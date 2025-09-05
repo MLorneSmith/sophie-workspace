@@ -1,8 +1,7 @@
 "use client";
 
-import { Settings } from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
+import { Settings } from "lucide-react";
 
 import { COMPONENTS_REGISTRY } from "../lib/components-data";
 

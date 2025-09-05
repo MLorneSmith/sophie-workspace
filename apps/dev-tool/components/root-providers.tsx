@@ -1,10 +1,9 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
-
 import { I18nProvider } from "@kit/i18n/provider";
 import { Toaster } from "@kit/ui/sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { i18nResolver } from "../lib/i18n/i18n.resolver";
 import { getI18nSettings } from "../lib/i18n/i18n.settings";

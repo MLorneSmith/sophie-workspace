@@ -1,6 +1,6 @@
 {
-	"_comment": "Hooks temporarily disabled due to hanging issues",
-	"_hooks": {
+	"_comment": "ClaudeKit integration - Phase 1 & 2 hooks",
+	"_disabled_hooks_backup": {
 		"PreToolUse": [
 			{
 				"matcher": "Bash",
@@ -12,5 +12,148 @@
 				]
 			}
 		]
+	},
+	"hooks": {
+		"SessionStart": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/codebase-map-compact.sh"
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/codebase-map-compact.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/thinking-level.sh"
+					}
+				]
+			}
+		],
+		"PreToolUse": [
+			{
+				"matcher": "Read|Edit|MultiEdit|Write|Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/file-guard.sh"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "Write|Edit|MultiEdit",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-lint-changed.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-format-changed.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/typecheck-changed.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/check-any-types.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/test-changed.sh"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/create-checkpoint.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-project-check.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/test-project.sh"
+					},
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/self-review.sh"
+					}
+				]
+			}
+		]
+	},
+	"codebase-map": {
+		"format": "auto",
+		"include": ["apps/**", "packages/**"],
+		"exclude": [
+			"**/*.test.ts",
+			"**/*.spec.ts",
+			"**/node_modules",
+			"**/.next",
+			"**/dist"
+		]
+	},
+	"create-checkpoint": {
+		"prefix": "claude",
+		"maxCheckpoints": 10
+	},
+	"thinking-level": {
+		"level": 2
+	},
+	"biome": {
+		"command": "npx biome",
+		"autoFix": false,
+		"formatOnSave": true,
+		"projectCheck": true,
+		"checkOnStop": true,
+		"timeout": 30,
+		"formatTimeout": 10,
+		"projectCheckTimeout": 60,
+		"checkPaths": "."
+	},
+	"typescript": {
+		"command": "npx tsc",
+		"checkOnChange": true,
+		"forbidAny": true,
+		"allowUnknown": true,
+		"skipTestFiles": true,
+		"strictMode": false,
+		"timeout": 30
+	},
+	"test-changed": {
+		"_comment": "Runs tests related to changed files",
+		"enabled": true,
+		"timeout": 30
+	},
+	"test-project": {
+		"_comment": "Runs unit test suite at session end",
+		"command": "pnpm test:unit",
+		"enabled": true,
+		"timeout": 55
+	},
+	"self-review": {
+		"_comment": "Prompts code review questions at session end",
+		"enabled": true,
+		"targetPatterns": ["**/*.ts", "**/*.tsx", "!**/*.test.ts", "!**/*.spec.ts"]
 	}
 }

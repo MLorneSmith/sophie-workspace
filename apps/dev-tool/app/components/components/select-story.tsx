@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import { Crown, Shield, User } from "lucide-react";
-
 import {
 	Card,
 	CardContent,
@@ -25,6 +21,8 @@ import {
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import { Crown, Shield, User } from "lucide-react";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

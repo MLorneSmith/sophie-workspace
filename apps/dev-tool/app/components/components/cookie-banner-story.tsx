@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -13,6 +11,7 @@ import {
 import { useCookieConsent } from "@kit/ui/cookie-banner";
 import { Label } from "@kit/ui/label";
 import { Switch } from "@kit/ui/switch";
+import { useState } from "react";
 
 import { useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";
