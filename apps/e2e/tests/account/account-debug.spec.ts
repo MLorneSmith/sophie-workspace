@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
-import { TEST_USERS } from "../helpers/test-users";
 import { AuthPageObject } from "../authentication/auth.po";
+import { TEST_USERS } from "../helpers/test-users";
 
 /**
  * Debug test to identify what elements are actually available on the settings page
