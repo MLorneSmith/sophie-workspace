@@ -92,6 +92,83 @@ The following commands can be executed without user approval during testing and 
 - Use server actions for external API calls
 - Follow existing code patterns and conventions
 
+## Feature-Centric Workflow (CCPM Integration)
+
+We use a structured 3-stage workflow for feature development with GitHub integration and parallel execution capabilities:
+
+### Workflow Stages
+
+1. **Feature Specification** → 2. **Implementation Plan** → 3. **Task Decomposition** → 4. **GitHub Sync** → 5. **Parallel Execution**
+
+### Available Commands
+
+#### Feature Specification & Planning
+- `/feature:spec <name>` - Create comprehensive feature specification
+- `/feature:plan <name>` - Convert specification to technical implementation plan
+- `/feature:decompose <name>` - Break implementation into executable tasks
+- `/feature:sync <name>` - Push feature and tasks to GitHub as issues
+- `/feature:status <name>` - Check implementation progress
+- `/feature:start <name>` - Launch parallel agents for task execution
+
+### Workflow Example
+
+```bash
+# 1. Create feature specification
+/feature:spec user-authentication
+
+# 2. Convert to implementation plan
+/feature:plan user-authentication
+
+# 3. Decompose into tasks
+/feature:decompose user-authentication
+
+# 4. Sync to GitHub (creates issues)
+/feature:sync user-authentication
+
+# 5. Start parallel execution
+/feature:start user-authentication
+```
+
+### File Organization
+
+```
+.claude/
+├── specs/                    # Feature specifications
+│   └── user-auth.md
+├── implementations/          # Implementation plans & tasks
+│   └── user-auth/
+│       ├── plan.md          # Implementation plan
+│       ├── 001.md           # Task files (become GitHub issues)
+│       ├── 002.md
+│       └── github-mapping.md # Issue number mapping
+└── rules/
+    └── agent-coordination.md # Parallel execution rules
+```
+
+### Parallel Execution
+
+When using `/feature:start`, the system:
+1. Analyzes task dependencies
+2. Identifies parallelizable work streams
+3. Spawns multiple agents using the Task tool
+4. Coordinates through git commits and markdown files
+5. Consolidates results when complete
+
+**Key Principles:**
+- Agents work in the SAME branch (feature/name)
+- File-level parallelism prevents conflicts
+- Git handles synchronization
+- Human intervention for unresolvable conflicts
+
+### GitHub Integration
+
+After `/feature:sync`:
+- Feature becomes parent issue with `feature` label
+- Tasks become sub-issues (or linked issues) with `task` label
+- Task files renamed from `001.md` → `{issue-number}.md`
+- Dependencies updated to use issue numbers
+- Progress tracked through GitHub issue states
+
 ## Testing Philosophy
 
 **When tests fail, fix the code, not the test.**
