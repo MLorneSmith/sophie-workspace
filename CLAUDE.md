@@ -107,22 +107,43 @@ Key principles:
 ## Directory Structure & File Organization
 
 ### Reports Directory
-ALL project reports and documentation should be saved to the `/reports/` directory:
+ALL project reports and documentation should be saved to the `/reports/` directory with proper organization:
 
-**Naming Convention**: `[TYPE]_[SCOPE]_[DATE].md`
+**Directory Structure**:
+```
+/reports/
+├── YYYY-MM-DD/           # Daily reports for quick access
+│   └── [report-type]/    # Optional categorization for busy days
+├── features/             # Feature-specific reports
+│   └── [feature-name]/   # e.g., auth/, payments/, etc.
+├── research/             # Long-term research documentation
+│   └── [topic]/          # e.g., webrtc/, libraries/, etc.
+└── _archive/             # Reports older than 30 days
+```
+
+**Naming Convention**: `[type]-[scope]-[date].md` (lowercase with hyphens)
 
 **Report Types**:
-- Implementation reports: `FEATURE_[NAME]_REPORT.md`
-- Test results: `TEST_RESULTS_[DATE].md`  
-- Performance analysis: `PERFORMANCE_ANALYSIS_[SCENARIO].md`
-- Security scans: `SECURITY_SCAN_[DATE].md`
-- Code quality: `CODE_QUALITY_REPORT.md`
-- API documentation: `API_COMPATIBILITY_REPORT.md`
+- Implementation reports: `feature-[name]-implementation.md`
+- Test results: `test-results-[scope].md`  
+- Performance analysis: `performance-analysis-[scenario].md`
+- Security scans: `security-scan-[scope].md`
+- Code quality: `code-quality-[component].md`
+- API documentation: `api-compatibility-[service].md`
+- Code reviews: `code-review-[scope].md`
+- Research: `research-[topic]-[date].md`
+
+**Examples**:
+- `/reports/2025-01-05/code-review-auth-components.md`
+- `/reports/features/auth/feature-auth-implementation.md`
+- `/reports/research/webrtc/research-webrtc-security-2025-01-05.md`
 
 **Guidelines**:
-- Always save reports to `/reports/`, never leave them in root
+- Always save reports to `/reports/` with appropriate subdirectory
 - Include dates in `YYYY-MM-DD` format for time-sensitive reports
-- Use clear prefixes: `TEST_`, `PERFORMANCE_`, `SECURITY_`, `FEATURE_`
+- Use lowercase with hyphens for readability and consistency
+- Archive reports older than 30 days to `_archive/` subdirectory
+- For daily reports, use date folders; for feature/research reports, use topic folders
 
 ### Temporary Files & Debugging
 All temporary files, debugging scripts, and test artifacts should be organized in a `/temp` folder:

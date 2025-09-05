@@ -139,7 +139,12 @@ After all agents complete, apply alternative hypothesis thinking before consolid
 - **Conflicting Recommendations**: How do we sequence fixes that might conflict with each other?
 - **Alternative Approaches**: If obvious fixes prove problematic, what are the alternative solutions?
 
-Then consolidate findings into this structured format:
+Then consolidate findings into this structured format and save if substantial:
+
+**For substantial reviews (>100 lines), save to:**
+- Daily reviews: `/reports/YYYY-MM-DD/code-review-[scope].md`
+- PR reviews: `/reports/YYYY-MM-DD/code-review-pr-[number].md`
+- Feature reviews: `/reports/features/[feature]/code-review-[component].md`
 
 ```
 🗂 Consolidated Code Review Report - [Target]

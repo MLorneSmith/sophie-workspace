@@ -101,16 +101,18 @@ For extensive research (COMPREHENSIVE level), save full reports to `/reports/`:
 - Documentation of technical investigations
 
 ### Report Naming Convention
-`/reports/RESEARCH_[TOPIC]_[DATE].md`
+`/reports/research/[topic]/research-[topic]-[date].md`
 
 Examples:
-- `/reports/RESEARCH_WEBRTC_SECURITY_2025-01-05.md`
-- `/reports/RESEARCH_CLOUD_PROVIDERS_COMPARISON_2025-01-05.md`
+- `/reports/research/webrtc/research-webrtc-security-2025-01-05.md`
+- `/reports/research/cloud/research-cloud-providers-comparison-2025-01-05.md`
+- `/reports/YYYY-MM-DD/research-[topic].md` (for one-off research)
 
 ### Report Delivery Pattern
 1. Display executive summary directly to user (50-100 lines)
-2. Save full detailed report to `/reports/`
-3. Inform user: "Full report saved to: /reports/RESEARCH_[TOPIC]_[DATE].md"
+2. Create directory structure if needed: `/reports/research/[topic]/`
+3. Save full detailed report with lowercase naming
+4. Inform user: "Full report saved to: /reports/research/[topic]/research-[topic]-[date].md"
 
 ## Quality Standards
 
