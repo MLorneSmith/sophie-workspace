@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { TEST_USERS } from "../helpers/test-users";
 import { AuthPageObject } from "../authentication/auth.po";
+import { TEST_USERS } from "../helpers/test-users";
 
 /**
  * Simplified account settings tests that avoid networkidle hanging

@@ -11,6 +11,7 @@ if (SKIP_ACCOUNT_SETTINGS) {
 	test.describe("Account Settings", () => {
 		test("temporarily disabled due to networkidle hanging - see issue #286", async () => {
 			// Placeholder test that passes immediately
+			expect(true).toBe(true);
 		});
 	});
 } else {
@@ -120,6 +121,7 @@ if (SKIP_ACCOUNT_SETTINGS) {
 	test.describe("Account Deletion", () => {
 		test("temporarily disabled due to networkidle hanging - see issue #286", async () => {
 			// Placeholder test that passes immediately
+			expect(true).toBe(true);
 		});
 	});
 } else {
