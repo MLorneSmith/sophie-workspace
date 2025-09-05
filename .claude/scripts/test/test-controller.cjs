@@ -46,6 +46,7 @@ const CONFIG = {
 	unitTimeout: 15 * 60 * 1000, // 15 minutes (increased for safety)
 	e2eTimeout: 45 * 60 * 1000, // 45 minutes (increased for all shards)
 	shardTimeout: 30 * 60 * 1000, // 30 minutes per shard (increased for safety)
+	fileTimeout: 3 * 60 * 1000, // 3 minutes per individual test file (fix for #302)
 	ports: {
 		supabase: 55321,
 		web: 3000,
@@ -2544,24 +2545,65 @@ class E2ETestRunner {
 		const startTime = Date.now();
 
 		for (const file of shard.files) {
-			log(
-				`   📄 Processing file ${shard.files.indexOf(file) + 1}/${shard.files.length}: ${file}`,
-			);
+			const fileIndex = shard.files.indexOf(file) + 1;
+			log(`   📄 Processing file ${fileIndex}/${shard.files.length}: ${file}`);
 
 			// Create a modified shard object with just this file
+			// Flag to use fileTimeout instead of shardTimeout
 			const fileShard = {
 				...shard,
 				currentFile: file,
 				files: [file],
+				isIndividualFile: true,
 			};
 
-			// Run this single file
-			const fileResult = await this.runShard(
-				fileShard,
-				attempt,
-				currentTests,
-				reportProgress,
-			);
+			let fileResult;
+			let fileTimedOut = false;
+			try {
+				// Run this single file with a timeout wrapper
+				const filePromise = this.runShard(
+					fileShard,
+					attempt,
+					currentTests,
+					reportProgress,
+				);
+
+				// Create a timeout promise for individual file execution
+				const timeoutPromise = new Promise((_, reject) => {
+					setTimeout(() => {
+						fileTimedOut = true;
+						// Aggressively kill any hanging Playwright processes for this file
+						const fileName = path.basename(file);
+						execAsync(
+							`pkill -9 -f "playwright.*${fileName}" 2>/dev/null || true`,
+						).catch(() => {});
+						reject(
+							new Error(
+								`File ${file} timed out after ${CONFIG.fileTimeout / 1000}s`,
+							),
+						);
+					}, CONFIG.fileTimeout);
+				});
+
+				// Race between test execution and timeout
+				fileResult = await Promise.race([filePromise, timeoutPromise]);
+			} catch (error) {
+				logError(`   ❌ File ${file} failed: ${error.message}`);
+				// Return a failure result if the file times out or errors
+				fileResult = {
+					total: 0,
+					passed: 0,
+					failed: 1,
+					skipped: 0,
+					intentionalFailures: 0,
+					infrastructureFailure: true,
+					exitCode: 1,
+					output: `File ${file} failed: ${error.message}\n`,
+					timedOut: fileTimedOut,
+				};
+				// Continue with other files even if this one fails
+				log("   ⚠️ Continuing with remaining files after failure...");
+			}
 
 			// Aggregate results
 			results.total += fileResult.total || 0;
@@ -2587,6 +2629,19 @@ class E2ETestRunner {
 				fileResult.failed !== fileResult.intentionalFailures
 			) {
 				log(`   ⚠️ File ${file} had ${fileResult.failed} failures`);
+			}
+
+			// Log timeout status if applicable
+			if (fileResult.timedOut) {
+				log(
+					"   ⏱️ File was terminated due to timeout - continuing with next file",
+				);
+			}
+
+			// Add delay between files to allow cleanup (skip for last file)
+			if (fileIndex < shard.files.length) {
+				log("   ⏳ Waiting 3s for cleanup before next file...");
+				await new Promise((resolve) => setTimeout(resolve, 3000));
 			}
 		}
 
@@ -2770,18 +2825,44 @@ class E2ETestRunner {
 			// Don't unref shard processes - we need to monitor them
 			// proc.unref();
 
-			const timeout = setTimeout(() => {
+			// Use fileTimeout for individual files, shardTimeout for full shards
+			const timeoutDuration = shard.isIndividualFile
+				? CONFIG.fileTimeout
+				: CONFIG.shardTimeout;
+			const timeoutLabel = shard.isIndividualFile
+				? `File ${shard.currentFile}`
+				: `Shard ${shard.id}`;
+
+			let timeoutOccurred = false;
+			const timeout = setTimeout(async () => {
+				timeoutOccurred = true;
 				logError(
-					`❌ Shard ${shard.id} timed out after ${CONFIG.shardTimeout / 1000}s`,
+					`❌ ${timeoutLabel} timed out after ${timeoutDuration / 1000}s`,
 				);
+
+				// More aggressive process cleanup for hanging tests
 				try {
-					// For detached processes, kill the process group
+					// Kill the process group
 					process.kill(-proc.pid, "SIGKILL");
 				} catch (e) {
 					// Fallback to killing just the process
 					proc.kill("SIGKILL");
 				}
-			}, CONFIG.shardTimeout);
+
+				// Also kill any orphaned Playwright processes
+				try {
+					await execAsync(
+						`pkill -9 -f "playwright.*${shard.currentFile || shard.id}" 2>/dev/null || true`,
+					);
+				} catch (e) {
+					// Ignore errors
+				}
+
+				// Force resolution of the promise with timeout error
+				if (!proc.killed) {
+					proc.emit("exit", 124, "TIMEOUT");
+				}
+			}, timeoutDuration);
 
 			proc.stdout.on("data", (data) => {
 				const chunk = data.toString();
@@ -2850,7 +2931,7 @@ class E2ETestRunner {
 				output += data.toString();
 			});
 
-			proc.on("close", (code) => {
+			proc.on("close", (code, signal) => {
 				clearTimeout(timeout);
 				const duration = Math.round((Date.now() - startTime) / 1000);
 
@@ -2866,6 +2947,16 @@ class E2ETestRunner {
 				result.hasServerStartup = hasServerStartupDetected;
 				result.output = output; // Include output for retry analysis
 				result.attempt = attempt; // Track attempt number
+
+				// Handle timeout case specifically
+				if (timeoutOccurred || signal === "TIMEOUT" || code === 124) {
+					result.timedOut = true;
+					result.infrastructureFailure = true;
+					result.failed = result.total > 0 ? result.total : 1;
+					log(
+						`  ⏱️ ${shard.isIndividualFile ? "File" : "Shard"} was terminated due to timeout`,
+					);
+				}
 
 				// Check for infrastructure failures
 				if (output.includes("WebServer") && output.includes("Timed out")) {

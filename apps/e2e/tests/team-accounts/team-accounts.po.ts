@@ -17,6 +17,25 @@ export class TeamAccountsPageObject {
 	async setup(params = this.createTeamName()) {
 		const { email } = await this.auth.signUpFlow("/home");
 
+		// Wait for the page to be ready after sign up
+		// Check if we're on an onboarding page and skip it if necessary
+		const currentUrl = this.page.url();
+		if (currentUrl.includes("/onboarding")) {
+			console.log("Detected onboarding page, waiting for navigation...");
+			// Wait for navigation to home page or handle onboarding
+			await this.page.waitForURL("**/home/**", { timeout: 10000 }).catch(() => {
+				console.log(
+					"Failed to navigate from onboarding, checking current page...",
+				);
+			});
+		}
+
+		// Ensure we're on the home page before trying to create a team
+		if (!this.page.url().includes("/home")) {
+			console.log(`Not on home page, current URL: ${this.page.url()}`);
+			await this.page.goto("/home");
+		}
+
 		await this.createTeam(params);
 
 		return { email, teamName: params.teamName, slug: params.slug };
@@ -68,14 +87,49 @@ export class TeamAccountsPageObject {
 		}).toPass();
 	}
 
-	openAccountsSelector() {
-		return expect(async () => {
-			await this.page.click('[data-test="account-selector-trigger"]');
+	async openAccountsSelector() {
+		// Wait for the page to be fully loaded
+		await this.page
+			.waitForLoadState("networkidle", { timeout: 5000 })
+			.catch(() => {
+				console.log("Network idle timeout, continuing...");
+			});
 
-			return expect(
-				this.page.locator('[data-test="account-selector-content"]'),
-			).toBeVisible();
-		}).toPass();
+		// First check if the trigger exists
+		const trigger = this.page.locator('[data-test="account-selector-trigger"]');
+
+		// Check if the trigger is already visible, if not, it might be behind a menu
+		const triggerCount = await trigger.count();
+		if (triggerCount === 0) {
+			console.error("Account selector trigger not found on page");
+			console.log("Current URL:", this.page.url());
+			// Take a screenshot for debugging
+			await this.page.screenshot({
+				path: "test-results/no-account-selector-trigger.png",
+			});
+			throw new Error("Account selector trigger not found on current page");
+		}
+
+		try {
+			// Wait for the trigger to be visible with a reasonable timeout
+			await trigger.waitFor({ state: "visible", timeout: 5000 });
+			await trigger.click();
+
+			// Wait for the content to appear with a shorter timeout
+			const content = this.page.locator(
+				'[data-test="account-selector-content"]',
+			);
+			await content.waitFor({ state: "visible", timeout: 5000 });
+		} catch (error) {
+			// Provide better error context
+			console.error("Failed to open account selector:", error.message);
+			console.log("Current page URL:", this.page.url());
+			// Take a screenshot for debugging
+			await this.page.screenshot({
+				path: "test-results/account-selector-error.png",
+			});
+			throw new Error(`Account selector failed to open: ${error.message}`);
+		}
 	}
 
 	async tryCreateTeam(teamName: string) {
