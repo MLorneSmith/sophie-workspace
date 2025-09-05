@@ -6,29 +6,20 @@ Usage: `/log-issue [output_format]` (default: github)
 - `local`: Save to `.claude/z.archive/issues/` only (no GitHub issue)
 - `file`: Same as `local` (alternative syntax)
 
-**New GitHub-First Workflow**: GitHub issues are now the single source of truth. Local files can be synced automatically for search purposes using the `.claude/scripts/issue-sync.js` script.
+**New GitHub-First Workflow**: GitHub issues are now the single source of truth. Local files are automatically synced when using the debug-issue command.
 
 This command documents issues systematically using diagnostic tools and creates a standardized issue specification.
 
-## Issue Synchronization Scripts
+## Issue Synchronization
 
-A script is available for syncing GitHub issues to local files:
+**Note**: Issue synchronization is handled automatically by the debug-issue command. Manual syncing is rarely needed.
 
-**`.claude/scripts/sync-issue.js`** - Sync script for GitHub issues
-
-```bash
-node .claude/scripts/sync-issue.js 123        # Sync issue #123
-node .claude/scripts/sync-issue.js ISSUE-123  # Sync ISSUE-123
-node .claude/scripts/sync-issue.js "#123"     # Sync issue #123
-node .claude/scripts/sync-issue.js "https://github.com/MLorneSmith/2025slideheroes/issues/123"
-```
-
-The sync script automatically:
+The debug-issue command uses an internal sync script that:
 
 - Checks if local cache exists and is up-to-date
 - Fetches from GitHub if needed
 - Creates temporary local files for debugging
-- Handles various issue reference formats
+- Handles various issue reference formats (issue numbers, ISSUE-123, URLs)
 
 ## 1. Adopt Role
 
@@ -457,7 +448,7 @@ Next Steps:
 2. To add more information, edit the GitHub issue
 3. To share with team, use the GitHub link above
 
-Note: Local file will be auto-created when debugging starts using sync-issue.js
+Note: Local file will be auto-created when debugging starts with /debug-issue command
 ```
 
 **Local-Only Mode:**

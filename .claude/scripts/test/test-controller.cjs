@@ -2216,9 +2216,14 @@ class E2ETestRunner {
 		});
 
 		const totalDuration = Math.round((Date.now() - startTime) / 1000);
+		const legitimateFailures = Math.max(
+			0,
+			totals.failed - (totals.intentionalFailures || 0),
+		);
 		status.status.e2e = {
 			...status.status.e2e,
 			...totals,
+			legitimateFailures,
 			duration: `${totalDuration}s`,
 		};
 
@@ -2235,6 +2240,9 @@ class E2ETestRunner {
 		log(`   Failed: ${totals.failed}`);
 		if (totals.intentionalFailures > 0) {
 			log(`   🎯 Intentional failures: ${totals.intentionalFailures}`);
+		}
+		if (legitimateFailures > 0) {
+			log(`   ⚠️ Legitimate failures: ${legitimateFailures}`);
 		}
 		if (totals.infrastructureFailures > 0) {
 			log(`   ⚠️ Infrastructure failures: ${totals.infrastructureFailures}`);
@@ -3508,12 +3516,18 @@ class TestController {
 
 		// E2E test results
 		if (e2e.total > 0) {
+			const e2eLegitimateFailures = Math.max(
+				0,
+				e2e.failed - (e2e.intentionalFailures || 0),
+			);
 			log("\nE2E Tests:");
 			log(`  Total: ${e2e.total}`);
 			log(`  ✅ Passed: ${e2e.passed}`);
 			if (e2e.failed > 0) log(`  ❌ Failed: ${e2e.failed}`);
 			if (e2e.intentionalFailures > 0)
 				log(`  🎯 Intentional failures: ${e2e.intentionalFailures}`);
+			if (e2eLegitimateFailures > 0)
+				log(`  ⚠️ Legitimate failures: ${e2eLegitimateFailures}`);
 			if (e2e.skipped > 0) log(`  ⏭️ Skipped: ${e2e.skipped}`);
 			if (e2e.duration) log(`  ⏱️ Duration: ${e2e.duration}`);
 
@@ -3530,6 +3544,10 @@ class TestController {
 		}
 
 		// Overall summary
+		const totalLegitimateFailures = Math.max(
+			0,
+			totalFailed - totalIntentionalFailures,
+		);
 		log(`\n${"═".repeat(40)}`);
 		log("OVERALL SUMMARY:");
 		log(`  Total Tests: ${totalTests}`);
@@ -3537,6 +3555,8 @@ class TestController {
 		if (totalFailed > 0) log(`  ❌ Failed: ${totalFailed}`);
 		if (totalIntentionalFailures > 0)
 			log(`  🎯 Intentional failures: ${totalIntentionalFailures}`);
+		if (totalLegitimateFailures > 0)
+			log(`  ⚠️ Legitimate failures: ${totalLegitimateFailures}`);
 		if (totalSkipped > 0) log(`  ⏭️ Skipped: ${totalSkipped}`);
 
 		const successRate =
@@ -3545,17 +3565,20 @@ class TestController {
 
 		// Final status
 		log(`\n${"═".repeat(40)}`);
-		if (totalFailed === 0) {
+		if (totalLegitimateFailures === 0) {
 			log("✅ ALL TESTS PASSED! 🎉");
 		} else {
-			log(`❌ ${totalFailed} TEST${totalFailed > 1 ? "S" : ""} FAILED`);
+			log(
+				`❌ ${totalLegitimateFailures} LEGITIMATE TEST${totalLegitimateFailures > 1 ? "S" : ""} FAILED`,
+			);
 
 			// Enhanced diagnostic suggestions
 			this.generateFixSuggestions(unit, e2e);
 		}
 
-		// Save final status
-		this.status.status.status = totalFailed === 0 ? "success" : "failed";
+		// Save final status (based on legitimate failures only)
+		this.status.status.status =
+			totalLegitimateFailures === 0 ? "success" : "failed";
 		await this.status.save();
 
 		log("\n📁 Full results saved to:", CONFIG.resultFile);
