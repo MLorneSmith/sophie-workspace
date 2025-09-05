@@ -1,7 +1,5 @@
 "use client";
 
-import { Download, Loader2, Mail, Plus, Settings } from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -15,6 +13,7 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import { Download, Loader2, Mail, Plus, Settings } from "lucide-react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

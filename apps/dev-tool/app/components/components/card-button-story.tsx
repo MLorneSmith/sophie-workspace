@@ -1,16 +1,5 @@
 "use client";
 
-import { useId, useState } from "react";
-
-import {
-	Calendar,
-	CreditCard,
-	FileText,
-	Settings,
-	Shield,
-	Users,
-} from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import {
 	Card,
@@ -30,6 +19,15 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { toast } from "@kit/ui/sonner";
 import { Switch } from "@kit/ui/switch";
+import {
+	Calendar,
+	CreditCard,
+	FileText,
+	Settings,
+	Shield,
+	Users,
+} from "lucide-react";
+import { useId, useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

@@ -1,7 +1,5 @@
 "use client";
 
-import { Eye, Heart, MoreHorizontal, Star, User } from "lucide-react";
-
 import { Avatar, AvatarFallback } from "@kit/ui/avatar";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -20,6 +18,7 @@ import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
+import { Eye, Heart, MoreHorizontal, Star, User } from "lucide-react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

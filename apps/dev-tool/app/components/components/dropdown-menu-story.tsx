@@ -1,37 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	Archive,
-	BookOpen,
-	Copy,
-	CreditCard,
-	Download,
-	Edit,
-	FileText,
-	Folder,
-	Github,
-	Image,
-	Keyboard,
-	LogOut,
-	Mail,
-	Monitor,
-	Moon,
-	MoreHorizontal,
-	Music,
-	Palette,
-	Plus,
-	Settings,
-	Share,
-	Shield,
-	Star,
-	Sun,
-	Trash,
-	User,
-	Video,
-} from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@kit/ui/avatar";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -68,6 +36,36 @@ import {
 	SelectValue,
 } from "@kit/ui/select";
 import { Switch } from "@kit/ui/switch";
+import {
+	Archive,
+	BookOpen,
+	Copy,
+	CreditCard,
+	Download,
+	Edit,
+	FileText,
+	Folder,
+	Github,
+	Image,
+	Keyboard,
+	LogOut,
+	Mail,
+	Monitor,
+	Moon,
+	MoreHorizontal,
+	Music,
+	Palette,
+	Plus,
+	Settings,
+	Share,
+	Shield,
+	Star,
+	Sun,
+	Trash,
+	User,
+	Video,
+} from "lucide-react";
+import { useState } from "react";
 
 import {
 	generateImportStatement,

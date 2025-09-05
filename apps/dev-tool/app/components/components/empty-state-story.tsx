@@ -1,7 +1,5 @@
 "use client";
 
-import { Bell, FileText, Package, Plus, Search, Users } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -21,6 +19,7 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
+import { Bell, FileText, Package, Plus, Search, Users } from "lucide-react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

@@ -44,8 +44,8 @@ vi.mock("@kit/next/actions", () => ({
 
 // Import after mocks are set up
 import {
-	getChatCompletion,
 	createReasoningOptimizedConfig,
+	getChatCompletion,
 	PromptManager,
 } from "@kit/ai-gateway";
 import { expectError } from "../../../../../../test/test-helpers";

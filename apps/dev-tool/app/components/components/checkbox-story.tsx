@@ -1,20 +1,5 @@
 "use client";
 
-import { useCallback, useState } from "react";
-
-import {
-	Bell,
-	Eye,
-	FileText,
-	Globe,
-	Image,
-	Settings,
-	Shield,
-	Star,
-	Users,
-	Zap,
-} from "lucide-react";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -37,6 +22,19 @@ import {
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { cn } from "@kit/ui/utils";
+import {
+	Bell,
+	Eye,
+	FileText,
+	Globe,
+	Image,
+	Settings,
+	Shield,
+	Star,
+	Users,
+	Zap,
+} from "lucide-react";
+import { useCallback, useState } from "react";
 
 import {
 	generateImportStatement,

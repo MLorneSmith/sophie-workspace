@@ -1,20 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	Download,
-	Edit,
-	FileText,
-	Image,
-	Info,
-	MessageSquare,
-	Plus,
-	Settings,
-	Share,
-	User,
-} from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import {
 	Card,
@@ -40,6 +25,19 @@ import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
 import { cn } from "@kit/ui/utils";
+import {
+	Download,
+	Edit,
+	FileText,
+	Image,
+	Info,
+	MessageSquare,
+	Plus,
+	Settings,
+	Share,
+	User,
+} from "lucide-react";
+import { useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

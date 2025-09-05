@@ -1,20 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-	AlertTriangle,
-	Archive,
-	Ban,
-	Download,
-	LogOut,
-	RefreshCw,
-	Share,
-	Trash2,
-	UserX,
-	X,
-} from "lucide-react";
-
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -39,6 +24,19 @@ import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { Textarea } from "@kit/ui/textarea";
+import {
+	AlertTriangle,
+	Archive,
+	Ban,
+	Download,
+	LogOut,
+	RefreshCw,
+	Share,
+	Trash2,
+	UserX,
+	X,
+} from "lucide-react";
+import { useState } from "react";
 
 import { useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
-import { BarChart3, FileText, Home, Settings, Users } from "lucide-react";
-
 import {
 	BorderedNavigationMenu,
 	BorderedNavigationMenuItem,
@@ -17,6 +13,8 @@ import {
 } from "@kit/ui/card";
 import { Label } from "@kit/ui/label";
 import { Switch } from "@kit/ui/switch";
+import { BarChart3, FileText, Home, Settings, Users } from "lucide-react";
+import { useState } from "react";
 
 import { useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";
