@@ -1,0 +1,290 @@
+---
+allowed-tools: Bash, Read, Write, LS
+---
+
+# Feature Update
+
+Post progress updates to GitHub for a feature or specific task.
+
+## Usage
+```
+/feature:update <issue_number>
+```
+
+## Preflight Checklist
+
+Before proceeding, complete these validation steps:
+
+1. **GitHub Authentication:**
+   ```bash
+   gh auth status || echo "❌ GitHub CLI not authenticated. Run: gh auth login"
+   ```
+
+2. **Issue Validation:**
+   ```bash
+   gh issue view $ARGUMENTS --json state,title,labels
+   # If issue doesn't exist: "❌ Issue #$ARGUMENTS not found"
+   # If issue is closed: "⚠️ Issue is closed. Are you sure you want to update?"
+   ```
+
+3. **Check Issue Type:**
+   ```bash
+   # Get issue labels to determine if feature or task
+   labels=$(gh issue view $ARGUMENTS --json labels -q '.labels[].name' | tr '\n' ' ')
+   
+   if [[ "$labels" =~ "feature" ]]; then
+     issue_type="feature"
+   elif [[ "$labels" =~ "task" ]]; then
+     issue_type="task"
+   else
+     issue_type="issue"
+   fi
+   ```
+
+## Instructions
+
+### 1. Gather Progress Information
+
+Collect current progress data:
+
+```bash
+# Get current datetime
+current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# For features with local tracking
+if [ "$issue_type" = "feature" ] || [ "$issue_type" = "task" ]; then
+  # Find local implementation files
+  feature_name=$(gh issue view $ARGUMENTS --json title -q '.title' | sed 's/^Feature: //' | sed 's/^Task: //')
+  
+  # Check for local progress tracking
+  if [ -d ".claude/implementations/$feature_name" ]; then
+    echo "📁 Found local implementation: $feature_name"
+    
+    # Count completed tasks
+    total_tasks=$(ls .claude/implementations/$feature_name/[0-9]*.md 2>/dev/null | wc -l)
+    
+    if [ $total_tasks -gt 0 ]; then
+      # Get task completion status from GitHub
+      completed_tasks=0
+      in_progress_tasks=0
+      blocked_tasks=0
+      
+      for task_file in .claude/implementations/$feature_name/[0-9]*.md; do
+        [ -f "$task_file" ] || continue
+        task_num=$(basename "$task_file" .md)
+        
+        # Check GitHub issue state
+        task_state=$(gh issue view $task_num --json state -q .state 2>/dev/null || echo "UNKNOWN")
+        
+        if [ "$task_state" = "CLOSED" ]; then
+          completed_tasks=$((completed_tasks + 1))
+        elif [ "$task_state" = "OPEN" ]; then
+          # Check for blocked label
+          task_labels=$(gh issue view $task_num --json labels -q '.labels[].name' 2>/dev/null | tr '\n' ' ')
+          if [[ "$task_labels" =~ "blocked" ]]; then
+            blocked_tasks=$((blocked_tasks + 1))
+          else
+            in_progress_tasks=$((in_progress_tasks + 1))
+          fi
+        fi
+      done
+      
+      # Calculate progress percentage
+      if [ $total_tasks -gt 0 ]; then
+        progress=$((completed_tasks * 100 / total_tasks))
+      else
+        progress=0
+      fi
+    fi
+  fi
+fi
+```
+
+### 2. Format Progress Update
+
+Create comprehensive update comment:
+
+```bash
+# Create update comment file
+cat > /tmp/feature-update-$ARGUMENTS.md << EOF
+## 🚀 Progress Update
+
+**Timestamp**: $current_date
+**Issue Type**: $issue_type
+
+### 📊 Overall Progress
+EOF
+
+if [ "$issue_type" = "feature" ] && [ -n "$total_tasks" ]; then
+  cat >> /tmp/feature-update-$ARGUMENTS.md << EOF
+- **Tasks Completed**: $completed_tasks / $total_tasks ($progress%)
+- **In Progress**: $in_progress_tasks
+- **Blocked**: $blocked_tasks
+- **Remaining**: $((total_tasks - completed_tasks - in_progress_tasks - blocked_tasks))
+
+### 📋 Task Breakdown
+EOF
+
+  # List task statuses
+  for task_file in .claude/implementations/$feature_name/[0-9]*.md; do
+    [ -f "$task_file" ] || continue
+    task_num=$(basename "$task_file" .md)
+    task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
+    task_state=$(gh issue view $task_num --json state -q .state 2>/dev/null || echo "UNKNOWN")
+    
+    if [ "$task_state" = "CLOSED" ]; then
+      echo "- ✅ #$task_num - $task_name" >> /tmp/feature-update-$ARGUMENTS.md
+    elif [ "$task_state" = "OPEN" ]; then
+      task_labels=$(gh issue view $task_num --json labels -q '.labels[].name' 2>/dev/null | tr '\n' ' ')
+      if [[ "$task_labels" =~ "blocked" ]]; then
+        echo "- ⚠️ #$task_num - $task_name (BLOCKED)" >> /tmp/feature-update-$ARGUMENTS.md
+      elif [[ "$task_labels" =~ "in-progress" ]]; then
+        echo "- 🔄 #$task_num - $task_name (IN PROGRESS)" >> /tmp/feature-update-$ARGUMENTS.md
+      else
+        echo "- ⏳ #$task_num - $task_name (PENDING)" >> /tmp/feature-update-$ARGUMENTS.md
+      fi
+    fi
+  done
+fi
+
+cat >> /tmp/feature-update-$ARGUMENTS.md << EOF
+
+### 🔄 Recent Activity
+[Describe what was completed, what's in progress, and any blockers]
+
+### 📝 Next Steps
+[Outline the immediate next actions]
+
+---
+*Updated by Claude Implementation Assistant*
+EOF
+```
+
+### 3. Post to GitHub
+
+Add comment to the issue:
+
+```bash
+# Post the update
+gh issue comment $ARGUMENTS --body-file /tmp/feature-update-$ARGUMENTS.md
+
+if [ $? -eq 0 ]; then
+  echo "✅ Progress update posted to issue #$ARGUMENTS"
+  echo "🔗 View: gh issue view $ARGUMENTS --comments"
+else
+  echo "❌ Failed to post update to issue #$ARGUMENTS"
+  exit 1
+fi
+```
+
+### 4. Update Labels (Optional)
+
+Update issue labels based on progress:
+
+```bash
+# Update labels based on status
+if [ "$progress" -eq 100 ]; then
+  # All tasks complete
+  gh issue edit $ARGUMENTS --add-label "ready-for-review" --remove-label "in-progress" 2>/dev/null
+  echo "🏷️ Added 'ready-for-review' label"
+elif [ "$progress" -gt 0 ]; then
+  # Some progress made
+  gh issue edit $ARGUMENTS --add-label "in-progress" 2>/dev/null
+  echo "🏷️ Added 'in-progress' label"
+fi
+
+# Add blocked label if tasks are blocked
+if [ "$blocked_tasks" -gt 0 ]; then
+  gh issue edit $ARGUMENTS --add-label "has-blocked-tasks" 2>/dev/null
+  echo "🏷️ Added 'has-blocked-tasks' label"
+fi
+```
+
+### 5. Update Local Tracking
+
+Update local frontmatter with last sync time:
+
+```bash
+# Update local plan if it exists
+if [ -f ".claude/implementations/$feature_name/plan.md" ]; then
+  # Update the updated field in frontmatter
+  sed -i.bak "/^updated:/c\updated: $current_date" .claude/implementations/$feature_name/plan.md
+  rm .claude/implementations/$feature_name/plan.md.bak
+  echo "📝 Updated local plan timestamp"
+fi
+```
+
+### 6. Output Summary
+
+```bash
+echo ""
+echo "📊 Update Summary"
+echo "=================="
+echo "Issue: #$ARGUMENTS"
+echo "Type: $issue_type"
+if [ -n "$total_tasks" ]; then
+  echo "Progress: $completed_tasks/$total_tasks tasks ($progress%)"
+  echo "  ✅ Completed: $completed_tasks"
+  echo "  🔄 In Progress: $in_progress_tasks"
+  echo "  ⚠️ Blocked: $blocked_tasks"
+fi
+echo ""
+echo "View full thread: gh issue view $ARGUMENTS --comments"
+```
+
+## Manual Progress Updates
+
+If you need to post a custom progress update without automatic tracking:
+
+```bash
+# Create custom update
+cat > /tmp/manual-update.md << 'EOF'
+## 🚀 Progress Update
+
+### ✅ Completed
+- [List completed items]
+
+### 🔄 In Progress
+- [List current work]
+
+### ⚠️ Blockers
+- [List any blockers]
+
+### 📝 Next Steps
+- [List next actions]
+
+---
+*Updated by Claude Implementation Assistant*
+EOF
+
+# Post to GitHub
+gh issue comment $ARGUMENTS --body-file /tmp/manual-update.md
+```
+
+## Error Handling
+
+Common issues and solutions:
+
+1. **GitHub Authentication Failed**
+   - Run: `gh auth login`
+   - Check token permissions
+
+2. **Issue Not Found**
+   - Verify issue number
+   - Check repository context
+
+3. **Rate Limited**
+   - Wait before retrying
+   - Use different token
+
+4. **Network Error**
+   - Check connection
+   - Retry command
+
+## Important Notes
+
+- Updates are posted as comments, preserving history
+- Original issue body is never modified
+- Labels are used to track high-level status
+- All updates include timestamp for audit trail
+- Progress is calculated from actual GitHub issue states

@@ -22,69 +22,99 @@ Load the implementation mindset:
 
 ## 2. Load Task Specification
 
-### 2.1 Auto-Sync and Locate Task
+### 2.1 Parse Task Reference
 
-Use the auto-sync service to fetch/cache tasks automatically:
-
-```bash
-# Run sync to ensure we have the latest task data
-node .claude/scripts/sync-task.js ${task_reference}
-
-# The script will:
-# 1. Detect if it's a GitHub issue (number, TASK-124, #124, URL)
-# 2. Check local cache (1 hour freshness)
-# 3. Auto-fetch from GitHub if needed
-# 4. Create/update local cache file
-# 5. Handle fallbacks gracefully
-```
-
-### 2.2 Parse Task Reference
-
-The auto-sync service handles all reference formats:
+Parse the task reference to extract issue number:
 
 ```bash
-# Examples of supported formats:
-node .claude/scripts/sync-task.js 124               # GitHub issue #124
-node .claude/scripts/sync-task.js TASK-124          # TASK-124 format
-node .claude/scripts/sync-task.js "#124"            # Hash format
-node .claude/scripts/sync-task.js "https://github.com/MLorneSmith/2025slideheroes/issues/124"  # Full URL
-```
+# Parse various input formats
+task_ref="${ARGUMENTS}"
 
-### 2.3 Load Synced Task
-
-After auto-sync completes, read the local file:
-
-```bash
-# Auto-sync creates files in format: YYYY-MM-DD-TASK-{number}.md
-# Find the synced file
-task_file=$(find .claude/z.archive/tasks -name "*-TASK-${task_number}.md" | head -1)
-
-if [ -z "$task_file" ]; then
-  echo "❌ Task file not found after auto-sync"
+# Extract issue number from different formats
+if [[ "$task_ref" =~ ^[0-9]+$ ]]; then
+  # Direct number: 124
+  issue_number="$task_ref"
+elif [[ "$task_ref" =~ ^TASK-([0-9]+)$ ]]; then
+  # TASK-124 format
+  issue_number="${BASH_REMATCH[1]}"
+elif [[ "$task_ref" =~ ^#([0-9]+)$ ]]; then
+  # #124 format
+  issue_number="${BASH_REMATCH[1]}"
+elif [[ "$task_ref" =~ github\.com/[^/]+/[^/]+/issues/([0-9]+) ]]; then
+  # GitHub URL format
+  issue_number="${BASH_REMATCH[1]}"
+else
+  echo "❌ Invalid task reference format: $task_ref"
   exit 1
 fi
 
-echo "📁 Using task file: $task_file"
+echo "📋 Loading task #$issue_number"
+```
+
+### 2.2 Get Issue from GitHub
+
+Use gh CLI to fetch issue details directly (following CCPM pattern):
+
+```bash
+# Get issue details from GitHub
+gh issue view $issue_number --json number,title,body,state,labels,assignees,createdAt,milestone > /tmp/task-$issue_number.json
+
+if [ $? -ne 0 ]; then
+  echo "❌ Cannot access issue #$issue_number. Check number or run: gh auth login"
+  exit 1
+fi
+
+# Get issue state
+issue_state=$(jq -r '.state' /tmp/task-$issue_number.json)
+issue_title=$(jq -r '.title' /tmp/task-$issue_number.json)
+
+echo "📋 Task: $issue_title"
+echo "📊 Status: $issue_state"
+```
+
+### 2.3 Check for Local Task File
+
+Look for corresponding local task file (if using feature workflow):
+
+```bash
+# Check if this is a feature task with local file
+# First check new naming convention (issue number as filename)
+task_file=".claude/implementations/*/${issue_number}.md"
+if ! test -f $task_file 2>/dev/null; then
+  # Check old naming convention (001.md, 002.md, etc.)
+  task_file=$(grep -l "github:.*issues/${issue_number}" .claude/implementations/*/*.md 2>/dev/null | head -1)
+fi
+
+if [ -f "$task_file" ]; then
+  echo "📁 Found local task file: $task_file"
+  # Read local task for additional context
+else
+  echo "📋 Working directly from GitHub issue #$issue_number"
+fi
 ```
 
 ### 2.4 Read and Parse Task
 
-```typescript
-// Read the task specification
-const taskContent = await readFile(taskPath);
-const task = parseTaskSpecification(taskContent);
+```bash
+# Extract task information from GitHub issue
+task_body=$(jq -r '.body' /tmp/task-$issue_number.json)
+task_labels=$(jq -r '.labels[].name' /tmp/task-$issue_number.json | tr '\n' ' ')
 
-// Extract key information
-const {
-  id,
-  priority,
-  type,
-  implementationPlan,
-  affectedFiles,
-  testingStrategy,
-  acceptanceCriteria,
-  timeEstimate
-} = task;
+# Determine task type from labels
+if [[ "$task_labels" =~ "feature" ]]; then
+  task_type="feature"
+elif [[ "$task_labels" =~ "enhancement" ]]; then
+  task_type="enhancement"
+elif [[ "$task_labels" =~ "bug" ]]; then
+  task_type="bug"
+elif [[ "$task_labels" =~ "refactor" ]]; then
+  task_type="refactor"
+else
+  task_type="task"
+fi
+
+echo "🏷️ Type: $task_type"
+echo "🏷️ Labels: $task_labels"
 ```
 
 ### 2.5 Review GitHub Issue Comments (Critical Step)
