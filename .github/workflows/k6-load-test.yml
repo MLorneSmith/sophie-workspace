@@ -52,7 +52,7 @@ on:
 jobs:
   load-test:
     name: K6 Load Test - ${{ inputs.environment }}
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       report_url: ${{ steps.cloud.outputs.report_url }}
       passed: ${{ steps.run-test.outputs.passed }}
@@ -312,7 +312,7 @@ jobs:
   # Generate performance report
   performance-report:
     name: Generate Performance Report
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: load-test
     if: always()
     steps:

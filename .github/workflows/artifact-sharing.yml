@@ -36,7 +36,7 @@ env:
 jobs:
   build-or-reuse:
     name: Build or Reuse Artifacts
-    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     outputs:
       artifact_key: ${{ steps.artifact.outputs.key }}
       artifact_found: ${{ steps.check.outputs.found }}
@@ -195,7 +195,7 @@ jobs:
 
   validate-artifacts:
     name: Validate Build Artifacts
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: build-or-reuse
     steps:
       - uses: actions/checkout@v4
