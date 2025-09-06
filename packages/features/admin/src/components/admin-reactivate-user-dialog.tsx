@@ -37,17 +37,6 @@ export function AdminReactivateUserDialog(
     userId: string;
   }>,
 ) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<boolean>(false);
-
-  const form = useForm({
-    resolver: zodResolver(ReactivateUserSchema),
-    defaultValues: {
-      userId: props.userId,
-      confirmation: '',
-    },
-  });
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{props.children}</AlertDialogTrigger>
@@ -61,68 +50,86 @@ export function AdminReactivateUserDialog(
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <Form {...form}>
-          <form
-            data-test={'admin-reactivate-user-form'}
-            className={'flex flex-col space-y-8'}
-            onSubmit={form.handleSubmit((data) => {
-              startTransition(async () => {
-                try {
-                  await reactivateUserAction(data);
-                  setError(false);
-                } catch {
-                  setError(true);
-                }
-              });
-            })}
-          >
-            <If condition={error}>
-              <Alert variant={'destructive'}>
-                <AlertTitle>Error</AlertTitle>
-
-                <AlertDescription>
-                  There was an error reactivating the user. Please check the
-                  server logs to see what went wrong.
-                </AlertDescription>
-              </Alert>
-            </If>
-
-            <FormField
-              name={'confirmation'}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Type <b>CONFIRM</b> to confirm
-                  </FormLabel>
-
-                  <FormControl>
-                    <Input
-                      required
-                      pattern={'CONFIRM'}
-                      placeholder={'Type CONFIRM to confirm'}
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormDescription>
-                    Are you sure you want to do this?
-                  </FormDescription>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-              <Button disabled={pending} type={'submit'}>
-                {pending ? 'Reactivating...' : 'Reactivate User'}
-              </Button>
-            </AlertDialogFooter>
-          </form>
-        </Form>
+        <ReactivateUserForm userId={props.userId} />
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+function ReactivateUserForm(props: { userId: string }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<boolean>(false);
+
+  const form = useForm({
+    resolver: zodResolver(ReactivateUserSchema),
+    defaultValues: {
+      userId: props.userId,
+      confirmation: '',
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        data-test={'admin-reactivate-user-form'}
+        className={'flex flex-col space-y-8'}
+        onSubmit={form.handleSubmit((data) => {
+          startTransition(async () => {
+            try {
+              const result = await reactivateUserAction(data);
+
+              setError(!result.success);
+            } catch {
+              setError(true);
+            }
+          });
+        })}
+      >
+        <If condition={error}>
+          <Alert variant={'destructive'}>
+            <AlertTitle>Error</AlertTitle>
+
+            <AlertDescription>
+              There was an error reactivating the user. Please check the server
+              logs to see what went wrong.
+            </AlertDescription>
+          </Alert>
+        </If>
+
+        <FormField
+          name={'confirmation'}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Type <b>CONFIRM</b> to confirm
+              </FormLabel>
+
+              <FormControl>
+                <Input
+                  required
+                  pattern={'CONFIRM'}
+                  placeholder={'Type CONFIRM to confirm'}
+                  {...field}
+                />
+              </FormControl>
+
+              <FormDescription>
+                Are you sure you want to do this?
+              </FormDescription>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+
+          <Button disabled={pending} type={'submit'}>
+            {pending ? 'Reactivating...' : 'Reactivate User'}
+          </Button>
+        </AlertDialogFooter>
+      </form>
+    </Form>
   );
 }

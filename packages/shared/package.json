@@ -23,7 +23,7 @@
     "@types/react": "19.1.12"
   },
   "dependencies": {
-    "pino": "^9.8.0"
+    "pino": "^9.9.4"
   },
   "typesVersions": {
     "*": {

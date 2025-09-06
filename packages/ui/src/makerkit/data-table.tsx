@@ -364,12 +364,12 @@ export function DataTable<RecordData extends DataItem>({
                             ? 'hover:bg-accent/50 -mx-3 cursor-pointer rounded px-3 py-1 select-none'
                             : '',
                         )}
-                        onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
+
                         {header.column.getCanSort() && (
                           <div className="flex flex-col">
                             <ChevronUp
@@ -503,7 +503,6 @@ export function DataTable<RecordData extends DataItem>({
             <div className={'px-2.5 py-1.5'}>
               <Pagination
                 table={table}
-                pageSize={pageSize}
                 totalCount={
                   pageCount && pageSize ? pageCount * pageSize : undefined
                 }
@@ -519,19 +518,26 @@ export function DataTable<RecordData extends DataItem>({
 function Pagination<T>({
   table,
   totalCount,
-  pageSize,
 }: React.PropsWithChildren<{
   table: ReactTable<T>;
   totalCount?: number;
   pageSize?: number;
 }>) {
+  const currentPageIndex = table.getState().pagination.pageIndex;
+  const currentPageSize = table.getState().pagination.pageSize;
+  const rows = table.getRowModel().rows;
+
+  // Calculate what records are being shown on this page
+  const startRecord = currentPageIndex * currentPageSize + 1;
+  const endRecord = startRecord + rows.length - 1;
+
   return (
     <div className="flex items-center space-x-4">
       <span className="text-muted-foreground flex items-center text-xs">
         <Trans
           i18nKey={'common:pageOfPages'}
           values={{
-            page: table.getState().pagination.pageIndex + 1,
+            page: currentPageIndex + 1,
             total: table.getPageCount(),
           }}
         />
@@ -583,12 +589,9 @@ function Pagination<T>({
         </Button>
       </div>
 
-      <If condition={totalCount}>
+      <If condition={totalCount && rows.length > 0}>
         <span className="text-muted-foreground flex items-center text-xs">
-          <Trans
-            i18nKey={'common:showingRecordCount'}
-            values={{ totalCount, pageSize }}
-          />
+          Showing {startRecord} to {endRecord} of {totalCount} rows
         </span>
       </If>
     </div>

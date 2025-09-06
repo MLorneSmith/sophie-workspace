@@ -153,7 +153,7 @@ class AdminAuthUserService {
   }
 
   private async setBanDuration(userId: string, banDuration: string) {
-    await this.adminClient.auth.admin.updateUserById(userId, {
+    return this.adminClient.auth.admin.updateUserById(userId, {
       ban_duration: banDuration,
     });
   }

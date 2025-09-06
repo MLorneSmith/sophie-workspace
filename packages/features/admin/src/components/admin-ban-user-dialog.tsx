@@ -37,17 +37,6 @@ export function AdminBanUserDialog(
     userId: string;
   }>,
 ) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<boolean>(false);
-
-  const form = useForm({
-    resolver: zodResolver(BanUserSchema),
-    defaultValues: {
-      userId: props.userId,
-      confirmation: '',
-    },
-  });
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{props.children}</AlertDialogTrigger>
@@ -62,72 +51,86 @@ export function AdminBanUserDialog(
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <Form {...form}>
-          <form
-            data-test={'admin-ban-user-form'}
-            className={'flex flex-col space-y-8'}
-            onSubmit={form.handleSubmit((data) => {
-              startTransition(async () => {
-                try {
-                  await banUserAction(data);
-                  setError(false);
-                } catch {
-                  setError(true);
-                }
-              });
-            })}
-          >
-            <If condition={error}>
-              <Alert variant={'destructive'}>
-                <AlertTitle>Error</AlertTitle>
-
-                <AlertDescription>
-                  There was an error banning the user. Please check the server
-                  logs to see what went wrong.
-                </AlertDescription>
-              </Alert>
-            </If>
-
-            <FormField
-              name={'confirmation'}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Type <b>CONFIRM</b> to confirm
-                  </FormLabel>
-
-                  <FormControl>
-                    <Input
-                      required
-                      pattern={'CONFIRM'}
-                      placeholder={'Type CONFIRM to confirm'}
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormDescription>
-                    Are you sure you want to do this?
-                  </FormDescription>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-              <Button
-                disabled={pending}
-                type={'submit'}
-                variant={'destructive'}
-              >
-                Ban User
-              </Button>
-            </AlertDialogFooter>
-          </form>
-        </Form>
+        <BanUserForm userId={props.userId} />
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+function BanUserForm(props: { userId: string }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<boolean>(false);
+
+  const form = useForm({
+    resolver: zodResolver(BanUserSchema),
+    defaultValues: {
+      userId: props.userId,
+      confirmation: '',
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <form
+        data-test={'admin-ban-user-form'}
+        className={'flex flex-col space-y-8'}
+        onSubmit={form.handleSubmit((data) => {
+          startTransition(async () => {
+            try {
+              const result = await banUserAction(data);
+
+              setError(!result.success);
+            } catch {
+              setError(true);
+            }
+          });
+        })}
+      >
+        <If condition={error}>
+          <Alert variant={'destructive'}>
+            <AlertTitle>Error</AlertTitle>
+
+            <AlertDescription>
+              There was an error banning the user. Please check the server logs
+              to see what went wrong.
+            </AlertDescription>
+          </Alert>
+        </If>
+
+        <FormField
+          name={'confirmation'}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Type <b>CONFIRM</b> to confirm
+              </FormLabel>
+
+              <FormControl>
+                <Input
+                  required
+                  pattern={'CONFIRM'}
+                  placeholder={'Type CONFIRM to confirm'}
+                  {...field}
+                />
+              </FormControl>
+
+              <FormDescription>
+                Are you sure you want to do this?
+              </FormDescription>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+
+          <Button disabled={pending} type={'submit'} variant={'destructive'}>
+            {pending ? 'Banning...' : 'Ban User'}
+          </Button>
+        </AlertDialogFooter>
+      </form>
+    </Form>
   );
 }

@@ -20,7 +20,7 @@
     "@kit/shared": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/wordpress": "workspace:*",
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.3.1"
   },
   "typesVersions": {
     "*": {

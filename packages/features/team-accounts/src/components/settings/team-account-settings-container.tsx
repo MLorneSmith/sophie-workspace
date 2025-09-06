@@ -67,25 +67,11 @@ export function TeamAccountSettingsContainer(props: {
         </CardContent>
       </Card>
 
-      <Card className={'border-destructive border'}>
-        <CardHeader>
-          <CardTitle>
-            <Trans i18nKey={'teams:settings.dangerZone'} />
-          </CardTitle>
-
-          <CardDescription>
-            <Trans i18nKey={'teams:settings.dangerZoneDescription'} />
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <TeamAccountDangerZone
-            primaryOwnerUserId={props.account.primaryOwnerUserId}
-            account={props.account}
-            features={props.features}
-          />
-        </CardContent>
-      </Card>
+      <TeamAccountDangerZone
+        primaryOwnerUserId={props.account.primaryOwnerUserId}
+        account={props.account}
+        features={props.features}
+      />
     </div>
   );
 }

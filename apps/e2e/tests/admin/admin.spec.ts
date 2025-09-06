@@ -126,7 +126,7 @@ test.describe('Admin', () => {
         page.waitForResponse(
           (response) =>
             response.url().includes('/admin/accounts') &&
-            response.status() === 200,
+            response.request().method() === 'POST',
         ),
       ]);
 
@@ -172,9 +172,11 @@ test.describe('Admin', () => {
         page.waitForResponse(
           (response) =>
             response.url().includes('/admin/accounts') &&
-            response.status() === 200,
+            response.request().method() === 'POST',
         ),
       ]);
+
+      await page.waitForTimeout(250);
 
       // Verify ban badge is removed
       await expect(page.getByText('Banned')).not.toBeVisible();
@@ -388,14 +390,17 @@ async function filterAccounts(page: Page, email: string) {
     .fill(email);
 
   await page.keyboard.press('Enter');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(250);
 }
 
 async function selectAccount(page: Page, email: string) {
-  await page
+  const link = page
     .locator('tr', { hasText: email.split('@')[0] })
-    .locator('a')
-    .click();
+    .locator('a');
+
+  await expect(link).toBeVisible();
+
+  await link.click();
 
   await page.waitForURL(new RegExp(`/admin/accounts/[a-z0-9-]+`));
   await page.waitForTimeout(500);

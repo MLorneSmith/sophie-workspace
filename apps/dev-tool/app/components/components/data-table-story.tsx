@@ -1248,6 +1248,16 @@ export function DataTableStory() {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
+              {/* Note about pagination examples */}
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                <p className="text-sm text-amber-800">
+                  <strong>Note:</strong> These examples show only the first page
+                  of data for demonstration. In a real application, pagination
+                  would fetch different pages from your backend based on the
+                  current page index.
+                </p>
+              </div>
+
               {/* Small dataset with pagination */}
               <div className="space-y-3">
                 <h4 className="text-sm font-semibold">
@@ -1267,7 +1277,7 @@ export function DataTableStory() {
                       ),
                     },
                   ]}
-                  data={data.slice(0, 15)}
+                  data={data.slice(0, 5)}
                   pageSize={5}
                   pageCount={3}
                   getRowId={(row) => row.id}
@@ -1303,7 +1313,7 @@ export function DataTableStory() {
                       },
                     },
                   ]}
-                  data={data.slice(0, 30)}
+                  data={data.slice(0, 10)}
                   pageSize={10}
                   pageCount={3}
                   getRowId={(row) => row.id}
@@ -1416,7 +1426,7 @@ export function DataTableStory() {
                       size: 80,
                     },
                   ]}
-                  data={data.slice(0, 50)}
+                  data={data.slice(0, 15)}
                   pageSize={15}
                   pageCount={Math.ceil(50 / 15)}
                   getRowId={(row) => row.id}

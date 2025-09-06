@@ -33,7 +33,15 @@ export const banUserAction = adminAction(
 
       logger.info({ userId }, `Super Admin is banning user...`);
 
-      await service.banUser(userId);
+      const { error } = await service.banUser(userId);
+
+      if (error) {
+        logger.error({ error }, `Error banning user`);
+
+        return {
+          success: false,
+        };
+      }
 
       logger.info({ userId }, `Super Admin has successfully banned user`);
 
@@ -61,11 +69,19 @@ export const reactivateUserAction = adminAction(
 
       logger.info({ userId }, `Super Admin is reactivating user...`);
 
-      await service.reactivateUser(userId);
+      const { error } = await service.reactivateUser(userId);
 
-      logger.info({ userId }, `Super Admin has successfully reactivated user`);
+      if (error) {
+        logger.error({ error }, `Error reactivating user`);
+
+        return {
+          success: false,
+        };
+      }
 
       revalidateAdmin();
+
+      logger.info({ userId }, `Super Admin has successfully reactivated user`);
 
       return {
         success: true,
@@ -113,8 +129,6 @@ export const deleteUserAction = adminAction(
 
       logger.info({ userId }, `Super Admin has successfully deleted user`);
 
-      revalidateAdmin();
-
       return redirect('/admin/accounts');
     },
     {
@@ -137,12 +151,12 @@ export const deleteAccountAction = adminAction(
 
       await service.deleteAccount(accountId);
 
+      revalidateAdmin();
+
       logger.info(
         { accountId },
         `Super Admin has successfully deleted account`,
       );
-
-      revalidateAdmin();
 
       return redirect('/admin/accounts');
     },
@@ -180,7 +194,7 @@ export const createUserAction = adminAction(
         `Super Admin has successfully created a new user`,
       );
 
-      revalidateAdmin();
+      revalidatePath(`/admin/accounts`);
 
       return {
         success: true,
@@ -212,8 +226,6 @@ export const resetPasswordAction = adminAction(
         `Super Admin has successfully sent password reset email`,
       );
 
-      revalidateAdmin();
-
       return result;
     },
     {
@@ -223,7 +235,7 @@ export const resetPasswordAction = adminAction(
 );
 
 function revalidateAdmin() {
-  revalidatePath('/admin', 'layout');
+  revalidatePath(`/admin/accounts/[id]`, 'page');
 }
 
 function getAdminAuthService() {
