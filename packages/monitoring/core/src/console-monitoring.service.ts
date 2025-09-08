@@ -6,12 +6,22 @@ export class ConsoleMonitoringService implements MonitoringService {
 		console.info("[Console Monitoring] Identified user", data);
 	}
 
-	captureException<Extra extends object>(
+	captureException<
+		Extra extends Record<string, unknown>,
+		Config extends Record<string, unknown>,
+	>(
 		error: Error & { digest?: string },
 		extra?: Extra,
-	) {
+		config?: Config,
+	): unknown {
 		// biome-ignore lint/suspicious/noConsole: Console monitoring service uses console directly
-		console.error("[Console Monitoring] Caught exception:", error, extra);
+		console.error(
+			"[Console Monitoring] Caught exception:",
+			error,
+			extra,
+			config,
+		);
+		return undefined;
 	}
 
 	captureEvent<Extra extends object>(event: string, extra?: Extra) {

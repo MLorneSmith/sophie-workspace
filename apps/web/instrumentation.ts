@@ -31,7 +31,7 @@ export const onRequestError: Instrumentation.onRequestError = async (
 	await service.ready();
 
 	await service.captureException(
-		err as Error,
+		err as Error & { digest?: string },
 		{},
 		{
 			path: request.path,
