@@ -94,23 +94,27 @@ The following commands can be executed without user approval during testing and 
 
 ## Feature-Centric Workflow (CCPM Integration)
 
-We use a structured 3-stage workflow for feature development with GitHub integration and parallel execution capabilities that delivers **3x faster feature delivery** with improved quality.
+We use a structured 3-stage workflow for feature development with GitHub integration and parallel
+execution capabilities that delivers **3x faster feature delivery** with improved quality.
 
 ### Why Use CCPM?
 
 **Performance Benefits:**
+
 - **3x faster delivery** for parallelizable features
 - **60% reduction** in context token usage
 - **70% fewer** context switches and interruptions
 - **Zero disruption** to existing workflows
 
 **When to Use CCPM:**
+
 - New features requiring 4+ hours of work
 - Multi-component implementations (UI + API + Database)
 - Features with clear separation of concerns
 - Time-critical deliverables
 
 **When NOT to Use CCPM:**
+
 - Quick bug fixes (<2 hours)
 - Single file changes
 - Heavy interdependencies
@@ -183,7 +187,8 @@ When using `/feature:start`, the system achieves **3x performance improvement** 
 5. Consolidating results when complete
 
 **Performance Example:**
-```
+
+```text
 Sequential: Task1(2hr) → Task2(2hr) → Task3(2hr) = 6 hours
 Parallel:   Task1(2hr) ┐
             Task2(2hr) ├─ = 2 hours (3x faster!)
