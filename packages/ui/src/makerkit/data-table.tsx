@@ -11,18 +11,22 @@ import type {
 	VisibilityState,
 } from "@tanstack/react-table";
 import {
+	type Cell,
 	flexRender,
 	getCoreRowModel,
+	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import {
+	ChevronDown,
 	ChevronLeft,
 	ChevronRight,
 	ChevronsLeft,
 	ChevronsRight,
+	ChevronUp,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 import { cn } from "../lib/utils/cn";
 import { Button } from "../shadcn/button";
@@ -39,14 +43,15 @@ import { Trans } from "./trans";
 
 type DataItem = Record<string, unknown> | object;
 
-export type {
-	ColumnDef,
-	ColumnFiltersState,
-	ColumnPinningState,
-	PaginationState,
-	Row,
-	SortingState,
-	VisibilityState,
+export {
+	type ColumnDef,
+	type ColumnFiltersState,
+	type ColumnPinningState,
+	type PaginationState,
+	type Row,
+	type SortingState,
+	type VisibilityState,
+	flexRender,
 };
 
 interface ReactTableProps<T extends DataItem> {
@@ -55,6 +60,8 @@ interface ReactTableProps<T extends DataItem> {
 	renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement;
 	pageIndex?: number;
 	className?: string;
+	headerClassName?: string;
+	footerClassName?: string;
 	pageSize?: number;
 	pageCount?: number;
 	sorting?: SortingState;
@@ -67,17 +74,21 @@ interface ReactTableProps<T extends DataItem> {
 	onColumnVisibilityChange?: (visibility: VisibilityState) => void;
 	onColumnPinningChange?: (pinning: ColumnPinningState) => void;
 	onRowSelectionChange?: (selection: Record<string, boolean>) => void;
-	onClick?: (row: Row<T>) => void;
+	onClick?: (props: { row: Row<T>; cell: Cell<T, unknown> }) => void;
 	tableProps?: React.ComponentProps<typeof Table> &
 		Record<`data-${string}`, string>;
 	sticky?: boolean;
+	renderCell?: (props: {
+		cell: Cell<T, unknown>;
+		style?: React.CSSProperties;
+		className?: string;
+	}) => (props: React.PropsWithChildren<object>) => React.ReactNode;
 	renderRow?: (props: {
 		row: Row<T>;
-		onClick?: (row: Row<T>) => void;
-		className?: string;
 	}) => (props: React.PropsWithChildren<object>) => React.ReactNode;
 	noResultsMessage?: React.ReactNode;
 	forcePagination?: boolean; // Force pagination to show even when pageCount <= 1
+	manualSorting?: boolean; // Default true for server-side sorting, set false for client-side sorting
 }
 
 export function DataTable<RecordData extends DataItem>({
@@ -95,7 +106,10 @@ export function DataTable<RecordData extends DataItem>({
 	onClick,
 	tableProps,
 	className,
+	headerClassName,
+	footerClassName,
 	renderRow,
+	renderCell,
 	noResultsMessage,
 	sorting: controlledSorting,
 	columnVisibility: controlledColumnVisibility,
@@ -103,7 +117,11 @@ export function DataTable<RecordData extends DataItem>({
 	rowSelection: controlledRowSelection,
 	sticky = false,
 	forcePagination = false,
+	manualSorting = true,
 }: ReactTableProps<RecordData>) {
+	// TODO: remove when https://github.com/TanStack/table/issues/5567 gets fixed
+	"use no memo";
+
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: pageIndex ?? 0,
 		pageSize: pageSize ?? 15,
@@ -125,19 +143,7 @@ export function DataTable<RecordData extends DataItem>({
 		controlledRowSelection ?? {},
 	);
 
-	// Use props if provided (controlled mode), otherwise use internal state (uncontrolled mode)
-	const columnVisibility =
-		controlledColumnVisibility ?? internalColumnVisibility;
-
-	const columnPinning = controlledColumnPinning ?? internalColumnPinning;
-	const rowSelection = controlledRowSelection ?? internalRowSelection;
-
-	if (pagination.pageIndex !== pageIndex && pageIndex !== undefined) {
-		setPagination({
-			pageIndex,
-			pageSize: pagination.pageSize,
-		});
-	}
+	// Computed values for table state - computed inline in callbacks for fresh values
 
 	const navigateToPage = useNavigateToNewPage();
 
@@ -146,14 +152,17 @@ export function DataTable<RecordData extends DataItem>({
 		getRowId,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		enableColumnPinning: true,
 		enableRowSelection: true,
 		manualPagination: true,
-		manualSorting: true,
+		manualSorting,
 		onColumnFiltersChange: setColumnFilters,
 		onColumnVisibilityChange: (updater) => {
 			if (typeof updater === "function") {
-				const nextState = updater(columnVisibility);
+				const currentVisibility =
+					controlledColumnVisibility ?? internalColumnVisibility;
+				const nextState = updater(currentVisibility);
 
 				// If controlled mode (callback provided), call it
 				if (onColumnVisibilityChange) {
@@ -174,7 +183,8 @@ export function DataTable<RecordData extends DataItem>({
 		},
 		onColumnPinningChange: (updater) => {
 			if (typeof updater === "function") {
-				const nextState = updater(columnPinning);
+				const currentPinning = controlledColumnPinning ?? internalColumnPinning;
+				const nextState = updater(currentPinning);
 
 				// If controlled mode (callback provided), call it
 				if (onColumnPinningChange) {
@@ -195,7 +205,8 @@ export function DataTable<RecordData extends DataItem>({
 		},
 		onRowSelectionChange: (updater) => {
 			if (typeof updater === "function") {
-				const nextState = updater(rowSelection);
+				const currentSelection = controlledRowSelection ?? internalRowSelection;
+				const nextState = updater(currentSelection);
 
 				// If controlled mode (callback provided), call it
 				if (onRowSelectionChange) {
@@ -219,9 +230,9 @@ export function DataTable<RecordData extends DataItem>({
 			pagination,
 			sorting,
 			columnFilters,
-			columnVisibility,
-			columnPinning,
-			rowSelection,
+			columnVisibility: controlledColumnVisibility ?? internalColumnVisibility,
+			columnPinning: controlledColumnPinning ?? internalColumnPinning,
+			rowSelection: controlledRowSelection ?? internalRowSelection,
 		},
 		onSortingChange: (updater) => {
 			if (typeof updater === "function") {
@@ -267,27 +278,12 @@ export function DataTable<RecordData extends DataItem>({
 		},
 	});
 
-	// Force table to update column pinning when controlled prop changes
-	useEffect(() => {
-		if (controlledColumnPinning) {
-			// Use the table's setColumnPinning method to force an update
-			table.setColumnPinning(controlledColumnPinning);
-		}
-	}, [controlledColumnPinning, table]);
-
-	// Force table to update column visibility when controlled prop changes
-	useEffect(() => {
-		if (controlledColumnVisibility) {
-			table.setColumnVisibility(controlledColumnVisibility);
-		}
-	}, [controlledColumnVisibility, table]);
-
-	// Force table to update row selection when controlled prop changes
-	useEffect(() => {
-		if (controlledRowSelection) {
-			table.setRowSelection(controlledRowSelection);
-		}
-	}, [controlledRowSelection, table]);
+	if (pagination.pageIndex !== pageIndex && pageIndex !== undefined) {
+		setPagination({
+			pageIndex,
+			pageSize: pagination.pageSize,
+		});
+	}
 
 	const rows = table.getRowModel().rows;
 
@@ -300,7 +296,7 @@ export function DataTable<RecordData extends DataItem>({
 				data-testid="data-table"
 				{...tableProps}
 				className={cn(
-					"bg-background border-separate border-spacing-0",
+					"bg-background border-collapse border-spacing-0",
 					className,
 					{
 						"h-full": data.length === 0,
@@ -308,8 +304,8 @@ export function DataTable<RecordData extends DataItem>({
 				)}
 			>
 				<TableHeader
-					className={cn("", {
-						"bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm transition-all duration-300":
+					className={cn(headerClassName, {
+						"bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm":
 							sticky,
 					})}
 				>
@@ -342,10 +338,10 @@ export function DataTable<RecordData extends DataItem>({
 										className={cn(
 											"text-muted-foreground bg-background/80 border-transparent font-sans font-medium",
 											{
-												"border-r-background sticky top-0 z-10 border-r opacity-95 backdrop-blur-sm":
-													isPinned === "left",
-												"border-l-background sticky top-0 z-10 border-l opacity-95 backdrop-blur-sm":
-													isPinned === "right",
+												"border-r-background border-r": isPinned === "left",
+												"border-l-background border-l": isPinned === "right",
+												"sticky top-0 z-10 opacity-95 backdrop-blur-sm":
+													isPinned,
 												"relative z-0": !isPinned,
 											},
 										)}
@@ -358,12 +354,42 @@ export function DataTable<RecordData extends DataItem>({
 										}}
 										key={header.id}
 									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
+										{header.isPlaceholder ? null : (
+											<div
+												className={cn(
+													"flex items-center gap-2",
+													header.column.getCanSort()
+														? "hover:bg-accent/50 -mx-3 cursor-pointer rounded px-3 py-1 select-none"
+														: "",
+												)}
+											>
+												{flexRender(
 													header.column.columnDef.header,
 													header.getContext(),
 												)}
+
+												{header.column.getCanSort() && (
+													<div className="flex flex-col">
+														<ChevronUp
+															className={cn(
+																"h-3 w-3",
+																header.column.getIsSorted() === "asc"
+																	? "text-foreground"
+																	: "text-muted-foreground/50",
+															)}
+														/>
+														<ChevronDown
+															className={cn(
+																"-mt-1 h-3 w-3",
+																header.column.getIsSorted() === "desc"
+																	? "text-foreground"
+																	: "text-muted-foreground/50",
+															)}
+														/>
+													</div>
+												)}
+											</div>
+										)}
 									</TableHead>
 								);
 							})}
@@ -373,9 +399,7 @@ export function DataTable<RecordData extends DataItem>({
 
 				<TableBody>
 					{rows.map((row) => {
-						const RowWrapper = renderRow
-							? renderRow({ row, onClick })
-							: TableRow;
+						const RowWrapper = renderRow ? renderRow({ row }) : TableRow;
 
 						const children = row.getVisibleCells().map((cell, index) => {
 							const isPinned = cell.column.getIsPinned();
@@ -415,16 +439,23 @@ export function DataTable<RecordData extends DataItem>({
 								},
 							);
 
-							return (
+							const style = {
+								width: `${size}px`,
+								minWidth: `${size}px`,
+								left: left !== undefined ? `${left}px` : undefined,
+								right: right !== undefined ? `${right}px` : undefined,
+							};
+
+							return renderCell ? (
+								<Fragment key={cell.id}>
+									{renderCell({ cell, style, className })({})}
+								</Fragment>
+							) : (
 								<TableCell
-									style={{
-										left: left !== undefined ? `${left}px` : undefined,
-										right: right !== undefined ? `${right}px` : undefined,
-										width: `${size}px`,
-										minWidth: `${size}px`,
-									}}
 									key={cell.id}
+									style={style}
 									className={className}
+									onClick={onClick ? () => onClick({ row, cell }) : undefined}
 								>
 									{flexRender(cell.column.columnDef.cell, cell.getContext())}
 								</TableCell>
@@ -433,11 +464,12 @@ export function DataTable<RecordData extends DataItem>({
 
 						return (
 							<RowWrapper
-								className={cn("active:bg-accent bg-background/80", {
-									"hover:bg-accent/60 cursor-pointer": !row.getIsSelected(),
-								})}
-								onClick={() => onClick?.(row)}
 								key={row.id}
+								className={cn("bg-background/80", {
+									"hover:bg-accent/60": !row.getIsSelected(),
+									"active:bg-accent": !!onClick,
+									"cursor-pointer": !!onClick && !row.getIsSelected(),
+								})}
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{children}
@@ -458,15 +490,21 @@ export function DataTable<RecordData extends DataItem>({
 			<If condition={displayPagination}>
 				<div
 					className={cn(
-						"bg-background/80 outline-border sticky bottom-0 z-10 border-b outline backdrop-blur-sm",
+						"bg-background/80 sticky bottom-0 z-10 border-t backdrop-blur-sm",
 						{
 							"sticky bottom-0 z-10 max-w-full rounded-none": sticky,
 						},
+						footerClassName,
 					)}
 				>
 					<div>
 						<div className={"px-2.5 py-1.5"}>
-							<Pagination table={table} />
+							<Pagination
+								table={table}
+								totalCount={
+									pageCount && pageSize ? pageCount * pageSize : undefined
+								}
+							/>
 						</div>
 					</div>
 				</div>
@@ -477,16 +515,27 @@ export function DataTable<RecordData extends DataItem>({
 
 function Pagination<T>({
 	table,
+	totalCount,
 }: React.PropsWithChildren<{
 	table: ReactTable<T>;
+	totalCount?: number;
+	pageSize?: number;
 }>) {
+	const currentPageIndex = table.getState().pagination.pageIndex;
+	const currentPageSize = table.getState().pagination.pageSize;
+	const rows = table.getRowModel().rows;
+
+	// Calculate what records are being shown on this page
+	const startRecord = currentPageIndex * currentPageSize + 1;
+	const endRecord = startRecord + rows.length - 1;
+
 	return (
 		<div className="flex items-center space-x-4">
 			<span className="text-muted-foreground flex items-center text-xs">
 				<Trans
 					i18nKey={"common:pageOfPages"}
 					values={{
-						page: table.getState().pagination.pageIndex + 1,
+						page: currentPageIndex + 1,
 						total: table.getPageCount(),
 					}}
 				/>
@@ -537,6 +586,12 @@ function Pagination<T>({
 					<ChevronsRight className={"h-4"} />
 				</Button>
 			</div>
+
+			<If condition={totalCount && rows.length > 0}>
+				<span className="text-muted-foreground flex items-center text-xs">
+					Showing {startRecord} to {endRecord} of {totalCount} rows
+				</span>
+			</If>
 		</div>
 	);
 }

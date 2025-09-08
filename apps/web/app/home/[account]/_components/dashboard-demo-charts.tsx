@@ -499,8 +499,9 @@ function Trend(
 }
 
 export function VisitorsChart() {
-	const gradientIdDesktop = useId();
-	const gradientIdMobile = useId();
+	const gradientIdPrefix = useId();
+	const fillDesktopId = `${gradientIdPrefix}-fillDesktop`;
+	const fillMobileId = `${gradientIdPrefix}-fillMobile`;
 	const chartData = useMemo(
 		() => [
 			{ date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -625,13 +626,7 @@ export function VisitorsChart() {
 				<ChartContainer className={"h-64 w-full"} config={chartConfig}>
 					<AreaChart accessibilityLayer data={chartData}>
 						<defs>
-							<linearGradient
-								id={gradientIdDesktop}
-								x1="0"
-								y1="0"
-								x2="0"
-								y2="1"
-							>
+							<linearGradient id={fillDesktopId} x1="0" y1="0" x2="0" y2="1">
 								<stop
 									offset="5%"
 									stopColor="var(--color-desktop)"
@@ -643,7 +638,7 @@ export function VisitorsChart() {
 									stopOpacity={0.1}
 								/>
 							</linearGradient>
-							<linearGradient id={gradientIdMobile} x1="0" y1="0" x2="0" y2="1">
+							<linearGradient id={fillMobileId} x1="0" y1="0" x2="0" y2="1">
 								<stop
 									offset="5%"
 									stopColor="var(--color-mobile)"
@@ -671,7 +666,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="mobile"
 							type="natural"
-							fill={`url(#${gradientIdMobile})`}
+							fill={`url(#${fillMobileId})`}
 							fillOpacity={0.4}
 							stroke="var(--color-mobile)"
 							stackId="a"
@@ -679,7 +674,7 @@ export function VisitorsChart() {
 						<Area
 							dataKey="desktop"
 							type="natural"
-							fill={`url(#${gradientIdDesktop})`}
+							fill={`url(#${fillDesktopId})`}
 							fillOpacity={0.4}
 							stroke="var(--color-desktop)"
 							stackId="a"
@@ -708,6 +703,7 @@ export function PageViewsChart() {
 	const [activeChart, setActiveChart] =
 		useState<keyof typeof chartConfig>("desktop");
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const chartData = [
 		{ date: "2024-04-01", desktop: 222, mobile: 150 },
 		{ date: "2024-04-02", desktop: 97, mobile: 180 },

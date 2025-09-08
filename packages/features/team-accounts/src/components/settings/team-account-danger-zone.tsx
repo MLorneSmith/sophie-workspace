@@ -17,6 +17,13 @@ import {
 } from "@kit/ui/alert-dialog";
 import { Button } from "@kit/ui/button";
 import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@kit/ui/card";
+import {
 	Form,
 	FormControl,
 	FormDescription,
@@ -62,7 +69,11 @@ export function TeamAccountDangerZone({
 
 	if (userIsPrimaryOwner) {
 		if (features.enableTeamDeletion) {
-			return <DeleteTeamContainer account={account} />;
+			return (
+				<DangerZoneCard>
+					<DeleteTeamContainer account={account} />
+				</DangerZoneCard>
+			);
 		}
 
 		return;
@@ -70,7 +81,11 @@ export function TeamAccountDangerZone({
 
 	// A primary owner can't leave the team account
 	// but other members can
-	return <LeaveTeamContainer account={account} />;
+	return (
+		<DangerZoneCard>
+			<LeaveTeamContainer account={account} />
+		</DangerZoneCard>
+	);
 }
 
 function DeleteTeamContainer(props: {
@@ -407,5 +422,23 @@ function DeleteTeamErrorAlert() {
 				</AlertDialogCancel>
 			</AlertDialogFooter>
 		</div>
+	);
+}
+
+function DangerZoneCard({ children }: React.PropsWithChildren) {
+	return (
+		<Card className={"border-destructive border"}>
+			<CardHeader>
+				<CardTitle>
+					<Trans i18nKey={"teams:settings.dangerZone"} />
+				</CardTitle>
+
+				<CardDescription>
+					<Trans i18nKey={"teams:settings.dangerZoneDescription"} />
+				</CardDescription>
+			</CardHeader>
+
+			<CardContent>{children}</CardContent>
+		</Card>
 	);
 }
