@@ -106,9 +106,9 @@
 				},
 				{
 					"command": "/codecheck",
-					"description": "Check code quality",
+					"description": "Execute comprehensive code quality checks (TypeScript, linting, formatting)",
 					"category": "developmentWorkflow",
-					"optimized": false
+					"optimized": true
 				},
 				{
 					"command": "/write-tests",
@@ -304,9 +304,9 @@
 				},
 				{
 					"command": "/update-makerkit",
-					"description": "Update MakerKit dependencies",
+					"description": "Semi-automated Makerkit upstream synchronization with intelligent conflict handling",
 					"category": "infrastructureConfiguration",
-					"optimized": false
+					"optimized": true
 				}
 			]
 		},
@@ -332,7 +332,7 @@
 		"utilities": {
 			"name": "Utilities",
 			"description": "Utility and helper commands",
-			"commandCount": 4,
+			"commandCount": 6,
 			"commands": [
 				{
 					"command": "/command-optimizer",
@@ -347,6 +347,12 @@
 					"optimized": false
 				},
 				{
+					"command": "/create-context",
+					"description": "Create or modify context files that provide specialized information for Claude Code agents and commands",
+					"category": "utilities",
+					"optimized": true
+				},
+				{
 					"command": "/dev:remove-worktree",
 					"description": "Removes git worktree with two-phase approach for Claude's non-interactive environment",
 					"category": "utilities",
@@ -355,6 +361,12 @@
 				{
 					"command": "/new-worktree",
 					"description": "Creates a new git worktree with feature branch from dev",
+					"category": "utilities",
+					"optimized": true
+				},
+				{
+					"command": "/unit-test-writer",
+					"description": "Generates comprehensive Vitest unit tests with priority-driven selection, coverage tracking, and context-driven pattern loading",
 					"category": "utilities",
 					"optimized": true
 				}
@@ -412,7 +424,7 @@
 			"/spec/* commands remain for standalone specification management",
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
-		"totalCommands": 2,
-		"lastUpdated": "2025-09-08T16:03:06.366Z"
+		"totalCommands": 4,
+		"lastUpdated": "2025-09-08T20:08:23.910Z"
 	}
 }

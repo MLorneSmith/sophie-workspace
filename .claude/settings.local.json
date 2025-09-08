@@ -9,7 +9,9 @@
       "Bash(pnpm test:*)",
       "Bash(pnpm lint:*)",
       "Bash(pnpm build:*)",
-      "mcp__exa__exa_search"
+      "mcp__exa__exa_search",
+      "Bash(pnpm --filter admin test:coverage)",
+      "Bash(.claude/scripts/codecheck-direct.sh:*)"
     ],
     "deny": [],
     "ask": [],

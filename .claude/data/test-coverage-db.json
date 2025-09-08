@@ -1,6 +1,6 @@
 {
 	"version": "2.0",
-	"lastUpdated": "2025-09-06T19:25:10Z",
+	"lastUpdated": "2025-09-08T22:25:15Z",
 	"testRunnerConfig": {
 		"vitest": {
 			"configPath": "apps/web/vitest.config.ts",
@@ -23,18 +23,18 @@
 	},
 	"summary": {
 		"totalSourceFiles": 500,
-		"totalTestFiles": 38,
-		"totalTestCases": 637,
-		"totalTestSuites": 139,
-		"vitestFiles": 20,
+		"totalTestFiles": 44,
+		"totalTestCases": 749,
+		"totalTestSuites": 145,
+		"vitestFiles": 26,
 		"playwrightFiles": 18,
-		"filesWithTests": 37,
-		"filesWithoutTests": 463,
+		"filesWithTests": 43,
+		"filesWithoutTests": 457,
 		"coverageByType": {
 			"unit": {
-				"files": 19,
-				"tests": 434,
-				"suites": 120
+				"files": 25,
+				"tests": 586,
+				"suites": 126
 			},
 			"e2e": {
 				"files": 18,
@@ -43,7 +43,6 @@
 			}
 		},
 		"criticalGaps": [
-			"packages/features/admin (25 files, 0 tests)",
 			"packages/features/auth (38 files, 0 tests)",
 			"packages/features/team-accounts (51 files, 0 tests)",
 			"packages/features/accounts (30 files, 0 tests)"
@@ -69,11 +68,17 @@
 		},
 		"packages/features/admin": {
 			"sourceFiles": 25,
-			"testFiles": 1,
-			"testCases": 40,
+			"testFiles": 7,
+			"testCases": 152,
 			"priority": "P1",
-			"riskScore": 95,
+			"riskScore": 15,
 			"recentlyModified": true,
+			"coverage": {
+				"line": 25.11,
+				"branch": 98.14,
+				"function": 95.55,
+				"serverSide": 100
+			},
 			"files": [
 				"admin-server-actions.ts",
 				"admin-action.ts",
@@ -81,7 +86,9 @@
 				"admin-dashboard.tsx",
 				"admin-guard.tsx",
 				"admin-auth-user.service.ts"
-			]
+			],
+			"testsAdded": "2025-09-08",
+			"notes": "100% coverage for all security-critical server-side code. UI components remain at 0% but are lower priority."
 		},
 		"packages/features/auth": {
 			"sourceFiles": 38,
@@ -143,50 +150,29 @@
 		{
 			"file": "packages/features/admin/src/admin-server-actions.ts",
 			"lastModified": "2025-01-06",
-			"hasTests": false,
+			"hasTests": true,
 			"priority": "P1",
-			"riskScore": 95
+			"riskScore": 10,
+			"testCoverage": 100
 		},
 		{
 			"file": "packages/features/admin/src/lib/server/utils/admin-action.ts",
 			"lastModified": "2025-01-06",
-			"hasTests": false,
+			"hasTests": true,
 			"priority": "P1",
-			"riskScore": 92
+			"riskScore": 10,
+			"testCoverage": 100
 		},
 		{
 			"file": "packages/features/admin/src/lib/server/utils/is-super-admin.ts",
 			"lastModified": "2025-01-06",
-			"hasTests": false,
+			"hasTests": true,
 			"priority": "P1",
-			"riskScore": 90
+			"riskScore": 10,
+			"testCoverage": 100
 		}
 	],
 	"priorityQueue": [
-		{
-			"file": "packages/features/admin/src/lib/server/utils/admin-action.ts",
-			"package": "admin",
-			"testType": "unit",
-			"score": 92,
-			"reason": "Critical security wrapper for admin actions, no tests",
-			"suggestedTests": [
-				"Permission validation",
-				"Error handling",
-				"Input sanitization"
-			]
-		},
-		{
-			"file": "packages/features/admin/src/lib/server/utils/is-super-admin.ts",
-			"package": "admin",
-			"testType": "unit",
-			"score": 90,
-			"reason": "Core authorization check, security critical",
-			"suggestedTests": [
-				"Valid super admin detection",
-				"Invalid user rejection",
-				"Edge cases and null handling"
-			]
-		},
 		{
 			"file": "packages/features/auth",
 			"package": "auth",
@@ -222,17 +208,19 @@
 	"recommendations": [
 		{
 			"priority": 1,
-			"action": "Create unit tests for admin package",
-			"impact": "Covers critical security functions",
-			"effort": "2-3 days",
-			"command": "/unit-test-writer --package=admin"
-		},
-		{
-			"priority": 2,
 			"action": "Add integration tests for auth package",
 			"impact": "Validates authentication flows",
 			"effort": "3-4 days",
-			"command": "/integration-test-writer --package=auth"
+			"command": "/integration-test-writer --package=auth",
+			"notes": "Critical security package with 38 files and zero tests"
+		},
+		{
+			"priority": 2,
+			"action": "Create tests for team-accounts package",
+			"impact": "Covers team management and permissions",
+			"effort": "3 days",
+			"command": "/unit-test-writer --package=team-accounts",
+			"notes": "51 files with no test coverage"
 		},
 		{
 			"priority": 3,
@@ -240,6 +228,14 @@
 			"impact": "Prevents regression in frequently changed code",
 			"effort": "2 days",
 			"command": "/unit-test-writer --high-churn"
+		}
+	],
+	"completedActions": [
+		{
+			"date": "2025-09-08",
+			"action": "Created comprehensive tests for admin package",
+			"result": "152 tests, 100% coverage for security-critical code",
+			"issue": "#309"
 		}
 	]
 }
