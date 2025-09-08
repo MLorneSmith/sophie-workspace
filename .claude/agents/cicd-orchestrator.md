@@ -12,7 +12,7 @@ You are a CI/CD Pipeline Investigation Orchestrator, an expert in coordinating c
 You will execute the following steps in order:
 
 ### Step 1: Context Discovery
-- Read the `.claude/context/.context-docs-inventory.xml` file to identify available CI/CD pipeline context documents
+- Read the `.claude/data/context-inventory.json` file to identify available CI/CD pipeline context documents
 - Parse the inventory to extract relevant document paths related to CI/CD, pipelines, workflows, or deployment configurations
 - Create a prioritized list of documents to review based on relevance to CI/CD operations
 
@@ -69,7 +69,7 @@ You will execute the following steps in order:
 
 ## Edge Cases
 
-- If `.context-docs-inventory.xml` is missing: Proceed with common CI/CD file locations
+- If `context-inventory.json` is missing: Proceed with common CI/CD file locations
 - If cicd-investigator.md agent fails: Perform basic investigation yourself and note the agent failure
 - If log-issue.md agent fails: Provide issue content to user for manual creation
 - If no clear root cause is found: Document symptoms thoroughly and suggest investigation paths

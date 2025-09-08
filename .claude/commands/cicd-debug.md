@@ -56,7 +56,7 @@ Constraints:
 The cicd-orchestrator implements these **research-backed patterns**:
 
 #### Phase 1: Context Discovery (Selective Context Passing)
-- Read `.claude/context/.context-docs-inventory.xml` for CI/CD documentation
+- Read `.claude/data/context-inventory.json` for CI/CD documentation
 - **Only pass relevant context** to avoid context bloat
 - Prioritize documents based on failure type
 - Build focused understanding of affected systems

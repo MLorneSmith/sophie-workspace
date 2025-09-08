@@ -1,0 +1,245 @@
+{
+	"version": "2.0",
+	"lastUpdated": "2025-09-06T19:25:10Z",
+	"testRunnerConfig": {
+		"vitest": {
+			"configPath": "apps/web/vitest.config.ts",
+			"pattern": "**/*.{test,spec}.{js,ts,jsx,tsx}",
+			"locations": ["apps/web", "packages"],
+			"excludes": [
+				"node_modules",
+				"dist",
+				".next",
+				"coverage",
+				"supabase/tests",
+				"e2e"
+			]
+		},
+		"playwright": {
+			"configPath": "apps/e2e/playwright.config.ts",
+			"testDir": "apps/e2e/tests",
+			"pattern": "*.spec.ts"
+		}
+	},
+	"summary": {
+		"totalSourceFiles": 500,
+		"totalTestFiles": 38,
+		"totalTestCases": 637,
+		"totalTestSuites": 139,
+		"vitestFiles": 20,
+		"playwrightFiles": 18,
+		"filesWithTests": 37,
+		"filesWithoutTests": 463,
+		"coverageByType": {
+			"unit": {
+				"files": 19,
+				"tests": 434,
+				"suites": 120
+			},
+			"e2e": {
+				"files": 18,
+				"tests": 163,
+				"suites": 19
+			}
+		},
+		"criticalGaps": [
+			"packages/features/admin (25 files, 0 tests)",
+			"packages/features/auth (38 files, 0 tests)",
+			"packages/features/team-accounts (51 files, 0 tests)",
+			"packages/features/accounts (30 files, 0 tests)"
+		]
+	},
+	"packages": {
+		"apps/web": {
+			"sourceFiles": 200,
+			"testFiles": 17,
+			"testCases": 400,
+			"coverage": {
+				"estimated": true,
+				"line": 35,
+				"branch": 25,
+				"function": 40
+			}
+		},
+		"apps/e2e": {
+			"sourceFiles": 0,
+			"testFiles": 18,
+			"testCases": 163,
+			"testType": "e2e"
+		},
+		"packages/features/admin": {
+			"sourceFiles": 25,
+			"testFiles": 1,
+			"testCases": 40,
+			"priority": "P1",
+			"riskScore": 95,
+			"recentlyModified": true,
+			"files": [
+				"admin-server-actions.ts",
+				"admin-action.ts",
+				"is-super-admin.ts",
+				"admin-dashboard.tsx",
+				"admin-guard.tsx",
+				"admin-auth-user.service.ts"
+			]
+		},
+		"packages/features/auth": {
+			"sourceFiles": 38,
+			"testFiles": 0,
+			"testCases": 0,
+			"priority": "P1",
+			"riskScore": 90
+		},
+		"packages/features/team-accounts": {
+			"sourceFiles": 51,
+			"testFiles": 0,
+			"testCases": 0,
+			"priority": "P2",
+			"riskScore": 75
+		},
+		"packages/features/accounts": {
+			"sourceFiles": 30,
+			"testFiles": 0,
+			"testCases": 0,
+			"priority": "P2",
+			"riskScore": 70
+		},
+		"packages/monitoring/newrelic": {
+			"sourceFiles": 5,
+			"testFiles": 1,
+			"testCases": 10,
+			"priority": "P3",
+			"riskScore": 30
+		},
+		"packages/shared": {
+			"sourceFiles": 15,
+			"testFiles": 1,
+			"testCases": 15,
+			"priority": "P3",
+			"riskScore": 25
+		}
+	},
+	"highChurnFiles": [
+		{
+			"file": "apps/e2e/playwright.config.ts",
+			"changes": 27,
+			"hasTests": false,
+			"priority": "P3"
+		},
+		{
+			"file": "apps/web/app/onboarding/_components/onboarding-form.tsx",
+			"changes": 13,
+			"hasTests": false,
+			"priority": "P2"
+		},
+		{
+			"file": "apps/web/app/home/(user)/course/lessons/[slug]/_components/SurveyComponent.tsx",
+			"changes": 9,
+			"hasTests": false,
+			"priority": "P2"
+		}
+	],
+	"recentChanges": [
+		{
+			"file": "packages/features/admin/src/admin-server-actions.ts",
+			"lastModified": "2025-01-06",
+			"hasTests": false,
+			"priority": "P1",
+			"riskScore": 95
+		},
+		{
+			"file": "packages/features/admin/src/lib/server/utils/admin-action.ts",
+			"lastModified": "2025-01-06",
+			"hasTests": false,
+			"priority": "P1",
+			"riskScore": 92
+		},
+		{
+			"file": "packages/features/admin/src/lib/server/utils/is-super-admin.ts",
+			"lastModified": "2025-01-06",
+			"hasTests": false,
+			"priority": "P1",
+			"riskScore": 90
+		}
+	],
+	"priorityQueue": [
+		{
+			"file": "packages/features/admin/src/lib/server/utils/admin-action.ts",
+			"package": "admin",
+			"testType": "unit",
+			"score": 92,
+			"reason": "Critical security wrapper for admin actions, no tests",
+			"suggestedTests": [
+				"Permission validation",
+				"Error handling",
+				"Input sanitization"
+			]
+		},
+		{
+			"file": "packages/features/admin/src/lib/server/utils/is-super-admin.ts",
+			"package": "admin",
+			"testType": "unit",
+			"score": 90,
+			"reason": "Core authorization check, security critical",
+			"suggestedTests": [
+				"Valid super admin detection",
+				"Invalid user rejection",
+				"Edge cases and null handling"
+			]
+		},
+		{
+			"file": "packages/features/auth",
+			"package": "auth",
+			"testType": "integration",
+			"score": 85,
+			"reason": "Authentication package with 38 files and zero tests",
+			"suggestedTests": [
+				"Sign-in flow",
+				"Sign-up validation",
+				"Password reset",
+				"MFA verification",
+				"Session management"
+			]
+		},
+		{
+			"file": "packages/features/accounts",
+			"package": "accounts",
+			"testType": "integration",
+			"score": 70,
+			"reason": "Account management with 30 files and no tests",
+			"suggestedTests": [
+				"Account creation",
+				"Account settings updates",
+				"Permission checks"
+			]
+		}
+	],
+	"testTypes": {
+		"needsUnitTests": 250,
+		"needsIntegrationTests": 45,
+		"needsE2ETests": 25
+	},
+	"recommendations": [
+		{
+			"priority": 1,
+			"action": "Create unit tests for admin package",
+			"impact": "Covers critical security functions",
+			"effort": "2-3 days",
+			"command": "/unit-test-writer --package=admin"
+		},
+		{
+			"priority": 2,
+			"action": "Add integration tests for auth package",
+			"impact": "Validates authentication flows",
+			"effort": "3-4 days",
+			"command": "/integration-test-writer --package=auth"
+		},
+		{
+			"priority": 3,
+			"action": "Test high-churn components",
+			"impact": "Prevents regression in frequently changed code",
+			"effort": "2 days",
+			"command": "/unit-test-writer --high-churn"
+		}
+	]
+}

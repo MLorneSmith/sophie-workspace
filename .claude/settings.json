@@ -97,10 +97,6 @@
 					{
 						"type": "command",
 						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/test-project.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/self-review.sh"
 					}
 				]
 			}
@@ -122,7 +118,7 @@
 		"maxCheckpoints": 10
 	},
 	"thinking-level": {
-		"level": 2
+		"level": 1
 	},
 	"biome": {
 		"command": "npx biome",
@@ -163,7 +159,7 @@
 	},
 	"self-review": {
 		"_comment": "Prompts code review questions at session end",
-		"enabled": true,
+		"enabled": false,
 		"targetPatterns": ["**/*.ts", "**/*.tsx", "!**/*.test.ts", "!**/*.spec.ts"]
 	}
 }

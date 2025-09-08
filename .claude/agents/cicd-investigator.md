@@ -14,7 +14,7 @@ You will systematically investigate CI/CD pipeline failures by analyzing context
 ## Investigation Protocol
 
 ### Phase 1: Context Discovery
-1. **Read the context inventory**: Start by reading `.claude/context/.context-docs-inventory.xml` to identify available CI/CD pipeline context documents
+1. **Read the context inventory**: Start by reading `.claude/data/context-inventory.json` to identify available CI/CD pipeline context documents
 2. **Identify relevant documents**: From the inventory, select all documents related to:
    - CI/CD pipeline configurations
    - GitHub Actions workflows

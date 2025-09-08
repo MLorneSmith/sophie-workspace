@@ -1,0 +1,406 @@
+{
+	"version": "2.0.0",
+	"name": "Commands Inventory",
+	"description": "Complete inventory of all available Claude Code commands",
+	"lastUpdated": "2025-09-08T09:45:00Z",
+	"postIntegration": "CCPM",
+	"totalCommands": 43,
+	"categories": {
+		"agentManagement": {
+			"name": "Agent Management",
+			"description": "Commands for managing AI agents and subagents",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/agents-md/cli",
+					"description": "CLI agent operations",
+					"category": "agentManagement",
+					"optimized": false
+				},
+				{
+					"command": "/agents-md/init",
+					"description": "Initialize agent environment",
+					"category": "agentManagement",
+					"optimized": false
+				},
+				{
+					"command": "/agents-md/migration",
+					"description": "Migrate agent configurations",
+					"category": "agentManagement",
+					"optimized": false
+				},
+				{
+					"command": "/create-subagent",
+					"description": "Create new specialized agent",
+					"category": "agentManagement",
+					"optimized": false
+				}
+			]
+		},
+		"featureDevelopment": {
+			"name": "Feature Development",
+			"description": "End-to-end feature development workflow commands",
+			"commandCount": 8,
+			"isNew": true,
+			"commands": [
+				{
+					"command": "/feature/spec",
+					"description": "Create comprehensive feature specification",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/plan",
+					"description": "Convert specification to technical implementation plan",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/decompose",
+					"description": "Break implementation into executable tasks",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/sync",
+					"description": "Push feature and tasks to GitHub as issues",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/start",
+					"description": "Launch parallel agents for task execution",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/status",
+					"description": "Check feature implementation progress",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/update",
+					"description": "Update feature specification or plan",
+					"category": "featureDevelopment",
+					"optimized": false
+				},
+				{
+					"command": "/feature/discover",
+					"description": "Run discovery phase for new features",
+					"category": "featureDevelopment",
+					"optimized": false
+				}
+			]
+		},
+		"developmentWorkflow": {
+			"name": "Development Workflow",
+			"description": "Code quality and development workflow commands",
+			"commandCount": 5,
+			"commands": [
+				{
+					"command": "/code-review",
+					"description": "Perform code review",
+					"category": "developmentWorkflow",
+					"optimized": false
+				},
+				{
+					"command": "/codecheck",
+					"description": "Check code quality",
+					"category": "developmentWorkflow",
+					"optimized": false
+				},
+				{
+					"command": "/write-tests",
+					"description": "Generate test cases",
+					"category": "developmentWorkflow",
+					"optimized": false
+				},
+				{
+					"command": "/validate-and-fix",
+					"description": "Validate and fix code issues",
+					"category": "developmentWorkflow",
+					"optimized": false
+				},
+				{
+					"command": "/workflow",
+					"description": "General workflow management",
+					"category": "developmentWorkflow",
+					"optimized": false
+				}
+			]
+		},
+		"gitOperations": {
+			"name": "Git Operations",
+			"description": "Git version control commands",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/git/checkout",
+					"description": "Checkout branches",
+					"category": "gitOperations",
+					"optimized": false
+				},
+				{
+					"command": "/git/commit",
+					"description": "Create commits",
+					"category": "gitOperations",
+					"optimized": false
+				},
+				{
+					"command": "/git/push",
+					"description": "Push to remote",
+					"category": "gitOperations",
+					"optimized": false
+				},
+				{
+					"command": "/git/status",
+					"description": "Check git status",
+					"category": "gitOperations",
+					"optimized": false
+				}
+			]
+		},
+		"checkpointManagement": {
+			"name": "Checkpoint Management",
+			"description": "Project state checkpoint commands",
+			"commandCount": 3,
+			"commands": [
+				{
+					"command": "/checkpoint/create",
+					"description": "Create project checkpoint",
+					"category": "checkpointManagement",
+					"optimized": false
+				},
+				{
+					"command": "/checkpoint/list",
+					"description": "List available checkpoints",
+					"category": "checkpointManagement",
+					"optimized": false
+				},
+				{
+					"command": "/checkpoint/restore",
+					"description": "Restore from checkpoint",
+					"category": "checkpointManagement",
+					"optimized": false
+				}
+			]
+		},
+		"taskIssueManagement": {
+			"name": "Task & Issue Management",
+			"description": "Task execution and issue tracking commands",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/do-task",
+					"description": "Execute task from specification",
+					"category": "taskIssueManagement",
+					"optimized": false
+				},
+				{
+					"command": "/log-task",
+					"description": "Log new task to GitHub",
+					"category": "taskIssueManagement",
+					"optimized": false
+				},
+				{
+					"command": "/log-issue",
+					"description": "Log issue to tracking system",
+					"category": "taskIssueManagement",
+					"optimized": false
+				},
+				{
+					"command": "/research",
+					"description": "Conduct research on topics",
+					"category": "taskIssueManagement",
+					"optimized": false
+				}
+			]
+		},
+		"specificationManagement": {
+			"name": "Specification Management",
+			"description": "Standalone specification management commands",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/spec/create",
+					"description": "Create specification",
+					"category": "specificationManagement",
+					"optimized": false
+				},
+				{
+					"command": "/spec/decompose",
+					"description": "Decompose specification",
+					"category": "specificationManagement",
+					"optimized": false
+				},
+				{
+					"command": "/spec/execute",
+					"description": "Execute specification",
+					"category": "specificationManagement",
+					"optimized": false
+				},
+				{
+					"command": "/spec/validate",
+					"description": "Validate specification",
+					"category": "specificationManagement",
+					"optimized": false
+				}
+			]
+		},
+		"cicdDeployment": {
+			"name": "CI/CD & Deployment",
+			"description": "Continuous integration and deployment commands",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/cicd-debug",
+					"description": "Debug CI/CD issues",
+					"category": "cicdDeployment",
+					"optimized": false
+				},
+				{
+					"command": "/pr",
+					"description": "Create pull request",
+					"category": "cicdDeployment",
+					"optimized": false
+				},
+				{
+					"command": "/promote-to-staging",
+					"description": "Promote to staging environment",
+					"category": "cicdDeployment",
+					"optimized": false
+				},
+				{
+					"command": "/promote-to-production",
+					"description": "Promote to production",
+					"category": "cicdDeployment",
+					"optimized": false
+				}
+			]
+		},
+		"infrastructureConfiguration": {
+			"name": "Infrastructure & Configuration",
+			"description": "System infrastructure and configuration commands",
+			"commandCount": 4,
+			"commands": [
+				{
+					"command": "/db-healthcheck",
+					"description": "Database health check",
+					"category": "infrastructureConfiguration",
+					"optimized": false
+				},
+				{
+					"command": "/config/bash-timeout",
+					"description": "Configure bash timeout",
+					"category": "infrastructureConfiguration",
+					"optimized": false
+				},
+				{
+					"command": "/dev/cleanup",
+					"description": "Clean development environment",
+					"category": "infrastructureConfiguration",
+					"optimized": false
+				},
+				{
+					"command": "/update-makerkit",
+					"description": "Update MakerKit dependencies",
+					"category": "infrastructureConfiguration",
+					"optimized": false
+				}
+			]
+		},
+		"debuggingTesting": {
+			"name": "Debugging & Testing",
+			"description": "Debugging and test execution commands",
+			"commandCount": 2,
+			"commands": [
+				{
+					"command": "/debug-issue",
+					"description": "Debug specific issues",
+					"category": "debuggingTesting",
+					"optimized": false
+				},
+				{
+					"command": "/test",
+					"description": "Run tests",
+					"category": "debuggingTesting",
+					"optimized": false
+				}
+			]
+		},
+		"utilities": {
+			"name": "Utilities",
+			"description": "Utility and helper commands",
+			"commandCount": 2,
+			"commands": [
+				{
+					"command": "/command-optimizer",
+					"description": "Prompt design and optimization (--new | --modify)",
+					"category": "utilities",
+					"optimized": true
+				},
+				{
+					"command": "/create-command",
+					"description": "Create new command",
+					"category": "utilities",
+					"optimized": false
+				}
+			]
+		}
+	},
+	"deprecations": {
+		"commands": [
+			{
+				"command": "/build-feature",
+				"deprecatedIn": "2.0.0",
+				"reason": "Replaced by modular /feature/* commands",
+				"migration": "Use /feature/spec → /feature/plan → /feature/decompose workflow"
+			}
+		]
+	},
+	"integrations": {
+		"ccpm": {
+			"name": "CCPM Integration",
+			"version": "2.0.0",
+			"features": [
+				"Structured Workflow: spec → plan → decompose → sync → start",
+				"GitHub Integration: Direct synchronization with GitHub issues",
+				"Parallel Execution: Multi-agent task execution capability",
+				"Progress Tracking: Real-time status monitoring"
+			]
+		}
+	},
+	"usagePatterns": {
+		"featureDevelopment": {
+			"name": "Feature Development Workflow",
+			"pattern": [
+				"/feature/spec <name>",
+				"/feature/plan <name>",
+				"/feature/decompose <name>",
+				"/feature/sync <name>",
+				"/feature/start <name>"
+			]
+		},
+		"quickTasks": {
+			"name": "Quick Task Execution",
+			"pattern": ["/do-task <specification>", "/log-issue <description>"]
+		}
+	},
+	"metadata": {
+		"infrastructure": {
+			"totalAgents": "40+",
+			"preservedCommands": 43,
+			"hooksConfiguration": "maintained",
+			"gitWorkflow": "preserved"
+		},
+		"notes": [
+			"This inventory is maintained programmatically",
+			"Run periodic audits to ensure accuracy",
+			"/spec/* commands remain for standalone specification management",
+			"/feature/* commands provide end-to-end feature development workflow"
+		],
+		"totalCommands": null,
+		"lastUpdated": "2025-09-08T14:08:48.470Z"
+	}
+}
