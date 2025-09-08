@@ -1,0 +1,512 @@
+{
+	"version": "1.0",
+	"lastUpdated": "2025-09-08",
+	"description": "Complete inventory of all context documentation files in .claude/context",
+	"basePath": ".claude/context",
+	"categories": {
+		"core": {
+			"name": "Core Documentation",
+			"description": "Core project documentation including architecture, constraints, and development guidelines",
+			"documents": [
+				{
+					"path": "INDEX.md",
+					"name": "Context Index",
+					"description": "Master index of all context documentation files and their purposes.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Documentation Navigation", "File Organization"]
+				},
+				{
+					"path": "architecture.md",
+					"name": "Architecture Documentation",
+					"description": "System architecture overview and design principles.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Architecture Overview",
+						"Design Principles",
+						"System Design"
+					]
+				},
+				{
+					"path": "constraints.md",
+					"name": "Project Constraints",
+					"description": "Critical project constraints and requirements that must be followed.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Technical Constraints",
+						"Business Rules",
+						"Implementation Requirements"
+					]
+				},
+				{
+					"path": "current-focus.md",
+					"name": "Current Focus",
+					"description": "Current development priorities and focus areas.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Development Priorities", "Current Tasks", "Focus Areas"]
+				},
+				{
+					"path": "database-schema.md",
+					"name": "Database Schema",
+					"description": "Complete database schema documentation.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Schema Structure", "Table Relationships", "Data Types"]
+				},
+				{
+					"path": "development-flow.md",
+					"name": "Development Flow",
+					"description": "Development workflow and process documentation.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Development Process",
+						"Workflow Guidelines",
+						"Best Practices"
+					]
+				},
+				{
+					"path": "project-overview.md",
+					"name": "Project Overview",
+					"description": "High-level project overview and key information.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Project Summary", "Key Features", "Goals"]
+				}
+			]
+		},
+		"design": {
+			"name": "Design Documentation",
+			"description": "Design documentation including system architecture and CI/CD pipeline designs",
+			"documents": [
+				{
+					"path": "design/cicd-pipeline-updated-design.md",
+					"name": "CI/CD Pipeline Updated Design",
+					"description": "Updated design document for the CI/CD pipeline architecture, incorporating lessons learned and target improvements.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Pipeline Architecture",
+						"Implementation Status",
+						"Security Design",
+						"Performance Optimization"
+					]
+				}
+			]
+		},
+		"roles": {
+			"name": "Role Definitions",
+			"description": "Role definitions for various engineering disciplines and responsibilities",
+			"documents": [
+				{
+					"path": "roles/.roles-summary.xml",
+					"name": "Roles Summary",
+					"description": "XML summary of all available role definitions.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Role Overview", "Role Mappings"]
+				},
+				{
+					"path": "roles/ai-engineer.md",
+					"name": "AI Engineer Role",
+					"description": "AI engineering role definition and responsibilities.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["AI Development", "Model Integration", "AI Best Practices"]
+				},
+				{
+					"path": "roles/architecture-engineer.md",
+					"name": "Architecture Engineer Role",
+					"description": "System architecture role definition and responsibilities.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"System Design",
+						"Architecture Planning",
+						"Technical Leadership"
+					]
+				},
+				{
+					"path": "roles/cms-engineer.md",
+					"name": "CMS Engineer Role",
+					"description": "Content management system engineering role.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["CMS Development", "Content Management", "Payload CMS"]
+				},
+				{
+					"path": "roles/data-engineer.md",
+					"name": "Data Engineer Role",
+					"description": "Data engineering and database management role.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Data Management", "Database Design", "Data Pipelines"]
+				},
+				{
+					"path": "roles/debug-engineer.md",
+					"name": "Debug Engineer Role",
+					"description": "Debugging and troubleshooting specialist role.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Debugging Strategies",
+						"Issue Resolution",
+						"Problem Analysis"
+					]
+				},
+				{
+					"path": "roles/full-stack-engineer.md",
+					"name": "Full Stack Engineer Role",
+					"description": "Full stack development role covering frontend and backend.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Full Stack Development",
+						"Frontend/Backend Integration",
+						"End-to-End Features"
+					]
+				},
+				{
+					"path": "roles/issue-investigator.md",
+					"name": "Issue Investigator Role",
+					"description": "Issue investigation and analysis specialist role.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Issue Analysis",
+						"Root Cause Investigation",
+						"Problem Documentation"
+					]
+				},
+				{
+					"path": "roles/qa-testing-engineer.md",
+					"name": "QA Testing Engineer Role",
+					"description": "Quality assurance and testing specialist role.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Test Strategy", "Quality Assurance", "Test Automation"]
+				},
+				{
+					"path": "roles/remediation-engineer.md",
+					"name": "Remediation Engineer Role",
+					"description": "Issue remediation and fix implementation role.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Issue Remediation",
+						"Fix Implementation",
+						"Problem Resolution"
+					]
+				},
+				{
+					"path": "roles/security-engineer.md",
+					"name": "Security Engineer Role",
+					"description": "Security implementation and analysis role.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Security Implementation",
+						"Vulnerability Assessment",
+						"Security Best Practices"
+					]
+				},
+				{
+					"path": "roles/systems-architect-engineer.md",
+					"name": "Systems Architect Engineer Role",
+					"description": "High-level systems architecture and design role.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Systems Architecture",
+						"Infrastructure Design",
+						"Scalability Planning"
+					]
+				},
+				{
+					"path": "roles/ui-engineer.md",
+					"name": "UI Engineer Role",
+					"description": "User interface and frontend development role.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["UI Development", "Frontend Components", "User Experience"]
+				},
+				{
+					"path": "roles/unit-test-writer.md",
+					"name": "Unit Test Writer Role",
+					"description": "Unit testing and test implementation specialist role.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Unit Testing", "Test Implementation", "Test Coverage"]
+				},
+				{
+					"path": "roles/comprehensive-test-writer.md",
+					"name": "Comprehensive Test Writer Role",
+					"description": "Expert test engineer specializing in comprehensive testing strategies across multiple test types.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Unit Testing",
+						"End-to-End Testing",
+						"Accessibility Testing",
+						"Integration Testing",
+						"Performance Testing"
+					]
+				},
+				{
+					"path": "roles/implementation-engineer.md",
+					"name": "Implementation Engineer Role",
+					"description": "Meticulous software engineer who excels at turning specifications into working code while maintaining high quality standards.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Specification Implementation",
+						"Code Quality",
+						"Pattern Consistency",
+						"Progress Tracking"
+					]
+				},
+				{
+					"path": "roles/pr-reviewer.md",
+					"name": "PR Reviewer Role",
+					"description": "Pull request review specialist focused on code quality, security, and best practices.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Code Review",
+						"Quality Assessment",
+						"Security Analysis",
+						"Best Practices"
+					]
+				},
+				{
+					"path": "roles/task-planner.md",
+					"name": "Task Planner Role",
+					"description": "Strategic task planning and project management specialist for development workflows.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Task Planning",
+						"Project Management",
+						"Workflow Optimization",
+						"Development Strategy"
+					]
+				}
+			]
+		},
+		"standards": {
+			"name": "Standards & Guidelines",
+			"description": "Standards and guidelines for typography, coding conventions, and best practices",
+			"documents": [
+				{
+					"path": "standards/TypographySystem.md",
+					"name": "Typography System",
+					"description": "Typography standards and design system guidelines.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Typography Guidelines", "Font Standards", "Text Styling"]
+				},
+				{
+					"path": "standards/code-standards.md",
+					"name": "Code Standards",
+					"description": "Coding standards and conventions for the project.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Coding Conventions", "Code Quality", "Best Practices"]
+				}
+			]
+		},
+		"systems": {
+			"name": "System Documentation",
+			"description": "System-level documentation including CI/CD, logging, and DevContainer configurations",
+			"documents": [
+				{
+					"path": "systems/cicd/CI_CD_INVENTORY.md",
+					"name": "CI/CD Inventory",
+					"description": "Complete inventory and documentation of CI/CD pipeline components and configurations.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Pipeline Components",
+						"Configuration Inventory",
+						"CI/CD Architecture",
+						"Implementation Status"
+					]
+				},
+				{
+					"path": "systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md",
+					"name": "Production Protection Private Repo",
+					"description": "Production protection strategies and implementation for private repositories.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Production Security",
+						"Access Control",
+						"Deployment Protection",
+						"Private Repository Management"
+					]
+				},
+				{
+					"path": "systems/cicd/cicd-llm-context.md",
+					"name": "CI/CD LLM Context",
+					"description": "Context documentation for LLM integration within CI/CD pipelines.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"LLM Integration",
+						"AI-Powered CI/CD",
+						"Automated Analysis",
+						"Pipeline Intelligence"
+					]
+				},
+				{
+					"path": "systems/enhanced-logger.md",
+					"name": "Enhanced Logger",
+					"description": "Enhanced logging system design and implementation for improved observability.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Logging Architecture",
+						"Observability",
+						"Error Tracking",
+						"Performance Monitoring"
+					]
+				},
+				{
+					"path": "systems/portkey-implementation.md",
+					"name": "Portkey Implementation",
+					"description": "Portkey AI gateway implementation and configuration.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"AI Gateway Setup",
+						"Provider Configuration",
+						"Integration Patterns"
+					]
+				},
+				{
+					"path": "systems/prompt-engineering.md",
+					"name": "Prompt Engineering",
+					"description": "Prompt engineering guidelines and best practices.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Prompt Design", "AI Optimization", "Response Quality"]
+				},
+				{
+					"path": "systems/devcontainer-codespaces/codespaces+warpterminal.md",
+					"name": "DevContainer and Codespaces System",
+					"description": "Comprehensive context for the SlideHeroes project's advanced GitHub Codespaces integration with Warp Terminal automation and multi-environment development workflow.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"DevContainer Configuration",
+						"GitHub Codespaces",
+						"SSH Integration",
+						"Warp Terminal Automation",
+						"Multi-Environment Development",
+						"Codespace Management"
+					]
+				}
+			]
+		},
+		"tools": {
+			"name": "Tool Documentation",
+			"description": "Documentation for development tools, integrations, and utilities",
+			"documents": [
+				{
+					"path": "tools/available-tools.xml",
+					"name": "Available Tools List",
+					"description": "XML listing of all available development tools and utilities.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Tool Inventory", "Tool Capabilities"]
+				},
+				{
+					"path": "tools/browser-tools.md",
+					"name": "Browser Tools",
+					"description": "Browser-based development and testing tools documentation.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Browser Testing", "Development Tools", "Debugging"]
+				},
+				{
+					"path": "tools/cloudflare-playwright.md",
+					"name": "Cloudflare Playwright",
+					"description": "Playwright testing with Cloudflare integration.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"End-to-End Testing",
+						"Cloudflare Integration",
+						"Automated Testing"
+					]
+				},
+				{
+					"path": "tools/cloudflare-workers-bindings.md",
+					"name": "Cloudflare Workers Bindings",
+					"description": "Cloudflare Workers bindings and configuration.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Worker Bindings",
+						"Edge Computing",
+						"Cloudflare Integration"
+					]
+				},
+				{
+					"path": "tools/cloudflare-workers-observability.md",
+					"name": "Cloudflare Workers Observability",
+					"description": "Monitoring and observability for Cloudflare Workers.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Workers Monitoring",
+						"Observability",
+						"Performance Tracking"
+					]
+				},
+				{
+					"path": "tools/code-reasoning.md",
+					"name": "Code Reasoning",
+					"description": "Code analysis and reasoning tools and techniques.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Code Analysis", "Automated Reasoning", "Code Quality"]
+				},
+				{
+					"path": "tools/context7.md",
+					"name": "Context7 Tools",
+					"description": "Context7 documentation and integration tools.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Documentation Tools", "Context Management", "Integration"]
+				},
+				{
+					"path": "tools/exa-search.md",
+					"name": "Exa Search",
+					"description": "Exa search engine integration and usage.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Search Integration", "Content Discovery", "API Usage"]
+				},
+				{
+					"path": "tools/github.md",
+					"name": "GitHub Tools",
+					"description": "GitHub integration tools and workflows.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"GitHub Integration",
+						"Repository Management",
+						"Workflow Automation"
+					]
+				},
+				{
+					"path": "tools/newrelic.md",
+					"name": "New Relic Tools",
+					"description": "New Relic monitoring and observability integration.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Application Monitoring",
+						"Performance Metrics",
+						"Error Tracking"
+					]
+				},
+				{
+					"path": "tools/perplexity.md",
+					"name": "Perplexity Tools",
+					"description": "Perplexity AI integration and usage documentation.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["AI Search", "Knowledge Retrieval", "API Integration"]
+				},
+				{
+					"path": "tools/postgresql.md",
+					"name": "PostgreSQL Tools",
+					"description": "PostgreSQL database tools and management utilities.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Database Management",
+						"PostgreSQL Tools",
+						"Database Operations"
+					]
+				},
+				{
+					"path": "tools/supabase.md",
+					"name": "Supabase Tools",
+					"description": "Supabase platform tools and integration documentation.",
+					"lastUpdated": "2025-09-03",
+					"topics": [
+						"Supabase Integration",
+						"Backend Services",
+						"Database Operations"
+					]
+				},
+				{
+					"path": "tools/tool-mappings.xml",
+					"name": "Tool Mappings",
+					"description": "XML mapping of tools to their specific use cases and contexts.",
+					"lastUpdated": "2025-09-03",
+					"topics": ["Tool Relationships", "Use Case Mapping", "Tool Selection"]
+				}
+			]
+		}
+	}
+}

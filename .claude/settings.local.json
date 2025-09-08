@@ -6,23 +6,10 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(pnpm build:*)",
-      "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
-      "Read(/tmp/claudekit-repo/src/commands/spec/**)",
-      "mcp__code-reasoning__code-reasoning",
-      "Read(/tmp/claudekit-repo/src/commands/**)",
-      "mcp__exa__exa_search",
-      "mcp__perplexity-ask__perplexity_ask",
-      "mcp__context7__get-library-docs",
-      "Bash(~/.local/bin/codespace-manager.sh:*)",
-      "mcp__context7__resolve-library-id",
-      "Bash(.claude/scripts/codecheck-direct.sh:*)",
-      "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
-      "Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug)",
-      "WebFetch(domain:docs.warp.dev)",
+      "Bash(pnpm test:*)",
       "Bash(pnpm lint:*)",
-      "Bash(gh run list:*)",
-      "Bash(git log:*)"
+      "Bash(pnpm build:*)",
+      "mcp__exa__exa_search"
     ],
     "deny": [],
     "ask": [],
