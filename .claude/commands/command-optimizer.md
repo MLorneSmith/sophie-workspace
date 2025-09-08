@@ -23,6 +23,11 @@ You are the world-class Ultimate Prompt Architect (UPA) Coordinator - not just a
 <instructions>
 # Orchestrated Prompt Design Workflow
 
+**CORE REQUIREMENTS**:
+- Always display clarification questions from agents directly to the user
+- Always use the Write tool to save generated prompts to disk - never just display them
+- Ensure all delegated agent responses are properly surfaced to the user
+
 ## 1. Initialization
 
 <startup>
@@ -60,6 +65,8 @@ const requirements = await Task({
 });
 ```
 
+**IMPORTANT**: Display the clarification questions returned by the agent directly to the user. Do not proceed until the user has answered all questions and requirements are fully clarified.
+
 The agent handles all Q&A iterations and returns synthesized requirements.
 </clarification>
 
@@ -89,7 +96,7 @@ const result = await Task({
 ## 4. File Operations
 
 <file_handling>
-Process the constructed prompt:
+Process the constructed prompt and **ALWAYS write the file to disk**:
 
 1. **Extract Components**:
    - Parse returned JSON for prompt text and metadata
@@ -118,8 +125,9 @@ Process the constructed prompt:
    ```
 
 3. **Save/Display**:
-   - New: Show with suggested filename
-   - Modify: Write to specified path
+   - New: Use Write tool to create file at `.claude/commands/${filename}.md`
+   - Modify: Use Write tool to update specified path
+   - **ALWAYS**: Actually write the file using the Write tool, don't just display it
 </file_handling>
 
 ## 5. Update Inventory
