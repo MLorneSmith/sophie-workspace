@@ -19,15 +19,14 @@
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/monitoring-core": "workspace:*",
+		"@kit/monitoring-newrelic": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/sentry": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/react": "19.1.12",
 		"react": "19.1.1",
-		"zod": "^3.25.74",
-		"@kit/baselime": "workspace:*",
-		"@kit/monitoring-newrelic": "workspace:*"
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {
