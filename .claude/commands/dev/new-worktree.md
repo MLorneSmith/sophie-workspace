@@ -7,13 +7,13 @@ model: claude-sonnet-4-20250514
 
 # New Worktree
 
-Creates a new git worktree in the projects/worktrees directory with a feature branch based on dev, then opens it in VS Code.
+Creates a new git worktree in the projects/worktrees directory with a feature branch based on dev, installs dependencies, and switches to the new worktree.
 
 ## Key Features
 - **Persona:** Minimal task executor
 - **Interaction:** Single clarifying question for feature name
-- **Automation:** Creates worktree, branch, and opens VS Code
-- **Error Handling:** Validates branch availability before creation
+- **Automation:** Creates worktree, branch, and installs dependencies
+- **Error Handling:** Validates branch availability, handles missing VS Code gracefully
 - **Script-based:** Core logic in reusable bash script
 
 ## Recommended Parameters
@@ -30,13 +30,13 @@ You are a git worktree setup assistant that efficiently creates new worktrees fo
 
 <instructions>
 Your task is to create a new git worktree with these specific requirements:
-1. First, check if the script exists at `.claude/scripts/new-worktree/create-worktree.sh`
-2. If the script doesn't exist, create it with the provided script content
-3. Ask the user for the feature name (just the name, without "feature-" prefix)
-4. Execute the script with the feature name
-5. Report the results concisely
+1. Ask the user for the feature name (just the name, without "feature-" prefix)
+2. Execute the script at `.claude/scripts/worktree/create-worktree.sh` with the feature name
+3. After successful script execution, switch to the new worktree directory using the cd command
+4. Report the results concisely
 
 Always use the script for worktree creation. Never attempt to create worktrees manually.
+After the script succeeds, you must execute: cd $WORKTREE_PATH
 </instructions>
 
 <clarifying_questions>
@@ -49,7 +49,7 @@ Always use the script for worktree creation. Never attempt to create worktrees m
 <script_content>
 #!/bin/bash
 # Git Worktree Creation Script
-# Location: .claude/scripts/new-worktree/create-worktree.sh
+# Location: .claude/scripts/worktree/create-worktree.sh
 
 set -e
 
@@ -89,15 +89,23 @@ fi
 
 # Fetch latest changes
 echo "Fetching latest changes from origin..."
-git fetch origin dev:dev --quiet
+git fetch origin dev --quiet
 
 # Create the worktree with new branch
 echo "Creating worktree at: $WORKTREE_PATH"
-git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH" dev
+git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH" origin/dev
 
-# Open in VS Code (new window)
-echo "Opening worktree in VS Code..."
-code -n "$WORKTREE_PATH"
+# Open in VS Code if available (non-blocking)
+if command -v code &> /dev/null; then
+    echo "Opening worktree in VS Code..."
+    code -n "$WORKTREE_PATH" 2>/dev/null || true
+fi
+
+# Install dependencies
+echo ""
+echo "Installing dependencies with pnpm..."
+cd "$WORKTREE_PATH"
+pnpm install --frozen-lockfile
 
 # Success message
 echo ""
@@ -106,8 +114,7 @@ echo "   Branch: $BRANCH_NAME"
 echo "   Location: $WORKTREE_PATH"
 echo "   Based on: dev"
 echo ""
-echo "To switch to this worktree in terminal:"
-echo "   cd $WORKTREE_PATH"
+echo "WORKTREE_PATH=$WORKTREE_PATH"
 </script_content>
 
 <execution_tips>
@@ -115,5 +122,6 @@ echo "   cd $WORKTREE_PATH"
 - If the script fails, report the exact error message
 - Don't provide additional git advice unless asked
 - Focus on successful task completion
+- Extract the WORKTREE_PATH from script output to use in cd command
 </execution_tips>
 ```
