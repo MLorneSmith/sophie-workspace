@@ -1,3 +1,4 @@
+import path from "node:path";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineProject } from "vitest/config";
@@ -15,6 +16,15 @@ export default defineProject({
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
 		tsconfigPaths(),
 	],
+	resolve: {
+		alias: {
+			// Mock server-only imports for testing
+			"server-only": path.resolve(
+				__dirname,
+				"src/test/__mocks__/server-only.ts",
+			),
+		},
+	},
 	esbuild: {
 		// Configure JSX transformation
 		jsx: "automatic",
@@ -38,11 +48,5 @@ export default defineProject({
 		// Performance settings
 		testTimeout: 10000,
 		hookTimeout: 10000,
-		// Server-side module handling for SSR components
-		server: {
-			deps: {
-				external: ["server-only"],
-			},
-		},
 	},
 });

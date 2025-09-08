@@ -33,7 +33,7 @@ export async function isSuperAdmin(client: SupabaseClient<Database>) {
 			throw error;
 		}
 
-		return data;
+		return data === true;
 	} catch {
 		return false;
 	}
