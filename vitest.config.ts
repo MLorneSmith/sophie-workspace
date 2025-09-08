@@ -16,6 +16,7 @@ export default defineConfig({
 			"apps/payload",
 			"packages/monitoring/newrelic",
 			"packages/shared",
+			"packages/features/admin",
 		],
 
 		// Global configuration options
