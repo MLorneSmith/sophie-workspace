@@ -30,9 +30,14 @@ FORCE_MODE=false
 NON_INTERACTIVE=false
 TARGET_WORKTREE=""
 SKIP_BRANCH_DELETE=false
+LIST_ONLY=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
+        --list)
+            LIST_ONLY=true
+            shift
+            ;;
         -f|--force)
             FORCE_MODE=true
             shift
@@ -53,17 +58,18 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  -f, --force          Force removal even with uncommitted changes"
-            echo "  -y, --yes           Non-interactive mode (auto-confirm)"
-            echo "  -n, --name NAME     Specify worktree name/path to remove"
-            echo "  -k, --keep-branch   Keep the branch after removing worktree"
-            echo "  -h, --help          Show this help message"
+            echo "  --list              List available worktrees only (discovery mode)"
+            echo "  -f, --force         Force removal even with uncommitted changes"
+            echo "  -y, --yes          Non-interactive mode (auto-confirm)"
+            echo "  -n, --name NAME    Specify worktree name/path to remove"
+            echo "  -k, --keep-branch  Keep the branch after removing worktree"
+            echo "  -h, --help         Show this help message"
             echo ""
             echo "Examples:"
-            echo "  $0                                    # Interactive mode"
-            echo "  $0 -n feature-ccpm -y                # Remove specific worktree"
-            echo "  $0 -n feature-ccpm -y -f             # Force remove with uncommitted changes"
-            echo "  $0 -n feature-ccpm -y -k             # Remove worktree but keep branch"
+            echo "  $0 --list                             # Discovery mode - list worktrees"
+            echo "  $0 -n feature-ccpm -y                 # Remove specific worktree"
+            echo "  $0 -n feature-ccpm -y -f              # Force remove with uncommitted changes"
+            echo "  $0 -n feature-ccpm -y -k              # Remove worktree but keep branch"
             exit 0
             ;;
         *)
@@ -84,7 +90,6 @@ if [ -z "$MAIN_REPO_PATH" ]; then
 fi
 
 # Get list of worktrees (excluding main)
-echo "Fetching worktree list..."
 WORKTREES=$(git worktree list --porcelain | grep "^worktree" | sed 's/^worktree //' | grep -v "^$MAIN_REPO_PATH$" || true)
 
 if [ -z "$WORKTREES" ]; then
@@ -96,6 +101,29 @@ fi
 # Convert to array
 IFS=$'\n'
 WORKTREE_ARRAY=($WORKTREES)
+
+# Handle list-only mode (discovery phase)
+if [ "$LIST_ONLY" = true ]; then
+    echo "Available worktrees:"
+    echo "===================="
+    for i in "${!WORKTREE_ARRAY[@]}"; do
+        WORKTREE_PATH="${WORKTREE_ARRAY[$i]}"
+        # Extract branch name from worktree path
+        BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
+        echo "$((i+1)). $WORKTREE_PATH"
+        echo "   Branch: $BRANCH_NAME"
+        
+        # Check for uncommitted changes
+        if [ -d "$WORKTREE_PATH" ]; then
+            cd "$WORKTREE_PATH"
+            if ! git diff --quiet || ! git diff --staged --quiet; then
+                echo -e "   ${YELLOW}⚠ Has uncommitted changes${NC}"
+            fi
+            cd "$MAIN_REPO_PATH"
+        fi
+    done
+    exit 0
+fi
 
 # Handle target worktree if specified
 if [ -n "$TARGET_WORKTREE" ]; then
@@ -122,38 +150,9 @@ if [ -n "$TARGET_WORKTREE" ]; then
     BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
     
 else
-    # Interactive mode - let user select
-    echo ""
-    echo "Available worktrees:"
-    echo "===================="
-    for i in "${!WORKTREE_ARRAY[@]}"; do
-        WORKTREE_PATH="${WORKTREE_ARRAY[$i]}"
-        # Extract branch name from worktree path
-        BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
-        echo "$((i+1)). $WORKTREE_PATH"
-        echo "   Branch: $BRANCH_NAME"
-    done
-    
-    # Get user selection
-    echo ""
-    read -p "Select worktree to remove (1-${#WORKTREE_ARRAY[@]}) or 'q' to quit: " selection
-    
-    # Handle quit
-    if [ "$selection" = "q" ] || [ "$selection" = "Q" ]; then
-        echo "Operation cancelled."
-        exit 0
-    fi
-    
-    # Validate selection
-    if ! [[ "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 1 ] || [ "$selection" -gt "${#WORKTREE_ARRAY[@]}" ]; then
-        echo -e "${RED}Invalid selection.${NC}"
-        exit 1
-    fi
-    
-    # Get selected worktree and branch
-    SELECTED_INDEX=$((selection - 1))
-    WORKTREE_PATH="${WORKTREE_ARRAY[$SELECTED_INDEX]}"
-    BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
+    echo -e "${RED}Error: No worktree specified for removal${NC}"
+    echo "Use --list to see available worktrees, then specify with -n option"
+    exit 1
 fi
 
 echo ""
@@ -174,31 +173,8 @@ if [ -d "$WORKTREE_PATH" ] && [ "$FORCE_MODE" = false ]; then
             echo "Use --force to override this check."
             exit 1
         fi
-        
-        read -p "Do you want to proceed anyway? (y/N): " proceed
-        if [ "$proceed" != "y" ] && [ "$proceed" != "Y" ]; then
-            echo "Operation cancelled."
-            exit 0
-        fi
     fi
     cd "$MAIN_REPO_PATH"
-fi
-
-# Final confirmation (skip if non-interactive)
-if [ "$NON_INTERACTIVE" = false ]; then
-    echo ""
-    echo -e "${YELLOW}This will permanently delete:${NC}"
-    echo "  - Worktree at: $WORKTREE_PATH"
-    if [ "$SKIP_BRANCH_DELETE" = false ]; then
-        echo "  - Branch: $BRANCH_NAME"
-    fi
-    echo ""
-    read -p "Are you sure you want to continue? (y/N): " confirm
-    
-    if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
-        echo "Operation cancelled."
-        exit 0
-    fi
 fi
 
 # Remove the worktree
