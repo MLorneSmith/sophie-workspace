@@ -2,14 +2,17 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineProject } from "vitest/config";
 
+const reactPlugin = react({
+	jsxImportSource: "react",
+});
+const tsconfigPlugin = tsconfigPaths();
+
 export default defineProject({
 	plugins: [
 		// Enable React support with automatic JSX transform
-		react({
-			jsxImportSource: "react",
-		}),
+		...(Array.isArray(reactPlugin) ? reactPlugin : [reactPlugin]),
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
-		tsconfigPaths(),
+		...(Array.isArray(tsconfigPlugin) ? tsconfigPlugin : [tsconfigPlugin]),
 	],
 	esbuild: {
 		// Configure JSX transformation
