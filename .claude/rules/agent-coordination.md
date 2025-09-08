@@ -1,6 +1,6 @@
 # Agent Coordination
 
-Rules for multiple agents working in parallel within the same epic worktree.
+Rules for multiple agents working in parallel within the same feature worktree.
 
 ## Parallel Execution Principles
 
@@ -11,16 +11,20 @@ Rules for multiple agents working in parallel within the same epic worktree.
 
 ## Work Stream Assignment
 
-Each agent is assigned a work stream from the issue analysis:
+Each agent is assigned a work stream from the task analysis:
 ```yaml
-# From {issue}-analysis.md
+# From {task}-analysis.md
 Stream A: Database Layer
   Files: src/db/*, migrations/*
-  Agent: backend-specialist
+  Agent: database-postgres-expert
 
 Stream B: API Layer
   Files: src/api/*
-  Agent: api-specialist
+  Agent: nodejs-expert
+
+Stream C: Frontend Layer
+  Files: src/components/*, src/pages/*
+  Agent: react-expert
 ```
 
 Agents should only modify files in their assigned patterns.
@@ -46,11 +50,11 @@ Make commits atomic and focused:
 ```bash
 # Good - Single purpose commit
 git add src/api/users.ts src/api/users.test.ts
-git commit -m "Issue #1234: Add user CRUD endpoints"
+git commit -m "feat(task-301): add user CRUD endpoints"
 
 # Bad - Mixed concerns
 git add src/api/* src/db/* src/ui/*
-git commit -m "Issue #1234: Multiple changes"
+git commit -m "feat(task-301): multiple changes"
 ```
 
 ## Communication Between Agents
@@ -62,16 +66,16 @@ Agents see each other's work through commits:
 git log --oneline -10
 
 # Agent pulls latest changes
-git pull origin epic/{name}
+git pull origin feature/{name}
 ```
 
 ### Through Progress Files
 Each stream maintains progress:
 ```markdown
-# .claude/epics/{epic}/updates/{issue}/stream-A.md
+# .claude/implementations/{feature}/updates/{task}/stream-A.md
 ---
 stream: Database Layer
-agent: backend-specialist
+agent: database-postgres-expert
 started: {datetime}
 status: in_progress
 ---
@@ -102,7 +106,7 @@ Stream B:
 ### Conflict Detection
 ```bash
 # If commit fails due to conflict
-git commit -m "Issue #1234: Update"
+git commit -m "feat(task-301): update"
 # Error: conflicts exist
 
 # Agent should report and wait
@@ -131,7 +135,7 @@ Never attempt automatic merge resolution.
 ### Explicit Sync
 ```bash
 # Pull latest changes
-git pull --rebase origin epic/{name}
+git pull --rebase origin feature/{name}
 
 # If conflicts, stop and report
 if [[ $? -ne 0 ]]; then
@@ -148,7 +152,7 @@ Agents should update their status regularly:
 # Update progress file every significant step
 echo "✅ Completed: Database schema" >> stream-A.md
 git add stream-A.md
-git commit -m "Progress: Stream A - schema complete"
+git commit -m "chore: update Stream A progress"
 ```
 
 ### Coordination Requests
@@ -167,9 +171,9 @@ When agents need to coordinate:
 When working on completely different files:
 ```bash
 # These can happen simultaneously
-Agent-A: git commit -m "Issue #1234: Update database"
-Agent-B: git commit -m "Issue #1235: Update UI"
-Agent-C: git commit -m "Issue #1236: Add tests"
+Agent-A: git commit -m "feat(task-301): update database"
+Agent-B: git commit -m "feat(task-301): update UI"
+Agent-C: git commit -m "test(task-301): add tests"
 ```
 
 ### Sequential When Needed
@@ -177,13 +181,13 @@ When touching shared resources:
 ```bash
 # Agent A commits first
 git add src/types/index.ts
-git commit -m "Issue #1234: Update type definitions"
+git commit -m "feat(task-301): update type definitions"
 
 # Agent B waits, then proceeds
 # (After A's commit)
 git pull
 git add src/api/users.ts
-git commit -m "Issue #1235: Use new types"
+git commit -m "feat(task-301): use new types"
 ```
 
 ## Best Practices
@@ -199,9 +203,9 @@ git commit -m "Issue #1235: Use new types"
 
 ### Starting Work
 ```bash
-1. cd ../epic-{name}
+1. cd /home/msmith/projects/worktrees/feature-{name}
 2. git pull
-3. Check {issue}-analysis.md for assignment
+3. Check {task}-analysis.md for assignment
 4. Update stream-{X}.md with "started"
 5. Begin work on assigned files
 ```
@@ -222,3 +226,55 @@ git commit -m "Issue #1235: Use new types"
 3. Check if other streams need help
 4. Report completion
 ```
+
+## Agent-to-Work-Stream Mapping
+
+### Database Layer
+- **Primary**: database-postgres-expert, database-mongodb-expert, database-expert
+- **Files**: migrations/*, src/db/*, supabase/*, prisma/*
+- **Work**: Schema changes, migrations, database functions, RLS policies
+
+### API/Backend Layer
+- **Primary**: nodejs-expert, nestjs-expert
+- **Files**: src/api/*, src/server/*, src/services/*, server/*
+- **Work**: API endpoints, server logic, authentication, middleware
+
+### Frontend Layer
+- **Primary**: react-expert, react-performance-expert, nextjs-expert
+- **Files**: src/components/*, src/pages/*, app/*, components/*
+- **Work**: UI components, pages, client-side logic
+
+### Styling Layer
+- **Primary**: frontend-css-styling-expert
+- **Files**: *.css, *.scss, tailwind.*, styles/*
+- **Work**: Styling, themes, responsive design
+
+### Testing Layer
+- **Primary**: jest-testing-expert, vitest-testing-expert, testing-expert
+- **Files**: *.test.*, *.spec.*, __tests__/*, tests/*
+- **Work**: Unit tests, integration tests, test utilities
+
+### E2E Testing Layer
+- **Primary**: e2e-playwright-expert
+- **Files**: e2e/*, playwright/*, cypress/*
+- **Work**: End-to-end tests, browser automation
+
+### Infrastructure Layer
+- **Primary**: infrastructure-docker-expert, infrastructure-github-actions-expert, devops-expert
+- **Files**: Dockerfile*, .github/*, docker-compose.*, k8s/*
+- **Work**: CI/CD, containerization, deployment
+
+### Documentation Layer
+- **Primary**: documentation-expert
+- **Files**: docs/*, *.md, README*
+- **Work**: Documentation, API docs, guides
+
+### Type System Layer
+- **Primary**: typescript-expert, typescript-type-expert
+- **Files**: *.d.ts, types/*, interfaces/*
+- **Work**: Type definitions, interfaces, type utilities
+
+### Build/Config Layer
+- **Primary**: build-tools-webpack-expert, build-tools-vite-expert
+- **Files**: webpack.*, vite.*, rollup.*, tsconfig.*, package.json
+- **Work**: Build configuration, bundling, optimization
