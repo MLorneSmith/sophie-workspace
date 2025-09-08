@@ -4,26 +4,6 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
-// New Relic configuration - conditionally load based on environment
-// Skip loading in test environments to prevent compilation errors
-let nrExternals;
-
-// Skip NewRelic in test environments to avoid compilation errors
-const isTestEnvironment =
-	process.env.NODE_ENV === "test" || process.env.CI === "true";
-
-if (!isTestEnvironment) {
-	try {
-		nrExternals = require("newrelic/load-externals");
-	} catch (_err) {
-		// New Relic not available (e.g., in build without agent)
-		nrExternals = () => {};
-	}
-} else {
-	// In test environments, use noop function to avoid loading NewRelic
-	nrExternals = () => {};
-}
-
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
 	"@kit/auth",
@@ -49,59 +29,14 @@ const config = {
 	/** Enables hot reloading for local packages without a build step */
 	transpilePackages: INTERNAL_PACKAGES,
 	images: {
-		remotePatterns: [
-			...getRemotePatterns(),
-			{
-				protocol: "https",
-				hostname: "*.supabase.co",
-			},
-			{
-				protocol: "https",
-				hostname: "*.r2.cloudflarestorage.com",
-			},
-			{
-				protocol: "https",
-				hostname: "images.slideheroes.com",
-			},
-		],
+		remotePatterns: getRemotePatterns(),
 	},
 	logging: {
 		fetches: {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: isTestEnvironment ? [] : ["newrelic"],
-	webpack: (config) => {
-		// Configure New Relic externals for proper agent loading
-		nrExternals(config);
-
-		// Suppress warnings that don't affect production builds
-		config.ignoreWarnings = [
-			...(config.ignoreWarnings || []),
-			// Critical dependency warnings from OpenTelemetry (dynamic requires for instrumentation)
-			{
-				module: /@opentelemetry\/instrumentation/,
-				message: /Critical dependency/,
-			},
-			{
-				module: /@baselime\/node-opentelemetry/,
-				message: /Critical dependency/,
-			},
-			// Edge Runtime compatibility warnings for Supabase (polyfilled at runtime)
-			{
-				module: /@supabase\/supabase-js/,
-				message:
-					/Node\.js API.*process\.version.*not supported in.*Edge Runtime/,
-			},
-			{
-				module: /@supabase\/realtime-js/,
-				message:
-					/Node\.js API.*process\.versions.*not supported in.*Edge Runtime/,
-			},
-		];
-
-		return config;
-	},
+	serverExternalPackages: [],
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],
@@ -111,9 +46,12 @@ const config = {
 		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
 		resolveAlias: getModulesAliases(),
 	},
-	devIndicators: {
-		position: "bottom-right",
-	},
+	devIndicators:
+		process.env.NEXT_PUBLIC_CI === "true"
+			? false
+			: {
+					position: "bottom-right",
+				},
 	experimental: {
 		mdxRs: true,
 		reactCompiler: ENABLE_REACT_COMPILER,
@@ -136,38 +74,6 @@ const config = {
 	/** We already do linting and typechecking as separate tasks in CI */
 	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
-	skipTrailingSlashRedirect: true,
-	async rewrites() {
-		// NOTE: change `eu` to `us` if applicable
-		return [
-			{
-				source: "/ingest/static/:path*",
-				destination: "https://eu-assets.i.posthog.com/static/:path*",
-			},
-			{
-				source: "/ingest/:path*",
-				destination: "https://eu.i.posthog.com/:path*",
-			},
-		];
-	},
-	async headers() {
-		return [
-			{
-				// Apply security headers to all routes
-				source: "/:path*",
-				headers: [
-					{
-						key: "X-Frame-Options",
-						value: "DENY",
-					},
-					{
-						key: "X-Content-Type-Options",
-						value: "nosniff",
-					},
-				],
-			},
-		];
-	},
 };
 
 export default withBundleAnalyzer({
@@ -175,80 +81,85 @@ export default withBundleAnalyzer({
 })(config);
 
 function getRemotePatterns() {
-	if (!SUPABASE_URL) {
-		return [];
-	}
+	/** @type {import('next').NextConfig['remotePatterns']} */
+	const remotePatterns = [];
 
-	const { hostname } = new URL(SUPABASE_URL);
+	if (SUPABASE_URL) {
+		const hostname = new URL(SUPABASE_URL).hostname;
 
-	return [
-		{
+		remotePatterns.push({
 			protocol: "https",
 			hostname,
+		});
+	}
+
+	return IS_PRODUCTION
+		? remotePatterns
+		: [
+				{
+					protocol: "http",
+					hostname: "127.0.0.1",
+				},
+				{
+					protocol: "http",
+					hostname: "localhost",
+				},
+			];
+}
+
+async function getRedirects() {
+	return [
+		{
+			source: "/server-sitemap.xml",
+			destination: "/sitemap.xml",
+			permanent: true,
 		},
 	];
 }
 
-async function getRedirects() {
-	// Add your redirects here
-	return [];
-}
-
+/**
+ * @description Aliases modules based on the environment variables
+ * This will speed up the development server by not loading the modules that are not needed
+ * @returns {Record<string, string>}
+ */
 function getModulesAliases() {
-	if (!IS_PRODUCTION) {
-		return {
-			"@kit/ui": {
-				"@kit/ui/*": "../../../packages/ui/src/*",
-			},
-			"@kit/shared": {
-				"@kit/shared/*": "../../../packages/shared/src/*",
-			},
-			"@kit/cms": {
-				"@kit/cms/*": "../../../packages/cms/src/*",
-			},
-			"@kit/auth": {
-				"@kit/auth/*": "../../../packages/features/auth/src/*",
-			},
-			"@kit/admin": {
-				"@kit/admin/*": "../../../packages/features/admin/src/*",
-			},
-			"@kit/accounts": {
-				"@kit/accounts/*": "../../../packages/features/accounts/src/*",
-			},
-			"@kit/team-accounts": {
-				"@kit/team-accounts/*":
-					"../../../packages/features/team-accounts/src/*",
-			},
-			"@kit/notifications": {
-				"@kit/notifications/*":
-					"../../../packages/features/notifications/src/*",
-			},
-			"@kit/billing-gateway": {
-				"@kit/billing-gateway/*": "../../../packages/billing/gateway/src/*",
-			},
-			"@kit/database-webhooks": {
-				"@kit/database-webhooks/*": "../../../packages/database-webhooks/src/*",
-			},
-			"@kit/email-templates": {
-				"@kit/email-templates/*": "../../../packages/email-templates/src/*",
-			},
-			"@kit/supabase": {
-				"@kit/supabase/*": "../../../packages/supabase/src/*",
-			},
-			"@kit/mailers": {
-				"@kit/mailers/*": "../../../packages/mailers/src/*",
-			},
-			"@kit/i18n": {
-				"@kit/i18n/*": "../../../packages/i18n/src/*",
-			},
-			"@kit/monitoring": {
-				"@kit/monitoring/*": "../../../packages/monitoring/src/*",
-			},
-			"@kit/next": {
-				"@kit/next/*": "../../../packages/next/src/*",
-			},
-		};
+	if (process.env.NODE_ENV !== "development") {
+		return {};
 	}
 
-	return {};
+	const monitoringProvider = process.env.NEXT_PUBLIC_MONITORING_PROVIDER;
+	const billingProvider = process.env.NEXT_PUBLIC_BILLING_PROVIDER;
+	const mailerProvider = process.env.MAILER_PROVIDER;
+	const captchaProvider = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
+
+	// exclude the modules that are not needed
+	const excludeSentry = monitoringProvider !== "sentry";
+	const excludeStripe = billingProvider !== "stripe";
+	const excludeNodemailer = mailerProvider !== "nodemailer";
+	const excludeTurnstile = !captchaProvider;
+
+	/** @type {Record<string, string>} */
+	const aliases = {};
+
+	// the path to the noop module
+	const noopPath = "~/lib/dev-mock-modules";
+
+	if (excludeSentry) {
+		aliases["@sentry/nextjs"] = noopPath;
+	}
+
+	if (excludeStripe) {
+		aliases.stripe = noopPath;
+		aliases["@stripe/stripe-js"] = noopPath;
+	}
+
+	if (excludeNodemailer) {
+		aliases.nodemailer = noopPath;
+	}
+
+	if (excludeTurnstile) {
+		aliases["@marsidev/react-turnstile"] = noopPath;
+	}
+
+	return aliases;
 }

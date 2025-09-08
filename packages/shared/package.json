@@ -2,13 +2,12 @@
 	"name": "@kit/shared",
 	"private": true,
 	"version": "0.1.0",
-	"type": "module",
 	"scripts": {
-		"build": "tsc",
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "prettier --check \"**/*.{ts,tsx}\"",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit",
+		"build": "tsc",
 		"test": "vitest",
 		"test:unit": "vitest run"
 	},
@@ -24,11 +23,11 @@
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/react": "19.1.8"
+		"@types/react": "19.1.12"
 	},
 	"dependencies": {
+		"pino": "^9.9.4",
 		"@kit/monitoring-core": "workspace:*",
-		"pino": "^9.8.0",
 		"zod": "^3.25.67"
 	},
 	"typesVersions": {

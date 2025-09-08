@@ -1,6 +1,6 @@
 {
 	"name": "slideheroes",
-	"version": "2.13.0",
+	"version": "2.13.1",
 	"private": true,
 	"sideEffects": false,
 	"engines": {
@@ -15,7 +15,6 @@
 		"preinstall": "pnpm run --filter scripts requirements",
 		"postinstall": "manypkg fix",
 		"build": "./.claude/statusline/build-wrapper.sh",
-		"build:raw": "turbo build --cache-dir=.turbo",
 		"clean": "git clean -xdf node_modules dist .next",
 		"clean:workspaces": "turbo clean",
 		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel --filter=!@slideheroes/playwright-mcp",
@@ -23,16 +22,8 @@
 		"format:fix": "biome format --write .",
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
 		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
-		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
-		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
 		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
-		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
 		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
-		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
-		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
-		"test:e2e": "turbo test --filter=web-e2e",
 		"update": "pnpm update -r",
 		"syncpack:list": "pnpm dlx syncpack list-mismatches",
 		"syncpack:fix": "pnpm dlx syncpack fix-mismatches",
@@ -40,13 +31,22 @@
 		"supabase:web:stop": "pnpm --filter web supabase:stop",
 		"supabase:web:typegen": "pnpm --filter web supabase:typegen",
 		"supabase:web:reset": "pnpm --filter web supabase:reset",
-		"ci-metrics:collect": "node scripts/collect-ci-metrics.js",
-		"ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
-		"ci-metrics:weekly": "node scripts/weekly-ci-report.js",
 		"supabase:web:test": "pnpm --filter web supabase:test",
 		"stripe:listen": "pnpm --filter '@kit/stripe' start",
 		"env:generate": "turbo gen env",
 		"env:validate": "turbo gen validate-env",
+		"build:raw": "turbo build --cache-dir=.turbo",
+		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
+		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**'",
+		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
+		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
+		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
+		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
+		"test:e2e": "turbo test --filter=web-e2e",
+		"ci-metrics:collect": "node scripts/collect-ci-metrics.js",
+		"ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
+		"ci-metrics:weekly": "node scripts/weekly-ci-report.js",
 		"fetch-questions-temp": "tsx fetch-questions-temp.ts",
 		"manypkg:check": "manypkg check",
 		"manypkg:fix": "manypkg fix",
@@ -61,13 +61,7 @@
 		"a11y:test": "turbo a11y:test",
 		"a11y:report": "turbo a11y:report"
 	},
-	"config": {
-		"commitizen": {
-			"path": "cz-conventional-changelog"
-		}
-	},
 	"prettier": "@kit/prettier-config",
-	"packageManager": "pnpm@10.14.0",
 	"lint-staged": {
 		"*": [
 			"bash ./scripts/trufflehog-scan.sh"
@@ -92,37 +86,33 @@
 			"bash ./scripts/type-check-staged.sh"
 		]
 	},
+	"packageManager": "pnpm@10.14.0",
 	"pnpm": {
 		"overrides": {
 			"react-is": "19.0.0",
-			"require-in-the-middle": "7.5.2",
-			"esbuild": ">=0.25.0",
-			"tmp": ">=0.2.4"
-		},
-		"onlyBuiltDependencies": [
-			"sharp"
-		]
+			"require-in-the-middle": "7.5.2"
+		}
 	},
 	"devDependencies": {
+		"@manypkg/cli": "^0.25.1",
+		"@turbo/gen": "^2.5.6",
+		"cross-env": "^10.0.0",
+		"prettier": "^3.6.2",
+		"turbo": "2.5.6",
+		"typescript": "^5.9.2",
 		"@biomejs/biome": "2.0.0",
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
-		"@manypkg/cli": "^0.25.0",
 		"@playwright/test": "^1.55.0",
-		"@turbo/gen": "^2.5.6",
 		"@vitest/coverage-v8": "^3.1.2",
 		"codebase-map": "^0.6.0",
 		"commitizen": "^4.3.1",
-		"cross-env": "^10.0.0",
 		"cz-conventional-changelog": "^3.3.0",
 		"husky": "^9.1.7",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
 		"markdownlint-cli2": "^0.18.1",
-		"prettier": "^3.6.2",
 		"tailwind-merge": "^3.3.1",
-		"turbo": "2.5.6",
-		"typescript": "^5.9.2",
 		"vitest": "^3.1.2",
 		"yaml-lint": "^1.7.0"
 	}
