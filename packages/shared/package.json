@@ -26,9 +26,9 @@
 		"@types/react": "19.1.12"
 	},
 	"dependencies": {
-		"pino": "^9.9.4",
 		"@kit/monitoring-core": "workspace:*",
-		"zod": "^3.25.67"
+		"pino": "^9.8.0",
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {
