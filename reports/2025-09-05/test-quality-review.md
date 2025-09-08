@@ -1,6 +1,7 @@
 # Code Review: Test Quality and Effectiveness
 
 ## 📊 Review Metrics
+
 - **Files Reviewed**: 7
 - **Critical Issues**: 3
 - **High Priority**: 4
@@ -9,15 +10,18 @@
 - **Test Coverage**: ~15% (E2E only, no unit tests)
 
 ## 🎯 Executive Summary
+
 The changed files reveal significant gaps in test coverage and quality. While E2E tests exist for the admin functionality, there are NO unit tests for critical admin components, services, or utilities. The test infrastructure documentation shows good intentions but lacks implementation where it matters most.
 
 ## 🔴 CRITICAL Issues (Must Fix)
 
 ### 1. Complete Absence of Unit Tests for Admin Components
+
 **Files**: `packages/features/admin/src/components/admin-dashboard.tsx`, `admin-guard.tsx`
 **Impact**: Zero unit test coverage for UI components increases risk of regressions and makes refactoring dangerous
 **Root Cause**: No test files exist for any admin package components
 **Solution**:
+
 ```typescript
 // Create: packages/features/admin/src/components/__tests__/admin-dashboard.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -59,10 +63,12 @@ describe('AdminDashboard', () => {
 ```
 
 ### 2. No Service Layer Testing
+
 **File**: `packages/features/admin/src/lib/server/services/admin-dashboard.service.ts`
 **Impact**: Business logic untested, database query failures unverified, error handling paths uncovered
 **Root Cause**: Service class has complex async logic with multiple error paths but zero tests
 **Solution**:
+
 ```typescript
 // Create: packages/features/admin/src/lib/server/services/__tests__/admin-dashboard.service.test.ts
 import { createAdminDashboardService } from '../admin-dashboard.service';
@@ -124,10 +130,12 @@ describe('AdminDashboardService', () => {
 ```
 
 ### 3. Critical Security Function Without Tests
+
 **File**: `packages/features/admin/src/lib/server/utils/is-super-admin.ts`
 **Impact**: Authorization bypass risks, security vulnerabilities in admin access control
 **Root Cause**: Security-critical function with no test coverage for success/failure paths
 **Solution**:
+
 ```typescript
 // Create: packages/features/admin/src/lib/server/utils/__tests__/is-super-admin.test.ts
 import { isSuperAdmin } from '../is-super-admin';
@@ -178,10 +186,12 @@ describe('isSuperAdmin', () => {
 ## 🟠 HIGH Priority (Fix Before Merge)
 
 ### 1. E2E Test Brittleness - Timing Issues
+
 **File**: `apps/e2e/tests/admin/admin.spec.ts:55`
 **Impact**: Flaky test causing intermittent failures (known issue from reports)
 **Root Cause**: Hard-coded timeout waiting for admin dashboard selector
 **Solution**:
+
 ```typescript
 // Replace line 380-382 with retry logic
 await expect(async () => {
@@ -195,10 +205,12 @@ await expect(async () => {
 ```
 
 ### 2. Missing Edge Case Coverage in E2E Tests
+
 **File**: `apps/e2e/tests/admin/admin.spec.ts`
 **Impact**: Critical paths untested - concurrent admin sessions, permission changes mid-session
 **Root Cause**: E2E tests only cover happy path scenarios
 **Solution**:
+
 ```typescript
 test('handles permission revocation during active session', async ({ page }) => {
   await goToAdmin(page);
@@ -225,10 +237,12 @@ test('prevents race conditions in concurrent updates', async ({ browser }) => {
 ```
 
 ### 3. No Integration Tests for Server Actions
+
 **File**: Missing tests for admin server actions
 **Impact**: Server-side logic untested between unit and E2E layers
 **Root Cause**: No integration test layer exists
 **Solution**:
+
 ```typescript
 // Create: packages/features/admin/__tests__/integration/admin-actions.test.ts
 import { enhanceAction } from '@kit/next/actions';
@@ -253,6 +267,7 @@ describe('Admin Server Actions Integration', () => {
 ```
 
 ### 4. Test Documentation Doesn't Match Reality
+
 **Files**: `.claude/commands/debug-issue.md`, `.claude/context/roles/debug-engineer.md`
 **Impact**: Documentation shows sophisticated test infrastructure that doesn't exist for admin features
 **Root Cause**: Documentation aspirational rather than descriptive
@@ -261,15 +276,18 @@ describe('Admin Server Actions Integration', () => {
 ## 🟡 MEDIUM Priority (Fix Soon)
 
 ### 1. Missing Mock Strategies Documentation
+
 **Impact**: Developers don't know how to mock Supabase client, server components, or RPC calls
 **Solution**: Create mocking guide with examples for common patterns
 
 ### 2. No Performance Testing for Dashboard Queries
+
 **File**: `admin-dashboard.service.ts`
 **Impact**: Parallel query performance unverified, potential for slow dashboard loads
 **Solution**: Add performance benchmarks for getDashboardData()
 
 ### 3. Incomplete E2E Test Scenarios
+
 **File**: `admin.spec.ts`
 **Impact**: Skipped test for non-MFA admin access (line 44)
 **Solution**: Implement test or document why it's permanently skipped
@@ -277,20 +295,25 @@ describe('Admin Server Actions Integration', () => {
 ## 🟢 LOW Priority (Opportunities)
 
 ### 1. Test Naming Improvements
+
 **Observation**: E2E test descriptions could be more specific
 **Suggestion**: Use Given-When-Then format for clarity:
+
 ```typescript
 test('Given admin user When accessing dashboard Then displays all metrics', ...)
 ```
 
 ### 2. Test Data Factories
+
 **Opportunity**: Create test data builders for consistent test setup:
+
 ```typescript
 const adminUser = createTestUser({ role: 'super_admin' });
 const regularUser = createTestUser({ role: 'user' });
 ```
 
 ## ✨ Strengths
+
 - E2E tests exist and cover main user journeys
 - Good use of Page Object pattern in E2E tests
 - Test infrastructure documentation shows understanding of best practices
@@ -299,13 +322,16 @@ const regularUser = createTestUser({ role: 'user' });
 ## 📈 Proactive Suggestions
 
 ### 1. Implement Test Pyramid
+
 Current state: Only E2E tests (top of pyramid)
 Recommended distribution:
+
 - 70% Unit tests (missing)
 - 20% Integration tests (missing)  
 - 10% E2E tests (exists but needs hardening)
 
 ### 2. Add Test Coverage Reporting
+
 ```json
 // package.json
 {
@@ -317,6 +343,7 @@ Recommended distribution:
 ```
 
 ### 3. Create Admin Test Suite Bootstrap
+
 ```typescript
 // packages/features/admin/test-utils/setup.ts
 export const setupAdminTest = () => {
@@ -331,12 +358,14 @@ export const setupAdminTest = () => {
 ## 🔄 Systemic Patterns
 
 ### Repeated Issues Across Codebase
+
 1. **Server Components Without Tests**: Pattern of creating React Server Components without any test coverage
 2. **Security Functions Untested**: Authorization and authentication code lacks test coverage
 3. **Service Layer Test Gap**: Business logic services consistently missing tests
 4. **Mock Strategy Absence**: No standardized approach to mocking Supabase or server utilities
 
 ### Recommendations for Team Discussion
+
 1. Mandate unit tests for all new components before PR approval
 2. Block deployments when security-critical functions lack tests
 3. Implement coverage thresholds (minimum 80% for new code)
@@ -346,6 +375,7 @@ export const setupAdminTest = () => {
 ## Test Quality Assessment Summary
 
 ### What's Missing (Critical Gaps)
+
 - **Zero unit tests** for admin package components
 - **No service layer tests** for business logic
 - **Security functions untested** (authorization checks)
@@ -353,12 +383,14 @@ export const setupAdminTest = () => {
 - **Missing error path coverage** in existing E2E tests
 
 ### What Needs Improvement
+
 - **E2E test stability** (timing issues causing failures)
 - **Mock strategies** undefined and inconsistent
 - **Test isolation** - E2E tests depend on specific database state
 - **Edge case coverage** - only happy paths tested
 
 ### Next Steps Priority
+
 1. **Immediate**: Add unit tests for `is-super-admin.ts` (security critical)
 2. **This Week**: Create service layer tests for `admin-dashboard.service.ts`
 3. **This Sprint**: Add component tests for admin UI components

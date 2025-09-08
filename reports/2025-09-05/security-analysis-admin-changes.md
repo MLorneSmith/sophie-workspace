@@ -9,6 +9,7 @@
 Comprehensive security analysis reveals **3 CRITICAL**, **2 HIGH**, and **3 MEDIUM** priority issues in the changed files. Most critical finding: **MFA enforcement is disabled for super-admin access**, creating a significant authentication bypass vulnerability.
 
 ## 📊 Analysis Metrics
+
 - **Files Reviewed**: 7
 - **Critical Issues**: 3
 - **High Priority**: 2
@@ -19,12 +20,14 @@ Comprehensive security analysis reveals **3 CRITICAL**, **2 HIGH**, and **3 MEDI
 ## 🔴 CRITICAL Issues (Must Fix Immediately)
 
 ### 1. MFA Bypass for Super-Admin Authentication
+
 **File**: `/apps/web/supabase/migrations/20250417090400_admin_route_fix.sql:31-36`
 **Impact**: Complete bypass of multi-factor authentication for highest privilege accounts
 **Root Cause**: MFA verification is commented out in the `is_super_admin()` function
 **Attack Vector**: Compromised super-admin credentials grant full access without second factor
 
 **Current Vulnerable Code**:
+
 ```sql
 -- if not public.is_aal2() then
 --     return false;
@@ -33,6 +36,7 @@ SELECT (auth.jwt() ->> 'app_metadata')::jsonb ->> 'role' = 'super-admin' INTO is
 ```
 
 **Solution**:
+
 ```sql
 CREATE OR REPLACE FUNCTION public.is_super_admin() 
 RETURNS boolean
@@ -53,12 +57,14 @@ $$ LANGUAGE plpgsql;
 ```
 
 ### 2. Insufficient Input Validation in Admin Dashboard Loader
+
 **File**: `/packages/features/admin/src/lib/server/services/admin-dashboard.service.ts`
 **Impact**: Potential for injection attacks or data exposure through unvalidated parameters
 **Root Cause**: Direct database queries without parameter validation
 **Attack Vector**: Malicious count parameter could bypass RLS or cause DoS
 
 **Current Code Issue**:
+
 ```typescript
 // Line 29: No validation on selectParams
 const selectParams = {
@@ -68,6 +74,7 @@ const selectParams = {
 ```
 
 **Solution**:
+
 ```typescript
 import { z } from 'zod';
 
@@ -91,17 +98,20 @@ async getDashboardData(params?: { count?: unknown }) {
 ```
 
 ### 3. Settings File Exposes Sensitive Configuration Paths
+
 **File**: `/.claude/settings.local.json`
 **Impact**: Exposes internal tool configurations and allowed operations
 **Root Cause**: Local settings file with sensitive permissions configuration
 **Attack Vector**: Information disclosure for targeted attacks
 
 **Issues Found**:
+
 - Line 33-47: Lists all enabled MCP servers (attack surface mapping)
 - Line 9-26: Exposes allowed bash commands with patterns
 - Line 3-4: Shows timeout configurations that could aid DoS attacks
 
 **Solution**:
+
 1. Move sensitive configurations to environment variables
 2. Use `.gitignore` to exclude local settings
 3. Implement runtime permission validation instead of static lists
@@ -110,11 +120,13 @@ async getDashboardData(params?: { count?: unknown }) {
 ## 🟠 HIGH Priority Issues (Fix Before Merge)
 
 ### 4. Missing Authorization Check in Admin Dashboard Component
+
 **File**: `/packages/features/admin/src/components/admin-dashboard.tsx`
 **Impact**: Component renders before authorization is verified
 **Root Cause**: Async server component loads data without pre-validation
 
 **Current Issue**:
+
 ```typescript
 // Line 11-12: Loads data without verifying admin status first
 export async function AdminDashboard() {
@@ -122,6 +134,7 @@ export async function AdminDashboard() {
 ```
 
 **Solution**:
+
 ```typescript
 export async function AdminDashboard() {
     const client = getSupabaseServerClient();
@@ -137,16 +150,19 @@ export async function AdminDashboard() {
 ```
 
 ### 5. SQL Injection Risk in Database Function
+
 **File**: `/apps/web/supabase/migrations/20250417090400_admin_route_fix.sql`
 **Impact**: JWT manipulation could bypass security checks
 **Root Cause**: Direct JSON extraction without validation
 
 **Current Code**:
+
 ```sql
 SELECT (auth.jwt() ->> 'app_metadata')::jsonb ->> 'role' = 'super-admin' INTO is_super_admin;
 ```
 
 **Solution**:
+
 ```sql
 -- Add validation and error handling
 BEGIN
@@ -175,15 +191,18 @@ END;
 ## 🟡 MEDIUM Priority Issues (Fix Soon)
 
 ### 6. Dependency Version Pinning Missing
+
 **File**: `/package.json`
 **Impact**: Supply chain attacks through compromised dependencies
 **Root Cause**: Some dependencies use caret (^) versioning
 
 **Issues**:
+
 - Line 108-127: DevDependencies with loose version constraints
 - Line 96-100: Security overrides but not all dependencies pinned
 
 **Solution**:
+
 ```json
 {
   "overrides": {
@@ -201,6 +220,7 @@ END;
 ```
 
 ### 7. Error Information Disclosure
+
 **File**: `/packages/features/admin/src/lib/server/services/admin-dashboard.service.ts`
 **Impact**: Stack traces could reveal system internals
 **Root Cause**: Generic error throwing without sanitization
@@ -208,6 +228,7 @@ END;
 **Lines 37-42, 54-59, 71-76, 88-93**: All throw generic Error() without message sanitization
 
 **Solution**:
+
 ```typescript
 class AdminDashboardError extends Error {
     constructor(public code: string, message?: string) {
@@ -222,11 +243,13 @@ throw new AdminDashboardError('FETCH_ERROR'); // Don't expose internal details
 ```
 
 ### 8. Missing CAPTCHA on Admin Actions
+
 **File**: `/apps/web/app/admin/api-usage/_actions/fetch-usage-data.ts`
 **Impact**: Automated attacks on admin endpoints
 **Root Cause**: No CAPTCHA configuration in enhanceAction
 
 **Line 120-124**: Configuration missing captcha protection
+
 ```typescript
 {
     auth: true,
@@ -238,10 +261,12 @@ throw new AdminDashboardError('FETCH_ERROR'); // Don't expose internal details
 ## 🟢 LOW Priority Issues (Opportunities)
 
 ### 9. Improve Type Safety
+
 **File**: `/apps/web/app/admin/api-usage/_actions/fetch-usage-data.ts`
 **Lines 167-170**: Uses @ts-ignore instead of proper typing
 
 **Solution**:
+
 ```typescript
 // Define proper types instead of using @ts-ignore
 type GroupedData = Record<string, { cost: number; tokens: number }>;
@@ -249,7 +274,9 @@ const usageByFeature = groupByField(logs, "feature") as GroupedData;
 ```
 
 ### 10. Add Security Headers
+
 **Recommendation**: Implement security headers for admin routes
+
 ```typescript
 // In admin route handlers
 export async function middleware(request: NextRequest) {
@@ -312,6 +339,7 @@ The current security model has fundamental issues:
 ## Compliance & Standards
 
 Current implementation violates:
+
 - **OWASP Top 10**: A07:2021 – Identification and Authentication Failures
 - **CWE-287**: Improper Authentication
 - **CWE-306**: Missing Authentication for Critical Function

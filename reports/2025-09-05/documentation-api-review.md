@@ -21,11 +21,13 @@ The codebase shows good technical implementation but suffers from significant do
 ## 🔴 CRITICAL Issues (Must Fix)
 
 ### 1. Missing Admin Package Documentation
+
 **File**: `packages/features/admin/` (no README.md)  
 **Impact**: New developers cannot understand package purpose, setup, or usage  
 **Root Cause**: Documentation was never created for this feature package  
 **Solution**:
 Create `/packages/features/admin/README.md`:
+
 ```markdown
 # @kit/admin
 
@@ -85,16 +87,18 @@ export default function Page() {
 ## Security
 
 All admin routes are protected by:
+
 1. Authentication check
 2. Super-admin role verification
 3. 404 redirect for unauthorized access
-```
 
 ### 2. No API Export Documentation
+
 **File**: `packages/features/admin/src/index.ts`  
 **Impact**: Package only exports one utility, limiting usability  
 **Root Cause**: Incomplete export configuration  
 **Solution**:
+
 ```typescript
 // packages/features/admin/src/index.ts
 // Server utilities
@@ -111,10 +115,12 @@ export type { AdminDashboardData } from "./lib/server/services/admin-dashboard.s
 ```
 
 ### 3. Missing Type Definitions for API Contract
+
 **File**: `packages/features/admin/src/lib/server/services/admin-dashboard.service.ts`  
 **Impact**: No clear API contract for dashboard data  
 **Root Cause**: Return type is implicit, not exported  
 **Solution**:
+
 ```typescript
 // Add to admin-dashboard.service.ts
 export interface AdminDashboardData {
@@ -139,10 +145,12 @@ async getDashboardData(
 ## 🟠 HIGH Priority (Fix Before Merge)
 
 ### 1. Inconsistent Error Handling Documentation
+
 **File**: `packages/features/admin/src/lib/server/services/admin-dashboard.service.ts`  
 **Impact**: Error handling throws generic errors without context  
 **Root Cause**: No error types or handling documentation  
 **Solution**:
+
 ```typescript
 // Create custom error types
 export class AdminServiceError extends Error {
@@ -165,9 +173,11 @@ export class AdminServiceError extends Error {
 ```
 
 ### 2. No JSDoc for Public Components
+
 **Files**: All component files in `packages/features/admin/src/components/`  
 **Impact**: No IntelliSense or documentation for component props  
 **Solution**:
+
 ```typescript
 /**
  * AdminGuard - Higher-order component for admin route protection
@@ -191,9 +201,11 @@ export function AdminGuard<Params extends object>(
 ```
 
 ### 3. Command Documentation Lacks Version Information
+
 **File**: `.claude/commands/debug-issue.md`  
 **Impact**: No way to track command evolution or compatibility  
 **Solution**: Add metadata header:
+
 ```markdown
 ---
 command: debug-issue
@@ -206,6 +218,7 @@ compatibility: claude-v3.0+
 ```
 
 ### 4. Missing Migration Guide for Settings Changes
+
 **File**: `.claude/settings.local.json`  
 **Impact**: New MCP servers and permissions added without documentation  
 **Solution**: Create migration guide for settings updates
@@ -213,9 +226,11 @@ compatibility: claude-v3.0+
 ## 🟡 MEDIUM Priority (Fix Soon)
 
 ### 1. Verbose Command Documentation
+
 **File**: `.claude/commands/debug-issue.md` (622 lines)  
 **Impact**: Difficult to quickly reference command usage  
 **Solution**: Add a quick reference section at the top:
+
 ```markdown
 ## Quick Reference
 - **Usage**: `/debug-issue [issue_number|ISSUE-ID|URL]`
@@ -225,14 +240,17 @@ compatibility: claude-v3.0+
 ```
 
 ### 2. No Loading State Documentation
+
 **File**: `packages/features/admin/src/components/admin-dashboard.tsx`  
 **Impact**: Component is async but no loading/error states documented  
 **Solution**: Document loading behavior and error boundaries
 
 ### 3. Package.json Exports Incomplete
+
 **File**: `packages/features/admin/package.json`  
 **Impact**: Only allows importing from specific paths  
 **Solution**: Add comprehensive export map:
+
 ```json
 "exports": {
   ".": "./src/index.ts",
@@ -243,11 +261,13 @@ compatibility: claude-v3.0+
 ```
 
 ### 4. Report Files Lack Consistent Structure
+
 **Files**: Reports in `/reports/`  
 **Impact**: Different report types have different structures  
 **Solution**: Create report template in `.claude/templates/report.md`
 
 ### 5. Debug Role Documentation Too Generic
+
 **File**: `.claude/context/roles/debug-engineer.md`  
 **Impact**: Doesn't provide specific debugging strategies for this codebase  
 **Solution**: Add project-specific debugging patterns and tools
@@ -255,7 +275,9 @@ compatibility: claude-v3.0+
 ## 🟢 LOW Priority (Opportunities)
 
 ### 1. Add TypeDoc Configuration
+
 Create comprehensive API documentation:
+
 ```json
 // typedoc.json
 {
@@ -266,18 +288,23 @@ Create comprehensive API documentation:
 ```
 
 ### 2. Create Component Storybook Stories
+
 Document components visually for better developer experience
 
 ### 3. Add Performance Benchmarks
+
 Document expected response times for admin dashboard queries
 
 ### 4. Create Admin Feature Changelog
+
 Track changes to admin functionality over time
 
 ### 5. Add Security Documentation
+
 Document the security model for admin features
 
 ### 6. Create Testing Guide
+
 Document how to test admin features with mock data
 
 ## ✨ Strengths
@@ -291,14 +318,18 @@ Document how to test admin features with mock data
 ## 📈 Proactive Suggestions
 
 ### 1. API Documentation Generator
+
 Consider using TypeDoc or similar to auto-generate API documentation:
+
 ```bash
 pnpm add -D typedoc
 pnpm typedoc --out docs/api packages/features/admin/src/index.ts
 ```
 
 ### 2. README Template
+
 Create a standard README template for all feature packages:
+
 ```markdown
 # Package Name
 ## Overview
@@ -311,13 +342,17 @@ Create a standard README template for all feature packages:
 ```
 
 ### 3. Breaking Changes Process
+
 Implement a breaking changes documentation process:
+
 - Add BREAKING_CHANGES.md to packages
 - Use conventional commits for breaking changes
 - Generate changelogs automatically
 
 ### 4. Developer Portal
+
 Consider creating a developer portal at `/docs` with:
+
 - Interactive API documentation
 - Code examples
 - Architecture diagrams
@@ -326,7 +361,9 @@ Consider creating a developer portal at `/docs` with:
 ## 🔄 Systemic Patterns
 
 ### Documentation Gaps Pattern
+
 Multiple packages lack basic documentation:
+
 - No READMEs in feature packages
 - Missing JSDoc on public APIs
 - No usage examples
@@ -334,7 +371,9 @@ Multiple packages lack basic documentation:
 **Recommendation**: Implement documentation requirements in PR checklist
 
 ### Implicit API Contracts
+
 Many services return untyped or implicitly typed data:
+
 - Dashboard service returns inferred types
 - No exported interfaces for API responses
 - Missing error type definitions
@@ -342,7 +381,9 @@ Many services return untyped or implicitly typed data:
 **Recommendation**: Create API style guide requiring explicit types
 
 ### Version Management
+
 No version tracking for:
+
 - Command documentation
 - API changes
 - Breaking changes
@@ -352,17 +393,20 @@ No version tracking for:
 ## 📝 Action Items
 
 ### Immediate (Before Next Deploy)
+
 1. [ ] Create README for admin package
 2. [ ] Export AdminDashboardData type
 3. [ ] Add JSDoc to AdminGuard component
 
 ### Short Term (This Week)
+
 1. [ ] Add TypeDoc configuration
 2. [ ] Create report template
 3. [ ] Document all public APIs
 4. [ ] Add quick reference to commands
 
 ### Long Term (This Sprint)
+
 1. [ ] Implement documentation generator
 2. [ ] Create developer portal
 3. [ ] Add interactive examples
