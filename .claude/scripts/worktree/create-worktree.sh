@@ -1,6 +1,6 @@
 #!/bin/bash
 # Git Worktree Creation Script
-# Location: .claude/scripts/new-worktree/create-worktree.sh
+# Location: .claude/scripts/worktree/create-worktree.sh
 
 set -e
 
@@ -46,9 +46,17 @@ git fetch origin dev --quiet
 echo "Creating worktree at: $WORKTREE_PATH"
 git worktree add -b "$BRANCH_NAME" "$WORKTREE_PATH" origin/dev
 
-# Open in VS Code (new window)
-echo "Opening worktree in VS Code..."
-code -n "$WORKTREE_PATH"
+# Open in VS Code if available (non-blocking)
+if command -v code &> /dev/null; then
+    echo "Opening worktree in VS Code..."
+    code -n "$WORKTREE_PATH" 2>/dev/null || true
+fi
+
+# Install dependencies
+echo ""
+echo "Installing dependencies with pnpm..."
+cd "$WORKTREE_PATH"
+pnpm install --frozen-lockfile
 
 # Success message
 echo ""
@@ -57,5 +65,4 @@ echo "   Branch: $BRANCH_NAME"
 echo "   Location: $WORKTREE_PATH"
 echo "   Based on: dev"
 echo ""
-echo "To switch to this worktree in terminal:"
-echo "   cd $WORKTREE_PATH"
+echo "WORKTREE_PATH=$WORKTREE_PATH"
