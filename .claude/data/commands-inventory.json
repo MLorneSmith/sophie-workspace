@@ -304,7 +304,7 @@
 				},
 				{
 					"command": "/update-makerkit",
-					"description": "Semi-automated Makerkit upstream synchronization with intelligent conflict handling",
+					"description": "Execute semi-automated Makerkit upstream synchronization with intelligent conflict handling",
 					"category": "infrastructureConfiguration",
 					"optimized": true
 				}
@@ -425,6 +425,6 @@
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
 		"totalCommands": 4,
-		"lastUpdated": "2025-09-08T20:08:23.910Z"
+		"lastUpdated": "2025-09-08T20:19:38.771Z"
 	}
 }

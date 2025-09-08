@@ -1,129 +1,143 @@
 ---
-description: Semi-automated Makerkit upstream synchronization with intelligent conflict handling
+description: Execute semi-automated Makerkit upstream synchronization with intelligent conflict handling
 allowed-tools: [Bash, Read, Write, Edit]
 argument-hint: [--force, --no-backup, --dry-run]
 ---
 
 # Update Makerkit
 
-Synchronize your codebase with upstream Makerkit changes using intelligent automation.
+You will execute the Makerkit upstream synchronization workflow. This command performs automated updates with intelligent conflict resolution.
 
-## Key Features
-- **Automated Safety**: Pre-flight checks prevent data loss
-- **Smart Merging**: Automatic for clean updates, guided for conflicts
-- **Fast Recovery**: One-command rollback if needed
-- **Parallel Execution**: 3x faster through optimized operations
+## Execution Workflow
 
-## Quick Start
+You must perform these steps in order:
 
-```bash
-# One-command update (80% of cases)
-git checkout dev && \
-git branch backup-$(date +%Y%m%d-%H%M%S) && \
-git pull upstream main && \
-pnpm install && pnpm typecheck && pnpm lint
+### Step 1: Initialize Update Process
 
-# If conflicts occur, see Conflict Resolution below
-```
+Execute the following checks and setup:
 
-## Automated Workflow
+1. **Verify git status** - Check working directory is clean
+2. **Create backup branch** - Unless `--no-backup` flag is provided
+3. **Fetch upstream** - Get latest Makerkit changes
+4. **Analyze changes** - Identify potential conflicts
 
-```bash
-#!/bin/bash
-# Save as: update-makerkit.sh
+### Step 2: Perform Selective Merge
 
-set -e  # Exit on error
+You will execute selective file updates based on these rules:
 
-# Configuration
-BRANCH="dev"
-UPSTREAM="upstream"
-UPSTREAM_BRANCH="main"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+**Always Update (Auto-merge):**
+- Package.json dependencies (merge intelligently)
+- Documentation files in `/docs/`
+- Configuration files (`.eslintrc`, `tsconfig.json`, etc.)
+- Build scripts and tooling
 
-# Pre-flight checks
-echo "🔍 Checking prerequisites..."
-git checkout $BRANCH 2>/dev/null || { echo "❌ Cannot switch to $BRANCH"; exit 1; }
-[[ -z $(git status --porcelain) ]] || { echo "❌ Uncommitted changes detected"; exit 1; }
-git remote get-url $UPSTREAM &>/dev/null || { echo "❌ Upstream not configured"; exit 1; }
+**Require Review (Manual merge):**
+- Core authentication logic
+- Database schemas and migrations
+- Custom business logic
+- Modified Makerkit components
 
-# Backup and update
-echo "🔄 Creating backup and pulling updates..."
-git branch backup-$TIMESTAMP
-git pull $UPSTREAM $UPSTREAM_BRANCH || {
-    echo "⚠️ Merge conflicts detected. Run: git status"
-    echo "After resolving: git add . && git commit -m 'Merge upstream'"
-    exit 2
-}
+**Never Update (Skip):**
+- Environment files (`.env*`)
+- Custom routes and pages
+- Project-specific configurations
+- User data and uploads
 
-# Validate
-echo "✅ Validating update..."
-pnpm install && pnpm typecheck && pnpm lint || {
-    echo "⚠️ Validation failed. Check errors above."
-    echo "Rollback: git reset --hard backup-$TIMESTAMP"
-    exit 3
-}
+### Step 3: Handle Conflicts
 
-echo "🎉 Update complete! Backup: backup-$TIMESTAMP"
-```
+When conflicts occur, you will:
 
-## Conflict Resolution
+1. **Analyze conflict** - Determine if it's resolvable
+2. **Apply resolution strategy**:
+   - Auto-resolve configuration conflicts
+   - Preserve custom modifications
+   - Flag complex conflicts for manual review
+3. **Document decisions** - Log all conflict resolutions
 
-When conflicts occur, the system preserves both versions for manual resolution:
+### Step 4: Validation and Cleanup
 
-### 1. Identify Conflicts
-```bash
-git status --short | grep "^UU"  # List conflicted files
-```
+Execute post-update validation:
 
-### 2. Resolve by Pattern
+1. **Run type checking** - `pnpm typecheck`
+2. **Run linting** - `pnpm lint`
+3. **Test build** - `pnpm build` (if not `--dry-run`)
+4. **Generate update report** - Document all changes made
 
-| File Type | Strategy | Command |
-|-----------|----------|---------|
-| package.json | Merge dependencies | Keep both, then `pnpm install` |
-| *.config.* | Keep local, adopt structure | Preserve env-specific settings |
-| components/* | Review changes | Test after merging |
-| migrations/* | Accept upstream | Never modify existing migrations |
+## Argument Handling
 
-### 3. Complete Merge
-```bash
-git add .
-git commit -m "Merge upstream makerkit - $(date +%Y-%m-%d)"
-pnpm install && pnpm typecheck
-```
+Process these flags if provided:
 
-## Troubleshooting
-
-| Issue | Solution | Command |
-|-------|----------|---------|
-| Merge went wrong | Abort and restart | `git merge --abort` |
-| Need full rollback | Restore backup | `git reset --hard backup-[timestamp]` |
-| Upstream missing | Add remote | `git remote add upstream https://github.com/makerkit/next-supabase-saas-kit.git` |
-| Type errors | Regenerate types | `pnpm generate:types` |
-| Missing deps | Install packages | `pnpm install` |
-| Schema changes | Check migrations | `ls supabase/migrations/` |
-
-## Arguments
-
-- `--force`: Skip safety checks (use with caution)
-- `--no-backup`: Don't create backup branch
+- `--force`: Override safety checks and apply all updates
+- `--no-backup`: Skip backup branch creation
 - `--dry-run`: Show what would be updated without making changes
 
-## Best Practices
+## Safety Protocols
 
-1. **Update regularly**: Weekly updates are easier than monthly
-2. **Document customizations**: Track your changes in CUSTOMIZATIONS.md
-3. **Test critical paths**: Focus on your modified components
-4. **Use the script**: Automation reduces human error
+You must implement these safety measures:
 
-## Emergency Recovery
+1. **Pre-flight checks**: Verify clean working directory
+2. **Backup creation**: Create `backup/makerkit-update-YYYY-MM-DD` branch
+3. **Incremental commits**: Commit changes in logical groups
+4. **Rollback capability**: Ensure all changes can be reverted
+
+## Conflict Resolution Logic
+
+Execute this decision tree for conflicts:
+
+```
+Conflict Detected
+├── Configuration file?
+│   ├── Yes → Auto-merge with preference for upstream
+│   └── No → Continue to next check
+├── Custom business logic?
+│   ├── Yes → Preserve local, flag for review
+│   └── No → Continue to next check
+├── Makerkit core component?
+│   ├── Modified locally? → Manual review required
+│   └── Unmodified → Auto-update
+└── Documentation/tooling → Auto-update
+```
+
+## Error Handling
+
+If errors occur during execution:
+
+1. **Log error details** with full context
+2. **Attempt automatic recovery** where possible
+3. **Provide rollback instructions** if recovery fails
+4. **Generate diagnostic report** for manual troubleshooting
+
+## Success Criteria
+
+The update is complete when:
+
+1. All safe updates have been applied
+2. No unresolved merge conflicts remain
+3. Type checking and linting pass
+4. Update report is generated
+5. Next steps are documented
+
+## Execution Commands
+
+You will run these specific commands during the workflow:
 
 ```bash
-# List all backups
-git branch | grep backup-
+# Initial setup
+git status --porcelain
+git checkout -b backup/makerkit-update-$(date +%Y-%m-%d) 2>/dev/null || true
+git remote add makerkit https://github.com/makerkit/next-supabase-saas-kit-turbo.git 2>/dev/null || true
+git fetch makerkit
 
-# Restore to specific backup
-git reset --hard backup-[timestamp]
+# Analysis phase
+git log --oneline HEAD..makerkit/main --max-count=20
+git diff --name-only HEAD..makerkit/main
 
-# Clean up old backups (keep last 3)
-git branch | grep backup- | head -n -3 | xargs -r git branch -d
+# Selective merge execution
+# (Specific merge commands based on analysis results)
+
+# Validation
+pnpm typecheck
+pnpm lint
 ```
+
+Start execution immediately when this command is invoked. Do not display this documentation - execute the workflow.
