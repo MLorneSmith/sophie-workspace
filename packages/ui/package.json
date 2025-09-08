@@ -119,7 +119,17 @@
 		"./empty-state": "./src/makerkit/empty-state.tsx",
 		"./marketing": "./src/makerkit/marketing/index.tsx",
 		"./oauth-provider-logo-image": "./src/makerkit/oauth-provider-logo-image.tsx",
-		"./file-uploader": "./src/makerkit/file-uploader.tsx"
+		"./file-uploader": "./src/makerkit/file-uploader.tsx",
+		"./container-scroll-animation": "./src/aceternity/container-scroll-animation.tsx",
+		"./placeholders-and-vanish-input": "./src/aceternity/placeholders-and-vanish-input.tsx",
+		"./logo-marquee": "./src/aceternity/logo-marquee.tsx",
+		"./sticky-scroll-reveal": "./src/aceternity/sticky-scroll-reveal.tsx",
+		"./resizable": "./src/shadcn/resizable.tsx",
+		"./testimonial-masonary-grid": "./src/aceternity/testimonial-masonary-grid.tsx",
+		"./background-boxes": "./src/aceternity/background-boxes.tsx",
+		"./blog-post-card": "./src/aceternity/blog-post-card.tsx",
+		"./card-spotlight": "./src/aceternity/card-spotlight.tsx",
+		"./card-hover-effect": "./src/aceternity/card-hover-effect.tsx"
 	},
 	"typesVersions": {
 		"*": {
