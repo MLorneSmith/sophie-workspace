@@ -1,19 +1,19 @@
 # Resolution Report - Issue #306
 
 **Issue ID**: ISSUE-306
-**Title**: Update existing-commands-inventory.md after build-feature removal
+**Title**: Update commands-inventory.json after build-feature removal
 **Resolved Date**: 2025-09-05T22:35:00Z
 **Resolver**: Claude Debug Assistant
 
 ## Root Cause
 
-The documentation file `.claude/docs/existing-commands-inventory.md` had become outdated following the CCPM
+The documentation file `.claude/data/commands-inventory.json` had become outdated following the CCPM
 integration work. The file still referenced the deprecated `/build-feature` command that had been removed and
 didn't include the new `/feature/*` command suite that replaced it.
 
 ## Solution Implemented
 
-Updated the existing-commands-inventory.md file with:
+Updated the commands-inventory.json file with:
 
 1. Removed all references to the deprecated `/build-feature` command
 2. Added complete documentation for all 8 new `/feature/*` commands
@@ -25,7 +25,7 @@ Updated the existing-commands-inventory.md file with:
 
 ## Files Modified
 
-- `.claude/docs/existing-commands-inventory.md` - Complete documentation update
+- `.claude/data/commands-inventory.json` - Complete documentation update
   - Added version header and timestamp
   - Removed deprecated command references
   - Added new feature command suite documentation

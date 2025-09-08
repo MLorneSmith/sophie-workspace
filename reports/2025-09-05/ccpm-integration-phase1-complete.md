@@ -86,7 +86,7 @@ All new commands follow the `/feature:*` namespace to avoid conflicts with exist
 ├── rules/
 │   └── agent-coordination.md  # Imported from CCPM
 └── docs/
-    └── existing-commands-inventory.md
+    └── commands-inventory.json
 ```
 
 ## Integration Approach
