@@ -36,7 +36,7 @@ echo "════════════════════════�
 # Check for custom test command in config
 CUSTOM_COMMAND=""
 if [ -f "$CONFIG_FILE" ]; then
-  CUSTOM_COMMAND=$(jq -r '.hooks["test-project"].command // ""' "$CONFIG_FILE" 2>/dev/null || echo "")
+  CUSTOM_COMMAND=$(jq -r '.["test-project"].command // ""' "$CONFIG_FILE" 2>/dev/null || echo "")
 fi
 
 # Determine test command
@@ -67,6 +67,7 @@ echo "────────────────────────�
 TEST_OUTPUT_FILE=$(mktemp)
 TEST_EXIT_CODE=0
 
+# Run test command (preserve pnpm environment variables)
 if $TIMEOUT_CMD $TEST_COMMAND > "$TEST_OUTPUT_FILE" 2>&1; then
   TEST_EXIT_CODE=0
 else

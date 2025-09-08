@@ -505,6 +505,21 @@
 					"description": "XML mapping of tools to their specific use cases and contexts.",
 					"lastUpdated": "2025-09-03",
 					"topics": ["Tool Relationships", "Use Case Mapping", "Tool Selection"]
+				},
+				{
+					"path": "tools/vitest-unit-testing.md",
+					"name": "Vitest Unit Testing Context",
+					"description": "Comprehensive guidance for writing Vitest unit tests including project infrastructure, patterns, helpers, and mocking strategies.",
+					"lastUpdated": "2025-09-08",
+					"topics": [
+						"Vitest",
+						"Unit Testing",
+						"Mocking",
+						"Test Helpers",
+						"Test Patterns",
+						"Coverage",
+						"Testing Infrastructure"
+					]
 				}
 			]
 		}

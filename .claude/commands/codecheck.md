@@ -1,253 +1,57 @@
 ---
 name: codecheck
-description: Comprehensive code quality check using direct script execution
+description: Execute comprehensive code quality checks (TypeScript, linting, formatting)
 usage: /codecheck [options]
 options:
-  - fix: Apply automatic fixes (default true)
+  - fix: Apply automatic fixes (default: true)
   - quick: Skip time-consuming checks
   - verbose: Show detailed output
 ---
 
-# Code Check Command
+# Execute Code Quality Checks
 
-Performs comprehensive code quality checks using direct script execution for TypeScript, linting, and formatting.
+**IMMEDIATELY execute the code quality check script - do not document, do not explain, just run it.**
 
-## Command Structure
+## Primary Action
 
-```yaml
-command: /codecheck
-options:
-  fix: true      # Apply automatic fixes
-  quick: false   # Skip comprehensive checks
-  verbose: false # Show detailed output
-```
+Run this command immediately when `/codecheck` is invoked:
 
-## Execution Flow
-
-### 1. Initialize Check
-```yaml
-initialization:
-  task: "Setup code check environment"
-  actions:
-    - "Verify working directory"
-    - "Check for uncommitted changes"
-    - "Initialize status tracking"
-  status_file: "/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
-```
-
-### 2. Execute Direct Check Script
-```yaml
-execution:
-  method: "direct_script"
-  script: ".claude/scripts/codecheck-direct.sh"
-  note: "Direct script execution ensures actual commands are run"
-```
-
-### 3. TypeScript Phase (Direct Execution)
-```yaml
-typecheck_phase:
-  method: "direct_bash_command"
-  commands:
-    - "pnpm typecheck:raw --force"
-  fixes:
-    - "Add missing type imports"
-    - "Fix nullable property access"
-    - "Add return type annotations"
-  status_update: true
-  cache_bypass: true
-  important: "Must run actual command, not simulation"
-```
-
-### 4. Linting Phase
-```yaml
-lint_phase:
-  method: "direct_script"
-  commands:
-    - "pnpm lint"
-    - "pnpm lint:yaml"
-    - "pnpm lint:md"
-  fixes:
-    - "Remove unused imports"
-    - "Fix accessibility issues"
-    - "Correct YAML indentation"
-    - "Fix Markdown formatting"
-  auto_fix_command: "pnpm lint:fix"
-  cache_bypass: true
-```
-
-### 5. Formatting Phase
-```yaml
-format_phase:
-  method: "direct_script"
-  commands:
-    - "pnpm format"
-  auto_fix_command: "pnpm format:fix"
-  validates:
-    - "Indentation consistency"
-    - "Line length compliance"
-    - "Quote style uniformity"
-  cache_bypass: true
-```
-
-### 6. Status Reporting
-```yaml
-status_reporting:
-  update_file: "/tmp/.claude_codecheck_status_"
-  format: "status|timestamp|errors|warnings|type_errors"
-  statusline_integration: true
-  display_format:
-    success: "🟢 codecheck"
-    running: "⟳ codecheck"
-    failed: "🔴 codecheck:errors"
-```
-
-## Execution Method
-
-### Direct Script Execution
 ```bash
-# Run the direct execution script
 .claude/scripts/codecheck-direct.sh
 ```
 
-This script handles all phases of the code check process:
-1. TypeScript checking with cache bypass
-2. Parallel linting and formatting checks
-3. Automatic fix application where safe
-4. Status file updates for statusline integration
-5. Comprehensive result reporting
+## What This Does
 
-## Output Format
+The script will automatically:
 
-### Success Output
-```yaml
-codecheck_results:
-  status: "success"
-  timestamp: "2024-01-15T10:30:00Z"
-  duration: "45s"
-  
-  summary:
-    total_files_checked: 150
-    total_issues_found: 25
-    total_issues_fixed: 24
-    remaining_issues: 1
-  
-  details:
-    typecheck:
-      status: "success"
-      errors_found: 5
-      errors_fixed: 5
-      execution_time: "12s"
-    
-    lint:
-      status: "success"
-      errors_found: 12
-      errors_fixed: 11
-      warnings_found: 8
-      warnings_fixed: 7
-      execution_time: "18s"
-    
-    format:
-      status: "success"
-      files_formatted: 8
-      execution_time: "8s"
-  
-  files_modified:
-    - path: "/home/msmith/projects/2025slideheroes/src/components/Button.tsx"
-      changes: ["Added type imports", "Fixed formatting"]
-    - path: "/home/msmith/projects/2025slideheroes/src/utils/helpers.ts"
-      changes: ["Removed unused imports"]
-  
-  next_steps:
-    - "All checks passed - ready to commit"
-    - "Run tests to verify functionality"
-```
+1. **TypeScript Check** - Run `pnpm typecheck:raw --force` (cache bypassed)
+2. **Lint Check** - Run `pnpm lint` and auto-fix with `pnpm lint:fix`  
+3. **Format Check** - Run `pnpm format:check` and apply `pnpm biome format --write .`
+4. **Status Updates** - Update `/tmp/.claude_codecheck_status_*` for statusline integration
+5. **Results Summary** - Show pass/fail status with error counts
 
-### Failure Output
-```yaml
-codecheck_results:
-  status: "failed"
-  timestamp: "2024-01-15T10:30:00Z"
-  
-  summary:
-    total_issues_found: 25
-    total_issues_fixed: 20
-    remaining_issues: 5
-    blocking_errors: 2
-  
-  remaining_errors:
-    - type: "typecheck"
-      file: "/home/msmith/projects/2025slideheroes/src/api/client.ts"
-      line: 45
-      error: "Type 'undefined' is not assignable to type 'string'"
-      severity: "error"
-    
-    - type: "lint"
-      file: "/home/msmith/projects/2025slideheroes/src/utils/complex.ts"
-      error: "Complexity too high - requires refactoring"
-      severity: "warning"
-  
-  commands_to_run:
-    - "Review and fix remaining TypeScript errors"
-    - "Run 'pnpm typecheck' to verify fixes"
-    - "Run '/codecheck' again after fixes"
-```
+## Execution Instructions
+
+**When user types `/codecheck`:**
+
+1. **Immediately run**: `bash .claude/scripts/codecheck-direct.sh`
+2. **Show script output** as it executes
+3. **Report final status** from script summary
+4. **If errors found**: List them clearly from script output
+5. **Suggest next steps** only if script fails
 
 ## Error Handling
 
-### Status File Updates
-```bash
-# Ensure status file is always updated
-trap 'echo "failed|$(date +%s)|1|0|0" > "$CODECHECK_STATUS_FILE"' ERR
+- Script handles all error recovery automatically
+- Status file always updated (success/failed/running)
+- Auto-fix attempts included in script
+- Parallel execution for performance
 
-# Update on each phase
-echo "running|$(date +%s)|0|0|0" > "$CODECHECK_STATUS_FILE"
-```
+## Quick Reference
 
-### Recovery from Failures
-```yaml
-error_recovery:
-  on_typecheck_failure:
-    action: "Stop and report"
-    reason: "TypeScript errors block compilation"
-  
-  on_lint_failure:
-    action: "Continue with warnings"
-    reason: "Lint issues don't block functionality"
-  
-  on_format_failure:
-    action: "Apply fixes and continue"
-    reason: "Format issues are auto-fixable"
-```
+- **Success**: All checks pass, ready to commit
+- **Failed**: Review errors shown in script output
+- **Status File**: `/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}`
+- **Logs**: Saved to `/tmp/codecheck_${TIMESTAMP}/`
 
-## Integration Points
-
-### CI/CD Integration
-```yaml
-ci_integration:
-  pre_commit: true
-  pre_push: false
-  github_actions: true
-  status_check: "required"
-```
-
-### Statusline Integration
-```yaml
-statusline:
-  component: "codecheck"
-  status_file: "/tmp/.claude_codecheck_status_"
-  update_frequency: "real-time"
-  display_rules:
-    - "Show error count when failed"
-    - "Show time since last check"
-    - "Use color coding for status"
-```
-
-## Notes
-
-- Uses direct script execution for reliable performance
-- Updates statusline in real-time during execution
-- Preserves uncommitted changes
-- **Uses typecheck:raw --force to bypass Turbo cache for typecheck accuracy**
-- **Ensures consistency between local and CI environments**
-- Integrates with existing build pipeline
-- Prioritizes accuracy over speed for pre-deployment validation
+**Critical**: This is an execution command, not documentation. Run the script immediately when invoked.
