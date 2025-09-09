@@ -526,11 +526,18 @@ class E2ETestRunner {
 
 			if (group.shardCommand) {
 				// Use the shard command defined in package.json
+				// Add --reporter=dot for CI mode to prevent interactive HTML report prompt on failures
 				command = "pnpm";
-				args = ["--filter", "web-e2e", group.shardCommand];
+				args = [
+					"--filter",
+					"web-e2e",
+					group.shardCommand,
+					"--",
+					"--reporter=dot",
+				];
 				cwd = process.cwd();
 				log(
-					`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand}`,
+					`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand} -- --reporter=dot`,
 				);
 			} else {
 				// Fallback to direct playwright execution (shouldn't happen with new configuration)
@@ -539,7 +546,7 @@ class E2ETestRunner {
 				args = [
 					"playwright",
 					"test",
-					"--reporter=list",
+					"--reporter=dot", // Use dot reporter for CI mode
 					"--workers=1",
 					...group.files,
 				];
@@ -558,6 +565,9 @@ class E2ETestRunner {
 					NODE_ENV: "test",
 					PLAYWRIGHT_BASE_URL: "http://localhost:3000",
 					TEST_SHARD_MODE: "true",
+					CI: "1", // Force CI mode to prevent interactive behaviors (official Playwright env var)
+					PLAYWRIGHT_HTML_OPEN: "never", // Explicitly prevent HTML report from opening
+					FORCE_COLOR: "0", // Disable colored output that might cause issues
 				},
 			});
 
