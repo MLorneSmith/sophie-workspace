@@ -41,8 +41,27 @@ if [ -f ".trufflehogexclude" ]; then
     EXCLUDE_ARGS="--exclude-paths .trufflehogexclude"
 fi
 
-trufflehog git file://. \
-    --since-commit HEAD \
+# For pre-commit, only scan staged files
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+    echo -e "${GREEN}✅ No staged files to scan.${NC}"
+    exit 0
+fi
+
+# Create a temporary file with staged content
+TEMP_DIR=$(mktemp -d)
+trap "rm -rf $TEMP_DIR" EXIT
+
+# Copy staged files to temp directory
+for file in $STAGED_FILES; do
+    mkdir -p "$TEMP_DIR/$(dirname "$file")"
+    git show ":$file" > "$TEMP_DIR/$file" 2>/dev/null || true
+done
+
+# Scan only the staged files
+trufflehog filesystem "$TEMP_DIR" \
     --results=verified,unknown \
     --fail \
     --no-update \
