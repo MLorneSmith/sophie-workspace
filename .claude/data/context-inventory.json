@@ -421,6 +421,22 @@
 						"Task Decomposition",
 						"System Design"
 					]
+				},
+				{
+					"path": "systems/mcp-servers.md",
+					"name": "Model Context Protocol (MCP) Servers Architecture",
+					"description": "Comprehensive guide to SlideHeroes MCP server implementation including containerized architecture, security patterns, service orchestration, and integration with Claude Code",
+					"lastUpdated": "2025-09-09",
+					"topics": [
+						"MCP Architecture",
+						"Model Context Protocol",
+						"AI Integration",
+						"Containerization",
+						"Microservices",
+						"Claude Integration",
+						"Security Patterns",
+						"Service Orchestration"
+					]
 				}
 			]
 		},
