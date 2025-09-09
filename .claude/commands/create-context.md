@@ -187,17 +187,22 @@ Determine subdirectory based on category:
 ## 5. File Operations
 
 <file_handling>
-1. **Generate Metadata**:
+1. **Get Current Date**:
+   - Extract today's date from environment (check <env> tag)
+   - Format as YYYY-MM-DD for consistency
+   - Use this date for created/last_updated fields
+
+2. **Generate Metadata**:
    - Create kebab-case ID from title
    - Determine appropriate category and subdirectory
    - Generate relevant tags from content
 
-2. **Create/Modify File**:
+3. **Create/Modify File**:
    - New: Write to `.claude/context/${subdirectory}/${id}.md`
    - Modify: Update existing file preserving structure
    - **ALWAYS**: Use Write tool to save the file
 
-3. **Path Creation**:
+4. **Path Creation**:
    ```bash
    # Ensure directory exists
    mkdir -p .claude/context/${subdirectory}
@@ -207,32 +212,32 @@ Determine subdirectory based on category:
 ## 6. Inventory Management
 
 <inventory>
-Create or update context-inventory.json:
+Update the existing context inventory at `.claude/data/context-inventory.json`:
 
-```javascript
-// Structure for context-inventory.json
-{
-  "version": "1.0.0",
-  "name": "Context Inventory", 
-  "description": "Specialized context files for Claude Code",
-  "lastUpdated": "${ISO_DATE}",
-  "totalContexts": ${count},
-  "contexts": {
-    "${id}": {
-      "id": "${id}",
-      "title": "${title}",
-      "category": "${category}",
-      "path": ".claude/context/${subdirectory}/${id}.md",
-      "tags": ["${tags}"],
-      "dependencies": ["${deps}"],
-      "created": "${date}",
-      "lastUpdated": "${date}"
-    }
-  }
-}
-```
+1. **Read Existing Inventory**:
+   ```bash
+   Read: file_path=".claude/data/context-inventory.json"
+   ```
 
-Update inventory after file creation/modification.
+2. **Update Structure**:
+   - Add new context entry to appropriate category under `categories.${category}.documents`
+   - Update the `lastUpdated` field at root level
+   - Preserve all existing entries
+
+3. **Document Entry Format**:
+   ```javascript
+   {
+     "path": "${subdirectory}/${id}.md",
+     "name": "${title}",
+     "description": "${description}",
+     "lastUpdated": "${YYYY-MM-DD}",
+     "topics": ["${topic1}", "${topic2}", "..."]
+   }
+   ```
+
+4. **Save Updated Inventory**:
+   - Use Edit tool to update the file
+   - Ensure proper JSON formatting is maintained
 </inventory>
 
 ## Modification Protocol
@@ -270,18 +275,20 @@ For existing file modifications:
 <workflow_summary>
 **Process Flow:**
 1. Parse parameters (--new/--modify + topic) 
-2. Deep research using research-agent
-3. Parallel repository analysis (Grep/Glob)
-4. Construct comprehensive context file
-5. Write to appropriate subdirectory
-6. Update context-inventory.json
+2. Get current date from environment for timestamps
+3. Deep research using research-agent
+4. Parallel repository analysis (Grep/Glob)
+5. Construct comprehensive context file with correct date
+6. Write to appropriate subdirectory
+7. Update existing inventory at .claude/data/context-inventory.json
 
 **Key Principles:**
 - Research goes deep (comprehensive analysis)
 - Repository integration (real examples)
 - Structured organization (consistent format)
 - Cross-referencing (relationship mapping)
-- Automated tracking (inventory management)
+- Automated tracking (inventory management at .claude/data/)
+- Accurate timestamps (from environment date)
 </workflow_summary>
 
 <performance_notes>
