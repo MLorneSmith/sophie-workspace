@@ -66,11 +66,11 @@ const CONFIG = {
 	// Test execution settings
 	execution: {
 		// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
+		// IMPORTANT: Set to 1 to disable parallel E2E test execution
+		// The local infrastructure cannot handle parallel E2E tests
 		maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS
 			? parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS)
-			: os.cpus().length > 4
-				? 4
-				: 2, // Limit to 4 shards max, or 2 for smaller machines
+			: 1, // Force sequential execution - parallel E2E tests cause system instability
 
 		// Test retry settings
 		maxTestRetries: 2,

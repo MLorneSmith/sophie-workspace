@@ -99,10 +99,10 @@ class TestReporter {
 		if (unit.total > 0) {
 			console.log("\n📦 UNIT TESTS");
 			console.log("─".repeat(40));
-			console.log(`Total:          ${unit.total}`);
-			console.log(`Passed:         ${unit.passed}`);
-			console.log(`Failed:         ${unit.failed}`);
-			console.log(`Skipped:        ${unit.skipped}`);
+			console.log(`Total Tests:    ${unit.total}`);
+			console.log(`✅ Passed:      ${unit.passed}`);
+			console.log(`❌ Failed:      ${unit.failed}`);
+			console.log(`⏭️  Skipped:     ${unit.skipped}`);
 			console.log(`Duration:       ${unit.duration || "N/A"}`);
 
 			if (unit.failedTests && unit.failedTests.length > 0) {
@@ -117,19 +117,43 @@ class TestReporter {
 		if (e2e.total > 0) {
 			console.log("\n🌐 E2E TESTS");
 			console.log("─".repeat(40));
-			console.log(`Total:          ${e2e.total}`);
-			console.log(`Passed:         ${e2e.passed}`);
-			console.log(`Failed:         ${e2e.failed}`);
-			console.log(`Skipped:        ${e2e.skipped}`);
+			console.log(`Total Tests:    ${e2e.total}`);
+			console.log(`✅ Passed:      ${e2e.passed}`);
+			console.log(`❌ Failed:      ${e2e.failed}`);
+			if (e2e.intentionalFailures > 0) {
+				console.log(
+					`🎯 Deliberate:   ${e2e.intentionalFailures} (intentional failures)`,
+				);
+			}
+			console.log(`⏭️  Skipped:     ${e2e.skipped}`);
+			if (e2e.integrationTests > 0) {
+				console.log(`🔗 Integration:  ${e2e.integrationTests} tests`);
+			}
 			console.log(`Duration:       ${e2e.duration || "N/A"}`);
+
+			// Show actual vs expected failures
+			const actualFailures = e2e.failed;
+			const expectedFailures = e2e.intentionalFailures || 0;
+			if (actualFailures > 0 || expectedFailures > 0) {
+				console.log("\n📊 Failure Analysis:");
+				console.log(`  Expected failures: ${expectedFailures}`);
+				console.log(`  Actual failures:   ${actualFailures}`);
+				console.log(
+					`  Unexpected failures: ${Math.max(0, actualFailures - expectedFailures)}`,
+				);
+			}
 
 			// Shard details
 			if (Object.keys(e2e.shards).length > 0) {
-				console.log("\n📈 Shard Results:");
+				console.log("\n📈 Test Group Results:");
 				for (const [shardId, shard] of Object.entries(e2e.shards)) {
-					console.log(
-						`  Shard ${shardId}: ${shard.passed}/${shard.total} passed`,
-					);
+					const groupName = shard.groupName || `Group ${shardId}`;
+					console.log(`  ${groupName}: ${shard.passed}/${shard.total} passed`);
+					if (shard.intentionalFailures > 0) {
+						console.log(
+							`    └─ ${shard.intentionalFailures} deliberate failures`,
+						);
+					}
 				}
 			}
 		}

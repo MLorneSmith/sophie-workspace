@@ -70,7 +70,7 @@ class UnitTestRunner {
 
 			const proc = spawn(cmd, args, {
 				cwd: this.config.paths.projectRoot,
-				stdio: ["inherit", "pipe", "pipe"],
+				stdio: ["ignore", "pipe", "pipe"],
 				shell: true,
 				env: {
 					...process.env,
@@ -78,6 +78,14 @@ class UnitTestRunner {
 					TURBO_FORCE: "true", // Always bypass cache for comprehensive testing
 				},
 			});
+
+			// Set a timeout to prevent infinite hanging
+			const timeout = setTimeout(() => {
+				logError(
+					`Unit tests timed out after ${this.config.timeouts.unitTests / 1000}s`,
+				);
+				proc.kill("SIGKILL");
+			}, this.config.timeouts.unitTests);
 
 			// Handle stdout
 			proc.stdout.on("data", (data) => {
@@ -104,6 +112,7 @@ class UnitTestRunner {
 
 			// Handle process exit
 			proc.on("close", async (code) => {
+				clearTimeout(timeout); // Clear the timeout
 				const duration = Math.round((Date.now() - startTime) / 1000);
 
 				// Parse test results from output

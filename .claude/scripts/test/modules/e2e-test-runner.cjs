@@ -47,55 +47,202 @@ class E2ETestRunner {
 	}
 
 	/**
-	 * Load test groups configuration
+	 * Dynamically discover all E2E test files
+	 */
+	discoverTestFiles() {
+		try {
+			const { execSync } = require("node:child_process");
+			const result = execSync(
+				`find apps/e2e/tests -name "*.spec.ts" -o -name "*.test.ts" 2>/dev/null | sort`,
+				{ encoding: "utf8" },
+			);
+			const testFiles = result
+				.split("\n")
+				.filter(Boolean)
+				.map((file) => file.replace("apps/e2e/", "")); // Remove base path for consistency
+
+			log(`📂 Discovered ${testFiles.length} test files`);
+			return testFiles;
+		} catch (error) {
+			logError(`Failed to discover test files: ${error.message}`);
+			return [];
+		}
+	}
+
+	/**
+	 * Group test files by directory for organized execution
+	 */
+	groupTestFiles(testFiles) {
+		const groups = new Map();
+
+		// Group files by their parent directory
+		for (const file of testFiles) {
+			const parts = file.split("/");
+			const category = parts.length > 2 ? parts[1] : "root";
+
+			if (!groups.has(category)) {
+				groups.set(category, []);
+			}
+			groups.get(category).push(file);
+		}
+
+		// Convert to test group format
+		const testGroups = [];
+		let id = 1;
+
+		// Priority order for test groups (smoke tests first, etc.)
+		const priorityOrder = [
+			"smoke",
+			"healthcheck",
+			"authentication",
+			"account",
+			"team-accounts",
+			"admin",
+			"invitations",
+			"team-billing",
+			"user-billing",
+			"accessibility",
+			"test-configuration-verification",
+		];
+
+		// Add groups in priority order
+		for (const category of priorityOrder) {
+			if (groups.has(category)) {
+				testGroups.push({
+					id: id++,
+					name: this.formatGroupName(category),
+					files: groups.get(category),
+					expectedTests: null, // Will be determined dynamically
+				});
+				groups.delete(category);
+			}
+		}
+
+		// Add any remaining groups
+		for (const [category, files] of groups) {
+			testGroups.push({
+				id: id++,
+				name: this.formatGroupName(category),
+				files: files,
+				expectedTests: null,
+			});
+		}
+
+		// Handle special case for single files in root
+		const rootIndex = testGroups.findIndex((g) => g.name === "Root");
+		if (rootIndex !== -1) {
+			const rootGroup = testGroups[rootIndex];
+			// Split root files into individual groups for better organization
+			testGroups.splice(rootIndex, 1);
+			for (const file of rootGroup.files) {
+				const fileName = path.basename(file, ".spec.ts").replace(/-/g, " ");
+				testGroups.push({
+					id: id++,
+					name: this.formatGroupName(fileName),
+					files: [file],
+					expectedTests: null,
+				});
+			}
+		}
+
+		return testGroups;
+	}
+
+	/**
+	 * Format group name for display
+	 */
+	formatGroupName(name) {
+		return name
+			.split("-")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	}
+
+	/**
+	 * Load test groups configuration based on package.json shards
 	 */
 	loadTestGroups() {
-		return [
+		// Use the predefined shards from package.json
+		// These are carefully organized and tested configurations
+		const shardGroups = [
 			{
 				id: 1,
 				name: "Smoke Tests",
+				shardCommand: "test:shard1",
 				files: ["tests/smoke/smoke.spec.ts"],
-				expectedTests: 10,
+				expectedTests: 9,
 			},
 			{
 				id: 2,
 				name: "Authentication",
+				shardCommand: "test:shard2",
 				files: [
-					"tests/authentication/auth-simple.spec.ts",
 					"tests/authentication/auth.spec.ts",
 					"tests/authentication/password-reset.spec.ts",
 				],
-				expectedTests: 12,
+				expectedTests: 3, // 1 + 2
 			},
 			{
 				id: 3,
-				name: "Account Management",
+				name: "Accounts",
+				shardCommand: "test:shard3",
 				files: [
-					"tests/account/account-simple.spec.ts",
 					"tests/account/account.spec.ts",
 					"tests/team-accounts/team-accounts.spec.ts",
+					"tests/team-accounts/team-invitation-mfa.spec.ts",
 				],
-				expectedTests: 17,
+				expectedTests: 15, // 7 + 7 + 1
 			},
 			{
 				id: 4,
 				name: "Admin & Invitations",
+				shardCommand: "test:shard4",
 				files: [
 					"tests/admin/admin.spec.ts",
-					"tests/invitations/team-invitations.spec.ts",
+					"tests/invitations/invitations.spec.ts",
 				],
-				expectedTests: 6,
+				expectedTests: 14, // 10 + 4
 			},
 			{
 				id: 5,
-				name: "Teams & Billing",
+				name: "Billing",
+				shardCommand: "test:shard5",
 				files: [
-					"tests/team/team.spec.ts",
-					"tests/billing/team-billing.spec.ts",
+					"tests/user-billing/user-billing.spec.ts",
+					"tests/team-billing/team-billing.spec.ts",
 				],
-				expectedTests: 3,
+				expectedTests: 2, // 1 + 1
+			},
+			{
+				id: 6,
+				name: "Accessibility",
+				shardCommand: "test:shard6",
+				files: [
+					"tests/accessibility/accessibility-hybrid.spec.ts",
+					"tests/accessibility/accessibility-hybrid-simple.spec.ts",
+				],
+				expectedTests: 39, // 28 + 11
+			},
+			{
+				id: 7,
+				name: "Config & Health",
+				shardCommand: "test:shard7",
+				files: [
+					"tests/test-configuration-verification.spec.ts",
+					"tests/healthcheck.spec.ts",
+				],
+				expectedTests: 12, // 11 + 1
 			},
 		];
+
+		log(`📋 Loaded ${shardGroups.length} test shards with ~94 expected tests`);
+		for (const group of shardGroups) {
+			log(
+				`  • Shard ${group.id} (${group.name}): ${group.expectedTests || "?"} tests`,
+			);
+		}
+
+		return shardGroups;
 	}
 
 	/**
@@ -162,26 +309,27 @@ class E2ETestRunner {
 			return { success: true };
 		}
 
-		// Start web server
-		log("🌐 Starting web server on port 3001...");
+		// Start web server on port 3000 (matching Playwright's expectation)
+		log("🌐 Starting web server on port 3000...");
 		this.servers.web = spawn("pnpm", ["--filter", "web", "dev:test"], {
 			cwd: process.cwd(),
-			stdio: ["pipe", "pipe", "pipe"],
+			stdio: ["ignore", "pipe", "pipe"], // Use "ignore" for stdin to prevent hanging
 			shell: true,
 			env: {
 				...process.env,
-				PORT: "3001",
-				NEXT_PUBLIC_APP_URL: "http://localhost:3001",
+				PORT: "3000",
+				NODE_ENV: "test",
+				NEXT_PUBLIC_APP_URL: "http://localhost:3000",
 			},
 		});
 
 		// Wait for web server to be ready
-		await this.waiter.waitForHttp("http://localhost:3001", {
+		await this.waiter.waitForHttp("http://localhost:3000", {
 			timeout: 60000,
 			name: "web server startup",
 		});
 
-		log("✅ Web server ready on port 3001");
+		log("✅ Web server ready on port 3000");
 		return { success: true };
 	}
 
@@ -191,7 +339,7 @@ class E2ETestRunner {
 	async checkServersReady() {
 		try {
 			const { stdout: webCheck } = await execAsync(
-				'curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 2>/dev/null || echo "000"',
+				'curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || echo "000"',
 			);
 
 			return webCheck.trim() === "200";
@@ -210,6 +358,8 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			intentionalFailures: 0,
+			integrationTests: 0,
 			shards: {},
 		};
 
@@ -349,6 +499,8 @@ class E2ETestRunner {
 		results.passed += shardResults.passed;
 		results.failed += shardResults.failed;
 		results.skipped += shardResults.skipped;
+		results.intentionalFailures += shardResults.intentionalFailures || 0;
+		results.integrationTests += shardResults.integrationTests || 0;
 		results.shards[shardId] = shardResults;
 
 		log(
@@ -367,22 +519,47 @@ class E2ETestRunner {
 
 		return new Promise((resolve) => {
 			let output = "";
-			const testFiles = group.files.join(" ");
 
-			const proc = spawn(
-				"pnpm",
-				["--filter", "web-e2e", "playwright", "test", ...group.files],
-				{
-					cwd: process.cwd(),
-					stdio: ["pipe", "pipe", "pipe"],
-					shell: true,
-					env: {
-						...process.env,
-						PLAYWRIGHT_WORKERS: "1", // Run tests sequentially within group
-						BASE_URL: "http://localhost:3001",
-					},
+			// Use the predefined shard command from package.json if available
+			// This ensures we run the exact test configuration that's been tested
+			let command, args, cwd;
+
+			if (group.shardCommand) {
+				// Use the shard command defined in package.json
+				command = "pnpm";
+				args = ["--filter", "web-e2e", group.shardCommand];
+				cwd = process.cwd();
+				log(
+					`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand}`,
+				);
+			} else {
+				// Fallback to direct playwright execution (shouldn't happen with new configuration)
+				log(`${shardPrefix}⚠️ Using fallback execution for ${group.name}`);
+				command = "npx";
+				args = [
+					"playwright",
+					"test",
+					"--reporter=list",
+					"--workers=1",
+					...group.files,
+				];
+				cwd = path.join(process.cwd(), "apps", "e2e");
+			}
+
+			const proc = spawn(command, args, {
+				cwd: cwd,
+				stdio: ["ignore", "pipe", "pipe"], // Use "ignore" for stdin to prevent hanging
+				shell: true,
+				env: {
+					...process.env,
+					PLAYWRIGHT_WORKERS: "1", // Run tests sequentially within group
+					PLAYWRIGHT_PARALLEL: "false", // Disable parallel mode - tests are more reliable in serial execution
+					BASE_URL: "http://localhost:3000",
+					NODE_ENV: "test",
+					PLAYWRIGHT_BASE_URL: "http://localhost:3000",
+					TEST_SHARD_MODE: "true",
 				},
-			);
+			});
 
 			proc.stdout.on("data", (data) => {
 				const str = data.toString();
@@ -430,6 +607,8 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			intentionalFailures: 0,
+			integrationTests: 0,
 		};
 
 		// Parse Playwright output patterns
@@ -442,6 +621,38 @@ class E2ETestRunner {
 		if (failedMatch) results.failed = parseInt(failedMatch[1]);
 		if (skippedMatch) results.skipped = parseInt(skippedMatch[1]);
 		if (flakyMatch) results.passed += parseInt(flakyMatch[1]); // Count flaky as passed
+
+		// Check for deliberate failures in test-configuration-verification.spec.ts
+		if (
+			output.includes("Configuration Verification - Continue on Failure") ||
+			output.includes("test-configuration-verification.spec.ts")
+		) {
+			// This test file has known intentional failures
+			const intentionalTestPatterns = [
+				"Test 2: Intentional FAILURE",
+				"Test 4: Another intentional FAILURE",
+				"Test 7: Nested intentional FAILURE",
+			];
+
+			let intentionalCount = 0;
+			for (const pattern of intentionalTestPatterns) {
+				if (output.includes(pattern)) {
+					intentionalCount++;
+				}
+			}
+
+			// Move intentional failures from failed to intentionalFailures
+			if (intentionalCount > 0) {
+				results.intentionalFailures = intentionalCount;
+				results.failed = Math.max(0, results.failed - intentionalCount);
+			}
+		}
+
+		// Count integration tests (@integration tagged tests)
+		const integrationMatches = output.match(/@integration/g);
+		if (integrationMatches) {
+			results.integrationTests = integrationMatches.length;
+		}
 
 		results.total = results.passed + results.failed + results.skipped;
 
