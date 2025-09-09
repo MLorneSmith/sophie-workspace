@@ -52,7 +52,8 @@ Your task is to remove an existing git worktree using a two-phase approach optim
    - Add `-f` if user mentions forcing or has uncommitted changes
    - Add `-k` if user wants to keep the branch
 6. Handle any errors that occur during execution
-7. Report the results concisely
+7. After successful removal, return to main mode: source ~/.zshrc && claude-main
+8. Report the results concisely
 
 **Key Rules:**
 - NEVER use interactive mode (no `read` commands)
@@ -303,12 +304,14 @@ fi
 - Use: `bash .claude/scripts/worktree/remove-worktree.sh -n <worktree-name> -y`
 - Add `-f` for force mode if needed
 - Add `-k` to keep branch if requested
+- After successful removal, run: `source ~/.zshrc && claude-main`
 
 **Key Points:**
 - Keep responses brief and action-focused
 - Handle all user interaction through Claude chat, not bash prompts
 - Always use the `--list` flag first for discovery
 - Never use interactive mode with `read` commands
+- After removal, return to main mode with `claude-main`
 - If the script fails, report the exact error message
 </execution_tips>
 ```
