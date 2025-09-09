@@ -76,8 +76,15 @@ detect_complexity() {
         return
     fi
     
-    # Git status/info commands - no thinking needed
-    if echo "$prompt_lower" | grep -qE '^git (status|log|diff|show|branch|remote|config)\b'; then
+    # All git commands - no thinking needed
+    # This includes all git subcommands and any commands from .claude/commands/git
+    if echo "$prompt_lower" | grep -qE '^git\b' || echo "$prompt_lower" | grep -qE '^/git:'; then
+        echo 0
+        return
+    fi
+    
+    # Git-related commands (commit, push, checkout, etc.) - no thinking needed
+    if echo "$prompt_lower" | grep -qE '^/(commit|push|checkout|status)\b'; then
         echo 0
         return
     fi
