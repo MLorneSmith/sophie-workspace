@@ -3,6 +3,11 @@
 # Biome Project Check Hook
 # Runs comprehensive Biome validation on entire project
 # Executes on Stop hook to ensure code quality before session ends
+#
+# Output Format:
+# - Uses clean, concise box formatting for better terminal compatibility
+# - Avoids verbose stderr output that can trigger persistent notifications in Warp
+# - Warnings are non-blocking (exit 0) while errors are blocking (exit 2)
 
 set -euo pipefail
 
@@ -53,7 +58,11 @@ if [ "${CLAUDE_HOOK:-}" = "Stop" ] && [ "$CHECK_ON_STOP" = "false" ]; then
     exit 0
 fi
 
-log "🔍 Running Biome check on entire project..."
+# Output status message with consistent formatting
+echo "" >&2
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+echo "🔍 Biome: Checking entire project..." >&2
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
 
 # Build Biome command
 BIOME_CMD="$BIOME_COMMAND check"
@@ -75,10 +84,12 @@ set -e
 
 # Check if timeout occurred
 if [ $EXIT_CODE -eq 124 ]; then
-    echo "⚠️ BIOME PROJECT CHECK TIMEOUT" >&2
     echo "" >&2
-    echo "Project check timed out after ${TIMEOUT} seconds" >&2
-    echo "Consider running 'npx biome check' manually" >&2
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    echo "⏱️  Biome: Check timed out (${TIMEOUT}s)" >&2
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    echo "Run 'npx biome check' manually to complete" >&2
+    echo "" >&2
     exit 0  # Don't fail on timeout for project-wide checks
 fi
 
@@ -111,12 +122,20 @@ if [ $EXIT_CODE -ne 0 ] && [ $ERRORS -gt 0 ]; then
     echo "To auto-fix all: npx biome check --write" >&2
     exit 2
 elif [ $WARNINGS -gt 0 ]; then
-    log "⚠️ Project has $WARNINGS warning(s) - consider fixing them"
-    # Show summary of warnings but don't fail
-    echo "$CHECK_OUTPUT" | grep -A 2 "warning\[" | head -20 >&2
+    # Output a clean, concise warning message
+    echo "" >&2
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    echo "⚠️  Biome: $WARNINGS warning(s) found" >&2
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    echo "Run 'npx biome check' to see details" >&2
+    echo "" >&2
     exit 0
 fi
 
-# Success
-log "✅ Biome project check passed - code is clean!"
+# Success - use consistent formatting
+echo "" >&2
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+echo "✅ Biome: All checks passed" >&2
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+echo "" >&2
 exit 0
