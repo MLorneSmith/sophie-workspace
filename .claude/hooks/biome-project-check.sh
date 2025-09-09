@@ -4,6 +4,11 @@
 # Runs comprehensive Biome validation on entire project
 # Executes on Stop hook to ensure code quality before session ends
 #
+# Worktree Support:
+# - When in a git worktree, only checks files in the current worktree
+# - Prevents checking errors from other branches when working in parallel
+# - In main repository, checks entire project as before
+#
 # Output Format:
 # - Uses clean, concise box formatting for better terminal compatibility
 # - Avoids verbose stderr output that can trigger persistent notifications in Warp
@@ -11,9 +16,37 @@
 
 set -euo pipefail
 
+# Function to detect if we're in a git worktree
+is_in_worktree() {
+    if ! git rev-parse --git-dir &>/dev/null; then
+        return 1  # Not in a git repository
+    fi
+    
+    local git_dir=$(git rev-parse --git-dir 2>/dev/null)
+    local common_dir=$(git rev-parse --git-common-dir 2>/dev/null)
+    
+    # In a worktree, git-dir and git-common-dir are different
+    # Also, .git is a file in worktrees, not a directory
+    if [ -f ".git" ] && [ "$git_dir" != "$common_dir" ]; then
+        return 0  # In a worktree
+    else
+        return 1  # In main repository
+    fi
+}
+
 # Get the project root and hook configuration
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 CONFIG_FILE="${PROJECT_ROOT}/.claude/settings.json"
+
+# Determine if we're in a worktree and set context message
+if is_in_worktree; then
+    WORKTREE_MODE=true
+    WORKTREE_NAME=$(basename "$PROJECT_ROOT")
+    CONTEXT_MESSAGE="(worktree: $WORKTREE_NAME)"
+else
+    WORKTREE_MODE=false
+    CONTEXT_MESSAGE="(main repository)"
+fi
 
 # Function to log messages
 log() {
@@ -61,14 +94,59 @@ fi
 # Output status message with consistent formatting
 echo "" >&2
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
-echo "🔍 Biome: Checking entire project..." >&2
+if [ "$WORKTREE_MODE" = true ]; then
+    echo "🔍 Biome: Checking worktree files $CONTEXT_MESSAGE" >&2
+else
+    echo "🔍 Biome: Checking entire project $CONTEXT_MESSAGE" >&2
+fi
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
 
 # Build Biome command
 BIOME_CMD="$BIOME_COMMAND check"
 
-# Add paths to check (default to current directory)
-CHECK_PATHS=$(get_config "checkPaths" ".")
+# Determine what to check based on worktree mode
+if [ "$WORKTREE_MODE" = true ]; then
+    # In worktree: only check files that are modified or staged in this worktree
+    # This prevents checking errors from the main dev branch
+    
+    # Get list of modified and staged files
+    CHANGED_FILES=$(cd "$PROJECT_ROOT" && git diff --name-only HEAD 2>/dev/null || true)
+    STAGED_FILES=$(cd "$PROJECT_ROOT" && git diff --cached --name-only 2>/dev/null || true)
+    
+    # Combine and deduplicate the file lists
+    ALL_CHANGED_FILES=$(echo -e "$CHANGED_FILES\n$STAGED_FILES" | sort -u | grep -v '^$' || true)
+    
+    if [ -z "$ALL_CHANGED_FILES" ]; then
+        echo "No modified files in worktree to check" >&2
+        echo "" >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "✅ Biome: No files to check in worktree" >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "" >&2
+        exit 0
+    fi
+    
+    # Filter for files that Biome should check (JS/TS/JSON files)
+    BIOME_FILES=$(echo "$ALL_CHANGED_FILES" | grep -E '\.(js|jsx|ts|tsx|json|jsonc)$' || true)
+    
+    if [ -z "$BIOME_FILES" ]; then
+        echo "No JavaScript/TypeScript/JSON files to check" >&2
+        echo "" >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "✅ Biome: No relevant files in worktree" >&2
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        echo "" >&2
+        exit 0
+    fi
+    
+    # Convert newlines to spaces for command line
+    CHECK_PATHS=$(echo "$BIOME_FILES" | tr '\n' ' ')
+    echo "Checking $(echo "$BIOME_FILES" | wc -l) modified file(s) in worktree" >&2
+else
+    # In main repository: check entire project as before
+    CHECK_PATHS=$(get_config "checkPaths" ".")
+fi
+
 BIOME_CMD="$BIOME_CMD $CHECK_PATHS"
 
 # Run Biome with timeout
