@@ -11,7 +11,8 @@
       "Bash(pnpm build:*)",
       "mcp__exa__exa_search",
       "Bash(pnpm --filter admin test:coverage)",
-      "Bash(.claude/scripts/codecheck-direct.sh:*)"
+      "Bash(.claude/scripts/codecheck-direct.sh:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": [],
