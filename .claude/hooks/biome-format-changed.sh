@@ -2,13 +2,23 @@
 
 # Biome Format Changed Hook
 # Automatically formats changed files using Biome
-# Based on ClaudeKit patterns, adapted for shell and Biome
+# Optimized for token usage with throttling and batching
 
 set -euo pipefail
 
 # Get the project root and hook configuration
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 CONFIG_FILE="${PROJECT_ROOT}/.claude/settings.json"
+
+# Source common functions and configuration
+HOOK_DIR="$(dirname "$0")"
+source "$HOOK_DIR/common-functions.sh"
+
+# Check if format hooks are disabled
+if is_hook_disabled "format"; then
+    [[ "$VERBOSE" == "true" ]] && echo "⏭️  Format hooks disabled in configuration"
+    exit 0
+fi
 
 # Function to log messages
 log() {
@@ -50,6 +60,16 @@ FILE_PATH="${CLAUDE_PARAM_file_path:-}"
 
 # Skip if no file path provided
 if [ -z "$FILE_PATH" ]; then
+    exit 0
+fi
+
+# Check if this file should be processed
+if ! should_check_file "$FILE_PATH"; then
+    exit 0
+fi
+
+# Check throttling
+if ! should_run_hook "biome-format"; then
     exit 0
 fi
 
