@@ -1,6 +1,6 @@
 {
 	"version": "1.0",
-	"lastUpdated": "2025-09-08",
+	"lastUpdated": "2025-09-09",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -372,6 +372,54 @@
 						"Warp Terminal Automation",
 						"Multi-Environment Development",
 						"Codespace Management"
+					]
+				},
+				{
+					"path": "systems/docker-setup.md",
+					"name": "Docker Setup and Container Architecture",
+					"description": "Comprehensive documentation of the SlideHeroes Docker container architecture including main app, E2E testing, and MCP servers with development workflows and troubleshooting guides.",
+					"lastUpdated": "2025-09-09",
+					"topics": [
+						"Docker",
+						"Container Architecture",
+						"DevContainer",
+						"MCP Servers",
+						"E2E Testing",
+						"Orchestration",
+						"Development Workflow",
+						"Troubleshooting"
+					]
+				},
+				{
+					"path": "systems/feature-implementation-workflow.md",
+					"name": "Feature Implementation Workflow Guide",
+					"description": "Step-by-step guide for implementing features using our integrated CCPM workflow with parallel execution and GitHub integration.",
+					"lastUpdated": "2025-09-09",
+					"topics": [
+						"Feature Implementation",
+						"CCPM Workflow",
+						"Parallel Execution",
+						"GitHub Integration",
+						"Task Management",
+						"Agent Coordination",
+						"Testing Strategy",
+						"Development Process"
+					]
+				},
+				{
+					"path": "systems/pm/ccpm-system-overview.md",
+					"name": "CCPM System Overview",
+					"description": "Technical architecture and comprehensive documentation of the Claude Code Project Management system for parallel feature development.",
+					"lastUpdated": "2025-09-08",
+					"topics": [
+						"Project Management",
+						"Parallel Execution",
+						"Agent Orchestration",
+						"GitHub Integration",
+						"Workflow Architecture",
+						"Performance Optimization",
+						"Task Decomposition",
+						"System Design"
 					]
 				}
 			]
