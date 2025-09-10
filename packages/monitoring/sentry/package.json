@@ -24,6 +24,7 @@
 		"@kit/monitoring-core": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
+		"@types/node": "^24.3.1",
 		"@types/react": "19.1.12",
 		"react": "19.1.1"
 	},

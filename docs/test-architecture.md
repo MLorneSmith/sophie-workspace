@@ -53,10 +53,12 @@ node .claude/scripts/test/test-container.cjs --no-container
 ### docker-compose.test.yml
 
 Defines two test containers:
+
 - `app-test`: Web application on port 3001
 - `payload-test`: Payload CMS on port 3021
 
 Both containers:
+
 - Use `node:20-slim` base image
 - Auto-install pnpm and dependencies
 - Connect to E2E Supabase services
@@ -65,6 +67,7 @@ Both containers:
 ### test-container.cjs
 
 Wrapper script that:
+
 - Ensures test containers are running
 - Sets environment variables for port 3001/3021
 - Tells test controller to skip starting its own servers
@@ -73,13 +76,14 @@ Wrapper script that:
 ## Environment Variables
 
 When using containerized testing, these variables are set:
+
 - `SKIP_DEV_SERVER=true` - Prevents test controller from starting servers
 - `TEST_BASE_URL=http://localhost:3001` - Points tests to container
 - `PAYLOAD_TEST_URL=http://localhost:3021` - Points Payload tests to container
 
 ## How It Works
 
-1. **Supabase Services**: 
+1. **Supabase Services**:
    - Main stack (dev): ports 54321/54322
    - E2E stack (test): ports 55321/55322
 
