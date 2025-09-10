@@ -440,6 +440,28 @@
 				}
 			]
 		},
+		"architecture": {
+			"name": "Architecture Documentation",
+			"description": "System architecture patterns, test infrastructure, and architectural decisions",
+			"documents": [
+				{
+					"path": "architecture/test-architecture.md",
+					"name": "Test Architecture and Infrastructure",
+					"description": "Comprehensive guide to SlideHeroes testing architecture, including containerization, parallel execution, port management, and CI/CD integration",
+					"lastUpdated": "2025-09-09",
+					"topics": [
+						"Test Architecture",
+						"Docker Containerization",
+						"Parallel Testing",
+						"Port Management",
+						"CI/CD Integration",
+						"E2E Testing",
+						"Unit Testing",
+						"Test Isolation"
+					]
+				}
+			]
+		},
 		"tools": {
 			"name": "Tool Documentation",
 			"description": "Documentation for development tools, integrations, and utilities",
