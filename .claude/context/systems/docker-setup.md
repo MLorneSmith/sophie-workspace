@@ -6,7 +6,7 @@ version: "1.0.0"
 category: "systems"
 
 # Discovery
-description: "Comprehensive documentation of the SlideHeroes Docker container architecture including main app, E2E testing, and MCP servers with development workflows and troubleshooting guides"
+description: "Documentation of SlideHeroes hybrid Docker architecture with Supabase CLI services, MCP servers, host-based development, and containerized testing with workflows and troubleshooting"
 tags: ["docker", "containers", "devcontainer", "mcp", "e2e", "orchestration", "development", "testing"]
 
 # Relationships
@@ -26,58 +26,78 @@ cross_references:
 created: "2025-09-09"
 last_updated: "2025-09-09"
 author: "create-context"
+revised: "2025-09-09 - Updated with actual production architecture"
 ---
 
 # Docker Setup and Container Architecture
 
 ## Overview
 
-The SlideHeroes project uses a sophisticated multi-container Docker architecture optimized for development, testing, and AI-powered workflows. The setup consists of three primary container groups:
+The SlideHeroes project uses a **hybrid Docker architecture** that combines containerized services with host-based application development for optimal performance and flexibility. The setup consists of:
 
-1. **2025slideheroes** - Main development container with full toolchain
-2. **2025slideheroes-e2e** - Dedicated E2E testing container with Playwright
-3. **mcp-servers** - Model Context Protocol servers for AI capabilities
+1. **Supabase CLI Stacks** (Not docker-compose):
+   - **2025slideheroes** - Main Supabase services (database, auth, storage) on ports 54321/54322
+   - **2025slideheroes-e2e** - E2E test Supabase services on ports 55321/55322
 
-This architecture leverages Docker's 2024-2025 performance improvements (85x faster uploads, 71% reduced build times) and implements security best practices including multi-stage builds, non-root users, and capability controls.
+2. **Docker Compose Stacks**:
+   - **mcp-servers** - Model Context Protocol servers for AI capabilities
+   - **app-test** (optional) - Isolated test server container on port 3001
+
+3. **Host-Based Development**:
+   - Next.js application runs directly on WSL2/macOS/Linux (not containerized)
+   - Connects to containerized Supabase services
+   - Provides fastest hot-reload and development experience
+
+This hybrid approach provides the best of both worlds: fast local development with isolated, reproducible service dependencies.
 
 ## Service Architecture
 
-### Main Application Container (`app`)
+### Supabase Services (Managed by Supabase CLI)
 
-**Purpose**: Primary development environment with full Node.js toolchain
+**Main Stack (`2025slideheroes`)**:
+- **Database**: PostgreSQL 15.8 on port 54322
+- **API Gateway**: Kong on port 54321
+- **Auth**: GoTrue authentication service
+- **Storage**: S3-compatible object storage
+- **Realtime**: WebSocket-based realtime subscriptions
+- **Studio**: Web-based database management on port 54323
 
-**Base Image**: `node:20`
+**E2E Test Stack (`2025slideheroes-e2e`)**:
+- Same services as main stack but on different ports:
+  - API Gateway: 55321
+  - Database: 55322
+  - Studio: 55323
+  - Mailpit: 55324-55326
+- Isolated database for test data
+- Separate auth tokens and JWT secrets
 
-**Key Features**:
-- Full development toolset (zsh, Oh My Zsh, git-delta, ripgrep, fd, bat)
-- PostgreSQL and Redis clients
-- Claude Code CLI integration
-- Docker-in-Docker capability
-- Persistent volumes for node_modules, pnpm store, build caches
+### Test Server Container (`app-test`)
 
-**Exposed Ports**:
-- 3000-3001: Next.js dev server and HMR
-- 6006: Storybook
-- 9229: Node.js debugger
+**Purpose**: Isolated Next.js server for test execution
 
-### E2E Testing Container (`e2e`)
+**Configuration** (`docker-compose.test.yml`):
+- **Base Image**: `node:20-slim`
+- **Port**: 3001 (avoids conflict with dev on 3000)
+- **Environment**: Connects to E2E Supabase stack
+- **Features**:
+  - Isolated node_modules
+  - Automatic pnpm installation
+  - Health check endpoint
+  - Can run parallel to development
 
-**Purpose**: Isolated Playwright testing environment
+### DevContainer Setup (Optional, in `.devcontainer/`)
 
-**Base Image**: `mcr.microsoft.com/playwright:v1.40.0-focal`
+**Note**: These containers are defined but typically not used in favor of host-based development.
 
-**Key Features**:
-- Pre-installed Playwright browsers (Chromium, Firefox, WebKit)
-- Isolated node_modules for test dependencies
-- Playwright cache volume for browser binaries
-- Test-optimized Node.js configuration
+**App Container** (`app`):
+- Full development environment with tooling
+- Defined in `.devcontainer/docker-compose.yml`
+- Includes zsh, git-delta, ripgrep, etc.
 
-**Environment**:
-```yaml
-NODE_ENV: test
-PLAYWRIGHT_BROWSERS_PATH: /home/node/.cache/ms-playwright
-CI: false
-```
+**E2E Container** (`e2e`):
+- Playwright testing environment
+- Pre-installed browsers
+- Isolated test dependencies
 
 ### MCP Servers Container Group (`mcp-servers`)
 
@@ -179,30 +199,53 @@ CI: false
 git clone https://github.com/MLorneSmith/2025slideheroes.git
 cd 2025slideheroes
 
-# 2. Start all services
-docker-compose -f .devcontainer/docker-compose.yml up -d
+# 2. Install dependencies on host
+pnpm install
 
-# 3. Start MCP servers
+# 3. Start Supabase services
+npx supabase start  # Main stack on ports 54321/54322
+
+# 4. Start E2E Supabase services (in apps/e2e directory)
+cd apps/e2e && npx supabase start  # E2E stack on ports 55321/55322
+
+# 5. Start MCP servers (optional, for AI features)
 docker-compose -f docker-compose.mcp.yml up -d
 
-# 4. Attach to main container
-docker exec -it slideheroes-app zsh
+# 6. Start development server on host
+pnpm dev  # Runs on port 3000
 ```
 
-### Daily Development
+### Daily Development (Hybrid Architecture)
 
 ```bash
-# Start development environment
-docker-compose -f .devcontainer/docker-compose.yml up -d
+# Start backend services
+npx supabase start  # If not already running
 
-# Run development server (inside container)
-pnpm dev
+# Start MCP servers (if needed)
+docker-compose -f docker-compose.mcp.yml up -d
+
+# Run development server on host
+pnpm dev  # Fast hot-reload on port 3000
+
+# For isolated testing, start test container
+docker-compose -f docker-compose.test.yml up -d  # Runs on port 3001
 
 # Run tests
-pnpm test
+pnpm test  # Unit tests on host
+/test  # Comprehensive test suite
+```
 
-# Run E2E tests
-docker exec -it slideheroes-e2e pnpm test:e2e
+### Parallel Development and Testing
+
+```bash
+# Terminal 1: Development (on host)
+pnpm dev  # Port 3000, uses main Supabase (54321/54322)
+
+# Terminal 2: Test server (in container)
+docker-compose -f docker-compose.test.yml up  # Port 3001, uses E2E Supabase (55321/55322)
+
+# Terminal 3: Run tests
+node .claude/scripts/test/test-controller.cjs  # Runs against port 3001
 ```
 
 ### MCP Server Management
@@ -272,58 +315,94 @@ MCP_AUTH_TOKEN=[bearer-token]
 
 ## Common Tasks
 
-### Building Images
+### Supabase Management
 
 ```bash
-# Build with cache
-docker-compose -f .devcontainer/docker-compose.yml build
+# Start main Supabase services
+npx supabase start
 
-# Build without cache
-docker-compose -f .devcontainer/docker-compose.yml build --no-cache
+# Start E2E Supabase services
+cd apps/e2e && npx supabase start
 
-# Build specific service
-docker-compose -f .devcontainer/docker-compose.yml build app
+# Stop Supabase services
+npx supabase stop
+
+# Check Supabase status
+npx supabase status
+
+# Reset database
+npx supabase db reset
+
+# Run migrations
+npx supabase migration up
+
+# Generate TypeScript types
+npx supabase gen types typescript --local
 ```
 
 ### Database Operations
 
 ```bash
-# Connect to PostgreSQL
-docker exec -it slideheroes-db psql -U postgres
+# Connect to main PostgreSQL
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
-# Reset database
-docker exec -it slideheroes-app npx supabase db reset
+# Connect to E2E PostgreSQL
+psql postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
-# Run migrations
-docker exec -it slideheroes-app npx supabase migration up
+# View Supabase Studio
+open http://localhost:54323  # Main
+open http://localhost:55323  # E2E
+```
+
+### Test Container Management
+
+```bash
+# Start test container
+docker-compose -f docker-compose.test.yml up -d
+
+# View test server logs
+docker logs slideheroes-app-test -f
+
+# Access test server
+curl http://localhost:3001/api/health
+
+# Stop test container
+docker-compose -f docker-compose.test.yml down
 ```
 
 ### Debugging
 
 ```bash
-# View container logs
-docker logs slideheroes-app -f
+# Check what's running on ports
+lsof -i :3000  # Dev server
+lsof -i :3001  # Test server
+lsof -i :54321  # Main Supabase
+lsof -i :55321  # E2E Supabase
 
-# Inspect container
-docker inspect slideheroes-app
+# View Supabase container logs
+docker logs supabase_db_2025slideheroes -f
 
-# Execute commands in container
-docker exec -it slideheroes-app bash -c "npm list"
+# Check Docker compose stacks
+docker compose ls
 
-# Check resource usage
-docker stats
+# List all containers with labels
+docker ps --format "table {{.Names}}\t{{.Labels}}"
 ```
 
 ### Cleanup
 
 ```bash
-# Stop all containers
-docker-compose -f .devcontainer/docker-compose.yml down
+# Stop Supabase services
+npx supabase stop
+cd apps/e2e && npx supabase stop
 
-# Remove volumes (WARNING: data loss)
-docker-compose -f .devcontainer/docker-compose.yml down -v
+# Stop MCP servers
+docker-compose -f docker-compose.mcp.yml down
 
-# Prune unused resources
+# Stop test container
+docker-compose -f docker-compose.test.yml down
+
+# Prune unused Docker resources
 docker system prune -a --volumes
 ```
 
@@ -425,20 +504,61 @@ docker system prune -a --volumes
 - **Resource Allocation**: Appropriate CPU/memory limits
 - **Storage Driver**: Use overlay2 for best performance
 
+## Hybrid Architecture: Benefits and Tradeoffs
+
+### Benefits of Current Approach
+
+**Development Speed**:
+- Instant hot-reload without container overhead
+- Direct filesystem access for faster builds
+- No Docker layer between IDE and code
+- Native debugging tools work seamlessly
+
+**Resource Efficiency**:
+- Lower memory usage (no container overhead for app)
+- Better CPU performance for compilation
+- Shared node_modules with host tools
+
+**Flexibility**:
+- Easy to switch between configurations
+- Can containerize when needed (CI/CD, testing)
+- Gradual migration path available
+
+### Tradeoffs
+
+**Consistency**:
+- Potential "works on my machine" issues
+- Need to manage Node.js versions on host
+- Dependencies between host and containers
+
+**Complexity**:
+- Multiple tools (Supabase CLI, Docker, pnpm)
+- Different commands for different services
+- Need to understand both patterns
+
+### When to Use Full Containerization
+
+Consider moving to full containerization when:
+- Team grows and environment consistency becomes critical
+- CI/CD pipeline needs exact parity with local
+- Complex microservices architecture emerges
+- Cross-platform development becomes essential
+
 ## Future Enhancements
 
-1. **Kubernetes Migration**: Prepare for K8s orchestration
-2. **Service Mesh**: Implement for microservices communication
-3. **Observability**: Add Prometheus/Grafana monitoring
-4. **CI/CD Integration**: Automated image building and testing
-5. **Registry Caching**: Local registry mirror for faster pulls
+1. **Unified Container Orchestration**: Migrate Supabase CLI projects to docker-compose
+2. **Development Containers**: Optional full containerization for consistency
+3. **Kubernetes Migration**: Prepare for K8s orchestration
+4. **Service Mesh**: Implement for microservices communication
+5. **Observability**: Add Prometheus/Grafana monitoring
 
 ## Related Files
 
+- `/home/msmith/projects/2025slideheroes/docker-compose.test.yml`: Test server container configuration
 - `/home/msmith/projects/2025slideheroes/docker-compose.mcp.yml`: MCP servers configuration
-- `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: Main services
+- `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: DevContainer services (optional)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/devcontainer.json`: VS Code integration
-- `/home/msmith/projects/2025slideheroes/.devcontainer/scripts/`: Setup and lifecycle scripts
+- `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration
 - `/home/msmith/projects/2025slideheroes/.dockerignore`: Build optimization
 
 ## See Also
