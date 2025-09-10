@@ -271,15 +271,22 @@ class E2ETestRunner {
 		await this.testStatus.setPhase("e2e_tests");
 
 		try {
-			// Start servers within phase timeout
-			const serverResult = await this.phaseCoordinator.transitionTo(
-				"e2e_setup",
-				() => this.startServers(),
-				{ timeout: this.config.timeouts.e2eSetup },
-			);
+			// Check if servers are already running (started by infrastructure manager)
+			const serversReady = await this.checkServersReady();
 
-			if (!serverResult.success) {
-				throw new Error("Failed to start servers for E2E tests");
+			if (!serversReady) {
+				// Only start servers if they're not already running
+				const serverResult = await this.phaseCoordinator.transitionTo(
+					"e2e_setup",
+					() => this.startServers(),
+					{ timeout: this.config.timeouts.e2eSetup },
+				);
+
+				if (!serverResult.success) {
+					throw new Error("Failed to start servers for E2E tests");
+				}
+			} else {
+				log("✅ Servers already running (started by infrastructure manager)");
 			}
 
 			// Run E2E tests
@@ -319,6 +326,7 @@ class E2ETestRunner {
 				...process.env,
 				PORT: "3000",
 				NODE_ENV: "test",
+				ENABLE_STRICT_CSP: "true", // Enable security headers for E2E tests
 				NEXT_PUBLIC_APP_URL: "http://localhost:3000",
 			},
 		});

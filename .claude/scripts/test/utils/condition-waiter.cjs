@@ -98,7 +98,7 @@ class ConditionWaiter {
 	}
 
 	/**
-	 * Wait for a port to be free
+	 * Wait for a port to be free with enhanced checking
 	 * @param {number} port - Port number to check
 	 * @param {Object} options - Configuration options
 	 * @returns {Promise<boolean>}
@@ -107,12 +107,26 @@ class ConditionWaiter {
 		return this.waitForCondition(
 			async () => {
 				try {
-					const { stdout } = await execAsync(
-						`lsof -ti:${port} 2>/dev/null || echo "free"`,
+					// Check with lsof
+					const { stdout: lsofResult } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || true`,
 					);
-					return stdout.trim() === "free";
+
+					// If lsof returns anything, port is in use
+					if (lsofResult.trim()) {
+						return false;
+					}
+
+					// Double check with netstat for TIME_WAIT connections
+					const { stdout: netstatResult } = await execAsync(
+						`netstat -an 2>/dev/null | grep ":${port}.*LISTEN" | wc -l || echo "0"`,
+					);
+
+					// Port is free if no listening connections
+					return parseInt(netstatResult.trim()) === 0;
 				} catch {
-					return true; // Port is free if lsof fails
+					// If commands fail, assume port is free
+					return true;
 				}
 			},
 			{
