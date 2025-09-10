@@ -5,10 +5,22 @@
 
 import { afterAll, beforeAll, vi } from "vitest";
 
+// Use vi.hoisted to ensure mocks are hoisted before module imports
+const { mocks } = vi.hoisted(() => {
+	return {
+		mocks: {
+			redirect: vi.fn(),
+			notFound: vi.fn(),
+			revalidatePath: vi.fn(),
+			revalidateTag: vi.fn(),
+		},
+	};
+});
+
 // Mock server-only package (Next.js specific import)
 vi.mock("server-only", () => ({}));
 
-// Mock Next.js router
+// Mock Next.js router - must be hoisted
 vi.mock("next/navigation", () => ({
 	useRouter: () => ({
 		push: vi.fn(),
@@ -20,14 +32,14 @@ vi.mock("next/navigation", () => ({
 	}),
 	usePathname: () => "/admin",
 	useSearchParams: () => new URLSearchParams(),
-	redirect: vi.fn(),
-	notFound: vi.fn(),
+	redirect: mocks.redirect,
+	notFound: mocks.notFound,
 }));
 
-// Mock Next.js cache
+// Mock Next.js cache - must be hoisted
 vi.mock("next/cache", () => ({
-	revalidatePath: vi.fn(),
-	revalidateTag: vi.fn(),
+	revalidatePath: mocks.revalidatePath,
+	revalidateTag: mocks.revalidateTag,
 }));
 
 // Setup DOM environment for React Testing Library
