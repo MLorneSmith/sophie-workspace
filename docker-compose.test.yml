@@ -1,0 +1,112 @@
+# Test Environment Docker Compose
+# This runs both the Next.js web app and Payload CMS in containers for isolated testing
+# Connects to the E2E Supabase services (ports 55321/55322)
+# Web app: port 3001 (dev uses 3000)
+# Payload app: port 3021 (dev uses 3020)
+
+services:
+  app-test:
+    image: node:20-slim
+    container_name: slideheroes-app-test
+    working_dir: /app
+    volumes:
+      - .:/app:cached
+      - /app/node_modules  # Use container's node_modules
+      - /app/.next         # Use container's build cache
+    ports:
+      - "3001:3001"
+    environment:
+      # E2E Supabase configuration (using the -e2e stack)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MjA3MTc2MDA1NCwiaWF0IjoxNzU2NDAwMDU0fQ.4JWdmHV63YkytmWm51e2HGBRGlOk03zszAwr9JDAKwA
+      - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      # Test environment settings
+      - NODE_ENV=test
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3001
+      - PORT=3001
+      # Auth configuration
+      - NEXT_PUBLIC_AUTH_PASSWORD=true
+      - NEXT_PUBLIC_AUTH_MAGIC_LINK=false
+      - NEXT_PUBLIC_AUTH_OTP=false
+      - NEXT_PUBLIC_PRODUCT_NAME=SlideHeroes
+      - NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION=true
+      - NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION=true
+      # Performance
+      - FORCE_COLOR=1
+      - CI=false
+    command: >
+      sh -c "
+        echo '📦 Installing pnpm...' &&
+        npm install -g pnpm@latest &&
+        echo '🔧 Installing dependencies...' &&
+        pnpm install --frozen-lockfile &&
+        echo '🚀 Starting test server on port 3001...' &&
+        pnpm --filter web dev --port 3001
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - test-network
+
+  payload-test:
+    image: node:20-slim
+    container_name: slideheroes-payload-test
+    working_dir: /app
+    volumes:
+      - .:/app:cached
+      - /app/node_modules  # Use container's node_modules
+      - /app/.next         # Use container's build cache
+    ports:
+      - "3021:3021"
+    environment:
+      # E2E Supabase configuration (using the -e2e stack)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MjA3MTc2MDA1NCwiaWF0IjoxNzU2NDAwMDU0fQ.4JWdmHV63YkytmWm51e2HGBRGlOk03zszAwr9JDAKwA
+      - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      # Payload specific settings - using DATABASE_URI (not DATABASE_URL)
+      - DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      - PAYLOAD_PUBLIC_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      - PAYLOAD_SECRET=your-payload-secret-here
+      - PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021
+      # Test environment settings
+      - NODE_ENV=test
+      - PORT=3021
+      # Performance
+      - FORCE_COLOR=1
+      - CI=false
+      - NODE_OPTIONS=--no-deprecation
+    command: >
+      sh -c "
+        echo '📦 Installing pnpm...' &&
+        npm install -g pnpm@latest &&
+        echo '🔧 Installing dependencies...' &&
+        pnpm install --frozen-lockfile &&
+        echo '🚀 Starting Payload test server on port 3021...' &&
+        cd apps/payload &&
+        PORT=3021 NODE_OPTIONS=--no-deprecation pnpm exec next dev
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3021/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    name: slideheroes-test
+    driver: bridge
