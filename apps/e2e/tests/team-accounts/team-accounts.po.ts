@@ -97,12 +97,28 @@ export class TeamAccountsPageObject {
 				console.log("Network idle timeout, continuing...");
 			});
 
-		// First check if the trigger exists
+		// On team account pages, the account selector is in the sidebar
+		// We need to make sure the sidebar is visible first
+		const sidebarTrigger = this.page.locator('[data-sidebar="trigger"]');
+		const sidebarTriggerCount = await sidebarTrigger.count();
+
+		// If we find a sidebar trigger (mobile/collapsed view), click it first
+		if (sidebarTriggerCount > 0) {
+			const isSidebarTriggerVisible = await sidebarTrigger.isVisible();
+			if (isSidebarTriggerVisible) {
+				console.log("Opening sidebar first...");
+				await sidebarTrigger.click();
+				await this.page.waitForTimeout(500); // Wait for sidebar animation
+			}
+		}
+
+		// Now look for the account selector trigger
 		const trigger = this.page.locator('[data-test="account-selector-trigger"]');
 
-		// Check if the trigger is already visible, if not, it might be behind a menu
-		const triggerCount = await trigger.count();
-		if (triggerCount === 0) {
+		// Wait for the trigger to be present in the DOM
+		try {
+			await trigger.waitFor({ state: "attached", timeout: 10000 });
+		} catch (error) {
 			console.error("Account selector trigger not found on page");
 			console.log("Current URL:", this.page.url());
 			// Take a screenshot for debugging
@@ -110,6 +126,28 @@ export class TeamAccountsPageObject {
 				path: "test-results/no-account-selector-trigger.png",
 			});
 			throw new Error("Account selector trigger not found on current page");
+		}
+
+		// Check if the trigger is visible, if not it might be in a collapsed sidebar
+		const isVisible = await trigger.isVisible();
+		if (!isVisible) {
+			console.log(
+				"Account selector trigger is not visible, checking for sidebar state...",
+			);
+
+			// Try to expand the sidebar if it's collapsed
+			const sidebar = this.page.locator('[data-sidebar="sidebar"]');
+			const sidebarState = await sidebar.getAttribute("data-state");
+
+			if (sidebarState === "collapsed") {
+				console.log("Sidebar is collapsed, expanding it...");
+				// Click the sidebar trigger to expand it
+				const expandButton = this.page.locator('[data-sidebar="trigger"]');
+				if (await expandButton.isVisible()) {
+					await expandButton.click();
+					await this.page.waitForTimeout(500);
+				}
+			}
 		}
 
 		try {
