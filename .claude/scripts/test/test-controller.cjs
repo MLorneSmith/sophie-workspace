@@ -56,17 +56,62 @@ class TestController {
 			process.exit(1);
 		}
 
+		// Initialize cleanup coordinator to prevent race conditions
+		this.cleanupCoordinator = {
+			portsCleared: new Set(),
+			processesCleaned: new Set(),
+
+			async clearPort(port, processManager) {
+				if (this.portsCleared.has(port)) {
+					log(`Port ${port} already cleared in this session`);
+					return true;
+				}
+
+				// Perform actual cleanup with enhanced options
+				const cleared = await processManager.killPort(port, {
+					maxRetries: 3,
+					waitTime: 2000,
+				});
+
+				if (cleared) {
+					this.portsCleared.add(port);
+				}
+				return cleared;
+			},
+
+			async cleanProcess(pattern, execAsync) {
+				if (this.processesCleaned.has(pattern)) {
+					log(`Process pattern '${pattern}' already cleaned`);
+					return true;
+				}
+
+				await execAsync(`pkill -f "${pattern}" 2>/dev/null || true`);
+				this.processesCleaned.add(pattern);
+				return true;
+			},
+
+			reset() {
+				this.portsCleared.clear();
+				this.processesCleaned.clear();
+			},
+		};
+
 		// Initialize modules
 		this.testStatus = new TestStatus({
 			resultFile: CONFIG.paths.resultFile,
 			statusFile: CONFIG.paths.statusFile,
 		});
 		this.phaseCoordinator = new PhaseCoordinator(this.testStatus);
+		this.processManager = new ProcessManager(CONFIG);
+
+		// Pass cleanup coordinator to infrastructure manager
 		this.infrastructureManager = new InfrastructureManager(
 			CONFIG,
 			this.testStatus,
+			this.cleanupCoordinator,
+			this.processManager,
 		);
-		this.processManager = new ProcessManager(CONFIG);
+
 		this.testReporter = new TestReporter(CONFIG, this.testStatus);
 		this.waiter = new ConditionWaiter();
 
@@ -251,12 +296,18 @@ Examples:
 				}
 
 				// Check if all critical services are healthy
-				const criticalServices = ["supabase", "database", "environment"];
+				const criticalServices = [
+					"supabase",
+					"database",
+					"environment",
+					"devServer",
+				];
 				const allHealthy = criticalServices.every(
 					(service) =>
 						results[service] === "healthy" ||
 						results[service] === "ready" ||
-						results[service] === "started",
+						results[service] === "started" ||
+						results[service] === "already_running",
 				);
 
 				if (!allHealthy) {
@@ -340,21 +391,32 @@ Examples:
 	}
 
 	/**
-	 * Normal cleanup
+	 * Normal cleanup with enhanced options
 	 */
 	async cleanup() {
 		log("\n🧹 Starting cleanup...");
 
 		try {
+			// Reset cleanup coordinator for next run
+			if (this.cleanupCoordinator) {
+				this.cleanupCoordinator.reset();
+			}
+
 			// Kill managed processes
 			await this.processManager.killAll();
 
-			// Clear ports
-			await this.processManager.clearPorts([
-				CONFIG.ports.web,
-				CONFIG.ports.webTest,
-				CONFIG.ports.payload,
-			]);
+			// Clear ports with enhanced retry logic
+			const portsCleared = await this.processManager.clearPorts(
+				[CONFIG.ports.web, CONFIG.ports.webTest, CONFIG.ports.payload],
+				{
+					maxRetries: 3,
+					waitTime: 2000,
+				},
+			);
+
+			if (!portsCleared) {
+				logError("Some ports could not be cleared completely");
+			}
 
 			// Release locks
 			await this.resourceLock.release("main");

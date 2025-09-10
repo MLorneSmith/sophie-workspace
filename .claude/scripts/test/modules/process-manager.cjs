@@ -286,23 +286,85 @@ class ProcessManager {
 	}
 
 	/**
-	 * Kill process on port
+	 * Kill process on port with retry logic and verification
 	 */
-	async killPort(port) {
-		try {
-			await execAsync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
-			log(`✅ Cleared port ${port}`);
-		} catch (error) {
-			logError(`Failed to clear port ${port}: ${error.message}`);
+	async killPort(port, options = {}) {
+		const maxRetries = options.maxRetries || 3;
+		const waitTime = options.waitTime || 2000;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				log(`🔧 Clearing port ${port} (attempt ${attempt}/${maxRetries})...`);
+
+				// First attempt: graceful termination (SIGTERM)
+				await execAsync(`lsof -ti:${port} | xargs -r kill 2>/dev/null || true`);
+				await this.waiter.delay(500, "graceful termination");
+
+				// Check if port is still in use
+				const { stdout } = await execAsync(
+					`lsof -ti:${port} 2>/dev/null || true`,
+				);
+				if (!stdout.trim()) {
+					log(`✅ Port ${port} cleared successfully (graceful)`);
+					return true;
+				}
+
+				// Force kill if still in use (SIGKILL)
+				log(`   Force killing processes on port ${port}...`);
+				await execAsync(
+					`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`,
+				);
+
+				// Try fuser as fallback
+				await execAsync(`fuser -k ${port}/tcp 2>/dev/null || true`);
+
+				// Wait progressively longer between attempts
+				const delay = Math.min(waitTime * attempt, 5000);
+				await this.waiter.delay(delay, `port ${port} release`);
+
+				// Verify port is free
+				const { stdout: check } = await execAsync(
+					`lsof -ti:${port} 2>/dev/null || true`,
+				);
+				if (!check.trim()) {
+					log(`✅ Port ${port} cleared after ${attempt} attempt(s)`);
+					return true;
+				}
+
+				// Check for TIME_WAIT sockets
+				const { stdout: timeWait } = await execAsync(
+					`netstat -an 2>/dev/null | grep :${port}.*TIME_WAIT | wc -l || echo "0"`,
+				);
+				const timeWaitCount = parseInt(timeWait.trim()) || 0;
+				if (timeWaitCount > 0) {
+					log(`   ⚠️ ${timeWaitCount} sockets in TIME_WAIT on port ${port}`);
+				}
+			} catch (error) {
+				logError(
+					`   Attempt ${attempt} failed for port ${port}: ${error.message}`,
+				);
+			}
 		}
+
+		logError(`Failed to clear port ${port} after ${maxRetries} attempts`);
+		return false;
 	}
 
 	/**
-	 * Clear multiple ports
+	 * Clear multiple ports with enhanced options
 	 */
-	async clearPorts(ports) {
-		const promises = ports.map((port) => this.killPort(port));
-		await Promise.allSettled(promises);
+	async clearPorts(ports, options = {}) {
+		const promises = ports.map((port) => this.killPort(port, options));
+		const results = await Promise.allSettled(promises);
+
+		// Log any failures
+		results.forEach((result, index) => {
+			if (result.status === "rejected" || result.value === false) {
+				logError(`Failed to clear port ${ports[index]}`);
+			}
+		});
+
+		return results.every((r) => r.status === "fulfilled" && r.value === true);
 	}
 
 	/**

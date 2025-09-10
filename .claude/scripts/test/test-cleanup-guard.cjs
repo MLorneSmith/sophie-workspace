@@ -180,8 +180,18 @@ class TestCleanupGuard {
 	 * Comprehensive cleanup of test ports
 	 */
 	async cleanupTestPorts() {
-		const testPorts = [3000, 3001, 3010, 3020];
-		console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
+		// Skip ports 3001 and 3021 if using external test servers
+		const skipTestPorts = process.env.SKIP_DEV_SERVER === "true";
+		let testPorts = [3000, 3001, 3010, 3020];
+
+		if (skipTestPorts) {
+			// Remove test server ports when using containerized testing
+			testPorts = [3000, 3010, 3020];
+			console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
+			console.log("   (Skipping ports 3001, 3021 - external test servers)");
+		} else {
+			console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
+		}
 
 		for (const port of testPorts) {
 			try {
@@ -221,33 +231,124 @@ class TestCleanupGuard {
 	}
 
 	/**
-	 * Pre-test cleanup to ensure clean state
+	 * Pre-test cleanup to ensure clean state with enhanced verification
 	 */
 	async preTestCleanup() {
 		console.log("🔧 Pre-test cleanup starting...");
 
-		// First clean up ports to prevent conflicts
-		await this.cleanupTestPorts();
+		// Skip ports 3001 and 3021 if using external test servers
+		const skipTestPorts = process.env.SKIP_DEV_SERVER === "true";
+		let testPorts = [3000, 3001, 3010, 3020];
 
-		// Kill any existing test processes
-		const killCommands = [
-			'pkill -f "playwright|vitest|next-server|dev:test|test:shard" || true',
-			// Don't kill ports again - already handled by cleanupTestPorts
-		];
-
-		for (const cmd of killCommands) {
-			await execAsync(cmd).catch(() => {});
+		if (skipTestPorts) {
+			// Remove test server ports when using containerized testing
+			testPorts = [3000, 3010, 3020];
+			console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
+			console.log("   (Skipping ports 3001, 3021 - external test servers)");
+		} else {
+			console.log("🔧 Cleaning up test ports:", testPorts.join(", "));
 		}
 
-		// Clean up old lock files
+		for (const port of testPorts) {
+			try {
+				// Check if port is in use
+				const { stdout: initialCheck } = await execAsync(
+					`lsof -ti:${port} 2>/dev/null || true`,
+				);
+
+				if (initialCheck.trim()) {
+					console.log(`   Found process on port ${port}, terminating...`);
+
+					// Step 1: Graceful termination (SIGTERM)
+					await execAsync(
+						`lsof -ti:${port} | xargs -r kill 2>/dev/null || true`,
+					);
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+
+					// Step 2: Check if still running
+					const { stdout: secondCheck } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || true`,
+					);
+
+					if (secondCheck.trim()) {
+						console.log(`   Force killing process on port ${port}...`);
+						// Force kill (SIGKILL)
+						await execAsync(
+							`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`,
+						);
+
+						// Also try fuser as fallback
+						await execAsync(`fuser -k ${port}/tcp 2>/dev/null || true`);
+
+						// Wait longer for force kill
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+					}
+
+					// Step 3: Final verification
+					const { stdout: finalCheck } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || true`,
+					);
+
+					if (finalCheck.trim()) {
+						console.log(`   ⚠️ Port ${port} still in use after cleanup`);
+					} else {
+						console.log(`   ✅ Port ${port} cleared successfully`);
+					}
+				}
+			} catch (e) {
+				// Port is likely free if commands fail
+			}
+		}
+
+		// Kill any existing test processes by pattern
+		const processPatterns = [
+			"playwright",
+			"vitest",
+			"next-server",
+			"next.*dev.*3000",
+			"dev:test",
+			"test:shard",
+		];
+
+		for (const pattern of processPatterns) {
+			try {
+				await execAsync(`pkill -f "${pattern}" 2>/dev/null || true`);
+			} catch {
+				// Ignore errors
+			}
+		}
+
+		// Clean up old lock files and temp files
 		await execAsync(
 			'find /tmp -name ".claude_test_*" -mtime +1 -delete 2>/dev/null || true',
 		).catch(() => {});
 
-		// Wait for processes to terminate
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+		await execAsync(
+			"rm -rf /tmp/.claude_test_locks/* 2>/dev/null || true",
+		).catch(() => {});
 
-		console.log("✅ Pre-test cleanup completed");
+		// Wait for all processes to fully terminate
+		await new Promise((resolve) => setTimeout(resolve, 3000));
+
+		// Final port verification
+		let allPortsFree = true;
+		for (const port of testPorts) {
+			const { stdout } = await execAsync(
+				`lsof -ti:${port} 2>/dev/null || true`,
+			);
+			if (stdout.trim()) {
+				console.log(
+					`   ⚠️ Warning: Port ${port} still has processes after cleanup`,
+				);
+				allPortsFree = false;
+			}
+		}
+
+		if (allPortsFree) {
+			console.log("✅ Pre-test cleanup completed - all ports free");
+		} else {
+			console.log("⚠️ Pre-test cleanup completed with warnings");
+		}
 	}
 
 	/**

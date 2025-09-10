@@ -9,6 +9,7 @@ const path = require("node:path");
 const { promisify } = require("node:util");
 const execAsync = promisify(exec);
 const { ConditionWaiter } = require("../utils/condition-waiter.cjs");
+const { ProcessManager } = require("./process-manager.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -21,10 +22,17 @@ function logError(message) {
 }
 
 class InfrastructureManager {
-	constructor(config, testStatus) {
+	constructor(
+		config,
+		testStatus,
+		cleanupCoordinator = null,
+		processManager = null,
+	) {
 		this.config = config;
 		this.testStatus = testStatus;
 		this.waiter = new ConditionWaiter();
+		this.cleanupCoordinator = cleanupCoordinator;
+		this.processManager = processManager || new ProcessManager(config);
 	}
 
 	/**
@@ -54,6 +62,7 @@ class InfrastructureManager {
 			testUsers: await this.healthCheckTestUsers(),
 			build: await this.healthCheckBuild(),
 			dependencies: await this.healthCheckDependencies(),
+			devServer: await this.healthCheckDevServer(),
 		};
 
 		const healthyCount = Object.values(results).filter(
@@ -106,6 +115,12 @@ class InfrastructureManager {
 			needsVerification = true;
 		}
 
+		if (healthResults.devServer !== "healthy") {
+			log("🌐 Setting up dev server...");
+			setupResults.devServer = await this.setupDevServer();
+			needsVerification = true;
+		}
+
 		// Always clean ports as this is lightweight and prevents conflicts
 		setupResults.ports = await this.cleanupPorts();
 
@@ -119,6 +134,7 @@ class InfrastructureManager {
 				"environment",
 				"database",
 				"testUsers",
+				"devServer",
 			];
 			const allHealthy = criticalServices.every(
 				(service) => verificationResults[service] === "healthy",
@@ -322,6 +338,72 @@ class InfrastructureManager {
 	}
 
 	/**
+	 * Health check for dev server
+	 */
+	async healthCheckDevServer() {
+		try {
+			// First check if process is on the port
+			const { stdout: portCheck } = await execAsync(
+				"lsof -ti:3000 2>/dev/null || echo 'none'",
+				{ timeout: 1000 },
+			);
+
+			if (portCheck.trim() === "none") {
+				return "not_running";
+			}
+
+			// Try to actually fetch from the server with a longer timeout
+			// Next.js dev server can be slow to respond initially
+			try {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+				const response = await fetch("http://localhost:3000", {
+					signal: controller.signal,
+					headers: {
+						Accept: "text/html",
+					},
+				});
+
+				clearTimeout(timeoutId);
+
+				// Any successful response (200, 301, 302, 304) means server is running
+				if (response.status >= 200 && response.status < 400) {
+					return "healthy";
+				}
+			} catch (fetchError) {
+				// Fetch failed, but process exists, server might be starting
+				if (fetchError.name === "AbortError") {
+					// Timeout - server is probably still starting
+					return "starting";
+				}
+			}
+
+			// Final fallback - try curl with a redirect follow
+			try {
+				const { stdout } = await execAsync(
+					'curl -s -o /dev/null -w "%{http_code}" -L http://localhost:3000 2>/dev/null || echo "000"',
+					{ timeout: 3000 },
+				);
+				const statusCode = stdout.trim();
+				if (
+					statusCode === "200" ||
+					statusCode === "301" ||
+					statusCode === "302"
+				) {
+					return "healthy";
+				}
+			} catch {
+				// Curl also failed
+			}
+
+			return "not_running";
+		} catch {
+			return "not_running";
+		}
+	}
+
+	/**
 	 * Setup Supabase
 	 */
 	async setupSupabase() {
@@ -452,6 +534,157 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
 			return "skipped";
 		} catch (error) {
 			logError(`Failed to setup test users: ${error.message}`);
+			return "failed";
+		}
+	}
+
+	/**
+	 * Setup dev server for E2E tests with enhanced cleanup
+	 */
+	async setupDevServer() {
+		try {
+			// Skip dev server setup if using external server (e.g., containerized)
+			if (process.env.SKIP_DEV_SERVER === "true") {
+				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
+				log(`⚙️ Using external test server at ${testUrl}`);
+
+				// Verify external server is healthy
+				try {
+					const response = await fetch(`${testUrl}/api/health`);
+					const data = await response.json();
+					if (data.status === "ready") {
+						log("✅ External test server is healthy");
+						return "external_server";
+					}
+				} catch (error) {
+					logError(`External test server not responding: ${error.message}`);
+					throw new Error("External test server is not available");
+				}
+			}
+
+			// Check if server is already running
+			const status = await this.healthCheckDevServer();
+			if (status === "healthy") {
+				log("✅ Dev server already running on port 3000");
+				return "already_running";
+			}
+
+			// Enhanced port cleanup with verification
+			log("🧹 Clearing port 3000...");
+
+			// Use cleanup coordinator if available, otherwise direct cleanup
+			let portCleared;
+			if (this.cleanupCoordinator) {
+				portCleared = await this.cleanupCoordinator.clearPort(
+					3000,
+					this.processManager,
+				);
+			} else {
+				portCleared = await this.processManager.killPort(3000, {
+					maxRetries: 3,
+					waitTime: 2000,
+				});
+			}
+
+			if (!portCleared) {
+				logError("⚠️ Failed to clear port 3000 completely");
+			}
+
+			// Additional cleanup for Next.js specific processes
+			await execAsync('pkill -f "next.*dev.*3000" 2>/dev/null || true');
+			await execAsync('pkill -f "node.*next.*3000" 2>/dev/null || true');
+
+			// Wait for OS to fully release the port
+			log("⏱️ Waiting 3s for port cleanup...");
+			await this.waiter.delay(3000, "Port release");
+
+			// Verify port is actually free before starting
+			try {
+				const portFree = await this.waiter.waitForCondition(
+					async () => {
+						const { stdout } = await execAsync(
+							"lsof -ti:3000 2>/dev/null || true",
+						);
+						return !stdout.trim();
+					},
+					{ timeout: 10000, interval: 500, name: "port 3000 to be free" },
+				);
+
+				if (!portFree) {
+					throw new Error("Port 3000 still in use after cleanup");
+				}
+			} catch (error) {
+				logError(`Port verification failed: ${error.message}`);
+				// Try one more aggressive cleanup
+				await execAsync("fuser -k 3000/tcp 2>/dev/null || true");
+				await this.waiter.delay(2000, "Final port cleanup");
+			}
+
+			// Start the dev server
+			log("🚀 Starting dev server on port 3000...");
+			const { spawn } = require("node:child_process");
+			const devServer = spawn("pnpm", ["--filter", "web", "dev:test"], {
+				cwd: process.cwd(),
+				stdio: ["ignore", "pipe", "pipe"],
+				shell: true,
+				detached: true, // CRITICAL: Detach to prevent signal propagation
+				env: {
+					...process.env,
+					PORT: "3000",
+					NODE_ENV: "test",
+					NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+					FORCE_COLOR: "0",
+				},
+			});
+
+			// Store reference for cleanup
+			if (!global.devServerProcess) {
+				global.devServerProcess = devServer;
+			}
+
+			// Handle stdout/stderr to detect startup issues
+			let serverReady = false;
+			devServer.stdout.on("data", (data) => {
+				const output = data.toString();
+				if (output.includes("ready") || output.includes("started on")) {
+					serverReady = true;
+				}
+				if (this.config.execution?.debug) {
+					log(`[dev-server]: ${output.trim()}`);
+				}
+			});
+
+			devServer.stderr.on("data", (data) => {
+				const output = data.toString();
+				// Ignore common warnings
+				if (!output.includes("Warning") && !output.includes("Deprecation")) {
+					logError(`[dev-server error]: ${output.trim()}`);
+				}
+			});
+
+			devServer.on("error", (error) => {
+				logError(`Failed to start dev server: ${error.message}`);
+			});
+
+			// Wait for server to be ready
+			log("⏳ Waiting for dev server to be ready...");
+			await this.waiter.waitForHttp("http://localhost:3000", {
+				timeout: 60000,
+				interval: 2000,
+				name: "dev server startup",
+			});
+
+			// Verify it's actually working
+			const verifyStatus = await this.healthCheckDevServer();
+			if (verifyStatus === "healthy") {
+				log("✅ Dev server started successfully on port 3000");
+				return "started";
+			} else {
+				logError("⚠️ Dev server started but health check failed");
+				return "unhealthy";
+			}
+		} catch (error) {
+			logError(`Failed to setup dev server: ${error.message}`);
 			return "failed";
 		}
 	}
