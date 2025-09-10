@@ -332,8 +332,14 @@
 		"utilities": {
 			"name": "Utilities",
 			"description": "Utility and helper commands",
-			"commandCount": 6,
+			"commandCount": 7,
 			"commands": [
+				{
+					"command": "/claude-md-optimizer",
+					"description": "Optimizes CLAUDE.md files for maximum efficiency and clarity",
+					"category": "utilities",
+					"optimized": true
+				},
 				{
 					"command": "/command-optimizer",
 					"description": "Prompt design and optimization (--new | --modify)",
@@ -424,7 +430,7 @@
 			"/spec/* commands remain for standalone specification management",
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
-		"totalCommands": 4,
-		"lastUpdated": "2025-09-08T20:19:38.771Z"
+		"totalCommands": 5,
+		"lastUpdated": "2025-09-10T14:49:11.390Z"
 	}
 }
