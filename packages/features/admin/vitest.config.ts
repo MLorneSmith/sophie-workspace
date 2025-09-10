@@ -23,6 +23,12 @@ export default defineProject({
 				__dirname,
 				"src/test/__mocks__/server-only.ts",
 			),
+			// Mock Next.js modules for testing
+			"next/navigation": path.resolve(
+				__dirname,
+				"src/__mocks__/next/navigation.ts",
+			),
+			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
 		},
 	},
 	esbuild: {
