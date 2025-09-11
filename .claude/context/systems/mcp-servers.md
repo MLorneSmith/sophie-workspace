@@ -26,7 +26,7 @@ cross_references:
 created: "2025-09-09"
 last_updated: "2025-09-11"
 author: "create-context"
-revised: "2025-09-11 - Updated to reflect native Claude Code MCP integration"
+revised: "2025-09-11 - Removed github, cloudflare-bindings, and browser-tools MCP servers"
 ---
 
 # Model Context Protocol (MCP) Servers Architecture
@@ -53,7 +53,7 @@ MCP represents a standardized protocol that allows AI models to access resources
 └────────┬────────┘
          │
 ┌────────▼────────┐
-│  MCP Servers    │  Server Layer (12 services)
+│  MCP Servers    │  Server Layer (8 services)
 │  (npx/native)   │  Managed by Claude Code
 └─────────────────┘
 ```
@@ -68,16 +68,13 @@ MCP represents a standardized protocol that allows AI models to access resources
 **Infrastructure Services**:
 - `supabase`: Database and auth management
 - `postgres`: Direct PostgreSQL operations (local connection)
-- `github`: GitHub API integration
 - `newrelic`: Application monitoring (Python-based)
 
 **Cloudflare Services**:
-- `cloudflare-bindings`: Cloudflare service management
 - `cloudflare-playwright`: Browser automation via Workers
 
 **Utility Services**:
 - `context7`: Documentation and API reference retrieval
-- `browser-tools`: Browser debugging and testing tools
 
 ## Implementation Details
 
@@ -160,12 +157,9 @@ Servers are enabled via `.claude/settings.local.json`:
     "perplexity-ask",
     "supabase",
     "context7",
-    "cloudflare-bindings",
     "cloudflare-playwright",
     "postgres",
-    "browser-tools",
     "code-reasoning",
-    "github",
     "newrelic"
   ]
 }
@@ -233,7 +227,7 @@ Servers are enabled via `.claude/settings.local.json`:
 claude mcp list
 
 # Add a new MCP server
-claude mcp add github --scope project
+claude mcp add server-name --scope project
 
 # Remove an MCP server
 claude mcp remove server-name
@@ -252,7 +246,7 @@ Edit `.claude/settings.local.json`:
   "enableAllProjectMcpServers": true,  // Enable all at once
   "enabledMcpjsonServers": [           // Or specify individual servers
     "perplexity-ask",
-    "github",
+    "supabase",
     "postgres"
   ]
 }
@@ -308,7 +302,7 @@ Achieving 3-5x performance improvements:
 ```javascript
 // Parallel MCP tool calls
 const results = await Promise.all([
-    mcpClient.callTool('github', { repo: 'user/repo' }),
+    mcpClient.callTool('supabase', { operation: 'list_tables' }),
     mcpClient.callTool('postgres', { query: 'SELECT...' }),
     mcpClient.callTool('perplexity', { question: '...' })
 ]);
@@ -332,7 +326,7 @@ deploy:
 
 ### Active Servers in SlideHeroes
 
-The following 12 MCP servers are configured in `.mcp.json`:
+The following 8 MCP servers are configured in `.mcp.json`:
 
 1. **exa** - Web search via Exa API
    - Command: `npx -y exa-mcp`
@@ -350,37 +344,23 @@ The following 12 MCP servers are configured in `.mcp.json`:
    - Command: `npx -y @upstash/context7-mcp`
    - Purpose: Up-to-date library documentation
 
-5. **cloudflare-bindings** - Cloudflare services
-   - Command: `npx -y mcp-remote https://bindings.mcp.cloudflare.com/sse`
-   - Purpose: Cloudflare service management
-
-6. **cloudflare-playwright** - Browser automation
+5. **cloudflare-playwright** - Browser automation
    - Command: `npx -y mcp-remote https://slideheroes-playwright-mcp.slideheroes.workers.dev/sse`
    - Purpose: Playwright testing via Workers
 
-7. **postgres** - PostgreSQL operations
+6. **postgres** - PostgreSQL operations
    - Command: `npx -y @henkey/postgres-mcp-server`
    - Connection: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
    - Purpose: Direct database operations
 
-8. **browser-tools** - Browser debugging
-   - Command: `npx -y @agentdeskai/browser-tools-mcp@latest`
-   - Purpose: Browser testing and debugging
-
-9. **code-reasoning** - Sequential thinking
+7. **code-reasoning** - Sequential thinking
    - Command: `npx -y @mettamatt/code-reasoning`
    - Purpose: Complex problem-solving
 
-10. **github** - GitHub API
-    - Command: `npx -y @modelcontextprotocol/server-github`
-    - Purpose: Repository and issue management
-
-11. **newrelic** - Application monitoring
-    - Command: `uv run newrelic_mcp_server.py`
-    - Purpose: Performance monitoring and observability
-    - Note: Python-based server
-
-12. **Additional servers** configured but may be disabled in settings
+8. **newrelic** - Application monitoring
+   - Command: `uv run newrelic_mcp_server.py`
+   - Purpose: Performance monitoring and observability
+   - Note: Python-based server
 
 ## Claude Code Integration
 
@@ -414,12 +394,9 @@ The following 12 MCP servers are configured in `.mcp.json`:
     "perplexity-ask",
     "supabase",
     "context7",
-    "cloudflare-bindings",
     "cloudflare-playwright",
     "postgres",
-    "browser-tools",
     "code-reasoning",
-    "github",
     "newrelic"
   ]
 }
