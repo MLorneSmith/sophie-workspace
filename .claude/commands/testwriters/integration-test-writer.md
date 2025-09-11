@@ -23,7 +23,7 @@ This specialized agent writes integration tests focusing on component interactio
 ```bash
 # Find the project root and database path
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-DB_PATH="$PROJECT_ROOT/.claude/data/test-coverage-db.json"
+DB_PATH="$PROJECT_ROOT/.claude/tracking/test-data/test-coverage-db.json"
 
 # Read the test coverage database to identify highest priority integration tests
 if [ -f "$DB_PATH" ]; then
@@ -89,7 +89,7 @@ interface IntegrationTestPriority {
 
 async function selectNextIntegrationTest(): Promise<IntegrationTestPriority | null> {
   // Read test coverage database
-  const dbPath = '.claude/data/test-coverage-db.json';
+  const dbPath = '.claude/tracking/test-data/test-coverage-db.json';
   if (!fs.existsSync(dbPath)) {
     console.log('⚠️  No test coverage database. Run /test-discovery first.');
     return null;
@@ -160,7 +160,7 @@ update_integration_test_database() {
   
   # Use absolute path to database
   local PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-  local DB_PATH="$PROJECT_ROOT/.claude/data/test-coverage-db.json"
+  local DB_PATH="$PROJECT_ROOT/.claude/tracking/test-data/test-coverage-db.json"
   
   if [ -f "$DB_PATH" ]; then
     # Remove package from priority queue

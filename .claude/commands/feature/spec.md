@@ -29,15 +29,15 @@ Do not bother the user with preflight checks progress. Just do them and move on.
    - If invalid, tell user: "❌ Feature name must be kebab-case (lowercase letters, numbers, hyphens only). Examples: user-auth, payment-v2, notification-system"
 
 2. **Check for existing specification:**
-   - Check if `.claude/specs/$ARGUMENTS.md` already exists
+   - Check if `.claude/tracking/specs/$ARGUMENTS.md` already exists
    - If it exists, ask user: "⚠️ Feature specification '$ARGUMENTS' already exists. Do you want to overwrite it? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
    - If user says no, suggest: "Use a different name or run: /feature:plan $ARGUMENTS to create an implementation plan from the existing specification"
 
 3. **Verify directory structure:**
-   - Check if `.claude/specs/` directory exists
+   - Check if `.claude/tracking/specs/` directory exists
    - If not, create it first
-   - If unable to create, tell user: "❌ Cannot create specs directory. Please manually create: .claude/specs/"
+   - If unable to create, tell user: "❌ Cannot create specs directory. Please manually create: .claude/tracking/specs/"
 
 ## Instructions
 
@@ -109,7 +109,7 @@ Create a comprehensive specification with these sections:
 - Total duration
 
 ### 3. File Format with Frontmatter
-Save the completed specification to: `.claude/specs/$ARGUMENTS.md` with this exact structure:
+Save the completed specification to: `.claude/tracking/specs/$ARGUMENTS.md` with this exact structure:
 
 ```markdown
 ---
@@ -164,7 +164,7 @@ Before saving the specification, verify:
 ### 6. Post-Creation
 
 After successfully creating the specification:
-1. Confirm: "✅ Feature specification created: .claude/specs/$ARGUMENTS.md"
+1. Confirm: "✅ Feature specification created: .claude/tracking/specs/$ARGUMENTS.md"
 2. Show brief summary of what was captured
 3. Suggest next step: "Ready to create implementation plan? Run: /feature:plan $ARGUMENTS"
 

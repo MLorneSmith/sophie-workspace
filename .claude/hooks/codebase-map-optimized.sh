@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Configuration
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-SESSION_DIR="${PROJECT_ROOT}/.claude/sessions"
+SESSION_DIR="${PROJECT_ROOT}/.claude/tracking/sessions"
 HOOK_NAME="codebase-map"
 SESSION_TIMEOUT=3600  # 1 hour in seconds
 MAX_OUTPUT_CHARS=8500  # Leave room for headers and formatting

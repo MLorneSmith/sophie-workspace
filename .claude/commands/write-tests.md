@@ -354,11 +354,11 @@ function selectTestTemplate(testType: string, file: string): string {
 
 function getTestCaseDocumentationPath(testType: string, file: string): string {
   const pathMap = {
-    unit: `.claude/instructions/testing/test-cases/${mirrorSourcePath(file)}/${getBasename(file)}.test-cases.md`,
-    e2e: `.claude/instructions/testing/test-cases/e2e/${getWorkflowName(file)}.test-cases.md`,
-    accessibility: `.claude/instructions/testing/test-cases/a11y/${getComponentName(file)}.test-cases.md`,
-    integration: `.claude/instructions/testing/test-cases/integration/${getServiceName(file)}.test-cases.md`,
-    performance: `.claude/instructions/testing/test-cases/performance/${getFeatureName(file)}.test-cases.md`
+    unit: `.claude/tracking/test-planning/${mirrorSourcePath(file)}/${getBasename(file)}.test-cases.md`,
+    e2e: `.claude/tracking/test-planning/e2e/${getWorkflowName(file)}.test-cases.md`,
+    accessibility: `.claude/tracking/test-planning/a11y/${getComponentName(file)}.test-cases.md`,
+    integration: `.claude/tracking/test-planning/integration/${getServiceName(file)}.test-cases.md`,
+    performance: `.claude/tracking/test-planning/performance/${getFeatureName(file)}.test-cases.md`
   };
   
   return pathMap[testType];

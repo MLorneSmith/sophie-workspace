@@ -6,7 +6,7 @@
 set -euo pipefail
 
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-DB_PATH="$PROJECT_ROOT/.claude/data/test-coverage-db.json"
+DB_PATH="$PROJECT_ROOT/.claude/tracking/test-data/test-coverage-db.json"
 
 # Colors for output
 RED='\033[0;31m'

@@ -7,7 +7,7 @@ set -euo pipefail
 
 # Configuration
 CONFIG_FILE=".claude/settings.json"
-SESSION_DIR=".claude/sessions"
+SESSION_DIR=".claude/tracking/sessions"
 REVIEW_MARKER="📋 **Self-Review**"
 
 # Get payload from stdin

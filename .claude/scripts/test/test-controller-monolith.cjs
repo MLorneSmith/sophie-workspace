@@ -1233,7 +1233,10 @@ class E2ETestRunner {
 
 	loadTestDependencies() {
 		try {
-			const depPath = path.join(__dirname, "../../data/test-dependencies.json");
+			const depPath = path.join(
+				__dirname,
+				"../../tracking/test-data/test-dependencies.json",
+			);
 			// Use fsSync for synchronous file reading
 			if (fsSync.existsSync(depPath)) {
 				const deps = JSON.parse(fsSync.readFileSync(depPath, "utf8"));

@@ -144,15 +144,15 @@ git log --format='' --name-only -n 200 -- '*.ts' '*.tsx' | \
 
 ```bash
 # Update existing database with fresh scan results
-if [ "$1" = "--update" ] && [ -f ".claude/data/test-coverage-db.json" ]; then
+if [ "$1" = "--update" ] && [ -f ".claude/tracking/test-data/test-coverage-db.json" ]; then
   echo "📊 Updating existing test coverage database..."
   
   # Backup existing database
-  cp .claude/data/test-coverage-db.json .claude/data/test-coverage-db.backup.json
+  cp .claude/tracking/test-data/test-coverage-db.json .claude/tracking/test-data/test-coverage-db.backup.json
   
   # Extract existing priority adjustments and custom data
-  EXISTING_PRIORITIES=$(jq '.priorityQueue' .claude/data/test-coverage-db.json)
-  EXISTING_RECOMMENDATIONS=$(jq '.recommendations' .claude/data/test-coverage-db.json)
+  EXISTING_PRIORITIES=$(jq '.priorityQueue' .claude/tracking/test-data/test-coverage-db.json)
+  EXISTING_RECOMMENDATIONS=$(jq '.recommendations' .claude/tracking/test-data/test-coverage-db.json)
   
   # Perform fresh scan (counts would be updated here)
   echo "🔍 Scanning for current test files..."
@@ -170,7 +170,7 @@ if [ "$1" = "--update" ] && [ -f ".claude/data/test-coverage-db.json" ]; then
       .summary.totalTestFiles = ($vitest + $e2e) |
       .summary.totalTestCases = $cases |
       .lastUpdated = $updated' \
-     .claude/data/test-coverage-db.json > tmp.json && mv tmp.json .claude/data/test-coverage-db.json
+     .claude/tracking/test-data/test-coverage-db.json > tmp.json && mv tmp.json .claude/tracking/test-data/test-coverage-db.json
   
   echo "✅ Database updated with latest test counts"
   echo "   Vitest files: $VITEST_COUNT"
