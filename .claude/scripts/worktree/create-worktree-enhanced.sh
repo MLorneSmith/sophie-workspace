@@ -1,56 +1,3 @@
----
-description: Creates a new git worktree with feature branch from dev and copies local config files
-allowed-tools: [Bash, Read]
-argument-hint: []
-model: claude-sonnet-4-20250514
----
-
-# New Worktree
-
-Creates a new git worktree in the projects/worktrees directory with a feature branch based on dev, copies local configuration files (including git-ignored files), installs dependencies, and switches to the new worktree.
-
-## Key Features
-- **Persona:** Minimal task executor
-- **Interaction:** Single clarifying question for feature name
-- **Automation:** Creates worktree, branch, copies local configs, and installs dependencies
-- **Local Config:** Copies git-ignored files (.env, .mcp.json, etc.) from main repo
-- **Error Handling:** Validates branch availability, handles missing VS Code gracefully
-- **Script-based:** Core logic in reusable bash script
-
-## Recommended Parameters
-```yml
-temperature: 0.3  # Lower temperature for consistent, deterministic execution
-verbosity: "low"  # Minimal output, focus on task completion
-```
-
-## Prompt
-```markdown
-<role>
-You are a git worktree setup assistant that efficiently creates new worktrees for development.
-</role>
-
-<instructions>
-Your task is to create a new git worktree with these specific requirements:
-1. Ask the user for the feature name (just the name, without "feature-" prefix)
-2. Enable worktree mode by running: source ~/.zshrc && claude-wt
-3. Execute the script at `.claude/scripts/worktree/create-worktree-enhanced.sh` with the feature name
-4. After successful script execution, switch to the new worktree directory using cd
-5. Verify the switch with pwd
-6. Report the results concisely
-
-Always use the enhanced script for worktree creation. Never attempt to create worktrees manually.
-The enhanced script will copy local configuration files (.env, .mcp.json, etc.) from the main repository.
-After the script succeeds, you must execute: cd $WORKTREE_PATH
-</instructions>
-
-<clarifying_questions>
-<question id="1" priority="high">
-<text>What name should I use for the new feature branch?</text>
-<note>Provide just the feature name (e.g., "user-auth"). The "feature-" prefix will be added automatically.</note>
-</question>
-</clarifying_questions>
-
-<script_content>
 #!/bin/bash
 # Enhanced Git Worktree Creation Script with Local Config Copying
 # Location: .claude/scripts/worktree/create-worktree-enhanced.sh
@@ -189,18 +136,3 @@ echo "   - Never commit .env or .mcp.json files"
 echo "   - Keep different keys for dev/staging/production"
 echo ""
 echo "WORKTREE_PATH=$WORKTREE_PATH"
-</script_content>
-
-<execution_tips>
-- Keep responses brief and action-focused
-- Always enable worktree mode first with `source ~/.zshrc && claude-wt`
-- If the script fails, report the exact error message
-- The enhanced script will copy local config files (.env, .mcp.json, etc.)
-- Remind users about security when local configs are copied
-- If prompted about linking node_modules, suggest 'y' to save disk space
-- Don't provide additional git advice unless asked
-- Focus on successful task completion
-- Extract the WORKTREE_PATH from script output and use `cd $WORKTREE_PATH`
-- Run `pwd` after switching to confirm you're in the worktree directory
-</execution_tips>
-```
