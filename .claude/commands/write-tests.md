@@ -151,9 +151,9 @@ ${topAlternatives.map(alt => `- ${alt.testType} test for ${alt.file} (${alt.scor
 When unit tests are selected, follow the established workflow:
 
 ```
-/read .claude/instructions/testing/context/testing-fundamentals.md
-/read .claude/instructions/testing/context/mocking-and-typescript.md
-/read .claude/instructions/testing/context/testing-examples.md
+/read .claude/context/standards/testing/testing-fundamentals.md
+/read .claude/context/standards/testing/mocking-and-typescript.md
+/read .claude/context/standards/testing/testing-examples.md
 ```
 
 **Process:**
@@ -169,7 +169,7 @@ When unit tests are selected, follow the established workflow:
 When E2E tests are selected:
 
 ```
-/read .claude/instructions/testing/context/e2e-testing-fundamentals.md
+/read .claude/context/standards/testing/e2e-testing-fundamentals.md
 ```
 
 **Process:**
@@ -185,7 +185,7 @@ When E2E tests are selected:
 When accessibility tests are selected:
 
 ```
-/read .claude/instructions/testing/context/accessibility-testing-fundamentals.md
+/read .claude/context/standards/testing/accessibility-testing-fundamentals.md
 ```
 
 **Process:**
@@ -201,7 +201,7 @@ When accessibility tests are selected:
 When integration tests are selected:
 
 ```
-/read .claude/instructions/testing/context/integration-testing-fundamentals.md
+/read .claude/context/standards/testing/integration-testing-fundamentals.md
 ```
 
 **Process:**
@@ -217,7 +217,7 @@ When integration tests are selected:
 When performance tests are selected:
 
 ```
-/read .claude/instructions/testing/context/performance-testing-fundamentals.md
+/read .claude/context/standards/testing/performance-testing-fundamentals.md
 ```
 
 **Process:**
@@ -477,7 +477,7 @@ function getFramework(testType: string): string {
 ```typescript
 // EFFICIENT: Load once per session
 if (selectedTestType === 'e2e') {
-  await loadOnce('.claude/instructions/testing/context/e2e-testing-fundamentals.md');
+  await loadOnce('.claude/context/standards/testing/e2e-testing-fundamentals.md');
   // Now write 3-5 E2E tests using this loaded context
 }
 

@@ -1,6 +1,6 @@
 {
 	"version": "1.0",
-	"lastUpdated": "2025-09-09",
+	"lastUpdated": "2025-09-11",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -272,7 +272,7 @@
 		},
 		"standards": {
 			"name": "Standards & Guidelines",
-			"description": "Standards and guidelines for typography, coding conventions, and best practices",
+			"description": "Standards and guidelines for typography, coding conventions, testing practices, and best practices",
 			"documents": [
 				{
 					"path": "standards/TypographySystem.md",
@@ -287,6 +287,70 @@
 					"description": "Coding standards and conventions for the project.",
 					"lastUpdated": "2025-09-03",
 					"topics": ["Coding Conventions", "Code Quality", "Best Practices"]
+				},
+				{
+					"path": "standards/testing/testing-fundamentals.md",
+					"name": "Testing Fundamentals",
+					"description": "Core testing principles, philosophy, and best practices for the project.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["Testing Principles", "Test Philosophy", "Best Practices"]
+				},
+				{
+					"path": "standards/testing/mocking-and-typescript.md",
+					"name": "Mocking and TypeScript",
+					"description": "TypeScript mocking patterns and strategies for effective test doubles.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["TypeScript Mocking", "Test Doubles", "Mock Patterns"]
+				},
+				{
+					"path": "standards/testing/testing-examples.md",
+					"name": "Testing Examples",
+					"description": "Practical testing examples and patterns from the codebase.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["Test Examples", "Code Patterns", "Practical Testing"]
+				},
+				{
+					"path": "standards/testing/typescript-test-patterns.md",
+					"name": "TypeScript Test Patterns",
+					"description": "TypeScript-specific testing patterns and type-safe testing strategies.",
+					"lastUpdated": "2025-09-11",
+					"topics": [
+						"TypeScript Testing",
+						"Type-Safe Tests",
+						"Advanced Patterns"
+					]
+				},
+				{
+					"path": "standards/testing/e2e-testing-fundamentals.md",
+					"name": "E2E Testing Fundamentals",
+					"description": "End-to-end testing principles, Playwright patterns, and browser automation best practices.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["E2E Testing", "Playwright", "Browser Automation"]
+				},
+				{
+					"path": "standards/testing/accessibility-testing-fundamentals.md",
+					"name": "Accessibility Testing Fundamentals",
+					"description": "Accessibility testing guidelines, WCAG compliance, and automated a11y testing patterns.",
+					"lastUpdated": "2025-09-11",
+					"topics": [
+						"Accessibility Testing",
+						"WCAG Compliance",
+						"A11y Automation"
+					]
+				},
+				{
+					"path": "standards/testing/integration-testing-fundamentals.md",
+					"name": "Integration Testing Fundamentals",
+					"description": "Integration testing strategies for API endpoints, database operations, and service interactions.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["Integration Testing", "API Testing", "Service Testing"]
+				},
+				{
+					"path": "standards/testing/performance-testing-fundamentals.md",
+					"name": "Performance Testing Fundamentals",
+					"description": "Performance testing methodologies, metrics collection, and optimization validation strategies.",
+					"lastUpdated": "2025-09-11",
+					"topics": ["Performance Testing", "Metrics", "Load Testing"]
 				}
 			]
 		},

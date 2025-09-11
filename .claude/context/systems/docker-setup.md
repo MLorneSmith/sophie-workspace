@@ -26,7 +26,7 @@ cross_references:
 created: "2025-09-09"
 last_updated: "2025-09-09"
 author: "create-context"
-revised: "2025-09-09 - Updated with actual production architecture"
+revised: "2025-09-11 - Removed MCP servers container, now using native Claude Code MCP integration"
 ---
 
 # Docker Setup and Container Architecture
@@ -39,14 +39,18 @@ The SlideHeroes project uses a **hybrid Docker architecture** that combines cont
    - **2025slideheroes** - Main Supabase services (database, auth, storage) on ports 54321/54322
    - **2025slideheroes-e2e** - E2E test Supabase services on ports 55321/55322
 
-2. **Docker Compose Stacks**:
-   - **mcp-servers** - Model Context Protocol servers for AI capabilities
+2. **Docker Compose Stacks** (Optional):
    - **app-test** (optional) - Isolated test server container on port 3001
 
 3. **Host-Based Development**:
    - Next.js application runs directly on WSL2/macOS/Linux (not containerized)
    - Connects to containerized Supabase services
    - Provides fastest hot-reload and development experience
+
+4. **MCP Servers** (via Claude Code):
+   - Model Context Protocol servers now run natively through Claude Code
+   - Configured in `.mcp.json` at project root
+   - No longer require Docker containers
 
 This hybrid approach provides the best of both worlds: fast local development with isolated, reproducible service dependencies.
 
@@ -99,29 +103,29 @@ This hybrid approach provides the best of both worlds: fast local development wi
 - Pre-installed browsers
 - Isolated test dependencies
 
-### MCP Servers Container Group (`mcp-servers`)
+### MCP Servers (Now via Claude Code)
 
-**Purpose**: Containerized AI/ML model servers for Claude integration
+**Previous Setup**: MCP servers used to run as Docker containers via `docker-compose.mcp.yml`
 
-**Services** (11 total):
-- **mcp-perplexity** (3051): Perplexity AI integration
-- **mcp-supabase** (3002): Supabase management
-- **mcp-context7** (3003): Context management
-- **mcp-postgres** (3004): PostgreSQL operations
-- **mcp-browser-tools** (3005): Browser automation
-- **mcp-code-reasoning** (3006): Code analysis
-- **mcp-github** (3007): GitHub integration
-- **mcp-exa-proxy** (3008): Exa AI proxy
-- **mcp-cloudflare-observability** (3009): CF monitoring
-- **mcp-cloudflare-bindings** (3010): CF bindings
-- **mcp-cloudflare-playwright** (3011): CF Playwright
+**Current Setup**: MCP servers are now configured natively through Claude Code
+- **Configuration**: Defined in `.mcp.json` at project root
+- **Execution**: Managed directly by Claude Code using `npx` commands
+- **Authentication**: API keys stored in `.mcp.json` (consider environment variables for production)
 
-**Architecture Pattern**:
-- Multi-stage builds for minimal image size
-- Non-root user execution (`mcpuser`)
-- Health check endpoints on all services
-- Automatic restart policies
-- Shared network for inter-service communication
+**Available MCP Servers** (12 total):
+- **exa**: Web search via Exa API
+- **perplexity-ask**: Perplexity AI for questions
+- **supabase**: Database management
+- **context7**: Documentation retrieval
+- **cloudflare-bindings**: Cloudflare services
+- **cloudflare-playwright**: Browser automation
+- **postgres**: PostgreSQL database operations
+- **browser-tools**: Browser debugging tools
+- **code-reasoning**: Sequential thinking
+- **github**: GitHub API operations
+- **newrelic**: Monitoring/observability (Python-based)
+
+**Note**: The `docker-compose.mcp.yml` file remains in the project for reference but is no longer actively used.
 
 ### Supporting Services
 
@@ -149,7 +153,9 @@ This hybrid approach provides the best of both worlds: fast local development wi
 
 ```
 /
-├── docker-compose.mcp.yml      # MCP servers orchestration
+├── .mcp.json                   # MCP servers configuration (Claude Code)
+├── docker-compose.mcp.yml      # Legacy MCP servers orchestration (not in use)
+├── docker-compose.test.yml     # Test server container configuration
 ├── .dockerignore               # Build context optimization
 └── .devcontainer/
     ├── devcontainer.json       # VS Code devcontainer config
@@ -158,13 +164,13 @@ This hybrid approach provides the best of both worlds: fast local development wi
     ├── docker-compose.local.yml       # Local development extras
     ├── Dockerfile              # Main app container
     ├── Dockerfile.e2e          # E2E testing container
-    └── Dockerfile.mcp          # MCP client container
+    └── Dockerfile.mcp          # Legacy MCP client container (not in use)
 ```
 
-### MCP Server Structure
+### MCP Server Structure (Legacy - Not in Use)
 
 ```
-.mcp-servers/
+.mcp-servers/              # Legacy Docker-based MCP servers (kept for reference)
 ├── perplexity-ask/
 │   ├── Dockerfile
 │   └── proxy-server.js
@@ -173,6 +179,8 @@ This hybrid approach provides the best of both worlds: fast local development wi
 │   └── proxy-server.js
 └── [other-servers]/
     └── ...
+
+.mcp.json                  # Current MCP configuration (Claude Code)
 ```
 
 ### Volume Mounts
@@ -208,8 +216,9 @@ npx supabase start  # Main stack on ports 54321/54322
 # 4. Start E2E Supabase services (in apps/e2e directory)
 cd apps/e2e && npx supabase start  # E2E stack on ports 55321/55322
 
-# 5. Start MCP servers (optional, for AI features)
-docker-compose -f docker-compose.mcp.yml up -d
+# 5. Configure MCP servers (for AI features)
+# MCP servers are now managed by Claude Code via .mcp.json
+# No Docker commands needed - they run automatically when Claude Code starts
 
 # 6. Start development server on host
 pnpm dev  # Runs on port 3000
@@ -221,8 +230,7 @@ pnpm dev  # Runs on port 3000
 # Start backend services
 npx supabase start  # If not already running
 
-# Start MCP servers (if needed)
-docker-compose -f docker-compose.mcp.yml up -d
+# MCP servers start automatically with Claude Code (configured in .mcp.json)
 
 # Run development server on host
 pnpm dev  # Fast hot-reload on port 3000
@@ -248,23 +256,24 @@ docker-compose -f docker-compose.test.yml up  # Port 3001, uses E2E Supabase (55
 node .claude/scripts/test/test-controller.cjs  # Runs against port 3001
 ```
 
-### MCP Server Management
+### MCP Server Management (Now via Claude Code)
 
+MCP servers are now managed directly by Claude Code through the `.mcp.json` configuration file.
+
+**Configuration Location**: `.mcp.json` at project root
+
+**Management**:
+- Servers start automatically when Claude Code launches
+- Configuration changes require Claude Code restart
+- Check status with `claude mcp list` command
+- Enable/disable servers in `.claude/settings.local.json`
+
+**Legacy Docker Commands** (no longer used):
 ```bash
-# Start all MCP services
-docker-compose -f docker-compose.mcp.yml up -d
-
-# Start specific services
-docker-compose -f docker-compose.mcp.yml up mcp-perplexity mcp-github
-
-# View logs
-docker-compose -f docker-compose.mcp.yml logs -f mcp-perplexity
-
-# Restart a service
-docker-compose -f docker-compose.mcp.yml restart mcp-supabase
-
-# Stop all services
-docker-compose -f docker-compose.mcp.yml down
+# These commands are kept for reference only
+# docker-compose -f docker-compose.mcp.yml up -d    # Start all
+# docker-compose -f docker-compose.mcp.yml down     # Stop all
+# docker-compose -f docker-compose.mcp.yml logs     # View logs
 ```
 
 ## Environment Configuration
@@ -276,9 +285,9 @@ docker-compose -f docker-compose.mcp.yml down
 - DNS resolution between services
 - Port mapping to host
 
-**MCP Network**: `mcp-network`
-- Dedicated network for MCP servers
-- Service discovery by container name
+**MCP Network**: `mcp-network` (Legacy - Not in Use)
+- Previously used for MCP server containers
+- MCP servers now run through Claude Code, not Docker
 
 ### Environment Variables
 
@@ -396,11 +405,10 @@ docker ps --format "table {{.Names}}\t{{.Labels}}"
 npx supabase stop
 cd apps/e2e && npx supabase stop
 
-# Stop MCP servers
-docker-compose -f docker-compose.mcp.yml down
-
-# Stop test container
+# Stop test container (if running)
 docker-compose -f docker-compose.test.yml down
+
+# MCP servers stop automatically when Claude Code exits
 
 # Prune unused Docker resources
 docker system prune -a --volumes
@@ -437,15 +445,16 @@ docker system prune -a --volumes
 2. Fix permissions: `docker exec -it [container] chown -R node:node /workspace`
 3. Reset volumes: `docker-compose down -v && docker-compose up`
 
-### MCP Server Failures
+### MCP Server Issues (Now Claude Code)
 
-**Symptoms**: MCP servers unhealthy, connection refused
+**Symptoms**: MCP servers not responding, tool failures in Claude Code
 
 **Solutions**:
-1. Check health: `docker-compose -f docker-compose.mcp.yml ps`
-2. View logs: `docker-compose -f docker-compose.mcp.yml logs [service]`
-3. Verify environment variables are set
-4. Restart service: `docker-compose -f docker-compose.mcp.yml restart [service]`
+1. Check MCP status: `claude mcp list`
+2. Verify configuration in `.mcp.json`
+3. Check API keys and environment variables
+4. Restart Claude Code to reload MCP servers
+5. Check `.claude/settings.local.json` for enabled servers
 
 ### Performance Issues
 
@@ -554,12 +563,14 @@ Consider moving to full containerization when:
 
 ## Related Files
 
+- `/home/msmith/projects/2025slideheroes/.mcp.json`: MCP servers configuration (Claude Code)
 - `/home/msmith/projects/2025slideheroes/docker-compose.test.yml`: Test server container configuration
-- `/home/msmith/projects/2025slideheroes/docker-compose.mcp.yml`: MCP servers configuration
+- `/home/msmith/projects/2025slideheroes/docker-compose.mcp.yml`: Legacy MCP servers configuration (not in use)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: DevContainer services (optional)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/devcontainer.json`: VS Code integration
 - `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration
 - `/home/msmith/projects/2025slideheroes/.dockerignore`: Build optimization
+- `/home/msmith/projects/2025slideheroes/.claude/settings.local.json`: Claude Code MCP enablement settings
 
 ## See Also
 

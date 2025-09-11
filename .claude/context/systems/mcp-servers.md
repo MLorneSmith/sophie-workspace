@@ -24,173 +24,191 @@ cross_references:
 
 # Maintenance
 created: "2025-09-09"
-last_updated: "2025-09-09"
+last_updated: "2025-09-11"
 author: "create-context"
+revised: "2025-09-11 - Updated to reflect native Claude Code MCP integration"
 ---
 
 # Model Context Protocol (MCP) Servers Architecture
 
 ## Overview
 
-The SlideHeroes project implements a sophisticated Model Context Protocol (MCP) server infrastructure that enables Claude Code to interact with external services, databases, and APIs through a standardized protocol. Our implementation follows enterprise-grade patterns with containerized deployment, multi-layer security, and comprehensive monitoring.
+The SlideHeroes project implements Model Context Protocol (MCP) servers through Claude Code's native integration, enabling seamless interaction with external services, databases, and APIs. Our current implementation uses Claude Code's built-in MCP client to connect directly to servers configured in `.mcp.json`, eliminating the need for Docker containerization while maintaining security and functionality.
 
-MCP represents a three-tier architecture (Host → Client → Server) enabling AI models to access resources, execute tools, and use prompts through a standardized interface. Our implementation leverages Docker containers for isolation, scalability, and consistent deployment across development and production environments.
+MCP represents a standardized protocol that allows AI models to access resources, execute tools, and use prompts through a unified interface. Our implementation leverages Claude Code's native MCP support for simplified deployment and management.
 
 ## Architecture Design
 
-### Three-Tier MCP Architecture
+### Claude Code Native MCP Architecture
 
 ```
 ┌─────────────────┐
-│   Claude Code   │  Host Layer
+│   Claude Code   │  Host Application
 │   (Desktop)     │
 └────────┬────────┘
          │
 ┌────────▼────────┐
-│   MCP Client    │  Client Layer
-│  (Claude Code)  │
+│  Built-in MCP   │  MCP Client (Integrated)
+│     Client      │
 └────────┬────────┘
          │
 ┌────────▼────────┐
-│  MCP Servers    │  Server Layer (11 services)
-│  (Containers)   │
+│  MCP Servers    │  Server Layer (12 services)
+│  (npx/native)   │  Managed by Claude Code
 └─────────────────┘
 ```
 
 ### Service Categories
 
 **AI/ML Services**:
-- `mcp-perplexity` (3051): AI-powered search and Q&A
-- `mcp-exa-proxy` (3008): Advanced web search
-- `mcp-code-reasoning` (3006): Code analysis and reasoning
+- `perplexity-ask`: Perplexity AI for questions and research
+- `exa`: Web search via Exa API
+- `code-reasoning`: Sequential thinking and problem-solving
 
 **Infrastructure Services**:
-- `mcp-supabase` (3002): Database and auth management
-- `mcp-postgres` (3004): Direct PostgreSQL operations
-- `mcp-github` (3007): GitHub API integration
+- `supabase`: Database and auth management
+- `postgres`: Direct PostgreSQL operations (local connection)
+- `github`: GitHub API integration
+- `newrelic`: Application monitoring (Python-based)
 
 **Cloudflare Services**:
-- `mcp-cloudflare-observability` (3009): Monitoring and logs
-- `mcp-cloudflare-bindings` (3010): Worker bindings
-- `mcp-cloudflare-playwright` (3011): Browser automation
+- `cloudflare-bindings`: Cloudflare service management
+- `cloudflare-playwright`: Browser automation via Workers
 
 **Utility Services**:
-- `mcp-context7` (3003): Context management
-- `mcp-browser-tools` (3005): Browser automation
+- `context7`: Documentation and API reference retrieval
+- `browser-tools`: Browser debugging and testing tools
 
 ## Implementation Details
 
-### Container Architecture
+### Claude Code Native Configuration
 
-Each MCP server follows a standardized container pattern:
+MCP servers are configured in `.mcp.json` at the project root:
 
-```dockerfile
-# Multi-stage build for optimal size
-FROM node:22-alpine AS builder
-# Build from official repositories
-RUN git clone [official-repo] && npm build
-
-FROM node:22-alpine AS base
-# Security: Non-root user
-RUN addgroup -g 1001 -S mcpuser && \
-    adduser -S mcpuser -u 1001
-    
-# Health checks for monitoring
-HEALTHCHECK --interval=30s --timeout=10s \
-    CMD curl -f http://localhost:3000/health || exit 1
-    
-# Proxy server for HTTP health endpoint
-CMD ["node", "proxy-server.js"]
-```
-
-### Proxy Server Pattern
-
-All MCP servers implement a proxy pattern for health monitoring:
-
-```javascript
-// proxy-server.js pattern
-const mcpProcess = spawn("node", ["dist/index.js"], {
-    stdio: ["pipe", "pipe", "pipe"],
-    env: { ...process.env },
-});
-
-// Health endpoint for Docker/Kubernetes
-const healthServer = http.createServer((req, res) => {
-    if (req.url === "/health") {
-        res.writeHead(isHealthy ? 200 : 503);
-        res.end(JSON.stringify({
-            status: isHealthy ? "healthy" : "unhealthy",
-            service: serviceName,
-            timestamp: new Date().toISOString(),
-        }));
+```json
+{
+  "mcpServers": {
+    "server-name": {
+      "command": "npx",
+      "args": ["-y", "@package/name"],
+      "env": {
+        "API_KEY": "your-api-key"
+      }
     }
-});
+  }
+}
 ```
 
-### Service Configuration
+### Server Execution Patterns
 
-**Docker Compose Orchestration** (`docker-compose.mcp.yml`):
+**NPX-based Servers** (Most Common):
+```json
+{
+  "perplexity-ask": {
+    "command": "npx",
+    "args": ["-y", "server-perplexity-ask"],
+    "env": {
+      "PERPLEXITY_API_KEY": "pplx-xxx"
+    }
+  }
+}
+```
 
-```yaml
-services:
-  mcp-[service]:
-    build:
-      context: ./.mcp-servers/[service]
-      dockerfile: Dockerfile
-    container_name: mcp-[service]
-    environment:
-      - API_KEY=${API_KEY}
-      - PORT=3000
-    ports:
-      - "[external]:[internal]"
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+**Direct Command Servers**:
+```json
+{
+  "postgres": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@henkey/postgres-mcp-server",
+      "--connection-string",
+      "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+    ]
+  }
+}
+```
+
+**Python-based Servers**:
+```json
+{
+  "newrelic": {
+    "command": "/home/msmith/.local/bin/uv",
+    "args": [
+      "--directory",
+      "/home/msmith/projects/2025slideheroes/.mcp-servers/newrelic-mcp",
+      "run",
+      "newrelic_mcp_server.py"
+    ],
+    "env": {
+      "NEW_RELIC_API_KEY": "xxx",
+      "NEW_RELIC_ACCOUNT_ID": "xxx"
+    }
+  }
+}
+```
+
+### Server Enablement
+
+Servers are enabled via `.claude/settings.local.json`:
+
+```json
+{
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "exa",
+    "perplexity-ask",
+    "supabase",
+    "context7",
+    "cloudflare-bindings",
+    "cloudflare-playwright",
+    "postgres",
+    "browser-tools",
+    "code-reasoning",
+    "github",
+    "newrelic"
+  ]
+}
 ```
 
 ## Security Implementation
 
-### Multi-Layer Security Model
-
-Based on industry best practices and addressing the 43% vulnerability rate in MCP implementations:
+### Claude Code MCP Security Model
 
 **1. Authentication Layer**:
-```yaml
-# OAuth 2.1 with token exchange (recommended)
-MCP_AUTH_TOKEN: Bearer [token]
-GITHUB_PERSONAL_ACCESS_TOKEN: [token]
-PERPLEXITY_API_KEY: [api-key]
+```json
+// .mcp.json configuration
+{
+  "env": {
+    "MCP_AUTH_TOKEN": "Bearer xxx",
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxx",
+    "PERPLEXITY_API_KEY": "pplx-xxx"
+  }
+}
 ```
 
-**2. Container Security**:
-- Non-root user execution (`mcpuser:1001`)
-- Read-only root filesystems where possible
-- Capability restrictions
-- No privileged containers
+**2. Process Isolation**:
+- Each MCP server runs as separate process
+- Managed by Claude Code's process supervisor
+- Automatic restart on failure
+- Resource limits enforced by OS
 
-**3. Network Isolation**:
-```yaml
-networks:
-  default:
-    name: mcp-network
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.21.0.0/16
-```
+**3. Configuration Security**:
+- API keys stored in `.mcp.json` (consider environment variables for production)
+- `.mcp.json` should be in `.gitignore` if contains secrets
+- Project-scoped servers require trust approval
+- Permission system via `.claude/settings.local.json`
 
 **4. Input Validation**:
-- All proxy servers validate environment variables
-- Health check endpoints sanitize responses
-- Tool calls validated at MCP client layer
+- Claude Code validates all MCP tool calls
+- Type checking on parameters
+- Rate limiting built into Claude Code
 
-**5. Secret Management**:
-- Environment variables for credentials
-- Never hardcoded in images
-- Rotation policies for tokens
+**5. Secret Management Best Practices**:
+- Use environment variable expansion: `${API_KEY}`
+- Regular token rotation
+- Consider using `.env` files with dotenv
+- Never commit secrets to version control
 
 ### Security Best Practices
 
@@ -202,61 +220,74 @@ networks:
 
 ## Service Management
 
-### Startup Procedures
+### Claude Code MCP Management
 
+**Automatic Startup**:
+- MCP servers start automatically when Claude Code launches
+- Configuration read from `.mcp.json` at startup
+- Servers managed by Claude Code's process supervisor
+
+**Manual Management**:
 ```bash
-# 1. Start all MCP services
-docker-compose -f docker-compose.mcp.yml up -d
+# List configured MCP servers
+claude mcp list
 
-# 2. Verify health status
-./scripts/mcp-status.sh
+# Add a new MCP server
+claude mcp add github --scope project
 
-# 3. Monitor logs for specific services
-docker-compose -f docker-compose.mcp.yml logs -f mcp-perplexity
+# Remove an MCP server
+claude mcp remove server-name
 
-# 4. Selective service startup
-docker-compose -f docker-compose.mcp.yml up mcp-github mcp-postgres
+# View MCP server details
+/mcp  # Within Claude Code session
 ```
 
-### Health Monitoring
+### Configuration Management
 
-**Automated Health Checks** (`scripts/mcp-status.sh`):
+**Enable/Disable Servers**:
 
-```bash
-services=(
-    "3051:Perplexity"
-    "3002:Supabase"
-    "3003:Context7"
-    # ... other services
-)
-
-for service in "${services[@]}"; do
-    port="${service%%:*}"
-    name="${service##*:}"
-    
-    if curl -s -f "http://localhost:$port/health" >/dev/null 2>&1; then
-        echo "✅ $name (port $port): healthy"
-    else
-        echo "❌ $name (port $port): unhealthy"
-    fi
-done
+Edit `.claude/settings.local.json`:
+```json
+{
+  "enableAllProjectMcpServers": true,  // Enable all at once
+  "enabledMcpjsonServers": [           // Or specify individual servers
+    "perplexity-ask",
+    "github",
+    "postgres"
+  ]
+}
 ```
 
-### Service Operations
+**Update Server Configuration**:
 
-**Restart Unhealthy Service**:
+1. Edit `.mcp.json` with new settings
+2. Restart Claude Code to apply changes
+3. Verify with `claude mcp list`
+
+### Monitoring and Debugging
+
+**Check MCP Status**:
 ```bash
-docker-compose -f docker-compose.mcp.yml restart mcp-[service]
+# From command line
+claude mcp list
+
+# Within Claude Code
+/mcp
 ```
 
-**View Service Logs**:
+**Debug MCP Issues**:
 ```bash
-docker-compose -f docker-compose.mcp.yml logs --tail=100 -f mcp-[service]
+# Launch Claude with debug flag
+claude --mcp-debug
+
+# Check for configuration errors
+claude --debug
 ```
 
-**Scale Services** (for load testing):
+**View Permissions**:
 ```bash
-docker-compose -f docker-compose.mcp.yml up --scale mcp-perplexity=3
+# Within Claude Code
+/permissions
 ```
 
 ## Performance Optimization
@@ -297,30 +328,108 @@ deploy:
       memory: 256M
 ```
 
+## Current MCP Server Configuration
+
+### Active Servers in SlideHeroes
+
+The following 12 MCP servers are configured in `.mcp.json`:
+
+1. **exa** - Web search via Exa API
+   - Command: `npx -y exa-mcp`
+   - Purpose: Advanced web search capabilities
+
+2. **perplexity-ask** - Perplexity AI integration
+   - Command: `npx -y server-perplexity-ask`
+   - Purpose: AI-powered Q&A and research
+
+3. **supabase** - Supabase management
+   - Command: `npx -y @supabase/mcp-server-supabase@latest`
+   - Purpose: Database and auth management
+
+4. **context7** - Documentation retrieval
+   - Command: `npx -y @upstash/context7-mcp`
+   - Purpose: Up-to-date library documentation
+
+5. **cloudflare-bindings** - Cloudflare services
+   - Command: `npx -y mcp-remote https://bindings.mcp.cloudflare.com/sse`
+   - Purpose: Cloudflare service management
+
+6. **cloudflare-playwright** - Browser automation
+   - Command: `npx -y mcp-remote https://slideheroes-playwright-mcp.slideheroes.workers.dev/sse`
+   - Purpose: Playwright testing via Workers
+
+7. **postgres** - PostgreSQL operations
+   - Command: `npx -y @henkey/postgres-mcp-server`
+   - Connection: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
+   - Purpose: Direct database operations
+
+8. **browser-tools** - Browser debugging
+   - Command: `npx -y @agentdeskai/browser-tools-mcp@latest`
+   - Purpose: Browser testing and debugging
+
+9. **code-reasoning** - Sequential thinking
+   - Command: `npx -y @mettamatt/code-reasoning`
+   - Purpose: Complex problem-solving
+
+10. **github** - GitHub API
+    - Command: `npx -y @modelcontextprotocol/server-github`
+    - Purpose: Repository and issue management
+
+11. **newrelic** - Application monitoring
+    - Command: `uv run newrelic_mcp_server.py`
+    - Purpose: Performance monitoring and observability
+    - Note: Python-based server
+
+12. **Additional servers** configured but may be disabled in settings
+
 ## Claude Code Integration
 
-### Configuration Structure
+### Configuration Files
 
-**MCP Settings** (`.claude/settings/mcp.json`):
+**Primary Configuration** (`.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp"],
+      "env": { "EXA_API_KEY": "xxx" }
+    },
+    "perplexity-ask": {
+      "command": "npx",
+      "args": ["-y", "server-perplexity-ask"],
+      "env": { "PERPLEXITY_API_KEY": "xxx" }
+    },
+    // ... other servers
+  }
+}
+```
+
+**Enablement Control** (`.claude/settings.local.json`):
 ```json
 {
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
+    "exa",
     "perplexity-ask",
     "supabase",
     "context7",
+    "cloudflare-bindings",
+    "cloudflare-playwright",
     "postgres",
     "browser-tools",
     "code-reasoning",
     "github",
-    "exa",
-    "cloudflare-observability",
-    "cloudflare-bindings",
-    "cloudflare-playwright",
     "newrelic"
   ]
 }
 ```
+
+### Configuration Hierarchy
+
+1. **`.mcp.json`** (project root) - Server definitions
+2. **`.claude/settings.local.json`** - Local overrides and enablement
+3. **`~/.claude.json`** - Global settings (lower priority)
 
 ### Tool Usage Patterns
 
@@ -334,111 +443,124 @@ deploy:
 
 ### Common Issues and Solutions
 
-**Service Won't Start**:
+**MCP Server Not Available**:
 ```bash
-# Check logs
-docker logs mcp-[service]
+# Check if server is configured
+claude mcp list
 
-# Verify environment variables
-docker exec mcp-[service] env | grep API_KEY
+# Verify in .mcp.json
+cat .mcp.json | jq '.mcpServers."server-name"'
 
-# Check port conflicts
-lsof -i :3000-3100
+# Check enablement in settings
+cat .claude/settings.local.json | grep enabledMcpjsonServers
 ```
 
-**Health Check Failures**:
-```bash
-# Direct health check
-curl http://localhost:[port]/health
-
-# Check container networking
-docker exec mcp-[service] ping host.docker.internal
-
-# Restart with verbose logging
-docker-compose -f docker-compose.mcp.yml up mcp-[service]
-```
-
-**Performance Issues**:
-1. Check container resource usage: `docker stats`
-2. Review service logs for errors
-3. Verify network latency between services
-4. Check for API rate limiting
+**Server Connection Failures**:
+1. Restart Claude Code to reload configuration
+2. Check API keys in `.mcp.json`
+3. Verify network connectivity
+4. Run with debug flag: `claude --mcp-debug`
 
 **Authentication Failures**:
-1. Verify API keys are correctly set
-2. Check token expiration
-3. Review service-specific auth requirements
-4. Validate OAuth flow for applicable services
+1. Verify API keys are correctly set in `.mcp.json`
+2. Check token format (Bearer tokens need prefix)
+3. Test API keys independently
+4. Review service-specific auth requirements
+
+**Performance Issues**:
+1. Check Claude Code token usage with `/cost`
+2. Monitor system resources
+3. Reduce number of active MCP servers
+4. Check for API rate limiting
+
+**Configuration Not Loading**:
+1. Ensure `.mcp.json` is valid JSON
+2. Check file permissions
+3. Verify Claude Code has read access
+4. Look for syntax errors in configuration
 
 ## Production Considerations
 
-### Deployment Patterns
+### Configuration Best Practices
 
-**1. Development**: Full stack with all services
-**2. Staging**: Production-like with monitoring
-**3. Production**: 
-   - High availability with replicas
-   - Load balancing for critical services
-   - External secret management (Vault/AWS Secrets Manager)
-   - Comprehensive monitoring (Prometheus/Grafana)
+**Development**:
+- Store API keys in `.mcp.json` for convenience
+- Use `.gitignore` to exclude sensitive files
+- Enable all servers for testing
 
-### Monitoring Stack
+**Production**:
+- Use environment variables for secrets
+- Implement secret rotation policies
+- Enable only required MCP servers
+- Consider rate limiting and quotas
 
-```yaml
-# Add to production deployment
-monitoring:
-  prometheus:
-    scrape_interval: 15s
-    targets:
-      - mcp-network:*/metrics
-  
-  grafana:
-    dashboards:
-      - mcp-service-health
-      - mcp-performance-metrics
-      - mcp-error-rates
-```
+### Security Hardening
 
-### Disaster Recovery
+1. **Secret Management**:
+   - Never commit API keys to version control
+   - Use environment variable expansion
+   - Implement regular key rotation
+   - Audit access logs
 
-1. **Backup Strategy**: Regular config backups
-2. **Failover**: Automated service restart
-3. **Circuit Breakers**: Prevent cascade failures
-4. **Rollback**: Version-tagged images for quick rollback
+2. **Access Control**:
+   - Use project-scoped configuration
+   - Require explicit trust approval
+   - Implement principle of least privilege
+   - Regular permission audits
+
+### Performance Optimization
+
+1. **Token Efficiency**:
+   - Monitor usage with `/cost` command
+   - Optimize MCP tool calls
+   - Batch operations when possible
+   - Cache frequently accessed data
+
+2. **Resource Management**:
+   - Limit concurrent MCP servers
+   - Monitor system resources
+   - Implement timeout policies
+   - Use connection pooling where applicable
 
 ## Related Files
 
-- `/docker-compose.mcp.yml`: MCP services orchestration
-- `/.mcp-servers/*/Dockerfile`: Individual service containers
-- `/.mcp-servers/*/proxy-server.js`: Health check proxies
-- `/scripts/mcp-status.sh`: Health monitoring script
-- `/scripts/start-mcp-servers.sh`: Startup automation
-- `/scripts/stop-mcp-servers.sh`: Shutdown script
-- `/.claude/settings/mcp.json`: Claude Code MCP configuration
-- `/.claude/context/systems/docker-setup.md`: Container architecture
+### Current Configuration
+- `/.mcp.json`: Primary MCP server configuration
+- `/.claude/settings.local.json`: Local enablement settings
+- `/.claude/settings/mcp.json`: MCP settings (if exists)
+- `~/.claude.json`: Global Claude Code configuration
+
+### Legacy Docker Files (Reference Only)
+- `/docker-compose.mcp.yml`: Legacy Docker orchestration
+- `/.mcp-servers/*/`: Legacy container definitions
+- `/scripts/mcp-status.sh`: Legacy health monitoring
+
+### Documentation
+- `/.claude/context/systems/docker-setup.md`: Current Docker architecture
+- `/CLAUDE.md`: Project-specific Claude Code instructions
 
 ## Best Practices Summary
 
-1. **Always use containerized deployment** for consistency and isolation
-2. **Implement comprehensive health checks** for all services
-3. **Follow security-first design** with multi-layer protection
-4. **Monitor service health proactively** using automated checks
-5. **Optimize for token efficiency** to maximize AI context usage
-6. **Use parallel execution** for independent operations
-7. **Maintain service documentation** for each MCP server
-8. **Regular security audits** of configurations and dependencies
-9. **Implement proper error handling** and retry logic
-10. **Version control all configurations** for reproducibility
+1. **Use Claude Code's native MCP integration** for simplified management
+2. **Store configuration in `.mcp.json`** at project root
+3. **Never commit API keys** to version control
+4. **Enable only required servers** to optimize performance
+5. **Monitor token usage** with `/cost` command
+6. **Use parallel MCP tool calls** for independent operations
+7. **Document server purposes** and API requirements
+8. **Regular security audits** of API keys and access
+9. **Implement proper error handling** in tool usage
+10. **Keep Claude Code updated** for latest MCP features
 
 ## Future Enhancements
 
-1. **Kubernetes Migration**: Helm charts for K8s deployment
-2. **Service Mesh**: Istio/Linkerd for advanced networking
-3. **API Gateway**: Kong/Traefik for centralized routing
-4. **Distributed Tracing**: OpenTelemetry integration
-5. **Auto-scaling**: HPA based on metrics
-6. **Multi-region**: Geographic distribution for latency
-7. **Cost Optimization**: Spot instances for non-critical services
+1. **Environment Variable Management**: Migrate all secrets to `.env` files
+2. **Custom MCP Servers**: Develop project-specific MCP servers
+3. **OAuth Integration**: Implement OAuth for applicable services
+4. **Caching Layer**: Add Redis caching for frequently accessed data
+5. **Rate Limiting**: Implement intelligent rate limiting
+6. **Monitoring Integration**: Add telemetry for MCP usage
+7. **Cost Tracking**: Detailed per-server cost analysis
 
 ## See Also
 
