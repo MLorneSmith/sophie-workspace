@@ -252,7 +252,7 @@ class E2ETestRunner {
 		try {
 			const depsPath = path.join(
 				process.cwd(),
-				".claude/rules/test-dependencies.json",
+				".claude/tracking/test-data/test-dependencies.json",
 			);
 			if (require("node:fs").existsSync(depsPath)) {
 				this.testDependencies = require(depsPath);
