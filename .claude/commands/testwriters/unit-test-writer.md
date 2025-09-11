@@ -174,7 +174,7 @@ Provide a summary including:
 <context>
 ## Database Integration
 
-The test coverage database at `.claude/data/test-coverage-db.json` tracks:
+The test coverage database at `.claude/tracking/test-data/test-coverage-db.json` tracks:
 - Priority queue of files needing tests
 - Package-level test statistics  
 - Test creation history
@@ -386,7 +386,7 @@ This command excels at:
 ## Integration Features
 
 - **Context**: Loads `.claude/context/tools/vitest-unit-testing.md` for patterns
-- **Database**: Tracks progress in `.claude/data/test-coverage-db.json`
+- **Database**: Tracks progress in `.claude/tracking/test-data/test-coverage-db.json`
 - **Coverage**: Uses Vitest's built-in coverage reporting
 - **Scripts**: Leverages helper scripts in `.claude/scripts/testwriters/`
 - **Agent**: Uses test-analysis-agent for complex path analysis

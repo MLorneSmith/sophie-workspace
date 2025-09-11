@@ -15,23 +15,23 @@ Analyze feature tasks to identify parallel work streams for maximum efficiency.
 
 1. **Verify implementation exists:**
    ```bash
-   test -f .claude/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation not found. Run: /feature:plan $ARGUMENTS"
+   test -f .claude/tracking/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation not found. Run: /feature:plan $ARGUMENTS"
    ```
 
 2. **Check for existing analysis:**
-   - If task_number provided: Check `.claude/implementations/$ARGUMENTS/${task_number}-analysis.md`
+   - If task_number provided: Check `.claude/tracking/implementations/$ARGUMENTS/${task_number}-analysis.md`
    - If exists: "⚠️ Analysis already exists. Overwrite? (yes/no)"
 
 ## Instructions
 
 ### 1. Read Implementation Context
 
-Read implementation plan from `.claude/implementations/$ARGUMENTS/plan.md` to understand:
+Read implementation plan from `.claude/tracking/implementations/$ARGUMENTS/plan.md` to understand:
 - Feature scope
 - Technical requirements
 - Task breakdown
 
-If task_number provided, read specific task from `.claude/implementations/$ARGUMENTS/${task_number}.md`
+If task_number provided, read specific task from `.claude/tracking/implementations/$ARGUMENTS/${task_number}.md`
 
 ### 2. Identify Parallel Work Streams
 
@@ -59,7 +59,7 @@ For specific task analysis:
 
 Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
-Create `.claude/implementations/$ARGUMENTS/${task_number}-analysis.md`:
+Create `.claude/tracking/implementations/$ARGUMENTS/${task_number}-analysis.md`:
 
 ```markdown
 ---

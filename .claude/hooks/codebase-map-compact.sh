@@ -7,7 +7,7 @@
 set -euo pipefail
 
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-SESSION_DIR="${PROJECT_ROOT}/.claude/sessions"
+SESSION_DIR="${PROJECT_ROOT}/.claude/tracking/sessions"
 HOOK_NAME="codebase-map"
 SESSION_TIMEOUT=3600
 MAX_CHARS=8800

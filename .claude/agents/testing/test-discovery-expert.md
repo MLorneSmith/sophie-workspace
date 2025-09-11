@@ -24,7 +24,7 @@ You are a specialized agent for comprehensive test discovery and coverage analys
    - Focus on business-critical paths
 
 4. **Database Management**
-   - Maintain `.claude/data/test-coverage-db.json`
+   - Maintain `.claude/tracking/test-data/test-coverage-db.json`
    - Track test coverage over time
    - Update efficiently using caching
    - Generate actionable reports

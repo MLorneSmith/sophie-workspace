@@ -27,23 +27,23 @@ Do not bother the user with preflight checks progress. Just do them and move on.
    - Stop execution if <feature_name> was not provided
 
 2. **Verify specification exists:**
-   - Check if `.claude/specs/$ARGUMENTS.md` exists
+   - Check if `.claude/tracking/specs/$ARGUMENTS.md` exists
    - If not found, tell user: "❌ Feature specification not found: $ARGUMENTS. First create it with: /feature:spec $ARGUMENTS"
    - Stop execution if specification doesn't exist
 
 3. **Validate specification frontmatter:**
    - Verify specification has valid frontmatter with: name, description, status, created
-   - If frontmatter is invalid or missing, tell user: "❌ Invalid specification frontmatter. Please check: .claude/specs/$ARGUMENTS.md"
+   - If frontmatter is invalid or missing, tell user: "❌ Invalid specification frontmatter. Please check: .claude/tracking/specs/$ARGUMENTS.md"
    - Show what's missing or invalid
 
 4. **Check for existing implementation plan:**
-   - Check if `.claude/implementations/$ARGUMENTS/plan.md` already exists
+   - Check if `.claude/tracking/implementations/$ARGUMENTS/plan.md` already exists
    - If it exists, ask user: "⚠️ Implementation plan '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "View existing plan with: /read .claude/implementations/$ARGUMENTS/plan.md"
+   - If user says no, suggest: "View existing plan with: /read .claude/tracking/implementations/$ARGUMENTS/plan.md"
 
 5. **Verify directory permissions:**
-   - Ensure `.claude/implementations/` directory exists or can be created
+   - Ensure `.claude/tracking/implementations/` directory exists or can be created
    - If cannot create, tell user: "❌ Cannot create implementations directory. Please check permissions."
 
 ## Instructions
@@ -51,7 +51,7 @@ Do not bother the user with preflight checks progress. Just do them and move on.
 You are a technical architect converting a Feature Specification into a detailed implementation plan for: **$ARGUMENTS**
 
 ### 1. Read the Specification
-- Load the specification from `.claude/specs/$ARGUMENTS.md`
+- Load the specification from `.claude/tracking/specs/$ARGUMENTS.md`
 - Analyze all requirements and constraints
 - Understand the user stories and success criteria
 - Extract the specification description from frontmatter
@@ -64,7 +64,7 @@ You are a technical architect converting a Feature Specification into a detailed
 - Consider performance and scalability requirements
 
 ### 3. File Format with Frontmatter
-Create the implementation plan at: `.claude/implementations/$ARGUMENTS/plan.md` with this exact structure:
+Create the implementation plan at: `.claude/tracking/implementations/$ARGUMENTS/plan.md` with this exact structure:
 
 ```markdown
 ---
@@ -72,7 +72,7 @@ name: $ARGUMENTS
 status: backlog
 created: [Current ISO date/time]
 progress: 0%
-specification: .claude/specs/$ARGUMENTS.md
+specification: .claude/tracking/specs/$ARGUMENTS.md
 github: [Will be updated when synced to GitHub]
 type: implementation-plan
 ---
@@ -202,8 +202,8 @@ High-level task categories for decomposition:
 
 ### 5. Output Location
 Create the directory structure if it doesn't exist:
-- `.claude/implementations/$ARGUMENTS/` (directory)
-- `.claude/implementations/$ARGUMENTS/plan.md` (implementation plan file)
+- `.claude/tracking/implementations/$ARGUMENTS/` (directory)
+- `.claude/tracking/implementations/$ARGUMENTS/plan.md` (implementation plan file)
 
 ### 6. Quality Validation
 
@@ -218,7 +218,7 @@ Before saving the plan, verify:
 ### 7. Post-Creation
 
 After successfully creating the plan:
-1. Confirm: "✅ Implementation plan created: .claude/implementations/$ARGUMENTS/plan.md"
+1. Confirm: "✅ Implementation plan created: .claude/tracking/implementations/$ARGUMENTS/plan.md"
 2. Show summary of:
    - Number of phases identified
    - Total estimated effort

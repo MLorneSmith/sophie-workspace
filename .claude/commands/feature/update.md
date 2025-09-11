@@ -57,11 +57,11 @@ if [ "$issue_type" = "feature" ] || [ "$issue_type" = "task" ]; then
   feature_name=$(gh issue view $ARGUMENTS --json title -q '.title' | sed 's/^Feature: //' | sed 's/^Task: //')
   
   # Check for local progress tracking
-  if [ -d ".claude/implementations/$feature_name" ]; then
+  if [ -d ".claude/tracking/implementations/$feature_name" ]; then
     echo "📁 Found local implementation: $feature_name"
     
     # Count completed tasks
-    total_tasks=$(ls .claude/implementations/$feature_name/[0-9]*.md 2>/dev/null | wc -l)
+    total_tasks=$(ls .claude/tracking/implementations/$feature_name/[0-9]*.md 2>/dev/null | wc -l)
     
     if [ $total_tasks -gt 0 ]; then
       # Get task completion status from GitHub
@@ -69,7 +69,7 @@ if [ "$issue_type" = "feature" ] || [ "$issue_type" = "task" ]; then
       in_progress_tasks=0
       blocked_tasks=0
       
-      for task_file in .claude/implementations/$feature_name/[0-9]*.md; do
+      for task_file in .claude/tracking/implementations/$feature_name/[0-9]*.md; do
         [ -f "$task_file" ] || continue
         task_num=$(basename "$task_file" .md)
         
@@ -126,7 +126,7 @@ if [ "$issue_type" = "feature" ] && [ -n "$total_tasks" ]; then
 EOF
 
   # List task statuses
-  for task_file in .claude/implementations/$feature_name/[0-9]*.md; do
+  for task_file in .claude/tracking/implementations/$feature_name/[0-9]*.md; do
     [ -f "$task_file" ] || continue
     task_num=$(basename "$task_file" .md)
     task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
@@ -206,10 +206,10 @@ Update local frontmatter with last sync time:
 
 ```bash
 # Update local plan if it exists
-if [ -f ".claude/implementations/$feature_name/plan.md" ]; then
+if [ -f ".claude/tracking/implementations/$feature_name/plan.md" ]; then
   # Update the updated field in frontmatter
-  sed -i.bak "/^updated:/c\updated: $current_date" .claude/implementations/$feature_name/plan.md
-  rm .claude/implementations/$feature_name/plan.md.bak
+  sed -i.bak "/^updated:/c\updated: $current_date" .claude/tracking/implementations/$feature_name/plan.md
+  rm .claude/tracking/implementations/$feature_name/plan.md.bak
   echo "📝 Updated local plan timestamp"
 fi
 ```

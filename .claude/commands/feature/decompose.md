@@ -22,19 +22,19 @@ Before proceeding, complete these validation steps.
 Do not bother the user with preflight checks progress. Just do them and move on.
 
 1. **Verify implementation plan exists:**
-   - Check if `.claude/implementations/$ARGUMENTS/plan.md` exists
+   - Check if `.claude/tracking/implementations/$ARGUMENTS/plan.md` exists
    - If not found, tell user: "❌ Implementation plan not found: $ARGUMENTS. First create it with: /feature:plan $ARGUMENTS"
    - Stop execution if plan doesn't exist
 
 2. **Check for existing tasks:**
-   - Check if any numbered task files (001.md, 002.md, etc.) already exist in `.claude/implementations/$ARGUMENTS/`
+   - Check if any numbered task files (001.md, 002.md, etc.) already exist in `.claude/tracking/implementations/$ARGUMENTS/`
    - If tasks exist, list them and ask: "⚠️ Found {count} existing tasks. Delete and recreate all tasks? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "View existing tasks with: ls .claude/implementations/$ARGUMENTS/*.md"
+   - If user says no, suggest: "View existing tasks with: ls .claude/tracking/implementations/$ARGUMENTS/*.md"
 
 3. **Validate plan frontmatter:**
    - Verify plan has valid frontmatter with: name, status, created, specification
-   - If invalid, tell user: "❌ Invalid plan frontmatter. Please check: .claude/implementations/$ARGUMENTS/plan.md"
+   - If invalid, tell user: "❌ Invalid plan frontmatter. Please check: .claude/tracking/implementations/$ARGUMENTS/plan.md"
 
 4. **Check plan status:**
    - If plan status is already "completed", warn user: "⚠️ Implementation is marked as completed. Are you sure you want to decompose it again?"
@@ -44,7 +44,7 @@ Do not bother the user with preflight checks progress. Just do them and move on.
 You are decomposing an implementation plan into specific, actionable tasks for: **$ARGUMENTS**
 
 ### 1. Read the Implementation Plan
-- Load the plan from `.claude/implementations/$ARGUMENTS/plan.md`
+- Load the plan from `.claude/tracking/implementations/$ARGUMENTS/plan.md`
 - Understand the technical approach and phases
 - Review the task categories preview
 - Analyze dependencies and risk factors
@@ -71,7 +71,7 @@ Task:
     - {list of 3-4 tasks for this batch}
     
     For each task:
-    1. Create file: .claude/implementations/$ARGUMENTS/{number}.md
+    1. Create file: .claude/tracking/implementations/$ARGUMENTS/{number}.md
     2. Use exact format with frontmatter and all sections
     3. Follow task breakdown from implementation plan
     4. Set parallel/depends_on fields appropriately
@@ -142,7 +142,7 @@ Clear, concise description of what needs to be done
 ```
 
 ### 5. Task Naming Convention
-Save tasks as: `.claude/implementations/$ARGUMENTS/{task_number}.md`
+Save tasks as: `.claude/tracking/implementations/$ARGUMENTS/{task_number}.md`
 - Use sequential numbering: 001.md, 002.md, etc.
 - Keep task titles short but descriptive
 - Focus on the outcome, not the process
@@ -291,7 +291,7 @@ If any step fails:
 - If task creation partially completes, list which tasks were created
 - Provide option to clean up partial tasks
 - Never leave the implementation in an inconsistent state
-- Suggest manual verification: "Check: ls .claude/implementations/$ARGUMENTS/*.md"
+- Suggest manual verification: "Check: ls .claude/tracking/implementations/$ARGUMENTS/*.md"
 
 ## Task Sizing Guidelines
 

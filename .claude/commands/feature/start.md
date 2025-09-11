@@ -15,7 +15,7 @@ Launch parallel agents to work on feature tasks.
 
 1. **Verify implementation exists:**
    ```bash
-   test -f .claude/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation not found. Run: /feature:plan $ARGUMENTS"
+   test -f .claude/tracking/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation not found. Run: /feature:plan $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**
@@ -60,7 +60,7 @@ fi
 
 ### 2. Identify Ready Tasks
 
-Read all task files in `.claude/implementations/$ARGUMENTS/`:
+Read all task files in `.claude/tracking/implementations/$ARGUMENTS/`:
 - Parse frontmatter for `status`, `depends_on`, `parallel` fields
 - Check GitHub issue status if synced
 - Build dependency graph
@@ -76,7 +76,7 @@ Categorize tasks:
 For each ready task without analysis:
 ```bash
 # Check for task analysis
-if ! test -f .claude/implementations/$ARGUMENTS/${task}-analysis.md; then
+if ! test -f .claude/tracking/implementations/$ARGUMENTS/${task}-analysis.md; then
   echo "Analyzing task #${task}..."
   # Create analysis inline
 fi
@@ -139,8 +139,8 @@ Task:
     - Work: ${stream_description}
     
     Read full requirements from:
-    - .claude/implementations/$ARGUMENTS/${task_file}
-    - .claude/implementations/$ARGUMENTS/${task}-analysis.md
+    - .claude/tracking/implementations/$ARGUMENTS/${task_file}
+    - .claude/tracking/implementations/$ARGUMENTS/${task}-analysis.md
     
     Follow these coordination rules:
     - Only modify files in your assigned scope
@@ -152,7 +152,7 @@ Task:
     "Task #${task}: ${specific_change}"
     
     Update progress in:
-    .claude/implementations/$ARGUMENTS/updates/${task}/stream-${X}.md
+    .claude/tracking/implementations/$ARGUMENTS/updates/${task}/stream-${X}.md
     
     Return a summary of:
     - What you completed
@@ -163,7 +163,7 @@ Task:
 
 ### 5. Track Active Agents
 
-Create/update `.claude/implementations/$ARGUMENTS/execution-status.md`:
+Create/update `.claude/tracking/implementations/$ARGUMENTS/execution-status.md`:
 
 ```markdown
 ---

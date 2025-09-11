@@ -15,10 +15,10 @@ Push feature implementation plan and tasks to GitHub as issues.
 
 ```bash
 # Verify implementation plan exists
-test -f .claude/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation plan not found. Run: /feature:plan $ARGUMENTS"
+test -f .claude/tracking/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation plan not found. Run: /feature:plan $ARGUMENTS"
 
 # Count task files
-ls .claude/implementations/$ARGUMENTS/*.md 2>/dev/null | grep -v plan.md | wc -l
+ls .claude/tracking/implementations/$ARGUMENTS/*.md 2>/dev/null | grep -v plan.md | wc -l
 ```
 
 If no tasks found: "❌ No tasks to sync. Run: /feature:decompose $ARGUMENTS"
@@ -52,7 +52,7 @@ fi
 Strip frontmatter and prepare GitHub issue body:
 ```bash
 # Extract content without frontmatter
-sed '1,/^---$/d; 1,/^---$/d' .claude/implementations/$ARGUMENTS/plan.md > /tmp/feature-body-raw.md
+sed '1,/^---$/d; 1,/^---$/d' .claude/tracking/implementations/$ARGUMENTS/plan.md > /tmp/feature-body-raw.md
 
 # Process the content to remove internal sections and format for GitHub
 awk '
@@ -96,8 +96,8 @@ awk '
 # Add reference to specification
 echo "" >> /tmp/feature-body.md
 echo "---" >> /tmp/feature-body.md
-echo "📋 **Specification**: .claude/specs/$ARGUMENTS.md" >> /tmp/feature-body.md
-echo "📁 **Implementation**: .claude/implementations/$ARGUMENTS/" >> /tmp/feature-body.md
+echo "📋 **Specification**: .claude/tracking/specs/$ARGUMENTS.md" >> /tmp/feature-body.md
+echo "📁 **Implementation**: .claude/tracking/implementations/$ARGUMENTS/" >> /tmp/feature-body.md
 
 # Create feature implementation issue with labels
 feature_number=$(gh issue create \
@@ -127,7 +127,7 @@ fi
 
 Count task files to determine strategy:
 ```bash
-task_count=$(ls .claude/implementations/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+task_count=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
 echo "📊 Found $task_count tasks to sync"
 ```
 
@@ -137,7 +137,7 @@ echo "📊 Found $task_count tasks to sync"
 if [ "$task_count" -lt 5 ]; then
   echo "Creating tasks sequentially..."
   
-  for task_file in .claude/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
     [ -f "$task_file" ] || continue
     
     # Extract task name from frontmatter
@@ -194,7 +194,7 @@ if [ "$task_count" -ge 5 ]; then
   batch_num=1
   file_count=0
   
-  for task_file in .claude/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
     [ -f "$task_file" ] || continue
     
     echo "$task_file" >> /tmp/feature-sync-batches/batch-$batch_num.txt
@@ -331,9 +331,9 @@ feature_url="https://github.com/$repo/issues/$feature_number"
 current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Update plan frontmatter
-sed -i.bak "/^github:/c\github: $feature_url" .claude/implementations/$ARGUMENTS/plan.md
-sed -i.bak "/^updated:/c\updated: $current_date" .claude/implementations/$ARGUMENTS/plan.md
-rm .claude/implementations/$ARGUMENTS/plan.md.bak
+sed -i.bak "/^github:/c\github: $feature_url" .claude/tracking/implementations/$ARGUMENTS/plan.md
+sed -i.bak "/^updated:/c\updated: $current_date" .claude/tracking/implementations/$ARGUMENTS/plan.md
+rm .claude/tracking/implementations/$ARGUMENTS/plan.md.bak
 
 echo "✅ Updated implementation plan with GitHub URL"
 ```
@@ -346,7 +346,7 @@ cat > /tmp/tasks-section.md << 'EOF'
 EOF
 
 # Add each task with its real issue number
-for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
+for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
   
   # Get issue number (filename without .md)
@@ -362,8 +362,8 @@ for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
 done
 
 # Add summary statistics
-total_count=$(ls .claude/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
-parallel_count=$(grep -l '^parallel: true' .claude/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+total_count=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+parallel_count=$(grep -l '^parallel: true' .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
 sequential_count=$((total_count - parallel_count))
 
 cat >> /tmp/tasks-section.md << EOF
@@ -375,7 +375,7 @@ Sequential tasks: ${sequential_count}
 EOF
 
 # Replace Tasks Created section in plan.md
-cp .claude/implementations/$ARGUMENTS/plan.md .claude/implementations/$ARGUMENTS/plan.md.backup
+cp .claude/tracking/implementations/$ARGUMENTS/plan.md .claude/tracking/implementations/$ARGUMENTS/plan.md.backup
 awk '
   /^## Tasks Created/ {
     skip=1
@@ -384,18 +384,18 @@ awk '
   }
   /^## / && !/^## Tasks Created/ { skip=0 }
   !skip && !/^## Tasks Created/ { print }
-' .claude/implementations/$ARGUMENTS/plan.md.backup > .claude/implementations/$ARGUMENTS/plan.md
+' .claude/tracking/implementations/$ARGUMENTS/plan.md.backup > .claude/tracking/implementations/$ARGUMENTS/plan.md
 
-rm .claude/implementations/$ARGUMENTS/plan.md.backup
+rm .claude/tracking/implementations/$ARGUMENTS/plan.md.backup
 rm /tmp/tasks-section.md
 ```
 
 ### 6. Create Mapping File
 
-Create `.claude/implementations/$ARGUMENTS/github-mapping.md`:
+Create `.claude/tracking/implementations/$ARGUMENTS/github-mapping.md`:
 ```bash
 # Create mapping file for reference
-cat > .claude/implementations/$ARGUMENTS/github-mapping.md << EOF
+cat > .claude/tracking/implementations/$ARGUMENTS/github-mapping.md << EOF
 # GitHub Issue Mapping
 
 **Feature**: #${feature_number} - https://github.com/${repo}/issues/${feature_number}
@@ -405,18 +405,18 @@ cat > .claude/implementations/$ARGUMENTS/github-mapping.md << EOF
 EOF
 
 # Add each task mapping
-for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
+for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
   
   issue_num=$(basename "$task_file" .md)
   task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
   
-  echo "- #${issue_num}: ${task_name} - https://github.com/${repo}/issues/${issue_num}" >> .claude/implementations/$ARGUMENTS/github-mapping.md
+  echo "- #${issue_num}: ${task_name} - https://github.com/${repo}/issues/${issue_num}" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
 done
 
-echo "" >> .claude/implementations/$ARGUMENTS/github-mapping.md
-echo "---" >> .claude/implementations/$ARGUMENTS/github-mapping.md
-echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .claude/implementations/$ARGUMENTS/github-mapping.md
+echo "" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
+echo "---" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
+echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
 
 echo "✅ Created GitHub mapping file"
 ```
@@ -452,7 +452,7 @@ echo "✅ Created/switched to branch: $branch_name"
 
 🔗 Links:
   - Feature: https://github.com/${repo}/issues/${feature_number}
-  - Mapping: .claude/implementations/${ARGUMENTS}/github-mapping.md
+  - Mapping: .claude/tracking/implementations/${ARGUMENTS}/github-mapping.md
 
 📋 Next Steps:
   - Start implementation: /do-task ${first_task_number}

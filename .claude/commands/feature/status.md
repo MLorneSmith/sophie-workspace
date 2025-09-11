@@ -22,15 +22,15 @@ echo "📋 Feature Status: $ARGUMENTS"
 echo "================================"
 
 # Check for specification
-if [ -f ".claude/specs/$ARGUMENTS.md" ]; then
+if [ -f ".claude/tracking/specs/$ARGUMENTS.md" ]; then
   echo "✅ Specification exists"
   
   # Extract status from frontmatter
-  spec_status=$(grep '^status:' .claude/specs/$ARGUMENTS.md | sed 's/^status: *//')
+  spec_status=$(grep '^status:' .claude/tracking/specs/$ARGUMENTS.md | sed 's/^status: *//')
   echo "   Status: $spec_status"
   
   # Get creation date
-  spec_created=$(grep '^created:' .claude/specs/$ARGUMENTS.md | sed 's/^created: *//')
+  spec_created=$(grep '^created:' .claude/tracking/specs/$ARGUMENTS.md | sed 's/^created: *//')
   echo "   Created: $spec_created"
 else
   echo "❌ No specification found"
@@ -40,15 +40,15 @@ fi
 echo ""
 
 # Check for implementation plan
-if [ -f ".claude/implementations/$ARGUMENTS/plan.md" ]; then
+if [ -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" ]; then
   echo "✅ Implementation plan exists"
   
   # Extract progress from frontmatter
-  plan_progress=$(grep '^progress:' .claude/implementations/$ARGUMENTS/plan.md | sed 's/^progress: *//')
+  plan_progress=$(grep '^progress:' .claude/tracking/implementations/$ARGUMENTS/plan.md | sed 's/^progress: *//')
   echo "   Progress: $plan_progress"
   
   # Check for GitHub sync
-  github_url=$(grep '^github:' .claude/implementations/$ARGUMENTS/plan.md | sed 's/^github: *//')
+  github_url=$(grep '^github:' .claude/tracking/implementations/$ARGUMENTS/plan.md | sed 's/^github: *//')
   if [[ "$github_url" != *"Will be updated"* ]] && [[ -n "$github_url" ]]; then
     echo "   GitHub: $github_url"
   else
@@ -62,12 +62,12 @@ fi
 echo ""
 
 # Check for tasks
-task_count=$(ls .claude/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+task_count=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
 if [ "$task_count" -gt 0 ]; then
   echo "✅ Tasks decomposed: $task_count tasks"
   
   # Count by status if tasks have been synced
-  if ls .claude/implementations/$ARGUMENTS/[0-9][0-9][0-9][0-9]*.md 2>/dev/null | head -1 > /dev/null; then
+  if ls .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9][0-9]*.md 2>/dev/null | head -1 > /dev/null; then
     echo "   ✅ Tasks synced to GitHub"
   else
     echo "   ⏳ Tasks not yet synced"
@@ -75,7 +75,7 @@ if [ "$task_count" -gt 0 ]; then
   fi
   
   # Show parallel vs sequential breakdown
-  parallel_count=$(grep -l '^parallel: true' .claude/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+  parallel_count=$(grep -l '^parallel: true' .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
   sequential_count=$((task_count - parallel_count))
   echo "   Parallel: $parallel_count | Sequential: $sequential_count"
 else
@@ -90,13 +90,13 @@ If the feature has been synced to GitHub:
 
 ```bash
 # Check if we have a GitHub mapping
-if [ -f ".claude/implementations/$ARGUMENTS/github-mapping.md" ]; then
+if [ -f ".claude/tracking/implementations/$ARGUMENTS/github-mapping.md" ]; then
   echo ""
   echo "GitHub Integration"
   echo "-----------------"
   
   # Extract feature issue number
-  feature_issue=$(grep '^**Feature**:' .claude/implementations/$ARGUMENTS/github-mapping.md | sed 's/.*#\([0-9]*\).*/\1/')
+  feature_issue=$(grep '^**Feature**:' .claude/tracking/implementations/$ARGUMENTS/github-mapping.md | sed 's/.*#\([0-9]*\).*/\1/')
   
   if [ -n "$feature_issue" ]; then
     # Get issue status from GitHub
@@ -111,7 +111,7 @@ if [ -f ".claude/implementations/$ARGUMENTS/github-mapping.md" ]; then
     closed_tasks=0
     
     # Get all task issue numbers
-    task_numbers=$(grep '^- #' .claude/implementations/$ARGUMENTS/github-mapping.md | sed 's/^- #\([0-9]*\).*/\1/')
+    task_numbers=$(grep '^- #' .claude/tracking/implementations/$ARGUMENTS/github-mapping.md | sed 's/^- #\([0-9]*\).*/\1/')
     
     for task_num in $task_numbers; do
       task_state=$(gh issue view $task_num --json state -q .state 2>/dev/null || echo "unknown")
@@ -145,7 +145,7 @@ if [ "$task_count" -gt 0 ]; then
   
   # Find tasks with no dependencies (can start immediately)
   echo "📌 Can start now (no dependencies):"
-  for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
+  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
     [ -f "$task_file" ] || continue
     
     depends_on=$(grep '^depends_on:' "$task_file" | sed 's/^depends_on: *//')
@@ -164,7 +164,7 @@ if [ "$task_count" -gt 0 ]; then
   
   # Show tasks with dependencies
   has_deps=false
-  for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
+  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
     [ -f "$task_file" ] || continue
     
     depends_on=$(grep '^depends_on:' "$task_file" | sed 's/^depends_on: *//')
@@ -193,16 +193,16 @@ echo "Summary"
 echo "-------"
 
 # Calculate overall status
-if [ ! -f ".claude/specs/$ARGUMENTS.md" ]; then
+if [ ! -f ".claude/tracking/specs/$ARGUMENTS.md" ]; then
   echo "📋 Status: Not started"
   echo "🎯 Next step: /feature:spec $ARGUMENTS"
-elif [ ! -f ".claude/implementations/$ARGUMENTS/plan.md" ]; then
+elif [ ! -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" ]; then
   echo "📋 Status: Specification complete"
   echo "🎯 Next step: /feature:plan $ARGUMENTS"
 elif [ "$task_count" -eq 0 ]; then
   echo "📋 Status: Planning complete"
   echo "🎯 Next step: /feature:decompose $ARGUMENTS"
-elif [ ! -f ".claude/implementations/$ARGUMENTS/github-mapping.md" ]; then
+elif [ ! -f ".claude/tracking/implementations/$ARGUMENTS/github-mapping.md" ]; then
   echo "📋 Status: Ready for GitHub sync"
   echo "🎯 Next step: /feature:sync $ARGUMENTS"
 else
@@ -221,8 +221,8 @@ else
 fi
 
 # Show time estimates if available
-if [ -f ".claude/implementations/$ARGUMENTS/plan.md" ]; then
-  total_effort=$(grep 'Estimated total effort:' .claude/implementations/$ARGUMENTS/plan.md | tail -1 | sed 's/.*: *//')
+if [ -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" ]; then
+  total_effort=$(grep 'Estimated total effort:' .claude/tracking/implementations/$ARGUMENTS/plan.md | tail -1 | sed 's/.*: *//')
   if [ -n "$total_effort" ]; then
     echo "⏱️ Total effort: $total_effort"
   fi
@@ -239,17 +239,17 @@ echo "Quick Actions"
 echo "-------------"
 
 # Suggest actions based on status
-if [ ! -f ".claude/specs/$ARGUMENTS.md" ]; then
+if [ ! -f ".claude/tracking/specs/$ARGUMENTS.md" ]; then
   echo "• Create specification: /feature:spec $ARGUMENTS"
-elif [ ! -f ".claude/implementations/$ARGUMENTS/plan.md" ]; then
+elif [ ! -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" ]; then
   echo "• Create plan: /feature:plan $ARGUMENTS"
-  echo "• Review spec: /read .claude/specs/$ARGUMENTS.md"
+  echo "• Review spec: /read .claude/tracking/specs/$ARGUMENTS.md"
 elif [ "$task_count" -eq 0 ]; then
   echo "• Decompose tasks: /feature:decompose $ARGUMENTS"
-  echo "• Review plan: /read .claude/implementations/$ARGUMENTS/plan.md"
-elif [ ! -f ".claude/implementations/$ARGUMENTS/github-mapping.md" ]; then
+  echo "• Review plan: /read .claude/tracking/implementations/$ARGUMENTS/plan.md"
+elif [ ! -f ".claude/tracking/implementations/$ARGUMENTS/github-mapping.md" ]; then
   echo "• Sync to GitHub: /feature:sync $ARGUMENTS"
-  echo "• Review tasks: ls .claude/implementations/$ARGUMENTS/*.md"
+  echo "• Review tasks: ls .claude/tracking/implementations/$ARGUMENTS/*.md"
 else
   # Show task-specific actions
   if [ -n "$feature_issue" ]; then
@@ -258,7 +258,7 @@ else
   fi
   
   # Find first open task
-  for task_file in .claude/implementations/$ARGUMENTS/[0-9]*.md; do
+  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
     [ -f "$task_file" ] || continue
     
     task_num=$(basename "$task_file" .md)
@@ -273,7 +273,7 @@ fi
 
 echo ""
 echo "• Full status check: /feature:status $ARGUMENTS"
-echo "• List all features: ls .claude/specs/"
+echo "• List all features: ls .claude/tracking/specs/"
 ```
 
 ## Error Handling
