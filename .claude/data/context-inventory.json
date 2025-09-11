@@ -16,17 +16,6 @@
 					"topics": ["Documentation Navigation", "File Organization"]
 				},
 				{
-					"path": "architecture.md",
-					"name": "Architecture Documentation",
-					"description": "System architecture overview and design principles.",
-					"lastUpdated": "2025-09-03",
-					"topics": [
-						"Architecture Overview",
-						"Design Principles",
-						"System Design"
-					]
-				},
-				{
 					"path": "constraints.md",
 					"name": "Project Constraints",
 					"description": "Critical project constraints and requirements that must be followed.",
@@ -508,6 +497,24 @@
 			"name": "Architecture Documentation",
 			"description": "System architecture patterns, test infrastructure, and architectural decisions",
 			"documents": [
+				{
+					"path": "architecture/project-architecture.md",
+					"name": "SlideHeroes Architecture Context",
+					"description": "Essential architectural reference for SlideHeroes platform - Next.js 15, Supabase RLS, multi-tenant SaaS patterns",
+					"lastUpdated": "2025-09-11",
+					"topics": [
+						"Architecture Overview",
+						"Next.js 15 App Router",
+						"Supabase RLS",
+						"Multi-tenant SaaS",
+						"Monorepo Structure",
+						"Server Components",
+						"Performance Optimization",
+						"Security Architecture",
+						"CI/CD Pipeline",
+						"Architecture Decision Records"
+					]
+				},
 				{
 					"path": "architecture/test-architecture.md",
 					"name": "Test Architecture and Infrastructure",
