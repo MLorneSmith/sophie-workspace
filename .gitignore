@@ -51,15 +51,14 @@ apps/*/.env
 .mcp.json
 .mcp.local.json
 
-# Claude Code local files
+# Claude Code sensitive/local files
 CLAUDE.local.md
 .claude/settings.local.json
 .claude/settings/permissions.json
-.claude/settings/environment.json
 .claude/sessions/
-.claude/scratch/
 .claude/z.archive/
-.claude/HOOK_PATH_ISSUE_SOLUTION.md
+# Note: .claude/scratch/ is now tracked (contains docs, not secrets)
+# Note: .claude/settings/environment.json is now tracked (non-sensitive)
 apps/e2e/.claude/
 reports/.claude/
 

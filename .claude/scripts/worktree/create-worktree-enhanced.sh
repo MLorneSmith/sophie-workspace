@@ -72,20 +72,25 @@ copy_if_exists "$MAIN_REPO_PATH/.env.station" "$WORKTREE_PATH/.env.station" ".en
 # Copy MCP configuration
 copy_if_exists "$MAIN_REPO_PATH/.mcp.json" "$WORKTREE_PATH/.mcp.json" ".mcp.json"
 
-# Copy Claude local settings
+# Copy Claude local settings (only gitignored files need copying)
 if [ -d "$MAIN_REPO_PATH/.claude" ]; then
-    # Create .claude directory if needed
-    mkdir -p "$WORKTREE_PATH/.claude"
+    # Create .claude directory structure if needed
+    mkdir -p "$WORKTREE_PATH/.claude/settings"
     
-    # Copy local settings files
+    # Copy gitignored local settings files
     copy_if_exists "$MAIN_REPO_PATH/.claude/settings.local.json" \
                    "$WORKTREE_PATH/.claude/settings.local.json" \
-                   "Claude local settings"
+                   ".claude/settings.local.json"
     
-    # Copy any .env files in .claude directory
-    if ls "$MAIN_REPO_PATH/.claude"/.env* 1> /dev/null 2>&1; then
-        cp "$MAIN_REPO_PATH/.claude"/.env* "$WORKTREE_PATH/.claude/" 2>/dev/null || true
-        echo "   ✅ Copied .claude environment files"
+    # Copy gitignored permissions file (security-sensitive)
+    copy_if_exists "$MAIN_REPO_PATH/.claude/settings/permissions.json" \
+                   "$WORKTREE_PATH/.claude/settings/permissions.json" \
+                   ".claude/settings/permissions.json"
+    
+    # Copy sessions directory if it exists (runtime data)
+    if [ -d "$MAIN_REPO_PATH/.claude/sessions" ]; then
+        cp -r "$MAIN_REPO_PATH/.claude/sessions" "$WORKTREE_PATH/.claude/" 2>/dev/null && \
+            echo "   ✅ Copied .claude/sessions/" || true
     fi
 fi
 
