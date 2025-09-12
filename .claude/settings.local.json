@@ -31,6 +31,7 @@
     "cloudflare-playwright",
     "postgres",
     "code-reasoning",
-    "newrelic"
+    "newrelic",
+    "docs-mcp"
   ]
 }

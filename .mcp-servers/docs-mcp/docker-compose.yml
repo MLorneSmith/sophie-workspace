@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  docs-mcp:
+    image: ghcr.io/arabold/docs-mcp-server:latest
+    container_name: docs-mcp-server
+    ports:
+      - "6280:6280"
+    environment:
+      # LM Studio configuration
+      - OPENAI_API_KEY=lmstudio
+      - OPENAI_API_BASE=http://host.docker.internal:1234/v1
+      - DOCS_MCP_EMBEDDING_MODEL=text-embedding-qwen3-embedding-4b
+      - DOCS_MCP_TELEMETRY=false
+    volumes:
+      # Persistent database storage (shared across projects)
+      - ~/.local/share/docs-mcp-server:/data
+      # Project documentation (read-only)
+      - ../../.claude/docs:/docs/slideheroes:ro
+    # No command specified - use container default
+    extra_hosts:
+      # For WSL2 to access Windows host (LM Studio)
+      - "host.docker.internal:172.31.160.1"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6280/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
