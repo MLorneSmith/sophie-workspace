@@ -14,7 +14,8 @@
       "Bash(.claude/scripts/codecheck-direct.sh:*)",
       "Bash(node:*)",
       "Bash(source:*)",
-      "Bash(claude-main)"
+      "Bash(claude-main)",
+      "mcp__docs-mcp__search_docs"
     ],
     "deny": [],
     "ask": [],

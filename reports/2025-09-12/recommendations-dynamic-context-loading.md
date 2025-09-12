@@ -16,12 +16,14 @@ Based on analysis of your current context inventory system and research into bes
 - **Output formatting for Claude Code**
 
 **Why a script helps**:
+
 - **Performance**: Pre-compute relevance scores in <200ms vs inline computation
 - **Reusability**: Single source of truth for all slash commands
 - **Maintainability**: Update scoring logic without modifying all commands
 - **Testing**: Unit test relevance algorithms independently
 
 **Script Architecture**:
+
 ```javascript
 // .claude/scripts/context-loader.js
 class ContextLoader {
@@ -165,7 +167,7 @@ Keep your existing structure mostly unchanged. Add only two essential fields:
 3. **Single optional enhancement** - just add token counts for budget management
 4. **Leverage existing structure** - categories already provide natural grouping
 
-**Alternative: Separate Command Configs (Even Simpler)**
+### Alternative: Separate Command Configs (Even Simpler)
 
 Instead of modifying the inventory at all, create a separate simple config:
 
@@ -199,6 +201,7 @@ Essential documents are the **foundational context files** that a specific slash
 **Where Essential Docs are Defined:**
 
 **In the Command Markdown File** (Preferred Approach):
+
 ```markdown
 ## Essential Context (Always Load First)
 Read .claude/context/roles/debug-engineer.md
@@ -366,12 +369,14 @@ const contextMap = {
 ## Implementation Roadmap (Simplified)
 
 ### Phase 1: Core Script (2-3 days)
+
 1. Create `context-loader.js` using existing JSON structure
 2. Implement topic-based relevance scoring
 3. Add simple token budget management
 4. Test with current inventory file
 
 ### Phase 2: Command Integration (2-3 days)
+
 1. Update `command-optimizer.md` to use dynamic context loading pattern
 2. Update `subagent-optimizer.md` to use dynamic context loading pattern
 3. Update 1-2 high-value commands (e.g., debug-issue)
@@ -379,6 +384,7 @@ const contextMap = {
 5. Document pattern in template
 
 ### Phase 3: Gradual Rollout (1 week)
+
 1. Add token counts to inventory (optional)
 2. Update remaining commands as needed
 3. Monitor effectiveness
