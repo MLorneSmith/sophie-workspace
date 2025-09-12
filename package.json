@@ -17,7 +17,7 @@
 		"build": "./.claude/statusline/build-wrapper.sh",
 		"clean": "git clean -xdf node_modules dist .next",
 		"clean:workspaces": "turbo clean",
-		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel --filter=!@slideheroes/playwright-mcp",
+		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel",
 		"format": "biome format .",
 		"format:fix": "biome format --write .",
 		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",

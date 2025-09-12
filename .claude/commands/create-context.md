@@ -214,28 +214,37 @@ Determine subdirectory based on category:
 <inventory>
 Update the existing context inventory at `.claude/data/context-inventory.json`:
 
-1. **Read Existing Inventory**:
+1. **Calculate Token Count**:
+   ```bash
+   # Calculate tokens for the newly created context file
+   node .claude/scripts/token-counter.cjs .claude/context/${subdirectory}/${id}.md
+   ```
+   - Extract the `tokens` field from the JSON output
+   - This provides accurate token budget for dynamic context loading
+
+2. **Read Existing Inventory**:
    ```bash
    Read: file_path=".claude/data/context-inventory.json"
    ```
 
-2. **Update Structure**:
+3. **Update Structure**:
    - Add new context entry to appropriate category under `categories.${category}.documents`
    - Update the `lastUpdated` field at root level
    - Preserve all existing entries
 
-3. **Document Entry Format**:
+4. **Document Entry Format**:
    ```javascript
    {
      "path": "${subdirectory}/${id}.md",
      "name": "${title}",
      "description": "${description}",
      "lastUpdated": "${YYYY-MM-DD}",
-     "topics": ["${topic1}", "${topic2}", "..."]
+     "topics": ["${topic1}", "${topic2}", "..."],
+     "tokens": ${calculated_tokens}  // From token-counter.cjs
    }
    ```
 
-4. **Save Updated Inventory**:
+5. **Save Updated Inventory**:
    - Use Edit tool to update the file
    - Ensure proper JSON formatting is maintained
 </inventory>
@@ -280,7 +289,8 @@ For existing file modifications:
 4. Parallel repository analysis (Grep/Glob)
 5. Construct comprehensive context file with correct date
 6. Write to appropriate subdirectory
-7. Update existing inventory at .claude/data/context-inventory.json
+7. Calculate token count using token-counter.cjs
+8. Update existing inventory at .claude/data/context-inventory.json with tokens
 
 **Key Principles:**
 - Research goes deep (comprehensive analysis)
