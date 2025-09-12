@@ -9,18 +9,22 @@ The files in `.claude/instructions/testing/` were created as part of a comprehen
 ## 1. How the Files Were Created
 
 ### Migration History
+
 - **Original Location**: `.claude/docs/testing/`
 - **Current Location**: `.claude/instructions/testing/`
 - **Migration Commit**: 403be956 ("chore: update configuration and documentation")
 - **Creation Date**: September 4, 2025
 
 ### File Origins
+
 The files were created during a series of commits focused on improving testing infrastructure:
+
 1. Initial creation in `.claude/docs/testing/`
 2. Development through multiple enhancement commits
 3. Final reorganization moved them to `.claude/instructions/testing/`
 
 ### Key Commits
+
 - 259750c4: "feat: comprehensive testing and bug fixes"
 - 88fe128d: "feat: enhance Claude workflows, add test coverage, and improve documentation"
 - 065ee136: "feat: complete testing milestone and fix React footer key issue"
@@ -31,11 +35,13 @@ The files were created during a series of commits focused on improving testing i
 ### Files NOT Using Testing Instructions
 
 #### `.claude/commands/testwriters/test-discovery.md`
+
 - **Does NOT reference** any files in `.claude/instructions/testing/`
 - Uses its own inline discovery logic with bash commands
 - Focuses on finding test gaps through file system analysis
 
 #### `.claude/commands/testwriters/` directory
+
 - `unit-test-writer.md` - No references to testing instructions
 - `integration-test-writer.md` - No references to testing instructions  
 - `e2e-test-writer.md` - No references to testing instructions
@@ -43,9 +49,11 @@ The files were created during a series of commits focused on improving testing i
 ### Files USING Testing Instructions
 
 #### `.claude/commands/write-tests.md`
+
 This is the **ONLY** command actively using the testing instruction files:
 
 **Context Files Referenced**:
+
 - `.claude/instructions/testing/context/testing-fundamentals.md`
 - `.claude/instructions/testing/context/mocking-and-typescript.md`
 - `.claude/instructions/testing/context/testing-examples.md`
@@ -55,6 +63,7 @@ This is the **ONLY** command actively using the testing instruction files:
 - `.claude/instructions/testing/context/performance-testing-fundamentals.md`
 
 **Test Case Documentation Path Pattern**:
+
 ```typescript
 unit: `.claude/instructions/testing/test-cases/${mirrorSourcePath(file)}/${getBasename(file)}.test-cases.md`
 e2e: `.claude/instructions/testing/test-cases/e2e/${getWorkflowName(file)}.test-cases.md`
@@ -66,7 +75,8 @@ performance: `.claude/instructions/testing/test-cases/performance/${getFeatureNa
 ## 3. File Structure
 
 ### Main Directory (`.claude/instructions/testing/`)
-```
+
+```text
 ├── context/                              # Fundamental testing knowledge
 │   ├── testing-fundamentals.md          # Core testing principles
 │   ├── mocking-and-typescript.md        # TypeScript mocking patterns
@@ -95,12 +105,15 @@ performance: `.claude/instructions/testing/test-cases/performance/${getFeatureNa
 ## 4. Key Findings
 
 ### Current State
+
 1. **Limited Usage**: Only `/write-tests` command actively uses these files
 2. **Test Discovery Gap**: The test-discovery.md command doesn't leverage this rich documentation
 3. **Testwriter Commands Gap**: None of the specialized testwriter commands use these resources
 
 ### Potential Value
+
 The testing instruction files contain:
+
 - Comprehensive testing fundamentals and best practices
 - TypeScript-specific testing patterns
 - Framework-specific guidance (E2E, A11y, Integration, Performance)

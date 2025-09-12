@@ -16,7 +16,7 @@
 
 Create a new parent directory for all project tracking, planning, and state management:
 
-```
+```text
 .claude/
 ├── tracking/              # NEW: All project tracking & planning
 │   ├── test-planning/     # Test case planning docs (from test-cases)
@@ -49,7 +49,7 @@ Create a new parent directory for all project tracking, planning, and state mana
 
 If you prefer organizing by domain rather than purpose:
 
-```
+```text
 .claude/
 ├── project/               # Project-specific tracking
 │   ├── planning/          # All planning docs
@@ -115,6 +115,7 @@ In this structure, test planning files would live at:
 `.claude/tracking/test-planning/`
 
 This makes sense because:
+
 - Test planning is project tracking activity
 - Grouped with related tracking (issues, specs, todo)
 - Clear separation from Claude configuration

@@ -7,6 +7,7 @@
 ## Problem
 
 The current location doesn't make semantic sense:
+
 - These are **planning/tracking documents**, not instructions
 - They're **project documentation**, not Claude configuration
 - The path is deeply nested and unintuitive
@@ -19,6 +20,7 @@ The current location doesn't make semantic sense:
 **Move to**: `.claude/docs/test-planning/`
 
 **Rationale**:
+
 1. **Semantic clarity** - These are documentation files for test planning
 2. **Existing pattern** - `.claude/docs/` already contains project documentation
 3. **Related content** - Test-related docs already exist in `.claude/docs/`
@@ -26,7 +28,8 @@ The current location doesn't make semantic sense:
 5. **Clean separation** - Keeps Claude instructions separate from project tracking
 
 **New structure**:
-```
+
+```text
 .claude/docs/test-planning/
 ├── apps/
 │   ├── payload/
@@ -51,39 +54,48 @@ The current location doesn't make semantic sense:
 ### Alternative Options Considered
 
 #### Option 2: Colocate with Source Files
+
 **Location**: Next to source files (e.g., `generate-ideas.test-cases.md` next to `generate-ideas.ts`)
 
 **Pros**:
+
 - Maximum discoverability when working on specific files
 - Clear 1:1 relationship with source code
 - No need to mirror directory structure
 
 **Cons**:
+
 - Clutters source directories
 - Risk of accidental commits
 - Harder to see overall test planning status
 - Mixed concerns (source vs. planning)
 
 #### Option 3: Colocate with Test Files
+
 **Location**: Next to test files (e.g., `generate-ideas.test-cases.md` next to `generate-ideas.test.ts`)
 
 **Pros**:
+
 - Logical grouping with actual tests
 - Easy to reference when writing tests
 
 **Cons**:
+
 - Test files don't exist for all planned tests
 - Still clutters source tree
 - Planning docs shouldn't be in source
 
 #### Option 4: `.claude/test-planning/`
+
 **Location**: New top-level directory in `.claude/`
 
 **Pros**:
+
 - Very clear purpose
 - Easy to find
 
 **Cons**:
+
 - Adds another top-level directory
 - Separates from other documentation
 - Breaks existing `.claude/docs/` pattern
@@ -91,16 +103,19 @@ The current location doesn't make semantic sense:
 ## Implementation Steps
 
 1. **Create new directory structure**:
+
 ```bash
 mkdir -p .claude/docs/test-planning
 ```
 
-2. **Move files preserving structure**:
+1. **Move files preserving structure**:
+
 ```bash
 mv .claude/instructions/testing/test-cases/* .claude/docs/test-planning/
 ```
 
-3. **Update `/write-tests` command**:
+1. **Update `/write-tests` command**:
+
 ```typescript
 // Change from:
 unit: `.claude/instructions/testing/test-cases/${mirrorSourcePath(file)}/${getBasename(file)}.test-cases.md`
@@ -109,7 +124,8 @@ unit: `.claude/instructions/testing/test-cases/${mirrorSourcePath(file)}/${getBa
 unit: `.claude/docs/test-planning/${mirrorSourcePath(file)}/${getBasename(file)}.test-cases.md`
 ```
 
-4. **Clean up empty directory**:
+1. **Clean up empty directory**:
+
 ```bash
 rm -rf .claude/instructions/testing
 rmdir .claude/instructions  # if empty

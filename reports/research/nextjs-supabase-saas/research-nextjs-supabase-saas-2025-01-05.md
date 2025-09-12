@@ -18,15 +18,18 @@ This comprehensive research reveals that Next.js 15 App Router combined with Sup
 ### 1. Next.js 15 App Router Architectural Patterns
 
 #### Server Components Revolution
+
 Next.js 15 App Router fundamentally shifts the development paradigm toward Server Components as the default:
 
 **Core Benefits:**
+
 - **Zero JavaScript to client** for server-rendered content
 - **Direct database access** without API routes
 - **Automatic performance optimization** through streaming and caching
 - **SEO-friendly** server-side rendering by default
 
 **Best Practices:**
+
 ```typescript
 // Server Component pattern - fetches data directly
 export default async function ProductPage({ params }: { params: { id: string } }) {
@@ -43,9 +46,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
 ```
 
 #### Server Actions: The New API Paradigm
+
 Server Actions eliminate the need for traditional API routes in many cases:
 
 **Separation of Concerns Pattern:**
+
 ```typescript
 // actions/products.ts
 'use server'
@@ -65,6 +70,7 @@ export async function createProduct(formData: FormData) {
 ```
 
 **Key Advantages:**
+
 - **Type safety end-to-end** from form to database
 - **Automatic error handling** and validation
 - **Built-in security** with unguessable endpoints
@@ -73,9 +79,11 @@ export async function createProduct(formData: FormData) {
 ### 2. Supabase Row Level Security for Multi-tenancy
 
 #### Database-Level Tenant Isolation
+
 RLS provides the most secure approach to multi-tenancy by enforcing access control at the PostgreSQL level:
 
 **Core RLS Pattern:**
+
 ```sql
 -- Enable RLS on all tenant-specific tables
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
@@ -94,6 +102,7 @@ CREATE POLICY "tenant_isolation" ON products
 | **Separate Databases** | Highest | Very High | Limited | Compliance-heavy industries |
 
 #### Authentication Integration Patterns
+
 ```typescript
 // Supabase Auth with tenant context
 const supabase = createServerClient(
@@ -115,10 +124,12 @@ const { data: products } = await supabase
 ### 3. Monorepo Architecture with Turbo/pnpm
 
 #### Workspace Organization Patterns
+
 Modern SaaS applications benefit significantly from monorepo organization:
 
 **Recommended Structure:**
-```
+
+```text
 apps/
 ├── web/                 # Next.js main application
 ├── admin/               # Admin dashboard
@@ -134,12 +145,14 @@ packages/
 ```
 
 **Performance Benefits:**
+
 - **3x faster builds** with Turborepo caching
 - **Efficient dependency management** with pnpm workspaces
 - **Code sharing** between web, mobile, and admin apps
 - **Consistent tooling** across all packages
 
 #### Turborepo Configuration Best Practices
+
 ```json
 // turbo.json
 {
@@ -159,15 +172,18 @@ packages/
 ### 4. Edge Runtime and Serverless Architecture
 
 #### Edge-First Strategy
+
 Next.js 15 emphasizes edge computing for global performance:
 
 **Edge Runtime Capabilities:**
+
 - **WebSocket support** for real-time features
 - **Streaming responses** for better user experience
 - **Global distribution** with automatic region selection
 - **Cold start optimization** under 50ms
 
 **Implementation Pattern:**
+
 ```typescript
 // Edge API route
 export const runtime = 'edge'
@@ -186,6 +202,7 @@ export async function GET(request: Request) {
 ```
 
 #### Serverless Optimization Strategies
+
 - **Function splitting** to minimize bundle sizes
 - **Selective bundling** of dependencies
 - **Memory optimization** for cost efficiency
@@ -194,9 +211,11 @@ export async function GET(request: Request) {
 ### 5. Real-time Features and WebSocket Architecture
 
 #### Next.js WebSocket Integration
+
 For real-time features, several architectural patterns emerge:
 
 **Custom Server Pattern (for persistent connections):**
+
 ```typescript
 // server.js
 import { createServer } from 'http'
@@ -220,6 +239,7 @@ app.prepare().then(() => {
 ```
 
 **Deployment Considerations:**
+
 - **Vercel limitations**: No persistent WebSocket support
 - **Alternative platforms**: Fly.io, Railway, traditional VPS
 - **Hybrid approach**: Static frontend + separate WebSocket server
@@ -227,6 +247,7 @@ app.prepare().then(() => {
 ### 6. Caching Strategies for Performance
 
 #### Multi-Layer Caching Architecture
+
 Next.js 15 implements sophisticated caching at multiple levels:
 
 **Caching Mechanisms:**
@@ -239,6 +260,7 @@ Next.js 15 implements sophisticated caching at multiple levels:
 | **Router Cache** | Client | Session | Navigation |
 
 **Practical Implementation:**
+
 ```typescript
 // Fine-grained cache control
 export async function getProducts() {
@@ -260,6 +282,7 @@ export async function generateStaticParams() {
 ```
 
 #### CDN and Edge Caching
+
 ```typescript
 // Edge-optimized responses
 export async function GET() {
@@ -275,9 +298,11 @@ export async function GET() {
 ### 7. Type-Safe Full-Stack Development
 
 #### End-to-End Type Safety
+
 The combination of TypeScript, Zod, and Supabase provides complete type safety:
 
 **Schema-First Development:**
+
 ```typescript
 // Schema definition with Zod
 const ProductSchema = z.object({
@@ -308,6 +333,7 @@ export async function createProduct(formData: FormData) {
 ```
 
 **Supabase Type Generation:**
+
 ```bash
 # Generate TypeScript types from database schema
 npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.types.ts
@@ -318,6 +344,7 @@ npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.
 #### Multi-Layered Security Architecture
 
 **Authentication Patterns:**
+
 - **JWT with refresh tokens** for session management
 - **Multi-factor authentication (MFA)** for enterprise security
 - **Single Sign-On (SSO)** integration with SAML/OIDC
@@ -332,6 +359,7 @@ npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.
 | **ReBAC** | Medium | Relationship-level | Social/collaborative apps |
 
 **Implementation Example:**
+
 ```typescript
 // Tenant-scoped RBAC with Supabase
 export async function checkPermission(
@@ -354,6 +382,7 @@ export async function checkPermission(
 ```
 
 #### Security Best Practices
+
 - **Environment variable protection** with server-only access
 - **CSRF protection** with SameSite cookies
 - **Content Security Policy (CSP)** headers
@@ -364,15 +393,18 @@ export async function checkPermission(
 ### 9. Payload CMS Integration Patterns
 
 #### Headless CMS Architecture
+
 Payload CMS v3.0 moves to Next.js-native architecture:
 
 **Integration Benefits:**
+
 - **Code co-location** in single repository
 - **Shared components** between frontend and admin
 - **Type sharing** across CMS and application
 - **Unified deployment** pipeline
 
 **Implementation Pattern:**
+
 ```typescript
 // payload.config.ts
 import { buildConfig } from 'payload/config'
@@ -401,7 +433,9 @@ export default buildConfig({
 ## Architectural Recommendations
 
 ### 1. Foundation Stack
+
 **Recommended Technology Stack:**
+
 - **Frontend**: Next.js 15 App Router with TypeScript
 - **Backend**: Supabase with PostgreSQL + RLS
 - **Authentication**: Supabase Auth or Clerk for advanced features
@@ -410,7 +444,9 @@ export default buildConfig({
 - **Real-time**: Supabase Realtime or custom WebSocket server
 
 ### 2. Database Architecture
+
 **Multi-tenancy Pattern:**
+
 ```sql
 -- Core tenant table
 CREATE TABLE tenants (
@@ -436,8 +472,10 @@ CREATE POLICY "tenant_isolation" ON products
 ```
 
 ### 3. File Structure
+
 **Recommended Organization:**
-```
+
+```text
 src/
 ├── app/                     # Next.js App Router
 │   ├── (dashboard)/         # Route groups
@@ -457,7 +495,9 @@ src/
 ```
 
 ### 4. Performance Optimization
+
 **Critical Patterns:**
+
 - **Parallel data fetching** in Server Components
 - **Selective hydration** for interactive components
 - **Image optimization** with Next.js Image component
@@ -465,7 +505,9 @@ src/
 - **Database query optimization** with proper indexing
 
 ### 5. Testing Strategy
+
 **Multi-Layer Approach:**
+
 - **Unit tests**: Jest + Testing Library for components
 - **Integration tests**: Playwright for user flows
 - **Database tests**: Supabase local development
@@ -474,29 +516,37 @@ src/
 ## Common Pitfalls and Solutions
 
 ### 1. Caching Issues
+
 **Problem**: Stale data displayed to users
-**Solution**: 
+**Solution**:
+
 - Use `revalidatePath()` after mutations
 - Implement proper cache invalidation strategies
 - Monitor cache hit rates and effectiveness
 
 ### 2. RLS Policy Complexity
+
 **Problem**: Complex authorization rules become hard to maintain
 **Solution**:
+
 - Keep policies simple and composable
 - Use database functions for complex logic
 - Test policies thoroughly with different user contexts
 
 ### 3. Monorepo Complexity
+
 **Problem**: Build times increase with repository size
 **Solution**:
+
 - Use Turborepo's selective builds
 - Implement proper caching strategies
 - Consider workspace dependencies carefully
 
 ### 4. Type Safety Gaps
+
 **Problem**: Runtime errors despite TypeScript
 **Solution**:
+
 - Use Zod for runtime validation
 - Generate types from database schema
 - Implement proper error boundaries
@@ -514,12 +564,14 @@ Based on research findings, typical performance improvements:
 ## Future Considerations
 
 ### Emerging Patterns
+
 - **React Server Components evolution** with streaming improvements
 - **Edge databases** for global data distribution
 - **AI integration** patterns for SaaS applications
 - **Micro-frontend** architectures for large teams
 
 ### Technology Evolution
+
 - **Supabase V2 features** with enhanced real-time capabilities
 - **Next.js Turbo** for even faster development
 - **WebAssembly** integration for compute-heavy tasks
@@ -541,6 +593,7 @@ This architecture delivers excellent developer experience, strong security, and 
 ---
 
 **Sources Consulted:**
+
 - Next.js Official Documentation and API References
 - Supabase Documentation and Community Resources
 - Turborepo and pnpm Workspace Guides

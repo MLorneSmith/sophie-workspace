@@ -10,6 +10,7 @@ Analysis of 30 markdown files in `.claude/instructions/testing/` revealed opport
 ## Files to DELETE (Redundant/Unreferenced)
 
 ### 1. Tracking Files (Not Referenced by Commands)
+
 These files track test progress but are not used by any Claude commands:
 
 - **DELETE**: `accessibility-test-tracking.md` - Tracking without integration
@@ -24,12 +25,14 @@ These files track test progress but are not used by any Claude commands:
 **Reason**: These tracking files were created for manual tracking but are not integrated into any Claude commands. The actual test guidance is in `.claude/context/standards/testing/`.
 
 ### 2. Template Files (Not Referenced)
+
 - **DELETE**: `test-case-template.md` - Not referenced by `/write-tests` command
 - **DELETE**: `test-prioritization-matrix.md` - Scoring system not implemented
 
 **Reason**: The template is not used by the write-tests command, which generates test cases directly.
 
 ### 3. Example Files (Superseded)
+
 - **DELETE**: `concrete-project-examples.md` - Examples are now in `.claude/context/standards/testing/testing-examples.md`
 
 **Reason**: Duplicate content already exists in context directory.
@@ -37,17 +40,22 @@ These files track test progress but are not used by any Claude commands:
 ## Files to KEEP
 
 ### Test Case Files (Referenced by /write-tests)
+
 The `test-cases/` subdirectory with 19 files is actively used by `/write-tests` command:
+
 - **KEEP**: All files in `test-cases/` directory - Used for test case documentation
 
 ## Consolidation Recommendations
 
 ### Testing Documentation Structure
+
 Current duplication between:
+
 - `.claude/instructions/testing/` - Tracking and templates (mostly unused)
 - `.claude/context/standards/testing/` - Actual testing standards (actively used)
 
-**Recommendation**: 
+**Recommendation**:
+
 1. Keep all testing standards in `.claude/context/standards/testing/`
 2. Keep only `test-cases/` subdirectory in `.claude/instructions/testing/`
 3. Delete all root-level tracking files in `.claude/instructions/testing/`
@@ -55,12 +63,14 @@ Current duplication between:
 ## Command Integration Status
 
 ### Commands Using Testing Files:
+
 - `/write-tests` - Uses `.claude/instructions/testing/test-cases/` directory
 - `/create-context` - References `.claude/context/standards/testing/` files
 - `/debug-issue` - References `.claude/context/standards/testing/` files  
 - `/do-task` - References `.claude/context/standards/testing/` files
 
 ### Commands NOT Using Instructions/Testing:
+
 - `/test` - Does not reference any testing instruction files
 
 ## Action Items
