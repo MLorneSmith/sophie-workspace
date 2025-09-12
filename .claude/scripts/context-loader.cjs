@@ -214,7 +214,8 @@ class ContextLoader {
 
 		const now = new Date();
 		const updated = new Date(lastUpdated);
-		const daysDiff = (now - updated) / (1000 * 60 * 60 * 24);
+		const daysDiff =
+			(now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24);
 
 		if (daysDiff < 7) return 1.0; // Very recent
 		if (daysDiff < 30) return 0.8; // Recent

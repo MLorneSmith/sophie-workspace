@@ -15,7 +15,8 @@
       "Bash(node:*)",
       "Bash(source:*)",
       "Bash(claude-main)",
-      "mcp__docs-mcp__search_docs"
+      "mcp__docs-mcp__search_docs",
+      "mcp__code-reasoning__code-reasoning"
     ],
     "deny": [],
     "ask": [],

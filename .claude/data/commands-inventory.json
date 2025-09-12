@@ -106,7 +106,7 @@
 				},
 				{
 					"command": "/codecheck",
-					"description": "Execute comprehensive code quality checks (TypeScript, linting, formatting)",
+					"description": "Execute comprehensive code quality checks with safe log extraction",
 					"category": "developmentWorkflow",
 					"optimized": true
 				},
@@ -431,6 +431,6 @@
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
 		"totalCommands": 5,
-		"lastUpdated": "2025-09-10T14:49:11.390Z"
+		"lastUpdated": "2025-09-12T16:37:57.390Z"
 	}
 }

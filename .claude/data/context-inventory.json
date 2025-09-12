@@ -54,6 +54,99 @@
 				}
 			]
 		},
+		"api": {
+			"name": "API Documentation",
+			"description": "API endpoints, server actions, and integration patterns documentation",
+			"documents": [
+				{
+					"path": "api/headers.md",
+					"name": "API Headers Documentation",
+					"description": "Essential HTTP headers used in the SlideHeroes API, focusing on authentication, security, and server patterns",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"Headers",
+						"Authentication",
+						"Security",
+						"CORS",
+						"CSRF",
+						"Supabase",
+						"API"
+					],
+					"tokens": 1201,
+					"priority": "essential",
+					"keywords": [
+						"headers",
+						"authentication",
+						"security",
+						"cors",
+						"csrf",
+						"supabase",
+						"cookies",
+						"middleware",
+						"server-actions",
+						"edge-functions"
+					]
+				},
+				{
+					"path": "api/endpoints.md",
+					"name": "API Endpoints and Server Actions Reference",
+					"description": "Streamlined SlideHeroes API and server actions reference",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"API Endpoints",
+						"Server Actions",
+						"Authentication",
+						"Supabase Integration",
+						"MakerKit Patterns",
+						"Error Handling",
+						"Security Patterns"
+					],
+					"tokens": 1243,
+					"priority": "essential",
+					"keywords": [
+						"api",
+						"endpoints",
+						"server-actions",
+						"authentication",
+						"supabase",
+						"makerkit",
+						"enhanceAction",
+						"webhook",
+						"billing",
+						"integration"
+					]
+				},
+				{
+					"path": "api/api-patterns.md",
+					"name": "API Implementation Patterns",
+					"description": "Detailed implementation patterns for API endpoints and server actions",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"Implementation Patterns",
+						"Code Examples",
+						"Testing Patterns",
+						"Webhook Handlers",
+						"File Upload",
+						"Transactions",
+						"Pagination"
+					],
+					"tokens": 1425,
+					"priority": "supplementary",
+					"keywords": [
+						"patterns",
+						"implementation",
+						"examples",
+						"testing",
+						"webhook",
+						"pagination",
+						"transactions",
+						"file-upload",
+						"server-actions",
+						"code-examples"
+					]
+				}
+			]
+		},
 		"design": {
 			"name": "Design Documentation",
 			"description": "Design documentation including system architecture and CI/CD pipeline designs",
