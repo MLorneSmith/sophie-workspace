@@ -1156,6 +1156,36 @@
 					]
 				},
 				{
+					"path": "architecture/service-patterns.md",
+					"name": "Service Patterns Architecture",
+					"description": "Comprehensive guide to the hybrid service architecture combining class-based services with functional server actions",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"Service Architecture",
+						"Server Actions",
+						"Business Logic",
+						"Dependency Injection",
+						"Testing Patterns",
+						"Error Handling",
+						"Performance Optimization",
+						"Data Fetching"
+					],
+					"tokens": 3773,
+					"priority": "essential",
+					"keywords": [
+						"services",
+						"architecture",
+						"patterns",
+						"server-actions",
+						"business-logic",
+						"testing",
+						"class-based",
+						"functional",
+						"hybrid",
+						"enhanceAction"
+					]
+				},
+				{
 					"path": "architecture/test-architecture.md",
 					"name": "Test Architecture and Infrastructure",
 					"description": "Comprehensive guide to SlideHeroes testing architecture, including containerization, parallel execution, port management, and CI/CD integration",
