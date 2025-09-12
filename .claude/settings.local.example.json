@@ -38,7 +38,6 @@
 		"context7",
 		"cloudflare-observability",
 		"cloudflare-bindings",
-		"cloudflare-playwright",
 		"postgres",
 		"browser-tools",
 		"code-reasoning",

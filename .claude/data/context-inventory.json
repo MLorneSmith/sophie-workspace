@@ -1,6 +1,6 @@
 {
-	"version": "1.0",
-	"lastUpdated": "2025-09-11",
+	"version": "1.1",
+	"lastUpdated": "2025-09-12",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -13,7 +13,9 @@
 					"name": "Context Index",
 					"description": "Master index of all context documentation files and their purposes.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Documentation Navigation", "File Organization"]
+					"topics": ["Documentation Navigation", "File Organization"],
+					"tokens": 0,
+					"priority": "supplementary"
 				},
 				{
 					"path": "constraints.md",
@@ -24,6 +26,19 @@
 						"Technical Constraints",
 						"Business Rules",
 						"Implementation Requirements"
+					],
+					"tokens": 2214,
+					"priority": "essential",
+					"keywords": [
+						"technical",
+						"constraints",
+						"business",
+						"rules",
+						"implementation",
+						"requirements",
+						"critical",
+						"project",
+						"followed."
 					]
 				},
 				{
@@ -31,14 +46,29 @@
 					"name": "Current Focus",
 					"description": "Current development priorities and focus areas.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Development Priorities", "Current Tasks", "Focus Areas"]
+					"topics": ["Development Priorities", "Current Tasks", "Focus Areas"],
+					"tokens": 0,
+					"priority": "supplementary"
 				},
 				{
 					"path": "database-schema.md",
 					"name": "Database Schema",
 					"description": "Complete database schema documentation.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Schema Structure", "Table Relationships", "Data Types"]
+					"topics": ["Schema Structure", "Table Relationships", "Data Types"],
+					"tokens": 2285,
+					"priority": "supplementary",
+					"keywords": [
+						"schema",
+						"structure",
+						"table",
+						"relationships",
+						"data",
+						"types",
+						"complete",
+						"database",
+						"documentation."
+					]
 				},
 				{
 					"path": "development-flow.md",
@@ -49,14 +79,18 @@
 						"Development Process",
 						"Workflow Guidelines",
 						"Best Practices"
-					]
+					],
+					"tokens": 0,
+					"priority": "supplementary"
 				},
 				{
 					"path": "project-overview.md",
 					"name": "Project Overview",
 					"description": "High-level project overview and key information.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Project Summary", "Key Features", "Goals"]
+					"topics": ["Project Summary", "Key Features", "Goals"],
+					"tokens": 0,
+					"priority": "supplementary"
 				}
 			]
 		},
@@ -74,6 +108,20 @@
 						"Implementation Status",
 						"Security Design",
 						"Performance Optimization"
+					],
+					"tokens": 2938,
+					"priority": "supplementary",
+					"keywords": [
+						"pipeline",
+						"architecture",
+						"implementation",
+						"status",
+						"security",
+						"design",
+						"performance",
+						"optimization",
+						"updated",
+						"document"
 					]
 				}
 			]
@@ -87,14 +135,40 @@
 					"name": "Roles Summary",
 					"description": "XML summary of all available role definitions.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Role Overview", "Role Mappings"]
+					"topics": ["Role Overview", "Role Mappings"],
+					"tokens": 904,
+					"priority": "supplementary",
+					"keywords": [
+						"role",
+						"overview",
+						"mappings",
+						"summary",
+						"available",
+						"definitions."
+					]
 				},
 				{
 					"path": "roles/ai-engineer.md",
 					"name": "AI Engineer Role",
 					"description": "AI engineering role definition and responsibilities.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["AI Development", "Model Integration", "AI Best Practices"]
+					"topics": [
+						"AI Development",
+						"Model Integration",
+						"AI Best Practices"
+					],
+					"tokens": 234,
+					"priority": "supplementary",
+					"keywords": [
+						"development",
+						"model",
+						"integration",
+						"best",
+						"practices",
+						"engineering",
+						"definition",
+						"responsibilities."
+					]
 				},
 				{
 					"path": "roles/architecture-engineer.md",
@@ -105,6 +179,18 @@
 						"System Design",
 						"Architecture Planning",
 						"Technical Leadership"
+					],
+					"tokens": 317,
+					"priority": "supplementary",
+					"keywords": [
+						"system",
+						"design",
+						"architecture",
+						"planning",
+						"technical",
+						"leadership",
+						"definition",
+						"responsibilities."
 					]
 				},
 				{
@@ -112,14 +198,36 @@
 					"name": "CMS Engineer Role",
 					"description": "Content management system engineering role.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["CMS Development", "Content Management", "Payload CMS"]
+					"topics": ["CMS Development", "Content Management", "Payload CMS"],
+					"tokens": 324,
+					"priority": "supplementary",
+					"keywords": [
+						"development",
+						"content",
+						"management",
+						"payload",
+						"system",
+						"engineering",
+						"role."
+					]
 				},
 				{
 					"path": "roles/data-engineer.md",
 					"name": "Data Engineer Role",
 					"description": "Data engineering and database management role.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Data Management", "Database Design", "Data Pipelines"]
+					"topics": ["Data Management", "Database Design", "Data Pipelines"],
+					"tokens": 288,
+					"priority": "supplementary",
+					"keywords": [
+						"data",
+						"management",
+						"database",
+						"design",
+						"pipelines",
+						"engineering",
+						"role."
+					]
 				},
 				{
 					"path": "roles/debug-engineer.md",
@@ -130,6 +238,19 @@
 						"Debugging Strategies",
 						"Issue Resolution",
 						"Problem Analysis"
+					],
+					"tokens": 606,
+					"priority": "supplementary",
+					"keywords": [
+						"debugging",
+						"strategies",
+						"issue",
+						"resolution",
+						"problem",
+						"analysis",
+						"troubleshooting",
+						"specialist",
+						"role."
 					]
 				},
 				{
@@ -141,6 +262,20 @@
 						"Full Stack Development",
 						"Frontend/Backend Integration",
 						"End-to-End Features"
+					],
+					"tokens": 342,
+					"priority": "supplementary",
+					"keywords": [
+						"full",
+						"stack",
+						"development",
+						"frontend/backend",
+						"integration",
+						"end-to-end",
+						"features",
+						"covering",
+						"frontend",
+						"backend."
 					]
 				},
 				{
@@ -152,6 +287,19 @@
 						"Issue Analysis",
 						"Root Cause Investigation",
 						"Problem Documentation"
+					],
+					"tokens": 1201,
+					"priority": "supplementary",
+					"keywords": [
+						"issue",
+						"analysis",
+						"root",
+						"cause",
+						"investigation",
+						"problem",
+						"documentation",
+						"specialist",
+						"role."
 					]
 				},
 				{
@@ -159,7 +307,19 @@
 					"name": "QA Testing Engineer Role",
 					"description": "Quality assurance and testing specialist role.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Test Strategy", "Quality Assurance", "Test Automation"]
+					"topics": ["Test Strategy", "Quality Assurance", "Test Automation"],
+					"tokens": 883,
+					"priority": "supplementary",
+					"keywords": [
+						"test",
+						"strategy",
+						"quality",
+						"assurance",
+						"automation",
+						"testing",
+						"specialist",
+						"role."
+					]
 				},
 				{
 					"path": "roles/remediation-engineer.md",
@@ -170,6 +330,16 @@
 						"Issue Remediation",
 						"Fix Implementation",
 						"Problem Resolution"
+					],
+					"tokens": 1843,
+					"priority": "supplementary",
+					"keywords": [
+						"issue",
+						"remediation",
+						"implementation",
+						"problem",
+						"resolution",
+						"role."
 					]
 				},
 				{
@@ -181,6 +351,18 @@
 						"Security Implementation",
 						"Vulnerability Assessment",
 						"Security Best Practices"
+					],
+					"tokens": 229,
+					"priority": "essential",
+					"keywords": [
+						"security",
+						"implementation",
+						"vulnerability",
+						"assessment",
+						"best",
+						"practices",
+						"analysis",
+						"role."
 					]
 				},
 				{
@@ -192,6 +374,18 @@
 						"Systems Architecture",
 						"Infrastructure Design",
 						"Scalability Planning"
+					],
+					"tokens": 1317,
+					"priority": "supplementary",
+					"keywords": [
+						"systems",
+						"architecture",
+						"infrastructure",
+						"design",
+						"scalability",
+						"planning",
+						"high-level",
+						"role."
 					]
 				},
 				{
@@ -199,14 +393,40 @@
 					"name": "UI Engineer Role",
 					"description": "User interface and frontend development role.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["UI Development", "Frontend Components", "User Experience"]
+					"topics": [
+						"UI Development",
+						"Frontend Components",
+						"User Experience"
+					],
+					"tokens": 263,
+					"priority": "supplementary",
+					"keywords": [
+						"development",
+						"frontend",
+						"components",
+						"user",
+						"experience",
+						"interface",
+						"role."
+					]
 				},
 				{
 					"path": "roles/unit-test-writer.md",
 					"name": "Unit Test Writer Role",
 					"description": "Unit testing and test implementation specialist role.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Unit Testing", "Test Implementation", "Test Coverage"]
+					"topics": ["Unit Testing", "Test Implementation", "Test Coverage"],
+					"tokens": 305,
+					"priority": "supplementary",
+					"keywords": [
+						"unit",
+						"testing",
+						"test",
+						"implementation",
+						"coverage",
+						"specialist",
+						"role."
+					]
 				},
 				{
 					"path": "roles/comprehensive-test-writer.md",
@@ -219,6 +439,20 @@
 						"Accessibility Testing",
 						"Integration Testing",
 						"Performance Testing"
+					],
+					"tokens": 1620,
+					"priority": "supplementary",
+					"keywords": [
+						"unit",
+						"testing",
+						"end-to-end",
+						"accessibility",
+						"integration",
+						"performance",
+						"expert",
+						"engineer",
+						"specializing",
+						"comprehensive"
 					]
 				},
 				{
@@ -231,6 +465,20 @@
 						"Code Quality",
 						"Pattern Consistency",
 						"Progress Tracking"
+					],
+					"tokens": 712,
+					"priority": "supplementary",
+					"keywords": [
+						"specification",
+						"implementation",
+						"code",
+						"quality",
+						"pattern",
+						"consistency",
+						"progress",
+						"tracking",
+						"meticulous",
+						"software"
 					]
 				},
 				{
@@ -243,6 +491,20 @@
 						"Quality Assessment",
 						"Security Analysis",
 						"Best Practices"
+					],
+					"tokens": 1315,
+					"priority": "supplementary",
+					"keywords": [
+						"code",
+						"review",
+						"quality",
+						"assessment",
+						"security",
+						"analysis",
+						"best",
+						"practices",
+						"request",
+						"specialist"
 					]
 				},
 				{
@@ -255,6 +517,20 @@
 						"Project Management",
 						"Workflow Optimization",
 						"Development Strategy"
+					],
+					"tokens": 593,
+					"priority": "supplementary",
+					"keywords": [
+						"task",
+						"planning",
+						"project",
+						"management",
+						"workflow",
+						"optimization",
+						"development",
+						"strategy",
+						"strategic",
+						"specialist"
 					]
 				}
 			]
@@ -268,35 +544,97 @@
 					"name": "Typography System",
 					"description": "Typography standards and design system guidelines.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Typography Guidelines", "Font Standards", "Text Styling"]
+					"topics": ["Typography Guidelines", "Font Standards", "Text Styling"],
+					"tokens": 2262,
+					"priority": "essential",
+					"keywords": [
+						"typography",
+						"guidelines",
+						"font",
+						"standards",
+						"text",
+						"styling",
+						"design",
+						"system",
+						"guidelines."
+					]
 				},
 				{
 					"path": "standards/code-standards.md",
 					"name": "Code Standards",
 					"description": "Coding standards and conventions for the project.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Coding Conventions", "Code Quality", "Best Practices"]
+					"topics": ["Coding Conventions", "Code Quality", "Best Practices"],
+					"tokens": 1301,
+					"priority": "essential",
+					"keywords": [
+						"coding",
+						"conventions",
+						"code",
+						"quality",
+						"best",
+						"practices",
+						"standards",
+						"project."
+					]
 				},
 				{
 					"path": "standards/testing/testing-fundamentals.md",
 					"name": "Testing Fundamentals",
 					"description": "Core testing principles, philosophy, and best practices for the project.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["Testing Principles", "Test Philosophy", "Best Practices"]
+					"topics": ["Testing Principles", "Test Philosophy", "Best Practices"],
+					"tokens": 2315,
+					"priority": "essential",
+					"keywords": [
+						"testing",
+						"principles",
+						"test",
+						"philosophy",
+						"best",
+						"practices",
+						"principles,",
+						"philosophy,",
+						"project."
+					]
 				},
 				{
 					"path": "standards/testing/mocking-and-typescript.md",
 					"name": "Mocking and TypeScript",
 					"description": "TypeScript mocking patterns and strategies for effective test doubles.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["TypeScript Mocking", "Test Doubles", "Mock Patterns"]
+					"topics": ["TypeScript Mocking", "Test Doubles", "Mock Patterns"],
+					"tokens": 2702,
+					"priority": "essential",
+					"keywords": [
+						"typescript",
+						"mocking",
+						"test",
+						"doubles",
+						"mock",
+						"patterns",
+						"strategies",
+						"effective",
+						"doubles."
+					]
 				},
 				{
 					"path": "standards/testing/testing-examples.md",
 					"name": "Testing Examples",
 					"description": "Practical testing examples and patterns from the codebase.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["Test Examples", "Code Patterns", "Practical Testing"]
+					"topics": ["Test Examples", "Code Patterns", "Practical Testing"],
+					"tokens": 3014,
+					"priority": "essential",
+					"keywords": [
+						"test",
+						"examples",
+						"code",
+						"patterns",
+						"practical",
+						"testing",
+						"codebase."
+					]
 				},
 				{
 					"path": "standards/testing/typescript-test-patterns.md",
@@ -307,6 +645,18 @@
 						"TypeScript Testing",
 						"Type-Safe Tests",
 						"Advanced Patterns"
+					],
+					"tokens": 3968,
+					"priority": "essential",
+					"keywords": [
+						"typescript",
+						"testing",
+						"type-safe",
+						"tests",
+						"advanced",
+						"patterns",
+						"typescript-specific",
+						"strategies."
 					]
 				},
 				{
@@ -314,7 +664,19 @@
 					"name": "E2E Testing Fundamentals",
 					"description": "End-to-end testing principles, Playwright patterns, and browser automation best practices.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["E2E Testing", "Playwright", "Browser Automation"]
+					"topics": ["E2E Testing", "Playwright", "Browser Automation"],
+					"tokens": 4223,
+					"priority": "essential",
+					"keywords": [
+						"testing",
+						"playwright",
+						"browser",
+						"automation",
+						"end-to-end",
+						"principles,",
+						"patterns,",
+						"practices."
+					]
 				},
 				{
 					"path": "standards/testing/accessibility-testing-fundamentals.md",
@@ -325,6 +687,20 @@
 						"Accessibility Testing",
 						"WCAG Compliance",
 						"A11y Automation"
+					],
+					"tokens": 5677,
+					"priority": "essential",
+					"keywords": [
+						"accessibility",
+						"testing",
+						"wcag",
+						"compliance",
+						"a11y",
+						"automation",
+						"guidelines,",
+						"compliance,",
+						"automated",
+						"patterns."
 					]
 				},
 				{
@@ -332,14 +708,39 @@
 					"name": "Integration Testing Fundamentals",
 					"description": "Integration testing strategies for API endpoints, database operations, and service interactions.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["Integration Testing", "API Testing", "Service Testing"]
+					"topics": ["Integration Testing", "API Testing", "Service Testing"],
+					"tokens": 6744,
+					"priority": "essential",
+					"keywords": [
+						"integration",
+						"testing",
+						"service",
+						"strategies",
+						"endpoints,",
+						"database",
+						"operations,",
+						"interactions."
+					]
 				},
 				{
 					"path": "standards/testing/performance-testing-fundamentals.md",
 					"name": "Performance Testing Fundamentals",
 					"description": "Performance testing methodologies, metrics collection, and optimization validation strategies.",
 					"lastUpdated": "2025-09-11",
-					"topics": ["Performance Testing", "Metrics", "Load Testing"]
+					"topics": ["Performance Testing", "Metrics", "Load Testing"],
+					"tokens": 6436,
+					"priority": "essential",
+					"keywords": [
+						"performance",
+						"testing",
+						"metrics",
+						"load",
+						"methodologies,",
+						"collection,",
+						"optimization",
+						"validation",
+						"strategies."
+					]
 				}
 			]
 		},
@@ -357,6 +758,20 @@
 						"Configuration Inventory",
 						"CI/CD Architecture",
 						"Implementation Status"
+					],
+					"tokens": 2386,
+					"priority": "supplementary",
+					"keywords": [
+						"pipeline",
+						"components",
+						"configuration",
+						"inventory",
+						"ci/cd",
+						"architecture",
+						"implementation",
+						"status",
+						"complete",
+						"configurations."
 					]
 				},
 				{
@@ -369,6 +784,20 @@
 						"Access Control",
 						"Deployment Protection",
 						"Private Repository Management"
+					],
+					"tokens": 1374,
+					"priority": "supplementary",
+					"keywords": [
+						"production",
+						"security",
+						"access",
+						"control",
+						"deployment",
+						"protection",
+						"private",
+						"repository",
+						"management",
+						"strategies"
 					]
 				},
 				{
@@ -381,6 +810,20 @@
 						"AI-Powered CI/CD",
 						"Automated Analysis",
 						"Pipeline Intelligence"
+					],
+					"tokens": 3525,
+					"priority": "supplementary",
+					"keywords": [
+						"integration",
+						"ai-powered",
+						"ci/cd",
+						"automated",
+						"analysis",
+						"pipeline",
+						"intelligence",
+						"context",
+						"within",
+						"pipelines."
 					]
 				},
 				{
@@ -393,6 +836,20 @@
 						"Observability",
 						"Error Tracking",
 						"Performance Monitoring"
+					],
+					"tokens": 3703,
+					"priority": "supplementary",
+					"keywords": [
+						"logging",
+						"architecture",
+						"observability",
+						"error",
+						"tracking",
+						"performance",
+						"monitoring",
+						"enhanced",
+						"system",
+						"design"
 					]
 				},
 				{
@@ -404,6 +861,19 @@
 						"AI Gateway Setup",
 						"Provider Configuration",
 						"Integration Patterns"
+					],
+					"tokens": 2699,
+					"priority": "supplementary",
+					"keywords": [
+						"gateway",
+						"setup",
+						"provider",
+						"configuration",
+						"integration",
+						"patterns",
+						"portkey",
+						"implementation",
+						"configuration."
 					]
 				},
 				{
@@ -411,7 +881,19 @@
 					"name": "Prompt Engineering",
 					"description": "Prompt engineering guidelines and best practices.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Prompt Design", "AI Optimization", "Response Quality"]
+					"topics": ["Prompt Design", "AI Optimization", "Response Quality"],
+					"tokens": 1230,
+					"priority": "supplementary",
+					"keywords": [
+						"prompt",
+						"design",
+						"optimization",
+						"response",
+						"quality",
+						"engineering",
+						"guidelines",
+						"practices."
+					]
 				},
 				{
 					"path": "systems/devcontainer-codespaces/codespaces+warpterminal.md",
@@ -425,6 +907,20 @@
 						"Warp Terminal Automation",
 						"Multi-Environment Development",
 						"Codespace Management"
+					],
+					"tokens": 5203,
+					"priority": "supplementary",
+					"keywords": [
+						"devcontainer",
+						"configuration",
+						"github",
+						"codespaces",
+						"integration",
+						"warp",
+						"terminal",
+						"automation",
+						"multi-environment",
+						"development"
 					]
 				},
 				{
@@ -441,6 +937,20 @@
 						"Orchestration",
 						"Development Workflow",
 						"Troubleshooting"
+					],
+					"tokens": 4427,
+					"priority": "supplementary",
+					"keywords": [
+						"docker",
+						"container",
+						"architecture",
+						"devcontainer",
+						"servers",
+						"testing",
+						"orchestration",
+						"development",
+						"workflow",
+						"troubleshooting"
 					]
 				},
 				{
@@ -457,6 +967,20 @@
 						"Agent Coordination",
 						"Testing Strategy",
 						"Development Process"
+					],
+					"tokens": 2307,
+					"priority": "supplementary",
+					"keywords": [
+						"feature",
+						"implementation",
+						"ccpm",
+						"workflow",
+						"parallel",
+						"execution",
+						"github",
+						"integration",
+						"task",
+						"management"
 					]
 				},
 				{
@@ -473,6 +997,20 @@
 						"Performance Optimization",
 						"Task Decomposition",
 						"System Design"
+					],
+					"tokens": 3893,
+					"priority": "important",
+					"keywords": [
+						"project",
+						"management",
+						"parallel",
+						"execution",
+						"agent",
+						"orchestration",
+						"github",
+						"integration",
+						"workflow",
+						"architecture"
 					]
 				},
 				{
@@ -489,6 +1027,50 @@
 						"Claude Integration",
 						"Security Patterns",
 						"Service Orchestration"
+					],
+					"tokens": 3606,
+					"priority": "supplementary",
+					"keywords": [
+						"architecture",
+						"model",
+						"context",
+						"protocol",
+						"integration",
+						"containerization",
+						"microservices",
+						"claude",
+						"security",
+						"patterns"
+					]
+				},
+				{
+					"path": "systems/claude-code/dynamic-context-loading-pattern.md",
+					"name": "Dynamic Context Loading Pattern",
+					"description": "Pattern for intelligent context selection in Claude Code slash commands, separating essential docs from dynamically selected relevant documentation for 3x better precision and 40-60% token reduction",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"Context Loading",
+						"Dynamic Selection",
+						"Token Optimization",
+						"Command Patterns",
+						"Claude Code",
+						"Performance Optimization",
+						"Relevance Scoring",
+						"Documentation Strategy"
+					],
+					"tokens": 2753,
+					"priority": "supplementary",
+					"keywords": [
+						"context",
+						"loading",
+						"dynamic",
+						"selection",
+						"token",
+						"optimization",
+						"command",
+						"patterns",
+						"claude",
+						"code"
 					]
 				}
 			]
@@ -513,6 +1095,20 @@
 						"Security Architecture",
 						"CI/CD Pipeline",
 						"Architecture Decision Records"
+					],
+					"tokens": 1751,
+					"priority": "supplementary",
+					"keywords": [
+						"architecture",
+						"overview",
+						"next.js",
+						"router",
+						"supabase",
+						"multi-tenant",
+						"saas",
+						"monorepo",
+						"structure",
+						"server"
 					]
 				},
 				{
@@ -529,6 +1125,20 @@
 						"E2E Testing",
 						"Unit Testing",
 						"Test Isolation"
+					],
+					"tokens": 3165,
+					"priority": "supplementary",
+					"keywords": [
+						"test",
+						"architecture",
+						"docker",
+						"containerization",
+						"parallel",
+						"testing",
+						"port",
+						"management",
+						"ci/cd",
+						"integration"
 					]
 				}
 			]
@@ -542,14 +1152,37 @@
 					"name": "Available Tools List",
 					"description": "XML listing of all available development tools and utilities.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Tool Inventory", "Tool Capabilities"]
+					"topics": ["Tool Inventory", "Tool Capabilities"],
+					"tokens": 9506,
+					"priority": "supplementary",
+					"keywords": [
+						"tool",
+						"inventory",
+						"capabilities",
+						"listing",
+						"available",
+						"development",
+						"tools",
+						"utilities."
+					]
 				},
 				{
 					"path": "tools/browser-tools.md",
 					"name": "Browser Tools",
 					"description": "Browser-based development and testing tools documentation.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Browser Testing", "Development Tools", "Debugging"]
+					"topics": ["Browser Testing", "Development Tools", "Debugging"],
+					"tokens": 486,
+					"priority": "supplementary",
+					"keywords": [
+						"browser",
+						"testing",
+						"development",
+						"tools",
+						"debugging",
+						"browser-based",
+						"documentation."
+					]
 				},
 				{
 					"path": "tools/cloudflare-playwright.md",
@@ -560,7 +1193,9 @@
 						"End-to-End Testing",
 						"Cloudflare Integration",
 						"Automated Testing"
-					]
+					],
+					"tokens": 0,
+					"priority": "supplementary"
 				},
 				{
 					"path": "tools/cloudflare-workers-bindings.md",
@@ -571,6 +1206,18 @@
 						"Worker Bindings",
 						"Edge Computing",
 						"Cloudflare Integration"
+					],
+					"tokens": 304,
+					"priority": "supplementary",
+					"keywords": [
+						"worker",
+						"bindings",
+						"edge",
+						"computing",
+						"cloudflare",
+						"integration",
+						"workers",
+						"configuration."
 					]
 				},
 				{
@@ -582,6 +1229,17 @@
 						"Workers Monitoring",
 						"Observability",
 						"Performance Tracking"
+					],
+					"tokens": 640,
+					"priority": "supplementary",
+					"keywords": [
+						"workers",
+						"monitoring",
+						"observability",
+						"performance",
+						"tracking",
+						"cloudflare",
+						"workers."
 					]
 				},
 				{
@@ -589,21 +1247,58 @@
 					"name": "Code Reasoning",
 					"description": "Code analysis and reasoning tools and techniques.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Code Analysis", "Automated Reasoning", "Code Quality"]
+					"topics": ["Code Analysis", "Automated Reasoning", "Code Quality"],
+					"tokens": 450,
+					"priority": "supplementary",
+					"keywords": [
+						"code",
+						"analysis",
+						"automated",
+						"reasoning",
+						"quality",
+						"tools",
+						"techniques."
+					]
 				},
 				{
 					"path": "tools/context7.md",
 					"name": "Context7 Tools",
 					"description": "Context7 documentation and integration tools.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Documentation Tools", "Context Management", "Integration"]
+					"topics": [
+						"Documentation Tools",
+						"Context Management",
+						"Integration"
+					],
+					"tokens": 397,
+					"priority": "supplementary",
+					"keywords": [
+						"documentation",
+						"tools",
+						"context",
+						"management",
+						"integration",
+						"context7",
+						"tools."
+					]
 				},
 				{
 					"path": "tools/exa-search.md",
 					"name": "Exa Search",
 					"description": "Exa search engine integration and usage.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Search Integration", "Content Discovery", "API Usage"]
+					"topics": ["Search Integration", "Content Discovery", "API Usage"],
+					"tokens": 326,
+					"priority": "supplementary",
+					"keywords": [
+						"search",
+						"integration",
+						"content",
+						"discovery",
+						"usage",
+						"engine",
+						"usage."
+					]
 				},
 				{
 					"path": "tools/github.md",
@@ -614,6 +1309,18 @@
 						"GitHub Integration",
 						"Repository Management",
 						"Workflow Automation"
+					],
+					"tokens": 385,
+					"priority": "supplementary",
+					"keywords": [
+						"github",
+						"integration",
+						"repository",
+						"management",
+						"workflow",
+						"automation",
+						"tools",
+						"workflows."
 					]
 				},
 				{
@@ -625,6 +1332,19 @@
 						"Application Monitoring",
 						"Performance Metrics",
 						"Error Tracking"
+					],
+					"tokens": 377,
+					"priority": "supplementary",
+					"keywords": [
+						"application",
+						"monitoring",
+						"performance",
+						"metrics",
+						"error",
+						"tracking",
+						"relic",
+						"observability",
+						"integration."
 					]
 				},
 				{
@@ -632,7 +1352,18 @@
 					"name": "Perplexity Tools",
 					"description": "Perplexity AI integration and usage documentation.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["AI Search", "Knowledge Retrieval", "API Integration"]
+					"topics": ["AI Search", "Knowledge Retrieval", "API Integration"],
+					"tokens": 403,
+					"priority": "supplementary",
+					"keywords": [
+						"search",
+						"knowledge",
+						"retrieval",
+						"integration",
+						"perplexity",
+						"usage",
+						"documentation."
+					]
 				},
 				{
 					"path": "tools/postgresql.md",
@@ -643,6 +1374,16 @@
 						"Database Management",
 						"PostgreSQL Tools",
 						"Database Operations"
+					],
+					"tokens": 226,
+					"priority": "supplementary",
+					"keywords": [
+						"database",
+						"management",
+						"postgresql",
+						"tools",
+						"operations",
+						"utilities."
 					]
 				},
 				{
@@ -654,6 +1395,19 @@
 						"Supabase Integration",
 						"Backend Services",
 						"Database Operations"
+					],
+					"tokens": 245,
+					"priority": "supplementary",
+					"keywords": [
+						"supabase",
+						"integration",
+						"backend",
+						"services",
+						"database",
+						"operations",
+						"platform",
+						"tools",
+						"documentation."
 					]
 				},
 				{
@@ -661,7 +1415,25 @@
 					"name": "Tool Mappings",
 					"description": "XML mapping of tools to their specific use cases and contexts.",
 					"lastUpdated": "2025-09-03",
-					"topics": ["Tool Relationships", "Use Case Mapping", "Tool Selection"]
+					"topics": [
+						"Tool Relationships",
+						"Use Case Mapping",
+						"Tool Selection"
+					],
+					"tokens": 3076,
+					"priority": "supplementary",
+					"keywords": [
+						"tool",
+						"relationships",
+						"case",
+						"mapping",
+						"selection",
+						"tools",
+						"their",
+						"specific",
+						"cases",
+						"contexts."
+					]
 				},
 				{
 					"path": "tools/vitest-unit-testing.md",
@@ -676,9 +1448,37 @@
 						"Test Patterns",
 						"Coverage",
 						"Testing Infrastructure"
+					],
+					"tokens": 3428,
+					"priority": "supplementary",
+					"keywords": [
+						"vitest",
+						"unit",
+						"testing",
+						"mocking",
+						"test",
+						"helpers",
+						"patterns",
+						"coverage",
+						"infrastructure",
+						"comprehensive"
 					]
 				}
 			]
+		}
+	},
+	"features": ["token-counts", "priority-levels", "keyword-extraction"],
+	"schema": {
+		"version": "1.1",
+		"fields": {
+			"path": "Relative path from .claude/context/",
+			"name": "Human-readable document name",
+			"description": "Brief description of document contents",
+			"lastUpdated": "Date of last update (YYYY-MM-DD)",
+			"topics": "Array of main topics covered",
+			"tokens": "Estimated token count for the document",
+			"priority": "Priority level: essential | important | supplementary",
+			"keywords": "Array of extracted keywords for improved matching"
 		}
 	}
 }

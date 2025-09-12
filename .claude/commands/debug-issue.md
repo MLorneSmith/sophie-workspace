@@ -12,11 +12,16 @@ This command reads an issue specification and launches a focused debugging sessi
 
 **CRITICAL**: Always review GitHub issue comments for the most current status and implementation progress, as issue descriptions may be outdated.
 
-## 1. Fetch Issue from GitHub (FIRST PRIORITY)
+## 1. Essential Context (Always Read)
+- Read `.claude/context/roles/debug-engineer.md` - Debug role and principles
+- Read `.claude/context/standards/code-standards.md` - Code quality standards
+- Read `.claude/context/constraints.md` - Project constraints
+
+## 2. Fetch Issue from GitHub (FIRST PRIORITY)
 
 **Always start by fetching the issue to understand what you're debugging:**
 
-### 1.1 Direct GitHub Fetch
+### 2.1 Direct GitHub Fetch
 
 ```bash
 # Parse the issue reference
@@ -49,7 +54,7 @@ if [ -n "$issue_number" ]; then
 fi
 ```
 
-### 1.2 Parse Issue Reference
+### 2.2 Parse Issue Reference
 
 The command supports multiple reference formats:
 
@@ -62,7 +67,7 @@ The command supports multiple reference formats:
 /debug-issue ISSUE-1234567-abc  # Legacy local-only format
 ```
 
-### 1.3 Display Issue Content and Comments
+### 2.3 Display Issue Content and Comments
 
 Load the issue content from GitHub or local file:
 
@@ -90,7 +95,7 @@ else
 fi
 ```
 
-### 1.4 Parse Issue Data
+### 2.4 Parse Issue Data
 
 ```typescript
 // For GitHub issues
@@ -117,7 +122,7 @@ if (issueNumber) {
 }
 ```
 
-### 1.5 Review GitHub Issue Comments (Critical Step)
+### 2.5 Review GitHub Issue Comments (Critical Step)
 
 **IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
 
@@ -150,7 +155,7 @@ gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
 - **Technical Context**: Decisions, approaches, and discoveries
 - **Blockers and Solutions**: Known issues and their resolutions
 
-## 2. Adopt Debug Role
+## 3. Adopt Debug Role
 
 **After understanding the issue, adopt the debugging mindset:**
 
@@ -158,46 +163,43 @@ gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
 /read .claude/context/roles/debug-engineer.md
 ```
 
-## 3. Load Context Documentation (Based on Issue Analysis)
+## 4. Load Dynamic Context Documentation (Based on Issue Analysis)
 
-**Only load context relevant to the specific issue you're debugging:**
+**Use the dynamic context loader to select relevant documentation based on the issue:**
 
-### 3.1 Selective Context Loading
+### 4.1 Dynamic Context Loading
 
-**Based on the issue type from section 1, load ONLY relevant documentation:**
+```bash
+# After analyzing the issue, load relevant context dynamically
+# Build query from issue content
+ISSUE_QUERY="${issue_title} ${issue_body_excerpt} ${issue_labels}"
 
-### 3.2 Core Context (Optional)
+# Load relevant documentation for debugging
+node .claude/scripts/context-loader.cjs \
+  --query="$ISSUE_QUERY" \
+  --command="debug-issue" \
+  --format=paths \
+  --budget=4000
 
-**Only if needed for the specific issue:**
-
+# This will automatically select relevant docs based on:
+# - Issue title and description
+# - Labels (e.g., "bug", "database", "frontend")
+# - Error messages and stack traces
+# - Affected components mentioned
 ```
-# Load if debugging patterns are relevant:
-.claude/docs/debugging/common-patterns.md
-.claude/docs/debugging/debugging-system-overview.md
-```
 
-### 3.3 Issue-Specific Context
+### 4.2 Context Categories
 
-**Load documentation based on the actual issue content from section 1:**
+The dynamic loader will prioritize documentation based on issue type:
 
 ```typescript
-// Based on issue analysis, select relevant docs from the inventory:
-const contextMap = {
-  // Frontend/UI issues
-  ui: [
-    '.claude/docs/ui/component-patterns.md',
-    '.claude/docs/ui/accessibility.md',
-    '.claude/docs/ui/responsive-design.md',
-    '.claude/docs/architecture/state-management.md',
-  ],
+// The context loader automatically scores and selects from:
+const contextCategories = {
+  // Frontend/UI issues (detected by keywords: ui, component, style, react, etc.)
+  ui: 'Higher scoring for UI/component docs',
 
-  // Backend/Database issues
-  database: [
-    '.claude/docs/data/database-schema.md',
-    '.claude/docs/data/supabase-patterns.md',
-    '.claude/docs/debugging/database-debugging.md',
-    '.claude/docs/security/authorization-patterns.md', // For RLS issues
-  ],
+  // Backend/Database issues (detected by keywords: database, query, rls, etc.)
+  database: 'Higher scoring for database/backend docs',
 
   // Performance issues
   performance: [
@@ -246,14 +248,14 @@ const contextMap = {
 // Note: Use the inventory to discover additional relevant docs not listed here
 ```
 
-### 3.4 Loading Strategy
+### 4.4 Loading Strategy
 
 1. **Be highly selective** - Only load what's directly relevant to the issue
 2. **Skip generic documentation** unless specifically needed
 3. **Load in parallel** when loading multiple docs
 4. **Check test cases** only if debugging a specific component with tests
 
-### 3.5 Context Loading Example
+### 4.5 Context Loading Example
 
 ```typescript
 // Example: Only load what's needed based on issue analysis
@@ -267,9 +269,9 @@ if (issue.labels.includes('database') || issue.body.includes('RLS')) {
 // Otherwise, skip unnecessary context loading
 ```
 
-## 4. Issue Analysis & Planning
+## 5. Issue Analysis & Planning
 
-### 4.1 Review Diagnostic Data
+### 5.1 Review Diagnostic Data
 
 Analyze the pre-collected diagnostic information:
 
@@ -279,7 +281,7 @@ Analyze the pre-collected diagnostic information:
 4. **Network Issues**: Check failed requests
 5. **Console Output**: Review warnings and errors
 
-### 4.2 Create Debug Plan
+### 5.2 Create Debug Plan
 
 Based on issue analysis:
 
@@ -311,7 +313,7 @@ Based on issue analysis:
 - [ ] Update documentation
 ```
 
-### 4.3 Set Up Debug Environment
+### 5.3 Set Up Debug Environment
 
 ```bash
 # Checkout relevant branch if needed
@@ -324,9 +326,9 @@ export NODE_ENV=[reported_environment]
 pnpm dev
 ```
 
-## 5. Reproduction & Investigation
+## 6. Reproduction & Investigation
 
-### 5.1 Reproduce the Issue
+### 6.1 Reproduce the Issue
 
 Follow the documented reproduction steps:
 
@@ -345,7 +347,7 @@ const currentErrors = (await mcp__browser) - tools__getConsoleErrors();
 const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
 ```
 
-### 5.2 Deep Dive Investigation
+### 6.2 Deep Dive Investigation
 
 Based on issue type, perform targeted investigation:
 
@@ -377,7 +379,7 @@ Based on issue type, perform targeted investigation:
 3. Verify API response shapes
 4. Review type assertions
 
-### 5.3 Compare with Baseline
+### 6.3 Compare with Baseline
 
 ```typescript
 // Compare current state with issue report
@@ -388,9 +390,9 @@ const comparison = {
 };
 ```
 
-## 6. Solution Implementation
+## 7. Solution Implementation
 
-### 6.1 Implement Fix
+### 7.1 Implement Fix
 
 Based on root cause analysis:
 
@@ -420,7 +422,7 @@ switch (issue.type) {
 }
 ```
 
-### 6.2 Add Defensive Measures
+### 7.2 Add Defensive Measures
 
 ```typescript
 // Add logging for future debugging
@@ -444,7 +446,7 @@ performance.mark('issue-fix-start');
 performance.measure('issue-fix', 'issue-fix-start');
 ```
 
-### 6.3 Create Tests
+### 7.3 Create Tests
 
 ```typescript
 // Create regression test
@@ -453,9 +455,9 @@ const testContent = generateRegressionTest(issue);
 await writeFile(testFile, testContent);
 ```
 
-## 7. Verification & Documentation
+## 8. Verification & Documentation
 
-### 7.1 Verify Fix
+### 8.1 Verify Fix
 
 Re-run diagnostic tools to confirm resolution:
 
@@ -479,7 +481,7 @@ const dbVerification = await mcp__postgres__pg_analyze_database({
 });
 ```
 
-### 7.2 Update Issue Documentation
+### 8.2 Update Issue Documentation
 
 Create resolution report:
 
@@ -515,7 +517,7 @@ Create resolution report:
 [Key takeaways for preventing similar issues]
 ```
 
-### 7.3 Update Issue Status
+### 8.3 Update Issue Status
 
 ```typescript
 // Update local issue file
@@ -535,9 +537,9 @@ if (issue.githubNumber) {
 }
 ```
 
-## 8. Post-Debug Actions
+## 9. Post-Debug Actions
 
-### 8.1 Create PR if Needed
+### 9.1 Create PR if Needed
 
 ```bash
 # Create branch for fix
@@ -556,7 +558,7 @@ Fixes #${issue.githubNumber}"
 gh pr create --title "Fix: ${issue.title}" --body "..."
 ```
 
-### 8.2 Knowledge Base Update
+### 9.2 Knowledge Base Update
 
 If the issue revealed a gap:
 
@@ -565,7 +567,7 @@ If the issue revealed a gap:
 3. Create troubleshooting guide
 4. Update team runbook
 
-### 8.3 Summary Output
+### 9.3 Summary Output
 
 ```
 ✅ Issue Resolved Successfully!

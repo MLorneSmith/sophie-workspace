@@ -26,9 +26,7 @@
   "enabledMcpjsonServers": [
     "exa",
     "perplexity-ask",
-    "supabase",
     "context7",
-    "cloudflare-playwright",
     "postgres",
     "code-reasoning",
     "newrelic",
