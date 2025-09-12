@@ -29,7 +29,7 @@
 
 ### ⚠️ Consider Moving (Mixed Purpose)
 
-6. **`data/`** - **Partial Move Recommended**
+1. **`data/`** - **Partial Move Recommended**
    - Contains: Mix of inventories and tracking databases
    - Move to tracking:
      - `test-coverage-db.json` → `.claude/tracking/test-data/`
@@ -43,6 +43,7 @@
 ### ❌ Do NOT Move (Not Tracking)
 
 **Configuration (Claude behavior):**
+
 - `agents/` - AI agent configurations
 - `commands/` - Command definitions  
 - `context/` - Project knowledge base
@@ -54,23 +55,27 @@
 - `statusline/` - Status line config
 
 **Workspace (Temporary):**
+
 - `cache/` - Temporary cache
 - `scratch/` - Working files
 
 **Documentation:**
+
 - `docs/` - Project documentation
 - `instructions/` - Guides and how-tos (consider moving to docs)
 
 **Tools:**
+
 - `scripts/` - Utility scripts
 - `utils/` - Utilities
 
 **Archive:**
+
 - `z.archive/` - Archived files
 
 ## Recommended Final Structure
 
-```
+```text
 .claude/tracking/
 ├── test-planning/     # ✅ Already moved
 ├── issues/            # Project issues
@@ -127,6 +132,7 @@ mv .claude/data/test-dependencies.json .claude/tracking/test-data/
 ## Additional Recommendation
 
 Consider creating `.claude/instructions/` → `.claude/docs/guides/` migration:
+
 - These are how-to guides and documentation
 - Better organized under docs
 - Frees up "instructions" name for actual Claude instructions if needed
