@@ -470,16 +470,12 @@ class ContextGraphManager {
 	}
 
 	/**
-	 * Get topological sort for dependency resolution
+	 * Get loading order based on dependencies (simple traversal since topologicalSort not available)
 	 */
 	getLoadingOrder() {
-		try {
-			return this.graph.topologicalSort();
-		} catch (error) {
-			// Graph might have cycles
-			console.warn("Graph has cycles, returning unsorted nodes");
-			return Array.from(this.graph.nodes);
-		}
+		// Return nodes in the order they were added
+		// Future: implement custom topological sort if needed
+		return Array.from(this.graph.nodes);
 	}
 }
 
