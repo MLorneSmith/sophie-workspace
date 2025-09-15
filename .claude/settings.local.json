@@ -16,7 +16,9 @@
       "Bash(source:*)",
       "Bash(claude-main)",
       "mcp__docs-mcp__search_docs",
-      "mcp__code-reasoning__code-reasoning"
+      "mcp__code-reasoning__code-reasoning",
+      "mcp__perplexity-ask__perplexity_ask",
+      "mcp__context7__get-library-docs"
     ],
     "deny": [],
     "ask": [],
