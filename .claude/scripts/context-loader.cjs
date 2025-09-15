@@ -16,6 +16,7 @@
 
 const fs = require("node:fs").promises;
 const path = require("node:path");
+const ContextGraphManager = require("./context-graph.cjs");
 // Fuse will be loaded dynamically to support ESM
 
 class ContextLoader {
@@ -26,6 +27,8 @@ class ContextLoader {
 		this.fuseCache = new Map();
 		this.commandWeights = this.getCommandWeights();
 		this.Fuse = null; // Will be loaded dynamically
+		this.graphManager = null; // Will be initialized when needed
+		this.graphEnabled = true; // Feature flag for graph-based recommendations
 	}
 
 	/**
@@ -40,9 +43,39 @@ class ContextLoader {
 			const data = await fs.readFile(this.inventoryPath, "utf8");
 			this.inventory = JSON.parse(data);
 			this.initializeFuseInstances();
+
+			// Initialize graph manager if enabled
+			if (this.graphEnabled) {
+				await this.initializeGraphManager();
+			}
 		} catch (error) {
 			console.error(`Error loading inventory: ${error.message}`);
 			throw error;
+		}
+	}
+
+	/**
+	 * Initialize the graph manager for relationship-based recommendations
+	 */
+	async initializeGraphManager() {
+		try {
+			this.graphManager = new ContextGraphManager();
+			const initialized = await this.graphManager.initialize();
+
+			if (initialized) {
+				// Check if graph needs rebuilding
+				const stats = await this.graphManager.getStatistics();
+				if (!stats || stats.documents === 0) {
+					console.error("Building context graph for first time...");
+					await this.graphManager.buildFromInventory();
+				}
+			}
+		} catch (error) {
+			console.error(
+				`Warning: Graph manager initialization failed: ${error.message}`,
+			);
+			console.error("Falling back to non-graph recommendations");
+			this.graphEnabled = false;
 		}
 	}
 
@@ -564,6 +597,80 @@ class ContextLoader {
 	}
 
 	/**
+	 * Get graph-based recommendations for documents
+	 */
+	async getGraphRecommendations(primaryDocs, options = {}) {
+		if (!this.graphEnabled || !this.graphManager?.initialized) {
+			return [];
+		}
+
+		const { maxDepth = 2, includeSecondOrder = true } = options;
+		const recommendations = new Map();
+
+		try {
+			// For each primary document, find related documents
+			for (const doc of primaryDocs) {
+				const related = await this.graphManager.findRelatedDocuments(
+					doc.path,
+					maxDepth,
+				);
+
+				// Add direct dependencies with high weight
+				for (const depPath of related.direct.dependencies || []) {
+					if (!recommendations.has(depPath)) {
+						recommendations.set(depPath, {
+							path: depPath,
+							score: 0,
+							reasons: [],
+						});
+					}
+					const rec = recommendations.get(depPath);
+					rec.score += 0.8; // High score for direct dependencies
+					rec.reasons.push(`dependency of ${doc.path}`);
+				}
+
+				// Add pairings with medium weight
+				for (const pairPath of related.direct.pairings || []) {
+					if (!recommendations.has(pairPath)) {
+						recommendations.set(pairPath, {
+							path: pairPath,
+							score: 0,
+							reasons: [],
+						});
+					}
+					const rec = recommendations.get(pairPath);
+					rec.score += 0.6; // Medium score for pairings
+					rec.reasons.push(`pairs with ${doc.path}`);
+				}
+
+				// Add second-order relationships if enabled
+				if (includeSecondOrder) {
+					for (const depPath of related.secondOrder.dependencies || []) {
+						if (!recommendations.has(depPath)) {
+							recommendations.set(depPath, {
+								path: depPath,
+								score: 0,
+								reasons: [],
+							});
+						}
+						const rec = recommendations.get(depPath);
+						rec.score += 0.3; // Lower score for second-order
+						rec.reasons.push(`2nd-order dep of ${doc.path}`);
+					}
+				}
+			}
+
+			// Convert to array and sort by score
+			return Array.from(recommendations.values())
+				.sort((a, b) => b.score - a.score)
+				.slice(0, 5); // Return top 5 graph recommendations
+		} catch (error) {
+			console.error(`Graph recommendations failed: ${error.message}`);
+			return [];
+		}
+	}
+
+	/**
 	 * Main method to find relevant context
 	 */
 	async findRelevantContext(query, options = {}) {
@@ -756,6 +863,51 @@ class ContextLoader {
 				tokenCount += doc.tokens;
 
 				if (selected.length >= maxResults) break;
+			}
+		}
+
+		// Get graph-based recommendations if enabled
+		if (this.graphEnabled && selected.length > 0) {
+			const graphRecs = await this.getGraphRecommendations(selected, {
+				maxDepth: 2,
+				includeSecondOrder: tokenCount < tokenBudget * 0.7, // Only include 2nd order if we have budget
+			});
+
+			// Add graph recommendations if they fit in budget
+			for (const rec of graphRecs) {
+				// Find the document in inventory
+				let recDoc = null;
+				for (const category of Object.values(this.inventory.categories)) {
+					const found = category.documents?.find((d) => d.path === rec.path);
+					if (found) {
+						recDoc = found;
+						break;
+					}
+				}
+
+				if (recDoc && !selected.some((s) => s.path === rec.path)) {
+					const recTokens = this.estimateTokens(recDoc);
+					if (tokenCount + recTokens <= tokenBudget) {
+						selected.push({
+							path: recDoc.path,
+							name: recDoc.name,
+							description: recDoc.description,
+							category: "graph-recommended",
+							tokens: recTokens,
+							relevance: rec.score,
+							importance: 0.7, // Medium importance for graph recs
+							combinedScore: rec.score * 0.7,
+							graphReasons: rec.reasons,
+						});
+						tokenCount += recTokens;
+
+						if (selected.length >= maxResults + 2) break; // Allow 2 extra for graph
+					}
+				}
+			}
+
+			if (verbose && graphRecs.length > 0) {
+				console.error(`Added ${graphRecs.length} graph-based recommendations`);
 			}
 		}
 

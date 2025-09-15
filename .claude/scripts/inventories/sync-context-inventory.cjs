@@ -11,8 +11,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execSync } = require("node:child_process");
+const { rebuildGraph } = require("./rebuild-context-graph.cjs");
 
-const PROJECT_ROOT = path.join(__dirname, "..", "..");
+const PROJECT_ROOT = path.join(__dirname, "..", "..", "..");
 const CONTEXT_DIR = path.join(PROJECT_ROOT, ".claude", "context");
 const INVENTORY_PATH = path.join(
 	PROJECT_ROOT,
@@ -136,7 +137,7 @@ function getTokenCount(filePath) {
 /**
  * Extract metadata from file content
  */
-function extractMetadata(filePath) {
+function extractMetadata(filePath, existingDoc = null) {
 	const fullPath = path.join(CONTEXT_DIR, filePath);
 
 	try {
@@ -210,6 +211,39 @@ function extractMetadata(filePath) {
 			priority = "important";
 		}
 
+		// Initialize relationship fields - preserve existing or create empty
+		const relatedCommands = existingDoc?.relatedCommands || [];
+		const dependencies = existingDoc?.dependencies || [];
+		const antiPatterns = existingDoc?.antiPatterns || [];
+		const pairings = existingDoc?.pairings || [];
+
+		// If no existing relationships, try to infer some basic ones
+		if (!existingDoc) {
+			// Infer related commands based on file path and content
+			if (filePath.includes("test")) relatedCommands.push("/write-tests");
+			if (filePath.includes("debug") || filePath.includes("troubleshoot"))
+				relatedCommands.push("/debug-issue");
+			if (filePath.includes("feature") || filePath.includes("implementation"))
+				relatedCommands.push("/feature", "/do-task");
+
+			// Infer dependencies based on file structure
+			if (filePath.includes("implementation") && filePath.includes("auth")) {
+				dependencies.push("auth/overview.md");
+			}
+			if (filePath.includes("troubleshooting")) {
+				const basePath = path.dirname(filePath);
+				dependencies.push(`${basePath}/overview.md`);
+			}
+
+			// Infer anti-patterns
+			if (filePath.includes("backend") || filePath.includes("server")) {
+				antiPatterns.push("frontend-only", "client-side-only");
+			}
+			if (filePath.includes("database") || filePath.includes("supabase")) {
+				antiPatterns.push("no-database", "static-site");
+			}
+		}
+
 		return {
 			name: title,
 			description:
@@ -218,6 +252,10 @@ function extractMetadata(filePath) {
 			topics: topics.length > 0 ? topics.slice(0, 5) : ["Documentation"],
 			priority,
 			keywords: Array.from(keywords).slice(0, 10),
+			relatedCommands,
+			dependencies,
+			antiPatterns,
+			pairings,
 		};
 	} catch (error) {
 		console.error(
@@ -230,6 +268,10 @@ function extractMetadata(filePath) {
 			topics: ["Documentation"],
 			priority: "supplementary",
 			keywords: [],
+			relatedCommands: existingDoc?.relatedCommands || [],
+			dependencies: existingDoc?.dependencies || [],
+			antiPatterns: existingDoc?.antiPatterns || [],
+			pairings: existingDoc?.pairings || [],
 		};
 	}
 }
@@ -299,18 +341,36 @@ async function syncInventory() {
 		const existing = existingFiles.get(filePath);
 
 		if (existing) {
-			// Update existing file
+			// Update existing file - preserve relationship fields
 			const tokenCount = getTokenCount(filePath);
-			if (existing.doc.tokens !== tokenCount) {
-				existing.doc.tokens = tokenCount;
-				existing.doc.lastUpdated = new Date().toISOString().split("T")[0];
+			const shouldUpdate = existing.doc.tokens !== tokenCount;
+
+			if (shouldUpdate) {
+				// Extract fresh metadata while preserving relationships
+				const metadata = extractMetadata(filePath, existing.doc);
+
+				// Update document while preserving manual relationship data
+				existing.doc = {
+					...existing.doc,
+					...metadata,
+					tokens: tokenCount,
+					// Explicitly preserve relationship fields
+					relatedCommands:
+						existing.doc.relatedCommands || metadata.relatedCommands || [],
+					dependencies:
+						existing.doc.dependencies || metadata.dependencies || [],
+					antiPatterns:
+						existing.doc.antiPatterns || metadata.antiPatterns || [],
+					pairings: existing.doc.pairings || metadata.pairings || [],
+				};
+
 				updated.push(filePath);
-				console.log(`🔄 Updated tokens for ${filePath}: ${tokenCount}`);
+				console.log(`🔄 Updated ${filePath}: ${tokenCount} tokens`);
 			}
 		} else {
 			// Add new file
 			console.log(`➕ Adding new file: ${filePath}`);
-			const metadata = extractMetadata(filePath);
+			const metadata = extractMetadata(filePath, null);
 			const tokenCount = getTokenCount(filePath);
 			const category = determineCategory(filePath);
 
@@ -412,6 +472,30 @@ async function syncInventory() {
 		console.log("\n✨ Formatted inventory with Biome");
 	} catch {
 		// Ignore formatting errors
+	}
+
+	// Rebuild the context graph to stay synchronized
+	console.log("\n🔄 Updating context graph...");
+	try {
+		const graphResult = await rebuildGraph(true); // Run silently
+		if (graphResult.success) {
+			console.log("✅ Context graph updated successfully");
+			if (graphResult.stats?.changes) {
+				const { nodesAdded, edgesAdded } = graphResult.stats.changes;
+				if (nodesAdded !== 0 || edgesAdded !== 0) {
+					console.log(
+						`   ${nodesAdded > 0 ? "+" : ""}${nodesAdded} nodes, ${
+							edgesAdded > 0 ? "+" : ""
+						}${edgesAdded} edges`,
+					);
+				}
+			}
+		} else {
+			console.warn("⚠️  Context graph update failed:", graphResult.error);
+			console.warn("   Run 'node rebuild-context-graph.cjs' manually to fix");
+		}
+	} catch (error) {
+		console.warn("⚠️  Could not update context graph:", error.message);
 	}
 
 	console.log("\n✅ Context inventory synchronized successfully!");

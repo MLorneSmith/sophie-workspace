@@ -1,0 +1,203 @@
+{
+	"nodes": [
+		"auth/overview.md",
+		"auth/security.md",
+		"auth/configuration.md",
+		"auth/implementation.md",
+		"auth/troubleshooting.md",
+		"constraints.md",
+		"database-schema.md",
+		"api/endpoints.md",
+		"api/headers.md",
+		"api/api-patterns.md",
+		"design/cicd-pipeline-updated-design.md",
+		"roles/security-engineer.md",
+		"roles/.roles-summary.xml",
+		"roles/ai-engineer.md",
+		"roles/architecture-engineer.md",
+		"roles/cms-engineer.md",
+		"roles/comprehensive-test-writer.md",
+		"roles/data-engineer.md",
+		"roles/debug-engineer.md",
+		"roles/full-stack-engineer.md",
+		"roles/implementation-engineer.md",
+		"roles/issue-investigator.md",
+		"roles/pr-reviewer.md",
+		"roles/qa-testing-engineer.md",
+		"roles/remediation-engineer.md",
+		"roles/systems-architect-engineer.md",
+		"roles/task-planner.md",
+		"roles/ui-engineer.md",
+		"roles/unit-test-writer.md",
+		"standards/code-standards.md",
+		"standards/react-query-patterns.md",
+		"standards/testing/accessibility-testing-fundamentals.md",
+		"standards/testing/e2e-testing-fundamentals.md",
+		"standards/testing/integration/integration-testing-fundamentals.md",
+		"standards/testing/integration/integration-testing-patterns.md",
+		"standards/testing/mocking-and-typescript.md",
+		"standards/testing/performance-testing-fundamentals.md",
+		"standards/testing/testing-examples.md",
+		"standards/testing/testing-fundamentals.md",
+		"standards/testing/typescript-test-patterns copy.md",
+		"standards/testing/typescript-test-patterns.md",
+		"standards/TypographySystem.md",
+		"standards/testing/integration/integration-testing-examples.md",
+		"standards/testing/integration/integration-testing-troubleshooting.md",
+		"systems/enhanced-logger.md",
+		"systems/payload/create-payload-custom-component.md",
+		"systems/payload/update-payload-version.md",
+		"systems/pm/ccpm-system-overview.md",
+		"systems/vercel/vercel-deployment-guide.md",
+		"systems/bash-working-directory.md",
+		"systems/cicd/CI_CD_INVENTORY.md",
+		"systems/cicd/cicd-llm-context.md",
+		"systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md",
+		"systems/claude-code/dynamic-context-loading-pattern.md",
+		"systems/devcontainer-codespaces/devcontainer-implementation-analysis.md",
+		"systems/docker-setup.md",
+		"systems/docs-mcp-server.md",
+		"systems/feature-implementation-workflow.md",
+		"systems/mcp-servers.md",
+		"systems/portkey-implementation.md",
+		"systems/prompt-engineering.md",
+		"systems/testing/vitest-setup.md",
+		"architecture/dependencies.md",
+		"architecture/patterns.md",
+		"architecture/service-patterns.md",
+		"architecture/project-architecture.md",
+		"architecture/test-architecture.md",
+		"tools/cli/cli.md",
+		"tools/cli/supabase-cli.md",
+		"tools/context7.md",
+		"tools/exa-search.md",
+		"tools/git-aliases.md",
+		"tools/newrelic.md",
+		"tools/perplexity.md",
+		"tools/postgresql.md",
+		"tools/vitest-unit-testing.md",
+		"auth/security copy.md",
+		"database/migration-cicd.md",
+		"database/migration-patterns.md",
+		"database/migrations.md",
+		"database/models copy.md",
+		"database/models.md",
+		"database/relationship-tables-management.md",
+		"database/schema copy.md",
+		"database/schema.md"
+	],
+	"edges": [
+		{
+			"source": "auth/overview.md",
+			"target": "auth/implementation.md",
+			"data": {
+				"type": "dependency"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "auth/security.md",
+			"data": {
+				"type": "dependency"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "database/relationship-tables-management.md",
+			"data": {
+				"type": "dependency"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "standards/api-patterns.md",
+			"data": {
+				"type": "pairing"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "systems/supabase/rls.md",
+			"data": {
+				"type": "pairing"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "command:/feature",
+			"data": {
+				"type": "command"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "command:/do-task",
+			"data": {
+				"type": "command"
+			}
+		},
+		{
+			"source": "auth/overview.md",
+			"target": "command:/debug-issue",
+			"data": {
+				"type": "command"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "auth/overview.md",
+			"data": {
+				"type": "dependency"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "auth/configuration.md",
+			"data": {
+				"type": "dependency"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "auth/troubleshooting.md",
+			"data": {
+				"type": "pairing"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "standards/typescript-patterns.md",
+			"data": {
+				"type": "pairing"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "command:/feature",
+			"data": {
+				"type": "command"
+			}
+		},
+		{
+			"source": "auth/implementation.md",
+			"target": "command:/write-tests",
+			"data": {
+				"type": "command"
+			}
+		},
+		{
+			"source": "standards/testing/typescript-test-patterns copy.md",
+			"target": "command:/write-tests",
+			"data": {
+				"type": "command"
+			}
+		}
+	],
+	"learning": {},
+	"metadata": {
+		"version": "1.0",
+		"lastUpdated": "2025-09-15T21:18:12.096Z",
+		"totalNodes": 85,
+		"totalEdges": 15
+	}
+}
