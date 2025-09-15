@@ -1,9 +1,164 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-12",
+	"lastUpdated": "2025-09-13",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
+		"auth": {
+			"name": "Authentication Documentation",
+			"description": "Authentication, authorization, and security documentation",
+			"documents": [
+				{
+					"path": "auth/overview.md",
+					"name": "Authentication System Overview",
+					"description": "MakerKit-based authentication system using Supabase Auth with team-based RBAC and server action patterns",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Authentication",
+						"Authorization",
+						"Supabase Auth",
+						"Session Management",
+						"Multi-Factor Authentication",
+						"Team-Based RBAC",
+						"Server Actions",
+						"Security Features"
+					],
+					"tokens": 952,
+					"priority": "essential",
+					"keywords": [
+						"authentication",
+						"authorization",
+						"supabase",
+						"jwt",
+						"session",
+						"mfa",
+						"rbac",
+						"server-actions",
+						"enhanceAction",
+						"requireUser",
+						"oauth",
+						"magic-links",
+						"captcha",
+						"team-accounts"
+					]
+				},
+				{
+					"path": "auth/implementation.md",
+					"name": "Authentication Implementation Patterns",
+					"description": "Detailed code examples, middleware chain, and implementation patterns for authentication",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Code Examples",
+						"Implementation Patterns",
+						"Middleware Chain",
+						"Server Actions",
+						"Client Hooks",
+						"MFA Implementation",
+						"Team Context"
+					],
+					"tokens": 1908,
+					"priority": "supplementary",
+					"keywords": [
+						"implementation",
+						"code-examples",
+						"patterns",
+						"server-actions",
+						"hooks",
+						"mfa",
+						"team-context",
+						"sign-in",
+						"oauth",
+						"magic-links"
+					]
+				},
+				{
+					"path": "auth/troubleshooting.md",
+					"name": "Authentication Troubleshooting Guide",
+					"description": "Common authentication issues, debugging approaches, and solutions",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Troubleshooting",
+						"Debugging",
+						"Common Issues",
+						"Error Messages",
+						"Quick Fixes"
+					],
+					"tokens": 1355,
+					"priority": "supplementary",
+					"keywords": [
+						"troubleshooting",
+						"debugging",
+						"errors",
+						"session",
+						"mfa",
+						"oauth",
+						"rls",
+						"jwt",
+						"cookies",
+						"permissions"
+					]
+				},
+				{
+					"path": "auth/configuration.md",
+					"name": "Authentication Configuration Guide",
+					"description": "Environment variables, cookie configuration, and authentication setup",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Configuration",
+						"Environment Variables",
+						"Supabase Dashboard",
+						"Local Development",
+						"Security Best Practices"
+					],
+					"tokens": 1146,
+					"priority": "supplementary",
+					"keywords": [
+						"configuration",
+						"environment",
+						"setup",
+						"supabase",
+						"captcha",
+						"oauth",
+						"cookies",
+						"development",
+						"security"
+					]
+				},
+				{
+					"path": "auth/security.md",
+					"name": "Authentication: Security Model",
+					"description": "Comprehensive security model for SlideHeroes authentication using Next.js, Supabase, and defense-in-depth strategies",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Security Architecture",
+						"Threat Modeling",
+						"CSRF Protection",
+						"XSS Prevention",
+						"RLS Policies",
+						"MFA Implementation",
+						"Rate Limiting",
+						"Audit Logging"
+					],
+					"tokens": 1461,
+					"priority": "essential",
+					"keywords": [
+						"security",
+						"authentication",
+						"supabase",
+						"rls",
+						"csrf",
+						"xss",
+						"mfa",
+						"rate-limiting",
+						"audit-logging",
+						"defense-in-depth",
+						"owasp",
+						"nosecone",
+						"edge-csrf"
+					]
+				}
+			]
+		},
 		"core": {
 			"name": "Core Documentation",
 			"description": "Core project documentation including architecture, constraints, and development guidelines",
@@ -1217,6 +1372,37 @@
 			"description": "System architecture patterns, test infrastructure, and architectural decisions",
 			"documents": [
 				{
+					"path": "architecture/patterns.md",
+					"name": "Architecture: Implementation Patterns",
+					"description": "Core architectural patterns and conventions for the 2025slideheroes Next.js monorepo application",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Monorepo Structure",
+						"Server Actions",
+						"Database Patterns",
+						"Error Handling",
+						"Testing Patterns",
+						"State Management",
+						"Performance Optimization",
+						"Security Patterns",
+						"Monitoring and Logging"
+					],
+					"tokens": 1681,
+					"priority": "essential",
+					"keywords": [
+						"architecture",
+						"patterns",
+						"next.js",
+						"typescript",
+						"supabase",
+						"monorepo",
+						"server-actions",
+						"enhanceAction",
+						"RLS",
+						"testing"
+					]
+				},
+				{
 					"path": "architecture/project-architecture.md",
 					"name": "SlideHeroes Architecture Context",
 					"description": "Essential architectural reference for SlideHeroes platform - Next.js 15, Supabase RLS, multi-tenant SaaS patterns",
@@ -1306,6 +1492,36 @@
 						"management",
 						"ci/cd",
 						"integration"
+					]
+				},
+				{
+					"path": "architecture/dependencies.md",
+					"name": "Dependency Management Architecture",
+					"description": "Dependency injection patterns, service lifecycle management, and provider architecture for the SlideHeroes Next.js monorepo",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Dependency Injection",
+						"Service Factories",
+						"Registry Pattern",
+						"Provider Architecture",
+						"Server Actions",
+						"Monorepo Dependencies",
+						"Testing Patterns",
+						"Lifecycle Management"
+					],
+					"tokens": 1487,
+					"priority": "essential",
+					"keywords": [
+						"dependency-injection",
+						"services",
+						"providers",
+						"monorepo",
+						"factories",
+						"registry",
+						"enhanceAction",
+						"supabase",
+						"singleton",
+						"lifecycle"
 					]
 				}
 			]
