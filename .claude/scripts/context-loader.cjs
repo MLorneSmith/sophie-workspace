@@ -16,13 +16,16 @@
 
 const fs = require("node:fs").promises;
 const path = require("node:path");
+// Fuse will be loaded dynamically to support ESM
 
 class ContextLoader {
 	constructor(inventoryPath = ".claude/data/context-inventory.json") {
 		this.inventoryPath = inventoryPath;
 		this.inventory = null;
 		this.cache = new Map();
+		this.fuseCache = new Map();
 		this.commandWeights = this.getCommandWeights();
+		this.Fuse = null; // Will be loaded dynamically
 	}
 
 	/**
@@ -30,11 +33,115 @@ class ContextLoader {
 	 */
 	async initialize() {
 		try {
+			// Dynamically import fuse.js (ESM module)
+			const fuseModule = await import("fuse.js");
+			this.Fuse = fuseModule.default;
+
 			const data = await fs.readFile(this.inventoryPath, "utf8");
 			this.inventory = JSON.parse(data);
+			this.initializeFuseInstances();
 		} catch (error) {
 			console.error(`Error loading inventory: ${error.message}`);
 			throw error;
+		}
+	}
+
+	/**
+	 * Initialize Fuse.js instances for intelligent fuzzy searching
+	 */
+	initializeFuseInstances() {
+		// Create a combined list of all documents with category info
+		const allDocuments = [];
+
+		for (const [categoryName, category] of Object.entries(
+			this.inventory.categories,
+		)) {
+			for (const doc of category.documents) {
+				allDocuments.push({
+					...doc,
+					category: categoryName,
+					// Combine all searchable text fields for better matching
+					searchableContent: [
+						doc.name,
+						doc.description,
+						...(doc.topics || []),
+						...(doc.keywords || []),
+					]
+						.join(" ")
+						.toLowerCase(),
+				});
+			}
+		}
+
+		// Add database documents if present
+		if (this.inventory.database?.documents) {
+			for (const doc of this.inventory.database.documents) {
+				allDocuments.push({
+					...doc,
+					category: "database",
+					searchableContent: [
+						doc.name,
+						doc.description,
+						...(doc.topics || []),
+						...(doc.keywords || []),
+					]
+						.join(" ")
+						.toLowerCase(),
+				});
+			}
+		}
+
+		// Configure Fuse with weighted fields for optimal document matching
+		const fuseOptions = {
+			keys: [
+				{ name: "keywords", weight: 0.35 }, // Highest weight for keywords
+				{ name: "topics", weight: 0.3 }, // High weight for topics
+				{ name: "name", weight: 0.2 }, // Medium weight for document name
+				{ name: "description", weight: 0.15 }, // Lower weight for description
+			],
+			threshold: 0.4, // Fuzzy matching threshold (0 = perfect match, 1 = match anything)
+			includeScore: true,
+			useExtendedSearch: true, // Enable logical operators
+			ignoreLocation: true, // Search anywhere in the text
+			minMatchCharLength: 2, // Minimum character length to match
+			shouldSort: true,
+			findAllMatches: false,
+			// Configure fuzzy matching parameters
+			distance: 100, // Maximum distance for fuzzy matches
+			maxPatternLength: 32,
+		};
+
+		// Create global Fuse instance
+		this.globalFuse = new this.Fuse(allDocuments, fuseOptions);
+
+		// Create category-specific Fuse instances for targeted searches
+		this.categoryFuses = {};
+		for (const [categoryName, category] of Object.entries(
+			this.inventory.categories,
+		)) {
+			if (category.documents && category.documents.length > 0) {
+				this.categoryFuses[categoryName] = new this.Fuse(
+					category.documents.map((doc) => ({
+						...doc,
+						category: categoryName,
+					})),
+					fuseOptions,
+				);
+			}
+		}
+
+		// Add database category if present
+		if (
+			this.inventory.database?.documents &&
+			this.inventory.database.documents.length > 0
+		) {
+			this.categoryFuses.database = new this.Fuse(
+				this.inventory.database.documents.map((doc) => ({
+					...doc,
+					category: "database",
+				})),
+				fuseOptions,
+			);
 		}
 	}
 
@@ -225,18 +332,75 @@ class ContextLoader {
 	}
 
 	/**
-	 * Calculate relevance score for a document
+	 * Perform Fuse.js search with enhanced query processing
 	 */
-	calculateRelevanceScore(document, queryKeywords, commandType, category) {
+	performFuseSearch(query, _commandType = "default") {
+		// Process query for better Fuse.js matching
+		const processedQuery = this.processQueryForFuse(query);
+
+		// Perform global search
+		const fuseResults = this.globalFuse.search(processedQuery);
+
+		// Map Fuse results with additional scoring
+		return fuseResults.map((result) => ({
+			...result.item,
+			fuseScore: 1 - (result.score || 0), // Convert Fuse score (0 = perfect) to our scale (1 = perfect)
+			refIndex: result.refIndex,
+		}));
+	}
+
+	/**
+	 * Process query for optimal Fuse.js matching
+	 */
+	processQueryForFuse(query) {
+		// Check if query contains logical operators
+		if (query.includes("'") || query.includes("|") || query.includes("!")) {
+			// User is using extended search syntax, return as-is
+			return query;
+		}
+
+		// Extract important keywords
+		const keywords = this.extractKeywords(query);
+
+		// Build Fuse.js extended search query
+		// Use fuzzy matching for each keyword to handle typos
+		if (keywords.length === 0) {
+			return query;
+		}
+
+		// Create an OR query with all keywords for broad matching
+		// Each keyword is wrapped for fuzzy matching
+		return keywords.map((keyword) => keyword).join(" ");
+	}
+
+	/**
+	 * Calculate relevance score for a document (enhanced with Fuse score)
+	 */
+	calculateRelevanceScore(
+		document,
+		queryKeywords,
+		commandType,
+		category,
+		fuseScore = null,
+	) {
 		const weights =
 			this.commandWeights[commandType] || this.commandWeights.default;
 
-		// Calculate individual scores
-		const topicScore = this.calculateTopicOverlap(
-			document.topics,
-			queryKeywords,
-		);
-		const textScore = this.calculateTextMatch(document, queryKeywords);
+		// If we have a Fuse score, use it as the primary text/topic score
+		let topicScore, textScore;
+
+		if (fuseScore !== null) {
+			// Fuse already handles topic and text matching with fuzzy logic
+			// Split the Fuse score between topic and text based on weights
+			const combinedFuseWeight = weights.topic + weights.text;
+			topicScore = fuseScore * (weights.topic / combinedFuseWeight);
+			textScore = fuseScore * (weights.text / combinedFuseWeight);
+		} else {
+			// Fallback to original scoring if no Fuse score
+			topicScore = this.calculateTopicOverlap(document.topics, queryKeywords);
+			textScore = this.calculateTextMatch(document, queryKeywords);
+		}
+
 		const categoryScore = this.getCategoryRelevance(category, commandType);
 		const recencyScore = this.calculateRecencyScore(document.lastUpdated);
 
@@ -253,6 +417,7 @@ class ContextLoader {
 			textScore,
 			categoryScore,
 			recencyScore,
+			fuseScore: fuseScore || 0,
 		};
 	}
 
@@ -291,6 +456,108 @@ class ContextLoader {
 	}
 
 	/**
+	 * Process rich command metadata to enhance relevance scoring
+	 */
+	processCommandMetadata(metadata) {
+		if (!metadata) return null;
+
+		const enhancedSignals = {
+			agents: [],
+			technologies: [],
+			phases: [],
+			fileTypes: [],
+			contextFiles: []
+		};
+
+		// Extract agent specialists
+		if (metadata.agents?.specialists) {
+			enhancedSignals.agents = metadata.agents.specialists;
+		}
+		if (metadata.tools?.task) {
+			enhancedSignals.agents.push(...metadata.tools.task);
+		}
+
+		// Extract technologies and frameworks
+		if (metadata.codePatterns?.technologies) {
+			enhancedSignals.technologies = metadata.codePatterns.technologies;
+		}
+		if (metadata.codePatterns?.frameworks) {
+			enhancedSignals.technologies.push(...metadata.codePatterns.frameworks);
+		}
+
+		// Extract active workflow phases
+		if (metadata.phases) {
+			for (const [phase, active] of Object.entries(metadata.phases)) {
+				if (active === true && phase !== 'activeCount') {
+					enhancedSignals.phases.push(phase);
+				}
+			}
+		}
+
+		// Extract file types being worked with
+		if (metadata.codePatterns?.fileTypes) {
+			enhancedSignals.fileTypes = metadata.codePatterns.fileTypes;
+		}
+
+		// Extract already referenced context files
+		if (metadata.contextPatterns?.essentialFiles) {
+			enhancedSignals.contextFiles = metadata.contextPatterns.essentialFiles;
+		}
+
+		return enhancedSignals;
+	}
+
+	/**
+	 * Boost document scores based on command metadata
+	 */
+	applyMetadataBoost(document, metadata) {
+		if (!metadata) return 1.0;
+
+		let boost = 1.0;
+
+		// Boost if document mentions agents used in the command
+		if (metadata.agents?.length) {
+			for (const agent of metadata.agents) {
+				if (document.keywords?.includes(agent) ||
+				    document.description?.toLowerCase().includes(agent)) {
+					boost *= 1.3;
+				}
+			}
+		}
+
+		// Boost if document relates to technologies used
+		if (metadata.technologies?.length) {
+			for (const tech of metadata.technologies) {
+				if (document.keywords?.includes(tech) ||
+				    document.topics?.some(t => t.toLowerCase().includes(tech))) {
+					boost *= 1.25;
+				}
+			}
+		}
+
+		// Boost if document matches workflow phases
+		if (metadata.phases?.length) {
+			for (const phase of metadata.phases) {
+				if (document.keywords?.includes(phase) ||
+				    document.description?.toLowerCase().includes(phase)) {
+					boost *= 1.2;
+				}
+			}
+		}
+
+		// Penalize if document was already in essential context
+		if (metadata.contextFiles?.length) {
+			for (const file of metadata.contextFiles) {
+				if (document.path === file) {
+					boost *= 0.5; // Already loaded, reduce priority
+				}
+			}
+		}
+
+		return Math.min(boost, 2.5); // Cap maximum boost
+	}
+
+	/**
 	 * Main method to find relevant context
 	 */
 	async findRelevantContext(query, options = {}) {
@@ -300,6 +567,8 @@ class ContextLoader {
 			tokenBudget = 4000,
 			includeScores = false,
 			verbose = false,
+			useFuse = true, // Enable Fuse.js by default
+			commandMetadata = null, // NEW: Rich metadata from command analyzer
 		} = options;
 
 		if (!this.inventory) {
@@ -307,44 +576,162 @@ class ContextLoader {
 		}
 
 		// Check cache
-		const cacheKey = `${commandType}:${query}:${maxResults}`;
+		const cacheKey = `${commandType}:${query}:${maxResults}:${useFuse}`;
 		if (this.cache.has(cacheKey)) {
 			if (verbose) console.error("Cache hit for query");
 			return this.cache.get(cacheKey);
 		}
 
-		// Extract keywords from query
+		// Process command metadata if provided
+		const enhancedSignals = this.processCommandMetadata(commandMetadata);
+		if (verbose && enhancedSignals) {
+			console.error("Using rich command metadata for enhanced scoring");
+			console.error(`Agents: ${enhancedSignals.agents.join(", ") || "none"}`);
+			console.error(`Technologies: ${enhancedSignals.technologies.join(", ") || "none"}`);
+			console.error(`Phases: ${enhancedSignals.phases.join(", ") || "none"}`);
+		}
+
+		// Extract keywords from query (still needed for fallback and supplementary logic)
 		const queryKeywords = this.extractKeywords(query);
 		if (verbose) {
 			console.error(`Query keywords: ${queryKeywords.join(", ")}`);
+			if (useFuse) {
+				console.error("Using Fuse.js for intelligent fuzzy matching");
+			}
 		}
 
 		// Score all documents
 		const scoredDocs = [];
 
-		for (const [categoryName, category] of Object.entries(
-			this.inventory.categories,
-		)) {
-			for (const doc of category.documents) {
+		if (useFuse && this.globalFuse) {
+			// Use Fuse.js for intelligent fuzzy searching
+			const fuseResults = this.performFuseSearch(query, commandType);
+
+			// Process Fuse results with additional scoring
+			for (const fuseDoc of fuseResults) {
 				const scores = this.calculateRelevanceScore(
-					doc,
+					fuseDoc,
 					queryKeywords,
 					commandType,
-					categoryName,
+					fuseDoc.category,
+					fuseDoc.fuseScore,
 				);
-				const importance = this.calculateImportanceScore(doc, categoryName);
+				const importance = this.calculateImportanceScore(
+					fuseDoc,
+					fuseDoc.category,
+				);
+
+				// Apply metadata boost if available
+				const metadataBoost = this.applyMetadataBoost(fuseDoc, enhancedSignals);
+				const boostedRelevance = scores.relevance * metadataBoost;
 
 				scoredDocs.push({
-					path: doc.path,
-					name: doc.name,
-					description: doc.description,
-					category: categoryName,
-					tokens: this.estimateTokens(doc),
-					relevance: scores.relevance,
+					path: fuseDoc.path,
+					name: fuseDoc.name,
+					description: fuseDoc.description,
+					category: fuseDoc.category,
+					tokens: this.estimateTokens(fuseDoc),
+					relevance: boostedRelevance,
 					importance: importance,
-					combinedScore: scores.relevance * importance,
+					combinedScore: boostedRelevance * importance,
+					metadataBoost: metadataBoost,
 					...scores,
 				});
+			}
+
+			// If Fuse returns few results, fall back to category-based search for supplementary docs
+			if (fuseResults.length < maxResults) {
+				const missingCount = maxResults - fuseResults.length;
+				const existingPaths = new Set(fuseResults.map((d) => d.path));
+
+				// Search in high-priority categories
+				for (const categoryName of ["core", "standards", "architecture"]) {
+					const category = this.inventory.categories[categoryName];
+					if (!category) continue;
+
+					for (const doc of category.documents) {
+						if (existingPaths.has(doc.path)) continue;
+
+						const scores = this.calculateRelevanceScore(
+							doc,
+							queryKeywords,
+							commandType,
+							categoryName,
+						);
+						const importance = this.calculateImportanceScore(doc, categoryName);
+
+						// Apply metadata boost if available
+						const metadataBoost = this.applyMetadataBoost(doc, enhancedSignals);
+						const boostedRelevance = scores.relevance * metadataBoost;
+
+						scoredDocs.push({
+							path: doc.path,
+							name: doc.name,
+							description: doc.description,
+							category: categoryName,
+							tokens: this.estimateTokens(doc),
+							relevance: boostedRelevance,
+							importance: importance,
+							combinedScore: boostedRelevance * importance,
+							metadataBoost: metadataBoost,
+							...scores,
+						});
+
+						if (scoredDocs.length >= maxResults * 2) break;
+					}
+				}
+			}
+		} else {
+			// Fallback to original keyword-based scoring
+			for (const [categoryName, category] of Object.entries(
+				this.inventory.categories,
+			)) {
+				for (const doc of category.documents) {
+					const scores = this.calculateRelevanceScore(
+						doc,
+						queryKeywords,
+						commandType,
+						categoryName,
+					);
+					const importance = this.calculateImportanceScore(doc, categoryName);
+
+					scoredDocs.push({
+						path: doc.path,
+						name: doc.name,
+						description: doc.description,
+						category: categoryName,
+						tokens: this.estimateTokens(doc),
+						relevance: scores.relevance,
+						importance: importance,
+						combinedScore: scores.relevance * importance,
+						...scores,
+					});
+				}
+			}
+
+			// Add database documents if present
+			if (this.inventory.database?.documents) {
+				for (const doc of this.inventory.database.documents) {
+					const scores = this.calculateRelevanceScore(
+						doc,
+						queryKeywords,
+						commandType,
+						"database",
+					);
+					const importance = this.calculateImportanceScore(doc, "database");
+
+					scoredDocs.push({
+						path: doc.path,
+						name: doc.name,
+						description: doc.description,
+						category: "database",
+						tokens: this.estimateTokens(doc),
+						relevance: scores.relevance,
+						importance: importance,
+						combinedScore: scores.relevance * importance,
+						...scores,
+					});
+				}
 			}
 		}
 
@@ -383,6 +770,9 @@ class ContextLoader {
 					category: doc.categoryScore.toFixed(3),
 					recency: doc.recencyScore.toFixed(3),
 				};
+				if (doc.metadataBoost) {
+					result.scores.metadataBoost = doc.metadataBoost.toFixed(2);
+				}
 			}
 
 			return result;
@@ -511,6 +901,10 @@ async function main() {
 		);
 		console.log("  --verbose              Show debug information");
 		console.log("  --supplementary        Also return supplementary docs");
+		console.log(
+			"  --no-fuse              Disable Fuse.js fuzzy matching (use legacy keyword matching)",
+		);
+		console.log("  --metadata=JSON        Command metadata from AST analysis (JSON or file path)");
 		console.log("");
 		console.log("Examples:");
 		console.log(
@@ -528,6 +922,22 @@ async function main() {
 	try {
 		const loader = new ContextLoader();
 
+		// Parse command metadata if provided
+		let commandMetadata = null;
+		if (options.metadata) {
+			try {
+				// Metadata can be JSON string or file path
+				if (options.metadata.startsWith('{')) {
+					commandMetadata = JSON.parse(options.metadata);
+				} else if (options.metadata.endsWith('.json')) {
+					const metadataContent = await fs.readFile(options.metadata, 'utf8');
+					commandMetadata = JSON.parse(metadataContent);
+				}
+			} catch (error) {
+				console.error(`Warning: Could not parse metadata: ${error.message}`);
+			}
+		}
+
 		// Find relevant context
 		const results = await loader.findRelevantContext(options.query, {
 			commandType: options.command || options.commandType,
@@ -536,6 +946,8 @@ async function main() {
 			includeScores:
 				options["include-scores"] || options.includeScores || false,
 			verbose: options.verbose || false,
+			useFuse: !options["no-fuse"],
+			commandMetadata: commandMetadata,
 		});
 
 		// Get supplementary docs if requested

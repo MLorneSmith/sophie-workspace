@@ -1,411 +1,473 @@
-# SlideHeroes CI/CD Pipeline - Complete LLM Context
+---
+# Identity
+id: "cicd-pipeline-implementation"
+title: "CI/CD Pipeline Implementation and Management"
+version: "2.0.1"
+category: "implementation"
 
-## 🎯 Purpose & Overview
+# Discovery
+description: "Comprehensive context for understanding, implementing, and managing the SlideHeroes CI/CD pipeline using GitHub Actions, including testing strategies, security scanning, deployment patterns, and performance optimization"
+tags: ["cicd", "github-actions", "testing", "deployment", "security", "performance", "monitoring", "automation", "devops"]
 
-This document provides comprehensive context about the SlideHeroes CI/CD pipeline for Large Language Models. It consolidates all essential information needed to understand, troubleshoot, modify, or enhance the CI/CD system.
+# Relationships
+dependencies: ["github-actions-fundamentals", "testing-strategy", "security-scanning"]
+cross_references:
+  - id: "deployment-strategies"
+    type: "pattern"
+    description: "Blue-green, canary, and rolling deployment patterns"
+  - id: "security-implementation"
+    type: "related"
+    description: "Security scanning and vulnerability management in CI/CD"
+  - id: "performance-optimization"
+    type: "pattern"
+    description: "Caching and parallelization strategies for CI/CD"
 
-## 📋 Current Pipeline State (August 2025)
+# Maintenance
+created: "2025-09-15"
+last_updated: "2025-09-15"
+author: "create-context"
+---
 
-### Implementation Status: 70% Complete
-- **✅ Fully Implemented**: Core pipeline, security scanning, deployment automation
-- **🔧 In Progress**: Performance optimizations, advanced testing features
-- **❌ Deferred**: Visual regression, full load testing, container scanning
+# CI/CD Pipeline Implementation and Management
 
-### Active Priority (Issue #248)
-**Objective**: Complete pipeline implementation based on updated design
-**Target**: Achieve < 5min PR feedback, > 95% success rate, full automation
+## Overview
 
-## 🏗️ Architecture Overview
+This document provides comprehensive context for the SlideHeroes CI/CD pipeline implementation using GitHub Actions. It consolidates research findings, current implementation status, best practices, and troubleshooting guidance for managing a modern, efficient CI/CD system that achieves <5 minute PR feedback times with >95% success rates.
 
-### Branch Strategy & Environments
-```
-feature/* → dev → staging → main
-    ↓         ↓        ↓       ↓
-development  dev    staging  production
-            .com    .com     .com
-```
+## Key Concepts
 
-### Environment Details
-| Environment | Branch    | URL                    | Purpose               | Protection Level |
-|-------------|-----------|------------------------|-----------------------|------------------|
-| Development | `dev`     | dev.slideheroes.com    | Active development    | Basic checks     |
-| Staging     | `staging` | staging.slideheroes.com| Pre-production        | Full test suite  |
-| Production  | `main`    | slideheroes.com        | Live production       | Manual approval  |
+### Core CI/CD Principles
+- **Continuous Integration**: Automated merging and testing of code changes
+- **Continuous Deployment**: Automated deployment to production after passing tests
+- **Infrastructure as Code**: Version-controlled pipeline configuration
+- **Shift-Left Testing**: Early detection of issues in the development cycle
+- **Progressive Deployment**: Gradual rollout with monitoring and rollback
 
-## 🚀 Pipeline Phases & Workflows
+### GitHub Actions Architecture
+- **Workflows**: YAML-based pipeline definitions in `.github/workflows/`
+- **Jobs**: Independent execution units with parallel capability
+- **Steps**: Individual commands or reusable actions
+- **Actions**: Marketplace components for common tasks
+- **Runners**: Execution environments (GitHub-hosted or self-hosted)
 
-### Phase 0: Pre-commit (Local)
-**Duration**: < 30 seconds
-**Tools**: Husky, lint-staged, Biome, TruffleHog
-```yaml
-Hooks:
-- TruffleHog secret scanning
-- Biome format & lint (staged files only)
-- TypeScript quick check
-- Markdown/YAML linting
-```
+## Implementation Details
 
-### Phase 1: PR Validation
-**Trigger**: PR to any protected branch
-**Duration Target**: 3-5 minutes
-**Parallelization**: All jobs run concurrently
+### Current Pipeline Architecture
 
-```yaml
-Jobs:
-- change-detection: Analyze file changes, set skip flags
-- code-quality: Biome linting, Markdown/YAML validation, manypkg
-- type-safety: TypeScript compilation, Knip unused exports
-- security-quick: TruffleHog + Semgrep SAST
-- test-unit: Vitest unit tests + coverage
-- bundle-analysis: Size check + performance budget
-```
-
-### Phase 2: Dev Integration
-**Trigger**: Push to `dev` branch
-**Duration Target**: 8-10 minutes
-**Flow**: Sequential with reusability
+The SlideHeroes CI/CD system implements a 4-phase progressive pipeline:
 
 ```yaml
-Sequence:
-1. Reuse PR validation checks
-2. Build applications (Turbo cached)
-3. Deploy to Vercel dev environment
-4. Integration tests (Playwright smoke)
-5. Accessibility audit (custom hybrid tester)
-6. Trigger promotion readiness check
+Phase 0: Pre-commit (Local) → Phase 1: PR Validation → Phase 2: Dev Integration → Phase 3: Staging → Phase 4: Production
 ```
 
-### Phase 3: Staging Validation
-**Trigger**: Push to `staging` branch
-**Duration Target**: 15-20 minutes
-**Comprehensive testing phase**
+### Workflow Files Structure
 
-```yaml
-Extended Testing:
-1. All Phase 2 validations
-2. Full E2E test suite (9-shard parallel)
-3. Performance testing (Lighthouse CI)
-4. Deep security scan (Aikido full scan)
-5. Load testing (K6 - when implemented)
-6. Deploy to staging environment
-7. Post-deployment smoke tests
+```text
+.github/workflows/
+├── Core Pipelines
+│   ├── pr-validation.yml          # PR checks and quality gates
+│   ├── dev-deploy.yml            # Development environment deployment
+│   ├── staging-deploy.yml        # Staging validation and deployment
+│   └── production-deploy.yml     # Production deployment with gates
+├── Testing Workflows
+│   ├── e2e-sharded.yml          # Parallel E2E test execution
+│   ├── e2e-smart.yml            # Affected flow testing
+│   ├── dev-integration-tests.yml # Integration test suite
+│   └── visual-regression.yml    # UI change detection
+├── Security & Compliance
+│   ├── codeql.yml               # GitHub code analysis
+│   ├── semgrep.yml              # SAST scanning
+│   ├── trufflehog-scan.yml      # Secret detection
+│   ├── container-security.yml   # Image vulnerability scanning
+│   └── security-weekly-scan.yml # Scheduled comprehensive scan
+├── Performance & Monitoring
+│   ├── lighthouse-ci.yml        # Web performance testing
+│   ├── k6-load-test.yml        # Load and stress testing
+│   ├── bundle-size-alert.yml   # Bundle size monitoring
+│   ├── pipeline-metrics.yml    # CI/CD metrics collection
+│   └── performance-monitor.yml # Runtime performance tracking
+├── Automation & Utilities
+│   ├── dependabot-auto-merge.yml # Dependency updates
+│   ├── auto-rollback.yml        # Automated failure recovery
+│   ├── dev-promotion-readiness.yml # Environment promotion
+│   ├── scheduled-maintenance.yml # Routine maintenance tasks
+│   └── artifact-sharing.yml     # Artifact management
+└── Infrastructure
+    ├── docker-ci-image.yml      # CI container management
+    ├── codespaces-prebuild.yml  # Development environment
+    ├── devcontainer-prebuild.yml # Container prebuilding
+    └── workflow.yml             # Main CI/CD orchestration
 ```
 
-### Phase 4: Production Deployment
-**Trigger**: Push to `main` OR manual dispatch
-**Duration Target**: 10-12 minutes
-**Solo Developer Pattern** (GitHub Pro private repo limitation)
+### Testing Strategy Implementation
 
-```yaml
-Production Flow:
-1. Confirmation required: "DEPLOY TO PRODUCTION"
-2. Safety checks: staging health, recent commits
-3. 30-second cancellation window
-4. Security gate validation
-5. Optimized production build
-6. Deploy to Vercel production
-7. Health checks & monitoring alerts
-8. Auto-rollback capability
-9. New Relic deployment marker
+#### Unit Testing Configuration
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    coverage: {
+      threshold: {
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80
+      }
+    },
+    parallel: true,
+    maxConcurrency: 4
+  }
+});
 ```
 
-## 🔧 Technical Implementation
-
-### Testing Strategy
-
-#### Unit Testing (Vitest)
-- **Coverage Target**: > 80%
-- **Execution**: Every PR with result caching
-- **Sharding**: 4-way split for package optimization
-- **Command**: `pnpm test:unit`
-
-#### E2E Testing (Playwright)
-- **Strategy**: 9-shard parallel execution (matrix approach deprecated)
-- **Smart Selection**: Affected flows only on PRs
-- **Full Suite**: Staging/production deploys
-- **Command**: `pnpm test:e2e`
-- **Accessibility**: Custom hybrid tester (not axe-core)
-
-#### Performance Testing
-- **Lighthouse CI**: Automated on staging/production
-- **Bundle Analysis**: Every PR with size alerts (+5% tolerance)
-- **K6 Load Testing**: Weekly scheduled (to be implemented)
+#### E2E Testing Strategy
+```typescript
+// apps/e2e/playwright.config.ts
+export default defineConfig({
+  workers: 6,  // Default parallel shards (configurable 3-9)
+  retries: 2,
+  use: {
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure'
+  }
+});
+```
 
 ### Security Implementation
 
-#### Primary Tools (Active)
-1. **Aikido Security** - Comprehensive security platform
-   - SCA, SAST, secrets, IaC, malware detection
-   - Privacy-first local scanning
-   - Replaces Snyk for better coverage
+#### Multi-Layer Security Scanning
+1. **Pre-commit**: TruffleHog for secrets detection
+2. **PR Validation**: Semgrep SAST, dependency audit
+3. **Staging**: Full security suite including DAST
+4. **Production**: Final security gate validation
 
-2. **Semgrep** - Additional SAST analysis
-   - Custom rules for business logic vulnerabilities
-   - PR and scheduled scans
+#### Security Tools Configuration
+```yaml
+# Aikido Security Platform (Primary)
+- Complete SAST/SCA/Secrets scanning
+- Privacy-first local scanning
+- Real-time vulnerability alerts
+- SAST configured as non-blocking (free tier limitation)
 
-3. **TruffleHog** - Secret detection
-   - Pre-commit hooks for immediate feedback
-   - Historical git repository scanning
-
-4. **CodeQL** - Advanced code analysis (in progress)
-   - GitHub's semantic code analysis
-   - JavaScript/TypeScript configuration
-
-#### Security Gates
-- **No merge policy**: Critical vulnerabilities block merging
-- **Dependency updates**: Automated via Dependabot
-- **Weekly scans**: Comprehensive security reviews
-- **Production validation**: Security checks before deployment
+# Additional Security Layers
+- CodeQL: Semantic code analysis
+- Semgrep: Custom rule enforcement
+- TruffleHog: Git history scanning
+- Container scanning: Trivy integration (when implemented)
+```
 
 ### Performance Optimization
 
-#### Multi-layer Caching Strategy
+#### Caching Strategy (3-5x Performance Improvement)
 ```yaml
-Cache Hierarchy (ordered by effectiveness):
-1. PNPM store: ~50% faster dependency installs
-2. Turbo build cache: Local + remote (when configured)
-3. Next.js build cache: Framework-level optimization  
-4. Playwright browsers: Cached browser binaries
-5. Test results cache: Skip unchanged test suites
-6. Docker layer cache: CI image optimization
+# Multi-layer cache hierarchy
+1. PNPM store cache         # ~50% faster installs
+2. Turbo build cache        # Incremental builds
+3. Next.js cache           # Framework optimization
+4. Playwright browsers     # Binary caching
+5. Test results cache      # Skip unchanged tests
 ```
 
-**Critical Issue**: Turbo remote cache missing signature key (Priority 1)
-
-#### Parallelization Approach
-- **PR validation**: All jobs run concurrently
-- **E2E testing**: 9-shard parallel execution
-- **Deployments**: Web and Payload in parallel (to be implemented)
-- **Matrix builds**: Multiple Node versions if needed
-
-#### Resource Optimization
+#### Parallel Execution Patterns
 ```yaml
-Runner Sizing Strategy:
-- Change detection: 2 CPU (lightweight)
-- Linting/formatting: 4 CPU (moderate)
-- Building applications: 8 CPU (intensive)
-- Testing (per shard): 4 CPU (balanced)
-- Deployment: 4 CPU (network bound)
+# PR Validation - Full parallelization
+jobs:
+  lint:              # Biome format and lint checks
+  typecheck:         # TypeScript type checking
+  aikido-security:   # Aikido security scanning
+  test-unit:         # Vitest unit tests
+  bundle-size:       # Bundle size analysis
+  yaml-lint:         # YAML validation
+  markdown-lint:     # Markdown validation
 ```
 
-## 📊 Monitoring & Quality Gates
+### Deployment Strategies
 
-### Pipeline Metrics (Tracked)
-- Build duration per phase and job
-- Cache hit rates across all layers
-- Test execution times and success rates
-- Failure rate by job type and cause
-- Time to deployment (commit → production)
-
-### Quality Metrics (Monitored)
-- Code coverage trends and targets
-- Bundle size evolution and budgets
-- Performance score tracking (Lighthouse)
-- Security vulnerability counts by severity
-- Accessibility compliance scores
-
-### Alerting Configuration
-- **Pipeline failures**: Slack/email notifications
-- **Performance degradation**: Threshold-based alerts
-- **Security vulnerabilities**: Immediate notifications
-- **Deployment issues**: Automatic rollback triggers
-- **SLA violations**: Escalation procedures
-
-## 🛠️ Tools & Configuration
-
-### Required GitHub Secrets
+#### Blue-Green Deployment (Production)
 ```yaml
-# Deployment & Infrastructure
-VERCEL_TOKEN: Vercel deployment authorization
-VERCEL_ORG_ID: Organization identifier
-VERCEL_PROJECT_ID: Project identifier
+steps:
+  - name: Deploy to Green Environment
+    run: vercel deploy --prod-preview
 
-# Security & Scanning
-AIKIDO_SECRET_KEY: Security platform API key
-SEMGREP_APP_TOKEN: SAST analysis token
+  - name: Health Check Green
+    run: ./scripts/health-check.sh $GREEN_URL
 
-# Database & Backend
-SUPABASE_SERVICE_ROLE_KEY: Database service access
-SUPABASE_DB_WEBHOOK_SECRET: Webhook security
+  - name: Switch Traffic to Green
+    run: vercel alias set $GREEN_URL production
 
-# Payment Processing
-STRIPE_SECRET_KEY: Payment API access
-STRIPE_WEBHOOK_SECRET: Webhook validation
-
-# Monitoring & Observability
-NEW_RELIC_API_KEY: APM integration
-NEW_RELIC_APP_ID: Application identifier
-
-# Performance & Caching
-TURBO_TOKEN: Build system acceleration
-TURBO_REMOTE_CACHE_SIGNATURE_KEY: Cache security (MISSING - Priority 1)
-
-# Communication
-SLACK_WEBHOOK_URL: Team notifications
+  - name: Monitor for Issues
+    run: ./scripts/monitor-deploy.sh
 ```
 
-### Feature Flags (Environment Control)
+#### Canary Deployment Pattern
 ```yaml
-ENABLE_E2E_MATRIX: false      # Matrix approach deprecated
-ENABLE_VISUAL_REGRESSION: false   # Not yet implemented
-ENABLE_K6_LOAD_TESTS: false       # Planned for staging
-ENABLE_CONTAINER_SCANNING: false  # Lower priority for Next.js
+# Progressive rollout with monitoring
+- 5% traffic → Monitor 10min
+- 25% traffic → Monitor 30min
+- 50% traffic → Monitor 1hr
+- 100% traffic → Full deployment
 ```
 
-## 🚦 Quality Gates & Requirements
+## Code Examples
 
-### PR Merge Requirements (Enforced)
-- ✅ All CI pipeline checks passing
-- ✅ Code coverage maintains > 80%
-- ✅ Zero critical/high security vulnerabilities
-- ✅ Bundle size within budget (+5% tolerance)
-- ✅ TypeScript compilation successful
-- ✅ Required approvals: 1 for dev, 2 for staging/main
-- ✅ Linear commit history maintained
+### Reusable Workflow Pattern
+```yaml
+# .github/workflows/reusable-build.yml
+name: Reusable Build
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      VERCEL_TOKEN:
+        required: true
 
-### Environment Promotion Gates
-
-#### Dev → Staging (Automated)
-- ✅ All integration tests passing
-- ✅ No critical bugs in dev for 24+ hours
-- ✅ Performance metrics within acceptable range
-- ✅ Automated PR creation to staging branch
-
-#### Staging → Production (Manual + Automated)
-- ✅ Full E2E test suite passing (all shards)
-- ✅ Manual QA sign-off required
-- ✅ Zero P0/P1 incidents in staging environment
-- ✅ Deployment window validation (business hours)
-- ✅ Two manual approvals required
-- ✅ Security scan completely clean
-
-## 📈 Success Metrics & KPIs
-
-### Performance Targets (Measured)
-- **PR Feedback Time**: < 5 minutes (current: varies)
-- **Dev Deploy Time**: < 10 minutes (current: ~8-12 minutes)
-- **Production Deploy Time**: < 15 minutes (current: varies)
-- **Pipeline Success Rate**: > 95% (current: ~90%)
-- **Cache Hit Rate**: > 80% (current: suboptimal due to missing key)
-
-### Quality Targets (Monitored)
-- **Test Coverage**: > 80% maintained (current: meeting target)
-- **Security Vulnerabilities**: Zero in production (current: meeting target)
-- **Lighthouse Performance Score**: > 90 (current: meeting target)
-- **Bundle Size Growth**: < 5% per quarter (current: monitoring)
-
-### Operational Targets (SLAs)
-- **Mean Time to Recovery (MTTR)**: < 30 minutes
-- **Deployment Frequency**: 
-  - Dev: Multiple daily deployments
-  - Staging: Daily deployments
-  - Production: 2-3 times weekly
-- **Lead Time**: < 2 hours (commit to production)
-- **Change Failure Rate**: < 5%
-
-## 🚨 Current Issues & Priorities
-
-### Priority 1: Critical Issues (Week 1)
-1. **Turbo Remote Cache Missing**: Generate and add `TURBO_REMOTE_CACHE_SIGNATURE_KEY`
-2. **Sequential Deployments**: Implement parallel Web/Payload deployment
-3. **Suboptimal Runner Sizes**: Right-size CPU allocation per job type
-4. **Promotion Testing**: Verify dev → staging automation
-
-### Priority 2: Security & Quality (Weeks 2-3)
-1. **CodeQL Implementation**: Add advanced code analysis
-2. **Production Approvals**: Configure GitHub environment protection
-3. **E2E Strategy**: Finalize sharded approach, remove matrix workflow
-
-### Priority 3: Performance Features (Month 2)
-1. **K6 Load Testing**: Integrate performance testing in staging
-2. **Visual Regression**: Implement UI change detection
-3. **Container Scanning**: Add Trivy for image security
-
-### Known Issues & Workarounds
-- **Turbo Remote Cache**: Missing signature key → 50-70% slower builds
-- **E2E Matrix Disabled**: Using sharded approach instead
-- **GitHub Pro Limitations**: Custom production protection for private repos
-
-## 🔄 Common Workflow Patterns
-
-### Typical Development Flow
-```
-1. Developer creates feature branch from dev
-2. Makes changes, commits trigger pre-commit hooks
-3. Opens PR → triggers Phase 1 validation (3-5 min)
-4. PR approved and merged to dev
-5. Dev deploy triggered → Phase 2 integration (8-10 min)
-6. Automated promotion readiness check
-7. If ready, automated PR created to staging
-8. Staging merge → Phase 3 comprehensive testing (15-20 min)
-9. Manual promotion to main (production)
-10. Production deployment with approval gates (10-12 min)
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ inputs.environment }}
+          path: dist/
 ```
 
-### Emergency Hotfix Flow
-```
-1. Create hotfix branch from main
-2. Implement fix with accelerated testing
-3. Direct merge to main with emergency approval
-4. Production deployment with enhanced monitoring
-5. Backport to dev and staging branches
+### Smart Test Selection
+```yaml
+# Detect changed files to optimize CI runs
+- name: Detect Changes
+  uses: dorny/paths-filter@v3
+  id: filter
+  with:
+    filters: |
+      typescript:
+        - '**/*.ts'
+        - '**/*.tsx'
+        - '**/*.js'
+        - '**/*.jsx'
+      markdown:
+        - '**/*.md'
+        - '**/*.mdx'
+      yaml:
+        - '**/*.yml'
+        - '**/*.yaml'
+      dependencies:
+        - '**/package.json'
+        - 'pnpm-lock.yaml'
+
+# Jobs run conditionally based on changes
+- name: Run TypeScript Check
+  if: steps.filter.outputs.typescript == 'true'
+  run: pnpm typecheck
 ```
 
-## 📁 Key File Locations
+### Security Gate Implementation
+```yaml
+- name: Security Gate Check
+  run: |
+    VULNS=$(aikido scan --format json | jq '.critical + .high')
+    if [ "$VULNS" -gt 0 ]; then
+      echo "❌ Critical/High vulnerabilities found"
+      exit 1
+    fi
+```
 
-### Workflow Files
-```
-.github/workflows/
-├── pr-validation.yml          # Phase 1: PR checks
-├── dev-deploy.yml            # Phase 2: Dev integration
-├── dev-integration-tests.yml # Dev environment testing
-├── dev-promotion-readiness.yml # Automated promotion
-├── staging-deploy.yml        # Phase 3: Staging validation
-├── production-deploy.yml     # Phase 4: Production deployment
-├── production-deploy-gated.yml # Solo developer protection
-├── security-weekly.yml       # Scheduled security scans
-└── e2e-matrix.yml           # DEPRECATED: Matrix E2E approach
-```
+## Related Files
 
 ### Configuration Files
-```
-turbo.json                    # Build system configuration
-vitest.config.ts             # Unit test configuration
-playwright.config.ts         # E2E test configuration
-.pre-commit-config.yaml      # Pre-commit hook setup
-package.json                 # Script definitions and dependencies
-```
+- `/turbo.json` - Build system configuration with caching rules
+- `/vitest.config.ts` - Unit test configuration with coverage thresholds
+- `/apps/e2e/playwright.config.ts` - E2E test configuration with sharding
+- `/package.json` - Script definitions and CI/CD commands
+
+### Utility Scripts
+- `/.claude/scripts/cleanup-ports.sh` - Port management for testing
+- `/.claude/scripts/codecheck-direct.sh` - Direct code quality checks
+- `/scripts/health-check.sh` - Deployment health validation
 
 ### Documentation
+- `/.claude/context/systems/cicd/CI_CD_INVENTORY.md` - Workflow inventory
+- `/.claude/context/systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md` - Security patterns
+
+## Common Patterns
+
+### Environment-Specific Configuration
+```yaml
+# Use environment variables for configuration
+env:
+  NODE_ENV: ${{ github.event_name == 'push' && 'production' || 'development' }}
+  ENABLE_CACHE: ${{ github.event_name != 'schedule' }}
 ```
-.claude/context/systems/cicd/
-├── cicd-pipeline-updated-design.md  # Complete design document
-├── cicd-llm-context.md              # This file
-└── [other related documentation]
+
+### Conditional Job Execution
+```yaml
+jobs:
+  deploy:
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      !contains(github.event.head_commit.message, '[skip-deploy]')
 ```
 
-## 💡 LLM Guidance
+### Artifact Sharing Between Jobs
+```yaml
+jobs:
+  build:
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
 
-### When Working with CI/CD
-1. **Always check current status** via issue #248 or recent commits
-2. **Prioritize based on the 3-tier system** (Critical → Security → Performance)
-3. **Test changes incrementally** - CI/CD changes affect the entire team
-4. **Maintain backward compatibility** when modifying workflows
-5. **Document all changes** in commit messages and relevant issues
+  deploy:
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+```
 
-### Common Tasks & Approaches
-- **Workflow modifications**: Test in feature branch first
-- **Security updates**: Always validate with multiple scanning tools
-- **Performance optimization**: Measure before and after changes
-- **Deployment issues**: Check logs in GitHub Actions and New Relic
+## Troubleshooting
 
-### Red Flags to Watch For
-- **Increased pipeline duration** beyond target SLAs
-- **Decreased cache hit rates** indicating configuration issues
-- **Security scan failures** requiring immediate attention
-- **Test flakiness** affecting pipeline reliability
+### Issue: Slow Pipeline Performance
+**Symptoms**: PR validation taking >10 minutes
+**Cause**: Cache misses, sequential execution, oversized runners
+**Solution**:
+```yaml
+# Enable caching
+- uses: actions/cache@v4
+  with:
+    path: ~/.pnpm-store
+    key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
 
----
+# Parallelize jobs
+jobs:
+  test:
+    strategy:
+      matrix:
+        shard: [1, 2, 3, 4]
+```
 
-*This context document is maintained in sync with the implementation. Last updated: August 2025*
-*For the most current status, check issue #248 and recent workflow runs*
+### Issue: Flaky E2E Tests
+**Symptoms**: Random test failures, inconsistent results
+**Cause**: Race conditions, timing issues, external dependencies
+**Solution**:
+```typescript
+// Add proper waits and retries
+await page.waitForLoadState('networkidle');
+await expect(element).toBeVisible({ timeout: 10000 });
+
+// Use test isolation
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => localStorage.clear());
+});
+```
+
+### Issue: Security Scan Failures
+**Symptoms**: Pipeline blocked by security vulnerabilities
+**Cause**: Outdated dependencies, new vulnerability disclosures
+**Solution**:
+```bash
+# Update dependencies
+pnpm update --latest --interactive
+
+# Audit and fix
+pnpm audit --fix
+
+# Override if false positive
+echo "vulnerability-id" >> .aikido-ignore
+```
+
+### Issue: Deployment Rollback Needed
+**Symptoms**: Production issues after deployment
+**Cause**: Untested edge cases, configuration issues
+**Solution**:
+```yaml
+# Automated rollback workflow
+- name: Monitor Deployment
+  id: monitor
+  run: |
+    ./scripts/monitor-health.sh
+
+- name: Rollback if Failed
+  if: failure()
+  run: |
+    vercel rollback --yes
+    gh issue create --title "Deployment rolled back" --body "${{ steps.monitor.outputs.errors }}"
+```
+
+## Performance Metrics
+
+### Target SLAs
+- **PR Feedback Time**: < 5 minutes
+- **Dev Deploy Time**: < 10 minutes
+- **Production Deploy**: < 15 minutes
+- **Pipeline Success Rate**: > 95%
+- **Cache Hit Rate**: > 80%
+
+### Monitoring Commands
+```bash
+# Check workflow run times
+gh run list --workflow=pr-validation.yml --json conclusion,duration
+
+# Analyze cache effectiveness
+gh api repos/:owner/:repo/actions/cache/usage
+
+# Review test performance
+pnpm test:unit -- --reporter=json > test-metrics.json
+```
+
+## Best Practices
+
+### Security
+- **Never commit secrets** - Use GitHub Secrets
+- **Enable branch protection** - Require PR reviews
+- **Scan dependencies** - Automated vulnerability checks
+- **Rotate credentials** - Regular token rotation
+
+### Performance
+- **Cache aggressively** - Dependencies, builds, test results
+- **Parallelize everything** - Matrix builds, job concurrency
+- **Optimize runner size** - Match resources to workload
+- **Use artifacts wisely** - Share between jobs, cleanup old artifacts
+
+### Reliability
+- **Implement retries** - Network calls, flaky tests
+- **Add monitoring** - Health checks, performance metrics
+- **Document failures** - Clear error messages, troubleshooting guides
+- **Practice rollbacks** - Automated recovery procedures
+
+## Current Issues & Priorities
+
+### Priority 1: Critical
+1. **Turbo Remote Cache**: Missing `TURBO_REMOTE_CACHE_SIGNATURE_KEY` (currently fallback to empty)
+2. **Parallel Deployments**: Implement concurrent web/payload deployment
+3. **Runner Optimization**: Right-size CPU allocation per job type
+
+### Priority 2: Important
+1. **CodeQL Integration**: Complete advanced code analysis setup
+2. **E2E Optimization**: Optimize shard strategy (currently 6 shards, configurable 3-9)
+3. **Monitoring Enhancement**: Integrate OpenTelemetry
+
+### Priority 3: Enhancement
+1. **K6 Load Testing**: Implement performance regression detection
+2. **Visual Regression**: Add UI change detection
+3. **Cost Optimization**: Implement self-hosted runners for heavy workloads
+
+## See Also
+
+- [[github-actions-fundamentals]]: Core GitHub Actions concepts
+- [[testing-strategy]]: Comprehensive testing approach
+- [[security-scanning]]: Security tools and practices
+- [[deployment-patterns]]: Blue-green, canary, rolling deployments
+- [[performance-optimization]]: Caching and parallelization techniques
