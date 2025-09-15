@@ -40,7 +40,9 @@ async function rebuildGraph(silent = false) {
 	try {
 		// Check if inventory exists
 		if (!fs.existsSync(INVENTORY_PATH)) {
-			error("❌ Context inventory not found. Run sync-context-inventory.cjs first.");
+			error(
+				"❌ Context inventory not found. Run sync-context-inventory.cjs first.",
+			);
 			return { success: false, error: "Inventory not found" };
 		}
 
@@ -53,7 +55,9 @@ async function rebuildGraph(silent = false) {
 		// Get current stats before rebuild
 		const beforeStats = await graphManager.getStatistics();
 		const beforeRelCount = beforeStats?.relationships?.total || 0;
-		log(`📊 Current graph: ${beforeStats.documents || 0} nodes, ${beforeRelCount} edges`);
+		log(
+			`📊 Current graph: ${beforeStats.documents || 0} nodes, ${beforeRelCount} edges`,
+		);
 
 		// Rebuild from inventory
 		const result = await graphManager.buildFromInventory();
@@ -68,14 +72,16 @@ async function rebuildGraph(silent = false) {
 			edgesAdded: afterRelCount - beforeRelCount,
 		};
 
-		log(`\n✅ Graph rebuilt successfully!`);
+		log("\n✅ Graph rebuilt successfully!");
 		log(`📊 New graph: ${afterStats.documents} nodes, ${afterRelCount} edges`);
 		if (afterStats.commands > 0) {
-			log(`📌 Command relationships: ${afterStats.commands} commands linked to documents`);
+			log(
+				`📌 Command relationships: ${afterStats.commands} commands linked to documents`,
+			);
 		}
 
 		if (changes.nodesAdded !== 0 || changes.edgesAdded !== 0) {
-			log(`\n📈 Changes:`);
+			log("\n📈 Changes:");
 			if (changes.nodesAdded > 0) {
 				log(`  ➕ ${changes.nodesAdded} nodes added`);
 			} else if (changes.nodesAdded < 0) {
@@ -87,7 +93,7 @@ async function rebuildGraph(silent = false) {
 				log(`  ➖ ${Math.abs(changes.edgesAdded)} edges removed`);
 			}
 		} else {
-			log(`\n✨ No changes needed - graph was already up to date`);
+			log("\n✨ No changes needed - graph was already up to date");
 		}
 
 		// Verify file was written
@@ -103,10 +109,9 @@ async function rebuildGraph(silent = false) {
 			stats: {
 				before: beforeStats,
 				after: afterStats,
-				changes: changes
-			}
+				changes: changes,
+			},
 		};
-
 	} catch (err) {
 		error(`\n❌ Failed to rebuild graph: ${err.message}`);
 		return { success: false, error: err.message };
