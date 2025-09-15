@@ -925,12 +925,24 @@ class ContextLoader {
 					relevance: doc.relevance.toFixed(3),
 					importance: doc.importance.toFixed(3),
 					combined: doc.combinedScore.toFixed(3),
-					topic: doc.topicScore.toFixed(3),
-					text: doc.textScore.toFixed(3),
-					category: doc.categoryScore.toFixed(3),
-					recency: doc.recencyScore.toFixed(3),
+					topic:
+						"topicScore" in doc && doc.topicScore
+							? doc.topicScore.toFixed(3)
+							: "0.000",
+					text:
+						"textScore" in doc && doc.textScore
+							? doc.textScore.toFixed(3)
+							: "0.000",
+					category:
+						"categoryScore" in doc && doc.categoryScore
+							? doc.categoryScore.toFixed(3)
+							: "0.000",
+					recency:
+						"recencyScore" in doc && doc.recencyScore
+							? doc.recencyScore.toFixed(3)
+							: "0.000",
 				};
-				if (doc.metadataBoost) {
+				if ("metadataBoost" in doc && doc.metadataBoost) {
 					result.scores.metadataBoost = doc.metadataBoost.toFixed(2);
 				}
 			}
