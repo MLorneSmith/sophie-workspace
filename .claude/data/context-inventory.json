@@ -40,89 +40,15 @@
 						"magic-links",
 						"captcha",
 						"team-accounts"
-					]
-				},
-				{
-					"path": "auth/implementation.md",
-					"name": "Authentication Implementation Patterns",
-					"description": "Detailed code examples, middleware chain, and implementation patterns for authentication",
-					"lastUpdated": "2025-09-13",
-					"topics": [
-						"Code Examples",
-						"Implementation Patterns",
-						"Middleware Chain",
-						"Server Actions",
-						"Client Hooks",
-						"MFA Implementation",
-						"Team Context"
 					],
-					"tokens": 1908,
-					"priority": "supplementary",
-					"keywords": [
-						"implementation",
-						"code-examples",
-						"patterns",
-						"server-actions",
-						"hooks",
-						"mfa",
-						"team-context",
-						"sign-in",
-						"oauth",
-						"magic-links"
-					]
-				},
-				{
-					"path": "auth/troubleshooting.md",
-					"name": "Authentication Troubleshooting Guide",
-					"description": "Common authentication issues, debugging approaches, and solutions",
-					"lastUpdated": "2025-09-13",
-					"topics": [
-						"Troubleshooting",
-						"Debugging",
-						"Common Issues",
-						"Error Messages",
-						"Quick Fixes"
+					"relatedCommands": ["/feature", "/do-task", "/debug-issue"],
+					"dependencies": [
+						"auth/implementation.md",
+						"auth/security.md",
+						"database/relationship-tables-management.md"
 					],
-					"tokens": 1355,
-					"priority": "supplementary",
-					"keywords": [
-						"troubleshooting",
-						"debugging",
-						"errors",
-						"session",
-						"mfa",
-						"oauth",
-						"rls",
-						"jwt",
-						"cookies",
-						"permissions"
-					]
-				},
-				{
-					"path": "auth/configuration.md",
-					"name": "Authentication Configuration Guide",
-					"description": "Environment variables, cookie configuration, and authentication setup",
-					"lastUpdated": "2025-09-13",
-					"topics": [
-						"Configuration",
-						"Environment Variables",
-						"Supabase Dashboard",
-						"Local Development",
-						"Security Best Practices"
-					],
-					"tokens": 1146,
-					"priority": "supplementary",
-					"keywords": [
-						"configuration",
-						"environment",
-						"setup",
-						"supabase",
-						"captcha",
-						"oauth",
-						"cookies",
-						"development",
-						"security"
-					]
+					"antiPatterns": ["frontend-only", "no-backend", "static-site"],
+					"pairings": ["standards/api-patterns.md", "systems/supabase/rls.md"]
 				},
 				{
 					"path": "auth/security.md",
@@ -155,6 +81,95 @@
 						"owasp",
 						"nosecone",
 						"edge-csrf"
+					]
+				},
+				{
+					"path": "auth/configuration.md",
+					"name": "Authentication Configuration Guide",
+					"description": "Environment variables, cookie configuration, and authentication setup",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Configuration",
+						"Environment Variables",
+						"Supabase Dashboard",
+						"Local Development",
+						"Security Best Practices"
+					],
+					"tokens": 1146,
+					"priority": "supplementary",
+					"keywords": [
+						"configuration",
+						"environment",
+						"setup",
+						"supabase",
+						"captcha",
+						"oauth",
+						"cookies",
+						"development",
+						"security"
+					]
+				},
+				{
+					"path": "auth/implementation.md",
+					"name": "Authentication Implementation Patterns",
+					"description": "Detailed code examples, middleware chain, and implementation patterns for authentication",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Code Examples",
+						"Implementation Patterns",
+						"Middleware Chain",
+						"Server Actions",
+						"Client Hooks",
+						"MFA Implementation",
+						"Team Context"
+					],
+					"tokens": 1908,
+					"priority": "supplementary",
+					"keywords": [
+						"implementation",
+						"code-examples",
+						"patterns",
+						"server-actions",
+						"hooks",
+						"mfa",
+						"team-context",
+						"sign-in",
+						"oauth",
+						"magic-links"
+					],
+					"relatedCommands": ["/feature", "/write-tests"],
+					"dependencies": ["auth/overview.md", "auth/configuration.md"],
+					"antiPatterns": ["no-code", "documentation-only"],
+					"pairings": [
+						"auth/troubleshooting.md",
+						"standards/typescript-patterns.md"
+					]
+				},
+				{
+					"path": "auth/troubleshooting.md",
+					"name": "Authentication Troubleshooting Guide",
+					"description": "Common authentication issues, debugging approaches, and solutions",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Troubleshooting",
+						"Debugging",
+						"Common Issues",
+						"Error Messages",
+						"Quick Fixes"
+					],
+					"tokens": 1355,
+					"priority": "supplementary",
+					"keywords": [
+						"troubleshooting",
+						"debugging",
+						"errors",
+						"session",
+						"mfa",
+						"oauth",
+						"rls",
+						"jwt",
+						"cookies",
+						"permissions"
 					]
 				}
 			]
@@ -214,35 +229,6 @@
 			"description": "API endpoints, server actions, and integration patterns documentation",
 			"documents": [
 				{
-					"path": "api/headers.md",
-					"name": "API Headers Documentation",
-					"description": "Essential HTTP headers used in the SlideHeroes API, focusing on authentication, security, and server patterns",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Headers",
-						"Authentication",
-						"Security",
-						"CORS",
-						"CSRF",
-						"Supabase",
-						"API"
-					],
-					"tokens": 1201,
-					"priority": "essential",
-					"keywords": [
-						"headers",
-						"authentication",
-						"security",
-						"cors",
-						"csrf",
-						"supabase",
-						"cookies",
-						"middleware",
-						"server-actions",
-						"edge-functions"
-					]
-				},
-				{
 					"path": "api/endpoints.md",
 					"name": "API Endpoints and Server Actions Reference",
 					"description": "Streamlined SlideHeroes API and server actions reference",
@@ -269,6 +255,35 @@
 						"webhook",
 						"billing",
 						"integration"
+					]
+				},
+				{
+					"path": "api/headers.md",
+					"name": "API Headers Documentation",
+					"description": "Essential HTTP headers used in the SlideHeroes API, focusing on authentication, security, and server patterns",
+					"lastUpdated": "2025-09-12",
+					"topics": [
+						"Headers",
+						"Authentication",
+						"Security",
+						"CORS",
+						"CSRF",
+						"Supabase",
+						"API"
+					],
+					"tokens": 1201,
+					"priority": "essential",
+					"keywords": [
+						"headers",
+						"authentication",
+						"security",
+						"cors",
+						"csrf",
+						"supabase",
+						"cookies",
+						"middleware",
+						"server-actions",
+						"edge-functions"
 					]
 				},
 				{
@@ -767,6 +782,44 @@
 					]
 				},
 				{
+					"path": "standards/react-query-patterns.md",
+					"name": "React Query Patterns and Best Practices",
+					"description": "Comprehensive guide for TanStack Query v5 patterns with Next.js 15 and Supabase integration",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"TanStack Query v5",
+						"React Query",
+						"Data Fetching",
+						"SSR/Hydration",
+						"Supabase Integration",
+						"Server Actions",
+						"Optimistic Updates",
+						"TypeScript Patterns",
+						"Performance Optimization",
+						"Troubleshooting"
+					],
+					"tokens": 4008,
+					"priority": "essential",
+					"keywords": [
+						"tanstack-query",
+						"react-query",
+						"data-fetching",
+						"ssr",
+						"hydration",
+						"supabase",
+						"nextjs",
+						"caching",
+						"mutations",
+						"optimistic-updates",
+						"server-actions",
+						"typescript",
+						"performance",
+						"troubleshooting",
+						"query-keys",
+						"error-handling"
+					]
+				},
+				{
 					"path": "standards/testing/accessibility-testing-fundamentals.md",
 					"name": "Accessibility Testing Fundamentals",
 					"description": "Pragmatic accessibility testing using HybridAccessibilityTester for WCAG 2.1 AA compliance without false positives.",
@@ -876,54 +929,6 @@
 					]
 				},
 				{
-					"path": "standards/testing/integration/integration-testing-examples.md",
-					"name": "Integration Testing Examples",
-					"description": "Practical integration test examples for authentication, courses, AI services, and payment workflows in SlideHeroes",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Code Examples",
-						"Test Implementation",
-						"Fixtures",
-						"Mock Helpers"
-					],
-					"tokens": 2349,
-					"priority": "supplementary",
-					"keywords": [
-						"examples",
-						"code",
-						"implementation",
-						"fixtures",
-						"mocks",
-						"playwright",
-						"testing",
-						"practical"
-					]
-				},
-				{
-					"path": "standards/testing/integration/integration-testing-troubleshooting.md",
-					"name": "Integration Testing Troubleshooting",
-					"description": "Comprehensive troubleshooting guide for common integration testing issues including flaky tests, performance problems, and debugging strategies",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Troubleshooting",
-						"Debugging",
-						"Performance",
-						"Flaky Tests"
-					],
-					"tokens": 2053,
-					"priority": "supplementary",
-					"keywords": [
-						"troubleshooting",
-						"debugging",
-						"performance",
-						"flaky-tests",
-						"ci-cd",
-						"optimization",
-						"monitoring",
-						"solutions"
-					]
-				},
-				{
 					"path": "standards/testing/mocking-and-typescript.md",
 					"name": "Mocking and TypeScript",
 					"description": "TypeScript mocking patterns and strategies for effective test doubles.",
@@ -1002,6 +1007,31 @@
 					]
 				},
 				{
+					"path": "standards/testing/typescript-test-patterns copy.md",
+					"name": "TypeScript Test Patterns for SlideHeroes",
+					"description": "This document provides comprehensive TypeScript patterns for fixing test file compilation errors based on the codebase's specific requirements and common error patterns.",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Testing"],
+					"priority": "essential",
+					"keywords": [
+						"typescript",
+						"patterns",
+						"slideheroes",
+						"document",
+						"provides",
+						"comprehensive",
+						"fixing",
+						"compilation",
+						"errors",
+						"based"
+					],
+					"relatedCommands": ["/write-tests"],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 3514
+				},
+				{
 					"path": "standards/testing/typescript-test-patterns.md",
 					"name": "TypeScript Test Patterns for SlideHeroes",
 					"description": "TypeScript-specific testing patterns, type safety strategies, and compilation error solutions for the SlideHeroes codebase",
@@ -1056,41 +1086,51 @@
 					]
 				},
 				{
-					"path": "standards/react-query-patterns.md",
-					"name": "React Query Patterns and Best Practices",
-					"description": "Comprehensive guide for TanStack Query v5 patterns with Next.js 15 and Supabase integration",
+					"path": "standards/testing/integration/integration-testing-examples.md",
+					"name": "Integration Testing Examples",
+					"description": "Practical integration test examples for authentication, courses, AI services, and payment workflows in SlideHeroes",
 					"lastUpdated": "2025-09-15",
 					"topics": [
-						"TanStack Query v5",
-						"React Query",
-						"Data Fetching",
-						"SSR/Hydration",
-						"Supabase Integration",
-						"Server Actions",
-						"Optimistic Updates",
-						"TypeScript Patterns",
-						"Performance Optimization",
-						"Troubleshooting"
+						"Code Examples",
+						"Test Implementation",
+						"Fixtures",
+						"Mock Helpers"
 					],
-					"tokens": 4008,
-					"priority": "essential",
+					"tokens": 2349,
+					"priority": "supplementary",
 					"keywords": [
-						"tanstack-query",
-						"react-query",
-						"data-fetching",
-						"ssr",
-						"hydration",
-						"supabase",
-						"nextjs",
-						"caching",
-						"mutations",
-						"optimistic-updates",
-						"server-actions",
-						"typescript",
-						"performance",
+						"examples",
+						"code",
+						"implementation",
+						"fixtures",
+						"mocks",
+						"playwright",
+						"testing",
+						"practical"
+					]
+				},
+				{
+					"path": "standards/testing/integration/integration-testing-troubleshooting.md",
+					"name": "Integration Testing Troubleshooting",
+					"description": "Comprehensive troubleshooting guide for common integration testing issues including flaky tests, performance problems, and debugging strategies",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Troubleshooting",
+						"Debugging",
+						"Performance",
+						"Flaky Tests"
+					],
+					"tokens": 2053,
+					"priority": "supplementary",
+					"keywords": [
 						"troubleshooting",
-						"query-keys",
-						"error-handling"
+						"debugging",
+						"performance",
+						"flaky-tests",
+						"ci-cd",
+						"optimization",
+						"monitoring",
+						"solutions"
 					]
 				}
 			]
@@ -1099,6 +1139,106 @@
 			"name": "System Documentation",
 			"description": "System-level documentation including CI/CD, logging, and DevContainer configurations",
 			"documents": [
+				{
+					"path": "systems/enhanced-logger.md",
+					"name": "Enhanced Logger System",
+					"description": "Comprehensive async logging system with structured output, security features, monitoring integration, and Biome linting compliance",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Logging Architecture",
+						"Async Patterns",
+						"Security Features",
+						"Monitoring Integration",
+						"Biome Compliance",
+						"Performance Optimization",
+						"Testing Strategies"
+					],
+					"tokens": 2160,
+					"priority": "essential",
+					"keywords": [
+						"logging",
+						"async",
+						"pino",
+						"monitoring",
+						"security",
+						"biome",
+						"performance",
+						"testing",
+						"structured-logging",
+						"request-correlation",
+						"gdpr",
+						"redaction"
+					]
+				},
+				{
+					"path": "systems/payload/create-payload-custom-component.md",
+					"name": "Creating Custom Components for Payload CMS",
+					"description": "Comprehensive guide for creating custom Payload CMS components with Lexical editor integration, TypeScript patterns, and best practices",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Payload CMS",
+						"Custom Components",
+						"Lexical Editor",
+						"TypeScript",
+						"Block Architecture",
+						"React Components",
+						"Admin UI",
+						"Field Components"
+					],
+					"tokens": 2981,
+					"priority": "essential",
+					"keywords": [
+						"payload",
+						"cms",
+						"custom-components",
+						"lexical",
+						"blocks",
+						"react",
+						"typescript",
+						"field-components",
+						"render-blocks",
+						"block-configuration",
+						"admin-ui",
+						"collections",
+						"importmap",
+						"troubleshooting",
+						"performance"
+					]
+				},
+				{
+					"path": "systems/payload/update-payload-version.md",
+					"name": "Payload CMS Version Update Guide",
+					"description": "Comprehensive guide for updating Payload CMS versions, managing dependencies, handling migrations, and resolving compatibility issues in the SlideHeroes project",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Payload CMS",
+						"Version Updates",
+						"Database Migrations",
+						"Dependency Management",
+						"Plugin Compatibility",
+						"CI/CD Integration",
+						"Rollback Procedures",
+						"Troubleshooting"
+					],
+					"tokens": 2567,
+					"priority": "essential",
+					"keywords": [
+						"payload",
+						"cms",
+						"version-update",
+						"migration",
+						"dependencies",
+						"troubleshooting",
+						"postgresql",
+						"plugins",
+						"compatibility",
+						"rollback",
+						"ci-cd",
+						"pnpm",
+						"workspace",
+						"four-step-migration"
+					]
+				},
 				{
 					"path": "systems/pm/ccpm-system-overview.md",
 					"name": "CCPM System Overview - Claude Code Project Management",
@@ -1139,6 +1279,41 @@
 						"task-management",
 						"do-task"
 					]
+				},
+				{
+					"path": "systems/vercel/vercel-deployment-guide.md",
+					"name": "Vercel Deployment Guide for Web App and Payload CMS",
+					"description": "Comprehensive guide for deploying monorepo applications with Next.js and Payload CMS to Vercel production environments",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Vercel Deployment",
+						"Next.js",
+						"Payload CMS",
+						"Monorepo",
+						"CI/CD",
+						"Production",
+						"Performance Optimization",
+						"Troubleshooting"
+					],
+					"priority": "essential",
+					"keywords": [
+						"vercel",
+						"deployment",
+						"nextjs",
+						"payload-cms",
+						"monorepo",
+						"ci-cd",
+						"production",
+						"devops",
+						"isr",
+						"edge-functions",
+						"serverless",
+						"turborepo",
+						"environment-variables",
+						"monitoring",
+						"rollback"
+					],
+					"tokens": 3615
 				},
 				{
 					"path": "systems/bash-working-directory.md",
@@ -1347,37 +1522,6 @@
 					"tokens": 3054
 				},
 				{
-					"path": "systems/enhanced-logger.md",
-					"name": "Enhanced Logger System",
-					"description": "Comprehensive async logging system with structured output, security features, monitoring integration, and Biome linting compliance",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Logging Architecture",
-						"Async Patterns",
-						"Security Features",
-						"Monitoring Integration",
-						"Biome Compliance",
-						"Performance Optimization",
-						"Testing Strategies"
-					],
-					"tokens": 2160,
-					"priority": "essential",
-					"keywords": [
-						"logging",
-						"async",
-						"pino",
-						"monitoring",
-						"security",
-						"biome",
-						"performance",
-						"testing",
-						"structured-logging",
-						"request-correlation",
-						"gdpr",
-						"redaction"
-					]
-				},
-				{
 					"path": "systems/feature-implementation-workflow.md",
 					"name": "Feature Implementation Workflow Guide",
 					"description": "Step-by-step guide for implementing features using our integrated CCPM workflow with parallel execution and GitHub integration.",
@@ -1481,75 +1625,6 @@
 					]
 				},
 				{
-					"path": "systems/payload/create-payload-custom-component.md",
-					"name": "Creating Custom Components for Payload CMS",
-					"description": "Comprehensive guide for creating custom Payload CMS components with Lexical editor integration, TypeScript patterns, and best practices",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Payload CMS",
-						"Custom Components",
-						"Lexical Editor",
-						"TypeScript",
-						"Block Architecture",
-						"React Components",
-						"Admin UI",
-						"Field Components"
-					],
-					"tokens": 2981,
-					"priority": "essential",
-					"keywords": [
-						"payload",
-						"cms",
-						"custom-components",
-						"lexical",
-						"blocks",
-						"react",
-						"typescript",
-						"field-components",
-						"render-blocks",
-						"block-configuration",
-						"admin-ui",
-						"collections",
-						"importmap",
-						"troubleshooting",
-						"performance"
-					]
-				},
-				{
-					"path": "systems/payload/update-payload-version.md",
-					"name": "Payload CMS Version Update Guide",
-					"description": "Comprehensive guide for updating Payload CMS versions, managing dependencies, handling migrations, and resolving compatibility issues in the SlideHeroes project",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Payload CMS",
-						"Version Updates",
-						"Database Migrations",
-						"Dependency Management",
-						"Plugin Compatibility",
-						"CI/CD Integration",
-						"Rollback Procedures",
-						"Troubleshooting"
-					],
-					"tokens": 2567,
-					"priority": "essential",
-					"keywords": [
-						"payload",
-						"cms",
-						"version-update",
-						"migration",
-						"dependencies",
-						"troubleshooting",
-						"postgresql",
-						"plugins",
-						"compatibility",
-						"rollback",
-						"ci-cd",
-						"pnpm",
-						"workspace",
-						"four-step-migration"
-					]
-				},
-				{
 					"path": "systems/testing/vitest-setup.md",
 					"name": "Vitest Testing Setup",
 					"description": "This monorepo uses Vitest as the primary testing framework, orchestrated through Turbo for parallel execution across packages.",
@@ -1569,41 +1644,6 @@
 						"parallel"
 					],
 					"tokens": 1841
-				},
-				{
-					"path": "systems/vercel/vercel-deployment-guide.md",
-					"name": "Vercel Deployment Guide for Web App and Payload CMS",
-					"description": "Comprehensive guide for deploying monorepo applications with Next.js and Payload CMS to Vercel production environments",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Vercel Deployment",
-						"Next.js",
-						"Payload CMS",
-						"Monorepo",
-						"CI/CD",
-						"Production",
-						"Performance Optimization",
-						"Troubleshooting"
-					],
-					"priority": "essential",
-					"keywords": [
-						"vercel",
-						"deployment",
-						"nextjs",
-						"payload-cms",
-						"monorepo",
-						"ci-cd",
-						"production",
-						"devops",
-						"isr",
-						"edge-functions",
-						"serverless",
-						"turborepo",
-						"environment-variables",
-						"monitoring",
-						"rollback"
-					],
-					"tokens": 3615
 				}
 			]
 		},
@@ -1611,6 +1651,36 @@
 			"name": "Architecture Documentation",
 			"description": "System architecture patterns, test infrastructure, and architectural decisions",
 			"documents": [
+				{
+					"path": "architecture/dependencies.md",
+					"name": "Dependency Management Architecture",
+					"description": "Dependency injection patterns, service lifecycle management, and provider architecture for the SlideHeroes Next.js monorepo",
+					"lastUpdated": "2025-09-13",
+					"topics": [
+						"Dependency Injection",
+						"Service Factories",
+						"Registry Pattern",
+						"Provider Architecture",
+						"Server Actions",
+						"Monorepo Dependencies",
+						"Testing Patterns",
+						"Lifecycle Management"
+					],
+					"tokens": 1487,
+					"priority": "essential",
+					"keywords": [
+						"dependency-injection",
+						"services",
+						"providers",
+						"monorepo",
+						"factories",
+						"registry",
+						"enhanceAction",
+						"supabase",
+						"singleton",
+						"lifecycle"
+					]
+				},
 				{
 					"path": "architecture/patterns.md",
 					"name": "Architecture: Implementation Patterns",
@@ -1640,6 +1710,36 @@
 						"enhanceAction",
 						"RLS",
 						"testing"
+					]
+				},
+				{
+					"path": "architecture/service-patterns.md",
+					"name": "Service Patterns Architecture",
+					"description": "Comprehensive guide to the hybrid service architecture combining class-based services with functional server actions",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Service Architecture",
+						"Server Actions",
+						"Business Logic",
+						"Dependency Injection",
+						"Testing Patterns",
+						"Error Handling",
+						"Performance Optimization",
+						"Data Fetching"
+					],
+					"tokens": 2066,
+					"priority": "essential",
+					"keywords": [
+						"services",
+						"architecture",
+						"patterns",
+						"server-actions",
+						"business-logic",
+						"testing",
+						"class-based",
+						"functional",
+						"hybrid",
+						"enhanceAction"
 					]
 				},
 				{
@@ -1675,36 +1775,6 @@
 					]
 				},
 				{
-					"path": "architecture/service-patterns.md",
-					"name": "Service Patterns Architecture",
-					"description": "Comprehensive guide to the hybrid service architecture combining class-based services with functional server actions",
-					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Service Architecture",
-						"Server Actions",
-						"Business Logic",
-						"Dependency Injection",
-						"Testing Patterns",
-						"Error Handling",
-						"Performance Optimization",
-						"Data Fetching"
-					],
-					"tokens": 2066,
-					"priority": "essential",
-					"keywords": [
-						"services",
-						"architecture",
-						"patterns",
-						"server-actions",
-						"business-logic",
-						"testing",
-						"class-based",
-						"functional",
-						"hybrid",
-						"enhanceAction"
-					]
-				},
-				{
 					"path": "architecture/test-architecture.md",
 					"name": "Test Architecture and Infrastructure",
 					"description": "Comprehensive guide to SlideHeroes testing architecture, including containerization, parallel execution, port management, and CI/CD integration",
@@ -1733,36 +1803,6 @@
 						"ci/cd",
 						"integration"
 					]
-				},
-				{
-					"path": "architecture/dependencies.md",
-					"name": "Dependency Management Architecture",
-					"description": "Dependency injection patterns, service lifecycle management, and provider architecture for the SlideHeroes Next.js monorepo",
-					"lastUpdated": "2025-09-13",
-					"topics": [
-						"Dependency Injection",
-						"Service Factories",
-						"Registry Pattern",
-						"Provider Architecture",
-						"Server Actions",
-						"Monorepo Dependencies",
-						"Testing Patterns",
-						"Lifecycle Management"
-					],
-					"tokens": 1487,
-					"priority": "essential",
-					"keywords": [
-						"dependency-injection",
-						"services",
-						"providers",
-						"monorepo",
-						"factories",
-						"registry",
-						"enhanceAction",
-						"supabase",
-						"singleton",
-						"lifecycle"
-					]
 				}
 			]
 		},
@@ -1770,6 +1810,74 @@
 			"name": "Tool Documentation",
 			"description": "Documentation for development tools, integrations, and utilities",
 			"documents": [
+				{
+					"path": "tools/cli/cli.md",
+					"name": "CLI Tools and Utilities",
+					"description": "Comprehensive reference of all CLI tools, commands, and utilities available in the SlideHeroes project",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"CLI Tools",
+						"Development Commands",
+						"Testing Commands",
+						"Build Tools",
+						"Package Management",
+						"Code Quality",
+						"Git Operations",
+						"Utilities"
+					],
+					"tokens": 1490,
+					"priority": "essential",
+					"keywords": [
+						"cli",
+						"tools",
+						"commands",
+						"npm-scripts",
+						"pnpm",
+						"development",
+						"testing",
+						"build",
+						"utilities",
+						"turbo",
+						"vitest",
+						"playwright",
+						"biome",
+						"knip",
+						"docker",
+						"github-cli"
+					]
+				},
+				{
+					"path": "tools/cli/supabase-cli.md",
+					"name": "Supabase CLI Tool",
+					"description": "Essential Supabase CLI commands, workflows, and best practices for local development and production deployment",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Supabase CLI",
+						"Database Migrations",
+						"Edge Functions",
+						"Type Generation",
+						"Docker",
+						"PostgreSQL",
+						"Testing",
+						"Local Development"
+					],
+					"tokens": 1347,
+					"priority": "essential",
+					"keywords": [
+						"supabase",
+						"cli",
+						"database",
+						"migrations",
+						"edge-functions",
+						"testing",
+						"docker",
+						"postgresql",
+						"type-generation",
+						"local-development",
+						"production",
+						"deployment"
+					]
+				},
 				{
 					"path": "tools/context7.md",
 					"name": "Context7 Tools",
@@ -1809,6 +1917,20 @@
 						"engine",
 						"usage."
 					]
+				},
+				{
+					"path": "tools/git-aliases.md",
+					"name": "Git Aliases",
+					"description": "Git aliases",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Documentation"],
+					"priority": "supplementary",
+					"keywords": ["aliases"],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 23
 				},
 				{
 					"path": "tools/newrelic.md",
@@ -1901,74 +2023,235 @@
 						"infrastructure",
 						"comprehensive"
 					]
-				},
+				}
+			]
+		},
+		"general": {
+			"name": "General Documentation",
+			"description": "Documentation for general",
+			"documents": [
 				{
-					"path": "tools/cli/supabase-cli.md",
-					"name": "Supabase CLI Tool",
-					"description": "Essential Supabase CLI commands, workflows, and best practices for local development and production deployment",
+					"path": "auth/security copy.md",
+					"name": "Authentication: Security Model",
+					"description": "This document defines the comprehensive security model for [Your Project Name], covering threat mitigation, security controls, and defensive measures for the authentication system.",
 					"lastUpdated": "2025-09-15",
-					"topics": [
-						"Supabase CLI",
-						"Database Migrations",
-						"Edge Functions",
-						"Type Generation",
-						"Docker",
-						"PostgreSQL",
-						"Testing",
-						"Local Development"
-					],
-					"tokens": 1347,
+					"topics": ["Authentication", "Security"],
 					"priority": "essential",
 					"keywords": [
-						"supabase",
-						"cli",
-						"database",
-						"migrations",
-						"edge-functions",
-						"testing",
-						"docker",
-						"postgresql",
-						"type-generation",
-						"local-development",
+						"authentication",
+						"security",
+						"model",
+						"document",
+						"defines",
+						"comprehensive",
+						"project",
+						"covering",
+						"threat",
+						"mitigation"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 3204
+				},
+				{
+					"path": "database/migration-cicd.md",
+					"name": "Identity",
+					"description": "\"CI/CD integration, deployment automation, and production strategies for database migrations\"",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database", "CI/CD"],
+					"priority": "supplementary",
+					"keywords": [
+						"identity",
+						"integration",
+						"deployment",
+						"automation",
 						"production",
-						"deployment"
-					]
+						"strategies",
+						"database",
+						"migrations"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 2233
 				},
 				{
-					"path": "tools/cli/cli.md",
-					"name": "CLI Tools and Utilities",
-					"description": "Comprehensive reference of all CLI tools, commands, and utilities available in the SlideHeroes project",
+					"path": "database/migration-patterns.md",
+					"name": "Identity",
+					"description": "\"Advanced migration patterns, zero-downtime strategies, and detailed examples for complex database changes\"",
 					"lastUpdated": "2025-09-15",
-					"topics": [
-						"CLI Tools",
-						"Development Commands",
-						"Testing Commands",
-						"Build Tools",
-						"Package Management",
-						"Code Quality",
-						"Git Operations",
-						"Utilities"
-					],
-					"tokens": 1490,
-					"priority": "essential",
+					"topics": ["Database"],
+					"priority": "supplementary",
 					"keywords": [
-						"cli",
-						"tools",
-						"commands",
-						"npm-scripts",
-						"pnpm",
-						"development",
-						"testing",
-						"build",
-						"utilities",
-						"turbo",
-						"vitest",
-						"playwright",
-						"biome",
-						"knip",
-						"docker",
-						"github-cli"
-					]
+						"identity",
+						"advanced",
+						"migration",
+						"patterns",
+						"downtime",
+						"strategies",
+						"detailed",
+						"examples",
+						"complex",
+						"database"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 2152
+				},
+				{
+					"path": "database/migrations.md",
+					"name": "Identity",
+					"description": "\"Core guide to the three-tier migration system using Supabase and Payload CMS for database schema management\"",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"identity",
+						"guide",
+						"three",
+						"migration",
+						"system",
+						"using",
+						"supabase",
+						"payload",
+						"database",
+						"schema"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 1417
+				},
+				{
+					"path": "database/models copy.md",
+					"name": "Database: Data Models",
+					"description": "This document defines the data model structures for [Your Project Name], including struct definitions, validation rules, serialization formats, and repository patterns for database interaction.",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"database",
+						"models",
+						"document",
+						"defines",
+						"model",
+						"structures",
+						"project",
+						"including",
+						"struct",
+						"definitions"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 3777
+				},
+				{
+					"path": "database/models.md",
+					"name": "Database: Data Models",
+					"description": "This document defines the data model structures for [Your Project Name], including struct definitions, validation rules, serialization formats, and repository patterns for database interaction.",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"database",
+						"models",
+						"document",
+						"defines",
+						"model",
+						"structures",
+						"project",
+						"including",
+						"struct",
+						"definitions"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 3777
+				},
+				{
+					"path": "database/relationship-tables-management.md",
+					"name": "Identity",
+					"description": "\"Comprehensive guide to managing database relationship tables, particularly addressing Payload CMS's dynamic UUID table challenges and implementing robust relationship management patterns\"",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"identity",
+						"comprehensive",
+						"guide",
+						"managing",
+						"database",
+						"relationship",
+						"tables",
+						"particularly",
+						"addressing",
+						"payload"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 1495
+				},
+				{
+					"path": "database/schema copy.md",
+					"name": "Database: Schema Design",
+					"description": "This document defines the database schema for [Your Project Name], including table structures, relationships, indexing strategies, and data integrity constraints.",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"database",
+						"schema",
+						"design",
+						"document",
+						"defines",
+						"project",
+						"including",
+						"table",
+						"structures",
+						"relationships"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 3060
+				},
+				{
+					"path": "database/schema.md",
+					"name": "Database: Schema Design",
+					"description": "This document defines the database schema for [Your Project Name], including table structures, relationships, indexing strategies, and data integrity constraints.",
+					"lastUpdated": "2025-09-15",
+					"topics": ["Database"],
+					"priority": "supplementary",
+					"keywords": [
+						"database",
+						"schema",
+						"design",
+						"document",
+						"defines",
+						"project",
+						"including",
+						"table",
+						"structures",
+						"relationships"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": ["no-database", "static-site"],
+					"pairings": [],
+					"tokens": 3060
 				}
 			]
 		}
@@ -2091,9 +2374,14 @@
 			}
 		]
 	},
-	"features": ["token-counts", "priority-levels", "keyword-extraction"],
+	"features": [
+		"token-counts",
+		"priority-levels",
+		"keyword-extraction",
+		"graph-relationships"
+	],
 	"schema": {
-		"version": "1.1",
+		"version": "1.2",
 		"fields": {
 			"path": "Relative path from .claude/context/",
 			"name": "Human-readable document name",
@@ -2102,7 +2390,11 @@
 			"topics": "Array of main topics covered",
 			"tokens": "Estimated token count for the document",
 			"priority": "Priority level: essential | important | supplementary",
-			"keywords": "Array of extracted keywords for improved matching"
+			"keywords": "Array of extracted keywords for improved matching",
+			"relatedCommands": "Array of commands that typically use this document",
+			"dependencies": "Array of documents often needed together with this one",
+			"antiPatterns": "Array of signals indicating when NOT to include this document",
+			"pairings": "Array of documents that complement this one"
 		}
 	}
 }

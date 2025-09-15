@@ -12,7 +12,7 @@ Synchronize `.claude/data/context-inventory.json` with the actual files in `.cla
 !echo "📊 Checking current inventory..." && node -e "const inv = require('./.claude/data/context-inventory.json'); const cats = Object.keys(inv.categories); const total = cats.reduce((sum, c) => sum + inv.categories[c].documents.length, 0); console.log(\`Categories: \${cats.length}\nTotal files: \${total}\nLast updated: \${inv.lastUpdated}\`);" 2>/dev/null || echo "No inventory found"
 
 ### 2. Run synchronization:
-!node .claude/scripts/sync-context-inventory.cjs 2>&1 | tee /tmp/sync-output.txt
+!node .claude/scripts/inventories/sync-context-inventory.cjs 2>&1 | tee /tmp/sync-output.txt
 
 ### 3. Review new files for categorization:
 

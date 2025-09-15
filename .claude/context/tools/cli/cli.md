@@ -139,7 +139,7 @@ Comprehensive reference of CLI tools and commands in the SlideHeroes project. Us
 | `codecheck-direct.sh` | Direct code quality checks |
 | `cleanup-ports.sh` | Clean test ports |
 | `token-counter.cjs` | Count tokens in files |
-| `sync-context-inventory.cjs` | Sync context documentation |
+| `inventories/sync-context-inventory.cjs` | Sync context documentation |
 
 ### Commands (`.claude/commands/`)
 

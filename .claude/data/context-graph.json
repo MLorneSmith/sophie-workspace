@@ -1,0 +1,2082 @@
+{
+	"nodes": [
+		"auth/overview.md",
+		"auth/security.md",
+		"auth/configuration.md",
+		"auth/implementation.md",
+		"auth/troubleshooting.md",
+		"constraints.md",
+		"database-schema.md",
+		"api/endpoints.md",
+		"api/headers.md",
+		"api/api-patterns.md",
+		"design/cicd-pipeline-updated-design.md",
+		"roles/security-engineer.md",
+		"roles/.roles-summary.xml",
+		"roles/ai-engineer.md",
+		"roles/architecture-engineer.md",
+		"roles/cms-engineer.md",
+		"roles/comprehensive-test-writer.md",
+		"roles/data-engineer.md",
+		"roles/debug-engineer.md",
+		"roles/full-stack-engineer.md",
+		"roles/implementation-engineer.md",
+		"roles/issue-investigator.md",
+		"roles/pr-reviewer.md",
+		"roles/qa-testing-engineer.md",
+		"roles/remediation-engineer.md",
+		"roles/systems-architect-engineer.md",
+		"roles/task-planner.md",
+		"roles/ui-engineer.md",
+		"roles/unit-test-writer.md",
+		"standards/code-standards.md",
+		"standards/react-query-patterns.md",
+		"standards/testing/accessibility-testing-fundamentals.md",
+		"standards/testing/e2e-testing-fundamentals.md",
+		"standards/testing/integration/integration-testing-fundamentals.md",
+		"standards/testing/integration/integration-testing-patterns.md",
+		"standards/testing/mocking-and-typescript.md",
+		"standards/testing/performance-testing-fundamentals.md",
+		"standards/testing/testing-examples.md",
+		"standards/testing/testing-fundamentals.md",
+		"standards/testing/typescript-test-patterns copy.md",
+		"standards/testing/typescript-test-patterns.md",
+		"standards/TypographySystem.md",
+		"standards/testing/integration/integration-testing-examples.md",
+		"standards/testing/integration/integration-testing-troubleshooting.md",
+		"systems/enhanced-logger.md",
+		"systems/payload/create-payload-custom-component.md",
+		"systems/payload/update-payload-version.md",
+		"systems/pm/ccpm-system-overview.md",
+		"systems/vercel/vercel-deployment-guide.md",
+		"systems/bash-working-directory.md",
+		"systems/cicd/CI_CD_INVENTORY.md",
+		"systems/cicd/cicd-llm-context.md",
+		"systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md",
+		"systems/claude-code/dynamic-context-loading-pattern.md",
+		"systems/devcontainer-codespaces/devcontainer-implementation-analysis.md",
+		"systems/docker-setup.md",
+		"systems/docs-mcp-server.md",
+		"systems/feature-implementation-workflow.md",
+		"systems/mcp-servers.md",
+		"systems/portkey-implementation.md",
+		"systems/prompt-engineering.md",
+		"systems/testing/vitest-setup.md",
+		"architecture/dependencies.md",
+		"architecture/patterns.md",
+		"architecture/service-patterns.md",
+		"architecture/project-architecture.md",
+		"architecture/test-architecture.md",
+		"tools/cli/cli.md",
+		"tools/cli/supabase-cli.md",
+		"tools/context7.md",
+		"tools/exa-search.md",
+		"tools/git-aliases.md",
+		"tools/newrelic.md",
+		"tools/perplexity.md",
+		"tools/postgresql.md",
+		"tools/vitest-unit-testing.md",
+		"auth/security copy.md",
+		"database/migration-cicd.md",
+		"database/migration-patterns.md",
+		"database/migrations.md",
+		"database/models copy.md",
+		"database/models.md",
+		"database/relationship-tables-management.md",
+		"database/schema copy.md",
+		"database/schema.md"
+	],
+	"edges": [
+		{
+			"from": "auth/overview.md",
+			"to": "auth/implementation.md"
+		},
+		{
+			"from": "auth/overview.md",
+			"to": "auth/security.md"
+		},
+		{
+			"from": "auth/overview.md",
+			"to": "database/relationship-tables-management.md"
+		},
+		{
+			"from": "auth/implementation.md",
+			"to": "auth/overview.md"
+		},
+		{
+			"from": "auth/implementation.md",
+			"to": "auth/configuration.md"
+		},
+		{
+			"from": "auth/implementation.md",
+			"to": "auth/troubleshooting.md"
+		},
+		{
+			"from": "auth/troubleshooting.md",
+			"to": "auth/implementation.md"
+		}
+	],
+	"metadata": {
+		"auth/overview.md": {
+			"name": "Authentication System Overview",
+			"category": "auth",
+			"priority": "essential",
+			"tokens": 952,
+			"keywords": [
+				"authentication",
+				"authorization",
+				"supabase",
+				"jwt",
+				"session",
+				"mfa",
+				"rbac",
+				"server-actions",
+				"enhanceAction",
+				"requireUser",
+				"oauth",
+				"magic-links",
+				"captcha",
+				"team-accounts"
+			],
+			"topics": [
+				"Authentication",
+				"Authorization",
+				"Supabase Auth",
+				"Session Management",
+				"Multi-Factor Authentication",
+				"Team-Based RBAC",
+				"Server Actions",
+				"Security Features"
+			],
+			"antiPatterns": ["frontend-only", "no-backend", "static-site"]
+		},
+		"auth/security.md": {
+			"name": "Authentication: Security Model",
+			"category": "auth",
+			"priority": "essential",
+			"tokens": 1461,
+			"keywords": [
+				"security",
+				"authentication",
+				"supabase",
+				"rls",
+				"csrf",
+				"xss",
+				"mfa",
+				"rate-limiting",
+				"audit-logging",
+				"defense-in-depth",
+				"owasp",
+				"nosecone",
+				"edge-csrf"
+			],
+			"topics": [
+				"Security Architecture",
+				"Threat Modeling",
+				"CSRF Protection",
+				"XSS Prevention",
+				"RLS Policies",
+				"MFA Implementation",
+				"Rate Limiting",
+				"Audit Logging"
+			]
+		},
+		"auth/configuration.md": {
+			"name": "Authentication Configuration Guide",
+			"category": "auth",
+			"priority": "supplementary",
+			"tokens": 1146,
+			"keywords": [
+				"configuration",
+				"environment",
+				"setup",
+				"supabase",
+				"captcha",
+				"oauth",
+				"cookies",
+				"development",
+				"security"
+			],
+			"topics": [
+				"Configuration",
+				"Environment Variables",
+				"Supabase Dashboard",
+				"Local Development",
+				"Security Best Practices"
+			]
+		},
+		"auth/implementation.md": {
+			"name": "Authentication Implementation Patterns",
+			"category": "auth",
+			"priority": "supplementary",
+			"tokens": 1908,
+			"keywords": [
+				"implementation",
+				"code-examples",
+				"patterns",
+				"server-actions",
+				"hooks",
+				"mfa",
+				"team-context",
+				"sign-in",
+				"oauth",
+				"magic-links"
+			],
+			"topics": [
+				"Code Examples",
+				"Implementation Patterns",
+				"Middleware Chain",
+				"Server Actions",
+				"Client Hooks",
+				"MFA Implementation",
+				"Team Context"
+			],
+			"antiPatterns": ["no-code", "documentation-only"]
+		},
+		"auth/troubleshooting.md": {
+			"name": "Authentication Troubleshooting Guide",
+			"category": "auth",
+			"priority": "supplementary",
+			"tokens": 1355,
+			"keywords": [
+				"troubleshooting",
+				"debugging",
+				"errors",
+				"session",
+				"mfa",
+				"oauth",
+				"rls",
+				"jwt",
+				"cookies",
+				"permissions"
+			],
+			"topics": [
+				"Troubleshooting",
+				"Debugging",
+				"Common Issues",
+				"Error Messages",
+				"Quick Fixes"
+			]
+		},
+		"constraints.md": {
+			"name": "Project Constraints",
+			"category": "core",
+			"priority": "essential",
+			"tokens": 1890,
+			"keywords": [
+				"technical",
+				"constraints",
+				"business",
+				"rules",
+				"implementation",
+				"requirements",
+				"critical",
+				"project",
+				"followed."
+			],
+			"topics": [
+				"Technical Constraints",
+				"Business Rules",
+				"Implementation Requirements"
+			]
+		},
+		"database-schema.md": {
+			"name": "Database Schema",
+			"category": "core",
+			"priority": "supplementary",
+			"tokens": 1977,
+			"keywords": [
+				"schema",
+				"structure",
+				"table",
+				"relationships",
+				"data",
+				"types",
+				"complete",
+				"database",
+				"documentation."
+			],
+			"topics": ["Schema Structure", "Table Relationships", "Data Types"]
+		},
+		"api/endpoints.md": {
+			"name": "API Endpoints and Server Actions Reference",
+			"category": "api",
+			"priority": "essential",
+			"tokens": 1243,
+			"keywords": [
+				"api",
+				"endpoints",
+				"server-actions",
+				"authentication",
+				"supabase",
+				"makerkit",
+				"enhanceAction",
+				"webhook",
+				"billing",
+				"integration"
+			],
+			"topics": [
+				"API Endpoints",
+				"Server Actions",
+				"Authentication",
+				"Supabase Integration",
+				"MakerKit Patterns",
+				"Error Handling",
+				"Security Patterns"
+			]
+		},
+		"api/headers.md": {
+			"name": "API Headers Documentation",
+			"category": "api",
+			"priority": "essential",
+			"tokens": 1201,
+			"keywords": [
+				"headers",
+				"authentication",
+				"security",
+				"cors",
+				"csrf",
+				"supabase",
+				"cookies",
+				"middleware",
+				"server-actions",
+				"edge-functions"
+			],
+			"topics": [
+				"Headers",
+				"Authentication",
+				"Security",
+				"CORS",
+				"CSRF",
+				"Supabase",
+				"API"
+			]
+		},
+		"api/api-patterns.md": {
+			"name": "API Implementation Patterns",
+			"category": "api",
+			"priority": "supplementary",
+			"tokens": 1425,
+			"keywords": [
+				"patterns",
+				"implementation",
+				"examples",
+				"testing",
+				"webhook",
+				"pagination",
+				"transactions",
+				"file-upload",
+				"server-actions",
+				"code-examples"
+			],
+			"topics": [
+				"Implementation Patterns",
+				"Code Examples",
+				"Testing Patterns",
+				"Webhook Handlers",
+				"File Upload",
+				"Transactions",
+				"Pagination"
+			]
+		},
+		"design/cicd-pipeline-updated-design.md": {
+			"name": "CI/CD Pipeline Updated Design",
+			"category": "design",
+			"priority": "supplementary",
+			"tokens": 2639,
+			"keywords": [
+				"pipeline",
+				"architecture",
+				"implementation",
+				"status",
+				"security",
+				"design",
+				"performance",
+				"optimization",
+				"updated",
+				"document"
+			],
+			"topics": [
+				"Pipeline Architecture",
+				"Implementation Status",
+				"Security Design",
+				"Performance Optimization"
+			]
+		},
+		"roles/security-engineer.md": {
+			"name": "Security Engineer Role",
+			"category": "roles",
+			"priority": "essential",
+			"tokens": 192,
+			"keywords": [
+				"security",
+				"implementation",
+				"vulnerability",
+				"assessment",
+				"best",
+				"practices",
+				"analysis",
+				"role."
+			],
+			"topics": [
+				"Security Implementation",
+				"Vulnerability Assessment",
+				"Security Best Practices"
+			]
+		},
+		"roles/.roles-summary.xml": {
+			"name": "Roles Summary",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 662,
+			"keywords": [
+				"role",
+				"overview",
+				"mappings",
+				"summary",
+				"available",
+				"definitions."
+			],
+			"topics": ["Role Overview", "Role Mappings"]
+		},
+		"roles/ai-engineer.md": {
+			"name": "AI Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 204,
+			"keywords": [
+				"development",
+				"model",
+				"integration",
+				"best",
+				"practices",
+				"engineering",
+				"definition",
+				"responsibilities."
+			],
+			"topics": ["AI Development", "Model Integration", "AI Best Practices"]
+		},
+		"roles/architecture-engineer.md": {
+			"name": "Architecture Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 262,
+			"keywords": [
+				"system",
+				"design",
+				"architecture",
+				"planning",
+				"technical",
+				"leadership",
+				"definition",
+				"responsibilities."
+			],
+			"topics": [
+				"System Design",
+				"Architecture Planning",
+				"Technical Leadership"
+			]
+		},
+		"roles/cms-engineer.md": {
+			"name": "CMS Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 276,
+			"keywords": [
+				"development",
+				"content",
+				"management",
+				"payload",
+				"system",
+				"engineering",
+				"role."
+			],
+			"topics": ["CMS Development", "Content Management", "Payload CMS"]
+		},
+		"roles/comprehensive-test-writer.md": {
+			"name": "Comprehensive Test Writer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 1397,
+			"keywords": [
+				"unit",
+				"testing",
+				"end-to-end",
+				"accessibility",
+				"integration",
+				"performance",
+				"expert",
+				"engineer",
+				"specializing",
+				"comprehensive"
+			],
+			"topics": [
+				"Unit Testing",
+				"End-to-End Testing",
+				"Accessibility Testing",
+				"Integration Testing",
+				"Performance Testing"
+			]
+		},
+		"roles/data-engineer.md": {
+			"name": "Data Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 250,
+			"keywords": [
+				"data",
+				"management",
+				"database",
+				"design",
+				"pipelines",
+				"engineering",
+				"role."
+			],
+			"topics": ["Data Management", "Database Design", "Data Pipelines"]
+		},
+		"roles/debug-engineer.md": {
+			"name": "Debug Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 537,
+			"keywords": [
+				"debugging",
+				"strategies",
+				"issue",
+				"resolution",
+				"problem",
+				"analysis",
+				"troubleshooting",
+				"specialist",
+				"role."
+			],
+			"topics": ["Debugging Strategies", "Issue Resolution", "Problem Analysis"]
+		},
+		"roles/full-stack-engineer.md": {
+			"name": "Full Stack Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 302,
+			"keywords": [
+				"full",
+				"stack",
+				"development",
+				"frontend/backend",
+				"integration",
+				"end-to-end",
+				"features",
+				"covering",
+				"frontend",
+				"backend."
+			],
+			"topics": [
+				"Full Stack Development",
+				"Frontend/Backend Integration",
+				"End-to-End Features"
+			]
+		},
+		"roles/implementation-engineer.md": {
+			"name": "Implementation Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 641,
+			"keywords": [
+				"specification",
+				"implementation",
+				"code",
+				"quality",
+				"pattern",
+				"consistency",
+				"progress",
+				"tracking",
+				"meticulous",
+				"software"
+			],
+			"topics": [
+				"Specification Implementation",
+				"Code Quality",
+				"Pattern Consistency",
+				"Progress Tracking"
+			]
+		},
+		"roles/issue-investigator.md": {
+			"name": "Issue Investigator Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 1047,
+			"keywords": [
+				"issue",
+				"analysis",
+				"root",
+				"cause",
+				"investigation",
+				"problem",
+				"documentation",
+				"specialist",
+				"role."
+			],
+			"topics": [
+				"Issue Analysis",
+				"Root Cause Investigation",
+				"Problem Documentation"
+			]
+		},
+		"roles/pr-reviewer.md": {
+			"name": "PR Reviewer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 1203,
+			"keywords": [
+				"code",
+				"review",
+				"quality",
+				"assessment",
+				"security",
+				"analysis",
+				"best",
+				"practices",
+				"request",
+				"specialist"
+			],
+			"topics": [
+				"Code Review",
+				"Quality Assessment",
+				"Security Analysis",
+				"Best Practices"
+			]
+		},
+		"roles/qa-testing-engineer.md": {
+			"name": "QA Testing Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 776,
+			"keywords": [
+				"test",
+				"strategy",
+				"quality",
+				"assurance",
+				"automation",
+				"testing",
+				"specialist",
+				"role."
+			],
+			"topics": ["Test Strategy", "Quality Assurance", "Test Automation"]
+		},
+		"roles/remediation-engineer.md": {
+			"name": "Remediation Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 1627,
+			"keywords": [
+				"issue",
+				"remediation",
+				"implementation",
+				"problem",
+				"resolution",
+				"role."
+			],
+			"topics": [
+				"Issue Remediation",
+				"Fix Implementation",
+				"Problem Resolution"
+			]
+		},
+		"roles/systems-architect-engineer.md": {
+			"name": "Systems Architect Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 1120,
+			"keywords": [
+				"systems",
+				"architecture",
+				"infrastructure",
+				"design",
+				"scalability",
+				"planning",
+				"high-level",
+				"role."
+			],
+			"topics": [
+				"Systems Architecture",
+				"Infrastructure Design",
+				"Scalability Planning"
+			]
+		},
+		"roles/task-planner.md": {
+			"name": "Task Planner Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 548,
+			"keywords": [
+				"task",
+				"planning",
+				"project",
+				"management",
+				"workflow",
+				"optimization",
+				"development",
+				"strategy",
+				"strategic",
+				"specialist"
+			],
+			"topics": [
+				"Task Planning",
+				"Project Management",
+				"Workflow Optimization",
+				"Development Strategy"
+			]
+		},
+		"roles/ui-engineer.md": {
+			"name": "UI Engineer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 226,
+			"keywords": [
+				"development",
+				"frontend",
+				"components",
+				"user",
+				"experience",
+				"interface",
+				"role."
+			],
+			"topics": ["UI Development", "Frontend Components", "User Experience"]
+		},
+		"roles/unit-test-writer.md": {
+			"name": "Unit Test Writer Role",
+			"category": "roles",
+			"priority": "supplementary",
+			"tokens": 260,
+			"keywords": [
+				"unit",
+				"testing",
+				"test",
+				"implementation",
+				"coverage",
+				"specialist",
+				"role."
+			],
+			"topics": ["Unit Testing", "Test Implementation", "Test Coverage"]
+		},
+		"standards/code-standards.md": {
+			"name": "Code Standards",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1201,
+			"keywords": [
+				"coding",
+				"conventions",
+				"code",
+				"quality",
+				"best",
+				"practices",
+				"standards",
+				"project."
+			],
+			"topics": ["Coding Conventions", "Code Quality", "Best Practices"]
+		},
+		"standards/react-query-patterns.md": {
+			"name": "React Query Patterns and Best Practices",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 4008,
+			"keywords": [
+				"tanstack-query",
+				"react-query",
+				"data-fetching",
+				"ssr",
+				"hydration",
+				"supabase",
+				"nextjs",
+				"caching",
+				"mutations",
+				"optimistic-updates",
+				"server-actions",
+				"typescript",
+				"performance",
+				"troubleshooting",
+				"query-keys",
+				"error-handling"
+			],
+			"topics": [
+				"TanStack Query v5",
+				"React Query",
+				"Data Fetching",
+				"SSR/Hydration",
+				"Supabase Integration",
+				"Server Actions",
+				"Optimistic Updates",
+				"TypeScript Patterns",
+				"Performance Optimization",
+				"Troubleshooting"
+			]
+		},
+		"standards/testing/accessibility-testing-fundamentals.md": {
+			"name": "Accessibility Testing Fundamentals",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 2230,
+			"keywords": [
+				"accessibility",
+				"testing",
+				"hybrid",
+				"wcag",
+				"compliance",
+				"pragmatic",
+				"lighthouse",
+				"contrast",
+				"keyboard",
+				"false-positives"
+			],
+			"topics": [
+				"Accessibility Testing",
+				"HybridAccessibilityTester",
+				"WCAG Compliance",
+				"Pragmatic Testing"
+			]
+		},
+		"standards/testing/e2e-testing-fundamentals.md": {
+			"name": "End-to-End Testing Fundamentals",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1964,
+			"keywords": [
+				"e2e",
+				"playwright",
+				"testing",
+				"integration",
+				"automation",
+				"quality",
+				"page-object-model",
+				"selectors",
+				"parallel-execution",
+				"sharding",
+				"authentication",
+				"troubleshooting",
+				"flaky-tests",
+				"roi",
+				"test-pyramid"
+			],
+			"topics": [
+				"E2E Testing",
+				"Playwright",
+				"Testing Pyramid",
+				"Page Object Model",
+				"ROI Analysis",
+				"Troubleshooting",
+				"Performance Optimization",
+				"CI/CD Integration"
+			]
+		},
+		"standards/testing/integration/integration-testing-fundamentals.md": {
+			"name": "Integration Testing Fundamentals",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1368,
+			"keywords": [
+				"integration",
+				"testing",
+				"api",
+				"playwright",
+				"services",
+				"best-practices",
+				"data-flow",
+				"validation"
+			],
+			"topics": [
+				"Integration Testing",
+				"API Testing",
+				"Service Testing",
+				"Best Practices"
+			]
+		},
+		"standards/testing/integration/integration-testing-patterns.md": {
+			"name": "Integration Testing Patterns",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1547,
+			"keywords": [
+				"patterns",
+				"authentication",
+				"payments",
+				"ai-services",
+				"testing",
+				"best-practices",
+				"mock",
+				"parallel"
+			],
+			"topics": [
+				"Testing Patterns",
+				"Authentication",
+				"Payments",
+				"AI Services"
+			]
+		},
+		"standards/testing/mocking-and-typescript.md": {
+			"name": "Mocking and TypeScript",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 2330,
+			"keywords": [
+				"typescript",
+				"mocking",
+				"test",
+				"doubles",
+				"mock",
+				"patterns",
+				"strategies",
+				"effective",
+				"doubles."
+			],
+			"topics": ["TypeScript Mocking", "Test Doubles", "Mock Patterns"]
+		},
+		"standards/testing/performance-testing-fundamentals.md": {
+			"name": "Performance Testing Fundamentals",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1987,
+			"keywords": [
+				"performance",
+				"testing",
+				"metrics",
+				"load",
+				"methodologies,",
+				"collection,",
+				"optimization",
+				"validation",
+				"strategies."
+			],
+			"topics": ["Performance Testing", "Metrics", "Load Testing"]
+		},
+		"standards/testing/testing-examples.md": {
+			"name": "Testing Examples",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 2314,
+			"keywords": [
+				"test",
+				"examples",
+				"code",
+				"patterns",
+				"practical",
+				"testing",
+				"codebase."
+			],
+			"topics": ["Test Examples", "Code Patterns", "Practical Testing"]
+		},
+		"standards/testing/testing-fundamentals.md": {
+			"name": "Testing Fundamentals",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 2081,
+			"keywords": [
+				"testing",
+				"principles",
+				"test",
+				"philosophy",
+				"best",
+				"practices",
+				"principles,",
+				"philosophy,",
+				"project."
+			],
+			"topics": ["Testing Principles", "Test Philosophy", "Best Practices"]
+		},
+		"standards/testing/typescript-test-patterns copy.md": {
+			"name": "TypeScript Test Patterns for SlideHeroes",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 3514,
+			"keywords": [
+				"typescript",
+				"patterns",
+				"slideheroes",
+				"document",
+				"provides",
+				"comprehensive",
+				"fixing",
+				"compilation",
+				"errors",
+				"based"
+			],
+			"topics": ["Testing"]
+		},
+		"standards/testing/typescript-test-patterns.md": {
+			"name": "TypeScript Test Patterns for SlideHeroes",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 2661,
+			"keywords": [
+				"typescript",
+				"testing",
+				"vitest",
+				"patterns",
+				"mocking",
+				"type-safe",
+				"discriminated-unions",
+				"action-result",
+				"supabase",
+				"factory-patterns",
+				"test-helpers",
+				"compilation-errors",
+				"type-assertions",
+				"enhanceAction"
+			],
+			"topics": [
+				"TypeScript Testing",
+				"Type-Safe Tests",
+				"Compilation Errors",
+				"Mock Patterns",
+				"Test Helpers",
+				"Discriminated Unions",
+				"ActionResult Pattern",
+				"Supabase Mocking"
+			]
+		},
+		"standards/TypographySystem.md": {
+			"name": "Typography System",
+			"category": "standards",
+			"priority": "essential",
+			"tokens": 1923,
+			"keywords": [
+				"typography",
+				"guidelines",
+				"font",
+				"standards",
+				"text",
+				"styling",
+				"design",
+				"system",
+				"guidelines."
+			],
+			"topics": ["Typography Guidelines", "Font Standards", "Text Styling"]
+		},
+		"standards/testing/integration/integration-testing-examples.md": {
+			"name": "Integration Testing Examples",
+			"category": "standards",
+			"priority": "supplementary",
+			"tokens": 2349,
+			"keywords": [
+				"examples",
+				"code",
+				"implementation",
+				"fixtures",
+				"mocks",
+				"playwright",
+				"testing",
+				"practical"
+			],
+			"topics": [
+				"Code Examples",
+				"Test Implementation",
+				"Fixtures",
+				"Mock Helpers"
+			]
+		},
+		"standards/testing/integration/integration-testing-troubleshooting.md": {
+			"name": "Integration Testing Troubleshooting",
+			"category": "standards",
+			"priority": "supplementary",
+			"tokens": 2053,
+			"keywords": [
+				"troubleshooting",
+				"debugging",
+				"performance",
+				"flaky-tests",
+				"ci-cd",
+				"optimization",
+				"monitoring",
+				"solutions"
+			],
+			"topics": ["Troubleshooting", "Debugging", "Performance", "Flaky Tests"]
+		},
+		"systems/enhanced-logger.md": {
+			"name": "Enhanced Logger System",
+			"category": "systems",
+			"priority": "essential",
+			"tokens": 2160,
+			"keywords": [
+				"logging",
+				"async",
+				"pino",
+				"monitoring",
+				"security",
+				"biome",
+				"performance",
+				"testing",
+				"structured-logging",
+				"request-correlation",
+				"gdpr",
+				"redaction"
+			],
+			"topics": [
+				"Logging Architecture",
+				"Async Patterns",
+				"Security Features",
+				"Monitoring Integration",
+				"Biome Compliance",
+				"Performance Optimization",
+				"Testing Strategies"
+			]
+		},
+		"systems/payload/create-payload-custom-component.md": {
+			"name": "Creating Custom Components for Payload CMS",
+			"category": "systems",
+			"priority": "essential",
+			"tokens": 2981,
+			"keywords": [
+				"payload",
+				"cms",
+				"custom-components",
+				"lexical",
+				"blocks",
+				"react",
+				"typescript",
+				"field-components",
+				"render-blocks",
+				"block-configuration",
+				"admin-ui",
+				"collections",
+				"importmap",
+				"troubleshooting",
+				"performance"
+			],
+			"topics": [
+				"Payload CMS",
+				"Custom Components",
+				"Lexical Editor",
+				"TypeScript",
+				"Block Architecture",
+				"React Components",
+				"Admin UI",
+				"Field Components"
+			]
+		},
+		"systems/payload/update-payload-version.md": {
+			"name": "Payload CMS Version Update Guide",
+			"category": "systems",
+			"priority": "essential",
+			"tokens": 2567,
+			"keywords": [
+				"payload",
+				"cms",
+				"version-update",
+				"migration",
+				"dependencies",
+				"troubleshooting",
+				"postgresql",
+				"plugins",
+				"compatibility",
+				"rollback",
+				"ci-cd",
+				"pnpm",
+				"workspace",
+				"four-step-migration"
+			],
+			"topics": [
+				"Payload CMS",
+				"Version Updates",
+				"Database Migrations",
+				"Dependency Management",
+				"Plugin Compatibility",
+				"CI/CD Integration",
+				"Rollback Procedures",
+				"Troubleshooting"
+			]
+		},
+		"systems/pm/ccpm-system-overview.md": {
+			"name": "CCPM System Overview - Claude Code Project Management",
+			"category": "systems",
+			"priority": "essential",
+			"tokens": 1983,
+			"keywords": [
+				"ccpm",
+				"project-management",
+				"parallel-execution",
+				"agent-orchestration",
+				"github-integration",
+				"feature-workflow",
+				"automazeio",
+				"performance",
+				"3x-faster",
+				"task-decomposition",
+				"specification",
+				"implementation",
+				"troubleshooting",
+				"command-reference",
+				"visual-monitoring",
+				"task-management",
+				"do-task"
+			],
+			"topics": [
+				"Project Management",
+				"Parallel Execution",
+				"Agent Orchestration",
+				"GitHub Integration",
+				"Workflow Architecture",
+				"Performance Optimization",
+				"Task Decomposition",
+				"System Design",
+				"Automazeio CCPM",
+				"Feature Workflow",
+				"Command Reference",
+				"Visual Monitoring"
+			]
+		},
+		"systems/vercel/vercel-deployment-guide.md": {
+			"name": "Vercel Deployment Guide for Web App and Payload CMS",
+			"category": "systems",
+			"priority": "essential",
+			"tokens": 3615,
+			"keywords": [
+				"vercel",
+				"deployment",
+				"nextjs",
+				"payload-cms",
+				"monorepo",
+				"ci-cd",
+				"production",
+				"devops",
+				"isr",
+				"edge-functions",
+				"serverless",
+				"turborepo",
+				"environment-variables",
+				"monitoring",
+				"rollback"
+			],
+			"topics": [
+				"Vercel Deployment",
+				"Next.js",
+				"Payload CMS",
+				"Monorepo",
+				"CI/CD",
+				"Production",
+				"Performance Optimization",
+				"Troubleshooting"
+			]
+		},
+		"systems/bash-working-directory.md": {
+			"name": "Bash Working Directory Management",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 687,
+			"keywords": [
+				"working",
+				"directory",
+				"management",
+				"claude",
+				"maintain",
+				"project",
+				"environment",
+				"variable",
+				"controls",
+				"handles"
+			],
+			"topics": ["Documentation"]
+		},
+		"systems/cicd/CI_CD_INVENTORY.md": {
+			"name": "CI/CD Inventory",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 2035,
+			"keywords": [
+				"pipeline",
+				"components",
+				"configuration",
+				"inventory",
+				"ci/cd",
+				"architecture",
+				"implementation",
+				"status",
+				"complete",
+				"configurations."
+			],
+			"topics": [
+				"Pipeline Components",
+				"Configuration Inventory",
+				"CI/CD Architecture",
+				"Implementation Status"
+			]
+		},
+		"systems/cicd/cicd-llm-context.md": {
+			"name": "CI/CD Pipeline Implementation and Management",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 2995,
+			"keywords": [
+				"integration",
+				"ai-powered",
+				"ci/cd",
+				"automated",
+				"analysis",
+				"pipeline",
+				"intelligence",
+				"context",
+				"within",
+				"pipelines."
+			],
+			"topics": [
+				"CI/CD Pipelines",
+				"GitHub Actions",
+				"Testing Strategies",
+				"Security Scanning",
+				"Deployment Patterns",
+				"Performance Optimization",
+				"Monitoring",
+				"Troubleshooting",
+				"Best Practices"
+			]
+		},
+		"systems/cicd/PRODUCTION_PROTECTION_PRIVATE_REPO.md": {
+			"name": "Production Protection Private Repo",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 1218,
+			"keywords": [
+				"production",
+				"security",
+				"access",
+				"control",
+				"deployment",
+				"protection",
+				"private",
+				"repository",
+				"management",
+				"strategies"
+			],
+			"topics": [
+				"Production Security",
+				"Access Control",
+				"Deployment Protection",
+				"Private Repository Management"
+			]
+		},
+		"systems/claude-code/dynamic-context-loading-pattern.md": {
+			"name": "Dynamic Context Loading Pattern",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 2378,
+			"keywords": [
+				"context",
+				"loading",
+				"dynamic",
+				"selection",
+				"token",
+				"optimization",
+				"command",
+				"patterns",
+				"claude",
+				"code"
+			],
+			"topics": [
+				"Context Loading",
+				"Dynamic Selection",
+				"Token Optimization",
+				"Command Patterns",
+				"Claude Code",
+				"Performance Optimization",
+				"Relevance Scoring",
+				"Documentation Strategy"
+			]
+		},
+		"systems/devcontainer-codespaces/devcontainer-implementation-analysis.md": {
+			"name": "Devcontainer Implementation Analysis for SlideHeroes",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 1486,
+			"keywords": [
+				"devcontainer",
+				"implementation",
+				"analysis",
+				"slideheroes",
+				"document",
+				"analyzes",
+				"requirements",
+				"implications",
+				"implementing",
+				"claude"
+			],
+			"topics": ["Documentation"]
+		},
+		"systems/docker-setup.md": {
+			"name": "Docker Setup and Container Architecture",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 3849,
+			"keywords": [
+				"docker",
+				"container",
+				"architecture",
+				"devcontainer",
+				"servers",
+				"testing",
+				"orchestration",
+				"development",
+				"workflow",
+				"troubleshooting"
+			],
+			"topics": [
+				"Docker",
+				"Container Architecture",
+				"DevContainer",
+				"MCP Servers",
+				"E2E Testing",
+				"Orchestration",
+				"Development Workflow",
+				"Troubleshooting"
+			]
+		},
+		"systems/docs-mcp-server.md": {
+			"name": "Identity",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 3054,
+			"keywords": [
+				"identity",
+				"local",
+				"documentation",
+				"indexing",
+				"search",
+				"system",
+				"using",
+				"server",
+				"studio",
+				"embeddings"
+			],
+			"topics": ["Documentation"]
+		},
+		"systems/feature-implementation-workflow.md": {
+			"name": "Feature Implementation Workflow Guide",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 2240,
+			"keywords": [
+				"feature",
+				"implementation",
+				"ccpm",
+				"workflow",
+				"parallel",
+				"execution",
+				"github",
+				"integration",
+				"task",
+				"management"
+			],
+			"topics": [
+				"Feature Implementation",
+				"CCPM Workflow",
+				"Parallel Execution",
+				"GitHub Integration",
+				"Task Management",
+				"Agent Coordination",
+				"Testing Strategy",
+				"Development Process"
+			]
+		},
+		"systems/mcp-servers.md": {
+			"name": "Model Context Protocol (MCP) Servers Architecture",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 3088,
+			"keywords": [
+				"architecture",
+				"model",
+				"context",
+				"protocol",
+				"integration",
+				"containerization",
+				"microservices",
+				"claude",
+				"security",
+				"patterns"
+			],
+			"topics": [
+				"MCP Architecture",
+				"Model Context Protocol",
+				"AI Integration",
+				"Containerization",
+				"Microservices",
+				"Claude Integration",
+				"Security Patterns",
+				"Service Orchestration"
+			]
+		},
+		"systems/portkey-implementation.md": {
+			"name": "Portkey Implementation",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 2336,
+			"keywords": [
+				"gateway",
+				"setup",
+				"provider",
+				"configuration",
+				"integration",
+				"patterns",
+				"portkey",
+				"implementation",
+				"configuration."
+			],
+			"topics": [
+				"AI Gateway Setup",
+				"Provider Configuration",
+				"Integration Patterns"
+			]
+		},
+		"systems/prompt-engineering.md": {
+			"name": "Prompt Engineering",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 1113,
+			"keywords": [
+				"prompt",
+				"design",
+				"optimization",
+				"response",
+				"quality",
+				"engineering",
+				"guidelines",
+				"practices."
+			],
+			"topics": ["Prompt Design", "AI Optimization", "Response Quality"]
+		},
+		"systems/testing/vitest-setup.md": {
+			"name": "Vitest Testing Setup",
+			"category": "systems",
+			"priority": "supplementary",
+			"tokens": 1841,
+			"keywords": [
+				"vitest",
+				"testing",
+				"setup",
+				"monorepo",
+				"primary",
+				"framework",
+				"orchestrated",
+				"through",
+				"turbo",
+				"parallel"
+			],
+			"topics": ["Testing"]
+		},
+		"architecture/dependencies.md": {
+			"name": "Dependency Management Architecture",
+			"category": "architecture",
+			"priority": "essential",
+			"tokens": 1487,
+			"keywords": [
+				"dependency-injection",
+				"services",
+				"providers",
+				"monorepo",
+				"factories",
+				"registry",
+				"enhanceAction",
+				"supabase",
+				"singleton",
+				"lifecycle"
+			],
+			"topics": [
+				"Dependency Injection",
+				"Service Factories",
+				"Registry Pattern",
+				"Provider Architecture",
+				"Server Actions",
+				"Monorepo Dependencies",
+				"Testing Patterns",
+				"Lifecycle Management"
+			]
+		},
+		"architecture/patterns.md": {
+			"name": "Architecture: Implementation Patterns",
+			"category": "architecture",
+			"priority": "essential",
+			"tokens": 1681,
+			"keywords": [
+				"architecture",
+				"patterns",
+				"next.js",
+				"typescript",
+				"supabase",
+				"monorepo",
+				"server-actions",
+				"enhanceAction",
+				"RLS",
+				"testing"
+			],
+			"topics": [
+				"Monorepo Structure",
+				"Server Actions",
+				"Database Patterns",
+				"Error Handling",
+				"Testing Patterns",
+				"State Management",
+				"Performance Optimization",
+				"Security Patterns",
+				"Monitoring and Logging"
+			]
+		},
+		"architecture/service-patterns.md": {
+			"name": "Service Patterns Architecture",
+			"category": "architecture",
+			"priority": "essential",
+			"tokens": 2066,
+			"keywords": [
+				"services",
+				"architecture",
+				"patterns",
+				"server-actions",
+				"business-logic",
+				"testing",
+				"class-based",
+				"functional",
+				"hybrid",
+				"enhanceAction"
+			],
+			"topics": [
+				"Service Architecture",
+				"Server Actions",
+				"Business Logic",
+				"Dependency Injection",
+				"Testing Patterns",
+				"Error Handling",
+				"Performance Optimization",
+				"Data Fetching"
+			]
+		},
+		"architecture/project-architecture.md": {
+			"name": "SlideHeroes Architecture Context",
+			"category": "architecture",
+			"priority": "supplementary",
+			"tokens": 1511,
+			"keywords": [
+				"architecture",
+				"overview",
+				"next.js",
+				"router",
+				"supabase",
+				"multi-tenant",
+				"saas",
+				"monorepo",
+				"structure",
+				"server"
+			],
+			"topics": [
+				"Architecture Overview",
+				"Next.js 15 App Router",
+				"Supabase RLS",
+				"Multi-tenant SaaS",
+				"Monorepo Structure",
+				"Server Components",
+				"Performance Optimization",
+				"Security Architecture",
+				"CI/CD Pipeline",
+				"Architecture Decision Records"
+			]
+		},
+		"architecture/test-architecture.md": {
+			"name": "Test Architecture and Infrastructure",
+			"category": "architecture",
+			"priority": "supplementary",
+			"tokens": 2681,
+			"keywords": [
+				"test",
+				"architecture",
+				"docker",
+				"containerization",
+				"parallel",
+				"testing",
+				"port",
+				"management",
+				"ci/cd",
+				"integration"
+			],
+			"topics": [
+				"Test Architecture",
+				"Docker Containerization",
+				"Parallel Testing",
+				"Port Management",
+				"CI/CD Integration",
+				"E2E Testing",
+				"Unit Testing",
+				"Test Isolation"
+			]
+		},
+		"tools/cli/cli.md": {
+			"name": "CLI Tools and Utilities",
+			"category": "tools",
+			"priority": "essential",
+			"tokens": 1490,
+			"keywords": [
+				"cli",
+				"tools",
+				"commands",
+				"npm-scripts",
+				"pnpm",
+				"development",
+				"testing",
+				"build",
+				"utilities",
+				"turbo",
+				"vitest",
+				"playwright",
+				"biome",
+				"knip",
+				"docker",
+				"github-cli"
+			],
+			"topics": [
+				"CLI Tools",
+				"Development Commands",
+				"Testing Commands",
+				"Build Tools",
+				"Package Management",
+				"Code Quality",
+				"Git Operations",
+				"Utilities"
+			]
+		},
+		"tools/cli/supabase-cli.md": {
+			"name": "Supabase CLI Tool",
+			"category": "tools",
+			"priority": "essential",
+			"tokens": 1347,
+			"keywords": [
+				"supabase",
+				"cli",
+				"database",
+				"migrations",
+				"edge-functions",
+				"testing",
+				"docker",
+				"postgresql",
+				"type-generation",
+				"local-development",
+				"production",
+				"deployment"
+			],
+			"topics": [
+				"Supabase CLI",
+				"Database Migrations",
+				"Edge Functions",
+				"Type Generation",
+				"Docker",
+				"PostgreSQL",
+				"Testing",
+				"Local Development"
+			]
+		},
+		"tools/context7.md": {
+			"name": "Context7 Tools",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 366,
+			"keywords": [
+				"documentation",
+				"tools",
+				"context",
+				"management",
+				"integration",
+				"context7",
+				"tools."
+			],
+			"topics": ["Documentation Tools", "Context Management", "Integration"]
+		},
+		"tools/exa-search.md": {
+			"name": "Exa Search",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 255,
+			"keywords": [
+				"search",
+				"integration",
+				"content",
+				"discovery",
+				"usage",
+				"engine",
+				"usage."
+			],
+			"topics": ["Search Integration", "Content Discovery", "API Usage"]
+		},
+		"tools/git-aliases.md": {
+			"name": "Git Aliases",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 23,
+			"keywords": ["aliases"],
+			"topics": ["Documentation"]
+		},
+		"tools/newrelic.md": {
+			"name": "New Relic Tools",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 339,
+			"keywords": [
+				"application",
+				"monitoring",
+				"performance",
+				"metrics",
+				"error",
+				"tracking",
+				"relic",
+				"observability",
+				"integration."
+			],
+			"topics": [
+				"Application Monitoring",
+				"Performance Metrics",
+				"Error Tracking"
+			]
+		},
+		"tools/perplexity.md": {
+			"name": "Perplexity Tools",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 331,
+			"keywords": [
+				"search",
+				"knowledge",
+				"retrieval",
+				"integration",
+				"perplexity",
+				"usage",
+				"documentation."
+			],
+			"topics": ["AI Search", "Knowledge Retrieval", "API Integration"]
+		},
+		"tools/postgresql.md": {
+			"name": "PostgreSQL Tools",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 171,
+			"keywords": [
+				"database",
+				"management",
+				"postgresql",
+				"tools",
+				"operations",
+				"utilities."
+			],
+			"topics": [
+				"Database Management",
+				"PostgreSQL Tools",
+				"Database Operations"
+			]
+		},
+		"tools/vitest-unit-testing.md": {
+			"name": "Vitest Unit Testing Context",
+			"category": "tools",
+			"priority": "supplementary",
+			"tokens": 2845,
+			"keywords": [
+				"vitest",
+				"unit",
+				"testing",
+				"mocking",
+				"test",
+				"helpers",
+				"patterns",
+				"coverage",
+				"infrastructure",
+				"comprehensive"
+			],
+			"topics": [
+				"Vitest",
+				"Unit Testing",
+				"Mocking",
+				"Test Helpers",
+				"Test Patterns",
+				"Coverage",
+				"Testing Infrastructure"
+			]
+		},
+		"auth/security copy.md": {
+			"name": "Authentication: Security Model",
+			"category": "general",
+			"priority": "essential",
+			"tokens": 3204,
+			"keywords": [
+				"authentication",
+				"security",
+				"model",
+				"document",
+				"defines",
+				"comprehensive",
+				"project",
+				"covering",
+				"threat",
+				"mitigation"
+			],
+			"topics": ["Authentication", "Security"]
+		},
+		"database/migration-cicd.md": {
+			"name": "Identity",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 2233,
+			"keywords": [
+				"identity",
+				"integration",
+				"deployment",
+				"automation",
+				"production",
+				"strategies",
+				"database",
+				"migrations"
+			],
+			"topics": ["Database", "CI/CD"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/migration-patterns.md": {
+			"name": "Identity",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 2152,
+			"keywords": [
+				"identity",
+				"advanced",
+				"migration",
+				"patterns",
+				"downtime",
+				"strategies",
+				"detailed",
+				"examples",
+				"complex",
+				"database"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/migrations.md": {
+			"name": "Identity",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 1417,
+			"keywords": [
+				"identity",
+				"guide",
+				"three",
+				"migration",
+				"system",
+				"using",
+				"supabase",
+				"payload",
+				"database",
+				"schema"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/models copy.md": {
+			"name": "Database: Data Models",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 3777,
+			"keywords": [
+				"database",
+				"models",
+				"document",
+				"defines",
+				"model",
+				"structures",
+				"project",
+				"including",
+				"struct",
+				"definitions"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/models.md": {
+			"name": "Database: Data Models",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 3777,
+			"keywords": [
+				"database",
+				"models",
+				"document",
+				"defines",
+				"model",
+				"structures",
+				"project",
+				"including",
+				"struct",
+				"definitions"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/relationship-tables-management.md": {
+			"name": "Identity",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 1495,
+			"keywords": [
+				"identity",
+				"comprehensive",
+				"guide",
+				"managing",
+				"database",
+				"relationship",
+				"tables",
+				"particularly",
+				"addressing",
+				"payload"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/schema copy.md": {
+			"name": "Database: Schema Design",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 3060,
+			"keywords": [
+				"database",
+				"schema",
+				"design",
+				"document",
+				"defines",
+				"project",
+				"including",
+				"table",
+				"structures",
+				"relationships"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		},
+		"database/schema.md": {
+			"name": "Database: Schema Design",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 3060,
+			"keywords": [
+				"database",
+				"schema",
+				"design",
+				"document",
+				"defines",
+				"project",
+				"including",
+				"table",
+				"structures",
+				"relationships"
+			],
+			"topics": ["Database"],
+			"antiPatterns": ["no-database", "static-site"]
+		}
+	},
+	"commandRelations": {
+		"/feature": ["auth/overview.md", "auth/implementation.md"],
+		"/do-task": ["auth/overview.md"],
+		"/debug-issue": ["auth/overview.md"],
+		"/write-tests": [
+			"auth/implementation.md",
+			"standards/testing/typescript-test-patterns copy.md"
+		]
+	},
+	"lastUpdated": "2025-09-15T21:25:48.625Z"
+}
