@@ -466,7 +466,7 @@ class ContextLoader {
 			technologies: [],
 			phases: [],
 			fileTypes: [],
-			contextFiles: []
+			contextFiles: [],
 		};
 
 		// Extract agent specialists
@@ -488,7 +488,7 @@ class ContextLoader {
 		// Extract active workflow phases
 		if (metadata.phases) {
 			for (const [phase, active] of Object.entries(metadata.phases)) {
-				if (active === true && phase !== 'activeCount') {
+				if (active === true && phase !== "activeCount") {
 					enhancedSignals.phases.push(phase);
 				}
 			}
@@ -518,8 +518,10 @@ class ContextLoader {
 		// Boost if document mentions agents used in the command
 		if (metadata.agents?.length) {
 			for (const agent of metadata.agents) {
-				if (document.keywords?.includes(agent) ||
-				    document.description?.toLowerCase().includes(agent)) {
+				if (
+					document.keywords?.includes(agent) ||
+					document.description?.toLowerCase().includes(agent)
+				) {
 					boost *= 1.3;
 				}
 			}
@@ -528,8 +530,10 @@ class ContextLoader {
 		// Boost if document relates to technologies used
 		if (metadata.technologies?.length) {
 			for (const tech of metadata.technologies) {
-				if (document.keywords?.includes(tech) ||
-				    document.topics?.some(t => t.toLowerCase().includes(tech))) {
+				if (
+					document.keywords?.includes(tech) ||
+					document.topics?.some((t) => t.toLowerCase().includes(tech))
+				) {
 					boost *= 1.25;
 				}
 			}
@@ -538,8 +542,10 @@ class ContextLoader {
 		// Boost if document matches workflow phases
 		if (metadata.phases?.length) {
 			for (const phase of metadata.phases) {
-				if (document.keywords?.includes(phase) ||
-				    document.description?.toLowerCase().includes(phase)) {
+				if (
+					document.keywords?.includes(phase) ||
+					document.description?.toLowerCase().includes(phase)
+				) {
 					boost *= 1.2;
 				}
 			}
@@ -587,7 +593,9 @@ class ContextLoader {
 		if (verbose && enhancedSignals) {
 			console.error("Using rich command metadata for enhanced scoring");
 			console.error(`Agents: ${enhancedSignals.agents.join(", ") || "none"}`);
-			console.error(`Technologies: ${enhancedSignals.technologies.join(", ") || "none"}`);
+			console.error(
+				`Technologies: ${enhancedSignals.technologies.join(", ") || "none"}`,
+			);
 			console.error(`Phases: ${enhancedSignals.phases.join(", ") || "none"}`);
 		}
 
@@ -904,7 +912,9 @@ async function main() {
 		console.log(
 			"  --no-fuse              Disable Fuse.js fuzzy matching (use legacy keyword matching)",
 		);
-		console.log("  --metadata=JSON        Command metadata from AST analysis (JSON or file path)");
+		console.log(
+			"  --metadata=JSON        Command metadata from AST analysis (JSON or file path)",
+		);
 		console.log("");
 		console.log("Examples:");
 		console.log(
@@ -927,10 +937,10 @@ async function main() {
 		if (options.metadata) {
 			try {
 				// Metadata can be JSON string or file path
-				if (options.metadata.startsWith('{')) {
+				if (options.metadata.startsWith("{")) {
 					commandMetadata = JSON.parse(options.metadata);
-				} else if (options.metadata.endsWith('.json')) {
-					const metadataContent = await fs.readFile(options.metadata, 'utf8');
+				} else if (options.metadata.endsWith(".json")) {
+					const metadataContent = await fs.readFile(options.metadata, "utf8");
 					commandMetadata = JSON.parse(metadataContent);
 				}
 			} catch (error) {
