@@ -58,22 +58,16 @@ This hybrid approach provides the best of both worlds: fast local development wi
 
 ### Supabase Services (Managed by Supabase CLI)
 
-**Main Stack (`2025slideheroes`)**:
-- **Database**: PostgreSQL 15.8 on port 54322
-- **API Gateway**: Kong on port 54321
-- **Auth**: GoTrue authentication service
-- **Storage**: S3-compatible object storage
-- **Realtime**: WebSocket-based realtime subscriptions
-- **Studio**: Web-based database management on port 54323
+**Two Isolated Stacks**:
 
-**E2E Test Stack (`2025slideheroes-e2e`)**:
-- Same services as main stack but on different ports:
-  - API Gateway: 55321
-  - Database: 55322
-  - Studio: 55323
-  - Mailpit: 55324-55326
-- Isolated database for test data
-- Separate auth tokens and JWT secrets
+| Service | Main Stack (2025slideheroes) | E2E Stack (2025slideheroes-e2e) |
+|---------|------------------------------|----------------------------------|
+| API Gateway | 54321 | 55321 |
+| PostgreSQL | 54322 | 55322 |
+| Studio | 54323 | 55323 |
+| Mailpit | - | 55324-55326 |
+
+**Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, and Supabase Studio
 
 ### Test Server Container (`app-test`)
 
@@ -89,43 +83,13 @@ This hybrid approach provides the best of both worlds: fast local development wi
   - Health check endpoint
   - Can run parallel to development
 
-### DevContainer Setup (Optional, in `.devcontainer/`)
+### DevContainer Setup
 
-**Note**: These containers are defined but typically not used in favor of host-based development.
+**Note**: DevContainer configurations exist in `.devcontainer/` but host-based development is preferred for performance.
 
-**App Container** (`app`):
-- Full development environment with tooling
-- Defined in `.devcontainer/docker-compose.yml`
-- Includes zsh, git-delta, ripgrep, etc.
+### MCP Servers (via Claude Code)
 
-**E2E Container** (`e2e`):
-- Playwright testing environment
-- Pre-installed browsers
-- Isolated test dependencies
-
-### MCP Servers (Now via Claude Code)
-
-**Previous Setup**: MCP servers used to run as Docker containers via `docker-compose.mcp.yml`
-
-**Current Setup**: MCP servers are now configured natively through Claude Code
-- **Configuration**: Defined in `.mcp.json` at project root
-- **Execution**: Managed directly by Claude Code using `npx` commands
-- **Authentication**: API keys stored in `.mcp.json` (consider environment variables for production)
-
-**Available MCP Servers** (12 total):
-- **exa**: Web search via Exa API
-- **perplexity-ask**: Perplexity AI for questions
-- **supabase**: Database management
-- **context7**: Documentation retrieval
-- **cloudflare-bindings**: Cloudflare services
-- **cloudflare-playwright**: Browser automation
-- **postgres**: PostgreSQL database operations
-- **browser-tools**: Browser debugging tools
-- **code-reasoning**: Sequential thinking
-- **github**: GitHub API operations
-- **newrelic**: Monitoring/observability (Python-based)
-
-**Note**: The `docker-compose.mcp.yml` file remains in the project for reference but is no longer actively used.
+MCP servers are configured natively through Claude Code via `.mcp.json` at project root. They are managed directly by Claude Code and start automatically when Claude Code launches. The legacy `docker-compose.mcp.yml` file is no longer used.
 
 ### Supporting Services
 
@@ -167,19 +131,9 @@ This hybrid approach provides the best of both worlds: fast local development wi
     └── Dockerfile.mcp          # Legacy MCP client container (not in use)
 ```
 
-### MCP Server Structure (Legacy - Not in Use)
+### MCP Configuration
 
 ```
-.mcp-servers/              # Legacy Docker-based MCP servers (kept for reference)
-├── perplexity-ask/
-│   ├── Dockerfile
-│   └── proxy-server.js
-├── supabase/
-│   ├── Dockerfile
-│   └── proxy-server.js
-└── [other-servers]/
-    └── ...
-
 .mcp.json                  # Current MCP configuration (Claude Code)
 ```
 
@@ -268,13 +222,6 @@ MCP servers are now managed directly by Claude Code through the `.mcp.json` conf
 - Check status with `claude mcp list` command
 - Enable/disable servers in `.claude/settings.local.json`
 
-**Legacy Docker Commands** (no longer used):
-```bash
-# These commands are kept for reference only
-# docker-compose -f docker-compose.mcp.yml up -d    # Start all
-# docker-compose -f docker-compose.mcp.yml down     # Stop all
-# docker-compose -f docker-compose.mcp.yml logs     # View logs
-```
 
 ## Environment Configuration
 
@@ -285,9 +232,6 @@ MCP servers are now managed directly by Claude Code through the `.mcp.json` conf
 - DNS resolution between services
 - Port mapping to host
 
-**MCP Network**: `mcp-network` (Legacy - Not in Use)
-- Previously used for MCP server containers
-- MCP servers now run through Claude Code, not Docker
 
 ### Environment Variables
 
@@ -469,49 +413,19 @@ docker system prune -a --volumes
 
 ## Best Practices
 
-### Image Optimization
-
-1. **Multi-stage Builds**: Separate build and runtime environments
-2. **Layer Caching**: Order Dockerfile commands by change frequency
-3. **Minimal Base Images**: Use Alpine or slim variants
-4. **Single Process**: One concern per container
-
-### Security
-
-1. **Non-root Users**: Always run as non-privileged user
-2. **Secret Management**: Use Docker secrets or environment files
-3. **Network Isolation**: Use custom networks, not default bridge
-4. **Vulnerability Scanning**: Regular image scanning with Docker Scout
-
-### Development Efficiency
-
-1. **Volume Mounts**: Cache dependencies and build artifacts
-2. **Hot Reload**: Configure for instant code updates
-3. **Parallel Services**: Start only needed services
-4. **Resource Limits**: Set memory/CPU limits to prevent resource exhaustion
-
-### Maintenance
-
-1. **Regular Updates**: Keep base images current
-2. **Cleanup**: Prune unused images and volumes regularly
-3. **Documentation**: Document all environment variables
-4. **Health Checks**: Implement for all services
+- Use multi-stage builds and minimal base images (Alpine/slim)
+- Run containers as non-root users with proper secret management
+- Cache dependencies via volume mounts for faster builds
+- Set resource limits and implement health checks
+- Regularly update base images and prune unused resources
 
 ## Performance Optimizations
 
-### Build Performance
-
-- **BuildKit**: 71% faster builds with parallel execution
-- **Cache Mounts**: Reuse package manager caches
-- **Multi-stage**: 90% smaller final images
-- **.dockerignore**: Reduce context upload time
-
-### Runtime Performance
-
-- **Volume Strategy**: Named volumes for persistent data
-- **Network Mode**: Bridge for isolation, host for performance
-- **Resource Allocation**: Appropriate CPU/memory limits
-- **Storage Driver**: Use overlay2 for best performance
+- Enable BuildKit for parallel builds
+- Use cache mounts and multi-stage builds
+- Configure .dockerignore to minimize context
+- Use named volumes and overlay2 storage driver
+- Set appropriate resource limits
 
 ## Hybrid Architecture: Benefits and Tradeoffs
 
@@ -553,19 +467,11 @@ Consider moving to full containerization when:
 - Complex microservices architecture emerges
 - Cross-platform development becomes essential
 
-## Future Enhancements
-
-1. **Unified Container Orchestration**: Migrate Supabase CLI projects to docker-compose
-2. **Development Containers**: Optional full containerization for consistency
-3. **Kubernetes Migration**: Prepare for K8s orchestration
-4. **Service Mesh**: Implement for microservices communication
-5. **Observability**: Add Prometheus/Grafana monitoring
 
 ## Related Files
 
 - `/home/msmith/projects/2025slideheroes/.mcp.json`: MCP servers configuration (Claude Code)
 - `/home/msmith/projects/2025slideheroes/docker-compose.test.yml`: Test server container configuration
-- `/home/msmith/projects/2025slideheroes/docker-compose.mcp.yml`: Legacy MCP servers configuration (not in use)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: DevContainer services (optional)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/devcontainer.json`: VS Code integration
 - `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration

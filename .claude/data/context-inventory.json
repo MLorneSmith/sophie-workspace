@@ -1,6 +1,6 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-13",
+	"lastUpdated": "2025-09-15",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -769,64 +769,158 @@
 				{
 					"path": "standards/testing/accessibility-testing-fundamentals.md",
 					"name": "Accessibility Testing Fundamentals",
-					"description": "Accessibility testing guidelines, WCAG compliance, and automated a11y testing patterns.",
-					"lastUpdated": "2025-09-12",
+					"description": "Pragmatic accessibility testing using HybridAccessibilityTester for WCAG 2.1 AA compliance without false positives.",
+					"lastUpdated": "2025-09-15",
 					"topics": [
 						"Accessibility Testing",
+						"HybridAccessibilityTester",
 						"WCAG Compliance",
-						"A11y Automation"
+						"Pragmatic Testing"
 					],
-					"tokens": 4204,
+					"tokens": 2230,
 					"priority": "essential",
 					"keywords": [
 						"accessibility",
 						"testing",
+						"hybrid",
 						"wcag",
 						"compliance",
-						"a11y",
-						"automation",
-						"guidelines,",
-						"compliance,",
-						"automated",
-						"patterns."
+						"pragmatic",
+						"lighthouse",
+						"contrast",
+						"keyboard",
+						"false-positives"
 					]
 				},
 				{
 					"path": "standards/testing/e2e-testing-fundamentals.md",
-					"name": "E2E Testing Fundamentals",
-					"description": "End-to-end testing principles, Playwright patterns, and browser automation best practices.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["E2E Testing", "Playwright", "Browser Automation"],
-					"tokens": 3364,
+					"name": "End-to-End Testing Fundamentals",
+					"description": "Comprehensive E2E testing guidance with Playwright, including patterns, troubleshooting, and ROI optimization",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"E2E Testing",
+						"Playwright",
+						"Testing Pyramid",
+						"Page Object Model",
+						"ROI Analysis",
+						"Troubleshooting",
+						"Performance Optimization",
+						"CI/CD Integration"
+					],
+					"tokens": 1964,
 					"priority": "essential",
 					"keywords": [
-						"testing",
+						"e2e",
 						"playwright",
-						"browser",
+						"testing",
+						"integration",
 						"automation",
-						"end-to-end",
-						"principles,",
-						"patterns,",
-						"practices."
+						"quality",
+						"page-object-model",
+						"selectors",
+						"parallel-execution",
+						"sharding",
+						"authentication",
+						"troubleshooting",
+						"flaky-tests",
+						"roi",
+						"test-pyramid"
 					]
 				},
 				{
-					"path": "standards/testing/integration-testing-fundamentals.md",
+					"path": "standards/testing/integration/integration-testing-fundamentals.md",
 					"name": "Integration Testing Fundamentals",
-					"description": "Integration testing strategies for API endpoints, database operations, and service interactions.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Integration Testing", "API Testing", "Service Testing"],
-					"tokens": 4921,
+					"description": "Core integration testing patterns for API endpoints, service interactions, and data flow validation in SlideHeroes",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Integration Testing",
+						"API Testing",
+						"Service Testing",
+						"Best Practices"
+					],
+					"tokens": 1368,
 					"priority": "essential",
 					"keywords": [
 						"integration",
 						"testing",
-						"service",
-						"strategies",
-						"endpoints,",
-						"database",
-						"operations,",
-						"interactions."
+						"api",
+						"playwright",
+						"services",
+						"best-practices",
+						"data-flow",
+						"validation"
+					]
+				},
+				{
+					"path": "standards/testing/integration/integration-testing-patterns.md",
+					"name": "Integration Testing Patterns",
+					"description": "Common integration testing patterns including authentication, payment processing, AI services, and data flow validation",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Testing Patterns",
+						"Authentication",
+						"Payments",
+						"AI Services"
+					],
+					"tokens": 1547,
+					"priority": "essential",
+					"keywords": [
+						"patterns",
+						"authentication",
+						"payments",
+						"ai-services",
+						"testing",
+						"best-practices",
+						"mock",
+						"parallel"
+					]
+				},
+				{
+					"path": "standards/testing/integration/integration-testing-examples.md",
+					"name": "Integration Testing Examples",
+					"description": "Practical integration test examples for authentication, courses, AI services, and payment workflows in SlideHeroes",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Code Examples",
+						"Test Implementation",
+						"Fixtures",
+						"Mock Helpers"
+					],
+					"tokens": 2349,
+					"priority": "supplementary",
+					"keywords": [
+						"examples",
+						"code",
+						"implementation",
+						"fixtures",
+						"mocks",
+						"playwright",
+						"testing",
+						"practical"
+					]
+				},
+				{
+					"path": "standards/testing/integration/integration-testing-troubleshooting.md",
+					"name": "Integration Testing Troubleshooting",
+					"description": "Comprehensive troubleshooting guide for common integration testing issues including flaky tests, performance problems, and debugging strategies",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Troubleshooting",
+						"Debugging",
+						"Performance",
+						"Flaky Tests"
+					],
+					"tokens": 2053,
+					"priority": "supplementary",
+					"keywords": [
+						"troubleshooting",
+						"debugging",
+						"performance",
+						"flaky-tests",
+						"ci-cd",
+						"optimization",
+						"monitoring",
+						"solutions"
 					]
 				},
 				{
@@ -852,10 +946,10 @@
 				{
 					"path": "standards/testing/performance-testing-fundamentals.md",
 					"name": "Performance Testing Fundamentals",
-					"description": "Performance testing methodologies, metrics collection, and optimization validation strategies.",
-					"lastUpdated": "2025-09-12",
+					"description": "Core performance testing principles, metrics, and implementation patterns for web applications",
+					"lastUpdated": "2025-09-15",
 					"topics": ["Performance Testing", "Metrics", "Load Testing"],
-					"tokens": 4786,
+					"tokens": 1987,
 					"priority": "essential",
 					"keywords": [
 						"performance",
@@ -909,25 +1003,36 @@
 				},
 				{
 					"path": "standards/testing/typescript-test-patterns.md",
-					"name": "TypeScript Test Patterns",
-					"description": "TypeScript-specific testing patterns and type-safe testing strategies.",
-					"lastUpdated": "2025-09-12",
+					"name": "TypeScript Test Patterns for SlideHeroes",
+					"description": "TypeScript-specific testing patterns, type safety strategies, and compilation error solutions for the SlideHeroes codebase",
+					"lastUpdated": "2025-09-15",
 					"topics": [
 						"TypeScript Testing",
 						"Type-Safe Tests",
-						"Advanced Patterns"
+						"Compilation Errors",
+						"Mock Patterns",
+						"Test Helpers",
+						"Discriminated Unions",
+						"ActionResult Pattern",
+						"Supabase Mocking"
 					],
-					"tokens": 3514,
+					"tokens": 2661,
 					"priority": "essential",
 					"keywords": [
 						"typescript",
 						"testing",
-						"type-safe",
-						"tests",
-						"advanced",
+						"vitest",
 						"patterns",
-						"typescript-specific",
-						"strategies."
+						"mocking",
+						"type-safe",
+						"discriminated-unions",
+						"action-result",
+						"supabase",
+						"factory-patterns",
+						"test-helpers",
+						"compilation-errors",
+						"type-assertions",
+						"enhanceAction"
 					]
 				},
 				{
@@ -949,6 +1054,44 @@
 						"system",
 						"guidelines."
 					]
+				},
+				{
+					"path": "standards/react-query-patterns.md",
+					"name": "React Query Patterns and Best Practices",
+					"description": "Comprehensive guide for TanStack Query v5 patterns with Next.js 15 and Supabase integration",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"TanStack Query v5",
+						"React Query",
+						"Data Fetching",
+						"SSR/Hydration",
+						"Supabase Integration",
+						"Server Actions",
+						"Optimistic Updates",
+						"TypeScript Patterns",
+						"Performance Optimization",
+						"Troubleshooting"
+					],
+					"tokens": 4008,
+					"priority": "essential",
+					"keywords": [
+						"tanstack-query",
+						"react-query",
+						"data-fetching",
+						"ssr",
+						"hydration",
+						"supabase",
+						"nextjs",
+						"caching",
+						"mutations",
+						"optimistic-updates",
+						"server-actions",
+						"typescript",
+						"performance",
+						"troubleshooting",
+						"query-keys",
+						"error-handling"
+					]
 				}
 			]
 		},
@@ -958,9 +1101,9 @@
 			"documents": [
 				{
 					"path": "systems/pm/ccpm-system-overview.md",
-					"name": "CCPM System Overview",
-					"description": "Technical architecture and comprehensive documentation of the Claude Code Project Management system for parallel feature development.",
-					"lastUpdated": "2025-09-12",
+					"name": "CCPM System Overview - Claude Code Project Management",
+					"description": "Complete CCPM parallel execution framework for 3x faster feature delivery through AI agent orchestration, adapted from automazeio/ccpm with enhanced command set and advanced patterns",
+					"lastUpdated": "2025-09-15",
 					"topics": [
 						"Project Management",
 						"Parallel Execution",
@@ -969,21 +1112,32 @@
 						"Workflow Architecture",
 						"Performance Optimization",
 						"Task Decomposition",
-						"System Design"
+						"System Design",
+						"Automazeio CCPM",
+						"Feature Workflow",
+						"Command Reference",
+						"Visual Monitoring"
 					],
-					"tokens": 3348,
-					"priority": "important",
+					"tokens": 1983,
+					"priority": "essential",
 					"keywords": [
-						"project",
-						"management",
-						"parallel",
-						"execution",
-						"agent",
-						"orchestration",
-						"github",
-						"integration",
-						"workflow",
-						"architecture"
+						"ccpm",
+						"project-management",
+						"parallel-execution",
+						"agent-orchestration",
+						"github-integration",
+						"feature-workflow",
+						"automazeio",
+						"performance",
+						"3x-faster",
+						"task-decomposition",
+						"specification",
+						"implementation",
+						"troubleshooting",
+						"command-reference",
+						"visual-monitoring",
+						"task-management",
+						"do-task"
 					]
 				},
 				{
@@ -1035,16 +1189,21 @@
 				},
 				{
 					"path": "systems/cicd/cicd-llm-context.md",
-					"name": "CI/CD LLM Context",
-					"description": "Context documentation for LLM integration within CI/CD pipelines.",
-					"lastUpdated": "2025-09-12",
+					"name": "CI/CD Pipeline Implementation and Management",
+					"description": "Comprehensive context for understanding, implementing, and managing the SlideHeroes CI/CD pipeline using GitHub Actions, including testing strategies, security scanning, deployment patterns, and performance optimization",
+					"lastUpdated": "2025-09-15",
 					"topics": [
-						"LLM Integration",
-						"AI-Powered CI/CD",
-						"Automated Analysis",
-						"Pipeline Intelligence"
+						"CI/CD Pipelines",
+						"GitHub Actions",
+						"Testing Strategies",
+						"Security Scanning",
+						"Deployment Patterns",
+						"Performance Optimization",
+						"Monitoring",
+						"Troubleshooting",
+						"Best Practices"
 					],
-					"tokens": 3193,
+					"tokens": 2995,
 					"priority": "supplementary",
 					"keywords": [
 						"integration",
@@ -1113,34 +1272,6 @@
 						"patterns",
 						"claude",
 						"code"
-					]
-				},
-				{
-					"path": "systems/devcontainer-codespaces/codespaces+warpterminal.md",
-					"name": "DevContainer and Codespaces System",
-					"description": "Comprehensive context for the SlideHeroes project's advanced GitHub Codespaces integration with Warp Terminal automation and multi-environment development workflow.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"DevContainer Configuration",
-						"GitHub Codespaces",
-						"SSH Integration",
-						"Warp Terminal Automation",
-						"Multi-Environment Development",
-						"Codespace Management"
-					],
-					"tokens": 4374,
-					"priority": "supplementary",
-					"keywords": [
-						"devcontainer",
-						"configuration",
-						"github",
-						"codespaces",
-						"integration",
-						"warp",
-						"terminal",
-						"automation",
-						"multi-environment",
-						"development"
 					]
 				},
 				{
@@ -1217,28 +1348,33 @@
 				},
 				{
 					"path": "systems/enhanced-logger.md",
-					"name": "Enhanced Logger",
-					"description": "Enhanced logging system design and implementation for improved observability.",
-					"lastUpdated": "2025-09-12",
+					"name": "Enhanced Logger System",
+					"description": "Comprehensive async logging system with structured output, security features, monitoring integration, and Biome linting compliance",
+					"lastUpdated": "2025-09-15",
 					"topics": [
 						"Logging Architecture",
-						"Observability",
-						"Error Tracking",
-						"Performance Monitoring"
+						"Async Patterns",
+						"Security Features",
+						"Monitoring Integration",
+						"Biome Compliance",
+						"Performance Optimization",
+						"Testing Strategies"
 					],
-					"tokens": 3330,
-					"priority": "supplementary",
+					"tokens": 2160,
+					"priority": "essential",
 					"keywords": [
 						"logging",
-						"architecture",
-						"observability",
-						"error",
-						"tracking",
-						"performance",
+						"async",
+						"pino",
 						"monitoring",
-						"enhanced",
-						"system",
-						"design"
+						"security",
+						"biome",
+						"performance",
+						"testing",
+						"structured-logging",
+						"request-correlation",
+						"gdpr",
+						"redaction"
 					]
 				},
 				{
@@ -1345,6 +1481,75 @@
 					]
 				},
 				{
+					"path": "systems/payload/create-payload-custom-component.md",
+					"name": "Creating Custom Components for Payload CMS",
+					"description": "Comprehensive guide for creating custom Payload CMS components with Lexical editor integration, TypeScript patterns, and best practices",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Payload CMS",
+						"Custom Components",
+						"Lexical Editor",
+						"TypeScript",
+						"Block Architecture",
+						"React Components",
+						"Admin UI",
+						"Field Components"
+					],
+					"tokens": 2981,
+					"priority": "essential",
+					"keywords": [
+						"payload",
+						"cms",
+						"custom-components",
+						"lexical",
+						"blocks",
+						"react",
+						"typescript",
+						"field-components",
+						"render-blocks",
+						"block-configuration",
+						"admin-ui",
+						"collections",
+						"importmap",
+						"troubleshooting",
+						"performance"
+					]
+				},
+				{
+					"path": "systems/payload/update-payload-version.md",
+					"name": "Payload CMS Version Update Guide",
+					"description": "Comprehensive guide for updating Payload CMS versions, managing dependencies, handling migrations, and resolving compatibility issues in the SlideHeroes project",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Payload CMS",
+						"Version Updates",
+						"Database Migrations",
+						"Dependency Management",
+						"Plugin Compatibility",
+						"CI/CD Integration",
+						"Rollback Procedures",
+						"Troubleshooting"
+					],
+					"tokens": 2567,
+					"priority": "essential",
+					"keywords": [
+						"payload",
+						"cms",
+						"version-update",
+						"migration",
+						"dependencies",
+						"troubleshooting",
+						"postgresql",
+						"plugins",
+						"compatibility",
+						"rollback",
+						"ci-cd",
+						"pnpm",
+						"workspace",
+						"four-step-migration"
+					]
+				},
+				{
 					"path": "systems/testing/vitest-setup.md",
 					"name": "Vitest Testing Setup",
 					"description": "This monorepo uses Vitest as the primary testing framework, orchestrated through Turbo for parallel execution across packages.",
@@ -1364,6 +1569,41 @@
 						"parallel"
 					],
 					"tokens": 1841
+				},
+				{
+					"path": "systems/vercel/vercel-deployment-guide.md",
+					"name": "Vercel Deployment Guide for Web App and Payload CMS",
+					"description": "Comprehensive guide for deploying monorepo applications with Next.js and Payload CMS to Vercel production environments",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Vercel Deployment",
+						"Next.js",
+						"Payload CMS",
+						"Monorepo",
+						"CI/CD",
+						"Production",
+						"Performance Optimization",
+						"Troubleshooting"
+					],
+					"priority": "essential",
+					"keywords": [
+						"vercel",
+						"deployment",
+						"nextjs",
+						"payload-cms",
+						"monorepo",
+						"ci-cd",
+						"production",
+						"devops",
+						"isr",
+						"edge-functions",
+						"serverless",
+						"turborepo",
+						"environment-variables",
+						"monitoring",
+						"rollback"
+					],
+					"tokens": 3615
 				}
 			]
 		},
@@ -1438,7 +1678,7 @@
 					"path": "architecture/service-patterns.md",
 					"name": "Service Patterns Architecture",
 					"description": "Comprehensive guide to the hybrid service architecture combining class-based services with functional server actions",
-					"lastUpdated": "2025-09-12",
+					"lastUpdated": "2025-09-15",
 					"topics": [
 						"Service Architecture",
 						"Server Actions",
@@ -1449,7 +1689,7 @@
 						"Performance Optimization",
 						"Data Fetching"
 					],
-					"tokens": 3773,
+					"tokens": 2066,
 					"priority": "essential",
 					"keywords": [
 						"services",
@@ -1531,106 +1771,6 @@
 			"description": "Documentation for development tools, integrations, and utilities",
 			"documents": [
 				{
-					"path": "tools/available-tools.xml",
-					"name": "Available Tools List",
-					"description": "XML listing of all available development tools and utilities.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Tool Inventory", "Tool Capabilities"],
-					"tokens": 6185,
-					"priority": "supplementary",
-					"keywords": [
-						"tool",
-						"inventory",
-						"capabilities",
-						"listing",
-						"available",
-						"development",
-						"tools",
-						"utilities."
-					]
-				},
-				{
-					"path": "tools/browser-tools.md",
-					"name": "Browser Tools",
-					"description": "Browser-based development and testing tools documentation.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Browser Testing", "Development Tools", "Debugging"],
-					"tokens": 420,
-					"priority": "supplementary",
-					"keywords": [
-						"browser",
-						"testing",
-						"development",
-						"tools",
-						"debugging",
-						"browser-based",
-						"documentation."
-					]
-				},
-				{
-					"path": "tools/cloudflare-workers-bindings.md",
-					"name": "Cloudflare Workers Bindings",
-					"description": "Cloudflare Workers bindings and configuration.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Worker Bindings",
-						"Edge Computing",
-						"Cloudflare Integration"
-					],
-					"tokens": 256,
-					"priority": "supplementary",
-					"keywords": [
-						"worker",
-						"bindings",
-						"edge",
-						"computing",
-						"cloudflare",
-						"integration",
-						"workers",
-						"configuration."
-					]
-				},
-				{
-					"path": "tools/cloudflare-workers-observability.md",
-					"name": "Cloudflare Workers Observability",
-					"description": "Monitoring and observability for Cloudflare Workers.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Workers Monitoring",
-						"Observability",
-						"Performance Tracking"
-					],
-					"tokens": 480,
-					"priority": "supplementary",
-					"keywords": [
-						"workers",
-						"monitoring",
-						"observability",
-						"performance",
-						"tracking",
-						"cloudflare",
-						"workers."
-					]
-				},
-				{
-					"path": "tools/code-reasoning.md",
-					"name": "Code Reasoning",
-					"description": "Code analysis and reasoning tools and techniques.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Code Analysis", "Automated Reasoning", "Code Quality"],
-					"tokens": 392,
-					"priority": "supplementary",
-					"keywords": [
-						"code",
-						"analysis",
-						"automated",
-						"reasoning",
-						"quality",
-						"tools",
-						"techniques."
-					]
-				},
-				{
 					"path": "tools/context7.md",
 					"name": "Context7 Tools",
 					"description": "Context7 documentation and integration tools.",
@@ -1668,29 +1808,6 @@
 						"usage",
 						"engine",
 						"usage."
-					]
-				},
-				{
-					"path": "tools/github.md",
-					"name": "GitHub Tools",
-					"description": "GitHub integration tools and workflows.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"GitHub Integration",
-						"Repository Management",
-						"Workflow Automation"
-					],
-					"tokens": 286,
-					"priority": "supplementary",
-					"keywords": [
-						"github",
-						"integration",
-						"repository",
-						"management",
-						"workflow",
-						"automation",
-						"tools",
-						"workflows."
 					]
 				},
 				{
@@ -1757,55 +1874,6 @@
 					]
 				},
 				{
-					"path": "tools/supabase.md",
-					"name": "Supabase Tools",
-					"description": "Supabase platform tools and integration documentation.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Supabase Integration",
-						"Backend Services",
-						"Database Operations"
-					],
-					"tokens": 212,
-					"priority": "supplementary",
-					"keywords": [
-						"supabase",
-						"integration",
-						"backend",
-						"services",
-						"database",
-						"operations",
-						"platform",
-						"tools",
-						"documentation."
-					]
-				},
-				{
-					"path": "tools/tool-mappings.xml",
-					"name": "Tool Mappings",
-					"description": "XML mapping of tools to their specific use cases and contexts.",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Tool Relationships",
-						"Use Case Mapping",
-						"Tool Selection"
-					],
-					"tokens": 1809,
-					"priority": "supplementary",
-					"keywords": [
-						"tool",
-						"relationships",
-						"case",
-						"mapping",
-						"selection",
-						"tools",
-						"their",
-						"specific",
-						"cases",
-						"contexts."
-					]
-				},
-				{
 					"path": "tools/vitest-unit-testing.md",
 					"name": "Vitest Unit Testing Context",
 					"description": "Comprehensive guidance for writing Vitest unit tests including project infrastructure, patterns, helpers, and mocking strategies.",
@@ -1833,9 +1901,195 @@
 						"infrastructure",
 						"comprehensive"
 					]
+				},
+				{
+					"path": "tools/cli/supabase-cli.md",
+					"name": "Supabase CLI Tool",
+					"description": "Essential Supabase CLI commands, workflows, and best practices for local development and production deployment",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"Supabase CLI",
+						"Database Migrations",
+						"Edge Functions",
+						"Type Generation",
+						"Docker",
+						"PostgreSQL",
+						"Testing",
+						"Local Development"
+					],
+					"tokens": 1347,
+					"priority": "essential",
+					"keywords": [
+						"supabase",
+						"cli",
+						"database",
+						"migrations",
+						"edge-functions",
+						"testing",
+						"docker",
+						"postgresql",
+						"type-generation",
+						"local-development",
+						"production",
+						"deployment"
+					]
+				},
+				{
+					"path": "tools/cli/cli.md",
+					"name": "CLI Tools and Utilities",
+					"description": "Comprehensive reference of all CLI tools, commands, and utilities available in the SlideHeroes project",
+					"lastUpdated": "2025-09-15",
+					"topics": [
+						"CLI Tools",
+						"Development Commands",
+						"Testing Commands",
+						"Build Tools",
+						"Package Management",
+						"Code Quality",
+						"Git Operations",
+						"Utilities"
+					],
+					"tokens": 1490,
+					"priority": "essential",
+					"keywords": [
+						"cli",
+						"tools",
+						"commands",
+						"npm-scripts",
+						"pnpm",
+						"development",
+						"testing",
+						"build",
+						"utilities",
+						"turbo",
+						"vitest",
+						"playwright",
+						"biome",
+						"knip",
+						"docker",
+						"github-cli"
+					]
 				}
 			]
 		}
+	},
+	"database": {
+		"name": "Database Documentation",
+		"description": "Database schema, migrations, functions, and RLS documentation",
+		"documents": [
+			{
+				"path": "database/migrations.md",
+				"name": "Database Migration System",
+				"description": "Core guide to the three-tier migration system using Supabase and Payload CMS for database schema management",
+				"lastUpdated": "2025-09-15",
+				"topics": [
+					"Database Migrations",
+					"Supabase Migrations",
+					"Payload CMS Migrations",
+					"Schema Management",
+					"RLS Policies",
+					"Core Patterns"
+				],
+				"tokens": 1417,
+				"priority": "essential",
+				"keywords": [
+					"database",
+					"migrations",
+					"supabase",
+					"payload",
+					"postgresql",
+					"schema",
+					"rls",
+					"deployment",
+					"sql",
+					"rollback"
+				]
+			},
+			{
+				"path": "database/migration-patterns.md",
+				"name": "Database Migration Patterns",
+				"description": "Advanced migration patterns, zero-downtime strategies, and detailed examples for complex database changes",
+				"lastUpdated": "2025-09-15",
+				"topics": [
+					"Migration Patterns",
+					"Zero-Downtime Strategies",
+					"Data Transformations",
+					"Complex Examples",
+					"Performance Optimization",
+					"Testing Patterns"
+				],
+				"tokens": 2152,
+				"priority": "supplementary",
+				"keywords": [
+					"patterns",
+					"zero-downtime",
+					"multi-phase",
+					"data-migration",
+					"performance",
+					"indexes",
+					"constraints",
+					"validation",
+					"batch-processing",
+					"rls-patterns"
+				]
+			},
+			{
+				"path": "database/migration-cicd.md",
+				"name": "Database Migration CI/CD",
+				"description": "CI/CD integration, deployment automation, and production strategies for database migrations",
+				"lastUpdated": "2025-09-15",
+				"topics": [
+					"CI/CD Integration",
+					"GitHub Actions",
+					"Deployment Automation",
+					"Production Strategy",
+					"Monitoring",
+					"Rollback Procedures"
+				],
+				"tokens": 2233,
+				"priority": "supplementary",
+				"keywords": [
+					"cicd",
+					"github-actions",
+					"deployment",
+					"automation",
+					"production",
+					"staging",
+					"rollback",
+					"backup",
+					"monitoring",
+					"health-checks"
+				]
+			},
+			{
+				"path": "database/relationship-tables-management.md",
+				"name": "Database Relationship Tables Management",
+				"description": "Comprehensive guide to managing database relationship tables, particularly addressing Payload CMS's dynamic UUID table challenges and implementing robust relationship management patterns",
+				"lastUpdated": "2025-09-15",
+				"topics": [
+					"Database Relationships",
+					"Payload CMS",
+					"UUID Tables",
+					"View-Based Abstractions",
+					"SQL Migrations",
+					"Relationship Tracking"
+				],
+				"tokens": 5600,
+				"priority": "essential",
+				"keywords": [
+					"database",
+					"relationships",
+					"payload-cms",
+					"postgresql",
+					"migrations",
+					"uuid-tables",
+					"foreign-keys",
+					"view-based",
+					"sql-first",
+					"dynamic-tables"
+				]
+			}
+		]
 	},
 	"features": ["token-counts", "priority-levels", "keyword-extraction"],
 	"schema": {

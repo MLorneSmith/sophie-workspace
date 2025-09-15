@@ -1,365 +1,554 @@
-# Log Task Command
+---
+description: Create comprehensive task specifications with GitHub integration and intelligent analysis
+allowed-tools: [Read, Write, Edit, Bash, Task, Grep, Glob, TodoWrite]
+argument-hint: [output_format] (github|local|file) - default: github
+model: sonnet
+---
 
-Usage: `/log-task [output_format]` (default: github)
+# Task Planning and Specification System
 
-- `github`: Create GitHub issue as a task (default)
-- `local`: Save to `.claude/z.archive/tasks/` only (no GitHub issue)
-- `file`: Same as `local` (alternative syntax)
+Create structured task specifications with multi-round clarification, specialist analysis, and robust GitHub integration.
 
-This command creates structured task specifications with clear steps, dependencies, and acceptance criteria for tracking development tasks.
+## Key Features
+- **Interactive Clarification**: Multi-round requirements gathering via clarification-loop-engine
+- **GitHub Integration**: Automatic issue creation with 3-attempt retry and fallback
+- **Specialist Analysis**: Leverages domain experts for technical feasibility
+- **Dynamic Context**: Task-specific documentation loading for informed planning
+- **Validation First**: Comprehensive input validation and error handling
+- **Progress Tracking**: Real-time task status with TodoWrite integration
 
-## 1. Adopt Role
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/constraints.md
+- Read .claude/context/database-schema.md
+- Read .claude/context/standards/code-standards.md
 
-Load the task planner mindset:
+## Prompt
 
-```
-/read .claude/context/roles/task-planner.md
-```
+<role>
+You are an expert Task Planning Specialist with deep expertise in software project management, requirement analysis, and GitHub integration.
+You excel at breaking down complex requirements into actionable tasks with clear acceptance criteria, using interactive clarification to ensure complete understanding.
+</role>
 
-## 2. Initial Information Gathering
+<instructions>
+# Task Planning and Specification Workflow
 
-### 2.1 User Interview
+**CORE REQUIREMENTS**:
+- Use clarification-loop-engine for ambiguous requirements
+- Implement 3-attempt retry for GitHub API failures
+- Load dynamic context based on task type
+- Delegate to specialist agents for technical analysis
+- Validate all inputs with schemas
+- Track progress with TodoWrite
 
-Ask the user for:
+## 1. Discovery & Context
+<discovery>
+Initial assessment and context gathering:
 
-1. **Task Title**: Brief description of what needs to be done
-2. **Task Type**:
-   - `feature`: New functionality
-   - `enhancement`: Improvement to existing functionality
-   - `refactor`: Code restructuring without changing behavior
-   - `documentation`: Documentation updates
-   - `testing`: Test creation or updates
-   - `infrastructure`: Build/deployment/tooling changes
-3. **Priority**: `critical`, `high`, `medium`, `low`
-4. **Scope**: Estimated effort (hours/days/weeks)
-5. **Dependencies**: Other tasks or systems this depends on
-6. **Success Criteria**: How we'll know when it's done
-7. **Due Date**: When it needs to be completed (if applicable)
+1. **Parse Command Arguments**:
+   - Format: `github` (default), `local`, or `file`
+   - Validate output format parameter
 
-### 2.2 Automatic Task Analysis
+2. **Initialize TodoWrite Tracking**:
+   ```javascript
+   const todos = [
+     { content: "Gather task requirements", status: "in_progress" },
+     { content: "Run clarification loop", status: "pending" },
+     { content: "Analyze technical feasibility", status: "pending" },
+     { content: "Create task specification", status: "pending" },
+     { content: "Publish to GitHub/local", status: "pending" }
+   ];
+   await TodoWrite(todos);
+   ```
 
-From the user-provided information, create:
+3. **Initial User Interview**:
+   Ask for basic information:
+   - Task title and description
+   - Priority level (critical/high/medium/low)
+   - Estimated scope (hours/days/weeks)
+   - Task type (feature/enhancement/refactor/documentation/testing/infrastructure)
+</discovery>
 
-1. **Task ID**: TODO-[github_issue_number] or TODO-[timestamp]-[hash]
-2. **Affected Areas**: Components, files, or systems that will be modified
-3. **Technical Requirements**: Specific technical needs or constraints
-4. **Testing Requirements**: What tests need to be written/updated
+## 2. Interactive Clarification
+<clarification>
+Use clarification-loop-engine for comprehensive requirements:
 
-### 2.3 Context Collection
+1. **Invoke Clarification Agent**:
+   ```javascript
+   const clarificationResult = await Task({
+     subagent_type: "clarification-loop-engine",
+     description: "Clarify task requirements",
+     prompt: `
+       Task Information:
+       - Title: ${taskTitle}
+       - Type: ${taskType}
+       - Initial Description: ${description}
 
-Gather relevant project information:
+       Generate clarification questions for:
+       1. Success criteria definition
+       2. Technical constraints
+       3. Dependencies and blockers
+       4. Testing requirements
+       5. Performance expectations
+     `
+   });
+   ```
+
+2. **Display Questions to User**:
+   ```
+   📋 **Clarification Required**
+
+   [Display full agent output]
+
+   Please answer the above questions to ensure accurate task planning.
+   ```
+
+3. **Process User Responses**:
+   - Parse answers for each question
+   - Update task specification with clarified requirements
+   - Mark clarification todo as completed
+</clarification>
+
+## 3. Dynamic Context Loading
+<context_loading>
+Load relevant documentation based on task type:
 
 ```bash
-# Current project state
-git branch --show-current
-git status --short
+# Extract keywords from task description and type
+TASK_KEYWORDS=$(extractKeywords "${taskTitle} ${taskType} ${description}")
 
-# Check existing related code
-# (search for files related to the task area)
+# Map task type to context query
+case "$taskType" in
+  feature)
+    CONTEXT_QUERY="$TASK_KEYWORDS feature implementation patterns"
+    ;;
+  refactor)
+    CONTEXT_QUERY="$TASK_KEYWORDS refactoring best practices code quality"
+    ;;
+  testing)
+    CONTEXT_QUERY="$TASK_KEYWORDS testing strategies test patterns"
+    ;;
+  infrastructure)
+    CONTEXT_QUERY="$TASK_KEYWORDS deployment CI/CD infrastructure"
+    ;;
+  database)
+    CONTEXT_QUERY="$TASK_KEYWORDS database migrations schema RLS"
+    ;;
+  *)
+    CONTEXT_QUERY="$TASK_KEYWORDS implementation patterns"
+    ;;
+esac
 
-# Review package dependencies if relevant
-cat package.json | grep -E "(dependencies|devDependencies)" -A 20
+# Load dynamic context
+CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
+  --query="$CONTEXT_QUERY" \
+  --command="log-task" \
+  --max-results=3 \
+  --token-budget=4000 \
+  --format=paths)
+
+# Read each context file
+for FILE in $CONTEXT_FILES; do
+  eval "$FILE"
+done
 ```
+</context_loading>
 
-## 3. Task Breakdown and Analysis
+## 4. Technical Analysis
+<analysis>
+Delegate to specialist agents for feasibility analysis:
 
-### 3.1 Prerequisite Analysis
+1. **Task Complexity Assessment**:
+   ```javascript
+   const complexity = assessComplexity({
+     fileCount: estimatedFiles.length,
+     dependencies: externalDependencies.length,
+     testingRequired: hasTestRequirements,
+     crossCutting: affectsMultipleLayers
+   });
+   ```
 
-Identify what needs to be in place before starting:
+2. **Specialist Agent Selection**:
+   ```javascript
+   const specialists = [];
 
+   if (taskType === 'feature' && involvesUI) {
+     specialists.push('react-expert');
+   }
+   if (involvesDatabase) {
+     specialists.push('database-expert');
+   }
+   if (requiresTesting) {
+     specialists.push('testing-expert');
+   }
+   if (involvesInfrastructure) {
+     specialists.push('devops-expert');
+   }
+   ```
+
+3. **Technical Feasibility Analysis**:
+   ```javascript
+   for (const specialist of specialists) {
+     const analysis = await Task({
+       subagent_type: specialist,
+       description: `Analyze technical feasibility`,
+       prompt: `
+         Task: ${taskTitle}
+         Requirements: ${clarifiedRequirements}
+
+         Provide:
+         1. Technical feasibility assessment
+         2. Potential challenges
+         3. Recommended approach
+         4. Estimated complexity
+       `
+     });
+
+     incorporateAnalysis(taskSpec, analysis);
+   }
+   ```
+</analysis>
+
+## 5. Task Specification Creation
+<specification>
+Create comprehensive task document with validation:
+
+### Validation Schema
 ```typescript
-// Check for existing patterns
-const existingPatterns = await searchForSimilarImplementations();
-const dependencies = await analyzeDependencies();
-const potentialConflicts = await checkForConflicts();
-```
+interface TaskSpecification {
+  id: string;
+  title: string;
+  type: 'feature' | 'enhancement' | 'refactor' | 'documentation' | 'testing' | 'infrastructure';
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  status: 'new' | 'in_progress' | 'blocked' | 'completed';
 
-### 3.2 Implementation Steps
+  summary: string;
+  successCriteria: string[];
+  technicalRequirements: {
+    dependencies: string[];
+    constraints: string[];
+    assumptions: string[];
+  };
 
-Break down the task into clear, actionable steps:
+  implementationPlan: {
+    phases: Phase[];
+    estimatedHours: number;
+  };
 
-1. **Preparation Phase**
-   - Environment setup
-   - Dependency installation
-   - Branch creation
+  testingStrategy: {
+    unitTests: string[];
+    integrationTests: string[];
+    manualTests: string[];
+  };
 
-2. **Development Phase**
-   - Core implementation steps
-   - Integration points
-   - Error handling
+  metadata: {
+    created: string;
+    assignee?: string;
+    dueDate?: string;
+    relatedIssues?: string[];
+  };
+}
 
-3. **Testing Phase**
-   - Unit tests
-   - Integration tests
-   - Manual testing
+interface Phase {
+  name: string;
+  steps: Step[];
+  estimatedHours: number;
+}
 
-4. **Finalization Phase**
-   - Code review preparation
-   - Documentation updates
-   - Deployment considerations
-
-### 3.3 Risk Assessment
-
-Identify potential challenges:
-
-- Technical complexity
-- External dependencies
-- Time constraints
-- Knowledge gaps
-
-## 4. Task Specification Creation
-
-### 4.1 Standard Task Format
-
-Create a structured task document:
-
-```markdown
-# Task: [Title]
-
-**ID**: TASK-[github_issue_number] (or TASK-[timestamp]-[hash] if local only)
-**Created**: [ISO timestamp]
-**Assignee**: [user/team member]
-**Priority**: [critical|high|medium|low]
-**Status**: new
-**Type**: [feature|enhancement|refactor|documentation|testing|infrastructure]
-**Due Date**: [YYYY-MM-DD or "No deadline"]
-
-## Summary
-
-[One paragraph description of what needs to be accomplished and why]
-
-## Success Criteria
-
-- [ ] [Specific, measurable outcome 1]
-- [ ] [Specific, measurable outcome 2]
-- [ ] [Specific, measurable outcome 3]
-
-## Technical Requirements
-
-### Dependencies
-- [External library/service 1]
-- [Internal module/component 2]
-
-### Constraints
-- [Performance requirement]
-- [Security consideration]
-- [Compatibility requirement]
-
-## Implementation Plan
-
-### Phase 1: Setup and Preparation
-- [ ] Create feature branch from `main`
-- [ ] Install required dependencies
-- [ ] Set up development environment
-- [ ] Review existing code patterns
-
-### Phase 2: Core Implementation
-- [ ] [Step 1 with specific file/component]
-- [ ] [Step 2 with specific file/component]
-- [ ] [Step 3 with specific file/component]
-
-### Phase 3: Testing
-- [ ] Write unit tests for [component]
-- [ ] Write integration tests for [feature]
-- [ ] Manual testing checklist:
-  - [ ] Test case 1
-  - [ ] Test case 2
-  - [ ] Edge case testing
-
-### Phase 4: Documentation and Review
-- [ ] Update README if needed
-- [ ] Add inline code documentation
-- [ ] Update API documentation
-- [ ] Create PR with detailed description
-
-## Affected Files
-
-Anticipated changes:
-- `src/components/[component].tsx` - [type of change]
-- `src/lib/[module].ts` - [type of change]
-- `src/app/[route]/page.tsx` - [type of change]
-
-## Testing Strategy
-
-### Unit Tests
-- Test [function/component] for [behavior]
-- Mock [external dependency]
-- Verify [edge case]
-
-### Integration Tests
-- Test [user flow]
-- Verify [system interaction]
-
-### Manual Testing
-1. [Step-by-step manual test procedure]
-2. [Expected results]
-
-## Acceptance Criteria
-
-- [ ] All tests passing
-- [ ] Code review approved
-- [ ] No performance regression
-- [ ] Documentation updated
-- [ ] Deployed to staging
-
-## Time Estimate
-
-- Setup: [X hours]
-- Implementation: [Y hours]
-- Testing: [Z hours]
-- Documentation: [W hours]
-**Total**: [Sum hours]
-
-## Notes and Considerations
-
-[Any additional context, warnings, or helpful information]
-
-## Related Issues/Tasks
-- [Link to related issue]
-- [Link to dependent task]
-
----
-*Generated by Claude Task Assistant*
-*Estimated Completion Time: [total estimate]*
-```
-
-### 4.2 GitHub Issue Creation
-
-```typescript
-let taskId, issueNumber, githubUrl;
-
-if (outputFormat === 'local' || outputFormat === 'file') {
-  // Local-only mode
-  const timestamp = Date.now();
-  const hash = Math.random().toString(36).substr(2, 9);
-  taskId = `TASK-${timestamp}-${hash}`;
-  
-  taskContent = taskContent.replace(
-    '**ID**: TASK-[github_issue_number]',
-    `**ID**: ${taskId}`
-  );
-  
-  // Save local file
-  const datePrefix = new Date().toISOString().split('T')[0];
-  const filename = `.claude/z.archive/tasks/${datePrefix}-${taskId}.md`;
-  await writeFile(filename, taskContent);
-} else {
-  // GitHub-first approach (default)
-  const issue = await mcp__github__create_issue({
-    owner: 'MLorneSmith',
-    repo: '2025slideheroes',
-    title: `[TASK] ${taskTitle}`,
-    body: taskContent,
-    labels: ['task', priority, taskType],
-    assignees: assignee ? [assignee] : []
-  });
-  
-  issueNumber = issue.number;
-  taskId = `TASK-${issueNumber}`;
-  githubUrl = issue.html_url;
+interface Step {
+  description: string;
+  completed: boolean;
+  files?: string[];
+  dependencies?: string[];
 }
 ```
 
-## 5. Post-Creation Actions
+### Task Document Format
+```markdown
+# Task: ${title}
 
-### 5.1 Summary Output
+**ID**: TASK-${id}
+**Created**: ${timestamp}
+**Priority**: ${priority}
+**Status**: new
+**Type**: ${type}
+**Complexity**: ${complexity}
+**Estimated Time**: ${totalHours} hours
 
-**GitHub Mode (Default):**
+## Summary
+${summary}
+
+## Success Criteria
+${successCriteria.map(c => `- [ ] ${c}`).join('\n')}
+
+## Technical Analysis
+### Feasibility Assessment
+${feasibilityAssessment}
+
+### Identified Risks
+${risks.map(r => `- **${r.level}**: ${r.description}`).join('\n')}
+
+### Recommended Approach
+${recommendedApproach}
+
+## Implementation Plan
+${phases.map(renderPhase).join('\n')}
+
+## Testing Strategy
+### Unit Tests
+${unitTests.map(t => `- ${t}`).join('\n')}
+
+### Integration Tests
+${integrationTests.map(t => `- ${t}`).join('\n')}
+
+### Manual Testing
+${manualTests.map(t => `- [ ] ${t}`).join('\n')}
+
+## Dependencies
+${dependencies.map(d => `- ${d}`).join('\n')}
+
+## Affected Files
+${files.map(f => `- \`${f.path}\` - ${f.changeType}`).join('\n')}
+
+## Acceptance Criteria
+- [ ] All tests passing
+- [ ] Code review approved
+- [ ] Documentation updated
+- [ ] No performance regression
+${additionalCriteria.map(c => `- [ ] ${c}`).join('\n')}
+
+## Notes
+${additionalNotes}
+
+---
+*Generated by Task Planning System*
+*Technical Analysis by: ${specialists.join(', ')}*
 ```
-✅ Task logged to GitHub successfully!
+</specification>
 
-🔗 GitHub Issue: https://github.com/MLorneSmith/2025slideheroes/issues/124
-🏷️ Task ID: TASK-124
-⏱️ Estimated Time: 8 hours
-📅 Due Date: 2025-01-15
+## 6. GitHub Integration with Error Handling
+<github_integration>
+Robust GitHub issue creation with retry logic:
 
-Next Steps:
-1. To start this task: /do-task 124
-2. To update progress: Edit the GitHub issue
-3. To break down further: /refine-task 124
+```javascript
+async function createGitHubIssue(taskSpec, retries = 3) {
+  let attempt = 0;
+  let lastError = null;
 
-The task has been created with a detailed implementation plan.
+  while (attempt < retries) {
+    try {
+      attempt++;
+      console.log(`GitHub API attempt ${attempt}/${retries}...`);
+
+      // Use gh CLI for issue creation
+      const result = await Bash(`
+        gh issue create \
+          --repo MLorneSmith/2025slideheroes \
+          --title "[TASK] ${taskSpec.title}" \
+          --body "${escapeForBash(taskSpec.markdown)}" \
+          --label "task,${taskSpec.priority},${taskSpec.type}" \
+          ${taskSpec.assignee ? `--assignee ${taskSpec.assignee}` : ''}
+      `);
+
+      // Parse issue number and URL from output
+      const issueNumber = extractIssueNumber(result);
+      const issueUrl = `https://github.com/MLorneSmith/2025slideheroes/issues/${issueNumber}`;
+
+      return {
+        success: true,
+        issueNumber,
+        issueUrl,
+        taskId: `TASK-${issueNumber}`
+      };
+
+    } catch (error) {
+      lastError = error;
+      console.error(`Attempt ${attempt} failed: ${error.message}`);
+
+      if (error.message.includes('rate limit')) {
+        // Wait exponentially for rate limits
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.log(`Rate limited. Waiting ${waitTime}ms...`);
+        await sleep(waitTime);
+      } else if (error.message.includes('authentication')) {
+        // Authentication failure - no point retrying
+        break;
+      } else {
+        // Network or other transient error
+        await sleep(1000 * attempt);
+      }
+    }
+  }
+
+  // All retries failed - prompt for manual intervention
+  console.error(`GitHub issue creation failed after ${retries} attempts`);
+
+  return {
+    success: false,
+    error: lastError,
+    fallback: await handleGitHubFailure(taskSpec)
+  };
+}
+
+async function handleGitHubFailure(taskSpec) {
+  console.log(`
+⚠️ **GitHub Issue Creation Failed**
+
+The system attempted to create a GitHub issue ${retries} times but failed.
+Error: ${lastError.message}
+
+**Options:**
+1. Save task locally and retry later
+2. Fix the issue and retry now
+3. Cancel task creation
+
+Automatically saving to local file as backup...
+  `);
+
+  // Save to local file as fallback
+  const timestamp = Date.now();
+  const hash = Math.random().toString(36).substr(2, 9);
+  const localId = `TASK-${timestamp}-${hash}`;
+  const filename = `.claude/z.archive/tasks/${new Date().toISOString().split('T')[0]}-${localId}.md`;
+
+  await Write(filename, taskSpec.markdown);
+
+  return {
+    localFile: filename,
+    localId: localId,
+    message: "Task saved locally. Use /publish-task to retry GitHub creation later."
+  };
+}
+```
+</github_integration>
+
+## 7. Output and Completion
+<output>
+Final task creation summary:
+
+**GitHub Success Output:**
+```
+✅ Task Specification Created Successfully!
+
+📋 **Task Summary**
+Title: ${taskTitle}
+Type: ${taskType}
+Priority: ${priority}
+Complexity: ${complexity}
+Estimated Time: ${totalHours} hours
+
+🔗 **GitHub Issue**: ${issueUrl}
+🏷️ **Task ID**: ${taskId}
+
+📊 **Technical Analysis**
+- Feasibility: ${feasibilityScore}/10
+- Risk Level: ${riskLevel}
+- Specialists Consulted: ${specialists.join(', ')}
+
+📁 **Affected Areas**
+- Files: ${fileCount} files
+- Components: ${components.join(', ')}
+- Tests Required: ${testCount} tests
+
+🚀 **Next Steps**
+1. Start implementation: /do-task ${issueNumber}
+2. View on GitHub: ${issueUrl}
+3. Update progress: Edit GitHub issue directly
+
+The task has been thoroughly analyzed and documented.
 ```
 
-**Local Mode:**
+**Local Fallback Output:**
 ```
-✅ Task logged locally!
+⚠️ Task Saved Locally (GitHub Unavailable)
 
-📁 Local File: .claude/z.archive/tasks/2025-01-06-TASK-1234567-xyz.md
-🏷️ Task ID: TASK-1234567-xyz
-⏱️ Estimated Time: 8 hours
+📁 **Local Storage**: ${filename}
+🏷️ **Task ID**: ${localId}
 
-Next Steps:
-1. To start this task: /do-task TASK-1234567-xyz
-2. To convert to GitHub issue: /publish-task TASK-1234567-xyz
+The task specification has been saved locally due to GitHub issues.
+
+**To publish to GitHub later:**
+/publish-task ${localId}
+
+**To start work immediately:**
+/do-task ${localId}
 ```
 
-### 5.2 Index Update
+Update TodoWrite to mark all tasks completed:
+```javascript
+await TodoWrite(todos.map(t => ({ ...t, status: 'completed' })));
+```
+</output>
+</instructions>
 
-Update `.claude/z.archive/tasks/index.md` with:
-- Task ID
-- Title
-- Priority
-- Status
-- Due date
-- Estimated time
-- File path
+<patterns>
+### Task Type Detection Patterns
+- **Feature**: New functionality, UI components, API endpoints
+- **Enhancement**: Performance improvements, UX updates, optimizations
+- **Refactor**: Code reorganization, technical debt reduction
+- **Testing**: Test coverage, E2E tests, test infrastructure
+- **Infrastructure**: CI/CD, deployment, tooling, monitoring
+- **Documentation**: README updates, API docs, user guides
 
-## 6. Task Planning Patterns
+### Complexity Assessment
+- **Simple** (<4 hours): Single file, minimal dependencies
+- **Medium** (4-16 hours): Multiple files, some integration
+- **Complex** (16-40 hours): Cross-cutting, multiple systems
+- **Epic** (40+ hours): Should be broken into sub-tasks
 
-### Common Task Types
+### Agent Selection Matrix
+| Task Aspect | Specialist Agent | When to Use |
+|------------|-----------------|-------------|
+| UI Components | react-expert | React components, hooks, state |
+| Styling | css-styling-expert | CSS, Tailwind, responsive design |
+| Backend | nodejs-expert | API routes, server logic |
+| Database | database-expert | Schema, migrations, queries |
+| Testing | testing-expert | Test strategy, coverage |
+| Infrastructure | devops-expert | CI/CD, deployment |
+| TypeScript | typescript-expert | Type issues, generics |
+| Performance | refactoring-expert | Optimization, code quality |
+</patterns>
 
-#### Feature Implementation
-- UI component creation
-- API endpoint development
-- Database schema changes
-- Service integration
+<error_handling>
+### Common Issues
+1. **GitHub Authentication**: Ensure GITHUB_TOKEN is set in environment
+2. **Rate Limiting**: Automatic exponential backoff and retry
+3. **Network Failures**: 3-attempt retry with fallback to local storage
+4. **Invalid Input**: Validation schemas catch before processing
+5. **Missing Context**: Dynamic loading ensures relevant documentation
 
-#### Enhancement Tasks
-- Performance optimization
-- UX improvements
-- Feature extensions
-- Code refactoring
+### Recovery Strategies
+- **Automatic Retry**: For transient failures (network, rate limits)
+- **Local Fallback**: Save locally when GitHub unavailable
+- **Manual Intervention**: Prompt user for critical failures
+- **Validation First**: Prevent errors with upfront validation
+- **Progress Tracking**: TodoWrite ensures no lost state
+</error_handling>
 
-#### Infrastructure Tasks
-- Build process updates
-- Deployment configuration
-- Tool integration
-- Development environment setup
+<help>
+📋 **Task Planning System**
 
-### Step Generation Guidelines
+Create comprehensive task specifications with interactive clarification and specialist analysis.
 
-1. **Be Specific**: Reference actual files and functions
-2. **Be Sequential**: Order steps logically
-3. **Be Complete**: Include setup, implementation, and cleanup
-4. **Be Testable**: Each step should have a clear completion criteria
+**Usage:**
+- `/log-task` - Create GitHub issue (default)
+- `/log-task local` - Save locally only
+- `/log-task file` - Alternative local syntax
 
-## 7. Integration with Other Commands
+**Process:**
+1. Gather initial requirements
+2. Run interactive clarification
+3. Load relevant context
+4. Conduct specialist analysis
+5. Create detailed specification
+6. Publish to GitHub or save locally
 
-### For Do-Task Command
-The do-task command expects:
-- Clear implementation steps
-- Defined success criteria
-- Identified files to modify
-- Testing requirements
+**Features:**
+- Multi-round clarification for complete understanding
+- Domain expert analysis for technical feasibility
+- Automatic GitHub issue creation with retry logic
+- Dynamic context loading based on task type
+- Comprehensive validation and error handling
 
-### For Team Collaboration
-- GitHub integration for assignment
-- Progress tracking through issue updates
-- Detailed steps for handoffs
-- Clear acceptance criteria
-
-## Context Management
-
-### Task Complexity Levels
-
-1. **Simple** (< 4 hours): Basic changes, single file
-2. **Medium** (4-16 hours): Multiple files, some testing
-3. **Complex** (16+ hours): Architecture changes, extensive testing
-4. **Epic** (Multi-week): Break into sub-tasks
-
-### Output Guidelines
-- Keep task specs focused and actionable
-- Include enough detail for implementation
-- Avoid over-engineering simple tasks
-- Link to relevant documentation
+Ready to plan your next task with precision!
+</help>

@@ -1,6 +1,29 @@
+---
+id: typescript-test-patterns
+title: TypeScript Test Patterns for SlideHeroes
+version: 2.1.0
+category: pattern
+description: TypeScript-specific testing patterns, type safety strategies, and compilation error solutions for the SlideHeroes codebase
+tags: ["typescript", "testing", "vitest", "patterns", "mocking", "type-safety"]
+dependencies: []
+cross_references:
+  - id: testing-fundamentals
+    type: prerequisite
+    description: Core testing principles and philosophy
+  - id: e2e-testing-fundamentals
+    type: related
+    description: E2E testing with Playwright
+  - id: performance-testing-fundamentals
+    type: related
+    description: Performance testing patterns
+created: 2025-01-05
+last_updated: 2025-09-15
+author: create-context
+---
+
 # TypeScript Test Patterns for SlideHeroes
 
-This document provides comprehensive TypeScript patterns for fixing test file compilation errors based on the codebase's specific requirements and common error patterns.
+This document provides TypeScript-specific testing patterns for fixing compilation errors and maintaining type safety in tests, based on the codebase's actual implementation.
 
 ## Table of Contents
 
@@ -27,8 +50,9 @@ const mockData: any = { test: true };
 const mockData: unknown = { test: true };
 const typedData = mockData as SpecificType;
 
-// ✅ GOOD - Use proper types
-const mockData: TestData = { test: true };
+// ✅ GOOD - Strategic any for complex external libraries
+// biome-ignore lint/suspicious/noExplicitAny: External library mock
+const complexMock = createMockBuilder() as any;
 ```
 
 ### 2. No Underscore Prefixes for Used Variables
@@ -36,14 +60,11 @@ const mockData: TestData = { test: true };
 ```typescript
 // ❌ BAD - Variable is used but prefixed
 const _response = await getResponse();
-console.log(_response); // TS error: Cannot find name '_response'
+console.log(_response); // TS error
 
-// ✅ GOOD - Remove underscore when variable is used
+// ✅ GOOD - Remove underscore when used
 const response = await getResponse();
 console.log(response);
-
-// ✅ GOOD - Keep underscore only for truly unused variables
-const [value, _setValue] = useState(0); // _setValue not used
 ```
 
 ### 3. Test Public APIs, Not Private Methods
@@ -68,83 +89,51 @@ expect(result).toBe(true);
 const result = await someAction(input);
 expect(result.success).toBe(true); // TS error
 
-// ✅ GOOD - Type assertion with helper
+// ✅ GOOD - From codebase: /apps/web/test/test-helpers.ts
 import type { ActionResult } from '@/test/test-types';
+import { castActionResult, expectSuccess } from '@/test/test-helpers';
 
-const result = await someAction(input) as ActionResult<DataType>;
-expect(result.success).toBe(true);
-if (result.success) {
-  expect(result.data?.someProperty).toBe(expected);
-}
-
-// ✅ GOOD - Using test helpers
-import { expectSuccess, expectError } from '@/test/test-helpers';
-
-const result = await someAction(input);
-expectSuccess(result);
-expectError(result, 'Expected error message');
+const result = castActionResult<DataType>(await someAction(input));
+const data = expectSuccess(result); // Throws if not success
 ```
 
 ### Pattern 2: Missing Type Imports
 
-**Error**: `Cannot find module '@/lib/database.types'`
-
 ```typescript
-// ❌ BAD - Missing or incorrect import path
-import type { Database } from '@/lib/database.types';
-
-// ✅ GOOD - Use correct import paths
-import type { Database } from '@/lib/supabase/database.types';
-import type { Tables } from '@/lib/supabase/types';
-
-// ✅ GOOD - Import from payload types
-import type { PayloadQuiz, PayloadLesson } from '@/../apps/payload/payload-types';
+// ✅ CORRECT - Import paths from codebase
+import type { Database } from '@kit/supabase/database.types';
+import type { Tables } from '@kit/supabase/types';
+import type { PayloadQuiz } from '@/../apps/payload/payload-types';
 ```
 
 ### Pattern 3: Property Name Mismatches
 
-**Error**: `Property 'isCorrect' does not exist. Did you mean 'iscorrect'?`
-
 ```typescript
-// ❌ BAD - Wrong property name
-option.isCorrect; // TS error
+// Database uses lowercase: iscorrect not isCorrect
+option.iscorrect; // ✅ Matches database schema
 
-// ✅ GOOD - Use correct property name from type definition
-option.iscorrect;
-
-// ✅ GOOD - Map to expected format if needed
-const formattedOption = {
-  ...option,
-  isCorrect: option.iscorrect, // Transform for consistency
-};
+// Transform if needed for consistency
+const formatted = { ...option, isCorrect: option.iscorrect };
 ```
 
 ### Pattern 4: Object Possibly Undefined
 
-**Error**: `Object is possibly 'undefined'`
-
 ```typescript
-// ❌ BAD - Direct access without null check
-result.data.property; // TS error if data could be undefined
+// ✅ Solutions
+result.data?.property; // Optional chaining
 
-// ✅ GOOD - Optional chaining
-result.data?.property;
-
-// ✅ GOOD - Type narrowing
 if (result.data) {
-  expect(result.data.property).toBe(expected);
+  expect(result.data.property).toBe(expected); // Type narrowing
 }
 
-// ✅ GOOD - Non-null assertion (when certain)
-result.data!.property; // Use sparingly, only when guaranteed
+result.data!.property; // Non-null assertion (when certain)
 ```
 
 ## Action Result Type Patterns
 
-### Standard ActionResult Type Definition
+### Type Definitions (from /apps/web/test/test-types.d.ts)
 
 ```typescript
-// test/test-types.d.ts
 export type ActionResult<T = unknown> =
   | { success: true; data?: T }
   | { success: false; error: string };
@@ -157,16 +146,17 @@ export type EnhancedAction<TInput, TOutput> = (
 ### Mock enhanceAction Pattern
 
 ```typescript
-// ✅ CORRECT - Mock with proper discriminated union
+// From codebase test files
 vi.mock('@kit/next/actions', () => ({
   enhanceAction: vi.fn((fn, options) => {
     return async (data: unknown) => {
       if (options?.schema) {
         const result = options.schema.safeParse(data);
         if (!result.success) {
-          return { success: false, error: 'Validation failed' } as const;
+          return { success: false, error: 'Validation failed' };
         }
       }
+      const mockUser = { id: 'user-123', email: 'test@example.com' };
       return fn(data, mockUser);
     };
   }),
@@ -178,9 +168,7 @@ vi.mock('@kit/next/actions', () => ({
 ```typescript
 describe('Server Actions', () => {
   it('should handle success case', async () => {
-    const result = (await createItemAction({
-      name: 'Test',
-    })) as ActionResult<Item>;
+    const result = await action(input) as ActionResult<Item>;
 
     expect(result.success).toBe(true);
     if (result.success) {
@@ -189,11 +177,11 @@ describe('Server Actions', () => {
   });
 
   it('should handle error case', async () => {
-    const result = (await createItemAction({ name: '' })) as ActionResult<Item>;
+    const result = await action(input) as ActionResult;
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error).toContain('required');
+      expect(result.error).toContain('validation');
     }
   });
 });
@@ -201,7 +189,7 @@ describe('Server Actions', () => {
 
 ## Mock Type Patterns
 
-### Complete Mock Factory Pattern
+### Factory Pattern (from codebase)
 
 ```typescript
 // test/factories/quiz.factory.ts
@@ -218,79 +206,44 @@ export function createMockQuiz(
     ...overrides,
   };
 }
-
-export function createMockQuizQuestion(
-  overrides: Partial<QuizQuestion> = {},
-): QuizQuestion {
-  return {
-    id: 'q_123',
-    question: 'Test question?',
-    questiontype: 'multiple_choice',
-    options: [
-      { id: 'opt_1', text: 'Option 1', iscorrect: true },
-      { id: 'opt_2', text: 'Option 2', iscorrect: false },
-    ],
-    ...overrides,
-  };
-}
 ```
 
-### React Component Props Pattern
+### Component Props Factory
 
 ```typescript
-// ❌ BAD - Incomplete props causing TS errors
-const props = {
-  quiz: mockQuiz,
-  onSubmit: vi.fn(),
-};
-
-// ✅ GOOD - Complete props satisfying interface
-const defaultProps: QuizComponentProps = {
+const createProps = (
+  overrides: Partial<ComponentProps> = {}
+): ComponentProps => ({
   quiz: createMockQuiz(),
   onSubmit: vi.fn(),
-  previousAttempts: [],
   courseId: 'course_123',
-  currentLessonId: 'lesson_123',
-  currentLessonNumber: 1,
-  // Add all required props
-};
+  ...overrides,
+});
 
-// Usage in tests
-render(<QuizComponent {...defaultProps} />);
+// Usage
+render(<Component {...createProps()} />);
 ```
 
 ## Component Testing Patterns
 
-### Type-Safe Component Testing
+### Type-Safe Testing
 
 ```typescript
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-describe('QuizComponent', () => {
-  const createProps = (overrides: Partial<QuizComponentProps> = {}): QuizComponentProps => ({
-    quiz: createMockQuiz(),
-    onSubmit: vi.fn(),
-    previousAttempts: [],
-    courseId: 'course_123',
-    currentLessonId: 'lesson_123',
-    currentLessonNumber: 1,
-    ...overrides,
-  });
-
-  it('should handle quiz submission', async () => {
+describe('Component', () => {
+  it('should handle user interaction', async () => {
     const onSubmit = vi.fn();
     const props = createProps({ onSubmit });
 
-    render(<QuizComponent {...props} />);
+    render(<Component {...props} />);
 
-    // Type-safe event handling
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-    await userEvent.click(submitButton);
+    const button = screen.getByRole('button', { name: /submit/i });
+    await userEvent.click(button);
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        answers: expect.any(Object),
         score: expect.any(Number),
         passed: expect.any(Boolean),
       })
@@ -299,135 +252,82 @@ describe('QuizComponent', () => {
 });
 ```
 
-### Event Type Conversion Pattern
-
-```typescript
-// ❌ BAD - Type mismatch
-const keyboardEvent = new KeyboardEvent('keydown');
-fireEvent.click(element, keyboardEvent); // TS error
-
-// ✅ GOOD - Proper event type or conversion
-const mouseEvent = new MouseEvent('click');
-fireEvent.click(element, mouseEvent);
-
-// ✅ GOOD - Using userEvent (recommended)
-await userEvent.click(element);
-```
-
 ## Supabase Mock Patterns
 
-### Recursive Query Builder Mock
+### From /apps/web/test/test-helpers.ts
 
 ```typescript
-export function createMockSupabaseClient(): SupabaseClient {
-  const createQueryBuilder = (): any => ({
+export function createMockSupabaseClient(): MockSupabaseClient {
+  const mockFrom = vi.fn().mockReturnValue({
     select: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
     delete: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
-    neq: vi.fn().mockReturnThis(),
-    gt: vi.fn().mockReturnThis(),
-    gte: vi.fn().mockReturnThis(),
-    lt: vi.fn().mockReturnThis(),
-    lte: vi.fn().mockReturnThis(),
-    like: vi.fn().mockReturnThis(),
-    ilike: vi.fn().mockReturnThis(),
-    is: vi.fn().mockReturnThis(),
-    in: vi.fn().mockReturnThis(),
-    contains: vi.fn().mockReturnThis(),
-    containedBy: vi.fn().mockReturnThis(),
-    range: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn().mockResolvedValue({ data: null, error: null }),
-    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
-    then: vi.fn((onResolve: any) => onResolve({ data: null, error: null })),
+    single: vi.fn().mockReturnThis(),
+    // biome-ignore lint/suspicious/noThenProperty: Mock thenable
+    then: vi.fn((onResolve) => onResolve({ data: null, error: null })),
   });
 
-  return {
-    from: vi.fn(() => createQueryBuilder()),
-    auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      getSession: vi
-        .fn()
-        .mockResolvedValue({ data: { session: null }, error: null }),
-    },
-    storage: {
-      from: vi.fn(() => ({
-        upload: vi
-          .fn()
-          .mockResolvedValue({ data: { path: 'test' }, error: null }),
-        getPublicUrl: vi
-          .fn()
-          .mockReturnValue({ data: { publicUrl: 'https://test.com' } }),
-      })),
-    },
-  } as any; // Strategic any for complex external library
+  const mockAuth = {
+    getUser: vi.fn().mockResolvedValue({
+      data: { user: { id: 'test-id', email: 'test@example.com' }},
+      error: null,
+    }),
+  };
+
+  return { from: mockFrom, auth: mockAuth } as unknown as MockSupabaseClient;
 }
 ```
 
-### Type Assertion for Supabase Results
+### Usage in Tests
 
 ```typescript
-// ❌ BAD - Direct cast losing type safety
-const result = mockSupabase.from.mockReturnValue(data);
+const mockClient = createMockSupabaseClient();
+vi.mocked(getSupabaseServerClient).mockReturnValue(mockClient);
 
-// ✅ GOOD - Proper mock setup
-vi.mocked(mockSupabase.from).mockReturnValue({
+mockClient.from = vi.fn(() => ({
   select: vi.fn().mockReturnThis(),
   eq: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({
-    data: { id: '123', name: 'Test' } as Tables<'items'>,
+    data: { id: 'user-123', name: 'Test User' },
     error: null,
   }),
-} as any);
+}));
 ```
 
 ## Error Handling Patterns
 
-### Discriminated Union Access
+### Discriminated Union Type Narrowing
 
 ```typescript
-// ❌ BAD - Direct error access
-const result = await action(input);
-expect(result.error).toBe('Error message'); // TS error
+// From codebase helpers
+import { expectError, isErrorResult } from '@/test/test-helpers';
 
-// ✅ GOOD - Type narrowing
-const result = await action(input) as ActionResult;
-expect(result.success).toBe(false);
-if (!result.success) {
-  expect(result.error).toBe('Error message');
+const result = await action(input);
+
+// Type guard approach
+if (isErrorResult(result)) {
+  expect(result.error).toContain('validation');
 }
 
-// ✅ GOOD - Helper function
-import { expectError } from '@/test/test-helpers';
-const result = await action(input);
-expectError(result, 'Error message');
+// Helper function approach
+const errorMessage = expectError(result);
+expect(errorMessage).toContain('validation');
 ```
 
 ### Try-Catch Type Safety
 
 ```typescript
-// ❌ BAD - Unknown error type
 try {
   await riskyOperation();
 } catch (error) {
-  expect(error.message).toBe('Failed'); // TS error
-}
-
-// ✅ GOOD - Type guard
-try {
-  await riskyOperation();
-} catch (error) {
-  expect(error).toBeInstanceOf(Error);
+  // Type guard
   if (error instanceof Error) {
     expect(error.message).toBe('Failed');
   }
-}
 
-// ✅ GOOD - Type assertion
-catch (error) {
+  // Or type assertion
   const err = error as Error;
   expect(err.message).toBe('Failed');
 }
@@ -435,26 +335,13 @@ catch (error) {
 
 ## Type Assertion Patterns
 
-### Double Casting for Complex Types
+### Mock Function Typing
 
 ```typescript
-// ❌ BAD - Direct incompatible cast
-const data: SpecificType = complexObject; // TS error
-
-// ✅ GOOD - Double cast through unknown
-const data = complexObject as unknown as SpecificType;
-
-// ✅ GOOD - With runtime validation
-const data = validateAndCast<SpecificType>(complexObject);
-```
-
-### Mock Function Return Types
-
-```typescript
-// ❌ BAD - Losing type information
+// ❌ BAD - Loses type information
 const mockFn = vi.fn();
 
-// ✅ GOOD - Typed mock function
+// ✅ GOOD - Typed mock
 const mockFn = vi.fn<[InputType], Promise<OutputType>>();
 
 // ✅ GOOD - With implementation
@@ -465,15 +352,28 @@ const mockFn = vi.fn().mockImplementation(
 );
 ```
 
-## Environment & Configuration
-
-### Vitest Environment Variables
+### Double Casting for Complex Types
 
 ```typescript
-// ❌ BAD - Direct assignment (fails in Vitest)
-process.env.NODE_ENV = 'test';
+// When types are incompatible
+const data = complexObject as unknown as SpecificType;
 
-// ✅ GOOD - Using vi.stubEnv
+// Type predicate for runtime safety
+function isSpecificType(obj: unknown): obj is SpecificType {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'requiredProp' in obj
+  );
+}
+```
+
+## Environment & Configuration
+
+### Vitest Environment Setup
+
+```typescript
+// ✅ Use vi.stubEnv for environment variables
 beforeEach(() => {
   vi.stubEnv('NODE_ENV', 'test');
   vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://test-api.com');
@@ -484,15 +384,24 @@ afterEach(() => {
 });
 ```
 
-### Import Path Resolution
+### Import Path Configuration
 
 ```typescript
 // vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import path from 'path';
+
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./test/setup.ts'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),
       '@/test': path.resolve(__dirname, './test'),
+      '@kit': path.resolve(__dirname, '../../packages'),
     },
   },
 });
@@ -500,116 +409,66 @@ export default defineConfig({
 
 ## Best Practices
 
-### 1. Create Comprehensive Test Helpers
+### Test Helpers (from /apps/web/test/test-helpers.ts)
 
 ```typescript
-// test/test-helpers.ts
 export function castActionResult<T>(result: unknown): ActionResult<T> {
   if (!result || typeof result !== 'object') {
     throw new Error('Invalid action result');
   }
+  // Runtime validation...
   return result as ActionResult<T>;
 }
 
-export function expectSuccess<T>(
-  result: unknown,
-): asserts result is { success: true; data?: T } {
-  expect(result).toMatchObject({ success: true });
-}
-
-export function expectError(
-  result: unknown,
-  errorMessage?: string,
-): asserts result is { success: false; error: string } {
-  expect(result).toMatchObject({ success: false });
-  if (errorMessage) {
-    expect((result as any).error).toContain(errorMessage);
+export function expectSuccess<T>(result: ActionResult<T>): T | undefined {
+  if (!result.success) {
+    throw new Error(`Expected success but got error: ${result.error}`);
   }
+  return result.data;
+}
+
+export function expectError(result: ActionResult<unknown>): string {
+  if (result.success) {
+    throw new Error('Expected error but got success');
+  }
+  return result.error;
+}
+
+export function isSuccessResult<T>(
+  result: ActionResult<T>
+): result is { success: true; data?: T } {
+  return result.success === true;
 }
 ```
 
-### 2. Use Factory Functions for Test Data
+### Key Patterns to Follow
 
-```typescript
-// Usage in tests
-import { createMockQuiz, createMockUser } from '@/test/factories';
+1. **Never use `any` types** - Use `unknown` with type assertions
+2. **Use type assertions** for action results: `as ActionResult<T>`
+3. **Create factory functions** for consistent test data
+4. **Handle discriminated unions** with type narrowing
+5. **Mock at boundaries** (external dependencies only)
+6. **Use existing test helpers** from `/apps/web/test/test-helpers.ts`
+7. **Follow import conventions** from the codebase (`@kit/*`, `@/test/*`)
+8. **Test behavior, not implementation** details
 
-// test/factories/index.ts
-export * from './quiz.factory';
-export * from './user.factory';
-export * from './course.factory';
+## Related Files
 
-const quiz = createMockQuiz({ title: 'Custom Quiz' });
-const user = createMockUser({ role: 'admin' });
-```
-
-### 3. Type-Safe Mock Utilities
-
-```typescript
-// test/mocks/supabase.ts
-export const mockSupabaseClient = createMockSupabaseClient();
-export const mockSupabaseAdmin = createMockSupabaseClient();
-
-// Re-export for convenience
-export function setupSupabaseMocks() {
-  vi.mock('@/lib/supabase/client', () => ({
-    createClient: () => mockSupabaseClient,
-  }));
-
-  vi.mock('@/lib/supabase/admin', () => ({
-    createAdminClient: () => mockSupabaseAdmin,
-  }));
-}
-```
-
-### 4. Consistent Error Patterns
-
-```typescript
-// Always use the same pattern for error handling
-describe('Error Handling', () => {
-  it('should handle validation errors', async () => {
-    const result = (await action({ invalid: true })) as ActionResult;
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error).toMatch(/validation/i);
-    }
-  });
-});
-```
-
-### 5. Avoid Anti-Patterns
-
-```typescript
-// ❌ AVOID - Testing implementation details
-expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM users');
-
-// ✅ PREFER - Testing behavior
-const users = await service.getUsers();
-expect(users).toHaveLength(2);
-expect(users[0]).toMatchObject({ name: 'Test User' });
-
-// ❌ AVOID - Using any for everything
-const mock = vi.fn() as any;
-
-// ✅ PREFER - Proper typing with strategic any
-const mock = vi.fn<[string], Promise<User>>()
-  .mockResolvedValue(createMockUser());
-```
+Key test files in the codebase:
+- `/apps/web/test/test-helpers.ts` - Core test utilities
+- `/apps/web/test/test-types.d.ts` - Type definitions
+- `/apps/web/app/**/**.test.ts` - Example test implementations
+- `/packages/features/admin/**/*.test.ts` - Service testing patterns
 
 ## Summary
 
-Key takeaways for TypeScript test patterns:
+Focus on TypeScript-specific challenges:
+- Type safety in mocks and assertions
+- Discriminated union handling
+- Import path resolution
+- Runtime vs compile-time type checking
+- Reusable factory patterns
+- Proper error type handling
 
-1. **Never use `any` types** - Use `unknown` with type assertions or proper types
-2. **Remove underscore prefixes** from variables that are actually used
-3. **Use type assertions** for action results: `as ActionResult<T>`
-4. **Create comprehensive mocks** with all required properties
-5. **Use factory functions** for consistent test data
-6. **Handle discriminated unions** with type narrowing
-7. **Mock at boundaries** (external dependencies, not internal code)
-8. **Test public APIs** rather than private implementations
-9. **Use test helpers** for common patterns
-10. **Maintain type safety** throughout tests
-
-These patterns ensure TypeScript compilation succeeds while maintaining test quality and readability.
+For E2E testing patterns, see `e2e-testing-fundamentals.md`.
+For performance testing, see `performance-testing-fundamentals.md`.

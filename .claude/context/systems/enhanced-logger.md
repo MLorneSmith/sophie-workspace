@@ -1,82 +1,101 @@
+---
+# Identity
+id: "enhanced-logger"
+title: "Enhanced Logger System"
+version: "2.1.0"
+category: "implementation"
+
+# Discovery
+description: "Async logging system with structured output, security features, monitoring integration, and Biome compliance for SlideHeroes"
+tags: ["logging", "async", "pino", "monitoring", "security", "biome", "testing"]
+
+# Relationships
+dependencies: ["monitoring-core", "supabase", "zod"]
+cross_references:
+  - id: "monitoring-integration"
+    type: "related"
+    description: "Integration with monitoring services"
+  - id: "server-actions"
+    type: "pattern"
+    description: "Server action patterns that use logging"
+
+# Maintenance
+created: "2025-01-13"
+last_updated: "2025-09-15"
+author: "create-context"
+---
+
 # Enhanced Logger System
 
 ## Overview
 
-The SlideHeroes application uses a sophisticated async logger system that provides structured logging, security
-features, and monitoring integration. The logger is designed to be environment-aware, performant, and secure by default.
+SlideHeroes uses an async logger system with structured logging, automatic security features, and monitoring integration. Built on Pino (3-5x faster than alternatives), it's environment-aware, secure by default, and compliant with strict Biome linting rules.
 
 ## Architecture
 
 ### Core Components
 
 1. **Base Logger Interface** (`packages/shared/src/logger/logger.ts`)
-
-   - Defines the standard `Logger` interface with methods: `info`, `error`, `warn`, `debug`, `fatal`
-   - Each method supports multiple call signatures for flexibility
+   - Standard interface: `info`, `error`, `warn`, `debug`, `fatal`
+   - Multiple call signatures for flexibility
 
 2. **Async Logger Registry** (`packages/shared/src/logger/index.ts`)
-
-   - Uses a registry pattern for lazy loading of logger implementations
-   - Supports multiple providers: "pino" (default) and "console"
+   - Registry pattern for lazy loading
+   - Providers: "pino" (default) and "console"
    - Provider selection via `LOGGER` environment variable
 
 3. **Enhanced Logger** (`packages/shared/src/logger/enhanced-logger.ts`)
-
-   - Feature-rich implementation with:
-     - Structured logging support
-     - Automatic data sanitization
-     - Request-scoped logging
-     - Performance tracking helpers
-     - Child logger creation
+   - Structured logging support
+   - Automatic data sanitization
+   - Request-scoped logging via `forRequest()`
+   - Child logger creation via `child()`
+   - Monitoring integration
 
 4. **Service Logger** (`packages/shared/src/logger/create-service-logger.ts`)
-   - Recommended for service-level logging
+   - **Recommended approach** for service-level logging
    - Provides service name context
    - Returns `{ getLogger }` for async access
 
-## Why Async?
+5. **Monitored Logger** (`packages/shared/src/logger/create-monitored-logger.ts`)
+   - Automatic monitoring service integration
+   - Graceful fallback on monitoring failure
 
-The logger is async due to:
+### Why Async?
 
-1. **Dynamic Imports**: Uses `await import()` for on-demand loading
-2. **Registry Pattern**: Lazy initialization of logger implementations
-3. **Monitoring Integration**: Supports async initialization of monitoring services
-4. **Performance**: Avoids blocking during initialization
+- **Dynamic Imports**: Uses `await import()` for code splitting
+- **Registry Pattern**: Lazy initialization prevents startup blocking
+- **Monitoring Integration**: Supports async service initialization
+- **Performance**: Avoids event loop blocking
 
 ## Usage Patterns
-
-### Basic Usage (Not Recommended)
-
-```typescript
-import { getLogger } from '@kit/shared/logger';
-
-// In async context
-const logger = await getLogger();
-logger.info('Operation completed', { userId: '123' });
-```
 
 ### Service Logger (Recommended)
 
 ```typescript
 import { createServiceLogger } from '@kit/shared/logger';
 
-// Create service-scoped logger
 const { getLogger } = createServiceLogger('CERTIFICATE-SERVICE');
 
-// In async function
-export async function generateCertificate() {
+export async function generateCertificate(userId: string) {
   const logger = await getLogger();
 
   logger.info('Starting certificate generation', {
     operation: 'generate_certificate',
-    userId: '123',
+    userId,
   });
 
   try {
-    // ... operation code
+    const result = await performGeneration();
+    logger.info('Certificate generated successfully', {
+      operation: 'generate_certificate',
+      userId,
+      certificateId: result.id,
+    });
+    return result;
   } catch (error) {
     logger.error('Certificate generation failed', {
       operation: 'generate_certificate',
+      userId,
       error,
     });
     throw error;
@@ -84,7 +103,7 @@ export async function generateCertificate() {
 }
 ```
 
-### Enhanced Logger
+### Enhanced Logger Direct Usage
 
 ```typescript
 import { createEnhancedLogger } from '@kit/shared/logger';
@@ -96,16 +115,14 @@ const logger = createEnhancedLogger({
 });
 
 // Request-scoped logging
-const requestLogger = logger.withRequest({
-  requestId: 'req-123',
+const requestLogger = logger.forRequest('req-123', {
   userId: 'user-456',
 });
 
-// Performance tracking
-const timer = logger.startTimer();
-// ... operation
-logger.info('Operation completed', {
-  duration: timer.end(),
+// Child logger with context
+const childLogger = logger.child({
+  module: 'auth',
+  version: '1.0.0',
 });
 ```
 
@@ -114,117 +131,112 @@ logger.info('Operation completed', {
 ```typescript
 import { createTestLogger } from '@kit/shared/logger';
 
-const { logger, logs } = createTestLogger();
+// Returns an EnhancedLogger configured for testing
+const logger = createTestLogger('TEST-SERVICE');
 
 // Use in tests
-logger.error('Test error');
-expect(logs.error).toHaveLength(1);
-expect(logs.error[0]).toMatchObject({
-  message: 'Test error',
-});
+logger.info('Test operation', { testId: '123' });
 ```
 
 ## Security Features
 
 ### Automatic Data Sanitization
 
-The logger automatically sanitizes sensitive fields:
-
-- Passwords, tokens, secrets
-- API keys, authentication data
-- Credit card information
-- Personal identifiable information
-
-Sensitive values are replaced with "[REDACTED]".
-
-### Configurable Sensitive Fields
+The logger automatically redacts sensitive fields:
 
 ```typescript
 const DEFAULT_SENSITIVE_FIELDS = [
-  'password',
-  'token',
-  'secret',
-  'apiKey',
-  'api_key',
-  'authorization',
-  'auth',
-  'cookie',
-  'session',
-  'creditCard',
-  'credit_card',
-  'ssn',
-  'socialSecurityNumber',
+  'password', 'token', 'secret', 'apiKey', 'api_key',
+  'authorization', 'auth', 'cookie', 'session',
+  'creditCard', 'credit_card', 'ssn', 'socialSecurityNumber'
 ];
+
+// Values are replaced with "[REDACTED]"
+logger.info('User login', {
+  email: 'user@example.com',    // → "[REDACTED]"
+  password: 'secret123',         // → "[REDACTED]"
+  userId: '123'                  // → "123" (not sensitive)
+});
 ```
 
 ## Environment Configuration
 
-### Log Level
+```bash
+# Log Levels
+LOG_LEVEL="info"                    # General log level
+API_LOG_LEVEL="debug"               # API-specific level
+MONITORING_LOG_THRESHOLD="error"    # Monitoring threshold
 
-- `LOG_LEVEL`: General log level (debug, info, warn, error, fatal)
-- `API_LOG_LEVEL`: API-specific log level
-- Default: "info" in production, "debug" in development
+# Logger Provider
+LOGGER="pino"                        # Use Pino (default, recommended)
+LOGGER="console"                     # Use console (fallback)
 
-### Logger Provider
-
-- `LOGGER`: Select logger implementation ("pino" or "console")
-- Default: "pino"
-
-### Output Format
-
-- Development: Pretty-printed, colorized output
-- Production: Structured JSON for log aggregation
-
-## Migration from Console
-
-### Before (Direct Console)
-
-```typescript
-console.error('Failed to parse content JSON:', error);
-console.log('Processing user:', userId);
+# Defaults
+# Development: "debug"
+# Production: "info"
 ```
 
-### After (Async Logger)
+## Biome Linting Compliance
+
+The project enforces `noConsole: "error"` with no exceptions. Migration strategy:
+
+### Server Components (No "use client")
 
 ```typescript
-const logger = await getLogger();
-logger.error('Failed to parse content JSON:', error);
-logger.info('Processing user', { userId });
+import { createServiceLogger } from "@kit/shared/logger";
+
+const { getLogger } = createServiceLogger("SERVICE-NAME");
+
+export async function MyServerComponent() {
+  const logger = await getLogger();
+  logger.info("Operation completed", { context });
+}
 ```
 
-### Client-Side Considerations
+### Client Components ("use client")
 
-For client-side code ("use client"), you have two options:
+```typescript
+"use client";
 
-1. **Keep Console for Simple Cases**
+// Development-gated console wrapper
+const logger = {
+  info: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging
+      console.info(...args);
+    }
+  },
+  error: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === "development") {
+      // biome-ignore lint/suspicious/noConsole: Development logging
+      console.error(...args);
+    }
+  },
+  // ... warn, debug
+};
 
-   ```typescript
-   // For client-side debugging
-   if (process.env.NODE_ENV === 'development') {
-     console.error('Client error:', error);
-   }
-   ```
+export function MyClientComponent() {
+  logger.info("Component rendered", { props });
+}
+```
 
-2. **Use Client-Safe Logger**
+### Migration Command
 
-   ```typescript
-   // Create a client-safe logger wrapper
-   const logger = {
-     info: (...args) => console.log(...args),
-     error: (...args) => console.error(...args),
-     warn: (...args) => console.warn(...args),
-     debug: (...args) => console.debug(...args),
-   };
-   ```
+```bash
+# Automated migration script
+node scripts/migrate-to-logger-advanced.js
+
+# Verify linting
+pnpm biome check path/to/file.tsx
+```
 
 ## Testing with Async Logger
 
-### Mock Setup
+### Mock Setup (Vitest)
 
 ```typescript
 import { vi } from 'vitest';
 
-// Mock the logger module
 vi.mock('@kit/shared/logger', () => ({
   createServiceLogger: vi.fn(() => ({
     getLogger: vi.fn(async () => ({
@@ -233,6 +245,8 @@ vi.mock('@kit/shared/logger', () => ({
       warn: vi.fn(),
       debug: vi.fn(),
       fatal: vi.fn(),
+      child: vi.fn().mockReturnThis(),
+      forRequest: vi.fn().mockReturnThis(),
     })),
   })),
 }));
@@ -241,8 +255,6 @@ vi.mock('@kit/shared/logger', () => ({
 ### Test Example
 
 ```typescript
-import { createServiceLogger } from '@kit/shared/logger';
-
 describe('MyService', () => {
   it('should log errors', async () => {
     const mockLogger = {
@@ -254,36 +266,30 @@ describe('MyService', () => {
       getLogger: mockGetLogger,
     });
 
-    // Run code that uses logger
     await myFunction();
 
-    // Assert
     expect(mockLogger.error).toHaveBeenCalledWith(
       'Expected error message',
-      expect.objectContaining({ error: expect.any(Error) }),
+      expect.objectContaining({ error: expect.any(Error) })
     );
   });
 });
 ```
 
-## Best Practices
+## Monitoring Integration
 
-1. **Always Use Service Logger**: Create service-specific loggers for better context
-2. **Structure Your Logs**: Use objects for metadata, not string concatenation
-3. **Include Operation Context**: Add operation names for easier debugging
-4. **Handle Sensitive Data**: Let the logger sanitize automatically
-5. **Use Appropriate Levels**:
+```typescript
+import { createMonitoredLogger } from '@kit/shared/logger';
+import { getServerMonitoringService } from '@kit/monitoring/api';
 
-   - `debug`: Detailed debugging information
-   - `info`: General informational messages
-   - `warn`: Warning messages
-   - `error`: Error messages (recoverable)
-   - `fatal`: Fatal errors (non-recoverable)
+// Create logger with monitoring
+const logger = createMonitoredLogger(
+  'SERVICE-NAME',
+  getServerMonitoringService()
+);
 
-6. **Performance Considerations**:
-   - Logger is cached after first initialization
-   - Avoid logging in tight loops
-   - Use debug level for verbose logging
+// Errors automatically sent to monitoring service (Sentry, New Relic, etc.)
+```
 
 ## Common Patterns
 
@@ -291,314 +297,93 @@ describe('MyService', () => {
 
 ```typescript
 try {
-  // ... operation
+  const result = await riskyOperation();
+  logger.info('Operation succeeded', {
+    operation: 'risky_operation',
+    resultId: result.id
+  });
 } catch (error) {
   logger.error('Operation failed', {
-    operation: 'operationName',
-    error,
-    context: {
-      /* additional context */
-    },
+    operation: 'risky_operation',
+    error: error instanceof Error ? {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    } : String(error),
   });
-  throw error; // Re-throw if needed
+  throw error;
 }
 ```
 
 ### Request Tracking
 
 ```typescript
-logger.info('API request received', {
+const logger = await getLogger();
+const requestLogger = logger.forRequest(req.headers['x-request-id'] || uuidv4(), {
   method: req.method,
-  path: req.path,
+  path: req.url,
   userId: req.user?.id,
-  requestId: req.id,
 });
+
+requestLogger.info('Request received');
+// ... handle request
+requestLogger.info('Request completed', { status: 200 });
 ```
 
-### Performance Monitoring
+## Best Practices
 
-```typescript
-const timer = logger.startTimer();
-const result = await expensiveOperation();
-logger.info('Operation completed', {
-  operation: 'expensiveOperation',
-  duration: timer.end(),
-  resultSize: result.length,
-});
-```
+1. **Always Use Service Logger**: Better context tracking
+2. **Structure Your Logs**: Use objects for metadata
+3. **Include Operation Context**: Add operation names for debugging
+4. **Let Logger Sanitize**: Don't manually redact sensitive data
+5. **Use Appropriate Levels**:
+   - `debug`: Detailed debugging (development only)
+   - `info`: General informational messages
+   - `warn`: Warning messages (potential issues)
+   - `error`: Error messages (recoverable)
+   - `fatal`: Fatal errors (non-recoverable)
 
-## Monitoring Integration
-
-The logger integrates with monitoring services through the `MonitoringService` interface:
-
-- Automatic error tracking
-- Performance metrics
-- Custom event tracking
-- User context association
+6. **Performance**: Logger is cached after first initialization
 
 ## Troubleshooting
 
-### Logger Not Working
+### Common Issues
 
-1. Check if you're in an async context
-2. Verify environment variables
-3. Ensure proper imports
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| No log output | Not in async context | Add `await` before `getLogger()` |
+| Sensitive data visible | Field names don't match patterns | Add to `sensitiveFields` config |
+| Performance degradation | Excessive logging in production | Set `LOG_LEVEL=warn` in production |
+| Lost logs during crash | Async logger hasn't flushed | Use sync console for critical errors in `process.on('uncaughtException')` |
+| Biome linting errors | Direct console usage | Add environment check and biome-ignore comment |
+| TypeScript errors in client wrapper | Incorrect typing | Use `(...args: unknown[])` signature |
 
-### Sensitive Data Visible
+## Migration Quick Reference
 
-1. Check if field names match sanitization list
-2. Consider adding custom sensitive fields
-3. Verify logger configuration
-
-### Performance Issues
-
-1. Check log level (reduce in production)
-2. Avoid synchronous logging in critical paths
-3. Use child loggers for request scoping
-
-## Biome Linting Alignment
-
-### Configuration Overview
-
-The project uses biome with strict console rules:
-- `noConsole` is set to `"error"` with `"allow": []`
-- All console statements are forbidden by default
-- Exceptions only for test files and scripts
-
-### Migration Strategy by Component Type
-
-#### Server Components (No "use client" directive)
 ```typescript
-// ✅ CORRECT: Use async logger
-import { createServiceLogger } from "@kit/shared/logger";
+// ❌ Before
+console.error('Failed:', error);
 
-const { getLogger } = createServiceLogger("SERVICE-NAME");
-
-export async function MyServerComponent() {
-  const logger = await getLogger();
-  logger.info("Operation completed", { context });
-}
-```
-
-#### Client Components ("use client" directive)
-```typescript
-// ✅ CORRECT: Use development-gated console wrapper
-"use client";
-
-// Create a client-safe logger wrapper
-const logger = {
-  info: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === "development") {
-      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
-      console.info(...args);
-    }
-  },
-  error: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === "development") {
-      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
-      console.error(...args);
-    }
-  },
-  warn: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === "development") {
-      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
-      console.warn(...args);
-    }
-  },
-  debug: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === "development") {
-      // biome-ignore lint/suspicious/noConsole: Development logging is allowed
-      console.debug(...args);
-    }
-  },
-};
-
-export function MyClientComponent() {
-  // Use logger.info(), logger.error(), etc.
-  logger.info("Component rendered", { props });
-}
-```
-
-### Biome-Ignore Best Practices
-
-1. **Always include explanation**: Describe why console is needed
-2. **Use correct rule name**: `lint/suspicious/noConsole` (not `nursery/noConsole`)
-3. **Gate with environment checks**: Only log in development
-4. **Place above console statement**: Comment must be immediately before
-
-#### Examples:
-```typescript
-// ✅ CORRECT
-if (process.env.NODE_ENV === "development") {
-  // biome-ignore lint/suspicious/noConsole: Development debugging for API responses
-  console.log("API Response:", data);
-}
-
-// ❌ INCORRECT - No environment check
-// biome-ignore lint/suspicious/noConsole: Debugging
-console.log(data); // Will run in production!
-
-// ❌ INCORRECT - Wrong rule name
-// biome-ignore lint/nursery/noConsole: Debugging
-console.log(data);
-```
-
-### Component Type Detection
-
-#### Automatic Detection Logic:
-```typescript
-// Check first few lines of file:
-const isClientComponent = content.includes('"use client"');
-const isServerAction = content.includes('"use server"');
-
-if (isClientComponent) {
-  // Use development-gated console wrapper
-} else if (isServerAction || !isClientComponent) {
-  // Use async logger (server component or server action)
-}
-```
-
-#### File Patterns:
-- **Client Components**: 
-  - Start with `"use client"`
-  - Use React hooks (useState, useEffect, etc.)
-  - Handle user interactions
-  
-- **Server Components**: 
-  - No `"use client"` directive
-  - Can use `await` in component body
-  - Data fetching components
-  
-- **Server Actions**:
-  - Start with `"use server"`
-  - Always async functions
-  - Database operations
-
-### Migration Workflow
-
-1. **Identify Component Type**:
-   ```bash
-   head -n 5 ComponentName.tsx | grep -E '"use (client|server)"'
-   ```
-
-2. **Apply Appropriate Pattern**:
-   - Client → Development-gated console wrapper
-   - Server → Async logger with createServiceLogger
-
-3. **Verify Linting**:
-   ```bash
-   pnpm biome check path/to/file.tsx
-   ```
-
-4. **Test in Both Environments**:
-   - Development: Logs should appear in console
-   - Production build: No console output
-
-### Production Safety
-
-#### Environment Gating Benefits:
-- **Bundle Size**: Development-only code can be tree-shaken
-- **Performance**: No runtime console calls in production
-- **Security**: Prevents accidental data exposure in production logs
-- **Compliance**: Meets strict linting requirements
-
-#### Verification:
-```bash
-# Check that console statements are properly gated
-rg "console\.(log|info|error|warn)" --type ts --type tsx |
-  grep -v "process.env.NODE_ENV === 'development'"
-# Should return no results for client components
-```
-
-### Common Migration Patterns
-
-#### Pattern 1: Simple Info Logging
-```typescript
-// Before (commented out with TODO)
-// TODO: Async logger needed
-// console.info("Processing item", itemId);
-
-// After (Client Component)
-logger.info("Processing item", { itemId });
-
-// After (Server Component)  
+// ✅ After (Server)
 const logger = await getLogger();
-logger.info("Processing item", { itemId });
+logger.error('Failed', { error });
+
+// ✅ After (Client)
+if (process.env.NODE_ENV === 'development') {
+  // biome-ignore lint/suspicious/noConsole: Debug
+  console.error('Failed:', error);
+}
 ```
 
-#### Pattern 2: Error Handling
-```typescript
-// Before
-// TODO: Async logger needed
-// console.error("Failed to process", error);
+## Related Files
 
-// After (Client Component)
-logger.error("Failed to process item", { error, itemId });
+- `/packages/shared/src/logger/`: Core implementation
+- `/packages/monitoring/`: Monitoring integrations
+- `/scripts/migrate-to-logger-advanced.js`: Migration script
+- `/biome.json`: Linting configuration
 
-// After (Server Component)
-const logger = await getLogger();
-logger.error("Failed to process item", { error, itemId });
-```
+## See Also
 
-#### Pattern 3: Debug Logging with Context
-```typescript
-// Before
-// TODO: Async logger needed  
-// console.log("Debug info:", data);
-
-// After (Client Component)
-logger.debug("Processing step completed", {
-  step: "validation",
-  dataLength: data.length,
-  timestamp: Date.now()
-});
-
-// After (Server Component)
-const logger = await getLogger();
-logger.debug("Processing step completed", {
-  step: "validation", 
-  dataLength: data.length,
-  userId
-});
-```
-
-### Troubleshooting Migration Issues
-
-#### Biome Errors:
-```
-× Don't use console.
-× Unknown lint rule nursery/noConsole
-× Suppression comment has no effect
-```
-
-**Solutions**:
-1. Use correct rule name: `suspicious/noConsole`
-2. Add environment check: `if (process.env.NODE_ENV === "development")`
-3. Place ignore comment immediately before console statement
-4. Use development-gated wrapper for client components
-
-#### TypeScript Errors:
-```
-argument of type 'unknown[]' is not assignable to parameter
-```
-
-**Solution**: Use proper typing in wrapper:
-```typescript
-const logger = {
-  info: (...args: unknown[]) => {
-    // Implementation
-  }
-};
-```
-
-#### React Hook Dependency Issues:
-```
-This hook does not specify all of its dependencies
-```
-
-**Solution**: Add all referenced variables to dependency array:
-```typescript
-useEffect(() => {
-  logger.info(`Survey ${survey?.id} (${survey?.title}): Processed`);
-}, [survey?.id, survey?.title]); // Include all referenced properties
-```
+- [[monitoring-integration]]: Monitoring service integration
+- [[server-actions]]: Server action patterns using logger
+- [[biome-configuration]]: Linting rules and compliance
