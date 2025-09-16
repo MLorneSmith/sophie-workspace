@@ -2,58 +2,73 @@
 description: Create new Claude Code slash commands with AI-assisted design and interactive clarification
 allowed-tools: [Read, Write, Bash, Task]
 argument-hint: [command-name] [--project | --personal] [--model <model-name>]
-model: claude-opus-4-1-20250805
 ---
 
 # Command Creator
 
-AI-assisted creation of new Claude Code slash commands with interactive clarification and specialized agent orchestration.
+AI-assisted creation of new Claude Code slash commands using the PRIME framework for systematic, high-quality command generation.
 
 ## Key Features
-- **Interactive Clarification**: 2-3 rounds of structured Q&A for clear requirements
-- **Automatic Agent Delegation**: Seamless handoff to specialized construction experts
+- **PRIME Framework**: Purpose-driven systematic approach (Purpose → Role → Inputs → Method → Expectations)
+- **Interactive Clarification**: 2-3 rounds of PRIME-aligned Q&A for clear requirements
+- **Parallel Agent Delegation**: Simultaneous execution for 3x faster command creation
+- **Command Validation**: Structure analysis with PRIME compliance checks
 - **Smart UX Design**: Structured question formatting with priority indicators
-- **Project vs Personal**: Choose command location with namespace support
 - **Dynamic Context Loading**: 40-60% token reduction with targeted documentation
-- **Template Examples**: Bash execution (!) and file reference (@) patterns
+- **Action Verb Enforcement**: All instructions start with clear action verbs
 
 ## Essential Context
 <!-- Always read for this command -->
 - Read .claude/context/standards/code-standards.md
 - Read .claude/context/systems/prompt-engineering.md
+- Read .claude/context/systems/claude-code/prime-framework.md
+- Read .claude/templates/command-template.md
 
 ## Prompt
 
 <role>
-You are the Command Creator - a collaborative partner who guides users through creating perfect Claude Code slash commands. You excel at interactive clarification, smart questioning, and orchestrating specialized agents while managing the complete creation workflow.
+You are the Command Creator - a collaborative partner who guides users through creating perfect Claude Code slash commands using the PRIME framework. You excel at interactive clarification, smart questioning, and orchestrating specialized agents while ensuring systematic command construction following Purpose → Role → Inputs → Method → Expectations.
 </role>
 
 <instructions>
-# Enhanced Command Creation Workflow
 
 **CORE REQUIREMENTS**:
-- Always conduct interactive clarification before delegation (max 3 rounds, 5 questions per round)
-- Present questions with structured formatting for optimal UX
-- Automatically delegate to specialized agents after clarification is complete
+- Follow PRIME framework strictly: Purpose → Role → Inputs → Method → Expectations
+- Conduct interactive clarification aligned with PRIME components (max 3 rounds)
+- All instructions must start with action verbs (Analyze, Generate, Validate, etc.)
+- Delegate to specialized agents using Task tool for parallel execution
+- Validate command structure with PRIME compliance checks
 - Support both project (.claude/commands/) and personal (~/.claude/commands/) locations
-- Handle namespaced commands with automatic subdirectory creation
 
-## 1. Discovery & Context
+# Command Creation Workflow - PRIME Framework
+
+## Pre-PRIME Setup
+
+### 1. Discovery & Context
 
 <initialization>
-Parse initial parameters and determine basic context:
-- Extract command name from arguments
-- Identify location preference (--project | --personal)
-- Note model preference (--model <model-name>)
-- Check for namespace indicators (`:` in command name)
+**Extract** initial parameters and **Determine** basic context:
+- **Extract** command name from arguments
+- **Identify** location preference (--project | --personal)
+- **Check** for namespace indicators (`:` in command name)
 
-Load dynamic context based on command purpose:
+#### Initial Pattern Discovery
+**Load** command creation patterns before clarification:
+
 ```bash
-# After getting initial command description from user
-# Extract keywords from their purpose statement
+# PATTERN DISCOVERY - Load general command design patterns
+# Purpose: Help ask better clarification questions
+# Timing: BEFORE clarification phase
+
+# Extract keywords from initial purpose statement
 QUERY="${commandPurpose} command creation design patterns"
 
-# Execute context loader to find relevant documentation
+# Analyze existing similar commands for patterns
+if [[ -f ".claude/commands/${commandName}.md" ]]; then
+  EXISTING_METADATA=$(node .claude/scripts/command-analyzer.cjs ".claude/commands/${commandName}.md" --json)
+fi
+
+# Load general command creation patterns
 CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
   --query="$QUERY" \
   --command="command-new" \
@@ -61,92 +76,180 @@ CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
   --token-budget=4000 \
   --format=paths)
 
-# Process each returned file path
-echo "$CONTEXT_FILES" | while read -r instruction; do
-  # Each line is like: "Read .claude/context/path/to/file.md"
-  eval "$instruction"
+# Process returned file paths
+echo "$CONTEXT_FILES" | while IFS= read -r instruction; do
+  if [[ "$instruction" == Read* ]]; then
+    FILE_PATH=$(echo "$instruction" | sed 's/Read //')
+    echo "Loading pattern context: $FILE_PATH"
+    # Use Read tool for each file
+  fi
 done
 ```
 
 Fallback if context loader unavailable:
-```javascript
-const contextMap = {
-  'api': ['.claude/context/api/patterns.md'],
-  'database': ['.claude/context/database/schema.md'],
-  'ui': ['.claude/context/ui/component-patterns.md'],
-  'testing': ['.claude/context/testing/test-patterns.md']
-};
-// Simple keyword matching as fallback
-const fallbackDocs = selectFromMap(contextMap, commandPurpose);
-```
+- **Use** keyword mapping for relevant documentation
+- **Load** essential context files as baseline
 </initialization>
 
-## 2. Interactive Clarification Phase
+### 2. Interactive Clarification Phase - PRIME Aligned
 
 <clarifying_questions>
-Begin structured clarification to understand command requirements:
+**Conduct** structured clarification following PRIME components:
 
-**Round 1 - Core Purpose & Scope**
-Present 3-5 essential questions in this format:
+**Round 1 - Purpose & Expectations (P & E)**
+**Present** 3-5 questions in this format:
 
 ```
-🎯 **Command Clarification** - Round 1/3
+🎯 **PRIME Framework Clarification** - Round 1/3
 
-To design the perfect command for you, I need to understand:
+Building your command using PRIME methodology. Let's define PURPOSE and EXPECTATIONS:
 
-**1. Primary Purpose** (Priority: HIGH)
-   What specific task should this command accomplish?
+**P1. Primary Objective** (Priority: HIGH)
+   What specific outcome should this command achieve?
+   Example: "Generate TypeScript interfaces from database schemas with 100% type safety"
 
-**2. Target Users** (Priority: MEDIUM)
-   Who will use this command? (Developers, designers, analysts, etc.)
+**P2. Success Criteria** (Priority: HIGH)
+   How will you measure if the command succeeded?
+   Example: "All generated interfaces compile without errors"
 
-**3. Expected Inputs** (Priority: HIGH)
-   What information does the command need to work?
-   Options: Arguments, file paths, user selections, environment context
+**P3. Scope Boundaries** (Priority: MEDIUM)
+   What's explicitly included and excluded?
+   Example: "Include: user tables | Exclude: system tables"
 
-**4. Output Requirements** (Priority: HIGH)
-   What should the command produce?
-   Options: Files, reports, code, analysis, interactive guidance
+**E1. Output Format** (Priority: HIGH)
+   What exactly should the command produce?
+   Options: Files, console output, reports, code modifications
 
-**5. Complexity Level** (Priority: MEDIUM)
-   Is this a simple single-step task or multi-phase workflow?
-
-Please answer as many as possible. I'll follow up with more specific questions based on your responses.
+**E2. Quality Standards** (Priority: MEDIUM)
+   What distinguishes good output from great?
 ```
 
-**Round 2 - Technical Specifications**
-Based on Round 1 answers, ask 3-5 targeted questions about:
-- Required tools (Read, Write, Bash, Task, etc.)
-- File operations and locations
-- External integrations needed
-- Performance considerations
-- Error handling requirements
+**Round 2 - Role & Inputs (R & I)**
+**Gather** role and input requirements:
 
-**Round 3 - Polish & Edge Cases**
-Final refinement questions about:
-- User experience preferences
-- Edge case handling
-- Documentation needs
-- Integration points
-- Success criteria
+```
+🔧 **PRIME Framework Clarification** - Round 2/3
+
+Now let's define ROLE and INPUTS:
+
+**R1. Expertise Required** (Priority: HIGH)
+   What domain expertise should the AI have?
+   Example: "Senior TypeScript developer with DB experience"
+
+**R2. Decision Authority** (Priority: MEDIUM)
+   What decisions can the AI make autonomously?
+
+**I1. Required Materials** (Priority: HIGH)
+   What context/files does the command need?
+   Options: File paths, configs, existing patterns
+
+**I2. Constraints** (Priority: HIGH)
+   What restrictions must be respected?
+   Example: "Read-only access, max file size limits"
+
+**I3. Examples** (Priority: LOW)
+   Do you have example inputs/outputs to share?
+```
+
+**Round 3 - Method & Validation (M & Refinement)**
+**Define** workflow and validation:
+
+```
+⚙️ **PRIME Framework Clarification** - Round 3/3
+
+Finally, METHOD and validation:
+
+**M1. Workflow Steps** (Priority: HIGH)
+   What's the logical sequence of operations?
+   Example: "1. Analyze → 2. Generate → 3. Validate"
+
+**M2. Decision Logic** (Priority: MEDIUM)
+   Where are conditional branches needed?
+   Example: "IF errors found THEN prompt user"
+
+**M3. Error Handling** (Priority: HIGH)
+   How should failures be handled?
+   Options: Graceful degradation, retry, fail fast
+
+**V1. Edge Cases** (Priority: MEDIUM)
+   What unusual scenarios need handling?
+
+**V2. Performance** (Priority: LOW)
+   Any speed or resource constraints?
+```
 
 **Maximum Rounds**: 3
-**Maximum Questions Per Round**: 5
-**Question Format**: Always use priority indicators (HIGH/MEDIUM/LOW)
+**Question Format**: Always use PRIME alignment and priority indicators
 </clarifying_questions>
 
-## 3. Automatic Agent Delegation
+## PRIME Workflow Phases
 
-After clarification is complete, automatically delegate to specialized agents:
+### Phase P - PURPOSE (Define Clear Outcomes)
 
-### 3.1 Load Relevant Context
+<purpose>
+**Extract** and **Define** the command's purpose from clarification:
+
+1. **Establish** primary objective
+   - **Parse** P1 answer for core outcome
+   - **Formulate** one-sentence objective statement
+
+2. **Define** success criteria
+   - **Extract** measurable criteria from P2
+   - **Create** validation checklist
+
+3. **Set** scope boundaries
+   - **Parse** P3 for inclusions/exclusions
+   - **Document** explicit boundaries
+
+4. **Map** key features to outcomes
+   - **Transform** features into measurable outcomes
+   - **Prioritize** by impact
+
+Output: Structured PURPOSE specification for command
+</purpose>
+
+### Phase R - ROLE (Establish AI Expertise)
+
+<role_definition>
+**Configure** the AI's identity and capabilities:
+
+1. **Define** expertise domain
+   - **Extract** from R1 clarification answer
+   - **Specify** technical domains and experience level
+
+2. **Set** personality traits
+   - **Determine** tone and approach
+   - **Align** with command purpose
+
+3. **Establish** decision authority
+   - **Parse** R2 for autonomous decisions
+   - **Define** escalation points
+
+4. **Include** relevant experience
+   - **Add** domain-specific knowledge
+   - **Reference** best practices
+
+Output: Complete ROLE definition for command
+</role_definition>
+
+### Phase I - INPUTS (Gather All Materials)
+
+<inputs>
+**Collect** and **Organize** all necessary materials:
+
+#### Load Technical Context
 ```bash
-# Load context based on clarified requirements
-COMMAND_PURPOSE="${clarificationAnswers.primaryPurpose}"
-TECHNICAL_DOMAIN="${clarificationAnswers.technicalDomain}"
-QUERY="${COMMAND_PURPOSE} ${TECHNICAL_DOMAIN}"
+# TECHNICAL CONTEXT - Load specific documentation
+# Purpose: Get precise technical docs for implementation
+# Timing: AFTER clarification when requirements are clear
 
-# Use context loader to get relevant documentation
+# Build PRIME-aligned query
+PURPOSE="${clarificationAnswers.P1_primaryObjective}"
+ROLE="${clarificationAnswers.R1_expertise}"
+INPUTS="${clarificationAnswers.I1_materials}"
+QUERY="${PURPOSE} ${ROLE} ${INPUTS} implementation patterns"
+
+# Load specific technical documentation
 DYNAMIC_DOCS=$(node .claude/scripts/context-loader.cjs \
   --query="$QUERY" \
   --command="command-new" \
@@ -154,327 +257,275 @@ DYNAMIC_DOCS=$(node .claude/scripts/context-loader.cjs \
   --token-budget=6000 \
   --format=paths)
 
-# Read each dynamic context file
-echo "$DYNAMIC_DOCS" | while read -r file_instruction; do
-  eval "$file_instruction"
+# Process documentation files
+echo "$DYNAMIC_DOCS" | while IFS= read -r file_instruction; do
+  if [[ "$file_instruction" == Read* ]]; then
+    FILE_PATH=$(echo "$file_instruction" | sed 's/Read //')
+    echo "Loading technical context: $FILE_PATH"
+    # Use Read tool for each file
+  fi
 done
 ```
 
-### 3.2 Requirements Synthesis
-```typescript
-const requirements = await Task({
-  subagent_type: "clarification-loop-engine",
-  description: "Synthesize clarified requirements",
-  prompt: `
-    Essential Context (already loaded):
-    - .claude/context/standards/code-standards.md
-    - .claude/context/systems/prompt-engineering.md
+#### Gather Additional Materials
+1. **Load** essential context files
+2. **Collect** constraints from I2
+3. **Process** examples from I3
+4. **Identify** standard feature patterns
 
-    Dynamic Context (loaded via context-loader.cjs):
-    ${dynamicDocsContent}
+#### Standard Feature Patterns
+**Reference** common patterns based on requirements:
 
-    Based on the clarification session, synthesize complete requirements:
+- **Dynamic Context Loading**: For adaptive commands
+- **Interactive Clarification**: For complex decisions
+- **Validation Steps**: For quality assurance
+- **Parallel Agent Execution**: For performance
+- **Error Handling**: For robustness
+- **Progress Tracking**: For long operations
 
-    Command Name: ${commandName}
-    Location: ${location}
-    User Responses: ${clarificationAnswers}
+Output: Complete INPUTS package for command construction
+</inputs>
 
-    Generate structured JSON requirements for construction phase.
-  `
-});
+### Phase M - METHOD (Execute Construction)
+
+<method>
+**Execute** command construction through parallel agents:
+
+#### Parallel Agent Delegation
+
+**Launch** three parallel streams using Task tool:
+
+**Stream 1 - Requirements & Validation**:
+**Delegate** to clarification-loop-engine:
+- **Synthesize** complete requirements from PRIME phases
+- **Generate** structured JSON requirements
+- **Identify** potential risks and edge cases
+
+**Stream 2 - Construction & Documentation**:
+**Delegate** to prompt-construction-expert:
+- **Build** command following PRIME structure
+- **Apply** Enhanced Command Template
+- **Include** dynamic context patterns
+- **Generate** comprehensive help documentation
+- **Ensure** all instructions use action verbs
+
+**Stream 3 - Optimization & Testing**:
+**Delegate** to refactoring-expert:
+- **Optimize** command structure for performance
+- **Add** error handling patterns
+- **Validate** command syntax
+- **Generate** test scenarios
+
+**Wait** for all agents to complete before proceeding.
+
+#### Decision Trees
+**Include** conditional logic where identified in M2:
+
+```
+IF [condition from M2]:
+  → EXECUTE [action verb] [specific task]
+  → THEN [next step]
+ELSE:
+  → EXECUTE [alternative action]
+  → THEN [alternative path]
 ```
 
-### 3.3 Command Construction
-```typescript
-const constructedCommand = await Task({
-  subagent_type: "prompt-construction-expert",
-  description: "Build optimized command",
-  prompt: `
-    Essential Context (already loaded):
-    - .claude/context/standards/code-standards.md
-    - .claude/context/systems/prompt-engineering.md
+Output: Constructed command following PRIME framework
+</method>
 
-    Dynamic Context (loaded via context-loader.cjs):
-    ${dynamicDocsContent}
+### Phase E - EXPECTATIONS (Validate & Deliver)
 
-    Construct an optimized Claude Code command from these requirements:
-    ${JSON.stringify(requirements)}
+<expectations>
+**Validate** and **Deploy** the completed command:
 
-    Follow Enhanced Command Template. Include:
-    - Proper frontmatter with model recommendation if complex
-    - Key Features section
-    - Essential Context files that new command should load
-    - Dynamic context loading pattern using context-loader.cjs
-    - Role and structured instructions
-    - Help section
+#### Command Validation
 
-    The generated command should itself use context-loader.cjs for dynamic context.
-    Return complete command as markdown text.
-  `
-});
+```bash
+# Save constructed command for analysis
+TEMP_FILE="/tmp/command_${COMMAND_NAME}_validation.md"
+echo "${CONSTRUCTED_COMMAND}" > "$TEMP_FILE"
+
+# Run structure validation
+VALIDATION_OUTPUT=$(node .claude/scripts/command-analyzer.cjs "$TEMP_FILE" --json)
+
+# Check PRIME compliance
+echo "🔍 PRIME Framework Compliance Check:"
+
+# Purpose validation
+HAS_PURPOSE=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.purpose != null')
+HAS_CRITERIA=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.success_criteria != null')
+
+# Role validation
+HAS_ROLE=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.role.expertise != null')
+HAS_AUTHORITY=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.role.authority != null')
+
+# Inputs validation
+HAS_MATERIALS=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.inputs.materials != null')
+HAS_CONSTRAINTS=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.inputs.constraints != null')
+
+# Method validation
+HAS_ACTION_VERBS=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.method.action_verbs == true')
+HAS_DECISION_LOGIC=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.method.decision_trees != null')
+
+# Expectations validation
+HAS_OUTPUT_FORMAT=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.expectations.format != null')
+HAS_QUALITY=$(echo "$VALIDATION_OUTPUT" | jq -r '.prime.expectations.quality != null')
+
+# Report results
+if [[ "$HAS_PURPOSE" == "true" && "$HAS_ROLE" == "true" &&
+      "$HAS_MATERIALS" == "true" && "$HAS_ACTION_VERBS" == "true" &&
+      "$HAS_OUTPUT_FORMAT" == "true" ]]; then
+  echo "✅ PRIME compliance: PASSED"
+else
+  echo "⚠️ PRIME compliance: INCOMPLETE"
+  # Show specific failures
+fi
+
+# Cleanup
+rm -f "$TEMP_FILE"
 ```
 
-## 4. Command Template
+#### File Operations & Deployment
 
-<template>
-### Ideal Structure for Commands
+**Determine** file path and **Deploy** command:
 
-```markdown
----
-description: [Clear, action-oriented description of what the command does]
-allowed-tools: [Specific tools needed, avoid wildcards unless necessary]
-argument-hint: [User-friendly hint for expected arguments]
-model: [Only if specific model required, e.g., claude-opus-4-1 for complex reasoning]
----
+```bash
+# Set base directory based on location
+if [[ "${LOCATION}" == "personal" ]]; then
+  BASE_DIR="$HOME/.claude/commands"
+else
+  BASE_DIR=".claude/commands"
+fi
 
-# [Command Name]
+# Handle namespaced commands
+if [[ "${COMMAND_NAME}" == *":"* ]]; then
+  IFS=':' read -r NAMESPACE NAME <<< "${COMMAND_NAME}"
+  DIR="${BASE_DIR}/${NAMESPACE}"
+  mkdir -p "$DIR"
+  FILE_PATH="${DIR}/${NAME}.md"
+else
+  FILE_PATH="${BASE_DIR}/${COMMAND_NAME}.md"
+fi
 
-[Brief description of the command's purpose and value proposition]
+# Create backup if exists
+if [[ -f "$FILE_PATH" ]]; then
+  BACKUP_PATH="${FILE_PATH}.backup.$(date +%Y%m%d_%H%M%S)"
+  cp "$FILE_PATH" "$BACKUP_PATH"
+  echo "Backup created: $BACKUP_PATH"
+fi
+```
 
-## Key Features
-- **[Feature Name]**: [Concise description of the feature]
-- **[Feature Name]**: [What it does and why it matters]
-[3-6 key features that highlight capabilities]
+**Write** command file using Write tool
+**Update** inventory if available
 
-## Essential Context
-<!-- Always read for this command -->
-- Read .claude/context/[domain]/[specific-file].md
-[2-4 essential files that are ALWAYS needed]
+#### Success Reporting
 
-## Prompt
-
-<role>
-You are [specific role/expertise], specializing in [key domains].
-[1-2 sentences defining expertise and approach]
-</role>
-
-<instructions>
-# [Command Workflow Name]
-
-**CORE REQUIREMENTS**:
-- [Critical requirement that must always be followed]
-- [Another non-negotiable requirement]
-[3-5 absolute requirements]
-
-## 1. Discovery & Context
-<discovery>
-- Ask clarifying questions when needed
-- Understand the problem being solved
-- Identify target users and use cases
-- Gather constraints and requirements
-</discovery>
-
-## 2. Initialization
-<initialization>
-1. [First step with clear action]
-2. [Parameter parsing/validation]
-3. [Context loading steps]
-   [Include specific implementation details, not pseudocode]
-</initialization>
-
-## 3. [Main Phase Name]
-<phase_name>
-[Clear description of what happens in this phase]
-
-[Provide concrete implementation steps with actual values]
-
-[Key considerations or decision points]
-</phase_name>
-
-## 4. Dynamic Context Loading
-<context_loading>
-\`\`\`bash
-# Extract relevant context based on task
-node .claude/scripts/context-loader.cjs \
-  --query="$EXTRACTED_QUERY" \
-  --command="command-name" \
-  --format=paths
-\`\`\`
-</context_loading>
-
-## 5. Agent Delegation (if applicable)
-<delegation>
-Use the Task tool to delegate to specialized agents:
-- Specify the exact agent name in subagent_type
-- Provide clear task description
-- Include structured prompt with context and requirements
-- Display agent output to user when appropriate
-</delegation>
-
-## 6. Output/Delivery
-<output>
-[Description of output format and delivery method]
-
-Example output:
-\`\`\`
-[Show example of what user will see]
-\`\`\`
-</output>
-</instructions>
-
-<patterns>
-<!-- Optional: Include specific patterns or techniques -->
-### [Pattern Category]
-- **[Pattern Name]**: [When and how to use]
-</patterns>
-
-<error_handling>
-<!-- Optional but recommended -->
-### Common Issues
-1. **[Issue]**: [Solution]
-2. **[Issue]**: [Solution]
-</error_handling>
-
-<help>
-[Emoji] **[Command Title]**
-
-[One-line description of what the command does]
-
-**Usage:**
-- \`/command:name <required>\` - [What this does]
-- \`/command:name [optional]\` - [What this variation does]
-
-**Process:**
-1. [High-level step]
-2. [High-level step]
-[3-5 steps maximum]
-
-**Requirements:**
-- [Any prerequisites]
-- [Required files or setup]
-
-[Encouraging closing line]
-</help>
-\`\`\`
-
-### Template Guidelines
-
-1. **Frontmatter**: Only include what's necessary
-   - \`description\`: Always required
-   - \`allowed-tools\`: Be specific, avoid wildcards
-   - \`argument-hint\`: Only if accepts arguments
-   - \`model\`: Include when command needs specific model
-     * Omit for standard/default model
-     * \`claude-opus-4-1\` for complex reasoning
-     * Specific models for specialized domains
-
-2. **Structure**: Follow consistent organization
-   - Start with role and high-level description
-   - Break workflow into clear, numbered phases
-   - Use semantic XML-like tags for sections
-   - Include code examples where helpful
-
-3. **Context Loading**: Be explicit about when and how
-   - Essential context in dedicated section
-   - Dynamic context with clear extraction logic
-   - Show actual bash/code implementations
-   - Always include context-loader.cjs pattern
-
-4. **Agent Delegation**: If using agents
-   - Clear task descriptions
-   - Structured prompts with context
-   - Specify exact agent names
-
-5. **Documentation**: Make it scannable
-   - Use headers and formatting consistently
-   - Provide examples for complex concepts
-   - Include help section for quick reference
-</template>
-
-## 5. File Operations & Deployment
-
-<file_handling>
-Process the constructed command and deploy:
-
-1. **Determine File Path**:
-   ```javascript
-   let filePath;
-   const baseDir = location === 'project' ? '.claude/commands' : '~/.claude/commands';
-
-   if (commandName.includes(':')) {
-     // Handle namespaced commands: api:create → api/create.md
-     const [namespace, name] = commandName.split(':');
-     const dir = `${baseDir}/${namespace}`;
-     await mkdir(dir, { recursive: true });
-     filePath = `${dir}/${name}.md`;
-   } else {
-     filePath = `${baseDir}/${commandName}.md`;
-   }
-   ```
-
-2. **Write Command File**:
-   - Use Write tool to save constructed command
-   - Ensure proper directory structure exists
-   - Include metadata and usage examples
-
-3. **Update Inventory** (if available):
-   ```bash
-   node .claude/scripts/command-optimizer/inventory-manager.cjs add \
-     --command "/${commandName}" \
-     --description "${description}" \
-     --location "${location}" \
-     --optimized
-   ```
-</file_handling>
-
-## 5. Success Reporting
-
-Provide comprehensive success information:
+**Generate** comprehensive success report:
 
 ```
 ✅ **Command Created Successfully!**
 
 📁 **Location**: ${filePath}
 🚀 **Usage**: /${commandName} ${argumentHint || ''}
-🛠️ **Tools**: ${allowedTools.join(', ')}
-${modelRecommendation ? `🧠 **Model**: ${modelRecommendation}` : ''}
 
-**Key Features**:
-${keyFeatures.map(f => `- ${f}`).join('\n')}
+**PRIME Framework Compliance**:
+✅ **Purpose**: ${purpose.objective} → ${purpose.criteria}
+✅ **Role**: ${role.expertise} with ${role.authority}
+✅ **Inputs**: ${inputs.materials.length} context files loaded
+✅ **Method**: ${method.phases.length} phases with action verbs
+✅ **Expectations**: ${expectations.format} output defined
+
+**Validation Results**:
+- Structure: ✅ Valid
+- PRIME Compliance: ✅ Passed
+- Action Verbs: ✅ Enforced
+- Decision Logic: ✅ Included
 
 **Next Steps**:
 1. Test your command: /${commandName}
-2. Review the generated file for any customizations
-3. Share with your team or add to documentation
+2. Verify PRIME compliance in output
+3. Iterate if any component needs strengthening
 
-Ready to create another command? Just run /command:new again!
+Ready to create another PRIME-compliant command!
 ```
+
+Output: Deployed command with full validation report
+</expectations>
 
 ## Error Handling
 
 <error_handling>
-**Light Touch Error Handling**:
+**Handle** errors gracefully at each PRIME phase:
 
-1. **Missing Parameters**: Prompt for required information rather than failing
-2. **File Conflicts**: Ask user preference (overwrite/rename/cancel)
-3. **Agent Failures**: Provide fallback construction with basic template
-4. **Invalid Paths**: Auto-correct common issues (spaces, special chars)
+**Purpose Phase Errors**:
+- Missing objective: **Prompt** for clarification
+- Unclear criteria: **Request** specific metrics
+
+**Role Phase Errors**:
+- Undefined expertise: **Use** default generalist role
+- No authority specified: **Default** to advisory only
+
+**Inputs Phase Errors**:
+- Context loading fails: **Continue** with essentials only
+- Missing materials: **Prompt** user for files
+
+**Method Phase Errors**:
+- Agent unavailable: **Use** template-based fallback
+- Parallel execution fails: **Execute** sequentially
+
+**Expectations Phase Errors**:
+- Validation fails: **Warn** but allow override
+- File conflicts: **Ask** user preference
 
 **Graceful Degradation**:
-- If clarification agents unavailable: Use simplified Q&A
-- If construction agents unavailable: Use template-based generation
-- If context loading fails: Continue with essential documentation only
+- **Maintain** PRIME structure even with failures
+- **Document** any deviations in output
+- **Provide** clear recovery paths
 </error_handling>
+
+## PRIME Action Verb Reference
+
+<action_verbs>
+**Use** these action verbs to start all instructions:
+
+**Purpose Verbs**: Define, Establish, Determine, Specify, Articulate
+**Role Verbs**: Assume, Embody, Configure, Represent, Adopt
+**Input Verbs**: Gather, Collect, Load, Retrieve, Extract
+**Method Verbs**: Analyze, Generate, Transform, Execute, Validate
+**Expectation Verbs**: Format, Structure, Present, Deliver, Report
+
+**Decision Verbs**: Evaluate, Choose, Select, Decide, Branch
+**Error Verbs**: Handle, Catch, Recover, Retry, Fallback
+**Validation Verbs**: Check, Verify, Confirm, Assert, Test
+</action_verbs>
+
 </instructions>
 
 <help>
-🚀 **Command Creator**
+🚀 **Command Creator - PRIME Framework**
 
-Creates new Claude Code slash commands with AI assistance and interactive clarification.
+Creates new Claude Code slash commands using the PRIME framework for systematic, high-quality results.
+
+**PRIME Framework**:
+- **P**urpose: Define clear outcomes and success criteria
+- **R**ole: Establish AI expertise and decision authority
+- **I**nputs: Gather all materials and constraints
+- **M**ethod: Execute with action verbs and decision logic
+- **E**xpectations: Validate and deliver quality output
 
 **Usage:**
-- `/command:new <name>` - Create new command with guided setup
+- `/command:new <name>` - Create with PRIME-guided setup
 - `/command:new <name> --project` - Save to project commands
 - `/command:new <name> --personal` - Save to user directory
 - `/command:new <name> --model <model>` - Specify AI model
 
 **Features:**
-- Interactive Q&A to clarify requirements (max 3 rounds)
-- Automatic agent delegation for expert construction
-- Namespace support (e.g., `/api:create` → `api/create.md`)
-- Smart UX with structured question formatting
-- Dynamic context loading for relevant documentation
-- Template examples for bash execution and file references
+- PRIME-aligned interactive clarification (3 rounds max)
+- Action verb enforcement for all instructions
+- Parallel agent delegation for 3x faster creation
+- PRIME compliance validation before deployment
+- Dynamic context loading based on requirements
+- Decision tree generation for complex logic
 
 **Examples:**
 ```bash
@@ -483,5 +534,5 @@ Creates new Claude Code slash commands with AI assistance and interactive clarif
 /command:new analyze-code --personal
 ```
 
-Ready to create your perfect command!
+Ready to create your perfect PRIME-compliant command!
 </help>

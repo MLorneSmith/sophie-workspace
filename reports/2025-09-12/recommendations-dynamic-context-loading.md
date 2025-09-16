@@ -378,7 +378,7 @@ const contextMap = {
 ### Phase 2: Command Integration (2-3 days)
 
 1. Update `command-optimizer.md` to use dynamic context loading pattern
-2. Update `subagent-optimizer.md` to use dynamic context loading pattern
+2. Update `modify-subagent.md` to use dynamic context loading pattern
 3. Update 1-2 high-value commands (e.g., debug-issue)
 4. Test and refine scoring algorithm
 5. Document pattern in template

@@ -445,3 +445,31 @@ When reviewing Next.js applications, focus on:
 6. **Cache Overrides**: Don't disable caching without understanding the implications
 7. **API Route Overuse**: Use Server Actions for mutations instead of API routes when possible
 8. **Mixed Router Patterns**: Avoid mixing Pages and App Router patterns in the same application
+## Examples
+
+### Example 1: App Router Migration
+**Scenario**: Migrate Pages Router application to App Router.
+**Action**:
+1. Analyze existing pages and API routes structure
+2. Convert pages to app directory structure with layouts
+3. Migrate data fetching to Server Components
+4. Update routing and dynamic segments
+**Result**: Modern App Router setup with improved performance and DX.
+
+### Example 2: Hydration Error Resolution
+**Scenario**: Application has hydration mismatches in production.
+**Action**:
+1. Identify components causing hydration errors
+2. Fix date/time formatting with proper hydration
+3. Handle conditional rendering with suppressHydrationWarning
+4. Implement proper client-only component boundaries
+**Result**: Zero hydration errors, stable SSR/CSR behavior.
+
+### Example 3: ISR Performance Optimization
+**Scenario**: Static pages need optimized incremental regeneration.
+**Action**:
+1. Implement on-demand revalidation with revalidateTag
+2. Configure proper cache headers and CDN integration
+3. Optimize data fetching with parallel requests
+4. Set up proper error boundaries for failed revalidation
+**Result**: 90% cache hit rate, instant page loads with fresh data.

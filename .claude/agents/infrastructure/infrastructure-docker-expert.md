@@ -4,6 +4,7 @@ description: Docker containerization expert with deep knowledge of multi-stage b
 category: devops
 color: blue
 displayName: Docker Expert
+tools: "*"
 ---
 
 # Docker Expert

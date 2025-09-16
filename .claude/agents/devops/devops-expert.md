@@ -4,6 +4,7 @@ description: DevOps and Infrastructure expert with comprehensive knowledge of CI
 category: devops
 color: red
 displayName: DevOps Expert
+tools: "*"
 ---
 
 # DevOps Expert

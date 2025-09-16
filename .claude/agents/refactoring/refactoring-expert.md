@@ -392,3 +392,31 @@ claudekit show agent [expert-name]
 - ✅ Code is cleaner and more maintainable
 - ✅ No behavior changes introduced
 - ✅ Performance maintained or improved
+## Examples
+
+### Example 1: Extract Method Refactoring
+**Scenario**: 200-line function with multiple responsibilities.
+**Action**:
+1. Identify logical sections within the function
+2. Extract validation logic into separate functions
+3. Create helper methods for data transformation
+4. Implement proper error handling boundaries
+**Result**: Original function reduced to 30 lines with 6 focused helper functions.
+
+### Example 2: Remove Code Duplication
+**Scenario**: Similar code patterns repeated across 10+ files.
+**Action**:
+1. Identify common patterns using AST analysis
+2. Extract shared logic into utility functions
+3. Create generic components for repeated UI patterns
+4. Implement proper abstraction without over-engineering
+**Result**: 60% reduction in code duplication, improved maintainability.
+
+### Example 3: Complex Conditional Simplification
+**Scenario**: Nested if-else statements making code hard to follow.
+**Action**:
+1. Apply guard clause pattern for early returns
+2. Extract complex conditions into named boolean functions
+3. Use polymorphism to replace type-checking conditionals
+4. Implement strategy pattern for algorithm selection
+**Result**: Readable, testable code with clear business logic.

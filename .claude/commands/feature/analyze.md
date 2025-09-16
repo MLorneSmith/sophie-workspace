@@ -151,15 +151,15 @@ ${Any special considerations, warnings, or recommendations}
 Use the agent-to-work-stream mapping from `.claude/rules/agent-coordination.md`:
 
 - **Database Layer**: database-postgres-expert, database-mongodb-expert, database-expert
-- **API/Backend Layer**: nodejs-expert, nestjs-expert  
-- **Frontend Layer**: react-expert, react-performance-expert, nextjs-expert
+- **API/Backend Layer**: nodejs-expert  
+- **Frontend Layer**: react-expert, nextjs-expert
 - **Styling Layer**: frontend-css-styling-expert
-- **Testing Layer**: jest-testing-expert, vitest-testing-expert, testing-expert
+- **Testing Layer**: vitest-testing-expert
 - **E2E Testing**: e2e-playwright-expert
-- **Infrastructure**: infrastructure-docker-expert, infrastructure-github-actions-expert, devops-expert
+- **Infrastructure**: docker-expert, devops-expert
 - **Documentation**: documentation-expert
-- **Type System**: typescript-expert, typescript-type-expert
-- **Build/Config**: build-tools-webpack-expert, build-tools-vite-expert
+- **Type System**: typescript-expert
+- **Build/Config**: (removed - using Next.js built-in)
 
 ### 5. Validate Analysis
 
@@ -259,7 +259,7 @@ Implement user authentication with email/password and OAuth providers.
 **Files**:
 - tests/auth/*.test.ts
 - e2e/auth/*.spec.ts
-**Agent Type**: jest-testing-expert
+**Agent Type**: vitest-testing-expert
 **Can Start**: after Streams B & C
 **Estimated Hours**: 2
 **Dependencies**: Streams B, C
