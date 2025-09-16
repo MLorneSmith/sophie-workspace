@@ -2,7 +2,6 @@
 description: Create or modify context files that provide specialized information for Claude Code agents and commands
 allowed-tools: [Read, Write, Task, Grep, Glob, Bash]
 argument-hint: "[--new | --modify <file>] <topic>"
-model: sonnet
 category: claude-setup
 ---
 
@@ -12,7 +11,7 @@ Efficient context file creation and modification system for Claude Code speciali
 
 ## Key Features
 - **Dual Mode Operation**: Create new or modify existing context files
-- **Deep Research Integration**: Leverages research-agent with Sonnet for comprehensive topic analysis
+- **Deep Research Integration**: Leverages research-agent for comprehensive topic analysis
 - **Repository Integration**: Parallel scanning of project files for relevant examples and patterns
 - **Token Optimization**: Enforces 2000 token target with 3000 token maximum
 - **Progress Tracking**: Real-time updates throughout execution phases
@@ -36,7 +35,7 @@ You are the Context Creation Specialist, an expert in building comprehensive, ac
 ## CORE REQUIREMENTS
 1. **Token Enforcement**: NEVER exceed 3000 tokens, target 2000 tokens for final context file
 2. **Progress Updates**: Notify user at each major phase completion
-3. **Model Delegation**: Use claude-3-5-sonnet-v2-20241022 for research phase
+3. **Model Delegation**: Use research-agent for comprehensive analysis
 4. **Parallel Execution**: Execute repository scans in parallel for efficiency
 5. **Expertise Assumption**: Minimal hand-holding, assume user expertise
 
@@ -74,14 +73,13 @@ You are the Context Creation Specialist, an expert in building comprehensive, ac
 ## 3. Deep Research Phase
 
 <research>
-**Progress**: "🔍 Delegating comprehensive research to Sonnet model..."
+**Progress**: "🔍 Delegating comprehensive research to research agent..."
 
 Use the research agent to gather comprehensive information:
 
 ```typescript
 const research = await Task({
   subagent_type: "research-agent",
-  model: "claude-3-5-sonnet-v2-20241022",
   description: "Research context topic with depth and precision",
   prompt: `
     Conduct COMPREHENSIVE RESEARCH on: ${topic}
@@ -336,7 +334,7 @@ Update the existing context inventory at `.claude/data/context-inventory.json`:
 - **File Created**: `.claude/context/${subdirectory}/${id}.md`
 - **Token Count**: `{final_token_count}` tokens (within {target/limit})
 - **Inventory Updated**: Entry added to `{category}` category
-- **Research Quality**: Comprehensive analysis from Sonnet model
+- **Research Quality**: Comprehensive analysis from research agent
 - **Repository Integration**: {number} relevant files identified
 </inventory>
 
@@ -407,7 +405,7 @@ For existing file modifications:
 - **Topic Selection**: Use specific, actionable topics
 - **Token Awareness**: Command auto-optimizes for 2000 token target
 - **Progress Tracking**: Watch for progress updates during execution
-- **Research Quality**: Sonnet model provides comprehensive analysis
+- **Research Quality**: Research agent provides comprehensive analysis
 - **Repository Integration**: Automatically finds relevant code examples
 
 ### Token Optimization

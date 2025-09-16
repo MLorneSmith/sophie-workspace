@@ -9,87 +9,113 @@
 		"agentManagement": {
 			"name": "Agent Management",
 			"description": "Commands for managing AI agents and subagents",
-			"commandCount": 4,
+			"commandCount": 5,
 			"commands": [
 				{
-					"command": "/agents-md/cli",
-					"description": "CLI agent operations",
+					"command": "/agent-mgmt/create-subagent",
+					"description": "Create specialized domain expert subagents using action-oriented design and ReAct patterns",
 					"category": "agentManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "agent-mgmt/create-subagent.md"
+				},
+				{
+					"command": "/agent-mgmt/modify-subagent",
+					"description": "Execute targeted enhancements to existing subagents using action-oriented design and ReAct patterns",
+					"category": "agentManagement",
+					"optimized": false,
+					"path": "agent-mgmt/modify-subagent.md"
+				},
+				{
+					"command": "/agents-md/cli",
+					"description": "Capture CLI tool help documentation and add it to CLAUDE.md for AI assistant reference",
+					"category": "agentManagement",
+					"optimized": false,
+					"path": "agents-md/cli.md"
 				},
 				{
 					"command": "/agents-md/init",
-					"description": "Initialize agent environment",
+					"description": "Initialize project with AGENTS.md and create symlinks for all AI assistants",
 					"category": "agentManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "agents-md/init.md"
 				},
 				{
 					"command": "/agents-md/migration",
-					"description": "Migrate agent configurations",
+					"description": "Migrate AI assistant configuration to AGENTS.md standard with universal compatibility",
 					"category": "agentManagement",
-					"optimized": false
-				},
-				{
-					"command": "/create-subagent",
-					"description": "Create new specialized agent",
-					"category": "agentManagement",
-					"optimized": false
+					"optimized": false,
+					"path": "agents-md/migration.md"
 				}
 			]
 		},
 		"featureDevelopment": {
 			"name": "Feature Development",
 			"description": "End-to-end feature development workflow commands",
-			"commandCount": 8,
+			"commandCount": 9,
 			"isNew": true,
 			"commands": [
 				{
-					"command": "/feature/spec",
-					"description": "Create comprehensive feature specification",
+					"command": "/feature/analyze",
+					"description": "${Brief description of what needs to be done}",
 					"category": "featureDevelopment",
-					"optimized": false
-				},
-				{
-					"command": "/feature/plan",
-					"description": "Convert specification to technical implementation plan",
-					"category": "featureDevelopment",
-					"optimized": false
+					"optimized": true,
+					"path": "feature/analyze.md"
 				},
 				{
 					"command": "/feature/decompose",
-					"description": "Break implementation into executable tasks",
+					"description": "Clear, concise description of what needs to be done",
 					"category": "featureDevelopment",
-					"optimized": false
-				},
-				{
-					"command": "/feature/sync",
-					"description": "Push feature and tasks to GitHub as issues",
-					"category": "featureDevelopment",
-					"optimized": false
-				},
-				{
-					"command": "/feature/start",
-					"description": "Launch parallel agents for task execution",
-					"category": "featureDevelopment",
-					"optimized": false
-				},
-				{
-					"command": "/feature/status",
-					"description": "Check feature implementation progress",
-					"category": "featureDevelopment",
-					"optimized": false
-				},
-				{
-					"command": "/feature/update",
-					"description": "Update feature specification or plan",
-					"category": "featureDevelopment",
-					"optimized": false
+					"optimized": false,
+					"path": "feature/decompose.md"
 				},
 				{
 					"command": "/feature/discover",
-					"description": "Run discovery phase for new features",
+					"description": "Initiate adaptive discovery process for a new feature idea, with research depth based on feature type.",
 					"category": "featureDevelopment",
-					"optimized": false
+					"optimized": true,
+					"path": "feature/discover.md"
+				},
+				{
+					"command": "/feature/plan",
+					"description": "Brief technical summary of the implementation approach",
+					"category": "featureDevelopment",
+					"optimized": false,
+					"path": "feature/plan.md"
+				},
+				{
+					"command": "/feature/spec",
+					"description": "Create a comprehensive feature specification document.",
+					"category": "featureDevelopment",
+					"optimized": true,
+					"path": "feature/spec.md"
+				},
+				{
+					"command": "/feature/start",
+					"description": "Launch parallel agents to work on feature tasks.",
+					"category": "featureDevelopment",
+					"optimized": false,
+					"path": "feature/start.md"
+				},
+				{
+					"command": "/feature/status",
+					"description": "Check the implementation status of a feature.",
+					"category": "featureDevelopment",
+					"optimized": true,
+					"path": "feature/status.md"
+				},
+				{
+					"command": "/feature/sync",
+					"description": "Push feature implementation plan and tasks to GitHub as issues.",
+					"category": "featureDevelopment",
+					"optimized": false,
+					"path": "feature/sync.md"
+				},
+				{
+					"command": "/feature/update",
+					"description": "Post progress updates to GitHub for a feature or specific task.",
+					"category": "featureDevelopment",
+					"optimized": false,
+					"path": "feature/update.md"
 				}
 			]
 		},
@@ -100,33 +126,38 @@
 			"commands": [
 				{
 					"command": "/code-review",
-					"description": "Perform code review",
+					"description": "Multi-aspect code review using parallel code-review-expert agents",
 					"category": "developmentWorkflow",
-					"optimized": false
+					"optimized": true,
+					"path": "code-review.md"
 				},
 				{
 					"command": "/codecheck",
-					"description": "Execute comprehensive code quality checks with safe log extraction",
+					"description": "Execute comprehensive code quality checks (TypeScript, linting, formatting)",
 					"category": "developmentWorkflow",
-					"optimized": true
-				},
-				{
-					"command": "/write-tests",
-					"description": "Generate test cases",
-					"category": "developmentWorkflow",
-					"optimized": false
+					"optimized": false,
+					"path": "codecheck.md"
 				},
 				{
 					"command": "/validate-and-fix",
-					"description": "Validate and fix code issues",
+					"description": "Run quality checks and automatically fix issues using concurrent agents",
 					"category": "developmentWorkflow",
-					"optimized": false
+					"optimized": true,
+					"path": "validate-and-fix.md"
 				},
 				{
 					"command": "/workflow",
-					"description": "General workflow management",
+					"description": "Usage: `/run-workflow [workflow_name]`",
 					"category": "developmentWorkflow",
-					"optimized": false
+					"optimized": true,
+					"path": "workflow.md"
+				},
+				{
+					"command": "/write-tests",
+					"description": "Usage: `/write-tests [options]`",
+					"category": "developmentWorkflow",
+					"optimized": true,
+					"path": "write-tests.md"
 				}
 			]
 		},
@@ -137,27 +168,31 @@
 			"commands": [
 				{
 					"command": "/git/checkout",
-					"description": "Checkout branches",
+					"description": "Smart branch creation and switching with conventional naming",
 					"category": "gitOperations",
-					"optimized": false
+					"optimized": true,
+					"path": "git/checkout.md"
 				},
 				{
 					"command": "/git/commit",
-					"description": "Create commits",
+					"description": "Create git commits with security checks, multi-commit detection, and project-aware conventions",
 					"category": "gitOperations",
-					"optimized": false
+					"optimized": true,
+					"path": "git/commit.md"
 				},
 				{
 					"command": "/git/push",
-					"description": "Push to remote",
+					"description": "Intelligently push commits to remote with safety checks and insights",
 					"category": "gitOperations",
-					"optimized": false
+					"optimized": true,
+					"path": "git/push.md"
 				},
 				{
 					"command": "/git/status",
-					"description": "Check git status",
+					"description": "Intelligently analyze git status and provide insights about current project state",
 					"category": "gitOperations",
-					"optimized": false
+					"optimized": true,
+					"path": "git/status.md"
 				}
 			]
 		},
@@ -168,21 +203,24 @@
 			"commands": [
 				{
 					"command": "/checkpoint/create",
-					"description": "Create project checkpoint",
+					"description": "Create a git stash checkpoint with optional description",
 					"category": "checkpointManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "checkpoint/create.md"
 				},
 				{
 					"command": "/checkpoint/list",
-					"description": "List available checkpoints",
+					"description": "List all Claude Code checkpoints with time and description",
 					"category": "checkpointManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "checkpoint/list.md"
 				},
 				{
 					"command": "/checkpoint/restore",
-					"description": "Restore from checkpoint",
+					"description": "Restore project to a previous checkpoint",
 					"category": "checkpointManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "checkpoint/restore.md"
 				}
 			]
 		},
@@ -193,27 +231,31 @@
 			"commands": [
 				{
 					"command": "/do-task",
-					"description": "Execute task from specification",
+					"description": "Usage: `/do-task [task_reference]`",
 					"category": "taskIssueManagement",
-					"optimized": false
-				},
-				{
-					"command": "/log-task",
-					"description": "Log new task to GitHub",
-					"category": "taskIssueManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "do-task.md"
 				},
 				{
 					"command": "/log-issue",
-					"description": "Log issue to tracking system",
+					"description": "Usage: `/log-issue [output_format]` (default: github)",
 					"category": "taskIssueManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "log-issue.md"
+				},
+				{
+					"command": "/log-task",
+					"description": "Create comprehensive task specifications with GitHub integration and intelligent analysis",
+					"category": "taskIssueManagement",
+					"optimized": false,
+					"path": "log-task.md"
 				},
 				{
 					"command": "/research",
-					"description": "Conduct research on topics",
+					"description": "Conduct comprehensive research on any topic using specialized research agent",
 					"category": "taskIssueManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "research.md"
 				}
 			]
 		},
@@ -224,27 +266,31 @@
 			"commands": [
 				{
 					"command": "/spec/create",
-					"description": "Create specification",
+					"description": "Generate a spec file for a new feature or bugfix",
 					"category": "specificationManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "spec/create.md"
 				},
 				{
 					"command": "/spec/decompose",
-					"description": "Decompose specification",
+					"description": "Break down a validated specification into actionable implementation tasks",
 					"category": "specificationManagement",
-					"optimized": false
+					"optimized": false,
+					"path": "spec/decompose.md"
 				},
 				{
 					"command": "/spec/execute",
-					"description": "Execute specification",
+					"description": "Implement a validated specification by orchestrating concurrent agents",
 					"category": "specificationManagement",
-					"optimized": false
+					"optimized": false,
+					"path": "spec/execute.md"
 				},
 				{
 					"command": "/spec/validate",
-					"description": "Validate specification",
+					"description": "Analyzes a specification document to determine if it has enough detail for autonomous implementation",
 					"category": "specificationManagement",
-					"optimized": false
+					"optimized": true,
+					"path": "spec/validate.md"
 				}
 			]
 		},
@@ -255,126 +301,178 @@
 			"commands": [
 				{
 					"command": "/cicd-debug",
-					"description": "Debug CI/CD issues",
+					"description": "Usage: `/cicd-debug [options]`",
 					"category": "cicdDeployment",
-					"optimized": false
+					"optimized": true,
+					"path": "cicd-debug.md"
 				},
 				{
 					"command": "/pr",
-					"description": "Create pull request",
+					"description": "Usage: `/pr [pr_reference]`",
 					"category": "cicdDeployment",
-					"optimized": false
-				},
-				{
-					"command": "/promote-to-staging",
-					"description": "Promote to staging environment",
-					"category": "cicdDeployment",
-					"optimized": false
+					"optimized": true,
+					"path": "pr.md"
 				},
 				{
 					"command": "/promote-to-production",
-					"description": "Promote to production",
+					"description": "This command follows the SlideHeroes CI/CD pipeline design:",
 					"category": "cicdDeployment",
-					"optimized": false
+					"optimized": true,
+					"path": "promote-to-production.md"
+				},
+				{
+					"command": "/promote-to-staging",
+					"description": "This command follows the SlideHeroes CI/CD pipeline design:",
+					"category": "cicdDeployment",
+					"optimized": true,
+					"path": "promote-to-staging.md"
 				}
 			]
 		},
 		"infrastructureConfiguration": {
 			"name": "Infrastructure & Configuration",
 			"description": "System infrastructure and configuration commands",
-			"commandCount": 4,
+			"commandCount": 7,
 			"commands": [
 				{
-					"command": "/db-healthcheck",
-					"description": "Database health check",
+					"command": "/config/bash-timeout",
+					"description": "Configure bash timeout values in Claude Code settings",
 					"category": "infrastructureConfiguration",
-					"optimized": false
+					"optimized": true,
+					"path": "config/bash-timeout.md"
 				},
 				{
-					"command": "/config/bash-timeout",
-					"description": "Configure bash timeout",
+					"command": "/db-healthcheck",
+					"description": "Comprehensive health check for both local and remote Supabase instances, including Payload schema validation.",
 					"category": "infrastructureConfiguration",
-					"optimized": false
+					"optimized": false,
+					"path": "db-healthcheck.md"
+				},
+				{
+					"command": "/dev/change-worktree",
+					"description": "Change to an existing git worktree, properly handling directory persistence",
+					"category": "infrastructureConfiguration",
+					"optimized": false,
+					"path": "dev/change-worktree.md"
 				},
 				{
 					"command": "/dev/cleanup",
-					"description": "Clean development environment",
+					"description": "Clean up debug files, test artifacts, and status reports created during development",
 					"category": "infrastructureConfiguration",
-					"optimized": false
+					"optimized": true,
+					"path": "dev/cleanup.md"
 				},
 				{
-					"command": "/update-makerkit",
+					"command": "/dev/new-worktree",
+					"description": "Creates a new git worktree with feature branch from dev and copies local config files",
+					"category": "infrastructureConfiguration",
+					"optimized": false,
+					"path": "dev/new-worktree.md"
+				},
+				{
+					"command": "/dev/remove-worktree",
+					"description": "Removes an existing git worktree and its associated branch",
+					"category": "infrastructureConfiguration",
+					"optimized": false,
+					"path": "dev/remove-worktree.md"
+				},
+				{
+					"command": "/update/update-makerkit",
 					"description": "Execute semi-automated Makerkit upstream synchronization with intelligent conflict handling",
 					"category": "infrastructureConfiguration",
-					"optimized": true
+					"optimized": true,
+					"path": "update/update-makerkit.md"
 				}
 			]
 		},
 		"debuggingTesting": {
 			"name": "Debugging & Testing",
 			"description": "Debugging and test execution commands",
-			"commandCount": 2,
+			"commandCount": 5,
 			"commands": [
 				{
 					"command": "/debug-issue",
-					"description": "Debug specific issues",
+					"description": "Usage: `/debug-issue [issue_reference]`",
 					"category": "debuggingTesting",
-					"optimized": false
+					"optimized": false,
+					"path": "debug-issue.md"
 				},
 				{
-					"command": "/test",
-					"description": "Run tests",
+					"command": "/testwriters/e2e-test-writer",
+					"description": "Usage: `/e2e-test-writer [options]`",
 					"category": "debuggingTesting",
-					"optimized": false
+					"optimized": false,
+					"path": "testwriters/e2e-test-writer.md"
+				},
+				{
+					"command": "/testwriters/integration-test-writer",
+					"description": "Usage: `/integration-test-writer [options]`",
+					"category": "debuggingTesting",
+					"optimized": true,
+					"path": "testwriters/integration-test-writer.md"
+				},
+				{
+					"command": "/testwriters/test-discovery",
+					"description": "echo \"=== Vitest Test Discovery ===\" && \\",
+					"category": "debuggingTesting",
+					"optimized": false,
+					"path": "testwriters/test-discovery.md"
+				},
+				{
+					"command": "/testwriters/unit-test-writer",
+					"description": "Generates comprehensive Vitest unit tests with priority-driven selection and coverage tracking",
+					"category": "debuggingTesting",
+					"optimized": true,
+					"path": "testwriters/unit-test-writer.md"
 				}
 			]
 		},
 		"utilities": {
 			"name": "Utilities",
 			"description": "Utility and helper commands",
-			"commandCount": 7,
+			"commandCount": 6,
 			"commands": [
 				{
 					"command": "/claude-md-optimizer",
-					"description": "Optimizes CLAUDE.md files for maximum efficiency and clarity",
+					"description": "Optimizes CLAUDE.md files for maximum efficiency and clarity while maintaining essential project information",
 					"category": "utilities",
-					"optimized": true
+					"optimized": true,
+					"path": "claude-md-optimizer.md"
 				},
 				{
-					"command": "/command-optimizer",
-					"description": "Prompt design and optimization (--new | --modify)",
+					"command": "/command/enhance",
+					"description": "Enhance existing Claude Code commands using the 4-D Methodology with parallel agent execution and simplified clarification",
 					"category": "utilities",
-					"optimized": true
+					"optimized": true,
+					"path": "command/enhance.md"
 				},
 				{
-					"command": "/create-command",
-					"description": "Create new command",
+					"command": "/command/new",
+					"description": "Create new Claude Code slash commands with AI-assisted design and interactive clarification",
 					"category": "utilities",
-					"optimized": false
+					"optimized": true,
+					"path": "command/new.md"
+				},
+				{
+					"command": "/context/sync-context-inventory",
+					"description": "Synchronize the context inventory with actual files in .claude/context",
+					"category": "utilities",
+					"optimized": true,
+					"path": "context/sync-context-inventory.md"
 				},
 				{
 					"command": "/create-context",
 					"description": "Create or modify context files that provide specialized information for Claude Code agents and commands",
 					"category": "utilities",
-					"optimized": true
+					"optimized": false,
+					"path": "create-context.md"
 				},
 				{
-					"command": "/dev:remove-worktree",
-					"description": "Removes git worktree with two-phase approach for Claude's non-interactive environment",
+					"command": "/test",
+					"description": "Runs tests using the deterministic test controller script directly, bypassing agent timeouts.",
 					"category": "utilities",
-					"optimized": true
-				},
-				{
-					"command": "/new-worktree",
-					"description": "Creates a new git worktree with feature branch from dev",
-					"category": "utilities",
-					"optimized": true
-				},
-				{
-					"command": "/unit-test-writer",
-					"description": "Generates comprehensive Vitest unit tests with priority-driven selection, coverage tracking, and context-driven pattern loading",
-					"category": "utilities",
-					"optimized": true
+					"optimized": false,
+					"path": "test.md"
 				}
 			]
 		}
@@ -430,7 +528,7 @@
 			"/spec/* commands remain for standalone specification management",
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
-		"totalCommands": 5,
-		"lastUpdated": "2025-09-12T16:37:57.390Z"
+		"totalCommands": 56,
+		"lastUpdated": "2025-09-16T17:44:14.637Z"
 	}
 }

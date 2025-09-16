@@ -1,4 +1,5 @@
 ---
+command: /spec/create
 allowed-tools: Read, Write, Grep, Glob, TodoWrite, Task, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Bash(ls:*), Bash(echo:*), Bash(command:*), Bash(npm:*), Bash(claude:*)
 description: Generate a spec file for a new feature or bugfix
 category: validation

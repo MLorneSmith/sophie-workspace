@@ -291,3 +291,4 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 - NEVER proactively create documentation files unless requested
 - Check for malicious code when reading files
 - Use TodoWrite for complex task tracking
+- The project uses ES modules by default

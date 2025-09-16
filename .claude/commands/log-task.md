@@ -179,7 +179,7 @@ Delegate to specialist agents for feasibility analysis:
      specialists.push('database-expert');
    }
    if (requiresTesting) {
-     specialists.push('testing-expert');
+     specialists.push('vitest-testing-expert');
    }
    if (involvesInfrastructure) {
      specialists.push('devops-expert');
@@ -503,7 +503,7 @@ await TodoWrite(todos.map(t => ({ ...t, status: 'completed' })));
 | Styling | css-styling-expert | CSS, Tailwind, responsive design |
 | Backend | nodejs-expert | API routes, server logic |
 | Database | database-expert | Schema, migrations, queries |
-| Testing | testing-expert | Test strategy, coverage |
+| Testing | vitest-testing-expert | Test strategy, coverage |
 | Infrastructure | devops-expert | CI/CD, deployment |
 | TypeScript | typescript-expert | Type issues, generics |
 | Performance | refactoring-expert | Optimization, code quality |

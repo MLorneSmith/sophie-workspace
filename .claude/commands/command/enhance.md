@@ -2,7 +2,6 @@
 description: Enhance existing Claude Code commands using the 4-D Methodology with parallel agent execution and simplified clarification
 allowed-tools: [Read, Write, Bash, Task]
 argument-hint: <file-path>
-model: claude-opus-4-1
 ---
 
 # Command Enhancer
@@ -53,16 +52,7 @@ CRITICAL: This command uses a streamlined 2-round clarification process and para
 1. Display welcome: "🔧 **Enhancing Command with 4-D Methodology + Parallel Execution**"
 2. Parse file path from arguments (required)
 3. Read target file immediately
-4. **Simple Model Selection**:
-   ```
-   📊 **Model Recommendation**
-   This command will use: claude-opus-4-1 (optimized for complex reasoning)
-
-   Proceed with this model? [Y/n]
-   ```
-   - If user confirms or provides no input → continue
-   - If user specifies different model → update frontmatter accordingly
-5. Create backup of original file:
+4. Create backup of original file:
    ```bash
    cp "$FILE_PATH" "$FILE_PATH.backup.$(date +%Y%m%d_%H%M%S)"
    ```
