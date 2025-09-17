@@ -1,4 +1,5 @@
 # Command Quality Baseline Assessment
+
 Generated: 2025-09-17
 
 ## Executive Summary

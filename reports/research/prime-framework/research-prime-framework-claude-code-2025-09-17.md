@@ -14,6 +14,7 @@ The PRIME Framework represents a systematic approach to prompt engineering speci
 ## Research Methodology
 
 ### Data Sources
+
 - **Primary Source**: Local codebase analysis (73 Claude Code commands)
 - **Template Analysis**: Command template structure (.claude/templates/command-template.md)
 - **Implementation Examples**: High-scoring commands (enhance, do-task, feature-spec)
@@ -21,6 +22,7 @@ The PRIME Framework represents a systematic approach to prompt engineering speci
 - **Compliance Reports**: PRIME compliance matrices from recent evaluations
 
 ### Analysis Approach
+
 - Pattern extraction from exemplary commands
 - Action verb taxonomy development
 - Decision tree structure analysis
@@ -30,6 +32,7 @@ The PRIME Framework represents a systematic approach to prompt engineering speci
 ## Core PRIME Framework Definition
 
 ### Purpose-Driven Methodology
+
 PRIME differs from other frameworks (DEFINE, SCOPE, BUILD, CANVAS) by starting with **outcomes first**. Each phase builds systematically toward measurable objectives:
 
 ```
@@ -39,6 +42,7 @@ Strategic Tactical Context  Execution  Validation
 ```
 
 ### Sequential Dependency Structure
+
 Unlike parallel frameworks, PRIME enforces **strict sequential flow** where each phase depends on outputs from previous phases, creating coherent command logic.
 
 ## PRIME Component Analysis
@@ -48,12 +52,14 @@ Unlike parallel frameworks, PRIME enforces **strict sequential flow** where each
 **Core Definition**: Define precise outcomes, success criteria, and scope boundaries before any implementation begins.
 
 **Implementation Requirements**:
+
 1. **Primary Objective**: Single clear sentence defining the goal
 2. **Success Criteria**: Measurable outcomes and quality gates
 3. **Scope Boundaries**: Explicit inclusions and exclusions
 4. **Key Features**: Features mapped to measurable outcomes
 
 **Best Practice Patterns**:
+
 ```markdown
 **Define** clear outcomes and success criteria:
 1. **Primary Objective**: [One clear sentence defining the goal]
@@ -69,12 +75,14 @@ Unlike parallel frameworks, PRIME enforces **strict sequential flow** where each
 **Core Definition**: Establish AI identity, expertise level, decision-making authority, and interaction approach.
 
 **Implementation Requirements**:
+
 1. **Expertise Domain**: Specific technical expertise required
 2. **Experience Level**: Senior/Expert/Specialist designation
 3. **Decision Authority**: What AI can decide autonomously
 4. **Approach Style**: How AI should interact and communicate
 
 **Best Practice Patterns**:
+
 ```markdown
 **Establish** AI expertise and authority:
 1. **Expertise Domain**: [Technical expertise required]
@@ -86,6 +94,7 @@ Unlike parallel frameworks, PRIME enforces **strict sequential flow** where each
 **Action Verb Requirements**: **Assume**, **Embody**, **Configure**, **Adopt**, **Represent**, **Initialize**, **Establish**, **Position**
 
 **Critical Pattern**: Role definition must be **specific and actionable** rather than generic. Examples:
+
 - ✅ "Senior Implementation Engineer specializing in systematic task execution from GitHub issues"
 - ❌ "You are a helpful assistant"
 
@@ -94,12 +103,14 @@ Unlike parallel frameworks, PRIME enforces **strict sequential flow** where each
 **Core Definition**: Gather ALL necessary context, data, constraints, and materials before execution begins.
 
 **Implementation Requirements**:
+
 1. **Essential Context**: Always-required files and documentation
 2. **Dynamic Context Loading**: Adaptive context via specialized agents
 3. **User Clarification Loop**: Interactive requirement gathering
 4. **Materials & Constraints**: Parameters, limitations, examples, patterns
 
 **Best Practice Patterns**:
+
 ```markdown
 **Gather** all necessary materials before execution:
 
@@ -125,12 +136,14 @@ Task({
 **Core Definition**: Execute main workflow using action verbs, decision trees, and structured logic flow.
 
 **Implementation Requirements**:
+
 1. **Core Workflow Steps**: Numbered, sequential actions
 2. **Decision Trees**: Conditional logic with clear branching
 3. **Agent Delegation**: Specialized task distribution
 4. **Progress Tracking**: State management for complex operations
 
 **Best Practice Patterns**:
+
 ```markdown
 **Execute** the main workflow with action verbs:
 
@@ -152,6 +165,7 @@ ELSE:
 **Action Verb Requirements**: **Execute**, **Process**, **Generate**, **Transform**, **Analyze**, **Compute**, **Build**, **Construct**, **Implement**, **Apply**, **Integrate**, **Optimize**
 
 **Decision Tree Standards**:
+
 - Format: `IF [condition]: → **Action** → THEN **Next**`
 - Always include ELSE conditions
 - Use action verbs for all branches
@@ -162,12 +176,14 @@ ELSE:
 **Core Definition**: Set explicit output format, quality standards, validation criteria, and success reporting.
 
 **Implementation Requirements**:
+
 1. **Output Specification**: Format, structure, location, quality standards
 2. **Validation Checks**: Quality assurance and verification procedures
 3. **Error Handling**: Graceful failure management
 4. **Success Reporting**: Comprehensive completion metrics
 
 **Best Practice Patterns**:
+
 ```markdown
 **Validate** and **Deliver** results:
 
@@ -197,6 +213,7 @@ ELSE:
 **Fundamental Rule**: ALL instructions must start with action verbs. No exceptions.
 
 **Phase-Specific Verb Categories**:
+
 - **Purpose Phase**: Define, Establish, Determine, Specify
 - **Role Phase**: Assume, Configure, Adopt, Embody
 - **Input Phase**: Gather, Load, Collect, Extract
@@ -204,12 +221,14 @@ ELSE:
 - **Expectation Phase**: Validate, Deliver, Report, Present
 
 **Anti-Pattern Examples**:
+
 - ❌ "This phase will gather the necessary context"
 - ✅ "**Gather** all necessary materials before execution"
 
 ### 2. Decision Tree Patterns
 
 **Standard Format**:
+
 ```
 IF [condition]:
   → **[Action Verb]** [specific task]
@@ -223,6 +242,7 @@ ELSE:
 ```
 
 **Implementation Requirements**:
+
 - Always use action verbs in branches
 - Include comprehensive ELSE conditions
 - Maintain logical flow integrity
@@ -231,11 +251,13 @@ ELSE:
 ### 3. Context Loading Strategies
 
 **Essential Context** (Static):
+
 - Pre-defined files always required
 - Listed explicitly in command template
 - Loaded during Inputs phase
 
 **Dynamic Context Loading** (Adaptive):
+
 ```javascript
 Task({
   subagent_type: "context-discovery-expert",
@@ -254,11 +276,13 @@ Task({
 ### 4. Agent Delegation Patterns
 
 **When to Delegate**:
+
 - Task requires specialized expertise
 - Independent operations can run in parallel
 - Complex analysis benefits from domain-specific agents
 
 **Standard Delegation Format**:
+
 ```javascript
 Task({
   subagent_type: "[exact-agent-name]",
@@ -270,6 +294,7 @@ Task({
 ### 5. Progress Tracking Integration
 
 **TodoWrite Integration**:
+
 ```javascript
 todos = [
   {content: "Initialize system", status: "in_progress", activeForm: "Initializing"},
@@ -279,6 +304,7 @@ todos = [
 ```
 
 **Requirements**:
+
 - Use for multi-step workflows
 - Update status as steps complete
 - Provide user visibility for long operations
@@ -288,6 +314,7 @@ todos = [
 ### PRIME Compliance Checklist
 
 **Pre-Implementation Validation**:
+
 - [ ] **Purpose**: Clear objective with measurable success criteria?
 - [ ] **Purpose**: Scope boundaries explicitly defined?
 - [ ] **Role**: Expertise level and decision authority specified?
@@ -313,6 +340,7 @@ Based on analysis of 73 commands:
 | Expectations | 100.0% | 0 |
 
 **Commands with Full PRIME Compliance** (Sample):
+
 - `/command/enhance` (Score: 90.0)
 - `/do-task` (Score: 89.0)
 - `/feature/spec` (Score: 88.0)
@@ -325,6 +353,7 @@ Based on analysis of 73 commands:
 **Performance Optimization**: Execute independent agents simultaneously for 3-5x performance improvement.
 
 **Implementation Pattern**:
+
 ```javascript
 // Prepare shared context once
 const SHARED_CONTEXT = `
@@ -348,6 +377,7 @@ const agents = [
 **Validation**: Automated via token-counter.cjs
 
 **Optimization Hierarchy**:
+
 1. Remove verbose descriptions
 2. Consolidate examples
 3. Preserve core functionality
@@ -356,6 +386,7 @@ const agents = [
 ### 3. Error Recovery Patterns
 
 **Multi-Level Error Handling**:
+
 ```markdown
 ### Purpose Phase Errors
 - **Missing objective**: Request clarification
@@ -384,6 +415,7 @@ const agents = [
 ### Template Structure Requirements
 
 **Frontmatter Standards**:
+
 ```yaml
 ---
 description: [Clear, action-oriented description]
@@ -393,6 +425,7 @@ argument-hint: [User-friendly hint for arguments]
 ```
 
 **Content Organization**:
+
 1. Command overview with key features
 2. Essential context section
 3. PRIME-structured prompt with role definition
@@ -404,6 +437,7 @@ argument-hint: [User-friendly hint for arguments]
 ### Best Practice Implementation
 
 **Command Quality Indicators**:
+
 - ✅ Action verbs start every instruction
 - ✅ Decision trees handle all conditional logic
 - ✅ Context loading is intelligent and adaptive
@@ -414,12 +448,14 @@ argument-hint: [User-friendly hint for arguments]
 ## Future Research Directions
 
 ### Emerging Patterns
+
 1. **Multi-Modal PRIME**: Extension to image/audio inputs
 2. **Federated Context**: Cross-repository context sharing
 3. **Adaptive Complexity**: Dynamic PRIME phase weighting
 4. **Performance Metrics**: Command execution optimization
 
 ### Implementation Opportunities
+
 1. **PRIME Validator**: Automated compliance checking
 2. **Context Graph**: Intelligent relationship mapping
 3. **Agent Orchestra**: Coordinated multi-agent workflows
@@ -430,6 +466,7 @@ argument-hint: [User-friendly hint for arguments]
 The PRIME Framework represents a **mature, systematic approach** to prompt engineering that has achieved remarkable success in Claude Code implementation. With 98.2% compliance rates and measurably improved command quality, PRIME establishes itself as the **definitive methodology** for creating reliable, maintainable AI command interfaces.
 
 **Key Insights**:
+
 1. **Sequential dependency** ensures logical command flow
 2. **Action-verb requirements** create executable instructions
 3. **Dynamic context loading** optimizes token usage
