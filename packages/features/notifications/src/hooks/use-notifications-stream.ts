@@ -11,7 +11,11 @@ type Notification = {
   link: string | null;
 };
 
-export function useNotificationsStream(params: {
+export function useNotificationsStream({
+  onNotifications,
+  accountIds,
+  enabled,
+}: {
   onNotifications: (notifications: Notification[]) => void;
   accountIds: string[];
   enabled: boolean;
@@ -19,6 +23,10 @@ export function useNotificationsStream(params: {
   const client = useSupabase();
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const channel = client.channel('notifications-channel');
 
     const subscription = channel
@@ -27,12 +35,11 @@ export function useNotificationsStream(params: {
         {
           event: 'INSERT',
           schema: 'public',
-          filter: `account_id=in.(${params.accountIds.join(', ')})`,
+          filter: `account_id=in.(${accountIds.join(', ')})`,
           table: 'notifications',
         },
         (payload) => {
-          console.log('payload', payload);
-          params.onNotifications([payload.new as Notification]);
+          onNotifications([payload.new as Notification]);
         },
       )
       .subscribe();
@@ -40,5 +47,5 @@ export function useNotificationsStream(params: {
     return () => {
       void subscription?.unsubscribe();
     };
-  }, [client, params]);
+  }, [client, onNotifications, accountIds, enabled]);
 }
