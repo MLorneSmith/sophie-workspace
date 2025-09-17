@@ -8,8 +8,8 @@ set -euo pipefail
 
 # Configuration
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-AIIGNORE_FILE="${PROJECT_ROOT}/.claude/patterns/.aiignore"
-DEFAULT_AIIGNORE="${PROJECT_ROOT}/.claude/patterns/.aiignore.default"
+AIIGNORE_FILE="${PROJECT_ROOT}/.claude/security/patterns.ignore"
+DEFAULT_AIIGNORE="${PROJECT_ROOT}/.claude/security/patterns.ignore.default"
 
 # Default sensitive patterns
 DEFAULT_PATTERNS=(

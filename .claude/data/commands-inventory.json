@@ -9,220 +9,55 @@
 		"agentManagement": {
 			"name": "Agent Management",
 			"description": "Commands for managing AI agents and subagents",
-			"commandCount": 5,
-			"commands": [
-				{
-					"command": "/agent-mgmt/create-subagent",
-					"description": "Create specialized domain expert subagents using action-oriented design and ReAct patterns",
-					"category": "agentManagement",
-					"optimized": true,
-					"path": "agent-mgmt/create-subagent.md"
-				},
-				{
-					"command": "/agent-mgmt/modify-subagent",
-					"description": "Execute targeted enhancements to existing subagents using action-oriented design and ReAct patterns",
-					"category": "agentManagement",
-					"optimized": false,
-					"path": "agent-mgmt/modify-subagent.md"
-				},
-				{
-					"command": "/agents-md/cli",
-					"description": "Capture CLI tool help documentation and add it to CLAUDE.md for AI assistant reference",
-					"category": "agentManagement",
-					"optimized": false,
-					"path": "agents-md/cli.md"
-				},
-				{
-					"command": "/agents-md/init",
-					"description": "Initialize project with AGENTS.md and create symlinks for all AI assistants",
-					"category": "agentManagement",
-					"optimized": true,
-					"path": "agents-md/init.md"
-				},
-				{
-					"command": "/agents-md/migration",
-					"description": "Migrate AI assistant configuration to AGENTS.md standard with universal compatibility",
-					"category": "agentManagement",
-					"optimized": false,
-					"path": "agents-md/migration.md"
-				}
-			]
+			"commandCount": 0,
+			"commands": []
 		},
 		"featureDevelopment": {
 			"name": "Feature Development",
 			"description": "End-to-end feature development workflow commands",
-			"commandCount": 9,
+			"commandCount": 0,
 			"isNew": true,
-			"commands": [
-				{
-					"command": "/feature/analyze",
-					"description": "${Brief description of what needs to be done}",
-					"category": "featureDevelopment",
-					"optimized": true,
-					"path": "feature/analyze.md"
-				},
-				{
-					"command": "/feature/decompose",
-					"description": "Clear, concise description of what needs to be done",
-					"category": "featureDevelopment",
-					"optimized": false,
-					"path": "feature/decompose.md"
-				},
-				{
-					"command": "/feature/discover",
-					"description": "Initiate adaptive discovery process for a new feature idea, with research depth based on feature type.",
-					"category": "featureDevelopment",
-					"optimized": true,
-					"path": "feature/discover.md"
-				},
-				{
-					"command": "/feature/plan",
-					"description": "Brief technical summary of the implementation approach",
-					"category": "featureDevelopment",
-					"optimized": false,
-					"path": "feature/plan.md"
-				},
-				{
-					"command": "/feature/spec",
-					"description": "Create a comprehensive feature specification document.",
-					"category": "featureDevelopment",
-					"optimized": true,
-					"path": "feature/spec.md"
-				},
-				{
-					"command": "/feature/start",
-					"description": "Launch parallel agents to execute feature implementation tasks with intelligent coordination",
-					"category": "featureDevelopment",
-					"optimized": true,
-					"path": "feature/start.md"
-				},
-				{
-					"command": "/feature/status",
-					"description": "Check the implementation status of a feature.",
-					"category": "featureDevelopment",
-					"optimized": true,
-					"path": "feature/status.md"
-				},
-				{
-					"command": "/feature/sync",
-					"description": "Push feature implementation plan and tasks to GitHub as issues.",
-					"category": "featureDevelopment",
-					"optimized": false,
-					"path": "feature/sync.md"
-				},
-				{
-					"command": "/feature/update",
-					"description": "Post progress updates to GitHub for a feature or specific task.",
-					"category": "featureDevelopment",
-					"optimized": false,
-					"path": "feature/update.md"
-				}
-			]
+			"commands": []
 		},
 		"developmentWorkflow": {
 			"name": "Development Workflow",
 			"description": "Code quality and development workflow commands",
-			"commandCount": 5,
+			"commandCount": 3,
 			"commands": [
 				{
-					"command": "/code-review",
+					"command": "/core/code-review",
 					"description": "Multi-aspect code review using parallel code-review-expert agents",
 					"category": "developmentWorkflow",
 					"optimized": true,
-					"path": "code-review.md"
+					"path": "core/code-review.md"
 				},
 				{
-					"command": "/codecheck",
-					"description": "Execute comprehensive code quality checks (TypeScript, linting, formatting)",
-					"category": "developmentWorkflow",
-					"optimized": false,
-					"path": "codecheck.md"
-				},
-				{
-					"command": "/validate-and-fix",
-					"description": "Run quality checks and automatically fix issues using concurrent agents",
+					"command": "/core/codecheck",
+					"description": "Execute comprehensive code quality validation with auto-fix and parallel analysis",
 					"category": "developmentWorkflow",
 					"optimized": true,
-					"path": "validate-and-fix.md"
+					"path": "core/codecheck.md"
 				},
 				{
 					"command": "/workflow",
-					"description": "Usage: `/run-workflow [workflow_name]`",
+					"description": "Execute professional workflows with intelligent loading, validation, and error recovery using PRIME framework methodology",
 					"category": "developmentWorkflow",
 					"optimized": true,
-					"path": "workflow.md"
-				},
-				{
-					"command": "/write-tests",
-					"description": "Usage: `/write-tests [options]`",
-					"category": "developmentWorkflow",
-					"optimized": true,
-					"path": "write-tests.md"
+					"path": "development/workflow.md"
 				}
 			]
 		},
 		"gitOperations": {
 			"name": "Git Operations",
 			"description": "Git version control commands",
-			"commandCount": 4,
-			"commands": [
-				{
-					"command": "/git/checkout",
-					"description": "Create or switch git branches with intelligent naming conventions and validation",
-					"category": "gitOperations",
-					"optimized": true,
-					"path": "git/checkout.md"
-				},
-				{
-					"command": "/git/commit",
-					"description": "Create git commits with security checks, multi-commit detection, and project-aware conventions",
-					"category": "gitOperations",
-					"optimized": true,
-					"path": "git/commit.md"
-				},
-				{
-					"command": "/git/push",
-					"description": "Intelligently push commits to remote with safety checks and insights",
-					"category": "gitOperations",
-					"optimized": true,
-					"path": "git/push.md"
-				},
-				{
-					"command": "/git/status",
-					"description": "Analyze git repository state with intelligent insights and actionable recommendations",
-					"category": "gitOperations",
-					"optimized": true,
-					"path": "git/status.md"
-				}
-			]
+			"commandCount": 0,
+			"commands": []
 		},
 		"checkpointManagement": {
 			"name": "Checkpoint Management",
 			"description": "Project state checkpoint commands",
-			"commandCount": 3,
-			"commands": [
-				{
-					"command": "/checkpoint/create",
-					"description": "Create a git stash checkpoint to save current work state without modifying working directory",
-					"category": "checkpointManagement",
-					"optimized": true,
-					"path": "checkpoint/create.md"
-				},
-				{
-					"command": "/checkpoint/list",
-					"description": "List all Claude Code checkpoints with time and description",
-					"category": "checkpointManagement",
-					"optimized": true,
-					"path": "checkpoint/list.md"
-				},
-				{
-					"command": "/checkpoint/restore",
-					"description": "Restore project files to a previous checkpoint with automatic backup of current changes",
-					"category": "checkpointManagement",
-					"optimized": true,
-					"path": "checkpoint/restore.md"
-				}
-			]
+			"commandCount": 0,
+			"commands": []
 		},
 		"taskIssueManagement": {
 			"name": "Task & Issue Management",
@@ -230,256 +65,346 @@
 			"commandCount": 4,
 			"commands": [
 				{
-					"command": "/do-task",
+					"command": "/project/do-task",
 					"description": "Execute GitHub task implementation with intelligent parallelization and dynamic context loading",
 					"category": "taskIssueManagement",
 					"optimized": true,
-					"path": "do-task.md"
+					"path": "project/do-task.md"
 				},
 				{
-					"command": "/log-issue",
-					"description": "Usage: `/log-issue [output_format]` (default: github)",
+					"command": "/project/log-issue",
+					"description": "Create comprehensive issue reports with automated diagnostics and GitHub integration",
 					"category": "taskIssueManagement",
 					"optimized": true,
-					"path": "log-issue.md"
+					"path": "project/log-issue.md"
 				},
 				{
-					"command": "/log-task",
+					"command": "/project/log-task",
 					"description": "Create comprehensive task specifications with GitHub integration and intelligent analysis",
 					"category": "taskIssueManagement",
 					"optimized": false,
-					"path": "log-task.md"
+					"path": "project/log-task.md"
 				},
 				{
-					"command": "/research",
-					"description": "Conduct comprehensive research on any topic using specialized research agent",
+					"command": "/project/research",
+					"description": "Conduct comprehensive research using parallel search strategies and multiple sources",
 					"category": "taskIssueManagement",
 					"optimized": true,
-					"path": "research.md"
+					"path": "project/research.md"
 				}
 			]
 		},
 		"specificationManagement": {
 			"name": "Specification Management",
 			"description": "Standalone specification management commands",
-			"commandCount": 4,
-			"commands": [
-				{
-					"command": "/spec/create",
-					"description": "Generate a spec file for a new feature or bugfix",
-					"category": "specificationManagement",
-					"optimized": true,
-					"path": "spec/create.md"
-				},
-				{
-					"command": "/spec/decompose",
-					"description": "Break down a validated specification into actionable implementation tasks",
-					"category": "specificationManagement",
-					"optimized": false,
-					"path": "spec/decompose.md"
-				},
-				{
-					"command": "/spec/execute",
-					"description": "Implement a validated specification by orchestrating concurrent agents",
-					"category": "specificationManagement",
-					"optimized": false,
-					"path": "spec/execute.md"
-				},
-				{
-					"command": "/spec/validate",
-					"description": "Analyzes a specification document to determine if it has enough detail for autonomous implementation",
-					"category": "specificationManagement",
-					"optimized": true,
-					"path": "spec/validate.md"
-				}
-			]
+			"commandCount": 0,
+			"commands": []
 		},
 		"cicdDeployment": {
 			"name": "CI/CD & Deployment",
 			"description": "Continuous integration and deployment commands",
-			"commandCount": 4,
+			"commandCount": 1,
 			"commands": [
 				{
-					"command": "/cicd-debug",
-					"description": "Usage: `/cicd-debug [options]`",
+					"command": "/deployment/cicd-debug",
+					"description": "Orchestrate comprehensive CI/CD pipeline failure investigation using specialized agents with automated GitHub issue creation",
 					"category": "cicdDeployment",
 					"optimized": true,
-					"path": "cicd-debug.md"
-				},
-				{
-					"command": "/pr",
-					"description": "Usage: `/pr [pr_reference]`",
-					"category": "cicdDeployment",
-					"optimized": true,
-					"path": "pr.md"
-				},
-				{
-					"command": "/promote-to-production",
-					"description": "Promote changes from staging to production environment following GitOps CI/CD pipeline",
-					"category": "cicdDeployment",
-					"optimized": true,
-					"path": "promote-to-production.md"
-				},
-				{
-					"command": "/promote-to-staging",
-					"description": "This command follows the SlideHeroes CI/CD pipeline design:",
-					"category": "cicdDeployment",
-					"optimized": true,
-					"path": "promote-to-staging.md"
+					"path": "deployment/cicd-debug.md"
 				}
 			]
 		},
 		"infrastructureConfiguration": {
 			"name": "Infrastructure & Configuration",
 			"description": "System infrastructure and configuration commands",
-			"commandCount": 8,
+			"commandCount": 1,
 			"commands": [
 				{
-					"command": "/config/bash-timeout",
-					"description": "Configure bash timeout values in Claude Code settings",
+					"command": "/infrastructure/db-healthcheck",
+					"description": "Comprehensive database health assessment with performance monitoring and schema validation",
 					"category": "infrastructureConfiguration",
 					"optimized": true,
-					"path": "config/bash-timeout.md"
-				},
-				{
-					"command": "/db-healthcheck",
-					"description": "Comprehensive health check for both local and remote Supabase instances, including Payload schema validation.",
-					"category": "infrastructureConfiguration",
-					"optimized": false,
-					"path": "db-healthcheck.md"
-				},
-				{
-					"command": "/dev/change-worktree",
-					"description": "Change to an existing git worktree, properly handling directory persistence",
-					"category": "infrastructureConfiguration",
-					"optimized": false,
-					"path": "dev/change-worktree.md"
-				},
-				{
-					"command": "/dev/cleanup",
-					"description": "Clean up debug files, test artifacts, and status reports created during development",
-					"category": "infrastructureConfiguration",
-					"optimized": true,
-					"path": "dev/cleanup.md"
-				},
-				{
-					"command": "/dev/new-worktree",
-					"description": "Creates a new git worktree with feature branch from dev and copies local config files",
-					"category": "infrastructureConfiguration",
-					"optimized": false,
-					"path": "dev/new-worktree.md"
-				},
-				{
-					"command": "/dev/remove-worktree",
-					"description": "Removes an existing git worktree and its associated branch",
-					"category": "infrastructureConfiguration",
-					"optimized": false,
-					"path": "dev/remove-worktree.md"
-				},
-				{
-					"command": "/update/update-makerkit",
-					"description": "Execute semi-automated Makerkit upstream synchronization with intelligent conflict handling",
-					"category": "infrastructureConfiguration",
-					"optimized": true,
-					"path": "update/update-makerkit.md"
-				},
-				{
-					"command": "/update:payload",
-					"description": "Update Payload CMS to latest version with automated dependency management and validation",
-					"category": "infrastructureConfiguration",
-					"optimized": true,
-					"path": "update/payload.md"
+					"path": "infrastructure/db-healthcheck.md"
 				}
 			]
 		},
 		"debuggingTesting": {
 			"name": "Debugging & Testing",
 			"description": "Debugging and test execution commands",
-			"commandCount": 5,
+			"commandCount": 1,
 			"commands": [
 				{
-					"command": "/debug-issue",
+					"command": "/development/debug-issue",
 					"description": "Analyze GitHub issues and launch systematic debugging sessions with parallel expert consultation and intelligent context loading",
 					"category": "debuggingTesting",
 					"optimized": true,
-					"path": "debug-issue.md"
-				},
-				{
-					"command": "/testwriters/e2e-test-writer",
-					"description": "Usage: `/e2e-test-writer [options]`",
-					"category": "debuggingTesting",
-					"optimized": false,
-					"path": "testwriters/e2e-test-writer.md"
-				},
-				{
-					"command": "/testwriters/integration-test-writer",
-					"description": "Usage: `/integration-test-writer [options]`",
-					"category": "debuggingTesting",
-					"optimized": true,
-					"path": "testwriters/integration-test-writer.md"
-				},
-				{
-					"command": "/testwriters/test-discovery",
-					"description": "echo \"=== Vitest Test Discovery ===\" && \\",
-					"category": "debuggingTesting",
-					"optimized": false,
-					"path": "testwriters/test-discovery.md"
-				},
-				{
-					"command": "/testwriters/unit-test-writer",
-					"description": "Generates comprehensive Vitest unit tests with priority-driven selection and coverage tracking",
-					"category": "debuggingTesting",
-					"optimized": true,
-					"path": "testwriters/unit-test-writer.md"
+					"path": "development/debug-issue.md"
 				}
 			]
 		},
 		"utilities": {
 			"name": "Utilities",
 			"description": "Utility and helper commands",
-			"commandCount": 6,
+			"commandCount": 37,
 			"commands": [
 				{
-					"command": "/claude-md-optimizer",
-					"description": "Optimizes CLAUDE.md files for maximum efficiency and clarity while maintaining essential project information",
+					"command": "/core/git/checkout",
+					"description": "Create or switch git branches with intelligent naming conventions and validation",
 					"category": "utilities",
 					"optimized": true,
-					"path": "claude-md-optimizer.md"
+					"path": "core/git/checkout.md"
 				},
 				{
-					"command": "/command/enhance",
-					"description": "Enhance existing Claude Code commands using the 4-D Methodology with parallel agent execution and simplified clarification",
+					"command": "/core/git/commit",
+					"description": "Create intelligent git commits with security validation and convention awareness",
 					"category": "utilities",
 					"optimized": true,
-					"path": "command/enhance.md"
+					"path": "core/git/commit.md"
 				},
 				{
-					"command": "/command/new",
-					"description": "Create new Claude Code slash commands with AI-assisted design and interactive clarification",
+					"command": "/core/git/push",
+					"description": "Execute intelligent git push with comprehensive safety validation and automatic conflict resolution",
 					"category": "utilities",
 					"optimized": true,
-					"path": "command/new.md"
+					"path": "core/git/push.md"
 				},
 				{
-					"command": "/context/sync-context-inventory",
-					"description": "Synchronize the context inventory with actual files in .claude/context",
+					"command": "/core/git/status",
+					"description": "Analyze git repository state with intelligent insights and actionable recommendations",
 					"category": "utilities",
 					"optimized": true,
-					"path": "context/sync-context-inventory.md"
+					"path": "core/git/status.md"
 				},
 				{
-					"command": "/create-context",
-					"description": "Create or modify context files that provide specialized information for Claude Code agents and commands",
-					"category": "utilities",
-					"optimized": false,
-					"path": "create-context.md"
-				},
-				{
-					"command": "/test",
+					"command": "/core/test",
 					"description": "Execute comprehensive test suites with intelligent orchestration and detailed reporting",
 					"category": "utilities",
 					"optimized": false,
-					"path": "test.md"
+					"path": "core/test.md"
+				},
+				{
+					"command": "/deployment/promote-production",
+					"description": "Execute zero-downtime production deployment with comprehensive safety validation and automated rollback capability",
+					"category": "utilities",
+					"optimized": true,
+					"path": "deployment/promote-production.md"
+				},
+				{
+					"command": "/deployment/promote-staging",
+					"description": "Deploy changes from dev to staging environment using GitOps CI/CD pipeline with validation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "deployment/promote-staging.md"
+				},
+				{
+					"command": "/development/checkpoints/create",
+					"description": "Create a git stash checkpoint to save current work state without modifying working directory",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/checkpoints/create.md"
+				},
+				{
+					"command": "/development/checkpoints/list",
+					"description": "Display and manage code checkpoints with restoration capabilities and metadata analysis",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/checkpoints/list.md"
+				},
+				{
+					"command": "/development/checkpoints/restore",
+					"description": "Restore project files to a previous checkpoint with automatic backup of current changes",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/checkpoints/restore.md"
+				},
+				{
+					"command": "/development/cleanup",
+					"description": "Execute comprehensive cleanup of debug files, test artifacts, and development reports with intelligent pattern detection and safety validation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/cleanup.md"
+				},
+				{
+					"command": "/development/worktrees/change-worktree",
+					"description": "Switch working directory to specified git worktree with proper environment handling",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/worktrees/change-worktree.md"
+				},
+				{
+					"command": "/development/worktrees/new-worktree",
+					"description": "Create isolated git worktree with feature branch and preserved local configurations",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/worktrees/new-worktree.md"
+				},
+				{
+					"command": "/development/worktrees/remove-worktree",
+					"description": "Execute safe git worktree removal with automatic validation and cleanup",
+					"category": "utilities",
+					"optimized": true,
+					"path": "development/worktrees/remove-worktree.md"
+				},
+				{
+					"command": "/feature/1-discover",
+					"description": "[PHASE 1 - Optional] Adaptive discovery process for new features with research depth based on feature type",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/1-discover.md"
+				},
+				{
+					"command": "/feature/1-spec",
+					"description": "[PHASE 1] Create comprehensive feature specifications using PRIME framework with interactive discovery and validation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/1-spec.md"
+				},
+				{
+					"command": "/feature/2-analyze",
+					"description": "[PHASE 2 - Optional] Analyze feature tasks to identify parallel work streams for maximum efficiency",
+					"category": "utilities",
+					"optimized": false,
+					"path": "features/2-analyze.md"
+				},
+				{
+					"command": "/feature/3-decompose",
+					"description": "[PHASE 3] Break feature implementation plans into parallelizable, actionable tasks with dependency tracking",
+					"category": "utilities",
+					"optimized": false,
+					"path": "features/3-decompose.md"
+				},
+				{
+					"command": "/feature/3-sync",
+					"description": "[PHASE 3] Push feature implementation plan and tasks to GitHub as issues with parallel processing and comprehensive validation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/3-sync.md"
+				},
+				{
+					"command": "/feature/4-start",
+					"description": "[PHASE 4] Launch parallel agents to execute feature implementation tasks with intelligent coordination",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/4-start.md"
+				},
+				{
+					"command": "/feature/4-status",
+					"description": "[PHASE 4 - Anytime] Check comprehensive implementation status of features with GitHub integration",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/4-status.md"
+				},
+				{
+					"command": "/feature/4-update",
+					"description": "[PHASE 4] Post comprehensive progress updates to GitHub with metrics, validation, and parallel status gathering",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/4-update.md"
+				},
+				{
+					"command": "/features/2-plan",
+					"description": "Convert feature specification to technical implementation plan with parallel agent analysis",
+					"category": "utilities",
+					"optimized": true,
+					"path": "features/2-plan.md"
+				},
+				{
+					"command": "/infrastructure/config/bash-timeout",
+					"description": "Configure Claude Code bash command timeout values for long-running operations",
+					"category": "utilities",
+					"optimized": true,
+					"path": "infrastructure/config/bash-timeout.md"
+				},
+				{
+					"command": "/infrastructure/updates/payload",
+					"description": "Update Payload CMS to latest version with automated dependency management, version alignment, and comprehensive validation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "infrastructure/updates/payload.md"
+				},
+				{
+					"command": "/infrastructure/updates/update-makerkit",
+					"description": "Intelligently synchronize Makerkit upstream changes with automated conflict resolution and safety protocols",
+					"category": "utilities",
+					"optimized": false,
+					"path": "infrastructure/updates/update-makerkit.md"
+				},
+				{
+					"command": "/meta/claude-md-optimizer",
+					"description": "Optimize CLAUDE.md files for maximum efficiency using PRIME framework with comprehensive analysis, validation, and agent delegation",
+					"category": "utilities",
+					"optimized": true,
+					"path": "meta/claude-md-optimizer.md"
+				},
+				{
+					"command": "/meta/commands/enhance",
+					"description": "Enhance existing Claude Code commands using the 4-D Methodology with parallel agent execution and simplified clarification",
+					"category": "utilities",
+					"optimized": true,
+					"path": "meta/commands/enhance.md"
+				},
+				{
+					"command": "/meta/commands/new",
+					"description": "Create new Claude Code slash commands with AI-assisted design and interactive clarification",
+					"category": "utilities",
+					"optimized": true,
+					"path": "meta/commands/new.md"
+				},
+				{
+					"command": "/meta/context/create",
+					"description": "Create or modify context files that provide specialized information for Claude Code agents and commands",
+					"category": "utilities",
+					"optimized": true,
+					"path": "meta/context/create.md"
+				},
+				{
+					"command": "/meta/context/sync-inventory",
+					"description": "Synchronize context inventory JSON with actual filesystem, update token counts, rebuild graph, and validate relationships",
+					"category": "utilities",
+					"optimized": false,
+					"path": "meta/context/sync-inventory.md"
+				},
+				{
+					"command": "/meta/subagents/create",
+					"description": "Create specialized domain expert subagents using action-oriented design and ReAct patterns",
+					"category": "utilities",
+					"optimized": true,
+					"path": "meta/subagents/create.md"
+				},
+				{
+					"command": "/meta/subagents/modify",
+					"description": "Execute targeted enhancements to existing subagents using action-oriented design and ReAct patterns",
+					"category": "utilities",
+					"optimized": false,
+					"path": "meta/subagents/modify.md"
+				},
+				{
+					"command": "/testing/e2e-test-writer",
+					"description": "Generate comprehensive end-to-end tests with Playwright for complete user journey validation and cross-browser testing",
+					"category": "utilities",
+					"optimized": false,
+					"path": "testing/e2e-test-writer.md"
+				},
+				{
+					"command": "/testing/integration-test-writer",
+					"description": "Create comprehensive integration tests for component interactions, APIs, databases, and service-to-service communication",
+					"category": "utilities",
+					"optimized": true,
+					"path": "testing/integration-test-writer.md"
+				},
+				{
+					"command": "/testing/test-discovery",
+					"description": "Analyze codebase to identify and prioritize missing tests with intelligent coverage mapping",
+					"category": "utilities",
+					"optimized": false,
+					"path": "testing/test-discovery.md"
+				},
+				{
+					"command": "/testing/unit-test-writer",
+					"description": "Generates comprehensive Vitest unit tests from prioritized test coverage database with intelligent mock generation and TypeScript safety",
+					"category": "utilities",
+					"optimized": true,
+					"path": "testing/unit-test-writer.md"
 				}
 			]
 		}
@@ -535,7 +460,7 @@
 			"/spec/* commands remain for standalone specification management",
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
-		"totalCommands": 57,
-		"lastUpdated": "2025-09-16T20:46:00.000Z"
+		"totalCommands": 47,
+		"lastUpdated": "2025-09-17T18:43:36.612Z"
 	}
 }

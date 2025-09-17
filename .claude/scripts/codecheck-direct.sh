@@ -151,7 +151,26 @@ main() {
     local type_status=0
     local lint_status=0
     local format_status=0
-    
+
+    # Create git checkpoint for safety (can be restored with: git stash pop)
+    if git diff --quiet && git diff --cached --quiet; then
+        echo "📸 No uncommitted changes to checkpoint"
+    else
+        echo "📸 Creating git checkpoint..."
+        git stash push -m "codecheck-checkpoint-$(date +%Y%m%d-%H%M%S)" --quiet
+        echo "✅ Checkpoint created (restore with: git stash pop)"
+    fi
+
+    # Capture baseline metrics for comparison
+    echo "📊 Capturing baseline metrics..."
+    local baseline_errors=0
+    local baseline_warnings=0
+    if [ -f "$CODECHECK_STATUS_FILE" ]; then
+        IFS='|' read -r prev_status prev_time prev_errors prev_warnings prev_type_errors < "$CODECHECK_STATUS_FILE" || true
+        baseline_errors=${prev_errors:-0}
+        baseline_warnings=${prev_warnings:-0}
+    fi
+
     # Phase 1: TypeScript (blocking)
     run_typecheck || type_status=$?
     
@@ -220,6 +239,25 @@ main() {
     echo "🔍 Linting: $([ $lint_status -eq 0 ] && echo "✅ PASS" || echo "❌ FAIL") (errors: $lint_errors, warnings: $lint_warnings)"
     echo "✨ Formatting: $([ $format_status -eq 0 ] && echo "✅ PASS" || echo "❌ FAIL")"
     echo ""
+
+    # Show metrics improvement if baseline exists
+    if [ $baseline_errors -gt 0 ] || [ $baseline_warnings -gt 0 ]; then
+        local error_diff=$((baseline_errors - total_errors))
+        local warning_diff=$((baseline_warnings - lint_warnings))
+        echo "📊 Metrics Improvement:"
+        if [ $error_diff -gt 0 ]; then
+            echo "   Errors reduced: $baseline_errors → $total_errors (-$error_diff)"
+        elif [ $error_diff -lt 0 ]; then
+            echo "   Errors increased: $baseline_errors → $total_errors (+$((-error_diff)))"
+        fi
+        if [ $warning_diff -gt 0 ]; then
+            echo "   Warnings reduced: $baseline_warnings → $lint_warnings (-$warning_diff)"
+        elif [ $warning_diff -lt 0 ]; then
+            echo "   Warnings increased: $baseline_warnings → $lint_warnings (+$((-warning_diff)))"
+        fi
+        echo ""
+    fi
+
     echo "📈 Overall: $overall_status"
     echo "📍 Status file: $CODECHECK_STATUS_FILE"
     echo "   Content: $(cat "$CODECHECK_STATUS_FILE")"

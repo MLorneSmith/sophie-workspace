@@ -245,6 +245,20 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 - `/test --unit` - Unit tests only
 - `/test --e2e` - E2E tests only
 
+### Test Command Architecture
+
+**IMPORTANT**: Test commands are intentionally kept separate to maintain clarity and avoid over-engineering.
+
+| Command | Purpose | Rationale for Separation |
+|---------|---------|-------------------------|
+| `/test` | Execute/orchestrate test suites | Complex 480-line orchestrator with timeout bypassing |
+| `/testwriters/unit-test-writer` | Generate unit tests | Standard test generation patterns |
+| `/testwriters/integration-test-writer` | Generate integration tests | 1800+ lines with PRIME framework and mocking |
+| `/testwriters/e2e-test-writer` | Generate E2E tests | Playwright-specific with Page Object Models |
+| `/testwriters/test-discovery` | Analyze missing tests | Foundational analysis used by other commands |
+
+**Design Principle**: Each command does one thing well (Unix philosophy). Consolidation would create unmaintainable 3000+ line mega-commands.
+
 ### Performance Monitoring
 
 - `pnpm analyze` - Bundle analysis

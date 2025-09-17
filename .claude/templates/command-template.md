@@ -84,41 +84,38 @@ Example:
 [List specific files that are always needed]
 
 #### Dynamic Context Loading (OPTIONAL - for adaptive commands)
-**Analyze** and **Load** context based on task specifics:
+**Delegate** context discovery to specialized agent for intelligent, multi-stage analysis:
 
-```bash
+```
 # When to use: Commands adapting to project structure, tech stack, or patterns
-# Requires: .claude/scripts/command-analyzer.cjs and context-loader.cjs
+# Implementation: Use context-discovery-expert agent via Task tool
 
-# Step 1: Analyze target to extract metadata
-COMMAND_METADATA=$(node .claude/scripts/command-analyzer.cjs "$TARGET_FILE" --json)
+Use Task tool with:
+- subagent_type: "context-discovery-expert"
+- description: "Discover relevant context for [command-type] operation"
+- prompt: Include:
+  - Task context/description (what the command is doing)
+  - Command type (debug, feature, test, refactor, etc.)
+  - Token budget (default 4000)
+  - Max results (default 5)
+  - Any specific keywords or domains to prioritize
 
-# Step 2: Extract patterns from metadata
-TOOL_PATTERNS=$(echo "$COMMAND_METADATA" | jq -r '.tools.task | join(" ")')
-AGENT_SPECIALISTS=$(echo "$COMMAND_METADATA" | jq -r '.agents.specialists | join(" ")')
-TECHNOLOGIES=$(echo "$COMMAND_METADATA" | jq -r '.codePatterns.technologies | join(" ")')
-WORKFLOW_PHASES=$(echo "$COMMAND_METADATA" | jq -r '[.phases | to_entries[] | select(.value == true) | .key] | join(" ")')
+The expert will:
+1. Extract key signals from task context
+2. Execute context-loader.cjs with enriched query
+3. Apply graph-based enhancement for relationships
+4. Validate relevance and identify gaps
+5. Return prioritized Read commands ready for execution
 
-# Step 3: Build enriched query
-ENRICHED_QUERY="$TOOL_PATTERNS $AGENT_SPECIALISTS $TECHNOLOGIES $WORKFLOW_PHASES [command-specific-keywords]"
+Example delegation:
+Task {
+  subagent_type: "context-discovery-expert",
+  description: "Find context for debugging database timeout",
+  prompt: "Discover relevant context for debugging a database connection timeout error in production. Command type: debug-issue, Token budget: 4000, Focus on: PostgreSQL configuration, connection pooling, error handling"
+}
 
-# Step 4: Load relevant context using context-inventory.json
-CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
-  --query="$ENRICHED_QUERY" \
-  --command="[command-name]" \
-  --max-results=3 \
-  --token-budget=4000 \
-  --format=paths \
-  --metadata="$COMMAND_METADATA")
-
-# Step 5: Process and read returned files
-while IFS= read -r line; do
-  if [[ $line =~ ^Read ]]; then
-    FILE_PATH=$(echo "$line" | sed 's/Read //')
-    echo "Loading context: $FILE_PATH"
-    # Use Read tool for $FILE_PATH
-  fi
-done <<< "$CONTEXT_FILES"
+Note: The expert handles all metadata extraction, query enrichment, and validation automatically.
+See .claude/agents/commands/context-discovery-expert.md for full capabilities.
 ```
 
 #### User Clarification Loop (OPTIONAL - for unclear requirements)
@@ -328,7 +325,7 @@ fi
 <patterns>
 <!-- Command-specific patterns and techniques -->
 ### Implemented Patterns
-- **Dynamic Context Loading**: Using context-loader.cjs
+- **Dynamic Context Loading**: Via context-discovery-expert agent
 - **User Clarification**: Interactive requirement gathering
 - **Parallel Execution**: Optimized task processing
 - **Agent Delegation**: Specialized expertise
@@ -387,9 +384,9 @@ Only include what's necessary:
 ### 4. Context Loading
 Be explicit about implementation:
 - **Essential Context**: Always list specific required files
-- **Dynamic Context**: Use command-analyzer.cjs + context-loader.cjs pattern
-- Show actual bash/code implementations, not pseudocode
-- Reference `.claude/data/context-inventory.json` registry
+- **Dynamic Context**: Delegate to context-discovery-expert agent via Task tool
+- Show actual Task tool invocations with proper parameters
+- The agent handles context-inventory.json and all script execution internally
 
 ### 5. Pattern Implementation
 Include working implementations for optional patterns:
@@ -426,7 +423,7 @@ Before finalizing any command, verify:
 - [ ] **Role**: Expertise level and decision authority specified?
 - [ ] **Role**: Approach style matches command purpose?
 - [ ] **Inputs**: Essential context files listed?
-- [ ] **Inputs**: Dynamic loading pattern implemented correctly?
+- [ ] **Inputs**: Dynamic loading via context-discovery-expert agent configured correctly?
 - [ ] **Inputs**: Materials gathered BEFORE Method phase?
 - [ ] **Method**: ALL instructions start with action verbs?
 - [ ] **Method**: Decision trees for conditional logic included?
@@ -446,7 +443,7 @@ Ask these questions to determine which patterns to include:
    - Does command need to adapt to project structure?
    - Will it analyze different file types or technologies?
    - Does context vary based on user's codebase?
-   → Include context-loader.cjs pattern
+   → Delegate to context-discovery-expert agent
 
 2. **User Clarification** (Phase I)
    - Are there multiple valid approaches?
