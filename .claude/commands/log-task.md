@@ -20,7 +20,7 @@ Create structured task specifications with multi-round clarification, specialist
 ## Essential Context
 <!-- Always read for this command -->
 - Read .claude/context/constraints.md
-- Read .claude/context/database-schema.md
+- Read .claude/context/database/schema.md
 - Read .claude/context/standards/code-standards.md
 
 ## Prompt

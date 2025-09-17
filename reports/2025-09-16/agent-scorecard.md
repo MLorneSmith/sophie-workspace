@@ -1,4 +1,5 @@
 # Agent Quality Scorecard
+
 Generated: 2025-09-16
 
 ## Complete Agent Rankings
@@ -41,6 +42,7 @@ Generated: 2025-09-16
 ## Quality Metrics by Category
 
 ### Structure & Format (20 points max)
+
 | Agent | Score | Missing Elements |
 |-------|-------|------------------|
 | log-issue | 17/20 | Model mismatch: opus model doesn't match medium complexity |
@@ -55,6 +57,7 @@ Generated: 2025-09-16
 | code-review-expert | 20/20 | None |
 
 ### Best Practices (30 points max)
+
 | Agent | Score | Key Issues |
 |-------|-------|------------|
 | typescript-expert | 23/30 | Missing success/completion criteria, Missing stopping/completion criteria |
@@ -71,11 +74,13 @@ Generated: 2025-09-16
 ## Action Items Summary
 
 ### Immediate Actions (Can be automated)
+
 1. Add tool definitions to 0 agents
 2. Add model specifications to 21 agents
 3. Add categories to 0 agents
 
 ### Manual Improvements Required
+
 1. Convert 0 agents to action-first
 2. Add examples to 1 agents
 3. Document error handling in 1 agents

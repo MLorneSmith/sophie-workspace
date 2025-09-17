@@ -1,317 +1,254 @@
 ---
-description: Removes an existing git worktree and its associated branch
-allowed-tools: [Bash, Read]
-argument-hint: [<worktree-name>]
+description: Execute safe git worktree removal with automatic validation and cleanup
+allowed-tools: [Bash(git:*), Read, Glob, Task]
+argument-hint: <worktree-name|--list>
+category: development
+mcp-tools: mcp__code-reasoning__code-reasoning
 ---
 
-# Remove Worktree
+# Remove Worktree Command
 
-Safely removes a git worktree and its associated feature branch using a two-phase approach optimized for Claude's non-interactive bash execution.
+Execute safe git worktree removal with comprehensive validation, automatic cleanup, and recovery patterns.
 
-## Key Features
-- **Two-phase approach:** Discovery first, then confirmed removal
-- **Self-healing:** Automatically fixes line ending issues
-- **Discovery mode:** Lists available worktrees for user selection
-- **Non-interactive removal:** Executes removal with specific worktree name
-- **Safety checks:** Validates uncommitted changes before removal
-- **Flexible options:** Force mode, keep branch, auto-confirm
-- **Error resilient:** Handles various edge cases gracefully
+## 1. PURPOSE
 
-## Command Line Options
-- `--list`: Discovery mode - list available worktrees only
-- `-n, --name NAME`: Specify worktree to remove
-- `-y, --yes`: Non-interactive mode (auto-confirm)
-- `-f, --force`: Force removal even with uncommitted changes
-- `-k, --keep-branch`: Keep branch after removing worktree
-- `-h, --help`: Show help message
+Define the strategic objective and measurable success criteria.
 
-## Recommended Parameters
-```yml
-temperature: 0.3  # Lower temperature for consistent, deterministic execution
-verbosity: "low"  # Minimal output, focus on task completion
+### Primary Objective
+Remove git worktrees safely with zero data loss and automatic cleanup of associated branches and directories.
+
+### Success Criteria
+- ✅ Worktree removed without data loss (100% safety)
+- ✅ Associated branch cleaned up properly
+- ✅ No orphaned directories or references
+- ✅ Uncommitted changes detected and preserved
+- ✅ Operation completes in <5 seconds
+
+### Scope Boundaries
+- **Included**: Worktree removal, branch cleanup, safety validation
+- **Excluded**: Main repository operations, remote branch management
+- **Constraints**: Non-interactive execution, automatic recovery
+
+## 2. ROLE
+
+You are a **Git Worktree Management Expert** with deep expertise in:
+- Git internals and worktree architecture
+- Safe data preservation strategies
+- Automated cleanup and recovery patterns
+- Non-interactive command execution
+
+### Authority Level
+- **Full control** over local worktree operations
+- **Decision authority** for force removal when safe
+- **Validation enforcement** for data protection
+
+### Expertise Domains
+- Git worktree lifecycle management
+- File system cleanup operations
+- Data integrity validation
+- Error recovery strategies
+
+## 3. INSTRUCTIONS
+
+Execute these action-oriented steps for safe worktree removal.
+
+### Phase 1: Discovery & Validation
+
+1. **Validate** git repository context:
+   ```bash
+   git rev-parse --show-toplevel || exit 1
+   ```
+
+2. **Load** dynamic context for current state:
+   ```bash
+   # Check if worktree helper script exists
+   test -f .claude/scripts/worktree/remove-worktree.sh || create_helper_script
+   ```
+
+3. **Discover** available worktrees:
+   ```bash
+   git worktree list --porcelain | grep "^worktree" | grep -v "^$(git rev-parse --show-toplevel)$"
+   ```
+
+4. **Analyze** each worktree for:
+   - Uncommitted changes (`git diff --quiet`)
+   - Untracked files (`git ls-files --others`)
+   - Branch merge status (`git branch --merged`)
+   - Directory accessibility
+
+5. **Present** discovery results with safety indicators
+
+### Phase 2: Targeted Removal
+
+6. **Verify** target worktree exists and is accessible
+
+7. **Check** for data loss risks:
+   - Uncommitted changes → Offer stash creation
+   - Unmerged branches → Confirm force deletion
+   - Active processes → Kill or wait
+
+8. **Execute** removal with appropriate flags:
+   ```bash
+   # Safe removal with validation
+   git worktree remove [--force] "$WORKTREE_PATH"
+   ```
+
+9. **Clean** associated branch if requested:
+   ```bash
+   git branch -d "$BRANCH_NAME" || git branch -D "$BRANCH_NAME"
+   ```
+
+10. **Validate** cleanup completeness:
+    - No orphaned directories
+    - No dangling references
+    - Git config cleaned
+
+## 4. MATERIALS
+
+Context, constraints, and resources for safe worktree removal.
+
+### Dynamic Context Loading
+
+```bash
+# Load project-specific git configuration
+CONTEXT_FILE=".claude/context/git-worktree-patterns.md"
+if [ -f "$CONTEXT_FILE" ]; then
+    source "$CONTEXT_FILE"
+fi
 ```
 
-## Prompt
-```markdown
-<role>
-You are a git worktree cleanup assistant that safely removes worktrees and their branches using a two-phase discovery and removal approach.
-</role>
+### Safety Constraints
 
-<instructions>
-Your task is to remove an existing git worktree using a two-phase approach optimized for Claude's non-interactive environment:
+| Risk Level | Condition | Action |
+|------------|-----------|--------|
+| **Critical** | Uncommitted changes | Stash or abort |
+| **High** | Unmerged branch | Confirm force delete |
+| **Medium** | Active processes | Wait or kill |
+| **Low** | Clean worktree | Proceed normally |
 
-**PHASE 1: Discovery**
-1. First, ensure the script at `.claude/scripts/worktree/remove-worktree.sh` exists and has proper line endings
-2. Run the script with `--list` flag to discover available worktrees
-3. Present the available options to the user in your response (not in bash)
-4. Ask the user to confirm which worktree they want to remove
+### Helper Script Template
 
-**PHASE 2: Removal** (only after user confirmation)
-5. Execute the script with specific flags based on user's choice:
-   - Use `-n <worktree-name> -y` for non-interactive removal
-   - Add `-f` if user mentions forcing or has uncommitted changes
-   - Add `-k` if user wants to keep the branch
-6. Handle any errors that occur during execution
-7. After successful removal, return to main mode: source ~/.zshrc && claude-main
-8. Report the results concisely
-
-**Key Rules:**
-- NEVER use interactive mode (no `read` commands)
-- ALWAYS get user confirmation through Claude chat, not bash prompts
-- Use the `--list` flag for discovery phase
-- Use `-n <name> -y` for confirmed removal
-- The script automatically handles line ending issues
-
-Always use the script for worktree removal. Never attempt to remove worktrees manually.
-</instructions>
-
-<script_content>
+```bash
 #!/bin/bash
-# Git Worktree Removal Script
-# Location: .claude/scripts/worktree/remove-worktree.sh
+# Auto-generated worktree removal helper
+set -euo pipefail
 
-set -e
+# Validation functions
+validate_worktree() {
+    git worktree list | grep -q "$1"
+}
 
-# Self-heal line endings if needed
-if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "darwin"* ]]; then
-    # Check if file has CRLF line endings
-    if file "$0" 2>/dev/null | grep -q "CRLF" || od -c "$0" 2>/dev/null | head -1 | grep -q '\\r'; then
-        echo "Fixing line endings in script..."
-        TEMP_FILE=$(mktemp)
-        tr -d '\r' < "$0" > "$TEMP_FILE"
-        cat "$TEMP_FILE" > "$0"
-        rm "$TEMP_FILE"
-        echo "Line endings fixed. Re-executing..."
-        exec "$0" "$@"
-    fi
-fi
+check_uncommitted() {
+    cd "$1" && ! git diff --quiet
+}
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Removal with recovery
+remove_safe() {
+    local worktree="$1"
+    local branch="$2"
 
-# Parse command line arguments
-FORCE_MODE=false
-NON_INTERACTIVE=false
-TARGET_WORKTREE=""
-SKIP_BRANCH_DELETE=false
-LIST_ONLY=false
+    # Create safety backup
+    tar -czf "/tmp/worktree-backup-$(date +%s).tar.gz" "$worktree" 2>/dev/null || true
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --list)
-            LIST_ONLY=true
-            shift
-            ;;
-        -f|--force)
-            FORCE_MODE=true
-            shift
-            ;;
-        -y|--yes)
-            NON_INTERACTIVE=true
-            shift
-            ;;
-        -n|--name)
-            TARGET_WORKTREE="$2"
-            shift 2
-            ;;
-        -k|--keep-branch)
-            SKIP_BRANCH_DELETE=true
-            shift
-            ;;
-        -h|--help)
-            echo "Usage: $0 [OPTIONS]"
-            echo ""
-            echo "Options:"
-            echo "  --list              List available worktrees only (discovery mode)"
-            echo "  -f, --force         Force removal even with uncommitted changes"
-            echo "  -y, --yes          Non-interactive mode (auto-confirm)"
-            echo "  -n, --name NAME    Specify worktree name/path to remove"
-            echo "  -k, --keep-branch  Keep the branch after removing worktree"
-            echo "  -h, --help         Show this help message"
-            echo ""
-            echo "Examples:"
-            echo "  $0 --list                             # Discovery mode - list worktrees"
-            echo "  $0 -n feature-ccpm -y                 # Remove specific worktree"
-            echo "  $0 -n feature-ccpm -y -f              # Force remove with uncommitted changes"
-            echo "  $0 -n feature-ccpm -y -k              # Remove worktree but keep branch"
-            exit 0
-            ;;
-        *)
-            echo -e "${RED}Unknown option: $1${NC}"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
-    esac
-done
+    # Remove worktree
+    git worktree remove ${FORCE:+--force} "$worktree"
 
-# Get main repository path
-MAIN_REPO_PATH="$(git rev-parse --show-toplevel 2>/dev/null)"
-
-# Validate we're in a git repository
-if [ -z "$MAIN_REPO_PATH" ]; then
-    echo -e "${RED}Error: Not in a git repository${NC}"
-    exit 1
-fi
-
-# Get list of worktrees (excluding main)
-WORKTREES=$(git worktree list --porcelain | grep "^worktree" | sed 's/^worktree //' | grep -v "^$MAIN_REPO_PATH$" || true)
-
-if [ -z "$WORKTREES" ]; then
-    echo -e "${YELLOW}No worktrees found to remove.${NC}"
-    echo "Only the main repository exists at: $MAIN_REPO_PATH"
-    exit 0
-fi
-
-# Convert to array
-IFS=$'\n'
-WORKTREE_ARRAY=($WORKTREES)
-
-# Handle list-only mode (discovery phase)
-if [ "$LIST_ONLY" = true ]; then
-    echo "Available worktrees:"
-    echo "===================="
-    for i in "${!WORKTREE_ARRAY[@]}"; do
-        WORKTREE_PATH="${WORKTREE_ARRAY[$i]}"
-        # Extract branch name from worktree path
-        BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
-        echo "$((i+1)). $WORKTREE_PATH"
-        echo "   Branch: $BRANCH_NAME"
-        
-        # Check for uncommitted changes
-        if [ -d "$WORKTREE_PATH" ]; then
-            cd "$WORKTREE_PATH"
-            if ! git diff --quiet || ! git diff --staged --quiet; then
-                echo -e "   ${YELLOW}⚠ Has uncommitted changes${NC}"
-            fi
-            cd "$MAIN_REPO_PATH"
-        fi
-    done
-    exit 0
-fi
-
-# Handle target worktree if specified
-if [ -n "$TARGET_WORKTREE" ]; then
-    WORKTREE_PATH=""
-    
-    # Try to find matching worktree
-    for wt in "${WORKTREE_ARRAY[@]}"; do
-        if [[ "$wt" == *"$TARGET_WORKTREE"* ]] || [[ "$wt" == "$TARGET_WORKTREE" ]]; then
-            WORKTREE_PATH="$wt"
-            break
-        fi
-    done
-    
-    if [ -z "$WORKTREE_PATH" ]; then
-        echo -e "${RED}Error: Worktree '$TARGET_WORKTREE' not found${NC}"
-        echo ""
-        echo "Available worktrees:"
-        for wt in "${WORKTREE_ARRAY[@]}"; do
-            echo "  - $wt"
-        done
-        exit 1
-    fi
-    
-    BRANCH_NAME=$(git worktree list --porcelain | grep -A 2 "^worktree $WORKTREE_PATH" | grep "^branch" | sed 's/^branch refs\/heads\///')
-    
-else
-    echo -e "${RED}Error: No worktree specified for removal${NC}"
-    echo "Use --list to see available worktrees, then specify with -n option"
-    exit 1
-fi
-
-echo ""
-echo "Selected worktree: $WORKTREE_PATH"
-echo "Associated branch: $BRANCH_NAME"
-
-# Check for uncommitted changes if worktree still exists
-if [ -d "$WORKTREE_PATH" ] && [ "$FORCE_MODE" = false ]; then
-    cd "$WORKTREE_PATH"
-    if ! git diff --quiet || ! git diff --staged --quiet; then
-        echo ""
-        echo -e "${YELLOW}Warning: Uncommitted changes detected in worktree!${NC}"
-        git status --short
-        echo ""
-        
-        if [ "$NON_INTERACTIVE" = true ]; then
-            echo -e "${RED}Cannot proceed in non-interactive mode with uncommitted changes.${NC}"
-            echo "Use --force to override this check."
-            exit 1
-        fi
-    fi
-    cd "$MAIN_REPO_PATH"
-fi
-
-# Remove the worktree
-echo ""
-echo "Removing worktree..."
-if [ "$FORCE_MODE" = true ]; then
-    git worktree remove --force "$WORKTREE_PATH"
-    echo -e "${GREEN}✓ Worktree force removed${NC}"
-else
-    if git worktree remove "$WORKTREE_PATH" 2>/dev/null; then
-        echo -e "${GREEN}✓ Worktree removed successfully${NC}"
-    else
-        # Try force removal if normal removal fails
-        echo -e "${YELLOW}Normal removal failed, attempting force removal...${NC}"
-        git worktree remove --force "$WORKTREE_PATH"
-        echo -e "${GREEN}✓ Worktree force removed${NC}"
-    fi
-fi
-
-# Delete the branch (unless skipped)
-if [ "$SKIP_BRANCH_DELETE" = false ]; then
-    echo "Deleting branch: $BRANCH_NAME"
-    if [ "$FORCE_MODE" = true ]; then
-        git branch -D "$BRANCH_NAME"
-        echo -e "${GREEN}✓ Branch force deleted${NC}"
-    else
-        if git branch -d "$BRANCH_NAME" 2>/dev/null; then
-            echo -e "${GREEN}✓ Branch deleted successfully${NC}"
-        else
-            # Force delete if normal delete fails (e.g., unmerged changes)
-            echo -e "${YELLOW}Branch has unmerged changes. Force deleting...${NC}"
-            git branch -D "$BRANCH_NAME"
-            echo -e "${GREEN}✓ Branch force deleted${NC}"
-        fi
-    fi
-fi
-
-# Success message
-echo ""
-echo -e "${GREEN}✅ Successfully removed worktree!${NC}"
-echo "   Removed worktree: $WORKTREE_PATH"
-if [ "$SKIP_BRANCH_DELETE" = false ]; then
-    echo "   Deleted branch: $BRANCH_NAME"
-else
-    echo "   Branch kept: $BRANCH_NAME"
-fi
-</script_content>
-
-<execution_tips>
-**Two-Phase Execution:**
-
-**Phase 1 - Discovery:**
-- Run: `bash .claude/scripts/worktree/remove-worktree.sh --list`
-- Present results to user in your response
-- Ask user to confirm which worktree to remove
-
-**Phase 2 - Removal:** 
-- Only execute after user confirmation
-- Use: `bash .claude/scripts/worktree/remove-worktree.sh -n <worktree-name> -y`
-- Add `-f` for force mode if needed
-- Add `-k` to keep branch if requested
-- After successful removal, run: `source ~/.zshrc && claude-main`
-
-**Key Points:**
-- Keep responses brief and action-focused
-- Handle all user interaction through Claude chat, not bash prompts
-- Always use the `--list` flag first for discovery
-- Never use interactive mode with `read` commands
-- After removal, return to main mode with `claude-main`
-- If the script fails, report the exact error message
-</execution_tips>
+    # Clean branch
+    [ -z "$KEEP_BRANCH" ] && git branch -D "$branch"
+}
 ```
+
+### Error Recovery Patterns
+
+1. **Stale worktree references**: `git worktree prune`
+2. **Locked worktrees**: Remove `.git/worktrees/*/locked`
+3. **Orphaned directories**: Manual `rm -rf` after validation
+4. **Config corruption**: `git worktree repair`
+
+## 5. EXPECTATIONS
+
+Define success criteria, output format, and validation methods.
+
+### Output Format
+
+```text
+🔍 DISCOVERY PHASE
+==================
+Found 3 worktrees:
+
+1. feature/auth-system
+   Path: /home/user/work/feature-auth
+   Status: ✅ Clean (safe to remove)
+
+2. bugfix/memory-leak
+   Path: /home/user/work/bugfix-memory
+   Status: ⚠️ Uncommitted changes (3 files)
+
+3. experiment/new-api
+   Path: /home/user/work/experiment-api
+   Status: ❌ Branch not merged to main
+
+Select worktree to remove or 'cancel': _
+```
+
+### Validation Criteria
+
+| Phase | Check | Success Indicator |
+|-------|-------|-------------------|
+| Pre-removal | Repository valid | `git rev-parse` succeeds |
+| Pre-removal | Worktree exists | Listed in `git worktree list` |
+| Pre-removal | No data loss | Changes stashed/committed |
+| Post-removal | Worktree gone | Not in `git worktree list` |
+| Post-removal | Branch cleaned | Not in `git branch -a` |
+| Post-removal | Directory removed | `! -d "$WORKTREE_PATH"` |
+
+### Error Handling Matrix
+
+```typescript
+const errorHandlers = {
+  "not a git repository": "Navigate to a git repository first",
+  "worktree not found": "List available worktrees with --list",
+  "uncommitted changes": "Stash changes or use --force flag",
+  "branch not fully merged": "Confirm with --force or merge first",
+  "worktree locked": "Remove lock file or investigate lock reason",
+  "permission denied": "Check directory permissions or use sudo"
+}
+```
+
+### Performance Benchmarks
+
+- Discovery phase: <1 second
+- Validation checks: <2 seconds
+- Removal operation: <2 seconds
+- Total operation: <5 seconds
+
+### Integration Points
+
+- **Delegate to**: `git-expert` for complex git issues
+- **MCP Tools**: `mcp__code-reasoning__code-reasoning` for decision logic
+- **Related Commands**: `/dev/worktree`, `/git/branch`, `/git/status`
+
+## Usage Examples
+
+```bash
+# List available worktrees
+/dev/remove-worktree --list
+
+# Remove specific worktree
+/dev/remove-worktree feature-auth
+
+# Force removal with uncommitted changes
+/dev/remove-worktree experiment-api --force
+
+# Remove worktree but keep branch
+/dev/remove-worktree bugfix-memory --keep-branch
+```
+
+## Success Indicators
+
+✅ Command executes without errors
+✅ Worktree removed from git tracking
+✅ Associated branch cleaned up (unless --keep-branch)
+✅ File system directory removed
+✅ No orphaned git references
+✅ User informed of all actions taken

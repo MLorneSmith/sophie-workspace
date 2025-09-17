@@ -50,26 +50,31 @@ The script (`create-agent-inventory.cjs`) performs the following checks:
 ## Recommendations
 
 ### Immediate Actions
+
 1. **Consolidate overlapping agents** - Reduce from 42 to ~35 agents
 2. **Focus on custom agents** - These 9 agents represent unique value
 3. **Update modified agents** - All claudekit agents are unmodified (consider updating from upstream)
 
 ### Quality Improvements Needed
+
 - 22 agents (52%) marked as "needs-improvement"
 - Focus on adding examples, tests, and step-by-step instructions
 - Prioritize frequently-used agents for improvements
 
 ### Maintenance Strategy
+
 1. **Track upstream changes** - Monitor claudekit repository for updates
 2. **Document custom agents** - Add comprehensive documentation for the 9 unique agents
 3. **Regular quality audits** - Use the inventory for quarterly reviews
 
 ## Script Location
+
 - **Inventory Generator**: `.claude/scripts/create-agent-inventory.cjs`
 - **Output**: `.claude/data/agents-inventory.json`
 - **claudekit Source**: `/home/msmith/projects/claudekit/` (cloned locally)
 
 ## Next Steps
+
 1. Review the 9 custom agents for documentation completeness
 2. Consider contributing valuable custom agents back to claudekit
 3. Implement automated quality checks in CI/CD pipeline

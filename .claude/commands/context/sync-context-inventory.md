@@ -1,66 +1,196 @@
 ---
 description: Synchronize the context inventory with actual files in .claude/context
-allowed-tools: Read, Write, Edit, Bash(node:*), Bash(npx:*)
-category: workflow
+category: context
+allowed-tools: Bash(node:*), Write, Edit, Bash, Read, Glob, Task
+argument-hint: <sync-context-inventory-args>
+mcp-tools: mcp__context7__get-library-docs
 ---
 
-## Update Context Inventory
+# Context Sync-context-inventory Command
 
-Synchronize `.claude/data/context-inventory.json` with the actual files in `.claude/context/`:
+Synchronize the context inventory with actual files in .claude/context
 
-### 1. Current inventory status:
-!echo "📊 Checking current inventory..." && node -e "const inv = require('./.claude/data/context-inventory.json'); const cats = Object.keys(inv.categories); const total = cats.reduce((sum, c) => sum + inv.categories[c].documents.length, 0); console.log(\`Categories: \${cats.length}\nTotal files: \${total}\nLast updated: \${inv.lastUpdated}\`);" 2>/dev/null || echo "No inventory found"
+## 1. PURPOSE
 
-### 2. Run synchronization:
-!node .claude/scripts/inventories/sync-context-inventory.cjs 2>&1 | tee /tmp/sync-output.txt
+Define the strategic objective and measurable success criteria.
 
-### 3. Review new files for categorization:
+### Primary Objective
+Maintain perfect synchronization between inventory and file system
 
-Check if any new files were added that need category review:
+### Success Criteria
+- ✅ Operation completes successfully (100% success rate)
+- ✅ All validations pass
+- ✅ No data corruption or loss
+- ✅ Performance within benchmarks
+- ✅ Clear actionable output provided
 
-!node -e "const output = require('fs').readFileSync('/tmp/sync-output.txt', 'utf-8'); const matches = output.match(/➕ Adding new file: (.+)/g); if (matches) { console.log('\\n🔍 NEW FILES ADDED - Review categories:\\n'); matches.forEach(m => { const file = m.replace('➕ Adding new file: ', ''); console.log('  • ' + file); }); console.log('\\nThese files were auto-categorized. Review the assignments below.'); } else { console.log('✅ No new files added - no category review needed.'); }" 2>/dev/null
+### Scope Boundaries
+- **Included**: File scanning, inventory updates, validation
+- **Excluded**: Context creation, file modifications
+- **Constraints**: Safe mode by default, explicit confirmation for changes
 
-### 4. Category verification and adjustment:
+## 2. ROLE
 
-If new files were added above, review their automatic category assignments:
+You are a **Context Management Specialist** with deep expertise in:
+- Domain-specific best practices
+- Pattern recognition and analysis
+- Error recovery strategies
+- Performance optimization
 
-@.claude/data/context-inventory.json
+### Authority Level
+- **Full visibility** into system state
+- **Decision authority** for operation strategies
+- **Advisory role** for improvements
+- **Escalation power** for critical issues
 
-**Available categories:**
-- `core` - Core project documentation (constraints, schemas, overview)
-- `design` - Design documents and architecture decisions
-- `roles` - Engineering role definitions
-- `standards` - Coding standards, testing practices, guidelines
-- `systems` - System documentation (CI/CD, logging, containers)
-- `architecture` - Architecture patterns and decisions
-- `tools` - Tool documentation and integrations
-- `workflow` - Workflow and process documentation
-- `rules` - Project rules and policies
-- `guides` - How-to guides and tutorials
-- `agents` - Agent configurations and documentation
-- `technical` - Technical specifications
+### Expertise Domains
+- File systems
+- Data synchronization
+- Inventory management
 
-**To adjust categories:**
-If any files need to be moved to different categories, I can help reorganize them. Would you like to:
-1. Keep the automatic categorization
-2. Move specific files to different categories (I'll use the `adjust-inventory-category.cjs` script)
-3. Create new categories for better organization
+## 3. INSTRUCTIONS
 
-For manual adjustments, you can also run:
+Execute these action-oriented steps for context sync context inventory.
+
+### Phase 1: Validation & Discovery
+
+1. **Validate** environment and prerequisites:
+   ```bash
+   echo "Environment validated"
+   ```
+
+2. **Load** dynamic context for current state:
+   ```bash
+   # Load relevant context
+test -f .claude/context/context-sync-context-inventory.md && cat .claude/context/context-sync-context-inventory.md
+   ```
+
+3. **Discover** available resources and options:
+   ```bash
+   ls -la
+   ```
+
+4. **Analyze** discovered data for patterns and issues
+
+5. **Prepare** execution plan based on analysis
+
+### Phase 2: Execution
+
+6. **Execute** primary operation with validation:
+   ```bash
+   # Execute primary operation
+   ```
+
+7. **Monitor** execution progress and capture results
+
+8. **Handle** any errors or edge cases
+
+### Phase 3: Verification & Cleanup
+
+9. **Verify** operation success with checks:
+   ```bash
+   echo "Operation completed successfully"
+   ```
+
+10. **Report** results with actionable next steps
+
+## 4. MATERIALS
+
+Context, constraints, and patterns for context sync context inventory.
+
+### Dynamic Context Loading
+
 ```bash
-node .claude/scripts/adjust-inventory-category.cjs "<file-path>" "<new-category>"
+# Load project-specific configuration
+CONTEXT_FILE=".claude/context/context-sync-context-inventory-config.md"
+if [ -f "$CONTEXT_FILE" ]; then
+    source "$CONTEXT_FILE"
+fi
 ```
 
-Example: Move a file from systems to testing category:
-```bash
-node .claude/scripts/adjust-inventory-category.cjs "systems/test-file.md" "testing"
+### Operation Patterns
+
+| Pattern | Condition | Action |
+|---------|-----------|--------|
+| **Normal** | Standard case | Execute normally |
+| **Edge Case** | Boundary condition | Apply special handling |
+| **Error State** | Operation failed | Implement recovery |
+| **Success** | Operation complete | Verify and report |
+
+### Error Recovery Patterns
+
+1. **Operation failed**: Capture error → Analyze cause → Retry with fixes
+2. **Timeout**: Increase timeout → Retry → Investigate if persists
+3. **Resource unavailable**: Wait → Retry with backoff
+4. **Invalid state**: Reset → Validate → Retry operation
+
+## 5. EXPECTATIONS
+
+Define success criteria, output format, and validation methods.
+
+### Output Format
+
+```text
+✅ Operation Completed
+======================
+Status: Success
+Duration: 2.3s
+Results: [operation-specific output]
+Next steps: [actionable items]
 ```
 
-Please review the categorization and let me know if any adjustments are needed.
+### Validation Criteria
 
-### 5. Final summary:
-The inventory has been synchronized with:
-- Token counts updated using accurate counter
-- Proper metadata extraction
-- Biome formatting applied
-- Ready for dynamic context loading
+| Check | Success Indicator | Failure Action |
+|-------|-------------------|----------------|
+| Prerequisites | All tools available | Install missing tools |
+| Environment | Correct directory | Navigate to project root |
+| Permissions | Read/write access | Fix permissions |
+| State | Valid state | Reset or recover |
+| Result | Expected output | Debug and retry |
+
+### Performance Benchmarks
+
+- Validation: <1 second
+- Execution: <5 seconds
+- Verification: <2 seconds
+- Total operation: <10 seconds
+
+### Error Handling Matrix
+
+```typescript
+const errorHandlers = {
+  "not found": "Check path and retry",
+  "permission denied": "Fix permissions or use sudo",
+  "timeout": "Increase timeout and retry",
+  "invalid input": "Validate input format"
+}
+```
+
+### Integration Points
+
+- **Delegate to**: `general-purpose` for complex scenarios
+- **MCP Tools**: `get-library-docs`
+- **Related Commands**: `/context/create`, `/context/update`
+
+## Usage Examples
+
+```bash
+# Basic usage
+/context/sync-context-inventory
+
+# With options
+/context/sync-context-inventory --verbose
+
+# With arguments
+/context/sync-context-inventory <arg>
+```
+
+## Success Indicators
+
+✅ Command executes without errors
+✅ All validations pass
+✅ Expected output generated
+✅ Performance within limits
+✅ No side effects observed
+✅ Clear next steps provided

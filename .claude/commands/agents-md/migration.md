@@ -1,175 +1,382 @@
 ---
 description: Migrate AI assistant configuration to AGENTS.md standard with universal compatibility
 category: claude-setup
-allowed-tools: Bash(mv:*), Bash(ln:*), Bash(ls:*), Bash(test:*), Bash(grep:*), Bash(echo:*), Read
+allowed-tools: Bash(mv:*), Bash(ln:*), Bash(ls:*), Bash(test:*), Bash(grep:*), Bash(echo:*), Read, Write, Edit, Bash(diff:*), Bash(cp:*)
+argument-hint: "[merge-strategy: auto|backup|selective|manual]"
+delegation-targets: git-expert
 ---
 
-# Convert to Universal AGENTS.md Format
+# PURPOSE
 
-This command helps you adopt the AGENTS.md standard by converting your existing CLAUDE.md file and creating symlinks for compatibility with various AI assistants.
+Migrate your project to the AGENTS.md universal standard, consolidating AI assistant configurations and creating compatibility symlinks for all major AI development tools.
 
-## Current Project State
-!`ls -la CLAUDE.md AGENTS.md AGENT.md GEMINI.md .cursorrules .clinerules .windsurfrules .replit.md .github/copilot-instructions.md 2>/dev/null | grep -E "(CLAUDE|AGENT|AGENTS|GEMINI|cursor|cline|windsurf|replit|copilot)" || echo "Checking for AI configuration files..."`
+**OUTCOME**: Single source of truth for AI assistant configuration with automatic symlinks for Claude, Cursor, Cline, Windsurf, Copilot, and others.
 
-## Task
+# ROLE
 
-Convert this project to use the AGENTS.md standard following these steps:
+Adopt the role of an **AI Configuration Migration Specialist** who:
+- Detects and analyzes all AI assistant configuration files
+- Intelligently merges conflicting configurations
+- Creates proper symlinks for cross-tool compatibility
+- Preserves important project-specific instructions
+- Ensures zero configuration loss during migration
 
-### 1. Pre-flight Checks
-Check for existing AI configuration files:
-- CLAUDE.md (Claude Code)
-- .clinerules (Cline)
-- .cursorrules (Cursor)
-- .windsurfrules (Windsurf)
-- .replit.md (Replit)
-- .github/copilot-instructions.md (GitHub Copilot)
-- GEMINI.md (Gemini CLI)
-- AGENTS.md (if already exists)
-- AGENT.md (legacy, to be symlinked)
+# INPUTS
 
-### 2. Analyze Existing Files
-Check all AI config files and their content to determine migration strategy:
+Analyze the current AI configuration landscape:
 
-**Priority order for analysis:**
-1. CLAUDE.md (Claude Code)
-2. .clinerules (Cline)
-3. .cursorrules (Cursor)
-4. .windsurfrules (Windsurf)
-5. .github/copilot-instructions.md (GitHub Copilot)
-6. .replit.md (Replit)
-7. GEMINI.md (Gemini CLI)
+## 1. Current Configuration Files
+!`ls -la CLAUDE.md AGENTS.md AGENT.md GEMINI.md .cursorrules .clinerules .windsurfrules .replit.md .github/copilot-instructions.md .idx/airules.md 2>/dev/null | grep -E "(CLAUDE|AGENT|AGENTS|GEMINI|cursor|cline|windsurf|replit|copilot|airules)" || echo "No AI configuration files found"`
 
-**Content Analysis:**
-- Compare file sizes and content
-- Identify identical files (can be safely symlinked)
-- Detect different content (needs merging or user decision)
-
-### 3. Perform Smart Migration
-
-**Scenario A: Single file found**
+## 2. File Content Analysis
 ```bash
-# Simple case - move to AGENTS.md
-mv CLAUDE.md AGENTS.md  # or whichever file exists
+# Detect all AI configuration files
+ai_files=()
+[ -f "CLAUDE.md" ] && ai_files+=("CLAUDE.md")
+[ -f ".cursorrules" ] && ai_files+=(".cursorrules")
+[ -f ".clinerules" ] && ai_files+=(".clinerules")
+[ -f ".windsurfrules" ] && ai_files+=(".windsurfrules")
+[ -f ".github/copilot-instructions.md" ] && ai_files+=(".github/copilot-instructions.md")
+[ -f ".replit.md" ] && ai_files+=(".replit.md")
+[ -f "GEMINI.md" ] && ai_files+=("GEMINI.md")
+[ -f "AGENTS.md" ] && ai_files+=("AGENTS.md")
+[ -f "AGENT.md" ] && ai_files+=("AGENT.md")
+
+echo "📊 Found ${#ai_files[@]} AI configuration file(s):"
+for file in "${ai_files[@]}"; do
+  size=$(ls -lh "$file" 2>/dev/null | awk '{print $5}')
+  echo "  • $file ($size)"
+done
 ```
 
-**Scenario B: Multiple identical files**
+## 3. Content Comparison
 ```bash
-# Keep the priority file, symlink others
-mv CLAUDE.md AGENTS.md
-ln -sf AGENTS.md .cursorrules  # if .cursorrules was identical
+# Check for identical files
+if [ ${#ai_files[@]} -gt 1 ]; then
+  echo ""
+  echo "🔍 Checking for identical files..."
+  for i in "${!ai_files[@]}"; do
+    for j in $(seq $((i+1)) $((${#ai_files[@]}-1))); do
+      if diff -q "${ai_files[$i]}" "${ai_files[$j]}" > /dev/null 2>&1; then
+        echo "  ✅ ${ai_files[$i]} = ${ai_files[$j]} (identical)"
+      fi
+    done
+  done
+fi
 ```
 
-**Scenario C: Multiple files with different content**
-1. **Automatic merging** (when possible):
-   - Different sections can be combined
-   - No conflicting information
-   - Clear structure boundaries
-
-2. **User guidance** (when conflicts exist):
-   - Show content differences
-   - Provide merge recommendations
-   - Offer options:
-     - Keep primary file, backup others
-     - Manual merge with assistance
-     - Selective migration
-
-### 4. Handle Conflicts Intelligently
-
-**When conflicts detected:**
-1. **Display differences:**
-   ```
-   ⚠️  Multiple AI config files with different content found:
-   
-   📄 CLAUDE.md (1,234 bytes)
-   - Build commands: npm run build
-   - Testing: vitest
-   
-   📄 .cursorrules (856 bytes)  
-   - Code style: Prettier + ESLint
-   - TypeScript: strict mode
-   
-   📄 .github/copilot-instructions.md (567 bytes)
-   - Security guidelines
-   - No secrets in code
-   ```
-
-2. **Provide merge options:**
-   ```
-   Choose migration approach:
-   1. 🔄 Auto-merge (recommended) - Combine all unique content
-   2. 📋 Keep CLAUDE.md, backup others (.cursorrules.bak, copilot-instructions.md.bak)
-   3. 🎯 Selective - Choose which sections to include
-   4. 🛠️  Manual - Guide me through merging step-by-step
-   ```
-
-3. **Execute chosen strategy:**
-   - **Auto-merge**: Combine sections intelligently
-   - **Backup**: Keep primary, rename others with .bak extension
-   - **Selective**: Interactive selection of content blocks
-   - **Manual**: Step-by-step merge assistance
-
-### 5. Create AGENTS.md and Symlinks
-After handling content merging, create the final structure:
+## 4. Migration Strategy
 ```bash
+# Parse user preference
+strategy="${ARGUMENTS:-auto}"
+echo ""
+echo "📋 Migration strategy: $strategy"
+case $strategy in
+  auto) echo "  → Will automatically merge compatible content" ;;
+  backup) echo "  → Will keep primary file and backup others" ;;
+  selective) echo "  → Will guide through selective content merging" ;;
+  manual) echo "  → Will provide step-by-step merge assistance" ;;
+  *) echo "  ⚠️ Unknown strategy, defaulting to 'auto'" ;;
+esac
+```
+
+# METHOD
+
+Execute the migration to AGENTS.md standard:
+
+## Phase 1: Analyze Existing Configuration
+
+```bash
+# Check for AGENTS.md already existing
+if [ -f "AGENTS.md" ]; then
+  echo "⚠️ AGENTS.md already exists!"
+  echo "Options:"
+  echo "  1. Update symlinks only (keeps existing AGENTS.md)"
+  echo "  2. Merge other configs into existing AGENTS.md"
+  echo "  3. Backup and recreate from scratch"
+  exit 0
+fi
+
+# Identify primary configuration file
+primary_file=""
+if [ -f "CLAUDE.md" ]; then
+  primary_file="CLAUDE.md"
+elif [ -f ".cursorrules" ]; then
+  primary_file=".cursorrules"
+elif [ -f ".clinerules" ]; then
+  primary_file=".clinerules"
+elif [ -f ".github/copilot-instructions.md" ]; then
+  primary_file=".github/copilot-instructions.md"
+fi
+
+if [ -z "$primary_file" ]; then
+  echo "❌ No AI configuration files found"
+  echo "💡 Run '/agents-md:init' to create a new AGENTS.md"
+  exit 1
+fi
+
+echo "📄 Primary configuration: $primary_file"
+```
+
+## Phase 2: Handle Multiple Configurations
+
+```bash
+# Count unique configuration files
+unique_count=0
+declare -A file_hashes
+
+for file in "${ai_files[@]}"; do
+  if [ -f "$file" ]; then
+    hash=$(md5sum "$file" | cut -d' ' -f1)
+    if [ -z "${file_hashes[$hash]}" ]; then
+      file_hashes[$hash]="$file"
+      unique_count=$((unique_count + 1))
+    fi
+  fi
+done
+
+echo "📊 Found $unique_count unique configuration(s)"
+
+# Handle based on uniqueness
+if [ $unique_count -eq 1 ]; then
+  echo "✅ All configurations are identical - simple migration"
+
+  # Move primary to AGENTS.md
+  echo "📦 Creating AGENTS.md from $primary_file..."
+  cp "$primary_file" AGENTS.md
+
+elif [ $unique_count -gt 1 ]; then
+  echo "⚠️ Multiple unique configurations found"
+
+  case "$strategy" in
+    auto)
+      echo "🔄 Auto-merging configurations..."
+      # Start with primary file
+      cp "$primary_file" AGENTS.md
+
+      # Append unique content from other files
+      for file in "${ai_files[@]}"; do
+        if [ "$file" != "$primary_file" ] && [ -f "$file" ]; then
+          echo "" >> AGENTS.md
+          echo "# --- Merged from $file ---" >> AGENTS.md
+          cat "$file" >> AGENTS.md
+        fi
+      done
+      ;;
+
+    backup)
+      echo "💾 Backing up secondary configurations..."
+      cp "$primary_file" AGENTS.md
+
+      for file in "${ai_files[@]}"; do
+        if [ "$file" != "$primary_file" ] && [ -f "$file" ]; then
+          mv "$file" "${file}.bak"
+          echo "  • Backed up: ${file} → ${file}.bak"
+        fi
+      done
+      ;;
+
+    *)
+      echo "📋 Manual review required"
+      echo "Please review and merge configurations manually"
+      exit 1
+      ;;
+  esac
+fi
+```
+
+## Phase 3: Create Symlinks
+
+```bash
+echo ""
+echo "🔗 Creating compatibility symlinks..."
+
 # Claude Code
-ln -s AGENTS.md CLAUDE.md
-
-# Cline
-ln -s AGENTS.md .clinerules
+if [ ! -f "CLAUDE.md" ] || [ ! -L "CLAUDE.md" ]; then
+  [ -f "CLAUDE.md" ] && mv CLAUDE.md CLAUDE.md.original
+  ln -sf AGENTS.md CLAUDE.md
+  echo "  ✅ CLAUDE.md → AGENTS.md"
+fi
 
 # Cursor
-ln -s AGENTS.md .cursorrules
+if [ ! -f ".cursorrules" ] || [ ! -L ".cursorrules" ]; then
+  [ -f ".cursorrules" ] && [ ! -L ".cursorrules" ] && mv .cursorrules .cursorrules.original
+  ln -sf AGENTS.md .cursorrules
+  echo "  ✅ .cursorrules → AGENTS.md"
+fi
+
+# Cline
+if [ ! -f ".clinerules" ] || [ ! -L ".clinerules" ]; then
+  [ -f ".clinerules" ] && [ ! -L ".clinerules" ] && mv .clinerules .clinerules.original
+  ln -sf AGENTS.md .clinerules
+  echo "  ✅ .clinerules → AGENTS.md"
+fi
 
 # Windsurf
-ln -s AGENTS.md .windsurfrules
+if [ ! -f ".windsurfrules" ] || [ ! -L ".windsurfrules" ]; then
+  [ -f ".windsurfrules" ] && [ ! -L ".windsurfrules" ] && mv .windsurfrules .windsurfrules.original
+  ln -sf AGENTS.md .windsurfrules
+  echo "  ✅ .windsurfrules → AGENTS.md"
+fi
 
 # Replit
-ln -s AGENTS.md .replit.md
+if [ ! -f ".replit.md" ] || [ ! -L ".replit.md" ]; then
+  [ -f ".replit.md" ] && [ ! -L ".replit.md" ] && mv .replit.md .replit.md.original
+  ln -sf AGENTS.md .replit.md
+  echo "  ✅ .replit.md → AGENTS.md"
+fi
 
-# Gemini CLI, OpenAI Codex, OpenCode
-ln -s AGENTS.md GEMINI.md
+# Gemini
+if [ ! -f "GEMINI.md" ] || [ ! -L "GEMINI.md" ]; then
+  [ -f "GEMINI.md" ] && [ ! -L "GEMINI.md" ] && mv GEMINI.md GEMINI.md.original
+  ln -sf AGENTS.md GEMINI.md
+  echo "  ✅ GEMINI.md → AGENTS.md"
+fi
 
-# Legacy AGENT.md symlink for backward compatibility
-ln -s AGENTS.md AGENT.md
+# Legacy AGENT.md
+if [ ! -f "AGENT.md" ] || [ ! -L "AGENT.md" ]; then
+  [ -f "AGENT.md" ] && [ ! -L "AGENT.md" ] && mv AGENT.md AGENT.md.original
+  ln -sf AGENTS.md AGENT.md
+  echo "  ✅ AGENT.md → AGENTS.md"
+fi
 
-# GitHub Copilot (special case - needs directory)
+# GitHub Copilot
 mkdir -p .github
-ln -s ../AGENTS.md .github/copilot-instructions.md
+if [ ! -f ".github/copilot-instructions.md" ] || [ ! -L ".github/copilot-instructions.md" ]; then
+  [ -f ".github/copilot-instructions.md" ] && [ ! -L ".github/copilot-instructions.md" ] && mv .github/copilot-instructions.md .github/copilot-instructions.md.original
+  ln -sf ../AGENTS.md .github/copilot-instructions.md
+  echo "  ✅ .github/copilot-instructions.md → ../AGENTS.md"
+fi
 
-# Firebase Studio (special case - needs .idx directory)
+# Firebase Studio
 mkdir -p .idx
-ln -s ../AGENTS.md .idx/airules.md
+if [ ! -f ".idx/airules.md" ] || [ ! -L ".idx/airules.md" ]; then
+  [ -f ".idx/airules.md" ] && [ ! -L ".idx/airules.md" ] && mv .idx/airules.md .idx/airules.md.original
+  ln -sf ../AGENTS.md .idx/airules.md
+  echo "  ✅ .idx/airules.md → ../AGENTS.md"
+fi
 ```
 
-### 6. Verify Results
-- Use `ls -la` to show all created symlinks
-- Display which AI assistants are now configured
-- Show any backup files created (.bak extensions)
-- Confirm that AGENTS.md includes the symlink documentation note
-- Verify content completeness (all important sections included)
+## Phase 4: Verification and Cleanup
 
-### 7. Git Guidance
-If in a git repository:
-- Show git status (including new AGENTS.md and any .bak files)
-- Suggest adding AGENTS.md and symlinks to git
-- Recommend reviewing .bak files before deleting them
-- Remind to update .gitignore if needed (some teams ignore certain config files)
+```bash
+echo ""
+echo "✅ Migration completed!"
+echo ""
+echo "📋 Verification:"
 
-### 8. Post-Migration Cleanup
-After successful migration and git commit:
-1. **Review backup files** (.bak extensions) to ensure nothing important was missed
-2. **Delete backup files** once satisfied with AGENTS.md content
-3. **Test with different AI assistants** to ensure all symlinks work correctly
-4. **Run `/agents-md:init`** if you want to add directory structure and latest best practices
+# Show symlinks
+echo "Symlinks created:"
+ls -la | grep -E "(CLAUDE|AGENT|GEMINI|cursor|cline|windsurf|replit)" | grep " -> "
+[ -L ".github/copilot-instructions.md" ] && echo "  .github/copilot-instructions.md -> ../AGENTS.md"
+[ -L ".idx/airules.md" ] && echo "  .idx/airules.md -> ../AGENTS.md"
 
-## Why AGENTS.md?
+# Show backup files
+echo ""
+backup_files=$(ls -la *.bak *.original 2>/dev/null | wc -l)
+if [ $backup_files -gt 0 ]; then
+  echo "📦 Backup files created:"
+  ls -la *.bak *.original 2>/dev/null
+  echo ""
+  echo "💡 Review backups and delete when ready:"
+  echo "   rm *.bak *.original"
+fi
 
-AGENTS.md is becoming the standard for AI assistant configuration because:
-- Single source of truth for all AI tools
-- No more duplicating content across multiple files
-- Consistent experience across Claude Code, Cursor, Windsurf, and other tools
-- Future-proof as new AI tools emerge
+# Git status
+if [ -d .git ]; then
+  echo ""
+  echo "📝 Git status:"
+  git status --short | head -10
+  echo ""
+  echo "💡 Commit the migration:"
+  echo "   git add AGENTS.md CLAUDE.md .cursorrules .clinerules .github/copilot-instructions.md"
+  echo "   git commit -m 'chore: migrate to AGENTS.md standard'"
+fi
+```
 
-AGENTS.md emerged from collaborative efforts across the AI software development ecosystem, including OpenAI Codex, Amp, Jules from Google, Cursor, and Factory.
+# EXPECTATIONS
 
-Learn more at https://agents.md
+## Success Criteria
+- ✅ AGENTS.md created from existing configurations
+- ✅ All AI tools have proper symlinks
+- ✅ No configuration data lost
+- ✅ Backup files created for safety
+- ✅ Git-friendly migration completed
+- ✅ All symlinks verified and working
+
+## Supported AI Assistants
+After migration, the following tools will use AGENTS.md:
+- Claude Code (via CLAUDE.md)
+- Cursor (via .cursorrules)
+- Cline (via .clinerules)
+- Windsurf (via .windsurfrules)
+- GitHub Copilot (via .github/copilot-instructions.md)
+- Replit (via .replit.md)
+- Gemini CLI (via GEMINI.md)
+- Firebase Studio (via .idx/airules.md)
+- Legacy support (via AGENT.md)
+
+## Verification Commands
+```bash
+# Verify all symlinks
+for link in CLAUDE.md .cursorrules .clinerules .windsurfrules .replit.md GEMINI.md AGENT.md; do
+  [ -L "$link" ] && echo "✅ $link → $(readlink $link)"
+done
+
+# Check special directory symlinks
+[ -L ".github/copilot-instructions.md" ] && echo "✅ .github/copilot-instructions.md → $(readlink .github/copilot-instructions.md)"
+[ -L ".idx/airules.md" ] && echo "✅ .idx/airules.md → $(readlink .idx/airules.md)"
+```
+
+## Error Handling
+
+### Common Issues
+
+1. **AGENTS.md already exists**
+   - Solution: Backup existing, merge, or update symlinks only
+
+2. **No configuration files found**
+   - Solution: Run `/agents-md:init` to create new
+
+3. **Permission denied creating symlinks**
+   - Solution: Check file permissions and ownership
+
+4. **Symlinks not working on Windows**
+   - Solution: Use Git Bash or WSL for proper symlink support
+
+## Help
+
+### Usage Examples
+
+```bash
+# Auto-merge all configurations
+/agents-md/migration
+
+# Keep primary, backup others
+/agents-md/migration backup
+
+# Selective merging
+/agents-md/migration selective
+
+# Manual step-by-step
+/agents-md/migration manual
+```
+
+### Post-Migration
+
+After successful migration:
+1. Review AGENTS.md for completeness
+2. Test with your AI tools
+3. Delete backup files when satisfied
+4. Commit changes to version control
+5. Share with team members
+
+### Why AGENTS.md?
+
+AGENTS.md is the emerging standard because:
+- **Single source of truth** for all AI assistants
+- **No duplication** across multiple config files
+- **Future-proof** as new AI tools emerge
+- **Community-driven** standard
+
+Learn more at [agents.md](https://agents.md)

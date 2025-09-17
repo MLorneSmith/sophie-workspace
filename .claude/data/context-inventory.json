@@ -203,7 +203,7 @@
 					]
 				},
 				{
-					"path": "database-schema.md",
+					"path": "database/schema.md",
 					"name": "Database Schema",
 					"description": "Complete database schema documentation.",
 					"lastUpdated": "2025-09-12",
@@ -779,6 +779,45 @@
 						"practices",
 						"standards",
 						"project."
+					]
+				},
+				{
+					"path": "standards/makerkit/upstream-sync.md",
+					"name": "Makerkit SaaS Template Upstream Synchronization",
+					"description": "Comprehensive guide for synchronizing Makerkit Next.js Supabase Turbo template updates with custom project code while preserving modifications",
+					"lastUpdated": "2025-09-16",
+					"topics": [
+						"Makerkit",
+						"Template Updates",
+						"Upstream Synchronization",
+						"Git Merge",
+						"Monorepo",
+						"Turbo",
+						"pnpm",
+						"Conflict Resolution"
+					],
+					"tokens": 1897,
+					"priority": "essential",
+					"keywords": [
+						"makerkit",
+						"template",
+						"upstream",
+						"git",
+						"merge",
+						"update",
+						"monorepo",
+						"turbo",
+						"pnpm",
+						"@kit",
+						"packages",
+						"conflict",
+						"resolution",
+						"breaking-changes",
+						"migration",
+						"declarative-schema",
+						"react-19",
+						"nextjs-15",
+						"tailwind-v4"
 					]
 				},
 				{

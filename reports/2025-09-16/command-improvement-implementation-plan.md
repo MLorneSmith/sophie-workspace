@@ -1,9 +1,11 @@
 # Command Quality Improvement Implementation Plan
 
 ## Overview
+
 Complete enhancement of 6 remaining F-grade commands to achieve quality targets.
 
 **Current State:**
+
 - 6 commands scoring 46-50/100 (F grade)
 - Average score: 62.9/100
 - Target: Eliminate all F-grades, achieve 70+ average
@@ -11,6 +13,7 @@ Complete enhancement of 6 remaining F-grade commands to achieve quality targets.
 ## Priority Order & Time Estimates
 
 ### Phase 1: Critical Git Commands (1 hour)
+
 1. **`/git/status`** (49→85) - 20 min
    - Add PRIME framework structure
    - Implement git analysis patterns
@@ -27,17 +30,18 @@ Complete enhancement of 6 remaining F-grade commands to achieve quality targets.
    - Add recovery procedures
 
 ### Phase 2: Deployment & Migration (1 hour)
-4. **`/promote-to-production`** (50→85) - 20 min
+
+1. **`/promote-to-production`** (50→85) - 20 min
    - Add frontmatter description
    - Complete PRIME implementation
    - Add deployment validation
 
-5. **`/agents-md/migration`** (50→85) - 20 min
+2. **`/agents-md/migration`** (50→85) - 20 min
    - Convert to action-oriented
    - Complete PRIME structure
    - Add migration patterns
 
-6. **`/dev/cleanup`** (47→85) - 20 min
+3. **`/dev/cleanup`** (47→85) - 20 min
    - Fix PURPOSE phase
    - Add ROLE definition
    - Integrate MCP tools
@@ -45,6 +49,7 @@ Complete enhancement of 6 remaining F-grade commands to achieve quality targets.
 ## Enhancement Template
 
 Each command will receive:
+
 ```yaml
 Structure:
   - Complete frontmatter (description, allowed-tools, argument-hint)
@@ -65,12 +70,14 @@ Key Improvements:
 ## Success Metrics
 
 ### Immediate Goals
+
 - [ ] No F-grade commands (currently 23)
 - [ ] Average score ≥ 70/100 (currently 62.9)
 - [ ] All commands have PRIME structure
 - [ ] 100% action-first design
 
 ### Quality Indicators
+
 - Each enhanced command scores 80+/100
 - PRIME compliance: 90%+
 - Documentation quality: 85%+
@@ -79,12 +86,14 @@ Key Improvements:
 ## Testing & Validation
 
 ### After Each Enhancement
+
 1. Run individual command evaluation
 2. Verify PRIME phases present
 3. Check action verb usage
 4. Test error handling
 
 ### Final Validation
+
 1. Run full quality evaluation suite
 2. Generate comparison report
 3. Verify all F-grades eliminated
@@ -93,6 +102,7 @@ Key Improvements:
 ## Implementation Steps
 
 ### For Each Command:
+
 1. **Backup**: Create timestamped backup
 2. **Read**: Analyze current implementation
 3. **Enhance**: Apply PRIME template
@@ -100,6 +110,7 @@ Key Improvements:
 5. **Test**: Verify functionality
 
 ### Batch Processing
+
 ```bash
 # Commands to enhance
 COMMANDS=(
@@ -121,12 +132,14 @@ done
 ## Risk Mitigation
 
 ### Potential Issues
+
 1. **Time Overrun**: Strict 20-min timebox per command
 2. **Quality Regression**: Test after each change
 3. **Breaking Changes**: Maintain backups
 4. **Scope Creep**: Focus only on quality metrics
 
 ### Rollback Strategy
+
 - All original files backed up with timestamps
 - Can restore any command if issues arise
 - Git history preserves all changes
@@ -134,11 +147,13 @@ done
 ## Expected Outcomes
 
 ### Quantitative
+
 - F-grade commands: 23 → 0
 - Average score: 62.9 → 75+
 - B-grade or higher: 6 → 15+
 
 ### Qualitative
+
 - Consistent command structure
 - Clear action-oriented language
 - Comprehensive error handling

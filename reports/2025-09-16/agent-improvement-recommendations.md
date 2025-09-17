@@ -1,23 +1,25 @@
 # Agent Quality Improvement Recommendations
+
 Generated: 2025-09-16
 
 ## Priority Matrix
 
 ### 🔴 Critical Priority (Score < 50)
+
 Agents requiring immediate refactoring:
 
-
 ### 🟡 Important Priority (Score 50-70)
+
 Agents needing significant improvements:
 
-
 ### 🟢 Moderate Priority (Score 70-85)
-Agents needing minor improvements:
 
+Agents needing minor improvements:
 
 ## Improvement Templates
 
 ### Template 1: Action-First Conversion
+
 ```markdown
 # [Agent Name]
 
@@ -35,11 +37,13 @@ You are a [specific role] that EXECUTES [primary function].
 ```
 
 ### Template 2: MCP Server Integration
+
 ```yaml
 tools: [...existing, mcp__context7__get-library-docs, mcp__exa__exa_search, mcp__perplexity-ask__perplexity_ask]
 ```
 
 ### Template 3: Parallel Execution Pattern
+
 ```markdown
 ## Parallel Search Strategy
 Execute multiple searches simultaneously:
@@ -52,18 +56,21 @@ All executed in ONE tool invocation batch for 3-5x performance gain.
 ## Implementation Roadmap
 
 ### Week 1: Quick Wins
+
 1. **Add missing tool definitions** (0 agents)
 2. **Add missing examples** (1 agents)
 3. **Fix model selections** (1 agents)
 4. **Add success criteria** (1 agents)
 
 ### Week 2: Structural Improvements
+
 1. **Convert to action-first patterns** (0 agents)
 2. **Add ReAct/execution protocols** (1 agents)
 3. **Implement error handling** (1 agents)
 4. **Specify output formats** (0 agents)
 
 ### Week 3: Advanced Enhancements
+
 1. **Integrate MCP servers** (1 agents)
 2. **Add parallel execution** (2 agents)
 3. **Implement delegation patterns** (14 agents)
@@ -72,11 +79,13 @@ All executed in ONE tool invocation batch for 3-5x performance gain.
 ## Success Metrics
 
 ### Before Improvements
+
 - Average Score: 95.3/100
 - Grade A Agents: 31
 - Grade F Agents: 0
 
 ### Target After Improvements
+
 - Average Score: >75/100
 - Grade A Agents: >10
 - Grade F Agents: 0
