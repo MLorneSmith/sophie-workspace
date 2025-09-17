@@ -1,190 +1,196 @@
-# Database Health Check Command
+---
+description: Validate database connectivity, performance metrics, and schema integrity
+category: database
+allowed-tools: Bash(psql:*), Bash(npx:*), Bash, Read, Glob, Task
 
-## Overview
-Comprehensive health check for both local and remote Supabase instances, including Payload schema validation.
+mcp-tools: mcp__postgres__pg_monitor_database, mcp__postgres__pg_debug_database
+---
 
-## Usage
-```
-/db-healthcheck [local|remote|all]
-```
+# Db-healthcheck Command
 
-## Health Check Components
+Validate database connectivity, performance metrics, and schema integrity
 
-### 1. Core Database Connectivity
-- **PostgreSQL Connection**: Test basic connectivity to database
-- **Response Time**: Measure query latency
-- **Connection Pool**: Check active/idle connections
-- **Database Version**: Verify PostgreSQL version compatibility
+## 1. PURPOSE
 
-### 2. Supabase Schema Health
-- **Schema Existence**: Verify public, auth, storage, extensions schemas
-- **Table Count Validation**: 
-  - Public schema: 29-31 tables expected
-  - Auth schema: ~16 tables expected
-- **RLS Policy Check**: Ensure Row Level Security is enabled
-- **Migration Status**: Check pending/failed migrations
-- **Seed Data Verification**: Confirm test users exist
+Define the strategic objective and measurable success criteria.
 
-### 3. Payload Schema Health
-- **Schema Existence**: Verify payload schema exists
-- **Table Structure**: Check all Payload collections tables
-- **Relationship Integrity**: Verify foreign key constraints
-- **UUID Tables**: Check _uuid suffix tables for relationships
-- **Migration Status**: Check Payload migration tracking
-- **Collection Access**: Test read/write to each collection
+### Primary Objective
+Ensure database integrity, performance, and availability
 
-### 4. API Endpoint Health
-- **Supabase API**: Test REST API connectivity
-- **Payload Admin API**: Test /api/health endpoint
-- **GraphQL Endpoint**: Verify GraphQL schema loads
-- **Storage API**: Check file upload/download capability
+### Success Criteria
+- ✅ Operation completes successfully (100% success rate)
+- ✅ All validations pass
+- ✅ No data corruption or loss
+- ✅ Performance within benchmarks
+- ✅ Clear actionable output provided
 
-### 5. Critical Table Checks
-```sql
--- Tables that must exist for proper operation
-- payload.payload_migrations
-- payload.payload_preferences
-- payload.users
-- payload.posts
-- payload.categories
-- payload.media
-- public.accounts
-- public.subscriptions
-- auth.users
-```
+### Scope Boundaries
+- **Included**: Connection testing, query performance, index analysis
+- **Excluded**: Schema migrations, data manipulation
+- **Constraints**: Read-only operations, no schema changes
 
-### 6. Performance Metrics
-- **Index Usage**: Check for missing indexes
-- **Table Bloat**: Identify tables needing vacuum
-- **Slow Queries**: Recent queries >100ms
-- **Lock Conflicts**: Check for blocking queries
+## 2. ROLE
 
-## Implementation
+You are a **Database Reliability Engineer** with deep expertise in:
+- Database performance optimization
+- Query analysis and tuning
+- Schema design and validation
+- Connection pool management
 
-### Agent Configuration
-```yaml
-name: db-healthcheck-agent
-description: Database health check orchestrator
-tools: [Bash, Read, Grep, WebFetch, Task]
-```
+### Authority Level
+- **Full visibility** into system state
+- **Decision authority** for operation strategies
+- **Advisory role** for improvements
+- **Escalation power** for critical issues
 
-### Execution Flow
+### Expertise Domains
+- Database systems
+- Query optimization
+- Performance tuning
 
-1. **Parse Arguments**
-   - Determine scope: local, remote, or all
-   - Set environment variables accordingly
+## 3. INSTRUCTIONS
 
-2. **Local Health Check**
+Execute these action-oriented steps for db healthcheck.
+
+### Phase 1: Validation & Discovery
+
+1. **Validate** environment and prerequisites:
    ```bash
-   # Check Docker/Supabase status
-   docker ps | grep supabase
-   cd apps/web && pnpm supabase:status
-   
-   # Direct PostgreSQL tests
-   psql "postgresql://postgres:postgres@localhost:54322/postgres" -c "SELECT 1"
-   
-   # Schema verification
-   psql -c "SELECT schema_name, COUNT(*) FROM information_schema.tables GROUP BY schema_name"
-   
-   # Payload schema check
-   psql -c "SELECT COUNT(*) FROM payload.payload_migrations"
+   pg_isready || npx supabase status
    ```
 
-3. **Remote Health Check**
+2. **Load** dynamic context for current state:
    ```bash
-   # Use Supabase service role for remote checks
-   curl -X GET "$SUPABASE_URL/rest/v1/" \
-     -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"
-   
-   # Payload health endpoint
-   curl -X GET "$PAYLOAD_PUBLIC_SERVER_URL/api/health"
+   # Load relevant context
+test -f .claude/context/db-healthcheck.md && cat .claude/context/db-healthcheck.md
    ```
 
-4. **Payload-Specific Tests**
-   ```typescript
-   // Test collection accessibility
-   const collections = ['posts', 'categories', 'media', 'users'];
-   for (const collection of collections) {
-     await payload.find({ collection, limit: 1 });
-   }
-   
-   // Verify relationships
-   const post = await payload.findByID({ 
-     collection: 'posts', 
-     id: 'test-id',
-     depth: 2 
-   });
+3. **Discover** available resources and options:
+   ```bash
+   ls -la
    ```
 
-5. **Report Generation**
-   ```markdown
-   ## Database Health Report
-   
-   ### Summary
-   - Status: ✅ Healthy | ⚠️ Warning | ❌ Critical
-   - Timestamp: 2025-08-25T10:00:00Z
-   - Environment: local/remote
-   
-   ### Connectivity
-   - PostgreSQL: ✅ Connected (12ms)
-   - Supabase API: ✅ Available
-   - Payload Admin: ✅ Responding
-   
-   ### Schema Status
-   - Public Tables: 30/30 ✅
-   - Auth Tables: 16/16 ✅  
-   - Payload Tables: 25/25 ✅
-   - RLS Policies: 45 active ✅
-   
-   ### Issues Found
-   - ⚠️ Missing index on posts.created_at
-   - ⚠️ Table bloat in media (12% bloat)
-   
-   ### Recommendations
-   - Run VACUUM ANALYZE on media table
-   - Create index: CREATE INDEX idx_posts_created ON posts(created_at)
+4. **Analyze** discovered data for patterns and issues
+
+5. **Prepare** execution plan based on analysis
+
+### Phase 2: Execution
+
+6. **Execute** primary operation with validation:
+   ```bash
+   npx supabase db diff
    ```
 
-## Error Conditions
+7. **Monitor** execution progress and capture results
 
-### Critical Errors (Stop Immediately)
-- Cannot connect to PostgreSQL
-- Payload schema missing
-- Auth schema corrupted
-- More than 5 missing tables
+8. **Handle** any errors or edge cases
 
-### Warnings (Continue with Caution)
-- Missing indexes
-- Table bloat >10%
-- Slow query detected
-- Missing seed data
+### Phase 3: Verification & Cleanup
 
-### Info (Log Only)
-- Migration pending
-- Cache needs refresh
-- Statistics outdated
+9. **Verify** operation success with checks:
+   ```bash
+   pg_isready && echo "SELECT 1" | psql
+   ```
 
-## Integration with Reset Commands
+10. **Report** results with actionable next steps
 
-After any database reset, automatically run:
+## 4. MATERIALS
+
+Context, constraints, and patterns for db healthcheck.
+
+### Dynamic Context Loading
+
 ```bash
-/db-healthcheck local --post-reset
+# Load project-specific configuration
+CONTEXT_FILE=".claude/context/db-healthcheck-config.md"
+if [ -f "$CONTEXT_FILE" ]; then
+    source "$CONTEXT_FILE"
+fi
 ```
 
-This will:
-1. Verify reset completed successfully
-2. Check all schemas rebuilt correctly
-3. Confirm seed data loaded
-4. Test Payload collections accessible
-5. Generate post-reset validation report
+### Operation Patterns
 
-## Monitoring Command
-```bash
-/db-healthcheck --monitor
+| Pattern | Condition | Action |
+|---------|-----------|--------|
+| **Normal** | Standard case | Execute normally |
+| **Edge Case** | Boundary condition | Apply special handling |
+| **Error State** | Operation failed | Implement recovery |
+| **Success** | Operation complete | Verify and report |
+
+### Error Recovery Patterns
+
+1. **Connection failed**: Check credentials → Verify network → Retry
+2. **Query timeout**: Analyze query plan → Add indexes → Retry
+3. **Lock timeout**: Wait and retry → Kill blocking query
+4. **Schema mismatch**: Run migrations → Verify schema
+
+## 5. EXPECTATIONS
+
+Define success criteria, output format, and validation methods.
+
+### Output Format
+
+```text
+✅ Operation Completed
+======================
+Status: Success
+Duration: 2.3s
+Results: [operation-specific output]
+Next steps: [actionable items]
 ```
 
-Runs health check every 5 minutes and alerts on:
-- Connection failures
-- Schema changes
-- Performance degradation
-- Payload collection errors
+### Validation Criteria
+
+| Check | Success Indicator | Failure Action |
+|-------|-------------------|----------------|
+| Prerequisites | All tools available | Install missing tools |
+| Environment | Correct directory | Navigate to project root |
+| Permissions | Read/write access | Fix permissions |
+| State | Valid state | Reset or recover |
+| Result | Expected output | Debug and retry |
+
+### Performance Benchmarks
+
+- Validation: <1 second
+- Execution: <5 seconds
+- Verification: <2 seconds
+- Total operation: <10 seconds
+
+### Error Handling Matrix
+
+```typescript
+const errorHandlers = {
+  "connection refused": "Start database service",
+  "authentication failed": "Check credentials",
+  "timeout": "Check network and retry",
+  "table not found": "Run migrations first"
+}
+```
+
+### Integration Points
+
+- **Delegate to**: `postgres-expert`, `database-expert`
+- **MCP Tools**: `pg_monitor_database`, `pg_debug_database`
+- **Related Commands**: `/db/migrate`, `/db/seed`, `/db/backup`
+
+## Usage Examples
+
+```bash
+# Basic usage
+/db-healthcheck
+
+# With options
+/db-healthcheck --verbose
+
+# With arguments
+/db-healthcheck <arg>
+```
+
+## Success Indicators
+
+✅ Command executes without errors
+✅ All validations pass
+✅ Expected output generated
+✅ Performance within limits
+✅ No side effects observed
+✅ Clear next steps provided

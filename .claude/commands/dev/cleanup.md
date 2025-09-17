@@ -1,206 +1,449 @@
 ---
 description: Clean up debug files, test artifacts, and status reports created during development
 category: workflow
-allowed-tools: Task, Bash(git:*), Bash(echo:*), Bash(grep:*), Bash(ls:*), Bash(pwd:*), Bash(head:*), Bash(wc:*), Bash(test:*)
+allowed-tools: Bash(rm:*), Bash(git:*), Bash(echo:*), Bash(grep:*), Bash(ls:*), Bash(find:*), Bash(test:*), Edit, Glob
+argument-hint: "[auto|preview|aggressive]"
+delegation-targets: git-expert
 ---
 
-## Purpose
+# PURPOSE
 
-Clean up temporary files and debug artifacts that Claude Code commonly creates during development sessions. These files clutter the workspace and should not be committed to version control.
+Identify and remove temporary debug files, test artifacts, and development reports that accumulate during coding sessions to maintain a clean workspace.
 
-## Context
+**OUTCOME**: Clean repository free of debug artifacts with updated .gitignore patterns to prevent future accumulation.
 
-\!`git status --porcelain && git status --ignored --porcelain | grep "^!!" && echo "--- PWD: $(pwd) ---" && ls -la && if [ -z "$(git status --porcelain)" ]; then echo "WORKING_DIR_CLEAN=true" && git ls-files | grep -E "(analyze-.*\.(js|ts)|debug-.*\.(js|ts)|test-.*\.(js|ts|sh)|.*-test\.(js|ts|sh)|quick-test\.(js|ts|sh)|.*-poc\..*|poc-.*\..*|.*_poc\..*|proof-of-concept-.*\..*|verify-.*\.md|research-.*\.(js|ts)|temp-.*/|test-.*/|.*_SUMMARY\.md|.*_REPORT\.md|.*_CHECKLIST\.md|.*_COMPLETE\.md|.*_GUIDE\.md|.*_ANALYSIS\.md|.*-analysis\.md|.*-examples\.(js|ts))$" | head -20 && echo "--- Found $(git ls-files | grep -E "(analyze-.*\.(js|ts)|debug-.*\.(js|ts)|test-.*\.(js|ts|sh)|.*-test\.(js|ts|sh)|quick-test\.(js|ts|sh)|.*-poc\..*|poc-.*\..*|.*_poc\..*|proof-of-concept-.*\..*|verify-.*\.md|research-.*\.(js|ts)|temp-.*/|test-.*/|.*_SUMMARY\.md|.*_REPORT\.md|.*_CHECKLIST\.md|.*_COMPLETE\.md|.*_GUIDE\.md|.*_ANALYSIS\.md|.*-analysis\.md|.*-examples\.(js|ts))$" | wc -l) committed cleanup candidates ---"; else echo "WORKING_DIR_CLEAN=false"; fi`
+# ROLE
 
-Launch ONE subagent to analyze the git status (including ignored files) and propose files for deletion. If the working directory is clean, also check for committed files that match cleanup patterns.
+Adopt the role of a **Development Environment Janitor** who:
+- Identifies temporary and debug artifacts accurately
+- Distinguishes between temporary files and legitimate project files
+- Provides clear categorization of cleanup candidates
+- Updates .gitignore patterns to prevent future accumulation
+- Maintains safety by requiring confirmation before deletion
 
-## Target Files for Cleanup
+# INPUTS
 
-**Debug & Analysis Files:**
-- `analyze-*.js`, `analyze-*.ts` - Analysis scripts (e.g., `analyze-race-condition.js`)
-- `debug-*.js`, `debug-*.ts` - Debug scripts (e.g., `debug-detailed.js`, `debug-race-condition.js`)
-- `research-*.js`, `research-*.ts` - Research scripts (e.g., `research-frontmatter-libs.js`)
-- `*-analysis.md` - Analysis documents (e.g., `eslint-manual-analysis.md`)
+Analyze the current workspace state and cleanup candidates:
 
-**Test Files (temporary/experimental):**
-- `test-*.js`, `test-*.ts`, `test-*.sh` - Test scripts (e.g., `test-race-condition.js`, `test-basic-add.js`, `test-poc.sh`)
+## 1. Git Repository Status
+!`git status --porcelain | head -20`
+
+## 2. Ignored Files Check
+!`git status --ignored --porcelain | grep "^!!" | head -20`
+
+## 3. Working Directory State
+```bash
+if [ -z "$(git status --porcelain)" ]; then
+  echo "✅ Working directory is CLEAN"
+  working_clean=true
+else
+  echo "⚠️ Working directory has changes"
+  working_clean=false
+fi
+```
+
+## 4. Cleanup Mode
+```bash
+mode="${ARGUMENTS:-preview}"
+echo "🔧 Cleanup mode: $mode"
+case $mode in
+  auto) echo "  → Will delete after showing list" ;;
+  preview) echo "  → Will show list and ask for confirmation" ;;
+  aggressive) echo "  → Will include more file patterns" ;;
+  *) echo "  → Defaulting to preview mode" ;;
+esac
+```
+
+## 5. Current Directory Contents
+!`ls -la | head -20`
+
+# METHOD
+
+Execute the cleanup analysis and removal process:
+
+## Phase 1: Identify Cleanup Candidates
+
+```bash
+echo "🔍 Scanning for cleanup candidates..."
+
+# Define cleanup patterns
+debug_patterns="analyze-*.js analyze-*.ts debug-*.js debug-*.ts research-*.js research-*.ts *-analysis.md"
+test_patterns="test-*.js test-*.ts test-*.sh *-test.js *-test.ts *-test.sh quick-test.* verify-*.md *-examples.js *-examples.ts"
+poc_patterns="*-poc.* poc-*.* *_poc.* proof-of-concept-*.*"
+report_patterns="*_SUMMARY.md *_REPORT.md *_CHECKLIST.md *_COMPLETE.md *_GUIDE.md *_ANALYSIS.md"
+temp_dirs="temp-* test-*"
+
+# Find untracked files
+untracked_files=()
+while IFS= read -r line; do
+  if [[ "$line" =~ ^\?\?[[:space:]]+(.+)$ ]]; then
+    file="${BASH_REMATCH[1]}"
+    # Check if file matches cleanup patterns
+    for pattern in $debug_patterns $test_patterns $poc_patterns $report_patterns; do
+      if [[ "$file" == $pattern ]]; then
+        untracked_files+=("$file")
+        break
+      fi
+    done
+  fi
+done < <(git status --porcelain)
+
+echo "📊 Found ${#untracked_files[@]} untracked cleanup candidates"
+
+# Find ignored files
+ignored_files=()
+while IFS= read -r line; do
+  if [[ "$line" =~ ^!![[:space:]]+(.+)$ ]]; then
+    file="${BASH_REMATCH[1]}"
+    ignored_files+=("$file")
+  fi
+done < <(git status --ignored --porcelain)
+
+echo "📊 Found ${#ignored_files[@]} ignored files"
+
+# Check for committed cleanup candidates if working directory is clean
+committed_files=()
+if [ "$working_clean" = true ]; then
+  echo "🔍 Checking committed files for cleanup patterns..."
+
+  for file in $(git ls-files); do
+    for pattern in $debug_patterns $test_patterns $poc_patterns $report_patterns; do
+      if [[ "$file" == $pattern ]]; then
+        committed_files+=("$file")
+        break
+      fi
+    done
+  done
+
+  echo "📊 Found ${#committed_files[@]} committed cleanup candidates"
+fi
+```
+
+## Phase 2: Categorize and Display Candidates
+
+```bash
+echo ""
+echo "🗑️ CLEANUP ANALYSIS RESULTS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Display untracked files
+if [ ${#untracked_files[@]} -gt 0 ]; then
+  echo ""
+  echo "📄 Untracked Files (safe to delete):"
+  for file in "${untracked_files[@]}"; do
+    size=$(ls -lh "$file" 2>/dev/null | awk '{print $5}')
+    echo "  • $file ($size)"
+  done
+fi
+
+# Display ignored files
+if [ ${#ignored_files[@]} -gt 0 ]; then
+  echo ""
+  echo "🚫 Ignored Files (already in .gitignore):"
+  for file in "${ignored_files[@]}"; do
+    size=$(ls -lh "$file" 2>/dev/null | awk '{print $5}')
+    echo "  • $file ($size)"
+  done
+fi
+
+# Display committed files (if clean)
+if [ ${#committed_files[@]} -gt 0 ]; then
+  echo ""
+  echo "⚠️ Committed Files (require git rm):"
+  for file in "${committed_files[@]}"; do
+    size=$(ls -lh "$file" 2>/dev/null | awk '{print $5}')
+    echo "  • $file ($size)"
+  done
+fi
+
+# Calculate total
+total_files=$((${#untracked_files[@]} + ${#ignored_files[@]} + ${#committed_files[@]}))
+echo ""
+echo "📊 Total: $total_files file(s) identified for cleanup"
+```
+
+## Phase 3: Execute Cleanup Based on Mode
+
+```bash
+# Determine action based on mode
+case "$mode" in
+  auto)
+    echo ""
+    echo "🚀 Auto-cleanup mode - proceeding with deletion..."
+    perform_cleanup=true
+    ;;
+
+  aggressive)
+    echo ""
+    echo "⚠️ Aggressive mode - including additional patterns"
+    # Add more aggressive patterns
+    echo "Finding additional temporary files..."
+    find . -name "*.tmp" -o -name "*.bak" -o -name "*.log" 2>/dev/null | head -20
+    echo ""
+    echo "❓ Delete all identified files? (y/n)"
+    read -r response
+    [ "$response" = "y" ] && perform_cleanup=true || perform_cleanup=false
+    ;;
+
+  preview|*)
+    echo ""
+    echo "❓ Proceed with cleanup? (y/n)"
+    read -r response
+    [ "$response" = "y" ] && perform_cleanup=true || perform_cleanup=false
+    ;;
+esac
+
+if [ "$perform_cleanup" = true ]; then
+  echo ""
+  echo "🧹 Performing cleanup..."
+
+  # Delete untracked files
+  for file in "${untracked_files[@]}"; do
+    if [ -d "$file" ]; then
+      rm -rf "$file" && echo "  ✅ Removed directory: $file"
+    else
+      rm -f "$file" && echo "  ✅ Removed file: $file"
+    fi
+  done
+
+  # Delete ignored files
+  for file in "${ignored_files[@]}"; do
+    if [ -d "$file" ]; then
+      rm -rf "$file" && echo "  ✅ Removed ignored directory: $file"
+    else
+      rm -f "$file" && echo "  ✅ Removed ignored file: $file"
+    fi
+  done
+
+  # Handle committed files
+  if [ ${#committed_files[@]} -gt 0 ]; then
+    echo ""
+    echo "📝 Removing committed files from git..."
+    for file in "${committed_files[@]}"; do
+      git rm "$file" && echo "  ✅ Git removed: $file"
+    done
+    echo ""
+    echo "💡 Remember to commit these removals:"
+    echo "   git commit -m 'chore: remove temporary debug and test files'"
+  fi
+else
+  echo ""
+  echo "❌ Cleanup cancelled"
+fi
+```
+
+## Phase 4: Update .gitignore
+
+```bash
+if [ "$perform_cleanup" = true ] && [ ${#untracked_files[@]} -gt 0 ]; then
+  echo ""
+  echo "📝 Suggested .gitignore patterns:"
+  echo ""
+  cat << 'EOF'
+# Debug and analysis files
+analyze-*.js
+analyze-*.ts
+debug-*.js
+debug-*.ts
+research-*.js
+research-*.ts
+*-analysis.md
+
+# Temporary test files
+test-*.js
+test-*.ts
+test-*.sh
+*-test.js
+*-test.ts
+*-test.sh
+quick-test.*
+verify-*.md
+*-examples.js
+*-examples.ts
+
+# POC files
+*-poc.*
+poc-*.*
+*_poc.*
+proof-of-concept-*.*
+
+# Temporary directories
+temp-*/
+test-*/
+!test/           # Preserve standard test directory
+!tests/          # Preserve standard tests directory
+
+# Reports and summaries
+*_SUMMARY.md
+*_REPORT.md
+*_CHECKLIST.md
+*_COMPLETE.md
+*_GUIDE.md
+*_ANALYSIS.md
+EOF
+
+  echo ""
+  echo "❓ Add these patterns to .gitignore? (y/n)"
+  read -r response
+  if [ "$response" = "y" ]; then
+    # Add patterns to .gitignore if not already present
+    patterns_to_add=""
+    for pattern in "analyze-*.js" "debug-*.js" "*_SUMMARY.md" "temp-*/"; do
+      if ! grep -q "^$pattern" .gitignore 2>/dev/null; then
+        patterns_to_add="$patterns_to_add\n$pattern"
+      fi
+    done
+
+    if [ -n "$patterns_to_add" ]; then
+      echo -e "\n# Development artifacts (added by /dev/cleanup)$patterns_to_add" >> .gitignore
+      echo "✅ Updated .gitignore"
+    else
+      echo "ℹ️ Patterns already in .gitignore"
+    fi
+  fi
+fi
+```
+
+# EXPECTATIONS
+
+## Success Criteria
+- ✅ All temporary debug files identified
+- ✅ Clear categorization of cleanup candidates
+- ✅ User confirmation obtained before deletion
+- ✅ Files removed cleanly without errors
+- ✅ .gitignore updated to prevent recurrence
+- ✅ Git repository remains in consistent state
+
+## Target Cleanup Patterns
+
+### Debug & Analysis Files
+- `analyze-*.js`, `analyze-*.ts` - Analysis scripts
+- `debug-*.js`, `debug-*.ts` - Debug scripts
+- `research-*.js`, `research-*.ts` - Research scripts
+- `*-analysis.md` - Analysis documents
+
+### Test Artifacts
+- `test-*.js`, `test-*.ts`, `test-*.sh` - Temporary test scripts
 - `*-test.js`, `*-test.ts`, `*-test.sh` - Test scripts with suffix
-- `quick-test.js`, `quick-test.ts`, `quick-test.sh` - Quick test files
-- `verify-*.md` - Verification documents (e.g., `verify-migration.md`)
-- `*-examples.js`, `*-examples.ts` - Example files (e.g., `frontmatter-replacement-examples.ts`)
+- `quick-test.*` - Quick test files
+- `verify-*.md` - Verification documents
+- `*-examples.js`, `*-examples.ts` - Example files
 
-**Proof of Concept (POC) Files:**
-- `*-poc.*` - POC files in any language (e.g., `test-poc.sh`, `auth-poc.js`)
-- `poc-*.*` - POC files with prefix (e.g., `poc-validation.ts`)
-- `*_poc.*` - POC files with underscore (e.g., `feature_poc.js`)
+### POC Files
+- `*-poc.*` - Proof of concept files
+- `poc-*.*` - POC with prefix
+- `*_poc.*` - POC with underscore
 - `proof-of-concept-*.*` - Verbose POC naming
 
-**Temporary Directories:**
-- `temp-*` - Temporary directories (e.g., `temp-debug/`, `temp-test/`, `temp-test-fix/`)
-- `test-*` - Temporary test directories (e.g., `test-integration/`, `test-2-concurrent/`)
-- NOTE: These are different from standard `test/` or `tests/` directories which should be preserved
+### Reports & Summaries
+- `*_SUMMARY.md` - Summary reports
+- `*_REPORT.md` - Various reports
+- `*_CHECKLIST.md` - Checklist documents
+- `*_COMPLETE.md` - Completion markers
+- `*_GUIDE.md` - Temporary guides
+- `*_ANALYSIS.md` - Analysis reports
 
-**Reports & Summaries:**
-- `*_SUMMARY.md` - Summary reports (e.g., `TEST_SUMMARY.md`, `ESLINT_FIXES_SUMMARY.md`)
-- `*_REPORT.md` - Various reports (e.g., `QUALITY_VALIDATION_REPORT.md`, `RELEASE_READINESS_REPORT.md`)
-- `*_CHECKLIST.md` - Checklist documents (e.g., `MIGRATION_CHECKLIST.md`)
-- `*_COMPLETE.md` - Completion markers (e.g., `MIGRATION_COMPLETE.md`)
-- `*_GUIDE.md` - Temporary guides (e.g., `MIGRATION_GUIDE.md`)
-- `*_ANALYSIS.md` - Analysis reports (e.g., `FRONTMATTER_ANALYSIS.md`)
+### Temporary Directories
+- `temp-*` - Temporary directories
+- `test-*` - Temporary test directories (not standard `test/` or `tests/`)
+
+## Verification Commands
+```bash
+# Verify cleanup completed
+git status --porcelain | grep -E "(debug-|analyze-|test-|poc-|_SUMMARY|_REPORT)" | wc -l
+
+# Check .gitignore was updated
+grep -E "(debug-|analyze-|test-.*\.js)" .gitignore
+
+# Confirm no important files deleted
+ls -la src/ test/ tests/ 2>/dev/null
+```
 
 ## Safety Rules
 
-**Files safe to propose for deletion:**
-- Must be untracked (?? in git status) OR ignored (!! in git status)
-- Should match or be similar to cleanup patterns above
-- Must be clearly temporary/debug files
+### NEVER Delete
+- Committed files (unless working directory is clean)
+- CHANGELOG.md, README.md, AGENTS.md, CLAUDE.md
+- Core directories: `src/`, `dist/`, `scripts/`, `node_modules/`
+- Standard test directories: `test/`, `tests/`, `__tests__/`
+- Configuration files: `.env`, `package.json`, `tsconfig.json`
 
-**Never propose these files:**
-- Any committed files (not marked ?? or !!) unless working directory is clean
-- CHANGELOG.md, README.md, AGENTS.md, CLAUDE.md (even if untracked)
-- Core project directories: src/, dist/, scripts/, node_modules/, etc.
-- Standard test directories: `test/`, `tests/`, `__tests__/` (without hyphens)
-- Any files you're uncertain about
+### Always Safe to Delete
+- Untracked files matching cleanup patterns
+- Ignored files already in .gitignore
+- Empty temporary directories
+- Debug scripts and analysis files
 
-## Instructions
+## Error Handling
 
-Launch ONE subagent to:
+### Common Issues
 
-1. **Analyze the git status output** provided in the context above
-2. **Check if WORKING_DIR_CLEAN=true**: If so, also analyze committed files that match cleanup patterns
-3. **Identify cleanup candidates**:
-   - For dirty working directory: Focus on untracked (??) and ignored (!!) files
-   - For clean working directory: Also include committed files matching cleanup patterns
-4. **Create a proposal list** of files and directories to delete
-5. **Present the list to the user** for approval before any deletion
-6. **Do NOT delete anything** - only propose what should be deleted
+1. **Permission Denied**
+   - Solution: Check file ownership and permissions
+   - Alternative: Use `sudo rm` with caution
 
-The agent should provide:
-- Clear list of proposed deletions with reasons
-- For untracked files: Confirmation they are marked (??) or (!!)
-- For committed files: Clear indication they are committed and match debug/temp patterns
-- Ask user for explicit approval before proceeding
+2. **File in Use**
+   - Solution: Close any processes using the file
+   - Check: `lsof | grep filename`
 
-**IMPORTANT**: The agent cannot delete files directly. It must present a proposal and wait for user confirmation.
+3. **Git Index Lock**
+   - Solution: Remove `.git/index.lock` if present
+   - Command: `rm -f .git/index.lock`
 
-## After User Approval
+4. **Accidental Deletion**
+   - Recovery: Use `git restore` for tracked files
+   - Check: `git reflog` for recent commits
 
-Once the user approves the proposed deletions:
+## Help
 
-1. **Delete the approved files** using appropriate commands:
-   - For untracked/ignored files: `rm -f` or `rm -rf` for directories
-   - For committed files: `git rm` to properly remove from git tracking
-2. **Analyze the target cleanup patterns** and approved files to identify common types
-3. **Propose .gitignore patterns** based on the cleanup patterns to prevent future accumulation:
-   ```
-   # Debug and analysis files
-   analyze-*.js
-   analyze-*.ts
-   debug-*.js
-   debug-*.ts
-   research-*.js
-   research-*.ts
-   *-analysis.md
-   
-   # Temporary test files
-   test-*.js
-   test-*.ts
-   *-test.js
-   *-test.ts
-   quick-test.js
-   quick-test.ts
-   verify-*.md
-   *-examples.js
-   *-examples.ts
-   
-   # Temporary directories
-   temp-*/
-   test-*/
-   
-   # Reports and summaries
-   *_SUMMARY.md
-   *_REPORT.md
-   *_CHECKLIST.md
-   *_COMPLETE.md
-   *_GUIDE.md
-   *_ANALYSIS.md
-   ```
-4. **Add suggested patterns to .gitignore** if user agrees
+### Usage Examples
 
-This prevents the same types of files from cluttering the workspace in future development sessions.
+```bash
+# Preview mode (default) - shows files and asks confirmation
+/dev/cleanup
 
-**Note**: When removing committed files, the agent should use `git rm` to ensure proper removal from git tracking, and remind the user to commit these removals.
+# Auto mode - deletes after showing list
+/dev/cleanup auto
 
-## Example Output
-
-Here's what a typical cleanup analysis looks like:
-
-```
-⏺ Based on my analysis, I've identified 17 files that can be cleaned up from your project. Here's what I found:
-
-🗑️ Untracked Files to Remove (8 files)
-
-Research/Debug files:
-rm -f research-frontmatter-libs.js
-rm -f eslint-manual-analysis.md
-rm -f frontmatter-replacement-examples.ts
-rm -f test-content-preservation.ts
-rm -f test-migration.ts
-rm -f verify-migration.md
-
-Dated reports:
-rm -f reports/RELEASE_READINESS_REPORT_2025-07-18.md
-rm -f reports/TEST_FAILURE_ANALYSIS_2025-07-18.md
-
-📁 Committed Files to Move or Remove (9 files)
-
-These report files are in the root but should be in reports/:
-
-# Move to reports/ (recommended):
-git mv FRONTMATTER_ANALYSIS.md reports/
-git mv MIGRATION_CHECKLIST.md reports/
-git mv MIGRATION_COMPLETE.md reports/
-git mv MIGRATION_GUIDE.md reports/
-git mv PERFORMANCE_TEST_FIX_SUMMARY.md reports/
-git mv QUALITY_VALIDATION_REPORT.md reports/
-git mv RELEASE_READINESS_REPORT.md reports/
-git mv TEST_FIXES_SUMMARY.md reports/
-git mv VALIDATION_REPORT.md reports/
-
-📝 Update .gitignore
-
-Add these patterns to prevent future accumulation:
-
-# Research and debug files
-research-*.js
-research-*.ts
-*-manual-analysis.md
-*-examples.ts
-test-*.ts
-!test/              # Exclude the test directory itself
-verify-*.md
-
-# Reports in root directory (should be in reports/)
-/*_ANALYSIS.md
-/*_CHECKLIST.md
-/*_COMPLETE.md
-/*_GUIDE.md
-/*_SUMMARY.md
-/*_REPORT.md
-# Preserve important documentation
-!CHANGELOG.md
-!README.md
-!AGENTS.md
-
-# Dated reports
-reports/*_[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].md
-
-Would you like me to proceed with the cleanup?
+# Aggressive mode - includes more patterns
+/dev/cleanup aggressive
 ```
 
-The command analyzes your project and categorizes cleanup items:
-- **Untracked files**: Temporary debug/test files that can be deleted
-- **Committed files**: Often reports that should be moved to the reports/ directory
-- **.gitignore updates**: Patterns to prevent future accumulation
+### Cleanup Workflow
 
-The agent will always ask for confirmation before making any changes.
+1. **Run in preview mode first**
+   ```bash
+   /dev/cleanup preview
+   ```
+
+2. **Review the list carefully**
+   - Ensure no important files are included
+   - Check file sizes for unusually large files
+
+3. **Approve or modify**
+   - Type 'y' to proceed with all
+   - Or manually delete specific files
+
+4. **Update .gitignore**
+   - Accept suggested patterns
+   - Or manually edit .gitignore
+
+5. **Commit changes**
+   ```bash
+   git add .gitignore
+   git commit -m "chore: update .gitignore for dev artifacts"
+   ```
+
+### Best Practices
+
+- Run cleanup regularly (weekly or after major development)
+- Always use preview mode first
+- Keep reports in `reports/` directory
+- Use meaningful filenames that don't match cleanup patterns
+- Commit important files promptly to avoid accidental deletion
+
+### Related Commands
+- `/git/status` - Check repository state
+- `/checkpoint/create` - Create backup before cleanup
+- `git clean -n` - Preview untracked file removal
+- `git clean -fd` - Force remove untracked files/directories

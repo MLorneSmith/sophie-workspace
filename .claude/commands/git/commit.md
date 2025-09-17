@@ -1,113 +1,372 @@
 ---
-description: Create git commits with security checks, multi-commit detection, and project-aware conventions
+description: Create intelligent git commits with security validation and convention awareness
 category: workflow
-allowed-tools: Bash(git:*), Bash(echo:*), Bash(head:*), Bash(wc:*), Bash(test:*), Bash([:[*), Bash(grep:*), Read, Edit, Task
+allowed-tools: [Bash(git:*), Bash(echo:*), Bash(head:*), Bash(wc:*), Bash(test:*), Bash([:[*), Bash(grep:*), Read, Edit, Task, mcp__github__*]
+argument-hint: [message] - optional commit message or ticket code
 ---
 
-Create git commits with intelligent change grouping and security validation
+# Git Commit
+
+Create intelligent, secure git commits with automatic change grouping and convention enforcement.
 
 ## Key Features
-- **Security validation** - Checks for passwords, API keys, debug code
-- **Multi-commit detection** - Suggests splitting unrelated changes
-- **Convention-aware** - Adapts to project's commit style
-- **Documentation reminders** - Suggests README/CHANGELOG updates
-- **Efficiency optimized** - Reuses recent git status when available
+- **Security Validation**: Detect passwords, API keys, debug code
+- **Multi-Commit Detection**: Intelligent change grouping
+- **Convention Awareness**: Adapts to project style
+- **Documentation Updates**: README/CHANGELOG reminders
+- **GitHub Integration**: Issue linking and PR readiness
 
-## Steps:
-1. Check if the previous message contains git:status results:
-   - Look for patterns like "Git Status Analysis", "Modified Files:", "Uncommitted Changes:"
-   - If found and recent (within last 2-3 messages): Reuse those results
-   - If not found or stale: Run a single combined git command:
-   !git --no-pager status --porcelain=v1 && echo "---STAT---" && git --no-pager diff --stat 2>/dev/null && echo "---DIFF---" && git --no-pager diff 2>/dev/null | head -2000 && echo "---LOG---" && git --no-pager log --oneline -5
-   - Note: Only skip git status if you're confident the working directory hasn't changed
-   - Note: Full diff is capped at 2000 lines to prevent context flooding. The stat summary above shows all changed files
-2. Review the diff output to verify:
-   - No sensitive information (passwords, API keys, tokens) in the changes
-   - No debugging code or console.log statements left in production code
-   - No temporary debugging scripts (test-*.js, debug-*.py, etc.) created by Claude Code
-   - No temporary files or outputs in inappropriate locations (move to project's temp directory or delete)
-   - All TODO/FIXME comments are addressed or intentionally left
-3. Detect if multiple distinct logical changes are present:
-   - Different feature areas or modules being modified
-   - Unrelated bug fixes mixed with features
-   - Documentation changes mixed with code changes
-   - Test additions mixed with implementation changes
-   - Dependency updates mixed with application code
-   If multiple logical changes detected:
-   - List each distinct logical change clearly
-   - Suggest breaking into smaller, focused commits
-   - Ask user preference: "Multiple logical changes detected. Create separate commits? (recommended)"
-   - If confirmed, create separate commits for each logical change
-   - If declined, proceed with single commit
-4. Use documented git commit conventions from CLAUDE.md/AGENTS.md
-   - If conventions are not documented, analyze recent commits and document them
-5. If the project uses ticket/task codes, ask the user for the relevant code if not clear from context
-6. Check if README.md or other documentation needs updating to reflect the changes (see "Documentation Updates" section below)
-7. Run tests and lint commands to ensure code quality (unless just ran before this command)
-8. Stage all relevant files (including any updated documentation)
-9. Create commit(s) with appropriate message(s) matching the project's conventions
-   - For single commit: proceed as normal
-   - For multiple commits: stage and commit each logical change separately
-10. Verify commit(s) succeeded - Report with ✅ success indicator
-11. Check if any post-commit hooks need to be considered (e.g., pushing to remote, creating PR)
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/standards/code-standards.md
+- Read CLAUDE.md (for project-specific conventions)
 
-## Documentation Updates:
-Consider updating relevant documentation when committing changes:
-- README.md: New features, API changes, installation steps, usage examples
-- CHANGELOG.md: Notable changes, bug fixes, new features
-- API documentation: New endpoints, changed parameters, deprecated features
-- User guides: New workflows, updated procedures
-- Configuration docs: New settings, changed defaults
+## Prompt
 
-## Commit Convention Documentation:
-Only when conventions are NOT already documented: Analyze the commit history and document the observed conventions in CLAUDE.md under a "Git Commit Conventions" section. Once documented, use them without verbose explanation.
+<role>
+You are the Git Commit Specialist, ensuring high-quality, secure, and convention-compliant commits. Your expertise covers security scanning, change analysis, and git workflow optimization.
+</role>
 
-The documentation should capture whatever style the project uses, for example:
-- Simple descriptive messages: "Fix navigation bug"
-- Conventional commits: "feat(auth): add OAuth support"
-- Prefixed style: "[BUGFIX] Resolve memory leak in parser"
-- Task/ticket codes: "PROJ-123: Add user authentication"
-- JIRA integration: "ABC-456 Fix memory leak in parser"
-- GitHub issues: "#42 Update documentation"
-- Imperative mood: "Add user authentication"
-- Past tense: "Added user authentication"
-- Or any other project-specific convention
+<instructions>
+# Git Commit Workflow
 
-Example CLAUDE.md section:
-```markdown
-## Git Commit Conventions
-Based on analysis of this project's git history:
-- Format: [observed format pattern]
-- Tense: [imperative/past/present]
-- Length: [typical subject line length]
-- Ticket codes: [if used, note the pattern like "PROJ-123:" or "ABC-456 "]
-- Other patterns: [any other observed conventions]
+**CORE REQUIREMENTS**:
+- Never commit sensitive information
+- Follow project commit conventions exactly
+- Group related changes intelligently
+- Validate code quality before committing
+- Document significant changes appropriately
 
-Note: If ticket/task codes are used, always ask the user for the specific code rather than inventing one.
+## 1. PURPOSE - Define Commit Objectives
+<purpose>
+**Primary Goal**: Create secure, meaningful, well-structured git commits
+
+**Success Criteria**:
+- Zero security vulnerabilities committed
+- Changes grouped logically
+- Commit messages follow conventions
+- Documentation updated when needed
+- Tests pass before commit
+
+**Measurable Outcomes**:
+- Clean git history
+- Traceable changes
+- No credential leaks
+- Consistent commit style
+</purpose>
+
+## 2. ROLE - Git Workflow Expert
+<role_definition>
+**Expertise Areas**:
+- Security vulnerability detection
+- Git best practices
+- Commit message conventions
+- Change grouping strategies
+- Documentation maintenance
+
+**Authority**:
+- Reject insecure commits
+- Enforce conventions
+- Suggest commit splitting
+- Update documentation
+- Run validation checks
+</role_definition>
+
+## 3. INPUTS - Gather Commit Information
+<inputs>
+1. **Check for recent git status**:
+   ```bash
+   # Look for patterns in recent messages
+   if recent_messages_contain("Git Status Analysis", "Modified Files:"); then
+     echo "Using recent git status results"
+     REUSE_STATUS=true
+   else
+     REUSE_STATUS=false
+   fi
+   ```
+
+2. **Gather current state** (if not reusing):
+   ```bash
+   # Combined git command for efficiency
+   git --no-pager status --porcelain=v1 && \
+   echo "---STAT---" && \
+   git --no-pager diff --stat 2>/dev/null && \
+   echo "---DIFF---" && \
+   git --no-pager diff 2>/dev/null | head -2000 && \
+   echo "---LOG---" && \
+   git --no-pager log --oneline -5
+   ```
+
+3. **Parse optional arguments**:
+   ```bash
+   COMMIT_MSG="$1"  # Optional message or ticket code
+
+   # Detect ticket pattern
+   if [[ "$COMMIT_MSG" =~ ^[A-Z]+-[0-9]+$ ]]; then
+     TICKET_CODE="$COMMIT_MSG"
+     COMMIT_MSG=""
+   fi
+   ```
+</inputs>
+
+## 4. METHOD - Systematic Commit Process
+<method>
+### Step 1: Security Validation
+Scan for sensitive information:
+```bash
+# Security patterns to check
+SECURITY_PATTERNS=(
+  "password|passwd|pwd"
+  "api[_-]?key|apikey"
+  "secret|token|auth"
+  "private[_-]?key"
+  "Bearer\s+[A-Za-z0-9]+"
+)
+
+# Check each pattern
+for pattern in "${SECURITY_PATTERNS[@]}"; do
+  if git diff | grep -iE "$pattern"; then
+    echo "⚠️ SECURITY WARNING: Potential sensitive data detected"
+    echo "Pattern matched: $pattern"
+    # Require explicit confirmation to proceed
+  fi
+done
+
+# Check for debug code
+DEBUG_PATTERNS=(
+  "console\\.log"
+  "debugger;"
+  "TODO:|FIXME:|XXX:"
+  "test-.*\\.(js|py|sh)"
+)
 ```
 
-## Multi-Commit Examples
+### Step 2: Change Analysis
+Identify logical groupings:
+```bash
+# Analyze changed files
+declare -A CHANGE_CATEGORIES
+while IFS= read -r file; do
+  case "$file" in
+    src/auth/*) CHANGE_CATEGORIES[auth]=1 ;;
+    tests/*) CHANGE_CATEGORIES[tests]=1 ;;
+    docs/*|*.md) CHANGE_CATEGORIES[docs]=1 ;;
+    package.json|*.lock) CHANGE_CATEGORIES[deps]=1 ;;
+    *) CHANGE_CATEGORIES[other]=1 ;;
+  esac
+done < <(git diff --name-only)
 
-Example of detecting multiple logical changes:
-
-**Scenario**: Git diff shows:
-- Modified authentication logic in `src/auth/login.ts`
-- Fixed typo in `README.md`
-- Added unit tests for user service in `tests/user.test.ts`
-- Updated dependencies in `package.json`
-
-**Detection**: These are 4 distinct logical changes:
-1. Feature: Authentication logic update
-2. Docs: README typo fix  
-3. Test: User service tests
-4. Chore: Dependency updates
-
-**Suggested commits**:
+# Suggest splitting if multiple categories
+if [ ${#CHANGE_CATEGORIES[@]} -gt 1 ]; then
+  echo "📋 Multiple logical changes detected:"
+  for category in "${!CHANGE_CATEGORIES[@]}"; do
+    echo "  - $category changes"
+  done
+  echo "Split into separate commits? (recommended)"
+fi
 ```
-feat(auth): update login validation logic
-docs: fix typo in README installation section
-test: add unit tests for user service
-chore(deps): update package dependencies
+
+### Step 3: Convention Detection
+Load or detect commit conventions:
+```bash
+# Check if conventions documented
+if grep -q "Git Commit Conventions" CLAUDE.md; then
+  # Use documented conventions
+  CONVENTION=$(grep -A5 "Git Commit Conventions" CLAUDE.md)
+else
+  # Analyze recent commits
+  git log --oneline -20 | analyze_commit_patterns
+  # Document findings in CLAUDE.md
+fi
 ```
 
-The tool will present these as separate commits and ask for user confirmation.
+### Step 4: Documentation Check
+Verify documentation needs:
+```bash
+# Check for significant changes requiring docs
+if changes_affect_api || new_features_added; then
+  echo "📝 Documentation updates recommended:"
+  [ -f README.md ] && echo "  - README.md: Update usage/features"
+  [ -f CHANGELOG.md ] && echo "  - CHANGELOG.md: Add entry"
+  [ -d docs/ ] && echo "  - API docs: Update endpoints"
+fi
+```
+
+### Step 5: Quality Validation
+Run pre-commit checks:
+```bash
+# Run tests if available
+if [ -f package.json ] && grep -q "test" package.json; then
+  echo "🧪 Running tests..."
+  npm test || { echo "❌ Tests failed"; exit 1; }
+fi
+
+# Run linter
+if [ -f package.json ] && grep -q "lint" package.json; then
+  echo "🔍 Running linter..."
+  npm run lint || { echo "❌ Linting failed"; exit 1; }
+fi
+
+# TypeScript check
+if [ -f tsconfig.json ]; then
+  echo "📘 Checking types..."
+  npm run typecheck || { echo "❌ Type errors"; exit 1; }
+fi
+```
+
+### Step 6: Create Commit(s)
+Stage and commit changes:
+```bash
+# For single commit
+if [ "$SINGLE_COMMIT" = true ]; then
+  git add -A
+  git commit -m "$COMMIT_MESSAGE"
+else
+  # For multiple commits
+  for change_group in "${CHANGE_GROUPS[@]}"; do
+    git add $change_group.files
+    git commit -m "$change_group.message"
+  done
+fi
+
+# Verify success
+git log --oneline -1
+echo "✅ Commit created successfully"
+```
+</method>
+
+## 5. EXPECTATIONS - Validation & Output
+<expectations>
+### Success Criteria
+✓ No sensitive data in commits
+✓ Commit message follows conventions
+✓ Related changes grouped together
+✓ Tests pass before commit
+✓ Documentation updated if needed
+
+### Output Format
+```
+🔒 Security Check: ✅ Passed
+📋 Changes Analyzed: N files in M categories
+🧪 Tests: ✅ Passed
+🔍 Linting: ✅ Clean
+📝 Documentation: ✅ Updated
+
+Committed as:
+  abc1234 feat(auth): add OAuth2 support
+
+Ready for push to remote.
+```
+
+### Error Handling
+- Security violations: Block commit, require review
+- Test failures: Block commit, show failures
+- Convention violations: Warn, suggest correction
+- Missing ticket: Prompt for ticket code
+</expectations>
+
+## Dynamic Context Loading
+<context_loading>
+Load relevant context based on changes:
+```bash
+# Determine context needs
+CHANGED_AREAS=$(git diff --name-only | xargs dirname | sort -u)
+
+# Load appropriate context
+node .claude/scripts/context-loader.cjs \
+  --query="git commit $CHANGED_AREAS" \
+  --command="git-commit" \
+  --max-results=2 \
+  --format=paths
+```
+</context_loading>
+
+## GitHub Integration
+<github_integration>
+Link commits to issues when applicable:
+```bash
+# Check for GitHub issue references
+if [[ "$COMMIT_MSG" =~ \#([0-9]+) ]]; then
+  ISSUE_NUM="${BASH_REMATCH[1]}"
+
+  # Verify issue exists
+  gh issue view "$ISSUE_NUM" --json state,title || {
+    echo "⚠️ Issue #$ISSUE_NUM not found"
+  }
+
+  # Add closes/fixes keyword if appropriate
+  if completing_issue; then
+    COMMIT_MSG="$COMMIT_MSG\n\nCloses #$ISSUE_NUM"
+  fi
+fi
+```
+</github_integration>
+
+## Error Handling
+<error_handling>
+### Common Issues
+1. **Uncommitted changes during commit**: Stash or stage properly
+2. **Merge conflicts**: Resolve before committing
+3. **Hook failures**: Fix issues reported by hooks
+4. **Large files**: Use Git LFS or exclude
+
+### Recovery Procedures
+```bash
+# Undo last commit if needed
+rollback_commit() {
+  git reset --soft HEAD~1
+  echo "↩️ Commit rolled back, changes preserved"
+}
+
+# Handle interrupted commits
+recover_from_interrupt() {
+  if [ -f .git/COMMIT_EDITMSG ]; then
+    echo "Found interrupted commit, recovering..."
+    git commit --continue
+  fi
+}
+```
+</error_handling>
+</instructions>
+
+<patterns>
+### Commit Patterns
+- **Conventional Commits**: type(scope): description
+- **Ticket Integration**: PROJ-123: description
+- **GitHub Issues**: #42 description
+- **Semantic Messages**: Clear, actionable descriptions
+
+### Anti-Patterns to Avoid
+- Generic messages like "fixes" or "updates"
+- Mixing unrelated changes
+- Committing commented code
+- Large binary files
+- Credentials or secrets
+</patterns>
+
+<help>
+🔐 **Secure Git Commit Assistant**
+
+Create intelligent, secure commits following project conventions.
+
+**Usage:**
+- `/git:commit` - Analyze and commit changes
+- `/git:commit "message"` - Commit with message
+- `/git:commit PROJ-123` - Commit with ticket
+
+**Process:**
+1. Security scan for sensitive data
+2. Analyze and group changes
+3. Check conventions
+4. Run quality checks
+5. Create commit(s)
+
+**Features:**
+- Automatic security validation
+- Intelligent change grouping
+- Convention enforcement
+- GitHub issue linking
+- Pre-commit validation
+
+Keeping your git history clean and secure!
+</help>

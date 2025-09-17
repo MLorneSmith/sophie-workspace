@@ -1,4 +1,5 @@
 # Agent Quality Baseline Assessment
+
 Generated: 2025-09-16
 
 ## Executive Summary

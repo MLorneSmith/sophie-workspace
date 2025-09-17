@@ -1,567 +1,593 @@
-# Do Task Command
+---
+description: Execute GitHub task implementation with intelligent parallelization and dynamic context loading
+allowed-tools: Read, Bash, Task, TodoWrite, Github
+argument-hint: [task_reference] - GitHub issue number, TASK-ID, or GitHub URL
+---
 
-Usage: `/do-task [task_reference]`
+# Do Task
 
-- GitHub issue number: `124` (preferred format from log-task command)
-- Task ID: `TASK-124`
-- Local file: `.claude/z.archive/tasks/2025-01-06-TASK-124.md`
-- GitHub URL: `https://github.com/MLorneSmith/2025slideheroes/issues/124`
-- Legacy format: `TASK-1234567-xyz` (for older local-only tasks)
+Execute task implementation from GitHub issues with intelligent parallelization, dynamic context loading, and comprehensive progress tracking.
 
-This command reads a task specification from GitHub and executes the implementation plan step-by-step.
+## Key Features
+- **Intelligent Task Analysis**: Automatically analyze GitHub issues for complexity and parallelization opportunities
+- **Dynamic Context Loading**: Load relevant documentation based on task type and content using context-loader.cjs
+- **Parallel Agent Execution**: Execute independent task components simultaneously for 3-5x performance improvement
+- **Automatic Clarification**: Detect ambiguous requirements and prompt for clarification before implementation
+- **Comprehensive Progress Tracking**: Update GitHub issues with detailed progress and maintain local state
+- **Enhanced Error Recovery**: Provide alternative approaches when encountering implementation blockers
 
-**CRITICAL**: Always review GitHub issue comments for the most current status and progress updates, as task descriptions may be outdated.
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/roles/implementation-engineer.md
 
-## 1. Adopt Role
+## Prompt
 
-Load the implementation mindset:
+<role>
+You are a Senior Implementation Engineer specializing in systematic task execution from GitHub issues. You excel at analyzing task complexity, coordinating parallel agent execution, and maintaining comprehensive progress tracking while delivering production-ready implementations.
+</role>
 
-```
-/read .claude/context/roles/implementation-engineer.md
-```
+<instructions>
+# Task Implementation Execution - PRIME Framework
 
-## 2. Load Task Specification
+**CORE REQUIREMENTS**:
+- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
+- **Start** with GitHub issue analysis for intelligent execution planning
+- **Use** dynamic context loading for task-specific documentation
+- **Implement** parallel execution for independent task components
+- **Maintain** comprehensive progress tracking throughout execution
 
-### 2.1 Parse Task Reference
+## PRIME Workflow
 
-Parse the task reference to extract issue number:
+### Phase P - PURPOSE
+<purpose>
+**Define** clear implementation objectives and success criteria:
+
+1. **Primary Objective**: Execute GitHub task implementation with maximum efficiency through intelligent parallelization
+2. **Success Criteria**: All acceptance criteria met, tests passing, comprehensive documentation, GitHub issue updated
+3. **Scope Boundaries**: Single GitHub task focus, production-ready implementation, no placeholder code
+4. **Key Features**: Parallel execution, dynamic context, progress tracking, error recovery
+</purpose>
+
+### Phase R - ROLE
+<role_definition>
+**Establish** implementation expertise and execution authority:
+
+1. **Expertise Domain**: Senior software engineer with full-stack implementation experience
+2. **Experience Level**: Expert in GitHub workflow, parallel execution, and production deployment
+3. **Decision Authority**: Choose optimal implementation approaches, delegate to specialists, modify task execution strategy
+4. **Approach Style**: Systematic, parallel-optimized, comprehensive progress tracking
+</role_definition>
+
+### Phase I - INPUTS
+<inputs>
+**Gather** all necessary materials and context before execution:
+
+#### Essential Context (REQUIRED)
+**Load** critical documentation:
+- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/roles/implementation-engineer.md
+
+#### Dynamic Context Loading (ADAPTIVE)
+**Analyze** and **Load** context based on task specifics:
 
 ```bash
-# Parse various input formats
-task_ref="${ARGUMENTS}"
-
-# Extract issue number from different formats
-if [[ "$task_ref" =~ ^[0-9]+$ ]]; then
-  # Direct number: 124
-  issue_number="$task_ref"
-elif [[ "$task_ref" =~ ^TASK-([0-9]+)$ ]]; then
-  # TASK-124 format
-  issue_number="${BASH_REMATCH[1]}"
-elif [[ "$task_ref" =~ ^#([0-9]+)$ ]]; then
-  # #124 format
-  issue_number="${BASH_REMATCH[1]}"
-elif [[ "$task_ref" =~ github\.com/[^/]+/[^/]+/issues/([0-9]+) ]]; then
-  # GitHub URL format
-  issue_number="${BASH_REMATCH[1]}"
+# Step 1: Parse task reference to extract GitHub issue number
+TASK_REF="${1:-}"
+if [[ "$TASK_REF" =~ ^[0-9]+$ ]]; then
+  ISSUE_NUMBER="$TASK_REF"
+elif [[ "$TASK_REF" =~ ^TASK-([0-9]+)$ ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
+elif [[ "$TASK_REF" =~ ^#([0-9]+)$ ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
+elif [[ "$TASK_REF" =~ github\.com/[^/]+/[^/]+/issues/([0-9]+) ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
 else
-  echo "❌ Invalid task reference format: $task_ref"
+  echo "❌ Invalid task reference format: $TASK_REF"
   exit 1
 fi
 
-echo "📋 Loading task #$issue_number"
+# Step 2: Fetch GitHub issue details
+gh issue view $ISSUE_NUMBER --json number,title,body,state,labels,assignees,createdAt,milestone --output-file /tmp/task-$ISSUE_NUMBER.json
+
+# Step 3: Analyze task for metadata extraction
+TASK_METADATA=$(node .claude/scripts/command-analyzer.cjs "/tmp/task-$ISSUE_NUMBER.json" --json)
+
+# Step 4: Extract patterns for context loading
+TASK_LABELS=$(jq -r '.labels[].name' /tmp/task-$ISSUE_NUMBER.json | tr '\n' ' ')
+TASK_BODY=$(jq -r '.body' /tmp/task-$ISSUE_NUMBER.json)
+TASK_TITLE=$(jq -r '.title' /tmp/task-$ISSUE_NUMBER.json)
+
+# Step 5: Build enriched query for context loader
+ENRICHED_QUERY="$TASK_LABELS $TASK_TITLE implementation task execution"
+
+# Step 6: Load relevant context
+CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
+  --query="$ENRICHED_QUERY" \
+  --command="do-task" \
+  --max-results=3 \
+  --token-budget=4000 \
+  --format=paths \
+  --metadata="$TASK_METADATA")
+
+# Step 7: Read returned context files
+while IFS= read -r line; do
+  if [[ $line =~ ^Read ]]; then
+    FILE_PATH=$(echo "$line" | sed 's/Read //')
+    echo "Loading context: $FILE_PATH"
+    # Use Read tool for $FILE_PATH
+  fi
+done <<< "$CONTEXT_FILES"
 ```
 
-### 2.2 Get Issue from GitHub
-
-Use gh CLI to fetch issue details directly (following CCPM pattern):
+#### GitHub Issue Analysis
+**Fetch** and **Analyze** GitHub issue for execution planning:
 
 ```bash
-# Get issue details from GitHub
-gh issue view $issue_number --json number,title,body,state,labels,assignees,createdAt,milestone > /tmp/task-$issue_number.json
+# Get issue with all comments for current progress
+gh issue view $ISSUE_NUMBER --comments --json number,title,body,state,labels,assignees,comments
 
-if [ $? -ne 0 ]; then
-  echo "❌ Cannot access issue #$issue_number. Check number or run: gh auth login"
-  exit 1
+# Extract task type from labels
+TASK_TYPE="task"
+if [[ "$TASK_LABELS" =~ "feature" ]]; then
+  TASK_TYPE="feature"
+elif [[ "$TASK_LABELS" =~ "enhancement" ]]; then
+  TASK_TYPE="enhancement"
+elif [[ "$TASK_LABELS" =~ "bug" ]]; then
+  TASK_TYPE="bug"
+elif [[ "$TASK_LABELS" =~ "refactor" ]]; then
+  TASK_TYPE="refactor"
 fi
 
-# Get issue state
-issue_state=$(jq -r '.state' /tmp/task-$issue_number.json)
-issue_title=$(jq -r '.title' /tmp/task-$issue_number.json)
+# Analyze task complexity for parallelization strategy
+COMPLEXITY_INDICATORS=(
+  "multiple components"
+  "frontend and backend"
+  "database migration"
+  "testing required"
+  "documentation needed"
+)
 
-echo "📋 Task: $issue_title"
-echo "📊 Status: $issue_state"
+PARALLEL_OPPORTUNITIES=()
+for indicator in "${COMPLEXITY_INDICATORS[@]}"; do
+  if echo "$TASK_BODY" | grep -qi "$indicator"; then
+    PARALLEL_OPPORTUNITIES+=("$indicator")
+  fi
+done
 ```
 
-### 2.3 Check for Local Task File
+#### Clarification Loop (CONDITIONAL)
+**Conduct** interactive clarification for ambiguous requirements:
 
-Look for corresponding local task file (if using feature workflow):
+IF task body is vague OR multiple implementation approaches exist OR requirements unclear:
+  → **Execute** clarification loop with max 2 rounds
+  → **Focus** on critical implementation decisions first
+  → **Document** clarified requirements in GitHub issue comment
 
 ```bash
-# Check if this is a feature task with local file
-# First check new naming convention (issue number as filename)
-task_file=".claude/implementations/*/${issue_number}.md"
-if ! test -f $task_file 2>/dev/null; then
-  # Check old naming convention (001.md, 002.md, etc.)
-  task_file=$(grep -l "github:.*issues/${issue_number}" .claude/implementations/*/*.md 2>/dev/null | head -1)
+# Detect ambiguity indicators
+AMBIGUITY_SCORE=0
+AMBIGUITY_INDICATORS=(
+  "should" "could" "might" "perhaps" "possibly"
+  "figure out" "determine" "decide" "choose"
+  "improve" "enhance" "better" "optimize"
+)
+
+for indicator in "${AMBIGUITY_INDICATORS[@]}"; do
+  if echo "$TASK_BODY" | grep -qi "$indicator"; then
+    ((AMBIGUITY_SCORE++))
+  fi
+done
+
+# If ambiguity score > 3, trigger clarification
+if [ $AMBIGUITY_SCORE -gt 3 ]; then
+  echo "🔍 Ambiguous requirements detected, triggering clarification..."
+  # Use Task tool with clarification-loop-engine
+fi
+```
+</inputs>
+
+### Phase M - METHOD
+<method>
+**Execute** the implementation workflow with intelligent parallelization:
+
+#### Step 1: Execution Strategy Analysis
+**Analyze** task for optimal execution approach:
+
+```bash
+# Determine parallelization strategy
+PARALLEL_STRATEGY="sequential" # default
+
+# Task Analysis-Based Strategy
+if [[ " ${PARALLEL_OPPORTUNITIES[@]} " =~ "multiple components" ]] && [[ " ${PARALLEL_OPPORTUNITIES[@]} " =~ "testing required" ]]; then
+  PARALLEL_STRATEGY="component-parallel"
+elif [[ "$TASK_TYPE" == "feature" ]] && [[ " ${PARALLEL_OPPORTUNITIES[@]} " =~ "frontend and backend" ]]; then
+  PARALLEL_STRATEGY="layer-parallel"
+elif [[ " ${PARALLEL_OPPORTUNITIES[@]} " =~ "documentation needed" ]]; then
+  PARALLEL_STRATEGY="implementation-docs-parallel"
 fi
 
-if [ -f "$task_file" ]; then
-  echo "📁 Found local task file: $task_file"
-  # Read local task for additional context
-else
-  echo "📋 Working directly from GitHub issue #$issue_number"
-fi
-```
-
-### 2.4 Read and Parse Task
-
-```bash
-# Extract task information from GitHub issue
-task_body=$(jq -r '.body' /tmp/task-$issue_number.json)
-task_labels=$(jq -r '.labels[].name' /tmp/task-$issue_number.json | tr '\n' ' ')
-
-# Determine task type from labels
-if [[ "$task_labels" =~ "feature" ]]; then
-  task_type="feature"
-elif [[ "$task_labels" =~ "enhancement" ]]; then
-  task_type="enhancement"
-elif [[ "$task_labels" =~ "bug" ]]; then
-  task_type="bug"
-elif [[ "$task_labels" =~ "refactor" ]]; then
-  task_type="refactor"
-else
-  task_type="task"
+# Confidence-Based Override
+IMPLEMENTATION_CONFIDENCE="high" # Start optimistic
+if [ $AMBIGUITY_SCORE -gt 5 ] || [[ "$TASK_LABELS" =~ "complex" ]]; then
+  IMPLEMENTATION_CONFIDENCE="low"
+  PARALLEL_STRATEGY="sequential" # Force sequential for complex unclear tasks
 fi
 
-echo "🏷️ Type: $task_type"
-echo "🏷️ Labels: $task_labels"
+echo "📊 Execution Strategy: $PARALLEL_STRATEGY (confidence: $IMPLEMENTATION_CONFIDENCE)"
 ```
 
-### 2.5 Review GitHub Issue Comments (Critical Step)
+#### Step 2: Implementation Execution
+**Execute** implementation based on determined strategy:
 
-**IMPORTANT**: Always review GitHub issue comments for implementation updates and current progress:
+**IF** PARALLEL_STRATEGY="component-parallel":
+  → **Launch** parallel agents for independent components
+  → **Use** shared context preparation to minimize switching overhead
 
 ```bash
-# Review all comments on the GitHub issue for latest status
-gh issue view ${task_number} --repo MLorneSmith/2025slideheroes --comments
+# Prepare shared context once
+SHARED_CONTEXT="
+Task: $TASK_TITLE (#$ISSUE_NUMBER)
+Type: $TASK_TYPE
+Labels: $TASK_LABELS
+Requirements: $(echo "$TASK_BODY" | head -20)
+"
 
-# This will show:
-# - Implementation progress updates
-# - Completed phases
-# - Current blockers
-# - Technical decisions made
-# - Next steps to focus on
+# Execute parallel component implementation
+# Stream 1: Frontend component implementation
+Task({
+  subagent_type: "react-expert",
+  description: "Implement frontend component",
+  prompt: `
+$SHARED_CONTEXT
+
+Focus on frontend component implementation:
+1. Create React component with TypeScript
+2. Implement proper error boundaries
+3. Add accessibility features
+4. Include unit tests
+
+Current GitHub issue comments: $(gh issue view $ISSUE_NUMBER --comments)
+`
+})
+
+# Stream 2: Backend API implementation
+Task({
+  subagent_type: "nodejs-expert",
+  description: "Implement backend API",
+  prompt: `
+$SHARED_CONTEXT
+
+Focus on backend API implementation:
+1. Create server actions with enhanceAction
+2. Implement proper validation with Zod
+3. Add error handling and logging
+4. Include integration tests
+
+Current GitHub issue comments: $(gh issue view $ISSUE_NUMBER --comments)
+`
+})
+
+# Stream 3: Database implementation
+Task({
+  subagent_type: "database-postgres-expert",
+  description: "Implement database changes",
+  prompt: `
+$SHARED_CONTEXT
+
+Focus on database implementation:
+1. Create migration scripts
+2. Implement RLS policies
+3. Add database indexes
+4. Test data integrity
+
+Current GitHub issue comments: $(gh issue view $ISSUE_NUMBER --comments)
+`
+})
 ```
 
-**What to Look For**:
-- **Progress Comments**: "Phase 1 complete", "Started Phase 2", etc.
-- **Completion Checkmarks**: Updated checklist items in comments
-- **Technical Context**: Decisions and discoveries during implementation
-- **Current Focus**: What specifically needs to be done next
-
-## 3. Implementation Planning
-
-### 3.1 Create Working Branch
+**ELSE IF** PARALLEL_STRATEGY="sequential":
+  → **Execute** step-by-step implementation
+  → **Update** progress after each major phase
 
 ```bash
-# Create feature branch for the task
-git checkout -b task/${task_id}
+# Sequential implementation for complex/unclear tasks
+echo "🔄 Executing sequential implementation..."
 
-# Verify clean working directory
-git status
+# Phase 1: Analysis and Planning
+echo "📋 Phase 1: Analysis and Planning"
+# Read affected files, understand current state
+# Plan implementation approach
+# Update GitHub with analysis
+
+# Phase 2: Core Implementation
+echo "🔨 Phase 2: Core Implementation"
+# Implement main functionality
+# Update GitHub with implementation progress
+
+# Phase 3: Testing and Validation
+echo "🧪 Phase 3: Testing and Validation"
+# Create/update tests
+# Run validation checks
+# Update GitHub with test results
+
+# Phase 4: Documentation and Finalization
+echo "📄 Phase 4: Documentation and Finalization"
+# Update documentation
+# Final validation
+# Create pull request
 ```
 
-### 3.2 Load Context Documentation
+#### Step 3: Progress Tracking
+**Track** and **Update** progress throughout execution:
 
-Based on task type, load relevant documentation:
+```bash
+# Function to update GitHub progress
+update_github_progress() {
+  local phase="$1"
+  local status="$2"
+  local details="$3"
 
-```typescript
-// Read context based on task type
-const contextMap = {
-  feature: [
-    '.claude/context/standards/code-standards.md',
-    '.claude/docs/architecture/system-design.md'
-  ],
-  enhancement: [
-    '.claude/context/standards/code-standards.md',
-    // Load docs for specific area being enhanced
-  ],
-  refactor: [
-    '.claude/docs/architecture/performance-optimization.md',
-    '.claude/context/standards/code-standards.md'
-  ],
-  testing: [
-    '.claude/docs/testing/unit-testing-patterns.md',
-    '.claude/docs/testing/context/testing-fundamentals.md'
-  ]
-};
-```
-
-### 3.3 Review Current State
-
-```typescript
-// Check affected files current state
-for (const file of task.affectedFiles) {
-  const exists = await fileExists(file);
-  if (exists) {
-    await readFile(file);
-    // Understand current implementation
-  }
-}
-
-// Check for related tests
-const testFiles = task.affectedFiles.map(f => f.replace(/\.(ts|tsx)$/, '.test.$1'));
-for (const testFile of testFiles) {
-  if (await fileExists(testFile)) {
-    await readFile(testFile);
-  }
-}
-```
-
-## 4. Phase-by-Phase Execution
-
-### 4.1 Execute Setup Phase
-
-```typescript
-// Phase 1: Setup and Preparation
-const setupSteps = task.implementationPlan.phase1;
-
-for (const step of setupSteps) {
-  console.log(`📋 Executing: ${step.description}`);
-  
-  if (step.completed) {
-    console.log('✅ Already completed (from GitHub comments)');
-    continue;
-  }
-  
-  // Execute the step
-  await executeStep(step);
-  
-  // Update progress
-  await updateGitHubProgress(task.id, step.id, 'completed');
-}
-```
-
-### 4.2 Core Implementation
-
-```typescript
-// Phase 2: Core Implementation
-const implementationSteps = task.implementationPlan.phase2;
-
-for (const step of implementationSteps) {
-  console.log(`🔨 Implementing: ${step.description}`);
-  
-  if (step.completed) {
-    console.log('✅ Already completed');
-    continue;
-  }
-  
-  // Read the file to modify
-  const fileContent = await readFile(step.file);
-  
-  // Implement the changes
-  const updatedContent = await implementFeature(step, fileContent);
-  
-  // Write the changes
-  await writeFile(step.file, updatedContent);
-  
-  // Run immediate validation
-  await validateChanges(step.file);
-  
-  // Update progress
-  await updateGitHubProgress(task.id, step.id, 'completed');
-}
-```
-
-### 4.3 Testing Phase
-
-```typescript
-// Phase 3: Testing
-const testingSteps = task.implementationPlan.phase3;
-
-for (const step of testingSteps) {
-  console.log(`🧪 Testing: ${step.description}`);
-  
-  if (step.testType === 'unit') {
-    // Create or update unit tests
-    const testFile = step.testFile;
-    const testContent = await generateUnitTests(step);
-    await writeFile(testFile, testContent);
-    
-    // Run the tests
-    const testResult = await runTests(testFile);
-    if (!testResult.success) {
-      console.error('❌ Tests failed:', testResult.errors);
-      // Fix and retry
-    }
-  } else if (step.testType === 'manual') {
-    // Document manual testing steps
-    console.log('📝 Manual testing required:');
-    step.testCases.forEach(tc => console.log(`  - ${tc}`));
-  }
-}
-```
-
-### 4.4 Documentation and Finalization
-
-```typescript
-// Phase 4: Documentation and Review
-const finalizationSteps = task.implementationPlan.phase4;
-
-for (const step of finalizationSteps) {
-  console.log(`📄 Finalizing: ${step.description}`);
-  
-  if (step.type === 'documentation') {
-    await updateDocumentation(step);
-  } else if (step.type === 'review-prep') {
-    await prepareForReview(step);
-  }
-}
-```
-
-## 5. Progress Tracking
-
-### 5.1 Update GitHub Issue
-
-After each major phase or significant progress:
-
-```typescript
-async function updateGitHubProgress(taskId, phaseCompleted, notes) {
-  const progressUpdate = `
+  local progress_comment="
 ## 🚀 IMPLEMENTATION PROGRESS UPDATE
 
-**Phase Completed**: ${phaseCompleted}
-**Timestamp**: ${new Date().toISOString()}
+**Phase**: $phase
+**Status**: $status
+**Timestamp**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-### ✅ Completed in this session:
-${notes.completed.map(item => `- ${item}`).join('\n')}
-
-### 🔄 In Progress:
-${notes.inProgress.map(item => `- ${item}`).join('\n')}
-
-### 📋 Next Steps:
-${notes.nextSteps.map(item => `- ${item}`).join('\n')}
+### ✅ Completed:
+$details
 
 ### 📊 Overall Progress:
-- Phase 1 (Setup): ✅ Complete
-- Phase 2 (Implementation): 🔄 ${notes.implementationProgress}% Complete
-- Phase 3 (Testing): ⏳ Pending
-- Phase 4 (Documentation): ⏳ Pending
+$(calculate_progress_percentage)
 
 ---
 *Updated by Claude Implementation Assistant*
-`;
+"
 
-  await mcp__github__add_issue_comment({
-    owner: 'MLorneSmith',
-    repo: '2025slideheroes',
-    issue_number: extractIssueNumber(taskId),
-    body: progressUpdate
-  });
-}
-```
-
-### 5.2 Local Progress Tracking
-
-```typescript
-// Create progress file
-const progressFile = `.claude/z.archive/tasks/progress/${task.id}-progress.md`;
-const progress = {
-  taskId: task.id,
-  startTime: new Date().toISOString(),
-  phases: {
-    setup: { status: 'in-progress', steps: [] },
-    implementation: { status: 'pending', steps: [] },
-    testing: { status: 'pending', steps: [] },
-    finalization: { status: 'pending', steps: [] }
-  },
-  currentPhase: 'setup',
-  blockers: [],
-  decisions: []
-};
-
-// Update after each step
-await updateProgressFile(progressFile, progress);
-```
-
-## 6. Quality Assurance
-
-### 6.1 Continuous Validation
-
-After each file modification:
-
-```bash
-# Run type checking
-npm run typecheck
-
-# Run linting
-npm run lint
-
-# Run affected tests
-npm test -- --findRelatedTests ${modified_files}
-```
-
-### 6.2 Acceptance Criteria Verification
-
-```typescript
-// Check each acceptance criterion
-const results = [];
-for (const criterion of task.acceptanceCriteria) {
-  const result = await verifyCriterion(criterion);
-  results.push({
-    criterion: criterion.description,
-    status: result.passed ? '✅' : '❌',
-    details: result.details
-  });
+  gh issue comment $ISSUE_NUMBER --body "$progress_comment"
 }
 
-// Report results
-console.log('\n📋 Acceptance Criteria Results:');
-results.forEach(r => console.log(`${r.status} ${r.criterion}`));
+# Update progress after each major step
+update_github_progress "Analysis" "Complete" "Task analyzed, execution strategy determined"
 ```
 
-## 7. Completion and Handoff
-
-### 7.1 Final Validation
+#### Step 4: Error Recovery
+**Handle** implementation blockers with alternative approaches:
 
 ```bash
-# Full test suite
-npm test
+# Error recovery function
+handle_implementation_error() {
+  local error_type="$1"
+  local error_details="$2"
 
-# Build verification
-npm run build
+  echo "❌ Implementation error detected: $error_type"
 
-# Final type check
-npm run typecheck
-```
+  case "$error_type" in
+    "dependency_missing")
+      echo "🔄 Alternative: Check for alternative dependencies or implementation approaches"
+      # Suggest alternative packages or approaches
+      ;;
+    "test_failure")
+      echo "🔄 Alternative: Analyze test failure and adjust implementation"
+      # Run specific test debugging
+      ;;
+    "compilation_error")
+      echo "🔄 Alternative: Fix compilation issues and retry"
+      # Use TypeScript expert for compilation fixes
+      ;;
+    *)
+      echo "🔄 Generic recovery: Document blocker and suggest alternative approaches"
+      ;;
+  esac
 
-### 7.2 Create Pull Request
+  # Document blocker in GitHub
+  local blocker_comment="
+## ⚠️ IMPLEMENTATION BLOCKER
 
-```bash
-# Stage all changes
-git add -A
+**Error Type**: $error_type
+**Details**: $error_details
+**Attempted Solutions**: [List attempted fixes]
 
-# Commit with descriptive message
-git commit -m "feat: implement ${task.title}
-
-- ${task.acceptanceCriteria[0]}
-- ${task.acceptanceCriteria[1]}
-- ${task.acceptanceCriteria[2]}
-
-Implements #${task.githubNumber}"
-
-# Push branch
-git push -u origin task/${task.id}
-
-# Create PR
-gh pr create \
-  --title "Implement: ${task.title}" \
-  --body "## Summary\n\n${task.summary}\n\n## Implementation\n\n- ✅ All acceptance criteria met\n- ✅ Tests passing\n- ✅ Documentation updated\n\n## Testing\n\n${testingSummary}\n\nCloses #${task.githubNumber}" \
-  --assignee @me
-```
-
-### 7.3 Final Status Update
-
-```typescript
-const completionUpdate = `
-## ✅ TASK COMPLETED
-
-**Task ID**: ${task.id}
-**Completion Time**: ${new Date().toISOString()}
-**Total Time**: ${calculateTotalTime(startTime)}
-
-### 🎯 All Acceptance Criteria Met:
-${task.acceptanceCriteria.map(ac => `- ✅ ${ac}`).join('\n')}
-
-### 📁 Files Modified:
-${modifiedFiles.map(f => `- ${f}`).join('\n')}
-
-### 🧪 Tests Added/Updated:
-${testFiles.map(f => `- ${f}`).join('\n')}
-
-### 🔗 Pull Request:
-${prUrl}
-
-### 📝 Implementation Notes:
-${implementationNotes}
+### 🛠️ Suggested Alternatives:
+1. [Alternative approach 1]
+2. [Alternative approach 2]
+3. [Escalation path if needed]
 
 ---
-*Task completed by Claude Implementation Assistant*
-`;
+*Blocker documented by Claude Implementation Assistant*
+"
 
-await mcp__github__add_issue_comment({
-  owner: 'MLorneSmith',
-  repo: '2025slideheroes',
-  issue_number: task.githubNumber,
-  body: completionUpdate
-});
+  gh issue comment $ISSUE_NUMBER --body "$blocker_comment"
+}
+```
+</method>
+
+### Phase E - EXPECTATIONS
+<expectations>
+**Validate** and **Deliver** implementation results:
+
+#### Output Specification
+**Define** exact deliverable format:
+- **Format**: Pull request with comprehensive implementation
+- **Structure**: All acceptance criteria met, tests passing, documentation updated
+- **Location**: GitHub repository with linked pull request
+- **Quality Standards**: Production-ready code, no placeholders, comprehensive error handling
+
+#### Validation Checks
+**Verify** implementation quality:
+
+```bash
+# Comprehensive validation pipeline
+validate_implementation() {
+  echo "🔍 Running comprehensive validation..."
+
+  # Type checking
+  if ! pnpm typecheck; then
+    handle_implementation_error "compilation_error" "TypeScript compilation failed"
+    return 1
+  fi
+
+  # Linting
+  if ! pnpm lint; then
+    echo "⚠️ Linting issues found, attempting auto-fix..."
+    pnpm lint --fix
+  fi
+
+  # Unit tests
+  if ! pnpm test:unit; then
+    handle_implementation_error "test_failure" "Unit tests failing"
+    return 1
+  fi
+
+  # Build verification
+  if ! pnpm build; then
+    handle_implementation_error "build_failure" "Production build failed"
+    return 1
+  fi
+
+  echo "✅ All validation checks passed"
+  return 0
+}
 ```
 
-## 8. Error Handling and Recovery
+#### Success Reporting
+**Report** completion with comprehensive metrics:
 
-### 8.1 Implementation Blockers
+```bash
+# Generate final completion report
+generate_completion_report() {
+  local start_time="$1"
+  local end_time=$(date +%s)
+  local duration=$((end_time - start_time))
 
-When encountering blockers:
+  local completion_report="
+## ✅ TASK COMPLETED SUCCESSFULLY
 
-```typescript
-// Document the blocker
-const blocker = {
-  phase: currentPhase,
-  step: currentStep,
-  description: errorDescription,
-  timestamp: new Date().toISOString(),
-  attemptedSolutions: [],
-  needsHelp: true
-};
+**Task**: $TASK_TITLE (#$ISSUE_NUMBER)
+**Completion Time**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Total Duration**: ${duration}s
+**Execution Strategy**: $PARALLEL_STRATEGY
 
-// Update GitHub
-await updateGitHubWithBlocker(task.id, blocker);
+### 🎯 PRIME Framework Results:
+✅ **Purpose**: All acceptance criteria achieved
+✅ **Role**: Senior implementation expertise applied
+✅ **Inputs**: Dynamic context loaded, requirements clarified
+✅ **Method**: $PARALLEL_STRATEGY execution completed
+✅ **Expectations**: Production-ready implementation delivered
 
-// Attempt recovery strategies
-const recoveryStrategies = [
-  checkForMissingDependencies,
-  reviewSimilarImplementations,
-  consultDocumentation,
-  suggestAlternativeApproach
-];
+### 📁 Deliverables:
+- ✅ All acceptance criteria implemented
+- ✅ Comprehensive test coverage added
+- ✅ Documentation updated
+- ✅ Pull request created: [PR_LINK]
+
+### 📊 Quality Metrics:
+- TypeScript compilation: ✅ Passed
+- Linting: ✅ Passed
+- Unit tests: ✅ Passed
+- Build verification: ✅ Passed
+
+### 🔗 Resources:
+- Pull Request: [PR_LINK]
+- Implementation Branch: [BRANCH_NAME]
+- Test Results: [TEST_REPORT_LINK]
+
+---
+*Task completed by Claude Implementation Assistant using PRIME framework*
+"
+
+  gh issue comment $ISSUE_NUMBER --body "$completion_report"
+  echo "$completion_report"
+}
 ```
 
-### 8.2 Partial Progress Handling
-
-If unable to complete all phases:
-
-```typescript
-// Save progress state
-const partialProgress = {
-  taskId: task.id,
-  completedPhases: getCompletedPhases(),
-  currentPhase: getCurrentPhase(),
-  nextSteps: getNextSteps(),
-  blockers: getBlockers(),
-  resumeInstructions: generateResumeInstructions()
-};
-
-// Create resume file
-await writeFile(
-  `.claude/z.archive/tasks/resume/${task.id}-resume.md`,
-  formatResumeInstructions(partialProgress)
-);
+#### Example Output
 ```
+✅ **Task Implementation Completed Successfully!**
 
-## Context Management
+**PRIME Framework Results:**
+✅ Purpose: GitHub issue #124 "Add user dashboard" fully implemented
+✅ Role: Senior implementation expertise with parallel execution
+✅ Inputs: 3 context docs loaded, requirements clarified
+✅ Method: Component-parallel execution (3 agents, 67% time savings)
+✅ Expectations: All criteria met, tests passing, documentation complete
 
-### Task Focus
+**Metrics:**
+- Duration: 45 minutes (vs 120 min sequential estimate)
+- Parallel Efficiency: 62% time savings
+- Quality Score: 100% (all validations passed)
 
-1. **Single Task Focus**: Work on one task at a time
-2. **Relevant Files Only**: Only load files mentioned in task
-3. **Incremental Progress**: Complete one phase before starting next
-4. **Regular Commits**: Commit after each significant step
-
-### When to Pause
-
-- Completed a full phase
-- Encountered a blocker needing user input
-- Reached context limits
-- Need to run extensive manual tests
-- Significant architectural decision needed
-
-## Integration with Log-Task
-
-### Feedback Loop
-
-- Update task estimates based on actual time
-- Document discovered subtasks
-- Refine implementation patterns
-- Improve testing strategies
-
-### Pattern Library
-
-Build implementation patterns:
-
+**Next Steps:**
+- Pull request ready for review: #PR-456
+- All CI/CD checks passing
+- Ready for team review and deployment
 ```
-.claude/z.archive/tasks/patterns/
-├── react-component-pattern.md
-├── api-endpoint-pattern.md
-├── database-migration-pattern.md
-└── test-creation-pattern.md
-```
+</expectations>
+
+## Error Handling
+<error_handling>
+**Handle** errors at each PRIME phase with alternative approaches:
+
+### Purpose Phase Errors
+- **Invalid task reference**: Request valid GitHub issue number or URL
+- **Issue not found**: Verify repository access and issue existence
+- **Unclear objectives**: Trigger clarification loop with specific questions
+
+### Role Phase Errors
+- **Insufficient permissions**: Request repository access or escalate to maintainer
+- **Unknown task type**: Default to general implementation approach with extra validation
+
+### Inputs Phase Errors
+- **Context loading fails**: Continue with essential context only, log warning
+- **GitHub API errors**: Retry with exponential backoff, fallback to cached data
+- **Clarification timeout**: Proceed with best-effort interpretation, document assumptions
+
+### Method Phase Errors
+- **Agent delegation fails**: Fallback to direct implementation approach
+- **Parallel execution errors**: Switch to sequential execution with progress tracking
+- **Implementation blockers**: Document alternatives, suggest escalation paths
+
+### Expectations Phase Errors
+- **Validation failures**: Provide specific fix recommendations, retry validation
+- **GitHub update fails**: Store progress locally, retry GitHub updates
+- **Quality gate failures**: Document issues, provide resolution steps
+</error_handling>
+
+</instructions>
+
+<patterns>
+<!-- Enhanced patterns implemented -->
+### Implemented Patterns
+- **Dynamic Context Loading**: Uses context-loader.cjs with task-specific queries and metadata enrichment
+- **Intelligent Parallelization**: Combines task analysis and confidence-based strategies for optimal execution
+- **Automatic Clarification**: Detects ambiguous requirements and prompts for clarification before implementation
+- **Comprehensive Progress Tracking**: Updates GitHub issues and maintains local state throughout execution
+- **Enhanced Error Recovery**: Provides specific alternative approaches for different types of implementation blockers
+- **Agent Delegation**: Delegates to specialized agents based on task requirements and execution strategy
+</patterns>
+
+<help>
+🚀 **Do Task**
+
+Execute GitHub task implementation with intelligent parallelization and comprehensive progress tracking.
+
+**Usage:**
+- `/do-task 124` - Execute GitHub issue #124
+- `/do-task TASK-124` - Execute task with TASK-ID format
+- `/do-task https://github.com/user/repo/issues/124` - Execute from GitHub URL
+
+**PRIME Process:**
+1. **Purpose**: Analyze GitHub issue and define implementation objectives
+2. **Role**: Apply senior implementation expertise with parallel execution authority
+3. **Inputs**: Load dynamic context, analyze task complexity, clarify ambiguous requirements
+4. **Method**: Execute with optimal strategy (parallel/sequential) based on task analysis
+5. **Expectations**: Deliver production-ready implementation with comprehensive validation
+
+**Requirements:**
+- Valid GitHub issue number or URL
+- Repository access with GitHub CLI authenticated
+- Node.js environment with required dependencies
+
+Transform GitHub issues into production-ready implementations with maximum efficiency!
+</help>

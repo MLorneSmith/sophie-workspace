@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"name": "Commands Inventory",
 	"description": "Complete inventory of all available Claude Code commands",
-	"lastUpdated": "2025-09-08T09:45:00Z",
+	"lastUpdated": "2025-09-16T20:46:00Z",
 	"postIntegration": "CCPM",
-	"totalCommands": 43,
+	"totalCommands": 57,
 	"categories": {
 		"agentManagement": {
 			"name": "Agent Management",
@@ -91,9 +91,9 @@
 				},
 				{
 					"command": "/feature/start",
-					"description": "Launch parallel agents to work on feature tasks.",
+					"description": "Launch parallel agents to execute feature implementation tasks with intelligent coordination",
 					"category": "featureDevelopment",
-					"optimized": false,
+					"optimized": true,
 					"path": "feature/start.md"
 				},
 				{
@@ -168,7 +168,7 @@
 			"commands": [
 				{
 					"command": "/git/checkout",
-					"description": "Smart branch creation and switching with conventional naming",
+					"description": "Create or switch git branches with intelligent naming conventions and validation",
 					"category": "gitOperations",
 					"optimized": true,
 					"path": "git/checkout.md"
@@ -189,7 +189,7 @@
 				},
 				{
 					"command": "/git/status",
-					"description": "Intelligently analyze git status and provide insights about current project state",
+					"description": "Analyze git repository state with intelligent insights and actionable recommendations",
 					"category": "gitOperations",
 					"optimized": true,
 					"path": "git/status.md"
@@ -203,7 +203,7 @@
 			"commands": [
 				{
 					"command": "/checkpoint/create",
-					"description": "Create a git stash checkpoint with optional description",
+					"description": "Create a git stash checkpoint to save current work state without modifying working directory",
 					"category": "checkpointManagement",
 					"optimized": true,
 					"path": "checkpoint/create.md"
@@ -217,7 +217,7 @@
 				},
 				{
 					"command": "/checkpoint/restore",
-					"description": "Restore project to a previous checkpoint",
+					"description": "Restore project files to a previous checkpoint with automatic backup of current changes",
 					"category": "checkpointManagement",
 					"optimized": true,
 					"path": "checkpoint/restore.md"
@@ -231,7 +231,7 @@
 			"commands": [
 				{
 					"command": "/do-task",
-					"description": "Usage: `/do-task [task_reference]`",
+					"description": "Execute GitHub task implementation with intelligent parallelization and dynamic context loading",
 					"category": "taskIssueManagement",
 					"optimized": true,
 					"path": "do-task.md"
@@ -315,7 +315,7 @@
 				},
 				{
 					"command": "/promote-to-production",
-					"description": "This command follows the SlideHeroes CI/CD pipeline design:",
+					"description": "Promote changes from staging to production environment following GitOps CI/CD pipeline",
 					"category": "cicdDeployment",
 					"optimized": true,
 					"path": "promote-to-production.md"
@@ -332,7 +332,7 @@
 		"infrastructureConfiguration": {
 			"name": "Infrastructure & Configuration",
 			"description": "System infrastructure and configuration commands",
-			"commandCount": 7,
+			"commandCount": 8,
 			"commands": [
 				{
 					"command": "/config/bash-timeout",
@@ -382,6 +382,13 @@
 					"category": "infrastructureConfiguration",
 					"optimized": true,
 					"path": "update/update-makerkit.md"
+				},
+				{
+					"command": "/update:payload",
+					"description": "Update Payload CMS to latest version with automated dependency management and validation",
+					"category": "infrastructureConfiguration",
+					"optimized": true,
+					"path": "update/payload.md"
 				}
 			]
 		},
@@ -392,9 +399,9 @@
 			"commands": [
 				{
 					"command": "/debug-issue",
-					"description": "Usage: `/debug-issue [issue_reference]`",
+					"description": "Analyze GitHub issues and launch systematic debugging sessions with parallel expert consultation and intelligent context loading",
 					"category": "debuggingTesting",
-					"optimized": false,
+					"optimized": true,
 					"path": "debug-issue.md"
 				},
 				{
@@ -469,7 +476,7 @@
 				},
 				{
 					"command": "/test",
-					"description": "Runs tests using the deterministic test controller script directly, bypassing agent timeouts.",
+					"description": "Execute comprehensive test suites with intelligent orchestration and detailed reporting",
 					"category": "utilities",
 					"optimized": false,
 					"path": "test.md"
@@ -528,7 +535,7 @@
 			"/spec/* commands remain for standalone specification management",
 			"/feature/* commands provide end-to-end feature development workflow"
 		],
-		"totalCommands": 56,
-		"lastUpdated": "2025-09-16T17:44:14.637Z"
+		"totalCommands": 57,
+		"lastUpdated": "2025-09-16T20:46:00.000Z"
 	}
 }

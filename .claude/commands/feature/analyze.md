@@ -1,275 +1,333 @@
 ---
-allowed-tools: Bash, Read, Write, LS
+description: Analyze feature tasks to identify parallel work streams for maximum efficiency
+allowed-tools: [Bash, Read, Write, LS, Task]
+argument-hint: <feature_name> [task_number] - e.g., "auth", "auth 001"
 ---
 
 # Feature Analyze
 
-Analyze feature tasks to identify parallel work streams for maximum efficiency.
+Identify parallel work streams in feature tasks for maximum execution efficiency.
 
-## Usage
-```
-/feature:analyze <feature_name> [task_number]
-```
+## Key Features
+- **Parallelization Analysis**: Identify independent work streams
+- **Agent Mapping**: Match work to specialized agents
+- **Conflict Detection**: Find potential file conflicts
+- **Timeline Optimization**: Calculate time savings
+- **Dependency Tracking**: Map sequential requirements
 
-## Quick Check
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/standards/code-standards.md
+- Read .claude/rules/agent-coordination.md
+- Read .claude/context/systems/pm/ccpm-system-overview.md
 
-1. **Verify implementation exists:**
+## Prompt
+
+<role>
+You are the Feature Parallelization Analyst, specializing in identifying independent work streams and optimizing task execution through parallel agent deployment. Your expertise lies in dependency analysis, conflict prevention, and timeline optimization.
+</role>
+
+<instructions>
+# Feature Analysis Workflow
+
+**CORE REQUIREMENTS**:
+- Identify truly independent work streams
+- Map work to appropriate specialized agents
+- Detect and document potential conflicts
+- Calculate realistic time savings
+- Preserve sequential dependencies
+
+## 1. PURPOSE - Define Analysis Objectives
+<purpose>
+**Primary Goal**: Maximize feature implementation efficiency through parallel execution
+
+**Success Criteria**:
+- All work streams properly identified
+- Agent assignments match expertise
+- Conflicts clearly documented
+- Time savings accurately calculated
+- Dependencies correctly mapped
+
+**Measurable Outcomes**:
+- Parallelization factor > 1.5x
+- Zero missed dependencies
+- Clear execution strategy
+</purpose>
+
+## 2. ROLE - Expert Parallelization Analyst
+<role_definition>
+**Expertise Areas**:
+- Software architecture decomposition
+- Dependency graph analysis
+- Resource conflict detection
+- Timeline optimization
+- Agent capability mapping
+
+**Authority**:
+- Define parallel execution strategies
+- Assign work to specialized agents
+- Determine coordination points
+- Set execution priorities
+</role_definition>
+
+## 3. INPUTS - Gather Required Information
+<inputs>
+1. **Parse arguments**:
    ```bash
-   test -f .claude/tracking/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation not found. Run: /feature:plan $ARGUMENTS"
+   FEATURE_NAME="$1"
+   TASK_NUMBER="$2"  # Optional specific task
+
+   if [ -z "$FEATURE_NAME" ]; then
+     echo "❌ Error: Feature name required"
+     echo "Usage: /feature:analyze <feature_name> [task_number]"
+     exit 1
+   fi
    ```
 
-2. **Check for existing analysis:**
-   - If task_number provided: Check `.claude/tracking/implementations/$ARGUMENTS/${task_number}-analysis.md`
-   - If exists: "⚠️ Analysis already exists. Overwrite? (yes/no)"
+2. **Verify prerequisites**:
+   ```bash
+   PLAN_FILE=".claude/implementations/$FEATURE_NAME/plan.md"
+   if [ ! -f "$PLAN_FILE" ]; then
+     echo "❌ Implementation not found"
+     echo "💡 Run: /feature:plan $FEATURE_NAME"
+     exit 1
+   fi
+   ```
 
-## Instructions
+3. **Check existing analysis**:
+   ```bash
+   if [ -n "$TASK_NUMBER" ]; then
+     ANALYSIS_FILE=".claude/implementations/$FEATURE_NAME/${TASK_NUMBER}-analysis.md"
+     if [ -f "$ANALYSIS_FILE" ]; then
+       echo "⚠️ Analysis exists. Overwrite? (yes/no)"
+       # Handle user response
+     fi
+   fi
+   ```
+</inputs>
 
-### 1. Read Implementation Context
+## 4. METHOD - Systematic Analysis Process
+<method>
+### Step 1: Load Implementation Context
+Read implementation details:
+```bash
+# Read overall plan
+cat "$PLAN_FILE"
 
-Read implementation plan from `.claude/tracking/implementations/$ARGUMENTS/plan.md` to understand:
-- Feature scope
-- Technical requirements
-- Task breakdown
+# Read specific task if provided
+if [ -n "$TASK_NUMBER" ]; then
+  TASK_FILE=".claude/implementations/$FEATURE_NAME/${TASK_NUMBER}.md"
+  [ -f "$TASK_FILE" ] && cat "$TASK_FILE"
+fi
+```
 
-If task_number provided, read specific task from `.claude/tracking/implementations/$ARGUMENTS/${task_number}.md`
+### Step 2: Identify Work Streams
+Analyze for parallel opportunities:
 
-### 2. Identify Parallel Work Streams
+**Analysis Framework**:
+1. **Layer Separation**:
+   - Database: Schema, migrations, RLS policies
+   - Service: Business logic, server actions
+   - API: Endpoints, validation, middleware
+   - UI: Components, pages, client logic
+   - Tests: Unit, integration, E2E
+   - Docs: API docs, user guides
 
-Analyze tasks to identify independent work that can run in parallel:
+2. **File Pattern Analysis**:
+   ```bash
+   # Identify file creation/modification patterns
+   - New files: Can run in parallel
+   - Modified files: Check for conflicts
+   - Shared files: Need coordination
+   ```
 
-**Common Patterns:**
-- **Database Layer**: Schema, migrations, models, RLS policies
-- **Service Layer**: Business logic, data access, server actions
-- **API Layer**: Endpoints, validation, middleware, authentication
-- **UI Layer**: Components, pages, styles, client logic
-- **Test Layer**: Unit tests, integration tests, E2E tests
-- **Documentation**: API docs, README updates, user guides
-- **Infrastructure**: CI/CD, Docker, deployment configs
-- **Type System**: Type definitions, interfaces, generics
+3. **Dependency Mapping**:
+   - Direct dependencies (A requires B)
+   - Transitive dependencies (A→B→C)
+   - Resource dependencies (same file)
 
-**Key Questions:**
-- What files will be created/modified?
-- Which changes can happen independently?
-- What are the dependencies between changes?
-- Where might conflicts occur?
+### Step 3: Agent Assignment
+Map work to specialized agents:
 
-### 3. Create Analysis File
+```bash
+# Agent mapping reference
+declare -A AGENT_MAP=(
+  ["database"]="database-postgres-expert"
+  ["api"]="nodejs-expert"
+  ["frontend"]="react-expert nextjs-expert"
+  ["styling"]="frontend-css-styling-expert"
+  ["testing"]="vitest-testing-expert"
+  ["e2e"]="e2e-playwright-expert"
+  ["docs"]="documentation-expert"
+  ["types"]="typescript-expert"
+)
+```
 
-For specific task analysis:
+### Step 4: Conflict Analysis
+Identify coordination points:
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+```bash
+# Check for shared file modifications
+SHARED_FILES=()
+for stream in "${STREAMS[@]}"; do
+  check_file_overlaps "$stream"
+done
 
-Create `.claude/tracking/implementations/$ARGUMENTS/${task_number}-analysis.md`:
+# Risk assessment
+if [ ${#SHARED_FILES[@]} -eq 0 ]; then
+  RISK="Low"
+elif [ ${#SHARED_FILES[@]} -le 2 ]; then
+  RISK="Medium"
+else
+  RISK="High"
+fi
+```
+
+### Step 5: Timeline Calculation
+Calculate efficiency gains:
+
+```bash
+# Calculate times
+SEQUENTIAL_TIME=0
+PARALLEL_TIME=0
+
+for stream in "${STREAMS[@]}"; do
+  SEQUENTIAL_TIME=$((SEQUENTIAL_TIME + stream.hours))
+  # Parallel time is max of concurrent streams
+  update_parallel_time "$stream"
+done
+
+SPEEDUP=$(echo "scale=1; $SEQUENTIAL_TIME / $PARALLEL_TIME" | bc)
+SAVINGS=$((100 - (PARALLEL_TIME * 100 / SEQUENTIAL_TIME)))
+```
+</method>
+
+## 5. EXPECTATIONS - Deliverables & Validation
+<expectations>
+### Create Analysis Document
+Generate analysis file with structure:
 
 ```markdown
 ---
 task: ${task_number}
-title: ${task_title}
-analyzed: ${current_datetime}
-estimated_hours: ${total_hours}
-parallelization_factor: ${1.0-5.0}
+analyzed: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+parallelization_factor: ${speedup}
 ---
 
-# Parallel Work Analysis: Task #${task_number}
-
-## Overview
-${Brief description of what needs to be done}
+# Parallel Work Analysis
 
 ## Parallel Streams
-
-### Stream A: ${Stream Name}
-**Scope**: ${What this stream handles}
-**Files**:
-- ${file_pattern_1}
-- ${file_pattern_2}
-**Agent Type**: ${agent_from_mapping}
-**Can Start**: immediately
-**Estimated Hours**: ${hours}
-**Dependencies**: none
-
-### Stream B: ${Stream Name}
-**Scope**: ${What this stream handles}
-**Files**:
-- ${file_pattern_1}
-- ${file_pattern_2}
-**Agent Type**: ${agent_from_mapping}
-**Can Start**: immediately
-**Estimated Hours**: ${hours}
-**Dependencies**: none
-
-### Stream C: ${Stream Name}
-**Scope**: ${What this stream handles}
-**Files**:
-- ${file_pattern_1}
-**Agent Type**: ${agent_from_mapping}
-**Can Start**: after Stream A completes
-**Estimated Hours**: ${hours}
-**Dependencies**: Stream A
+[Detailed stream definitions]
 
 ## Coordination Points
+[Shared resources and conflicts]
 
-### Shared Files
-${List any files multiple streams need to modify}:
-- `src/types/index.ts` - Streams A & B (coordinate type updates)
-- `package.json` - Stream B (add dependencies)
+## Risk Assessment
+[Conflict probability and mitigation]
 
-### Sequential Requirements
-${List what must happen in order}:
-1. Database schema before API endpoints
-2. API types before UI components
-3. Core logic before tests
-
-## Conflict Risk Assessment
-- **Low Risk**: Streams work on different directories
-- **Medium Risk**: Some shared type files, manageable with coordination
-- **High Risk**: Multiple streams modifying same core files
-
-## Parallelization Strategy
-
-**Recommended Approach**: ${sequential|parallel|hybrid}
-
-${If parallel}: Launch Streams A, B simultaneously. Start C when A completes.
-${If sequential}: Complete Stream A, then B, then C.
-${If hybrid}: Start A & B together, C depends on A, D depends on B & C.
-
-## Expected Timeline
-
-With parallel execution:
-- Wall time: ${max_stream_hours} hours
-- Total work: ${sum_all_hours} hours
-- Efficiency gain: ${percentage}%
-
-Without parallel execution:
-- Wall time: ${sum_all_hours} hours
-
-## Notes
-${Any special considerations, warnings, or recommendations}
+## Timeline
+- Sequential: ${sequential}h
+- Parallel: ${parallel}h
+- Savings: ${savings}%
 ```
 
-### 4. Agent Mapping Reference
+### Validation Checks
+✓ All work covered by streams
+✓ No unnecessary file overlaps
+✓ Dependencies logically correct
+✓ Agent types match work type
+✓ Time estimates reasonable
 
-Use the agent-to-work-stream mapping from `.claude/rules/agent-coordination.md`:
-
-- **Database Layer**: database-postgres-expert, database-mongodb-expert, database-expert
-- **API/Backend Layer**: nodejs-expert  
-- **Frontend Layer**: react-expert, nextjs-expert
-- **Styling Layer**: frontend-css-styling-expert
-- **Testing Layer**: vitest-testing-expert
-- **E2E Testing**: e2e-playwright-expert
-- **Infrastructure**: docker-expert, devops-expert
-- **Documentation**: documentation-expert
-- **Type System**: typescript-expert
-- **Build/Config**: (removed - using Next.js built-in)
-
-### 5. Validate Analysis
-
-Ensure:
-- All major work is covered by streams
-- File patterns don't unnecessarily overlap
-- Dependencies are logical
-- Agent types match the work type
-- Time estimates are reasonable
-- Parallelization factor is realistic (not overly optimistic)
-
-### 6. Output
-
-For single task analysis:
+### Output Summary
 ```
-✅ Analysis complete for Task #${task_number}
+✅ Analysis Complete
 
-Identified ${count} parallel work streams:
-  Stream A: ${name} (${hours}h) - ${agent}
-  Stream B: ${name} (${hours}h) - ${agent}
-  Stream C: ${name} (${hours}h) - ${agent}
-  
-Parallelization potential: ${factor}x speedup
-  Sequential time: ${total}h
-  Parallel time: ${reduced}h
+Identified ${stream_count} parallel streams:
+${stream_summaries}
 
-Files at risk of conflict:
-  ${list shared files if any}
+Parallelization: ${speedup}x speedup
+Time savings: ${savings}%
+Risk level: ${risk}
 
-Next: Start work with /feature:start ${feature_name}
+Next: /feature:start ${feature_name}
 ```
+</expectations>
 
-For full feature analysis:
+## Dynamic Context Loading
+<context_loading>
+Load relevant context based on feature type:
+```bash
+# Extract feature characteristics
+FEATURE_TYPE=$(grep -m1 "type:" "$PLAN_FILE" | cut -d: -f2 | xargs)
+
+# Load appropriate context
+node .claude/scripts/context-loader.cjs \
+  --query="$FEATURE_TYPE parallelization analysis" \
+  --command="feature-analyze" \
+  --max-results=3 \
+  --format=paths
 ```
-✅ Analyzed ${task_count} tasks in feature ${feature_name}
+</context_loading>
 
-Total parallelization opportunities:
-  - ${count} tasks can run fully in parallel
-  - ${count} tasks have partial parallelization
-  - ${count} tasks must be sequential
+## Error Handling
+<error_handling>
+### Common Issues
+1. **Missing implementation**: Direct to /feature:plan
+2. **Invalid task number**: List available tasks
+3. **Circular dependencies**: Flag and suggest resolution
+4. **Agent conflicts**: Propose alternative assignments
 
-Estimated time savings:
-  Sequential: ${total_hours}h
-  Parallel: ${reduced_hours}h
-  Speedup: ${factor}x
+### Recovery Procedures
+```bash
+# Handle missing files gracefully
+if [ ! -f "$expected_file" ]; then
+  echo "⚠️ File not found: $expected_file"
+  echo "💡 Continuing with available data..."
+  # Proceed with partial analysis
+fi
 
-High-risk coordination points:
-  ${list major shared resources}
-
-Ready to execute: /feature:start ${feature_name}
+# Validate agent availability
+for agent in "${REQUIRED_AGENTS[@]}"; do
+  validate_agent_exists "$agent" || suggest_alternative "$agent"
+done
 ```
+</error_handling>
+</instructions>
 
-## Examples
+<patterns>
+### Analysis Patterns
+- **Layer Independence**: Database→Service→API→UI natural separation
+- **Test Parallelization**: Tests can run alongside implementation
+- **Documentation Concurrency**: Docs update in parallel with code
+- **Type-First Development**: Type definitions enable parallel work
 
-### Example 1: Authentication Feature Task
+### Anti-Patterns to Avoid
+- Over-parallelization causing conflicts
+- Ignoring hidden dependencies
+- Unrealistic time estimates
+- Missing coordination points
+</patterns>
 
-```markdown
-# Parallel Work Analysis: Task #001
+<help>
+📊 **Feature Parallelization Analyzer**
 
-## Overview
-Implement user authentication with email/password and OAuth providers.
+Identify and optimize parallel work streams for faster feature delivery.
 
-## Parallel Streams
+**Usage:**
+- `/feature:analyze <name>` - Analyze entire feature
+- `/feature:analyze <name> <task>` - Analyze specific task
 
-### Stream A: Database Schema
-**Scope**: User tables, auth tokens, sessions
-**Files**:
-- supabase/migrations/*.sql
-- src/db/schema/*.ts
-**Agent Type**: database-postgres-expert
-**Can Start**: immediately
-**Estimated Hours**: 2
-**Dependencies**: none
+**Process:**
+1. Load implementation plan
+2. Identify independent streams
+3. Map work to agents
+4. Calculate time savings
+5. Document strategy
 
-### Stream B: Auth Service
-**Scope**: Authentication logic, JWT handling
-**Files**:
-- src/services/auth/*.ts
-- src/lib/auth/*.ts
-**Agent Type**: nodejs-expert  
-**Can Start**: immediately
-**Estimated Hours**: 3
-**Dependencies**: none
+**Requirements:**
+- Implementation plan exists
+- Agent coordination rules loaded
+- Write permissions for analysis files
 
-### Stream C: UI Components
-**Scope**: Login/signup forms, auth guards
-**Files**:
-- src/components/auth/*.tsx
-- src/app/(auth)/*.tsx
-**Agent Type**: react-expert
-**Can Start**: after Stream A
-**Estimated Hours**: 4
-**Dependencies**: Stream A (needs schema)
-
-### Stream D: Tests
-**Scope**: Unit and integration tests
-**Files**:
-- tests/auth/*.test.ts
-- e2e/auth/*.spec.ts
-**Agent Type**: vitest-testing-expert
-**Can Start**: after Streams B & C
-**Estimated Hours**: 2
-**Dependencies**: Streams B, C
-```
-
-## Important Notes
-
-- Analysis is stored locally in the implementations directory
-- Focus on practical parallelization, not theoretical maximum
-- Consider agent expertise when assigning streams
-- Account for coordination overhead in estimates
-- Prefer clear separation over maximum parallelization
-- Use realistic time estimates based on complexity
+Ready to optimize your feature execution!
+</help>

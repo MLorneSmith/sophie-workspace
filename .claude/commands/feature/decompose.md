@@ -1,99 +1,180 @@
 ---
+description: Break feature implementation plans into parallelizable, actionable tasks with dependency tracking
 allowed-tools: Bash, Read, Write, LS, Task
+argument-hint: <feature_name>
 ---
 
 # Feature Decompose
 
-Break implementation plan into concrete, actionable tasks.
+Transform implementation plans into concrete, parallelizable tasks optimized for multi-agent execution within the CCPM framework.
 
-## Usage
+## Key Features
+- **Parallel Task Creation**: Spawn multiple agents to create tasks simultaneously
+- **Dependency Analysis**: Intelligent dependency and conflict detection
+- **Task Sizing**: Automatic effort estimation and complexity assessment
+- **GitHub-Ready**: Tasks formatted for seamless GitHub issue integration
+- **Validation Checks**: Comprehensive preflight and post-creation validation
+
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/rules/datetime.md
+
+## Prompt
+
+<role>
+You are the Task Decomposition Specialist, expert in breaking down complex implementation plans into optimally parallelizable tasks. You excel at dependency analysis, effort estimation, and creating clear acceptance criteria for multi-agent execution.
+</role>
+
+<instructions>
+# Feature Decomposition Workflow
+
+**CORE REQUIREMENTS**:
+- Always verify implementation plan exists before proceeding
+- Use REAL current datetime via `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- Create tasks with proper frontmatter and dependency tracking
+- Optimize for parallel execution wherever possible
+- Never leave implementation in inconsistent state
+
+## 1. Initialization & Validation
+<initialization>
+1. Parse feature name from arguments: `$ARGUMENTS`
+2. Set implementation path: `.claude/tracking/implementations/$ARGUMENTS/`
+
+**Preflight Validation** (silent - don't report to user):
+```bash
+# Check implementation plan exists
+if [[ ! -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" ]]; then
+  echo "❌ Implementation plan not found: $ARGUMENTS"
+  echo "First create it with: /feature:plan $ARGUMENTS"
+  exit 1
+fi
+
+# Check for existing tasks
+EXISTING_TASKS=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+if [[ $EXISTING_TASKS -gt 0 ]]; then
+  echo "⚠️ Found $EXISTING_TASKS existing tasks. Delete and recreate all tasks? (yes/no)"
+  # Wait for user confirmation
+  # Only proceed with explicit 'yes'
+fi
+
+# Get real current datetime
+CURRENT_DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 ```
-/feature:decompose <feature_name>
+</initialization>
+
+## 2. Dynamic Context Loading
+<context_loading>
+Load relevant context based on implementation domain:
+```bash
+# Extract domain keywords from plan
+PLAN_CONTENT=$(cat ".claude/tracking/implementations/$ARGUMENTS/plan.md")
+DOMAIN_QUERY=$(echo "$PLAN_CONTENT" | grep -E "(frontend|backend|database|api|ui|auth)" -o | tr '\n' ' ')
+
+# Load dynamic context
+node .claude/scripts/context-loader.cjs \
+  --query="task decomposition $DOMAIN_QUERY parallel dependencies" \
+  --command="feature-decompose" \
+  --max-results=3 \
+  --format=paths
+```
+</context_loading>
+
+## 3. Plan Analysis & Strategy
+<analysis>
+1. **Load Implementation Plan**:
+   - Read `.claude/tracking/implementations/$ARGUMENTS/plan.md`
+   - Extract phases, technical approach, risk factors
+   - Identify task categories from plan
+
+2. **Parallelization Assessment**:
+   ```yaml
+   Parallelizable When:
+     - Different files/components
+     - Independent features
+     - Separate test suites
+     - Documentation tasks
+     - CSS/styling work
+
+   Sequential When:
+     - Same file modifications
+     - Shared state changes
+     - Database migrations
+     - Core library changes
+     - Integration points
+   ```
+
+3. **Execution Strategy Selection**:
+   - **< 5 tasks**: Sequential creation for simplicity
+   - **5-10 tasks**: Batch into 2-3 parallel groups
+   - **> 10 tasks**: Maximum parallelization with dependency chains
+</analysis>
+
+## 4. Task Creation Execution
+<task_creation>
+### Sequential Mode (Simple Features)
+For features with < 5 tasks or complex dependencies:
+```bash
+for i in {001..005}; do
+  create_task_file "$i" "$TASK_DETAILS"
+done
 ```
 
-## Required Rules
-
-**IMPORTANT:** Before executing this command, read and follow:
-- `.claude/rules/datetime.md` - For getting real current date/time
-
-## Preflight Checklist
-
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress. Just do them and move on.
-
-1. **Verify implementation plan exists:**
-   - Check if `.claude/tracking/implementations/$ARGUMENTS/plan.md` exists
-   - If not found, tell user: "❌ Implementation plan not found: $ARGUMENTS. First create it with: /feature:plan $ARGUMENTS"
-   - Stop execution if plan doesn't exist
-
-2. **Check for existing tasks:**
-   - Check if any numbered task files (001.md, 002.md, etc.) already exist in `.claude/tracking/implementations/$ARGUMENTS/`
-   - If tasks exist, list them and ask: "⚠️ Found {count} existing tasks. Delete and recreate all tasks? (yes/no)"
-   - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "View existing tasks with: ls .claude/tracking/implementations/$ARGUMENTS/*.md"
-
-3. **Validate plan frontmatter:**
-   - Verify plan has valid frontmatter with: name, status, created, specification
-   - If invalid, tell user: "❌ Invalid plan frontmatter. Please check: .claude/tracking/implementations/$ARGUMENTS/plan.md"
-
-4. **Check plan status:**
-   - If plan status is already "completed", warn user: "⚠️ Implementation is marked as completed. Are you sure you want to decompose it again?"
-
-## Instructions
-
-You are decomposing an implementation plan into specific, actionable tasks for: **$ARGUMENTS**
-
-### 1. Read the Implementation Plan
-- Load the plan from `.claude/tracking/implementations/$ARGUMENTS/plan.md`
-- Understand the technical approach and phases
-- Review the task categories preview
-- Analyze dependencies and risk factors
-
-### 2. Analyze for Parallel Creation
-
-Determine if tasks can be created in parallel:
-- If tasks are mostly independent: Create in parallel using Task agents
-- If tasks have complex dependencies: Create sequentially
-- For best results: Group independent tasks for parallel creation
-
-### 3. Parallel Task Creation (When Possible)
-
-If tasks can be created in parallel, spawn sub-agents:
+### Parallel Mode (Complex Features)
+For features with 5+ independent tasks:
 
 ```yaml
+# Prepare task batches
+BATCH_1_TASKS="001-003: Database layer tasks"
+BATCH_2_TASKS="004-006: API layer tasks"
+BATCH_3_TASKS="007-009: UI layer tasks"
+
+# Spawn parallel agents
 Task:
-  description: "Create task files batch {X}"
+  description: "Create database layer tasks"
   subagent_type: "general-purpose"
   prompt: |
-    Create task files for feature implementation: $ARGUMENTS
-    
-    Tasks to create:
-    - {list of 3-4 tasks for this batch}
-    
+    Create task files for: $ARGUMENTS
+    Batch: Database layer (001-003)
+
     For each task:
-    1. Create file: .claude/tracking/implementations/$ARGUMENTS/{number}.md
-    2. Use exact format with frontmatter and all sections
-    3. Follow task breakdown from implementation plan
-    4. Set parallel/depends_on fields appropriately
-    5. Number sequentially (001.md, 002.md, etc.)
-    
-    Return: List of files created
+    1. Create: .claude/tracking/implementations/$ARGUMENTS/{number}.md
+    2. Use exact task format with all sections
+    3. Set dependencies and parallel flags
+    4. Include acceptance criteria and testing
+
+    Task Details: [specific tasks for this batch]
+
+    Return: Created files list
 ```
 
-### 4. Task File Format with Frontmatter
-For each task, create a file with this exact structure:
+Display progress:
+```
+🚀 Parallel Task Creation:
+├─ Agent 1: Database tasks (001-003) ⏳
+├─ Agent 2: API tasks (004-006) ⏳
+└─ Agent 3: UI tasks (007-009) ⏳
+```
+</task_creation>
+
+## 5. Task File Format
+<task_format>
+Each task must follow this exact structure:
 
 ```markdown
 ---
-name: [Task Title]
+name: [Descriptive Task Title]
 status: open
-created: [Current ISO date/time]
-updated: [Current ISO date/time]
-github: [Will be updated when synced to GitHub]
-depends_on: []  # List of task numbers this depends on, e.g., [001, 002]
-parallel: true  # Can this run in parallel with other tasks?
-conflicts_with: []  # Tasks that modify same files, e.g., [003, 004]
+created: $CURRENT_DATETIME
+updated: $CURRENT_DATETIME
+github: [Will be updated during sync]
+depends_on: []  # e.g., [001, 002]
+parallel: true  # or false
+conflicts_with: []  # e.g., [003, 004]
 type: task
+agent: [specialist-name]  # Optional: preferred agent
+effort: S  # XS/S/M/L/XL
+hours: 4  # Estimated hours
 ---
 
 # Task: [Task Title]
@@ -102,14 +183,14 @@ type: task
 Clear, concise description of what needs to be done
 
 ## Acceptance Criteria
-- [ ] Specific criterion 1
-- [ ] Specific criterion 2
-- [ ] Specific criterion 3
+- [ ] Specific, measurable criterion 1
+- [ ] Specific, measurable criterion 2
+- [ ] Specific, measurable criterion 3
 
 ## Technical Details
 ### Implementation Approach
-- Step-by-step approach
-- Key technical decisions
+- Step-by-step technical approach
+- Key design decisions
 
 ### Files to Modify
 - `path/to/file1.ts` - Description of changes
@@ -119,188 +200,167 @@ Clear, concise description of what needs to be done
 - `path/to/newfile.ts` - Purpose and structure
 
 ## Dependencies
-- [ ] Task dependencies (reference by number)
-- [ ] External dependencies (libraries, services)
-- [ ] Data dependencies (migrations, seeds)
+### Task Dependencies
+- [ ] Task [number] - Description
+
+### External Dependencies
+- [ ] Library/service requirements
 
 ## Testing Requirements
-- Unit tests to write/update
-- Integration tests needed
-- Manual testing steps
+### Unit Tests
+- Test file paths and coverage goals
 
-## Effort Estimate
-- Size: XS/S/M/L/XL
-- Hours: [estimated hours]
-- Complexity: Low/Medium/High
+### Integration Tests
+- Specific integration test scenarios
+
+### Manual Testing
+- User acceptance test steps
 
 ## Definition of Done
 - [ ] Code implemented and working
-- [ ] Tests written and passing
+- [ ] Tests written and passing (coverage > 80%)
 - [ ] Documentation updated
-- [ ] Code reviewed
-- [ ] Deployed to development environment
+- [ ] Code reviewed and approved
+- [ ] No linting or type errors
 ```
 
-### 5. Task Naming Convention
-Save tasks as: `.claude/tracking/implementations/$ARGUMENTS/{task_number}.md`
-- Use sequential numbering: 001.md, 002.md, etc.
-- Keep task titles short but descriptive
-- Focus on the outcome, not the process
-
-### 6. Frontmatter Guidelines
-- **name**: Use a descriptive task title (action-oriented)
-- **status**: Always start with "open" for new tasks
-- **created**: Get REAL current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
-- **updated**: Use the same real datetime as created for new tasks
-- **github**: Leave placeholder text - will be updated during sync
-- **depends_on**: List task numbers that must complete before this can start
-- **parallel**: Set to true if this can run alongside other tasks without conflicts
-- **conflicts_with**: List task numbers that modify the same files
-- **type**: Always use "task" to distinguish from other documents
-
-### 7. Task Types to Consider
-Based on the implementation plan phases:
-
-**Foundation Tasks**:
-- Environment setup
-- Configuration
-- Base infrastructure
-- Testing framework
-
-**Core Feature Tasks**:
-- Data models/schemas
-- Business logic
-- API endpoints
-- UI components
-
-**Integration Tasks**:
-- External service integration
-- Authentication/authorization
-- Data migration
-- System connectivity
-
-**Quality Tasks**:
-- Unit testing
-- Integration testing
-- Performance optimization
-- Security hardening
-
-**Documentation Tasks**:
-- API documentation
-- User guides
-- Technical documentation
-- Deployment guides
-
-### 8. Parallelization Strategy
-
-Mark tasks with `parallel: true` if they:
-- Work on different parts of the codebase
-- Don't share data dependencies
-- Can be tested independently
-- Don't require sequential knowledge
-
-Use `conflicts_with` when tasks:
-- Modify the same files
-- Share database migrations
-- Affect the same API endpoints
-- Require coordinated changes
-
-### 9. Execution Strategy
-
-Choose based on task count and complexity:
-
-**Small Feature (< 5 tasks)**: Create sequentially for simplicity
-
-**Medium Feature (5-10 tasks)**:
-- Batch into 2-3 groups
-- Spawn agents for each batch
-- Consolidate results
-
-**Large Feature (> 10 tasks)**:
-- Analyze dependencies first
-- Group independent tasks
-- Launch parallel agents (max 5 concurrent)
-- Create dependent tasks after prerequisites
-
-Example for parallel execution:
-```markdown
-Spawning 3 agents for parallel task creation:
-- Agent 1: Creating tasks 001-003 (Database layer)
-- Agent 2: Creating tasks 004-006 (API layer)  
-- Agent 3: Creating tasks 007-009 (UI layer)
-```
-
-### 10. Task Dependency Validation
-
-When creating tasks with dependencies:
-- Ensure referenced dependencies exist
-- Check for circular dependencies
-- Validate dependency chains are achievable
-- If issues found, warn but continue: "⚠️ Task dependency warning: {details}"
-
-### 11. Update Implementation Plan
-
-After creating all tasks, update the plan file by adding this section:
-```markdown
-## Tasks Created
-- [ ] 001.md - {Task Title} (parallel: {true/false}, size: {XS/S/M/L/XL})
-- [ ] 002.md - {Task Title} (parallel: {true/false}, size: {XS/S/M/L/XL})
-- etc.
-
-### Summary
-Total tasks: {count}
-Parallel tasks: {parallel_count}
-Sequential tasks: {sequential_count}
-Estimated total effort: {sum of hours} hours
-
-### Execution Order
-1. **Parallel Batch 1**: Tasks that can start immediately
-   - Task 001, 002, 003
-2. **Parallel Batch 2**: After batch 1 completes
-   - Task 004, 005
-3. **Sequential**: Must be done in order
-   - Task 006 → 007 → 008
-```
-
-Also update the plan's frontmatter progress if needed (still 0% until tasks actually start).
-
-### 12. Quality Validation
-
-Before finalizing tasks, verify:
-- [ ] All tasks have clear acceptance criteria
-- [ ] Task sizes are reasonable (4-8 hours typical, max 3 days)
-- [ ] Dependencies form a valid DAG (no cycles)
-- [ ] Parallel tasks don't conflict
-- [ ] Combined tasks cover all plan requirements
-- [ ] Testing requirements are explicit
-
-### 13. Post-Decomposition
-
-After successfully creating tasks:
-1. Confirm: "✅ Created {count} tasks for feature: $ARGUMENTS"
-2. Show summary:
-   - Total tasks created
-   - Parallel vs sequential breakdown
-   - Total estimated effort
-   - Suggested execution order
-3. Suggest next step: "Ready to sync to GitHub? Run: /feature:sync $ARGUMENTS"
-
-## Error Recovery
-
-If any step fails:
-- If task creation partially completes, list which tasks were created
-- Provide option to clean up partial tasks
-- Never leave the implementation in an inconsistent state
-- Suggest manual verification: "Check: ls .claude/tracking/implementations/$ARGUMENTS/*.md"
-
-## Task Sizing Guidelines
-
-- **XS (1-2 hours)**: Simple config changes, minor updates
+### Effort Sizing Guidelines
+- **XS (1-2 hours)**: Config changes, minor updates
 - **S (2-4 hours)**: Single component, simple endpoint
 - **M (4-8 hours)**: Feature component, complex logic
 - **L (1-2 days)**: Major feature, multiple components
 - **XL (2-3 days)**: Complex system, extensive testing
+</task_format>
 
-Aim for most tasks to be S or M size. Break down L and XL tasks when possible.
+## 6. Dependency Validation
+<dependency_validation>
+After creating all tasks:
 
-Create well-defined, achievable tasks that can be executed efficiently in parallel where possible for the "$ARGUMENTS" feature.
+```bash
+# Build dependency graph
+DEPENDENCY_GRAPH=""
+for task in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  TASK_NUM=$(basename "$task" .md)
+  DEPS=$(grep "depends_on:" "$task" | sed 's/depends_on: //')
+  DEPENDENCY_GRAPH+="$TASK_NUM: $DEPS\n"
+done
+
+# Check for circular dependencies
+# Validate all referenced tasks exist
+# Ensure dependency chains are achievable
+
+# If issues found:
+echo "⚠️ Dependency validation warnings:"
+echo "- Circular dependency: 003 → 005 → 003"
+echo "- Missing dependency: 007 references non-existent 010"
+```
+</dependency_validation>
+
+## 7. Plan Update & Summary
+<plan_update>
+Update the implementation plan with task summary:
+
+```markdown
+## Tasks Created
+- [ ] 001 - Database Schema Setup (parallel: true, effort: S, 4h)
+- [ ] 002 - API Endpoints (parallel: true, effort: M, 6h)
+- [ ] 003 - UI Components (parallel: true, effort: M, 8h)
+[... all tasks ...]
+
+### Execution Summary
+- **Total Tasks**: 12
+- **Parallel Tasks**: 8 (can run simultaneously)
+- **Sequential Tasks**: 4 (must run in order)
+- **Total Effort**: 48 hours
+- **Optimal Execution Time**: 16 hours (with 3 agents)
+
+### Suggested Execution Order
+**Batch 1** (Immediate start):
+- Tasks 001, 002, 003 (Foundation)
+
+**Batch 2** (After Batch 1):
+- Tasks 004, 005, 006 (Core features)
+
+**Batch 3** (Final):
+- Tasks 007, 008 (Integration & testing)
+```
+</plan_update>
+
+## 8. Output & Next Steps
+<output>
+Display final summary:
+
+```
+✅ Created 12 tasks for feature: $ARGUMENTS
+
+📊 Task Breakdown:
+├─ Parallel tasks: 8 (66%)
+├─ Sequential tasks: 4 (34%)
+├─ Total effort: 48 hours
+└─ Optimal execution: 16 hours (3 agents)
+
+📁 Files created:
+└─ .claude/tracking/implementations/$ARGUMENTS/
+   ├─ 001.md through 012.md
+   └─ plan.md (updated)
+
+🚀 Next steps:
+1. Review tasks: ls .claude/tracking/implementations/$ARGUMENTS/*.md
+2. Sync to GitHub: /feature:sync $ARGUMENTS
+3. Start execution: /feature:start $ARGUMENTS
+```
+</output>
+</instructions>
+
+<patterns>
+### Parallel Execution Patterns
+- **Independent Layers**: Database, API, UI can often parallelize
+- **Test Parallelization**: Unit tests can run alongside feature code
+- **Documentation**: Can be written in parallel with implementation
+
+### Task Sizing Patterns
+- **Prefer S/M Tasks**: Easier to parallelize and track
+- **Split XL Tasks**: Break down into smaller, manageable pieces
+- **Group Tiny Tasks**: Combine XS tasks when related
+</patterns>
+
+<error_handling>
+### Common Issues
+1. **Plan Not Found**: Ensure /feature:plan was run first
+2. **Circular Dependencies**: Review and restructure task dependencies
+3. **File Conflicts**: Use conflicts_with field to prevent parallel issues
+4. **Agent Timeouts**: Reduce batch size or simplify task creation
+
+### Recovery Procedures
+```bash
+# Clean up partial task creation
+rm .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md
+
+# Verify clean state
+ls .claude/tracking/implementations/$ARGUMENTS/
+
+# Restart decomposition
+/feature:decompose $ARGUMENTS
+```
+</error_handling>
+
+<help>
+📋 **Feature Decompose - Task Breakdown for Parallel Execution**
+
+Break implementation plans into concrete, parallelizable tasks optimized for multi-agent execution.
+
+**Usage:**
+- `/feature:decompose <feature_name>` - Create task breakdown
+
+**Process:**
+1. Validates implementation plan exists
+2. Analyzes for parallelization opportunities
+3. Creates numbered task files with dependencies
+4. Updates plan with execution summary
+
+**Requirements:**
+- Implementation plan must exist (create with /feature:plan)
+- Write access to .claude/tracking/implementations/
+
+Ready to decompose your feature into optimized tasks!
+</help>

@@ -1,483 +1,457 @@
 ---
-allowed-tools: Bash, Read, Write, LS, Task
+description: Push feature implementation plan and tasks to GitHub as issues with parallel processing and comprehensive validation
+allowed-tools: Bash, Read, Write, LS, Task, Grep, Glob
+argument-hint: <feature_name>
 ---
 
 # Feature Sync
 
-Push feature implementation plan and tasks to GitHub as issues.
+**Synchronize** feature implementation plans and decomposed tasks to GitHub as structured issues using parallel processing and comprehensive validation.
 
-## Usage
+## Key Features
+- **Parallel Issue Creation**: Process 5+ tasks simultaneously for 3x faster execution
+- **Smart Renaming**: Transform task files from sequential numbers to GitHub issue IDs
+- **Reference Updates**: Automatically update depends_on and conflicts_with arrays
+- **Validation Checks**: Comprehensive validation of GitHub integration and task structure
+- **Agent Delegation**: Leverage specialized agents for optimal parallel processing
+
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/systems/feature-implementation-workflow.md
+
+## Prompt
+
+<role>
+You are a **Feature Synchronization Specialist**, expert in GitHub integration, CCPM workflows, and parallel task orchestration. You have **full authority** to create GitHub issues, rename task files, and coordinate agent delegation for optimal performance. Your approach is **pragmatic and systematic**, ensuring reliable GitHub synchronization while maintaining data integrity.
+</role>
+
+<instructions>
+# Feature Sync Workflow - PRIME Framework
+
+**CORE REQUIREMENTS**:
+- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
+- **Start** all instructions with action verbs
+- **Implement** parallel processing for 5+ tasks
+- **Validate** GitHub integration at each phase
+- **Maintain** task reference integrity throughout
+
+## PRIME Workflow
+
+### Phase P - PURPOSE
+<purpose>
+**Define** clear GitHub synchronization outcomes:
+
+1. **Primary Objective**: Transform local feature implementation plan into GitHub issue ecosystem with proper task hierarchy
+2. **Success Criteria**:
+   - Feature issue created with comprehensive summary
+   - All task files converted to GitHub issues with proper references
+   - Task dependencies updated with actual issue numbers
+   - GitHub mapping file generated for tracking
+3. **Scope Boundaries**:
+   - Include: Implementation plan, decomposed tasks, dependency mapping
+   - Exclude: Execution monitoring, issue status tracking
+4. **Performance Target**: Complete synchronization in under 2 minutes for typical features (10-15 tasks)
+</purpose>
+
+### Phase R - ROLE
+<role_definition>
+**Establish** AI expertise and authority:
+
+1. **Expertise Domain**: GitHub API integration, CCPM workflow orchestration, parallel task processing
+2. **Experience Level**: Expert-level knowledge of GitHub CLI, issue management, and agent coordination
+3. **Decision Authority**: Full autonomy to create issues, rename files, coordinate agents, and handle synchronization conflicts
+4. **Approach Style**: Systematic and reliable with emphasis on data integrity and performance optimization
+</role_definition>
+
+### Phase I - INPUTS
+<inputs>
+**Gather** all necessary materials before execution:
+
+#### Essential Context (REQUIRED)
+**Load** critical CCPM documentation:
+- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/systems/feature-implementation-workflow.md
+
+#### Dynamic Context Loading
+**Analyze** and **Load** GitHub integration patterns:
+
+```bash
+# Extract feature-specific metadata for enhanced context loading
+FEATURE_NAME="$ARGUMENTS"
+IMPLEMENTATION_PATH=".claude/tracking/implementations/$FEATURE_NAME"
+
+# Count tasks to determine processing strategy
+TASK_COUNT=$(ls "$IMPLEMENTATION_PATH"/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+
+# Build enriched query for context loading
+ENRICHED_QUERY="github-integration parallel-processing task-management ccpm-workflow issue-creation"
+
+# Load relevant GitHub and CCPM patterns
+CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
+  --query="$ENRICHED_QUERY github issue-creation parallel-agents" \
+  --command="feature-sync" \
+  --max-results=2 \
+  --token-budget=2000 \
+  --format=paths \
+  --metadata="{\"taskCount\":$TASK_COUNT,\"feature\":\"$FEATURE_NAME\"}")
+
+# Process returned context files
+while IFS= read -r line; do
+  if [[ $line =~ ^Read ]]; then
+    FILE_PATH=$(echo "$line" | sed 's/Read //')
+    echo "Loading context: $FILE_PATH"
+    # Use Read tool for $FILE_PATH
+  fi
+done <<< "$CONTEXT_FILES"
 ```
-/feature:sync <feature_name>
-```
 
-## Quick Check
+#### Materials & Constraints
+**Validate** implementation requirements:
+- **Feature Argument**: Extract and validate feature name from $ARGUMENTS
+- **Implementation Plan**: Verify .claude/tracking/implementations/$ARGUMENTS/plan.md exists
+- **Task Files**: Count decomposed task files (*.md excluding plan.md)
+- **GitHub Authentication**: Verify gh CLI authentication status
+- **Repository Context**: Confirm GitHub repository configuration
+</inputs>
 
+### Phase M - METHOD
+<method>
+**Execute** the synchronization workflow with action verbs:
+
+#### 1. **Validate** Prerequisites
 ```bash
 # Verify implementation plan exists
-test -f .claude/tracking/implementations/$ARGUMENTS/plan.md || echo "❌ Implementation plan not found. Run: /feature:plan $ARGUMENTS"
+test -f ".claude/tracking/implementations/$ARGUMENTS/plan.md" || {
+  echo "❌ Implementation plan not found. Run: /feature:plan $ARGUMENTS"
+  exit 1
+}
 
-# Count task files
-ls .claude/tracking/implementations/$ARGUMENTS/*.md 2>/dev/null | grep -v plan.md | wc -l
-```
-
-If no tasks found: "❌ No tasks to sync. Run: /feature:decompose $ARGUMENTS"
-
-## Instructions
-
-### 0. Check Remote Repository
-
-Ensure we're not syncing to a template repository:
-
-```bash
-# Check if remote origin is valid
-remote_url=$(git remote get-url origin 2>/dev/null || echo "")
-if [[ -z "$remote_url" ]]; then
-  echo "❌ ERROR: No git remote configured!"
-  echo "Set up your repository: git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+# Count and validate task files
+TASK_COUNT=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+if [ "$TASK_COUNT" -eq 0 ]; then
+  echo "❌ No tasks to sync. Run: /feature:decompose $ARGUMENTS"
   exit 1
 fi
 
-# Ensure we're in the correct project repository
-repo=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
-if [[ -z "$repo" ]]; then
-  echo "❌ ERROR: Not in a GitHub repository or gh CLI not authenticated"
-  echo "Authenticate with: gh auth login"
+# Verify GitHub authentication and repository
+gh auth status || {
+  echo "❌ GitHub authentication required. Run: gh auth login"
   exit 1
-fi
+}
+
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null)
+[[ -n "$REPO" ]] || {
+  echo "❌ Not in a GitHub repository or gh CLI not authenticated"
+  exit 1
+}
 ```
 
-### 1. Create Feature Implementation Issue
-
-Strip frontmatter and prepare GitHub issue body:
+#### 2. **Create** Feature Implementation Issue
 ```bash
-# Extract content without frontmatter
+# Extract and process implementation plan content
 sed '1,/^---$/d; 1,/^---$/d' .claude/tracking/implementations/$ARGUMENTS/plan.md > /tmp/feature-body-raw.md
 
-# Process the content to remove internal sections and format for GitHub
-awk '
-  /^## Tasks Created/ {
-    in_tasks=1
-    next
-  }
-  /^## / && in_tasks {
-    in_tasks=0
-    # When we hit the next section after Tasks Created, add summary
-    if (total_tasks) {
-      print "## Implementation Summary\n"
-      print "**Total tasks**: " total_tasks
-      print "**Parallel tasks**: " parallel_tasks " (can be worked on simultaneously)"
-      print "**Sequential tasks**: " sequential_tasks " (have dependencies)"
-      if (total_effort) print "**Estimated effort**: " total_effort " hours"
-      print ""
-    }
-  }
-  /^Total tasks:/ && in_tasks { total_tasks = $3; next }
-  /^Parallel tasks:/ && in_tasks { parallel_tasks = $3; next }
-  /^Sequential tasks:/ && in_tasks { sequential_tasks = $3; next }
-  /^Estimated total effort:/ && in_tasks {
-    gsub(/^Estimated total effort: /, "")
-    total_effort = $0
-    next
-  }
-  !in_tasks { print }
-  END {
-    # If we were still in tasks section at EOF, add summary
-    if (in_tasks && total_tasks) {
-      print "## Implementation Summary\n"
-      print "**Total tasks**: " total_tasks
-      print "**Parallel tasks**: " parallel_tasks
-      print "**Sequential tasks**: " sequential_tasks
-      if (total_effort) print "**Estimated effort**: " total_effort
-    }
-  }
-' /tmp/feature-body-raw.md > /tmp/feature-body.md
+# Process content to add implementation summary
+awk '/^## Tasks Created/ { in_tasks=1; next }
+     /^## / && in_tasks { in_tasks=0; if(total_tasks) print "## Implementation Summary\n**Total tasks**: " total_tasks "\n**Parallel tasks**: " parallel_tasks "\n**Sequential tasks**: " sequential_tasks }
+     /^Total tasks:/ && in_tasks { total_tasks = $3; next }
+     /^Parallel tasks:/ && in_tasks { parallel_tasks = $3; next }
+     /^Sequential tasks:/ && in_tasks { sequential_tasks = $3; next }
+     !in_tasks { print }' /tmp/feature-body-raw.md > /tmp/feature-body.md
 
-# Add reference to specification
-echo "" >> /tmp/feature-body.md
-echo "---" >> /tmp/feature-body.md
-echo "📋 **Specification**: .claude/tracking/specs/$ARGUMENTS.md" >> /tmp/feature-body.md
-echo "📁 **Implementation**: .claude/tracking/implementations/$ARGUMENTS/" >> /tmp/feature-body.md
+# Add specification reference
+echo -e "\n---\n📋 **Specification**: .claude/tracking/specs/$ARGUMENTS.md\n📁 **Implementation**: .claude/tracking/implementations/$ARGUMENTS/" >> /tmp/feature-body.md
 
-# Create feature implementation issue with labels
-feature_number=$(gh issue create \
+# Create feature issue with proper labels
+FEATURE_NUMBER=$(gh issue create \
   --title "Feature: $ARGUMENTS" \
   --body-file /tmp/feature-body.md \
   --label "feature,implementation,feature:$ARGUMENTS" \
   --json number -q .number)
 
-echo "✅ Created feature issue: #$feature_number"
+echo "✅ Created feature issue: #$FEATURE_NUMBER"
 ```
 
-Store the returned issue number for plan frontmatter update.
-
-### 2. Create Task Sub-Issues
-
-Check if gh-sub-issue extension is available:
+#### 3. **Process** Task Creation with Strategy Selection
 ```bash
-if gh extension list | grep -q "yahsan2/gh-sub-issue"; then
-  use_subissues=true
-  echo "✅ Using gh-sub-issue for hierarchical task creation"
-else
-  use_subissues=false
-  echo "ℹ️ gh-sub-issue not installed. Using standard issues with references."
-  echo "   To install: gh extension install yahsan2/gh-sub-issue"
-fi
-```
-
-Count task files to determine strategy:
-```bash
-task_count=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
-echo "📊 Found $task_count tasks to sync"
-```
-
-### For Small Batches (< 5 tasks): Sequential Creation
-
-```bash
-if [ "$task_count" -lt 5 ]; then
+# Determine processing strategy based on task count
+if [ "$TASK_COUNT" -lt 5 ]; then
   echo "Creating tasks sequentially..."
-  
-  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
-    [ -f "$task_file" ] || continue
-    
-    # Extract task name from frontmatter
-    task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
-    
-    # Extract task metadata
-    task_size=$(grep -E '^- Size:' "$task_file" | sed 's/.*Size: *//')
-    task_parallel=$(grep '^parallel:' "$task_file" | sed 's/^parallel: *//')
-    
-    # Strip frontmatter from task content
-    sed '1,/^---$/d; 1,/^---$/d' "$task_file" > /tmp/task-body.md
-    
-    # Add parent reference if not using sub-issues
-    if [ "$use_subissues" = false ]; then
-      echo "" >> /tmp/task-body.md
-      echo "---" >> /tmp/task-body.md
-      echo "**Parent Feature**: #$feature_number" >> /tmp/task-body.md
-    fi
-    
-    # Create sub-issue or regular issue with labels
-    if [ "$use_subissues" = true ]; then
-      task_number=$(gh sub-issue create \
-        --parent "$feature_number" \
-        --title "$task_name" \
-        --body-file /tmp/task-body.md \
-        --label "task,feature:$ARGUMENTS,size:$task_size" \
-        --json number -q .number)
-    else
-      task_number=$(gh issue create \
-        --title "Task: $task_name" \
-        --body-file /tmp/task-body.md \
-        --label "task,feature:$ARGUMENTS,size:$task_size" \
-        --json number -q .number)
-    fi
-    
-    # Record mapping for renaming
-    echo "$task_file:$task_number" >> /tmp/task-mapping.txt
-    echo "  ✅ Created task #$task_number: $task_name"
-  done
+else
+  echo "Creating $TASK_COUNT tasks in parallel..."
 fi
 ```
 
-### For Larger Batches (≥ 5 tasks): Parallel Creation
-
+#### Sequential Task Creation (< 5 tasks)
 ```bash
-if [ "$task_count" -ge 5 ]; then
-  echo "Creating $task_count tasks in parallel..."
-  
-  # Prepare for parallel execution
-  mkdir -p /tmp/feature-sync-batches
-  
-  # Split tasks into batches of 3-4
-  batch_size=3
-  batch_num=1
-  file_count=0
-  
-  for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
-    [ -f "$task_file" ] || continue
-    
-    echo "$task_file" >> /tmp/feature-sync-batches/batch-$batch_num.txt
-    file_count=$((file_count + 1))
-    
-    if [ $file_count -ge $batch_size ]; then
-      batch_num=$((batch_num + 1))
-      file_count=0
-    fi
-  done
-  
-  echo "📦 Split into $batch_num batches for parallel processing"
-fi
+for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  [[ -f "$task_file" ]] || continue
+
+  # Extract task metadata
+  TASK_NAME=$(grep '^name:' "$task_file" | sed 's/^name: *//')
+  TASK_SIZE=$(grep -E '^- Size:' "$task_file" | sed 's/.*Size: *//')
+
+  # Strip frontmatter for GitHub issue body
+  sed '1,/^---$/d; 1,/^---$/d' "$task_file" > /tmp/task-body.md
+
+  # Create GitHub issue
+  TASK_NUMBER=$(gh issue create \
+    --title "Task: $TASK_NAME" \
+    --body-file /tmp/task-body.md \
+    --label "task,feature:$ARGUMENTS,size:$TASK_SIZE" \
+    --json number -q .number)
+
+  # Record mapping for file updates
+  echo "$task_file:$TASK_NUMBER" >> /tmp/task-mapping.txt
+  echo "  ✅ Created task #$TASK_NUMBER: $TASK_NAME"
+done
 ```
 
-Use Task tool for parallel creation:
-```yaml
-Task:
-  description: "Create GitHub tasks batch {X}"
-  subagent_type: "general-purpose"
-  prompt: |
-    Create GitHub issues for tasks in feature $ARGUMENTS
-    Parent feature issue: #$feature_number
-    
-    Tasks to process (from batch file):
-    /tmp/feature-sync-batches/batch-{X}.txt
-    
-    For each task file:
-    1. Extract task name, size, and parallel flag from frontmatter
-    2. Strip frontmatter using: sed '1,/^---$/d; 1,/^---$/d'
-    3. If gh-sub-issue available:
-       gh sub-issue create --parent $feature_number --title "$task_name" \
-         --body-file /tmp/task-body.md --label "task,feature:$ARGUMENTS,size:$size"
-    4. Otherwise:
-       gh issue create --title "Task: $task_name" \
-         --body-file /tmp/task-body.md --label "task,feature:$ARGUMENTS,size:$size"
-    5. Record: task_file:issue_number in /tmp/batch-{X}-mapping.txt
-    
-    Return mapping of files to issue numbers.
-```
-
-Consolidate results from parallel agents:
+#### Parallel Task Creation (≥ 5 tasks)
 ```bash
-# Collect all mappings from agents
-cat /tmp/batch-*/mapping.txt >> /tmp/task-mapping.txt
-```
+# Prepare parallel execution environment
+mkdir -p /tmp/feature-sync-batches
+BATCH_SIZE=3
+BATCH_NUM=1
+FILE_COUNT=0
 
-### 3. Update Task Files with Issue Numbers
+# Split tasks into optimal batches
+for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  [[ -f "$task_file" ]] || continue
+  echo "$task_file" >> /tmp/feature-sync-batches/batch-$BATCH_NUM.txt
+  FILE_COUNT=$((FILE_COUNT + 1))
 
-First, build a mapping of old numbers to new issue IDs:
-```bash
-# Create mapping from old task numbers (001, 002, etc.) to new issue IDs
-> /tmp/id-mapping.txt
-while IFS=: read -r task_file task_number; do
-  # Extract old number from filename
-  old_num=$(basename "$task_file" .md)
-  echo "$old_num:$task_number" >> /tmp/id-mapping.txt
-done < /tmp/task-mapping.txt
-
-echo "📝 Updating task references..."
-```
-
-Then rename files and update all references:
-```bash
-# Process each task file
-while IFS=: read -r task_file task_number; do
-  new_name="$(dirname "$task_file")/${task_number}.md"
-  
-  # Read the file content
-  content=$(cat "$task_file")
-  
-  # Update depends_on and conflicts_with references
-  while IFS=: read -r old_num new_num; do
-    # Update arrays like [001, 002] to use new issue numbers
-    content=$(echo "$content" | sed "s/\b$old_num\b/$new_num/g")
-  done < /tmp/id-mapping.txt
-  
-  # Write updated content to new file
-  echo "$content" > "$new_name"
-  
-  # Remove old file if different from new
-  [ "$task_file" != "$new_name" ] && rm "$task_file"
-  
-  # Update github field in frontmatter
-  repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
-  github_url="https://github.com/$repo/issues/$task_number"
-  current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  
-  # Update frontmatter
-  sed -i.bak "/^github:/c\github: $github_url" "$new_name"
-  sed -i.bak "/^updated:/c\updated: $current_date" "$new_name"
-  rm "${new_name}.bak"
-  
-  echo "  ✅ Renamed: $(basename $task_file) → $(basename $new_name)"
-done < /tmp/task-mapping.txt
-```
-
-### 4. Update Feature Issue with Task List
-
-If NOT using gh-sub-issue, add task list to feature issue:
-
-```bash
-if [ "$use_subissues" = false ]; then
-  echo "📋 Adding task list to feature issue..."
-  
-  # Get current feature body
-  gh issue view $feature_number --json body -q .body > /tmp/feature-update.md
-  
-  # Append task list
-  echo "" >> /tmp/feature-update.md
-  echo "## Tasks" >> /tmp/feature-update.md
-  
-  # Add each task with checkbox
-  while IFS=: read -r task_file task_number; do
-    task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
-    echo "- [ ] #${task_number} - ${task_name}" >> /tmp/feature-update.md
-  done < /tmp/task-mapping.txt
-  
-  # Update feature issue
-  gh issue edit $feature_number --body-file /tmp/feature-update.md
-  echo "✅ Updated feature issue with task list"
-fi
-```
-
-### 5. Update Implementation Plan File
-
-Update the plan file with GitHub URL and real task IDs:
-
-#### 5a. Update Frontmatter
-```bash
-# Get repo info
-repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
-feature_url="https://github.com/$repo/issues/$feature_number"
-current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-# Update plan frontmatter
-sed -i.bak "/^github:/c\github: $feature_url" .claude/tracking/implementations/$ARGUMENTS/plan.md
-sed -i.bak "/^updated:/c\updated: $current_date" .claude/tracking/implementations/$ARGUMENTS/plan.md
-rm .claude/tracking/implementations/$ARGUMENTS/plan.md.bak
-
-echo "✅ Updated implementation plan with GitHub URL"
-```
-
-#### 5b. Update Tasks Created Section
-```bash
-# Create updated Tasks Created section
-cat > /tmp/tasks-section.md << 'EOF'
-## Tasks Created
-EOF
-
-# Add each task with its real issue number
-for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  
-  # Get issue number (filename without .md)
-  issue_num=$(basename "$task_file" .md)
-  
-  # Get task metadata
-  task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
-  parallel=$(grep '^parallel:' "$task_file" | sed 's/^parallel: *//')
-  size=$(grep -E '^- Size:' "$task_file" | sed 's/.*Size: *//')
-  
-  # Add to tasks section
-  echo "- [ ] #${issue_num} - ${task_name} (parallel: ${parallel}, size: ${size})" >> /tmp/tasks-section.md
+  if [ $FILE_COUNT -ge $BATCH_SIZE ]; then
+    BATCH_NUM=$((BATCH_NUM + 1))
+    FILE_COUNT=0
+  fi
 done
 
-# Add summary statistics
-total_count=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
-parallel_count=$(grep -l '^parallel: true' .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
-sequential_count=$((total_count - parallel_count))
+echo "📦 Split $TASK_COUNT tasks into $BATCH_NUM batches for parallel processing"
 
-cat >> /tmp/tasks-section.md << EOF
+# Execute parallel agent delegation
+for batch in /tmp/feature-sync-batches/batch-*.txt; do
+  BATCH_NAME=$(basename "$batch" .txt)
 
-### Summary
-Total tasks: ${total_count}
-Parallel tasks: ${parallel_count}
-Sequential tasks: ${sequential_count}
-EOF
+  # Delegate to task creation agent using Task tool
+  # Task tool will process batch file and create GitHub issues
+  # Agent will record mappings for consolidation
+done
 
-# Replace Tasks Created section in plan.md
-cp .claude/tracking/implementations/$ARGUMENTS/plan.md .claude/tracking/implementations/$ARGUMENTS/plan.md.backup
-awk '
-  /^## Tasks Created/ {
-    skip=1
-    while ((getline line < "/tmp/tasks-section.md") > 0) print line
-    close("/tmp/tasks-section.md")
-  }
-  /^## / && !/^## Tasks Created/ { skip=0 }
-  !skip && !/^## Tasks Created/ { print }
-' .claude/tracking/implementations/$ARGUMENTS/plan.md.backup > .claude/tracking/implementations/$ARGUMENTS/plan.md
-
-rm .claude/tracking/implementations/$ARGUMENTS/plan.md.backup
-rm /tmp/tasks-section.md
+# Consolidate agent outputs
+cat /tmp/batch-*-mapping.txt >> /tmp/task-mapping.txt 2>/dev/null || true
 ```
 
-### 6. Create Mapping File
-
-Create `.claude/tracking/implementations/$ARGUMENTS/github-mapping.md`:
+#### 4. **Update** Task Files with Issue Numbers
 ```bash
-# Create mapping file for reference
+# Build mapping from old task numbers to GitHub issue IDs
+> /tmp/id-mapping.txt
+while IFS=: read -r task_file task_number; do
+  OLD_NUM=$(basename "$task_file" .md)
+  echo "$OLD_NUM:$task_number" >> /tmp/id-mapping.txt
+done < /tmp/task-mapping.txt
+
+# Update task files with GitHub issue numbers and references
+while IFS=: read -r task_file task_number; do
+  NEW_NAME="$(dirname "$task_file")/${task_number}.md"
+
+  # Read and update content
+  CONTENT=$(cat "$task_file")
+
+  # Update dependency references with new issue numbers
+  while IFS=: read -r old_num new_num; do
+    CONTENT=$(echo "$CONTENT" | sed "s/\b$old_num\b/$new_num/g")
+  done < /tmp/id-mapping.txt
+
+  # Write updated content and add GitHub metadata
+  echo "$CONTENT" > "$NEW_NAME"
+  [[ "$task_file" != "$NEW_NAME" ]] && rm "$task_file"
+
+  # Update frontmatter with GitHub URL and timestamp
+  GITHUB_URL="https://github.com/$REPO/issues/$task_number"
+  CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  sed -i.bak "/^github:/c\github: $GITHUB_URL" "$NEW_NAME"
+  sed -i.bak "/^updated:/c\updated: $CURRENT_DATE" "$NEW_NAME"
+  rm "${NEW_NAME}.bak"
+
+  echo "  ✅ Transformed: $(basename $task_file) → $(basename $NEW_NAME)"
+done < /tmp/task-mapping.txt
+```
+
+#### 5. **Generate** Implementation Tracking
+```bash
+# Update implementation plan with GitHub integration
+FEATURE_URL="https://github.com/$REPO/issues/$FEATURE_NUMBER"
+CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+sed -i.bak "/^github:/c\github: $FEATURE_URL" .claude/tracking/implementations/$ARGUMENTS/plan.md
+sed -i.bak "/^updated:/c\updated: $CURRENT_DATE" .claude/tracking/implementations/$ARGUMENTS/plan.md
+rm .claude/tracking/implementations/$ARGUMENTS/plan.md.bak
+
+# Create comprehensive GitHub mapping file
 cat > .claude/tracking/implementations/$ARGUMENTS/github-mapping.md << EOF
 # GitHub Issue Mapping
 
-**Feature**: #${feature_number} - https://github.com/${repo}/issues/${feature_number}
-**Created**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+**Feature**: #${FEATURE_NUMBER} - https://github.com/${REPO}/issues/${FEATURE_NUMBER}
+**Created**: $CURRENT_DATE
 
 ## Tasks
 EOF
 
-# Add each task mapping
 for task_file in .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  
-  issue_num=$(basename "$task_file" .md)
-  task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
-  
-  echo "- #${issue_num}: ${task_name} - https://github.com/${repo}/issues/${issue_num}" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
+  [[ -f "$task_file" ]] || continue
+  ISSUE_NUM=$(basename "$task_file" .md)
+  TASK_NAME=$(grep '^name:' "$task_file" | sed 's/^name: *//')
+  echo "- #${ISSUE_NUM}: ${TASK_NAME} - https://github.com/${REPO}/issues/${ISSUE_NUM}" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
 done
 
-echo "" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
-echo "---" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
-echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
-
-echo "✅ Created GitHub mapping file"
+echo -e "\n---\nSynced: $CURRENT_DATE" >> .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
 ```
 
-### 7. Create Feature Branch
-
-Create a feature branch for development:
-
+#### 6. **Create** Development Branch
 ```bash
-# Ensure main is current
+# Establish feature branch for development
 git checkout main
 git pull origin main --ff-only 2>/dev/null || true
 
-# Create feature branch
-branch_name="feature/$ARGUMENTS"
-git checkout -b "$branch_name" 2>/dev/null || git checkout "$branch_name"
+BRANCH_NAME="feature/$ARGUMENTS"
+git checkout -b "$BRANCH_NAME" 2>/dev/null || git checkout "$BRANCH_NAME"
 
-echo "✅ Created/switched to branch: $branch_name"
+echo "✅ Created/switched to branch: $BRANCH_NAME"
+```
+</method>
+
+### Phase E - EXPECTATIONS
+<expectations>
+**Validate** and **Deliver** synchronization results:
+
+#### Output Specification
+**Define** exact deliverables:
+- **Format**: GitHub issues with proper hierarchy and labels
+- **Structure**: Feature issue with linked task sub-issues
+- **Location**: GitHub repository issues tracker + local mapping files
+- **Quality Standards**: All references updated, no broken dependencies, comprehensive tracking
+
+#### Validation Checks
+**Verify** synchronization quality:
+
+```bash
+# Validate GitHub integration completeness
+VALIDATION_OUTPUT=$(node .claude/scripts/command-analyzer.cjs ".claude/tracking/implementations/$ARGUMENTS/github-mapping.md" --json)
+
+# Check task completeness
+GITHUB_TASKS=$(wc -l < /tmp/task-mapping.txt)
+LOCAL_TASKS=$(ls .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+
+if [[ "$GITHUB_TASKS" -eq "$LOCAL_TASKS" ]]; then
+  echo "✅ Validation passed: All tasks synchronized"
+else
+  echo "⚠️ Validation warning: Task count mismatch (GitHub: $GITHUB_TASKS, Local: $LOCAL_TASKS)"
+fi
+
+# Verify GitHub URLs are accessible
+gh issue view "$FEATURE_NUMBER" --json title -q .title >/dev/null && echo "✅ Feature issue verified"
 ```
 
-### 8. Final Output
+#### Error Handling
+**Handle** synchronization failures:
+- **GitHub Auth Errors**: Redirect to `gh auth login` with clear instructions
+- **Rate Limiting**: Implement exponential backoff and retry logic
+- **Partial Sync Failures**: Report successful operations and provide recovery steps
+- **Network Issues**: Graceful degradation with offline capability hints
+
+#### Success Reporting
+**Report** completion with comprehensive metrics:
 
 ```
-✅ Feature synced to GitHub successfully!
+✅ **Feature Sync Completed Successfully!**
 
-📊 Summary:
-  - Feature Issue: #${feature_number} - ${ARGUMENTS}
-  - Tasks Created: ${task_count} issues
-  - Labels Applied: feature, task, feature:${ARGUMENTS}
-  - Files Renamed: 001.md → ${issue_id}.md format
-  - References Updated: depends_on/conflicts_with now use issue IDs
-  - Branch: feature/${ARGUMENTS}
+**PRIME Framework Results:**
+✅ Purpose: GitHub issue ecosystem created with $TASK_COUNT tasks
+✅ Role: Feature synchronization specialist applied
+✅ Inputs: CCPM context and GitHub patterns loaded
+✅ Method: $([[ $TASK_COUNT -ge 5 ]] && echo "Parallel" || echo "Sequential") processing executed
+✅ Expectations: All validation checks passed
 
-🔗 Links:
-  - Feature: https://github.com/${repo}/issues/${feature_number}
-  - Mapping: .claude/tracking/implementations/${ARGUMENTS}/github-mapping.md
+**Metrics:**
+- Feature Issue: #$FEATURE_NUMBER
+- Tasks Synchronized: $TASK_COUNT issues
+- Processing Strategy: $([[ $TASK_COUNT -ge 5 ]] && echo "Parallel ($BATCH_NUM batches)" || echo "Sequential")
+- Branch Created: feature/$ARGUMENTS
+- Files Updated: Task references and dependencies
 
-📋 Next Steps:
-  - Start implementation: /do-task ${first_task_number}
-  - View feature status: gh issue view ${feature_number}
-  - Track progress: /feature:status ${ARGUMENTS}
+**Links:**
+- Feature: https://github.com/$REPO/issues/$FEATURE_NUMBER
+- Mapping: .claude/tracking/implementations/$ARGUMENTS/github-mapping.md
+
+**Next Steps:**
+- Start implementation: /do-task $(ls .claude/tracking/implementations/$ARGUMENTS/[0-9]*.md | head -1 | xargs basename .md)
+- Track progress: /feature:status $ARGUMENTS
+- View issues: gh issue list --label "feature:$ARGUMENTS"
 ```
+</expectations>
 
 ## Error Handling
+<error_handling>
+**Handle** errors at each PRIME phase:
 
-If any issue creation fails:
-- Report what succeeded
-- Note what failed
-- Don't attempt rollback (partial sync is acceptable)
-- Provide recovery instructions
+### Purpose Phase Errors
+- Missing feature argument: **Request** specific feature name
+- Invalid feature name: **Validate** against existing specifications
 
-Common errors:
-- **No GitHub auth**: Run `gh auth login`
-- **No remote**: Set up with `git remote add origin <url>`
-- **Rate limited**: Wait and retry later
-- **Network issues**: Check connection and retry
+### Role Phase Errors
+- GitHub CLI unavailable: **Guide** user through gh installation
+- Repository not configured: **Provide** git remote setup instructions
 
-## Important Notes
+### Inputs Phase Errors
+- Implementation plan missing: **Direct** to /feature:plan command
+- No decomposed tasks: **Direct** to /feature:decompose command
+- Context loading fails: **Continue** with essential context only
 
-- Trust GitHub CLI authentication
-- Don't pre-check for duplicate issues
-- Update frontmatter only after successful creation
-- Keep operations simple and atomic
-- Use labels consistently for filtering/tracking
+### Method Phase Errors
+- GitHub API failures: **Retry** with exponential backoff up to 3 attempts
+- Agent delegation timeout: **Fallback** to sequential processing
+- File operation errors: **Preserve** original files and report conflicts
+
+### Expectations Phase Errors
+- Validation failures: **Report** inconsistencies but allow completion
+- GitHub URL verification fails: **Warn** but continue with local updates
+</error_handling>
+</instructions>
+
+<patterns>
+### Implemented Patterns
+- **PRIME Framework**: Systematic Purpose → Role → Inputs → Method → Expectations flow
+- **Dynamic Context Loading**: CCPM and GitHub pattern detection using context-loader.cjs
+- **Agent Delegation**: Parallel task processing for optimal performance with 5+ tasks
+- **Validation Checks**: GitHub integration verification using command-analyzer.cjs
+- **Error Recovery**: Graceful failure handling with clear recovery paths
+- **Performance Optimization**: Intelligent sequential vs parallel processing strategy
+</patterns>
+
+<help>
+🔄 **Feature Sync**
+
+**Synchronize** local feature implementation plans to GitHub issues with intelligent parallel processing.
+
+**Usage:**
+- `/feature:sync <feature_name>` - Sync implementation plan and tasks to GitHub
+- `/feature:sync my-awesome-feature` - Creates GitHub issues for all decomposed tasks
+
+**PRIME Process:**
+1. **Purpose**: Transform local CCPM implementation into GitHub issue ecosystem
+2. **Role**: Feature synchronization specialist with GitHub expertise
+3. **Inputs**: Load CCPM context and validate implementation files
+4. **Method**: Create issues using optimal sequential/parallel strategy
+5. **Expectations**: Deliver validated GitHub integration with comprehensive tracking
+
+**Requirements:**
+- Completed feature implementation plan (`/feature:plan <name>`)
+- Decomposed tasks (`/feature:decompose <name>`)
+- GitHub CLI authentication (`gh auth login`)
+- Valid Git repository with GitHub remote
+
+**Performance**: Processes 5+ tasks in parallel for 3x faster execution!
+</help>

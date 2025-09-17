@@ -1,400 +1,249 @@
+---
+description: Analyze GitHub issues and launch systematic debugging sessions with parallel expert consultation and intelligent context loading
+allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite]
+argument-hint: <issue_reference> (e.g., 123, ISSUE-123, #123, GitHub URL)
+---
+
 # Debug Issue Command
 
-Usage: `/debug-issue [issue_reference]`
+Comprehensive debugging command that analyzes GitHub issues and launches systematic debugging sessions using parallel expert consultation and intelligent context loading for efficient problem resolution.
 
-- GitHub issue number: `123` (preferred format from log-issue command)
-- Issue ID: `ISSUE-123`
-- Local file: `.claude/z.archive/issues/2025-01-06-ISSUE-123.md`
-- GitHub URL: `https://github.com/MLorneSmith/2025slideheroes/issues/123`
-- Legacy format: `ISSUE-1234567-abc` (for older local-only issues)
+## Key Features
+- **GitHub Integration**: Direct issue fetching with comments analysis
+- **Systematic Debugging**: Scientific method approach with hypothesis testing
+- **Parallel Expert Consultation**: Simultaneous specialist engagement for faster resolution
+- **Dynamic Context Loading**: Intelligent documentation selection with 6000 token budget
+- **Comprehensive Verification**: Multi-layer testing and regression prevention
 
-This command reads an issue specification and launches a focused debugging session to resolve it.
+## Essential Context
+<!-- Always read for this command -->
+- Read .claude/context/roles/debug-engineer.md
+- Read .claude/context/constraints.md
 
-**CRITICAL**: Always review GitHub issue comments for the most current status and implementation progress, as issue descriptions may be outdated.
+## Prompt
 
-## 1. Essential Context (Always Read)
-- Read `.claude/context/roles/debug-engineer.md` - Debug role and principles
-- Read `.claude/context/standards/code-standards.md` - Code quality standards
-- Read `.claude/context/constraints.md` - Project constraints
+<role>
+You are a Senior Debug Engineer with expertise in full-stack debugging, systematic problem-solving, and root cause analysis. You apply scientific methodology to debugging, use parallel expert consultation, and maintain comprehensive documentation of the debugging process.
+</role>
 
-## 2. Fetch Issue from GitHub (FIRST PRIORITY)
+<instructions>
+# Debug Issue Workflow - PRIME Framework
 
-**Always start by fetching the issue to understand what you're debugging:**
+**CORE REQUIREMENTS**:
+- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
+- **Start** all instructions with action verbs
+- **Apply** systematic debugging methodology with hypothesis testing
+- **Use** parallel execution for independent debugging tasks
+- **Delegate** to specialized agents when expertise required
+- **Document** complete debugging process for future reference
 
-### 2.1 Direct GitHub Fetch
+## PRIME Workflow
+
+### Phase P - PURPOSE
+<purpose>
+**Define** clear debugging outcomes and success criteria:
+
+1. **Primary Objective**: Identify root cause and implement verified solution for the reported issue
+2. **Success Criteria**:
+   - Issue no longer reproducible after fix
+   - Solution doesn't introduce new problems
+   - Comprehensive documentation created
+   - Regression tests added
+3. **Scope Boundaries**: Focus on reported issue; document related findings for separate investigation
+4. **Key Features**: GitHub integration, expert consultation, systematic methodology, verification
+</purpose>
+
+### Phase R - ROLE
+<role_definition>
+**Establish** debug engineer expertise and authority:
+
+1. **Expertise Domain**: Full-stack debugging, systematic problem-solving, GitHub integration
+2. **Experience Level**: Senior engineer with cross-functional debugging experience
+3. **Decision Authority**: Choose debugging approaches, delegate to specialists, implement fixes
+4. **Approach Style**: Scientific method, hypothesis-driven, collaborative with experts
+</role_definition>
+
+### Phase I - INPUTS
+<inputs>
+**Gather** all necessary materials before execution:
+
+#### Essential Context (REQUIRED)
+**Load** critical debugging documentation:
+- Read .claude/context/roles/debug-engineer.md
+- Read .claude/context/constraints.md
+
+#### GitHub Issue Analysis (REQUIRED)
+**Fetch** and **Parse** issue data:
 
 ```bash
-# Parse the issue reference
-if [[ "$issue_reference" =~ ^[0-9]+$ ]]; then
-  issue_number=$issue_reference
-elif [[ "$issue_reference" =~ ^ISSUE-([0-9]+)$ ]]; then
-  issue_number=${BASH_REMATCH[1]}
-elif [[ "$issue_reference" =~ ^#([0-9]+)$ ]]; then
-  issue_number=${BASH_REMATCH[1]}
-elif [[ "$issue_reference" =~ github\.com/.*/issues/([0-9]+) ]]; then
-  issue_number=${BASH_REMATCH[1]}
+# Parse issue reference format
+ISSUE_REF="$1"
+if [[ "$ISSUE_REF" =~ ^[0-9]+$ ]]; then
+  ISSUE_NUMBER="$ISSUE_REF"
+elif [[ "$ISSUE_REF" =~ ^ISSUE-([0-9]+)$ ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
+elif [[ "$ISSUE_REF" =~ ^#([0-9]+)$ ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
+elif [[ "$ISSUE_REF" =~ github\.com/.*/issues/([0-9]+) ]]; then
+  ISSUE_NUMBER="${BASH_REMATCH[1]}"
 else
-  # Legacy local format
-  issue_id=$issue_reference
+  echo "❌ Invalid issue reference format: $ISSUE_REF"
+  exit 1
 fi
 
-# Simple, direct fetch with comments included
-if [ -n "$issue_number" ]; then
-  gh issue view $issue_number --repo MLorneSmith/2025slideheroes --json number,title,body,state,labels,assignees,createdAt,updatedAt,comments > /tmp/issue-$issue_number.json
-  
-  if [ $? -eq 0 ]; then
-    echo "✅ Fetched issue #$issue_number with comments from GitHub"
-    
-    # Display issue summary immediately
-    jq -r '"\n📋 Issue #\(.number): \(.title)\n📊 State: \(.state)\n🏷️ Labels: \(.labels | map(.name) | join(", "))\n💬 Comments: \(.comments | length)"' /tmp/issue-$issue_number.json
-  else
-    echo "❌ Failed to fetch issue #$issue_number from GitHub"
-    exit 1
-  fi
-fi
-```
+# Fetch issue with comments from GitHub
+gh issue view "$ISSUE_NUMBER" --repo MLorneSmith/2025slideheroes --json number,title,body,state,labels,assignees,createdAt,updatedAt,comments > "/tmp/issue-$ISSUE_NUMBER.json"
 
-### 2.2 Parse Issue Reference
-
-The command supports multiple reference formats:
-
-```bash
-# Examples of supported formats:
-/debug-issue 30              # GitHub issue #30
-/debug-issue ISSUE-30        # ISSUE-30 format  
-/debug-issue "#30"           # Hash format
-/debug-issue "https://github.com/MLorneSmith/2025slideheroes/issues/30"  # Full URL
-/debug-issue ISSUE-1234567-abc  # Legacy local-only format
-```
-
-### 2.3 Display Issue Content and Comments
-
-Load the issue content from GitHub or local file:
-
-```bash
-if [ -n "$issue_number" ]; then
-  # Extract content from GitHub issue JSON
-  issue_title=$(jq -r '.title' /tmp/issue-$issue_number.json)
-  issue_body=$(jq -r '.body' /tmp/issue-$issue_number.json)
-  issue_state=$(jq -r '.state' /tmp/issue-$issue_number.json)
-  issue_labels=$(jq -r '.labels[].name' /tmp/issue-$issue_number.json | tr '\n' ' ')
-  
-  echo "📋 Issue #$issue_number: $issue_title"
-  echo "📊 State: $issue_state"
-  echo "🏷️ Labels: $issue_labels"
+if [ $? -eq 0 ]; then
+  echo "✅ Fetched issue #$ISSUE_NUMBER with comments from GitHub"
+  jq -r '"\n📋 Issue #\(.number): \(.title)\n📊 State: \(.state)\n🏷️ Labels: \(.labels | map(.name) | join(", "))\n💬 Comments: \(.comments | length)"' "/tmp/issue-$ISSUE_NUMBER.json"
 else
-  # For legacy local-only issues
-  issue_file=$(find .claude/z.archive/issues -name "*-${issue_id}.md" | head -1)
-  
-  if [ -z "$issue_file" ]; then
-    echo "❌ Local issue file not found: $issue_id"
-    exit 1
-  fi
-  
-  echo "📁 Using local issue file: $issue_file"
+  echo "❌ Failed to fetch issue #$ISSUE_NUMBER from GitHub"
+  exit 1
 fi
 ```
 
-### 2.4 Parse Issue Data
-
-```typescript
-// For GitHub issues
-if (issueNumber) {
-  const issueJson = JSON.parse(await readFile(`/tmp/issue-${issueNumber}.json`));
-  const issue = {
-    id: `ISSUE-${issueNumber}`,
-    title: issueJson.title,
-    body: issueJson.body,
-    state: issueJson.state,
-    labels: issueJson.labels.map(l => l.name),
-    // Parse additional fields from the body
-    severity: extractSeverity(issueJson.body),
-    type: extractType(issueJson.labels),
-    affectedFiles: extractAffectedFiles(issueJson.body),
-    diagnosticData: extractDiagnosticData(issueJson.body),
-    reproductionSteps: extractReproductionSteps(issueJson.body),
-    suggestedAreas: extractSuggestedAreas(issueJson.body),
-  };
-} else {
-  // For legacy local files
-  const issueContent = await readFile(issuePath);
-  const issue = parseIssueSpecification(issueContent);
-}
-```
-
-### 2.5 Review GitHub Issue Comments (Critical Step)
-
-**IMPORTANT**: Always review GitHub issue comments for status updates, implementation progress, and current context:
+#### Dynamic Context Loading (ADAPTIVE)
+**Analyze** issue content and **Load** relevant documentation:
 
 ```bash
-# Review all comments on the GitHub issue for latest status
-gh issue view ${issue_number} --repo MLorneSmith/2025slideheroes --comments
+# Extract issue metadata for context selection
+ISSUE_TITLE=$(jq -r '.title' "/tmp/issue-$ISSUE_NUMBER.json")
+ISSUE_BODY=$(jq -r '.body' "/tmp/issue-$ISSUE_NUMBER.json" | head -c 500)
+ISSUE_LABELS=$(jq -r '.labels[].name' "/tmp/issue-$ISSUE_NUMBER.json" | tr '\n' ' ')
 
-# This will show:
-# - Implementation status updates
-# - Progress reports
-# - Current phase information
-# - Next steps and priorities
-# - Technical decisions made
-# - Blockers and resolutions
-```
+# Build enriched query for context selection
+ENRICHED_QUERY="$ISSUE_TITLE $ISSUE_BODY $ISSUE_LABELS debugging troubleshooting"
 
-**Why This Is Critical**:
-
-- GitHub issue descriptions may be outdated
-- Comments contain the most current status and context
-- Implementation progress is tracked in comments
-- Status updates override initial issue description
-- Comments reveal actual current state vs original problem
-
-**What to Look For**:
-
-- **Status Update Comments**: "IMPLEMENTATION STATUS UPDATE", "Progress Update", etc.
-- **Current Phase Information**: What's completed vs what's pending
-- **Next Steps**: Specific tasks and priorities for current session
-- **Technical Context**: Decisions, approaches, and discoveries
-- **Blockers and Solutions**: Known issues and their resolutions
-
-## 3. Adopt Debug Role
-
-**After understanding the issue, adopt the debugging mindset:**
-
-```
-/read .claude/context/roles/debug-engineer.md
-```
-
-## 4. Load Dynamic Context Documentation (Based on Issue Analysis)
-
-**Use the dynamic context loader to select relevant documentation based on the issue:**
-
-### 4.1 Dynamic Context Loading
-
-```bash
-# After analyzing the issue, load relevant context dynamically
-# Build query from issue content
-ISSUE_QUERY="${issue_title} ${issue_body_excerpt} ${issue_labels}"
-
-# Load relevant documentation for debugging
-node .claude/scripts/context-loader.cjs \
-  --query="$ISSUE_QUERY" \
+# Load relevant context using 6000 token budget
+CONTEXT_FILES=$(node .claude/scripts/context-loader.cjs \
+  --query="$ENRICHED_QUERY" \
   --command="debug-issue" \
-  --format=paths \
-  --budget=4000
+  --max-results=4 \
+  --token-budget=6000 \
+  --format=paths)
 
-# This will automatically select relevant docs based on:
-# - Issue title and description
-# - Labels (e.g., "bug", "database", "frontend")
-# - Error messages and stack traces
-# - Affected components mentioned
+# Process and load context files
+echo "$CONTEXT_FILES" | while IFS= read -r line; do
+  if [[ $line =~ ^Read ]]; then
+    FILE_PATH=$(echo "$line" | sed 's/Read //')
+    echo "📖 Loading context: $FILE_PATH"
+    # Use Read tool for $FILE_PATH
+  fi
+done
 ```
 
-### 4.2 Context Categories
-
-The dynamic loader will prioritize documentation based on issue type:
-
-```typescript
-// The context loader automatically scores and selects from:
-const contextCategories = {
-  // Frontend/UI issues (detected by keywords: ui, component, style, react, etc.)
-  ui: 'Higher scoring for UI/component docs',
-
-  // Backend/Database issues (detected by keywords: database, query, rls, etc.)
-  database: 'Higher scoring for database/backend docs',
-
-  // Performance issues
-  performance: [
-    '.claude/docs/debugging/performance-debugging.md',
-    '.claude/docs/architecture/performance-optimization.md',
-    '.claude/docs/data/react-query-patterns.md', // For caching issues
-  ],
-
-  // Integration issues
-  integration: [
-    '.claude/docs/debugging/integration-debugging.md',
-    '.claude/docs/architecture/system-design.md',
-    '.claude/docs/architecture/service-patterns.md',
-    '.claude/docs/ai/portkey-integration.md', // For AI service issues
-  ],
-
-  // Type/Build issues
-  typescript: [
-    '.claude/docs/debugging/error-handling.md',
-    '.claude/docs/testing/unit-testing-patterns.md',
-  ],
-
-  // Authentication issues
-  auth: [
-    '.claude/docs/security/authentication-patterns.md',
-    '.claude/docs/security/authorization-patterns.md',
-    '.claude/docs/data/supabase-patterns.md',
-  ],
-
-  // CMS issues
-  cms: [
-    '.claude/docs/cms/payload-patterns.md',
-    '.claude/docs/cms/database-verification-repair.md',
-    '.claude/docs/cms/content-migration-troubleshooting.md',
-  ],
-
-  // Testing issues
-  testing: [
-    '.claude/docs/testing/unit-testing-prioritization-plan.md',
-    '.claude/docs/testing/context/testing-fundamentals.md',
-    '.claude/docs/testing/context/mocking-and-typescript.md',
-    '.claude/docs/testing/context/testing-examples.md',
-  ],
-};
-
-// Note: Use the inventory to discover additional relevant docs not listed here
-```
-
-### 4.4 Loading Strategy
-
-1. **Be highly selective** - Only load what's directly relevant to the issue
-2. **Skip generic documentation** unless specifically needed
-3. **Load in parallel** when loading multiple docs
-4. **Check test cases** only if debugging a specific component with tests
-
-### 4.5 Context Loading Example
-
-```typescript
-// Example: Only load what's needed based on issue analysis
-if (issue.labels.includes('database') || issue.body.includes('RLS')) {
-  // Load database-specific docs
-  await parallelRead([
-    '.claude/docs/data/supabase-patterns.md',
-    '.claude/docs/debugging/database-debugging.md'
-  ]);
-}
-// Otherwise, skip unnecessary context loading
-```
-
-## 5. Issue Analysis & Planning
-
-### 5.1 Review Diagnostic Data
-
-Analyze the pre-collected diagnostic information:
-
-1. **Error Patterns**: Look for specific error messages
-2. **Performance Metrics**: Identify bottlenecks
-3. **Query Analysis**: Find inefficient queries
-4. **Network Issues**: Check failed requests
-5. **Console Output**: Review warnings and errors
-
-### 5.2 Create Debug Plan
-
-Based on issue analysis:
-
-```markdown
-## Debug Plan for [Issue ID]
-
-### Priority 1: Immediate Actions
-
-- [ ] Reproduce issue locally
-- [ ] Verify diagnostic data is current
-- [ ] Check recent code changes
-
-### Priority 2: Root Cause Analysis
-
-- [ ] Investigate [suggested area 1]
-- [ ] Test hypothesis: [based on diagnostics]
-- [ ] Check related components
-
-### Priority 3: Solution Implementation
-
-- [ ] Implement fix for root cause
-- [ ] Add error handling/logging
-- [ ] Create tests to prevent regression
-
-### Priority 4: Verification
-
-- [ ] Test fix in development
-- [ ] Re-run diagnostic tools
-- [ ] Update documentation
-```
-
-### 5.3 Set Up Debug Environment
+#### Issue Comments Analysis (CRITICAL)
+**Review** GitHub issue comments for current status:
 
 ```bash
-# Checkout relevant branch if needed
-git checkout [branch]
+# Display all comments for status review
+echo "🔍 Reviewing issue comments for current status..."
+gh issue view "$ISSUE_NUMBER" --repo MLorneSmith/2025slideheroes --comments
 
-# Ensure environment matches issue report
-export NODE_ENV=[reported_environment]
-
-# Start necessary services
-pnpm dev
+# Look for status updates, implementation progress, and current context
+echo "⚠️  CRITICAL: Review comments above for latest status - issue description may be outdated"
 ```
+</inputs>
 
-## 6. Reproduction & Investigation
+### Phase M - METHOD
+<method>
+**Execute** systematic debugging workflow with parallel expert consultation:
 
-### 6.1 Reproduce the Issue
+#### Step 1: Issue Analysis & Hypothesis Formation
+**Analyze** issue data and **Generate** initial hypotheses:
 
-Follow the documented reproduction steps:
-
-```typescript
-// Use MCP tools to monitor while reproducing
-mcp__browser - tools__wipeLogs(); // Clear logs
-
-// Execute reproduction steps
-for (const step of issue.reproductionSteps) {
-  console.log(`Executing: ${step}`);
-  // Perform step
-}
-
-// Capture new diagnostic data
-const currentErrors = (await mcp__browser) - tools__getConsoleErrors();
-const currentNetwork = (await mcp__browser) - tools__getNetworkErrors();
-```
-
-### 6.2 Deep Dive Investigation
-
-Based on issue type, perform targeted investigation:
-
-#### For Runtime Errors
-
-1. Set breakpoints in suspected functions
-2. Add console.log statements for variable inspection
-3. Check error boundaries and try-catch blocks
-4. Verify async/await handling
-
-#### For Performance Issues
-
-1. Profile the application
-2. Check React DevTools for re-renders
-3. Analyze bundle size
-4. Review database query plans
-
-#### For Database Issues
-
-1. Test queries in isolation
-2. Check RLS policies
-3. Verify indexes
-4. Monitor connection pool
-
-#### For Type Errors
-
-1. Run targeted type checking
-2. Check interface definitions
-3. Verify API response shapes
-4. Review type assertions
-
-### 6.3 Compare with Baseline
-
-```typescript
-// Compare current state with issue report
-const comparison = {
-  original: issue.diagnosticData,
-  current: currentDiagnosticData,
-  differences: findDifferences(issue.diagnosticData, currentDiagnosticData),
+```javascript
+// Parse issue content
+const issueData = JSON.parse(await readFile(`/tmp/issue-${issueNumber}.json`));
+const issue = {
+  id: `ISSUE-${issueNumber}`,
+  title: issueData.title,
+  body: issueData.body,
+  labels: issueData.labels.map(l => l.name),
+  comments: issueData.comments,
+  // Extract diagnostic patterns
+  errorMessages: extractErrorMessages(issueData.body),
+  affectedComponents: extractComponents(issueData.body),
+  reproductionSteps: extractSteps(issueData.body),
+  severity: determineSeverity(issueData.labels)
 };
+
+// Form initial hypotheses based on patterns
+const hypotheses = generateHypotheses(issue);
 ```
 
-## 7. Solution Implementation
+#### Step 2: Parallel Expert Consultation
+**Delegate** to specialized agents based on issue characteristics:
 
-### 7.1 Implement Fix
+```bash
+# Identify required specialists based on issue labels and content
+SPECIALISTS=()
 
-Based on root cause analysis:
+if echo "$ISSUE_LABELS" | grep -q "database\|rls\|query"; then
+  SPECIALISTS+=("database-expert")
+fi
+
+if echo "$ISSUE_LABELS" | grep -q "ui\|component\|frontend\|react"; then
+  SPECIALISTS+=("frontend-expert")
+fi
+
+if echo "$ISSUE_LABELS" | grep -q "test\|testing\|spec"; then
+  SPECIALISTS+=("testing-expert")
+fi
+
+if echo "$ISSUE_LABELS" | grep -q "performance\|slow\|optimization"; then
+  SPECIALISTS+=("performance-expert")
+fi
+
+# Launch parallel specialist consultations
+for specialist in "${SPECIALISTS[@]}"; do
+  echo "🔧 Consulting $specialist for specialized analysis..."
+  # Use Task tool with subagent_type: $specialist
+done
+```
+
+#### Step 3: Environment Setup & Reproduction
+**Prepare** debugging environment and **Reproduce** the issue:
+
+```bash
+# Set up debugging environment
+git status --porcelain  # Check current state
+export NODE_ENV="development"
+
+# Start services if needed
+if ! pgrep -f "next-server" > /dev/null; then
+  echo "🚀 Starting development server..."
+  pnpm dev &
+  sleep 5
+fi
+
+# Execute reproduction steps from issue
+echo "🔄 Attempting to reproduce issue..."
+# Follow documented reproduction steps
+```
+
+#### Step 4: Systematic Investigation
+**Investigate** using hypothesis-driven approach:
+
+```javascript
+// Systematic investigation workflow
+const investigationPlan = {
+  phase1: "Reproduce issue and capture current state",
+  phase2: "Test primary hypothesis with targeted investigation",
+  phase3: "Gather additional evidence if hypothesis unclear",
+  phase4: "Verify root cause through isolated testing"
+};
+
+// Execute investigation phases
+for (const [phase, description] of Object.entries(investigationPlan)) {
+  console.log(`📋 ${phase}: ${description}`);
+  // Execute phase-specific investigation
+}
+```
+
+#### Step 5: Solution Implementation
+**Implement** targeted fix based on verified root cause:
 
 ```typescript
 // Read affected files
@@ -402,222 +251,189 @@ for (const file of issue.affectedFiles) {
   await readFile(file);
 }
 
-// Apply fixes based on issue type
-switch (issue.type) {
-  case 'error':
-    // Add error handling
-    // Fix logic errors
-    // Add validation
+// Apply fix based on root cause analysis
+switch (issue.rootCause.type) {
+  case 'logic-error':
+    // Fix logical issues, add validation
     break;
   case 'performance':
-    // Optimize queries
-    // Add caching
-    // Implement lazy loading
+    // Optimize queries, add caching
     break;
-  case 'database':
-    // Fix queries
-    // Update RLS policies
-    // Add indexes
+  case 'type-error':
+    // Fix type definitions, update interfaces
+    break;
+  case 'integration':
+    // Fix API integration, update configurations
     break;
 }
 ```
 
-### 7.2 Add Defensive Measures
+#### Progress Tracking (For Complex Issues)
+**Track** investigation progress:
 
-```typescript
-// Add logging for future debugging
-logger.info('Fixed issue context', {
-  issueId: issue.id,
-  action: 'specific_action',
-  timestamp: new Date(),
-});
+```javascript
+// Use TodoWrite for complex debugging sessions
+const debugTodos = [
+  {content: "Reproduce issue locally", status: "in_progress"},
+  {content: "Analyze error patterns", status: "pending"},
+  {content: "Test primary hypothesis", status: "pending"},
+  {content: "Implement solution", status: "pending"},
+  {content: "Verify fix", status: "pending"}
+];
+```
+</method>
 
-// Add error tracking
-if (error) {
-  errorReporter.capture(error, {
-    issueId: issue.id,
-    context: debugContext,
-  });
-}
+### Phase E - EXPECTATIONS
+<expectations>
+**Validate** and **Deliver** debugging results:
 
-// Add performance monitoring
-performance.mark('issue-fix-start');
-// ... operation ...
-performance.measure('issue-fix', 'issue-fix-start');
+#### Output Specification
+**Define** exact debugging deliverables:
+- **Resolution Report**: Complete analysis and solution documentation
+- **Modified Files**: All code changes with explanations
+- **Verification Results**: Test results confirming issue resolution
+- **Prevention Measures**: Tests and monitoring to prevent recurrence
+
+#### Verification Workflow
+**Verify** solution effectiveness:
+
+```bash
+# Clear logs and test fix
+echo "🧪 Verifying fix effectiveness..."
+
+# Re-run reproduction steps
+# Should no longer reproduce the issue
+
+# Run relevant tests
+if [ -f "package.json" ]; then
+  pnpm test --run 2>/dev/null || echo "⚠️ Tests need to be run manually"
+fi
+
+# Check for new errors
+echo "🔍 Checking for new issues introduced by fix..."
 ```
 
-### 7.3 Create Tests
-
-```typescript
-// Create regression test
-const testFile = `${affectedFile}.test.ts`;
-const testContent = generateRegressionTest(issue);
-await writeFile(testFile, testContent);
-```
-
-## 8. Verification & Documentation
-
-### 8.1 Verify Fix
-
-Re-run diagnostic tools to confirm resolution:
-
-```typescript
-// Clear and re-test
-mcp__browser - tools__wipeLogs();
-
-// Reproduce original steps
-// Should no longer see the issue
-
-// Run diagnostic tools
-const verificationResults = {
-  consoleErrors: (await mcp__browser) - tools__getConsoleErrors(),
-  networkErrors: (await mcp__browser) - tools__getNetworkErrors(),
-  performance: (await mcp__browser) - tools__runPerformanceAudit(),
-};
-
-// For database fixes
-const dbVerification = await mcp__postgres__pg_analyze_database({
-  analysisType: 'performance',
-});
-```
-
-### 8.2 Update Issue Documentation
-
-Create resolution report:
+#### Documentation & Status Update
+**Create** resolution documentation:
 
 ```markdown
 ## Resolution Report
 
-**Issue ID**: [ID]
-**Resolved Date**: [timestamp]
-**Resolver**: Claude Debug Assistant
+**Issue ID**: ISSUE-${issueNumber}
+**Resolved Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+**Debug Engineer**: Claude Debug Assistant
 
-### Root Cause
-
+### Root Cause Analysis
 [Detailed explanation of what caused the issue]
 
 ### Solution Implemented
-
-[Description of the fix]
+[Description of the fix and rationale]
 
 ### Files Modified
-
-- [file1.ts] - [brief description of changes]
-- [file2.tsx] - [brief description of changes]
+[List of changed files with brief descriptions]
 
 ### Verification Results
+- ✅ Issue reproduction: No longer occurs
+- ✅ Regression testing: No new issues detected
+- ✅ Performance impact: Measured and acceptable
+- ✅ Prevention measures: Tests added
 
-- ✅ Issue no longer reproducible
-- ✅ No new errors introduced
-- ✅ Performance metrics improved/maintained
-- ✅ Tests added to prevent regression
+### Expert Consultations
+[Summary of specialist input and recommendations]
 
 ### Lessons Learned
-
 [Key takeaways for preventing similar issues]
 ```
 
-### 8.3 Update Issue Status
-
-```typescript
-// Update local issue file
-issue.status = 'resolved';
-issue.resolvedDate = new Date().toISOString();
-issue.resolution = resolutionReport;
-
-// Update GitHub if applicable
-if (issue.githubNumber) {
-  await mcp__github__update_issue({
-    owner: 'MLorneSmith',
-    repo: '2025slideheroes',
-    issue_number: issue.githubNumber,
-    state: 'closed',
-    body: issue.body + '\n\n' + resolutionReport,
-  });
-}
-```
-
-## 9. Post-Debug Actions
-
-### 9.1 Create PR if Needed
+#### GitHub Issue Update
+**Update** issue status and documentation:
 
 ```bash
-# Create branch for fix
-git checkout -b fix/issue-${issueId}
+# Add resolution comment to GitHub issue
+gh issue comment "$ISSUE_NUMBER" --repo MLorneSmith/2025slideheroes --body "$(cat resolution-report.md)"
 
-# Commit changes
-git add [modified_files]
-git commit -m "fix: resolve ${issue.title}
+# Close issue if fully resolved
+if [ "$RESOLUTION_STATUS" = "complete" ]; then
+  gh issue close "$ISSUE_NUMBER" --repo MLorneSmith/2025slideheroes --reason "completed"
+fi
+```
+</expectations>
 
-- ${bulletPoint1}
-- ${bulletPoint2}
+## Parallel Execution Patterns
 
-Fixes #${issue.githubNumber}"
+### Independent Task Streams
+**Execute** parallel debugging tasks when beneficial:
 
-# Create PR
-gh pr create --title "Fix: ${issue.title}" --body "..."
+```bash
+# Stream 1: Issue analysis and context loading
+# Stream 2: Environment setup and service verification
+# Stream 3: Specialist consultation and expert analysis
+# Stream 4: Related issue investigation and pattern analysis
+
+# Combine results for comprehensive debugging approach
 ```
 
-### 9.2 Knowledge Base Update
+### Agent Delegation Strategy
+**Delegate** to specialists based on issue domain:
 
-If the issue revealed a gap:
+- **Database Issues**: database-expert for RLS, query optimization, schema problems
+- **Frontend Issues**: frontend-expert for React, UI components, styling problems
+- **Performance Issues**: Use performance analysis tools and optimization specialists
+- **Integration Issues**: API experts for external service integration problems
+- **Testing Issues**: testing-expert for test failures, coverage, and test strategy
 
-1. Update debugging documentation
-2. Add to common patterns
-3. Create troubleshooting guide
-4. Update team runbook
+</instructions>
 
-### 9.3 Summary Output
+<error_handling>
+**Handle** debugging failures gracefully:
 
-```
-✅ Issue Resolved Successfully!
+### GitHub API Failures
+- **Network Issues**: Retry with exponential backoff
+- **Authentication**: Check GITHUB_TOKEN availability
+- **Rate Limits**: Wait and retry with appropriate delays
+- **Issue Not Found**: Verify issue number and repository access
 
-📋 Issue: ISSUE-1234567-abc
-🔧 Root Cause: [brief description]
-💡 Solution: [brief description]
-📁 Modified Files: 3
-✅ Tests Added: 2
-🚀 Status: Ready for review
+### Context Loading Failures
+- **Script Unavailable**: Fall back to manual context selection
+- **Token Budget Exceeded**: Reduce context scope, prioritize essential docs
+- **File Access**: Skip unavailable files, continue with available context
 
-Next Steps:
-1. Review PR: [PR link]
-2. Deploy to staging for verification
-3. Monitor for regressions
-```
+### Reproduction Failures
+- **Environment Issues**: Document environment differences, suggest setup steps
+- **Missing Dependencies**: Identify and install required dependencies
+- **Service Unavailable**: Start required services, check configuration
 
-## Context Management
+### Solution Implementation Failures
+- **Code Conflicts**: Use Git strategies to resolve conflicts
+- **Test Failures**: Address test issues before deploying fix
+- **Performance Regression**: Revert and find alternative solution
+</error_handling>
 
-### Focus Strategies
+<help>
+🐛 **Debug Issue Command**
 
-1. **Single Issue Focus**: Work on one issue at a time
-2. **Relevant Context**: Only load files mentioned in issue
-3. **Incremental Changes**: Make small, testable changes
-4. **Regular Verification**: Test after each change
+Systematic debugging command that analyzes GitHub issues and resolves them using scientific methodology and expert consultation.
 
-### When to Stop
+**Usage:**
+- `/debug-issue 123` - Debug GitHub issue #123
+- `/debug-issue ISSUE-123` - Debug using ISSUE format
+- `/debug-issue "#123"` - Debug using hash format
+- `/debug-issue https://github.com/MLorneSmith/2025slideheroes/issues/123` - Debug using full URL
 
-- Issue is resolved and verified
-- Hit context limits (suggest continuing in new session)
-- Need additional information not in issue spec
-- Discovered this is actually multiple issues
+**PRIME Process:**
+1. **Purpose**: Define debugging objectives and success criteria
+2. **Role**: Establish debug engineer expertise and authority
+3. **Inputs**: Load essential context, fetch GitHub data, analyze issue
+4. **Method**: Execute systematic debugging with expert consultation
+5. **Expectations**: Deliver verified solution with comprehensive documentation
 
-## Integration with Log-Issue
+**Requirements:**
+- GitHub CLI installed and authenticated
+- Access to MLorneSmith/2025slideheroes repository
+- Node.js for context loading scripts
 
-### Feedback Loop
+**Expert Consultation:**
+The command automatically consults relevant specialists based on issue characteristics (database, frontend, testing, performance experts).
 
-- Update issue specs with new findings
-- Add discovered patterns to diagnostics
-- Improve reproduction steps
-- Document workarounds if no fix possible
-
-### Pattern Library
-
-Build a library of issue patterns:
-
-```
-.claude/z.archive/issues/patterns/
-├── slow-query-pattern.md
-├── memory-leak-pattern.md
-├── cors-error-pattern.md
-└── type-mismatch-pattern.md
-```
+Ready to debug systematically and resolve issues efficiently! 🔧
+</help>
