@@ -202,6 +202,13 @@ export class ScriptsTool {
         usage: 'Automatically align package versions across workspaces.',
         importance: 'low',
       },
+      'supabase:cli': {
+        category: 'database',
+        description: 'Access Supabase CLI commands via web project',
+        usage:
+          'Use with: pnpm --filter web supabase <command>. Examples: db diff, db push, gen types, etc.',
+        importance: 'high',
+      },
     };
 
     const scriptInfo = scriptDescriptions[scriptName] || {

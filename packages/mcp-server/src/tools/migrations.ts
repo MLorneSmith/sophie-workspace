@@ -19,8 +19,8 @@ export class MigrationsTool {
     );
   }
 
-  static CreateMigration(path: string) {
-    return promisify(exec)(`supabase migration new ${path}`);
+  static CreateMigration(name: string) {
+    return promisify(exec)(`pnpm --filter web supabase migration new ${name}`);
   }
 
   static Diff() {
