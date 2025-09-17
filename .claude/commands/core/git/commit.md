@@ -192,29 +192,7 @@ if changes_affect_api || new_features_added; then
 fi
 ```
 
-### Step 5: Quality Validation
-Run pre-commit checks:
-```bash
-# Run tests if available
-if [ -f package.json ] && grep -q "test" package.json; then
-  echo "🧪 Running tests..."
-  npm test || { echo "❌ Tests failed"; exit 1; }
-fi
-
-# Run linter
-if [ -f package.json ] && grep -q "lint" package.json; then
-  echo "🔍 Running linter..."
-  npm run lint || { echo "❌ Linting failed"; exit 1; }
-fi
-
-# TypeScript check
-if [ -f tsconfig.json ]; then
-  echo "📘 Checking types..."
-  npm run typecheck || { echo "❌ Type errors"; exit 1; }
-fi
-```
-
-### Step 6: Create Commit(s)
+### Step 5: Create Commit(s)
 Stage and commit changes:
 ```bash
 # For single commit
