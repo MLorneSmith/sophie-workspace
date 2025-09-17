@@ -1,9 +1,11 @@
 # Command Quality Detailed Analysis
+
 Generated: 2025-09-17
 
 ## Analysis by Command Category
 
 ### Command
+
 **Average Score**: 88.5/100 | **Commands**: 2
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -12,6 +14,7 @@ Generated: 2025-09-17
 | new | 87.0 | B | 5 | Add allowed-tools to frontmatter |
 
 ### Git
+
 **Average Score**: 81.6/100 | **Commands**: 4
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -22,6 +25,7 @@ Generated: 2025-09-17
 | push | 73.0 | C | 9 | Consider delegating to: typescript-expert, testing-expert, nodejs-expert |
 
 ### Spec
+
 **Average Score**: 79.4/100 | **Commands**: 4
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -32,6 +36,7 @@ Generated: 2025-09-17
 | execute | 78.0 | C | 7 | Consider delegating to: refactoring-expert, testing-expert, nodejs-expert |
 
 ### Feature
+
 **Average Score**: 78.4/100 | **Commands**: 9
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -47,6 +52,7 @@ Generated: 2025-09-17
 | update | 63.0 | D | 9 | Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations |
 
 ### Agent Mgmt
+
 **Average Score**: 77.5/100 | **Commands**: 2
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -55,6 +61,7 @@ Generated: 2025-09-17
 | create-subagent | 74.0 | C | 9 | Consider delegating to: typescript-expert, refactoring-expert, testing-expert |
 
 ### Root Commands
+
 **Average Score**: 76.4/100 | **Commands**: 18
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -79,6 +86,7 @@ Generated: 2025-09-17
 | promote-to-staging | 62.5 | D | 13 | Consider delegating to: typescript-expert, refactoring-expert, testing-expert |
 
 ### Update
+
 **Average Score**: 75.5/100 | **Commands**: 2
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -87,6 +95,7 @@ Generated: 2025-09-17
 | update-makerkit | 75.0 | C | 9 | None |
 
 ### Dev
+
 **Average Score**: 75.1/100 | **Commands**: 4
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -97,6 +106,7 @@ Generated: 2025-09-17
 | cleanup | 70.5 | C | 10 | Consider delegating to: refactoring-expert, testing-expert, nodejs-expert |
 
 ### Agents Md
+
 **Average Score**: 74.3/100 | **Commands**: 3
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -106,6 +116,7 @@ Generated: 2025-09-17
 | migration | 64.5 | D | 12 | Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations |
 
 ### Checkpoint
+
 **Average Score**: 72.5/100 | **Commands**: 3
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -115,6 +126,7 @@ Generated: 2025-09-17
 | restore | 67.0 | D | 11 | Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations |
 
 ### Context
+
 **Average Score**: 72.0/100 | **Commands**: 1
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -122,6 +134,7 @@ Generated: 2025-09-17
 | sync-context-inventory | 72.0 | C | 11 | Consider delegating to: typescript-expert, refactoring-expert, testing-expert |
 
 ### Config
+
 **Average Score**: 71.0/100 | **Commands**: 1
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -129,6 +142,7 @@ Generated: 2025-09-17
 | bash-timeout | 71.0 | C | 9 | Implement dynamic context loading pattern for adaptability |
 
 ### Testwriters
+
 **Average Score**: 70.9/100 | **Commands**: 4
 
 | Command | Score | Grade | Issues | Recommendations |
@@ -137,7 +151,6 @@ Generated: 2025-09-17
 | unit-test-writer | 73.0 | C | 9 | Consider delegating to: typescript-expert, refactoring-expert, testing-expert |
 | e2e-test-writer | 67.0 | D | 10 | Consider delegating to: typescript-expert, testing-expert, nodejs-expert |
 | test-discovery | 63.5 | D | 12 | Add allowed-tools to frontmatter |
-
 
 ## Score Distribution Analysis
 
@@ -154,6 +167,7 @@ Score Range | Count | Visual
 ## Category Score Breakdown
 
 ### Frontmatter & Metadata
+
 - **Maximum Points**: 15
 - **Average Score**: 12.6 (84%)
 - **Excellent (90%+)**: 11 commands
@@ -161,11 +175,13 @@ Score Range | Count | Visual
 - **Poor (<50%)**: 0 commands
 
 Top Issues in this category:
+
 - Should include MCP tools for this domain (37 commands)
 - Description should be action-oriented (12 commands)
 - Missing description in frontmatter (10 commands)
 
 ### PRIME Framework Compliance
+
 - **Maximum Points**: 30
 - **Average Score**: 26.9 (90%)
 - **Excellent (90%+)**: 42 commands
@@ -173,11 +189,13 @@ Top Issues in this category:
 - **Poor (<50%)**: 1 commands
 
 Top Issues in this category:
+
 - Weak EXPECTATIONS phase implementation (21 commands)
 - Weak ROLE phase implementation (14 commands)
 - Weak INPUTS phase implementation (9 commands)
 
 ### Action-First Design
+
 - **Maximum Points**: 15
 - **Average Score**: 10.0 (67%)
 - **Excellent (90%+)**: 0 commands
@@ -185,9 +203,11 @@ Top Issues in this category:
 - **Poor (<50%)**: 0 commands
 
 Top Issues in this category:
+
 - Most instructions don't start with action verbs (57 commands)
 
 ### Agent & MCP Integration
+
 - **Maximum Points**: 15
 - **Average Score**: 9.4 (62%)
 - **Excellent (90%+)**: 2 commands
@@ -195,11 +215,13 @@ Top Issues in this category:
 - **Poor (<50%)**: 2 commands
 
 Top Issues in this category:
+
 - Missing MCP tool permissions in frontmatter (46 commands)
 - Should delegate to specialized agents (36 commands)
 - Consider using: typescript-expert, refactoring-expert, testing-expert (20 commands)
 
 ### Pattern Implementation
+
 - **Maximum Points**: 15
 - **Average Score**: 8.2 (54%)
 - **Excellent (90%+)**: 8 commands
@@ -207,11 +229,13 @@ Top Issues in this category:
 - **Poor (<50%)**: 23 commands
 
 Top Issues in this category:
+
 - Missing Dynamic context loading pattern (41 commands)
 - Missing Validation checks pattern (26 commands)
 - Consider adding optional patterns for complex commands (21 commands)
 
 ### Documentation Quality
+
 - **Maximum Points**: 10
 - **Average Score**: 9.7 (97%)
 - **Excellent (90%+)**: 53 commands
@@ -219,6 +243,6 @@ Top Issues in this category:
 - **Poor (<50%)**: 1 commands
 
 Top Issues in this category:
+
 - Missing usage instructions (4 commands)
 - Missing examples (1 commands)
-

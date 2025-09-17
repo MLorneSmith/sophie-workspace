@@ -1,4 +1,5 @@
 # Analysis: /spec vs /feature Commands
+
 *Date: 2025-09-17*
 
 ## Executive Summary
@@ -10,6 +11,7 @@ After analyzing the command structure, I've identified significant overlap and c
 ## Origin Story
 
 ### Original CCPM Structure (automazeio/ccpm)
+
 ```
 /pm/prd-* → Product Requirements Documents
 /pm/epic-* → Epic management (features)
@@ -17,6 +19,7 @@ After analyzing the command structure, I've identified significant overlap and c
 ```
 
 ### Our Adaptation
+
 ```
 /pm/prd-* → /feature/spec (renamed & integrated)
 /pm/epic-* → /feature/* (renamed as feature workflow)
@@ -28,7 +31,9 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ## Current State Analysis
 
 ### Active Workflow (/feature/*)
+
 **Used by our CCPM process:**
+
 ```bash
 /feature/spec      # Create feature specification (replaces /pm/prd-new)
 /feature/plan      # Technical implementation plan
@@ -42,13 +47,16 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ```
 
 **Evidence of Active Use:**
+
 - Referenced in `.claude/context/systems/feature-implementation-workflow.md`
 - Referenced in `.claude/context/systems/pm/ccpm-system-overview.md`
 - Part of documented workflow: spec → plan → decompose → sync → start
 - Creates files in `.claude/implementations/[feature]/`
 
 ### Orphaned Commands (/spec/*)
+
 **Not part of CCPM workflow:**
+
 ```bash
 /spec/create     # Technical specification creation (duplicates /feature/spec)
 /spec/decompose  # Task breakdown (duplicates /feature/decompose)
@@ -57,6 +65,7 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ```
 
 **Evidence of Being Orphaned:**
+
 - NOT mentioned in feature-implementation-workflow.md
 - NOT mentioned in ccpm-system-overview.md
 - Creates files in different location (unclear where)
@@ -78,12 +87,14 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ### Command Purpose Comparison
 
 **`/feature/spec`:**
+
 - Part of integrated CCPM workflow
 - Creates `.claude/specs/[feature].md`
 - Feeds into plan → decompose → sync pipeline
 - Interactive discovery process
 
 **`/spec/create`:**
+
 - Standalone technical specification
 - "Enterprise-grade" focus
 - No clear integration with other commands
@@ -104,11 +115,13 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ## Recommendation: Consolidate & Simplify
 
 ### Phase 1: Immediate Actions
+
 1. **Deprecate `/spec/*` commands** - Add deprecation notices pointing to `/feature/*`
 2. **Document the decision** - Update CLAUDE.md with clear workflow
 3. **Preserve any unique features** - If `/spec/validate` has unique value, integrate into `/feature/spec`
 
 ### Phase 2: Migration (Week 1)
+
 ```bash
 # Redirect old commands to new ones
 /spec/create → /feature/spec
@@ -118,6 +131,7 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ```
 
 ### Phase 3: Cleanup (Week 2)
+
 1. Remove `/spec/*` command files after 30-day deprecation
 2. Update all documentation
 3. Clean up any orphaned specification files
@@ -127,7 +141,9 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ## Decision Matrix
 
 ### Keep /feature/* Only (RECOMMENDED)
+
 **Pros:**
+
 - ✅ Single, clear workflow
 - ✅ Integrated with GitHub
 - ✅ Documented and tested
@@ -135,15 +151,19 @@ NEW → /spec/* (appears to be standalone, disconnected)
 - ✅ Reduces command count by 4
 
 **Cons:**
+
 - ❌ May lose some "enterprise" features from /spec/create
 - ❌ Need migration path for any existing /spec usage
 
 ### Keep Both (NOT RECOMMENDED)
+
 **Pros:**
+
 - ✅ No breaking changes
 - ✅ Flexibility for different use cases
 
 **Cons:**
+
 - ❌ Confusing for users
 - ❌ Maintenance burden
 - ❌ Duplicated functionality
@@ -154,6 +174,7 @@ NEW → /spec/* (appears to be standalone, disconnected)
 ## Implementation Plan
 
 ### Immediate (Today)
+
 ```bash
 # 1. Add deprecation headers to /spec/* commands
 echo "# ⚠️ DEPRECATED: Use /feature/spec instead" >> .claude/commands/spec/create.md
@@ -165,12 +186,14 @@ node .claude/scripts/inventories/sync-command-inventory.cjs
 ```
 
 ### This Week
+
 1. Audit `/spec/validate` for unique features worth preserving
 2. Integrate any valuable validation into `/feature/spec`
 3. Create migration guide for users
 4. Update all workflow documentation
 
 ### Next Week
+
 1. Remove deprecated commands
 2. Final documentation update
 3. Announce simplification to team
@@ -190,6 +213,7 @@ The only exception might be `/spec/validate` if it provides unique validation no
 ## Quick Reference
 
 ### What We Use (KEEP)
+
 ```bash
 /feature/spec       # Start here
 /feature/plan       # Then plan
@@ -199,6 +223,7 @@ The only exception might be `/spec/validate` if it provides unique validation no
 ```
 
 ### What's Redundant (REMOVE)
+
 ```bash
 /spec/create       # Duplicate of /feature/spec
 /spec/decompose    # Duplicate of /feature/decompose

@@ -1,7 +1,9 @@
 # Command Quality Improvement Plan
+
 Generated: 2025-09-17
 
 ## Current State Summary
+
 - **Total Commands**: 57
 - **Average Score**: 76.8/100
 - **Target Score**: 85/100
@@ -10,6 +12,7 @@ Generated: 2025-09-17
 ## Prioritized Improvement Plan
 
 ### 🔴 Phase 1: Critical Fixes (Week 1)
+
 **Goal**: Bring all F-grade commands to at least D-grade
 
 | Command | Current | Target | Required Actions |
@@ -17,6 +20,7 @@ Generated: 2025-09-17
 | *No F-grade commands* | - | - | - |
 
 ### 🟠 Phase 2: High Priority (Week 2)
+
 **Goal**: Upgrade D-grade commands to C-grade
 
 | Command | Current | Target | Required Actions |
@@ -33,18 +37,22 @@ Generated: 2025-09-17
 | /testwriters/e2e-test-writer | 67/D | 70/C | Consider delegating to: typescript-expert, testing-expert, nodejs-expert; Consider MCP servers: context7, exa |
 
 ### 🟡 Phase 3: Optimization (Week 3-4)
+
 **Goal**: Bring C-grade commands to B-grade
 
 Focus Areas:
+
 1. **PRIME Compliance** - Add missing phases to 1 commands
 2. **Action-First Design** - Convert advisory language in 0 commands
 3. **Integration** - Add agent delegation to 36 commands
 4. **Documentation** - Add examples to 1 commands
 
 ### 🟢 Phase 4: Excellence (Month 2)
+
 **Goal**: Achieve 85+ average score
 
 Strategic Improvements:
+
 - **Implement dynamic context loading** (41 commands) - Est. +5 points average
 - **Add MCP server integration** (46 commands) - Est. +5 points average
 - **Add validation patterns** (26 commands) - Est. +5 points average
@@ -61,17 +69,20 @@ Strategic Improvements:
 ## Resource Requirements
 
 ### Time Investment
+
 - **Phase 1**: ~0 hours (0 commands × 2 hours)
 - **Phase 2**: ~15 hours
 - **Phase 3**: ~15 hours
 - **Phase 4**: ~20 hours for strategic improvements
 
 ### Tools & Resources
+
 - PRIME Framework Template: `.claude/templates/command-template.md`
 - Command Creator: `/command/new`
 - This evaluation system: `.claude/scripts/commands/command-quality-evaluator.cjs`
 
 ## Success Criteria
+
 ✅ No F-grade commands
 ✅ Average score ≥ 85
 ✅ 80% PRIME compliance

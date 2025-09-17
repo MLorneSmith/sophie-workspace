@@ -1,4 +1,5 @@
 # Command Reorganization Proposal
+
 *Date: 2025-09-17*
 
 ## Current Problem
@@ -63,6 +64,7 @@ Make the workflow order crystal clear with numbered prefixes:
 ```
 
 **Benefits:**
+
 - ✅ Order is immediately obvious
 - ✅ No need to remember sequence
 - ✅ Keeps existing `/feature` namespace
@@ -70,6 +72,7 @@ Make the workflow order crystal clear with numbered prefixes:
 - ✅ Users can see workflow at a glance
 
 **Usage becomes intuitive:**
+
 ```bash
 /feature/1-spec my-feature
 /feature/2-plan my-feature
@@ -102,11 +105,13 @@ Separate by entity type like the original:
 ```
 
 **Benefits:**
+
 - ✅ Clear entity separation
 - ✅ Similar to original CCPM
 - ✅ Each namespace has focused purpose
 
 **Drawbacks:**
+
 - ❌ More namespaces to remember
 - ❌ Workflow order not obvious
 - ❌ More code changes required
@@ -129,10 +134,12 @@ Use action verbs that imply order:
 ```
 
 **Benefits:**
+
 - ✅ Natural language feel
 - ✅ Each command is self-explanatory
 
 **Drawbacks:**
+
 - ❌ Order still not obvious
 - ❌ Breaks existing muscle memory
 - ❌ Major refactoring needed
@@ -144,6 +151,7 @@ Use action verbs that imply order:
 ### Go with Option 1: Numbered Sequence
 
 **Phase 1: Add Numbers (Immediate)**
+
 ```bash
 # Simple rename in .claude/commands/feature/
 mv spec.md 1-spec.md
@@ -158,11 +166,13 @@ mv update.md 4-update.md
 ```
 
 **Phase 2: Update Commands (30 minutes)**
+
 - Update frontmatter in each file
 - Keep backward compatibility aliases
 - Update command inventory
 
 **Phase 3: Documentation (15 minutes)**
+
 - Update CLAUDE.md
 - Update workflow documentation
 - Add quick reference card
@@ -205,6 +215,7 @@ If you prefer minimal disruption, just add a "workflow helper":
 ```
 
 This command would output:
+
 ```
 Feature Workflow Steps:
 1. /feature/spec <name>      - Define what to build
