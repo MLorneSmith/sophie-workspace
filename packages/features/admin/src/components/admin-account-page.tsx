@@ -46,18 +46,18 @@ export function AdminAccountPage(props: {
 async function PersonalAccountPage(props: { account: Account }) {
   const adminClient = getSupabaseServerAdminClient();
 
-  const { data, error } = await adminClient.auth.admin.getUserById(
-    props.account.id,
-  );
+  const [memberships, userResult] = await Promise.all([
+    getMemberships(props.account.id),
+    adminClient.auth.admin.getUserById(props.account.id),
+  ]);
 
-  if (!data || error) {
-    throw new Error(`User not found`);
+  if (userResult.error) {
+    throw userResult.error;
   }
 
-  const memberships = await getMemberships(props.account.id);
-
   const isBanned =
-    'banned_until' in data.user && data.user.banned_until !== 'none';
+    'banned_until' in userResult.data.user &&
+    userResult.data.user.banned_until !== 'none';
 
   return (
     <>

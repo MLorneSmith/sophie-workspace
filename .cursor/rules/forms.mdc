@@ -3,6 +3,7 @@ description: Writing Forms with Shadcn UI, Server Actions, Zod
 globs: apps/**/*.tsx,packages/**/*.tsx
 alwaysApply: false
 ---
+
 # Forms
 
 - Use React Hook Form for form validation and submission.
@@ -10,6 +11,7 @@ alwaysApply: false
 - Use the `zodResolver` function to resolve the Zod schema to the form.
 - Use Server Actions [server-actions.mdc](mdc:.cursor/rules/server-actions.mdc) for server-side code handling
 - Use Sonner for writing toasters for UI feedback
+- Never add generics to `useForm`, use Zod resolver to infer types instead
 
 Follow the example below to create all forms:
 
@@ -35,7 +37,9 @@ Server Actions [server-actions.mdc](mdc:.cursor/rules/server-actions.mdc) can he
 'use server';
 
 import { z } from 'zod';
+
 import { enhanceAction } from '@kit/next/actions';
+
 import { CreateNoteSchema } from '../schema/create-note.schema';
 
 export const createNoteAction = enhanceAction(

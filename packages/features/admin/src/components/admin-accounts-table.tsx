@@ -168,6 +168,7 @@ function getColumns(): ColumnDef<Account>[] {
       cell: ({ row }) => {
         return (
           <Link
+            prefetch={false}
             className={'hover:underline'}
             href={`/admin/accounts/${row.original.id}`}
           >

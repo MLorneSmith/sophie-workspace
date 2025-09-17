@@ -15,7 +15,7 @@ class UserService {
 }
 
 export function createUserService() {
-    return new UserService();
+  return new UserService();
 }
 ```
 

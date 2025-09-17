@@ -84,7 +84,9 @@ test.describe('Team Invitation with MFA Flow', () => {
     await invitations.acceptInvitation();
 
     // Should be redirected to the team dashboard
-    await page.waitForURL(`/home/${teamSlug}`);
+    await page.waitForURL(`/home/${teamSlug}`, {
+      timeout: 5_000,
+    });
 
     // Step 4: Verify membership was successful
     // Open account selector to verify team is available

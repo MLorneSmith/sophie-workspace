@@ -47,9 +47,7 @@ export const banUserAction = adminAction(
 
       revalidateAdmin();
 
-      return {
-        success: true,
-      };
+      return redirect(`/admin/accounts/${userId}`);
     },
     {
       schema: BanUserSchema,
@@ -83,9 +81,7 @@ export const reactivateUserAction = adminAction(
 
       logger.info({ userId }, `Super Admin has successfully reactivated user`);
 
-      return {
-        success: true,
-      };
+      return redirect(`/admin/accounts/${userId}`);
     },
     {
       schema: ReactivateUserSchema,

@@ -1,5 +1,4 @@
 import { Page, expect } from '@playwright/test';
-import { TOTP } from 'totp-generator';
 
 import { Mailbox } from '../utils/mailbox';
 
@@ -50,7 +49,9 @@ export class AuthPageObject {
   async submitMFAVerification(key: string) {
     const period = 30;
 
-    const { otp } = TOTP.generate(key, {
+    const { TOTP } = await import('totp-generator');
+
+    const { otp } = await TOTP.generate(key, {
       period,
     });
 

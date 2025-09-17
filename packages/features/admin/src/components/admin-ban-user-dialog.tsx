@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from 'react';
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -77,11 +79,9 @@ function BanUserForm(props: { userId: string }) {
         onSubmit={form.handleSubmit((data) => {
           startTransition(async () => {
             try {
-              const result = await banUserAction(data);
-
-              setError(!result.success);
-            } catch {
-              setError(true);
+              await banUserAction(data);
+            } catch (error) {
+              setError(!isRedirectError(error));
             }
           });
         })}

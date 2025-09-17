@@ -59,13 +59,13 @@ export class InvitationsPageObject {
   navigateToMembers() {
     return expect(async () => {
       await this.page
-          .locator('a', {
-            hasText: 'Members',
-          })
-          .click();
+        .locator('a', {
+          hasText: 'Members',
+        })
+        .click();
 
       await this.page.waitForURL('**/home/*/members');
-    }).toPass()
+    }).toPass();
   }
 
   async openInviteForm() {
@@ -127,6 +127,8 @@ export class InvitationsPageObject {
     });
 
     await Promise.all([click, response]);
+
+    console.log('Invitation accepted');
   }
 
   private getInviteForm() {

@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from 'react';
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -76,11 +78,9 @@ function ReactivateUserForm(props: { userId: string }) {
         onSubmit={form.handleSubmit((data) => {
           startTransition(async () => {
             try {
-              const result = await reactivateUserAction(data);
-
-              setError(!result.success);
-            } catch {
-              setError(true);
+              await reactivateUserAction(data);
+            } catch (error) {
+              setError(!isRedirectError(error));
             }
           });
         })}

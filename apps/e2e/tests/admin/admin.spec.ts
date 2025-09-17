@@ -130,7 +130,7 @@ test.describe('Admin', () => {
         ),
       ]);
 
-      await expect(page.getByText('Banned')).toBeVisible();
+      await expect(page.getByText('Banned').first()).toBeVisible();
 
       await page.context().clearCookies();
 
@@ -156,7 +156,7 @@ test.describe('Admin', () => {
       await page.fill('[placeholder="Type CONFIRM to confirm"]', 'CONFIRM');
       await page.getByRole('button', { name: 'Ban User' }).click();
 
-      await expect(page.getByText('Banned')).toBeVisible();
+      await expect(page.getByText('Banned').first()).toBeVisible();
 
       // Now reactivate
       await page.getByTestId('admin-reactivate-account-button').click();
@@ -199,6 +199,7 @@ test.describe('Admin', () => {
 
     test('impersonate user flow', async ({ page }) => {
       await page.getByTestId('admin-impersonate-button').click();
+
       await expect(
         page.getByRole('heading', { name: 'Impersonate User' }),
       ).toBeVisible();
@@ -394,14 +395,15 @@ async function filterAccounts(page: Page, email: string) {
 }
 
 async function selectAccount(page: Page, email: string) {
-  const link = page
-    .locator('tr', { hasText: email.split('@')[0] })
-    .locator('a');
+  await expect(async () => {
+    const link = page
+      .locator('tr', { hasText: email.split('@')[0] })
+      .locator('a');
 
-  await expect(link).toBeVisible();
+    await expect(link).toBeVisible();
 
-  await link.click();
+    await link.click();
 
-  await page.waitForURL(new RegExp(`/admin/accounts/[a-z0-9-]+`));
-  await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle');
+  }).toPass();
 }
