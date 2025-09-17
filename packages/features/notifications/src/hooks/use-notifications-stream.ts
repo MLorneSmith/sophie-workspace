@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
-
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
 type Notification = {
@@ -20,32 +18,27 @@ export function useNotificationsStream(params: {
 }) {
   const client = useSupabase();
 
-  const { data: subscription } = useQuery({
-    enabled: params.enabled,
-    queryKey: ['realtime-notifications', ...params.accountIds],
-    queryFn: () => {
-      const channel = client.channel('notifications-channel');
-
-      return channel
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            filter: `account_id=in.(${params.accountIds.join(', ')})`,
-            table: 'notifications',
-          },
-          (payload) => {
-            params.onNotifications([payload.new as Notification]);
-          },
-        )
-        .subscribe();
-    },
-  });
-
   useEffect(() => {
+    const channel = client.channel('notifications-channel');
+
+    const subscription = channel
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          filter: `account_id=in.(${params.accountIds.join(', ')})`,
+          table: 'notifications',
+        },
+        (payload) => {
+          console.log('payload', payload);
+          params.onNotifications([payload.new as Notification]);
+        },
+      )
+      .subscribe();
+
     return () => {
       void subscription?.unsubscribe();
     };
-  }, [subscription]);
+  }, [client, params]);
 }
