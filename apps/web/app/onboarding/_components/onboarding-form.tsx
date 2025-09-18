@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { analytics } from "@kit/analytics";
+import { createClientLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import { Checkbox } from "@kit/ui/checkbox";
 import {
@@ -36,33 +37,8 @@ import { z } from "zod";
 import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
 
-// Client-safe logger wrapper for development logging
-const logger = {
-	info: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.info(...args);
-		}
-	},
-	error: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.error(...args);
-		}
-	},
-	warn: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.warn(...args);
-		}
-	},
-	debug: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.debug(...args);
-		}
-	},
-};
+// Client-side logger for this component
+const { getLogger } = createClientLogger("ONBOARDING-FORM");
 
 // Create the client-side schema using z.object directly to avoid memory issues
 const FormSchema = z.object(FormSchemaShape);
@@ -181,7 +157,7 @@ export function OnboardingForm() {
 					throw new Error(result.message || "Failed to submit form");
 				}
 			} catch (error) {
-				logger.error("Onboarding form submission failed", { error });
+				getLogger().error("Onboarding form submission failed", { error });
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
 				});
@@ -215,7 +191,9 @@ export function OnboardingForm() {
 				const parsedData = JSON.parse(savedData);
 				form.reset(parsedData);
 			} catch (error) {
-				logger.error("Failed to parse saved onboarding form data", { error });
+				getLogger().error("Failed to parse saved onboarding form data", {
+					error,
+				});
 			}
 		}
 	}, [form.reset]);
@@ -777,7 +755,7 @@ function CompleteStep() {
 			const isValid = await form.trigger();
 			if (!isValid) {
 				const errors = form.formState.errors;
-				logger.error("Form validation failed on final submission", {
+				getLogger().error("Form validation failed on final submission", {
 					formData: finalFormData,
 					errors: errors,
 					formState: form.formState,
@@ -787,10 +765,10 @@ function CompleteStep() {
 			}
 
 			const result = await submitOnboardingFormAction(finalFormData);
-			logger.info("Onboarding submission result", { result });
+			getLogger().info("Onboarding submission result", { result });
 
 			if (result.success && result.isComplete === true) {
-				logger.info("Onboarding successful, redirecting to home");
+				getLogger().info("Onboarding successful, redirecting to home");
 
 				// Clear local storage to ensure clean state
 				localStorage.removeItem(STORAGE_KEY);
@@ -804,14 +782,14 @@ function CompleteStep() {
 					window.location.href = `/home?onboarded=${timestamp}`;
 				}
 			} else {
-				logger.error("Onboarding completion failed", {
+				getLogger().error("Onboarding completion failed", {
 					result,
 					formData: finalFormData,
 				});
 				alert(`Failed to complete onboarding: ${result.message}`);
 			}
 		} catch (error) {
-			logger.error("Error during onboarding completion", { error });
+			getLogger().error("Error during onboarding completion", { error });
 			alert("An error occurred while submitting the form. Please try again.");
 		} finally {
 			setIsSubmitting(false);

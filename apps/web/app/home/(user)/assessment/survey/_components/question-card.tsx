@@ -1,6 +1,7 @@
 "use client";
 
 import type { SurveyQuestion } from "@kit/cms-types";
+import { createClientLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
@@ -9,21 +10,8 @@ import { useState } from "react";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
 
-// Client-safe logger wrapper
-const logger = {
-	info: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.info(...args);
-		}
-	},
-	error: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.error(...args);
-		}
-	},
-};
+// Client-side logger for this component
+const { getLogger } = createClientLogger("SURVEY-QUESTION-CARD");
 
 type QuestionCardProps = {
 	question: SurveyQuestion;
@@ -65,11 +53,11 @@ export function QuestionCard({
 	const _handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
-			logger.info("Selected option:", {
+			getLogger().info("Selected option", {
 				data: selectedOption,
 				questionId: question.id,
 			});
-			logger.info("Available options:", {
+			getLogger().info("Available options", {
 				data: question.options,
 				questionId: question.id,
 			});
@@ -79,12 +67,12 @@ export function QuestionCard({
 			if (option) {
 				onAnswer(question.id, option.option, 0);
 			} else {
-				logger.error("Selected option not found:", {
+				getLogger().error("Selected option not found", {
 					selectedOption,
 					questionId: question.id,
 					questionType: question.type,
 				});
-				logger.error("Question options:", {
+				getLogger().error("Question options", {
 					options: question.options,
 					questionId: question.id,
 				});

@@ -155,6 +155,22 @@ async function adminGetUserNotes(userId: string) {
 
 **Rule of thumb**: If using standard Supabase client, trust RLS. If using admin client, validate everything manually.
 
+### Database Performance Guidelines 🚀
+
+**CRITICAL**: Always use performant RLS patterns to avoid query performance degradation.
+
+```sql
+-- ❌ AVOID: Direct auth function calls (causes re-evaluation per row)
+user_id = auth.uid()
+
+-- ✅ USE: Subquery wrapper (evaluates once per query)
+user_id = (select auth.uid())
+```
+
+**Performance Impact**: The subquery pattern can improve query performance by 10-100x on large datasets.
+
+**Reference**: See `/apps/web/supabase/CLAUDE.md` for complete RLS performance guidelines.
+
 ## Internationalization
 
 Always use `Trans` component from `@kit/ui/trans`:
