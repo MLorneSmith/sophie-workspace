@@ -11,8 +11,10 @@ The thinking-level.sh hook was configured to return level 0 (no thinking) for `/
 ## Root Cause Analysis
 
 ### 1. Hook Data Flow Issue
+
 - **Expected:** Hook receives raw prompt text from stdin
 - **Actual:** Claude Code passes JSON data via stdin with structure:
+
 ```json
 {
   "prompt": "/codecheck",
@@ -23,7 +25,9 @@ The thinking-level.sh hook was configured to return level 0 (no thinking) for `/
 ```
 
 ### 2. Input Processing Bug
+
 The original hook code read stdin directly:
+
 ```bash
 prompt=$(cat)  # This got the entire JSON string, not just the prompt
 ```
@@ -31,6 +35,7 @@ prompt=$(cat)  # This got the entire JSON string, not just the prompt
 This caused the complexity detection to fail because it was analyzing JSON structure instead of the actual user command.
 
 ### 3. Command Processing Timing
+
 - **Confirmed:** UserPromptSubmit hooks are called BEFORE command name resolution
 - **Confirmed:** Claude Code does NOT transform `/codecheck` to `/core:codecheck` before calling hooks
 - **Confirmed:** Hooks receive exactly what the user typed
@@ -38,6 +43,7 @@ This caused the complexity detection to fail because it was analyzing JSON struc
 ## Solution Implementation
 
 ### Fixed Input Processing
+
 ```bash
 # Read JSON input from stdin
 input=$(cat)
@@ -61,7 +67,9 @@ fi
 ```
 
 ### Output Format Correction
+
 Changed from complex JSON response to simple text output:
+
 ```bash
 # Before: Complex JSON output
 cat <<EOF
@@ -92,7 +100,9 @@ All test scenarios now pass:
 ## Debugging Tools Created
 
 ### 1. Debug Input Logger
+
 `/.claude/hooks/debug-hook-input.sh` - Captures actual hook input for inspection
+
 ```bash
 # Usage: Temporarily replace your hook with this to capture input format
 bash .claude/hooks/debug-hook-input.sh
@@ -100,7 +110,9 @@ bash .claude/hooks/debug-hook-input.sh
 ```
 
 ### 2. Comprehensive Test Suite
+
 `/.claude/hooks/test-hook-scenarios.sh` - Validates hook behavior across scenarios
+
 ```bash
 # Run all test scenarios
 bash .claude/hooks/test-hook-scenarios.sh
@@ -109,6 +121,7 @@ bash .claude/hooks/test-hook-scenarios.sh
 ## Best Practices for Claude Code Hooks
 
 ### 1. Always Parse JSON Input
+
 ```bash
 # Correct approach
 input=$(cat)
@@ -119,6 +132,7 @@ prompt=$(cat)  # Gets raw JSON, not the prompt field
 ```
 
 ### 2. Provide Fallback for Non-JSON
+
 ```bash
 # Handle both JSON and raw text input
 if [ -z "$prompt" ] || [ "$prompt" = "null" ]; then
@@ -127,6 +141,7 @@ fi
 ```
 
 ### 3. Error Handling
+
 ```bash
 # Use 2>/dev/null to suppress jq errors
 prompt=$(echo "$input" | jq -r '.prompt // empty' 2>/dev/null)
@@ -138,6 +153,7 @@ fi
 ```
 
 ### 4. Output Format
+
 - **UserPromptSubmit:** stdout becomes additional context for Claude
 - **Other hooks:** stdout shown to user in transcript mode
 - **stderr:** Error messages (exit code 2 = blocking error)
@@ -160,6 +176,7 @@ fi
 ## Status: RESOLVED
 
 The thinking-level.sh hook now correctly:
+
 - ✅ Parses JSON input from Claude Code
 - ✅ Extracts the prompt field properly
 - ✅ Respects `/codecheck: 0` configuration
