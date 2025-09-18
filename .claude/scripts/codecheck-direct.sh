@@ -4,6 +4,11 @@
 
 set -euo pipefail
 
+# Disable hooks during codecheck to prevent interference
+export CLAUDE_HOOKS_DISABLED=true
+export CLAUDE_CODECHECK_ACTIVE="/tmp/.claude_codecheck_active_$$"
+touch "$CLAUDE_CODECHECK_ACTIVE"
+
 # Initialize status tracking
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 CODECHECK_STATUS_FILE="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
@@ -26,6 +31,9 @@ echo "✅ Status file initialized: $CODECHECK_STATUS_FILE"
 # Set up cleanup trap
 cleanup() {
     local exit_code=$?
+    # Remove codecheck active marker
+    [ -f "$CLAUDE_CODECHECK_ACTIVE" ] && rm -f "$CLAUDE_CODECHECK_ACTIVE"
+
     if [ $exit_code -ne 0 ] && [ -f "$CODECHECK_STATUS_FILE" ]; then
         if grep -q "running" "$CODECHECK_STATUS_FILE"; then
             if [ -f "$STATUS_UPDATE_SCRIPT" ]; then

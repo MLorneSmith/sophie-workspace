@@ -5,6 +5,11 @@
 
 set -euo pipefail
 
+# Check if hooks are globally disabled (e.g., during codecheck)
+if [ "${CLAUDE_HOOKS_DISABLED:-}" = "true" ] || [ -f "${CLAUDE_CODECHECK_ACTIVE:-/dev/null}" ]; then
+    exit 0
+fi
+
 # Get payload from stdin
 PAYLOAD=$(cat)
 
