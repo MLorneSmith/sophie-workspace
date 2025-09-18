@@ -1,3 +1,4 @@
+import path from "node:path";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineProject } from "vitest/config";
@@ -14,6 +15,12 @@ export default defineProject({
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
 		...(Array.isArray(tsconfigPlugin) ? tsconfigPlugin : [tsconfigPlugin]),
 	],
+	resolve: {
+		alias: {
+			// Mock Next.js modules for testing
+			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+		},
+	},
 	esbuild: {
 		// Configure JSX transformation
 		jsx: "automatic",
