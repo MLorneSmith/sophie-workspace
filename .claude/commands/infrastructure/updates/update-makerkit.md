@@ -63,6 +63,23 @@ fi
 CURRENT_BRANCH=$(git branch --show-current)
 echo "📍 Current branch: $CURRENT_BRANCH"
 
+# CRITICAL: Verify we're on the intended branch for updates
+TARGET_BRANCH="${TARGET_BRANCH:-dev}"  # Default to dev, can be overridden
+if [ "$CURRENT_BRANCH" != "$TARGET_BRANCH" ]; then
+  echo "⚠️ Warning: Currently on branch '$CURRENT_BRANCH', not '$TARGET_BRANCH'"
+  echo "The upstream pull will merge into the current branch."
+  read -p "Continue on '$CURRENT_BRANCH'? (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "ℹ️ Switching to $TARGET_BRANCH branch..."
+    git checkout "$TARGET_BRANCH" || {
+      echo "❌ Failed to switch to $TARGET_BRANCH"
+      exit 1
+    }
+    CURRENT_BRANCH="$TARGET_BRANCH"
+  fi
+fi
+
 # Verify repository health
 git fsck --no-progress 2>&1 | grep -q "error" && {
   echo "❌ Repository integrity check failed"
@@ -107,27 +124,32 @@ fi
 Configure and analyze upstream changes:
 
 ```bash
-# Add upstream remote if not exists
-git remote get-url makerkit &>/dev/null || {
-  git remote add makerkit https://github.com/makerkit/next-supabase-saas-kit-turbo.git
-  echo "✅ Added Makerkit upstream remote"
+# Verify upstream remote configuration
+# Expected configuration:
+# upstream   https://MLorneSmith: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@github.com/makerkit/next-supabase-saas-kit-turbo.git
+git remote get-url upstream &>/dev/null || {
+  echo "❌ Upstream remote not configured. Please run:"
+  echo "git remote add upstream https://MLorneSmith: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@github.com/makerkit/next-supabase-saas-kit-turbo.git"
+  exit 1
 }
+
+echo "✅ Upstream remote verified"
 
 # Fetch latest changes
 echo "📥 Fetching upstream changes..."
-git fetch makerkit --depth=50
+git fetch upstream
 
-# Analyze incoming changes
-COMMIT_COUNT=$(git rev-list --count HEAD..makerkit/main)
+# Analyze incoming changes before pulling
+COMMIT_COUNT=$(git rev-list --count HEAD..upstream/main 2>/dev/null || echo "0")
 echo "📊 Found $COMMIT_COUNT new commits from upstream"
 
 # Generate change summary
 echo "📋 Change Summary:"
-git log --oneline HEAD..makerkit/main --max-count=10
+git log --oneline HEAD..upstream/main --max-count=10 2>/dev/null || echo "No new commits"
 
 # Identify affected areas
 echo "📁 Files to be updated:"
-git diff --name-only HEAD..makerkit/main | head -20
+git diff --name-only HEAD..upstream/main 2>/dev/null | head -20 || echo "No file changes detected"
 ```
 </upstream>
 
@@ -137,7 +159,7 @@ Load relevant documentation based on changes:
 
 ```bash
 # Identify change categories
-CHANGED_FILES=$(git diff --name-only HEAD..makerkit/main)
+CHANGED_FILES=$(git diff --name-only HEAD..upstream/main)
 CHANGE_CATEGORIES=""
 
 echo "$CHANGED_FILES" | grep -q "packages/" && CHANGE_CATEGORIES="$CHANGE_CATEGORIES packages"
@@ -153,56 +175,67 @@ fi
 ```
 </context_loading>
 
-## 5. Selective Merge Execution
+## 5. Pull Upstream Changes (Makerkit Recommended Approach)
 <merge>
-Apply updates based on safety classification:
+Pull and merge upstream changes using Makerkit's recommended approach:
 
 ```bash
 # Initialize merge report
 MERGE_REPORT="/tmp/makerkit-update-report-$(date +%Y%m%d).md"
 echo "# Makerkit Update Report - $(date +%Y-%m-%d)" > "$MERGE_REPORT"
 echo "## Summary" >> "$MERGE_REPORT"
+echo "## Branch: $CURRENT_BRANCH" >> "$MERGE_REPORT"
 
-# Categorize files for merge
-AUTO_MERGE_FILES=""
-REVIEW_REQUIRED_FILES=""
-SKIP_FILES=""
+# Store list of changed files before pull
+CHANGED_FILES=$(git diff --name-only HEAD..upstream/main 2>/dev/null)
 
-for file in $(git diff --name-only HEAD..makerkit/main); do
-  # Classification logic
+# Categorize files that will be updated
+ENVIRONMENT_FILES=""
+CONFIG_FILES=""
+COMPONENT_FILES=""
+OTHER_FILES=""
+
+for file in $CHANGED_FILES; do
+  # Categorize for reporting
   if [[ "$file" =~ ^(\.env|\.env\.) ]]; then
-    SKIP_FILES="$SKIP_FILES $file"
+    ENVIRONMENT_FILES="$ENVIRONMENT_FILES $file"
   elif [[ "$file" =~ ^(package\.json|pnpm-lock\.yaml|\.eslintrc|tsconfig) ]]; then
-    AUTO_MERGE_FILES="$AUTO_MERGE_FILES $file"
+    CONFIG_FILES="$CONFIG_FILES $file"
   elif [[ "$file" =~ ^(apps/web/app/\(app\)|packages/.*/src/.*\.tsx?) ]]; then
-    REVIEW_REQUIRED_FILES="$REVIEW_REQUIRED_FILES $file"
+    COMPONENT_FILES="$COMPONENT_FILES $file"
   else
-    AUTO_MERGE_FILES="$AUTO_MERGE_FILES $file"
+    OTHER_FILES="$OTHER_FILES $file"
   fi
 done
 
-# Execute auto-merge for safe files
-if [ ! -z "$AUTO_MERGE_FILES" ]; then
-  echo "🔄 Auto-merging safe files..."
-  for file in $AUTO_MERGE_FILES; do
-    if [ "$DRY_RUN" = "true" ]; then
-      echo "  [DRY RUN] Would update: $file"
-    else
-      git checkout makerkit/main -- "$file" 2>/dev/null && {
-        echo "  ✅ Updated: $file"
-        echo "- ✅ $file" >> "$MERGE_REPORT"
-      }
-    fi
-  done
-fi
-
-# Handle files requiring review
-if [ ! -z "$REVIEW_REQUIRED_FILES" ]; then
-  echo "⚠️ Files requiring manual review:"
-  for file in $REVIEW_REQUIRED_FILES; do
+# Execute pull with merge strategy
+if [ "$DRY_RUN" = "true" ]; then
+  echo "🔍 [DRY RUN] Would execute: git pull upstream main"
+  echo "Files that would be updated:"
+  echo "$CHANGED_FILES" | while read -r file; do
     echo "  - $file"
-    echo "- ⚠️ [REVIEW] $file" >> "$MERGE_REPORT"
   done
+else
+  echo "🔄 Pulling upstream changes from main branch..."
+
+  # Use git pull with merge strategy (Makerkit recommended)
+  git pull upstream main --no-rebase 2>&1 | tee /tmp/pull-output.log
+  PULL_EXIT=$?
+
+  if [ $PULL_EXIT -eq 0 ]; then
+    echo "✅ Successfully pulled upstream changes"
+    echo "## Pull Status: Success" >> "$MERGE_REPORT"
+  else
+    echo "⚠️ Pull completed with conflicts or warnings"
+    echo "## Pull Status: Conflicts detected" >> "$MERGE_REPORT"
+  fi
+
+  # Document the changes
+  echo "## Changed Files" >> "$MERGE_REPORT"
+  [ ! -z "$CONFIG_FILES" ] && echo "### Configuration Files" >> "$MERGE_REPORT" && for f in $CONFIG_FILES; do echo "- $f" >> "$MERGE_REPORT"; done
+  [ ! -z "$COMPONENT_FILES" ] && echo "### Component Files" >> "$MERGE_REPORT" && for f in $COMPONENT_FILES; do echo "- $f" >> "$MERGE_REPORT"; done
+  [ ! -z "$OTHER_FILES" ] && echo "### Other Files" >> "$MERGE_REPORT" && for f in $OTHER_FILES; do echo "- $f" >> "$MERGE_REPORT"; done
+  [ ! -z "$ENVIRONMENT_FILES" ] && echo "### ⚠️ Environment Files (Review Required)" >> "$MERGE_REPORT" && for f in $ENVIRONMENT_FILES; do echo "- $f" >> "$MERGE_REPORT"; done
 fi
 ```
 </merge>
@@ -360,7 +393,7 @@ handle_error() {
     2)
       echo "🔧 Network error, retrying fetch..."
       sleep 2
-      git fetch makerkit --depth=50
+      git fetch upstream
       ;;
     *)
       echo "⚠️ Automatic recovery not available for this error"
@@ -399,7 +432,7 @@ Success is measured by:
 <help>
 🔄 **Makerkit Update Manager**
 
-Safely synchronize your project with the latest Makerkit framework updates.
+Safely synchronize your project with the latest Makerkit framework updates using the official `git pull upstream main` approach.
 
 **Usage:**
 - `/update:makerkit` - Standard update with all safety checks
@@ -411,14 +444,21 @@ Safely synchronize your project with the latest Makerkit framework updates.
 1. Pre-flight validation checks
 2. Backup branch creation
 3. Fetch and analyze upstream changes
-4. Selective merge with conflict resolution
+4. Pull upstream main branch (Makerkit recommended approach)
 5. Comprehensive validation suite
 6. Generate detailed update report
+
+**Pre-configured Remote:**
+This project already has the upstream remote configured with authentication:
+```
+upstream   https://MLorneSmith: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@github.com/makerkit/next-supabase-saas-kit-turbo.git
+```
 
 **Requirements:**
 - Clean git working directory
 - Network access to GitHub
 - Valid pnpm installation
+- Upstream remote configured (already set up)
 
 Your custom code is always protected during updates!
 </help>
