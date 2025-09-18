@@ -111,16 +111,25 @@ run_lint() {
         echo "warnings_found: $lint_warnings" >> "$WORK_DIR/lint_result.yaml"
         echo "❌ Lint issues found - Errors: $lint_errors, Warnings: $lint_warnings"
         
-        # Try auto-fix
-        echo "🔧 Attempting auto-fix..."
-        if pnpm lint:fix > "$WORK_DIR/lint_fix_output.log" 2>&1; then
-            echo "✅ Auto-fix applied"
-            # Re-check
-            if pnpm lint > "$WORK_DIR/lint_recheck.log" 2>&1; then
-                sed -i "s/status: failed/status: success/" "$WORK_DIR/lint_result.yaml"
-                echo "✅ All lint issues resolved"
-                return 0
+        # Smart auto-fix (git-aware)
+        echo "🔧 Checking for auto-fix eligibility..."
+        local modified_files=$(git diff --name-only)
+
+        if [ -z "$modified_files" ]; then
+            echo "🔧 No modifications detected - applying auto-fix"
+            if pnpm lint:fix > "$WORK_DIR/lint_fix_output.log" 2>&1; then
+                echo "✅ Auto-fix applied"
+                # Re-check
+                if pnpm lint > "$WORK_DIR/lint_recheck.log" 2>&1; then
+                    sed -i "s/status: failed/status: success/" "$WORK_DIR/lint_result.yaml"
+                    echo "✅ All lint issues resolved"
+                    return 0
+                fi
             fi
+        else
+            echo "⚠️ Modified files detected - skipping auto-fix to preserve changes:"
+            echo "$modified_files" | sed 's/^/   /'
+            echo "💡 Commit or stash changes first to enable auto-fixing"
         fi
         return 1
     fi
@@ -138,17 +147,29 @@ run_format() {
         echo "✅ All files properly formatted"
         return 0
     else
-        echo "🔧 Applying formatting..."
-        # Apply formatting fix
-        if pnpm biome format --write . > "$output_file" 2>&1; then
-            echo "status: success" > "$WORK_DIR/format_result.yaml"
-            echo "files_formatted: 1" >> "$WORK_DIR/format_result.yaml"
-            echo "✅ Formatting applied"
-            return 0
+        # Smart formatting (git-aware)
+        echo "🔧 Checking for format auto-fix eligibility..."
+        local modified_files=$(git diff --name-only)
+
+        if [ -z "$modified_files" ]; then
+            echo "🔧 No modifications detected - applying formatting"
+            if pnpm biome format --write . > "$output_file" 2>&1; then
+                echo "status: success" > "$WORK_DIR/format_result.yaml"
+                echo "files_formatted: 1" >> "$WORK_DIR/format_result.yaml"
+                echo "✅ Formatting applied"
+                return 0
+            else
+                echo "status: failed" > "$WORK_DIR/format_result.yaml"
+                echo "files_formatted: 0" >> "$WORK_DIR/format_result.yaml"
+                echo "❌ Format check failed"
+                return 1
+            fi
         else
+            echo "⚠️ Modified files detected - skipping format auto-fix to preserve changes:"
+            echo "$modified_files" | sed 's/^/   /'
+            echo "💡 Commit or stash changes first to enable auto-formatting"
             echo "status: failed" > "$WORK_DIR/format_result.yaml"
             echo "files_formatted: 0" >> "$WORK_DIR/format_result.yaml"
-            echo "❌ Format check failed"
             return 1
         fi
     fi
@@ -159,15 +180,6 @@ main() {
     local type_status=0
     local lint_status=0
     local format_status=0
-
-    # Create git checkpoint for safety (can be restored with: git stash pop)
-    if git diff --quiet && git diff --cached --quiet; then
-        echo "📸 No uncommitted changes to checkpoint"
-    else
-        echo "📸 Creating git checkpoint..."
-        git stash push -m "codecheck-checkpoint-$(date +%Y%m%d-%H%M%S)" --quiet
-        echo "✅ Checkpoint created (restore with: git stash pop)"
-    fi
 
     # Capture baseline metrics for comparison
     echo "📊 Capturing baseline metrics..."
