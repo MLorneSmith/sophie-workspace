@@ -477,6 +477,13 @@ CREATE POLICY "Users can view their own certificates"
 ON public.certificates FOR SELECT
 USING ((select auth.uid()) = user_id);
 
+-- Fix the problematic auth.role() policy for certificates
+DROP POLICY IF EXISTS "Authenticated users can insert certificates" ON public.certificates;
+CREATE POLICY "Authenticated users can insert certificates" ON public.certificates
+FOR INSERT
+TO authenticated
+WITH CHECK ((select auth.uid()) = user_id);
+
 -- Fix building_blocks_submissions table RLS policies (using actual policy names)
 DROP POLICY IF EXISTS "Users can view their own building blocks submissions" ON public.building_blocks_submissions;
 CREATE POLICY "Users can view their own building blocks submissions"
@@ -503,6 +510,24 @@ DROP POLICY IF EXISTS "Users can manage their own tasks" ON public.tasks;
 CREATE POLICY "Users can manage their own tasks" ON public.tasks FOR ALL
 USING (account_id = (select auth.uid()))
 WITH CHECK (account_id = (select auth.uid()));
+
+-- Fix subtasks table RLS policies - optimize the inefficient EXISTS pattern
+DROP POLICY IF EXISTS "Users can manage subtasks of their tasks" ON public.subtasks;
+CREATE POLICY "Users can manage subtasks of their tasks" ON public.subtasks FOR ALL
+USING (
+  EXISTS (
+    SELECT 1 FROM public.tasks
+    WHERE tasks.id = subtasks.task_id
+    AND tasks.account_id = (select auth.uid())
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.tasks
+    WHERE tasks.id = subtasks.task_id
+    AND tasks.account_id = (select auth.uid())
+  )
+);
 
 -- Note: task_comments table does not exist in current schema, skipping
 -- Task comments policies would go here if table existed
@@ -591,6 +616,29 @@ BEGIN
     END IF;
 END $$;
 
+-- =============================================================================
+-- SECTION 8A: Remove Duplicate Indexes (Issue #347)
+-- =============================================================================
+
+-- Drop duplicate indexes that provide the same functionality
+-- Keep the older, original indexes and drop the _rls suffixed duplicates
+
+-- accounts_memberships: Keep ix_accounts_memberships_user_id, drop idx_accounts_memberships_user_id_rls
+DROP INDEX IF EXISTS public.idx_accounts_memberships_user_id_rls;
+
+-- ai_request_logs: Keep original indexes, drop _rls suffixed ones
+DROP INDEX IF EXISTS public.idx_ai_request_logs_team_id_rls;
+DROP INDEX IF EXISTS public.idx_ai_request_logs_user_id_rls;
+
+-- survey_progress: Keep original, drop _rls duplicate
+DROP INDEX IF EXISTS public.idx_survey_progress_user_id_rls;
+
+-- survey_responses: Keep original, drop _rls duplicate
+DROP INDEX IF EXISTS public.idx_survey_responses_user_id_rls;
+
+-- tasks: Keep original, drop _rls duplicate
+DROP INDEX IF EXISTS public.idx_tasks_account_id_rls;
+
 -- Add index on RLS filter columns for performance (if not already exists)
 -- These indexes support the optimized RLS policies
 
@@ -599,26 +647,18 @@ CREATE INDEX IF NOT EXISTS idx_accounts_primary_owner_user_id_rls
 ON public.accounts (primary_owner_user_id)
 WHERE primary_owner_user_id IS NOT NULL;
 
--- Index for accounts_memberships RLS performance
-CREATE INDEX IF NOT EXISTS idx_accounts_memberships_user_id_rls
-ON public.accounts_memberships (user_id);
+-- Index for accounts_memberships RLS performance (only add if missing)
+-- Note: idx_accounts_memberships_user_id_rls was dropped above as duplicate
+-- The original ix_accounts_memberships_user_id already exists
 
 CREATE INDEX IF NOT EXISTS idx_accounts_memberships_account_id_user_id_rls
 ON public.accounts_memberships (account_id, user_id);
 
--- Index for survey tables RLS performance
-CREATE INDEX IF NOT EXISTS idx_survey_responses_user_id_rls
-ON public.survey_responses (user_id);
+-- Index for survey tables RLS performance (originals exist, duplicates dropped)
+-- Note: Original idx_survey_responses_user_id and idx_survey_progress_user_id exist
 
-CREATE INDEX IF NOT EXISTS idx_survey_progress_user_id_rls
-ON public.survey_progress (user_id);
-
--- Index for AI tracking tables RLS performance
-CREATE INDEX IF NOT EXISTS idx_ai_request_logs_user_id_rls
-ON public.ai_request_logs (user_id);
-
-CREATE INDEX IF NOT EXISTS idx_ai_request_logs_team_id_rls
-ON public.ai_request_logs (team_id);
+-- Index for AI tracking tables RLS performance (originals exist, duplicates dropped)
+-- Note: Original idx_request_logs_user_id and idx_request_logs_team_id exist
 
 CREATE INDEX IF NOT EXISTS idx_ai_usage_allocations_user_id_rls
 ON public.ai_usage_allocations (user_id);
@@ -661,8 +701,12 @@ ON public.certificates (user_id);
 CREATE INDEX IF NOT EXISTS idx_building_blocks_submissions_user_id_rls
 ON public.building_blocks_submissions (user_id);
 
-CREATE INDEX IF NOT EXISTS idx_tasks_account_id_rls
-ON public.tasks (account_id);
+-- Note: idx_tasks_account_id_rls was dropped above as duplicate
+-- The original idx_tasks_account_id already exists
+
+-- Add index for subtasks table to optimize the RLS policy
+CREATE INDEX IF NOT EXISTS idx_subtasks_task_id_rls
+ON public.subtasks (task_id);
 
 -- =============================================================================
 -- SECTION 9: Verification and Comments
