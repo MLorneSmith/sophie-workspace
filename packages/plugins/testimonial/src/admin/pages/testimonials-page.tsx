@@ -1,6 +1,7 @@
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { Button } from "@kit/ui/button";
 import { PageBody, PageHeader } from "@kit/ui/page";
+// @ts-expect-error - Package exists but type definitions are not being resolved correctly
 import { ServerDataLoader } from "@makerkit/data-loader-supabase-nextjs";
 import { PlusCircleIcon } from "lucide-react";
 import { use } from "react";
@@ -44,7 +45,17 @@ export function TestimonialsPage(props: {
 							created_at: "desc",
 						}}
 					>
-						{({ data, page, pageSize, pageCount }) => {
+						{({
+							data,
+							page,
+							pageSize,
+							pageCount,
+						}: {
+							data: unknown[];
+							page: number;
+							pageSize: number;
+							pageCount: number;
+						}) => {
 							return (
 								<TestimonialsTable
 									data={data}
