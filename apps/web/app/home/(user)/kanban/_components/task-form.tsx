@@ -42,7 +42,7 @@ export function TaskForm({
 	defaultValues,
 	isSubmitting,
 }: TaskFormProps) {
-	const form = useForm({
+	const form = useForm<CreateTaskInput>({
 		resolver: zodResolver(CreateTaskSchema),
 		defaultValues: {
 			title: "",

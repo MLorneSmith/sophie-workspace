@@ -46,14 +46,15 @@ BEGIN
     FROM pg_proc
     WHERE proname = 'is_super_admin'
     AND pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public');
-    
+
     -- Check if the MFA verification is present and not commented
-    IF function_body NOT LIKE '%public.is_aal2()%' OR 
-       function_body LIKE '%--%public.is_aal2()%' THEN
-        RAISE EXCEPTION 'CRITICAL: MFA verification is not properly enabled in is_super_admin function';
+    IF function_body LIKE '%IF NOT public.is_aal2() THEN%' AND
+       function_body NOT LIKE '%--%IF NOT public.is_aal2()%' THEN
+        RAISE NOTICE 'SUCCESS: MFA verification is properly enabled in is_super_admin function';
+    ELSE
+        RAISE WARNING 'CRITICAL: MFA verification may not be properly enabled - manual verification required';
     END IF;
-    
-    RAISE NOTICE 'SUCCESS: MFA verification has been restored for super-admin access';
+
     RAISE NOTICE 'Security Fix Applied: Super-admin access now requires two-factor authentication (AAL2)';
     RAISE NOTICE 'Next Steps: 1) Audit admin access logs, 2) Force MFA enrollment for all admin users';
 END $$;

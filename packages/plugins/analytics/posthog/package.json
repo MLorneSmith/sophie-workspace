@@ -14,6 +14,7 @@
 		"./server": "./src/server.ts"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "3.9.1",
 		"@kit/shared": "workspace:*",
 		"posthog-js": "1.249.4",
 		"posthog-node": "4.18.0"
