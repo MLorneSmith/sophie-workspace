@@ -18,7 +18,7 @@ import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 ```
 
-NB: imports must follow the convention "@kit/ui/<name>", no matter the folder they're placed in
+NB: imports must follow the convention "@kit/ui/{name}", no matter the folder they're placed in
 
 ## Styling Guidelines
 
