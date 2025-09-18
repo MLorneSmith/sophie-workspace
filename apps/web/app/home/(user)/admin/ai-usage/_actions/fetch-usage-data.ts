@@ -186,15 +186,12 @@ function groupLogsByDay(
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
 		} catch (timestampError) {
-			// Note: Can't use async logger in sync function - would need to refactor to async
-			// For now, just skip invalid timestamps silently in production
-			if (process.env.NODE_ENV === "development") {
-				// biome-ignore lint/suspicious/noConsole: Development logging for invalid timestamps
-				console.error("Invalid timestamp in usage data:", {
-					timestamp: log.request_timestamp,
-					error: timestampError,
-				});
-			}
+			// Use synchronous logger for this sync function
+			const logger = getLogger();
+			logger.error("Invalid timestamp in usage data", {
+				timestamp: log.request_timestamp,
+				error: timestampError,
+			});
 			continue; // Skip this log if timestamp is invalid
 		}
 		if (!dayMap[date]) {
