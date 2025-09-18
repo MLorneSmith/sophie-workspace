@@ -11,8 +11,10 @@ This file contains instructions for working with Supabase, database security, an
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
 - **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
 - **Always use security_invoker=true for views** to maintain proper access control
-- **Storage buckets MUST validate access** using account_id in the path structure. See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
-- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
+- **Storage buckets MUST validate access** using account_id in the path structure.
+  See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations.
+  Make sure to take these into account for all database operations.
 
 ### Security Definer Function - Dangerous Pattern ❌
 
@@ -106,7 +108,8 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
 4. Restart: `pnpm supabase:web:start` and `pnpm supabase:web:reset`
 5. Generate types: `pnpm supabase:web:typegen`
 
-- **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json scripts to re-generate the types after resetting the DB
+- **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json scripts
+  to re-generate the types after resetting the DB
 
 ### Key Schema Files
 
