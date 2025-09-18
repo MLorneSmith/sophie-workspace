@@ -118,7 +118,27 @@
 		"maxCheckpoints": 10
 	},
 	"thinking-level": {
-		"level": 1
+		"level": 1,
+		"command-levels": {
+			"/core:codecheck": 0,
+			"/codecheck": 0,
+			"/core/git:commit": 0,
+			"/commit": 0,
+			"/development:debug-issue": 2,
+			"/debug-issue": 2,
+			"/project:log-issue": 1,
+			"/log-issue": 1,
+			"/project:log-task": 1,
+			"/log-task": 1,
+			"/meta/commands:enhance": 2,
+			"/enhance": 2,
+			"/meta/commands:new": 2,
+			"/new": 2,
+			"/infrastructure/updates:payload": 0,
+			"/payload": 0,
+			"/infrastructure/updates:update-makerkit": 1,
+			"/update-makerkit": 1
+		}
 	},
 	"biome": {
 		"command": "npx biome",
