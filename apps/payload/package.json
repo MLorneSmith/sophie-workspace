@@ -32,6 +32,7 @@
 		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "3.9.1",
 		"@kit/shared": "workspace:*",
 		"@lexical/list": "^0.28.0",
 		"@lexical/rich-text": "^0.28.0",

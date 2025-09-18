@@ -10,6 +10,7 @@
 		"build": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "3.9.1",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"openai": "^4.28.0",

@@ -43,5 +43,8 @@
 		"lighthouse": "^12.8.1",
 		"node-html-parser": "^7.0.1",
 		"totp-generator": "^1.0.0"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "3.9.1"
 	}
 }
