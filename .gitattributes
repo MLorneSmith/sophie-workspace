@@ -1,0 +1,32 @@
+# Automated Merge Conflict Resolution Configuration
+# Generated for SlideHeroes upstream synchronization
+
+# Formatting conflicts - auto-resolve with Biome
+*.js merge=formatting
+*.ts merge=formatting
+*.tsx merge=formatting
+*.jsx merge=formatting
+
+# Package management - keep our version
+pnpm-lock.yaml merge=ours
+package.json merge=json-union
+
+# SlideHeroes custom features - keep ours
+**/kanban/** merge=ours
+**/presentation/** merge=ours
+**/slides/** merge=ours
+
+# Template areas - take theirs (MakerKit upstream)
+**/auth/** merge=theirs
+**/billing/** merge=theirs
+README.md merge=theirs
+
+# Configuration files - manual merge required
+*.config.js merge=manual
+*.config.ts merge=manual
+.env* merge=manual
+
+# Documentation - keep ours for custom features
+docs/kanban/** merge=ours
+docs/presentation/** merge=ours
+docs/slides/** merge=ours
