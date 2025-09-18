@@ -227,7 +227,8 @@ pnpm run supabase:web:test
 
 ### The Problem: Direct auth Function Calls
 
-**CRITICAL**: Direct `auth.uid()` calls in RLS policies cause PostgreSQL to re-evaluate the function for every row during query execution, leading to exponential performance degradation.
+**CRITICAL**: Direct `auth.uid()` calls in RLS policies cause PostgreSQL to re-evaluate the function for every row during
+query execution, leading to exponential performance degradation.
 
 ```sql
 -- ❌ SLOW: Re-evaluates auth.uid() for every row
