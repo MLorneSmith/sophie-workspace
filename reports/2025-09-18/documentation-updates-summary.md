@@ -15,6 +15,7 @@ Comprehensive documentation updates following the resolution of critical RLS per
 **File**: `/apps/web/supabase/CLAUDE.md`
 
 **Updates Added**:
+
 - **RLS Performance Best Practices** section with complete technical explanation
 - **The Problem**: Why `auth.uid()` causes performance issues
 - **The Solution**: Subquery wrapper pattern `(select auth.uid())`
@@ -25,6 +26,7 @@ Comprehensive documentation updates following the resolution of critical RLS per
 - **Future Prevention**: Guidelines and history
 
 **Key Changes**:
+
 - Updated all example RLS policies to use optimized patterns
 - Added performance testing commands
 - Included migration history and lessons learned
@@ -34,6 +36,7 @@ Comprehensive documentation updates following the resolution of critical RLS per
 **File**: `/apps/web/CLAUDE.md`
 
 **Updates Added**:
+
 - **Database Performance Guidelines** section
 - Warning about direct auth function calls in RLS
 - Reference to comprehensive guidelines in Supabase documentation
@@ -45,6 +48,7 @@ Comprehensive documentation updates following the resolution of critical RLS per
 **File**: `/reports/2025-09-18/rls-performance-optimization-complete.md`
 
 **Content**:
+
 - **Complete Issue Analysis**: Technical root cause and solution
 - **Performance Measurements**: Before/after benchmarks
 - **Tables Affected**: 40+ policies examined, 28 optimized

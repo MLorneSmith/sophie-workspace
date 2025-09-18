@@ -76,12 +76,14 @@ user_id = (select auth.uid())  -- Evaluated once, result cached
 ### Example Transformations
 
 #### Before (Problematic)
+
 ```sql
 create policy "ai_usage_read" on public.ai_usage_allocations 
   for select using (auth.uid() = user_id);
 ```
 
 #### After (Optimized)
+
 ```sql
 create policy "ai_usage_read" on public.ai_usage_allocations 
   for select using ((select auth.uid()) = user_id);
@@ -180,11 +182,13 @@ CREATE POLICY policy_name ON table_name
 ### PostgreSQL Function Evaluation
 
 **VOLATILE Functions** (like `auth.uid()`):
+
 - Cannot be optimized by query planner
 - Re-evaluated for every row
 - No result caching
 
 **Subquery Pattern Benefits**:
+
 - Creates execution boundary
 - Forces single evaluation
 - Result available for entire query

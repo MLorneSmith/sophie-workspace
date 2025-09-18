@@ -13,23 +13,27 @@ The current CCPM system creates GitHub issues that lack meaningful content, maki
 ### 1. Content Generation Problems
 
 #### Issue Body Generation (lines 154-165 of sync.md)
+
 ```bash
 # Current implementation strips most content
 sed '1,/^---$/d; 1,/^---$/d' .claude/tracking/implementations/$ARGUMENTS/plan.md > /tmp/feature-body-raw.md
 ```
 
 **Problems Identified**:
+
 - **Content Loss**: Removes all frontmatter and preserves minimal body content
 - **No Context Extraction**: Doesn't extract problem statements, objectives, or technical details
 - **Rigid Processing**: Assumes specific markdown structure that may not exist
 - **Minimal Information**: Only extracts task counts (total, parallel, sequential)
 
 #### Reference Generation
+
 ```bash
 echo -e "\n---\n📋 **Specification**: .claude/tracking/specs/$ARGUMENTS.md\n📁 **Implementation**: .claude/tracking/implementations/$ARGUMENTS/" >> /tmp/feature-body.md
 ```
 
 **Problems Identified**:
+
 - **Local Path References**: Points to `.claude/` files not accessible in GitHub UI
 - **No Context**: Doesn't explain what these references contain
 - **Generic Labels**: Uses "feature" and "implementation" without specificity
@@ -37,6 +41,7 @@ echo -e "\n---\n📋 **Specification**: .claude/tracking/specs/$ARGUMENTS.md\n�
 ### 2. Examples of Current "Empty" Issues
 
 #### Issue #322, #335, #336 Pattern
+
 ```markdown
 Title: Feature: feature-station.md
 
@@ -49,6 +54,7 @@ Body:
 ```
 
 **Missing Elements**:
+
 - No problem statement or context
 - No acceptance criteria
 - No technical approach
@@ -270,21 +276,25 @@ New comprehensive issue template:
 ## Implementation Recommendations
 
 ### Priority 1: Fix Content Extraction (Immediate)
+
 1. Rewrite issue body generation to preserve meaningful content
 2. Extract all key sections from implementation plans
 3. Add fallbacks for missing sections
 
 ### Priority 2: Enhance Metadata (Short-term)
+
 1. Implement intelligent label generation
 2. Add effort estimation extraction
 3. Set appropriate assignees based on expertise
 
 ### Priority 3: Add Visual Elements (Medium-term)
+
 1. Generate task dependency graphs
 2. Add progress bars and metrics
 3. Include timeline visualizations
 
 ### Priority 4: Improve References (Long-term)
+
 1. Convert local paths to GitHub-friendly links
 2. Add context for all references
 3. Include related documentation links
@@ -292,12 +302,14 @@ New comprehensive issue template:
 ## Success Metrics
 
 ### Quantitative
+
 - Issue body content: From ~50 words to 500+ words
 - Structured sections: From 2 to 10+
 - Labels: From 2 generic to 5+ specific
 - Acceptance criteria: From 0 to 5+ items
 
 ### Qualitative
+
 - Developer can work entirely from GitHub issue
 - Stakeholders understand feature scope and progress
 - Issues serve as documentation
