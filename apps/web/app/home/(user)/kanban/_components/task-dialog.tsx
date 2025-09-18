@@ -68,7 +68,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	);
 	const imageUploadId = useId();
 
-	const form = useForm({
+	const form = useForm<z.infer<typeof CreateTaskSchema>>({
 		resolver: zodResolver(CreateTaskSchema),
 		defaultValues: {
 			title: task?.title ?? "",
@@ -125,7 +125,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	);
 
 	const handleRemoveImage = useCallback(() => {
-		form.setValue("image", undefined);
+		form.setValue("image", undefined as File | undefined);
 		form.setValue("image_url", undefined);
 		setImagePreview(null);
 	}, [form]);
