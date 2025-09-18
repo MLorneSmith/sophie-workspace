@@ -13,6 +13,7 @@
 		"format": "prettier --check \"**/*.{js,json}\""
 	},
 	"dependencies": {
+		"@hookform/resolvers": "3.9.1",
 		"@next/eslint-plugin-next": "15.5.2",
 		"@types/eslint": "9.6.1",
 		"eslint-config-next": "15.5.2",

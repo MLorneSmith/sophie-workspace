@@ -31,5 +31,8 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "3.9.1"
 	}
 }

@@ -20,7 +20,7 @@
 		"./oauth-provider-logo-image": "./src/components/oauth-provider-logo-image.tsx"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "^5.2.1",
+		"@hookform/resolvers": "3.9.1",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",

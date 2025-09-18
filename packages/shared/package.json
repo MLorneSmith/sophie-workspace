@@ -27,6 +27,7 @@
 		"@types/react": "19.1.12"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "3.9.1",
 		"@kit/monitoring-core": "workspace:*",
 		"pino": "^9.8.0",
 		"zod": "^3.25.74"
