@@ -161,5 +161,10 @@
 		"_comment": "Prompts code review questions at session end",
 		"enabled": false,
 		"targetPatterns": ["**/*.ts", "**/*.tsx", "!**/*.test.ts", "!**/*.spec.ts"]
+	},
+	"hook_coordination": {
+		"_comment": "Coordinates hook execution to prevent race conditions",
+		"enabled": true,
+		"description": "Ensures hooks run in proper sequence: TypeScript > Lint > Format"
 	}
 }

@@ -14,6 +14,12 @@ CONFIG_FILE="${PROJECT_ROOT}/.claude/settings.json"
 HOOK_DIR="$(dirname "$0")"
 source "$HOOK_DIR/common-functions.sh"
 
+# Check if hooks are globally disabled (e.g., during codecheck)
+if [ "${CLAUDE_HOOKS_DISABLED:-}" = "true" ] || [ -f "${CLAUDE_CODECHECK_ACTIVE:-/dev/null}" ]; then
+    [[ "$VERBOSE" == "true" ]] && echo "⏭️  Hooks disabled during codecheck"
+    exit 0
+fi
+
 # Check if lint hooks are disabled
 if is_hook_disabled "lint"; then
     [[ "$VERBOSE" == "true" ]] && echo "⏭️  Lint hooks disabled in configuration"
