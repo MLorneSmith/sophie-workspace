@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCPM Executive Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .progress-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">CCPM Executive Dashboard</h1>
+                    <span class="ml-4 px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        Live Data
+                    </span>
+                </div>
+                <div class="flex space-x-4 text-sm text-gray-600">
+                    <span id="lastUpdated">Last updated: Loading...</span>
+                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+            <!-- Navigation Tabs -->
+            <nav class="flex space-x-8 mt-2">
+                <a href="executive.html" class="border-b-2 border-blue-600 text-blue-600 font-medium py-2 px-1">
+                    Executive
+                </a>
+                <a href="manager.html" class="text-gray-500 hover:text-gray-700 font-medium py-2 px-1">
+                    Manager
+                </a>
+                <a href="developer.html" class="text-gray-500 hover:text-gray-700 font-medium py-2 px-1">
+                    Developer
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Key Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Overall Progress Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-gray-600">Overall Progress</h3>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="flex items-center">
+                    <svg width="60" height="60" class="mr-4">
+                        <circle cx="30" cy="30" r="25" stroke="#e5e7eb" stroke-width="5" fill="none"/>
+                        <circle cx="30" cy="30" r="25" stroke="#3b82f6" stroke-width="5" fill="none"
+                                class="progress-ring" id="progressRing"
+                                stroke-dasharray="157" stroke-dashoffset="157"/>
+                    </svg>
+                    <div>
+                        <p class="text-2xl font-bold text-gray-900" id="overallProgress">0%</p>
+                        <p class="text-xs text-gray-600">Complete</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-gray-600">Features</h3>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-900" id="totalFeatures">0</p>
+                <div class="mt-2 text-xs text-gray-600">
+                    <span class="text-green-600" id="completedFeatures">0 completed</span> •
+                    <span class="text-blue-600" id="inProgressFeatures">0 in progress</span>
+                </div>
+            </div>
+
+            <!-- Tasks Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-gray-600">Tasks</h3>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-900" id="totalTasks">0</p>
+                <div class="mt-2 text-xs text-gray-600">
+                    <span class="text-green-600" id="completedTasks">0 done</span> •
+                    <span class="text-yellow-600" id="pendingTasks">0 pending</span>
+                </div>
+            </div>
+
+            <!-- Velocity Card -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-medium text-gray-600">Velocity</h3>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-900" id="weeklyVelocity">0</p>
+                <div class="mt-2 text-xs text-gray-600">
+                    <span id="velocityTrend">tasks/week</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Progress Timeline Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Progress Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="progressTimelineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Task Distribution Chart -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Task Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="taskDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Priority and Complexity Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Priority Distribution -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Priority Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Complexity Distribution -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Complexity Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="complexityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Risk Indicators -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Risk Indicators</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 rounded-lg" id="blockedTasksRisk">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                            <span class="text-sm font-medium">Blocked Tasks</span>
+                        </div>
+                        <span class="text-sm font-bold" id="blockedCount">0</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg" id="overdueRisk">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                            <span class="text-sm font-medium">Behind Schedule</span>
+                        </div>
+                        <span class="text-sm font-bold" id="behindCount">0</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg" id="resourceRisk">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                            <span class="text-sm font-medium">On Track</span>
+                        </div>
+                        <span class="text-sm font-bold" id="onTrackCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Progress Table -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Feature Progress</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Feature
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Progress
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tasks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="featureTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center text-sm text-gray-600">
+                <span>CCPM Dashboard v1.0.0</span>
+                <span>Generated by Claude Implementation Assistant</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Data Script Placeholder -->
+    <script>
+        // This will be replaced with actual data during generation
+        const dashboardData = {{{DATA_PLACEHOLDER}}};
+    </script>
+
+    <!-- Dashboard Initialization Script -->
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: true });
+
+        // Update timestamp
+        document.getElementById('lastUpdated').textContent =
+            `Last updated: ${new Date().toLocaleString()}`;
+
+        // Update metrics
+        function updateMetrics() {
+            const metrics = dashboardData.metrics;
+            const summary = dashboardData.summary;
+
+            // Overall Progress
+            const progress = metrics.overallProgress || 0;
+            document.getElementById('overallProgress').textContent = `${progress}%`;
+
+            // Animate progress ring
+            const progressRing = document.getElementById('progressRing');
+            const circumference = 2 * Math.PI * 25; // radius = 25
+            const offset = circumference - (progress / 100) * circumference;
+            progressRing.style.strokeDashoffset = offset;
+
+            // Features
+            document.getElementById('totalFeatures').textContent = summary.features.total;
+            document.getElementById('completedFeatures').textContent = `${summary.features.completed} completed`;
+            document.getElementById('inProgressFeatures').textContent = `${summary.features.inProgress} in progress`;
+
+            // Tasks
+            document.getElementById('totalTasks').textContent = metrics.totalTasks;
+            document.getElementById('completedTasks').textContent = `${metrics.completedTasks} done`;
+            document.getElementById('pendingTasks').textContent = `${metrics.pendingTasks} pending`;
+
+            // Velocity
+            const weeklyVelocity = calculateWeeklyVelocity();
+            document.getElementById('weeklyVelocity').textContent = weeklyVelocity;
+
+            // Risk indicators
+            document.getElementById('blockedCount').textContent = metrics.blockedTasks || 0;
+            document.getElementById('behindCount').textContent =
+                summary.features.blocked || 0;
+            document.getElementById('onTrackCount').textContent =
+                summary.features.inProgress + summary.features.completed || 0;
+
+            // Color code risk indicators
+            if (metrics.blockedTasks > 0) {
+                document.getElementById('blockedTasksRisk').classList.add('bg-red-50');
+            }
+        }
+
+        // Calculate weekly velocity
+        function calculateWeeklyVelocity() {
+            const velocity = dashboardData.metrics.velocity || [];
+            if (velocity.length === 0) return 0;
+
+            const lastWeek = velocity.slice(-7);
+            const total = lastWeek.reduce((sum, day) => sum + day.count, 0);
+            return Math.round(total / lastWeek.length * 7);
+        }
+
+        // Create Progress Timeline Chart
+        function createProgressTimelineChart() {
+            const ctx = document.getElementById('progressTimelineChart').getContext('2d');
+            const timeline = dashboardData.timeline || [];
+
+            // Group by date and calculate cumulative progress
+            const progressByDate = {};
+            let cumulative = 0;
+
+            timeline.forEach(event => {
+                const date = event.date.split('T')[0];
+                if (event.type === 'completed') {
+                    cumulative++;
+                    progressByDate[date] = cumulative;
+                }
+            });
+
+            const labels = Object.keys(progressByDate);
+            const data = Object.values(progressByDate);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Completed Tasks',
+                        data: data,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Create Task Distribution Chart
+        function createTaskDistributionChart() {
+            const ctx = document.getElementById('taskDistributionChart').getContext('2d');
+            const metrics = dashboardData.metrics;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'Pending', 'Blocked'],
+                    datasets: [{
+                        data: [
+                            metrics.completedTasks,
+                            metrics.inProgressTasks,
+                            metrics.pendingTasks,
+                            metrics.blockedTasks
+                        ],
+                        backgroundColor: [
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)',
+                            'rgb(156, 163, 175)',
+                            'rgb(239, 68, 68)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Priority Chart
+        function createPriorityChart() {
+            const ctx = document.getElementById('priorityChart').getContext('2d');
+            const priority = dashboardData.metrics.priorityDistribution;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [{
+                        label: 'Tasks',
+                        data: [priority.high, priority.medium, priority.low],
+                        backgroundColor: [
+                            'rgb(239, 68, 68)',
+                            'rgb(251, 191, 36)',
+                            'rgb(34, 197, 94)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Create Complexity Chart
+        function createComplexityChart() {
+            const ctx = document.getElementById('complexityChart').getContext('2d');
+            const complexity = dashboardData.metrics.complexityDistribution;
+
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [complexity.high, complexity.medium, complexity.low],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.5)',
+                            'rgba(251, 191, 36, 0.5)',
+                            'rgba(34, 197, 94, 0.5)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Populate Feature Table
+        function populateFeatureTable() {
+            const tbody = document.getElementById('featureTableBody');
+            const features = dashboardData.features || [];
+
+            tbody.innerHTML = features.map(feature => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${feature.name}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-32 bg-gray-200 rounded-full h-2 mr-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${feature.progress}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-900">${feature.progress}%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                     ${getStatusColor(feature.status)}">
+                            ${feature.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${feature.tasks.length} tasks
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Get status color classes
+        function getStatusColor(status) {
+            switch(status) {
+                case 'completed': return 'bg-green-100 text-green-800';
+                case 'in_progress': return 'bg-blue-100 text-blue-800';
+                case 'blocked': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMetrics();
+            createProgressTimelineChart();
+            createTaskDistributionChart();
+            createPriorityChart();
+            createComplexityChart();
+            populateFeatureTable();
+        });
+    </script>
+</body>
+</html>

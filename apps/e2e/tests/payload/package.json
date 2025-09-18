@@ -1,0 +1,23 @@
+{
+	"name": "payload-e2e-tests",
+	"version": "1.0.0",
+	"description": "E2E tests for Payload CMS with Supabase integration",
+	"scripts": {
+		"test": "playwright test",
+		"test:auth": "playwright test payload-auth",
+		"test:collections": "playwright test payload-collections",
+		"test:database": "playwright test payload-database",
+		"test:ui": "playwright test --ui",
+		"test:debug": "playwright test --debug",
+		"test:headed": "playwright test --headed",
+		"test:report": "playwright show-report",
+		"test:ci": "CI=true playwright test",
+		"pretest": "node -e \"console.log('🚀 Starting Payload E2E Tests...')\"",
+		"posttest": "node -e \"console.log('✅ Payload E2E Tests Complete!')\""
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.40.0",
+		"@axe-core/playwright": "^4.8.0",
+		"dotenv": "^16.3.1"
+	}
+}

@@ -78,31 +78,6 @@ You have full authority over quality checks and auto-fixes, with veto power on r
 
 ### Phase I - INPUTS
 <inputs>
-**Gather** all necessary materials before execution:
-
-#### Essential Context (REQUIRED)
-**Load** critical documentation:
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/systems/prompt-engineering.md
-
-#### Dynamic Context Loading (Light Implementation)
-**Check** for project-specific quality configuration:
-
-```bash
-# Load project-specific quality standards if available
-QUALITY_CONFIG=".claude/context/code-quality-standards.md"
-if [ -f "$QUALITY_CONFIG" ]; then
-    # Read quality configuration
-    Read "$QUALITY_CONFIG"
-fi
-
-# Check for custom rule overrides
-CUSTOM_RULES=".claude/rules/quality-overrides.json"
-if [ -f "$CUSTOM_RULES" ]; then
-    # Parse custom rules
-    Read "$CUSTOM_RULES"
-fi
-```
 
 #### Parameters & Constraints
 **Parse** command arguments:
@@ -114,9 +89,6 @@ fi
 #### Materials & Resources
 **Verify** required tools and scripts:
 - .claude/scripts/codecheck-direct.sh (main execution script)
-- pnpm package manager and project dependencies
-- TypeScript, ESLint/Biome configurations
-- Git for checkpoint creation
 </inputs>
 
 ### Phase M - METHOD
@@ -139,15 +111,6 @@ todos = [
 **Verify** environment and tools availability:
 
 ```bash
-# Check all required tools
-which pnpm && pnpm --version
-test -f .claude/scripts/codecheck-direct.sh && echo "Script ready"
-git rev-parse --show-toplevel || exit 1
-
-# Detect project configuration
-test -f tsconfig.json && echo "TypeScript: ✓"
-test -f biome.json && echo "Biome: ✓"
-
 # Clear previous check artifacts
 rm -f /tmp/.claude_codecheck_status_*
 ```

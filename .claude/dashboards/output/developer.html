@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCPM Developer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-gray-900">CCPM Developer Dashboard</h1>
+                <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Export PDF
+                </button>
+            </div>
+            <nav class="flex space-x-8 mt-2">
+                <a href="executive.html" class="text-gray-500 hover:text-gray-700 font-medium py-2 px-1">
+                    Executive
+                </a>
+                <a href="manager.html" class="text-gray-500 hover:text-gray-700 font-medium py-2 px-1">
+                    Manager
+                </a>
+                <a href="developer.html" class="border-b-2 border-blue-600 text-blue-600 font-medium py-2 px-1">
+                    Developer
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Agent Performance</h2>
+            <div id="agentStats">Loading...</div>
+        </div>
+    </main>
+
+    <script>
+        const dashboardData = {
+  "features": [
+    {
+      "name": "test-enhanced-issues",
+      "tasks": [
+        {
+          "name": "Configure Enhanced Generator Environment",
+          "type": "task",
+          "priority": "high",
+          "complexity": "low",
+          "size": "small",
+          "status": "ready",
+          "created": "2025-09-18T16:00:00Z",
+          "updated": "2025-09-18T16:00:00Z",
+          "github": null,
+          "depends_on": [],
+          "conflicts_with": [],
+          "content": "\n\n# Configure Enhanced Generator Environment\n\n## Description\nSet up and validate the enhanced GitHub issue generator script environment, ensuring all dependencies are installed and the script has proper permissions to execute within the CCPM sync workflow.\n\n## Objectives\n- Validate Node.js environment and dependencies\n- Ensure enhancement script has execution permissions\n- Configure proper error handling and logging\n- Test script accessibility from sync command\n\n## Acceptance Criteria\n- [ ] Enhancement script is executable (`chmod +x`)\n- [ ] Node.js dependencies are available\n- [ ] Script path is correctly referenced in sync command\n- [ ] Error handling properly configured\n- [ ] Fallback mechanism tested and working\n\n## Technical Approach\n1. Check Node.js version compatibility\n2. Validate script file permissions\n3. Test script execution with sample data\n4. Configure logging for debugging\n5. Implement error recovery mechanisms\n\n## Implementation Details\n```bash\n# Make script executable\nchmod +x .claude/scripts/github/enhance-github-issue.js\n\n# Test script execution\nnode .claude/scripts/github/enhance-github-issue.js --help\n\n# Validate integration point\ngrep -n \"enhance-github-issue.js\" .claude/commands/features/3-sync.md\n```\n\n## Dependencies\n- Node.js runtime\n- File system access\n- GitHub CLI for testing\n\n## Estimated Effort\n- **Time**: 30 minutes\n- **Complexity**: Low\n- **Risk**: Minimal",
+          "htmlContent": "<h1>Configure Enhanced Generator Environment</h1>\n<h2>Description</h2>\n<p>Set up and validate the enhanced GitHub issue generator script environment, ensuring all dependencies are installed and the script has proper permissions to execute within the CCPM sync workflow.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Validate Node.js environment and dependencies</li>\n<li>Ensure enhancement script has execution permissions</li>\n<li>Configure proper error handling and logging</li>\n<li>Test script accessibility from sync command</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Enhancement script is executable (<code>chmod +x</code>)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Node.js dependencies are available</li>\n<li><input disabled=\"\" type=\"checkbox\"> Script path is correctly referenced in sync command</li>\n<li><input disabled=\"\" type=\"checkbox\"> Error handling properly configured</li>\n<li><input disabled=\"\" type=\"checkbox\"> Fallback mechanism tested and working</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Check Node.js version compatibility</li>\n<li>Validate script file permissions</li>\n<li>Test script execution with sample data</li>\n<li>Configure logging for debugging</li>\n<li>Implement error recovery mechanisms</li>\n</ol>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-bash\"># Make script executable\nchmod +x .claude/scripts/github/enhance-github-issue.js\n\n# Test script execution\nnode .claude/scripts/github/enhance-github-issue.js --help\n\n# Validate integration point\ngrep -n &quot;enhance-github-issue.js&quot; .claude/commands/features/3-sync.md\n</code></pre>\n<h2>Dependencies</h2>\n<ul>\n<li>Node.js runtime</li>\n<li>File system access</li>\n<li>GitHub CLI for testing</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 30 minutes</li>\n<li><strong>Complexity</strong>: Low</li>\n<li><strong>Risk</strong>: Minimal</li>\n</ul>\n",
+          "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/001.md",
+          "featureName": "test-enhanced-issues",
+          "taskId": "001"
+        },
+        {
+          "name": "Test Content Extraction Logic",
+          "type": "task",
+          "priority": "high",
+          "complexity": "medium",
+          "size": "medium",
+          "status": "ready",
+          "created": "2025-09-18T16:00:00Z",
+          "updated": "2025-09-18T16:00:00Z",
+          "github": null,
+          "depends_on": [
+            1
+          ],
+          "conflicts_with": [],
+          "content": "\n\n# Test Content Extraction Logic\n\n## Description\nValidate that the enhanced generator correctly extracts all relevant content sections from markdown files, including problem statements, objectives, acceptance criteria, and technical details. Test edge cases with missing sections.\n\n## Objectives\n- Test extraction of all standard sections\n- Validate fallback behavior for missing content\n- Ensure proper formatting of extracted content\n- Verify markdown preservation in output\n\n## Acceptance Criteria\n- [ ] Problem statements extracted correctly\n- [ ] Objectives properly formatted as lists\n- [ ] Acceptance criteria converted to checkboxes\n- [ ] Technical details preserved with formatting\n- [ ] Missing sections handled gracefully with defaults\n- [ ] Markdown syntax properly preserved\n- [ ] Special characters escaped correctly\n\n## Technical Approach\n1. Create test markdown files with various content patterns\n2. Run extraction on complete documents\n3. Test with missing sections\n4. Validate output format\n5. Check edge cases (empty sections, special chars)\n\n## Test Cases\n### Complete Document Test\n- All sections present\n- Validate complete extraction\n\n### Missing Sections Test\n- Remove various sections\n- Confirm fallback content\n\n### Formatting Edge Cases\n- Code blocks in content\n- Special markdown syntax\n- Unicode characters\n\n## Implementation Details\n```javascript\n// Test extraction patterns\nconst testCases = [\n  { name: 'complete', hasAll: true },\n  { name: 'no_criteria', missing: ['criteria'] },\n  { name: 'minimal', missing: ['objectives', 'approach'] }\n];\n\n// Validate each test case\ntestCases.forEach(test => {\n  const result = extractContent(test.file);\n  validateOutput(result, test.expected);\n});\n```\n\n## Dependencies\n- Task 001 (environment setup)\n- Test markdown files\n- Enhancement script\n\n## Estimated Effort\n- **Time**: 1 hour\n- **Complexity**: Medium\n- **Risk**: Low",
+          "htmlContent": "<h1>Test Content Extraction Logic</h1>\n<h2>Description</h2>\n<p>Validate that the enhanced generator correctly extracts all relevant content sections from markdown files, including problem statements, objectives, acceptance criteria, and technical details. Test edge cases with missing sections.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Test extraction of all standard sections</li>\n<li>Validate fallback behavior for missing content</li>\n<li>Ensure proper formatting of extracted content</li>\n<li>Verify markdown preservation in output</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Problem statements extracted correctly</li>\n<li><input disabled=\"\" type=\"checkbox\"> Objectives properly formatted as lists</li>\n<li><input disabled=\"\" type=\"checkbox\"> Acceptance criteria converted to checkboxes</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical details preserved with formatting</li>\n<li><input disabled=\"\" type=\"checkbox\"> Missing sections handled gracefully with defaults</li>\n<li><input disabled=\"\" type=\"checkbox\"> Markdown syntax properly preserved</li>\n<li><input disabled=\"\" type=\"checkbox\"> Special characters escaped correctly</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Create test markdown files with various content patterns</li>\n<li>Run extraction on complete documents</li>\n<li>Test with missing sections</li>\n<li>Validate output format</li>\n<li>Check edge cases (empty sections, special chars)</li>\n</ol>\n<h2>Test Cases</h2>\n<h3>Complete Document Test</h3>\n<ul>\n<li>All sections present</li>\n<li>Validate complete extraction</li>\n</ul>\n<h3>Missing Sections Test</h3>\n<ul>\n<li>Remove various sections</li>\n<li>Confirm fallback content</li>\n</ul>\n<h3>Formatting Edge Cases</h3>\n<ul>\n<li>Code blocks in content</li>\n<li>Special markdown syntax</li>\n<li>Unicode characters</li>\n</ul>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-javascript\">// Test extraction patterns\nconst testCases = [\n  { name: &#39;complete&#39;, hasAll: true },\n  { name: &#39;no_criteria&#39;, missing: [&#39;criteria&#39;] },\n  { name: &#39;minimal&#39;, missing: [&#39;objectives&#39;, &#39;approach&#39;] }\n];\n\n// Validate each test case\ntestCases.forEach(test =&gt; {\n  const result = extractContent(test.file);\n  validateOutput(result, test.expected);\n});\n</code></pre>\n<h2>Dependencies</h2>\n<ul>\n<li>Task 001 (environment setup)</li>\n<li>Test markdown files</li>\n<li>Enhancement script</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 1 hour</li>\n<li><strong>Complexity</strong>: Medium</li>\n<li><strong>Risk</strong>: Low</li>\n</ul>\n",
+          "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/002.md",
+          "featureName": "test-enhanced-issues",
+          "taskId": "002"
+        },
+        {
+          "name": "Validate GitHub Issue Quality",
+          "type": "task",
+          "priority": "high",
+          "complexity": "medium",
+          "size": "medium",
+          "status": "ready",
+          "created": "2025-09-18T16:00:00Z",
+          "updated": "2025-09-18T16:00:00Z",
+          "github": null,
+          "depends_on": [
+            1,
+            2
+          ],
+          "conflicts_with": [],
+          "content": "\n\n# Validate GitHub Issue Quality\n\n## Description\nExecute the enhanced sync process and validate that created GitHub issues meet quality standards with rich content, proper formatting, and actionable information. Compare against previous empty issue format to measure improvement.\n\n## Objectives\n- Execute enhanced sync on test feature\n- Validate issue content completeness\n- Measure content quality metrics\n- Compare against baseline empty issues\n- Document improvement statistics\n\n## Acceptance Criteria\n- [ ] Issues created successfully via enhanced sync\n- [ ] Content length increased by 10x minimum\n- [ ] All sections properly formatted in GitHub\n- [ ] Labels correctly applied (priority, complexity, size)\n- [ ] Links and references working\n- [ ] Markdown rendering correctly in GitHub UI\n- [ ] Performance within acceptable limits (< 2s/issue)\n- [ ] Fallback mechanism tested if enhancement fails\n\n## Technical Approach\n1. Run enhanced sync command on test feature\n2. Capture created issue numbers\n3. Fetch issue content via GitHub API\n4. Analyze content quality metrics\n5. Compare with baseline measurements\n6. Generate quality report\n\n## Quality Metrics\n### Content Analysis\n- Word count comparison\n- Section completeness score\n- Actionability rating\n- Metadata accuracy\n\n### Performance Metrics\n- Time per issue creation\n- API call efficiency\n- Error rate\n\n## Implementation Details\n```bash\n# Execute enhanced sync\n./claude/commands/features/3-sync.md test-enhanced-issues\n\n# Fetch created issues\ngh issue list --label \"feature:test-enhanced-issues\" --json number,title,body,labels\n\n# Analyze content quality\nfor issue in $(gh issue list --label \"feature:test-enhanced-issues\" --json number -q '.[].number'); do\n  gh issue view $issue --json body | jq -r '.body' | wc -w\ndone\n\n# Compare with baseline\necho \"Baseline: ~50 words\"\necho \"Enhanced: $(calculate_average)\"\n```\n\n## Validation Checklist\n- [ ] Feature issue contains problem statement\n- [ ] Feature issue has objectives section\n- [ ] Task issues include acceptance criteria\n- [ ] Technical details present\n- [ ] Dependencies properly linked\n- [ ] Labels comprehensive and accurate\n\n## Dependencies\n- Task 001 (environment setup)\n- Task 002 (content extraction validation)\n- GitHub API access\n- Test feature files\n\n## Estimated Effort\n- **Time**: 1 hour\n- **Complexity**: Medium\n- **Risk**: Low",
+          "htmlContent": "<h1>Validate GitHub Issue Quality</h1>\n<h2>Description</h2>\n<p>Execute the enhanced sync process and validate that created GitHub issues meet quality standards with rich content, proper formatting, and actionable information. Compare against previous empty issue format to measure improvement.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Execute enhanced sync on test feature</li>\n<li>Validate issue content completeness</li>\n<li>Measure content quality metrics</li>\n<li>Compare against baseline empty issues</li>\n<li>Document improvement statistics</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Issues created successfully via enhanced sync</li>\n<li><input disabled=\"\" type=\"checkbox\"> Content length increased by 10x minimum</li>\n<li><input disabled=\"\" type=\"checkbox\"> All sections properly formatted in GitHub</li>\n<li><input disabled=\"\" type=\"checkbox\"> Labels correctly applied (priority, complexity, size)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Links and references working</li>\n<li><input disabled=\"\" type=\"checkbox\"> Markdown rendering correctly in GitHub UI</li>\n<li><input disabled=\"\" type=\"checkbox\"> Performance within acceptable limits (&lt; 2s/issue)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Fallback mechanism tested if enhancement fails</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Run enhanced sync command on test feature</li>\n<li>Capture created issue numbers</li>\n<li>Fetch issue content via GitHub API</li>\n<li>Analyze content quality metrics</li>\n<li>Compare with baseline measurements</li>\n<li>Generate quality report</li>\n</ol>\n<h2>Quality Metrics</h2>\n<h3>Content Analysis</h3>\n<ul>\n<li>Word count comparison</li>\n<li>Section completeness score</li>\n<li>Actionability rating</li>\n<li>Metadata accuracy</li>\n</ul>\n<h3>Performance Metrics</h3>\n<ul>\n<li>Time per issue creation</li>\n<li>API call efficiency</li>\n<li>Error rate</li>\n</ul>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-bash\"># Execute enhanced sync\n./claude/commands/features/3-sync.md test-enhanced-issues\n\n# Fetch created issues\ngh issue list --label &quot;feature:test-enhanced-issues&quot; --json number,title,body,labels\n\n# Analyze content quality\nfor issue in $(gh issue list --label &quot;feature:test-enhanced-issues&quot; --json number -q &#39;.[].number&#39;); do\n  gh issue view $issue --json body | jq -r &#39;.body&#39; | wc -w\ndone\n\n# Compare with baseline\necho &quot;Baseline: ~50 words&quot;\necho &quot;Enhanced: $(calculate_average)&quot;\n</code></pre>\n<h2>Validation Checklist</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Feature issue contains problem statement</li>\n<li><input disabled=\"\" type=\"checkbox\"> Feature issue has objectives section</li>\n<li><input disabled=\"\" type=\"checkbox\"> Task issues include acceptance criteria</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical details present</li>\n<li><input disabled=\"\" type=\"checkbox\"> Dependencies properly linked</li>\n<li><input disabled=\"\" type=\"checkbox\"> Labels comprehensive and accurate</li>\n</ul>\n<h2>Dependencies</h2>\n<ul>\n<li>Task 001 (environment setup)</li>\n<li>Task 002 (content extraction validation)</li>\n<li>GitHub API access</li>\n<li>Test feature files</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 1 hour</li>\n<li><strong>Complexity</strong>: Medium</li>\n<li><strong>Risk</strong>: Low</li>\n</ul>\n",
+          "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/003.md",
+          "featureName": "test-enhanced-issues",
+          "taskId": "003"
+        }
+      ],
+      "plan": {
+        "feature": "test-enhanced-issues",
+        "title": "Test Enhanced GitHub Issues Generation",
+        "status": "ready",
+        "priority": "high",
+        "complexity": "medium",
+        "created": "2025-09-18T16:00:00Z",
+        "updated": "2025-09-18T16:00:00Z",
+        "github": null,
+        "content": "\n\n# Test Enhanced GitHub Issues Implementation Plan\n\n## Problem Statement\nWe need to validate that the enhanced GitHub issue generation creates rich, actionable content instead of empty placeholder issues. This implementation will test all aspects of the enhanced sync process.\n\n## Objectives\n1. **Validate Content Extraction**: Ensure all relevant sections are properly extracted from markdown files\n2. **Test Metadata Enhancement**: Verify labels, priorities, and other metadata are correctly applied\n3. **Confirm Fallback Behavior**: Test that fallback mechanisms work when enhanced generator fails\n4. **Measure Quality Improvement**: Compare enhanced issues against previous empty format\n\n## Implementation Approach\n\n### Phase 1: Setup and Configuration\nConfigure the test environment with enhanced generator script and updated sync command to ensure all components are properly integrated.\n\n### Phase 2: Content Generation Testing\nCreate comprehensive test cases that cover all content extraction scenarios including edge cases and missing sections.\n\n### Phase 3: GitHub Integration Validation\nExecute the enhanced sync process and validate that GitHub issues are created with expected rich content.\n\n### Phase 4: Quality Assurance\nReview generated issues for completeness, accuracy, and actionability compared to original requirements.\n\n## Acceptance Criteria\n- [ ] Enhanced generator script successfully processes feature and task files\n- [ ] GitHub issues contain complete problem statements and context\n- [ ] Acceptance criteria are properly formatted as checklists\n- [ ] Technical details and implementation guidance included\n- [ ] Proper labels applied including priority and complexity\n- [ ] Dependencies correctly extracted and linked\n- [ ] Fallback mechanism activates when enhancement fails\n- [ ] Performance remains acceptable (< 2s per issue)\n\n## Task Dependencies\n- Sequential execution for Phase 1 setup tasks\n- Parallel execution possible for Phase 2 testing tasks\n- Phase 3 depends on Phase 1-2 completion\n- Phase 4 can run partially in parallel with Phase 3\n\n## Risk Assessment\n- **Low Risk**: Script failures handled by fallback mechanism\n- **Medium Risk**: Performance impact on large feature sets\n- **Mitigation**: Comprehensive error handling and performance monitoring\n\n## Success Metrics\n- 100% of test cases passing\n- 10x content increase verified (50 → 500+ words)\n- All acceptance criteria checkboxes present\n- Zero broken dependencies in sync process\n\n## Tasks Created\n\nTotal tasks: 4\nParallel tasks: 2\nSequential tasks: 2\n\n### Task Distribution\n- Setup tasks: 1 (sequential)\n- Testing tasks: 2 (parallel)\n- Integration task: 1 (sequential)",
+        "htmlContent": "<h1>Test Enhanced GitHub Issues Implementation Plan</h1>\n<h2>Problem Statement</h2>\n<p>We need to validate that the enhanced GitHub issue generation creates rich, actionable content instead of empty placeholder issues. This implementation will test all aspects of the enhanced sync process.</p>\n<h2>Objectives</h2>\n<ol>\n<li><strong>Validate Content Extraction</strong>: Ensure all relevant sections are properly extracted from markdown files</li>\n<li><strong>Test Metadata Enhancement</strong>: Verify labels, priorities, and other metadata are correctly applied</li>\n<li><strong>Confirm Fallback Behavior</strong>: Test that fallback mechanisms work when enhanced generator fails</li>\n<li><strong>Measure Quality Improvement</strong>: Compare enhanced issues against previous empty format</li>\n</ol>\n<h2>Implementation Approach</h2>\n<h3>Phase 1: Setup and Configuration</h3>\n<p>Configure the test environment with enhanced generator script and updated sync command to ensure all components are properly integrated.</p>\n<h3>Phase 2: Content Generation Testing</h3>\n<p>Create comprehensive test cases that cover all content extraction scenarios including edge cases and missing sections.</p>\n<h3>Phase 3: GitHub Integration Validation</h3>\n<p>Execute the enhanced sync process and validate that GitHub issues are created with expected rich content.</p>\n<h3>Phase 4: Quality Assurance</h3>\n<p>Review generated issues for completeness, accuracy, and actionability compared to original requirements.</p>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Enhanced generator script successfully processes feature and task files</li>\n<li><input disabled=\"\" type=\"checkbox\"> GitHub issues contain complete problem statements and context</li>\n<li><input disabled=\"\" type=\"checkbox\"> Acceptance criteria are properly formatted as checklists</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical details and implementation guidance included</li>\n<li><input disabled=\"\" type=\"checkbox\"> Proper labels applied including priority and complexity</li>\n<li><input disabled=\"\" type=\"checkbox\"> Dependencies correctly extracted and linked</li>\n<li><input disabled=\"\" type=\"checkbox\"> Fallback mechanism activates when enhancement fails</li>\n<li><input disabled=\"\" type=\"checkbox\"> Performance remains acceptable (&lt; 2s per issue)</li>\n</ul>\n<h2>Task Dependencies</h2>\n<ul>\n<li>Sequential execution for Phase 1 setup tasks</li>\n<li>Parallel execution possible for Phase 2 testing tasks</li>\n<li>Phase 3 depends on Phase 1-2 completion</li>\n<li>Phase 4 can run partially in parallel with Phase 3</li>\n</ul>\n<h2>Risk Assessment</h2>\n<ul>\n<li><strong>Low Risk</strong>: Script failures handled by fallback mechanism</li>\n<li><strong>Medium Risk</strong>: Performance impact on large feature sets</li>\n<li><strong>Mitigation</strong>: Comprehensive error handling and performance monitoring</li>\n</ul>\n<h2>Success Metrics</h2>\n<ul>\n<li>100% of test cases passing</li>\n<li>10x content increase verified (50 → 500+ words)</li>\n<li>All acceptance criteria checkboxes present</li>\n<li>Zero broken dependencies in sync process</li>\n</ul>\n<h2>Tasks Created</h2>\n<p>Total tasks: 4\nParallel tasks: 2\nSequential tasks: 2</p>\n<h3>Task Distribution</h3>\n<ul>\n<li>Setup tasks: 1 (sequential)</li>\n<li>Testing tasks: 2 (parallel)</li>\n<li>Integration task: 1 (sequential)</li>\n</ul>\n",
+        "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/plan.md"
+      },
+      "status": "pending",
+      "progress": 0
+    }
+  ],
+  "tasks": [
+    {
+      "name": "Configure Enhanced Generator Environment",
+      "type": "task",
+      "priority": "high",
+      "complexity": "low",
+      "size": "small",
+      "status": "ready",
+      "created": "2025-09-18T16:00:00Z",
+      "updated": "2025-09-18T16:00:00Z",
+      "github": null,
+      "depends_on": [],
+      "conflicts_with": [],
+      "content": "\n\n# Configure Enhanced Generator Environment\n\n## Description\nSet up and validate the enhanced GitHub issue generator script environment, ensuring all dependencies are installed and the script has proper permissions to execute within the CCPM sync workflow.\n\n## Objectives\n- Validate Node.js environment and dependencies\n- Ensure enhancement script has execution permissions\n- Configure proper error handling and logging\n- Test script accessibility from sync command\n\n## Acceptance Criteria\n- [ ] Enhancement script is executable (`chmod +x`)\n- [ ] Node.js dependencies are available\n- [ ] Script path is correctly referenced in sync command\n- [ ] Error handling properly configured\n- [ ] Fallback mechanism tested and working\n\n## Technical Approach\n1. Check Node.js version compatibility\n2. Validate script file permissions\n3. Test script execution with sample data\n4. Configure logging for debugging\n5. Implement error recovery mechanisms\n\n## Implementation Details\n```bash\n# Make script executable\nchmod +x .claude/scripts/github/enhance-github-issue.js\n\n# Test script execution\nnode .claude/scripts/github/enhance-github-issue.js --help\n\n# Validate integration point\ngrep -n \"enhance-github-issue.js\" .claude/commands/features/3-sync.md\n```\n\n## Dependencies\n- Node.js runtime\n- File system access\n- GitHub CLI for testing\n\n## Estimated Effort\n- **Time**: 30 minutes\n- **Complexity**: Low\n- **Risk**: Minimal",
+      "htmlContent": "<h1>Configure Enhanced Generator Environment</h1>\n<h2>Description</h2>\n<p>Set up and validate the enhanced GitHub issue generator script environment, ensuring all dependencies are installed and the script has proper permissions to execute within the CCPM sync workflow.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Validate Node.js environment and dependencies</li>\n<li>Ensure enhancement script has execution permissions</li>\n<li>Configure proper error handling and logging</li>\n<li>Test script accessibility from sync command</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Enhancement script is executable (<code>chmod +x</code>)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Node.js dependencies are available</li>\n<li><input disabled=\"\" type=\"checkbox\"> Script path is correctly referenced in sync command</li>\n<li><input disabled=\"\" type=\"checkbox\"> Error handling properly configured</li>\n<li><input disabled=\"\" type=\"checkbox\"> Fallback mechanism tested and working</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Check Node.js version compatibility</li>\n<li>Validate script file permissions</li>\n<li>Test script execution with sample data</li>\n<li>Configure logging for debugging</li>\n<li>Implement error recovery mechanisms</li>\n</ol>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-bash\"># Make script executable\nchmod +x .claude/scripts/github/enhance-github-issue.js\n\n# Test script execution\nnode .claude/scripts/github/enhance-github-issue.js --help\n\n# Validate integration point\ngrep -n &quot;enhance-github-issue.js&quot; .claude/commands/features/3-sync.md\n</code></pre>\n<h2>Dependencies</h2>\n<ul>\n<li>Node.js runtime</li>\n<li>File system access</li>\n<li>GitHub CLI for testing</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 30 minutes</li>\n<li><strong>Complexity</strong>: Low</li>\n<li><strong>Risk</strong>: Minimal</li>\n</ul>\n",
+      "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/001.md",
+      "featureName": "test-enhanced-issues",
+      "taskId": "001"
+    },
+    {
+      "name": "Test Content Extraction Logic",
+      "type": "task",
+      "priority": "high",
+      "complexity": "medium",
+      "size": "medium",
+      "status": "ready",
+      "created": "2025-09-18T16:00:00Z",
+      "updated": "2025-09-18T16:00:00Z",
+      "github": null,
+      "depends_on": [
+        1
+      ],
+      "conflicts_with": [],
+      "content": "\n\n# Test Content Extraction Logic\n\n## Description\nValidate that the enhanced generator correctly extracts all relevant content sections from markdown files, including problem statements, objectives, acceptance criteria, and technical details. Test edge cases with missing sections.\n\n## Objectives\n- Test extraction of all standard sections\n- Validate fallback behavior for missing content\n- Ensure proper formatting of extracted content\n- Verify markdown preservation in output\n\n## Acceptance Criteria\n- [ ] Problem statements extracted correctly\n- [ ] Objectives properly formatted as lists\n- [ ] Acceptance criteria converted to checkboxes\n- [ ] Technical details preserved with formatting\n- [ ] Missing sections handled gracefully with defaults\n- [ ] Markdown syntax properly preserved\n- [ ] Special characters escaped correctly\n\n## Technical Approach\n1. Create test markdown files with various content patterns\n2. Run extraction on complete documents\n3. Test with missing sections\n4. Validate output format\n5. Check edge cases (empty sections, special chars)\n\n## Test Cases\n### Complete Document Test\n- All sections present\n- Validate complete extraction\n\n### Missing Sections Test\n- Remove various sections\n- Confirm fallback content\n\n### Formatting Edge Cases\n- Code blocks in content\n- Special markdown syntax\n- Unicode characters\n\n## Implementation Details\n```javascript\n// Test extraction patterns\nconst testCases = [\n  { name: 'complete', hasAll: true },\n  { name: 'no_criteria', missing: ['criteria'] },\n  { name: 'minimal', missing: ['objectives', 'approach'] }\n];\n\n// Validate each test case\ntestCases.forEach(test => {\n  const result = extractContent(test.file);\n  validateOutput(result, test.expected);\n});\n```\n\n## Dependencies\n- Task 001 (environment setup)\n- Test markdown files\n- Enhancement script\n\n## Estimated Effort\n- **Time**: 1 hour\n- **Complexity**: Medium\n- **Risk**: Low",
+      "htmlContent": "<h1>Test Content Extraction Logic</h1>\n<h2>Description</h2>\n<p>Validate that the enhanced generator correctly extracts all relevant content sections from markdown files, including problem statements, objectives, acceptance criteria, and technical details. Test edge cases with missing sections.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Test extraction of all standard sections</li>\n<li>Validate fallback behavior for missing content</li>\n<li>Ensure proper formatting of extracted content</li>\n<li>Verify markdown preservation in output</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Problem statements extracted correctly</li>\n<li><input disabled=\"\" type=\"checkbox\"> Objectives properly formatted as lists</li>\n<li><input disabled=\"\" type=\"checkbox\"> Acceptance criteria converted to checkboxes</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical details preserved with formatting</li>\n<li><input disabled=\"\" type=\"checkbox\"> Missing sections handled gracefully with defaults</li>\n<li><input disabled=\"\" type=\"checkbox\"> Markdown syntax properly preserved</li>\n<li><input disabled=\"\" type=\"checkbox\"> Special characters escaped correctly</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Create test markdown files with various content patterns</li>\n<li>Run extraction on complete documents</li>\n<li>Test with missing sections</li>\n<li>Validate output format</li>\n<li>Check edge cases (empty sections, special chars)</li>\n</ol>\n<h2>Test Cases</h2>\n<h3>Complete Document Test</h3>\n<ul>\n<li>All sections present</li>\n<li>Validate complete extraction</li>\n</ul>\n<h3>Missing Sections Test</h3>\n<ul>\n<li>Remove various sections</li>\n<li>Confirm fallback content</li>\n</ul>\n<h3>Formatting Edge Cases</h3>\n<ul>\n<li>Code blocks in content</li>\n<li>Special markdown syntax</li>\n<li>Unicode characters</li>\n</ul>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-javascript\">// Test extraction patterns\nconst testCases = [\n  { name: &#39;complete&#39;, hasAll: true },\n  { name: &#39;no_criteria&#39;, missing: [&#39;criteria&#39;] },\n  { name: &#39;minimal&#39;, missing: [&#39;objectives&#39;, &#39;approach&#39;] }\n];\n\n// Validate each test case\ntestCases.forEach(test =&gt; {\n  const result = extractContent(test.file);\n  validateOutput(result, test.expected);\n});\n</code></pre>\n<h2>Dependencies</h2>\n<ul>\n<li>Task 001 (environment setup)</li>\n<li>Test markdown files</li>\n<li>Enhancement script</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 1 hour</li>\n<li><strong>Complexity</strong>: Medium</li>\n<li><strong>Risk</strong>: Low</li>\n</ul>\n",
+      "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/002.md",
+      "featureName": "test-enhanced-issues",
+      "taskId": "002"
+    },
+    {
+      "name": "Validate GitHub Issue Quality",
+      "type": "task",
+      "priority": "high",
+      "complexity": "medium",
+      "size": "medium",
+      "status": "ready",
+      "created": "2025-09-18T16:00:00Z",
+      "updated": "2025-09-18T16:00:00Z",
+      "github": null,
+      "depends_on": [
+        1,
+        2
+      ],
+      "conflicts_with": [],
+      "content": "\n\n# Validate GitHub Issue Quality\n\n## Description\nExecute the enhanced sync process and validate that created GitHub issues meet quality standards with rich content, proper formatting, and actionable information. Compare against previous empty issue format to measure improvement.\n\n## Objectives\n- Execute enhanced sync on test feature\n- Validate issue content completeness\n- Measure content quality metrics\n- Compare against baseline empty issues\n- Document improvement statistics\n\n## Acceptance Criteria\n- [ ] Issues created successfully via enhanced sync\n- [ ] Content length increased by 10x minimum\n- [ ] All sections properly formatted in GitHub\n- [ ] Labels correctly applied (priority, complexity, size)\n- [ ] Links and references working\n- [ ] Markdown rendering correctly in GitHub UI\n- [ ] Performance within acceptable limits (< 2s/issue)\n- [ ] Fallback mechanism tested if enhancement fails\n\n## Technical Approach\n1. Run enhanced sync command on test feature\n2. Capture created issue numbers\n3. Fetch issue content via GitHub API\n4. Analyze content quality metrics\n5. Compare with baseline measurements\n6. Generate quality report\n\n## Quality Metrics\n### Content Analysis\n- Word count comparison\n- Section completeness score\n- Actionability rating\n- Metadata accuracy\n\n### Performance Metrics\n- Time per issue creation\n- API call efficiency\n- Error rate\n\n## Implementation Details\n```bash\n# Execute enhanced sync\n./claude/commands/features/3-sync.md test-enhanced-issues\n\n# Fetch created issues\ngh issue list --label \"feature:test-enhanced-issues\" --json number,title,body,labels\n\n# Analyze content quality\nfor issue in $(gh issue list --label \"feature:test-enhanced-issues\" --json number -q '.[].number'); do\n  gh issue view $issue --json body | jq -r '.body' | wc -w\ndone\n\n# Compare with baseline\necho \"Baseline: ~50 words\"\necho \"Enhanced: $(calculate_average)\"\n```\n\n## Validation Checklist\n- [ ] Feature issue contains problem statement\n- [ ] Feature issue has objectives section\n- [ ] Task issues include acceptance criteria\n- [ ] Technical details present\n- [ ] Dependencies properly linked\n- [ ] Labels comprehensive and accurate\n\n## Dependencies\n- Task 001 (environment setup)\n- Task 002 (content extraction validation)\n- GitHub API access\n- Test feature files\n\n## Estimated Effort\n- **Time**: 1 hour\n- **Complexity**: Medium\n- **Risk**: Low",
+      "htmlContent": "<h1>Validate GitHub Issue Quality</h1>\n<h2>Description</h2>\n<p>Execute the enhanced sync process and validate that created GitHub issues meet quality standards with rich content, proper formatting, and actionable information. Compare against previous empty issue format to measure improvement.</p>\n<h2>Objectives</h2>\n<ul>\n<li>Execute enhanced sync on test feature</li>\n<li>Validate issue content completeness</li>\n<li>Measure content quality metrics</li>\n<li>Compare against baseline empty issues</li>\n<li>Document improvement statistics</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Issues created successfully via enhanced sync</li>\n<li><input disabled=\"\" type=\"checkbox\"> Content length increased by 10x minimum</li>\n<li><input disabled=\"\" type=\"checkbox\"> All sections properly formatted in GitHub</li>\n<li><input disabled=\"\" type=\"checkbox\"> Labels correctly applied (priority, complexity, size)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Links and references working</li>\n<li><input disabled=\"\" type=\"checkbox\"> Markdown rendering correctly in GitHub UI</li>\n<li><input disabled=\"\" type=\"checkbox\"> Performance within acceptable limits (&lt; 2s/issue)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Fallback mechanism tested if enhancement fails</li>\n</ul>\n<h2>Technical Approach</h2>\n<ol>\n<li>Run enhanced sync command on test feature</li>\n<li>Capture created issue numbers</li>\n<li>Fetch issue content via GitHub API</li>\n<li>Analyze content quality metrics</li>\n<li>Compare with baseline measurements</li>\n<li>Generate quality report</li>\n</ol>\n<h2>Quality Metrics</h2>\n<h3>Content Analysis</h3>\n<ul>\n<li>Word count comparison</li>\n<li>Section completeness score</li>\n<li>Actionability rating</li>\n<li>Metadata accuracy</li>\n</ul>\n<h3>Performance Metrics</h3>\n<ul>\n<li>Time per issue creation</li>\n<li>API call efficiency</li>\n<li>Error rate</li>\n</ul>\n<h2>Implementation Details</h2>\n<pre><code class=\"language-bash\"># Execute enhanced sync\n./claude/commands/features/3-sync.md test-enhanced-issues\n\n# Fetch created issues\ngh issue list --label &quot;feature:test-enhanced-issues&quot; --json number,title,body,labels\n\n# Analyze content quality\nfor issue in $(gh issue list --label &quot;feature:test-enhanced-issues&quot; --json number -q &#39;.[].number&#39;); do\n  gh issue view $issue --json body | jq -r &#39;.body&#39; | wc -w\ndone\n\n# Compare with baseline\necho &quot;Baseline: ~50 words&quot;\necho &quot;Enhanced: $(calculate_average)&quot;\n</code></pre>\n<h2>Validation Checklist</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> Feature issue contains problem statement</li>\n<li><input disabled=\"\" type=\"checkbox\"> Feature issue has objectives section</li>\n<li><input disabled=\"\" type=\"checkbox\"> Task issues include acceptance criteria</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical details present</li>\n<li><input disabled=\"\" type=\"checkbox\"> Dependencies properly linked</li>\n<li><input disabled=\"\" type=\"checkbox\"> Labels comprehensive and accurate</li>\n</ul>\n<h2>Dependencies</h2>\n<ul>\n<li>Task 001 (environment setup)</li>\n<li>Task 002 (content extraction validation)</li>\n<li>GitHub API access</li>\n<li>Test feature files</li>\n</ul>\n<h2>Estimated Effort</h2>\n<ul>\n<li><strong>Time</strong>: 1 hour</li>\n<li><strong>Complexity</strong>: Medium</li>\n<li><strong>Risk</strong>: Low</li>\n</ul>\n",
+      "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/implementations/test-enhanced-issues/003.md",
+      "featureName": "test-enhanced-issues",
+      "taskId": "003"
+    }
+  ],
+  "specs": [
+    {
+      "content": "# Test Enhanced Issues Feature Specification\n\n## Problem Statement\nThe current CCPM system creates GitHub issues with minimal content that lack actionable detail. This test feature demonstrates the enhanced issue generation capabilities that transform empty issues into comprehensive, actionable development tasks.\n\n## Objectives\n1. Validate enhanced GitHub issue generation with rich content\n2. Test extraction of acceptance criteria and technical details\n3. Verify proper metadata and labeling in created issues\n4. Demonstrate improved developer experience with actionable tasks\n\n## User Stories\n- As a **developer**, I want GitHub issues with complete context so I can start work without referencing local files\n- As a **project manager**, I want detailed task breakdowns so I can track progress effectively\n- As a **stakeholder**, I want comprehensive issue descriptions so I understand what's being built\n\n## Acceptance Criteria\n- [ ] GitHub issues contain problem statements and context\n- [ ] Each issue includes testable acceptance criteria\n- [ ] Technical approach and implementation guidance provided\n- [ ] Proper metadata labels applied (priority, complexity, size)\n- [ ] Dependencies clearly documented and linked\n- [ ] Effort estimates included with rationale\n\n## Technical Approach\n### Architecture\n- Enhanced content extraction from markdown files\n- Intelligent section parsing with fallbacks\n- Rich metadata extraction from frontmatter\n- Template-based issue generation\n\n### Implementation Details\n- Node.js script for content enhancement\n- Bash integration in sync command\n- Fallback mechanisms for robustness\n- Comprehensive validation checks\n\n## Dependencies\n- GitHub CLI authenticated\n- Node.js for enhancement script\n- Existing CCPM tracking structure\n- Access to .claude/scripts/github/\n\n## Constraints\n- Must maintain backward compatibility\n- Cannot break existing sync workflows\n- Should handle missing sections gracefully\n- Performance impact < 2 seconds per issue\n\n## Success Metrics\n- Issue content increase: 10x (from ~50 to 500+ words)\n- Actionable criteria: 100% of issues\n- Developer satisfaction: Improved\n- Time to understand task: Reduced by 70%",
+      "htmlContent": "<h1>Test Enhanced Issues Feature Specification</h1>\n<h2>Problem Statement</h2>\n<p>The current CCPM system creates GitHub issues with minimal content that lack actionable detail. This test feature demonstrates the enhanced issue generation capabilities that transform empty issues into comprehensive, actionable development tasks.</p>\n<h2>Objectives</h2>\n<ol>\n<li>Validate enhanced GitHub issue generation with rich content</li>\n<li>Test extraction of acceptance criteria and technical details</li>\n<li>Verify proper metadata and labeling in created issues</li>\n<li>Demonstrate improved developer experience with actionable tasks</li>\n</ol>\n<h2>User Stories</h2>\n<ul>\n<li>As a <strong>developer</strong>, I want GitHub issues with complete context so I can start work without referencing local files</li>\n<li>As a <strong>project manager</strong>, I want detailed task breakdowns so I can track progress effectively</li>\n<li>As a <strong>stakeholder</strong>, I want comprehensive issue descriptions so I understand what&#39;s being built</li>\n</ul>\n<h2>Acceptance Criteria</h2>\n<ul>\n<li><input disabled=\"\" type=\"checkbox\"> GitHub issues contain problem statements and context</li>\n<li><input disabled=\"\" type=\"checkbox\"> Each issue includes testable acceptance criteria</li>\n<li><input disabled=\"\" type=\"checkbox\"> Technical approach and implementation guidance provided</li>\n<li><input disabled=\"\" type=\"checkbox\"> Proper metadata labels applied (priority, complexity, size)</li>\n<li><input disabled=\"\" type=\"checkbox\"> Dependencies clearly documented and linked</li>\n<li><input disabled=\"\" type=\"checkbox\"> Effort estimates included with rationale</li>\n</ul>\n<h2>Technical Approach</h2>\n<h3>Architecture</h3>\n<ul>\n<li>Enhanced content extraction from markdown files</li>\n<li>Intelligent section parsing with fallbacks</li>\n<li>Rich metadata extraction from frontmatter</li>\n<li>Template-based issue generation</li>\n</ul>\n<h3>Implementation Details</h3>\n<ul>\n<li>Node.js script for content enhancement</li>\n<li>Bash integration in sync command</li>\n<li>Fallback mechanisms for robustness</li>\n<li>Comprehensive validation checks</li>\n</ul>\n<h2>Dependencies</h2>\n<ul>\n<li>GitHub CLI authenticated</li>\n<li>Node.js for enhancement script</li>\n<li>Existing CCPM tracking structure</li>\n<li>Access to .claude/scripts/github/</li>\n</ul>\n<h2>Constraints</h2>\n<ul>\n<li>Must maintain backward compatibility</li>\n<li>Cannot break existing sync workflows</li>\n<li>Should handle missing sections gracefully</li>\n<li>Performance impact &lt; 2 seconds per issue</li>\n</ul>\n<h2>Success Metrics</h2>\n<ul>\n<li>Issue content increase: 10x (from ~50 to 500+ words)</li>\n<li>Actionable criteria: 100% of issues</li>\n<li>Developer satisfaction: Improved</li>\n<li>Time to understand task: Reduced by 70%</li>\n</ul>\n",
+      "filePath": "/home/msmith/projects/2025slideheroes/.claude/tracking/specs/test-enhanced-issues.md",
+      "specName": "test-enhanced-issues"
+    }
+  ],
+  "issues": [],
+  "metrics": {
+    "totalFeatures": 1,
+    "totalTasks": 3,
+    "completedTasks": 0,
+    "inProgressTasks": 0,
+    "blockedTasks": 0,
+    "pendingTasks": 3,
+    "velocity": [],
+    "agentDistribution": {},
+    "priorityDistribution": {
+      "high": 3,
+      "medium": 0,
+      "low": 0
+    },
+    "complexityDistribution": {
+      "high": 0,
+      "medium": 2,
+      "low": 1
+    },
+    "overallProgress": 0
+  },
+  "timeline": [
+    {
+      "date": "2025-09-18T16:00:00Z",
+      "type": "created",
+      "task": "Configure Enhanced Generator Environment",
+      "feature": "test-enhanced-issues"
+    },
+    {
+      "date": "2025-09-18T16:00:00Z",
+      "type": "created",
+      "task": "Test Content Extraction Logic",
+      "feature": "test-enhanced-issues"
+    },
+    {
+      "date": "2025-09-18T16:00:00Z",
+      "type": "created",
+      "task": "Validate GitHub Issue Quality",
+      "feature": "test-enhanced-issues"
+    }
+  ],
+  "summary": {
+    "features": {
+      "total": 1,
+      "completed": 0,
+      "inProgress": 0,
+      "blocked": 0
+    },
+    "tasks": {
+      "total": 3,
+      "completed": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "pending": 3
+    },
+    "progress": 0,
+    "velocity": [],
+    "topAgents": []
+  },
+  "generated": "2025-09-18T15:53:35.481Z"
+};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const agentStats = document.getElementById('agentStats');
+            const agents = dashboardData.metrics.agentDistribution || {};
+
+            agentStats.innerHTML = '<ul class="space-y-2">' +
+                Object.entries(agents).map(([agent, count]) =>
+                    '<li class="p-2 border rounded">' +
+                    '<span class="font-medium">' + agent + '</span>: ' +
+                    '<span class="text-sm text-gray-600">' + count + ' tasks</span>' +
+                    '</li>'
+                ).join('') + '</ul>';
+        });
+    </script>
+</body>
+</html>
