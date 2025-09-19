@@ -42,3 +42,5 @@ This directory contains systematically documented issues and their resolutions.
 Common patterns discovered through issue resolution:
 
 - [Add patterns as they are identified]
+| ISSUE-351 (GitHub #351) | E2E Test Execution Inconsistency | medium | new | 2025-09-19 | 2025-09-19-ISSUE-351 (GitHub #351).md |
+| ISSUE-352 (GitHub #352) | Test Command Background Execution | medium | new | 2025-09-19 | 2025-09-19-ISSUE-352 (GitHub #352).md |
