@@ -46,6 +46,15 @@ create index ix_accounts_memberships_user_id on public.accounts_memberships (use
 
 create index ix_accounts_memberships_account_role on public.accounts_memberships (account_role);
 
+-- Triggers for accounts_memberships table
+create trigger accounts_memberships_set_timestamps
+before insert or update on public.accounts_memberships
+for each row execute function public.trigger_set_timestamps();
+
+create trigger accounts_memberships_set_user_tracking
+before insert or update on public.accounts_memberships
+for each row execute function public.trigger_set_user_tracking();
+
 -- Enable RLS on the accounts_memberships table
 alter table public.accounts_memberships enable row level security;
 
