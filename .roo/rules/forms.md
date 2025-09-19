@@ -11,6 +11,7 @@ alwaysApply: false
 - Use the `zodResolver` function to resolve the Zod schema to the form.
 - Use Server Actions [server-actions.md](mdc:.roo/rules/server-actions.md) for server-side code handling
 - Use Sonner for writing toasters for UI feedback
+- Never add generics to `useForm`, use Zod resolver to infer types instead
 
 Follow the example below to create all forms:
 

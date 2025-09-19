@@ -1,62 +1,6 @@
-# AGENTS.md
-
-This AGENTS.md file provides comprehensive guidance for OpenAI Codex and other AI agents working with this codebase.
-
 ## Core Technologies
 
 - **Next.js 15** with App Router and Turbopack
-- **Supabase** for database, auth, and storage
-- **React 19** with React Compiler
-- **TypeScript** with strict configuration
-- **Tailwind CSS 4** for styling
-- **Turborepo** for monorepo management
-
-## Monorepo Structure
-
-- @apps/web - Main Next.js SaaS application
-- @apps/dev-tool - Development utilities (port 3010)
-- @apps/e2e - Playwright end-to-end tests
-- @packages/ - Shared packages and utilities
-- @tooling/ - Build tools and development scripts
-
-## Multi-Tenant Architecture
-
-**Personal Accounts**: Individual user accounts (auth.users.id = accounts.id)
-**Team Accounts**: Shared workspaces with members, roles, and permissions
-
-Data associates with accounts via foreign keys for proper access control.
-
-## Essential Commands
-
-### Development Workflow
-
-```bash
-pnpm dev                    # Start all apps
-pnpm --filter web dev       # Main app (port 3000)
-pnpm --filter dev-tool dev  # Dev tools (port 3010)
-pnpm build                  # Build all apps
-```
-
-### Database Operations
-
-```bash
-pnpm supabase:web:start     # Start Supabase locally
-pnpm supabase:web:reset     # Reset with latest schema
-pnpm supabase:web:typegen   # Generate TypeScript types
-pnpm --filter web supabase:db:diff  # Create migration
-```
-
-### Code Quality
-
-```bash
-pnpm lint && pnpm format    # Lint and format
-pnpm typecheck              # Type checking
-pnpm test                   # Run tests
-```
-
-## Application Structure
-
-### Route Organization
 
 ```bash
 app/
@@ -68,8 +12,6 @@ app/
 ├── admin/               # Super admin section
 └── api/                 # API routes
 ```
-
-Key Examples:
 
 - Marketing layout: @apps/web/app/(marketing)/layout.tsx
 - Personal dashboard: @apps/web/app/home/(user)/page.tsx
