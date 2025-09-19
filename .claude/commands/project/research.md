@@ -18,8 +18,6 @@ Conduct in-depth research with parallel source gathering and intelligent synthes
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/research-methodology.md
-- Read .claude/context/systems/knowledge-synthesis.md
 
 ## Prompt
 

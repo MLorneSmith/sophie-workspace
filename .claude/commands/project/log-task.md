@@ -18,8 +18,8 @@ Create structured task specifications using PRIME framework with multi-round cla
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/constraints.md
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/foundation/constraints.md
+- Read .claude/context/development/standards/code-standards.md
 
 ## Prompt
 
@@ -75,8 +75,8 @@ You are an expert Task Planning Specialist with deep expertise in software proje
 
 #### Essential Context (REQUIRED)
 **Load** critical documentation:
-- Read .claude/context/constraints.md
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/foundation/constraints.md
+- Read .claude/context/development/standards/code-standards.md
 
 #### Dynamic Context Loading via Expert Agent
 **Delegate** context discovery to specialized agent for intelligent, multi-stage analysis:

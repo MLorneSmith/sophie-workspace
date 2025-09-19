@@ -50,7 +50,7 @@ The debug-issue command uses an internal sync script that:
 
 1. **Load issue investigator role**:
    ```
-   /read .claude/context/roles/issue-investigator.md
+   /read .claude/context/team/roles/issue-investigator.md
    ```
 
 2. **Activate expert capabilities**:

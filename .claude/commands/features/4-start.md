@@ -18,8 +18,7 @@ Launch coordinated parallel agents to execute feature implementation tasks with 
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/pm/ccpm-coordination-rules.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
 
 ## Prompt
 

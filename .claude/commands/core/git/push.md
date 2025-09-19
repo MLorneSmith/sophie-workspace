@@ -20,7 +20,7 @@ Execute intelligent git push operations with comprehensive safety checks, automa
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/development/standards/code-standards.md
 - Read CLAUDE.md
 
 ## Prompt

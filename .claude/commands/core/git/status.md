@@ -18,8 +18,7 @@ Analyze git repository state with intelligent categorization, pattern detection,
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/git/branching-strategy.md
+- Read .claude/context/development/standards/code-standards.md
 
 ## Prompt
 

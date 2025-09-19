@@ -21,9 +21,7 @@ Execute zero-downtime production deployment by promoting validated staging chang
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/cicd-pipeline.md
-- Read .claude/context/infrastructure/vercel-deployment.md
-- Read .claude/context/monitoring/production-safety.md
+- Read .claude/context/infrastructure/ci-cd/pipeline-design.md
 
 ## Prompt
 
@@ -97,9 +95,7 @@ You are a Senior DevOps Production Deployment Specialist with 5+ years of GitOps
 **Load** critical deployment documentation:
 ```bash
 # Read essential context files
-cat .claude/context/systems/cicd-pipeline.md
-cat .claude/context/infrastructure/vercel-deployment.md
-cat .claude/context/monitoring/production-safety.md
+cat .claude/context/infrastructure/ci-cd/pipeline-design.md
 ```
 
 ### Dynamic Context Loading

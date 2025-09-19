@@ -20,8 +20,8 @@ Automated upstream synchronization with intelligent conflict resolution, compreh
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/standards/makerkit/upstream-sync.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/development/standards/frameworks/makerkit/upstream-sync.md
 - Read .claude/context/development/workflows/merge-automation.md
 
 ## Prompt
@@ -86,8 +86,8 @@ You are the Makerkit Synchronization Engineer, expert in framework updates, git 
 **Load** critical documentation:
 ```bash
 # Read essential files
-Read .claude/context/standards/code-standards.md
-Read .claude/context/standards/makerkit/upstream-sync.md
+Read .claude/context/development/standards/code-standards.md
+Read .claude/context/development/standards/frameworks/makerkit/upstream-sync.md
 Read .claude/context/development/workflows/merge-automation.md
 ```
 
@@ -168,23 +168,74 @@ git remote get-url upstream &>/dev/null || {
 # Fetch latest changes without merging
 git fetch upstream --quiet
 
-# Check if there are any new commits
-CURRENT_COMMIT=$(git rev-parse HEAD)
-UPSTREAM_COMMIT=$(git rev-parse upstream/main)
-COMMITS_BEHIND=$(git rev-list --count HEAD..upstream/main 2>/dev/null || echo "0")
+echo "🔍 Analyzing branch relationship with upstream..."
 
-if [ "$COMMITS_BEHIND" -eq 0 ] || [ "$CURRENT_COMMIT" = "$UPSTREAM_COMMIT" ]; then
-  echo "✅ Already up-to-date with upstream - no updates available"
-  echo "📊 Current commit: $(git log -1 --oneline)"
-  echo "📊 Upstream commit: $(git log upstream/main -1 --oneline)"
+# Method 1: Check if upstream/main is already an ancestor of HEAD
+if git merge-base --is-ancestor upstream/main HEAD; then
+  echo "✅ All upstream changes already incorporated"
+  echo "📊 Current branch includes all upstream commits"
+  echo "📊 Your branch: $(git log -1 --oneline)"
+  echo "📊 Upstream: $(git log upstream/main -1 --oneline)"
   echo ""
   echo "ℹ️ No action needed - your project is synchronized with Makerkit"
   exit 0
 fi
 
-echo "📊 Found $COMMITS_BEHIND new commits from upstream"
-echo "📋 Recent upstream changes:"
-git log --oneline HEAD..upstream/main --max-count=5
+# Method 2: Check if we're at the same merge base as upstream
+MERGE_BASE=$(git merge-base HEAD upstream/main)
+UPSTREAM_COMMIT=$(git rev-parse upstream/main)
+if [ "$MERGE_BASE" = "$UPSTREAM_COMMIT" ]; then
+  echo "✅ No new upstream changes to incorporate"
+  echo "📊 Merge base equals upstream HEAD"
+  echo "📊 Your branch: $(git log -1 --oneline)"
+  echo "📊 Upstream: $(git log upstream/main -1 --oneline)"
+  echo ""
+  echo "ℹ️ No action needed - upstream has no new commits"
+  exit 0
+fi
+
+# Method 3: Analyze what's new in upstream
+UPSTREAM_COMMITS=$(git rev-list --count $MERGE_BASE..upstream/main 2>/dev/null || echo "0")
+AHEAD_COMMITS=$(git rev-list --count upstream/main..HEAD 2>/dev/null || echo "0")
+
+echo "📊 Branch analysis:"
+echo "   • Your branch is $AHEAD_COMMITS commits ahead of upstream"
+echo "   • Upstream has $UPSTREAM_COMMITS new commits since divergence"
+echo "   • Merge base: $(git log $MERGE_BASE -1 --oneline)"
+echo ""
+
+if [ "$UPSTREAM_COMMITS" -eq 0 ]; then
+  echo "✅ No new upstream commits to sync"
+  echo "ℹ️ No action needed - upstream has no new changes"
+  exit 0
+fi
+
+echo "📋 New upstream changes since merge base:"
+git log --oneline $MERGE_BASE..upstream/main --max-count=10
+echo ""
+
+echo "📁 Files that would be affected:"
+CHANGED_FILES=$(git diff --name-only $MERGE_BASE..upstream/main)
+echo "$CHANGED_FILES" | head -20
+if [ $(echo "$CHANGED_FILES" | wc -l) -gt 20 ]; then
+  echo "   ... and $(($(echo "$CHANGED_FILES" | wc -l) - 20)) more files"
+fi
+echo ""
+
+# For force mode, continue automatically
+if [ "$FORCE" = "true" ]; then
+  echo "🔄 --force specified, proceeding with sync..."
+else
+  # Interactive confirmation for non-force mode
+  echo "🤔 Do you want to sync these upstream changes? [y/N]"
+  read -r CONFIRM
+  if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+    echo "ℹ️ Sync cancelled by user"
+    exit 0
+  fi
+fi
+
+echo "🔄 Proceeding with upstream sync..."
 
 # Mark task as completed
 ```
@@ -592,7 +643,8 @@ Safely synchronize your project with the latest Makerkit framework updates using
 5. **Expectations**: Clean merge with full documentation
 
 **Key Features:**
-- Checks for updates before proceeding (efficiency)
+- Smart sync detection (handles diverged branches correctly)
+- Interactive confirmation of upstream changes
 - 95% automated conflict resolution
 - Parallel validation suite
 - Progress tracking with TodoWrite
@@ -603,6 +655,13 @@ This project already has the upstream remote configured with authentication:
 ```
 upstream   https://MLorneSmith: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@github.com/makerkit/next-supabase-saas-kit-turbo.git
 ```
+
+**Smart Sync Detection:**
+The command now properly handles diverged branches by:
+1. Checking if upstream is already an ancestor (fully synced)
+2. Detecting if there are actually new upstream commits
+3. Showing you exactly what would change before proceeding
+4. Asking for confirmation unless --force is used
 
 **Requirements:**
 - Clean git working directory

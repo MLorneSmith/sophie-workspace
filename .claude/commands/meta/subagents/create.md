@@ -18,7 +18,7 @@ Create specialized AI subagents following action-oriented design principles and 
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/claude-code/creating-subagent-prompts.md
+- Read .claude/context/development/tooling/claude-code/creating-subagent-prompts.md
 
 ## Prompt
 

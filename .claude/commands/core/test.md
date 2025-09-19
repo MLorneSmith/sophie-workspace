@@ -18,8 +18,7 @@ Execute comprehensive test suites with intelligent orchestration, detailed repor
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/testing/test-strategy.md
+- Read .claude/context/development/standards/code-standards.md
 
 ## Prompt
 

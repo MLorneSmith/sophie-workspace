@@ -21,7 +21,6 @@ Display and manage code checkpoints with comprehensive metadata, restoration opt
 <!-- Always read for this command -->
 - Read .claude/commands/checkpoint/create.md
 - Read .claude/commands/checkpoint/restore.md
-- Read .claude/context/systems/git-patterns.md
 
 ## Prompt
 
@@ -81,7 +80,6 @@ You are a **Code State Management Expert** specializing in git stash operations,
 **Load** critical documentation:
 - Read .claude/commands/checkpoint/create.md - Checkpoint creation patterns
 - Read .claude/commands/checkpoint/restore.md - Restoration procedures
-- Read .claude/context/systems/git-patterns.md - Git best practices
 
 #### Dynamic Context Loading
 **Delegate** context discovery to specialized agent:

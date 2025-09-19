@@ -20,8 +20,8 @@ Efficient context file creation and modification system for Claude Code speciali
 ## Essential Context
 <!-- Always read for this command -->
 - Read .claude/data/context-inventory.json
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/architecture/patterns.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/foundation/architecture/patterns.md
 
 ## Prompt
 
@@ -90,8 +90,8 @@ ELSE:
 #### Essential Context (REQUIRED)
 **Load** critical documentation:
 - Read .claude/data/context-inventory.json
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/architecture/patterns.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/foundation/architecture/patterns.md
 
 #### Dynamic Context Loading (ADAPTIVE)
 **Delegate** context discovery to specialized agent for intelligent analysis:
@@ -219,7 +219,7 @@ ELSE:
 
 5. **Calculate** token count using token-counter.cjs:
    ```bash
-   TOKEN_RESULT=$(node .claude/scripts/token-counter.cjs <temp-file-path>)
+   TOKEN_RESULT=$(node .claude/scripts/analysis/token-counter.cjs <temp-file-path>)
    TOKEN_COUNT=$(echo "$TOKEN_RESULT" | jq -r '.tokens')
    ```
 
@@ -271,7 +271,7 @@ ELSE IF --new mode:
 
 8. **Calculate** final token count:
    ```bash
-   FINAL_TOKENS=$(node .claude/scripts/token-counter.cjs .claude/context/${subdirectory}/${id}.md)
+   FINAL_TOKENS=$(node .claude/scripts/analysis/token-counter.cjs .claude/context/${subdirectory}/${id}.md)
    FINAL_COUNT=$(echo "$FINAL_TOKENS" | jq -r '.tokens')
    ```
 
@@ -300,7 +300,7 @@ ELSE IF --new mode:
 **Verify** token compliance:
 ```bash
 # Final token validation
-VALIDATION_RESULT=$(node .claude/scripts/token-counter.cjs .claude/context/${subdirectory}/${id}.md)
+VALIDATION_RESULT=$(node .claude/scripts/analysis/token-counter.cjs .claude/context/${subdirectory}/${id}.md)
 TOKEN_COUNT=$(echo "$VALIDATION_RESULT" | jq -r '.tokens')
 
 IF TOKEN_COUNT <= 2000:

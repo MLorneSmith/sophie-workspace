@@ -20,9 +20,9 @@ Generates comprehensive Vitest unit tests from the prioritized test coverage dat
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/tools/vitest-unit-testing.md
-- Read .claude/context/standards/testing/typescript-test-patterns.md
-- Read .claude/context/standards/testing/testing-fundamentals.md
+- Read .claude/context/testing/infrastructure/vitest-unit-testing.md
+- Read .claude/context/testing/fundamentals/typescript-test-patterns.md
+- Read .claude/context/testing/fundamentals/testing-fundamentals.md
 - Read apps/web/test/test-helpers.ts
 
 ## Prompt

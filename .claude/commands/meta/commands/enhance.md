@@ -18,9 +18,9 @@ AI-powered Claude Code command enhancement using the 4-D Methodology with parall
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/systems/prompt-engineering.md
-- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/team/knowledge/prompt-engineering.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
 
 ## Prompt
 

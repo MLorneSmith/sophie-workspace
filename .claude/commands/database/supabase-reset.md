@@ -17,7 +17,7 @@ Reset all Supabase database instances in the turborepo with comprehensive safety
 ## Essential Context
 <!-- Always read for this command -->
 - Read .claude/context/tools/cli/supabase-cli.md
-- Read .claude/context/database/migrations.md
+- Read .claude/context/data/migrations/overview.md
 
 ## Prompt
 
@@ -64,7 +64,7 @@ You are a Database Operations Specialist with expertise in Supabase multi-instan
 #### Essential Context (REQUIRED)
 **Load** critical documentation that is always needed:
 - Read .claude/context/tools/cli/supabase-cli.md
-- Read .claude/context/database/migrations.md
+- Read .claude/context/data/migrations/overview.md
 
 #### Dynamic Context Loading
 **Delegate** to database expert for intelligent context discovery:

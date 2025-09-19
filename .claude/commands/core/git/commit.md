@@ -18,7 +18,7 @@ Create intelligent, secure git commits with automatic change grouping and conven
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/development/standards/code-standards.md
 - Read CLAUDE.md (for project-specific conventions)
 
 ## Prompt

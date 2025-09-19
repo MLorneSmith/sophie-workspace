@@ -19,8 +19,8 @@ Generate comprehensive, production-ready feature specifications using the PRIME 
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/roles/task-planner.md
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/team/roles/task-planner.md
+- Read .claude/context/development/standards/code-standards.md
 
 ## Prompt
 
@@ -72,8 +72,8 @@ You are a Senior Product Requirements Specialist with expertise in feature analy
 
 #### Essential Context (REQUIRED)
 **Load** critical patterns and examples:
-- Read .claude/context/roles/task-planner.md
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/team/roles/task-planner.md
+- Read .claude/context/development/standards/code-standards.md
 
 #### Dynamic Context Loading
 **Analyze** and **Load** context based on feature characteristics:

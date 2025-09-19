@@ -19,7 +19,7 @@ Execute autonomous enhancements to existing Claude Code subagents following acti
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/claude-code/creating-subagent-prompts.md
+- Read .claude/context/development/tooling/claude-code/creating-subagent-prompts.md
 
 ## Prompt
 

@@ -56,7 +56,7 @@ Assume the role of Senior Context Synchronization Engineer with expertise in:
 Essential:
   - .claude/data/context-inventory.json       # Current inventory state
   - .claude/scripts/inventories/sync-context-inventory.cjs  # Primary sync engine
-  - .claude/scripts/token-counter.cjs         # Token counting utility
+  - .claude/scripts/analysis/token-counter.cjs         # Token counting utility
 
 Supporting:
   - .claude/context/**/*.md                   # All context documentation
@@ -269,7 +269,7 @@ Execute primary sync script with comprehensive error handling and progress track
        for (const doc of category.docs) {
          try {
            const output = execSync(
-             \`node .claude/scripts/token-counter.cjs '.claude/context/\${doc.path}'\`,
+             \`node .claude/scripts/analysis/token-counter.cjs '.claude/context/\${doc.path}'\`,
              { encoding: 'utf8' }
            );
            const tokens = parseInt(output.match(/(\d+)/)?.[1] || '0');

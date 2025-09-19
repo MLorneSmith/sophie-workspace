@@ -18,8 +18,6 @@ Comprehensive assessment of database connectivity, performance metrics, schema i
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/database/postgresql-patterns.md
-- Read .claude/context/monitoring/performance-baselines.md
 
 ## Prompt
 
@@ -75,8 +73,6 @@ You are a Database Reliability Engineer specializing in PostgreSQL health assess
 
 #### Essential Context (REQUIRED)
 **Load** critical documentation:
-- Read .claude/context/database/postgresql-patterns.md
-- Read .claude/context/monitoring/performance-baselines.md
 
 #### Dynamic Context Loading
 **Delegate** context discovery for project-specific database patterns:

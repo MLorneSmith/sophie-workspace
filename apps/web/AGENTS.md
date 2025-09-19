@@ -6,7 +6,7 @@ This file contains instructions specific to the main Next.js web application.
 
 ### Route Organization
 
-```
+```text
 app/
 ├── (marketing)/          # Public pages (landing, blog, docs)
 ├── (auth)/              # Authentication pages
@@ -81,7 +81,7 @@ function InteractiveNotes() {
 
 ### Performance Optimization - Parallel Data Fetching 🚀
 
-**Sequential (Slow) Pattern ❌**
+#### Sequential (Slow) Pattern ❌
 
 ```typescript
 async function SlowDashboard() {
@@ -92,7 +92,7 @@ async function SlowDashboard() {
 }
 ```
 
-**Parallel (Optimized) Pattern ✅**
+#### Parallel (Optimized) Pattern ✅
 
 ```typescript
 async function FastDashboard() {

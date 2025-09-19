@@ -19,7 +19,7 @@ Execute safe git worktree removal with comprehensive validation, automatic clean
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/development/standards/code-standards.md
 - Read .claude/software-docs/debugging/error-handling.md
 
 ## Prompt

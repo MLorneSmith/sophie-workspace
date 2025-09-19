@@ -19,9 +19,9 @@ AI-assisted creation of new Claude Code slash commands using the PRIME framework
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/systems/prompt-engineering.md
-- Read .claude/context/systems/claude-code/prime-framework.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/team/knowledge/prompt-engineering.md
+- Read .claude/context/development/tooling/claude-code/prime-framework.md
 - Read .claude/templates/command-template.md
 
 ## Prompt

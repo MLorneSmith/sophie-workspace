@@ -18,7 +18,7 @@ Track CCPM feature implementation progress from specification to completion with
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
 - Read .claude/rules/feature-workflow.md
 
 ## Prompt
@@ -75,7 +75,6 @@ You are a CCPM Feature Progress Specialist with expertise in software project ma
 
 #### Essential Context (REQUIRED)
 **Load** CCMP documentation:
-- Read .claude/context/systems/pm/ccmp-system-overview.md
 - Read .claude/rules/feature-workflow.md
 
 #### Dynamic Context Loading
