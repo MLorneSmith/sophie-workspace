@@ -18,9 +18,9 @@ Identify parallel work streams in feature tasks for maximum execution efficiency
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
+- Read .claude/context/development/standards/code-standards.md
 - Read .claude/rules/agent-coordination.md
-- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
 
 ## Prompt
 

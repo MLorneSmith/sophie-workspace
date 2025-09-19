@@ -19,8 +19,6 @@ Execute controlled restoration of project state to a previous checkpoint while i
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/git-workflows.md
-- Read .claude/context/standards/error-recovery.md
 
 ## Prompt
 
@@ -76,8 +74,6 @@ You have senior-level expertise in state transitions, merge conflict resolution,
 
 #### Essential Context (REQUIRED)
 **Load** critical documentation:
-- Read .claude/context/systems/git-workflows.md
-- Read .claude/context/standards/error-recovery.md
 
 #### Dynamic Context Loading
 **Delegate** context discovery for adaptive restoration:

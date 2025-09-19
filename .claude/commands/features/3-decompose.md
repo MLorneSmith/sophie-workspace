@@ -19,7 +19,7 @@ Transform implementation plans into concrete, parallelizable tasks optimized for
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
 - Read .claude/rules/agent-coordination.md
 - Read .claude/rules/datetime.md
 

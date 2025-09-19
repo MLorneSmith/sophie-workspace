@@ -19,8 +19,8 @@ allowed-tools: Bash, Read, Write, LS, Task, Grep, Glob
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 
 ## Prompt
 
@@ -72,8 +72,8 @@ You are a **Feature Progress Specialist**, expert in GitHub issue management, CC
 
 #### Essential Context (REQUIRED)
 **Load** critical CCPM documentation:
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 
 #### Dynamic Context Loading
 **Delegate** to context-discovery-expert for intelligent context selection:

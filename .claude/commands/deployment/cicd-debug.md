@@ -17,8 +17,7 @@ Orchestrate systematic CI/CD pipeline failure investigation through specialized 
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/cicd/workflow-patterns.md
-- Read .claude/context/systems/testing/integration-patterns.md
+- Read .claude/context/infrastructure/ci-cd/cicd-llm-context.md
 
 ## Prompt
 
@@ -76,8 +75,7 @@ CRITICAL: You execute systematic investigation while maintaining evidence-based 
 
 #### Essential Context (REQUIRED)
 **Load** critical CI/CD documentation:
-- Read .claude/context/systems/cicd/workflow-patterns.md
-- Read .claude/context/systems/testing/integration-patterns.md
+- Read .claude/context/infrastructure/ci-cd/cicd-llm-context.md
 
 #### Dynamic Context Loading (OPTIONAL - for adaptive investigation)
 **Delegate** context discovery to specialized agent for intelligent analysis:

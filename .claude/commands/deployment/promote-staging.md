@@ -24,16 +24,8 @@ Deploy changes from dev branch to staging environment following GitOps CI/CD pip
 // Load deployment-specific context dynamically
 const deploymentContext = await loadContext({
   required: [
-    '.claude/context/systems/cicd-pipeline.md',
-    '.claude/context/systems/cicd-pipeline-design.md',
-    '.claude/context/infrastructure/vercel-deployment.md',
-    '.claude/context/monitoring/newrelic-integration.md'
+    '.claude/context/infrastructure/ci-cd/pipeline-design.md'
   ],
-  conditional: {
-    hasSecurityScans: '.claude/context/security/deployment-scanning.md',
-    hasE2ETests: '.claude/context/testing/e2e-staging-validation.md',
-    hasPerformanceMonitoring: '.claude/context/monitoring/performance-baselines.md'
-  },
   onError: 'graceful-degradation'
 });
 ```

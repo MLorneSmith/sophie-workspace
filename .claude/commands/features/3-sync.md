@@ -18,8 +18,8 @@ argument-hint: <feature_name>
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 
 ## Prompt
 
@@ -71,8 +71,8 @@ You are a **Feature Synchronization Specialist**, expert in GitHub integration, 
 
 #### Essential Context (REQUIRED)
 **Load** critical CCPM documentation:
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 
 #### Dynamic Context Loading
 **Analyze** and **Load** GitHub integration patterns:

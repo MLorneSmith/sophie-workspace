@@ -17,8 +17,8 @@ Comprehensive debugging command that analyzes GitHub issues and launches systema
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/roles/debug-engineer.md
-- Read .claude/context/constraints.md
+- Read .claude/context/team/roles/debug-engineer.md
+- Read .claude/context/foundation/constraints.md
 
 ## Prompt
 
@@ -69,8 +69,8 @@ You are a Senior Debug Engineer with expertise in full-stack debugging, systemat
 
 #### Essential Context (REQUIRED)
 **Load** critical debugging documentation:
-- Read .claude/context/roles/debug-engineer.md
-- Read .claude/context/constraints.md
+- Read .claude/context/team/roles/debug-engineer.md
+- Read .claude/context/foundation/constraints.md
 
 #### GitHub Issue Analysis (REQUIRED)
 **Fetch** and **Parse** issue data:

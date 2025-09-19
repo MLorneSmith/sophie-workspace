@@ -18,8 +18,8 @@ Convert feature specification to detailed technical implementation plan with par
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 - Read .claude/rules/datetime.md
 
 ## Prompt
@@ -75,8 +75,8 @@ You are a Senior Technical Architect specializing in feature implementation plan
 
 #### Essential Context Loading
 **Load** critical CCPM workflow documentation:
-- Read .claude/context/systems/pm/ccpm-system-overview.md
-- Read .claude/context/systems/feature-implementation-workflow.md
+- Read .claude/context/development/tooling/pm/ccpm-system-overview.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
 - Read .claude/rules/datetime.md
 
 #### Dynamic Context Discovery

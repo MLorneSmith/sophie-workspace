@@ -18,8 +18,8 @@ Execute task implementation from GitHub issues with intelligent parallelization,
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/systems/feature-implementation-workflow.md
-- Read .claude/context/roles/implementation-engineer.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
+- Read .claude/context/team/roles/implementation-engineer.md
 
 ## Prompt
 
@@ -65,8 +65,8 @@ You are a Senior Implementation Engineer specializing in systematic task executi
 
 #### Essential Context (REQUIRED)
 **Load** critical documentation:
-- Read .claude/context/systems/feature-implementation-workflow.md
-- Read .claude/context/roles/implementation-engineer.md
+- Read .claude/context/development/workflows/feature-implementation-workflow.md
+- Read .claude/context/team/roles/implementation-engineer.md
 
 #### Dynamic Context Loading (ADAPTIVE)
 **Analyze** and **Load** context based on task specifics:

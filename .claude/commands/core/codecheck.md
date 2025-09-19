@@ -20,8 +20,8 @@ Execute comprehensive code quality validation across TypeScript, linting, format
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/standards/code-standards.md
-- Read .claude/context/systems/prompt-engineering.md
+- Read .claude/context/development/standards/code-standards.md
+- Read .claude/context/team/knowledge/prompt-engineering.md
 
 ## Prompt
 
