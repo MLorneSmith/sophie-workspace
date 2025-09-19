@@ -348,7 +348,54 @@ class InfrastructureManager {
 	 */
 	async healthCheckDevServer() {
 		try {
-			// First check if process is on the port
+			// First check if we're using Docker container on port 3001
+			const { stdout: dockerCheck } = await execAsync(
+				'docker ps --format "{{.Names}}:{{.State}}:{{.Ports}}" | grep -E "slideheroes-app-test" || echo ""',
+			);
+
+			if (
+				dockerCheck.includes("slideheroes-app-test") &&
+				dockerCheck.includes("3001")
+			) {
+				// Check Docker container health
+				try {
+					const response = await fetch("http://localhost:3001/api/health", {
+						signal: AbortSignal.timeout(5000),
+					});
+
+					if (response.ok) {
+						// Set environment variables for E2E tests
+						process.env.TEST_BASE_URL = "http://localhost:3001";
+						process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3001";
+						return "healthy";
+					}
+				} catch (error) {
+					return "docker_unhealthy";
+				}
+			}
+
+			// Check if external server is configured
+			if (
+				process.env.TEST_BASE_URL &&
+				process.env.TEST_BASE_URL !== "http://localhost:3000"
+			) {
+				try {
+					const response = await fetch(
+						`${process.env.TEST_BASE_URL}/api/health`,
+						{
+							signal: AbortSignal.timeout(5000),
+						},
+					);
+
+					if (response.ok) {
+						return "healthy";
+					}
+				} catch (error) {
+					return "external_unhealthy";
+				}
+			}
+
+			// Default check for port 3000
 			const { stdout: portCheck } = await execAsync(
 				"lsof -ti:3000 2>/dev/null || echo 'none'",
 				{ timeout: 1000 },
@@ -549,6 +596,36 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
 	 */
 	async setupDevServer() {
 		try {
+			// First, check if we have a Docker container running the test server
+			const { stdout: dockerCheck } = await execAsync(
+				'docker ps --format "{{.Names}}:{{.State}}:{{.Ports}}" | grep -E "slideheroes-app-test" || echo ""',
+			);
+
+			if (
+				dockerCheck.includes("slideheroes-app-test") &&
+				dockerCheck.includes("3001")
+			) {
+				log("🐳 Docker test container detected on port 3001");
+
+				// Verify the container server is healthy
+				const testUrl = "http://localhost:3001";
+				try {
+					const response = await fetch(`${testUrl}/api/health`, {
+						signal: AbortSignal.timeout(5000),
+					});
+
+					if (response.ok) {
+						log("✅ Docker test server is healthy on port 3001");
+						// Set environment variables for E2E tests to use port 3001
+						process.env.TEST_BASE_URL = testUrl;
+						process.env.NEXT_PUBLIC_APP_URL = testUrl;
+						return "docker_container";
+					}
+				} catch (error) {
+					log("⚠️ Docker test server not responding, will try to restart");
+				}
+			}
+
 			// Skip dev server setup if using external server (e.g., containerized)
 			if (process.env.SKIP_DEV_SERVER === "true") {
 				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
@@ -568,7 +645,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
 				}
 			}
 
-			// Check if server is already running
+			// Check if server is already running on port 3000
 			const status = await this.healthCheckDevServer();
 			if (status === "healthy") {
 				log("✅ Dev server already running on port 3000");

@@ -100,12 +100,14 @@ const CONFIG = {
 	// Environment variables for test execution
 	environment: {
 		NODE_ENV: "test",
-		NEXT_PUBLIC_APP_URL: "http://localhost:3001",
+		NEXT_PUBLIC_APP_URL: process.env.TEST_BASE_URL || "http://localhost:3001",
 		SUPABASE_URL: "http://localhost:55321",
 		SUPABASE_SERVICE_ROLE_KEY:
 			process.env.SUPABASE_SERVICE_ROLE_KEY || "test-service-key",
 		TURBO_FORCE: "true", // Always bypass cache for comprehensive testing
 		CI: process.env.CI || "false",
+		// Use Docker container if available
+		TEST_BASE_URL: process.env.TEST_BASE_URL || "http://localhost:3001",
 	},
 
 	// Database configuration

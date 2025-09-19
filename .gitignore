@@ -42,6 +42,7 @@ yarn-error.log*
 .env*.local
 .env
 .env.test
+.env.docker
 packages/*/.env
 apps/*/.env
 **/.env

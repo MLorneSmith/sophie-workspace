@@ -141,7 +141,7 @@ run_format() {
     local output_file="$WORK_DIR/format_output.log"
     
     # First check if formatting is needed
-    if pnpm format:check > "$output_file" 2>&1; then
+    if pnpm format > "$output_file" 2>&1; then
         echo "status: success" > "$WORK_DIR/format_result.yaml"
         echo "files_formatted: 0" >> "$WORK_DIR/format_result.yaml"
         echo "✅ All files properly formatted"
