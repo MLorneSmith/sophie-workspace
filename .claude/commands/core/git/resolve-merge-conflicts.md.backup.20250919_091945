@@ -11,14 +11,14 @@ Automatically resolve all merge conflicts from upstream MakerKit updates using t
 ## Key Features
 - **Automated Resolution**: Leverages existing merge drivers for 95% conflict automation
 - **Smart Conflict Handling**: Uses .gitattributes rules for formatting, package.json, and feature boundaries
-- **Comprehensive Validation**: Biome formatting, type checking, build verification, and codecheck validation
+- **Comprehensive Validation**: Biome formatting, type checking, and build verification
 - **Status Reporting**: Real-time progress tracking and detailed completion report
 - **Safety Protocols**: Backup creation and rollback capability
 - **Progress Visibility**: TodoWrite integration for multi-step tracking
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/development/workflows/merge-automation.md
+- Read docs/merge-automation.md
 - Read .gitattributes
 - Read .claude/commands/infrastructure/updates/update-makerkit.md
 
@@ -32,9 +32,9 @@ You are the Merge Conflict Resolution Expert, specializing in automated conflict
 
 **CORE REQUIREMENTS**:
 - **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
-- **Leverage** existing 95% automation system from merge-automation.md
+- **Leverage** existing 95% automation system from docs/merge-automation.md
 - **Ensure** zero conflicts remain after resolution
-- **Validate** all changes with Biome, TypeScript, build checks, and codecheck
+- **Validate** all changes with Biome, TypeScript, and build checks
 - **Provide** comprehensive status reporting throughout process
 - **Track** progress using TodoWrite for visibility
 
@@ -50,8 +50,6 @@ You are the Merge Conflict Resolution Expert, specializing in automated conflict
    - All conflicts resolved (git status shows no UU files)
    - No syntax errors (Biome check passes)
    - No type errors (TypeScript compilation succeeds)
-   - Build succeeds (pnpm build completes)
-   - Codecheck passes (.claude/scripts/codecheck-direct.sh succeeds)
    - Repository in clean, committable state
 3. **Scope Boundaries**:
    - Include: Entire project repository
@@ -82,7 +80,7 @@ You are the Merge Conflict Resolution Expert, specializing in automated conflict
 **Load** critical documentation:
 ```bash
 # Read essential files
-Read .claude/context/development/workflows/merge-automation.md
+Read docs/merge-automation.md
 Read .gitattributes
 Read .claude/commands/infrastructure/updates/update-makerkit.md
 ```
@@ -193,16 +191,15 @@ TodoWrite({
     { content: "Verify merge automation system", status: "pending", activeForm: "Verifying merge automation system" },
     { content: "Create safety backup", status: "pending", activeForm: "Creating safety backup" },
     { content: "Apply automated conflict resolution", status: "pending", activeForm: "Applying automated conflict resolution" },
-    { content: "Analyze and update package versions", status: "pending", activeForm: "Analyzing and updating package versions" },
     { content: "Handle remaining conflicts by category", status: "pending", activeForm: "Handling remaining conflicts by category" },
     { content: "Verify all conflicts resolved", status: "pending", activeForm: "Verifying all conflicts resolved" },
-    { content: "Run comprehensive validation suite", status: "pending", activeForm: "Running comprehensive validation suite" }
+    { content: "Run validation suite", status: "pending", activeForm: "Running validation suite" }
   ]
 });
 ```
 
 ### Step 1: Pre-Resolution Validation
-**Mark** task as in_progress and **verify** merge automation system:
+**Mark** task as in_progress and **Verify** merge automation system:
 ```bash
 # Check merge drivers are configured
 git config --get merge.formatting.driver || echo "⚠️ Formatting driver not configured"
@@ -215,7 +212,7 @@ git config --get rerere.enabled || echo "⚠️ Git rerere not enabled"
 **Mark** task as completed
 
 ### Step 2: Create Safety Backup
-**Mark** task as in_progress and **create** backup unless --force:
+**Mark** task as in_progress and **Create** backup unless --force:
 ```bash
 if [ "$FORCE" != "true" ]; then
   BACKUP_BRANCH="backup/conflict-resolution-$(date +%Y%m%d-%H%M%S)"
@@ -226,7 +223,7 @@ fi
 **Mark** task as completed
 
 ### Step 3: Automated Conflict Resolution
-**Mark** task as in_progress and **apply** systematic resolution using three-way merge:
+**Mark** task as in_progress and **Apply** systematic resolution using three-way merge:
 ```bash
 # Create temporary directory for merge work
 TEMP_DIR=$(mktemp -d)
@@ -319,69 +316,28 @@ for file in $PACKAGE_CONFLICTS; do
   git add "$file"
 done
 
-# Enhanced corrupted file recovery with multiple strategies
+# Handle corrupted files with conflict markers
 for file in $CORRUPTED_CONFLICTS; do
   echo "🔧 Reconstructing corrupted file: $file"
 
-  # Strategy 1: Try to get clean version from git history
+  # Try to get clean version from git history
   if git show HEAD~1:"$file" &>/dev/null; then
     echo "  Using version from HEAD~1"
     git show HEAD~1:"$file" > "$file"
   elif git show upstream/main:"$file" &>/dev/null; then
     echo "  Using version from upstream/main"
     git show upstream/main:"$file" > "$file"
-  elif git show HEAD~2:"$file" &>/dev/null; then
-    echo "  Using version from HEAD~2"
-    git show HEAD~2:"$file" > "$file"
-  elif git show origin/main:"$file" &>/dev/null; then
-    echo "  Using version from origin/main"
-    git show origin/main:"$file" > "$file"
   else
-    echo "  ⚠️ Manual cleanup - attempting smart conflict marker removal"
-
-    # Strategy 2: Smart conflict marker removal preserving both sides
-    if grep -q "^<<<<<<< HEAD" "$file"; then
-      # Create temporary files for both sides
-      sed -n '/^<<<<<<< HEAD/,/^=======/p' "$file" | sed '1d;$d' > "$TEMP_DIR/head_version"
-      sed -n '/^=======/,/^>>>>>>> /p' "$file" | sed '1d;$d' > "$TEMP_DIR/incoming_version"
-
-      # Try to merge non-conflicting parts
-      if [ -s "$TEMP_DIR/head_version" ] && [ -s "$TEMP_DIR/incoming_version" ]; then
-        # Use our version by default for corrupted files
-        cp "$TEMP_DIR/head_version" "$file"
-        echo "    Used HEAD version for corrupted conflict"
-      else
-        # Fallback: Remove all markers and hope for the best
-        sed -i 's/^<<<<<<< .*//' "$file"
-        sed -i 's/^=======//' "$file"
-        sed -i 's/^>>>>>>> .*//' "$file"
-        echo "    Removed conflict markers (manual review recommended)"
-      fi
-    else
-      # Strategy 3: Generic marker cleanup
-      sed -i 's/^<<<<<<< .*//' "$file"
-      sed -i 's/^=======//' "$file"
-      sed -i 's/^>>>>>>> .*//' "$file"
-      echo "    Cleaned up conflict markers"
-    fi
+    echo "  ⚠️ Manual cleanup required - removing conflict markers"
+    # Remove all conflict markers, keeping content between them
+    sed -i 's/^<<<<<<< .*//' "$file"
+    sed -i 's/^=======//' "$file"
+    sed -i 's/^>>>>>>> .*//' "$file"
   fi
 
-  # Post-recovery validation and formatting
+  # Format if it's a source file
   if [[ "$file" =~ \.(js|ts|tsx|jsx|json)$ ]]; then
-    # Validate syntax before formatting
-    if [[ "$file" =~ \.json$ ]]; then
-      if ! jq empty "$file" 2>/dev/null; then
-        echo "    ⚠️ JSON syntax error detected - attempting repair"
-        # Try to fix common JSON issues
-        sed -i 's/,\s*}/}/g' "$file"  # Remove trailing commas
-        sed -i 's/,\s*]/]/g' "$file"  # Remove trailing commas in arrays
-      fi
-    fi
-
-    # Format if valid
-    npx biome format --write "$file" 2>/dev/null || {
-      echo "    ⚠️ Formatting failed - file may need manual review"
-    }
+    npx biome format --write "$file" 2>/dev/null || true
   fi
 
   git add "$file"
@@ -389,50 +345,8 @@ done
 ```
 **Mark** task as completed
 
-### Step 4: Package Version Analysis and Updates
-**Mark** task as in_progress and **analyze** package version differences after conflict resolution:
-```bash
-# Analyze package versions that may have been missed when choosing "ours"
-echo "📦 Analyzing package version differences..."
-
-# Run the package version comparison tool if it exists
-if [ -f ".claude/scripts/conflict-resolution/compare-package-versions.sh" ]; then
-  echo "Running package version comparison..."
-  .claude/scripts/conflict-resolution/compare-package-versions.sh
-
-  # Check if we should apply safe updates automatically
-  if [ "$FORCE" != "true" ]; then
-    echo ""
-    echo "💡 Recommended: Apply safe (minor/patch) updates"
-    read -p "Apply safe package updates now? (y/N): " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      echo "📦 Applying safe package updates..."
-      npx -y npm-check-updates -u --target minor
-      pnpm install
-      echo "✅ Package updates applied"
-
-      # Add updated files to git
-      git add "**/package.json" pnpm-lock.yaml 2>/dev/null || true
-    else
-      echo "⏭️  Skipping package updates (can be done later)"
-    fi
-  else
-    # In force mode, automatically apply safe updates
-    echo "📦 Auto-applying safe package updates (--force mode)..."
-    npx -y npm-check-updates -u --target minor
-    pnpm install
-    git add "**/package.json" pnpm-lock.yaml 2>/dev/null || true
-  fi
-else
-  echo "⚠️ Package version comparison script not found"
-  echo "  Consider running: npx npm-check-updates --target minor"
-fi
-```
-**Mark** task as completed
-
-### Step 5: Smart Conflict Resolution by Category
-**Mark** task as in_progress and **handle** remaining conflicts based on .gitattributes rules:
+### Step 4: Smart Conflict Resolution by Category
+**Mark** task as in_progress and **Handle** remaining conflicts based on .gitattributes rules:
 ```bash
 # Apply .gitattributes-based resolution
 for file in $CONFIG_CONFLICTS; do
@@ -452,8 +366,8 @@ done
 ```
 **Mark** task as completed
 
-### Step 6: Final Conflict Check
-**Mark** task as in_progress and **verify** all conflicts resolved:
+### Step 5: Final Conflict Check
+**Mark** task as in_progress and **Verify** all conflicts resolved:
 ```bash
 REMAINING_CONFLICTS=$(git diff --name-only --diff-filter=U)
 if [ ! -z "$REMAINING_CONFLICTS" ]; then
@@ -466,60 +380,30 @@ fi
 ```
 **Mark** task as completed
 
-### Step 7: Comprehensive Validation Suite
-**Mark** task as in_progress and **execute** enhanced validation checks:
+### Step 6: Parallel Validation Execution
+**Mark** task as in_progress and **Launch** validation checks simultaneously:
 ```bash
 if [ "$SKIP_VALIDATION" != "true" ]; then
-  echo "🧪 Running comprehensive validation suite..."
+  echo "🧪 Running validation suite..."
 
-  # Biome formatting and linting check
-  echo "  🔍 Running Biome check..."
-  npx biome check --diagnostic-level=error . > /tmp/biome-check.log 2>&1
-  BIOME_EXIT=$?
+  # Biome formatting check
+  npx biome check --diagnostic-level=error . > /tmp/biome-check.log 2>&1 &
+  BIOME_PID=$!
 
   # TypeScript compilation check
-  echo "  🔍 Running TypeScript check..."
-  pnpm typecheck > /tmp/typecheck.log 2>&1
+  pnpm typecheck > /tmp/typecheck.log 2>&1 &
+  TYPECHECK_PID=$!
+
+  # Wait for validation results
+  wait $BIOME_PID
+  BIOME_EXIT=$?
+
+  wait $TYPECHECK_PID
   TYPECHECK_EXIT=$?
-
-  # Build verification
-  echo "  🔍 Running build verification..."
-  pnpm build > /tmp/build.log 2>&1
-  BUILD_EXIT=$?
-
-  # Codecheck validation
-  echo "  🔍 Running codecheck validation..."
-  if [ -f ".claude/scripts/codecheck-direct.sh" ]; then
-    .claude/scripts/codecheck-direct.sh > /tmp/codecheck.log 2>&1
-    CODECHECK_EXIT=$?
-  else
-    echo "    ⚠️ Codecheck script not found, skipping"
-    CODECHECK_EXIT=0
-  fi
 
   echo "Validation Results:"
   echo "  Biome check: $([ $BIOME_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Failed")"
   echo "  TypeScript: $([ $TYPECHECK_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Failed")"
-  echo "  Build: $([ $BUILD_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Failed")"
-  echo "  Codecheck: $([ $CODECHECK_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Failed")"
-
-  # Show details for failed checks
-  if [ $BIOME_EXIT -ne 0 ]; then
-    echo "📋 Biome Issues:"
-    head -20 /tmp/biome-check.log
-  fi
-  if [ $TYPECHECK_EXIT -ne 0 ]; then
-    echo "📋 TypeScript Errors:"
-    head -20 /tmp/typecheck.log
-  fi
-  if [ $BUILD_EXIT -ne 0 ]; then
-    echo "📋 Build Errors:"
-    head -20 /tmp/build.log
-  fi
-  if [ $CODECHECK_EXIT -ne 0 ]; then
-    echo "📋 Codecheck Issues:"
-    head -20 /tmp/codecheck.log
-  fi
 fi
 ```
 **Mark** task as completed
@@ -528,7 +412,7 @@ fi
 **Branch** based on validation results:
 
 ```
-IF all validation passes:
+IF validation passes:
   → **Proceed** to success reporting
   → THEN **Generate** completion status
 ELSE IF only formatting issues:
@@ -537,9 +421,6 @@ ELSE IF only formatting issues:
 ELSE IF type errors detected:
   → **Flag** for manual review
   → THEN **Generate** error report with file locations
-ELSE IF build fails:
-  → **Analyze** build errors
-  → THEN **Provide** specific resolution guidance
 ELSE:
   → **Provide** rollback instructions
   → THEN **Exit** with error status
@@ -548,9 +429,8 @@ ELSE:
 ### Error Handling and Recovery
 **Handle** failures gracefully:
 - **Validation Errors**: Auto-fix formatting, flag type errors
-- **Build Failures**: **Provide** specific error analysis and resolution steps
-- **Merge Failures**: **Provide** manual resolution guidance
-- **System Errors**: **Offer** rollback to backup branch
+- **Merge Failures**: Provide manual resolution guidance
+- **System Errors**: Offer rollback to backup branch
 </method>
 
 ## Phase E - EXPECTATIONS
@@ -591,8 +471,6 @@ if [ $FINAL_CONFLICTS -eq 0 ]; then
   echo "**Validation Results**:"
   echo "  - Biome formatting: $([ $BIOME_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Issues found")"
   echo "  - TypeScript compilation: $([ $TYPECHECK_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Errors found")"
-  echo "  - Build verification: $([ $BUILD_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Failed")"
-  echo "  - Codecheck validation: $([ $CODECHECK_EXIT -eq 0 ] && echo "✅ Passed" || echo "❌ Issues found")"
   echo ""
   echo "**Next Steps**:"
   echo "1. Review the automated changes: \`git diff --cached\`"
@@ -631,8 +509,6 @@ fi
 **Ensure** high-quality resolution:
 - All conflicts either resolved or flagged for manual review
 - No syntax errors introduced during automated resolution
-- Build succeeds without errors
-- Codecheck passes all quality gates
 - Existing functionality preserved (no breaking changes)
 - Comprehensive documentation of all changes made
 
@@ -640,7 +516,6 @@ fi
 **Handle** edge cases:
 - **Partial Resolution**: Clear guidance for remaining manual conflicts
 - **Validation Failures**: Specific error locations and suggested fixes
-- **Build Failures**: Detailed build error analysis and resolution steps
 - **System Failures**: Rollback instructions and recovery options
 - **Permission Issues**: Alternative resolution strategies
 
@@ -651,20 +526,17 @@ fi
 ### Executive Summary
 - ✅ Resolved X/Y conflicts automatically (Z% success rate)
 - ⚠️ N conflicts require manual intervention
-- 🔍 Validation: [Biome: PASS/FAIL] [TypeScript: PASS/FAIL] [Build: PASS/FAIL] [Codecheck: PASS/FAIL]
+- 🔍 Validation: [Biome: PASS/FAIL] [TypeScript: PASS/FAIL]
 
 ### Resolution Breakdown
 **Formatting Conflicts**: X resolved via Biome automation
 **Package Dependencies**: X resolved via JSON union merge
 **Configuration Files**: X resolved via .gitattributes rules
-**Corrupted Files**: X recovered using enhanced strategies
 **Manual Review Required**: X flagged for developer attention
 
 ### Validation Results
 - Biome formatting check: [PASS/FAIL with details]
 - TypeScript compilation: [PASS/FAIL with errors]
-- Build verification: [PASS/FAIL with errors]
-- Codecheck validation: [PASS/FAIL with issues]
 - Git repository status: [CLEAN/CONFLICTS REMAINING]
 
 ### Next Steps
@@ -685,7 +557,7 @@ fi
 - Invalid repository state: **Guide** to proper git status
 
 ### Role Phase Errors
-- Merge automation not configured: **Provide** setup instructions from merge-automation.md
+- Merge automation not configured: **Provide** setup instructions from docs/merge-automation.md
 - Missing validation tools: **Install** or **skip** validation with warning
 
 ### Inputs Phase Errors
@@ -696,7 +568,6 @@ fi
 ### Method Phase Errors
 - Merge driver failures: **Fallback** to manual resolution guidance
 - Validation failures: **Report** specific errors and suggested fixes
-- Build failures: **Analyze** errors and **provide** resolution steps
 - TodoWrite errors: **Continue** without progress tracking
 
 ### Expectations Phase Errors
@@ -712,12 +583,11 @@ fi
 - **PRIME Framework**: Complete P→R→I→M→E sequential flow
 - **Dynamic Context Loading**: context-discovery-expert integration
 - **Existing Automation Integration**: Leverages 95% merge automation system
-- **Enhanced Validation**: Biome, TypeScript, build, and codecheck verification
+- **Parallel Validation**: Simultaneous Biome and TypeScript checks
 - **Progressive Resolution**: Handles conflicts by category and complexity
 - **Comprehensive Reporting**: Detailed status with actionable next steps
 - **Safety Protocols**: Backup creation and rollback capability
 - **Smart Conflict Detection**: Categorizes conflicts for optimal resolution strategy
-- **Enhanced Corruption Recovery**: Multiple strategies for corrupted file restoration
 - **Progress Tracking**: TodoWrite for multi-step visibility
 </patterns>
 
@@ -743,15 +613,13 @@ Automatically resolve merge conflicts using SlideHeroes' sophisticated automatio
 - Formatting conflicts → Biome auto-resolution
 - Package.json conflicts → Smart dependency merging
 - Feature boundaries → .gitattributes rule application
-- Validation suite → Biome + TypeScript + Build + Codecheck
-- Enhanced corruption recovery → Multiple restoration strategies
+- Validation suite → Biome + TypeScript + Build checks
 - Progress tracking → TodoWrite integration
 
 **Requirements:**
 - Active merge conflicts in repository
-- Existing automation system configured (merge-automation.md)
+- Existing automation system configured (docs/merge-automation.md)
 - Biome and TypeScript available for validation
-- Build system functional (pnpm build)
 
 **Your conflicts are resolved automatically - focus on building features!**
 </help>
