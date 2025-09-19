@@ -8,7 +8,7 @@ mcp-tools: mcp__docs-mcp__search_docs
 
 # Update Payload Command
 
-Systematically update Payload CMS and all related packages using PRIME framework to maintain version alignment and project stability with intelligent error recovery and parallel validation.
+Systematically update Payload CMS and all related packages to maintain version alignment and project stability with intelligent error recovery and parallel validation.
 
 ## Key Features
 - **Version Alignment**: Ensures all @payloadcms/* packages use consistent versions
@@ -176,9 +176,11 @@ parallel_commands=(
   "rg '\"payload\":\\s*\"[^\"]*\"' apps/payload/package.json"
   "curl -s https://registry.npmjs.org/payload/latest | jq -r '.version'"
   "rg '@payloadcms/[^\"]*' -g 'package.json' --no-heading"
+  "rg 'payload' packages/cms/payload/package.json"
 )
 
 # Execute in parallel and collect results
+# CRITICAL: Verify packages/cms/payload/package.json exists and contains payload dependency
 ```
 
 **Analyze** version jump intelligently:
@@ -231,9 +233,28 @@ edits = [
 ]
 ```
 
-**Apply** similar updates to:
-- packages/cms/payload/package.json (exact version, no caret)
-- apps/web/package.json (for @payloadcms/db-postgres)
+**For packages/cms/payload/package.json:**
+```javascript
+// CRITICAL: Update both package version AND payload dependency
+edits = [
+  {
+    old_string: '"version": "current_version"',
+    new_string: '"version": "new_version"'
+  },
+  {
+    old_string: '"payload": "current_payload_version"',
+    new_string: '"payload": "new_payload_version"'
+  }
+]
+```
+
+**For apps/web/package.json (if @payloadcms packages exist):**
+```javascript
+// Check for and update any @payloadcms/* dependencies
+edits = [
+  // Update any @payloadcms/* packages found
+]
+```
 
 Mark todo as completed.
 
@@ -400,9 +421,9 @@ Update Type: [MAJOR|MINOR|PATCH]
 Duration: [time]
 
 ✅ Packages Updated: [count]
-├─ apps/payload: ✓
-├─ packages/cms/payload: ✓
-└─ apps/web: ✓
+├─ apps/payload/package.json: ✓ (9 @payloadcms packages + payload)
+├─ packages/cms/payload/package.json: ✓ (package version + payload dependency)
+└─ apps/web/package.json: ✓ (if @payloadcms packages exist)
 
 ✅ Validation Results:
 ├─ Build: [Success|Failed]
@@ -436,17 +457,39 @@ git checkout -- . && rm -rf node_modules pnpm-lock.yaml && pnpm install
 # Final validation sweep
 VALIDATION_PASSED=true
 
-# Check version alignment
+# Check version alignment across ALL Payload packages
+echo "🔍 Verifying version alignment across all package.json files..."
+
+# Check @payloadcms/* packages
 MISMATCHED=$(rg '@payloadcms/[^"]*":\s*"[^"]*"' -g 'package.json' | awk -F'"' '{print $4}' | sort -u | wc -l)
 if [ $MISMATCHED -gt 1 ]; then
   VALIDATION_PASSED=false
-  echo "❌ Version mismatch detected across packages"
+  echo "❌ Version mismatch detected in @payloadcms/* packages"
+fi
+
+# Check core payload package
+PAYLOAD_VERSIONS=$(rg '"payload":\s*"[^"]*"' -g 'package.json' | awk -F'"' '{print $4}' | sort -u | wc -l)
+if [ $PAYLOAD_VERSIONS -gt 1 ]; then
+  VALIDATION_PASSED=false
+  echo "❌ Version mismatch detected in payload core packages"
+fi
+
+# CRITICAL: Verify packages/cms/payload/package.json was updated
+if [ -f "packages/cms/payload/package.json" ]; then
+  CMS_PAYLOAD_VERSION=$(rg '"version":\s*"([^"]*)"' packages/cms/payload/package.json -o -r '$1')
+  CMS_PAYLOAD_DEP=$(rg '"payload":\s*"([^"]*)"' packages/cms/payload/package.json -o -r '$1')
+  echo "✅ packages/cms/payload package version: $CMS_PAYLOAD_VERSION"
+  echo "✅ packages/cms/payload payload dependency: $CMS_PAYLOAD_DEP"
+else
+  echo "⚠️ packages/cms/payload/package.json not found"
 fi
 
 # Verify critical files exist
 CRITICAL_FILES=(
   "apps/payload/payload-types.ts"
   "apps/payload/payload.config.ts"
+  "apps/payload/package.json"
+  "packages/cms/payload/package.json"
   "pnpm-lock.yaml"
 )
 
@@ -478,6 +521,11 @@ Common Issues & Solutions:
 
 5. Database migration required
    → Review Payload changelog for migration guides
+
+6. Incomplete package updates
+   → CRITICAL: Always verify packages/cms/payload/package.json is updated
+   → Check both package version AND payload dependency version
+   → Search all package.json files: grep -r "payload" **/package.json
 ```
 
 Mark final todo as completed.
@@ -550,6 +598,11 @@ Systematically updates Payload CMS with intelligent version management and valid
 - Clean or stashed git state recommended
 - pnpm, curl, jq installed
 - Network access to npm registry
+
+**Critical Files Updated:**
+- apps/payload/package.json (all @payloadcms/* packages + payload core)
+- packages/cms/payload/package.json (package version + payload dependency)
+- apps/payload/src/app/(payload)/api/health/route.ts (version string)
 
 Ready to update Payload CMS with confidence!
 </help>
