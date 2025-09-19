@@ -14,8 +14,6 @@ services:
     working_dir: /app
     volumes:
       - .:/app:cached
-      - /app/node_modules  # Use container's node_modules
-      - /app/.next         # Use container's build cache
     ports:
       - "3001:3001"
     environment:
@@ -44,12 +42,10 @@ services:
       - CI=false
     command: >
       sh -c "
-        echo '📦 Installing pnpm...' &&
-        npm install -g pnpm@latest &&
-        echo '🔧 Installing dependencies...' &&
-        pnpm install --frozen-lockfile &&
+        echo '🔧 Installing dependencies with npx pnpm...' &&
+        npx pnpm@latest install --frozen-lockfile &&
         echo '🚀 Starting test server on port 3001...' &&
-        pnpm --filter web dev --port 3001
+        npx pnpm@latest --filter web dev --port 3001
       "
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
@@ -69,8 +65,6 @@ services:
     working_dir: /app
     volumes:
       - .:/app:cached
-      - /app/node_modules  # Use container's node_modules
-      - /app/.next         # Use container's build cache
     ports:
       - "3021:3021"
     environment:
@@ -97,13 +91,11 @@ services:
       - NODE_OPTIONS=--no-deprecation
     command: >
       sh -c "
-        echo '📦 Installing pnpm...' &&
-        npm install -g pnpm@latest &&
-        echo '🔧 Installing dependencies...' &&
-        pnpm install --frozen-lockfile &&
+        echo '🔧 Installing dependencies with npx pnpm...' &&
+        npx pnpm@latest install --frozen-lockfile &&
         echo '🚀 Starting Payload test server on port 3021...' &&
         cd apps/payload &&
-        PORT=3021 NODE_OPTIONS=--no-deprecation pnpm exec next dev
+        PORT=3021 NODE_OPTIONS=--no-deprecation npx pnpm@latest exec next dev
       "
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3021/api/health"]
