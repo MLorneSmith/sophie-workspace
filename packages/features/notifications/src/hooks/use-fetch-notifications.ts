@@ -4,16 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
+import { Notification } from '../types';
 import { useNotificationsStream } from './use-notifications-stream';
-
-type Notification = {
-  id: number;
-  body: string;
-  dismissed: boolean;
-  type: 'info' | 'warning' | 'error';
-  created_at: string;
-  link: string | null;
-};
 
 export function useFetchNotifications({
   onNotifications,

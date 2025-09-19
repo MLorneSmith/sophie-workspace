@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "main": "./build/index.js",
+  "module": true,
   "bin": {
     "makerkit-mcp-server": "./build/index.js"
   },
@@ -17,6 +18,7 @@
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
     "build": "tsc && chmod 755 build/index.js",
+    "build:watch": "tsc --watch",
     "mcp": "node build/index.js"
   },
   "devDependencies": {
@@ -25,6 +27,7 @@
     "@kit/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "1.18.0",
     "@types/node": "^24.5.0",
+    "postgres": "3.4.7",
     "zod": "^3.25.74"
   },
   "prettier": "@kit/prettier-config"

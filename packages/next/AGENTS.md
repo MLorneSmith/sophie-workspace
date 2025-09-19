@@ -59,10 +59,9 @@ export const createNoteAction = enhanceAction(
 
 ```typescript
 export const myAction = enhanceAction(
-  async function (data, user, requestData) {
+  async function (data, user) {
     // data: validated input data
     // user: authenticated user (if auth: true)
-    // requestData: additional request information
     
     return { success: true };
   },
@@ -167,6 +166,11 @@ export const POST = enhanceRouteHandler(
 );
 ```
 
+## Revalidation
+
+- Use `revalidatePath` for revalidating data after a migration.
+- Avoid calling `router.refresh()` or `router.push()` following a Server Action. Use `revalidatePath` and `redirect` from the server action instead.
+
 ## Error Handling Patterns
 
 ### Server Actions with Error Handling
@@ -201,8 +205,10 @@ export const createNoteAction = enhanceAction(
       
       return { success: true, note };
     } catch (error) {
-      logger.error({ ...ctx, error }, 'Create note action failed');
-      throw error;
+      if (!isRedirectError(error)) {
+        logger.error({ ...ctx, error }, 'Create note action failed');
+        throw error;
+      }
     }
   },
   {
@@ -211,6 +217,26 @@ export const createNoteAction = enhanceAction(
   },
 );
 ```
+
+
+### Server Action Redirects - Client Handling
+
+When server actions call `redirect()`, it throws a special error that should NOT be treated as a failure:
+
+```typescript
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
+async function handleSubmit(formData: FormData) {
+  try {
+    await myServerAction(formData);
+  } catch (error) {
+    // Don't treat redirects as errors
+    if (!isRedirectError(error)) {
+      // Handle actual errors
+      toast.error('Something went wrong');
+    }
+  }
+}
 
 ### Route Handler with Error Handling
 
@@ -306,6 +332,8 @@ function CreateNoteForm() {
   );
 }
 ```
+
+NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
 
 ### Using Route Handlers with Fetch
 
@@ -421,15 +449,3 @@ export const deleteAccountAction = enhanceAction(
   },
 );
 ```
-
-## Middleware Integration
-
-The `enhanceAction` and `enhanceRouteHandler` utilities integrate with the application middleware for:
-
-- CSRF protection
-- Authentication verification
-- Request logging
-- Error handling
-- Input validation
-
-This ensures consistent security and monitoring across all server actions and API routes.

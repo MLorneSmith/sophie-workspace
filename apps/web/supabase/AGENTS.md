@@ -6,13 +6,15 @@ This file contains guidance for working with database schemas, migrations, and S
 
 Schemas are organized in numbered files in the `schemas/` directory. Numbers are used to sort dependencies.
 
-## Schema Development Workflow
+Migrations are generated from schemas. If creating a new schema, the migration can be created using the exact same content.
+
+If modifying an existing migration, use the `diff` command:
 
 ### 1. Creating New Schema Files
 
 ```bash
 # Create new schema file
-touch schemas/15-my-new-feature.sql
+touch apps/web/supabase/schemas/15-my-new-feature.sql
 
 # Apply changes and create migration
 pnpm --filter web run supabase:db:diff -f my-new-feature
@@ -23,6 +25,8 @@ pnpm supabase:web:reset
 # Generate TypeScript types
 pnpm supabase:web:typegen
 ```
+
+Verify the diff command generated the same content as the schema; if not, take steps to fix the migration.
 
 ### 2. Modifying Existing Schemas
 
@@ -35,6 +39,8 @@ pnpm --filter web run supabase:db:diff -f update-accounts
 
 # Apply and test
 pnpm supabase:web:reset
+
+# After resetting
 pnpm supabase:web:typegen
 ```
 
@@ -221,47 +227,6 @@ pnpm supabase:web:reset
 
 # Test your changes
 pnpm run supabase:web:test
-```
-
-## Type Generation
-
-### After Schema Changes
-
-```bash
-# Generate types after any schema changes
-pnpm supabase:web:typegen
-# Types are generated to src/lib/supabase/database.types.ts
-
-# Reset DB
-pnpm supabase:web:reset
-```
-
-### Using Generated Types
-
-```typescript
-import { Enums, Tables } from '@kit/supabase/database';
-
-// Table types
-type Account = Tables<'accounts'>;
-type Note = Tables<'notes'>;
-
-// Enum types
-type AppPermission = Enums<'app_permissions'>;
-
-// Insert types
-type AccountInsert = Tables<'accounts'>['Insert'];
-type AccountUpdate = Tables<'accounts'>['Update'];
-
-// Use in functions
-async function createNote(data: Tables<'notes'>['Insert']) {
-  const { data: note, error } = await supabase
-    .from('notes')
-    .insert(data)
-    .select()
-    .single();
-
-  return note;
-}
 ```
 
 ## Common Schema Patterns

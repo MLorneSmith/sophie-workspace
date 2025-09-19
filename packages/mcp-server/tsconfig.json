@@ -6,8 +6,8 @@
     "noEmit": false,
     "strict": false,
     "target": "ES2022",
-    "module": "commonjs",
-    "moduleResolution": "node"
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
   },
   "files": ["src/index.ts"],
   "exclude": ["node_modules"]

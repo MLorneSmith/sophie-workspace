@@ -2,14 +2,7 @@ import { useEffect } from 'react';
 
 import { useSupabase } from '@kit/supabase/hooks/use-supabase';
 
-type Notification = {
-  id: number;
-  body: string;
-  dismissed: boolean;
-  type: 'info' | 'warning' | 'error';
-  created_at: string;
-  link: string | null;
-};
+import { Notification } from '../types';
 
 export function useNotificationsStream({
   onNotifications,
