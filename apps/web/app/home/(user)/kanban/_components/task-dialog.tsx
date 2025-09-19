@@ -68,7 +68,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	);
 	const imageUploadId = useId();
 
-	const form = useForm<z.infer<typeof CreateTaskSchema>>({
+	const form = useForm({
 		resolver: zodResolver(CreateTaskSchema),
 		defaultValues: {
 			title: task?.title ?? "",

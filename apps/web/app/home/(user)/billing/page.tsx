@@ -47,7 +47,7 @@ async function PersonalAccountBillingPage() {
 				<div className={"flex flex-col space-y-4"}>
 					<If
 						condition={hasBillingData}
-						fallback=<PersonalAccountCheckoutForm customerId={customerId} />
+						fallback={<PersonalAccountCheckoutForm customerId={customerId} />}
 					>
 						<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
 							<If condition={subscription}>
