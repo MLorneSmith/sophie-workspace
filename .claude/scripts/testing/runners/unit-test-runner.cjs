@@ -62,11 +62,21 @@ class UnitTestRunner {
 			let output = "";
 			let errorOutput = "";
 
-			// Always force fresh test runs to ensure all tests validate changed code
-			const testCommand = this.config.commands.unitTest;
+			// Check if coverage is enabled
+			const collectCoverage =
+				this.config.execution.collectCoverage ||
+				process.env.TEST_COVERAGE === "true";
+
+			// Choose the appropriate test command
+			const testCommand = collectCoverage
+				? this.config.commands.unitTestCoverage
+				: this.config.commands.unitTest;
 			const [cmd, ...args] = testCommand;
 
 			log(`🚀 Executing: ${cmd} ${args.join(" ")}`);
+			if (collectCoverage) {
+				log("📊 Coverage collection enabled");
+			}
 
 			const proc = spawn(cmd, args, {
 				cwd: this.config.paths.projectRoot,
@@ -139,10 +149,21 @@ class UnitTestRunner {
 					log("   This might indicate some workspaces failed to execute.");
 				}
 
+				const collectCoverage =
+					this.config.execution.collectCoverage ||
+					process.env.TEST_COVERAGE === "true";
+
+				// Parse coverage information if enabled
+				let coverageData = null;
+				if (collectCoverage && code === 0) {
+					coverageData = this.parseCoverage(output);
+				}
+
 				resolve({
 					success: code === 0,
 					...results,
 					duration,
+					coverage: coverageData,
 					output: this.config.execution.debug ? output : undefined,
 					errorOutput: errorOutput.length > 0 ? errorOutput : undefined,
 					workspaceInfo,
@@ -396,6 +417,50 @@ class UnitTestRunner {
 			);
 			log("   This might indicate some workspaces failed to execute.");
 		}
+	}
+
+	/**
+	 * Parse coverage information from test output
+	 */
+	parseCoverage(output) {
+		const coverage = {
+			enabled: true,
+			summary: null,
+			files: [],
+		};
+
+		// Look for coverage summary table
+		const coverageMatch = output.match(
+			/% Coverage report from v8[\s\S]*?All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/,
+		);
+
+		if (coverageMatch) {
+			coverage.summary = {
+				statements: parseFloat(coverageMatch[1]),
+				branches: parseFloat(coverageMatch[2]),
+				functions: parseFloat(coverageMatch[3]),
+				lines: parseFloat(coverageMatch[4]),
+			};
+		}
+
+		// Look for coverage threshold warnings
+		const thresholdWarnings =
+			output.match(/Coverage threshold for .+ not met/g) || [];
+		if (thresholdWarnings.length > 0) {
+			coverage.warnings = thresholdWarnings;
+		}
+
+		// Check if coverage files exist
+		try {
+			const fs = require("node:fs");
+			if (fs.existsSync("coverage")) {
+				coverage.reportPath = "coverage/lcov-report/index.html";
+			}
+		} catch {
+			// Ignore errors
+		}
+
+		return coverage;
 	}
 
 	/**

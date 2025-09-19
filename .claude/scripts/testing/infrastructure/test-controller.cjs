@@ -13,19 +13,17 @@
  */
 
 // Import modules
-const { CONFIG, validateConfig } = require("./config/test-config.cjs");
-const { TestStatus } = require("./modules/test-status.cjs");
-const { PhaseCoordinator } = require("./modules/phase-coordinator.cjs");
-const {
-	InfrastructureManager,
-} = require("./modules/infrastructure-manager.cjs");
-const { UnitTestRunner } = require("./modules/unit-test-runner.cjs");
-const { E2ETestRunner } = require("./modules/e2e-test-runner.cjs");
-const { ProcessManager } = require("./modules/process-manager.cjs");
-const { TestReporter } = require("./modules/test-reporter.cjs");
-const { ConditionWaiter } = require("./utils/condition-waiter.cjs");
-const { ResourceLock } = require("./resource-lock.cjs");
-const { TestCleanupGuard } = require("./test-cleanup-guard.cjs");
+const { CONFIG, validateConfig } = require("../config/test-config.cjs");
+const { TestStatus } = require("../utilities/test-status.cjs");
+const { PhaseCoordinator } = require("./phase-coordinator.cjs");
+const { InfrastructureManager } = require("./infrastructure-manager.cjs");
+const { UnitTestRunner } = require("../runners/unit-test-runner.cjs");
+const { E2ETestRunner } = require("../runners/e2e-test-runner.cjs");
+const { ProcessManager } = require("../utilities/process-manager.cjs");
+const { TestReporter } = require("../utilities/test-reporter.cjs");
+const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
+const { ResourceLock } = require("../resource-lock.cjs");
+const { TestCleanupGuard } = require("../utilities/test-cleanup-guard.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -147,6 +145,7 @@ class TestController {
 			quickCheck: false,
 			debug: false,
 			verbose: false,
+			unitOnly: false,
 		};
 
 		for (const arg of args) {
@@ -155,6 +154,10 @@ class TestController {
 					options.skipUnit = true;
 					break;
 				case "--skip-e2e":
+					options.skipE2E = true;
+					break;
+				case "--unit":
+					options.unitOnly = true;
 					options.skipE2E = true;
 					break;
 				case "--quick":
@@ -286,7 +289,9 @@ Examples:
 			name: "infrastructure_check",
 			critical: true,
 			executor: async () => {
-				const results = await this.infrastructureManager.checkAll();
+				const results = await this.infrastructureManager.checkAll(
+					this.options.unitOnly,
+				);
 
 				// Update status
 				for (const [key, value] of Object.entries(results)) {
@@ -296,12 +301,13 @@ Examples:
 				}
 
 				// Check if all critical services are healthy
-				const criticalServices = [
-					"supabase",
-					"database",
-					"environment",
-					"devServer",
-				];
+				const criticalServices = ["supabase", "database", "environment"];
+
+				// Only require devServer for E2E tests
+				if (!this.options.unitOnly) {
+					criticalServices.push("devServer");
+				}
+
 				const allHealthy = criticalServices.every(
 					(service) =>
 						results[service] === "healthy" ||

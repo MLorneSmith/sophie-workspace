@@ -8,7 +8,7 @@
 		"allow": [
 			"WebSearch",
 			"Bash(pnpm build:*)",
-			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --quick --debug)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/testing/infrastructure/test-controller.cjs --quick --debug)",
 			"Read(/tmp/claudekit-repo/src/commands/spec/**)",
 			"mcp__code-reasoning__code-reasoning",
 			"Read(/tmp/claudekit-repo/src/commands/**)",
@@ -18,7 +18,7 @@
 			"Bash(~/.local/bin/codespace-manager.sh:*)",
 			"mcp__context7__resolve-library-id",
 			"Bash(.claude/scripts/codecheck-direct.sh:*)",
-			"Bash(DEBUG_TEST=true node .claude/scripts/test/test-controller.cjs --debug)",
+			"Bash(DEBUG_TEST=true node .claude/scripts/testing/infrastructure/test-controller.cjs --debug)",
 			"WebFetch(domain:docs.warp.dev)",
 			"Bash(pnpm lint:*)",
 			"Bash(gh run list:*)",

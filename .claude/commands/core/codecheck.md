@@ -122,7 +122,7 @@ rm -f /tmp/.claude_codecheck_status_*
 
 ```bash
 # Execute with real-time output
-bash .claude/scripts/codecheck-direct.sh
+bash .claude/scripts/development/codecheck-direct.sh
 ```
 
 **Monitor** execution progress:

@@ -276,7 +276,7 @@ class PhaseCoordinator extends EventEmitter {
 			await execAsync("npx supabase start");
 
 			// Wait for Supabase to be ready
-			const { ConditionWaiter } = require("../utils/condition-waiter.cjs");
+			const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
 			const waiter = new ConditionWaiter();
 			await waiter.waitForSupabase({ timeout: 60000 });
 
