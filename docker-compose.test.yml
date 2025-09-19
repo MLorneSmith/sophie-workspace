@@ -4,10 +4,13 @@
 # Web app: port 3001 (dev uses 3000)
 # Payload app: port 3021 (dev uses 3020)
 
+name: 2025slideheroes-test
+
 services:
   app-test:
     image: node:20-slim
     container_name: slideheroes-app-test
+    user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
     working_dir: /app
     volumes:
       - .:/app:cached
@@ -16,6 +19,9 @@ services:
     ports:
       - "3001:3001"
     environment:
+      # npm configuration for non-root user
+      - npm_config_cache=/tmp/.npm
+      - NEXT_TELEMETRY_DISABLED=1
       # E2E Supabase configuration (using the -e2e stack)
       - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
       - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls
@@ -59,6 +65,7 @@ services:
   payload-test:
     image: node:20-slim
     container_name: slideheroes-payload-test
+    user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
     working_dir: /app
     volumes:
       - .:/app:cached
@@ -67,6 +74,9 @@ services:
     ports:
       - "3021:3021"
     environment:
+      # npm configuration for non-root user
+      - npm_config_cache=/tmp/.npm
+      - NEXT_TELEMETRY_DISABLED=1
       # E2E Supabase configuration (using the -e2e stack)
       - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
       - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls

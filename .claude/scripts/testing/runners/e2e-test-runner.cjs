@@ -309,6 +309,26 @@ class E2ETestRunner {
 	async startServers() {
 		log("🚀 Starting E2E test servers...");
 
+		// Check if we're using an external server (Docker or other)
+		const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+
+		if (testUrl !== "http://localhost:3000") {
+			log(`🐳 Using external test server at ${testUrl}`);
+
+			// Verify the external server is ready
+			try {
+				await this.waiter.waitForHttp(testUrl, {
+					timeout: 30000,
+					name: "external test server",
+				});
+				log(`✅ External test server ready at ${testUrl}`);
+				return { success: true };
+			} catch (error) {
+				logError(`External test server not responding: ${error.message}`);
+				return { success: false };
+			}
+		}
+
 		// Check if servers are already running
 		const serversReady = await this.checkServersReady();
 		if (serversReady) {
@@ -346,8 +366,11 @@ class E2ETestRunner {
 	 */
 	async checkServersReady() {
 		try {
+			// Use TEST_BASE_URL if set, otherwise check default port 3000
+			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+
 			const { stdout: webCheck } = await execAsync(
-				'curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 2>/dev/null || echo "000"',
+				`curl -s -o /dev/null -w "%{http_code}" ${testUrl} 2>/dev/null || echo "000"`,
 			);
 
 			return webCheck.trim() === "200";
@@ -561,6 +584,9 @@ class E2ETestRunner {
 				cwd = path.join(process.cwd(), "apps", "e2e");
 			}
 
+			// Use the TEST_BASE_URL if set (from Docker container or external server)
+			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+
 			const proc = spawn(command, args, {
 				cwd: cwd,
 				stdio: ["ignore", "pipe", "pipe"], // Use "ignore" for stdin to prevent hanging
@@ -569,9 +595,10 @@ class E2ETestRunner {
 					...process.env,
 					PLAYWRIGHT_WORKERS: "1", // Run tests sequentially within group
 					PLAYWRIGHT_PARALLEL: "false", // Disable parallel mode - tests are more reliable in serial execution
-					BASE_URL: "http://localhost:3000",
+					BASE_URL: testUrl,
 					NODE_ENV: "test",
-					PLAYWRIGHT_BASE_URL: "http://localhost:3000",
+					PLAYWRIGHT_BASE_URL: testUrl,
+					NEXT_PUBLIC_APP_URL: testUrl,
 					TEST_SHARD_MODE: "true",
 					CI: "1", // Force CI mode to prevent interactive behaviors (official Playwright env var)
 					PLAYWRIGHT_HTML_OPEN: "never", // Explicitly prevent HTML report from opening

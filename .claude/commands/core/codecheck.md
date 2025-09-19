@@ -88,7 +88,7 @@ You have full authority over quality checks and auto-fixes, with veto power on r
 
 #### Materials & Resources
 **Verify** required tools and scripts:
-- .claude/scripts/codecheck-direct.sh (main execution script)
+- .claude/scripts/development/codecheck-direct.sh (main execution script)
 </inputs>
 
 ### Phase M - METHOD

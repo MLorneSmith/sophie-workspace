@@ -1,3 +1,4 @@
+
 ---
 # Identity
 id: "docker-setup"
@@ -26,7 +27,7 @@ cross_references:
 created: "2025-09-09"
 last_updated: "2025-09-09"
 author: "create-context"
-revised: "2025-09-11 - Removed MCP servers container, now using native Claude Code MCP integration"
+revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues"
 ---
 
 # Docker Setup and Container Architecture
@@ -36,11 +37,13 @@ revised: "2025-09-11 - Removed MCP servers container, now using native Claude Co
 The SlideHeroes project uses a **hybrid Docker architecture** that combines containerized services with host-based application development for optimal performance and flexibility. The setup consists of:
 
 1. **Supabase CLI Stacks** (Not docker-compose):
-   - **2025slideheroes** - Main Supabase services (database, auth, storage) on ports 54321/54322
+   - **2025slideheroes-db** - Main Supabase services (database, auth, storage) on ports 39000-39006
    - **2025slideheroes-e2e** - E2E test Supabase services on ports 55321/55322
 
-2. **Docker Compose Stacks** (Optional):
-   - **app-test** (optional) - Isolated test server container on port 3001
+2. **Docker Compose Stack** (`docker-compose.test.yml`):
+   - **2025slideheroes-test** - Test environment stack with two containers:
+     - `slideheroes-app-test`: Next.js test server on port 3001
+     - `slideheroes-payload-test`: Payload CMS test server on port 3021
 
 3. **Host-Based Development**:
    - Next.js application runs directly on WSL2/macOS/Linux (not containerized)
@@ -54,33 +57,63 @@ The SlideHeroes project uses a **hybrid Docker architecture** that combines cont
 
 This hybrid approach provides the best of both worlds: fast local development with isolated, reproducible service dependencies.
 
+## Recent Updates (2025-09-19)
+
+### Port Configuration Changes
+- **Main Stack**: Migrated from 54xxx to 39xxx port range to resolve Windows/WSL2 conflicts
+- **New URLs**:
+  - Studio: http://localhost:39002 (was 54323)
+  - API: http://localhost:39000 (was 54321)
+  - Database: postgresql://postgres:postgres@localhost:39001/postgres (was 54322)
+
+### RLS Performance Optimizations
+- Consolidated 45+ duplicate RLS policies across 15 tables
+- Applied optimizations to both main and E2E databases
+- Expected 2-10x query performance improvement
+
+### Windows/WSL2 Compatibility
+- Documented port binding issues and solutions
+- Recommended WSL 2.6.1+ with mirrored networking mode
+- Implemented safe port range (39xxx) to avoid Hyper-V conflicts
+
+### Docker Compose Naming Clarity
+- Renamed Docker Compose project to `2025slideheroes-test` for clear distinction
+- Naming convention:
+  - `-db` suffix: Main Supabase development stack
+  - `-e2e` suffix: E2E Supabase testing stack
+  - `-test` suffix: Docker Compose test containers
+
 ## Service Architecture
 
 ### Supabase Services (Managed by Supabase CLI)
 
 **Two Isolated Stacks**:
 
-| Service | Main Stack (2025slideheroes) | E2E Stack (2025slideheroes-e2e) |
-|---------|------------------------------|----------------------------------|
-| API Gateway | 54321 | 55321 |
-| PostgreSQL | 54322 | 55322 |
-| Studio | 54323 | 55323 |
-| Mailpit | - | 55324-55326 |
+| Service | Main Stack (2025slideheroes-db) | E2E Stack (2025slideheroes-e2e) |
+|---------|----------------------------------|----------------------------------|
+| API Gateway | 39000 | 55321 |
+| PostgreSQL | 39001 | 55322 |
+| Studio | 39002 | 55323 |
+| Inbucket | 39003-39005 | 55324-55326 |
+| Analytics | 39006 | 55327 |
 
 **Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, and Supabase Studio
 
-### Test Server Container (`app-test`)
+### Test Server Containers (`2025slideheroes-test` stack)
 
-**Purpose**: Isolated Next.js server for test execution
+**Purpose**: Isolated test environment for Next.js and Payload CMS
 
 **Configuration** (`docker-compose.test.yml`):
+- **Project Name**: `2025slideheroes-test` (explicitly set in compose file)
 - **Base Image**: `node:20-slim`
-- **Port**: 3001 (avoids conflict with dev on 3000)
-- **Environment**: Connects to E2E Supabase stack
+- **Containers**:
+  - `slideheroes-app-test`: Next.js on port 3001 (dev uses 3000)
+  - `slideheroes-payload-test`: Payload CMS on port 3021 (dev uses 3020)
+- **Environment**: Connects to E2E Supabase stack (55321/55322)
 - **Features**:
-  - Isolated node_modules
+  - Isolated node_modules for each container
   - Automatic pnpm installation
-  - Health check endpoint
+  - Health check endpoints
   - Can run parallel to development
 
 ### DevContainer Setup
@@ -93,8 +126,8 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 
 ### Supporting Services
 
-**PostgreSQL** (54322):
-- Supabase-optimized PostgreSQL 17.5.1
+**PostgreSQL** (39001 for main, 55322 for E2E):
+- Supabase-optimized PostgreSQL 15.8
 - OrioleDB support (disabled by default in Codespaces)
 - Performance tuning for development
 
@@ -107,7 +140,7 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 - SMTP server for email testing
 - Web UI for email inspection
 
-**Supabase Studio** (54321):
+**Supabase Studio** (39002 for main, 55323 for E2E):
 - Optional database management UI
 - Connected to local PostgreSQL
 
@@ -152,6 +185,33 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 - `postgres_data`: PostgreSQL data
 - `redis_data`: Redis persistence
 
+## Windows/WSL2 Port Binding Issues
+
+### Known Issue
+Windows with WSL2 and Docker Desktop can experience port binding conflicts due to Hyper-V dynamically reserving port ranges. This commonly affects ports in the 50000-60000 range.
+
+**Error Message**: `bind: An attempt was made to access a socket in a way forbidden by its access permissions`
+
+### Solutions
+
+1. **Port Range Change (Implemented)**: The main stack now uses ports 39000-39006 to avoid the problematic range.
+
+2. **WSL Update**: Update to WSL 2.6.1+ and enable mirrored networking mode:
+   ```powershell
+   wsl --update
+   ```
+   Then create/edit `C:\Users\[Username]\.wslconfig`:
+   ```ini
+   [wsl2]
+   networkingMode=mirrored
+   ```
+
+3. **Quick Fix**: Restart WSL and Docker:
+   ```powershell
+   wsl --shutdown
+   # Then restart Docker Desktop
+   ```
+
 ## Development Workflow
 
 ### Initial Setup
@@ -165,7 +225,7 @@ cd 2025slideheroes
 pnpm install
 
 # 3. Start Supabase services
-npx supabase start  # Main stack on ports 54321/54322
+npx supabase start  # Main stack on ports 39000/39001
 
 # 4. Start E2E Supabase services (in apps/e2e directory)
 cd apps/e2e && npx supabase start  # E2E stack on ports 55321/55322
@@ -182,15 +242,15 @@ pnpm dev  # Runs on port 3000
 
 ```bash
 # Start backend services
-npx supabase start  # If not already running
+npx supabase start  # If not already running (ports 39000-39006)
 
 # MCP servers start automatically with Claude Code (configured in .mcp.json)
 
 # Run development server on host
 pnpm dev  # Fast hot-reload on port 3000
 
-# For isolated testing, start test container
-docker-compose -f docker-compose.test.yml up -d  # Runs on port 3001
+# For isolated testing, start test containers
+docker-compose -f docker-compose.test.yml up -d  # Runs on ports 3001 & 3021
 
 # Run tests
 pnpm test  # Unit tests on host
@@ -201,10 +261,10 @@ pnpm test  # Unit tests on host
 
 ```bash
 # Terminal 1: Development (on host)
-pnpm dev  # Port 3000, uses main Supabase (54321/54322)
+pnpm dev  # Port 3000, uses main Supabase (39000/39001)
 
-# Terminal 2: Test server (in container)
-docker-compose -f docker-compose.test.yml up  # Port 3001, uses E2E Supabase (55321/55322)
+# Terminal 2: Test servers (in containers)
+docker-compose -f docker-compose.test.yml up  # Ports 3001 & 3021, uses E2E Supabase (55321/55322)
 
 # Terminal 3: Run tests
 node .claude/scripts/test/test-controller.cjs  # Runs against port 3001
@@ -227,7 +287,9 @@ MCP servers are now managed directly by Claude Code through the `.mcp.json` conf
 
 ### Network Architecture
 
-**Bridge Network**: `slideheroes` (172.20.0.0/16)
+**Bridge Networks**:
+- `slideheroes-test`: Test container network (Docker Compose)
+- Supabase networks are managed separately by Supabase CLI
 - Isolated network for all containers
 - DNS resolution between services
 - Port mapping to host
@@ -235,13 +297,14 @@ MCP servers are now managed directly by Claude Code through the `.mcp.json` conf
 
 ### Environment Variables
 
-**Critical Variables**:
+**Critical Variables (Updated for new ports)**:
 ```bash
 NODE_ENV=development
-POSTGRES_PASSWORD=postgres
-JWT_SECRET=your-super-secret-jwt-token-with-at-least-32-characters-long
-SUPABASE_ANON_KEY=[base64-encoded-jwt]
-SUPABASE_SERVICE_KEY=[base64-encoded-jwt]
+DATABASE_URL=postgresql://postgres:postgres@localhost:39001/postgres  # Main stack
+# DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres  # E2E stack
+SUPABASE_URL=http://localhost:39000  # Main API (was 54321)
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
 ```
 
 **MCP Server Credentials**:
@@ -297,29 +360,34 @@ npx supabase gen types typescript --local
 
 ```bash
 # Connect to main PostgreSQL
-psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
+psql postgresql://postgres:postgres@127.0.0.1:39001/postgres
 
 # Connect to E2E PostgreSQL
 psql postgresql://postgres:postgres@127.0.0.1:55322/postgres
 
 # View Supabase Studio
-open http://localhost:54323  # Main
+open http://localhost:39002  # Main
 open http://localhost:55323  # E2E
 ```
 
 ### Test Container Management
 
 ```bash
-# Start test container
+# Start test containers (2025slideheroes-test stack)
 docker-compose -f docker-compose.test.yml up -d
 
 # View test server logs
-docker logs slideheroes-app-test -f
+docker logs slideheroes-app-test -f      # Next.js logs
+docker logs slideheroes-payload-test -f  # Payload CMS logs
 
-# Access test server
-curl http://localhost:3001/api/health
+# Access test servers
+curl http://localhost:3001/api/health    # Next.js health check
+curl http://localhost:3021/health        # Payload CMS health check
 
-# Stop test container
+# Check stack status
+docker compose ls  # Should show: 2025slideheroes-test
+
+# Stop test containers
 docker-compose -f docker-compose.test.yml down
 ```
 
@@ -328,12 +396,14 @@ docker-compose -f docker-compose.test.yml down
 ```bash
 # Check what's running on ports
 lsof -i :3000  # Dev server
-lsof -i :3001  # Test server
-lsof -i :54321  # Main Supabase
+lsof -i :3001  # Test server (Next.js)
+lsof -i :3021  # Test server (Payload CMS)
+lsof -i :39000  # Main Supabase API
 lsof -i :55321  # E2E Supabase
 
 # View Supabase container logs
-docker logs supabase_db_2025slideheroes -f
+docker logs supabase_db_2025slideheroes-db -f  # Main stack
+docker logs supabase_db_2025slideheroes-e2e -f  # E2E stack
 
 # Check Docker compose stacks
 docker compose ls
@@ -349,7 +419,7 @@ docker ps --format "table {{.Names}}\t{{.Labels}}"
 npx supabase stop
 cd apps/e2e && npx supabase stop
 
-# Stop test container (if running)
+# Stop test containers (if running)
 docker-compose -f docker-compose.test.yml down
 
 # MCP servers stop automatically when Claude Code exits
