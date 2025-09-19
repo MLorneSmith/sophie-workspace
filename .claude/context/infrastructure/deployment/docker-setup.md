@@ -25,9 +25,9 @@ cross_references:
 
 # Maintenance
 created: "2025-09-09"
-last_updated: "2025-09-09"
+last_updated: "2025-09-19"
 author: "create-context"
-revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues"
+revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues, added test infrastructure integration documentation, fixed container permission issues"
 ---
 
 # Docker Setup and Container Architecture
@@ -101,7 +101,7 @@ This hybrid approach provides the best of both worlds: fast local development wi
 
 ### Test Server Containers (`2025slideheroes-test` stack)
 
-**Purpose**: Isolated test environment for Next.js and Payload CMS
+**Purpose**: Isolated test environment for Next.js and Payload CMS with automatic integration to test infrastructure
 
 **Configuration** (`docker-compose.test.yml`):
 - **Project Name**: `2025slideheroes-test` (explicitly set in compose file)
@@ -110,11 +110,11 @@ This hybrid approach provides the best of both worlds: fast local development wi
   - `slideheroes-app-test`: Next.js on port 3001 (dev uses 3000)
   - `slideheroes-payload-test`: Payload CMS on port 3021 (dev uses 3020)
 - **Environment**: Connects to E2E Supabase stack (55321/55322)
-- **Features**:
-  - Isolated node_modules for each container
-  - Automatic pnpm installation
-  - Health check endpoints
-  - Can run parallel to development
+- **Package Management**: Uses `npx pnpm@latest` to avoid permission issues
+- **Volume Strategy**: Simplified mounting without isolated node_modules to prevent permission conflicts
+- **Health Endpoints**: `/api/health` for container health verification
+- **Auto-Detection**: Test infrastructure automatically detects and uses these containers
+- **Integration**: Can run parallel to development, automatically used by `/test` command
 
 ### DevContainer Setup
 
@@ -123,6 +123,25 @@ This hybrid approach provides the best of both worlds: fast local development wi
 ### MCP Servers (via Claude Code)
 
 MCP servers are configured natively through Claude Code via `.mcp.json` at project root. They are managed directly by Claude Code and start automatically when Claude Code launches. The legacy `docker-compose.mcp.yml` file is no longer used.
+
+### Test Infrastructure Integration
+
+**Automatic Container Detection**: The test infrastructure in `.claude/scripts/testing/infrastructure/` automatically detects and integrates with Docker test containers:
+
+- **Container Detection**: `infrastructure-manager.cjs` checks for `slideheroes-app-test` container on port 3001
+- **Automatic Configuration**: Sets `TEST_BASE_URL=http://localhost:3001` when container is healthy
+- **Fallback Strategy**: Uses host-based dev server on port 3000 if containers unavailable
+- **Health Verification**: Validates `/api/health` endpoints before using containers
+
+**Test Command Integration**:
+```bash
+/test                    # Auto-detects containers, uses port 3001 if available
+/test --unit            # Uses containers for unit tests when available
+/test --e2e             # Requires containers for E2E tests (port 3001)
+/test --quick           # Quick infrastructure check, shows container status
+```
+
+**Container Priority**: When both host development server (port 3000) and test containers (port 3001) are running, the test infrastructure will automatically prefer containers for testing to avoid conflicts.
 
 ### Supporting Services
 
@@ -249,12 +268,17 @@ npx supabase start  # If not already running (ports 39000-39006)
 # Run development server on host
 pnpm dev  # Fast hot-reload on port 3000
 
-# For isolated testing, start test containers
+# For isolated testing, start test containers (recommended)
 docker-compose -f docker-compose.test.yml up -d  # Runs on ports 3001 & 3021
 
-# Run tests
-pnpm test  # Unit tests on host
-/test  # Comprehensive test suite
+# Verify containers are healthy
+curl http://localhost:3001/api/health    # Should return {"status":"ready"}
+curl http://localhost:3021/api/health    # Should return {"status":"ready"}
+
+# Run tests (auto-detects containers)
+/test --quick              # Quick infrastructure check, uses containers if available
+/test --unit              # Unit tests, uses containers if available
+/test --e2e               # E2E tests, requires containers for full suite
 ```
 
 ### Parallel Development and Testing
@@ -267,7 +291,9 @@ pnpm dev  # Port 3000, uses main Supabase (39000/39001)
 docker-compose -f docker-compose.test.yml up  # Ports 3001 & 3021, uses E2E Supabase (55321/55322)
 
 # Terminal 3: Run tests
-node .claude/scripts/test/test-controller.cjs  # Runs against port 3001
+/test                                           # Auto-detects port 3001 containers
+# OR run test controller directly:
+node .claude/scripts/testing/infrastructure/test-controller.cjs  # Runs against port 3001
 ```
 
 ### MCP Server Management (Now via Claude Code)
@@ -459,6 +485,39 @@ docker system prune -a --volumes
 2. Fix permissions: `docker exec -it [container] chown -R node:node /workspace`
 3. Reset volumes: `docker-compose down -v && docker-compose up`
 
+### Container Permission Issues (pnpm)
+
+**Problem**: `EACCES: permission denied` errors when starting test containers
+**Symptoms**:
+- Container exits with code 243
+- Logs show `npm error EACCES: permission denied, mkdir '/usr/local/lib/node_modules/pnpm'`
+- Containers fail to install pnpm globally
+
+**Root Cause**: Test containers run as non-root user (`node`) and cannot install global packages
+
+**Solution**: The containers now use `npx pnpm@latest` instead of global installation:
+```bash
+# ✅ This works (used in containers)
+npx pnpm@latest install --frozen-lockfile
+
+# ❌ This fails (avoid in containers)
+npm install -g pnpm
+corepack enable  # Also fails with permission errors
+```
+
+**If you encounter this issue**:
+1. **Check container logs**: `docker logs slideheroes-app-test`
+2. **Restart containers**: `docker-compose -f docker-compose.test.yml down && docker-compose -f docker-compose.test.yml up -d`
+3. **Clear problematic volumes**: `docker-compose -f docker-compose.test.yml down -v`
+4. **Verify fix**: Wait for containers to show "Ready" status
+
+**Volume Permission Issues**: If you encounter node_modules permission errors:
+```bash
+# Remove problematic volumes and restart
+docker-compose -f docker-compose.test.yml down -v
+docker-compose -f docker-compose.test.yml up -d
+```
+
 ### MCP Server Issues (Now Claude Code)
 
 **Symptoms**: MCP servers not responding, tool failures in Claude Code
@@ -537,11 +596,154 @@ Consider moving to full containerization when:
 - Complex microservices architecture emerges
 - Cross-platform development becomes essential
 
+## Architecture Verification
+
+### Complete Setup Verification
+
+Use these commands to verify your entire Docker infrastructure is working correctly:
+
+```bash
+# === Supabase Stacks ===
+echo "=== Main Supabase Stack ==="
+npx supabase status                           # Should show API on 39000, DB on 39001
+
+echo "=== E2E Supabase Stack ==="
+cd apps/e2e && npx supabase status            # Should show API on 55321, DB on 55322
+cd ../..
+
+# === Docker Containers ===
+echo "=== Test Containers ==="
+docker ps --filter "name=slideheroes-" --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
+
+echo "=== MCP Integration ==="
+docker ps --filter "name=docs-mcp" --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}"
+
+echo "=== Compose Stacks ==="
+docker compose ls                             # Should show: 2025slideheroes-test running(2)
+
+# === Health Checks ===
+echo "=== Container Health ==="
+curl -s http://localhost:3001/api/health | jq '.status'  # Should return "ready"
+curl -s http://localhost:3021/api/health | jq '.status'  # Should return "ready"
+
+# === Test Infrastructure Integration ===
+echo "=== Infrastructure Health Check ==="
+node .claude/scripts/testing/infrastructure/test-controller.cjs --quick
+```
+
+### Expected Results
+
+**✅ Healthy Setup Should Show**:
+```
+Main Supabase:   API=39000, DB=39001, Studio=39002
+E2E Supabase:    API=55321, DB=55322, Studio=55323
+Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021)
+MCP Server:      docs-mcp-server (6280)
+Infrastructure:  All infrastructure healthy (7/7)
+```
+
+**❌ Common Issues**:
+- **Port conflicts**: Check `lsof -i :3001` and restart containers
+- **Container exits**: Check logs with `docker logs slideheroes-app-test`
+- **Supabase not running**: Run `npx supabase start` in main and `apps/e2e`
+- **Infrastructure check fails**: Run `/test --debug` for detailed diagnostics
+
+### Quick Diagnostic Commands
+
+```bash
+# Check what's using key ports
+lsof -i :3000 :3001 :3021 :39000 :39001 :55321 :55322
+
+# View all running containers
+docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
+
+# Check container logs for issues
+docker logs slideheroes-app-test --tail 20
+docker logs slideheroes-payload-test --tail 20
+
+# Test container health endpoints
+curl http://localhost:3001/api/health
+curl http://localhost:3021/api/health
+
+# Verify test infrastructure integration
+/test --quick --debug
+```
+
+## Prevention Mechanisms for Incorrect Stack Creation
+
+### Issue #348 Resolution
+
+After resolving RLS performance issues, we implemented multiple prevention mechanisms to stop the creation of incorrect Supabase stacks:
+
+**Problem**: Running `npx supabase start` from project root creates wrong stack:
+- ❌ Stack: `2025slideheroes` (ports 54321/54322)
+- ✅ Correct: `2025slideheroes-db` (ports 39000-39006) or `2025slideheroes-e2e` (ports 55321/55322)
+
+### 1. Claude Code Hook Guard
+
+**Location**: `.claude/settings.local.json` and `.claude/hooks/supabase-directory-guard.sh`
+
+**How it works**: Intercepts all Bash commands containing "supabase" and blocks execution if run from project root.
+
+**Example Warning**:
+```
+🚨 SUPABASE DIRECTORY WARNING
+❌ You're running a Supabase command from the project root.
+🛑 Command blocked to prevent incorrect stack creation.
+
+✅ Correct usage:
+   cd apps/web && npx supabase start    # For main development
+   cd apps/e2e && npx supabase start    # For E2E testing
+```
+
+### 2. Root-Level Warning Config
+
+**Location**: `supabase/config.toml` (project root)
+
+**Purpose**: Creates invalid configuration with ports 99999/99998 to prevent accidental usage and shows clear warnings.
+
+### 3. Directory-Specific Best Practices
+
+**Always run Supabase commands from the correct directories**:
+
+```bash
+# ✅ CORRECT - Main development
+cd apps/web
+npx supabase start    # Creates 2025slideheroes-db on ports 39000-39006
+
+# ✅ CORRECT - E2E testing
+cd apps/e2e
+npx supabase start    # Creates 2025slideheroes-e2e on ports 55321-55322
+
+# ❌ WRONG - Project root (blocked by hook)
+cd /home/msmith/projects/2025slideheroes
+npx supabase start    # Would create wrong stack, now blocked
+```
+
+### 4. Container Cleanup Commands
+
+If incorrect stacks are accidentally created:
+
+```bash
+# Stop incorrect stack (from any directory)
+npx supabase stop
+
+# List and remove incorrect volumes
+docker volume ls --filter "label=com.supabase.cli.project=2025slideheroes"
+docker volume rm supabase_db_2025slideheroes supabase_config_2025slideheroes
+
+# Verify correct stacks are running
+docker ps --filter "name=2025slideheroes-db" --format "table {{.Names}}\t{{.Ports}}"
+docker ps --filter "name=2025slideheroes-e2e" --format "table {{.Names}}\t{{.Ports}}"
+```
 
 ## Related Files
 
 - `/home/msmith/projects/2025slideheroes/.mcp.json`: MCP servers configuration (Claude Code)
 - `/home/msmith/projects/2025slideheroes/docker-compose.test.yml`: Test server container configuration
+- `/home/msmith/projects/2025slideheroes/.claude/scripts/testing/infrastructure/test-controller.cjs`: Main test orchestration script
+- `/home/msmith/projects/2025slideheroes/.claude/scripts/testing/infrastructure/infrastructure-manager.cjs`: Container detection and integration
+- `/home/msmith/projects/2025slideheroes/.claude/commands/core/test.md`: Test command documentation
 - `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: DevContainer services (optional)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/devcontainer.json`: VS Code integration
 - `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration
