@@ -9,7 +9,7 @@ const path = require("node:path");
 const { promisify } = require("node:util");
 const os = require("node:os");
 const execAsync = promisify(exec);
-const { ConditionWaiter } = require("../utils/condition-waiter.cjs");
+const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {

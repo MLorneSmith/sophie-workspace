@@ -6,7 +6,7 @@
 const { spawn, exec } = require("node:child_process");
 const { promisify } = require("node:util");
 const execAsync = promisify(exec);
-const { ConditionWaiter } = require("../utils/condition-waiter.cjs");
+const { ConditionWaiter } = require("./condition-waiter.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {

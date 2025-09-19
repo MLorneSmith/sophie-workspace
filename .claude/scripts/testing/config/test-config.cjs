@@ -125,8 +125,9 @@ const CONFIG = {
 		packageManager: "pnpm",
 
 		// Test commands
-		unitTest: ["pnpm", "test:unit", "--force"],
-		e2eTest: ["pnpm", "--filter", "web-e2e", "test:e2e"],
+		unitTest: ["pnpm", "test:unit"],
+		unitTestCoverage: ["pnpm", "test:coverage"],
+		e2eTest: ["pnpm", "--filter", "web-e2e", "test"],
 
 		// Server commands
 		startWeb: ["pnpm", "--filter", "web", "dev:test"],

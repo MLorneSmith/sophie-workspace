@@ -8,8 +8,8 @@ const fs = require("node:fs").promises;
 const path = require("node:path");
 const { promisify } = require("node:util");
 const execAsync = promisify(exec);
-const { ConditionWaiter } = require("../utils/condition-waiter.cjs");
-const { ProcessManager } = require("./process-manager.cjs");
+const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
+const { ProcessManager } = require("../utilities/process-manager.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -38,14 +38,14 @@ class InfrastructureManager {
 	/**
 	 * Main infrastructure check and setup
 	 */
-	async checkAll() {
+	async checkAll(unitOnly = false) {
 		log("🔍 Running smart pre-flight infrastructure validation...");
 
 		// Phase 1: Quick health checks (< 2 seconds)
-		const healthResults = await this.runHealthChecks();
+		const healthResults = await this.runHealthChecks(unitOnly);
 
 		// Phase 2: Only run startup procedures if health checks fail
-		const results = await this.runConditionalSetup(healthResults);
+		const results = await this.runConditionalSetup(healthResults, unitOnly);
 
 		return results;
 	}
@@ -53,7 +53,7 @@ class InfrastructureManager {
 	/**
 	 * Fast health checks to determine if infrastructure is already running correctly
 	 */
-	async runHealthChecks() {
+	async runHealthChecks(unitOnly = false) {
 		log("⚡ Running fast health checks...");
 		const results = {
 			supabase: await this.healthCheckSupabase(),
@@ -62,8 +62,14 @@ class InfrastructureManager {
 			testUsers: await this.healthCheckTestUsers(),
 			build: await this.healthCheckBuild(),
 			dependencies: await this.healthCheckDependencies(),
-			devServer: await this.healthCheckDevServer(),
 		};
+
+		// Only check devServer for E2E tests
+		if (!unitOnly) {
+			results.devServer = await this.healthCheckDevServer();
+		} else {
+			results.devServer = "healthy"; // Skip devServer for unit tests
+		}
 
 		const healthyCount = Object.values(results).filter(
 			(r) => r === "healthy",
@@ -86,7 +92,7 @@ class InfrastructureManager {
 	/**
 	 * Conditionally run setup procedures only for unhealthy services
 	 */
-	async runConditionalSetup(healthResults) {
+	async runConditionalSetup(healthResults, unitOnly = false) {
 		const setupResults = { ...healthResults };
 		let needsVerification = false;
 
@@ -115,7 +121,7 @@ class InfrastructureManager {
 			needsVerification = true;
 		}
 
-		if (healthResults.devServer !== "healthy") {
+		if (healthResults.devServer !== "healthy" && !unitOnly) {
 			log("🌐 Setting up dev server...");
 			setupResults.devServer = await this.setupDevServer();
 			needsVerification = true;

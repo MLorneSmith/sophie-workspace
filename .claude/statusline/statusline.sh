@@ -147,9 +147,9 @@ codecheck_log_file="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
 # Also check old lint status file for backwards compatibility
 lint_log_file="/tmp/.claude_lint_status_${GIT_ROOT//\//_}"
 
-# Check if codecheck/lint/typecheck is currently running (exclude LSP servers)
-# Also check for individual pnpm commands that might be running from /code-check command
-if pgrep -f "code-check|codecheck|pnpm (run )?(lint|typecheck|format|biome)|npm run (lint|typecheck)|yarn (lint|typecheck)|tsc --noEmit|eslint .*\.(js|ts|jsx|tsx)|biome check" | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
+# Check if codecheck/lint/typecheck is currently running (exclude LSP servers and background processes)
+# Use ps aux to get full command lines for proper filtering
+if ps aux | grep -E "(code-check|codecheck|pnpm (run )?(lint|typecheck|format)|npm run (lint|typecheck)|yarn (lint|typecheck)|tsc --noEmit|eslint.*\.(js|ts|jsx|tsx)|biome check)" | grep -v grep | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
     codecheck_status="⟳ codecheck"
 elif [ -f "$codecheck_log_file" ]; then
     # Read last codecheck status from temp file

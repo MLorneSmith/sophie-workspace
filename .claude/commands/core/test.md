@@ -121,7 +121,7 @@ fi
 **Verify Test Environment**:
 ```bash
 # Check for test controller script
-TEST_CONTROLLER=".claude/scripts/test/test-controller.cjs"
+TEST_CONTROLLER=".claude/scripts/testing/infrastructure/test-controller.cjs"
 if [[ ! -f "$TEST_CONTROLLER" ]]; then
   echo "⚠️  Test controller not found, using direct commands"
   USE_DIRECT=true
@@ -130,14 +130,19 @@ else
 fi
 
 # Clean any stuck test processes
-pkill -f "playwright|vitest|jest" 2>/dev/null || true
+if pgrep -f "playwright|vitest|jest" >/dev/null 2>&1; then
+  echo "🧹 Cleaning stuck test processes..."
+  pkill -f "playwright|vitest|jest" 2>/dev/null || true
+else
+  echo "✨ No stuck test processes found"
+fi
 echo "✅ Test environment ready"
 ```
 
 **Load Dynamic Context**:
 ```bash
 # Load test-specific context
-node .claude/scripts/context-loader.cjs \
+node .claude/scripts/analysis/context-loader.cjs \
   --query="testing $ARGS test suites coverage" \
   --command="test" \
   --format=inline 2>/dev/null || true
@@ -165,8 +170,9 @@ prepare_test_environment() {
   # Clean previous test artifacts
   rm -rf coverage .nyc_output test-results 2>/dev/null || true
 
-  # Create test results directory
+  # Create required directories
   mkdir -p test-results
+  mkdir -p /tmp/.claude_test_locks
 
   echo "✅ Environment prepared"
 }
