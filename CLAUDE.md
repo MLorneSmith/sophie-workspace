@@ -18,34 +18,11 @@ SlideHeroes - AI-powered presentation platform built with Next.js 14, Supabase, 
 - **Offer alternatives** - Suggest different solutions when appropriate
 - **Admit uncertainty** - Say "I don't know" rather than guessing
 - **Document discoveries** - Update CLAUDE.md with learnings after each task
-
-## Anti-Patterns to Avoid
-
-- No placeholder implementations (TODOs, mocks, "would need to...")
-- No social validation ("Great question!", "You're right!")
-- No hedging language ("might", "perhaps", "could potentially")
-- No restating obvious requirements
-- No verbose explanations when code suffices
-
-## Critical Project Constraints
-
-### Security First
-
 1. **Never expose API keys** - Use server actions for AI/external APIs
 2. **Always validate input** - Use Zod schemas everywhere
 3. **Follow RLS patterns** - Never bypass security policies
 4. **Use enhanceAction** - For all server actions (@packages/next/src/actions/index.ts)
 5. **Implement proper error handling** - User-friendly messages
-
-### Authentication & Secrets
-
-- Use `GITHUB_TOKEN` for authenticated GitHub API requests (environment variables only)
-- NEVER hardcode tokens or expose them in code
-- Use server-side actions for token-based requests
-- Rotate tokens periodically for security
-
-### Next.js 14+ Patterns
-
 - **Prefer Server Components** - Client components only when needed for interactivity
 - **Enable streaming with Suspense** - Wrap slow components for progressive rendering
 - **Use parallel data fetching** - `Promise.all()` in Server Components
