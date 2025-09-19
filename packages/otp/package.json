@@ -14,7 +14,7 @@
 		"./components": "./src/components/index.ts"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "3.9.1",
+		"@hookform/resolvers": "5.2.1",
 		"@kit/email-templates": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/mailers": "workspace:*",

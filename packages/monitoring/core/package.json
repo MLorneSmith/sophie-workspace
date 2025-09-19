@@ -28,6 +28,6 @@
 		}
 	},
 	"dependencies": {
-		"@hookform/resolvers": "3.9.1"
+		"@hookform/resolvers": "5.2.1"
 	}
 }

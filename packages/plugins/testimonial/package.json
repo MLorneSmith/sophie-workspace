@@ -16,7 +16,7 @@
 		"./widgets": "./src/widgets.ts"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "3.9.1",
+		"@hookform/resolvers": "5.2.1",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/next": "workspace:*",
 		"@kit/prettier-config": "workspace:*",

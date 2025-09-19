@@ -91,8 +91,8 @@ importers:
   .claude/scripts:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@types/node':
         specifier: ^24.3.1
@@ -110,8 +110,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@tanstack/react-query':
         specifier: 5.87.1
         version: 5.87.1(react@19.1.1)
@@ -198,8 +198,8 @@ importers:
   apps/e2e:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@playwright/test':
         specifier: ^1.55.0
@@ -229,8 +229,8 @@ importers:
   apps/payload:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -392,8 +392,8 @@ importers:
         specifier: 2.5.3-cloudflare-rc1
         version: 2.5.3-cloudflare-rc1(next@15.5.2(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.55.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.77.4))
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/accounts':
         specifier: workspace:*
         version: link:../../packages/features/accounts
@@ -645,8 +645,8 @@ importers:
   packages/ai-gateway:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/shared':
         specifier: workspace:*
         version: link:../shared
@@ -679,8 +679,8 @@ importers:
   packages/analytics:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/shared':
         specifier: workspace:*
         version: link:../shared
@@ -701,8 +701,8 @@ importers:
   packages/billing/core:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -726,8 +726,8 @@ importers:
   packages/billing/gateway:
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/billing':
         specifier: workspace:*
         version: link:../core
@@ -875,8 +875,8 @@ importers:
   packages/cms/core:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/cms-types':
         specifier: workspace:*
@@ -906,8 +906,8 @@ importers:
   packages/cms/keystatic:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@keystatic/core':
         specifier: 0.5.48
         version: 0.5.48(next@15.5.2(@opentelemetry/api@1.9.0)(@playwright/test@1.55.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.77.4))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -949,8 +949,8 @@ importers:
   packages/cms/payload:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/cms-types':
         specifier: workspace:*
         version: link:../types
@@ -983,8 +983,8 @@ importers:
   packages/cms/types:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -999,8 +999,8 @@ importers:
   packages/cms/wordpress:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/shared':
         specifier: workspace:*
         version: link:../../shared
@@ -1033,8 +1033,8 @@ importers:
   packages/database-webhooks:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/billing':
         specifier: workspace:*
@@ -1073,8 +1073,8 @@ importers:
   packages/email-templates:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@react-email/components':
         specifier: 0.5.1
         version: 0.5.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1099,8 +1099,8 @@ importers:
         version: 5.1.5
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/billing-gateway':
         specifier: workspace:*
         version: link:../../billing/gateway
@@ -1180,8 +1180,8 @@ importers:
   packages/features/admin:
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -1264,8 +1264,8 @@ importers:
   packages/features/auth:
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -1321,8 +1321,8 @@ importers:
   packages/features/notifications:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1368,8 +1368,8 @@ importers:
         version: 5.1.5
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/accounts':
         specifier: workspace:*
         version: link:../accounts
@@ -1455,8 +1455,8 @@ importers:
   packages/i18n:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       i18next:
         specifier: 25.5.2
         version: 25.5.2(typescript@5.9.2)
@@ -1498,8 +1498,8 @@ importers:
   packages/mailers/core:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1532,8 +1532,8 @@ importers:
   packages/mailers/nodemailer:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       nodemailer:
         specifier: ^7.0.6
         version: 7.0.6
@@ -1560,8 +1560,8 @@ importers:
   packages/mailers/resend:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1585,8 +1585,8 @@ importers:
   packages/mailers/shared:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1629,8 +1629,8 @@ importers:
   packages/monitoring/api:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1666,8 +1666,8 @@ importers:
   packages/monitoring/core:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -1688,8 +1688,8 @@ importers:
   packages/monitoring/newrelic:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/monitoring-core':
         specifier: workspace:*
         version: link:../core
@@ -1713,8 +1713,8 @@ importers:
   packages/monitoring/sentry:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@sentry/nextjs':
         specifier: ^10.10.0
         version: 10.10.0(@opentelemetry/context-async-hooks@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.1.0(@opentelemetry/api@1.9.0))(next@15.5.2(@babel/core@7.28.3)(@opentelemetry/api@1.9.0)(@playwright/test@1.55.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(sass@1.77.4))(react@19.1.1)(webpack@5.101.3)
@@ -1747,8 +1747,8 @@ importers:
   packages/next:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/auth':
         specifier: workspace:*
@@ -1781,8 +1781,8 @@ importers:
   packages/otp:
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/email-templates':
         specifier: workspace:*
         version: link:../email-templates
@@ -1838,8 +1838,8 @@ importers:
   packages/plugins/analytics/posthog:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/shared':
         specifier: workspace:*
         version: link:../../../shared
@@ -1866,8 +1866,8 @@ importers:
   packages/plugins/testimonial:
     devDependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/eslint-config':
         specifier: workspace:*
         version: link:../../../tooling/eslint
@@ -1932,8 +1932,8 @@ importers:
   packages/shared:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@kit/monitoring-core':
         specifier: workspace:*
         version: link:../monitoring/core
@@ -1963,8 +1963,8 @@ importers:
   packages/supabase:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
     devDependencies:
       '@kit/eslint-config':
         specifier: workspace:*
@@ -2003,8 +2003,8 @@ importers:
   packages/ui:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@radix-ui/react-icons':
         specifier: ^1.3.2
         version: 1.3.2(react@19.1.1)
@@ -2115,8 +2115,8 @@ importers:
   tooling/eslint:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@next/eslint-plugin-next':
         specifier: 15.5.2
         version: 15.5.2
@@ -2149,8 +2149,8 @@ importers:
   tooling/prettier:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
       '@trivago/prettier-plugin-sort-imports':
         specifier: 5.2.2
         version: 5.2.2(prettier@3.6.2)
@@ -2171,14 +2171,14 @@ importers:
   tooling/scripts:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
 
   tooling/typescript:
     dependencies:
       '@hookform/resolvers':
-        specifier: 3.9.1
-        version: 3.9.1(react-hook-form@7.62.0(react@19.1.1))
+        specifier: 5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.1))
 
 packages:
 
@@ -3501,10 +3501,10 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  '@hookform/resolvers@3.9.1':
-    resolution: {integrity: sha512-ud2HqmGBM0P0IABqoskKWI6PEf6ZDDBZkFqe2Vnl+mTHCEHzr3ISjjZyCwTjC/qpL25JC9aIDkloQejvMeq0ug==}
+  '@hookform/resolvers@5.2.1':
+    resolution: {integrity: sha512-u0+6X58gkjMcxur1wRWokA7XsiiBJ6aK17aPZxhkoYiK5J+HcTx0Vhu9ovXe6H+dVpO6cjrn2FkJTryXEMlryQ==}
     peerDependencies:
-      react-hook-form: ^7.0.0
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -6659,6 +6659,9 @@ packages:
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
+
   '@stripe/react-stripe-js@4.0.2':
     resolution: {integrity: sha512-l2wau+8/LOlHl+Sz8wQ1oDuLJvyw51nQCsu6/ljT6smqzTszcMHifjAJoXlnMfcou3+jK/kQyVe04u/ufyTXgg==}
     peerDependencies:
@@ -8782,8 +8785,8 @@ packages:
   electron-to-chromium@1.5.214:
     resolution: {integrity: sha512-TpvUNdha+X3ybfU78NoQatKvQEm1oq3lf2QbnmCEdw+Bd9RuIAY+hJTvq1avzHM0f7EJfnH3vbCnbzKzisc/9Q==}
 
-  electron-to-chromium@1.5.221:
-    resolution: {integrity: sha512-/1hFJ39wkW01ogqSyYoA4goOXOtMRy6B+yvA1u42nnsEGtHzIzmk93aPISumVQeblj47JUHLC9coCjUxb1EvtQ==}
+  electron-to-chromium@1.5.222:
+    resolution: {integrity: sha512-gA7psSwSwQRE60CEoLz6JBCQPIxNeuzB2nL8vE03GK/OHxlvykbLyeiumQy1iH5C2f3YbRAZpGCMT12a/9ih9w==}
 
   emery@1.4.4:
     resolution: {integrity: sha512-mMoO3uGDoiw/DmZ/YekT9gEoC0IFAXNWzYVukY8+/j0Wt8un1IDraIYGx+cMbRh+fHaCDE6Ui7zFAN8ezZSsAA==}
@@ -15466,8 +15469,9 @@ snapshots:
       protobufjs: 7.5.4
       yargs: 17.7.2
 
-  '@hookform/resolvers@3.9.1(react-hook-form@7.62.0(react@19.1.1))':
+  '@hookform/resolvers@5.2.1(react-hook-form@7.62.0(react@19.1.1))':
     dependencies:
+      '@standard-schema/utils': 0.3.0
       react-hook-form: 7.62.0(react@19.1.1)
 
   '@humanfs/core@0.19.1': {}
@@ -19721,6 +19725,8 @@ snapshots:
 
   '@standard-schema/spec@1.0.0': {}
 
+  '@standard-schema/utils@0.3.0': {}
+
   '@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@stripe/stripe-js': 7.9.0
@@ -21168,7 +21174,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.8.6
       caniuse-lite: 1.0.30001743
-      electron-to-chromium: 1.5.221
+      electron-to-chromium: 1.5.222
       node-releases: 2.0.21
       update-browserslist-db: 1.1.3(browserslist@4.26.2)
 
@@ -21987,7 +21993,7 @@ snapshots:
 
   electron-to-chromium@1.5.214: {}
 
-  electron-to-chromium@1.5.221: {}
+  electron-to-chromium@1.5.222: {}
 
   emery@1.4.4: {}
 
