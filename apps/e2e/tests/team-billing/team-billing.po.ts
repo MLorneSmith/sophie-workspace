@@ -13,6 +13,6 @@ export class TeamBillingPageObject {
   }
 
   setup() {
-    return this.teamAccounts.setup();
+    return this.teamAccounts.createTeam();
   }
 }

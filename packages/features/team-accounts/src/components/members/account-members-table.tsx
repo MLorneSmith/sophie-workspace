@@ -220,10 +220,6 @@ function ActionsDropdown({
   currentTeamAccountId: string;
   currentRoleHierarchy: number;
 }) {
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [isTransferring, setIsTransferring] = useState(false);
-  const [isUpdatingRole, setIsUpdatingRole] = useState(false);
-
   const isCurrentUser = member.user_id === currentUserId;
   const isPrimaryOwner = member.primary_owner_user_id === member.user_id;
 
@@ -258,54 +254,42 @@ function ActionsDropdown({
 
         <DropdownMenuContent>
           <If condition={canUpdateRole}>
-            <DropdownMenuItem onClick={() => setIsUpdatingRole(true)}>
-              <Trans i18nKey={'teams:updateRole'} />
-            </DropdownMenuItem>
+            <UpdateMemberRoleDialog
+              userId={member.user_id}
+              userRole={member.role}
+              teamAccountId={currentTeamAccountId}
+              userRoleHierarchy={currentRoleHierarchy}
+            >
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trans i18nKey={'teams:updateRole'} />
+              </DropdownMenuItem>
+            </UpdateMemberRoleDialog>
           </If>
 
           <If condition={permissions.canTransferOwnership}>
-            <DropdownMenuItem onClick={() => setIsTransferring(true)}>
-              <Trans i18nKey={'teams:transferOwnership'} />
-            </DropdownMenuItem>
+            <TransferOwnershipDialog
+              targetDisplayName={member.name ?? member.email}
+              accountId={member.account_id}
+              userId={member.user_id}
+            >
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trans i18nKey={'teams:transferOwnership'} />
+              </DropdownMenuItem>
+            </TransferOwnershipDialog>
           </If>
 
           <If condition={canRemoveFromAccount}>
-            <DropdownMenuItem onClick={() => setIsRemoving(true)}>
-              <Trans i18nKey={'teams:removeMember'} />
-            </DropdownMenuItem>
+            <RemoveMemberDialog
+              teamAccountId={currentTeamAccountId}
+              userId={member.user_id}
+            >
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Trans i18nKey={'teams:removeMember'} />
+              </DropdownMenuItem>
+            </RemoveMemberDialog>
           </If>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <If condition={isRemoving}>
-        <RemoveMemberDialog
-          isOpen
-          setIsOpen={setIsRemoving}
-          teamAccountId={currentTeamAccountId}
-          userId={member.user_id}
-        />
-      </If>
-
-      <If condition={isUpdatingRole}>
-        <UpdateMemberRoleDialog
-          isOpen
-          setIsOpen={setIsUpdatingRole}
-          userId={member.user_id}
-          userRole={member.role}
-          teamAccountId={currentTeamAccountId}
-          userRoleHierarchy={currentRoleHierarchy}
-        />
-      </If>
-
-      <If condition={isTransferring}>
-        <TransferOwnershipDialog
-          isOpen
-          setIsOpen={setIsTransferring}
-          targetDisplayName={member.name ?? member.email}
-          accountId={member.account_id}
-          userId={member.user_id}
-        />
-      </If>
     </>
   );
 }

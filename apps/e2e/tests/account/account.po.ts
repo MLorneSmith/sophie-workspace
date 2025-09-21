@@ -14,10 +14,6 @@ export class AccountPageObject {
     this.otp = new OtpPo(page);
   }
 
-  async setup() {
-    return this.auth.signUpFlow('/home/settings');
-  }
-
   async updateName(name: string) {
     await this.page.fill('[data-test="update-account-name-form"] input', name);
     await this.page.click('[data-test="update-account-name-form"] button');

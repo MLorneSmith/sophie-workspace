@@ -1,22 +1,33 @@
-import { Page, expect } from '@playwright/test';
+import { createClient } from '@supabase/supabase-js';
 
+import test, { Page, expect } from '@playwright/test';
+
+import { AUTH_STATES } from '../utils/auth-state';
 import { Mailbox } from '../utils/mailbox';
+
+const MFA_KEY = 'NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE';
 
 export class AuthPageObject {
   private readonly page: Page;
   private readonly mailbox: Mailbox;
+
+  static MFA_KEY = MFA_KEY;
 
   constructor(page: Page) {
     this.page = page;
     this.mailbox = new Mailbox(page);
   }
 
-  goToSignIn() {
-    return this.page.goto('/auth/sign-in');
+  static setupSession(user: (typeof AUTH_STATES)[keyof typeof AUTH_STATES]) {
+    test.use({ storageState: user });
   }
 
-  goToSignUp() {
-    return this.page.goto('/auth/sign-up');
+  goToSignIn(next?: string) {
+    return this.page.goto(`/auth/sign-in${next ? `?next=${next}` : ''}`);
+  }
+
+  goToSignUp(next?: string) {
+    return this.page.goto(`/auth/sign-up${next ? `?next=${next}` : ''}`);
   }
 
   async signOut() {
@@ -25,7 +36,7 @@ export class AuthPageObject {
   }
 
   async signIn(params: { email: string; password: string }) {
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(100);
 
     await this.page.fill('input[name="email"]', params.email);
     await this.page.fill('input[name="password"]', params.password);
@@ -37,7 +48,7 @@ export class AuthPageObject {
     password: string;
     repeatPassword: string;
   }) {
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(100);
 
     await this.page.fill('input[name="email"]', params.email);
     await this.page.fill('input[name="password"]', params.password);
@@ -107,5 +118,61 @@ export class AuthPageObject {
     await this.page.fill('[name="password"]', password);
     await this.page.fill('[name="repeatPassword"]', password);
     await this.page.click('[type="submit"]');
+  }
+
+  async loginAsSuperAdmin(params: { next?: string }) {
+    await this.loginAsUser({
+      email: 'super-admin@makerkit.dev',
+      next: '/auth/verify',
+    });
+
+    // Complete MFA verification
+    await this.submitMFAVerification(MFA_KEY);
+    await this.page.waitForURL(params.next ?? '/home');
+  }
+
+  async bootstrapUser({
+    email,
+    password,
+    name,
+  }: {
+    email: string;
+    password?: string;
+    name: string;
+  }) {
+    const client = createClient(
+      'http://127.0.0.1:54321',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
+    );
+
+    const { data, error } = await client.auth.admin.createUser({
+      email,
+      password: password || 'testingpassword',
+      email_confirm: true,
+      user_metadata: {
+        name,
+      },
+    });
+
+    if (error) {
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
+
+    return data;
+  }
+
+  async loginAsUser(params: {
+    email: string;
+    password?: string;
+    next?: string;
+  }) {
+    await this.goToSignIn(params.next);
+
+    await this.signIn({
+      email: params.email,
+      password: params.password || 'testingpassword',
+    });
+
+    await this.page.waitForURL(params.next ?? '**/home');
   }
 }

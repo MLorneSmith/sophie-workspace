@@ -1,20 +1,33 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
+import { AuthPageObject } from '../authentication/auth.po';
 import { AccountPageObject } from './account.po';
-import {AuthPageObject} from "../authentication/auth.po";
 
 test.describe('Account Settings', () => {
-  let page: Page;
   let account: AccountPageObject;
+  let email: string;
 
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
+  test.beforeEach(async ({ page }) => {
+    const auth = new AuthPageObject(page);
+
+    email = auth.createRandomEmail();
+
+    auth.bootstrapUser({
+      email,
+      password: 'testingpassword',
+      name: 'Test User',
+    });
+
     account = new AccountPageObject(page);
 
-    await account.setup();
+    await auth.loginAsUser({
+      email,
+      password: 'testingpassword',
+      next: '/home/settings',
+    });
   });
 
-  test('user can update their profile name', async () => {
+  test('user can update their profile name', async ({ page }) => {
     const name = 'John Doe';
 
     const request = account.updateName(name);
@@ -28,13 +41,13 @@ test.describe('Account Settings', () => {
     await expect(account.getProfileName()).toHaveText(name);
   });
 
-  test('user can update their email', async () => {
+  test('user can update their email', async ({ page }) => {
     const email = account.auth.createRandomEmail();
 
     await account.updateEmail(email);
   });
 
-  test('user can update their password', async () => {
+  test('user can update their password', async ({ page }) => {
     const password = (Math.random() * 100000).toString();
 
     const request = account.updatePassword(password);
@@ -53,10 +66,19 @@ test.describe('Account Settings', () => {
 
 test.describe('Account Deletion', () => {
   test('user can delete their own account', async ({ page }) => {
-    const account = new AccountPageObject(page);
+    // Create a fresh user for this test since we'll be deleting it
     const auth = new AuthPageObject(page);
+    const account = new AccountPageObject(page);
 
-    const { email } = await account.setup();
+    const email = auth.createRandomEmail();
+
+    await auth.bootstrapUser({
+      email,
+      password: 'testingpassword',
+      name: 'Test User',
+    });
+
+    await auth.loginAsUser({ email, next: '/home/settings' });
 
     await account.deleteAccount(email);
 
@@ -70,6 +92,8 @@ test.describe('Account Deletion', () => {
       password: 'testingpassword',
     });
 
-    await expect(page.locator('[data-test="auth-error-message"]')).toBeVisible();
+    await expect(
+      page.locator('[data-test="auth-error-message"]'),
+    ).toBeVisible();
   });
 });

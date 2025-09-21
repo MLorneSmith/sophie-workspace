@@ -7,9 +7,10 @@ dotenvConfig({ path: '.env.local' });
 /**
  * Number of workers to use in CI. Tweak based on your CI provider's resources.
  */
-const CI_WORKERS = 3;
+const CI_WORKERS = 2;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
+
 const enableTeamAccountTests =
   (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
 
@@ -50,7 +51,7 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  retries: 3,
+  retries: 2,
   /* Limit parallel tests on CI. */
   workers: process.env.CI ? CI_WORKERS : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -68,6 +69,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     navigationTimeout: 15 * 1000,
+    testIdAttribute: 'data-test',
   },
   // test timeout set to 2 minutes
   timeout: 120 * 1000,
@@ -77,9 +79,11 @@ export default defineConfig({
   },
   /* Configure projects for major browsers */
   projects: [
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
     },
     /* Test against mobile viewports. */
     // {

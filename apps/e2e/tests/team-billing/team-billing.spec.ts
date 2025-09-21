@@ -1,18 +1,13 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
+import { AuthPageObject } from '../authentication/auth.po';
 import { TeamBillingPageObject } from './team-billing.po';
 
 test.describe('Team Billing', () => {
-  let page: Page;
-  let po: TeamBillingPageObject;
+  test('a team can subscribe to a plan', async ({ page }) => {
+    const po = new TeamBillingPageObject(page);
 
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    po = new TeamBillingPageObject(page);
-  });
-
-  test('a team can subscribe to a plan', async () => {
-    await po.setup();
+    await po.teamAccounts.setup();
     await po.teamAccounts.goToBilling();
 
     await po.billing.selectPlan(0);
@@ -23,7 +18,7 @@ test.describe('Team Billing', () => {
     await po.billing.stripe.submitForm();
 
     await expect(po.billing.successStatus()).toBeVisible({
-      timeout: 25_000,
+      timeout: 20_000,
     });
 
     await po.billing.returnToBilling();

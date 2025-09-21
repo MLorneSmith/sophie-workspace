@@ -29,7 +29,9 @@ test.describe('Auth flow', () => {
 
     await auth.visitConfirmEmailLink(email);
 
-    await page.waitForURL('**/home');
+    await page.waitForURL('**/home', {
+      timeout: 5_000,
+    });
   });
 
   test('will sign-in with the correct credentials', async ({ page }) => {
@@ -43,7 +45,9 @@ test.describe('Auth flow', () => {
       password: 'password',
     });
 
-    await page.waitForURL('**/home');
+    await page.waitForURL('**/home', {
+      timeout: 5_000,
+    });
 
     expect(page.url()).toContain('/home');
 
@@ -62,7 +66,9 @@ test.describe('Auth flow', () => {
       password: 'testingpassword',
     });
 
-    await page.waitForURL('/home/settings');
+    await page.waitForURL('/home/settings', {
+      timeout: 5_000,
+    });
 
     await auth.signOut();
 
@@ -75,17 +81,14 @@ test.describe('Protected routes', () => {
     page,
   }) => {
     const auth = new AuthPageObject(page);
+    const path = '/home/settings';
 
-    await page.goto('/home/settings');
+    await page.goto(path);
 
-    await auth.signIn({
+    await auth.loginAsUser({
       email: 'test@makerkit.dev',
-      password: 'testingpassword',
+      next: path,
     });
-
-    await page.waitForURL('/home/settings');
-
-    expect(page.url()).toContain('/home/settings');
   });
 
   test('will redirect to the sign-in page if not authenticated', async ({
@@ -115,7 +118,9 @@ test.describe('Last auth method tracking', () => {
     });
 
     await auth.visitConfirmEmailLink(testEmail);
-    await page.waitForURL('**/home');
+    await page.waitForURL('**/home', {
+      timeout: 5_000,
+    });
 
     // Sign out
     await auth.signOut();
@@ -169,7 +174,9 @@ test.describe('Last auth method tracking', () => {
       password: 'password123',
     });
 
-    await page.waitForURL('**/home');
+    await page.waitForURL('**/home', {
+      timeout: 5_000,
+    });
 
     // Sign out and check the method is still tracked
     await auth.signOut();

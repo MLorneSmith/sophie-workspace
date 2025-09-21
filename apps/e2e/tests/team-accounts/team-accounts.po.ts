@@ -15,11 +15,24 @@ export class TeamAccountsPageObject {
   }
 
   async setup(params = this.createTeamName()) {
-    const { email } = await this.auth.signUpFlow('/home');
+    const auth = new AuthPageObject(this.page);
+
+    const email = auth.createRandomEmail();
+
+    await auth.bootstrapUser({
+      email,
+      name: 'Test User',
+    });
+
+    await auth.loginAsUser({ email });
 
     await this.createTeam(params);
 
-    return { email, teamName: params.teamName, slug: params.slug };
+    return {
+      email: email,
+      teamName: params.teamName,
+      slug: params.slug,
+    };
   }
 
   getTeamFromSelector(teamName: string) {
@@ -81,11 +94,12 @@ export class TeamAccountsPageObject {
   async tryCreateTeam(teamName: string) {
     await this.page.locator('[data-test="create-team-form"] input').fill('');
     await this.page.waitForTimeout(200);
-    await this.page.locator('[data-test="create-team-form"] input').fill(teamName);
 
-    return this.page.click(
-      '[data-test="create-team-form"] button:last-child',
-    );
+    await this.page
+      .locator('[data-test="create-team-form"] input')
+      .fill(teamName);
+
+    return this.page.click('[data-test="create-team-form"] button:last-child');
   }
 
   async createTeam({ teamName, slug } = this.createTeamName()) {
@@ -150,13 +164,13 @@ export class TeamAccountsPageObject {
       await this.page.click('[data-test="role-selector-trigger"]');
       await this.page.click(`[data-test="role-option-${newRole}"]`);
 
-      // Click the confirm button
-      const click = this.page.click('[data-test="confirm-update-member-role"]');
-
       // Wait for the update to complete and page to reload
-      const response = this.page.waitForURL('**/home/*/members');
+      const response = this.page.waitForResponse('**/members');
 
-      return Promise.all([click, response]);
+      return Promise.all([
+        this.page.click('[data-test="confirm-update-member-role"]'),
+        response,
+      ]);
     }).toPass();
   }
 
@@ -172,15 +186,13 @@ export class TeamAccountsPageObject {
       // Complete OTP verification
       await this.otp.completeOtpVerification(ownerEmail);
 
-      // Click the confirm button
-      const click = this.page.click(
-        '[data-test="confirm-transfer-ownership-button"]',
-      );
-
       // Wait for the transfer to complete and page to reload
-      const response = this.page.waitForURL('**/home/*/members');
+      const response = this.page.waitForResponse('**/members');
 
-      return Promise.all([click, response]);
+      return Promise.all([
+        this.page.click('[data-test="confirm-transfer-ownership-button"]'),
+        response,
+      ]);
     }).toPass();
   }
 

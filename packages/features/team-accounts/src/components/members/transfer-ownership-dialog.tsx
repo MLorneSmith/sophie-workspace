@@ -16,6 +16,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@kit/ui/alert-dialog';
 import { Button } from '@kit/ui/button';
 import { Form } from '@kit/ui/form';
@@ -26,20 +27,20 @@ import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-owner
 import { transferOwnershipAction } from '../../server/actions/team-members-server-actions';
 
 export function TransferOwnershipDialog({
-  isOpen,
-  setIsOpen,
+  children,
   targetDisplayName,
   accountId,
   userId,
 }: {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  children: React.ReactNode;
   accountId: string;
   userId: string;
   targetDisplayName: string;
 }) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -55,7 +56,6 @@ export function TransferOwnershipDialog({
           accountId={accountId}
           userId={userId}
           targetDisplayName={targetDisplayName}
-          setIsOpen={setIsOpen}
         />
       </AlertDialogContent>
     </AlertDialog>
@@ -66,12 +66,10 @@ function TransferOrganizationOwnershipForm({
   accountId,
   userId,
   targetDisplayName,
-  setIsOpen,
 }: {
   userId: string;
   accountId: string;
   targetDisplayName: string;
-  setIsOpen: (isOpen: boolean) => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<boolean>();
@@ -121,8 +119,6 @@ function TransferOrganizationOwnershipForm({
           startTransition(async () => {
             try {
               await transferOwnershipAction(data);
-
-              setIsOpen(false);
             } catch {
               setError(true);
             }

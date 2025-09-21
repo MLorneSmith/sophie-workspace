@@ -9,6 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@kit/ui/alert-dialog';
 import { Button } from '@kit/ui/button';
 import { If } from '@kit/ui/if';
@@ -17,18 +18,17 @@ import { Trans } from '@kit/ui/trans';
 import { removeMemberFromAccountAction } from '../../server/actions/team-members-server-actions';
 
 export function RemoveMemberDialog({
-  isOpen,
-  setIsOpen,
   teamAccountId,
   userId,
-}: {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  children,
+}: React.PropsWithChildren<{
   teamAccountId: string;
   userId: string;
-}) {
+}>) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -40,11 +40,7 @@ export function RemoveMemberDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <RemoveMemberForm
-          setIsOpen={setIsOpen}
-          accountId={teamAccountId}
-          userId={userId}
-        />
+        <RemoveMemberForm accountId={teamAccountId} userId={userId} />
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -53,11 +49,9 @@ export function RemoveMemberDialog({
 function RemoveMemberForm({
   accountId,
   userId,
-  setIsOpen,
 }: {
   accountId: string;
   userId: string;
-  setIsOpen: (isOpen: boolean) => void;
 }) {
   const [isSubmitting, startTransition] = useTransition();
   const [error, setError] = useState<boolean>();
@@ -66,8 +60,6 @@ function RemoveMemberForm({
     startTransition(async () => {
       try {
         await removeMemberFromAccountAction({ accountId, userId });
-
-        setIsOpen(false);
       } catch {
         setError(true);
       }

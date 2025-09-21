@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@kit/ui/dialog';
 import {
   Form,
@@ -33,22 +34,20 @@ import { RolesDataProvider } from './roles-data-provider';
 type Role = string;
 
 export function UpdateMemberRoleDialog({
-  isOpen,
-  setIsOpen,
+  children,
   userId,
   teamAccountId,
   userRole,
   userRoleHierarchy,
-}: {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+}: React.PropsWithChildren<{
   userId: string;
   teamAccountId: string;
   userRole: Role;
   userRoleHierarchy: number;
-}) {
+}>) {
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -63,7 +62,6 @@ export function UpdateMemberRoleDialog({
         <RolesDataProvider maxRoleHierarchy={userRoleHierarchy}>
           {(data) => (
             <UpdateMemberForm
-              setIsOpen={setIsOpen}
               userId={userId}
               teamAccountId={teamAccountId}
               userRole={userRole}
@@ -80,13 +78,11 @@ function UpdateMemberForm({
   userId,
   userRole,
   teamAccountId,
-  setIsOpen,
   roles,
 }: React.PropsWithChildren<{
   userId: string;
   userRole: Role;
   teamAccountId: string;
-  setIsOpen: (isOpen: boolean) => void;
   roles: Role[];
 }>) {
   const [pending, startTransition] = useTransition();
@@ -101,8 +97,6 @@ function UpdateMemberForm({
           userId,
           role,
         });
-
-        setIsOpen(false);
       } catch {
         setError(true);
       }

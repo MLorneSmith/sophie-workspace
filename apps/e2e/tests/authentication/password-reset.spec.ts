@@ -13,21 +13,11 @@ test.describe('Password Reset Flow', () => {
     await expect(async () => {
       email = auth.createRandomEmail();
 
-      await page.goto('/auth/sign-up');
-
-      await auth.signUp({
+      auth.bootstrapUser({
         email,
         password: 'password',
-        repeatPassword: 'password',
+        name: 'Test User',
       });
-
-      await auth.visitConfirmEmailLink(email, {
-        deleteAfter: true,
-        subject: 'Confirm your email',
-      });
-
-      await page.context().clearCookies();
-      await page.reload();
 
       await page.goto('/auth/password-reset');
 
@@ -59,13 +49,10 @@ test.describe('Password Reset Flow', () => {
     await page.waitForURL('/');
     await page.goto('/auth/sign-in');
 
-    await auth.signIn({
+    await auth.loginAsUser({
       email,
       password: newPassword,
-    });
-
-    await page.waitForURL('/home', {
-      timeout: 2000,
+      next: '/home',
     });
   });
 });

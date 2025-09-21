@@ -126,6 +126,9 @@ importers:
       '@playwright/test':
         specifier: ^1.55.0
         version: 1.55.0
+      '@supabase/supabase-js':
+        specifier: 2.57.4
+        version: 2.57.4
       '@types/node':
         specifier: ^24.5.2
         version: 24.5.2

@@ -56,12 +56,10 @@ async function setupTeamWithMember(page: Page, memberRole = 'member') {
 
   await page.goto('/auth/sign-in');
 
-  await invitations.auth.signIn({
+  await invitations.auth.loginAsUser({
     email: ownerEmail,
-    password: 'password',
+    next: '/home',
   });
-
-  await page.waitForURL('/home');
 
   // Navigate to the team members page
   await page.goto(`/home/${slug}/members`);
@@ -70,17 +68,13 @@ async function setupTeamWithMember(page: Page, memberRole = 'member') {
 }
 
 test.describe('Team Accounts', () => {
-  let page: Page;
-  let teamAccounts: TeamAccountsPageObject;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    teamAccounts = new TeamAccountsPageObject(page);
+  test.beforeEach(async ({ page }) => {
+    const teamAccounts = new TeamAccountsPageObject(page);
+    await teamAccounts.setup();
   });
 
-  test('user can update their team name (and slug)', async () => {
-    await teamAccounts.setup();
-
+  test('user can update their team name (and slug)', async ({ page }) => {
+    const teamAccounts = new TeamAccountsPageObject(page);
     const { teamName, slug } = teamAccounts.createTeamName();
 
     await teamAccounts.goToSettings();
@@ -101,7 +95,7 @@ test.describe('Team Accounts', () => {
     page,
   }) => {
     const teamAccounts = new TeamAccountsPageObject(page);
-    await teamAccounts.setup();
+    await teamAccounts.createTeam();
 
     await teamAccounts.openAccountsSelector();
     await page.click('[data-test="create-team-account-trigger"]');
@@ -132,16 +126,16 @@ test.describe('Team Accounts', () => {
     await teamAccounts.tryCreateTeam('Test,Name');
     await expectError();
 
-    await teamAccounts.tryCreateTeam('Test Name/')
+    await teamAccounts.tryCreateTeam('Test Name/');
     await expectError();
 
-    await teamAccounts.tryCreateTeam('Test Name\\')
+    await teamAccounts.tryCreateTeam('Test Name\\');
     await expectError();
 
-    await teamAccounts.tryCreateTeam('Test Name:')
+    await teamAccounts.tryCreateTeam('Test Name:');
     await expectError();
 
-    await teamAccounts.tryCreateTeam('Test Name;')
+    await teamAccounts.tryCreateTeam('Test Name;');
     await expectError();
 
     await teamAccounts.tryCreateTeam('Test Name=');
@@ -225,14 +219,11 @@ test.describe('Team Member Role Management', () => {
     // Update the member's role to admin
     await teamAccounts.updateMemberRole(memberEmail, 'owner');
 
-    // Wait for the page to fully load after the update
-    await page.waitForTimeout(1000);
-
-    // Verify the role was updated successfully
-    const updatedRoleBadge = page
-      .getByRole('row', { name: memberEmail })
-      .locator('[data-test="member-role-badge"]');
-    await expect(updatedRoleBadge).toHaveText('Owner');
+    await expect(
+      page
+        .getByRole('row', { name: memberEmail })
+        .locator('[data-test="member-role-badge"]'),
+    ).toHaveText('Owner');
   });
 });
 
@@ -250,7 +241,7 @@ test.describe('Team Ownership Transfer', () => {
     await teamAccounts.transferOwnership(memberEmail, ownerEmail);
 
     // Wait for the page to fully load after the transfer
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
 
     // Verify the transfer was successful by checking if the primary owner badge
     // is now on the new owner's row

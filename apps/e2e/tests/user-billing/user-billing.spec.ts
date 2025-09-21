@@ -1,19 +1,25 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
+import { AuthPageObject } from '../authentication/auth.po';
 import { UserBillingPageObject } from './user-billing.po';
 
 test.describe('User Billing', () => {
-  let page: Page;
-  let po: UserBillingPageObject;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    po = new UserBillingPageObject(page);
-
-    await po.setup();
-  });
-
   test('user can subscribe to a plan', async ({ page }) => {
+    const po = new UserBillingPageObject(page);
+    const auth = new AuthPageObject(page);
+
+    const email = auth.createRandomEmail();
+
+    await auth.bootstrapUser({
+      email,
+      name: 'Test Billing User',
+    });
+
+    await auth.loginAsUser({
+      email,
+      next: '/home/billing',
+    });
+
     await po.billing.selectPlan(0);
     await po.billing.proceedToCheckout();
 

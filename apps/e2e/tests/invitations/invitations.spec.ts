@@ -1,13 +1,11 @@
-import { Page, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import { InvitationsPageObject } from './invitations.po';
 
 test.describe('Invitations', () => {
-  let page: Page;
   let invitations: InvitationsPageObject;
 
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
+  test.beforeEach(async ({ page }) => {
     invitations = new InvitationsPageObject(page);
 
     await invitations.setup();
@@ -88,17 +86,12 @@ test.describe('Invitations', () => {
 });
 
 test.describe('Full Invitation Flow', () => {
-  let page: Page;
-  let invitations: InvitationsPageObject;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    invitations = new InvitationsPageObject(page);
-
+  test('should invite users and let users accept an invite', async ({
+    page,
+  }) => {
+    const invitations = new InvitationsPageObject(page);
     await invitations.setup();
-  });
 
-  test('should invite users and let users accept an invite', async () => {
     await invitations.navigateToMembers();
 
     const invites = [
