@@ -4,6 +4,11 @@ import { config as dotenvConfig } from 'dotenv';
 dotenvConfig();
 dotenvConfig({ path: '.env.local' });
 
+/**
+ * Number of workers to use in CI. Tweak based on your CI provider's resources.
+ */
+const CI_WORKERS = 3;
+
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
 const enableTeamAccountTests =
   (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
@@ -47,7 +52,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: 3,
   /* Limit parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? CI_WORKERS : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Ignore billing tests if the environment variable is not set. */

@@ -38,12 +38,6 @@
   },
   "prettier": "@kit/prettier-config",
   "packageManager": "pnpm@10.14.0",
-  "pnpm": {
-    "overrides": {
-      "react-is": "19.0.0",
-      "require-in-the-middle": "7.5.2"
-    }
-  },
   "devDependencies": {
     "@manypkg/cli": "^0.25.1",
     "@turbo/gen": "^2.5.6",
