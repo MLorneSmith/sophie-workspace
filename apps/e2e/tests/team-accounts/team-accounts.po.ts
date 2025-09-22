@@ -198,84 +198,68 @@ export class TeamAccountsPageObject {
 	}
 
 	async updateName(name: string, slug: string) {
-		await expect(async () => {
-			await this.page.fill(
-				'[data-test="update-team-account-name-form"] input',
-				name,
-			);
+		// Fill in the new team name
+		await this.page.fill(
+			'[data-test="update-team-account-name-form"] input',
+			name,
+		);
 
-			const click = this.page.click(
-				'[data-test="update-team-account-name-form"] button',
-			);
+		// Click the update button
+		await this.page.click('[data-test="update-team-account-name-form"] button');
 
-			// the slug should be updated to match the new team name
-			const response = this.page.waitForURL(`**/home/${slug}/settings`);
-
-			return Promise.all([click, response]);
-		}).toPass();
+		// Wait for redirect with updated slug with reasonable timeout
+		await this.page.waitForURL(`**/home/${slug}/settings`, { timeout: 30000 });
 	}
 
 	async deleteAccount(email: string) {
-		await expect(async () => {
-			await this.page.click('[data-test="delete-team-trigger"]');
+		// Click delete trigger
+		await this.page.click('[data-test="delete-team-trigger"]');
 
-			await this.otp.completeOtpVerification(email);
+		// Complete OTP verification
+		await this.otp.completeOtpVerification(email);
 
-			const click = this.page.click(
-				'[data-test="delete-team-form-confirm-button"]',
-			);
+		// Click confirm delete button and wait for navigation
+		await this.page.click('[data-test="delete-team-form-confirm-button"]');
 
-			const response = this.page.waitForURL("**/home");
-
-			return Promise.all([click, response]);
-		}).toPass();
+		// Wait for redirect to home page with reasonable timeout
+		await this.page.waitForURL("**/home", { timeout: 30000 });
 	}
 
 	async updateMemberRole(memberEmail: string, newRole: string) {
-		await expect(async () => {
-			// Find the member row and click the actions button
-			const memberRow = this.page.getByRole("row", { name: memberEmail });
-			await memberRow.getByRole("button").click();
+		// Find the member row and click the actions button
+		const memberRow = this.page.getByRole("row", { name: memberEmail });
+		await memberRow.getByRole("button").click();
 
-			// Click the update role option in the dropdown menu
-			await this.page.getByText("Update Role").click();
+		// Click the update role option in the dropdown menu
+		await this.page.getByText("Update Role").click();
 
-			// Select the new role
-			await this.page.click('[data-test="role-selector-trigger"]');
-			await this.page.click(`[data-test="role-option-${newRole}"]`);
+		// Select the new role
+		await this.page.click('[data-test="role-selector-trigger"]');
+		await this.page.click(`[data-test="role-option-${newRole}"]`);
 
-			// Click the confirm button
-			const click = this.page.click('[data-test="confirm-update-member-role"]');
+		// Click the confirm button
+		await this.page.click('[data-test="confirm-update-member-role"]');
 
-			// Wait for the update to complete and page to reload
-			const response = this.page.waitForURL("**/home/*/members");
-
-			return Promise.all([click, response]);
-		}).toPass();
+		// Wait for the update to complete with reasonable timeout
+		await this.page.waitForURL("**/home/*/members", { timeout: 30000 });
 	}
 
 	async transferOwnership(memberEmail: string, ownerEmail: string) {
-		await expect(async () => {
-			// Find the member row and click the actions button
-			const memberRow = this.page.getByRole("row", { name: memberEmail });
-			await memberRow.getByRole("button").click();
+		// Find the member row and click the actions button
+		const memberRow = this.page.getByRole("row", { name: memberEmail });
+		await memberRow.getByRole("button").click();
 
-			// Click the transfer ownership option in the dropdown menu
-			await this.page.getByText("Transfer Ownership").click();
+		// Click the transfer ownership option in the dropdown menu
+		await this.page.getByText("Transfer Ownership").click();
 
-			// Complete OTP verification
-			await this.otp.completeOtpVerification(ownerEmail);
+		// Complete OTP verification
+		await this.otp.completeOtpVerification(ownerEmail);
 
-			// Click the confirm button
-			const click = this.page.click(
-				'[data-test="confirm-transfer-ownership-button"]',
-			);
+		// Click the confirm button
+		await this.page.click('[data-test="confirm-transfer-ownership-button"]');
 
-			// Wait for the transfer to complete and page to reload
-			const response = this.page.waitForURL("**/home/*/members");
-
-			return Promise.all([click, response]);
-		}).toPass();
+		// Wait for the transfer to complete with reasonable timeout
+		await this.page.waitForURL("**/home/*/members", { timeout: 30000 });
 	}
 
 	createTeamName() {
