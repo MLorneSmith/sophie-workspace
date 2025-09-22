@@ -12,8 +12,8 @@ import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { generateIdeasAction } from "../_actions/generate-ideas";
-import { simplifyTextAction } from "../_actions/simplify-text";
+import { generateIdeasActionEdge } from "../_actions/generate-ideas-edge";
+import { simplifyTextActionEdge } from "../_actions/simplify-text-edge";
 import type { TiptapEditorRef } from "./editor/tiptap/tiptap-editor";
 
 // Create a client-safe logger wrapper
@@ -100,7 +100,7 @@ export function ActionToolbar({
 				]);
 
 				// Call the simplify text action
-				const result = await simplifyTextAction({
+				const result = await simplifyTextActionEdge({
 					content,
 					userId: user.id,
 					canvasId,
@@ -110,9 +110,9 @@ export function ActionToolbar({
 				if (result.success && result.response) {
 					try {
 						// Access the text content from the response before parsing
-						// Access the text content from the response before parsing
+						const response = result.response as { content: string };
 						const simplified = JSON.parse(
-							result.response.content,
+							response.content,
 						) as SimplifiedContent;
 
 						// Clear current content and insert simplified sections safely
@@ -158,7 +158,7 @@ export function ActionToolbar({
 							error: parseError,
 							canvasId,
 							sectionType,
-							response: result.response?.content,
+							response: (result.response as { content?: string })?.content,
 						});
 						return;
 					}
@@ -226,7 +226,7 @@ export function ActionToolbar({
 				const contentToSend =
 					content.trim() || "Please suggest some initial ideas.";
 
-				const result = await generateIdeasAction({
+				const result = await generateIdeasActionEdge({
 					content: contentToSend,
 					submissionId: canvasId,
 					type: sectionType,
