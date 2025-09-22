@@ -12,14 +12,10 @@ const Graph = gds.Graph;
 const fs = require("node:fs");
 const path = require("node:path");
 
-const PROJECT_ROOT = path.join(__dirname, "..");
-const INVENTORY_PATH = path.join(
-	PROJECT_ROOT,
-	"data",
-	"context-inventory.json",
-);
-const GRAPH_DATA_PATH = path.join(PROJECT_ROOT, "data", "context-graph.json");
-const LEARNING_PATH = path.join(PROJECT_ROOT, "data", "context-learning.json");
+const CLAUDE_ROOT = path.join(__dirname, "..", ".."); // Go up to .claude directory
+const INVENTORY_PATH = path.join(CLAUDE_ROOT, "data", "context-inventory.json");
+const GRAPH_DATA_PATH = path.join(CLAUDE_ROOT, "data", "context-graph.json");
+const LEARNING_PATH = path.join(CLAUDE_ROOT, "data", "context-learning.json");
 
 class ContextGraphManager {
 	constructor(dataPath = GRAPH_DATA_PATH) {

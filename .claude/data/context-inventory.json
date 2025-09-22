@@ -1,119 +1,9 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-19",
+	"lastUpdated": "2025-09-22",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
-		"core": {
-			"name": "Core Documentation",
-			"description": "Core project documentation including architecture, constraints, and development guidelines",
-			"documents": [
-				{
-					"path": "database/schema.md",
-					"name": "Database Schema",
-					"description": "Complete database schema documentation.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Schema Structure", "Table Relationships", "Data Types"],
-					"tokens": 1977,
-					"priority": "supplementary",
-					"keywords": [
-						"schema",
-						"structure",
-						"table",
-						"relationships",
-						"data",
-						"types",
-						"complete",
-						"database",
-						"documentation."
-					]
-				}
-			]
-		},
-		"roles": {
-			"name": "Role Definitions",
-			"description": "Role definitions for various engineering disciplines and responsibilities",
-			"documents": [
-				{
-					"path": "roles/.roles-summary.xml",
-					"name": "Roles Summary",
-					"description": "XML summary of all available role definitions.",
-					"lastUpdated": "2025-09-12",
-					"topics": ["Role Overview", "Role Mappings"],
-					"tokens": 662,
-					"priority": "supplementary",
-					"keywords": [
-						"role",
-						"overview",
-						"mappings",
-						"summary",
-						"available",
-						"definitions."
-					]
-				}
-			]
-		},
-		"systems": {
-			"name": "System Documentation",
-			"description": "System-level documentation including CI/CD, logging, and DevContainer configurations",
-			"documents": [
-				{
-					"path": "systems/claude-code/dynamic-context-loading-pattern.md",
-					"name": "Dynamic Context Loading Pattern",
-					"description": "Pattern for intelligent context selection in Claude Code slash commands, separating essential docs from dynamically selected relevant documentation for 3x better precision and 40-60% token reduction",
-					"lastUpdated": "2025-09-12",
-					"topics": [
-						"Context Loading",
-						"Dynamic Selection",
-						"Token Optimization",
-						"Command Patterns",
-						"Claude Code",
-						"Performance Optimization",
-						"Relevance Scoring",
-						"Documentation Strategy"
-					],
-					"tokens": 2378,
-					"priority": "supplementary",
-					"keywords": [
-						"context",
-						"loading",
-						"dynamic",
-						"selection",
-						"token",
-						"optimization",
-						"command",
-						"patterns",
-						"claude",
-						"code"
-					]
-				},
-				{
-					"path": "systems/claude-code/prime-framework.md",
-					"name": "PRIME Framework for Claude Code Commands",
-					"description": "\"Purpose-driven methodology for creating Claude Code slash commands with systematic action-oriented structure\"",
-					"lastUpdated": "2025-09-19",
-					"topics": ["Documentation"],
-					"priority": "supplementary",
-					"keywords": [
-						"prime",
-						"framework",
-						"claude",
-						"commands",
-						"purpose",
-						"driven",
-						"methodology",
-						"creating",
-						"slash",
-						"systematic"
-					],
-					"relatedCommands": [],
-					"dependencies": [],
-					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 1827
-				}
-			]
-		},
 		"tools": {
 			"name": "Tool Documentation",
 			"description": "Documentation for development tools, integrations, and utilities",
@@ -715,6 +605,31 @@
 					"tokens": 1511
 				},
 				{
+					"path": "infrastructure/deployment/docker-architecture.md",
+					"name": "Docker Architecture Overview",
+					"description": "\"Hybrid Docker architecture combining containerized services with host-based development for optimal performance\"",
+					"lastUpdated": "2025-09-22",
+					"topics": ["Docker"],
+					"priority": "important",
+					"keywords": [
+						"docker",
+						"architecture",
+						"overview",
+						"hybrid",
+						"combining",
+						"containerized",
+						"services",
+						"based",
+						"development",
+						"optimal"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1135
+				},
+				{
 					"path": "team/roles/architecture-engineer.md",
 					"name": "Architecture Engineer Role",
 					"description": "> Follow the instructions precisely. If it wasn't specified, don't do it.",
@@ -984,6 +899,31 @@
 					"tokens": 2567
 				},
 				{
+					"path": "development/ui/shadcn-ui-components.md",
+					"name": "Shadcn UI Components Guide",
+					"description": "\"Comprehensive guide for using and adding shadcn UI components in the SlideHeroes project packages/ui/src/shadcn directory\"",
+					"lastUpdated": "2025-09-22",
+					"topics": ["Documentation"],
+					"priority": "supplementary",
+					"keywords": [
+						"shadcn",
+						"components",
+						"guide",
+						"comprehensive",
+						"using",
+						"adding",
+						"slideheroes",
+						"project",
+						"packages",
+						"directory"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1752
+				},
+				{
 					"path": "development/workflows/feature-implementation-workflow.md",
 					"name": "Feature Implementation Workflow Guide",
 					"description": "\"Step-by-step guide for implementing features using our CCPM workflow\"",
@@ -1128,6 +1068,30 @@
 					"tokens": 1218
 				},
 				{
+					"path": "infrastructure/deployment/docker-containers-management.md",
+					"name": "Docker Containers Management",
+					"description": "\"Container operations, edge functions, test infrastructure, and health management for SlideHeroes\"",
+					"lastUpdated": "2025-09-22",
+					"topics": ["Docker"],
+					"priority": "supplementary",
+					"keywords": [
+						"docker",
+						"containers",
+						"management",
+						"container",
+						"operations",
+						"functions",
+						"infrastructure",
+						"health",
+						"slideheroes"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1750
+				},
+				{
 					"path": "infrastructure/deployment/docker-setup.md",
 					"name": "Identity",
 					"description": "\"Documentation of SlideHeroes hybrid Docker architecture with Supabase CLI services, MCP servers, host-based development, and containerized testing with workflows and troubleshooting\"",
@@ -1151,6 +1115,31 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 3111
+				},
+				{
+					"path": "infrastructure/deployment/docker-troubleshooting.md",
+					"name": "Docker Troubleshooting Guide",
+					"description": "\"Common Docker issues, solutions, debugging techniques, and prevention strategies for SlideHeroes\"",
+					"lastUpdated": "2025-09-22",
+					"topics": ["Docker"],
+					"priority": "supplementary",
+					"keywords": [
+						"docker",
+						"troubleshooting",
+						"guide",
+						"common",
+						"issues",
+						"solutions",
+						"debugging",
+						"techniques",
+						"prevention",
+						"strategies"
+					],
+					"relatedCommands": ["/debug-issue"],
+					"dependencies": ["infrastructure/deployment/overview.md"],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1922
 				},
 				{
 					"path": "infrastructure/deployment/vercel/vercel-deployment-guide.md",
@@ -1201,6 +1190,29 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 1486
+				},
+				{
+					"path": "infrastructure/environments/local-development-environment.md",
+					"name": "Local Development Environment Setup",
+					"description": "\"Complete local development environment setup and daily workflows for SlideHeroes development\"",
+					"lastUpdated": "2025-09-22",
+					"topics": ["Documentation"],
+					"priority": "supplementary",
+					"keywords": [
+						"local",
+						"development",
+						"environment",
+						"setup",
+						"complete",
+						"daily",
+						"workflows",
+						"slideheroes"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1447
 				},
 				{
 					"path": "integrations/api/api-patterns.md",
@@ -1462,20 +1474,6 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 1113
-				},
-				{
-					"path": "team/roles/.roles-summary.xml",
-					"name": ".Roles Summary",
-					"description": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-					"lastUpdated": "2025-09-19",
-					"topics": ["Documentation"],
-					"priority": "supplementary",
-					"keywords": ["roles", "summary", "version", "encoding"],
-					"relatedCommands": [],
-					"dependencies": [],
-					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 662
 				},
 				{
 					"path": "team/roles/ai-engineer.md",
