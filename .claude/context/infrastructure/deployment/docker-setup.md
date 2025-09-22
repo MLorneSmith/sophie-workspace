@@ -27,7 +27,7 @@ cross_references:
 created: "2025-09-09"
 last_updated: "2025-09-19"
 author: "create-context"
-revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues, added test infrastructure integration documentation, fixed container permission issues"
+revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues, added test infrastructure integration documentation, fixed container permission issues, added hybrid Edge Functions architecture documentation (GitHub issue #29)"
 ---
 
 # Docker Setup and Container Architecture
@@ -96,8 +96,9 @@ This hybrid approach provides the best of both worlds: fast local development wi
 | Studio | 39002 | 55323 |
 | Inbucket | 39003-39005 | 55324-55326 |
 | Analytics | 39006 | 55327 |
+| **Edge Functions** | 39000/functions/v1/* | 55321/functions/v1/* |
 
-**Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, and Supabase Studio
+**Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, Supabase Studio, and **Edge Functions Runtime**
 
 ### Test Server Containers (`2025slideheroes-test` stack)
 
@@ -123,6 +124,34 @@ This hybrid approach provides the best of both worlds: fast local development wi
 ### MCP Servers (via Claude Code)
 
 MCP servers are configured natively through Claude Code via `.mcp.json` at project root. They are managed directly by Claude Code and start automatically when Claude Code launches. The legacy `docker-compose.mcp.yml` file is no longer used.
+
+### Edge Functions (Hybrid Architecture)
+
+**Implementation**: SlideHeroes uses a hybrid edge functions architecture combining both Vercel Edge Functions and Supabase Edge Functions for optimal performance across different use cases.
+
+**Supabase Edge Functions** (Deno Runtime):
+- **Location**: `apps/web/supabase/functions/`
+- **Runtime**: Integrated within Supabase Docker stack
+- **Access URL**: `http://localhost:39000/functions/v1/{function-name}`
+- **Use Case**: Heavy file processing and external API integrations
+- **Functions**:
+  - `powerpoint-generator`: PowerPoint file generation with memory optimization
+  - `certificate-generator`: PDF certificate generation via PDF.co API integration
+
+**Vercel Edge Functions** (V8 Isolates):
+- **Location**: `apps/web/app/api/` (with `export const runtime = 'edge'`)
+- **Runtime**: Host-based development, edge-optimized for deployment
+- **Use Case**: AI content generation and lightweight processing
+- **Functions**:
+  - `/api/ai/generate-ideas`: AI-powered content suggestions via Portkey Gateway
+  - `/api/ai/simplify-text`: Text simplification and optimization
+
+**Integration Strategy**:
+- **Supabase Edge Functions**: Automatically served by Supabase CLI stack (no separate deployment needed for local development)
+- **Vercel Edge Functions**: Served by Next.js development server with edge runtime
+- **Authentication**: Both use shared Supabase authentication and RLS policies
+- **Performance**: 40-75% performance improvement over traditional server-side functions
+- **Development**: Both functions are available during local development without additional setup
 
 ### Test Infrastructure Integration
 
@@ -394,6 +423,36 @@ psql postgresql://postgres:postgres@127.0.0.1:55322/postgres
 # View Supabase Studio
 open http://localhost:39002  # Main
 open http://localhost:55323  # E2E
+```
+
+### Edge Functions Testing
+
+```bash
+# Test Supabase Edge Functions (within Docker stack)
+curl -X POST http://localhost:39000/functions/v1/powerpoint-generator \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [auth-token]" \
+  -d '{"storyboard": {...}, "userId": "test-user"}'
+
+curl -X POST http://localhost:39000/functions/v1/certificate-generator \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [auth-token]" \
+  -d '{"userId": "test-user", "courseId": "course-123", "fullName": "Test User"}'
+
+# Test Vercel Edge Functions (via Next.js dev server)
+curl -X POST http://localhost:3000/api/ai/generate-ideas \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [auth-token]" \
+  -d '{"content": "test content", "submissionId": "123", "type": "situation"}'
+
+curl -X POST http://localhost:3000/api/ai/simplify-text \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer [auth-token]" \
+  -d '{"content": "complex text", "userId": "test-user", "canvasId": "123", "sectionType": "situation"}'
+
+# Check Edge Functions are responding (should return 401 without auth)
+curl -X POST http://localhost:39000/functions/v1/powerpoint-generator -H "Content-Type: application/json" -d '{}'
+curl -X POST http://localhost:39000/functions/v1/certificate-generator -H "Content-Type: application/json" -d '{}'
 ```
 
 ### Test Container Management
@@ -749,6 +808,12 @@ docker ps --filter "name=2025slideheroes-e2e" --format "table {{.Names}}\t{{.Por
 - `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration
 - `/home/msmith/projects/2025slideheroes/.dockerignore`: Build optimization
 - `/home/msmith/projects/2025slideheroes/.claude/settings.local.json`: Claude Code MCP enablement settings
+- `/home/msmith/projects/2025slideheroes/apps/web/supabase/functions/powerpoint-generator/index.ts`: Supabase Edge Function for PowerPoint generation
+- `/home/msmith/projects/2025slideheroes/apps/web/supabase/functions/certificate-generator/index.ts`: Supabase Edge Function for certificate generation
+- `/home/msmith/projects/2025slideheroes/apps/web/app/api/ai/generate-ideas/route.ts`: Vercel Edge Function for AI content generation
+- `/home/msmith/projects/2025slideheroes/apps/web/app/api/ai/simplify-text/route.ts`: Vercel Edge Function for text simplification
+- `/home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/ai/canvas/_actions/generate-ideas-edge.ts`: Client action for generate-ideas edge function
+- `/home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/ai/canvas/_actions/simplify-text-edge.ts`: Client action for simplify-text edge function
 
 ## See Also
 

@@ -241,7 +241,7 @@ Project: [project_path]
 
 | Check | Success Indicator | Failure Action |
 |-------|-------------------|----------------|
-| Script exists | `.claude/scripts/codecheck-direct.sh` found | Report missing script error |
+| Script exists | `.claude/scripts/development/codecheck-direct.sh` found | Report missing script error |
 | TypeScript config | `tsconfig.json` exists | Use default config |
 | Lint config | ESLint/Biome configured | Skip lint checks with warning |
 | All checks pass | Exit code 0 | Review and report specific failures |
