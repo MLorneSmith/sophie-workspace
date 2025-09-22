@@ -28,15 +28,31 @@ export class OtpPo {
 		// wait for the OTP to be sent
 		await this.page.waitForTimeout(500);
 
-		await expect(async () => {
-			// Get the OTP code from the email
-			const otpCode = await this.getOtpCodeFromEmail(email);
+		// Get the OTP code from the email with retries (max 30s)
+		let otpCode = null;
+		let attempts = 0;
+		const maxAttempts = 6; // 30 seconds total (6 * 5s)
 
-			expect(otpCode).not.toBeNull();
+		while (!otpCode && attempts < maxAttempts) {
+			try {
+				otpCode = await this.getOtpCodeFromEmail(email);
+				if (otpCode) break;
+			} catch (error) {
+				console.log(
+					`OTP attempt ${attempts + 1}/${maxAttempts} failed, retrying...`,
+				);
+			}
 
-			// Enter the OTP code
-			await this.enterOtpCode(otpCode);
-		}).toPass();
+			attempts++;
+			if (attempts < maxAttempts) {
+				await this.page.waitForTimeout(5000); // Wait 5 seconds between attempts
+			}
+		}
+
+		expect(otpCode).not.toBeNull();
+
+		// Enter the OTP code
+		await this.enterOtpCode(otpCode);
 
 		// Click the "Verify Code" button
 		await this.page.click('[data-test="otp-verify-button"]');
