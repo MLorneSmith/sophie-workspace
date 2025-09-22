@@ -51,8 +51,18 @@ CREATE POLICY "ai_cost_configuration_select_policy" ON public.ai_cost_configurat
 FOR SELECT
 USING (true); -- Viewable by all
 
-CREATE POLICY "ai_cost_configuration_write_policy" ON public.ai_cost_configuration
-FOR ALL TO authenticated
+CREATE POLICY "ai_cost_configuration_insert_policy" ON public.ai_cost_configuration
+FOR INSERT TO authenticated
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.accounts_memberships
+    WHERE user_id = (SELECT auth.uid())
+    AND account_role = 'owner'
+  )
+);
+
+CREATE POLICY "ai_cost_configuration_update_policy" ON public.ai_cost_configuration
+FOR UPDATE TO authenticated
 USING (
   EXISTS (
     SELECT 1 FROM public.accounts_memberships
@@ -61,6 +71,16 @@ USING (
   )
 )
 WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.accounts_memberships
+    WHERE user_id = (SELECT auth.uid())
+    AND account_role = 'owner'
+  )
+);
+
+CREATE POLICY "ai_cost_configuration_delete_policy" ON public.ai_cost_configuration
+FOR DELETE TO authenticated
+USING (
   EXISTS (
     SELECT 1 FROM public.accounts_memberships
     WHERE user_id = (SELECT auth.uid())
