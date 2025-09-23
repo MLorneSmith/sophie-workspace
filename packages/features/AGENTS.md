@@ -286,4 +286,8 @@ const isOwner = await client.rpc('is_account_owner', {
 if (!isOwner) {
   throw new Error('Only account owners can perform this action');
 }
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

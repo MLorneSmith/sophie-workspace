@@ -1,11 +1,12 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import {
 	BanUserSchema,
@@ -21,19 +22,8 @@ import { createAdminAuthUserService } from "./services/admin-auth-user.service";
 import { adminAction } from "./utils/admin-action";
 
 /**
- * Bans a user from the system, preventing them from accessing the application.
- *
- * This action marks a user as banned in the authentication system. Banned users
- * cannot log in or access any protected resources. The action is logged for
- * audit purposes.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.userId - The UUID of the user to ban
- * @returns {Promise<{success: boolean}>} Success status of the operation
- * @throws {Error} If the ban operation fails
- *
- * @example
- * await banUserAction({ userId: '123e4567-e89b-12d3-a456-426614174000' });
+ * @name banUserAction
+ * @description Ban a user from the system.
  */
 export const banUserAction = adminAction(
 	enhanceAction(
@@ -43,15 +33,19 @@ export const banUserAction = adminAction(
 
 			logger.info({ userId }, "Super Admin is banning user...");
 
-			await service.banUser(userId);
+			const { error } = await service.banUser(userId);
 
-			logger.info({ userId }, "Super Admin has successfully banned user");
+			if (error) {
+				logger.error({ error }, "Error banning user");
+
+				return {
+					success: false,
+				};
+			}
 
 			revalidateAdmin();
 
-			return {
-				success: true,
-			};
+			logger.info({ userId }, "Super Admin has successfully banned user");
 		},
 		{
 			schema: BanUserSchema,
@@ -60,18 +54,8 @@ export const banUserAction = adminAction(
 );
 
 /**
- * Reactivates a previously banned user, restoring their access to the application.
- *
- * This action removes the ban status from a user account, allowing them to log in
- * and access the application again. The action is logged for audit purposes.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.userId - The UUID of the user to reactivate
- * @returns {Promise<{success: boolean}>} Success status of the operation
- * @throws {Error} If the reactivation fails
- *
- * @example
- * await reactivateUserAction({ userId: '123e4567-e89b-12d3-a456-426614174000' });
+ * @name reactivateUserAction
+ * @description Reactivate a user in the system.
  */
 export const reactivateUserAction = adminAction(
 	enhanceAction(
@@ -81,15 +65,19 @@ export const reactivateUserAction = adminAction(
 
 			logger.info({ userId }, "Super Admin is reactivating user...");
 
-			await service.reactivateUser(userId);
+			const { error } = await service.reactivateUser(userId);
 
-			logger.info({ userId }, "Super Admin has successfully reactivated user");
+			if (error) {
+				logger.error({ error }, "Error reactivating user");
+
+				return {
+					success: false,
+				};
+			}
 
 			revalidateAdmin();
 
-			return {
-				success: true,
-			};
+			logger.info({ userId }, "Super Admin has successfully reactivated user");
 		},
 		{
 			schema: ReactivateUserSchema,
@@ -98,21 +86,8 @@ export const reactivateUserAction = adminAction(
 );
 
 /**
- * Impersonates a user account for debugging and support purposes.
- *
- * This action allows a super-admin to access the application as if they were
- * the specified user, useful for debugging user-specific issues. The impersonation
- * is logged for security and audit purposes.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.userId - The UUID of the user to impersonate
- * @returns {Promise<Object>} Impersonation session data
- * @throws {Error} If impersonation fails
- *
- * @security This action should be used with extreme caution and only for legitimate support purposes
- *
- * @example
- * const session = await impersonateUserAction({ userId: '123e4567-e89b-12d3-a456-426614174000' });
+ * @name impersonateUserAction
+ * @description Impersonate a user in the system.
  */
 export const impersonateUserAction = adminAction(
 	enhanceAction(
@@ -131,22 +106,8 @@ export const impersonateUserAction = adminAction(
 );
 
 /**
- * Permanently deletes a user account from the system.
- *
- * This action completely removes a user and all associated data from the authentication
- * system. This operation is irreversible. After successful deletion, the browser is
- * redirected to the admin accounts page.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.userId - The UUID of the user to delete
- * @returns {Promise<void>} Redirects to /admin/accounts on success
- * @throws {Error} If the deletion fails
- *
- * @warning This action is irreversible and will permanently delete all user data
- *
- * @example
- * await deleteUserAction({ userId: '123e4567-e89b-12d3-a456-426614174000' });
- * // Browser will redirect to /admin/accounts
+ * @name deleteUserAction
+ * @description Delete a user from the system.
  */
 export const deleteUserAction = adminAction(
 	enhanceAction(
@@ -160,8 +121,6 @@ export const deleteUserAction = adminAction(
 
 			logger.info({ userId }, "Super Admin has successfully deleted user");
 
-			revalidateAdmin();
-
 			return redirect("/admin/accounts");
 		},
 		{
@@ -171,22 +130,8 @@ export const deleteUserAction = adminAction(
 );
 
 /**
- * Permanently deletes an entire account (team or personal) from the system.
- *
- * This action removes an account and all associated data, including memberships,
- * subscriptions, and related resources. This operation is irreversible. After
- * successful deletion, the browser is redirected to the admin accounts page.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.accountId - The UUID of the account to delete
- * @returns {Promise<void>} Redirects to /admin/accounts on success
- * @throws {Error} If the deletion fails
- *
- * @warning This action is irreversible and will delete the account and all associated data
- *
- * @example
- * await deleteAccountAction({ accountId: '123e4567-e89b-12d3-a456-426614174000' });
- * // Browser will redirect to /admin/accounts
+ * @name deleteAccountAction
+ * @description Delete an account from the system.
  */
 export const deleteAccountAction = adminAction(
 	enhanceAction(
@@ -198,12 +143,12 @@ export const deleteAccountAction = adminAction(
 
 			await service.deleteAccount(accountId);
 
+			revalidateAdmin();
+
 			logger.info(
 				{ accountId },
 				"Super Admin has successfully deleted account",
 			);
-
-			revalidateAdmin();
 
 			return redirect("/admin/accounts");
 		},
@@ -214,26 +159,8 @@ export const deleteAccountAction = adminAction(
 );
 
 /**
- * Creates a new user account in the authentication system.
- *
- * This action creates a new user with the specified email and password. Optionally,
- * the email can be auto-confirmed to skip email verification. The action is logged
- * for audit purposes.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.email - The email address for the new user
- * @param {string} params.password - The password for the new user account
- * @param {boolean} params.emailConfirm - Whether to auto-confirm the email address
- * @returns {Promise<{success: boolean, user: Object}>} Success status and created user object
- * @throws {Error} If user creation fails (e.g., email already exists)
- *
- * @example
- * const result = await createUserAction({
- *   email: 'newuser@example.com',
- *   password: 'SecurePassword123!',
- *   emailConfirm: true
- * });
- * console.log('Created user:', result.user.id);
+ * @name createUserAction
+ * @description Create a new user in the system.
  */
 export const createUserAction = adminAction(
 	enhanceAction(
@@ -259,7 +186,7 @@ export const createUserAction = adminAction(
 				"Super Admin has successfully created a new user",
 			);
 
-			revalidateAdmin();
+			revalidatePath("/admin/accounts");
 
 			return {
 				success: true,
@@ -273,20 +200,8 @@ export const createUserAction = adminAction(
 );
 
 /**
- * Initiates a password reset for a user by sending them a reset email.
- *
- * This action triggers the password reset flow for a specified user. A password
- * reset link is sent to the user's registered email address. The action is logged
- * for security and audit purposes.
- *
- * @param {Object} params - The action parameters
- * @param {string} params.userId - The UUID of the user whose password should be reset
- * @returns {Promise<Object>} Result of the password reset operation
- * @throws {Error} If the password reset fails
- *
- * @example
- * const result = await resetPasswordAction({ userId: '123e4567-e89b-12d3-a456-426614174000' });
- * console.log('Password reset email sent');
+ * @name resetPasswordAction
+ * @description Reset a user's password by sending a password reset email.
  */
 export const resetPasswordAction = adminAction(
 	enhanceAction(
@@ -303,8 +218,6 @@ export const resetPasswordAction = adminAction(
 				"Super Admin has successfully sent password reset email",
 			);
 
-			revalidateAdmin();
-
 			return result;
 		},
 		{
@@ -314,7 +227,7 @@ export const resetPasswordAction = adminAction(
 );
 
 function revalidateAdmin() {
-	revalidatePath("/admin", "layout");
+	revalidatePath("/admin/accounts/[id]", "page");
 }
 
 function getAdminAuthService() {

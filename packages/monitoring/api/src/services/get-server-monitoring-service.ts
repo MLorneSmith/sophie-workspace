@@ -5,8 +5,8 @@ import {
 import { createRegistry } from "@kit/shared/registry";
 
 import {
-	getMonitoringProvider,
 	type MonitoringProvider,
+	getMonitoringProvider,
 } from "../get-monitoring-provider";
 
 // create a registry for the server monitoring services

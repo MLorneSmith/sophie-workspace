@@ -40,7 +40,7 @@ BEGIN
             jsonb_build_object(
                 'provider', 'email',
                 'providers', array['email'],
-                'role', 'super_admin'
+                'role', 'super-admin'
             ),
             jsonb_build_object(
                 'name', 'Michael Admin',

@@ -59,10 +59,16 @@ export const createNoteAction = enhanceAction(
 
 ```typescript
 export const myAction = enhanceAction(
+<<<<<<< HEAD
   async function (data, user, requestData) {
     // data: validated input data
     // user: authenticated user (if auth: true)
     // requestData: additional request information
+=======
+  async function (data, user) {
+    // data: validated input data
+    // user: authenticated user (if auth: true)
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
     
     return { success: true };
   },
@@ -167,6 +173,14 @@ export const POST = enhanceRouteHandler(
 );
 ```
 
+<<<<<<< HEAD
+=======
+## Revalidation
+
+- Use `revalidatePath` for revalidating data after a migration.
+- Avoid calling `router.refresh()` or `router.push()` following a Server Action. Use `revalidatePath` and `redirect` from the server action instead.
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Error Handling Patterns
 
 ### Server Actions with Error Handling
@@ -201,8 +215,15 @@ export const createNoteAction = enhanceAction(
       
       return { success: true, note };
     } catch (error) {
+<<<<<<< HEAD
       logger.error({ ...ctx, error }, 'Create note action failed');
       throw error;
+=======
+      if (!isRedirectError(error)) {
+        logger.error({ ...ctx, error }, 'Create note action failed');
+        throw error;
+      }
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
     }
   },
   {
@@ -212,6 +233,29 @@ export const createNoteAction = enhanceAction(
 );
 ```
 
+<<<<<<< HEAD
+=======
+
+### Server Action Redirects - Client Handling
+
+When server actions call `redirect()`, it throws a special error that should NOT be treated as a failure:
+
+```typescript
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
+async function handleSubmit(formData: FormData) {
+  try {
+    await myServerAction(formData);
+  } catch (error) {
+    // Don't treat redirects as errors
+    if (!isRedirectError(error)) {
+      // Handle actual errors
+      toast.error('Something went wrong');
+    }
+  }
+}
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### Route Handler with Error Handling
 
 ```typescript
@@ -307,6 +351,11 @@ function CreateNoteForm() {
 }
 ```
 
+<<<<<<< HEAD
+=======
+NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### Using Route Handlers with Fetch
 
 ```typescript
@@ -420,6 +469,7 @@ export const deleteAccountAction = enhanceAction(
     schema: DeleteAccountSchema,
   },
 );
+<<<<<<< HEAD
 ```
 
 ## Middleware Integration
@@ -433,3 +483,6 @@ The `enhanceAction` and `enhanceRouteHandler` utilities integrate with the appli
 - Input validation
 
 This ensures consistent security and monitoring across all server actions and API routes.
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

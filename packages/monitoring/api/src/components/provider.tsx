@@ -1,11 +1,12 @@
 "use client";
 
-import { createRegistry } from "@kit/shared/registry";
 import { lazy } from "react";
 
+import { createRegistry } from "@kit/shared/registry";
+
 import {
-	getMonitoringProvider,
 	type MonitoringProvider as MonitoringProviderType,
+	getMonitoringProvider,
 } from "../get-monitoring-provider";
 
 // Define the type for our provider components

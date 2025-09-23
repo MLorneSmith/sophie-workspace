@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 
 export class StripePageObject {
 	private readonly page: Page;
@@ -12,20 +12,9 @@ export class StripePageObject {
 	}
 
 	async waitForForm() {
-		// Check if test checkout modal is present first
-		const testCheckoutModal = this.page.locator(
-			'[data-test="test-checkout-modal"]',
-		);
-		try {
-			await testCheckoutModal.waitFor({ state: "visible", timeout: 2000 });
-			// Test mode detected
-			return;
-		} catch {
-			// Test modal not found, wait for Stripe iframe
-			return expect(async () => {
-				await expect(this.billingCountry()).toBeVisible();
-			}).toPass();
-		}
+		return expect(async () => {
+			await expect(this.billingCountry()).toBeVisible();
+		}).toPass();
 	}
 
 	async fillForm(
@@ -37,19 +26,6 @@ export class StripePageObject {
 			billingCountry?: string;
 		} = {},
 	) {
-		// Check if we're in test mode by looking for the test modal
-		const testCheckoutModal = this.page.locator(
-			'[data-test="test-checkout-modal"]',
-		);
-		const isTestMode = await testCheckoutModal.isVisible();
-
-		if (isTestMode) {
-			// Just wait a bit to simulate form filling
-			await this.page.waitForTimeout(500);
-			return;
-		}
-
-		// In production mode, fill the actual Stripe form
 		const billingName = this.billingName();
 		const cardNumber = this.cardNumber();
 		const expiry = this.expiry();
@@ -63,23 +39,9 @@ export class StripePageObject {
 		await billingCountry.selectOption(params.billingCountry ?? "IT");
 	}
 
-	async submitForm() {
-		// Check if we're in test mode by looking for the test modal
-		const testCheckoutModal = this.page.locator(
-			'[data-test="test-checkout-modal"]',
-		);
-		const isTestMode = await testCheckoutModal.isVisible();
-
-		if (isTestMode) {
-			await this.page.click('[data-test="test-checkout-success"]');
-			// Wait for the redirect
-			await this.page.waitForTimeout(2000);
-			return;
-		}
-
-		// In production mode, submit the Stripe form
+	submitForm() {
 		return this.getStripeCheckoutIframe()
-			.getByTestId("hosted-payment-submit-button")
+			.locator('[data-testid="hosted-payment-submit-button"]')
 			.click();
 	}
 

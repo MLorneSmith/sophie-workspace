@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 
 import { InvitationsPageObject } from "../invitations/invitations.po";
 import { TeamAccountsPageObject } from "./team-accounts.po";
@@ -56,28 +56,25 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 
 	await page.goto("/auth/sign-in");
 
-	await invitations.auth.signIn({
+	await invitations.auth.loginAsUser({
 		email: ownerEmail,
-		password: "password",
+		next: "/home",
 	});
-
-	await page.waitForURL("/home");
 
 	// Navigate to the team members page
 	await page.goto(`/home/${slug}/members`);
 
-	// Wait for the members page to fully load
-	await page.waitForLoadState("networkidle");
-	await page.waitForTimeout(1000); // Additional buffer for async operations
-
 	return { invitations, teamAccounts, ownerEmail, memberEmail, slug };
 }
 
-test.describe("Team Accounts @integration", () => {
-	test("user can update their team name (and slug)", async ({ page }) => {
+test.describe("Team Accounts", () => {
+	test.beforeEach(async ({ page }) => {
 		const teamAccounts = new TeamAccountsPageObject(page);
 		await teamAccounts.setup();
+	});
 
+	test("user can update their team name (and slug)", async ({ page }) => {
+		const teamAccounts = new TeamAccountsPageObject(page);
 		const { teamName, slug } = teamAccounts.createTeamName();
 
 		await teamAccounts.goToSettings();
@@ -98,7 +95,7 @@ test.describe("Team Accounts @integration", () => {
 		page,
 	}) => {
 		const teamAccounts = new TeamAccountsPageObject(page);
-		await teamAccounts.setup();
+		await teamAccounts.createTeam();
 
 		await teamAccounts.openAccountsSelector();
 		await page.click('[data-test="create-team-account-trigger"]');
@@ -210,31 +207,23 @@ test.describe("Team Member Role Management", () => {
 		// Setup team with a regular member
 		const { teamAccounts, memberEmail } = await setupTeamWithMember(page);
 
-		// Wait for the members table to be fully loaded
-		await page.waitForLoadState("networkidle");
-
-		// Get the current role badge text with retry logic
+		// Get the current role badge text
 		const memberRow = page.getByRole("row", { name: memberEmail });
-		await expect(memberRow).toBeVisible({ timeout: 10000 });
 
 		const initialRoleBadge = memberRow.locator(
 			'[data-test="member-role-badge"]',
 		);
 
-		await expect(initialRoleBadge).toHaveText("Member", { timeout: 10000 });
+		await expect(initialRoleBadge).toHaveText("Member");
 
 		// Update the member's role to admin
 		await teamAccounts.updateMemberRole(memberEmail, "owner");
 
-		// Wait for the page to fully load after the update
-		await page.waitForLoadState("networkidle");
-		await page.waitForTimeout(2000); // Increased wait for DB update
-
-		// Verify the role was updated successfully
-		const updatedRoleBadge = page
-			.getByRole("row", { name: memberEmail })
-			.locator('[data-test="member-role-badge"]');
-		await expect(updatedRoleBadge).toHaveText("Owner", { timeout: 15000 });
+		await expect(
+			page
+				.getByRole("row", { name: memberEmail })
+				.locator('[data-test="member-role-badge"]'),
+		).toHaveText("Owner");
 	});
 });
 
@@ -252,7 +241,7 @@ test.describe("Team Ownership Transfer", () => {
 		await teamAccounts.transferOwnership(memberEmail, ownerEmail);
 
 		// Wait for the page to fully load after the transfer
-		await page.waitForTimeout(1000);
+		await page.waitForTimeout(500);
 
 		// Verify the transfer was successful by checking if the primary owner badge
 		// is now on the new owner's row

@@ -6,13 +6,23 @@ This file contains guidance for working with database schemas, migrations, and S
 
 Schemas are organized in numbered files in the `schemas/` directory. Numbers are used to sort dependencies.
 
+<<<<<<< HEAD
 ## Schema Development Workflow
+=======
+Migrations are generated from schemas. If creating a new schema, the migration can be created using the exact same content.
+
+If modifying an existing migration, use the `diff` command:
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ### 1. Creating New Schema Files
 
 ```bash
 # Create new schema file
+<<<<<<< HEAD
 touch schemas/15-my-new-feature.sql
+=======
+touch apps/web/supabase/schemas/15-my-new-feature.sql
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 # Apply changes and create migration
 pnpm --filter web run supabase:db:diff -f my-new-feature
@@ -24,6 +34,11 @@ pnpm supabase:web:reset
 pnpm supabase:web:typegen
 ```
 
+<<<<<<< HEAD
+=======
+Verify the diff command generated the same content as the schema; if not, take steps to fix the migration.
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### 2. Modifying Existing Schemas
 
 ```bash
@@ -35,6 +50,11 @@ pnpm --filter web run supabase:db:diff -f update-accounts
 
 # Apply and test
 pnpm supabase:web:reset
+<<<<<<< HEAD
+=======
+
+# After resetting
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 pnpm supabase:web:typegen
 ```
 
@@ -223,6 +243,7 @@ pnpm supabase:web:reset
 pnpm run supabase:web:test
 ```
 
+<<<<<<< HEAD
 ## Type Generation
 
 ### After Schema Changes
@@ -264,6 +285,8 @@ async function createNote(data: Tables<'notes'>['Insert']) {
 }
 ```
 
+=======
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Common Schema Patterns
 
 ### Audit Trail

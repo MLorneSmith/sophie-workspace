@@ -1,13 +1,13 @@
 {
-	"extends": "../../tooling/typescript/base.json",
+	"extends": "@kit/tsconfig/base.json",
 	"compilerOptions": {
 		"tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
 		"outDir": "./build",
 		"noEmit": false,
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"strict": false,
 		"target": "ES2022",
-		"strict": false
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
 	},
 	"files": ["src/index.ts"],
 	"exclude": ["node_modules"]

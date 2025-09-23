@@ -286,4 +286,8 @@ The UI components automatically support dark mode through CSS variables. Use sem
 <div className="bg-white text-black border-gray-200">
   <p className="text-gray-500">Secondary text</p>
 </div>
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

@@ -63,4 +63,8 @@ await mailer.sendEmail({
   subject,
   html,
 });
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

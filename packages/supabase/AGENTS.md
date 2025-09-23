@@ -2,6 +2,26 @@
 
 This file contains instructions for working with Supabase, database security, and authentication.
 
+<<<<<<< HEAD
+=======
+## Schemas and Migrations ⚠️
+
+**Critical Understanding**: Schema files are NOT automatically applied to the database!
+
+- **Schemas** (`supabase/schemas/`) represent the desired database state (source of truth)
+- **Migrations** (`supabase/migrations/`) are the actual SQL commands that modify the database
+
+### The Required Workflow
+
+1. **Edit schema file** (e.g., `supabase/schemas/18-projects.sql`)
+2. **Generate migration**: `pnpm --filter web supabase:db:diff -f migration_name`
+   - This compares your schema against the current database and creates a migration
+3. **Apply migration**: `pnpm --filter web supabase migration up`
+   - This actually executes the SQL changes in the database
+
+**⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database. You MUST generate and apply a migration for changes to take effect. Schema files are templates - migrations are the actual database operations.
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Database Security Guidelines ⚠️
 
 **Critical Security Guidelines - Read Carefully!**
@@ -11,10 +31,15 @@ This file contains instructions for working with Supabase, database security, an
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
 - **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
 - **Always use security_invoker=true for views** to maintain proper access control
+<<<<<<< HEAD
 - **Storage buckets MUST validate access** using account_id in the path structure.
   See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
 - **Use locks if required**: Database locks prevent race conditions and timing attacks in
   concurrent operations. Make sure to take these into account for all database operations.
+=======
+- **Storage buckets MUST validate access** using account_id in the path structure. See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ### Security Definer Function - Dangerous Pattern ❌
 
@@ -100,6 +125,7 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
   );
 ```
 
+<<<<<<< HEAD
 ## Schema Management Workflow
 
 1. Create schemas in `apps/web/supabase/schemas/` as `<number>-<name>.sql`
@@ -116,6 +142,9 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
 - Accounts: `apps/web/supabase/schemas/03-accounts.sql`
 - Memberships: `apps/web/supabase/schemas/05-memberships.sql`
 - Permissions: `apps/web/supabase/schemas/06-roles-permissions.sql`
+=======
+- **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json scripts to re-generate the types after resetting the DB
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Type Generation
 
@@ -299,7 +328,11 @@ async function databaseOperation() {
 ## Migration Best Practices
 
 1. Always test migrations locally first
+<<<<<<< HEAD
 2. Use transactions for complex migrations
+=======
+2. Use transactions for complex operations
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 3. Add proper indexes for new columns
 4. Update RLS policies when adding new tables
 5. Generate TypeScript types after schema changes
@@ -312,4 +345,8 @@ async function databaseOperation() {
 2. **Missing indexes**: Always add indexes for foreign keys and commonly queried columns
 3. **Security definer functions**: Only use with explicit permission checks
 4. **Storage paths**: Must include account_id for proper access control
+<<<<<<< HEAD
 5. **Type safety**: Always regenerate types after schema changes
+=======
+5. **Type safety**: Always regenerate types after schema changes
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
