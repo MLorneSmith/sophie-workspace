@@ -1,9 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
 import { faker } from "@faker-js/faker";
-
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -18,15 +15,16 @@ import {
 	type ColumnDef,
 	type ColumnPinningState,
 	DataTable,
-	type VisibilityState,
 	flexRender,
 	useColumnManagement,
+	type VisibilityState,
 } from "@kit/ui/enhanced-data-table";
 import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { TableCell } from "@kit/ui/table";
 import { cn } from "@kit/ui/utils";
+import { useMemo, useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";

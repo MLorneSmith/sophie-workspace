@@ -48,7 +48,7 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema, // Validate input with Zod
   },
 );
-```
+```text
 
 ### Server Action Examples
 
@@ -59,16 +59,9 @@ export const createNoteAction = enhanceAction(
 
 ```typescript
 export const myAction = enhanceAction(
-<<<<<<< HEAD
-  async function (data, user, requestData) {
-    // data: validated input data
-    // user: authenticated user (if auth: true)
-    // requestData: additional request information
-=======
   async function (data, user) {
     // data: validated input data
     // user: authenticated user (if auth: true)
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
     
     return { success: true };
   },
@@ -78,7 +71,7 @@ export const myAction = enhanceAction(
     // Additional options available
   },
 );
-```
+```text
 
 ## Route Handlers (API Routes)
 
@@ -155,7 +148,7 @@ export const GET = enhanceRouteHandler(
     // No schema needed for GET requests
   },
 );
-```
+```text
 
 ### Route Handler Options
 
@@ -171,16 +164,13 @@ export const POST = enhanceRouteHandler(
     // Additional options available
   },
 );
-```
+```text
 
-<<<<<<< HEAD
-=======
 ## Revalidation
 
 - Use `revalidatePath` for revalidating data after a migration.
 - Avoid calling `router.refresh()` or `router.push()` following a Server Action. Use `revalidatePath` and `redirect` from the server action instead.
 
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Error Handling Patterns
 
 ### Server Actions with Error Handling
@@ -215,15 +205,10 @@ export const createNoteAction = enhanceAction(
       
       return { success: true, note };
     } catch (error) {
-<<<<<<< HEAD
-      logger.error({ ...ctx, error }, 'Create note action failed');
-      throw error;
-=======
       if (!isRedirectError(error)) {
         logger.error({ ...ctx, error }, 'Create note action failed');
         throw error;
       }
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
     }
   },
   {
@@ -231,10 +216,8 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema,
   },
 );
-```
+```text
 
-<<<<<<< HEAD
-=======
 
 ### Server Action Redirects - Client Handling
 
@@ -255,7 +238,6 @@ async function handleSubmit(formData: FormData) {
   }
 }
 
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### Route Handler with Error Handling
 
 ```typescript
@@ -294,7 +276,7 @@ export const POST = enhanceRouteHandler(
     schema: CreateItemSchema,
   },
 );
-```
+```text
 
 ## Client-Side Integration
 
@@ -349,13 +331,10 @@ function CreateNoteForm() {
     </form>
   );
 }
-```
+```text
 
-<<<<<<< HEAD
-=======
 NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
 
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### Using Route Handlers with Fetch
 
 ```typescript
@@ -389,7 +368,7 @@ const handleCreateItem = async (data) => {
     throw error;
   }
 };
-```
+```text
 
 ## Security Best Practices
 
@@ -427,7 +406,7 @@ export const updateUserAction = enhanceAction(
     schema: UpdateUserSchema,
   },
 );
-```
+```text
 
 ### Authorization Checks
 
@@ -469,20 +448,4 @@ export const deleteAccountAction = enhanceAction(
     schema: DeleteAccountSchema,
   },
 );
-<<<<<<< HEAD
-```
-
-## Middleware Integration
-
-The `enhanceAction` and `enhanceRouteHandler` utilities integrate with the application middleware for:
-
-- CSRF protection
-- Authentication verification
-- Request logging
-- Error handling
-- Input validation
-
-This ensures consistent security and monitoring across all server actions and API routes.
-=======
-```
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text

@@ -1,6 +1,5 @@
+import test, { expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
-
-import test, { type Page, expect } from "@playwright/test";
 
 import type { AUTH_STATES } from "../utils/auth-state";
 import { Mailbox } from "../utils/mailbox";
@@ -120,9 +119,14 @@ export class AuthPageObject {
 		await this.page.click('[type="submit"]');
 	}
 
-	async loginAsSuperAdmin(params: { next?: string }) {
+	async loginAsSuperAdmin(params: {
+		email?: string;
+		password?: string;
+		next?: string;
+	}) {
 		await this.loginAsUser({
-			email: "super-admin@makerkit.dev",
+			email: params.email || "super-admin@makerkit.dev",
+			password: params.password,
 			next: "/auth/verify",
 		});
 

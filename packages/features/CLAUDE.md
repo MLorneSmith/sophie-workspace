@@ -37,7 +37,7 @@ const subscription = await api.getSubscription(accountId);
 
 // Get customer ID
 const customerId = await api.getCustomerId(accountId);
-```
+```text
 
 ### Team Accounts API
 
@@ -66,7 +66,7 @@ const count = await api.getMembersCount(accountId);
 
 // Get invitation
 const invitation = await api.getInvitation(adminClient, token);
-```
+```text
 
 ## Workspace Contexts
 
@@ -85,7 +85,7 @@ function PersonalComponent() {
   
   return <div>Welcome {user.name}</div>;
 }
-```
+```text
 
 Context provider: `packages/features/accounts/src/components/user-workspace-context-provider.tsx`
 
@@ -105,7 +105,7 @@ function TeamComponent() {
   
   return <div>Team: {account.name}</div>;
 }
-```
+```text
 
 Context provider: `packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx`
 
@@ -120,7 +120,7 @@ Located at: `apps/web/app/home/(user)/billing/_lib/server/user-billing.service.t
 // - Manage individual user subscriptions
 // - Handle personal account payments
 // - Process individual billing changes
-```
+```text
 
 ### Team Billing  
 
@@ -131,7 +131,7 @@ Located at: `apps/web/app/home/[account]/billing/_lib/server/team-billing.servic
 // - Manage team subscriptions
 // - Handle team payments
 // - Process team billing changes
-```
+```text
 
 ### Per-Seat Billing Service
 
@@ -150,7 +150,7 @@ await billingService.decreaseSeats(accountId);
 
 // Get per-seat subscription item
 const subscription = await billingService.getPerSeatSubscriptionItem(accountId);
-```
+```text
 
 ## Authentication Features
 
@@ -170,7 +170,7 @@ import { VerifyOtpForm } from '@kit/otp/components';
   }}
   CancelButton={<Button variant="outline">Cancel</Button>}
 />
-```
+```text
 
 ## Admin Features
 
@@ -192,7 +192,7 @@ function AdminPage() {
 
 // Wrap the page component
 export default AdminGuard(AdminPage);
-```
+```text
 
 ### Admin Service
 
@@ -203,7 +203,7 @@ Located at: `packages/features/admin/src/lib/server/services/admin.service.ts`
 // - Manage all accounts
 // - Handle admin-level operations
 // - Access system-wide data
-```
+```text
 
 ### Checking Admin Status
 
@@ -219,7 +219,7 @@ function criticalAdminFeature() {
 
   // ...
 }
-```
+```text
 
 ## Error Handling & Logging
 
@@ -252,7 +252,7 @@ async function featureOperation() {
     throw error;
   }
 }
-```
+```text
 
 ## Permission Patterns
 
@@ -273,7 +273,7 @@ const canManageBilling = await api.hasPermission({
 if (!canManageBilling) {
   throw new Error('Insufficient permissions');
 }
-```
+```text
 
 ### Account Ownership
 
@@ -286,8 +286,4 @@ const isOwner = await client.rpc('is_account_owner', {
 if (!isOwner) {
   throw new Error('Only account owners can perform this action');
 }
-<<<<<<< HEAD
-```
-=======
-```
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text

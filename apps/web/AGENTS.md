@@ -6,11 +6,7 @@ This file contains instructions specific to the main Next.js web application.
 
 ### Route Organization
 
-<<<<<<< HEAD
 ```text
-=======
-```
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 app/
 ├── (marketing)/          # Public pages (landing, blog, docs)
 ├── (auth)/              # Authentication pages
@@ -19,7 +15,7 @@ app/
 │   └── [account]/       # Team account context ([account] = team slug)
 ├── admin/               # Super admin section
 └── api/                 # API routes
-```
+```text
 
 Key Examples:
 
@@ -40,8 +36,7 @@ Example:
 - Team server utils: `app/home/[account]/_lib/server/`
 - Marketing components: `app/(marketing)/_components/`
 
-<<<<<<< HEAD
-=======
+
 The `[account]` parameter is the `accounts.slug` property, not the ID
 
 ## React Server Components - Async Pattern
@@ -63,9 +58,7 @@ async function Page({ params }: Props) {
 function Page({ params }: Props) {
   const { account } = use(params); // ✅ Server component pattern
 }
-```
-
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text
 ## Data Fetching Strategy
 
 **Quick Decision Framework:**
@@ -86,7 +79,7 @@ async function NotesPage() {
   if (error) return <ErrorMessage error={error} />;
   return <NotesList notes={data} />;
 }
-```
+```text
 
 **Key Insight**: Server Components automatically inherit RLS protection - no additional authorization checks needed!
 
@@ -107,15 +100,11 @@ function InteractiveNotes() {
   if (isLoading) return <Spinner />;
   return <NotesList notes={data} />;
 }
-```
+```text
 
 ### Performance Optimization - Parallel Data Fetching 🚀
 
-<<<<<<< HEAD
-#### Sequential (Slow) Pattern ❌
-=======
 **Sequential (Slow) Pattern ❌**
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ```typescript
 async function SlowDashboard() {
@@ -124,13 +113,9 @@ async function SlowDashboard() {
   const metrics = await loadMetrics();
   // Total time: sum of all requests
 }
-```
+```text
 
-<<<<<<< HEAD
-#### Parallel (Optimized) Pattern ✅
-=======
 **Parallel (Optimized) Pattern ✅**
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ```typescript
 async function FastDashboard() {
@@ -144,7 +129,7 @@ async function FastDashboard() {
 
   return <Dashboard user={userData} notifications={notifications} metrics={metrics} />;
 }
-```
+```text
 
 **Performance Impact**: Parallel fetching can reduce page load time by 60-80% for multi-data pages!
 
@@ -162,7 +147,7 @@ async function getUserNotes(userId: string) {
 
   return data;
 }
-```
+```text
 
 ### Admin Client Usage (Dangerous - Rare Cases Only) ⚠️
 
@@ -189,7 +174,7 @@ async function adminGetUserNotes(userId: string) {
 
   return data;
 }
-```
+```text
 
 **Rule of thumb**: If using standard Supabase client, trust RLS. If using admin client, validate everything manually.
 
@@ -212,7 +197,7 @@ import { Trans } from '@kit/ui/trans';
     TermsLink: <a href="/terms" className="underline" />,
   }}
 />
-```
+```text
 
 ### Adding New Languages
 
@@ -220,14 +205,10 @@ import { Trans } from '@kit/ui/trans';
 2. Create translation files in `public/locales/[new-language]/`
 3. Copy structure from English files
 
-<<<<<<< HEAD
-Translation files: `public/locales/<locale>/<namespace>.json`
-=======
 ### Adding new namespaces
 
 1. Translation files: `public/locales/<locale>/<namespace>.json`
 2. Add namespace to `defaultI18nNamespaces` in `apps/web/lib/i18n/i18n.settings.ts`
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Workspace Contexts 🏢
 
@@ -240,7 +221,7 @@ function PersonalComponent() {
   const { user, account } = useUserWorkspace();
   // Personal account data
 }
-```
+```text
 
 Context provider: `@packages/features/accounts/src/components/user-workspace-context-provider.tsx`
 
@@ -253,7 +234,7 @@ function TeamComponent() {
   const { account, user, accounts } = useTeamAccountWorkspace();
   // Team account data with permissions
 }
-```
+```text
 
 Context provider: `@packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx`
 
@@ -281,10 +262,8 @@ export const POST = enhanceRouteHandler(
     schema: ZodSchema,
   },
 );
-```
+```text
 
-<<<<<<< HEAD
-=======
 ## Navigation Menu Configuration 🗺️
 
 ### Adding Sidebar Menu Items
@@ -303,7 +282,7 @@ export const POST = enhanceRouteHandler(
   Icon: <YourIcon className="w-4" />,
   end: true,
 },
-```
+```text
 
 **Add to Team Navigation:**
 
@@ -313,7 +292,7 @@ export const POST = enhanceRouteHandler(
   path: createPath(pathsConfig.app.yourTeamFeaturePath, account),
   Icon: <YourIcon className="w-4" />,
 },
-```
+```text
 
 **Add Paths:**
 
@@ -323,7 +302,7 @@ app: {
   yourFeaturePath: '/home/your-feature',
   yourTeamFeaturePath: '/home/[account]/your-feature',
 }
-```
+```text
 
 **Add Translations:**
 
@@ -332,9 +311,7 @@ app: {
 "routes": {
   "yourFeature": "Your Feature"
 }
-```
-
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text
 ## Security Guidelines 🛡️
 
 ### Authentication & Authorization
@@ -349,7 +326,6 @@ app: {
 - **Never pass sensitive data** to Client Components
 - **Never expose server environment variables** to client (unless prefixed with NEXT_PUBLIC)
 - Always validate user input
-<<<<<<< HEAD
 
 ### Super Admin Protection
 
@@ -359,6 +335,4 @@ For admin routes, use `AdminGuard` from `@packages/features/admin/src/components
 import { AdminGuard } from '@kit/admin/components/admin-guard';
 
 export default AdminGuard(AdminPageComponent);
-```
-=======
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text

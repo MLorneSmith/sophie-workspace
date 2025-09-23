@@ -2,8 +2,6 @@
 
 This file contains instructions for working with Supabase, database security, and authentication.
 
-<<<<<<< HEAD
-=======
 ## Schemas and Migrations ⚠️
 
 **Critical Understanding**: Schema files are NOT automatically applied to the database!
@@ -19,9 +17,9 @@ This file contains instructions for working with Supabase, database security, an
 3. **Apply migration**: `pnpm --filter web supabase migration up`
    - This actually executes the SQL changes in the database
 
-**⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database. You MUST generate and apply a migration for changes to take effect. Schema files are templates - migrations are the actual database operations.
+**⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database. You MUST generate and apply a
+migration for changes to take effect. Schema files are templates - migrations are the actual database operations.
 
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Database Security Guidelines ⚠️
 
 **Critical Security Guidelines - Read Carefully!**
@@ -31,15 +29,10 @@ This file contains instructions for working with Supabase, database security, an
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
 - **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
 - **Always use security_invoker=true for views** to maintain proper access control
-<<<<<<< HEAD
-- **Storage buckets MUST validate access** using account_id in the path structure.
-  See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
-- **Use locks if required**: Database locks prevent race conditions and timing attacks in
-  concurrent operations. Make sure to take these into account for all database operations.
-=======
-- **Storage buckets MUST validate access** using account_id in the path structure. See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
-- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+- **Storage buckets MUST validate access** using account_id in the path structure. See
+  `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent
+  operations. Make sure to take these into account for all database operations.
 
 ### Security Definer Function - Dangerous Pattern ❌
 
@@ -55,7 +48,7 @@ BEGIN
 END;
 $;
 GRANT EXECUTE ON FUNCTION public.dangerous_function() TO authenticated;
-```
+```text
 
 ### Security Definer Function - Safe Pattern ✅
 
@@ -76,13 +69,13 @@ BEGIN
   -- Your admin operation here
 END;
 $;
-```
+```text
 
 Only grant critical functions to `service_role`:
 
 ```sql
 grant execute on public.dangerous_function to service_role;
-```
+```text
 
 ## Existing Helper Functions - Use These! 📚
 
@@ -104,7 +97,7 @@ public.is_mfa_compliant()                         -- MFA compliance
 
 -- Configuration
 public.is_set(field_name)                         -- Feature flag checks
-```
+```text
 
 Always check `apps/web/supabase/schemas/` before creating new functions!
 
@@ -123,28 +116,9 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
   TO authenticated USING (
     public.has_permission(auth.uid(), account_id, 'notes.manage'::app_permissions)
   );
-```
+```text
 
-<<<<<<< HEAD
-## Schema Management Workflow
-
-1. Create schemas in `apps/web/supabase/schemas/` as `<number>-<name>.sql`
-2. After changes: `pnpm supabase:web:stop`
-3. Run: `pnpm --filter web run supabase:db:diff -f <filename>`
-4. Restart: `pnpm supabase:web:start` and `pnpm supabase:web:reset`
-5. Generate types: `pnpm supabase:web:typegen`
-
-- **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json
-  scripts to re-generate the types after resetting the DB
-
-### Key Schema Files
-
-- Accounts: `apps/web/supabase/schemas/03-accounts.sql`
-- Memberships: `apps/web/supabase/schemas/05-memberships.sql`
-- Permissions: `apps/web/supabase/schemas/06-roles-permissions.sql`
-=======
 - **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json scripts to re-generate the types after resetting the DB
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Type Generation
 
@@ -152,7 +126,7 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
 import { Tables } from '@kit/supabase/database';
 
 type Account = Tables<'accounts'>;
-```
+```text
 
 Always prefer inferring types from generated Database types.
 
@@ -171,7 +145,7 @@ async function NotesPage() {
 
   return <NotesList notes={data} />;
 }
-```
+```text
 
 ### Client Components
 
@@ -183,7 +157,7 @@ function InteractiveNotes() {
   const supabase = useSupabase();
   // Use with React Query for optimal data fetching
 }
-```
+```text
 
 ### Admin Client (Use with Extreme Caution) ⚠️
 
@@ -203,7 +177,7 @@ async function adminFunction() {
   // Now safe to proceed with admin privileges
   const { data } = await adminClient.from('table').select('*');
 }
-```
+```text
 
 ## Authentication Patterns
 
@@ -218,7 +192,7 @@ const requiresMultiFactorAuthentication =
 if (requiresMultiFactorAuthentication) {
   // Redirect to MFA page
 }
-```
+```text
 
 ### User Requirements
 
@@ -227,7 +201,7 @@ import { requireUser } from '@kit/supabase/require-user';
 
 const client = getSupabaseServerClient();
 const user = await requireUser(client, { verifyMfa: false });
-```
+```text
 
 ## Storage Security
 
@@ -253,7 +227,7 @@ with check (
     )
   )
 );
-```
+```text
 
 ## Common Database Operations
 
@@ -289,7 +263,7 @@ create policy "notes_write" on public.notes for insert
     account_id = (select auth.uid()) or
     public.has_permission(auth.uid(), account_id, 'notes.manage'::app_permissions)
   );
-```
+```text
 
 ### Indexes for Performance
 
@@ -297,7 +271,7 @@ create policy "notes_write" on public.notes for insert
 -- Create indexes for common queries
 create index if not exists ix_notes_account_id on public.notes (account_id);
 create index if not exists ix_notes_created_at on public.notes (created_at);
-```
+```text
 
 ## Error Handling
 
@@ -323,16 +297,12 @@ async function databaseOperation() {
     throw error;
   }
 }
-```
+```text
 
 ## Migration Best Practices
 
 1. Always test migrations locally first
-<<<<<<< HEAD
-2. Use transactions for complex migrations
-=======
 2. Use transactions for complex operations
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 3. Add proper indexes for new columns
 4. Update RLS policies when adding new tables
 5. Generate TypeScript types after schema changes
@@ -345,8 +315,4 @@ async function databaseOperation() {
 2. **Missing indexes**: Always add indexes for foreign keys and commonly queried columns
 3. **Security definer functions**: Only use with explicit permission checks
 4. **Storage paths**: Must include account_id for proper access control
-<<<<<<< HEAD
 5. **Type safety**: Always regenerate types after schema changes
-=======
-5. **Type safety**: Always regenerate types after schema changes
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
