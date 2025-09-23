@@ -1,8 +1,7 @@
-import { expect, type Page } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
-import { waitForNetworkIdleWithFallback } from "../utils/wait-helpers";
 
 export class InvitationsPageObject {
 	private readonly page: Page;
@@ -34,12 +33,7 @@ export class InvitationsPageObject {
 				continue;
 			}
 
-			// Only log in debug mode to avoid Biome linting errors
-			if (process.env.DEBUG) {
-				process.stdout.write(
-					`Inviting ${invite.email} with role ${invite.role}...\n`,
-				);
-			}
+			console.log(`Inviting ${invite.email} with role ${invite.role}...`);
 
 			const nth = index + 1;
 
@@ -71,7 +65,7 @@ export class InvitationsPageObject {
 				.click();
 
 			await this.page.waitForURL("**/home/*/members");
-		}).toPass({ timeout: 15000 });
+		}).toPass();
 	}
 
 	async openInviteForm() {
@@ -79,7 +73,7 @@ export class InvitationsPageObject {
 			await this.page.click('[data-test="invite-members-form-trigger"]');
 
 			return await expect(this.getInviteForm()).toBeVisible();
-		}).toPass({ timeout: 15000 });
+		}).toPass();
 	}
 
 	getInvitations() {
@@ -119,43 +113,22 @@ export class InvitationsPageObject {
 	}
 
 	async acceptInvitation() {
-		// Only log in debug mode to avoid Biome linting errors
-		if (process.env.DEBUG) {
-			process.stdout.write("Accepting invitation...\n");
-		}
+		console.log("Accepting invitation...");
 
-		// Wait for page to be fully loaded before interaction
-		await waitForNetworkIdleWithFallback(this.page);
-		await this.page.waitForSelector('[data-test="join-team-form"]', {
-			state: "visible",
-			timeout: process.env.CI ? 20000 : 10000,
+		const click = this.page
+			.locator('[data-test="join-team-form"] button[type="submit"]')
+			.click();
+
+		const response = this.page.waitForResponse((response) => {
+			return (
+				response.url().includes("/join") &&
+				response.request().method() === "POST"
+			);
 		});
 
-		const submitButton = this.page.locator(
-			'[data-test="join-team-form"] button[type="submit"]',
-		);
+		await Promise.all([click, response]);
 
-		// Ensure button is enabled before clicking
-		await expect(submitButton).toBeEnabled({ timeout: 5000 });
-
-		// Use Promise.all with proper error handling
-		const [response] = await Promise.all([
-			this.page.waitForResponse((response) => {
-				return (
-					response.url().includes("/join") &&
-					response.request().method() === "POST" &&
-					response.status() === 200
-				);
-			}),
-			submitButton.click(),
-		]);
-
-		// Wait for redirect after successful join
-		await this.page.waitForURL("**/home/**", { timeout: 10000 });
-
-		if (process.env.DEBUG) {
-			process.stdout.write(`Join response status: ${response.status()}\n`);
-		}
+		console.log("Invitation accepted");
 	}
 
 	private getInviteForm() {

@@ -1,7 +1,11 @@
 # @kit/analytics Package
 
+<<<<<<< HEAD
 Analytics package providing a unified interface for tracking events, page views, and user identification
 across multiple analytics providers.
+=======
+Analytics package providing a unified interface for tracking events, page views, and user identification across multiple analytics providers.
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Architecture
 
@@ -103,4 +107,8 @@ await analytics.identify(user.id, {
   created_at: user.created_at,
   plan: user.plan,
 });
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

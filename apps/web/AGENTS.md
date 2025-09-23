@@ -6,7 +6,11 @@ This file contains instructions specific to the main Next.js web application.
 
 ### Route Organization
 
+<<<<<<< HEAD
 ```text
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 app/
 ├── (marketing)/          # Public pages (landing, blog, docs)
 ├── (auth)/              # Authentication pages
@@ -36,6 +40,32 @@ Example:
 - Team server utils: `app/home/[account]/_lib/server/`
 - Marketing components: `app/(marketing)/_components/`
 
+<<<<<<< HEAD
+=======
+The `[account]` parameter is the `accounts.slug` property, not the ID
+
+## React Server Components - Async Pattern
+
+**CRITICAL**: In Next.js 15, always await params directly in async server components:
+
+```typescript
+// ❌ WRONG - Don't use React.use() in async functions
+async function Page({ params }: Props) {
+  const { account } = use(params);
+}
+
+// ✅ CORRECT - await params directly in Next.js 15
+async function Page({ params }: Props) {
+  const { account } = await params; // ✅ Server component pattern
+}
+
+// ✅ CORRECT - "use" in non-async functions in Next.js 15
+function Page({ params }: Props) {
+  const { account } = use(params); // ✅ Server component pattern
+}
+```
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Data Fetching Strategy
 
 **Quick Decision Framework:**
@@ -81,7 +111,11 @@ function InteractiveNotes() {
 
 ### Performance Optimization - Parallel Data Fetching 🚀
 
+<<<<<<< HEAD
 #### Sequential (Slow) Pattern ❌
+=======
+**Sequential (Slow) Pattern ❌**
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ```typescript
 async function SlowDashboard() {
@@ -92,7 +126,11 @@ async function SlowDashboard() {
 }
 ```
 
+<<<<<<< HEAD
 #### Parallel (Optimized) Pattern ✅
+=======
+**Parallel (Optimized) Pattern ✅**
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ```typescript
 async function FastDashboard() {
@@ -182,7 +220,14 @@ import { Trans } from '@kit/ui/trans';
 2. Create translation files in `public/locales/[new-language]/`
 3. Copy structure from English files
 
+<<<<<<< HEAD
 Translation files: `public/locales/<locale>/<namespace>.json`
+=======
+### Adding new namespaces
+
+1. Translation files: `public/locales/<locale>/<namespace>.json`
+2. Add namespace to `defaultI18nNamespaces` in `apps/web/lib/i18n/i18n.settings.ts`
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Workspace Contexts 🏢
 
@@ -238,6 +283,58 @@ export const POST = enhanceRouteHandler(
 );
 ```
 
+<<<<<<< HEAD
+=======
+## Navigation Menu Configuration 🗺️
+
+### Adding Sidebar Menu Items
+
+**Config Files:**
+
+- Personal: `config/personal-account-navigation.config.tsx`
+- Team: `config/team-account-navigation.config.tsx`
+
+**Add to Personal Navigation:**
+
+```typescript
+{
+  label: 'common:routes.yourFeature',
+  path: pathsConfig.app.yourFeaturePath,
+  Icon: <YourIcon className="w-4" />,
+  end: true,
+},
+```
+
+**Add to Team Navigation:**
+
+```typescript
+{
+  label: 'common:routes.yourTeamFeature',
+  path: createPath(pathsConfig.app.yourTeamFeaturePath, account),
+  Icon: <YourIcon className="w-4" />,
+},
+```
+
+**Add Paths:**
+
+```typescript
+// config/paths.config.ts
+app: {
+  yourFeaturePath: '/home/your-feature',
+  yourTeamFeaturePath: '/home/[account]/your-feature',
+}
+```
+
+**Add Translations:**
+
+```json
+// public/locales/en/common.json
+"routes": {
+  "yourFeature": "Your Feature"
+}
+```
+
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Security Guidelines 🛡️
 
 ### Authentication & Authorization
@@ -252,6 +349,7 @@ export const POST = enhanceRouteHandler(
 - **Never pass sensitive data** to Client Components
 - **Never expose server environment variables** to client (unless prefixed with NEXT_PUBLIC)
 - Always validate user input
+<<<<<<< HEAD
 
 ### Super Admin Protection
 
@@ -262,3 +360,5 @@ import { AdminGuard } from '@kit/admin/components/admin-guard';
 
 export default AdminGuard(AdminPageComponent);
 ```
+=======
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

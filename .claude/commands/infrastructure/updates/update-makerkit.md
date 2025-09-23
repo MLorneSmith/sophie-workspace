@@ -645,7 +645,6 @@ Safely synchronize your project with the latest Makerkit framework updates using
 **Key Features:**
 - Smart sync detection (handles diverged branches correctly)
 - Interactive confirmation of upstream changes
-- 95% automated conflict resolution
 - Parallel validation suite
 - Progress tracking with TodoWrite
 - Comprehensive update reports

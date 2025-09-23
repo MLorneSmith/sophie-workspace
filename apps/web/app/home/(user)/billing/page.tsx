@@ -1,3 +1,7 @@
+import type { z } from "zod";
+
+import type { PlanSchema, ProductSchema } from "@kit/billing";
+import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -34,6 +38,17 @@ async function PersonalAccountBillingPage() {
 	const [subscription, order, customerId] =
 		await loadPersonalAccountBillingPageData(user.id);
 
+	const subscriptionProductPlan = subscription
+		? await getProductPlan(
+				subscription.items[0]?.variant_id,
+				subscription.currency,
+			)
+		: undefined;
+
+	const orderProductPlan = order
+		? await getProductPlan(order.items[0]?.variant_id, order.currency)
+		: undefined;
+
 	const hasBillingData = subscription || order;
 
 	return (
@@ -55,7 +70,8 @@ async function PersonalAccountBillingPage() {
 									return (
 										<CurrentSubscriptionCard
 											subscription={subscription}
-											config={billingConfig}
+											product={subscriptionProductPlan?.product}
+											plan={subscriptionProductPlan?.plan}
 										/>
 									);
 								}}
@@ -66,7 +82,8 @@ async function PersonalAccountBillingPage() {
 									return (
 										<CurrentLifetimeOrderCard
 											order={order}
-											config={billingConfig}
+											product={orderProductPlan?.product}
+											plan={orderProductPlan?.plan}
 										/>
 									);
 								}}
@@ -91,4 +108,21 @@ function CustomerBillingPortalForm() {
 			<BillingPortalCard />
 		</form>
 	);
+}
+
+async function getProductPlan(
+	variantId: string | undefined,
+	currency: string,
+): Promise<
+	| {
+			product: ProductSchema;
+			plan: z.infer<typeof PlanSchema>;
+	  }
+	| undefined
+> {
+	if (!variantId) {
+		return undefined;
+	}
+
+	return resolveProductPlan(billingConfig, variantId, currency);
 }

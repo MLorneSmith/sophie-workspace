@@ -18,7 +18,11 @@ import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 ```
 
+<<<<<<< HEAD
 NB: imports must follow the convention "@kit/ui/[name]", no matter the folder they're placed in
+=======
+NB: imports must follow the convention "@kit/ui/<name>", no matter the folder they're placed in
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ## Styling Guidelines
 
@@ -301,4 +305,8 @@ The UI components automatically support dark mode through CSS variables. Use sem
 <div className="bg-white text-black border-gray-200">
   <p className="text-gray-500">Secondary text</p>
 </div>
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 02e2502dcce1004aed05877f26221daf10864684

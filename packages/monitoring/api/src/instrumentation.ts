@@ -1,8 +1,8 @@
 import { createRegistry } from "@kit/shared/registry";
 
 import {
-	getMonitoringProvider,
 	type MonitoringProvider,
+	getMonitoringProvider,
 } from "./get-monitoring-provider";
 
 // Define a type for the instrumentation registration implementation

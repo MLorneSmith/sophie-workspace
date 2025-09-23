@@ -1,7 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Database } from "@kit/supabase/database";
+import type { ColumnDef } from "@tanstack/react-table";
+import { EllipsisVertical } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import type { Tables } from "@kit/supabase/database";
 import { Button } from "@kit/ui/button";
 import {
 	DropdownMenu,
@@ -24,19 +32,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@kit/ui/select";
-import type { ColumnDef } from "@tanstack/react-table";
-import { EllipsisVertical } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";
 import { AdminDeleteUserDialog } from "./admin-delete-user-dialog";
 import { AdminImpersonateUserDialog } from "./admin-impersonate-user-dialog";
 import { AdminResetPasswordDialog } from "./admin-reset-password-dialog";
 
-type Account = Database["public"]["Tables"]["accounts"]["Row"];
+type Account = Tables<"accounts">;
 
 const FiltersSchema = z.object({
 	type: z.enum(["all", "team", "personal"]),
@@ -166,6 +168,7 @@ function getColumns(): ColumnDef<Account>[] {
 			cell: ({ row }) => {
 				return (
 					<Link
+						prefetch={false}
 						className={"hover:underline"}
 						href={`/admin/accounts/${row.original.id}`}
 					>

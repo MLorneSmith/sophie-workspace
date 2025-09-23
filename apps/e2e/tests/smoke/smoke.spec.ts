@@ -137,10 +137,10 @@ test.describe("Smoke Tests @smoke", () => {
 	});
 
 	test("security headers are present @smoke", async ({ page }) => {
-		// Add timeout to prevent hanging
+		// Use networkidle for better stability on first load
 		const response = await page.goto("/", {
-			timeout: 10000, // 10 second timeout
-			waitUntil: "domcontentloaded", // Don't wait for all resources
+			timeout: 15000, // Increased timeout for initial load
+			waitUntil: "networkidle", // Wait for network to be idle for better stability
 		});
 		const headers = response?.headers() || {};
 

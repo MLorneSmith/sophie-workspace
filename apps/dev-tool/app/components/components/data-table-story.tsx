@@ -1,6 +1,9 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { faker } from "@faker-js/faker";
+
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import {
@@ -15,16 +18,15 @@ import {
 	type ColumnDef,
 	type ColumnPinningState,
 	DataTable,
+	type VisibilityState,
 	flexRender,
 	useColumnManagement,
-	type VisibilityState,
 } from "@kit/ui/enhanced-data-table";
 import { Label } from "@kit/ui/label";
 import { Separator } from "@kit/ui/separator";
 import { Switch } from "@kit/ui/switch";
 import { TableCell } from "@kit/ui/table";
 import { cn } from "@kit/ui/utils";
-import { useMemo, useState } from "react";
 
 import { generatePropsString, useStoryControls } from "../lib/story-utils";
 import { ComponentStoryLayout } from "./story-layout";
@@ -226,6 +228,29 @@ export function DataTableStory() {
 	// Row selection state
 	const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
+	// Example-specific states moved to top level
+	const exampleColumnManagement = useColumnManagement({
+		defaultVisibility: {
+			name: true,
+			email: true,
+			status: true,
+			role: true,
+			department: true,
+			salary: true,
+		},
+		defaultPinning: { left: [], right: [] },
+	});
+
+	const [exampleRowSelection1, setExampleRowSelection1] = useState<
+		Record<string, boolean>
+	>({});
+	const [exampleRowSelection2, setExampleRowSelection2] = useState<
+		Record<string, boolean>
+	>({});
+	const [paginationRowSelection, setPaginationRowSelection] = useState<
+		Record<string, boolean>
+	>({});
+
 	// Column management with checkbox always pinned left when selection is enabled
 	const columnManagement = useColumnManagement({
 		defaultVisibility: {
@@ -360,30 +385,6 @@ export function DataTableStory() {
 	}, [controls.enableSelection, controls.enableSorting]);
 
 	const currentPageData = data.slice(0, controls.pageSize);
-
-	// Example-specific column management state (moved from renderExamples)
-	const exampleColumnManagement = useColumnManagement({
-		defaultVisibility: {
-			name: true,
-			email: true,
-			status: true,
-			role: true,
-			department: true,
-			salary: true,
-		},
-		defaultPinning: { left: [], right: [] },
-	});
-
-	// Example-specific row selection states (moved from renderExamples)
-	const [exampleRowSelection1, setExampleRowSelection1] = useState<
-		Record<string, boolean>
-	>({});
-	const [exampleRowSelection2, setExampleRowSelection2] = useState<
-		Record<string, boolean>
-	>({});
-	const [paginationRowSelection, setPaginationRowSelection] = useState<
-		Record<string, boolean>
-	>({});
 
 	const renderPreview = () => {
 		return (
@@ -721,7 +722,9 @@ export function DataTableStory() {
 								pageSize={5}
 								pageCount={1}
 								getRowId={(row) => row.id}
-								onClick={() => {}}
+								onClick={(_row) => {
+									// Handle row click - in real app might navigate to detail page
+								}}
 							/>
 							<div className="text-muted-foreground text-xs">
 								💡 Click on any row to see the onClick handler in action. In a
@@ -748,7 +751,7 @@ export function DataTableStory() {
 								{["name", "email", "role", "department"].map((columnId) => (
 									<div key={columnId} className="flex items-center gap-2">
 										<Checkbox
-											id={`visibility-${columnId}`}
+											id={`column-${columnId}`}
 											checked={exampleColumnManagement.isColumnVisible(
 												columnId,
 											)}
@@ -760,8 +763,8 @@ export function DataTableStory() {
 											}
 										/>
 										<label
-											htmlFor={`visibility-${columnId}`}
-											className="capitalize"
+											htmlFor={`column-${columnId}`}
+											className="capitalize cursor-pointer"
 										>
 											{columnId}
 										</label>
@@ -1071,7 +1074,9 @@ export function DataTableStory() {
 									sticky={true}
 									rowSelection={exampleRowSelection2}
 									onRowSelectionChange={setExampleRowSelection2}
-									onRowClick={(_row) => {}}
+									onRowClick={(_row) => {
+										// Log row click in full-screen layout
+									}}
 									onRowDoubleClick={(row) => {
 										alert(`Double-click: Quick edit for ${row.original.name}`);
 									}}
@@ -1168,11 +1173,11 @@ export function DataTableStory() {
 										const rating = row.getValue("rating") as number;
 										return (
 											<div className="flex items-center gap-1">
-												{Array.from({ length: 5 }).map((_, i) => (
+												{[1, 2, 3, 4, 5].map((starNumber) => (
 													<span
-														key={`rating-star-${row.id}-${i}`}
+														key={`rating-star-${starNumber}`}
 														className={
-															i < rating
+															starNumber <= rating
 																? "text-yellow-400"
 																: "text-muted-foreground"
 														}
@@ -1446,7 +1451,9 @@ export function DataTableStory() {
 											`Right-click context menu for ${row.original.name}:\n\n${actions.join("\n")}`,
 										);
 									}}
-									onRowClick={(_row) => {}}
+									onRowClick={(_row) => {
+										// Handle row click - in real app might navigate to detail
+									}}
 								/>
 							</div>
 

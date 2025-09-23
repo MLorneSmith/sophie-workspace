@@ -1,8 +1,10 @@
 import "server-only";
 
-import type { Database } from "@kit/supabase/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { z } from "zod";
+
+import type { Database } from "@kit/supabase/database";
 
 export function createAdminAuthUserService(
 	client: SupabaseClient<Database>,
@@ -15,7 +17,6 @@ export function createAdminAuthUserService(
  * @name AdminAuthUserService
  * @description Service for performing admin actions on users in the system.
  * This service only interacts with the Supabase Auth Admin API.
- * Test change to trigger workflow validation for issue #224.
  */
 class AdminAuthUserService {
 	constructor(
@@ -152,7 +153,7 @@ class AdminAuthUserService {
 	}
 
 	private async setBanDuration(userId: string, banDuration: string) {
-		await this.adminClient.auth.admin.updateUserById(userId, {
+		return this.adminClient.auth.admin.updateUserById(userId, {
 			ban_duration: banDuration,
 		});
 	}
