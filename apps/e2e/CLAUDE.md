@@ -21,7 +21,7 @@ export class AuthPageObject {
     await this.page.click('[data-test="account-dropdown-sign-out"]');
   }
 }
-```
+```text
 
 ### Reliability Patterns
 
@@ -49,7 +49,7 @@ await expect(async () => {
 }).toPass({
   intervals: [500, 2500, 5000, 7500, 10_000, 15_000, 20_000]
 });
-```
+```text
 
 ### Test Data Management
 
@@ -59,7 +59,7 @@ createRandomEmail() {
   const value = Math.random() * 10000000000000;
   return `${value.toFixed(0)}@makerkit.dev`;
 }
-```
+```text
 
 **User Bootstrapping**: Use `bootstrapUser()` for consistent test user creation:
 ```typescript
@@ -68,7 +68,7 @@ await auth.bootstrapUser({
   password: 'testingpassword',
   name: 'Test User'
 });
-```
+```text
 
 This method creates a user with an API call.
 
@@ -79,7 +79,7 @@ await auth.loginAsUser({
   email: 'test@example.com',
   password: 'testingpassword',
 });
-```
+```text
 
 ### Test Selectors
 
@@ -95,7 +95,7 @@ await this.page.getByTestId('submit-button').click();
 // ❌ AVOID - Fragile selectors
 await this.page.click('.btn-primary');
 await this.page.click('button:nth-child(2)');
-```
+```text
 
 ### Test Organization
 

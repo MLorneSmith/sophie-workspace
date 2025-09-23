@@ -6,23 +6,15 @@ This file contains guidance for working with database schemas, migrations, and S
 
 Schemas are organized in numbered files in the `schemas/` directory. Numbers are used to sort dependencies.
 
-<<<<<<< HEAD
-## Schema Development Workflow
-=======
 Migrations are generated from schemas. If creating a new schema, the migration can be created using the exact same content.
 
 If modifying an existing migration, use the `diff` command:
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 ### 1. Creating New Schema Files
 
 ```bash
 # Create new schema file
-<<<<<<< HEAD
-touch schemas/15-my-new-feature.sql
-=======
 touch apps/web/supabase/schemas/15-my-new-feature.sql
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 
 # Apply changes and create migration
 pnpm --filter web run supabase:db:diff -f my-new-feature
@@ -32,13 +24,10 @@ pnpm supabase:web:reset
 
 # Generate TypeScript types
 pnpm supabase:web:typegen
-```
+```text
 
-<<<<<<< HEAD
-=======
 Verify the diff command generated the same content as the schema; if not, take steps to fix the migration.
 
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ### 2. Modifying Existing Schemas
 
 ```bash
@@ -50,13 +39,10 @@ pnpm --filter web run supabase:db:diff -f update-accounts
 
 # Apply and test
 pnpm supabase:web:reset
-<<<<<<< HEAD
-=======
 
 # After resetting
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 pnpm supabase:web:typegen
-```
+```text
 
 ## Security First Patterns
 
@@ -65,7 +51,7 @@ pnpm supabase:web:typegen
 ```sql
 ALTER TYPE public.app_permissions ADD VALUE 'notes.manage';
 COMMIT;
-```
+```text
 
 ### Table Creation with RLS
 
@@ -111,7 +97,7 @@ create policy "notes_delete" on public.notes for delete
   to authenticated using (
     public.has_permission(auth.uid(), account_id, 'notes.manage'::app_permissions)
   );
-```
+```text
 
 ### Storage Bucket Policies
 
@@ -143,7 +129,7 @@ with check (
     )
   )
 );
-```
+```text
 
 ## Function Creation Patterns
 
@@ -181,7 +167,7 @@ $$;
 
 -- Grant to authenticated users only
 grant execute on function public.create_team_account(text) to authenticated;
-```
+```text
 
 ### Security Invoker Functions (Safer)
 
@@ -203,7 +189,7 @@ end;
 $$;
 
 grant execute on function public.get_account_notes(uuid) to authenticated;
-```
+```text
 
 ### Safe Column Additions
 
@@ -218,7 +204,7 @@ add column if not exists is_verified boolean default false not null;
 
 -- Unsafe: Adding non-null columns without defaults
 -- alter table public.accounts add column required_field text not null; -- DON'T DO THIS
-```
+```text
 
 ### Index Management
 
@@ -229,7 +215,7 @@ on public.accounts (created_at desc);
 
 -- Drop unused indexes
 drop index if exists ix_old_unused_index;
-```
+```text
 
 ## Testing Database Changes
 
@@ -241,52 +227,8 @@ pnpm supabase:web:reset
 
 # Test your changes
 pnpm run supabase:web:test
-```
+```text
 
-<<<<<<< HEAD
-## Type Generation
-
-### After Schema Changes
-
-```bash
-# Generate types after any schema changes
-pnpm supabase:web:typegen
-# Types are generated to src/lib/supabase/database.types.ts
-
-# Reset DB
-pnpm supabase:web:reset
-```
-
-### Using Generated Types
-
-```typescript
-import { Enums, Tables } from '@kit/supabase/database';
-
-// Table types
-type Account = Tables<'accounts'>;
-type Note = Tables<'notes'>;
-
-// Enum types
-type AppPermission = Enums<'app_permissions'>;
-
-// Insert types
-type AccountInsert = Tables<'accounts'>['Insert'];
-type AccountUpdate = Tables<'accounts'>['Update'];
-
-// Use in functions
-async function createNote(data: Tables<'notes'>['Insert']) {
-  const { data: note, error } = await supabase
-    .from('notes')
-    .insert(data)
-    .select()
-    .single();
-
-  return note;
-}
-```
-
-=======
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
 ## Common Schema Patterns
 
 ### Audit Trail
@@ -312,4 +254,4 @@ pnpm --filter web run supabase:db:diff -f migration-name
 
 # Apply specific migration
 pnpm --filter web supabase migration up --include-schemas public
-```
+```text

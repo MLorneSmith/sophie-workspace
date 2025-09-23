@@ -15,7 +15,7 @@ import { If } from '@kit/ui/if';
 import { ProfileAvatar } from '@kit/ui/profile-avatar';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
-```
+```text
 
 ## Styling Guidelines
 
@@ -33,7 +33,7 @@ function MyComponent({ className }) {
     </div>
   );
 }
-```
+```text
 
 ### Conditional Rendering
 
@@ -50,14 +50,14 @@ import { If } from '@kit/ui/if';
 <If condition={error}>
   {(err) => <ErrorMessage error={err} />}
 </If>
-```
+```text
 
 ### Testing Attributes
 
 ```tsx
 <button data-test="submit-button">Submit</button>
 <div data-test="user-profile" data-user-id={user.id}>Profile</div>
-```
+```text
 
 ## Forms with React Hook Form & Zod
 
@@ -83,7 +83,7 @@ const onSubmit = (data) => {
     }).unwrap();
   });
 };
-```
+```text
 
 ### Guidelines
 
@@ -116,7 +116,7 @@ import { Trans } from '@kit/ui/trans';
     TermsLink: <a href="/terms" className="underline" />,
   }}
 />
-```
+```text
 
 ## Toast Notifications
 
@@ -135,7 +135,7 @@ await toast.promise(asyncFunction(), {
   success: 'Done!',
   error: 'Failed!',
 });
-```
+```text
 
 ## Common Component Patterns
 
@@ -147,7 +147,7 @@ import { Spinner } from '@kit/ui/spinner';
 <If condition={isLoading} fallback={<Content />}>
   <Spinner className="h-4 w-4" />
 </If>
-```
+```text
 
 ### Error Handling
 
@@ -162,7 +162,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
     <AlertDescription>{error}</AlertDescription>
   </Alert>
 </If>
-```
+```text
 
 ### Button Patterns
 
@@ -186,7 +186,7 @@ import { Button } from '@kit/ui/button';
 <Button variant="destructive">Delete</Button>
 <Button variant="outline">Cancel</Button>
 <Button variant="ghost">Ghost</Button>
-```
+```text
 
 ### Card Layouts
 
@@ -202,7 +202,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@kit/
     Card content goes here
   </CardContent>
 </Card>
-```
+```text
 
 ## Form Components
 
@@ -226,7 +226,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@kit/u
     </FormItem>
   )}
 />
-```
+```text
 
 ### Select Components
 
@@ -254,7 +254,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
     </FormItem>
   )}
 />
-```
+```text
 
 ## Accessibility Guidelines
 
@@ -270,7 +270,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 >
   <X className="h-4 w-4" />
 </button>
-```
+```text
 
 ## Dark Mode Support
 
@@ -286,8 +286,4 @@ The UI components automatically support dark mode through CSS variables. Use sem
 <div className="bg-white text-black border-gray-200">
   <p className="text-gray-500">Secondary text</p>
 </div>
-<<<<<<< HEAD
-```
-=======
-```
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text

@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-```text
-#### Sequential (Slow) Pattern ❌
-#### Parallel (Optimized) Pattern ✅
-### Database Performance Guidelines 🚀
-
-**CRITICAL**: Always use performant RLS patterns to avoid query performance degradation.
-
-```sql
--- ❌ AVOID: Direct auth function calls (causes re-evaluation per row)
-user_id = auth.uid()
-
--- ✅ USE: Subquery wrapper (evaluates once per query)
-user_id = (select auth.uid())
-```
-
-**Performance Impact**: The subquery pattern can improve query performance by 10-100x on large datasets.
-
-**Reference**: See `/apps/web/supabase/CLAUDE.md` for complete RLS performance guidelines.
-=======
 # Web Application Instructions
 
 This file contains instructions specific to the main Next.js web application.
@@ -26,7 +6,7 @@ This file contains instructions specific to the main Next.js web application.
 
 ### Route Organization
 
-```
+```text
 app/
 ├── (marketing)/          # Public pages (landing, blog, docs)
 ├── (auth)/              # Authentication pages
@@ -35,7 +15,7 @@ app/
 │   └── [account]/       # Team account context ([account] = team slug)
 ├── admin/               # Super admin section
 └── api/                 # API routes
-```
+```text
 
 Key Examples:
 
@@ -77,7 +57,7 @@ async function Page({ params }: Props) {
 function Page({ params }: Props) {
   const { account } = use(params); // ✅ Server component pattern
 }
-```
+```text
 
 ## Data Fetching Strategy
 
@@ -99,7 +79,7 @@ async function NotesPage() {
   if (error) return <ErrorMessage error={error} />;
   return <NotesList notes={data} />;
 }
-```
+```text
 
 **Key Insight**: Server Components automatically inherit RLS protection - no additional authorization checks needed!
 
@@ -120,7 +100,7 @@ function InteractiveNotes() {
   if (isLoading) return <Spinner />;
   return <NotesList notes={data} />;
 }
-```
+```text
 
 ### Performance Optimization - Parallel Data Fetching 🚀
 
@@ -133,7 +113,7 @@ async function SlowDashboard() {
   const metrics = await loadMetrics();
   // Total time: sum of all requests
 }
-```
+```text
 
 **Parallel (Optimized) Pattern ✅**
 
@@ -149,7 +129,7 @@ async function FastDashboard() {
 
   return <Dashboard user={userData} notifications={notifications} metrics={metrics} />;
 }
-```
+```text
 
 **Performance Impact**: Parallel fetching can reduce page load time by 60-80% for multi-data pages!
 
@@ -167,7 +147,7 @@ async function getUserNotes(userId: string) {
 
   return data;
 }
-```
+```text
 
 ### Admin Client Usage (Dangerous - Rare Cases Only) ⚠️
 
@@ -194,9 +174,25 @@ async function adminGetUserNotes(userId: string) {
 
   return data;
 }
-```
+```text
 
 **Rule of thumb**: If using standard Supabase client, trust RLS. If using admin client, validate everything manually.
+
+## Database Performance Guidelines 🚀
+
+**CRITICAL**: Always use performant RLS patterns to avoid query performance degradation.
+
+```sql
+-- ❌ AVOID: Direct auth function calls (causes re-evaluation per row)
+user_id = auth.uid()
+
+-- ✅ USE: Subquery wrapper (evaluates once per query)
+user_id = (select auth.uid())
+```text
+
+**Performance Impact**: The subquery pattern can improve query performance by 10-100x on large datasets.
+
+**Reference**: See `/apps/web/supabase/CLAUDE.md` for complete RLS performance guidelines.
 
 ## Internationalization
 
@@ -217,7 +213,7 @@ import { Trans } from '@kit/ui/trans';
     TermsLink: <a href="/terms" className="underline" />,
   }}
 />
-```
+```text
 
 ### Adding New Languages
 
@@ -241,7 +237,7 @@ function PersonalComponent() {
   const { user, account } = useUserWorkspace();
   // Personal account data
 }
-```
+```text
 
 Context provider: `@packages/features/accounts/src/components/user-workspace-context-provider.tsx`
 
@@ -254,7 +250,7 @@ function TeamComponent() {
   const { account, user, accounts } = useTeamAccountWorkspace();
   // Team account data with permissions
 }
-```
+```text
 
 Context provider: `@packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx`
 
@@ -282,7 +278,7 @@ export const POST = enhanceRouteHandler(
     schema: ZodSchema,
   },
 );
-```
+```text
 
 ## Navigation Menu Configuration 🗺️
 
@@ -302,7 +298,7 @@ export const POST = enhanceRouteHandler(
   Icon: <YourIcon className="w-4" />,
   end: true,
 },
-```
+```text
 
 **Add to Team Navigation:**
 
@@ -312,7 +308,7 @@ export const POST = enhanceRouteHandler(
   path: createPath(pathsConfig.app.yourTeamFeaturePath, account),
   Icon: <YourIcon className="w-4" />,
 },
-```
+```text
 
 **Add Paths:**
 
@@ -322,7 +318,7 @@ app: {
   yourFeaturePath: '/home/your-feature',
   yourTeamFeaturePath: '/home/[account]/your-feature',
 }
-```
+```text
 
 **Add Translations:**
 
@@ -331,7 +327,7 @@ app: {
 "routes": {
   "yourFeature": "Your Feature"
 }
-```
+```text
 
 ## Security Guidelines 🛡️
 
@@ -347,4 +343,3 @@ app: {
 - **Never pass sensitive data** to Client Components
 - **Never expose server environment variables** to client (unless prefixed with NEXT_PUBLIC)
 - Always validate user input
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684

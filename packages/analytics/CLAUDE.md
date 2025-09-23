@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-Analytics package providing a unified interface for tracking events, page views, and user identification
-across multiple analytics providers.
-=======
 # @kit/analytics Package
 
-Analytics package providing a unified interface for tracking events, page views, and user identification across multiple analytics providers.
+Analytics package providing a unified interface for tracking events, page views, and user identification across
+multiple analytics providers.
 
 ## Architecture
 
@@ -23,7 +20,7 @@ import { analytics } from '@kit/analytics';
 
 // Server-side
 import { analytics } from '@kit/analytics/server';
-```
+```text
 
 ### Core Methods
 
@@ -42,7 +39,7 @@ await analytics.identify('user123', {
   email: 'user@example.com',
   plan: 'premium' 
 });
-```
+```text
 
 Page views and user identification are handled by the plugin by default.
 
@@ -70,7 +67,7 @@ class CustomAnalyticsService implements AnalyticsService {
     // Identify user implementation
   }
 }
-```
+```text
 
 ## Default Behavior
 
@@ -106,5 +103,4 @@ await analytics.identify(user.id, {
   created_at: user.created_at,
   plan: user.plan,
 });
-```
->>>>>>> 02e2502dcce1004aed05877f26221daf10864684
+```text

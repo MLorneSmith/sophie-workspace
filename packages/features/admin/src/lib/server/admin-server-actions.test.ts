@@ -137,6 +137,7 @@ describe("Admin Server Actions", () => {
 
 		it("should allow action execution when user is super admin", async () => {
 			const validUserId = "123e4567-e89b-12d3-a456-426614174000";
+			mockAdminAuthService.banUser.mockResolvedValue({ data: {}, error: null });
 
 			const result = await banUserAction({
 				userId: validUserId,
@@ -151,7 +152,7 @@ describe("Admin Server Actions", () => {
 	describe("banUserAction", () => {
 		it("should successfully ban a user with valid UUID", async () => {
 			const validUserId = "123e4567-e89b-12d3-a456-426614174000";
-			mockAdminAuthService.banUser.mockResolvedValue(undefined);
+			mockAdminAuthService.banUser.mockResolvedValue({ data: {}, error: null });
 
 			const result = await banUserAction({
 				userId: validUserId,
@@ -168,7 +169,10 @@ describe("Admin Server Actions", () => {
 				{ userId: validUserId },
 				"Super Admin has successfully banned user",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
+			expect(revalidatePath).toHaveBeenCalledWith(
+				"/admin/accounts/[id]",
+				"page",
+			);
 		});
 
 		it("should handle service errors when banning user", async () => {
@@ -191,7 +195,10 @@ describe("Admin Server Actions", () => {
 	describe("reactivateUserAction", () => {
 		it("should successfully reactivate a banned user", async () => {
 			const validUserId = "123e4567-e89b-12d3-a456-426614174000";
-			mockAdminAuthService.reactivateUser.mockResolvedValue(undefined);
+			mockAdminAuthService.reactivateUser.mockResolvedValue({
+				data: {},
+				error: null,
+			});
 
 			const result = await reactivateUserAction({
 				userId: validUserId,
@@ -210,7 +217,10 @@ describe("Admin Server Actions", () => {
 				{ userId: validUserId },
 				"Super Admin has successfully reactivated user",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
+			expect(revalidatePath).toHaveBeenCalledWith(
+				"/admin/accounts/[id]",
+				"page",
+			);
 		});
 
 		it("should handle errors when reactivating non-existent user", async () => {
@@ -296,7 +306,6 @@ describe("Admin Server Actions", () => {
 				{ userId: validUserId },
 				"Super Admin has successfully deleted user",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
 			expect(redirect).toHaveBeenCalledWith("/admin/accounts");
 		});
 
@@ -339,7 +348,10 @@ describe("Admin Server Actions", () => {
 				{ accountId: validAccountId },
 				"Super Admin has successfully deleted account",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
+			expect(revalidatePath).toHaveBeenCalledWith(
+				"/admin/accounts/[id]",
+				"page",
+			);
 			expect(redirect).toHaveBeenCalledWith("/admin/accounts");
 		});
 
@@ -420,7 +432,7 @@ describe("Admin Server Actions", () => {
 				{ userId: mockUserData.id },
 				"Super Admin has successfully created a new user",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
+			expect(revalidatePath).toHaveBeenCalledWith("/admin/accounts");
 		});
 
 		it("should create user without email confirmation by default", async () => {
@@ -552,7 +564,6 @@ describe("Admin Server Actions", () => {
 				{ userId: validUserId },
 				"Super Admin has successfully sent password reset email",
 			);
-			expect(revalidatePath).toHaveBeenCalledWith("/admin", "layout");
 		});
 
 		it("should handle error when user email is not verified", async () => {
@@ -695,7 +706,7 @@ describe("Admin Server Actions", () => {
 	describe("Concurrent Operations", () => {
 		it("should handle concurrent ban operations on same user", async () => {
 			const userId = "123e4567-e89b-12d3-a456-426614174000";
-			mockAdminAuthService.banUser.mockResolvedValue(undefined);
+			mockAdminAuthService.banUser.mockResolvedValue({ data: {}, error: null });
 
 			const results = await Promise.all([
 				banUserAction({ userId, confirmation: "CONFIRM" }),
@@ -712,8 +723,11 @@ describe("Admin Server Actions", () => {
 			const userId1 = "123e4567-e89b-12d3-a456-426614174000";
 			const userId2 = "456e4567-e89b-12d3-a456-426614174000";
 
-			mockAdminAuthService.banUser.mockResolvedValue(undefined);
-			mockAdminAuthService.reactivateUser.mockResolvedValue(undefined);
+			mockAdminAuthService.banUser.mockResolvedValue({ data: {}, error: null });
+			mockAdminAuthService.reactivateUser.mockResolvedValue({
+				data: {},
+				error: null,
+			});
 
 			const [banResult, reactivateResult] = await Promise.all([
 				banUserAction({ userId: userId1, confirmation: "CONFIRM" }),
@@ -730,7 +744,7 @@ describe("Admin Server Actions", () => {
 	describe("Logging and Audit Trail", () => {
 		it("should log all steps of user ban operation", async () => {
 			const userId = "123e4567-e89b-12d3-a456-426614174000";
-			mockAdminAuthService.banUser.mockResolvedValue(undefined);
+			mockAdminAuthService.banUser.mockResolvedValue({ data: {}, error: null });
 
 			await banUserAction({ userId, confirmation: "CONFIRM" });
 

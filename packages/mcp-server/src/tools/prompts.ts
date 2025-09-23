@@ -23,44 +23,43 @@ interface PromptTemplate {
 	examples?: string[];
 }
 
-export class PromptsManager {
-	private static prompts: PromptTemplate[] = [
-		{
-			name: "code_review",
-			title: "Comprehensive Code Review",
-			description:
-				"Analyze code for quality, security, performance, and best practices",
-			category: "code-review",
-			arguments: [
-				{
-					name: "code",
-					description: "The code to review",
-					required: true,
-					type: "text",
-				},
-				{
-					name: "focus_area",
-					description: "Specific area to focus the review on",
-					required: false,
-					type: "enum",
-					options: [
-						"security",
-						"performance",
-						"maintainability",
-						"typescript",
-						"react",
-						"all",
-					],
-				},
-				{
-					name: "severity_level",
-					description: "Minimum severity level for issues to report",
-					required: false,
-					type: "enum",
-					options: ["low", "medium", "high", "critical"],
-				},
-			],
-			template: `Please review the following code with a focus on {{focus_area || 'all aspects'}}.
+const prompts: PromptTemplate[] = [
+	{
+		name: "code_review",
+		title: "Comprehensive Code Review",
+		description:
+			"Analyze code for quality, security, performance, and best practices",
+		category: "code-review",
+		arguments: [
+			{
+				name: "code",
+				description: "The code to review",
+				required: true,
+				type: "text",
+			},
+			{
+				name: "focus_area",
+				description: "Specific area to focus the review on",
+				required: false,
+				type: "enum",
+				options: [
+					"security",
+					"performance",
+					"maintainability",
+					"typescript",
+					"react",
+					"all",
+				],
+			},
+			{
+				name: "severity_level",
+				description: "Minimum severity level for issues to report",
+				required: false,
+				type: "enum",
+				options: ["low", "medium", "high", "critical"],
+			},
+		],
+		template: `Please review the following code with a focus on {{focus_area || 'all aspects'}}.
 
 **Code to Review:**
 \`\`\`
@@ -118,40 +117,40 @@ export class PromptsManager {
 3. **Suggestions:** Concrete improvement recommendations
 4. **Best Practices:** Relevant patterns from the Makerkit codebase
 5. **Security Review:** Any security concerns or improvements`,
-			examples: [
-				"Review a React component for best practices",
-				"Security-focused review of authentication code",
-				"Performance analysis of database queries",
-			],
-		},
-		{
-			name: "component_implementation",
-			title: "Component Implementation Guide",
-			description:
-				"Generate implementation guidance for creating new UI components",
-			category: "development",
-			arguments: [
-				{
-					name: "component_description",
-					description: "Description of the component to implement",
-					required: true,
-					type: "text",
-				},
-				{
-					name: "component_type",
-					description: "Type of component to create",
-					required: true,
-					type: "enum",
-					options: ["shadcn", "makerkit", "page", "form", "table", "modal"],
-				},
-				{
-					name: "features",
-					description: "Specific features or functionality needed",
-					required: false,
-					type: "text",
-				},
-			],
-			template: `Help me implement a {{component_type}} component: {{component_description}}
+		examples: [
+			"Review a React component for best practices",
+			"Security-focused review of authentication code",
+			"Performance analysis of database queries",
+		],
+	},
+	{
+		name: "component_implementation",
+		title: "Component Implementation Guide",
+		description:
+			"Generate implementation guidance for creating new UI components",
+		category: "development",
+		arguments: [
+			{
+				name: "component_description",
+				description: "Description of the component to implement",
+				required: true,
+				type: "text",
+			},
+			{
+				name: "component_type",
+				description: "Type of component to create",
+				required: true,
+				type: "enum",
+				options: ["shadcn", "makerkit", "page", "form", "table", "modal"],
+			},
+			{
+				name: "features",
+				description: "Specific features or functionality needed",
+				required: false,
+				type: "text",
+			},
+		],
+		template: `Help me implement a {{component_type}} component: {{component_description}}
 
 {{#if features}}
 **Required Features:**
@@ -199,38 +198,38 @@ export class PromptsManager {
 - Follow monorepo structure: packages/features/* for feature packages
 - Use established naming conventions and folder organization
 - Import from @kit/* packages appropriately`,
-			examples: [
-				"Create a data table component with sorting and filtering",
-				"Build a multi-step form component",
-				"Design a notification center component",
-			],
-		},
-		{
-			name: "architecture_guidance",
-			title: "Architecture Guidance",
-			description: "Provide architectural recommendations for complex features",
-			category: "architecture",
-			arguments: [
-				{
-					name: "feature_scope",
-					description: "Description of the feature or system to architect",
-					required: true,
-					type: "text",
-				},
-				{
-					name: "scale_requirements",
-					description: "Expected scale and performance requirements",
-					required: false,
-					type: "text",
-				},
-				{
-					name: "constraints",
-					description: "Technical constraints or requirements",
-					required: false,
-					type: "text",
-				},
-			],
-			template: `Provide architectural guidance for: {{feature_scope}}
+		examples: [
+			"Create a data table component with sorting and filtering",
+			"Build a multi-step form component",
+			"Design a notification center component",
+		],
+	},
+	{
+		name: "architecture_guidance",
+		title: "Architecture Guidance",
+		description: "Provide architectural recommendations for complex features",
+		category: "architecture",
+		arguments: [
+			{
+				name: "feature_scope",
+				description: "Description of the feature or system to architect",
+				required: true,
+				type: "text",
+			},
+			{
+				name: "scale_requirements",
+				description: "Expected scale and performance requirements",
+				required: false,
+				type: "text",
+			},
+			{
+				name: "constraints",
+				description: "Technical constraints or requirements",
+				required: false,
+				type: "text",
+			},
+		],
+		template: `Provide architectural guidance for: {{feature_scope}}
 
 {{#if scale_requirements}}
 **Scale Requirements:** {{scale_requirements}}
@@ -275,47 +274,47 @@ export class PromptsManager {
 - Shared utilities in packages/* (ui, auth, billing, etc.)
 - Consistent naming conventions and file structure
 - Proper import patterns from @kit/* packages`,
-			examples: [
-				"Design a real-time notification system",
-				"Architect a file upload and processing system",
-				"Design a reporting and analytics feature",
-			],
-		},
-		{
-			name: "makerkit_feature_implementation",
-			title: "Makerkit Feature Implementation Guide",
-			description:
-				"Complete guide for implementing new features following Makerkit patterns",
-			category: "development",
-			arguments: [
-				{
-					name: "feature_name",
-					description: "Name of the feature to implement",
-					required: true,
-					type: "string",
-				},
-				{
-					name: "feature_type",
-					description: "Type of feature being implemented",
-					required: true,
-					type: "enum",
-					options: [
-						"billing",
-						"auth",
-						"team-management",
-						"data-management",
-						"api",
-						"ui-component",
-					],
-				},
-				{
-					name: "user_stories",
-					description: "User stories or requirements for the feature",
-					required: false,
-					type: "text",
-				},
-			],
-			template: `Implement a {{feature_type}} feature: {{feature_name}}
+		examples: [
+			"Design a real-time notification system",
+			"Architect a file upload and processing system",
+			"Design a reporting and analytics feature",
+		],
+	},
+	{
+		name: "makerkit_feature_implementation",
+		title: "Makerkit Feature Implementation Guide",
+		description:
+			"Complete guide for implementing new features following Makerkit patterns",
+		category: "development",
+		arguments: [
+			{
+				name: "feature_name",
+				description: "Name of the feature to implement",
+				required: true,
+				type: "string",
+			},
+			{
+				name: "feature_type",
+				description: "Type of feature being implemented",
+				required: true,
+				type: "enum",
+				options: [
+					"billing",
+					"auth",
+					"team-management",
+					"data-management",
+					"api",
+					"ui-component",
+				],
+			},
+			{
+				name: "user_stories",
+				description: "User stories or requirements for the feature",
+				required: false,
+				type: "text",
+			},
+		],
+		template: `Implement a {{feature_type}} feature: {{feature_name}}
 
 {{#if user_stories}}
 **User Requirements:**
@@ -362,45 +361,45 @@ export class PromptsManager {
 - Use existing database functions where applicable
 - Follow monorepo patterns and package organization
 - Implement proper security and performance best practices`,
-			examples: [
-				"Implement team collaboration features",
-				"Build a subscription management system",
-				"Create a file sharing feature with permissions",
-			],
-		},
-		{
-			name: "supabase_rls_policy_design",
-			title: "Supabase RLS Policy Design",
-			description:
-				"Design Row Level Security policies for Makerkit multi-tenant architecture",
-			category: "database",
-			arguments: [
-				{
-					name: "table_name",
-					description: "Table that needs RLS policies",
-					required: true,
-					type: "string",
-				},
-				{
-					name: "access_patterns",
-					description: "Who should access this data and how",
-					required: true,
-					type: "text",
-				},
-				{
-					name: "data_sensitivity",
-					description: "Sensitivity level of the data",
-					required: true,
-					type: "enum",
-					options: [
-						"public",
-						"account-restricted",
-						"role-restricted",
-						"owner-only",
-					],
-				},
-			],
-			template: `Design RLS policies for table: {{table_name}}
+		examples: [
+			"Implement team collaboration features",
+			"Build a subscription management system",
+			"Create a file sharing feature with permissions",
+		],
+	},
+	{
+		name: "supabase_rls_policy_design",
+		title: "Supabase RLS Policy Design",
+		description:
+			"Design Row Level Security policies for Makerkit multi-tenant architecture",
+		category: "database",
+		arguments: [
+			{
+				name: "table_name",
+				description: "Table that needs RLS policies",
+				required: true,
+				type: "string",
+			},
+			{
+				name: "access_patterns",
+				description: "Who should access this data and how",
+				required: true,
+				type: "text",
+			},
+			{
+				name: "data_sensitivity",
+				description: "Sensitivity level of the data",
+				required: true,
+				type: "enum",
+				options: [
+					"public",
+					"account-restricted",
+					"role-restricted",
+					"owner-only",
+				],
+			},
+		],
+		template: `Design RLS policies for table: {{table_name}}
 
 **Access Requirements:** {{access_patterns}}
 **Data Sensitivity:** {{data_sensitivity}}
@@ -441,74 +440,76 @@ ALTER TABLE {{table_name}} ENABLE ROW LEVEL SECURITY;
 - Personal accounts: auth.users.id = accounts.id
 - Team accounts: check via accounts_memberships table
 - Leverage roles and role_permissions for granular access`,
-			examples: [
-				"Design RLS for a documents table",
-				"Create policies for team collaboration data",
-				"Set up RLS for billing and subscription data",
-			],
+		examples: [
+			"Design RLS for a documents table",
+			"Create policies for team collaboration data",
+			"Set up RLS for billing and subscription data",
+		],
+	},
+];
+
+export function getAllPrompts(): PromptTemplate[] {
+	return prompts;
+}
+
+export function getPromptsByCategory(category: string): PromptTemplate[] {
+	return prompts.filter((prompt) => prompt.category === category);
+}
+
+export function getPrompt(name: string): PromptTemplate | null {
+	return prompts.find((prompt) => prompt.name === name) || null;
+}
+
+export function searchPrompts(query: string): PromptTemplate[] {
+	const searchTerm = query.toLowerCase();
+	return prompts.filter(
+		(prompt) =>
+			prompt.name.toLowerCase().includes(searchTerm) ||
+			prompt.title.toLowerCase().includes(searchTerm) ||
+			prompt.description.toLowerCase().includes(searchTerm) ||
+			prompt.category.toLowerCase().includes(searchTerm),
+	);
+}
+
+export function renderPrompt(
+	name: string,
+	args: Record<string, string>,
+): string {
+	const prompt = getPrompt(name);
+	if (!prompt) {
+		throw new Error(`Prompt "${name}" not found`);
+	}
+
+	// Simple template rendering with Handlebars-like syntax
+	let rendered = prompt.template;
+
+	// Replace {{variable}} placeholders
+	rendered = rendered.replace(/\{\{(\w+)\}\}/g, (_match, varName) => {
+		return args[varName] || "";
+	});
+
+	// Replace {{variable || default}} placeholders
+	rendered = rendered.replace(
+		/\{\{(\w+)\s*\|\|\s*'([^']*)'\}\}/g,
+		(_match, varName, defaultValue) => {
+			return args[varName] || defaultValue;
 		},
-	];
+	);
 
-	static getAllPrompts(): PromptTemplate[] {
-		return PromptsManager.prompts;
-	}
+	// Handle conditional blocks {{#if variable}}...{{/if}}
+	rendered = rendered.replace(
+		/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g,
+		(_match, varName, content) => {
+			return args[varName] ? content : "";
+		},
+	);
 
-	static getPromptsByCategory(category: string): PromptTemplate[] {
-		return PromptsManager.prompts.filter((prompt) => prompt.category === category);
-	}
-
-	static getPrompt(name: string): PromptTemplate | null {
-		return PromptsManager.prompts.find((prompt) => prompt.name === name) || null;
-	}
-
-	static searchPrompts(query: string): PromptTemplate[] {
-		const searchTerm = query.toLowerCase();
-		return PromptsManager.prompts.filter(
-			(prompt) =>
-				prompt.name.toLowerCase().includes(searchTerm) ||
-				prompt.title.toLowerCase().includes(searchTerm) ||
-				prompt.description.toLowerCase().includes(searchTerm) ||
-				prompt.category.toLowerCase().includes(searchTerm),
-		);
-	}
-
-	static renderPrompt(name: string, args: Record<string, string>): string {
-		const prompt = PromptsManager.getPrompt(name);
-		if (!prompt) {
-			throw new Error(`Prompt "${name}" not found`);
-		}
-
-		// Simple template rendering with Handlebars-like syntax
-		let rendered = prompt.template;
-
-		// Replace {{variable}} placeholders
-		rendered = rendered.replace(/\{\{(\w+)\}\}/g, (_match, varName) => {
-			return args[varName] || "";
-		});
-
-		// Replace {{variable || default}} placeholders
-		rendered = rendered.replace(
-			/\{\{(\w+)\s*\|\|\s*'([^']*)'\}\}/g,
-			(_match, varName, defaultValue) => {
-				return args[varName] || defaultValue;
-			},
-		);
-
-		// Handle conditional blocks {{#if variable}}...{{/if}}
-		rendered = rendered.replace(
-			/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g,
-			(_match, varName, content) => {
-				return args[varName] ? content : "";
-			},
-		);
-
-		return rendered.trim();
-	}
+	return rendered.trim();
 }
 
 export function registerPromptsSystem(server: McpServer) {
 	// Register all prompts using the SDK's prompt API
-	const allPrompts = PromptsManager.getAllPrompts();
+	const allPrompts = getAllPrompts();
 
 	for (const promptTemplate of allPrompts) {
 		// Convert arguments to proper Zod schema format
@@ -529,10 +530,7 @@ export function registerPromptsSystem(server: McpServer) {
 			promptTemplate.description,
 			argsSchema,
 			async (args: Record<string, string>) => {
-				const renderedPrompt = PromptsManager.renderPrompt(
-					promptTemplate.name,
-					args,
-				);
+				const renderedPrompt = renderPrompt(promptTemplate.name, args);
 
 				return {
 					messages: [

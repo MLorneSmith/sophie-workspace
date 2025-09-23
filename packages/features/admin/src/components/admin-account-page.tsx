@@ -1,5 +1,3 @@
-import { BadgeX, Ban, ShieldPlus, VenetianMask } from "lucide-react";
-
 import type { Tables } from "@kit/supabase/database";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
@@ -19,6 +17,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@kit/ui/table";
+import { BadgeX, Ban, ShieldPlus, VenetianMask } from "lucide-react";
 
 import { AdminBanUserDialog } from "./admin-ban-user-dialog";
 import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";

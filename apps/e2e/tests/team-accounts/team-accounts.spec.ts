@@ -1,4 +1,4 @@
-import { type Page, expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 import { InvitationsPageObject } from "../invitations/invitations.po";
 import { TeamAccountsPageObject } from "./team-accounts.po";

@@ -41,7 +41,7 @@ test.describe("Account Settings", () => {
 		await expect(account.getProfileName()).toHaveText(name);
 	});
 
-	test("user can update their email", async ({ page }) => {
+	test("user can update their email", async ({ page: _page }) => {
 		const email = account.auth.createRandomEmail();
 
 		await account.updateEmail(email);

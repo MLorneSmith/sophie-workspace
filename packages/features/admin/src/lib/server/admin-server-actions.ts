@@ -1,12 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import {
 	BanUserSchema,
@@ -46,6 +45,10 @@ export const banUserAction = adminAction(
 			revalidateAdmin();
 
 			logger.info({ userId }, "Super Admin has successfully banned user");
+
+			return {
+				success: true,
+			};
 		},
 		{
 			schema: BanUserSchema,
@@ -78,6 +81,10 @@ export const reactivateUserAction = adminAction(
 			revalidateAdmin();
 
 			logger.info({ userId }, "Super Admin has successfully reactivated user");
+
+			return {
+				success: true,
+			};
 		},
 		{
 			schema: ReactivateUserSchema,

@@ -1,3 +1,5 @@
+# Agent Instructions
+
 This file provides guidance to AI Agents and Claude Code when working with code in this repository.
 
 ## Core Technologies
@@ -32,7 +34,7 @@ Data associates with accounts via foreign keys for proper access control.
 ```bash
 pnpm dev                    # Start all apps
 pnpm --filter web dev       # Main app (port 3000)
-```
+```text
 
 ### Database Operations
 
@@ -42,7 +44,7 @@ pnpm --filter web supabase migration up     # Apply new migrations
 pnpm supabase:web:reset     # Reset with latest schema (clean rebuild)
 pnpm supabase:web:typegen   # Generate TypeScript types
 pnpm --filter web supabase:db:diff  # Create migration
-```
+```text
 
 The typegen command must be run after applying migrations or resetting the database.
 
@@ -68,7 +70,7 @@ When adding new database features, ALWAYS follow this exact order:
 pnpm format:fix 
 pnpm lint:fix
 pnpm typecheck
-```
+```text
 
 - Run the typecheck command regularly to ensure your code is type-safe.
 - Run the linter and the formatter when your task is complete.
@@ -116,7 +118,7 @@ pnpm typecheck
 
 Always organize schemas for reusability between server actions and client forms:
 
-```
+```text
 _lib/
 ├── schemas/
 │   └── feature.schema.ts    # Shared Zod schemas
@@ -124,7 +126,7 @@ _lib/
 │   └── server-actions.ts # Server actions import schemas
 └── client/
     └── forms.tsx    # Forms import same schemas
-```
+```text
 
 **Example implementation:**
 
@@ -149,7 +151,7 @@ import { CreateProjectSchema } from '../_lib/schemas/project.schema';
 const form = useForm({
   resolver: zodResolver(CreateProjectSchema)
 });
-```
+```text
 
 ## Import Guidelines - ALWAYS Check These
 
@@ -169,11 +171,12 @@ const form = useForm<FormData>({
 const form = useForm({
   resolver: zodResolver(Schema)
 });
-```
+```text
 
 ## Verification Steps
 
 After implementation:
+
 1. **Run `pnpm typecheck`** - Must pass without errors
 2. **Run `pnpm lint:fix`** - Auto-fix issues
 3. **Run `pnpm format:fix`** - Format code
