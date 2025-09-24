@@ -44,6 +44,10 @@ export function SignInMethodsContainer(props: {
 			process.env.NODE_ENV === "development" ||
 			process.env.NODE_ENV === "test"
 		) {
+			// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+			console.log(
+				"[Auth Debug] onSignIn callback triggered, waiting for session establishment...",
+			);
 		}
 
 		// Poll for session establishment with timeout
@@ -67,12 +71,21 @@ export function SignInMethodsContainer(props: {
 				process.env.NODE_ENV === "development" ||
 				process.env.NODE_ENV === "test"
 			) {
+				// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+				console.error(
+					"[Auth Debug] Session not established after 10s, proceeding with navigation anyway",
+				);
 			}
 		} else {
 			if (
 				process.env.NODE_ENV === "development" ||
 				process.env.NODE_ENV === "test"
 			) {
+				// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+				console.log("[Auth Debug] Session established successfully:", {
+					userId: session.user.id,
+					email: session.user.email,
+				});
 			}
 		}
 
@@ -90,6 +103,8 @@ export function SignInMethodsContainer(props: {
 				process.env.NODE_ENV === "development" ||
 				process.env.NODE_ENV === "test"
 			) {
+				// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+				console.log("[Auth Debug] Navigating to join team path:", joinTeamPath);
 			}
 			window.location.href = joinTeamPath;
 		} else {
@@ -99,6 +114,8 @@ export function SignInMethodsContainer(props: {
 				process.env.NODE_ENV === "development" ||
 				process.env.NODE_ENV === "test"
 			) {
+				// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+				console.log("[Auth Debug] Navigating to return path:", returnPath);
 			}
 			// Use window.location for a hard navigation to ensure cookies are sent
 			window.location.href = returnPath;

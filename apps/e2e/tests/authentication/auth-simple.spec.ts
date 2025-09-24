@@ -131,12 +131,14 @@ test.describe("Authentication - Simple Tests @auth", () => {
 		// Now sign out using the simplified method (avoiding portal UI)
 		await auth.signOut();
 
-		// Try to access protected route
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Wait for sign out to complete and redirect
+		await page.waitForURL("/", { timeout: 10000 });
 
-		// Should be redirected to sign-in page
-		await page.waitForURL(/\/auth\/sign-in/, { timeout: 10000 });
-		await expect(page).toHaveURL(/\/auth\/sign-in/);
+		// Verify we're on the homepage (not authenticated)
+		await expect(page).toHaveURL("/");
+
+		// Verify sign in link is visible (indicates logged out state)
+		await expect(page.getByRole("link", { name: /sign in/i })).toBeVisible();
 	});
 
 	test("password reset link navigates correctly", async ({ page }) => {

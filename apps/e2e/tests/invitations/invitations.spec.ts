@@ -4,11 +4,25 @@ import { InvitationsPageObject } from "./invitations.po";
 
 test.describe("Invitations", () => {
 	let invitations: InvitationsPageObject;
+	let slug: string;
 
 	test.beforeEach(async ({ page }) => {
 		invitations = new InvitationsPageObject(page);
 
-		await invitations.setup();
+		// Use pre-existing test user instead of bootstrapUser
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "testingpassword";
+
+		await invitations.auth.loginAsUser({ email, password });
+
+		// Create a team for the test
+		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
+		slug = teamName.toLowerCase().replace(/ /g, "-");
+
+		await invitations.teamAccounts.createTeam({
+			teamName,
+			slug,
+		});
 	});
 
 	test("users can delete invites", async () => {
@@ -90,7 +104,21 @@ test.describe("Full Invitation Flow", () => {
 		page,
 	}) => {
 		const invitations = new InvitationsPageObject(page);
-		await invitations.setup();
+
+		// Use pre-existing test user instead of bootstrapUser
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "testingpassword";
+
+		await invitations.auth.loginAsUser({ email, password });
+
+		// Create a team for the test
+		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
+		const slug = teamName.toLowerCase().replace(/ /g, "-");
+
+		await invitations.teamAccounts.createTeam({
+			teamName,
+			slug,
+		});
 
 		await invitations.navigateToMembers();
 
