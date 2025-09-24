@@ -1,8 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
-dotenvConfig();
-dotenvConfig({ path: ".env.local" });
+dotenvConfig({
+	path: [".env", ".env.local"],
+	quiet: true, // Suppress dotenv logging
+	override: false,
+});
 
 /**
  * Authentication test configuration - runs without pre-authentication setup

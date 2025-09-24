@@ -3,9 +3,13 @@ import { defineConfig, devices } from "@playwright/test";
 import * as dotenv from "dotenv";
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
 dotenv.config({
-	path: path.resolve(__dirname, "../../../../apps/payload/.env.test"),
+	path: [
+		path.resolve(__dirname, "../../.env.test"),
+		path.resolve(__dirname, "../../../../apps/payload/.env.test"),
+	],
+	quiet: true, // Suppress dotenv logging
+	override: false,
 });
 
 const PAYLOAD_URL =

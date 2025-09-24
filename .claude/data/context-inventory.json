@@ -1,6 +1,6 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-23",
+	"lastUpdated": "2025-09-24",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -2154,6 +2154,36 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 1841
+				},
+				{
+					"path": "testing/environment/e2e-local-environment.md",
+					"name": "Local E2E Testing Environment",
+					"description": "Comprehensive guide to the local E2E testing environment including Docker setup, Supabase configuration, test data seeding with crypt() password hashing, and environment variables",
+					"lastUpdated": "2025-09-24",
+					"topics": ["Testing", "Docker", "Environment", "E2E", "Supabase"],
+					"priority": "important",
+					"keywords": [
+						"e2e",
+						"docker",
+						"supabase",
+						"testing",
+						"environment",
+						"playwright",
+						"authentication",
+						"docker-compose",
+						"test-data",
+						"seeding",
+						"crypt",
+						"password-hashing",
+						"environment-variables",
+						"port-configuration",
+						"isolated-testing"
+					],
+					"relatedCommands": ["/test", "/test --e2e"],
+					"dependencies": ["e2e-testing-fundamentals", "docker-setup"],
+					"antiPatterns": [],
+					"pairings": ["docker-setup", "e2e-testing-fundamentals"],
+					"tokens": 1844
 				}
 			]
 		}

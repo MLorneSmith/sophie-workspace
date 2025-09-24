@@ -62,9 +62,12 @@ test.describe("Team Invitation with MFA Flow", () => {
 			.getByRole("link", { name: "Already have an account?" })
 			.click();
 
+		const adminEmail = process.env.E2E_ADMIN_EMAIL || "michael@slideheroes.com";
+		const adminPassword = process.env.E2E_ADMIN_PASSWORD || "aiesec1992";
+
 		await auth.signIn({
-			email: "super-admin@makerkit.dev",
-			password: "testingpassword",
+			email: adminEmail,
+			password: adminPassword,
 		});
 
 		// Complete MFA verification

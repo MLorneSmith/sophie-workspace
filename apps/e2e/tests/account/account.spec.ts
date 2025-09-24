@@ -12,7 +12,8 @@ test.describe("Account Settings", () => {
 
 		// Use pre-existing test user from seed data
 		email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "testingpassword";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
 
 		account = new AccountPageObject(page);
 
@@ -72,7 +73,7 @@ test.describe("Account Deletion", () => {
 
 		await auth.bootstrapUser({
 			email,
-			password: "testingpassword",
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
 			name: "Test User",
 		});
 
@@ -87,7 +88,7 @@ test.describe("Account Deletion", () => {
 		// sign in will now fail
 		await auth.signIn({
 			email,
-			password: "testingpassword",
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
 		});
 
 		await expect(

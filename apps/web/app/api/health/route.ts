@@ -1,3 +1,4 @@
+import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { NextResponse } from "next/server";
 
@@ -24,16 +25,28 @@ export async function GET() {
  * @returns true if the database is healthy, false otherwise
  */
 async function getSupabaseHealthCheck() {
+	const logger = await getLogger();
+	const ctx = { name: "health-check" };
+
 	try {
 		const client = getSupabaseServerAdminClient();
 
+		// Simple health check - query any table to verify database connectivity
 		const { data, error } = await client
 			.from("config")
 			.select("billing_provider")
+			.limit(1)
 			.single();
 
-		return !error && Boolean(data?.billing_provider);
-	} catch {
+		// Health check passes if query executes without error and returns data
+		if (error) {
+			logger.error({ ...ctx, error: error.message }, "Database query failed");
+			return false;
+		}
+
+		return data !== null;
+	} catch (error) {
+		logger.error({ ...ctx, error }, "Database connection failed");
 		return false;
 	}
 }
