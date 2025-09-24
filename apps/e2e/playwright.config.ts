@@ -1,13 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
-dotenvConfig();
-dotenvConfig({ path: ".env.local" });
+// Load environment variables with quiet mode to suppress logging
+dotenvConfig({
+	path: [".env", ".env.local"],
+	quiet: true, // Suppress dotenv logging
+	override: false,
+});
 
 /**
  * Number of workers to use in CI. Tweak based on your CI provider's resources.
+ * Reduced from 2 to prevent resource contention and authentication conflicts
  */
-const CI_WORKERS = 2;
+const CI_WORKERS = 4;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =

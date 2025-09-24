@@ -58,6 +58,7 @@ CLAUDE.local.md
 .claude/settings/permissions.json
 .claude/sessions/
 .claude/z.archive/
+.claude/context/testing/environment/password-synchronization.md
 # Note: .claude/scratch/ is now tracked (contains docs, not secrets)
 # Note: .claude/settings/environment.json is now tracked (non-sensitive)
 apps/e2e/.claude/

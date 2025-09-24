@@ -17,14 +17,12 @@ export class TeamAccountsPageObject {
 	async setup(params = this.createTeamName()) {
 		const auth = new AuthPageObject(this.page);
 
-		const email = auth.createRandomEmail();
+		// Use pre-existing test user from seed data with environment variables
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
 
-		await auth.bootstrapUser({
-			email,
-			name: "Test User",
-		});
-
-		await auth.loginAsUser({ email });
+		await auth.loginAsUser({ email, password });
 
 		await this.createTeam(params);
 

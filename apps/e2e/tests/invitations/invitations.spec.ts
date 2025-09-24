@@ -11,7 +11,8 @@ test.describe("Invitations", () => {
 
 		// Use pre-existing test user instead of bootstrapUser
 		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "testingpassword";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
 
 		await invitations.auth.loginAsUser({ email, password });
 
@@ -107,7 +108,8 @@ test.describe("Full Invitation Flow", () => {
 
 		// Use pre-existing test user instead of bootstrapUser
 		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "testingpassword";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
 
 		await invitations.auth.loginAsUser({ email, password });
 

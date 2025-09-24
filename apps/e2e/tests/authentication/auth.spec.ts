@@ -62,9 +62,13 @@ test.describe.skip("Auth flow", () => {
 
 		await page.goto("/home/settings");
 
+		const testEmail =
+			process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const testPassword = process.env.E2E_TEST_USER_PASSWORD || "aiesec1992";
+
 		await auth.signIn({
-			email: "test@makerkit.dev",
-			password: "testingpassword",
+			email: testEmail,
+			password: testPassword,
 		});
 
 		await page.waitForURL("/home/settings", {

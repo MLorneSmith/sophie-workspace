@@ -76,7 +76,7 @@ test.describe("Team Accounts", () => {
 		const auth = new AuthPageObject(page);
 		await auth.loginAsUser({
 			email: process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com",
-			password: process.env.E2E_TEST_USER_PASSWORD || "testingpassword",
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
 		});
 	});
 

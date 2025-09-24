@@ -1,6 +1,6 @@
 # Test Environment Docker Compose
 # This runs both the Next.js web app and Payload CMS in containers for isolated testing
-# Connects to the E2E Supabase services (ports 55321/55322)
+# Connects to the Web Supabase services (ports 54321/54322) - Single source of truth
 # Web app: port 3001 (dev uses 3000)
 # Payload app: port 3021 (dev uses 3020)
 
@@ -20,12 +20,13 @@ services:
       # npm configuration for non-root user
       - npm_config_cache=/tmp/.npm
       - NEXT_TELEMETRY_DISABLED=1
-      # E2E Supabase configuration (using the -e2e stack)
-      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
-      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls
-      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MjA3MTc2MDA1NCwiaWF0IjoxNzU2NDAwMDU0fQ.4JWdmHV63YkytmWm51e2HGBRGlOk03zszAwr9JDAKwA
+      # Web Supabase configuration (single source of truth)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
       - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
-      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       # Test environment settings
       - NODE_ENV=test
       - NEXT_PUBLIC_SITE_URL=http://localhost:3001
@@ -42,17 +43,18 @@ services:
       - CI=false
     command: >
       sh -c "
-        echo '🔧 Installing dependencies with npx pnpm...' &&
-        npx pnpm@latest install --frozen-lockfile &&
+        echo '🔧 Installing dependencies with pnpm...' &&
+        npx pnpm install &&
         echo '🚀 Starting test server on port 3001...' &&
-        npx pnpm@latest --filter web dev --port 3001
+        cd apps/web &&
+        npx pnpm dev --port 3001
       "
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s
+      start_period: 120s
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -71,15 +73,16 @@ services:
       # npm configuration for non-root user
       - npm_config_cache=/tmp/.npm
       - NEXT_TELEMETRY_DISABLED=1
-      # E2E Supabase configuration (using the -e2e stack)
-      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:55321
-      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwNzE3NjAwNTQsImlhdCI6MTc1NjQwMDA1NH0.dNd36P5RE-UVVQRwpkwM-CMPgFYsy6JMn8DQM5Qh0ls
-      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MjA3MTc2MDA1NCwiaWF0IjoxNzU2NDAwMDU0fQ.4JWdmHV63YkytmWm51e2HGBRGlOk03zszAwr9JDAKwA
+      # Web Supabase configuration (single source of truth)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
       - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
-      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       # Payload specific settings - using DATABASE_URI (not DATABASE_URL)
-      - DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:55322/postgres
-      - PAYLOAD_PUBLIC_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:55322/postgres
+      - DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      - PAYLOAD_PUBLIC_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       - PAYLOAD_SECRET=your-payload-secret-here
       - PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021
       # Test environment settings
@@ -98,7 +101,7 @@ services:
         PORT=3021 NODE_OPTIONS=--no-deprecation npx pnpm@latest exec next dev
       "
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3021/api/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3021/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
       interval: 10s
       timeout: 5s
       retries: 5

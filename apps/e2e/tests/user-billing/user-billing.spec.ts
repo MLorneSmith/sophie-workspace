@@ -1,24 +1,26 @@
 import { expect, test } from "@playwright/test";
 
-import { AuthPageObject } from "../authentication/auth.po";
 import { UserBillingPageObject } from "./user-billing.po";
 
 test.describe("User Billing", () => {
 	test("user can subscribe to a plan", async ({ page }) => {
 		const po = new UserBillingPageObject(page);
-		const auth = new AuthPageObject(page);
 
-		const email = auth.createRandomEmail();
+		// Add debugging to track navigation issues
+		console.log("Starting billing test, current URL:", page.url());
 
-		await auth.bootstrapUser({
-			email,
-			name: "Test Billing User",
+		// Try a two-step navigation approach - first to home, then to billing
+		console.log("Navigating to /home first...");
+		await page.goto("/home", { waitUntil: "domcontentloaded", timeout: 15000 });
+		console.log("At /home, URL:", page.url());
+
+		// Now navigate to billing
+		console.log("Navigating to /home/billing...");
+		await page.goto("/home/billing", {
+			waitUntil: "domcontentloaded",
+			timeout: 15000,
 		});
-
-		await auth.loginAsUser({
-			email,
-			next: "/home/billing",
-		});
+		console.log("At /home/billing, URL:", page.url());
 
 		await po.billing.selectPlan(0);
 		await po.billing.proceedToCheckout();

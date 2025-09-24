@@ -6,7 +6,8 @@ test.describe("Team Billing", () => {
 	test("a team can subscribe to a plan", async ({ page }) => {
 		const po = new TeamBillingPageObject(page);
 
-		await po.teamAccounts.setup();
+		// User is already logged in from billing.setup.ts, create team and go to billing
+		await po.teamAccounts.createTeam();
 		await po.teamAccounts.goToBilling();
 
 		await po.billing.selectPlan(0);

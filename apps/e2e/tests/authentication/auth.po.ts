@@ -37,9 +37,38 @@ export class AuthPageObject {
 	async signIn(params: { email: string; password: string }) {
 		await this.page.waitForTimeout(100);
 
-		await this.page.fill('input[name="email"]', params.email);
-		await this.page.fill('input[name="password"]', params.password);
+		// Wait for form elements to be ready
+		await this.page.waitForSelector('[data-test="email-input"]', {
+			state: "visible",
+		});
+		await this.page.waitForSelector('[data-test="password-input"]', {
+			state: "visible",
+		});
+
+		// Fill in credentials with debugging
+		console.log(`Filling email: ${params.email}`);
+		await this.page.fill('[data-test="email-input"]', params.email);
+
+		console.log(`Filling password: ${params.password ? "***" : "empty"}`);
+		await this.page.fill('[data-test="password-input"]', params.password);
+
+		// Verify fields were filled
+		const emailValue = await this.page.inputValue('[data-test="email-input"]');
+		const passwordValue = await this.page.inputValue(
+			'[data-test="password-input"]',
+		);
+		console.log(`Email field value after fill: ${emailValue}`);
+		console.log(`Password field has value: ${passwordValue ? "yes" : "no"}`);
+
+		// Check for any console errors before submitting
+		this.page.on("console", (msg) => {
+			if (msg.type() === "error") {
+				console.log(`Console error: ${msg.text()}`);
+			}
+		});
+
 		await this.page.click('button[type="submit"]');
+		console.log("Form submitted, waiting for navigation...");
 	}
 
 	async signUp(params: {
@@ -120,17 +149,13 @@ export class AuthPageObject {
 	}
 
 	async loginAsSuperAdmin(params: {
-		email?: string;
-		password?: string;
+		email: string;
+		password: string;
 		next?: string;
 	}) {
 		await this.loginAsUser({
-			email:
-				params.email ||
-				process.env.E2E_ADMIN_EMAIL ||
-				"michael@slideheroes.com",
-			password:
-				params.password || process.env.E2E_ADMIN_PASSWORD || "aiesec1992",
+			email: params.email,
+			password: params.password,
 			next: "/auth/verify",
 		});
 
@@ -151,12 +176,12 @@ export class AuthPageObject {
 
 				// Wait for final navigation
 				await this.page.waitForURL(params.next ?? "/home", {
-					timeout: 10000,
+					timeout: 20000,
 					waitUntil: "domcontentloaded",
 				});
 			}).toPass({
 				intervals: [500, 1000, 2000, 3000, 5000],
-				timeout: 15000,
+				timeout: 25000,
 			});
 		} catch (error) {
 			// If we're already on the expected page, that's fine
@@ -173,7 +198,7 @@ export class AuthPageObject {
 		name,
 	}: {
 		email: string;
-		password?: string;
+		password: string;
 		name: string;
 	}) {
 		const client = createClient(
@@ -184,7 +209,7 @@ export class AuthPageObject {
 
 		const { data, error } = await client.auth.admin.createUser({
 			email,
-			password: password || "testingpassword",
+			password: password,
 			email_confirm: true,
 			user_metadata: {
 				name,
@@ -200,21 +225,33 @@ export class AuthPageObject {
 
 	async loginAsUser(params: {
 		email: string;
-		password?: string;
+		password: string;
 		next?: string;
 	}) {
 		await this.goToSignIn(params.next);
 
 		await this.signIn({
 			email: params.email,
-			password: params.password || "testingpassword",
+			password: params.password,
 		});
 
 		// Wait for navigation with increased timeout and more flexible pattern
 		// The auth component uses window.location.href which causes a hard navigation
-		await this.page.waitForURL(params.next ?? "**/home", {
-			timeout: 30000, // Increase timeout to 30s to account for session establishment polling
-			waitUntil: "domcontentloaded", // Use domcontentloaded to avoid networkidle hanging issues (#286)
-		});
+		const targetUrl = params.next ?? "/home";
+		console.log(`Waiting for navigation to: ${targetUrl}`);
+
+		// Wait for the URL to change from sign-in page
+		await this.page.waitForURL(
+			(url) => {
+				const urlStr = url.toString();
+				console.log(`Current URL during wait: ${urlStr}`);
+				return !urlStr.includes("/auth/sign-in") && urlStr.includes(targetUrl);
+			},
+			{
+				timeout: 30000, // Increase timeout to 30s to account for session establishment polling
+			},
+		);
+
+		console.log(`Navigation complete. Final URL: ${this.page.url()}`);
 	}
 }

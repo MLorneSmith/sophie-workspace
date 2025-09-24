@@ -137,7 +137,7 @@ test.describe("Admin", () => {
 
 			await auth.signIn({
 				email: testUserEmail,
-				password: "testingpassword",
+				password: process.env.E2E_TEST_USER_PASSWORD || "",
 			});
 
 			// Should show an error message
@@ -224,7 +224,7 @@ test.describe("Admin", () => {
 
 			await auth.signIn({
 				email: testUserEmail,
-				password: "testingpassword",
+				password: process.env.E2E_TEST_USER_PASSWORD || "",
 			});
 
 			// Should show an error message
