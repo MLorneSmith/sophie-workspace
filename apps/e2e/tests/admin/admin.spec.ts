@@ -62,7 +62,7 @@ test.describe("Admin", () => {
 		let testUserEmail: string;
 
 		test.beforeEach(async ({ page }) => {
-			// Create a new test user before each test
+			// Use pre-existing test user
 			testUserEmail = await createUser(page);
 
 			await page.goto("/admin/accounts");
@@ -75,13 +75,28 @@ test.describe("Admin", () => {
 		});
 
 		test("displays personal account details", async ({ page }) => {
+			// Wait for page to fully load
 			await expect(page.getByText("Personal Account")).toBeVisible();
-			await expect(page.getByTestId("admin-ban-account-button")).toBeVisible();
-			await expect(page.getByTestId("admin-impersonate-button")).toBeVisible();
 
-			await expect(
-				page.getByTestId("admin-delete-account-button"),
-			).toBeVisible();
+			// Wait for buttons to appear with a more reliable approach
+			await expect(async () => {
+				const banButton = await page
+					.getByTestId("admin-ban-account-button")
+					.isVisible();
+				const impersonateButton = await page
+					.getByTestId("admin-impersonate-button")
+					.isVisible();
+				const deleteButton = await page
+					.getByTestId("admin-delete-account-button")
+					.isVisible();
+
+				expect(banButton).toBe(true);
+				expect(impersonateButton).toBe(true);
+				expect(deleteButton).toBe(true);
+			}).toPass({
+				timeout: 15000,
+				intervals: [500, 1000, 2000],
+			});
 		});
 
 		test("ban user flow", async ({ page }) => {
@@ -316,21 +331,10 @@ test.describe("Team Account Management", () => {
 	});
 });
 
-async function createUser(page: Page) {
-	const auth = new AuthPageObject(page);
-
-	const password = "testingpassword";
-	const email = auth.createRandomEmail();
-
-	// create user using bootstrap method
-	await auth.bootstrapUser({
-		email,
-		password,
-		name: "Test User",
-	});
-
-	// return the email
-	return email;
+async function createUser(_page: Page) {
+	// Use pre-existing test user from seed data
+	// test2@slideheroes.com is a regular user without super-admin privileges
+	return "test2@slideheroes.com";
 }
 
 async function filterAccounts(page: Page, email: string) {

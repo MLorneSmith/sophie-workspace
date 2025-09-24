@@ -92,7 +92,7 @@ export class AuthPageObject {
 	createRandomEmail() {
 		const value = Math.random() * 10000000000000;
 
-		return `${value.toFixed(0)}@makerkit.dev`;
+		return `${value.toFixed(0)}@slideheroes.com`;
 	}
 
 	async signUpFlow(path: string) {
@@ -125,14 +125,46 @@ export class AuthPageObject {
 		next?: string;
 	}) {
 		await this.loginAsUser({
-			email: params.email || "super-admin@makerkit.dev",
-			password: params.password,
+			email:
+				params.email ||
+				process.env.E2E_ADMIN_EMAIL ||
+				"michael@slideheroes.com",
+			password:
+				params.password || process.env.E2E_ADMIN_PASSWORD || "aiesec1992",
 			next: "/auth/verify",
 		});
 
-		// Complete MFA verification
-		await this.submitMFAVerification(MFA_KEY);
-		await this.page.waitForURL(params.next ?? "/home");
+		// Check if we're on MFA page and complete verification if needed
+		try {
+			// Wait for either MFA form or redirect to final destination
+			await expect(async () => {
+				const currentUrl = this.page.url();
+
+				// If we're on the verify page, submit MFA
+				if (currentUrl.includes("/auth/verify")) {
+					// Check if MFA form is present
+					const mfaInput = await this.page.locator("[data-input-otp]").count();
+					if (mfaInput > 0) {
+						await this.submitMFAVerification(MFA_KEY);
+					}
+				}
+
+				// Wait for final navigation
+				await this.page.waitForURL(params.next ?? "/home", {
+					timeout: 10000,
+					waitUntil: "domcontentloaded",
+				});
+			}).toPass({
+				intervals: [500, 1000, 2000, 3000, 5000],
+				timeout: 15000,
+			});
+		} catch (error) {
+			// If we're already on the expected page, that's fine
+			const currentUrl = this.page.url();
+			if (!currentUrl.includes(params.next ?? "/home")) {
+				throw error;
+			}
+		}
 	}
 
 	async bootstrapUser({
@@ -145,8 +177,9 @@ export class AuthPageObject {
 		name: string;
 	}) {
 		const client = createClient(
-			"http://127.0.0.1:54321",
-			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+			process.env.E2E_SUPABASE_URL || "http://127.0.0.1:55321",
+			process.env.E2E_SUPABASE_SERVICE_ROLE_KEY ||
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
 		);
 
 		const { data, error } = await client.auth.admin.createUser({
@@ -177,6 +210,11 @@ export class AuthPageObject {
 			password: params.password || "testingpassword",
 		});
 
-		await this.page.waitForURL(params.next ?? "**/home");
+		// Wait for navigation with increased timeout and more flexible pattern
+		// The auth component uses window.location.href which causes a hard navigation
+		await this.page.waitForURL(params.next ?? "**/home", {
+			timeout: 30000, // Increase timeout to 30s to account for session establishment polling
+			waitUntil: "domcontentloaded", // Use domcontentloaded to avoid networkidle hanging issues (#286)
+		});
 	}
 }

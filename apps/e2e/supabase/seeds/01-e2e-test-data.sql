@@ -3,7 +3,7 @@
 
 -- Insert test users in auth.users (using actual test users from web app)
 INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") VALUES
-        ('00000000-0000-0000-0000-000000000000', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 'authenticated', 'authenticated', 'test2@slideheroes.com', '$2a$10$B6t76TzZFakA11BtvbuBzehMtDPAyWT5jMCBlnL5KoqNUuUN1Wd1a', '2024-04-20 08:20:38.165331+00', NULL, '', NULL, '', NULL, '', '', NULL, '2024-04-20 09:36:02.521776+00', '{"provider": "email", "providers": ["email"], "role": "super-admin"}', '{"sub": "f47ac10b-58cc-4372-a567-0e02b2c3d479", "email": "test2@slideheroes.com", "email_verified": false, "phone_verified": false, "onboarded": true, "onboardedAt": "2025-04-05T18:24:00.000Z"}', NULL, '2024-04-20 08:20:34.459113+00', '2024-04-20 10:07:48.554125+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
+        ('00000000-0000-0000-0000-000000000000', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 'authenticated', 'authenticated', 'test2@slideheroes.com', '$2a$10$B6t76TzZFakA11BtvbuBzehMtDPAyWT5jMCBlnL5KoqNUuUN1Wd1a', '2024-04-20 08:20:38.165331+00', NULL, '', NULL, '', NULL, '', '', NULL, '2024-04-20 09:36:02.521776+00', '{"provider": "email", "providers": ["email"]}', '{"sub": "f47ac10b-58cc-4372-a567-0e02b2c3d479", "email": "test2@slideheroes.com", "email_verified": false, "phone_verified": false, "onboarded": true, "onboardedAt": "2025-04-05T18:24:00.000Z"}', NULL, '2024-04-20 08:20:34.459113+00', '2024-04-20 10:07:48.554125+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
         ('00000000-0000-0000-0000-000000000000', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'authenticated', 'authenticated', 'test1@slideheroes.com', '$2a$10$B6t76TzZFakA11BtvbuBzehMtDPAyWT5jMCBlnL5KoqNUuUN1Wd1a', '2024-04-20 08:20:38.165331+00', NULL, '', NULL, '', NULL, '', '', NULL, '2024-04-20 09:36:02.521776+00', '{"provider": "email", "providers": ["email"]}', '{"sub": "31a03e74-1639-45b6-bfa7-77447f1a4762", "email": "test1@slideheroes.com", "email_verified": false, "phone_verified": false, "onboarded": true, "onboardedAt": "2025-04-05T18:24:00.000Z"}', NULL, '2024-04-20 08:20:34.459113+00', '2024-04-20 10:07:48.554125+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
         ('00000000-0000-0000-0000-000000000000', '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', 'authenticated', 'authenticated', 'michael@slideheroes.com', '$2a$10$B6t76TzZFakA11BtvbuBzehMtDPAyWT5jMCBlnL5KoqNUuUN1Wd1a', '2024-04-20 08:36:37.517993+00', NULL, '', '2024-04-20 08:36:27.639648+00', '', NULL, '', '', NULL, '2024-04-20 08:36:37.614337+00', '{"provider": "email", "providers": ["email"], "role": "super-admin"}', '{"sub": "5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf", "email": "michael@slideheroes.com", "email_verified": false, "phone_verified": false, "onboarded": true, "onboardedAt": "2025-04-05T18:24:00.000Z"}', NULL, '2024-04-20 08:36:27.630379+00', '2024-04-20 08:36:37.617955+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false)
 ON CONFLICT (id) DO UPDATE SET
@@ -19,6 +19,28 @@ ON CONFLICT (id) DO UPDATE SET
     identity_data = EXCLUDED.identity_data,
     updated_at = now();
 
+-- Insert MFA factors for super-admin user
+INSERT INTO auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_at, updated_at, secret, phone)
+VALUES
+    ('ad6c5aa8-9a61-4419-9c27-b09b7e99b35f', '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', 'TOTP Factor', 'totp', 'verified', '2024-01-01 00:00:00+00', '2024-01-01 00:00:00+00', 'NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE', NULL)
+ON CONFLICT (id) DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    friendly_name = EXCLUDED.friendly_name,
+    factor_type = EXCLUDED.factor_type,
+    status = EXCLUDED.status,
+    secret = EXCLUDED.secret;
+
+-- Insert personal accounts for test users
+INSERT INTO "public"."accounts" ("id", "primary_owner_user_id", "name", "slug", "email", "is_personal_account", "updated_at", "created_at", "created_by", "updated_by", "picture_url", "public_data")
+VALUES
+    ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 'Test User Two', NULL, 'test2@slideheroes.com', true, NOW(), NOW(), NULL, NULL, NULL, '{}'),
+    ('31a03e74-1639-45b6-bfa7-77447f1a4762', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'Test User One', NULL, 'test1@slideheroes.com', true, NOW(), NOW(), NULL, NULL, NULL, '{}'),
+    ('5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', 'Michael Smith', NULL, 'michael@slideheroes.com', true, NOW(), NOW(), NULL, NULL, NULL, '{}')
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    email = EXCLUDED.email,
+    updated_at = now();
+
 -- Insert test account (SlideHeroes Team)
 INSERT INTO "public"."accounts" ("id", "primary_owner_user_id", "name", "slug", "email", "is_personal_account", "updated_at", "created_at", "created_by", "updated_by", "picture_url", "public_data")
 VALUES ('5deaa894-2094-4da3-b4fd-1fada0809d1c', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'SlideHeroes Team', 'slideheroes-team', NULL, false, NULL, NULL, NULL, NULL, NULL, '{}')
@@ -26,7 +48,17 @@ ON CONFLICT (id) DO UPDATE SET
     name = EXCLUDED.name,
     updated_at = now();
 
--- Insert test account memberships
+-- Insert personal account memberships (users are owners of their own personal accounts)
+INSERT INTO "public"."accounts_memberships" ("user_id", "account_id", "account_role", "created_at", "updated_at", "created_by", "updated_by")
+VALUES
+    ('f47ac10b-58cc-4372-a567-0e02b2c3d479', 'f47ac10b-58cc-4372-a567-0e02b2c3d479', 'owner', NOW(), NOW(), NULL, NULL),
+    ('31a03e74-1639-45b6-bfa7-77447f1a4762', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'owner', NOW(), NOW(), NULL, NULL),
+    ('5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', 'owner', NOW(), NOW(), NULL, NULL)
+ON CONFLICT (user_id, account_id) DO UPDATE SET
+    account_role = EXCLUDED.account_role,
+    updated_at = now();
+
+-- Insert test team account memberships
 INSERT INTO "public"."accounts_memberships" ("user_id", "account_id", "account_role", "created_at", "updated_at", "created_by", "updated_by")
 VALUES ('31a03e74-1639-45b6-bfa7-77447f1a4762', '5deaa894-2094-4da3-b4fd-1fada0809d1c', 'owner', '2024-04-20 08:21:16.802867+00', '2024-04-20 08:21:16.802867+00', NULL, NULL),
        ('5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', '5deaa894-2094-4da3-b4fd-1fada0809d1c', 'owner', '2024-04-20 08:36:44.21028+00', '2024-04-20 08:36:44.21028+00', NULL, NULL),
