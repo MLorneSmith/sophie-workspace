@@ -48,7 +48,7 @@ const CONFIG = {
 	shardTimeout: 30 * 60 * 1000, // 30 minutes per shard (increased for safety)
 	fileTimeout: 3 * 60 * 1000, // 3 minutes per individual test file (fix for #302)
 	ports: {
-		supabase: 55321,
+		supabase: 54321, // Updated to unified Web Supabase port
 		web: 3000,
 		payload: 3020,
 	},
@@ -252,10 +252,11 @@ class InfrastructureChecker {
 	async healthCheckSupabase() {
 		try {
 			// First check if database is responding on E2E port
-			const response = await fetch("http://127.0.0.1:55321/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54321/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
 					apikey:
+						process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
 				},
 			});
@@ -265,7 +266,7 @@ class InfrastructureChecker {
 				// Also check if we can get status (non-critical if it fails)
 				try {
 					const { stdout } = await execAsync(
-						"cd apps/e2e && npx supabase status 2>&1 | head -1",
+						"cd apps/web && npx supabase status 2>&1 | head -1",
 						{ timeout: 2000 },
 					);
 					if (stdout.includes("running")) {
@@ -288,30 +289,45 @@ class InfrastructureChecker {
 	}
 
 	/**
-	 * Check if .env.test exists and has required variables
+	 * Check if .env.test or .env.test.locked exists and has required variables
 	 */
 	async healthCheckEnvironment() {
 		try {
-			const envPath = path.join(process.cwd(), "apps/web/.env.test");
-			await fs.access(envPath);
+			// Check for locked test environment first (unified architecture)
+			const lockedEnvPath = path.join(
+				process.cwd(),
+				"apps/web/.env.test.locked",
+			);
+			const testEnvPath = path.join(process.cwd(), "apps/web/.env.test");
+
+			// Try locked env first, then regular test env
+			let envPath = null;
+			try {
+				await fs.access(lockedEnvPath);
+				envPath = lockedEnvPath;
+			} catch {
+				await fs.access(testEnvPath);
+				envPath = testEnvPath;
+			}
 
 			// Quick validation of critical env vars
 			const content = await fs.readFile(envPath, "utf8");
 			const requiredVars = [
 				"NEXT_PUBLIC_AUTH_PASSWORD",
-				"NEXT_PUBLIC_PRODUCT_NAME",
+				"NEXT_PUBLIC_SUPABASE_URL",
+				"E2E_TEST_USER_PASSWORD", // Ensure passwords are configured
 			];
 			const hasRequired = requiredVars.every((v) => content.includes(v));
 
 			if (hasRequired) {
-				log("✅ Environment: Healthy");
+				log(`✅ Environment: Healthy (using ${path.basename(envPath)})`);
 				return "healthy";
 			}
 
 			log("⚠️ Environment: Missing critical variables");
 			return "unhealthy";
 		} catch {
-			log("⚠️ Environment: .env.test missing");
+			log("⚠️ Environment: .env.test.locked or .env.test missing");
 			return "unhealthy";
 		}
 	}
@@ -322,10 +338,11 @@ class InfrastructureChecker {
 	async healthCheckDatabase() {
 		try {
 			// Quick connectivity test to Supabase E2E instance
-			const response = await fetch("http://127.0.0.1:55321/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54321/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
 					apikey:
+						process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 						"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
 				},
 			});
@@ -369,14 +386,17 @@ class InfrastructureChecker {
 			// Query the onboarding table which has entries for our test users
 			// This is accessible via the public API and confirms users are properly seeded
 			const response = await fetch(
-				"http://127.0.0.1:55321/rest/v1/onboarding?select=user_id",
+				"http://127.0.0.1:54321/rest/v1/onboarding?select=user_id",
 				{
 					signal: AbortSignal.timeout(3000),
 					headers: {
 						apikey:
+							process.env.SUPABASE_SERVICE_ROLE_KEY ||
 							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
-						Authorization:
-							"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+						Authorization: `Bearer ${
+							process.env.SUPABASE_SERVICE_ROLE_KEY ||
+							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU"
+						}`,
 						"Content-Type": "application/json",
 					},
 				},
@@ -447,7 +467,7 @@ class InfrastructureChecker {
 				// First, try to stop any existing instances
 				if (attempt > 1) {
 					log("🛑 Stopping existing Supabase instances...");
-					await execAsync("cd apps/e2e && npx supabase stop", {
+					await execAsync("cd apps/web && npx supabase stop", {
 						timeout: 30000,
 					}).catch(() => {});
 					await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -464,7 +484,7 @@ class InfrastructureChecker {
 
 				// Start Supabase with proper timeout
 				const { stdout } = await execAsync(
-					"cd apps/e2e && npx supabase start",
+					"cd apps/web && npx supabase start",
 					{ timeout: attempt === 1 ? 180000 : 300000 }, // 3min first attempt, 5min for retries
 				);
 
@@ -499,9 +519,9 @@ class InfrastructureChecker {
 					log("\n📋 Troubleshooting steps:");
 					log("   1. Check Docker is running: docker info");
 					log("   2. Check Supabase CLI: npx supabase --version");
-					log("   3. Check for port conflicts: lsof -ti:55321,55322");
-					log("   4. Try manual start: cd apps/e2e && npx supabase start");
-					log("   5. Check logs: cd apps/e2e && npx supabase logs");
+					log("   3. Check for port conflicts: lsof -ti:54321,54322");
+					log("   4. Try manual start: cd apps/web && npx supabase start");
+					log("   5. Check logs: cd apps/web && npx supabase logs");
 					return "failed";
 				}
 
@@ -515,16 +535,73 @@ class InfrastructureChecker {
 	}
 
 	/**
-	 * Create/update .env.test if needed
+	 * Create/update .env.test if needed and load environment variables
 	 */
 	async setupEnvironment() {
 		try {
+			// Check for locked test environment first (unified architecture)
+			const lockedEnvPath = path.join(
+				process.cwd(),
+				"apps/web/.env.test.locked",
+			);
+			const testEnvPath = path.join(process.cwd(), "apps/web/.env.test");
 			const examplePath = path.join(process.cwd(), "apps/web/.env.example");
-			const envPath = path.join(process.cwd(), "apps/web/.env.test");
 
-			const content = await fs.readFile(examplePath, "utf8");
-			await fs.writeFile(envPath, content);
-			return "created";
+			// Determine which env file to use/create
+			let envPath = null;
+			let action = null;
+
+			try {
+				await fs.access(lockedEnvPath);
+				envPath = lockedEnvPath;
+				action = "using-locked";
+				log("Using locked test environment (.env.test.locked)");
+			} catch {
+				try {
+					await fs.access(testEnvPath);
+					envPath = testEnvPath;
+					action = "using-test";
+					log("Using test environment (.env.test)");
+				} catch {
+					// Create from example if neither exists
+					const content = await fs.readFile(examplePath, "utf8");
+					await fs.writeFile(testEnvPath, content);
+					envPath = testEnvPath;
+					action = "created";
+					log("Created test environment from example");
+				}
+			}
+
+			// Load environment variables from the file
+			const envContent = await fs.readFile(envPath, "utf-8");
+			const lines = envContent.split("\n");
+
+			for (const line of lines) {
+				const trimmed = line.trim();
+				if (trimmed && !trimmed.startsWith("#")) {
+					const [key, ...valueParts] = trimmed.split("=");
+					if (key) {
+						process.env[key.trim()] = valueParts.join("=").trim();
+					}
+				}
+			}
+
+			// Verify critical variables are loaded
+			const criticalVars = [
+				"E2E_TEST_USER_PASSWORD",
+				"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+				"SUPABASE_SERVICE_ROLE_KEY",
+			];
+
+			const missing = criticalVars.filter((v) => !process.env[v]);
+			if (missing.length > 0) {
+				logError(
+					`⚠️ Missing critical environment variables: ${missing.join(", ")}`,
+				);
+				logError("Please ensure these are configured in .env.test.locked");
+			}
+
+			return action;
 		} catch (error) {
 			logError(`❌ Environment setup failed: ${error.message}`);
 			return "failed";
@@ -560,7 +637,7 @@ class InfrastructureChecker {
 				// Run database reset which applies migrations and runs seed files
 				// This ensures clean, consistent test data for E2E tests
 				const { stdout, stderr } = await execAsync(
-					"cd apps/e2e && npx supabase db reset --local",
+					"cd apps/web && npx supabase db reset --local",
 					{ timeout: 60000 }, // Longer timeout for reset operation
 				);
 
@@ -629,15 +706,15 @@ class InfrastructureChecker {
 				if (attempt === maxAttempts) {
 					log("\n📋 Test user seeding troubleshooting:");
 					log(
-						"   1. Check Supabase is running: cd apps/e2e && npx supabase status",
+						"   1. Check Supabase is running: cd apps/web && npx supabase status",
 					);
 					log(
-						"   2. Check seed file exists: ls -la apps/e2e/supabase/seeds/01-e2e-test-data.sql",
+						"   2. Check seed file exists: ls -la apps/web/supabase/seeds/01_main_seed.sql",
 					);
-					log("   3. Try manual seeding: cd apps/e2e && npx supabase db seed");
-					log("   4. Check database logs: cd apps/e2e && npx supabase logs db");
+					log("   3. Try manual seeding: cd apps/web && npx supabase db seed");
+					log("   4. Check database logs: cd apps/web && npx supabase logs db");
 					log(
-						"   5. Verify migrations: cd apps/e2e && npx supabase migration list",
+						"   5. Verify migrations: cd apps/web && npx supabase migration list",
 					);
 					return "failed";
 				}
@@ -703,7 +780,7 @@ class InfrastructureChecker {
 			log("🗄️ Checking database connection...");
 			// Simple pg connection test using environment vars
 			const { stdout } = await execAsync(
-				'cd apps/e2e && npx supabase status | grep -i "db url"',
+				'cd apps/web && npx supabase status | grep -i "db url"',
 			);
 			if (stdout.length > 0) {
 				log("✅ Database connection verified");
@@ -752,7 +829,7 @@ class InfrastructureChecker {
 		if (results.supabase === "failed") {
 			fixes.push({
 				issue: "Supabase not running",
-				command: "cd apps/e2e && npx supabase start",
+				command: "cd apps/web && npx supabase start",
 				severity: "critical",
 			});
 		}
@@ -768,7 +845,7 @@ class InfrastructureChecker {
 		if (results.database === "failed") {
 			fixes.push({
 				issue: "Database connection failed",
-				command: "cd apps/e2e && npx supabase db reset --linked",
+				command: "cd apps/web && npx supabase db reset --linked",
 				severity: "warning",
 			});
 		}
@@ -784,7 +861,7 @@ class InfrastructureChecker {
 		if (results.testUsers === "failed") {
 			fixes.push({
 				issue: "Required test users missing from database",
-				command: "cd apps/e2e && npx supabase db seed",
+				command: "cd apps/web && npx supabase db seed",
 				severity: "critical",
 			});
 		}
@@ -3258,7 +3335,7 @@ class E2ETestRunner {
 		// Get test files using find command
 		const { execSync } = require("node:child_process");
 		const result = execSync(
-			`find apps/e2e/tests -name "*.spec.ts" 2>/dev/null`,
+			`find apps/web/tests -name "*.spec.ts" 2>/dev/null`,
 			{ encoding: "utf8" },
 		);
 		const testFiles = result.split("\n").filter(Boolean);
@@ -3616,7 +3693,7 @@ class TestController {
 			// Infrastructure failures
 			if (e2e.infrastructureFailures > 0) {
 				log("   🚨 Infrastructure failures detected:");
-				log("   💡 1. Restart services: cd apps/e2e && npx supabase restart");
+				log("   💡 1. Restart services: cd apps/web && npx supabase restart");
 				log(
 					'   💡 2. Clear processes: pkill -f "playwright|vitest|next-server"',
 				);
@@ -3643,7 +3720,7 @@ class TestController {
 			// General E2E fixes
 			log("   💡 4. Reduce concurrency: TEST_MAX_CONCURRENT_SHARDS=2");
 			log("   💡 5. Debug specific shard: pnpm --filter web-e2e test:shard1");
-			log("   💡 6. Check screenshots: apps/e2e/test-results/");
+			log("   💡 6. Check screenshots: apps/web/test-results/");
 		}
 
 		// Success rate analysis
