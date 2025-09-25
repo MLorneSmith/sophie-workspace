@@ -42,10 +42,13 @@ yarn-error.log*
 .env*.local
 .env
 .env.test
+.env.test.locked
 .env.docker
 packages/*/.env
 apps/*/.env
 **/.env
+**/.env.test
+**/.env.test.locked
 *.env
 
 # MCP configuration (contains tokens)
