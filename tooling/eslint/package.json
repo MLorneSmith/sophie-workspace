@@ -13,11 +13,11 @@
     "format": "prettier --check \"**/*.{js,json}\""
   },
   "dependencies": {
-    "@next/eslint-plugin-next": "15.5.3",
+    "@next/eslint-plugin-next": "15.5.4",
     "@types/eslint": "9.6.1",
-    "eslint-config-next": "15.5.3",
-    "eslint-config-turbo": "^2.5.6",
-    "typescript-eslint": "8.44.0"
+    "eslint-config-next": "15.5.4",
+    "eslint-config-turbo": "^2.5.8",
+    "typescript-eslint": "8.44.1"
   },
   "devDependencies": {
     "@kit/prettier-config": "workspace:*",

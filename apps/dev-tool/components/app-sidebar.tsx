@@ -6,9 +6,12 @@ import { usePathname } from 'next/navigation';
 import {
   BoltIcon,
   ComponentIcon,
+  DatabaseIcon,
+  FileTextIcon,
   LanguagesIcon,
   LayoutDashboardIcon,
   MailIcon,
+  ServerIcon,
 } from 'lucide-react';
 
 import {
@@ -19,6 +22,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from '@kit/ui/shadcn-sidebar';
 import { isRouteActive } from '@kit/ui/utils';
 
@@ -48,6 +54,22 @@ const routes = [
     path: '/translations',
     Icon: LanguagesIcon,
   },
+  {
+    label: 'MCP Server',
+    Icon: ServerIcon,
+    children: [
+      {
+        label: 'Database',
+        path: '/mcp-server/database',
+        Icon: DatabaseIcon,
+      },
+      {
+        label: 'PRD Manager',
+        path: '/mcp-server/prds',
+        Icon: FileTextIcon,
+      },
+    ],
+  },
 ];
 
 export function DevToolSidebar({
@@ -66,16 +88,40 @@ export function DevToolSidebar({
 
         <SidebarMenu>
           {routes.map((route) => (
-            <SidebarMenuItem key={route.path}>
-              <SidebarMenuButton
-                isActive={isRouteActive(route.path, pathname, false)}
-                asChild
-              >
-                <Link href={route.path}>
-                  <route.Icon className="h-4 w-4" />
-                  <span>{route.label}</span>
-                </Link>
-              </SidebarMenuButton>
+            <SidebarMenuItem key={route.path || route.label}>
+              {'children' in route ? (
+                <>
+                  <SidebarMenuButton>
+                    <route.Icon className="h-4 w-4" />
+                    <span>{route.label}</span>
+                  </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    {route.children.map((child) => (
+                      <SidebarMenuSubItem key={child.path}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={isRouteActive(child.path, pathname, false)}
+                        >
+                          <Link href={child.path}>
+                            <child.Icon className="h-4 w-4" />
+                            <span>{child.label}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </>
+              ) : (
+                <SidebarMenuButton
+                  isActive={isRouteActive(route.path, pathname, false)}
+                  asChild
+                >
+                  <Link href={route.path}>
+                    <route.Icon className="h-4 w-4" />
+                    <span>{route.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

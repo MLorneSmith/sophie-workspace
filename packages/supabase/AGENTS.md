@@ -14,7 +14,7 @@ This file contains instructions for working with Supabase, database security, an
 1. **Edit schema file** (e.g., `supabase/schemas/18-projects.sql`)
 2. **Generate migration**: `pnpm --filter web supabase:db:diff -f migration_name`
    - This compares your schema against the current database and creates a migration
-3. **Apply migration**: `pnpm --filter web supabase migration up`
+3. **Apply migration**: `pnpm --filter web supabase migrations up`
    - This actually executes the SQL changes in the database
 
 **⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database. You MUST generate and apply a migration for changes to take effect. Schema files are templates - migrations are the actual database operations.

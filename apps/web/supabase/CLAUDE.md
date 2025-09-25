@@ -10,25 +10,30 @@ Migrations are generated from schemas. If creating a new schema, the migration c
 
 If modifying an existing migration, use the `diff` command:
 
-### 1. Creating New Schema Files
+### 1. Creating new entities
+
+When creating new entities (such as creating a new tabble), we can create a migration as is, just copying its content.
 
 ```bash
 # Create new schema file
 touch apps/web/supabase/schemas/15-my-new-feature.sql
 
-# Apply changes and create migration
-pnpm --filter web run supabase:db:diff -f my-new-feature
+# Create Migration
+pnpm --filter web supabase migrations new my-new-feature
 
-# Restart Supabase with fresh schema
-pnpm supabase:web:reset
+# Copy content to migration
+cp apps/web/supabase/schemas/15-my-new-feature.sql apps/web/supabase/migrations/$(ls -t apps/web/supabase/migrations/ | head -n1)
+
+# Apply migration
+pnpm --filter web supabase migrations up # alternatively reset db with pnpm supabase:web:reset
 
 # Generate TypeScript types
 pnpm supabase:web:typegen
 ```
 
-Verify the diff command generated the same content as the schema; if not, take steps to fix the migration.
+### 2. Modifying existing entities
 
-### 2. Modifying Existing Schemas
+When modifying existing entities (such ass adding a field to an existing table), we can use the `diff` command to generate a migration following the changes:
 
 ```bash
 # Edit schema file (e.g., schemas/03-accounts.sql)
@@ -38,7 +43,7 @@ Verify the diff command generated the same content as the schema; if not, take s
 pnpm --filter web run supabase:db:diff -f update-accounts
 
 # Apply and test
-pnpm supabase:web:reset
+pnpm --filter web supabase migrations up # alternatively reset db with pnpm supabase:web:reset
 
 # After resetting
 pnpm supabase:web:typegen
@@ -244,7 +249,7 @@ Add triggers if the properties exist and are appropriate:
 
 ```bash
 # View migration status
-pnpm --filter web supabase migration list
+pnpm --filter web supabase migrations list
 
 # Reset database completely
 pnpm supabase:web:reset
@@ -252,6 +257,9 @@ pnpm supabase:web:reset
 # Generate migration from schema diff
 pnpm --filter web run supabase:db:diff -f migration-name
 
+## Apply created migration
+pnpm --filter web supabase migrations up
+
 # Apply specific migration
-pnpm --filter web supabase migration up --include-schemas public
+pnpm --filter web supabase migrations up --include-schemas public
 ```

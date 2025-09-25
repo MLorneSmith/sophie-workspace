@@ -7,6 +7,7 @@ import {
   registerDatabaseTools,
 } from './tools/database';
 import { registerGetMigrationsTools } from './tools/migrations';
+import { registerPRDTools } from './tools/prd-manager';
 import { registerPromptsSystem } from './tools/prompts';
 import { registerScriptsTools } from './tools/scripts';
 
@@ -24,6 +25,7 @@ async function main() {
   registerDatabaseResources(server);
   registerComponentsTools(server);
   registerScriptsTools(server);
+  registerPRDTools(server);
   registerPromptsSystem(server);
 
   await server.connect(transport);

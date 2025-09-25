@@ -92,14 +92,25 @@ interface EnumInfo {
 }
 
 export class DatabaseTool {
+  private static _ROOT_PATH = process.cwd();
+
+  static get ROOT_PATH(): string {
+    return this._ROOT_PATH;
+  }
+
+  static set ROOT_PATH(path: string) {
+    this._ROOT_PATH = path;
+  }
+
   static async getSchemaFiles(): Promise<SchemaFile[]> {
     const schemasPath = join(
-      process.cwd(),
+      DatabaseTool.ROOT_PATH,
       'apps',
       'web',
       'supabase',
       'schemas',
     );
+
     const files = await readdir(schemasPath);
 
     const schemaFiles: SchemaFile[] = [];
@@ -113,10 +124,10 @@ export class DatabaseTool {
       const sectionMatch = content.match(/\* Section: ([^\n*]+)/);
       const descriptionMatch = content.match(/\* ([^*\n]+)\n \* We create/);
 
-      // Extract tables and functions from content
-      const tables = this.extractTables(content);
-      const functions = this.extractFunctionNames(content);
-      const dependencies = this.extractDependencies(content);
+      // Extract tables and functions from content using simple regex (for schema file metadata only)
+      const tables = this.extractTablesRegex(content);
+      const functions = this.extractFunctionNamesRegex(content);
+      const dependencies = this.extractDependenciesRegex(content);
       const topic = this.determineTopic(file, content);
 
       schemaFiles.push({
@@ -137,6 +148,54 @@ export class DatabaseTool {
   }
 
   static async getFunctions(): Promise<DatabaseFunction[]> {
+    try {
+      // Query the database directly for function information
+      const functions = await sql`
+        SELECT
+          p.proname as function_name,
+          n.nspname as schema_name,
+          pg_get_function_result(p.oid) as return_type,
+          pg_get_function_arguments(p.oid) as parameters,
+          CASE p.prosecdef WHEN true THEN 'definer' ELSE 'invoker' END as security_level,
+          l.lanname as language,
+          obj_description(p.oid, 'pg_proc') as description
+        FROM pg_proc p
+        JOIN pg_namespace n ON p.pronamespace = n.oid
+        LEFT JOIN pg_language l ON p.prolang = l.oid
+        WHERE n.nspname IN ('public', 'kit')
+        AND p.prokind = 'f'  -- Only functions, not procedures
+        ORDER BY n.nspname, p.proname
+      `;
+
+      // Get schema files to map functions to source files
+      const schemaFiles = await this.getSchemaFiles();
+      const fileMapping = this.createFunctionFileMapping(schemaFiles);
+
+      return functions.map((func) => ({
+        name: func.function_name,
+        schema: func.schema_name,
+        returnType: func.return_type || 'unknown',
+        parameters: this.parsePostgresParameters(func.parameters || ''),
+        securityLevel: func.security_level as 'definer' | 'invoker',
+        description: func.description || 'No description available',
+        purpose: this.extractPurpose(
+          func.description || '',
+          func.function_name,
+        ),
+        sourceFile:
+          fileMapping[`${func.schema_name}.${func.function_name}`] || 'unknown',
+      }));
+    } catch (error) {
+      console.error(
+        'Error querying database functions, falling back to file parsing:',
+        error.message,
+      );
+      // Fallback to file-based extraction if database query fails
+      return this.getFunctionsFromFiles();
+    }
+  }
+
+  private static async getFunctionsFromFiles(): Promise<DatabaseFunction[]> {
     const schemaFiles = await this.getSchemaFiles();
     const functions: DatabaseFunction[] = [];
 
@@ -150,6 +209,70 @@ export class DatabaseTool {
     }
 
     return functions.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  private static createFunctionFileMapping(
+    schemaFiles: SchemaFile[],
+  ): Record<string, string> {
+    const mapping: Record<string, string> = {};
+
+    for (const file of schemaFiles) {
+      for (const functionName of file.functions) {
+        // Map both public.functionName and functionName to the file
+        mapping[`public.${functionName}`] = file.name;
+        mapping[`kit.${functionName}`] = file.name;
+        mapping[functionName] = file.name;
+      }
+    }
+
+    return mapping;
+  }
+
+  private static parsePostgresParameters(paramString: string): Array<{
+    name: string;
+    type: string;
+    defaultValue?: string;
+  }> {
+    if (!paramString.trim()) return [];
+
+    const parameters: Array<{
+      name: string;
+      type: string;
+      defaultValue?: string;
+    }> = [];
+
+    // PostgreSQL function arguments format: "name type, name type DEFAULT value"
+    const params = paramString
+      .split(',')
+      .map((p) => p.trim())
+      .filter((p) => p);
+
+    for (const param of params) {
+      // Match pattern: "name type" or "name type DEFAULT value"
+      const match = param.match(
+        /^(?:(?:IN|OUT|INOUT)\s+)?([a-zA-Z_][a-zA-Z0-9_]*)\s+([^=\s]+)(?:\s+DEFAULT\s+(.+))?$/i,
+      );
+
+      if (match) {
+        const [, name, type, defaultValue] = match;
+        parameters.push({
+          name: name.trim(),
+          type: type.trim(),
+          defaultValue: defaultValue?.trim(),
+        });
+      } else if (param.includes(' ')) {
+        // Fallback for unnamed parameters
+        const parts = param.split(' ');
+        if (parts.length >= 2) {
+          parameters.push({
+            name: parts[0] || 'unnamed',
+            type: parts.slice(1).join(' ').trim(),
+          });
+        }
+      }
+    }
+
+    return parameters;
   }
 
   static async getFunctionDetails(
@@ -226,12 +349,13 @@ export class DatabaseTool {
 
   static async getSchemaContent(fileName: string): Promise<string> {
     const schemasPath = join(
-      process.cwd(),
+      DatabaseTool.ROOT_PATH,
       'apps',
       'web',
       'supabase',
       'schemas',
     );
+
     const filePath = join(schemasPath, fileName);
 
     try {
@@ -265,24 +389,61 @@ export class DatabaseTool {
   }
 
   static async getAllProjectTables(): Promise<ProjectTable[]> {
+    // Query database directly for table information
+    const tables = await sql`
+      SELECT
+        t.table_name,
+        t.table_schema,
+        obj_description(c.oid, 'pg_class') as description
+      FROM information_schema.tables t
+      LEFT JOIN pg_class c ON c.relname = t.table_name
+      LEFT JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = t.table_schema
+      WHERE t.table_schema IN ('public', 'kit')
+      AND t.table_type = 'BASE TABLE'
+      ORDER BY t.table_schema, t.table_name
+    `;
+
+    // Get schema files to map tables to source files
     const schemaFiles = await this.getSchemaFiles();
-    const tables: ProjectTable[] = [];
+    const fileMapping = this.createTableFileMapping(schemaFiles);
+
+    return tables.map((table: any) => ({
+      name: table.table_name,
+      schema: table.table_schema,
+      sourceFile:
+        fileMapping[`${table.table_schema}.${table.table_name}`] ||
+        fileMapping[table.table_name] ||
+        'database',
+      topic: this.getTableTopic(table.table_name, schemaFiles),
+    }));
+  }
+
+  private static createTableFileMapping(
+    schemaFiles: SchemaFile[],
+  ): Record<string, string> {
+    const mapping: Record<string, string> = {};
 
     for (const file of schemaFiles) {
-      const content = await readFile(file.path, 'utf8');
-      const extractedTables = this.extractTablesWithSchema(content);
-
-      for (const table of extractedTables) {
-        tables.push({
-          name: table.name,
-          schema: table.schema || 'public',
-          sourceFile: file.name,
-          topic: file.topic,
-        });
+      for (const tableName of file.tables) {
+        mapping[`public.${tableName}`] = file.name;
+        mapping[`kit.${tableName}`] = file.name;
+        mapping[tableName] = file.name;
       }
     }
 
-    return tables;
+    return mapping;
+  }
+
+  private static getTableTopic(
+    tableName: string,
+    schemaFiles: SchemaFile[],
+  ): string {
+    for (const file of schemaFiles) {
+      if (file.tables.includes(tableName)) {
+        return file.topic;
+      }
+    }
+    return 'general';
   }
 
   static async getAllEnums(): Promise<Record<string, EnumInfo>> {
@@ -675,78 +836,59 @@ export class DatabaseTool {
     return `Custom database function: ${description}`;
   }
 
-  private static extractTables(content: string): string[] {
-    const tables: string[] = [];
-    const tableRegex =
-      /create\s+table\s+(?:if\s+not\s+exists\s+)?(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi;
-    let match;
-
-    while ((match = tableRegex.exec(content)) !== null) {
-      if (match[1]) {
-        tables.push(match[1]);
-      }
-    }
-
-    return [...new Set(tables)]; // Remove duplicates
-  }
-
-  private static extractTablesWithSchema(content: string): Array<{
-    name: string;
-    schema: string;
-  }> {
-    const tables: Array<{ name: string; schema: string }> = [];
-    const tableRegex =
-      /create\s+table\s+(?:if\s+not\s+exists\s+)?(?:([a-zA-Z_][a-zA-Z0-9_]*)\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi;
-    let match;
-
-    while ((match = tableRegex.exec(content)) !== null) {
-      if (match[2]) {
-        tables.push({
-          schema: match[1] || 'public',
-          name: match[2],
-        });
-      }
-    }
-
-    return tables.filter(
-      (table, index, arr) =>
-        arr.findIndex(
-          (t) => t.name === table.name && t.schema === table.schema,
-        ) === index,
+  // Fallback regex methods (simplified and more reliable)
+  private static extractTablesRegex(content: string): string[] {
+    const tableMatches = content.match(
+      /create\s+table\s+(?:if\s+not\s+exists\s+)?(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi,
     );
+    if (!tableMatches) return [];
+
+    return [
+      ...new Set(
+        tableMatches
+          .map((match) => {
+            const nameMatch = match.match(/([a-zA-Z_][a-zA-Z0-9_]*)$/i);
+            return nameMatch ? nameMatch[1] : '';
+          })
+          .filter(Boolean),
+      ),
+    ];
   }
 
-  private static extractFunctionNames(content: string): string[] {
-    const functions: string[] = [];
-    const functionRegex =
-      /create\s+(?:or\s+replace\s+)?function\s+(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi;
-    let match;
+  private static extractFunctionNamesRegex(content: string): string[] {
+    const functionMatches = content.match(
+      /create\s+(?:or\s+replace\s+)?function\s+(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi,
+    );
+    if (!functionMatches) return [];
 
-    while ((match = functionRegex.exec(content)) !== null) {
-      if (match[1]) {
-        functions.push(match[1]);
-      }
-    }
-
-    return [...new Set(functions)]; // Remove duplicates
+    return [
+      ...new Set(
+        functionMatches
+          .map((match) => {
+            const nameMatch = match.match(/([a-zA-Z_][a-zA-Z0-9_]*)$/i);
+            return nameMatch ? nameMatch[1] : '';
+          })
+          .filter(Boolean),
+      ),
+    ];
   }
 
-  private static extractDependencies(content: string): string[] {
-    const dependencies: string[] = [];
+  private static extractDependenciesRegex(content: string): string[] {
+    const refMatches = content.match(
+      /references\s+(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi,
+    );
+    if (!refMatches) return [];
 
-    // Look for references to other tables
-    const referencesRegex =
-      /references\s+(?:public\.)?([a-zA-Z_][a-zA-Z0-9_]*)/gi;
-    let match;
-
-    while ((match = referencesRegex.exec(content)) !== null) {
-      if (match[1] && match[1] !== 'users') {
-        // Exclude auth.users as it's external
-        dependencies.push(match[1]);
-      }
-    }
-
-    return [...new Set(dependencies)]; // Remove duplicates
+    return [
+      ...new Set(
+        refMatches
+          .map((match) => {
+            const nameMatch = match.match(/([a-zA-Z_][a-zA-Z0-9_]*)$/i);
+            return nameMatch && nameMatch[1] !== 'users' ? nameMatch[1] : '';
+          })
+          .filter(Boolean),
+      ),
+    ];
   }
 
   private static extractTableDefinition(

@@ -9,6 +9,6 @@
     "module": "nodenext",
     "moduleResolution": "nodenext"
   },
-  "files": ["src/index.ts"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

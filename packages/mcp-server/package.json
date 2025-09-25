@@ -7,22 +7,21 @@
   "bin": {
     "makerkit-mcp-server": "./build/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "src/*"
-      ]
-    }
+  "exports": {
+    "./database": "./src/tools/database.ts",
+    "./components": "./src/tools/components.ts",
+    "./migrations": "./src/tools/migrations.ts",
+    "./prd-manager": "./src/tools/prd-manager.ts",
+    "./prompts": "./src/tools/prompts.ts",
+    "./scripts": "./src/tools/scripts.ts"
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
-    "build": "tsc && chmod 755 build/index.js",
-    "build:watch": "tsc --watch",
-    "mcp": "node build/index.js"
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "1.18.1",
@@ -30,5 +29,12 @@
     "postgres": "3.4.7",
     "zod": "^3.25.74"
   },
-  "prettier": "@kit/prettier-config"
+  "prettier": "@kit/prettier-config",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "src/*"
+      ]
+    }
+  }
 }

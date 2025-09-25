@@ -20,11 +20,11 @@ export class MigrationsTool {
   }
 
   static CreateMigration(name: string) {
-    return promisify(exec)(`pnpm --filter web supabase migration new ${name}`);
+    return promisify(exec)(`pnpm --filter web supabase migrations new ${name}`);
   }
 
   static Diff() {
-    return promisify(exec)(`supabase migration diff`);
+    return promisify(exec)(`supabase db diff`);
   }
 }
 
