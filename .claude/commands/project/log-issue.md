@@ -35,7 +35,27 @@ examples:
 
 **Note**: Issue synchronization is handled automatically by the debug-issue command. Manual syncing is rarely needed.
 
+<<<<<<< HEAD:.claude/commands/project/log-issue.md
 The debug-issue command uses an internal sync script that:
+=======
+Two scripts are available for syncing GitHub issues to local files:
+
+1. **`.claude/scripts/issue-sync.js`** - Main sync script for individual issues
+
+   ```bash
+   node .claude/scripts/issue-sync.js 123  # Sync issue #123
+   ```
+
+2. **`.claude/scripts/auto-sync.js`** - Auto-sync wrapper for debug workflows
+
+   ```bash
+   node .claude/scripts/auto-sync.js 123        # Auto-sync issue #123
+   node .claude/scripts/auto-sync.js ISSUE-123  # Auto-sync ISSUE-123
+   node .claude/scripts/auto-sync.js "#123"     # Auto-sync issue #123
+   ```
+
+The auto-sync script automatically:
+>>>>>>> origin/main:.claude/commands/log-issue.md
 
 - Checks if local cache exists and is up-to-date
 - Fetches from GitHub if needed

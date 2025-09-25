@@ -2,21 +2,20 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
+# Install http-server globally
+RUN npm install -g http-server
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm@9
-RUN pnpm install
-
-# Copy source files
+# Copy all files
 COPY . .
 
+# Install local dependencies
+RUN npm install
+
 # Generate dashboards (if tracking data exists)
-RUN pnpm run generate || echo "No tracking data, skipping generation"
+RUN npm run generate || echo "No tracking data, skipping generation"
 
 # Expose port
 EXPOSE 8080
 
-# Start the server
-CMD ["pnpm", "run", "serve"]
+# Start the server directly
+CMD ["http-server", "output", "-p", "8080", "-a", "0.0.0.0"]
