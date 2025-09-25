@@ -21,7 +21,7 @@
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"zod": "^3.25.74"
+		"zod": "^3.25.67"
 	},
 	"typesVersions": {
 		"*": {
@@ -29,8 +29,5 @@
 				"src/*"
 			]
 		}
-	},
-	"dependencies": {
-		"@hookform/resolvers": "5.2.1"
 	}
 }

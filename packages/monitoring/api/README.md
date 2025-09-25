@@ -2,7 +2,7 @@
 
 Please set the following environment variable to your preferred monitoring provider:
 
-```bash
+```
 NEXT_PUBLIC_MONITORING_PROVIDER=
 ENABLE_MONITORING_INSTRUMENTATION=true
 ```
@@ -18,7 +18,7 @@ To use a specific provider, set the `NEXT_PUBLIC_MONITORING_PROVIDER` environmen
 
 To use Baselime, set the `NEXT_PUBLIC_MONITORING_PROVIDER` environment variable to `baselime`.
 
-```bash
+```
 NEXT_PUBLIC_MONITORING_PROVIDER=baselime
 ```
 
@@ -26,7 +26,7 @@ NEXT_PUBLIC_MONITORING_PROVIDER=baselime
 
 To use Sentry, set the `NEXT_PUBLIC_MONITORING_PROVIDER` environment variable to `sentry`.
 
-```bash
+```
 NEXT_PUBLIC_MONITORING_PROVIDER=sentry
 ```
 
@@ -34,6 +34,6 @@ NEXT_PUBLIC_MONITORING_PROVIDER=sentry
 
 To enable instrumentation, set the `ENABLE_MONITORING_INSTRUMENTATION` environment variable to `true`.
 
-```bash
+```
 ENABLE_MONITORING_INSTRUMENTATION=true
 ```

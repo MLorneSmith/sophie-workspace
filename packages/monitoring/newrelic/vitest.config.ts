@@ -24,6 +24,7 @@ export default defineProject({
 		// Project-specific performance settings
 		testTimeout: 10000,
 		hookTimeout: 5000,
+		teardownTimeout: 2000,
 	},
 
 	// Path resolution

@@ -15,9 +15,9 @@
 		"./components": "./src/components/index.ts"
 	},
 	"dependencies": {
-		"@stripe/react-stripe-js": "^4.0.2",
-		"@stripe/stripe-js": "^7.9.0",
-		"stripe": "^18.5.0"
+		"@stripe/react-stripe-js": "^3.7.0",
+		"@stripe/stripe-js": "^7.3.1",
+		"stripe": "^18.2.1"
 	},
 	"devDependencies": {
 		"@kit/billing": "workspace:*",
@@ -27,11 +27,11 @@
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"@types/react": "19.1.12",
+		"@types/react": "19.1.8",
 		"date-fns": "^4.1.0",
-		"next": "15.5.2",
-		"react": "19.1.1",
-		"zod": "^3.25.74"
+		"next": "15.3.3",
+		"react": "19.1.0",
+		"zod": "^3.25.67"
 	},
 	"typesVersions": {
 		"*": {
