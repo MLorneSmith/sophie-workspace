@@ -194,7 +194,7 @@ ENABLE_DB_METRICS_LOGGING=true
 
 3. **Monitor the logs** for these messages:
 
-   ```
+   ```text
    [REQ-DEDUP-INFO] Request deduplication manager initialized
    [ENHANCED-API-INFO] Enhanced API Manager initialized
    [FORM-PROTECTION] Initializing...
@@ -206,7 +206,7 @@ ENABLE_DB_METRICS_LOGGING=true
 
 2. **Open browser DevTools** and check for:
 
-   ```
+   ```text
    [FORM-PROTECTION] Initializing...
    [FORM-PROTECTION] Protected form: [form-id]
    ```
@@ -262,7 +262,7 @@ Look for these key log messages:
 
 **Success indicators:**
 
-```
+```text
 [REQ-DEDUP-INFO] Returning cached response
 [FORM-PROTECTION] Prevented duplicate submission
 [ENHANCED-API-INFO] Request completed successfully
@@ -270,14 +270,14 @@ Look for these key log messages:
 
 **Warning indicators:**
 
-```
+```text
 [REQ-DEDUP-INFO] Duplicate request detected
 [FORM-PROTECTION] Prevented double-click
 ```
 
 **Error indicators:**
 
-```
+```text
 [REQ-DEDUP-ERROR] Request failed
 [ENHANCED-API-ERROR] API Error
 ```

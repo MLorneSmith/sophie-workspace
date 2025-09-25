@@ -77,6 +77,15 @@ create unique index unique_personal_account on public.accounts (primary_owner_us
 where
   is_personal_account = true;
 
+-- Triggers for accounts table
+create trigger accounts_set_timestamps
+before insert or update on public.accounts
+for each row execute function public.trigger_set_timestamps();
+
+create trigger accounts_set_user_tracking
+before insert or update on public.accounts
+for each row execute function public.trigger_set_user_tracking();
+
 -- RLS on the accounts table
 -- UPDATE(accounts):
 -- Team owners can update their accounts

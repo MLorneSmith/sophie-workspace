@@ -12,6 +12,10 @@
 import { createServiceLogger } from "@kit/shared/logger";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
+import { loadTestEnv } from "./load-test-env";
+
+// Load test environment variables
+loadTestEnv();
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("UPDATE_TEST_USER_PROGRESS");
@@ -63,342 +67,461 @@ interface ProgressData {
 	[key: string]: unknown;
 }
 
-// Hardcoded Supabase credentials
-// In a production environment, these should be loaded from environment variables
-const supabaseUrl = "http://127.0.0.1:54321";
-const supabaseKey =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+// Main async wrapper to enable top-level async logger usage
+async function runScript() {
+	const logger = await getLogger();
 
-// Payload CMS URL
-const payloadUrl =
-	process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3020";
+	// Load credentials from environment variables
+	const supabaseUrl = process.env.TEST_SUPABASE_URL;
+	const supabaseKey = process.env.TEST_SUPABASE_SERVICE_ROLE_KEY;
+	const payloadUrl = process.env.TEST_PAYLOAD_URL || "http://localhost:3020";
 
-// TODO: Async logger needed
-// (await getLogger()).info(`Supabase URL: ${supabaseUrl}`);
-// TODO: Async logger needed
-// (await getLogger()).info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
-// TODO: Async logger needed
-// (await getLogger()).info(`Payload URL: ${payloadUrl}`);
+	// Validate that credentials are loaded
+	if (!supabaseUrl || !supabaseKey) {
+		throw new Error("Missing required test environment variables");
+	}
 
-// Supabase client setup
-const supabase = createClient(supabaseUrl, supabaseKey);
+	logger.info(`Supabase URL: ${supabaseUrl}`);
+	logger.info(`Supabase Key: ${supabaseKey ? "********" : "undefined"}`);
+	logger.info(`Payload URL: ${payloadUrl}`);
 
-// Course ID for "Decks for Decision Makers"
-const COURSE_ID = "3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8";
-const TEST_USER_EMAIL = "test2@slideheroes.com";
-// Only exclude the congratulations and final lessons, not 702 which is required for completion
-const EXCLUDED_LESSONS = ["801", "802"];
+	// Supabase client setup
+	const supabase = createClient(supabaseUrl, supabaseKey);
 
-/**
- * Fetch lessons from Payload CMS
- * @param courseId The course ID to fetch lessons for
- * @returns Array of lesson data
- */
-async function fetchLessonsFromPayload(
-	courseId: string,
-): Promise<LessonData[]> {
-	(await getLogger()).info(
-		`Fetching lessons from Payload CMS for course ID: ${courseId}...`,
-	);
+	// Course ID for "Decks for Decision Makers"
+	const COURSE_ID = "3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8";
+	const TEST_USER_EMAIL =
+		process.env.TEST_USER_EMAIL || "test2@slideheroes.com";
+	// Only exclude the congratulations and final lessons, not 702 which is required for completion
+	const EXCLUDED_LESSONS = ["801", "802"];
 
-	try {
-		// Use the Payload API to get the current lessons
-		const response = await fetch(
-			`${payloadUrl}/api/course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&limit=100`,
+	/**
+	 * Fetch lessons from Payload CMS
+	 * @param courseId The course ID to fetch lessons for
+	 * @returns Array of lesson data
+	 */
+	async function fetchLessonsFromPayload(
+		courseId: string,
+	): Promise<LessonData[]> {
+		logger.info(
+			`Fetching lessons from Payload CMS for course ID: ${courseId}...`,
 		);
 
-		if (!response.ok) {
-			throw new Error(`Failed to fetch lessons: ${response.statusText}`);
-		}
-
-		const data = (await response.json()) as { docs?: LessonData[] };
-		const lessons = data.docs || [];
-
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Successfully fetched ${lessons.length} lessons from Payload CMS`, { data:  });
-
-		// Log the first few lessons for debugging
-		if (lessons.length > 0) {
-			// TODO: Async logger needed
-			// (await getLogger()).info("Sample lessons:");
-			for (const _lesson of lessons.slice(0, 3)) {
-				// TODO: Async logger needed
-				// (await getLogger()).info(`  - ${lesson.id}: Lesson ${lesson.lesson_number} - ${lesson.title}`, { data:  });
-			}
-		}
-
-		return lessons;
-	} catch (_error) {
-		// TODO: Async logger needed
-		// (await getLogger()).error("Error fetching lessons from Payload CMS:", { data: error });
-
-		// Fallback to fetching from Supabase if Payload API fails
-		// TODO: Async logger needed
-		// (await getLogger()).info("Attempting to fetch lessons from Supabase as fallback...");
-
 		try {
-			// Try a direct query with the schema specified
-			const { data, error: supabaseError } = await supabase
-				.from("payload.course_lessons")
-				.select("id, lesson_number, title")
-				.eq("course_id", courseId)
-				.order("lesson_number", { ascending: true });
+			// Use the Payload API to get the current lessons
+			const response = await fetch(
+				`${payloadUrl}/api/course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&limit=100`,
+			);
 
-			if (supabaseError) {
-				// If that fails, try querying without the schema
-				// TODO: Async logger needed
-				// (await getLogger()).info("Query with schema failed, { data: trying without schema..." });
-				const { data: noSchemaData, error: noSchemaError } = await supabase
-					.from("course_lessons")
+			if (!response.ok) {
+				throw new Error(`Failed to fetch lessons: ${response.statusText}`);
+			}
+
+			const data = (await response.json()) as { docs?: LessonData[] };
+			const lessons = data.docs || [];
+
+			logger.info(
+				`Successfully fetched ${lessons.length} lessons from Payload CMS`,
+				{
+					operation: "fetch_lessons_payload",
+					courseId,
+					lessonCount: lessons.length,
+				},
+			);
+
+			return lessons;
+		} catch (error) {
+			logger.error("Error fetching lessons from Payload CMS:", {
+				operation: "fetch_lessons_payload",
+				error,
+				courseId,
+			});
+
+			// Fallback to fetching from Supabase if Payload API fails
+			logger.info("Attempting to fetch lessons from Supabase as fallback...");
+
+			try {
+				// Try a direct query with the schema specified
+				const { data, error: supabaseError } = await supabase
+					.from("payload.course_lessons")
 					.select("id, lesson_number, title")
 					.eq("course_id", courseId)
 					.order("lesson_number", { ascending: true });
 
-				if (noSchemaError) {
-					throw noSchemaError;
+				if (supabaseError) {
+					// If that fails, try querying without the schema
+					logger.info("Query with schema failed, trying without schema...");
+					const { data: noSchemaData, error: noSchemaError } = await supabase
+						.from("course_lessons")
+						.select("id, lesson_number, title")
+						.eq("course_id", courseId)
+						.order("lesson_number", { ascending: true });
+
+					if (noSchemaError) {
+						throw noSchemaError;
+					}
+
+					logger.info(
+						`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`,
+						{
+							operation: "fetch_lessons_supabase_no_schema",
+							courseId,
+							lessonCount: noSchemaData?.length || 0,
+						},
+					);
+					return (noSchemaData as LessonData[]) || [];
 				}
 
-				// TODO: Async logger needed
-				// (await getLogger()).info(`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`, { data:  });
-				return noSchemaData || [];
+				logger.info(
+					`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`,
+					{
+						operation: "fetch_lessons_supabase",
+						courseId,
+						lessonCount: data?.length || 0,
+					},
+				);
+				return (data as LessonData[]) || [];
+			} catch (fallbackError) {
+				logger.error("Fallback fetch also failed:", {
+					operation: "fetch_lessons_fallback",
+					error: fallbackError,
+					courseId,
+				});
+				throw new Error(
+					"Failed to fetch lessons from both Payload CMS and Supabase",
+				);
 			}
-
-			// TODO: Async logger needed
-			// (await getLogger()).info(`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`, { data:  });
-			return data || [];
-		} catch (_fallbackError) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Fallback fetch also failed:", { data: fallbackError });
-			throw new Error(
-				"Failed to fetch lessons from both Payload CMS and Supabase",
-			);
 		}
 	}
-}
 
-async function main() {
-	try {
-		(await getLogger()).info(
-			"Starting course progress update for test user...",
-		);
-
-		// 1. Get the user ID for test2@slideheroes.com
-		// Try to get the user directly from the accounts table
-		(await getLogger()).info("Fetching user ID from accounts table...");
-		const { data: accountData, error: accountError } = await supabase
+	/**
+	 * Get user by email
+	 * @param email The user's email
+	 * @returns User data with ID
+	 */
+	async function getUser(email: string) {
+		const { data, error } = await supabase
 			.from("accounts")
-			.select("id")
-			.eq("email", TEST_USER_EMAIL)
+			.select("id, name")
+			.eq("email", email)
 			.single();
 
-		if (accountError || !accountData) {
-			throw new Error(
-				`Failed to find user with email ${TEST_USER_EMAIL}: ${accountError?.message || "User not found"}`,
-			);
+		if (error) {
+			logger.error("Error fetching user by email:", {
+				operation: "fetch_user",
+				error,
+				email,
+			});
+			throw new Error(`Error fetching user by email: ${error.message}`);
 		}
 
-		const userId = accountData.id;
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Found user ID: ${userId}`);
-
-		// 2. Get all lessons for the course from Payload CMS
-		// TODO: Async logger needed
-		// (await getLogger()).info("Fetching course lessons from Payload CMS...");
-
-		// Fetch lessons from Payload CMS instead of using hardcoded data
-		const lessonsData = await fetchLessonsFromPayload(COURSE_ID);
-
-		if (!lessonsData || lessonsData.length === 0) {
-			throw new Error("No lessons found for the course");
+		if (!data) {
+			logger.error(`User not found with email: ${email}`, {
+				operation: "fetch_user",
+				email,
+			});
+			throw new Error(`User not found with email: ${email}`);
 		}
 
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Found ${lessonsData.length} lessons`);
+		logger.info(`User found with ID: ${data.id}`, {
+			operation: "fetch_user",
+			userId: data.id,
+			name: data.name,
+			email,
+		});
+		return data;
+	}
 
-		// 3. Mark all lessons as complete except for excluded ones
-		const now = new Date().toISOString();
-		let _completedLessonsCount = 0;
+	async function main() {
+		try {
+			logger.info("Starting course progress update...");
 
-		// We're now including lesson 702 as completed to trigger course completion
-		// TODO: Async logger needed
-		// (await getLogger()).info("Including lesson 702 as completed to trigger course completion", { data:  });
+			// 1. Get the user
+			const user = await getUser(TEST_USER_EMAIL);
+			const userId = user.id;
 
-		// Now mark all other lessons as complete except for excluded ones
-		for (const lesson of lessonsData as LessonData[]) {
-			// Skip excluded lessons
-			if (EXCLUDED_LESSONS.includes(String(lesson.lesson_number))) {
-				// TODO: Async logger needed
-				// (await getLogger()).info(`Skipping lesson ${lesson.lesson_number}: ${lesson.title}`);
-				continue;
+			// 2. Get all lessons for the course from Payload CMS
+			logger.info("Fetching course lessons from Payload CMS...");
+			const lessonsData = await fetchLessonsFromPayload(COURSE_ID);
+
+			if (!lessonsData || lessonsData.length === 0) {
+				throw new Error("No lessons found for the course");
 			}
 
-			// TODO: Async logger needed
-			// (await getLogger()).info(`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`, { data:  });
+			logger.info(`Found ${lessonsData.length} lessons`);
 
-			// Check if lesson progress already exists
-			const { data: existingProgress } = await supabase
+			// 3. Mark all lessons as complete except the excluded ones
+			const now = new Date().toISOString();
+			let completedLessonsCount = 0;
+
+			for (const lesson of lessonsData) {
+				// Skip excluded lessons
+				if (EXCLUDED_LESSONS.includes(String(lesson.lesson_number))) {
+					logger.info(
+						`Skipping lesson ${lesson.lesson_number}: ${lesson.title}`,
+						{
+							operation: "skip_lesson",
+							lessonNumber: lesson.lesson_number,
+							lessonId: lesson.id,
+						},
+					);
+					continue;
+				}
+
+				logger.info(
+					`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`,
+					{
+						operation: "mark_lesson_complete",
+						lessonNumber: lesson.lesson_number,
+						lessonId: lesson.id,
+						userId,
+					},
+				);
+
+				// Check if lesson progress already exists
+				const { data: existingProgress } = await supabase
+					.from("lesson_progress")
+					.select("*")
+					.eq("user_id", userId)
+					.eq("lesson_id", lesson.id)
+					.single();
+
+				if (existingProgress) {
+					// Update existing progress
+					const { error: updateError } = await supabase
+						.from("lesson_progress")
+						.update({
+							completion_percentage: 100,
+							completed_at: now,
+						})
+						.eq("id", existingProgress.id);
+
+					if (updateError) {
+						logger.error(
+							`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`,
+							{
+								operation: "update_lesson_progress",
+								error: updateError,
+								lessonNumber: lesson.lesson_number,
+								lessonId: lesson.id,
+								userId,
+							},
+						);
+						continue;
+					}
+				} else {
+					// Create new progress
+					const { error: insertError } = await supabase
+						.from("lesson_progress")
+						.insert({
+							user_id: userId,
+							course_id: COURSE_ID,
+							lesson_id: lesson.id,
+							started_at: now,
+							completed_at: now,
+							completion_percentage: 100,
+						});
+
+					if (insertError) {
+						logger.error(
+							`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`,
+							{
+								operation: "create_lesson_progress",
+								error: insertError,
+								lessonNumber: lesson.lesson_number,
+								lessonId: lesson.id,
+								userId,
+							},
+						);
+						continue;
+					}
+				}
+
+				completedLessonsCount++;
+			}
+
+			// Get all lesson progress records for this user and course
+			const { data: lessonProgress, error: progressError } = await supabase
 				.from("lesson_progress")
 				.select("*")
 				.eq("user_id", userId)
-				.eq("lesson_id", lesson.id)
+				.eq("course_id", COURSE_ID);
+
+			if (progressError || !lessonProgress) {
+				throw new Error(
+					`Failed to fetch lesson progress: ${progressError?.message}`,
+				);
+			}
+
+			// 4. Update overall course progress
+			// Count completed required lessons
+			const completedRequiredLessons = REQUIRED_LESSON_NUMBERS.filter(
+				(lessonNumber: string) => {
+					// Find the lesson with this number
+					const lesson = lessonsData.find(
+						(l) => String(l.lesson_number) === lessonNumber,
+					);
+
+					if (!lesson) return false;
+
+					// Check if this lesson is completed
+					return lessonProgress.some(
+						(p: ProgressData) =>
+							p.lesson_id === lesson.id && p.completed_at !== null,
+					);
+				},
+			).length;
+
+			// Calculate completion percentage based on completed required lessons
+			const completionPercentage = Math.round(
+				(completedRequiredLessons / TOTAL_REQUIRED_LESSONS) * 100,
+			);
+
+			// Check if all required lessons are completed (including 702)
+			const isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
+
+			logger.info("Course progress summary", {
+				operation: "course_progress_summary",
+				userId,
+				courseId: COURSE_ID,
+				totalRequiredLessons: TOTAL_REQUIRED_LESSONS,
+				completedRequiredLessons,
+				completionPercentage,
+				isCompleted,
+			});
+
+			// Check if course progress already exists
+			const { data: existingCourseProgress } = await supabase
+				.from("course_progress")
+				.select("*")
+				.eq("user_id", userId)
+				.eq("course_id", COURSE_ID)
 				.single();
 
-			if (existingProgress) {
-				// Update existing progress
+			if (existingCourseProgress) {
+				// Update existing course progress
+				const updateData: Record<string, unknown> = {
+					completion_percentage: completionPercentage,
+					last_accessed_at: now,
+				};
+
+				// Only set completed_at if the course is actually completed
+				if (isCompleted) {
+					updateData.completed_at = now;
+					logger.info(
+						"Course is now complete, setting completed_at timestamp",
+						{
+							operation: "update_course_progress",
+							userId,
+							courseId: COURSE_ID,
+						},
+					);
+				}
+
 				const { error: updateError } = await supabase
-					.from("lesson_progress")
-					.update({
-						completion_percentage: 100,
-						completed_at: now,
-					})
-					.eq("id", existingProgress.id);
+					.from("course_progress")
+					.update(updateData)
+					.eq("id", existingCourseProgress.id);
 
 				if (updateError) {
-					// TODO: Async logger needed
-					// (await getLogger()).error(`Failed to update lesson progress for lesson ${lesson.lesson_number}: ${updateError.message}`, { data:  });
-					continue;
+					throw new Error(
+						`Failed to update course progress: ${updateError.message}`,
+					);
 				}
+
+				logger.info("Updated course progress record", {
+					operation: "update_course_progress",
+					userId,
+					courseId: COURSE_ID,
+					completionPercentage,
+					isCompleted,
+				});
 			} else {
-				// Create new progress
-				const { error: insertError } = await supabase
-					.from("lesson_progress")
-					.insert({
-						user_id: userId,
-						course_id: COURSE_ID,
-						lesson_id: lesson.id,
-						started_at: now,
-						completed_at: now,
-						completion_percentage: 100,
-					});
-
-				if (insertError) {
-					// TODO: Async logger needed
-					// (await getLogger()).error(`Failed to create lesson progress for lesson ${lesson.lesson_number}: ${insertError.message}`, { data:  });
-					continue;
-				}
-			}
-
-			_completedLessonsCount++;
-		}
-
-		// Get all lesson progress records for this user and course
-		const { data: lessonProgress } = await supabase
-			.from("lesson_progress")
-			.select("*")
-			.eq("user_id", userId)
-			.eq("course_id", COURSE_ID);
-
-		if (!lessonProgress) {
-			throw new Error("Failed to fetch lesson progress");
-		}
-
-		// 4. Update overall course progress
-		// Count completed required lessons
-		const completedRequiredLessons = REQUIRED_LESSON_NUMBERS.filter(
-			(lessonNumber: string) => {
-				// Find the lesson with this number
-				const lesson = lessonsData.find(
-					(l) => String(l.lesson_number) === lessonNumber,
-				);
-
-				if (!lesson) return false;
-
-				// Check if this lesson is completed
-				return lessonProgress.some(
-					(p: ProgressData) => p.lesson_id === lesson.id && p.completed_at,
-				);
-			},
-		).length;
-
-		// Calculate completion percentage based on completed required lessons
-		const completionPercentage = Math.round(
-			(completedRequiredLessons / TOTAL_REQUIRED_LESSONS) * 100,
-		);
-
-		// Check if all required lessons are completed
-		const isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
-
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Total required lessons: ${TOTAL_REQUIRED_LESSONS}`);
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Completed required lessons: ${completedRequiredLessons}`);
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Completion percentage: ${completionPercentage}%`);
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Course completed: ${isCompleted ? "Yes" : "No"}`);
-
-		// Check if course progress already exists
-		const { data: existingCourseProgress } = await supabase
-			.from("course_progress")
-			.select("*")
-			.eq("user_id", userId)
-			.eq("course_id", COURSE_ID)
-			.single();
-
-		if (existingCourseProgress) {
-			// Update existing course progress
-			const { error: updateError } = await supabase
-				.from("course_progress")
-				.update({
-					completion_percentage: completionPercentage,
-					completed_at: isCompleted ? now : null, // Only set completed_at if course is actually complete
-					last_accessed_at: now,
-				})
-				.eq("id", existingCourseProgress.id);
-
-			if (updateError) {
-				throw new Error(
-					`Failed to update course progress: ${updateError.message}`,
-				);
-			}
-
-			// TODO: Async logger needed
-			// (await getLogger()).info(isCompleted
-			//		? "Marked course as completed by setting completed_at timestamp"
-			//		: "Updated course progress without marking as completed");
-		} else {
-			// Create new course progress
-			const { error: insertError } = await supabase
-				.from("course_progress")
-				.insert({
+				// Create new course progress
+				const insertData: Record<string, unknown> = {
 					user_id: userId,
 					course_id: COURSE_ID,
 					started_at: now,
 					last_accessed_at: now,
 					completion_percentage: completionPercentage,
-					completed_at: isCompleted ? now : null, // Only set completed_at if course is actually complete
-				});
+				};
 
-			if (insertError) {
-				throw new Error(
-					`Failed to create course progress: ${insertError.message}`,
+				// Only set completed_at if the course is actually completed
+				if (isCompleted) {
+					insertData.completed_at = now;
+					logger.info(
+						"Course is complete, creating with completed_at timestamp",
+						{
+							operation: "create_course_progress",
+							userId,
+							courseId: COURSE_ID,
+						},
+					);
+				}
+
+				const { error: insertError } = await supabase
+					.from("course_progress")
+					.insert(insertData);
+
+				if (insertError) {
+					throw new Error(
+						`Failed to create course progress: ${insertError.message}`,
+					);
+				}
+
+				logger.info("Created new course progress record", {
+					operation: "create_course_progress",
+					userId,
+					courseId: COURSE_ID,
+					completionPercentage,
+					isCompleted,
+				});
+			}
+
+			logger.info(
+				`Successfully updated course progress for ${TEST_USER_EMAIL}`,
+				{
+					operation: "update_complete",
+					email: TEST_USER_EMAIL,
+					userId,
+					completedLessonsCount,
+					completionPercentage,
+					isCompleted,
+				},
+			);
+
+			// If the course is now complete, trigger certificate generation
+			if (isCompleted) {
+				logger.info(
+					"Course is complete! Certificate generation should be triggered.",
+					{
+						operation: "course_completion",
+						userId,
+						courseId: COURSE_ID,
+					},
 				);
 			}
 
-			// TODO: Async logger needed
-			// (await getLogger()).info(isCompleted
-			//		? "Created new course progress record with completed_at timestamp set"
-			//		: "Created new course progress record without marking as completed");
+			logger.info("Done!");
+		} catch (error) {
+			logger.error("Error:", {
+				operation: "main",
+				error,
+			});
+			process.exit(1);
 		}
-
-		// TODO: Async logger needed
-		// (await getLogger()).info(`Successfully updated course progress for ${TEST_USER_EMAIL}`);
-		// TODO: Async logger needed
-		// (await getLogger()).info(
-		//	`Completed ${completedLessonsCount}/${TOTAL_REQUIRED_LESSONS} lessons (${completionPercentage}%)`,
-		// );
-		// TODO: Async logger needed
-		// (await getLogger()).info("Done!");
-	} catch (_error) {
-		// TODO: Async logger needed
-		// (await getLogger()).error("Error:", { data: error });
-		process.exit(1);
 	}
+
+	// Run main function
+	await main();
 }
 
-// Call main() directly
-main().catch((_error) => {
-	// TODO: Async logger needed
-	// (await getLogger()).error("Error in main execution:", { data: error });
+// Call runScript() and handle errors
+runScript().catch(async (error) => {
+	const logger = await getLogger();
+	logger.error("Error in script execution:", {
+		operation: "script_execution",
+		error,
+	});
 	process.exit(1);
 });

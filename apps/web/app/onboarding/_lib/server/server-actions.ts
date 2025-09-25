@@ -109,11 +109,37 @@ export const submitOnboardingFormAction = enhanceAction(
 					{ userId: user.id },
 					"User marked as onboarded successfully",
 				);
+
+				// Refresh the session to ensure the middleware sees the updated metadata
+				const { error: refreshError } = await supabase.auth.refreshSession();
+				if (refreshError) {
+					logger.warn(
+						{ userId: user.id, error: refreshError },
+						"Failed to refresh session after onboarding",
+					);
+				}
+
+				// Force a new session fetch to ensure metadata is up to date
+				const { data: sessionData } = await supabase.auth.getSession();
+				if (sessionData?.session) {
+					// Re-fetch user to confirm metadata update
+					const { data: updatedUser } = await supabase.auth.getUser();
+					logger.info(
+						{
+							userId: user.id,
+							onboarded: updatedUser?.user?.user_metadata?.onboarded,
+						},
+						"Session refreshed with updated metadata",
+					);
+				}
 			}
 
 			return {
 				success: true,
 				isComplete: isFinalSubmission,
+				redirectUrl: isFinalSubmission
+					? `/home?onboarded=${Date.now()}`
+					: undefined,
 			};
 		} catch (error) {
 			logger.error(

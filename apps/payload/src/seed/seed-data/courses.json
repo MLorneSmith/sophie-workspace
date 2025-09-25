@@ -1,0 +1,23 @@
+[
+	{
+		"_ref": "courses:ddm",
+		"slug": "decks-for-decision-makers",
+		"title": "Decks for Decision Makers",
+		"description": "SlideHeroes' flgaship presentation development course 'Decks for Decision Makers'.",
+		"content": {
+			"root": {
+				"type": "root",
+				"format": "",
+				"indent": 0,
+				"version": 1,
+				"children": []
+			}
+		},
+		"downloads": [
+			"{ref:downloads:slide-templates}",
+			"{ref:downloads:swipe-file}"
+		],
+		"publishedAt": "2024-01-15T10:00:00Z",
+		"status": "published"
+	}
+]

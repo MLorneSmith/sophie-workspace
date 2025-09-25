@@ -20,8 +20,11 @@ export async function convertExistingRecordsToTiptap() {
 		.select("*");
 
 	if (error || !submissions) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+		const logger = await getLogger();
+		logger.error("Failed to fetch building blocks submissions", {
+			operation: "convertExistingRecordsToTiptap",
+			error,
+		});
 		return { success: false, error: error?.message };
 	}
 
@@ -70,8 +73,12 @@ export async function convertExistingRecordsToTiptap() {
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			const logger = await getLogger();
+			logger.error("Failed to convert submission data", {
+				operation: "convertExistingRecordsToTiptap",
+				submissionId: submission.id,
+				error,
+			});
 			results.failed++;
 			results.errors.push(`ID ${submission.id}: ${message}`);
 		}

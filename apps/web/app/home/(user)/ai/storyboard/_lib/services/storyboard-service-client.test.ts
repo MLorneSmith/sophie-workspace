@@ -62,18 +62,45 @@ describe("StoryboardService", () => {
 	let service: StoryboardService;
 	let mockSupabase: MockSupabaseClient;
 
-	beforeEach(() => {
-		vi.clearAllMocks();
+	// Create a chainable mock that properly returns itself
+	const createChainableMock = () => {
+		const chainMock = {
+			select: vi.fn().mockReturnThis(),
+			eq: vi.fn().mockReturnThis(),
+			single: vi.fn().mockResolvedValue({ data: null, error: null }),
+			update: vi.fn().mockReturnThis(),
+			order: vi.fn().mockReturnThis(),
+		};
 
+		// Make each method return the chain itself
+		chainMock.select.mockReturnValue(chainMock);
+		chainMock.eq.mockReturnValue(chainMock);
+		chainMock.update.mockReturnValue(chainMock);
+		chainMock.order.mockReturnValue(chainMock);
+
+		return chainMock;
+	};
+
+	beforeEach(() => {
 		// Create proper Supabase mock with chaining
 		mockSupabase = {
-			from: vi.fn().mockImplementation(() => mockSupabase),
-			select: vi.fn().mockImplementation(() => mockSupabase),
-			eq: vi.fn().mockImplementation(() => mockSupabase),
+			from: vi.fn(),
+			select: vi.fn(),
+			eq: vi.fn(),
 			single: vi.fn(),
-			update: vi.fn().mockImplementation(() => mockSupabase),
+			update: vi.fn(),
 			order: vi.fn(),
 		};
+
+		// Set up from() to return a new chainable mock
+		mockSupabase.from.mockReturnValue(createChainableMock());
+
+		// Also set up the main mock object methods for backward compatibility
+		mockSupabase.select.mockReturnValue(mockSupabase);
+		mockSupabase.eq.mockReturnValue(mockSupabase);
+		mockSupabase.update.mockReturnValue(mockSupabase);
+		mockSupabase.order.mockReturnValue(mockSupabase);
+		mockSupabase.single.mockResolvedValue({ data: null, error: null });
 
 		service = new StoryboardService(mockSupabase as unknown as SupabaseClient);
 	});
@@ -115,7 +142,9 @@ describe("StoryboardService", () => {
 				storyboard: mockStoryboardData,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
+			// Override the single method on the chain returned by from()
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -125,10 +154,10 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
-			expect(mockSupabase.select).toHaveBeenCalledWith(
+			expect(fromResult.select).toHaveBeenCalledWith(
 				"id, outline, storyboard, title",
 			);
-			expect(mockSupabase.eq).toHaveBeenCalledWith("id", "submission-1");
+			expect(fromResult.eq).toHaveBeenCalledWith("id", "submission-1");
 		});
 
 		it("should generate storyboard from outline when storyboard is missing", async () => {
@@ -155,9 +184,16 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			// Mock the save operation chain
-			mockSupabase.eq.mockResolvedValue({ error: null });
+			// Override the single method on the chain returned by from()
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation - create a new chain for the update operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -167,7 +203,7 @@ describe("StoryboardService", () => {
 			expect(result?.slides).toHaveLength(2);
 			expect(result?.slides?.[0]?.title).toBe("Main Title");
 			expect(result?.slides?.[1]?.title).toBe("Slide 1");
-			expect(mockSupabase.update).toHaveBeenCalled(); // Should save generated storyboard
+			expect(updateChain.update).toHaveBeenCalled(); // Should save generated storyboard
 		});
 
 		it("should handle missing storyboard column gracefully", async () => {
@@ -190,16 +226,28 @@ describe("StoryboardService", () => {
 				outline: JSON.stringify(mockOutline),
 			};
 
-			// Mock the first call to fail with column error, then succeed on fallback
-			mockSupabase.single
-				.mockRejectedValueOnce(columnError)
-				.mockResolvedValueOnce({
-					data: fallbackData,
-					error: null,
-				});
+			// Mock the first call to fail with column error
+			const firstChain = createChainableMock();
+			firstChain.single.mockResolvedValue({
+				data: null,
+				error: { message: "column 'storyboard' does not exist" },
+			});
 
-			// Mock saveStoryboard call - it should not throw in this case
-			mockSupabase.eq.mockResolvedValue({ error: null });
+			// Mock the fallback call to succeed
+			const secondChain = createChainableMock();
+			secondChain.single.mockResolvedValue({
+				data: fallbackData,
+				error: null,
+			});
+
+			// Mock saveStoryboard call
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+
+			mockSupabase.from
+				.mockReturnValueOnce(firstChain)
+				.mockReturnValueOnce(secondChain)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -207,13 +255,16 @@ describe("StoryboardService", () => {
 			// Assert
 			expect(result?.title).toBe("Fallback Title");
 			expect(result?.slides).toHaveLength(1);
-			expect(mockSupabase.select).toHaveBeenCalledWith("id, outline, title"); // Fallback query
+			expect(secondChain.select).toHaveBeenCalledWith("id, outline, title"); // Fallback query
 		});
 
 		it("should throw error when submission not found", async () => {
 			// Arrange
-			const notFoundError = new Error("Submission not found");
-			mockSupabase.single.mockRejectedValue(notFoundError);
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({
+				data: null,
+				error: { message: "Submission not found" },
+			});
 
 			// Act & Assert
 			await expect(service.getStoryboard("invalid-id")).rejects.toThrow(
@@ -230,7 +281,8 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
 
 			// Act & Assert
 			await expect(service.getStoryboard("submission-1")).rejects.toThrow(
@@ -247,8 +299,10 @@ describe("StoryboardService", () => {
 				slides: [],
 			};
 
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			// Create a chain for the update operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from.mockReturnValue(updateChain);
 
 			// Act
 			const result = await service.saveStoryboard(
@@ -261,18 +315,21 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
-			expect(mockSupabase.update).toHaveBeenCalledWith({
+			expect(updateChain.update).toHaveBeenCalledWith({
 				storyboard: storyboardData,
 			});
-			expect(mockSupabase.eq).toHaveBeenCalledWith("id", "submission-1");
+			expect(updateChain.eq).toHaveBeenCalledWith("id", "submission-1");
 		});
 
 		it("should handle missing storyboard column during save", async () => {
 			// Arrange
 			const storyboardData = { title: "Test", slides: [] };
 			const columnError = { message: "column 'storyboard' does not exist" };
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: columnError });
+
+			// Create a chain for the update operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: columnError });
+			mockSupabase.from.mockReturnValue(updateChain);
 
 			// Act
 			const result = await service.saveStoryboard(
@@ -293,23 +350,35 @@ describe("StoryboardService", () => {
 			const storyboardData = { title: "Test", slides: [] };
 			const dbError = { message: "Database connection failed" };
 
-			// Mock the await result from the update chain
-			// The code does: const result = await this.supabase.from().update().eq()
-			// So the final .eq() call should return the error
-			mockSupabase.eq.mockResolvedValue({ error: dbError });
+			// Create a chain for the update operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: dbError });
+			mockSupabase.from.mockReturnValue(updateChain);
 
-			// Act & Assert
-			await expect(
-				service.saveStoryboard("submission-1", storyboardData),
-			).rejects.toThrow("Database connection failed");
+			// Act
+			const result = await service.saveStoryboard(
+				"submission-1",
+				storyboardData,
+			);
+
+			// Assert
+			expect(result).toBe(false);
+			const { toast } = await import("@kit/ui/sonner");
+			expect(vi.mocked(toast.error)).toHaveBeenCalledWith(
+				"Failed to save storyboard",
+			);
 		});
 
 		it("should handle exceptions during save operation", async () => {
 			// Arrange
 			const storyboardData = { title: "Test", slides: [] };
-			mockSupabase.update.mockImplementation(() => {
+
+			// Create a chain that throws an error
+			const updateChain = createChainableMock();
+			updateChain.update.mockImplementation(() => {
 				throw new Error("Network error");
 			});
+			mockSupabase.from.mockReturnValue(updateChain);
 
 			// Act
 			const result = await service.saveStoryboard(
@@ -334,10 +403,13 @@ describe("StoryboardService", () => {
 				{ id: "sub-1", title: "Older Presentation", created_at: "2024-01-01" },
 			];
 
-			mockSupabase.order.mockResolvedValue({
+			// Create a chain for the list operation
+			const listChain = createChainableMock();
+			listChain.order.mockResolvedValue({
 				data: mockPresentations,
 				error: null,
 			});
+			mockSupabase.from.mockReturnValue(listChain);
 
 			// Act
 			const result = await service.listPresentations();
@@ -347,15 +419,17 @@ describe("StoryboardService", () => {
 			expect(mockSupabase.from).toHaveBeenCalledWith(
 				"building_blocks_submissions",
 			);
-			expect(mockSupabase.select).toHaveBeenCalledWith("id, title, created_at");
-			expect(mockSupabase.order).toHaveBeenCalledWith("created_at", {
+			expect(listChain.select).toHaveBeenCalledWith("id, title, created_at");
+			expect(listChain.order).toHaveBeenCalledWith("created_at", {
 				ascending: false,
 			});
 		});
 
 		it("should return empty array when no presentations exist", async () => {
 			// Arrange
-			mockSupabase.order.mockResolvedValue({ data: [], error: null });
+			const listChain = createChainableMock();
+			listChain.order.mockResolvedValue({ data: [], error: null });
+			mockSupabase.from.mockReturnValue(listChain);
 
 			// Act
 			const result = await service.listPresentations();
@@ -367,7 +441,9 @@ describe("StoryboardService", () => {
 		it("should handle database errors during listing", async () => {
 			// Arrange
 			const dbError = new Error("Database connection failed");
-			mockSupabase.order.mockResolvedValue({ data: null, error: dbError });
+			const listChain = createChainableMock();
+			listChain.order.mockResolvedValue({ data: null, error: dbError });
+			mockSupabase.from.mockReturnValue(listChain);
 
 			// Act & Assert
 			await expect(service.listPresentations()).rejects.toThrow(
@@ -413,9 +489,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -455,9 +537,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -480,9 +568,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -522,9 +616,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -559,9 +659,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -581,9 +687,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -623,9 +735,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -656,9 +774,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -717,9 +841,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");
@@ -751,9 +881,15 @@ describe("StoryboardService", () => {
 				storyboard: null,
 			};
 
-			mockSupabase.single.mockResolvedValue({ data: mockData, error: null });
-			mockSupabase.update.mockReturnThis();
-			mockSupabase.eq.mockReturnValue({ error: null });
+			const fromResult = mockSupabase.from();
+			fromResult.single.mockResolvedValue({ data: mockData, error: null });
+
+			// Mock the save operation
+			const updateChain = createChainableMock();
+			updateChain.eq.mockResolvedValue({ error: null });
+			mockSupabase.from
+				.mockReturnValueOnce(fromResult)
+				.mockReturnValueOnce(updateChain);
 
 			// Act
 			const result = await service.getStoryboard("submission-1");

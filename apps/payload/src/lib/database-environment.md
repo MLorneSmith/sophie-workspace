@@ -1,6 +1,7 @@
 # Database Connection Management Environment Configuration
 
-This document outlines the environment variables and configuration options for the enhanced database connection management system.
+This document outlines the environment variables and configuration options for the enhanced database connection
+management system.
 
 ## Required Environment Variables
 
@@ -142,7 +143,8 @@ ALLOWED_ORIGINS=https://domain1.com,https://domain2.com
 
 ### Migration Management
 
-Migrations are managed through Payload's built-in migration system. The enhanced adapter does not interfere with normal migration processes.
+Migrations are managed through Payload's built-in migration system. The enhanced adapter does not interfere with
+normal migration processes.
 
 ## Monitoring and Health Checks
 

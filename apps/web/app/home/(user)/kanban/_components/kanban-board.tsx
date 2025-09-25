@@ -37,7 +37,18 @@ import {
 import type { Task, TaskStatus } from "../_lib/schema/task.schema";
 import { Column } from "./column";
 import { TaskCard } from "./task-card";
+
 import { TaskDialog } from "./task-dialog";
+
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
 
 const COLUMNS = [
 	{ id: "do", title: "To Do" },
@@ -89,12 +100,7 @@ export function KanbanBoard() {
 							status: overId as TaskStatus,
 						});
 					} catch (_error) {
-						// TODO: Async logger needed
-						// TODO: Async logger needed
-						// (await getLogger()).error(
-						// 	"Failed to update task status:",
-						// 	{ data: error }
-						// );
+						logger.error("Failed to update task status:", _error);
 					} finally {
 						setUpdatingTaskId(null);
 					}

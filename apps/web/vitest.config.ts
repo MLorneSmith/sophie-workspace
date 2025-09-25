@@ -1,23 +1,34 @@
-import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import path from "node:path";
 import react from "@vitejs/plugin-react";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+const reactPlugin = react({
+	jsxImportSource: "react",
+});
+const tsconfigPlugin = tsconfigPaths();
+
+export default defineProject({
 	plugins: [
 		// Enable React support with automatic JSX transform
-		react({
-			jsxImportSource: "react",
-		}),
+		...(Array.isArray(reactPlugin) ? reactPlugin : [reactPlugin]),
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
-		tsconfigPaths(),
+		...(Array.isArray(tsconfigPlugin) ? tsconfigPlugin : [tsconfigPlugin]),
 	],
+	resolve: {
+		alias: {
+			// Mock Next.js modules for testing
+			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+		},
+	},
 	esbuild: {
 		// Configure JSX transformation
 		jsx: "automatic",
 		jsxImportSource: "react",
 	},
 	test: {
-		// Environment setup
+		// Project-specific configuration only
+		name: "web",
 		environment: "jsdom",
 		globals: true,
 		setupFiles: ["./vitest.setup.ts"],
@@ -33,60 +44,16 @@ export default defineConfig({
 			"**/e2e/**",
 		],
 
-		// Performance and reliability
+		// Project-specific performance settings
 		testTimeout: 10000, // 10 seconds max per test
 		hookTimeout: 10000,
-		teardownTimeout: 5000,
 
-		// Coverage configuration
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json", "html"],
-			exclude: [
-				"coverage/**",
-				"dist/**",
-				"**/[.]**",
-				"packages/*/test{,s}/**",
-				"**/*.d.ts",
-				"**/virtual:*",
-				"**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
-				"**/.{eslint,mocha,prettier}rc.{js,cjs,yml}",
-				// Next.js specific exclusions
-				"**/next.config.*",
-				"**/middleware.*",
-				"**/app/**/layout.*",
-				"**/app/**/loading.*",
-				"**/app/**/not-found.*",
-				"**/app/**/error.*",
-				"**/app/**/global-error.*",
-				// Type-only files
-				"**/types/**",
-				"**/lib/database.types.ts",
-			],
-			thresholds: {
-				global: {
-					branches: 70,
-					functions: 70,
-					lines: 70,
-					statements: 70,
-				},
-			},
-		},
-
-		// Concurrency for faster test runs
-		pool: "threads",
+		// Project-specific thread pool settings
 		poolOptions: {
 			threads: {
+				isolate: true,
 				singleThread: false,
-				minThreads: 1,
-				maxThreads: 4,
 			},
-		},
-
-		// Better error reporting
-		reporters: ["verbose"],
-		outputFile: {
-			json: "./coverage/test-results.json",
 		},
 
 		// Server-side module handling for SSR components

@@ -1,7 +1,10 @@
 packages:
-  - apps/payload
-  - apps/web
-  - apps/e2e
-  - apps/dev-tool
+  - apps/*
   - packages/**
   - tooling/*
+  - .claude/scripts
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - '@sentry/cli'
+  - supabase

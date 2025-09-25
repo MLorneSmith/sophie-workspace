@@ -1,0 +1,220 @@
+# Supabase Database Reset Command
+
+Comprehensive database reset for all Supabase instances in the turborepo.
+
+## Command
+
+```bash
+/supabase-reset <target> [options]
+```
+
+## Implementation
+
+```bash
+tsx .claude/scripts/database/supabase-reset.ts "$@"
+```
+
+## Synopsis
+
+Resets Supabase databases across all three applications (web, payload, e2e) with safety mechanisms and Payload CMS schema handling.
+
+## Arguments
+
+- `target` - **Required**. Reset target: `local` or `remote`
+
+## Options
+
+- `--confirm` - Skip confirmation for remote operations (DANGEROUS)
+- `--run-tests` - Run E2E tests after successful reset
+- `--apps=LIST` - Target specific apps (web,e2e,payload). Default: all
+- `--verbose` - Show detailed logging and debug information
+
+## Examples
+
+```bash
+# Reset all local databases
+/supabase-reset local
+
+# Reset only web and e2e local databases
+/supabase-reset local --apps=web,e2e
+
+# Reset with E2E test verification
+/supabase-reset local --run-tests --verbose
+
+# Reset remote databases (requires confirmation)
+/supabase-reset remote --confirm
+```
+
+## Features
+
+### Multi-Instance Coordination
+- **Web instance**: ports 54321-54327, project "2025slideheroes-db"
+- **E2E instance**: ports 55321-55327, project "2025slideheroes-e2e"
+- **Sequential reset order**: web → e2e → payload for dependency management
+
+### Payload CMS Schema Handling
+- **Complete schema validation**: Ensures payload schema exists and is accessible
+- **Critical table verification**: Checks for payload_users, payload_preferences, etc.
+- **Runtime issue resolution**: Fixes user creation and collection access issues
+- **Atomic operations**: Schema changes are atomic with rollback capability
+
+### Safety Mechanisms
+- **Port cleanup**: Automatically kills conflicting processes before reset
+- **Remote confirmation**: Requires explicit confirmation for remote operations
+- **Verification suite**: Tests connectivity, schema integrity, and authentication
+- **Error recovery**: Provides detailed error messages and recovery suggestions
+
+### Progress Reporting
+- **Real-time progress**: Shows step-by-step progress with percentages
+- **Detailed logging**: Verbose mode shows all operations and decisions
+- **Final status report**: Displays connection details and next steps
+- **Error context**: Clear error messages with actionable suggestions
+
+## Technical Details
+
+### Instance Configuration
+```typescript
+interface SupabaseInstance {
+  name: string;           // 'web' | 'e2e'
+  projectId: string;      // Supabase project identifier
+  directory: string;      // App directory path
+  ports: {
+    api: number;          // API server port
+    db: number;           // Database port
+    studio: number;       // Studio interface port
+  };
+  hasPayloadSchema: boolean; // Requires payload schema handling
+}
+```
+
+### Reset Process
+1. **Safety checks** - Confirm operation and validate parameters
+2. **Port cleanup** - Kill conflicting processes on all ports
+3. **Instance shutdown** - Stop all Supabase instances gracefully
+4. **Database reset** - Execute `supabase db reset` for each instance
+5. **Payload handling** - Special schema validation and testing
+6. **Instance startup** - Restart all instances with fresh databases
+7. **Verification** - Test connectivity, schemas, and authentication
+8. **Optional testing** - Run E2E tests to verify functionality
+
+### Payload Schema Resolution
+Addresses known issues with Payload CMS after database resets:
+- **Schema creation**: Ensures payload schema exists in PostgreSQL
+- **Table verification**: Checks critical Payload tables are present
+- **Functionality testing**: Validates user creation and collection access
+- **Runtime validation**: Tests that admin interface works correctly
+
+## Error Handling
+
+### Common Issues
+- **Port conflicts**: Automatically detected and resolved
+- **Instance not running**: Gracefully handled with startup
+- **Schema corruption**: Payload schema automatically recreated
+- **Migration failures**: Detailed error reporting with suggestions
+
+### Recovery Procedures
+- **Failed reset**: Instances are restarted in clean state
+- **Verification failure**: Detailed diagnostics provided
+- **Test failures**: Optional, warnings provided for expected failures
+- **Remote errors**: Safe abortion without partial state
+
+## Dependencies
+
+### Required Tools
+- **Supabase CLI**: `supabase` command must be available
+- **PostgreSQL**: `psql` client for direct database operations
+- **Node.js**: `tsx` for TypeScript execution
+- **pnpm**: Workspace package manager
+
+### Environment Setup
+- Docker running for local Supabase instances
+- Valid Supabase configurations in app directories
+- Network access for remote operations
+- Sufficient permissions for port management
+
+## Integration
+
+### With Existing Scripts
+- Leverages existing `supabase:reset` pnpm scripts
+- Uses established Docker patterns from `.devcontainer/`
+- Follows command patterns from `.claude/commands/`
+- Integrates with existing test suites
+
+### With Development Workflow
+- Safe for daily development use
+- Coordinates with E2E test infrastructure
+- Preserves development configurations
+- Maintains compatibility with existing processes
+
+## Performance
+
+### Execution Time
+- **Local reset**: 2-4 minutes depending on schema complexity
+- **With tests**: 5-8 minutes including E2E test execution
+- **Remote reset**: 3-6 minutes depending on network latency
+
+### Parallel Optimizations
+- **Sequential execution**: Required for shared database state
+- **Port cleanup**: Parallel port scanning and cleanup
+- **Verification**: Parallel instance verification where possible
+
+## Security
+
+### Local Operations
+- **No credentials required**: Uses local Docker instances
+- **Port isolation**: Each instance uses dedicated ports
+- **Process isolation**: Clean process management with proper cleanup
+
+### Remote Operations
+- **Explicit confirmation**: Requires `--confirm` flag for safety
+- **Credential validation**: Uses existing Supabase CLI authentication
+- **Audit logging**: All operations logged for security review
+
+## Troubleshooting
+
+### Failed Reset
+```bash
+# Check instance status
+npx supabase status
+
+# Manual cleanup if needed
+.claude/scripts/cleanup-ports.sh
+
+# Retry with verbose logging
+/supabase-reset local --verbose
+```
+
+### Payload Issues
+```bash
+# Check payload schema directly
+psql "postgresql://postgres:postgres@localhost:54322/postgres" \
+  -c "SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'payload';"
+
+# Verify payload tables
+psql "postgresql://postgres:postgres@localhost:54322/postgres" \
+  -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'payload';"
+```
+
+### Port Conflicts
+```bash
+# Check what's using ports
+lsof -i :54321-54327
+lsof -i :55321-55327
+
+# Manual port cleanup
+.claude/scripts/cleanup-ports.sh
+```
+
+## Related Commands
+
+- `/test` - Run comprehensive test suite after reset
+- `/codecheck` - Validate code quality after schema changes
+- `/git:status` - Check for any generated file changes
+
+## Notes
+
+- Always run locally first before attempting remote resets
+- Payload schema issues are automatically resolved
+- E2E tests may fail immediately after reset (expected)
+- Remote operations are irreversible - use with extreme caution
+- Verify all instances are accessible before considering reset complete

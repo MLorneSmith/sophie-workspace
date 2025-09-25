@@ -1,18 +1,19 @@
 "use server";
 
 import {
+	baseInstructions,
 	type ChatCompletionOptions,
 	type ChatMessage,
 	ConfigManager,
+	createOpenAIOnlyConfig,
 	getChatCompletion,
+	ideasCreatorSystem,
+	improvementFormat,
+	parseImprovements,
+	presentationContext,
 } from "@kit/ai-gateway";
-import { createOpenAIOnlyConfig } from "@kit/ai-gateway/src/configs/templates/openai-only";
-import { ideasCreatorSystem } from "@kit/ai-gateway/src/prompts/messages/system/ideas-creator";
-import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
-import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";
-import { presentationContext } from "@kit/ai-gateway/src/prompts/partials/presentation-context";
-import { parseImprovements } from "@kit/ai-gateway/src/utils/parse-improvements";
 import { enhanceAction } from "@kit/next/actions";
+import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
@@ -51,13 +52,14 @@ export const generateIdeasAction = enhanceAction(
 				"No content provided yet. Please suggest some initial ideas.";
 
 			// Debug log the request
-			// TODO: Async logger needed
-			// (await getLogger()).info("Ideas Request:", {
-			// 	contentLength: contentToUse.length,
-			// 	userId: user.id,
-			// 	submissionId: data.submissionId,
-			// 	type: data.type,
-			// });
+			const logger = await getLogger();
+			logger.info("Ideas Request:", {
+				operation: "generateIdeasAction",
+				contentLength: contentToUse.length,
+				userId: user.id,
+				submissionId: data.submissionId,
+				type: data.type,
+			});
 
 			// Create and normalize config using OpenAI-only config to avoid authentication issues
 			const config = createOpenAIOnlyConfig({
@@ -107,21 +109,22 @@ ${improvementFormat}`,
 			const _duration = performance.now() - startTime;
 
 			// Log metrics
-			// TODO: Async logger needed
-			// (await getLogger()).info("AI Request Metrics:", {
-			// 	duration,
-			// 	userId: user.id,
-			// 	status: "success",
-			// });
+			logger.info("AI Request Metrics:", {
+				operation: "generateIdeasAction",
+				duration: _duration,
+				userId: user.id,
+				status: "success",
+			});
 
 			// Parse the response using our utility - extract content from CompletionResult
 			const improvements = parseImprovements(response.content, data.type);
 
 			// Debug log the parsed improvements
-			// TODO: Async logger needed
-			// (await getLogger()).info("Parsed Ideas:", {
-			// 	data: improvements,
-			// });
+			logger.info("Parsed Ideas:", {
+				operation: "generateIdeasAction",
+				data: improvements,
+				userId: user.id,
+			});
 
 			return {
 				success: true,
@@ -131,10 +134,13 @@ ${improvementFormat}`,
 				},
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error in ideas action:", {
-			// 	data: error,
-			// });
+			const logger = await getLogger();
+			logger.error("Error in ideas action:", {
+				operation: "generateIdeasAction",
+				error,
+				userId: user.id,
+				submissionId: data.submissionId,
+			});
 
 			return {
 				success: false,

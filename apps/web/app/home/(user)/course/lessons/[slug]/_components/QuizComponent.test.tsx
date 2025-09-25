@@ -191,10 +191,16 @@ interface RadioGroupItemProps {
 	id?: string;
 	className?: string;
 	checked?: boolean;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	[key: string]: unknown;
 }
 
 vi.mock("@kit/ui/radio-group", () => {
+	const RadioGroupContext = React.createContext<{
+		value?: string;
+		onValueChange?: (value: string) => void;
+	}>({});
+
 	const RadioGroup = ({
 		children,
 		value,
@@ -202,33 +208,17 @@ vi.mock("@kit/ui/radio-group", () => {
 		className,
 		...props
 	}: RadioGroupProps) => {
-		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			if (e.target.type === "radio" && e.target.checked) {
-				onValueChange?.(e.target.value);
-			}
-		};
-
 		return (
-			<div
-				data-testid="radio-group"
-				data-value={value}
-				className={className}
-				onChange={handleChange}
-				{...props}
-			>
-				{React.Children.map(children, (child: React.ReactNode) => {
-					if (React.isValidElement(child)) {
-						const childProps = child.props as { value?: string };
-						if (childProps.value !== undefined) {
-							return React.cloneElement(child, {
-								...childProps,
-								checked: childProps.value === value,
-							} as React.ComponentProps<"input">);
-						}
-					}
-					return child;
-				})}
-			</div>
+			<RadioGroupContext.Provider value={{ value, onValueChange }}>
+				<div
+					data-testid="radio-group"
+					data-value={value}
+					className={className}
+					{...props}
+				>
+					{children}
+				</div>
+			</RadioGroupContext.Provider>
 		);
 	};
 
@@ -236,20 +226,35 @@ vi.mock("@kit/ui/radio-group", () => {
 		value,
 		id,
 		className,
-		checked,
 		...props
-	}: RadioGroupItemProps) => (
-		<input
-			type="radio"
-			value={value}
-			id={id}
-			name="quiz-option"
-			className={className}
-			data-testid={`radio-${id}`}
-			checked={checked}
-			{...props}
-		/>
-	);
+	}: RadioGroupItemProps) => {
+		const context = React.useContext(RadioGroupContext);
+
+		// Extract question index from the id to create unique radio group names
+		const questionMatch = id?.match(/q(\d+)-/);
+		const questionIndex = questionMatch ? questionMatch[1] : "0";
+		const radioName = `quiz-option-q${questionIndex}`;
+
+		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			if (e.target.checked) {
+				context.onValueChange?.(e.target.value);
+			}
+		};
+
+		return (
+			<input
+				type="radio"
+				value={value}
+				id={id}
+				name={radioName}
+				className={className}
+				data-testid={id ? `radio-${id}` : undefined}
+				checked={String(value) === String(context.value)}
+				onChange={handleChange}
+				{...props}
+			/>
+		);
+	};
 
 	return { RadioGroup, RadioGroupItem };
 });
@@ -529,6 +534,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "Test question",
+						questiontype: "multi-answer" as const,
 						options: [
 							{ text: "Option 1", iscorrect: true },
 							{ text: "Option 2", iscorrect: true },
@@ -576,8 +582,12 @@ describe("QuizComponent", () => {
 			const user = userEvent.setup();
 			render(<QuizComponent {...defaultProps} />);
 
-			// Answer first question
-			await user.click(screen.getByLabelText("4"));
+			// Answer first question by clicking the radio button directly
+			await user.click(screen.getByTestId("radio-q0-o1"));
+
+			// Verify the radio button is checked before navigation
+			expect(screen.getByTestId("radio-q0-o1")).toBeChecked();
+
 			await user.click(screen.getByText("Next Question"));
 
 			// Answer second question
@@ -606,6 +616,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -614,6 +625,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "6", iscorrect: true },
 							{ text: "7", iscorrect: false },
@@ -641,6 +653,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -649,6 +662,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q2",
 						question: "What is 3 + 3?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "6", iscorrect: true },
 							{ text: "7", iscorrect: false },
@@ -676,6 +690,7 @@ describe("QuizComponent", () => {
 					{
 						id: "q1",
 						question: "What is 2 + 2?",
+						questiontype: "single-answer" as const,
 						options: [
 							{ text: "3", iscorrect: false },
 							{ text: "4", iscorrect: true },
@@ -831,7 +846,7 @@ describe("QuizComponent", () => {
 			const user = userEvent.setup();
 			const partialQuiz = {
 				...sampleQuiz,
-				questions: [sampleQuiz.questions[0]], // Only one question
+				questions: sampleQuiz.questions.slice(0, 1), // Only one question
 			};
 
 			render(<QuizComponent {...defaultProps} quiz={partialQuiz} />);

@@ -62,7 +62,8 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = true
+# DISABLED for testing to prevent email bounce issues
+enable_confirmations = false
 
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
@@ -103,7 +104,7 @@ content_path = "./supabase/templates/magic-link.html"
 
 [analytics]
 enabled = true
-port = 54327
+port = 39006
 backend = "postgres"
 
 # Added from Makerkit update
@@ -113,7 +114,7 @@ schema_paths = [
 ]
 
 [db.seed]
-sql_paths = ['seed.sql', './seeds/*.sql']
+sql_paths = ['./seeds/*.sql']
 
 [edge_runtime]
 # Inspector port for debugging Edge Functions.

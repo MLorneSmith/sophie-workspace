@@ -64,7 +64,6 @@ vi.mock("@kit/next/actions", () => ({
 }));
 
 // Mock console.error to prevent test output pollution
-// biome-ignore lint/suspicious/noConsole: Test file needs console.error for mocking
 const originalConsoleError = console.error;
 
 import { getLogger } from "@kit/shared/logger";
@@ -272,11 +271,11 @@ describe("Storyboard Service", () => {
 			// Assert
 			const loggerInstance = await mockLogger();
 			expect(loggerInstance.error).toHaveBeenCalledWith(
+				"Error fetching presentation from Supabase",
 				{
 					error: storyboardColumnError.message,
 					presentationId: "presentation-123",
 				},
-				"Error fetching presentation from Supabase",
 			);
 			expect(mockQuery.select).toHaveBeenCalledWith("id, title, outline");
 			expect(mockTipTapTransformer.transform).toHaveBeenCalled();
@@ -322,10 +321,13 @@ describe("Storyboard Service", () => {
 
 			// Assert
 			expect(result).toEqual(presentationWithInvalidOutline);
-			// biome-ignore lint/suspicious/noConsole: Test assertion for console.error mock
-			expect(console.error).toHaveBeenCalledWith(
-				"Error transforming outline to storyboard:",
-				expect.any(Error),
+			const loggerInstance = await mockLogger();
+			expect(loggerInstance.error).toHaveBeenCalledWith(
+				"Error transforming outline to storyboard",
+				expect.objectContaining({
+					error: expect.any(String),
+					presentationId: "presentation-123",
+				}),
 			);
 		});
 
@@ -404,8 +406,8 @@ describe("Storyboard Service", () => {
 
 			const loggerInstance = await mockLogger();
 			expect(loggerInstance.error).toHaveBeenCalledWith(
-				{ error: dbError },
 				"Error fetching presentations",
+				{ error: dbError },
 			);
 		});
 	});
@@ -485,11 +487,11 @@ describe("Storyboard Service", () => {
 
 			const loggerInstance = await mockLogger();
 			expect(loggerInstance.error).toHaveBeenCalledWith(
+				"Error saving storyboard to Supabase",
 				{
 					presentationId: "presentation-123",
 					error: storyboardColumnError.message,
 				},
-				"Error saving storyboard to Supabase",
 			);
 		});
 
@@ -516,11 +518,11 @@ describe("Storyboard Service", () => {
 
 			const loggerInstance = await mockLogger();
 			expect(loggerInstance.error).toHaveBeenCalledWith(
+				"Error saving storyboard to Supabase",
 				{
 					presentationId: "presentation-123",
 					error: dbError.message,
 				},
-				"Error saving storyboard to Supabase",
 			);
 		});
 

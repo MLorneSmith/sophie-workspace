@@ -35,11 +35,11 @@ import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+
 import { refreshAuthSession } from "../../../server/personal-accounts-server-actions";
 
 export function MultiFactorAuthSetupDialog(props: { userId: string }) {
@@ -110,7 +110,7 @@ function MultiFactorAuthSetupForm({
 		},
 	});
 
-	const [_state, setState] = useState({
+	const [state, setState] = useState({
 		loading: false,
 		error: "",
 	});
@@ -159,7 +159,7 @@ function MultiFactorAuthSetupForm({
 		[onEnrolled, verifyCodeMutation],
 	);
 
-	if (_state.error) {
+	if (state.error) {
 		return <ErrorAlert />;
 	}
 
@@ -226,11 +226,11 @@ function MultiFactorAuthSetupForm({
 
 								<Button
 									disabled={
-										!verificationCodeForm.formState.isValid || _state.loading
+										!verificationCodeForm.formState.isValid || state.loading
 									}
 									type={"submit"}
 								>
-									{_state.loading ? (
+									{state.loading ? (
 										<Trans i18nKey={"account:verifyingCode"} />
 									) : (
 										<Trans i18nKey={"account:enableMfaFactor"} />
@@ -314,15 +314,13 @@ function FactorQrCode({
 
 					const data = response.data;
 
-					if (data && data.type === "totp") {
+					if (data.type === "totp") {
 						form.setValue("factorName", name);
 						form.setValue("qrCode", data.totp.qr_code);
 					}
 
 					// dispatch event to set factor ID
-					if (data) {
-						onSetFactorId(data.id);
-					}
+					onSetFactorId(data.id);
 				}}
 			/>
 		);
@@ -413,12 +411,14 @@ function FactorNameForm(
 
 function QrImage({ src }: { src: string }) {
 	return (
-		<Image
-			alt="QR Code"
+		// eslint-disable-next-line @next/next/no-img-element
+		// biome-ignore lint/performance/noImgElement: QR code needs to be a regular img tag
+		<img
+			alt={"QR Code"}
 			src={src}
 			width={160}
 			height={160}
-			className="bg-white p-2"
+			className={"bg-white p-2"}
 		/>
 	);
 }
@@ -437,7 +437,7 @@ function useEnrollFactor(userId: string) {
 		if (response.error) {
 			return {
 				success: false as const,
-				data: response.error.code || "",
+				data: response.error.code,
 			};
 		}
 
@@ -470,10 +470,6 @@ function useVerifyCodeMutation(userId: string) {
 
 		if (challenge.error) {
 			throw challenge.error;
-		}
-
-		if (!challenge.data) {
-			throw new Error("Challenge data is missing");
 		}
 
 		const challengeId = challenge.data.id;

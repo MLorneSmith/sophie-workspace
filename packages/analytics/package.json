@@ -10,17 +10,14 @@
 	},
 	"prettier": "@kit/prettier-config",
 	"exports": {
-		".": "./src/index.ts"
-	},
-	"dependencies": {
-		"@kit/shared": "workspace:*"
+		".": "./src/index.ts",
+		"./server": "./src/server.ts"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
-		"@kit/posthog": "workspace:^",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.0.1"
+		"@types/node": "^24.3.1"
 	},
 	"typesVersions": {
 		"*": {
@@ -28,5 +25,9 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
+		"@kit/shared": "workspace:*"
 	}
 }

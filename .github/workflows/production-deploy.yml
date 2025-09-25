@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+# Prevent multiple deployments from running simultaneously
+concurrency:
+  group: deploy-production-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel in-progress deployments
+
 permissions:
   contents: read
   deployments: write
@@ -12,70 +17,116 @@ permissions:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
+  # Check if validation is needed
+  check-validation:
+    name: Check if validation needed
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      should-validate: ${{ steps.check.outputs.should-validate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Check if already validated
+        id: check
+        run: |
+          # Skip validation if this commit was already validated in staging
+          COMMIT=${{ github.sha }}
+          
+          # Check if this is a merge commit from staging
+          if git log --format=%B -n 1 | grep -q "Merge.*staging"; then
+            echo "This is a merge from staging, validation already done"
+            echo "should-validate=false" >> $GITHUB_OUTPUT
+          else
+            echo "This is a direct push to main, validation needed"
+            echo "should-validate=true" >> $GITHUB_OUTPUT
+          fi
+
   # Final security check
   security-check:
     name: Final Security Check
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: check-validation
+    if: needs.check-validation.outputs.should-validate == 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for security scans
       
-      - name: Run security checks
-        run: |
-          echo "Running final security checks"
-          # TODO: Implement comprehensive security scan
-          # - Secret scanning with TruffleHog
-          # - Dependency vulnerabilities with Snyk
-          # - SAST with CodeQL
+      - name: TruffleHog Secret Scan
+        uses: docker://trufflesecurity/trufflehog:3.63.7
+        with:
+          args: |
+            git file://./ \
+            --since-commit HEAD~1 \
+            --fail \
+            --no-update
+      
+      - name: Aikido Security Scan
+        uses: AikidoSec/github-actions-workflow@v1.0.13
+        with:
+          secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+          fail-on-timeout: true
+          fail-on-dependency-scan: true
+          fail-on-sast-scan: true
+          fail-on-iac-scan: true
+          minimum-severity: 'HIGH'
+          timeout-seconds: 300
+      
+      - name: Run Weekly Security Scan
+        uses: ./.github/workflows/security-weekly-scan.yml
 
-  # Deploy to Vercel Production
-  deploy:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: security-check
+  # Build application once
+  build:
+    name: Build Application
+    needs: [check-validation, security-check]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      environment: production
+
+  # Deploy Web App to Vercel Production
+  deploy-web:
+    name: Deploy Web App to Production
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: build
     environment:
       name: production
-      url: ${{ steps.deploy.outputs.url }}
+      url: https://slideheroes.com
+      # Add protection rules via GitHub Settings:
+      # - Required reviewers: 2
+      # - Restrict deployments to specific users/teams
+      # - Add deployment delay for manual review
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup-deps
 
-      - uses: actions/setup-node@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          node-version: lts/*
-          cache: 'pnpm'
+          name: build-artifacts-production
+          path: .
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project with Production Optimizations
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          NODE_ENV: production
-
-      - name: Deploy to Vercel Production
+      - name: Deploy to Vercel
         id: deploy
-        run: |
-          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$url" >> $GITHUB_OUTPUT
-          echo "Deployed to: $url"
-          
-          # Production deployment should automatically use slideheroes.com domain
-          production_url="https://slideheroes.com"
-          echo "production_url=$production_url" >> $GITHUB_OUTPUT
-          echo "🚀 Production deployment complete at: $production_url"
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          environment: production
+          build-artifacts: true
+          health-check-url: /healthcheck
+          health-check-timeout: 120
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Create deployment status
         uses: actions/github-script@v7
@@ -85,7 +136,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
-              environment: 'production',
+              environment: 'production-web',
               required_contexts: [],
               auto_merge: false,
               production_environment: true
@@ -97,104 +148,172 @@ jobs:
               deployment_id: deployment.data.id,
               state: 'success',
               environment_url: '${{ steps.deploy.outputs.url }}',
-              description: 'Deployed to production'
+              description: 'Web app deployed to production'
+            });
+
+  # Deploy Payload CMS to Vercel Production
+  deploy-payload:
+    name: Deploy Payload CMS to Production
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: build
+    environment:
+      name: production-payload
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-production
+          path: .
+
+      - name: Deploy to Vercel
+        id: deploy
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
+          environment: production
+          build-artifacts: true
+          health-check-url: /api/health
+          health-check-timeout: 120
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Create deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production-payload',
+              required_contexts: [],
+              auto_merge: false,
+              production_environment: true
+            });
+
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: '${{ steps.deploy.outputs.url }}',
+              description: 'Payload CMS deployed to production'
             });
 
   # Post-deployment monitoring
   health-check:
     name: Production Health Check
-    runs-on: ubuntu-latest
-    needs: deploy
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [deploy-web, deploy-payload]
     steps:
       - uses: actions/checkout@v4
 
       - name: Wait for deployment propagation
         run: sleep 30
 
-      - name: Check production health
+      - name: Check production web health
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy.outputs.url }}/api/health)
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-web.outputs.url }}/healthcheck)
           if [ $response -eq 200 ]; then
-            echo "✅ Production health check passed"
+            echo "✅ Production web health check passed"
           else
-            echo "❌ Production health check failed with status $response"
+            echo "❌ Production web health check failed with status $response"
+            exit 1
+          fi
+
+      - name: Check production payload health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ needs.deploy-payload.outputs.url }}/api/health)
+          if [ $response -eq 200 ]; then
+            echo "✅ Production payload health check passed"
+          else
+            echo "❌ Production payload health check failed with status $response"
             exit 1
           fi
 
       - name: Run critical path tests
         run: |
-          echo "Running critical user path validations"
+          echo "Critical path testing will be implemented"
           # TODO: Implement critical path E2E tests
 
-  # Notify monitoring services
-  notify:
-    name: Notify Services
+  # Production DAST security scan (informational only)
+  production-security-scan:
+    name: Production Security Monitoring
     runs-on: ubuntu-latest
-    needs: [deploy, health-check]
-    if: always()
+    needs: [deploy-web, deploy-payload, health-check]
+    continue-on-error: true  # Never block production
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - name: Notify New Relic
-        if: needs.health-check.result == 'success'
-        run: |
-          echo "Creating New Relic deployment marker"
-          # TODO: Implement New Relic deployment marker
-          # curl -X POST "https://api.newrelic.com/v2/applications/${NEW_RELIC_APP_ID}/deployments.json" \
-          #   -H "X-Api-Key:${NEW_RELIC_API_KEY}" \
-          #   -H "Content-Type: application/json" \
-          #   -d "{\"deployment\":{\"revision\":\"${GITHUB_SHA}\",\"user\":\"${GITHUB_ACTOR}\"}}"
-        env:
-          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
-          NEW_RELIC_APP_ID: ${{ secrets.NEW_RELIC_APP_ID }}
-
-      - name: Notify Slack
+      - uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      
+      - name: Run Nuclei quick scan
+        uses: ./.github/actions/nuclei-scan
+        with:
+          target: ${{ needs.deploy-web.outputs.url }}
+          scan-type: 'quick'  # Quick scan only for production
+          severity: 'critical,high'
+          fail-on-severity: 'none'  # Never fail production
+      
+      - name: Log security metrics
         if: always()
         run: |
-          if [ "${{ needs.health-check.result }}" == "success" ]; then
-            echo "✅ Production deployment successful"
-            # TODO: Send success notification to Slack
-          else
-            echo "❌ Production deployment failed"
-            # TODO: Send failure notification to Slack
-          fi
+          echo "📊 Production Security Scan Metrics"
+          echo "Critical: ${VULN_CRITICAL:-0}"
+          echo "High: ${VULN_HIGH:-0}"
+          
+          # Send metrics to monitoring (when configured)
+          # TODO: Send to DataDog/New Relic/CloudWatch
 
-  # Rollback on failure
-  rollback:
-    name: Rollback on Failure
-    runs-on: ubuntu-latest
-    needs: health-check
-    if: failure()
+  # Notify monitoring services
+  notify-monitoring:
+    name: Notify Monitoring Services
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [deploy-web, deploy-payload]
+    continue-on-error: true
     steps:
-      - name: Trigger rollback
-        run: |
-          echo "🔄 Initiating automatic rollback"
-          # TODO: Implement Vercel rollback
-          # vercel rollback --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Create rollback issue
-        uses: actions/github-script@v7
+      - uses: actions/checkout@v4
+      
+      - uses: ./.github/actions/newrelic-notify
         with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `[URGENT] Production deployment failed - ${context.sha}`,
-              body: `## Production Deployment Failure
-              
-              **Commit**: ${context.sha}
-              **Actor**: ${context.actor}
-              **Time**: ${new Date().toISOString()}
-              
-              ### Actions Taken
-              - ✅ Automatic rollback initiated
-              - ✅ Team notified
-              
-              ### Next Steps
-              1. Check deployment logs
-              2. Review health check failures
-              3. Fix issues and redeploy
-              
-              cc @${context.actor}`,
-              labels: ['bug', 'production', 'urgent']
-            });
+          api-key: ${{ secrets.NEW_RELIC_API_KEY }}
+          app-id: ${{ secrets.NEW_RELIC_APP_ID }}
+          account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+          insert-key: ${{ secrets.NEW_RELIC_INSERT_KEY }}
+          environment: production
+          deployment-url: ${{ needs.deploy-web.outputs.url }}
+
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🚀 Production deployment completed successfully!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          fields: 'repo,commit,author'
+
+  # Auto-rollback workflow
+  auto-rollback:
+    name: Auto Rollback
+    needs: deploy-web
+    uses: ./.github/workflows/auto-rollback.yml
+    with:
+      environment: production
+      deployment_url: ${{ needs.deploy-web.outputs.url }}
+    secrets:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

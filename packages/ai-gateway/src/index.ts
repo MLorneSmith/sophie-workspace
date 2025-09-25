@@ -3,14 +3,12 @@ import { OpenAI } from "openai";
 import { z } from "zod";
 import {
 	ConfigManager,
-	loadTemplate,
 	mergeWithUseCase,
 	normalizeConfig,
 	overrideWithPortkey,
 } from "./configs/config-manager";
 import type { Config } from "./configs/types";
 import { _createGatewayClient } from "./enhanced-gateway-client";
-import { PromptManager } from "./prompts/prompt-manager";
 import { initializeAiGatewayDatabase } from "./utils/db-init";
 import { getSupabaseClient } from "./utils/supabase-client";
 import {
@@ -663,9 +661,48 @@ export async function* getStreamingChatCompletion(
 // Export config manager functions and classes for external use
 export {
 	ConfigManager,
-	loadTemplate,
 	mergeWithUseCase,
 	overrideWithPortkey,
 	normalizeConfig,
 };
-export { PromptManager };
+
+export * from "./configs/templates";
+// Export templates config
+export * from "./configs/templates";
+// Export config templates
+export { createBalancedOptimizedConfig } from "./configs/templates/balanced-optimized";
+export { createOpenAIOnlyConfig } from "./configs/templates/openai-only";
+// Export types
+export type { Config } from "./configs/types";
+// Export use cases
+export { createAudienceSuggestionsConfig } from "./configs/use-cases/audience-suggestions/config";
+export { createTitleSuggestionsConfig } from "./configs/use-cases/title-suggestions/config";
+// Export messages
+export { ideasCreatorSystem } from "./prompts/messages/system/ideas-creator";
+// Export prompt partials
+export { baseInstructions } from "./prompts/partials/base-instructions";
+export { improvementFormat } from "./prompts/partials/improvement-format";
+export { improvementProcess } from "./prompts/partials/improvement-process";
+export { outlineRewriteInstructions } from "./prompts/partials/outline-rewrite";
+export { presentationContext } from "./prompts/partials/presentation-context";
+export { sectionAnalysis } from "./prompts/partials/section-analysis";
+export { simplifiedFormat } from "./prompts/partials/simplified-format";
+// Export prompt manager
+export {
+	compileTemplate,
+	getAvailableTemplates,
+	loadTemplate,
+	PromptManager,
+} from "./prompts/prompt-manager";
+// Export templates
+export { textSimplificationTemplate } from "./prompts/templates/text-simplification";
+// Export types from prompts
+export type { Improvement } from "./prompts/types/improvements";
+export * from "./prompts/types/improvements";
+// Export utils
+export { parseImprovements } from "./utils/parse-improvements";
+export type {
+	SimplifiedContent,
+	SimplifiedSection,
+} from "./utils/parse-simplified";
+export { parseSimplified } from "./utils/parse-simplified";

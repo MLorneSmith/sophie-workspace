@@ -1,13 +1,12 @@
 "use server";
 
-import type { User } from "@supabase/supabase-js";
-
+import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
+import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import type { JWTUserData } from "@kit/supabase/types";
 import { z } from "zod";
 
-// Import User type
-
-import { enhanceAction } from "@kit/next/actions";
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
+const { getLogger } = createServiceLogger("FETCH-USAGE-DATA");
 
 import type { UsageStats } from "../_lib/types";
 
@@ -20,7 +19,7 @@ const UsageDataQuerySchema = z.object({
 type UsageDataQuery = z.infer<typeof UsageDataQuerySchema>; // Define type for data
 
 export const fetchUsageDataAction = enhanceAction(
-	async (data: UsageDataQuery, user: User | null) => {
+	async (data: UsageDataQuery, user: JWTUserData | null) => {
 		// Explicitly type data and user
 		try {
 			// Check if user is authenticated and has admin role
@@ -83,12 +82,14 @@ export const fetchUsageDataAction = enhanceAction(
 				data: stats,
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error fetching AI usage data:",
-			// 	{ data: error }
-			// );
+			const logger = await getLogger();
+			logger.error("Error fetching AI usage data", {
+				operation: "fetch_usage_data",
+				error,
+				timeRange: data.timeRange,
+				userId: data.userId,
+				teamId: data.teamId,
+			});
 			return {
 				success: false,
 				error: error instanceof Error ? error.message : "Unknown error",
@@ -184,11 +185,13 @@ function groupLogsByDay(
 			date = new Date(log.request_timestamp)
 				.toISOString()
 				.split("T")[0] as string; // Get YYYY-MM-DD
-		} catch {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Invalid timestamp:", {
-			// 	data: log.request_timestamp,
-			// });
+		} catch (timestampError) {
+			// Use synchronous logger for this sync function
+			const logger = getLogger();
+			logger.error("Invalid timestamp in usage data", {
+				timestamp: log.request_timestamp,
+				error: timestampError,
+			});
 			continue; // Skip this log if timestamp is invalid
 		}
 		if (!dayMap[date]) {
@@ -243,7 +246,7 @@ function groupLogsByField<T extends AiRequestLog>(
 }
 
 // Check if user has admin role
-function hasAdminRole(user: User): boolean {
+function hasAdminRole(user: JWTUserData): boolean {
 	// Implement your admin role check logic here
 	// This is a placeholder - you should replace with your actual admin role check
 	return user.email?.endsWith("@slideheroes.com") || false;

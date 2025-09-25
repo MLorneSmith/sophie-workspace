@@ -1,12 +1,11 @@
 "use client";
 
+import type { SurveyQuestion } from "@kit/cms-types";
 import { Button } from "@kit/ui/button";
 import { Label } from "@kit/ui/label";
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { useId, useState } from "react";
-
-import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
 
 type TextFieldQuestionProps = {
 	question: SurveyQuestion;

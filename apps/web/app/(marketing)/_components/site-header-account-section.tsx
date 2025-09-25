@@ -2,23 +2,22 @@
 
 import { PersonalAccountDropdown } from "@kit/accounts/personal-account-dropdown";
 import { useSignOut } from "@kit/supabase/hooks/use-sign-out";
+import type { JWTUserData } from "@kit/supabase/types";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
-import type { Session } from "@supabase/supabase-js";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState } from "react";
 
 import featuresFlagConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";
 
-import { BookDemoOverlay } from "./book-demo-overlay";
-
-const ModeToggle = dynamic(() =>
-	import("@kit/ui/mode-toggle").then((mod) => ({
-		default: mod.ModeToggle,
-	})),
+const ModeToggle = dynamic(
+	() =>
+		import("@kit/ui/mode-toggle").then((mod) => ({
+			default: mod.ModeToggle,
+		})),
+	{ ssr: false },
 );
 
 const MobileModeToggle = dynamic(() =>
@@ -35,71 +34,56 @@ const features = {
 	enableThemeToggle: featuresFlagConfig.enableThemeToggle,
 };
 
-interface SiteHeaderAccountSectionProps {
-	session: Session | null;
-}
-
 export function SiteHeaderAccountSection({
-	session,
-}: SiteHeaderAccountSectionProps) {
-	if (session) {
-		return <AuthenticatedSection session={session} />;
+	user,
+}: {
+	user: JWTUserData | null;
+}) {
+	const signOut = useSignOut();
+
+	if (user) {
+		return (
+			<PersonalAccountDropdown
+				showProfileName={false}
+				paths={paths}
+				features={features}
+				user={user}
+				signOutRequested={() => signOut.mutateAsync()}
+			/>
+		);
 	}
 
 	return <AuthButtons />;
 }
 
-function AuthenticatedSection({ session }: { session: Session }) {
-	const signOut = useSignOut();
-
-	return (
-		<PersonalAccountDropdown
-			showProfileName={false}
-			paths={paths}
-			features={features}
-			user={session.user}
-			signOutRequested={() => signOut.mutateAsync()}
-		/>
-	);
-}
-
 function AuthButtons() {
-	const [isBookDemoOpen, setIsBookDemoOpen] = useState(false);
-
 	return (
-		<>
+		<div className={"animate-in fade-in flex gap-x-2.5 duration-500"}>
+			<div className={"hidden md:flex"}>
+				<If condition={features.enableThemeToggle}>
+					<ModeToggle />
+				</If>
+			</div>
+
 			<div className={"md:hidden"}>
 				<If condition={features.enableThemeToggle}>
 					<MobileModeToggle />
 				</If>
 			</div>
 
-			<div className={"animate-in fade-in flex gap-x-2.5 duration-500"}>
-				<div className={"hidden md:flex"}>
-					<If condition={features.enableThemeToggle}>
-						<ModeToggle />
-					</If>
-				</div>
-
-				<Button
-					variant={"outline"}
-					className="font-medium"
-					onClick={() => setIsBookDemoOpen(true)}
-				>
-					<Trans i18nKey={"common:bookDemo"} defaults="Book a demo" />
-				</Button>
-
-				<Button asChild variant={"default"}>
+			<div className={"flex gap-x-2.5"}>
+				<Button className={"hidden md:block"} asChild variant={"ghost"}>
 					<Link href={pathsConfig.auth.signIn}>
 						<Trans i18nKey={"auth:signIn"} />
 					</Link>
 				</Button>
-			</div>
 
-			<BookDemoOverlay
-				isOpen={isBookDemoOpen}
-				onClose={() => setIsBookDemoOpen(false)}
-			/>
-		</>
+				<Button asChild className="text-xs md:text-sm" variant={"default"}>
+					<Link href={pathsConfig.auth.signUp}>
+						<Trans i18nKey={"auth:signUp"} />
+					</Link>
+				</Button>
+			</div>
+		</div>
 	);
 }

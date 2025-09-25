@@ -534,6 +534,13 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: "Series 1",
+						labels: ["A", "B", "C"],
+						values: [1, 2, 3],
+					}),
+				]),
 				expect.objectContaining({
 					x: 1.0,
 					y: 1.8,
@@ -594,6 +601,7 @@ describe("PptxGenerator", () => {
 
 				expect(mockSlide.addChart).toHaveBeenCalledWith(
 					chartType,
+					expect.any(Array),
 					expect.any(Object),
 				);
 				vi.clearAllMocks();
@@ -629,6 +637,7 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
+				expect.any(Array),
 				expect.any(Object),
 			);
 		});
@@ -957,14 +966,18 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
+				expect.arrayContaining([
+					expect.objectContaining({
+						labels: ["A", "B", "C"],
+						values: [1, 2, 3],
+					}),
+				]),
 				expect.objectContaining({
 					title: "Test Chart",
-					chartData: expect.arrayContaining([
-						expect.objectContaining({
-							labels: ["A", "B", "C"],
-							values: [1, 2, 3],
-						}),
-					]),
+					x: 1.0,
+					y: 1.8,
+					w: 8,
+					h: 4,
 				}),
 			);
 		});
@@ -998,15 +1011,19 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: "Series 1",
+						labels: [],
+						values: [],
+					}),
+				]),
 				expect.objectContaining({
 					title: "Chart",
-					chartData: expect.arrayContaining([
-						expect.objectContaining({
-							name: "Series 1",
-							labels: [],
-							values: [],
-						}),
-					]),
+					x: 1.0,
+					y: 1.8,
+					w: 8,
+					h: 4,
 				}),
 			);
 		});
@@ -1040,15 +1057,19 @@ describe("PptxGenerator", () => {
 
 			expect(mockSlide.addChart).toHaveBeenCalledWith(
 				"bar",
+				expect.arrayContaining([
+					expect.objectContaining({
+						name: "Error",
+						labels: ["Please check", "chart data", "format"],
+						values: [1, 1, 1],
+					}),
+				]),
 				expect.objectContaining({
 					title: "Error in Chart Data",
-					chartData: expect.arrayContaining([
-						expect.objectContaining({
-							name: "Error",
-							labels: ["Please check", "chart data", "format"],
-							values: [1, 1, 1],
-						}),
-					]),
+					x: 1.0,
+					y: 1.8,
+					w: 8,
+					h: 4,
 				}),
 			);
 			// Error should be logged

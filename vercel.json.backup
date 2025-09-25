@@ -1,0 +1,64 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"rootDirectory": "apps/web",
+	"buildCommand": "pnpm build",
+	"outputDirectory": ".next",
+	"installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+	"framework": "nextjs",
+	"headers": [
+		{
+			"source": "/(.*)",
+			"headers": [
+				{
+					"key": "X-Frame-Options",
+					"value": "DENY"
+				},
+				{
+					"key": "X-Content-Type-Options",
+					"value": "nosniff"
+				},
+				{
+					"key": "Referrer-Policy",
+					"value": "strict-origin-when-cross-origin"
+				},
+				{
+					"key": "Permissions-Policy",
+					"value": "camera=(), microphone=(), geolocation=()"
+				}
+			]
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/api/cms/:path*",
+			"destination": "http://localhost:3020/api/:path*",
+			"has": [
+				{
+					"type": "host",
+					"value": "localhost"
+				}
+			]
+		}
+	],
+	"preview": {
+		"commandForIgnoringBuildStep": "bash scripts/ignore-build-step.sh"
+	},
+	"git": {
+		"deploymentEnabled": {
+			"main": true,
+			"staging": true,
+			"dev": true
+		}
+	},
+	"deploymentProtection": {
+		"checks": [
+			{
+				"name": "Health Check",
+				"path": "/healthcheck",
+				"method": "GET"
+			}
+		],
+		"timeout": 30000,
+		"errorThreshold": 0.05
+	}
+}

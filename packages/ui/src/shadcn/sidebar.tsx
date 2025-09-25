@@ -1,15 +1,15 @@
 "use client";
 
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown, PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Slot } from "radix-ui";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIsMobile } from "../hooks/use-mobile";
-import { cn, isRouteActive, setCookie } from "../lib/utils";
+import { cn, isRouteActive } from "../lib/utils";
 import { If } from "../makerkit/if";
 import type { SidebarConfig } from "../makerkit/sidebar";
 import { Trans } from "../makerkit/trans";
@@ -93,11 +93,9 @@ const SidebarProvider: React.FC<
 
 			_setOpen(value);
 
-			// This sets the cookie to keep the sidebar state for SSR hydration
-			setCookie(SIDEBAR_COOKIE_NAME, String(open), {
-				path: "/",
-				maxAge: SIDEBAR_COOKIE_MAX_AGE,
-			});
+			// This sets the cookie to keep the sidebar state.
+			// biome-ignore lint/suspicious/noDocumentCookie: Sidebar state needs to persist across page reloads
+			document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 		},
 		[setOpenProp, open],
 	);
@@ -150,26 +148,24 @@ const SidebarProvider: React.FC<
 
 	return (
 		<SidebarContext.Provider value={contextValue}>
-			<TooltipProvider delayDuration={0}>
-				<div
-					style={
-						{
-							"--sidebar-width": sidebarWidth,
-							"--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-							...style,
-						} as React.CSSProperties
-					}
-					data-minimized={!open}
-					className={cn(
-						"group text-sidebar-foreground has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
-						className,
-					)}
-					ref={ref}
-					{...props}
-				>
-					{children}
-				</div>
-			</TooltipProvider>
+			<div
+				style={
+					{
+						"--sidebar-width": sidebarWidth,
+						"--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+						...style,
+					} as React.CSSProperties
+				}
+				data-minimized={!open}
+				className={cn(
+					"group/sidebar text-sidebar-foreground has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+					className,
+				)}
+				ref={ref}
+				{...props}
+			>
+				{children}
+			</div>
 		</SidebarContext.Provider>
 	);
 };
@@ -465,7 +461,7 @@ SidebarGroup.displayName = "SidebarGroup";
 const SidebarGroupLabel: React.FC<
 	React.ComponentProps<"div"> & { asChild?: boolean }
 > = ({ className, asChild = false, ...props }) => {
-	const Comp = asChild ? Slot : "div";
+	const Comp = asChild ? Slot.Root : "div";
 
 	return (
 		<Comp
@@ -484,7 +480,7 @@ SidebarGroupLabel.displayName = "SidebarGroupLabel";
 const SidebarGroupAction: React.FC<
 	React.ComponentProps<"button"> & { asChild?: boolean }
 > = ({ className, asChild = false, ...props }) => {
-	const Comp = asChild ? Slot : "button";
+	const Comp = asChild ? Slot.Root : "button";
 
 	return (
 		<Comp
@@ -521,7 +517,7 @@ const SidebarMenu: React.FC<React.ComponentProps<"ul">> = ({
 	<ul
 		data-sidebar="menu"
 		className={cn(
-			"flex w-full min-w-0 flex-col gap-1 group-data-[minimized=true]:items-center",
+			"flex w-full min-w-0 flex-col gap-1 group-data-[minimized=true]/sidebar:items-center",
 			className,
 		)}
 		{...props}
@@ -581,7 +577,7 @@ const SidebarMenuButton: React.FC<
 	className,
 	...props
 }) => {
-	const Comp = asChild ? Slot : "button";
+	const Comp = asChild ? Slot.Root : "button";
 	const { isMobile, open } = useSidebar();
 	const { t } = useTranslation();
 
@@ -608,15 +604,17 @@ const SidebarMenuButton: React.FC<
 	}
 
 	return (
-		<Tooltip>
-			<TooltipTrigger asChild>{button}</TooltipTrigger>
-			<TooltipContent
-				side="right"
-				align="center"
-				hidden={isMobile || open}
-				{...tooltip}
-			/>
-		</Tooltip>
+		<TooltipProvider delayDuration={0}>
+			<Tooltip>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent
+					side="right"
+					align="center"
+					hidden={isMobile || open}
+					{...tooltip}
+				/>
+			</Tooltip>
+		</TooltipProvider>
 	);
 };
 
@@ -628,7 +626,7 @@ const SidebarMenuAction: React.FC<
 		showOnHover?: boolean;
 	}
 > = ({ className, asChild = false, showOnHover = false, ...props }) => {
-	const Comp = asChild ? Slot : "button";
+	const Comp = asChild ? Slot.Root : "button";
 
 	return (
 		<Comp
@@ -736,7 +734,7 @@ const SidebarMenuSubButton: React.FC<
 		isActive?: boolean;
 	}
 > = ({ asChild = false, size = "md", isActive, className, ...props }) => {
-	const Comp = asChild ? Slot : "a";
+	const Comp = asChild ? Slot.Root : "a";
 
 	return (
 		<Comp
@@ -771,7 +769,11 @@ export function SidebarNavigation({
 				const isLast = index === config.routes.length - 1;
 
 				if ("divider" in item) {
-					// Use a combination of position and context for stable keys\n\t\t\t\t\tconst prevItem = config.routes[index - 1];\n\t\t\t\t\tconst nextItem = config.routes[index + 1];\n\t\t\t\t\tconst contextKey = [\n\t\t\t\t\t\tprevItem && 'label' in prevItem ? prevItem.label : 'start',\n\t\t\t\t\t\tnextItem && 'label' in nextItem ? nextItem.label : 'end'\n\t\t\t\t\t].join('-');\n\t\t\t\t\treturn <SidebarSeparator key={`divider-${contextKey}`} />;
+					return (
+						<SidebarSeparator
+							key={`divider-${index}-${config.routes.length}`}
+						/>
+					);
 				}
 
 				if ("children" in item) {
@@ -799,7 +801,7 @@ export function SidebarNavigation({
 					};
 
 					return (
-						<Container key={`nav-${item.label}`}>
+						<Container key={`collapsible-${item.label || index}`}>
 							<SidebarGroup key={item.label}>
 								<If
 									condition={item.collapsible}
@@ -905,6 +907,15 @@ export function SidebarNavigation({
 														end,
 													);
 
+													const testId =
+														path === "/home"
+															? "home-link"
+															: path === "/home/settings"
+																? "settings-link"
+																: path.includes("/home/[account]")
+																	? "dashboard-link"
+																	: undefined;
+
 													return (
 														<SidebarMenuButton
 															asChild
@@ -912,6 +923,7 @@ export function SidebarNavigation({
 															tooltip={child.label}
 														>
 															<Link
+																data-testid={testId}
 																className={cn("flex items-center", {
 																	"mx-auto w-full gap-0! [&>svg]:flex-1": !open,
 																})}
@@ -938,7 +950,9 @@ export function SidebarNavigation({
 
 												return (
 													<Container
-														key={`child-${child.label || child.path || childIndex}`}
+														key={`group-${item.label}-${
+															"label" in child ? child.label : childIndex
+														}`}
 													>
 														<SidebarMenuItem>
 															<TriggerItem />

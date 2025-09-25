@@ -1,6 +1,8 @@
 ## Testimonial Collection Plugin for Makerkit
 
-This plugin allows Makerkit users to easily collect and manage testimonials from their customers. It integrates seamlessly with the existing Makerkit structure and provides both backend and frontend components.
+This plugin allows Makerkit users to easily collect and manage testimonials from their customers.
+It integrates seamlessly with the existing Makerkit structure and provides both backend and
+frontend components.
 
 ## Features
 
@@ -41,7 +43,8 @@ And update the types:
 pnpm run supabase:web:typegen
 ```
 
-Once the plugin is added to your repository, please install it as a dependency in your application in the package.json file of `apps/web`:
+Once the plugin is added to your repository, please install it as a dependency in your
+application in the package.json file of `apps/web`:
 
 ```json
 {
@@ -57,7 +60,8 @@ Now run the following command to install the plugin:
 pnpm i
 ```
 
-You can now add the Admin pages from where you can manage the testimonials. To do so, add the following code to the `apps/web/app/admin/testimonials/page.tsx` file:
+You can now add the Admin pages from where you can manage the testimonials. To do so, add the
+following code to the `apps/web/app/admin/testimonials/page.tsx` file:
 
 ```tsx
 import { TestimonialsPage } from '@kit/testimonial/admin';

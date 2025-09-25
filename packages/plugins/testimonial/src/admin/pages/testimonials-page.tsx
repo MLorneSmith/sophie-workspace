@@ -1,3 +1,4 @@
+import type { Tables } from "@kit/supabase/database";
 import { getSupabaseServerAdminClient } from "@kit/supabase/server-admin-client";
 import { Button } from "@kit/ui/button";
 import { PageBody, PageHeader } from "@kit/ui/page";
@@ -44,7 +45,17 @@ export function TestimonialsPage(props: {
 							created_at: "desc",
 						}}
 					>
-						{({ data, page, pageSize, pageCount }) => {
+						{({
+							data,
+							page,
+							pageSize,
+							pageCount,
+						}: {
+							data: Tables<"testimonials">[];
+							page: number;
+							pageSize: number;
+							pageCount: number;
+						}) => {
 							return (
 								<TestimonialsTable
 									data={data}

@@ -1,0 +1,4 @@
+name: Fix Claude Script Permissions
+command: ./.claude/utils/fix-permissions.sh
+description: Fix executable permissions for all Claude scripts
+tags: ["claude", "permissions", "maintenance"]

@@ -18,23 +18,21 @@
 		"./require-user": "./src/require-user.ts",
 		"./hooks/*": "./src/hooks/*.ts",
 		"./database": "./src/database.types.ts",
-		"./auth": "./src/auth.ts"
-	},
-	"dependencies": {
-		"@kit/shared": "workspace:*"
+		"./auth": "./src/auth.ts",
+		"./types": "./src/types.ts"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@supabase/ssr": "^0.6.1",
-		"@supabase/supabase-js": "2.50.0",
-		"@tanstack/react-query": "5.80.7",
-		"@types/react": "19.1.8",
-		"next": "15.3.3",
-		"react": "19.1.0",
+		"@supabase/ssr": "^0.7.0",
+		"@supabase/supabase-js": "2.57.2",
+		"@tanstack/react-query": "5.87.1",
+		"@types/react": "19.1.12",
+		"next": "15.5.2",
+		"react": "19.1.1",
 		"server-only": "^0.0.1",
-		"zod": "^3.25.67"
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {
@@ -42,5 +40,8 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1"
 	}
 }

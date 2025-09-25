@@ -1,4 +1,6 @@
+import type { SurveyQuestion } from "@kit/cms-types";
 import { getSurvey, getSurveyQuestions } from "@kit/payload";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { Card } from "@kit/ui/card";
 import { PageBody } from "@kit/ui/page";
@@ -11,6 +13,49 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 import { HomeLayoutPageHeader } from "../../_components/home-page-header";
 // Import from the current directory
 import { SurveyContainer } from "./_components/survey-container";
+
+const { getLogger } = createServiceLogger("ASSESSMENT-SURVEY");
+
+// Helper function to process questions with logging
+async function processQuestions(questions: SurveyQuestion[]) {
+	const logger = await getLogger();
+
+	// Process and sort questions
+	const processedQuestions = questions.map((question) => {
+		// For multiple_choice questions, add default options if none exist
+		if (
+			question.type === "multiple_choice" &&
+			(!question.options || question.options.length === 0)
+		) {
+			logger.info("Adding default options for question", {
+				questionId: question.id,
+			});
+
+			// Default options for Likert scale
+			const defaultOptions = [
+				{ option: "Strongly disagree" },
+				{ option: "Disagree" },
+				{ option: "Neither agree nor disagree" },
+				{ option: "Agree" },
+				{ option: "Strongly agree" },
+			];
+
+			// Return question with default options
+			return {
+				...question,
+				options: defaultOptions,
+			};
+		}
+
+		// Return question as-is if it already has options
+		return question;
+	});
+
+	// Sort questions by position
+	return [...processedQuestions].sort(
+		(a, b) => (a.position || 0) - (b.position || 0),
+	);
+}
 
 export const generateMetadata = async () => {
 	const i18n = await createI18nServerInstance();
@@ -72,75 +117,8 @@ async function SurveyPage() {
 		.eq("survey_id", String(survey.id))
 		.maybeSingle();
 
-	// Define types for our question and option structures
-	type SurveyQuestion = {
-		id: string;
-		text: string;
-		description?: string;
-		category: string;
-		questionspin?: string;
-		position?: number;
-		options: Array<{ option: string }>;
-		[key: string]: unknown;
-	};
-
-	// Transform and sort questions
-	const transformedQuestions = questions.map((question: SurveyQuestion) => {
-		// For multiple_choice questions, add default options if none exist
-		if (
-			question.type === "multiple_choice" &&
-			(!question.options || question.options.length === 0)
-		) {
-			// TODO: Async logger needed
-			// (await getLogger()).info(
-			// `Adding default options for question: ${question.id}`,
-			// );
-
-			// Default options for Likert scale
-			const defaultOptions = [
-				{ option: "Strongly disagree" },
-				{ option: "Disagree" },
-				{ option: "Neither agree nor disagree" },
-				{ option: "Agree" },
-				{ option: "Strongly agree" },
-			];
-
-			// Add default options to the question
-			question.options = defaultOptions;
-		}
-
-		// Transform options to the expected format
-		const transformedOptions =
-			question.options?.map((opt: { option: string }, index: number) => ({
-				id: `${question.id}_option_${index}`,
-				text: opt.option,
-				// Calculate score based on question spin
-				score: calculateScoreForOption(opt.option, question.questionspin),
-			})) || [];
-
-		return {
-			...question,
-			options: transformedOptions,
-		};
-	});
-
-	// Sort questions by position
-	const sortedQuestions = [...transformedQuestions].sort(
-		(a, b) => (a.position || 0) - (b.position || 0),
-	);
-
-	// Helper function to calculate score based on option and question spin
-	function calculateScoreForOption(option: string, spin = "Positive") {
-		const scoreMap: Record<string, number> = {
-			"Strongly disagree": spin === "Positive" ? 1 : 5,
-			Disagree: spin === "Positive" ? 2 : 4,
-			"Neither agree nor disagree": 3,
-			Agree: spin === "Positive" ? 4 : 2,
-			"Strongly agree": spin === "Positive" ? 5 : 1,
-		};
-
-		return scoreMap[option] || 0;
-	}
+	// Process questions with logging in async helper
+	const sortedQuestions = await processQuestions(questions as SurveyQuestion[]);
 
 	return (
 		<>

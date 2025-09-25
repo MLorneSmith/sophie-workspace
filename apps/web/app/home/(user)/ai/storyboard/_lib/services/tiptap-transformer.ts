@@ -80,13 +80,11 @@ export namespace TipTapTransformer {
 		if (typeof document === "string") {
 			try {
 				return JSON.parse(document) as TipTapDocument;
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Error parsing TipTap document:",
-				// 	{ data: error }
-				// );
+			} catch (error) {
+				if (process.env.NODE_ENV === "development") {
+					// biome-ignore lint/suspicious/noConsole: Development debugging for TipTap document parsing errors
+					console.error("Error parsing TipTap document:", error);
+				}
 				// Return empty document if parsing fails
 				return { type: "doc", content: [] };
 			}

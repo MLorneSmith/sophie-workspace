@@ -38,11 +38,11 @@ async function SignUpPage({ searchParams }: Props) {
 	return (
 		<>
 			<div className={"flex flex-col items-center gap-1"}>
-				<Heading level={4} className={"tracking-tight"}>
+				<Heading level={1} className={"tracking-tight text-lg lg:text-xl"}>
 					<Trans i18nKey={"auth:signUpHeading"} />
 				</Heading>
 
-				<p className={"text-muted-foreground text-sm"}>
+				<p className={"text-foreground text-sm"}>
 					<Trans i18nKey={"auth:signUpSubheading"} />
 				</p>
 			</div>
@@ -55,7 +55,12 @@ async function SignUpPage({ searchParams }: Props) {
 			/>
 
 			<div className={"flex justify-center"}>
-				<Button asChild variant={"link"} size={"sm"}>
+				<Button
+					asChild
+					variant={"link"}
+					size={"sm"}
+					className="text-foreground"
+				>
 					<Link href={signInPath} prefetch={true}>
 						<Trans i18nKey={"auth:alreadyHaveAnAccount"} />
 					</Link>

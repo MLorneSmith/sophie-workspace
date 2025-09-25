@@ -124,9 +124,14 @@ export const getPresentationAction = enhanceAction(
 							...typedFallbackData,
 							storyboard,
 						};
-					} catch (_transformError) {
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: error
+					} catch (transformError) {
+						logger.error("Error transforming outline to storyboard", {
+							error:
+								transformError instanceof Error
+									? transformError.message
+									: String(transformError),
+							presentationId: data.presentationId,
+						});
 						// Return the data without storyboard if transformation fails
 						return typedFallbackData;
 					}
@@ -164,10 +169,19 @@ export const getPresentationAction = enhanceAction(
 								storyboard: storyboard as unknown as Json,
 							})
 							.eq("id", data.presentationId);
-					} catch (_saveError) {
+					} catch (saveError) {
 						// Log but continue if saving fails
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: warn
+						const logger = await getLogger();
+						logger.warn(
+							{
+								error:
+									saveError instanceof Error
+										? saveError.message
+										: String(saveError),
+								presentationId: data.presentationId,
+							},
+							"Failed to save generated storyboard",
+						);
 					}
 
 					// Return with the generated storyboard
@@ -175,9 +189,15 @@ export const getPresentationAction = enhanceAction(
 						...typedPresentation,
 						storyboard,
 					};
-				} catch (_transformError) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+				} catch (transformError) {
+					const logger = await getLogger();
+					logger.error("Error transforming outline to storyboard", {
+						error:
+							transformError instanceof Error
+								? transformError.message
+								: String(transformError),
+						presentationId: data.presentationId,
+					});
 					// Return without storyboard if transformation fails
 					return typedPresentation;
 				}
@@ -186,8 +206,8 @@ export const getPresentationAction = enhanceAction(
 			return typedPresentation;
 		} catch (error) {
 			const logger = await getLogger();
-			logger.error("Error fetching presentation", {
-				error,
+			logger.error("Error fetching presentation from Supabase", {
+				error: error instanceof Error ? error.message : String(error),
 				presentationId: data.presentationId,
 			});
 			throw new Error("Failed to load presentation data.");
@@ -245,10 +265,9 @@ export const saveStoryboardAction = enhanceAction(
 
 			if (error) {
 				// Log the specific Supabase error
-				logger.error({
+				logger.error("Error saving storyboard to Supabase", {
 					presentationId: data.presentationId,
 					error: error.message,
-					message: "Error saving storyboard to Supabase",
 				});
 				// If storyboard column doesn't exist, inform the client
 				if (error.message.includes("column 'storyboard' does not exist")) {
@@ -271,10 +290,9 @@ export const saveStoryboardAction = enhanceAction(
 			// Catch any unexpected errors during the process
 			const errorMessage =
 				error instanceof Error ? error.message : "An unknown error occurred";
-			logger.error({
+			logger.error("Unexpected error in saveStoryboardAction", {
 				presentationId: data.presentationId,
 				error: errorMessage,
-				message: "Unexpected error in saveStoryboardAction",
 			});
 			// Throw a more user-friendly error message for unexpected errors
 			throw new Error(

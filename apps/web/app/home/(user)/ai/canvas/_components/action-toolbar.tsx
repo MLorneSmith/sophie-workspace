@@ -4,17 +4,45 @@ import { useUserWorkspace } from "@kit/accounts/hooks/use-user-workspace";
 import type {
 	BaseImprovement,
 	ImprovementType,
-} from "@kit/ai-gateway/src/prompts/types/improvements";
-import type { SimplifiedContent } from "@kit/ai-gateway/src/utils/parse-simplified";
+	SimplifiedContent,
+} from "@kit/ai-gateway";
 import { Button } from "@kit/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
 import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { generateIdeasAction } from "../_actions/generate-ideas";
-import { simplifyTextAction } from "../_actions/simplify-text";
+import { generateIdeasActionEdge } from "../_actions/generate-ideas-edge";
+import { simplifyTextActionEdge } from "../_actions/simplify-text-edge";
 import type { TiptapEditorRef } from "./editor/tiptap/tiptap-editor";
+
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
 
 interface ActionToolbarProps {
 	editorRef: React.RefObject<TiptapEditorRef | null>;
@@ -55,12 +83,12 @@ export function ActionToolbar({
 					try {
 						content = editorRef.current.getText();
 						resolve(content);
-					} catch (_error) {
-						// TODO: Async logger needed
-						// (await getLogger()).warn(
-						// 	"Error getting editor content:",
-						// 	{ data: _error }
-						// );
+					} catch (error) {
+						logger.warn("Error getting editor content for simplify", {
+							error,
+							canvasId,
+							sectionType,
+						});
 						resolve("");
 					}
 				});
@@ -72,7 +100,7 @@ export function ActionToolbar({
 				]);
 
 				// Call the simplify text action
-				const result = await simplifyTextAction({
+				const result = await simplifyTextActionEdge({
 					content,
 					userId: user.id,
 					canvasId,
@@ -82,9 +110,9 @@ export function ActionToolbar({
 				if (result.success && result.response) {
 					try {
 						// Access the text content from the response before parsing
-						// Access the text content from the response before parsing
+						const response = result.response as { content: string };
 						const simplified = JSON.parse(
-							result.response.content,
+							response.content,
 						) as SimplifiedContent;
 
 						// Clear current content and insert simplified sections safely
@@ -117,41 +145,45 @@ export function ActionToolbar({
 										}
 									}
 								}
-							} catch (_updateError) {
-								// TODO: Async logger needed
-								// (await getLogger()).warn(
-								// 	"Error updating editor content:",
-								// 	{ data: _updateError }
-								// );
+							} catch (updateError) {
+								logger.warn("Error updating editor content after simplify", {
+									error: updateError,
+									canvasId,
+									sectionType,
+								});
 							}
 						}
-					} catch (_parseError) {
-						// TODO: Async logger needed
-						// (await getLogger()).error(
-						// 	"Failed to parse simplified content:",
-						// 	{ data: _parseError }
-						// );
+					} catch (parseError) {
+						logger.error("Failed to parse simplified content", {
+							error: parseError,
+							canvasId,
+							sectionType,
+							response: (result.response as { content?: string })?.content,
+						});
 						return;
 					}
 				} else {
-					// TODO: Async logger needed
-					// (await getLogger()).error(
-					// 	"Failed to simplify text:",
-					// 	{ data: result.error }
-					// );
+					logger.error("Failed to simplify text", {
+						error: result.error,
+						canvasId,
+						sectionType,
+						success: result.success,
+					});
 				}
-			} catch (_contentError) {
-				// TODO: Async logger needed
-				// (await getLogger()).warn(
-				// 	"Error getting editor content:",
-				// 	{ data: _contentError }
-				// );
+			} catch (contentError) {
+				logger.warn("Error getting editor content for simplify action", {
+					error: contentError,
+					canvasId,
+					sectionType,
+				});
 			}
-		} catch (_error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error simplifying text:", {
-			// 	data: _error,
-			// });
+		} catch (error) {
+			logger.error("Error simplifying text", {
+				error,
+				canvasId,
+				sectionType,
+				userId: user?.id,
+			});
 		} finally {
 			setIsSimplifying(false);
 		}
@@ -174,12 +206,12 @@ export function ActionToolbar({
 					try {
 						content = editorRef.current.getText();
 						resolve(content);
-					} catch (_error) {
-						// TODO: Async logger needed
-						// (await getLogger()).warn(
-						// 	"Error getting editor content:",
-						// 	{ data: _error }
-						// );
+					} catch (error) {
+						logger.warn("Error getting editor content for ideas generation", {
+							error,
+							canvasId,
+							sectionType,
+						});
 						resolve("");
 					}
 				});
@@ -194,7 +226,7 @@ export function ActionToolbar({
 				const contentToSend =
 					content.trim() || "Please suggest some initial ideas.";
 
-				const result = await generateIdeasAction({
+				const result = await generateIdeasActionEdge({
 					content: contentToSend,
 					submissionId: canvasId,
 					type: sectionType,
@@ -207,18 +239,23 @@ export function ActionToolbar({
 				) {
 					onGenerateImprovements(result.data.improvements);
 				}
-			} catch (_contentError) {
-				// TODO: Async logger needed
-				// (await getLogger()).warn(
-				// 	"Error getting editor content:",
-				// 	{ data: contentError }
-				// );
+			} catch (contentError) {
+				logger.warn(
+					"Error getting editor content for ideas generation action",
+					{
+						error: contentError,
+						canvasId,
+						sectionType,
+					},
+				);
 			}
-		} catch (_error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error generating ideas:", {
-			// 	data: _error,
-			// });
+		} catch (error) {
+			logger.error("Error generating ideas", {
+				error,
+				canvasId,
+				sectionType,
+				userId: user?.id,
+			});
 		}
 	}, [editorRef, canvasId, user, sectionType, onGenerateImprovements]);
 

@@ -1,0 +1,74 @@
+{
+	"rules": {
+		"color-contrast": {
+			"enabled": true
+		},
+		"focus-order-semantics": {
+			"enabled": true
+		},
+		"keyboard-navigation": {
+			"enabled": true
+		},
+		"landmark-banner-is-top-level": {
+			"enabled": true
+		},
+		"landmark-main-is-top-level": {
+			"enabled": true
+		},
+		"landmark-no-duplicate-banner": {
+			"enabled": true
+		},
+		"landmark-no-duplicate-contentinfo": {
+			"enabled": true
+		},
+		"landmark-no-duplicate-main": {
+			"enabled": true
+		},
+		"landmark-one-main": {
+			"enabled": true
+		},
+		"region": {
+			"enabled": true
+		},
+		"aria-allowed-attr": {
+			"enabled": true
+		},
+		"aria-required-attr": {
+			"enabled": true
+		},
+		"aria-valid-attr-value": {
+			"enabled": true
+		},
+		"aria-valid-attr": {
+			"enabled": true
+		},
+		"button-name": {
+			"enabled": true
+		},
+		"form-field-multiple-labels": {
+			"enabled": true
+		},
+		"input-button-name": {
+			"enabled": true
+		},
+		"label": {
+			"enabled": true
+		},
+		"link-name": {
+			"enabled": true
+		},
+		"image-alt": {
+			"enabled": true
+		},
+		"heading-order": {
+			"enabled": true
+		},
+		"page-has-heading-one": {
+			"enabled": true
+		}
+	},
+	"tags": ["wcag2a", "wcag2aa", "wcag21aa"],
+	"reporter": "html",
+	"outputDir": "./accessibility-report",
+	"disabledRules": []
+}

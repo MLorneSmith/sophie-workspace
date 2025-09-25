@@ -12,30 +12,28 @@ const CSRF_SECRET_COOKIE = "csrfSecret";
 const NEXT_ACTION_HEADER = "next-action";
 
 export const config = {
-	matcher: [
-		"/((?!_next/static|_next/image|images|locales|assets|ingest/*|api/*).*)",
-	],
+	matcher: ["/((?!_next/static|_next/image|images|locales|assets|api/*).*)"],
 };
 
 const getUser = (request: NextRequest, response: NextResponse) => {
 	const supabase = createMiddlewareClient(request, response);
 
-	return supabase.auth.getUser();
+	return supabase.auth.getClaims();
 };
 
 export async function middleware(request: NextRequest) {
-	const secureHeaders = await _createResponseWithSecureHeaders();
+	const secureHeaders = await createResponseWithSecureHeaders();
 	const response = NextResponse.next(secureHeaders);
 
 	// set a unique request ID for each request
 	// this helps us log and trace requests
-	_setRequestId(request);
+	setRequestId(request);
 
 	// apply CSRF protection for mutating requests
 	const csrfResponse = await withCsrfMiddleware(request, response);
 
 	// handle patterns for specific routes
-	const handlePattern = _matchUrlPattern(request.url);
+	const handlePattern = matchUrlPattern(request.url);
 
 	// if a pattern handler exists, call it
 	if (handlePattern) {
@@ -104,14 +102,11 @@ async function adminMiddleware(request: NextRequest, response: NextResponse) {
 		return;
 	}
 
-	const {
-		data: { user },
-		error,
-	} = await getUser(request, response);
+	const { data, error } = await getUser(request, response);
 
 	// If user is not logged in, redirect to sign in page.
 	// This should never happen, but just in case.
-	if (!user || error) {
+	if (!data?.claims || error) {
 		return NextResponse.redirect(
 			new URL(pathsConfig.auth.signIn, request.nextUrl.origin).href,
 		);
@@ -139,42 +134,12 @@ function getPatterns() {
 			handler: adminMiddleware,
 		},
 		{
-			pattern: new URLPattern({ pathname: "/onboarding" }),
-			handler: async (req: NextRequest, res: NextResponse) => {
-				const {
-					data: { user },
-				} = await getUser(req, res);
-
-				const origin = req.nextUrl.origin;
-
-				// If user is not logged in, redirect to sign in page.
-				if (!user) {
-					const signIn = pathsConfig.auth.signIn;
-					const redirectPath = `${signIn}?next=/onboarding`;
-
-					return NextResponse.redirect(new URL(redirectPath, origin).href);
-				}
-
-				// Check if user has already completed onboarding
-				const isOnboarded = user.user_metadata.onboarded === true;
-
-				// If user has already completed onboarding, redirect to home page
-				if (isOnboarded) {
-					return NextResponse.redirect(
-						new URL(pathsConfig.app.home, origin).href,
-					);
-				}
-			},
-		},
-		{
 			pattern: new URLPattern({ pathname: "/auth/*?" }),
 			handler: async (req: NextRequest, res: NextResponse) => {
-				const {
-					data: { user },
-				} = await getUser(req, res);
+				const { data } = await getUser(req, res);
 
 				// the user is logged out, so we don't need to do anything
-				if (!user) {
+				if (!data?.claims) {
 					return;
 				}
 
@@ -182,10 +147,23 @@ function getPatterns() {
 				const isVerifyMfa = req.nextUrl.pathname === pathsConfig.auth.verifyMfa;
 
 				// If user is logged in and does not need to verify MFA,
-				// redirect to home page.
+				// check onboarding status and redirect appropriately
 				if (!isVerifyMfa) {
-					const nextPath =
-						req.nextUrl.searchParams.get("next") ?? pathsConfig.app.home;
+					const supabase = createMiddlewareClient(req, res);
+					const { data: userData } = await supabase.auth.getUser();
+					const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+
+					// Determine the redirect path
+					let nextPath = req.nextUrl.searchParams.get("next");
+
+					// If no explicit next path or if not onboarded, handle accordingly
+					if (!isOnboarded) {
+						// New users should go to onboarding
+						nextPath = "/onboarding";
+					} else if (!nextPath) {
+						// Onboarded users without a next path go to home
+						nextPath = pathsConfig.app.home;
+					}
 
 					return NextResponse.redirect(
 						new URL(nextPath, req.nextUrl.origin).href,
@@ -196,15 +174,13 @@ function getPatterns() {
 		{
 			pattern: new URLPattern({ pathname: "/home/*?" }),
 			handler: async (req: NextRequest, res: NextResponse) => {
-				const {
-					data: { user },
-				} = await getUser(req, res);
+				const { data } = await getUser(req, res);
 
 				const origin = req.nextUrl.origin;
 				const next = req.nextUrl.pathname;
 
 				// If user is not logged in, redirect to sign in page.
-				if (!user) {
+				if (!data?.claims) {
 					const signIn = pathsConfig.auth.signIn;
 					const redirectPath = `${signIn}?next=${next}`;
 
@@ -212,6 +188,15 @@ function getPatterns() {
 				}
 
 				const supabase = createMiddlewareClient(req, res);
+
+				// Check if user has completed onboarding
+				const { data: userData } = await supabase.auth.getUser();
+				const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+
+				// If user hasn't completed onboarding, redirect to onboarding page
+				if (!isOnboarded) {
+					return NextResponse.redirect(new URL("/onboarding", origin).href);
+				}
 
 				const requiresMultiFactorAuthentication =
 					await checkRequiresMultiFactorAuthentication(supabase);
@@ -222,21 +207,34 @@ function getPatterns() {
 						new URL(pathsConfig.auth.verifyMfa, origin).href,
 					);
 				}
+			},
+		},
+		{
+			pattern: new URLPattern({ pathname: "/onboarding" }),
+			handler: async (req: NextRequest, res: NextResponse) => {
+				const { data } = await getUser(req, res);
+				const origin = req.nextUrl.origin;
 
-				// Check if user needs to complete onboarding
-				const { data: userData } = await supabase.auth.getUser();
-				const needsOnboarding =
-					userData.user &&
-					(!userData.user.user_metadata.onboarded ||
-						userData.user.user_metadata.onboarded !== true);
-
-				// Skip onboarding check for the onboarding page itself
-				const isOnboardingPath = req.nextUrl.pathname === "/onboarding";
-
-				// If user needs onboarding and is not already on the onboarding page, redirect to onboarding
-				if (needsOnboarding && !isOnboardingPath) {
-					return NextResponse.redirect(new URL("/onboarding", origin).href);
+				// If user is not logged in, redirect to sign in page.
+				if (!data?.claims) {
+					const signIn = pathsConfig.auth.signIn;
+					return NextResponse.redirect(new URL(signIn, origin).href);
 				}
+
+				// Check if user has already completed onboarding
+				const supabase = createMiddlewareClient(req, res);
+				const { data: userData } = await supabase.auth.getUser();
+				const isOnboarded = userData?.user?.user_metadata?.onboarded === true;
+
+				// If user has already completed onboarding, redirect to home
+				if (isOnboarded) {
+					return NextResponse.redirect(
+						new URL(pathsConfig.app.home, origin).href,
+					);
+				}
+
+				// User is logged in and needs onboarding - allow access to onboarding page
+				return res;
 			},
 		},
 	];
@@ -246,7 +244,7 @@ function getPatterns() {
  * Match URL patterns to specific handlers.
  * @param url
  */
-function _matchUrlPattern(url: string) {
+function matchUrlPattern(url: string) {
 	const patterns = getPatterns();
 	const input = url.split("?")[0];
 
@@ -263,7 +261,7 @@ function _matchUrlPattern(url: string) {
  * Set a unique request ID for each request.
  * @param request
  */
-function _setRequestId(request: Request) {
+function setRequestId(request: Request) {
 	request.headers.set("x-correlation-id", crypto.randomUUID());
 }
 
@@ -272,7 +270,7 @@ function _setRequestId(request: Request) {
  * @description Create a middleware with enhanced headers applied (if applied).
  * This is disabled by default. To enable set ENABLE_STRICT_CSP=true
  */
-async function _createResponseWithSecureHeaders() {
+async function createResponseWithSecureHeaders() {
 	const enableStrictCsp = process.env.ENABLE_STRICT_CSP ?? "false";
 
 	// we disable ENABLE_STRICT_CSP by default

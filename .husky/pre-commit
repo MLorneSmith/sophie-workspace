@@ -3,8 +3,8 @@
 
 echo "🚀 Starting optimized pre-commit checks..."
 
-# Use lint-staged for parallel processing of files
-echo "🔄 Running lint-staged for parallel file processing..."
-npx lint-staged
+# Use lint-staged with limited concurrency to prevent SIGKILL errors
+echo "🔄 Running lint-staged with concurrency limit..."
+npx lint-staged --concurrent 2
 
 echo "✅ Pre-commit checks completed!"

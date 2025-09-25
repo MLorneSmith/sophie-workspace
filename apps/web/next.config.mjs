@@ -4,15 +4,6 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
-// New Relic configuration for local development
-let nrExternals;
-try {
-	nrExternals = require("newrelic/load-externals");
-} catch (_err) {
-	// New Relic not available (e.g., in build without agent)
-	nrExternals = () => {};
-}
-
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
 	"@kit/auth",
@@ -38,33 +29,14 @@ const config = {
 	/** Enables hot reloading for local packages without a build step */
 	transpilePackages: INTERNAL_PACKAGES,
 	images: {
-		remotePatterns: [
-			...getRemotePatterns(),
-			{
-				protocol: "https",
-				hostname: "*.supabase.co",
-			},
-			{
-				protocol: "https",
-				hostname: "*.r2.cloudflarestorage.com",
-			},
-			{
-				protocol: "https",
-				hostname: "images.slideheroes.com",
-			},
-		],
+		remotePatterns: getRemotePatterns(),
 	},
 	logging: {
 		fetches: {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: ["newrelic"],
-	webpack: (config) => {
-		// Configure New Relic externals for proper agent loading
-		nrExternals(config);
-		return config;
-	},
+	serverExternalPackages: [],
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],
@@ -74,12 +46,16 @@ const config = {
 		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
 		resolveAlias: getModulesAliases(),
 	},
-	devIndicators: {
-		position: "bottom-right",
-	},
+	devIndicators:
+		process.env.NEXT_PUBLIC_CI === "true"
+			? false
+			: {
+					position: "bottom-right",
+				},
 	experimental: {
 		mdxRs: true,
 		reactCompiler: ENABLE_REACT_COMPILER,
+		clientSegmentCache: true,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",
@@ -98,20 +74,6 @@ const config = {
 	/** We already do linting and typechecking as separate tasks in CI */
 	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
-	skipTrailingSlashRedirect: true,
-	async rewrites() {
-		// NOTE: change `eu` to `us` if applicable
-		return [
-			{
-				source: "/ingest/static/:path*",
-				destination: "https://eu-assets.i.posthog.com/static/:path*",
-			},
-			{
-				source: "/ingest/:path*",
-				destination: "https://eu.i.posthog.com/:path*",
-			},
-		];
-	},
 };
 
 export default withBundleAnalyzer({
@@ -172,7 +134,6 @@ function getModulesAliases() {
 
 	// exclude the modules that are not needed
 	const excludeSentry = monitoringProvider !== "sentry";
-	const excludeBaselime = monitoringProvider !== "baselime";
 	const excludeStripe = billingProvider !== "stripe";
 	const excludeNodemailer = mailerProvider !== "nodemailer";
 	const excludeTurnstile = !captchaProvider;
@@ -185,10 +146,6 @@ function getModulesAliases() {
 
 	if (excludeSentry) {
 		aliases["@sentry/nextjs"] = noopPath;
-	}
-
-	if (excludeBaselime) {
-		aliases["@baselime/react-rum"] = noopPath;
 	}
 
 	if (excludeStripe) {

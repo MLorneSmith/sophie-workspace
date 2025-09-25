@@ -1,5 +1,6 @@
 "use client";
 
+import { createClientLogger } from "@kit/shared/logger";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
@@ -9,6 +10,9 @@ import * as React from "react";
 
 import { useError } from "../error/ErrorContext";
 import { isAuthError, isConnectionError } from "../lib/error-utils";
+
+// Client-side logger for this component
+const { getLogger } = createClientLogger("BLOCKS-FORM-ERROR-BOUNDARY");
 
 const ERROR_MESSAGES = {
 	AUTH_ERROR: "Your session has expired. Please refresh and try again.",
@@ -89,12 +93,10 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		// Log error
-		// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"SetupFormErrorBoundary caught an error:",
-		// 	{ arg1: error, arg2: errorInfo }
-		// );
+		getLogger().error("SetupFormErrorBoundary caught an error", {
+			error,
+			errorInfo,
+		});
 
 		// Call onError prop if provided
 		this.props.onError?.(error, errorInfo);

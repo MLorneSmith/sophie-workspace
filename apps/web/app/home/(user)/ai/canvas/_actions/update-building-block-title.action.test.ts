@@ -4,6 +4,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { expectError } from "@/test/test-helpers";
+import type { ActionResult } from "@/test/test-types";
 import { updateBuildingBlockTitleAction } from "./update-building-block-title.action";
 
 // Mock dependencies
@@ -82,7 +83,9 @@ describe("updateBuildingBlockTitleAction", () => {
 				title: null as unknown as string,
 			});
 
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as ActionResult<unknown>)).toBe(
+				"Validation failed",
+			);
 		});
 
 		it("should reject missing fields", async () => {
@@ -90,7 +93,9 @@ describe("updateBuildingBlockTitleAction", () => {
 				id: undefined as unknown as string,
 			} as { id: string; title: string });
 
-			expect(expectError(result)).toBe("Validation failed");
+			expect(expectError(result as ActionResult<unknown>)).toBe(
+				"Validation failed",
+			);
 		});
 	});
 

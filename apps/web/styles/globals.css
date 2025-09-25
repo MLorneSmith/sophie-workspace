@@ -7,10 +7,12 @@
 /* Tailwind CSS */
 @import "tailwindcss";
 
+/* CSS Variables and Theme (MUST BE AFTER Tailwind for v4) */
+@import "./shadcn-ui.css";
+
 /* local styles - update the below if you add a new style */
 @import "./theme.css";
 @import "./theme.utilities.css";
-@import "./shadcn-ui.css";
 @import "./markdoc.css";
 @import "./makerkit.css";
 
@@ -44,8 +46,16 @@
 		border-color: var(--border, currentColor);
 	}
 
+	/* Ensure placeholder text meets WCAG AA contrast requirements */
 	input::placeholder,
 	textarea::placeholder {
-		color: hsl(var(--muted-foreground));
+		color: hsl(0 0% 32%); /* 7.8:1 contrast on white background */
+		opacity: 1; /* Prevent browser opacity reduction */
+	}
+
+	.dark input::placeholder,
+	.dark textarea::placeholder {
+		color: hsl(0 0% 64%); /* Appropriate contrast for dark mode */
+		opacity: 1;
 	}
 }

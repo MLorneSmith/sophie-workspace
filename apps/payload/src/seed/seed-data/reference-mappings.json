@@ -1,0 +1,1483 @@
+[
+	{
+		"type": "media",
+		"originalId": "../assets/img/Nav/slideHeroes_final_white.svg",
+		"identifier": "../assets/img/Nav/slideHeroes_final_white.svg"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/DDM%20Blueprint%20Narrow%202024.jpg",
+		"identifier": "../assets/img/bpm/DDM%20Blueprint%20Narrow%202024.jpg"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/Art%20&%20Craft%20of%20Presentation%20Creation%203.png",
+		"identifier": "../assets/img/Art%20&%20Craft%20of%20Presentation%20Creation%203.png"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/Vanesa%20Feedback%202024.png",
+		"identifier": "../assets/img/bpm/Vanesa%20Feedback%202024.png"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/Luchetsky%20SlideHeroes%20feedback.png",
+		"identifier": "../assets/img/bpm/Luchetsky%20SlideHeroes%20feedback.png"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/kshivets-o-lung-cancer-surgery-2024.png",
+		"identifier": "../assets/img/bpm/kshivets-o-lung-cancer-surgery-2024.png"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/BPM%20Course%20Chapters%202024.png",
+		"identifier": "../assets/img/bpm/BPM%20Course%20Chapters%202024.png"
+	},
+	{
+		"type": "media",
+		"originalId": "../assets/img/bpm/Types-of-Mistakes-Chart_v3%202024.png",
+		"identifier": "../assets/img/bpm/Types-of-Mistakes-Chart_v3%202024.png"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide3.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide3.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide5.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide5.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide7.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide7.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide9.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide9.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide11.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide11.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide13.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide13.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide16.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide16.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide17.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide17.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide18.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide18.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide20.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide20.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide22.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide22.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide24.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide24.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide26.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide26.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide28.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide28.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide30.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide30.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide31.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide31.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide33.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide33.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide37.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide37.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide38.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide38.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide40.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide40.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/presentation-review-bcg/Slide42.webp",
+		"identifier": "/site/images/presentation-review-bcg/Slide42.webp"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/typology-business-charts/business-charts-infographic-optimized.jpg",
+		"identifier": "/site/images/typology-business-charts/business-charts-infographic-optimized.jpg"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/typology-business-charts/respresenting-quantitative-values-optimized.jpg",
+		"identifier": "/site/images/typology-business-charts/respresenting-quantitative-values-optimized.jpg"
+	},
+	{
+		"type": "media",
+		"originalId": "/site/images/typology-business-charts/data-relationships-and-charts-optimized.jpg",
+		"identifier": "/site/images/typology-business-charts/data-relationships-and-charts-optimized.jpg"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "art-craft-business-presentation-creation",
+		"identifier": "art-craft-business-presentation-creation"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "pitch-deck",
+		"identifier": "pitch-deck"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "powerpoint-presentations-defense",
+		"identifier": "powerpoint-presentations-defense"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "presentation-review-bcg",
+		"identifier": "presentation-review-bcg"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "presentation-tips",
+		"identifier": "presentation-tips"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "presentation-tools",
+		"identifier": "presentation-tools"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "seneca-partnership",
+		"identifier": "seneca-partnership"
+	},
+	{
+		"type": "collection",
+		"collection": "posts",
+		"originalId": "typology-business-charts",
+		"identifier": "typology-business-charts"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "facts-and-data",
+		"identifier": "facts-and-data",
+		"newId": "facts-and-data"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "getting-started",
+		"identifier": "getting-started",
+		"newId": "getting-started"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "conclusion",
+		"identifier": "conclusion",
+		"newId": "conclusion"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "design",
+		"identifier": "design",
+		"newId": "design"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "structure",
+		"identifier": "structure",
+		"newId": "structure"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "the-start",
+		"identifier": "the-start",
+		"newId": "the-start"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "performance",
+		"identifier": "performance",
+		"newId": "performance"
+	},
+	{
+		"type": "collection",
+		"collection": "courses",
+		"originalId": "storytelling",
+		"identifier": "storytelling",
+		"newId": "storytelling"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "basic-graphs",
+		"identifier": "basic-graphs"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "elements-of-design-detail",
+		"identifier": "elements-of-design-detail"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "fact-persuasion",
+		"identifier": "fact-persuasion"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "gestalt-principles",
+		"identifier": "gestalt-principles"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "idea-generation",
+		"identifier": "idea-generation"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "introductions",
+		"identifier": "introductions"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "our-process",
+		"identifier": "our-process"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "overview-elements-of-design",
+		"identifier": "overview-elements-of-design"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "performance",
+		"identifier": "performance"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "preparation-practice",
+		"identifier": "preparation-practice"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "slide-composition",
+		"identifier": "slide-composition"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "specialist-graphs",
+		"identifier": "specialist-graphs"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "storyboards-in-film",
+		"identifier": "storyboards-in-film"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "storyboards-in-presentations",
+		"identifier": "storyboards-in-presentations"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "structure",
+		"identifier": "structure"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "tables-vs-graphs",
+		"identifier": "tables-vs-graphs"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "the-who",
+		"identifier": "the-who"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "using-stories",
+		"identifier": "using-stories"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "visual-perception",
+		"identifier": "visual-perception"
+	},
+	{
+		"type": "course-quizzes",
+		"originalId": "why-next-steps",
+		"identifier": "why-next-steps"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q1",
+		"identifier": "39e80bf8-f01e-446a-8ba5-bc2bdf7f2bfb",
+		"newId": "39e80bf8-f01e-446a-8ba5-bc2bdf7f2bfb"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q2",
+		"identifier": "1ac4ca0f-2f91-43c2-8f12-ec3ac1fd2c4f",
+		"newId": "1ac4ca0f-2f91-43c2-8f12-ec3ac1fd2c4f"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q3",
+		"identifier": "9f04e613-2565-413a-8c34-2061c9fdea3d",
+		"newId": "9f04e613-2565-413a-8c34-2061c9fdea3d"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q4",
+		"identifier": "421b7035-7c03-4c18-923b-31e692351c67",
+		"newId": "421b7035-7c03-4c18-923b-31e692351c67"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q5",
+		"identifier": "255d4974-ec6e-4e46-a866-ba5ab10f54ad",
+		"newId": "255d4974-ec6e-4e46-a866-ba5ab10f54ad"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q6",
+		"identifier": "32d49dd0-3fcc-442a-b6f4-a07c65ee88ea",
+		"newId": "32d49dd0-3fcc-442a-b6f4-a07c65ee88ea"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q7",
+		"identifier": "194722f8-1328-423d-8a37-fea7d0ba3592",
+		"newId": "194722f8-1328-423d-8a37-fea7d0ba3592"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "basic-graphs-quiz-q8",
+		"identifier": "bf3856fd-dd18-493c-aa63-d4675daa1914",
+		"newId": "bf3856fd-dd18-493c-aa63-d4675daa1914"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q1",
+		"identifier": "71f9da88-797a-42b4-a11d-d13c2ee2c902",
+		"newId": "71f9da88-797a-42b4-a11d-d13c2ee2c902"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q2",
+		"identifier": "5d0dd18c-4b1e-4959-9f24-020b2d7253d4",
+		"newId": "5d0dd18c-4b1e-4959-9f24-020b2d7253d4"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q3",
+		"identifier": "6ebad866-e957-4622-adb1-948cb9904557",
+		"newId": "6ebad866-e957-4622-adb1-948cb9904557"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q4",
+		"identifier": "05210046-bd6b-455f-a684-fc431d372be0",
+		"newId": "05210046-bd6b-455f-a684-fc431d372be0"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q5",
+		"identifier": "7b5b8d55-2712-4140-9a2b-04b034f516bf",
+		"newId": "7b5b8d55-2712-4140-9a2b-04b034f516bf"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "elements-of-design-detail-quiz-q6",
+		"identifier": "0be2b01a-34b8-4cd4-b41c-823f696a5f51",
+		"newId": "0be2b01a-34b8-4cd4-b41c-823f696a5f51"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "fact-persuasion-quiz-q1",
+		"identifier": "820569d5-78a0-46f7-88f2-81e445c06df9",
+		"newId": "820569d5-78a0-46f7-88f2-81e445c06df9"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "fact-persuasion-quiz-q2",
+		"identifier": "b14140ce-03a0-4ceb-8e6b-1a31e12efae0",
+		"newId": "b14140ce-03a0-4ceb-8e6b-1a31e12efae0"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "gestalt-principles-quiz-q1",
+		"identifier": "7b516c8e-1053-4321-8123-48c12952a864",
+		"newId": "7b516c8e-1053-4321-8123-48c12952a864"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "gestalt-principles-quiz-q2",
+		"identifier": "364d8149-1e02-4dc2-a946-5e0da7ad27ce",
+		"newId": "364d8149-1e02-4dc2-a946-5e0da7ad27ce"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "gestalt-principles-quiz-q3",
+		"identifier": "cc074ccf-e0dd-4162-8b12-13a1ba84ea60",
+		"newId": "cc074ccf-e0dd-4162-8b12-13a1ba84ea60"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "gestalt-principles-quiz-q4",
+		"identifier": "beb92ee5-7f5c-46cc-98e6-46367900d015",
+		"newId": "beb92ee5-7f5c-46cc-98e6-46367900d015"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "idea-generation-quiz-q1",
+		"identifier": "07fd931f-2ab3-4283-b561-f068b830a3e5",
+		"newId": "07fd931f-2ab3-4283-b561-f068b830a3e5"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "idea-generation-quiz-q2",
+		"identifier": "ddd666b9-f12d-4b9f-865d-1509d92027ff",
+		"newId": "ddd666b9-f12d-4b9f-865d-1509d92027ff"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "idea-generation-quiz-q3",
+		"identifier": "cdcd2014-4bad-40c0-81d1-ce0e491fb299",
+		"newId": "cdcd2014-4bad-40c0-81d1-ce0e491fb299"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q1",
+		"identifier": "951987a4-3399-4643-88eb-981e929373b4",
+		"newId": "951987a4-3399-4643-88eb-981e929373b4"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q2",
+		"identifier": "5507eba5-98d0-4165-8eba-2ba490e6a793",
+		"newId": "5507eba5-98d0-4165-8eba-2ba490e6a793"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q3",
+		"identifier": "588f966f-ee52-404c-b739-6672779fb93f",
+		"newId": "588f966f-ee52-404c-b739-6672779fb93f"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q4",
+		"identifier": "e5632906-a9dc-4374-8c07-1cf306e84a8e",
+		"newId": "e5632906-a9dc-4374-8c07-1cf306e84a8e"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q5",
+		"identifier": "6e8fadb8-a68c-4ce8-8266-41f381386d4e",
+		"newId": "6e8fadb8-a68c-4ce8-8266-41f381386d4e"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "introductions-quiz-q6",
+		"identifier": "cf55dd2a-1acd-4694-8033-b00b87daf650",
+		"newId": "cf55dd2a-1acd-4694-8033-b00b87daf650"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q1",
+		"identifier": "c302d7d3-c63d-45db-a6e7-1d3c68c959fe",
+		"newId": "c302d7d3-c63d-45db-a6e7-1d3c68c959fe"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q2",
+		"identifier": "fc57e409-03d2-4b5e-9127-7cac30797a20",
+		"newId": "fc57e409-03d2-4b5e-9127-7cac30797a20"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q3",
+		"identifier": "700fb500-0cfa-4a21-8063-e4cc7751a68f",
+		"newId": "700fb500-0cfa-4a21-8063-e4cc7751a68f"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q4",
+		"identifier": "59bcf9c3-7063-401d-8521-8461e0810146",
+		"newId": "59bcf9c3-7063-401d-8521-8461e0810146"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q5",
+		"identifier": "34172f83-66ae-407e-b51d-69f70dd8487d",
+		"newId": "34172f83-66ae-407e-b51d-69f70dd8487d"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q6",
+		"identifier": "2904f664-1082-40a6-be1f-87ce32a41c86",
+		"newId": "2904f664-1082-40a6-be1f-87ce32a41c86"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q7",
+		"identifier": "b1569856-188e-4826-99c1-66f65ce05358",
+		"newId": "b1569856-188e-4826-99c1-66f65ce05358"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q8",
+		"identifier": "dc7869f0-c62a-43ba-a72a-5bf623be364c",
+		"newId": "dc7869f0-c62a-43ba-a72a-5bf623be364c"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "our-process-quiz-q9",
+		"identifier": "1794d96c-500f-4650-a1de-b6a66b808cfc",
+		"newId": "1794d96c-500f-4650-a1de-b6a66b808cfc"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "overview-elements-of-design-quiz-q1",
+		"identifier": "41d7d55a-d46e-4b7e-a450-6d1371adb114",
+		"newId": "41d7d55a-d46e-4b7e-a450-6d1371adb114"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "performance-quiz-q1",
+		"identifier": "9ac1e769-4bcb-44c3-8c0c-fadd8e283959",
+		"newId": "9ac1e769-4bcb-44c3-8c0c-fadd8e283959"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "performance-quiz-q2",
+		"identifier": "b7e005d4-f970-4e9e-a097-91ce095d14b7",
+		"newId": "b7e005d4-f970-4e9e-a097-91ce095d14b7"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "performance-quiz-q3",
+		"identifier": "71707f9a-a40c-4fac-b766-fd89c0f40930",
+		"newId": "71707f9a-a40c-4fac-b766-fd89c0f40930"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q1",
+		"identifier": "0553f44f-01fc-4414-868b-d0c8b3a549ce",
+		"newId": "0553f44f-01fc-4414-868b-d0c8b3a549ce"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q2",
+		"identifier": "da6b9633-713d-4191-b75c-dbc84fc3ff17",
+		"newId": "da6b9633-713d-4191-b75c-dbc84fc3ff17"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q3",
+		"identifier": "df71ffe4-782e-4e55-9d03-6daf72a41133",
+		"newId": "df71ffe4-782e-4e55-9d03-6daf72a41133"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q4",
+		"identifier": "33c88622-895d-42fc-84f1-86d7dd9971dd",
+		"newId": "33c88622-895d-42fc-84f1-86d7dd9971dd"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q5",
+		"identifier": "bf6c255f-3504-44bf-91d6-3b270c409250",
+		"newId": "bf6c255f-3504-44bf-91d6-3b270c409250"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q6",
+		"identifier": "42a44ae9-a2cd-42f9-88f7-06457c59fdc3",
+		"newId": "42a44ae9-a2cd-42f9-88f7-06457c59fdc3"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q7",
+		"identifier": "83461e1c-6a73-470e-88af-f41bc259f26a",
+		"newId": "83461e1c-6a73-470e-88af-f41bc259f26a"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "preparation-practice-quiz-q8",
+		"identifier": "98c13ee5-0901-4b28-93bc-093cdeb1961c",
+		"newId": "98c13ee5-0901-4b28-93bc-093cdeb1961c"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "slide-composition-quiz-q1",
+		"identifier": "3052e5f0-f1fb-4bba-9f9e-8eaaafbe9ea6",
+		"newId": "3052e5f0-f1fb-4bba-9f9e-8eaaafbe9ea6"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "slide-composition-quiz-q2",
+		"identifier": "cc1fbac8-4927-4a71-96e1-cf31deacf865",
+		"newId": "cc1fbac8-4927-4a71-96e1-cf31deacf865"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "slide-composition-quiz-q3",
+		"identifier": "8ab34557-2075-40b8-ad3e-0dac77b29553",
+		"newId": "8ab34557-2075-40b8-ad3e-0dac77b29553"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "slide-composition-quiz-q4",
+		"identifier": "5287d078-7dc6-4d77-8001-bc4825c25458",
+		"newId": "5287d078-7dc6-4d77-8001-bc4825c25458"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "slide-composition-quiz-q5",
+		"identifier": "b7ac6144-d340-4ea3-890b-519ca30b6aac",
+		"newId": "b7ac6144-d340-4ea3-890b-519ca30b6aac"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q1",
+		"identifier": "c78567d0-cfe2-43c8-9f55-56e70bd79ad3",
+		"newId": "c78567d0-cfe2-43c8-9f55-56e70bd79ad3"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q2",
+		"identifier": "0983b521-30bc-4a96-8e14-f19e41a19069",
+		"newId": "0983b521-30bc-4a96-8e14-f19e41a19069"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q3",
+		"identifier": "9fa40c2f-c9e9-41c8-b8a0-87c1390bf689",
+		"newId": "9fa40c2f-c9e9-41c8-b8a0-87c1390bf689"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q4",
+		"identifier": "f076e203-ddcc-485c-91d0-927cbb6f6ab5",
+		"newId": "f076e203-ddcc-485c-91d0-927cbb6f6ab5"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q5",
+		"identifier": "6823b69c-f8bb-4409-b455-7f37a39b0b26",
+		"newId": "6823b69c-f8bb-4409-b455-7f37a39b0b26"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "specialist-graphs-quiz-q6",
+		"identifier": "34ad761e-79bb-4a3f-aec6-c23f3a74a749",
+		"newId": "34ad761e-79bb-4a3f-aec6-c23f3a74a749"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "storyboards-in-film-quiz-q1",
+		"identifier": "37a89a7c-85b7-4329-a71a-363254941294",
+		"newId": "37a89a7c-85b7-4329-a71a-363254941294"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "storyboards-in-film-quiz-q2",
+		"identifier": "7b0f0718-1c87-4f10-bad5-a9f788ee9fab",
+		"newId": "7b0f0718-1c87-4f10-bad5-a9f788ee9fab"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "storyboards-in-film-quiz-q3",
+		"identifier": "add506d2-edc0-45cf-ba94-a2c827947023",
+		"newId": "add506d2-edc0-45cf-ba94-a2c827947023"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "storyboards-in-presentations-quiz-q1",
+		"identifier": "a3aa8180-848c-4088-aae8-20bb1fe68af8",
+		"newId": "a3aa8180-848c-4088-aae8-20bb1fe68af8"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "storyboards-in-presentations-quiz-q2",
+		"identifier": "5ac05dfc-1952-4b20-817c-dfcacaddc554",
+		"newId": "5ac05dfc-1952-4b20-817c-dfcacaddc554"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q1",
+		"identifier": "54f31da5-5e78-4edd-ab8c-9c7fd44b1edd",
+		"newId": "54f31da5-5e78-4edd-ab8c-9c7fd44b1edd"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q2",
+		"identifier": "3561315b-3fd9-4a6b-a9fc-d1adda9dccda",
+		"newId": "3561315b-3fd9-4a6b-a9fc-d1adda9dccda"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q3",
+		"identifier": "ae41f3a7-d561-44e5-88e6-f208bb3db63e",
+		"newId": "ae41f3a7-d561-44e5-88e6-f208bb3db63e"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q4",
+		"identifier": "c44739d8-a03c-4c46-b4bb-aa8119accaa9",
+		"newId": "c44739d8-a03c-4c46-b4bb-aa8119accaa9"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q5",
+		"identifier": "9e0d57ad-bf8b-4296-98fa-8b778e2ce0fa",
+		"newId": "9e0d57ad-bf8b-4296-98fa-8b778e2ce0fa"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "structure-quiz-q6",
+		"identifier": "0ec364eb-e4c1-4575-9357-503081c97bfa",
+		"newId": "0ec364eb-e4c1-4575-9357-503081c97bfa"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "tables-vs-graphs-quiz-q1",
+		"identifier": "2f1d7e80-62ac-45c8-a50f-f019f5055e23",
+		"newId": "2f1d7e80-62ac-45c8-a50f-f019f5055e23"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "tables-vs-graphs-quiz-q2",
+		"identifier": "1ad58b03-654a-4a3d-8faa-d6dd63f20340",
+		"newId": "1ad58b03-654a-4a3d-8faa-d6dd63f20340"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "tables-vs-graphs-quiz-q3",
+		"identifier": "8939e79b-5eca-4b3a-af4b-f276733715cb",
+		"newId": "8939e79b-5eca-4b3a-af4b-f276733715cb"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "tables-vs-graphs-quiz-q4",
+		"identifier": "cd1b79e9-54f7-4919-a391-75aada7d29bf",
+		"newId": "cd1b79e9-54f7-4919-a391-75aada7d29bf"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q1",
+		"identifier": "e79b5abf-d2d6-49ff-999a-9e05e37d0b95",
+		"newId": "e79b5abf-d2d6-49ff-999a-9e05e37d0b95"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q2",
+		"identifier": "ce1cf0e8-9a44-4397-836f-18b9fb99a427",
+		"newId": "ce1cf0e8-9a44-4397-836f-18b9fb99a427"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q3",
+		"identifier": "ad8105b4-ba6d-463a-a311-99e245ce2a5e",
+		"newId": "ad8105b4-ba6d-463a-a311-99e245ce2a5e"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q4",
+		"identifier": "b8181123-b92c-4b2e-a51a-e637dc8a96c3",
+		"newId": "b8181123-b92c-4b2e-a51a-e637dc8a96c3"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q5",
+		"identifier": "4435f0c5-1924-4797-9cb0-5d3529e10596",
+		"newId": "4435f0c5-1924-4797-9cb0-5d3529e10596"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q6",
+		"identifier": "ce574ace-2ce2-4884-9367-50c601c2890e",
+		"newId": "ce574ace-2ce2-4884-9367-50c601c2890e"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "the-who-quiz-q7",
+		"identifier": "3b5f9c48-2c4f-4ed6-b259-831f2dc3867d",
+		"newId": "3b5f9c48-2c4f-4ed6-b259-831f2dc3867d"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "using-stories-quiz-q1",
+		"identifier": "8cd3c484-52fd-49e0-91fa-263d2b355083",
+		"newId": "8cd3c484-52fd-49e0-91fa-263d2b355083"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "using-stories-quiz-q2",
+		"identifier": "4aa2ebb8-cbbc-483c-bdb6-f799b3bebf07",
+		"newId": "4aa2ebb8-cbbc-483c-bdb6-f799b3bebf07"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "using-stories-quiz-q3",
+		"identifier": "833be1d0-4e6c-40d6-b830-b44a3679b0b0",
+		"newId": "833be1d0-4e6c-40d6-b830-b44a3679b0b0"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "visual-perception-quiz-q1",
+		"identifier": "599176a9-649e-4efd-b31a-222520aad39d",
+		"newId": "599176a9-649e-4efd-b31a-222520aad39d"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "visual-perception-quiz-q2",
+		"identifier": "8b4a32e1-33a1-485c-8617-615d2a6003f8",
+		"newId": "8b4a32e1-33a1-485c-8617-615d2a6003f8"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "visual-perception-quiz-q3",
+		"identifier": "fe8df6ab-9f37-4f17-9059-196fa612b95c",
+		"newId": "fe8df6ab-9f37-4f17-9059-196fa612b95c"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "visual-perception-quiz-q4",
+		"identifier": "512a893d-6e25-48bd-818d-73804e76ef21",
+		"newId": "512a893d-6e25-48bd-818d-73804e76ef21"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "why-next-steps-quiz-q1",
+		"identifier": "15acc528-808b-4169-b0dd-33a07ae1caa2",
+		"newId": "15acc528-808b-4169-b0dd-33a07ae1caa2"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "why-next-steps-quiz-q2",
+		"identifier": "277f9996-2dc3-471f-88ff-47467c56edfb",
+		"newId": "277f9996-2dc3-471f-88ff-47467c56edfb"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "why-next-steps-quiz-q3",
+		"identifier": "71c9fdf3-097f-404d-a578-ebcc82f3a5cd",
+		"newId": "71c9fdf3-097f-404d-a578-ebcc82f3a5cd"
+	},
+	{
+		"type": "collection",
+		"collection": "quiz-questions",
+		"originalId": "why-next-steps-quiz-q4",
+		"identifier": "a5f1d512-8bbd-442a-a9f9-5f24bf171eb7",
+		"newId": "a5f1d512-8bbd-442a-a9f9-5f24bf171eb7"
+	},
+	{
+		"type": "surveys",
+		"originalId": "feedback",
+		"identifier": "feedback"
+	},
+	{
+		"type": "surveys",
+		"originalId": "self-assessment",
+		"identifier": "self-assessment"
+	},
+	{
+		"type": "surveys",
+		"originalId": "three-quick-questions",
+		"identifier": "three-quick-questions"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "feedback-q1",
+		"identifier": "5bc4ccc1-24b2-46f9-9e7f-b346a54b32c3",
+		"newId": "5bc4ccc1-24b2-46f9-9e7f-b346a54b32c3"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "feedback-q2",
+		"identifier": "05090640-0ec9-4bb7-82c1-6392c17114b3",
+		"newId": "05090640-0ec9-4bb7-82c1-6392c17114b3"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "feedback-q3",
+		"identifier": "4c047d0b-4980-4555-82a1-a8bbd171aa31",
+		"newId": "4c047d0b-4980-4555-82a1-a8bbd171aa31"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "feedback-q4",
+		"identifier": "aa8758e0-87b9-4830-b0a8-bcff2a476565",
+		"newId": "aa8758e0-87b9-4830-b0a8-bcff2a476565"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q1",
+		"identifier": "9341b67d-9105-4447-84b4-096adf491a0c",
+		"newId": "9341b67d-9105-4447-84b4-096adf491a0c"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q2",
+		"identifier": "2db08ae8-9ee8-4e17-8ef3-d72598f9e5c6",
+		"newId": "2db08ae8-9ee8-4e17-8ef3-d72598f9e5c6"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q3",
+		"identifier": "68b47079-8545-40fa-85ce-a3f779e77ea5",
+		"newId": "68b47079-8545-40fa-85ce-a3f779e77ea5"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q4",
+		"identifier": "d3a75a81-2563-4621-be4d-dd11fd5a3759",
+		"newId": "d3a75a81-2563-4621-be4d-dd11fd5a3759"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q5",
+		"identifier": "0831a1eb-c8d8-4c55-92bc-40d06d4e1f58",
+		"newId": "0831a1eb-c8d8-4c55-92bc-40d06d4e1f58"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q6",
+		"identifier": "fbaa7327-9282-4db9-9c86-94762bd8292c",
+		"newId": "fbaa7327-9282-4db9-9c86-94762bd8292c"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q7",
+		"identifier": "2ff41217-a9fd-4fee-9ed4-ee7789ec3c0a",
+		"newId": "2ff41217-a9fd-4fee-9ed4-ee7789ec3c0a"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q8",
+		"identifier": "09fe1985-bf1f-4064-bd5d-7385fdfaa077",
+		"newId": "09fe1985-bf1f-4064-bd5d-7385fdfaa077"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q9",
+		"identifier": "7cd89d21-f693-4fc4-ab55-77af99e5cd01",
+		"newId": "7cd89d21-f693-4fc4-ab55-77af99e5cd01"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q10",
+		"identifier": "5008f75c-97e3-4d0d-bef0-45b39a5a1bcd",
+		"newId": "5008f75c-97e3-4d0d-bef0-45b39a5a1bcd"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q11",
+		"identifier": "2f51d216-2acf-4d58-a4c9-fcfbc0f94060",
+		"newId": "2f51d216-2acf-4d58-a4c9-fcfbc0f94060"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q12",
+		"identifier": "07f0bed0-ca67-4305-8f64-bdfffea98d70",
+		"newId": "07f0bed0-ca67-4305-8f64-bdfffea98d70"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q13",
+		"identifier": "3cac324f-b1db-49dc-a04d-ec241c9e138c",
+		"newId": "3cac324f-b1db-49dc-a04d-ec241c9e138c"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q14",
+		"identifier": "48c4092f-9be7-493c-ad01-10dabd1be49e",
+		"newId": "48c4092f-9be7-493c-ad01-10dabd1be49e"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q15",
+		"identifier": "269cc30d-9e28-4dc2-b1e0-acb5eab987ce",
+		"newId": "269cc30d-9e28-4dc2-b1e0-acb5eab987ce"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q16",
+		"identifier": "9b0142f1-0455-4605-8386-d26673214c51",
+		"newId": "9b0142f1-0455-4605-8386-d26673214c51"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q17",
+		"identifier": "309d6243-d1bb-4ed0-9f11-5b0ace886d77",
+		"newId": "309d6243-d1bb-4ed0-9f11-5b0ace886d77"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q18",
+		"identifier": "3e64dad4-c98e-4dfd-a437-182675f29a55",
+		"newId": "3e64dad4-c98e-4dfd-a437-182675f29a55"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q19",
+		"identifier": "b106153f-8a23-4fe3-aeaa-7a8a54353170",
+		"newId": "b106153f-8a23-4fe3-aeaa-7a8a54353170"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q20",
+		"identifier": "d65c26a4-1847-4166-bd52-a4de5b8dc9b0",
+		"newId": "d65c26a4-1847-4166-bd52-a4de5b8dc9b0"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q21",
+		"identifier": "ac0f0281-e5db-4fb7-86da-cc56e37bda46",
+		"newId": "ac0f0281-e5db-4fb7-86da-cc56e37bda46"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q22",
+		"identifier": "5abbdfb7-a41d-401c-9025-14da7d444358",
+		"newId": "5abbdfb7-a41d-401c-9025-14da7d444358"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q23",
+		"identifier": "16937478-995f-4495-a431-92be80b39653",
+		"newId": "16937478-995f-4495-a431-92be80b39653"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q24",
+		"identifier": "62bd9692-2c42-443e-a97a-d7d1cd583bfc",
+		"newId": "62bd9692-2c42-443e-a97a-d7d1cd583bfc"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "self-assessment-q25",
+		"identifier": "922a8d0b-ed41-4704-a47f-b79f6237be82",
+		"newId": "922a8d0b-ed41-4704-a47f-b79f6237be82"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "three-quick-questions-q1",
+		"identifier": "3f5acbd1-29f5-4ae6-b192-dbe3554fb1cb",
+		"newId": "3f5acbd1-29f5-4ae6-b192-dbe3554fb1cb"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "three-quick-questions-q2",
+		"identifier": "88fe30d3-0811-436d-8a8c-b45cd3016bd8",
+		"newId": "88fe30d3-0811-436d-8a8c-b45cd3016bd8"
+	},
+	{
+		"type": "collection",
+		"collection": "survey-questions",
+		"originalId": "three-quick-questions-q3",
+		"identifier": "593bae28-96c6-430e-8a32-c2156d53c0a6",
+		"newId": "593bae28-96c6-430e-8a32-c2156d53c0a6"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "basic-graphs",
+		"identifier": "basic-graphs"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "before-we-begin",
+		"identifier": "before-we-begin"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "before-you-go",
+		"identifier": "before-you-go"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "congratulations",
+		"identifier": "congratulations"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "fact-based-persuasion",
+		"identifier": "fact-based-persuasion"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "fundamental-design-detail",
+		"identifier": "fundamental-design-detail"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "fundamental-design-overview",
+		"identifier": "fundamental-design-overview"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "gestalt-principles",
+		"identifier": "gestalt-principles"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "idea-generation",
+		"identifier": "idea-generation"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "lesson-0",
+		"identifier": "lesson-0"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "our-process",
+		"identifier": "our-process"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "performance",
+		"identifier": "performance"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "preparation-practice",
+		"identifier": "preparation-practice"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "slide-composition",
+		"identifier": "slide-composition"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "specialist-graphs",
+		"identifier": "specialist-graphs"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "storyboards-film",
+		"identifier": "storyboards-film"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "storyboards-presentations",
+		"identifier": "storyboards-presentations"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "tables-vs-graphs",
+		"identifier": "tables-vs-graphs"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "the-who",
+		"identifier": "the-who"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "the-why-introductions",
+		"identifier": "the-why-introductions"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "the-why-next-steps",
+		"identifier": "the-why-next-steps"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "tools-and-resources",
+		"identifier": "tools-and-resources"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "using-stories",
+		"identifier": "using-stories"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "visual-perception",
+		"identifier": "visual-perception"
+	},
+	{
+		"type": "course-lessons",
+		"originalId": "what-is-structure",
+		"identifier": "what-is-structure"
+	},
+	{
+		"type": "documentation",
+		"originalId": "affiliates-affiliates",
+		"identifier": "affiliates-affiliates"
+	},
+	{
+		"type": "documentation",
+		"originalId": "affiliates-apply-for-affiliate-program",
+		"identifier": "affiliates-apply-for-affiliate-program"
+	},
+	{
+		"type": "documentation",
+		"originalId": "data-security-and-privacy-data-security-and-privacy",
+		"identifier": "data-security-and-privacy-data-security-and-privacy"
+	},
+	{
+		"type": "documentation",
+		"originalId": "data-security-and-privacy-where-is-data-stored",
+		"identifier": "data-security-and-privacy-where-is-data-stored"
+	},
+	{
+		"type": "documentation",
+		"originalId": "data-security-and-privacy-will-you-train",
+		"identifier": "data-security-and-privacy-will-you-train"
+	},
+	{
+		"type": "documentation",
+		"originalId": "difference-between-pro-and-teams",
+		"identifier": "difference-between-pro-and-teams"
+	},
+	{
+		"type": "documentation",
+		"originalId": "how-much-does-slideheroes-cost",
+		"identifier": "how-much-does-slideheroes-cost"
+	},
+	{
+		"type": "documentation",
+		"originalId": "just-promote-informally",
+		"identifier": "just-promote-informally"
+	},
+	{
+		"type": "documentation",
+		"originalId": "our-product-course-without-ai-tools",
+		"identifier": "our-product-course-without-ai-tools"
+	},
+	{
+		"type": "documentation",
+		"originalId": "our-product-our-product",
+		"identifier": "our-product-our-product"
+	},
+	{
+		"type": "documentation",
+		"originalId": "purchases-invoicing-currencies",
+		"identifier": "purchases-invoicing-currencies"
+	},
+	{
+		"type": "documentation",
+		"originalId": "purchases-invoicing-payment-methods",
+		"identifier": "purchases-invoicing-payment-methods"
+	},
+	{
+		"type": "documentation",
+		"originalId": "purchases-invoicing-purchases-invoicing",
+		"identifier": "purchases-invoicing-purchases-invoicing"
+	},
+	{
+		"type": "documentation",
+		"originalId": "refunds-refund-policy",
+		"identifier": "refunds-refund-policy"
+	},
+	{
+		"type": "documentation",
+		"originalId": "refunds-refund-process",
+		"identifier": "refunds-refund-process"
+	},
+	{
+		"type": "documentation",
+		"originalId": "refunds-refunds",
+		"identifier": "refunds-refunds"
+	},
+	{
+		"type": "documentation",
+		"originalId": "technical-support-custom-invoices",
+		"identifier": "technical-support-custom-invoices"
+	},
+	{
+		"type": "documentation",
+		"originalId": "technical-support-technical-support",
+		"identifier": "technical-support-technical-support"
+	},
+	{
+		"type": "documentation",
+		"originalId": "technical-support-troubleshooting-payments",
+		"identifier": "technical-support-troubleshooting-payments"
+	}
+]

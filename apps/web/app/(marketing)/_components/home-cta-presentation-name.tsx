@@ -1,6 +1,10 @@
 "use client";
 
+import { createClientLogger } from "@kit/shared/logger";
 import { PlaceholdersAndVanishInput } from "@kit/ui/placeholders-and-vanish-input";
+
+// Client-side logger for this component
+const { getLogger } = createClientLogger("HOME-CTA-PRESENTATION-NAME");
 
 export function CtaPresentationName() {
 	return (
@@ -13,22 +17,23 @@ export function CtaPresentationName() {
 					"Charging More for Less and Making It Seem Like a Bargain!",
 					"Strategic Acquisition of the United States for Global Domination",
 				]}
-				onChange={(_e) => {
+				onChange={(e) => {
 					// Handle search input changes
-					// TODO: Async logger needed
-					// (await getLogger()).info("Search input:", {
-					// 	data: e.target.value,
-					// });
+					getLogger().debug("Presentation name search input changed", {
+						value: e.target.value,
+						length: e.target.value.length,
+					});
 				}}
 				onSubmit={(e) => {
 					e.preventDefault();
 					// Handle search submission
 					const input = e.currentTarget.querySelector("input");
 					if (input) {
-						// TODO: Async logger needed
-						// (await getLogger()).info("Search submitted:", {
-						// 	data: input.value,
-						// });
+						getLogger().info("Presentation name search submitted", {
+							value: input.value,
+							length: input.value.length,
+							timestamp: new Date().toISOString(),
+						});
 					}
 				}}
 			/>

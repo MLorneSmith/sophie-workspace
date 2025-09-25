@@ -1,14 +1,17 @@
 "use client";
 
+import type { SurveyQuestion } from "@kit/cms-types";
+import { createClientLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import { Label } from "@kit/ui/label";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
-
-import type { SurveyQuestion } from "../../../../../../../payload/payload-types";
 import { ScaleQuestion } from "./scale-question";
 import { TextFieldQuestion } from "./text-field-question";
+
+// Client-side logger for this component
+const { getLogger } = createClientLogger("SURVEY-QUESTION-CARD");
 
 type QuestionCardProps = {
 	question: SurveyQuestion;
@@ -50,29 +53,29 @@ export function QuestionCard({
 	const _handleSubmit = () => {
 		if (selectedOption) {
 			// Log the selected option and available options for debugging
-			// TODO: Async logger needed
-			// (await getLogger()).info("Selected option:", {
-			// 	data: selectedOption,
-			// });
-			// TODO: Async logger needed
-			// (await getLogger()).info("Available options:", {
-			// 	data: question.options,
-			// });
+			getLogger().info("Selected option", {
+				data: selectedOption,
+				questionId: question.id,
+			});
+			getLogger().info("Available options", {
+				data: question.options,
+				questionId: question.id,
+			});
 
 			const option = question.options?.find((opt) => opt.id === selectedOption);
 
 			if (option) {
 				onAnswer(question.id, option.option, 0);
 			} else {
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Selected option not found:",
-				// 	{ data: selectedOption }
-				// );
-				// TODO: Async logger needed
-				// (await getLogger()).error("Question options:", {
-				// 	data: question.options,
-				// });
+				getLogger().error("Selected option not found", {
+					selectedOption,
+					questionId: question.id,
+					questionType: question.type,
+				});
+				getLogger().error("Question options", {
+					options: question.options,
+					questionId: question.id,
+				});
 			}
 		}
 	};

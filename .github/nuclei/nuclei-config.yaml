@@ -1,0 +1,94 @@
+# Nuclei Configuration for SlideHeroes Security Scanning
+# This configuration is optimized for Next.js + Supabase + Payload CMS stack
+
+# Rate limiting to avoid overwhelming staging/production
+rate-limit: 150
+bulk-size: 25
+concurrency: 10
+
+# Timeout settings
+timeout: 10
+retries: 2
+
+# Headers to include in all requests
+header:
+  - "User-Agent: SlideHeroes-Security-Scanner/1.0"
+
+# Custom variables for our application
+vars:
+  - app_name: "SlideHeroes"
+  - tech_stack: "nextjs,react,supabase,postgresql,payloadcms"
+
+# Exclude certain paths from scanning
+exclude:
+  - ".*\\.pdf$"
+  - ".*\\.jpg$"
+  - ".*\\.png$"
+  - ".*\\.gif$"
+  - ".*\\.svg$"
+  - ".*\\.woff.*$"
+  - ".*\\.ttf$"
+  - ".*\\.eot$"
+  - ".*/_next/static/.*"
+  - ".*/favicon\\.ico$"
+
+# Template filters - what to scan for
+templates:
+  # Critical security issues
+  - cves/2024/
+  - cves/2023/
+  - vulnerabilities/other/
+  - vulnerabilities/generic/
+  - exposures/configs/
+  - exposures/apis/
+  - exposures/tokens/
+  - misconfiguration/
+  - default-logins/
+  
+  # Specific to our stack
+  - technologies/node/
+  - technologies/nginx/
+  - technologies/postgresql/
+  - technologies/graphql/
+  
+  # API Security
+  - vulnerabilities/api/
+  - exposures/apis/
+  
+  # Authentication issues
+  - vulnerabilities/auth/
+  - misconfiguration/auth/
+  
+  # Common web vulnerabilities
+  - vulnerabilities/xss/
+  - vulnerabilities/sqli/
+  - vulnerabilities/xxe/
+  - vulnerabilities/ssrf/
+  - vulnerabilities/redirect/
+  
+# Severity levels to report
+severity:
+  - critical
+  - high
+  - medium
+  - low
+  - info
+
+# Output formats
+output-format: json,markdown
+
+# Tags to include (specific to our stack)
+tags:
+  - nextjs
+  - cms
+  - api
+  - auth
+  - config
+  - exposure
+  - sqli
+  - xss
+  - xxe
+  - lfi
+  - rce
+  - ssrf
+  - oast

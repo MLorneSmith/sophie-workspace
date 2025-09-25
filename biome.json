@@ -20,9 +20,10 @@
 			"!**/coverage/**",
 			"!**/test-results/**",
 			"!**/playwright-report/**",
-			"!**/packages/playwright-mcp/temp-playwright-mcp/**",
 			"!**/apps/payload/payload-types.ts",
+			"!**/packages/cms/types/src/payload-types.ts",
 			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
+			"!**/apps/payload/src/seed/**",
 			"!**/z.docs/**",
 			"!**/z.old/**",
 			"!**/z.test/**",
@@ -75,6 +76,86 @@
 				"rules": {
 					"security": {
 						"noDangerouslySetInnerHtml": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dev-tool/app/components/components/*-story.tsx"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"useUniqueElementIds": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/tests/**/*.ts",
+				"**/tests/**/*.tsx",
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.spec.ts",
+				"**/*.spec.tsx",
+				"**/load-tests/**/*.js",
+				"**/test-*.ts",
+				"**/test-*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noConsole": "off",
+						"noExplicitAny": "off"
+					},
+					"complexity": {
+						"useDateNow": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/.claude/scripts/**/*.js",
+				"**/.claude/scripts/**/*.cjs",
+				"**/scripts/**/*.js",
+				"**/scripts/**/*.cjs",
+				"**/scripts/**/*.ts"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noConsole": "off",
+						"noAssignInExpressions": "off"
+					},
+					"style": {
+						"useTemplate": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/cookie.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noDocumentCookie": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/dropzone.tsx"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noImgElement": "off"
 					}
 				}
 			}

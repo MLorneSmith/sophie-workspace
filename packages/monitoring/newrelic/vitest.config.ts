@@ -3,11 +3,12 @@
  */
 
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+export default defineProject({
 	test: {
-		// Node.js environment for server-side testing
+		// Project-specific configuration only
+		name: "monitoring-newrelic",
 		environment: "node",
 		globals: true,
 
@@ -20,7 +21,7 @@ export default defineConfig({
 			"**/coverage/**",
 		],
 
-		// Performance settings
+		// Project-specific performance settings
 		testTimeout: 10000,
 		hookTimeout: 5000,
 		teardownTimeout: 2000,

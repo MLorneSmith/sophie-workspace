@@ -141,7 +141,7 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 						alt={logo.name}
 						width={120}
 						height={60}
-						className="block opacity-70 transition-all duration-300 hover:opacity-100 dark:hidden"
+						className="block opacity-90 transition-all duration-300 hover:opacity-100 dark:hidden"
 						style={{
 							objectFit: "contain",
 							objectPosition: "center",
@@ -152,7 +152,7 @@ const LogoItem = ({ logo }: { logo: Logo }) => {
 						alt={logo.name}
 						width={120 * (logo.scale || 1.0)}
 						height={60 * (logo.scale || 1.0)}
-						className="hidden opacity-70 transition-all duration-300 hover:opacity-100 dark:block"
+						className="hidden opacity-90 transition-all duration-300 hover:opacity-100 dark:block"
 						style={{
 							objectFit: "contain",
 							objectPosition: "center",
@@ -187,7 +187,7 @@ export function LogoCloudMarquee({
 				<h2
 					className={cn(
 						"font-heading text-center text-3xl font-bold md:text-4xl lg:text-5xl",
-						"bg-gradient-to-b from-neutral-900 to-neutral-600 bg-clip-text text-transparent dark:from-white dark:to-neutral-600",
+						"text-foreground",
 					)}
 				>
 					{title}
@@ -202,7 +202,7 @@ export function LogoCloudMarquee({
 					delay: 0.1,
 				}}
 			>
-				<p className="body mt-4 text-center text-neutral-700 dark:text-neutral-300">
+				<p className="body mt-4 text-center text-muted-foreground">
 					{description}
 				</p>
 			</MotionDiv>
@@ -212,7 +212,13 @@ export function LogoCloudMarquee({
 					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
 					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
 					<div className="relative z-[1]">
-						<Marquee pauseOnHover direction="right" gradient={false} speed={30}>
+						<Marquee
+							pauseOnHover
+							direction="right"
+							gradient={false}
+							speed={30}
+							aria-label="Logo marquee first row"
+						>
 							<div className="flex items-center justify-center gap-4">
 								{firstHalf.map((logo) => (
 									<LogoItem key={logo.name} logo={logo} />
@@ -226,7 +232,13 @@ export function LogoCloudMarquee({
 					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 left-0 z-[2] w-1/3 bg-gradient-to-r to-transparent" />
 					<div className="from-background via-background/90 pointer-events-none absolute inset-y-0 right-0 z-[2] w-1/3 bg-gradient-to-l to-transparent" />
 					<div className="relative z-[1]">
-						<Marquee pauseOnHover direction="left" speed={25} gradient={false}>
+						<Marquee
+							pauseOnHover
+							direction="left"
+							speed={25}
+							gradient={false}
+							aria-label="Logo marquee second row"
+						>
 							<div className="flex items-center justify-center gap-4">
 								{secondHalf.map((logo) => (
 									<LogoItem key={`${logo.name}-second`} logo={logo} />
