@@ -108,7 +108,7 @@ class TestCleanupGuard {
 
 			// Clean up ports
 			"lsof -ti:3000-3020 | xargs kill -9 2>/dev/null || true",
-			"lsof -ti:55321-55327 | xargs kill -9 2>/dev/null || true",
+			"lsof -ti:54321-54327 | xargs kill -9 2>/dev/null || true",
 
 			// Clean up zombie processes
 			'pkill -f "zombie" || true',

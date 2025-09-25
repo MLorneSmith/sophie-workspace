@@ -51,10 +51,10 @@ const CONFIG = {
 	// Port configuration
 	ports: {
 		supabase: {
-			api: 55321,
-			db: 55322,
-			studio: 55323,
-			inbucket: 55324,
+			api: 54321, // Updated to unified Web Supabase port
+			db: 54322, // Updated to unified Web Supabase DB port
+			studio: 54323,
+			inbucket: 54324,
 		},
 		web: 3000,
 		webTest: 3001,
@@ -101,9 +101,10 @@ const CONFIG = {
 	environment: {
 		NODE_ENV: "test",
 		NEXT_PUBLIC_APP_URL: process.env.TEST_BASE_URL || "http://localhost:3001",
-		SUPABASE_URL: "http://localhost:55321",
+		SUPABASE_URL: "http://localhost:54321", // Updated to unified Web Supabase port
 		SUPABASE_SERVICE_ROLE_KEY:
-			process.env.SUPABASE_SERVICE_ROLE_KEY || "test-service-key",
+			process.env.SUPABASE_SERVICE_ROLE_KEY ||
+			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU", // Standard local dev key
 		TURBO_FORCE: "true", // Always bypass cache for comprehensive testing
 		CI: process.env.CI || "false",
 		// Use Docker container if available
@@ -114,11 +115,18 @@ const CONFIG = {
 	database: {
 		connectionString:
 			process.env.DATABASE_URL ||
-			"postgresql://postgres:postgres@localhost:55322/postgres",
+			"postgresql://postgres:postgres@localhost:54322/postgres", // Updated to unified Web Supabase DB port
 		maxConnections: 20,
-		testUserEmail: "test@example.com",
-		testUserPassword: "testpassword123",
-		seedScript: path.join(PROJECT_ROOT, "supabase/seed.sql"),
+		testUserEmail: process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com", // Use environment variable
+		testUserPassword: process.env.E2E_TEST_USER_PASSWORD, // Use environment variable, no fallback for security
+		ownerEmail: process.env.E2E_OWNER_EMAIL || "test1@slideheroes.com", // Use environment variable
+		ownerPassword: process.env.E2E_OWNER_PASSWORD, // Use environment variable
+		adminEmail: process.env.E2E_ADMIN_EMAIL || "michael@slideheroes.com", // Use environment variable
+		adminPassword: process.env.E2E_ADMIN_PASSWORD, // Use environment variable
+		seedScript: path.join(
+			PROJECT_ROOT,
+			"apps/web/supabase/seeds/01_main_seed.sql",
+		), // Updated to Web seed location
 	},
 
 	// Commands

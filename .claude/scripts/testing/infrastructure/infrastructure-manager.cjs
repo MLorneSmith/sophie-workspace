@@ -167,14 +167,17 @@ class InfrastructureManager {
 	 */
 	async healthCheckSupabase() {
 		try {
-			// First check if database is responding on E2E port
+			// Check if database is responding on unified Web Supabase port
+			const anonKey =
+				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+
 			const response = await fetch(
 				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/`,
 				{
 					signal: AbortSignal.timeout(2000),
 					headers: {
-						apikey:
-							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
+						apikey: anonKey,
 					},
 				},
 			);
@@ -184,7 +187,7 @@ class InfrastructureManager {
 				// Also check if we can get status (non-critical if it fails)
 				try {
 					const { stdout } = await execAsync(
-						"cd apps/e2e && npx supabase status 2>&1 | head -1",
+						"cd apps/web && npx supabase status 2>&1 | head -1", // Updated to use Web Supabase
 						{ timeout: 2000 },
 					);
 					if (stdout.includes("running")) {
@@ -207,14 +210,29 @@ class InfrastructureManager {
 	 */
 	async healthCheckEnvironment() {
 		try {
-			const envPath = path.join(process.cwd(), "apps/web/.env.test");
-			await fs.access(envPath);
+			// Check for locked test environment first (unified architecture)
+			const lockedEnvPath = path.join(
+				process.cwd(),
+				"apps/web/.env.test.locked",
+			);
+			const testEnvPath = path.join(process.cwd(), "apps/web/.env.test");
+
+			// Prefer locked environment if it exists
+			let envPath = null;
+			if (await this.fileExists(lockedEnvPath)) {
+				envPath = lockedEnvPath;
+			} else if (await this.fileExists(testEnvPath)) {
+				envPath = testEnvPath;
+			} else {
+				return "missing";
+			}
 
 			// Quick validation of critical env vars
 			const content = await fs.readFile(envPath, "utf8");
 			const requiredVars = [
 				"NEXT_PUBLIC_AUTH_PASSWORD",
-				"NEXT_PUBLIC_PRODUCT_NAME",
+				"NEXT_PUBLIC_SUPABASE_URL",
+				"NEXT_PUBLIC_SUPABASE_ANON_KEY",
 			];
 			const hasRequired = requiredVars.every((v) => content.includes(v));
 
@@ -222,7 +240,7 @@ class InfrastructureManager {
 				return "healthy";
 			}
 
-			return "missing";
+			return "incomplete";
 		} catch {
 			return "missing";
 		}
@@ -233,14 +251,17 @@ class InfrastructureManager {
 	 */
 	async healthCheckDatabase() {
 		try {
-			// Quick connectivity test to Supabase E2E instance (same as original)
+			// Quick connectivity test to unified Web Supabase instance
+			const anonKey =
+				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+
 			const response = await fetch(
 				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/`,
 				{
 					signal: AbortSignal.timeout(2000),
 					headers: {
-						apikey:
-							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
+						apikey: anonKey,
 					},
 				},
 			);
@@ -261,16 +282,19 @@ class InfrastructureManager {
 	 */
 	async healthCheckTestUsers() {
 		try {
-			// Query the onboarding table which has entries for our test users (same as original)
+			// Use service role key for admin access
+			const serviceRoleKey =
+				process.env.SUPABASE_SERVICE_ROLE_KEY ||
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+
+			// Query the onboarding table in unified Web database for our test users
 			const response = await fetch(
 				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/onboarding?select=user_id`,
 				{
 					signal: AbortSignal.timeout(3000),
 					headers: {
-						apikey:
-							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
-						Authorization:
-							"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
+						apikey: serviceRoleKey,
+						Authorization: `Bearer ${serviceRoleKey}`,
 						"Content-Type": "application/json",
 					},
 				},
@@ -465,25 +489,25 @@ class InfrastructureManager {
 			const status = await this.healthCheckSupabase();
 
 			if (status === "not_running") {
-				log("Starting Supabase...");
-				const proc = exec("npx supabase start");
+				log("Starting Web Supabase...");
+				const proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
 
 				// Wait for Supabase to be ready using ConditionWaiter
 				await this.waiter.waitForSupabase({
 					timeout: 120000,
-					name: "Supabase startup",
+					name: "Web Supabase startup",
 				});
 
 				return "started";
 			} else if (status === "needs_restart") {
-				log("Restarting Supabase...");
-				await execAsync("npx supabase stop");
+				log("Restarting Web Supabase...");
+				await execAsync("cd apps/web && npx supabase stop"); // Use Web Supabase
 				await this.waiter.delay(3000, "Supabase shutdown");
 
-				const proc = exec("npx supabase start");
+				const proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
 				await this.waiter.waitForSupabase({
 					timeout: 120000,
-					name: "Supabase restart",
+					name: "Web Supabase restart",
 				});
 
 				return "restarted";
@@ -491,7 +515,7 @@ class InfrastructureManager {
 
 			return "already_running";
 		} catch (error) {
-			logError(`Failed to setup Supabase: ${error.message}`);
+			logError(`Failed to setup Web Supabase: ${error.message}`);
 			return "failed";
 		}
 	}
@@ -501,11 +525,29 @@ class InfrastructureManager {
 	 */
 	async setupEnvironment() {
 		try {
-			// Load environment variables from .env file
+			// Check for locked test environment first (unified architecture)
+			const lockedEnvPath = path.join(
+				process.cwd(),
+				"apps/web/.env.test.locked",
+			);
+			const testEnvPath = path.join(process.cwd(), "apps/web/.env.test");
 			const envPath = path.join(process.cwd(), "apps/web/.env");
 
-			try {
-				const envContent = await fs.readFile(envPath, "utf-8");
+			// Prefer locked environment if it exists
+			let targetEnvPath = null;
+			if (await this.fileExists(lockedEnvPath)) {
+				targetEnvPath = lockedEnvPath;
+				log("Using locked test environment (.env.test.locked)");
+			} else if (await this.fileExists(testEnvPath)) {
+				targetEnvPath = testEnvPath;
+				log("Using test environment (.env.test)");
+			} else if (await this.fileExists(envPath)) {
+				targetEnvPath = envPath;
+				log("Using default environment (.env)");
+			}
+
+			if (targetEnvPath) {
+				const envContent = await fs.readFile(targetEnvPath, "utf-8");
 				const lines = envContent.split("\n");
 
 				for (const line of lines) {
@@ -519,24 +561,34 @@ class InfrastructureManager {
 				}
 
 				return "loaded";
-			} catch {
-				// Create default .env file
-				log("Creating default .env file...");
+			} else {
+				// Create default .env.test file with unified architecture settings
+				log("Creating default test environment file...");
+				// Note: Passwords should be configured in .env.test.locked for security
 				const defaultEnv = `
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-SUPABASE_URL=http://localhost:55321
-SUPABASE_ANON_KEY=test-anon-key
-SUPABASE_SERVICE_ROLE_KEY=test-service-key
-DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
+# Unified Web Supabase Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3001
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+
+# Test User Configuration - IMPORTANT: Configure passwords in .env.test.locked
+E2E_TEST_USER_EMAIL=test1@slideheroes.com
+E2E_OWNER_EMAIL=test1@slideheroes.com
+E2E_ADMIN_EMAIL=michael@slideheroes.com
+# Passwords must be set in .env.test.locked for security
 				`.trim();
 
-				await fs.writeFile(envPath, defaultEnv);
+				await fs.writeFile(testEnvPath, defaultEnv);
 
 				// Set environment variables
 				for (const line of defaultEnv.split("\n")) {
-					const [key, value] = line.split("=");
-					if (key && value) {
-						process.env[key.trim()] = value.trim();
+					if (!line.startsWith("#") && line.includes("=")) {
+						const [key, ...valueParts] = line.split("=");
+						if (key) {
+							process.env[key.trim()] = valueParts.join("=").trim();
+						}
 					}
 				}
 
@@ -553,21 +605,31 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
 	 */
 	async setupDatabase() {
 		try {
-			// Wait for Supabase API to be accessible
+			// Wait for Web Supabase API to be accessible
 			const apiUrl =
 				this.config.environment.SUPABASE_URL ||
 				`http://localhost:${this.config.ports.supabase.api}`;
 			await this.waiter.waitForHttp(apiUrl, {
 				timeout: 60000,
-				name: "Supabase API",
+				name: "Web Supabase API",
 			});
 
-			// Run migrations if needed
+			// Run migrations from Web Supabase if needed
 			try {
-				await execAsync("npx supabase db push");
-				log("✅ Database migrations applied");
+				await execAsync("cd apps/web && npx supabase db push");
+				log("✅ Database migrations applied from apps/web");
 			} catch {
 				log("⚠️ Migrations may already be applied");
+			}
+
+			// Reset database with seed data if specified
+			if (process.env.RESET_DATABASE === "true") {
+				try {
+					await execAsync("cd apps/web && npx supabase db reset");
+					log("✅ Database reset with seed data from apps/web/supabase/seeds/");
+				} catch (error) {
+					logError(`⚠️ Database reset failed: ${error.message}`);
+				}
 			}
 
 			return "ready";
@@ -931,11 +993,13 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres
 		// Clear all ports
 		await this.cleanupPorts();
 
-		// Stop Supabase
+		// Stop Web Supabase
 		try {
-			await execAsync("npx supabase stop");
+			await execAsync("cd apps/web && npx supabase stop");
+			log("✅ Web Supabase stopped");
 		} catch {
 			// Already stopped
+			log("⚠️ Web Supabase was not running");
 		}
 
 		// Wait for everything to settle
