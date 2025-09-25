@@ -10,8 +10,6 @@ import { requireUser } from '@kit/supabase/require-user';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { JWTUserData } from '@kit/supabase/types';
 
-import { zodParseFactory } from '../utils';
-
 interface Config<Schema> {
   auth?: boolean;
   captcha?: boolean;
@@ -117,8 +115,16 @@ export const enhanceRouteHandler = <
       // clone the request to read the body
       // so that we can pass it to the handler safely
       const json = await request.clone().json();
+      const parsedBody = await params.schema.safeParseAsync(json);
 
-      body = zodParseFactory(params.schema)(json);
+      if (parsedBody.success) {
+        body = parsedBody.data;
+      } else {
+        return NextResponse.json(
+          { error: parsedBody.error.message || 'Invalid request body' },
+          { status: 400 },
+        );
+      }
     }
 
     return handler({

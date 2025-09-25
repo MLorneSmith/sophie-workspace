@@ -9,8 +9,6 @@ import { requireUser } from '@kit/supabase/require-user';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import { JWTUserData } from '@kit/supabase/types';
 
-import { zodParseFactory } from '../utils';
-
 /**
  * @name enhanceAction
  * @description Enhance an action with captcha, schema and auth checks
@@ -42,9 +40,21 @@ export function enhanceAction<
     let user: UserParam = undefined as UserParam;
 
     // validate the schema passed in the config if it exists
-    const data = config.schema
-      ? zodParseFactory(config.schema)(params)
-      : params;
+    const validateData = async () => {
+      if (config.schema) {
+        const parsed = await config.schema.safeParseAsync(params);
+
+        if (parsed.success) {
+          return parsed.data;
+        }
+
+        throw new Error(parsed.error.message || 'Invalid request body');
+      }
+
+      return params;
+    };
+
+    const data = await validateData();
 
     // by default, the CAPTCHA token is not required
     const verifyCaptcha = config.captcha ?? false;
