@@ -8,7 +8,7 @@ async function globalSetup(config: FullConfig) {
 	try {
 		const _seedUsersPath = path.join(__dirname, "scripts/seed-test-users.sql");
 		execSync(
-			"cd apps/e2e && npx supabase db reset --db-url postgresql://postgres:postgres@localhost:55322/postgres",
+			"cd apps/web && npx supabase db reset --db-url postgresql://postgres:postgres@localhost:54322/postgres",
 			{
 				stdio: "ignore",
 			},
