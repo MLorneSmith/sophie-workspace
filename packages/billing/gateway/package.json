@@ -16,7 +16,7 @@
 		"./marketing": "./src/components/marketing.tsx"
 	},
 	"devDependencies": {
-		"@hookform/resolvers": "^5.1.1",
+		"@hookform/resolvers": "5.2.1",
 		"@kit/billing": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/lemon-squeezy": "workspace:*",
@@ -26,15 +26,15 @@
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"@supabase/supabase-js": "2.50.0",
-		"@types/react": "19.1.8",
+		"@supabase/supabase-js": "2.57.2",
+		"@types/react": "19.1.12",
 		"date-fns": "^4.1.0",
-		"lucide-react": "^0.516.0",
-		"next": "15.3.3",
-		"react": "19.1.0",
-		"react-hook-form": "^7.58.0",
-		"react-i18next": "^15.5.3",
-		"zod": "^3.25.67"
+		"lucide-react": "^0.542.0",
+		"next": "15.5.2",
+		"react": "19.1.1",
+		"react-hook-form": "^7.62.0",
+		"react-i18next": "^15.7.3",
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {

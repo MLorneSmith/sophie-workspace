@@ -56,11 +56,7 @@ cp apps/e2e/.env.example apps/e2e/.env.test
 cd apps/web
 npx supabase start  # Creates 2025slideheroes-db on 39000-39006
 
-# 5. Start E2E Supabase (from apps/e2e)
-cd ../e2e
-npx supabase start  # Creates 2025slideheroes-e2e on 55321-55327
-
-# 6. Return to project root
+# 5. Return to project root
 cd ../..
 ```
 
@@ -133,9 +129,10 @@ EXA_API_KEY=[your-key]
 |---------|----------|-----------|---------|
 | Next.js | 3000 | 3001 | Web application |
 | Payload CMS | 3020 | 3021 | Content management |
-| Supabase API | 39000 | 55321 | API gateway |
-| PostgreSQL | 39001 | 55322 | Database |
-| Studio | 39002 | 55323 | Database UI |
+| Supabase API | 54321 | - | API gateway |
+| PostgreSQL | 54322 | - | Database |
+| Studio | 54323 | - | Database UI |
+| Inbucket | 54324-54326 | - | Email testing |
 
 ## Common Development Tasks
 
@@ -250,8 +247,6 @@ pnpm test:coverage
 # ✅ CORRECT - Main development
 cd apps/web && npx supabase start
 
-# ✅ CORRECT - E2E testing
-cd apps/e2e && npx supabase start
 
 # ❌ WRONG - Project root (blocked by hook)
 npx supabase start  # Creates wrong stack

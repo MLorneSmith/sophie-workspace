@@ -13,11 +13,11 @@
 	},
 	"prettier": "@kit/prettier-config",
 	"exports": {
-		"./logger": "./src/logger/index.ts",
-		"./utils": "./src/utils.ts",
-		"./hooks": "./src/hooks/index.ts",
-		"./events": "./src/events/index.tsx",
-		"./registry": "./src/registry/index.ts"
+		"./logger": "./dist/logger/index.js",
+		"./utils": "./dist/utils.js",
+		"./hooks": "./dist/hooks/index.js",
+		"./events": "./dist/events/index.jsx",
+		"./registry": "./dist/registry/index.js"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",

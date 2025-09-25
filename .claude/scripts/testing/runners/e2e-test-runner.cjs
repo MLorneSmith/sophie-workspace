@@ -394,15 +394,18 @@ class E2ETestRunner {
 			shards: {},
 		};
 
-		// Determine execution strategy
-		if (this.maxConcurrentShards > 1) {
+		// Always run shards sequentially by default for better tracking
+		// Unless explicitly configured for parallel execution
+		const runParallel = process.env.E2E_PARALLEL === "true" || false;
+
+		if (runParallel && this.maxConcurrentShards > 1) {
 			log(
 				`🔀 Running E2E tests with ${this.maxConcurrentShards} parallel shards`,
 			);
 			return await this.runParallelShards(results, startTime);
 		} else {
-			log("📝 Running E2E tests sequentially");
-			return await this.runSequentialGroups(results, startTime);
+			log("📝 Running E2E tests by shard (sequential execution)");
+			return await this.runShardByShardSequential(results, startTime);
 		}
 	}
 
@@ -464,7 +467,113 @@ class E2ETestRunner {
 	}
 
 	/**
-	 * Run test groups sequentially
+	 * Run shards sequentially with better tracking
+	 */
+	async runShardByShardSequential(results, startTime) {
+		const totalShards = this.testGroups.length;
+		const timedOutShards = new Set(); // Track shards that timed out to avoid retrying
+		log(`\n🎯 Running ${totalShards} test shards sequentially`);
+		log("─".repeat(60));
+
+		for (let i = 0; i < this.testGroups.length; i++) {
+			const shard = this.testGroups[i];
+			const shardNum = i + 1;
+
+			// Skip shards that have already timed out
+			if (timedOutShards.has(shardNum)) {
+				log(
+					`\n⏭️ Skipping Shard ${shardNum} (${shard.name}) - already timed out`,
+				);
+				continue;
+			}
+
+			// Progress indicator
+			log(`\n📊 Progress: Shard ${shardNum}/${totalShards}`);
+			log(`🎯 Shard ${shardNum}: ${shard.name}`);
+			log(`   Files: ${shard.files.join(", ")}`);
+			if (shard.expectedTests) {
+				log(`   Expected tests: ${shard.expectedTests}`);
+			}
+
+			// Run the shard
+			const shardStartTime = Date.now();
+			const shardResult = await this.runTestGroupWithTimeout(shard, shardNum);
+			const shardDuration = Math.round((Date.now() - shardStartTime) / 1000);
+
+			// Update results
+			results.total += shardResult.total;
+			results.passed += shardResult.passed;
+			results.failed += shardResult.failed;
+			results.skipped += shardResult.skipped;
+			results.intentionalFailures += shardResult.intentionalFailures || 0;
+			results.integrationTests += shardResult.integrationTests || 0;
+			results.shards[shardNum] = {
+				...shardResult,
+				name: shard.name,
+				duration: shardDuration,
+			};
+
+			// Track timed out shards to prevent retrying
+			if (shardResult.timedOut) {
+				timedOutShards.add(shardNum);
+				log(`⏱️ Marking Shard ${shardNum} as timed out - will not retry`);
+			}
+
+			// Show shard result
+			const shardSuccess = shardResult.failed === 0 && !shardResult.timedOut;
+			const statusIcon = shardResult.timedOut
+				? "⏱️"
+				: shardSuccess
+					? "✅"
+					: "❌";
+			log(
+				`${statusIcon} Shard ${shardNum} (${shard.name}) completed in ${shardDuration}s`,
+			);
+			log(
+				`   Results: ${shardResult.passed}/${shardResult.total} passed, ${shardResult.failed} failed`,
+			);
+
+			// Update overall status
+			await this.testStatus.updateE2ETests({
+				...results,
+				currentShard: shardNum,
+				totalShards,
+			});
+
+			// Check if we should continue
+			if (shardResult.timedOut && this.config.execution.continueOnTimeout) {
+				log(
+					`⏱️ Shard ${shardNum} (${shard.name}) timed out, but continuing with other shards`,
+				);
+			} else if (
+				shardResult.failed > 0 &&
+				!this.config.execution.continueOnFailure
+			) {
+				log(
+					`❌ Stopping test execution due to failures in Shard ${shardNum} (${shard.name})`,
+				);
+				break;
+			}
+
+			// Show cumulative progress
+			log(
+				`\n📈 Cumulative: ${results.passed}/${results.total} tests passed so far`,
+			);
+			log("─".repeat(60));
+		}
+
+		const duration = Math.round((Date.now() - startTime) / 1000);
+		this.logE2ESummary(results, duration);
+
+		return {
+			success: results.failed === 0,
+			...results,
+			duration,
+		};
+	}
+
+	/**
+	 * Run test groups sequentially (legacy method)
 	 */
 	async runSequentialGroups(results, startTime) {
 		for (const group of this.testGroups) {
@@ -542,105 +651,395 @@ class E2ETestRunner {
 	}
 
 	/**
-	 * Run a single test group
+	 * Check if a process is still running
 	 */
-	async runTestGroup(group, shardId = null) {
+	isProcessRunning(pid) {
+		try {
+			process.kill(pid, 0); // Signal 0 checks if process exists
+			return true;
+		} catch (error) {
+			return error.code !== "ESRCH"; // ESRCH means process doesn't exist
+		}
+	}
+
+	/**
+	 * Run test group with enhanced timeout and error handling
+	 */
+	async runTestGroupWithTimeout(group, shardId = null) {
 		const startTime = Date.now();
 		const shardPrefix = shardId ? `[Shard ${shardId}] ` : "";
 
 		return new Promise((resolve) => {
 			let output = "";
+			let errorOutput = "";
+			let proc = null;
+			let timeout = null;
+			let resolved = false;
+			let lastOutputTime = Date.now();
+			let stallCheckInterval = null;
 
-			// Use the predefined shard command from package.json if available
-			// This ensures we run the exact test configuration that's been tested
-			let command, args, cwd;
+			// Resolve with error result
+			const resolveWithError = (reason) => {
+				if (resolved) return;
+				resolved = true;
 
-			if (group.shardCommand) {
-				// Use the shard command defined in package.json
-				// Add --reporter=dot for CI mode to prevent interactive HTML report prompt on failures
-				command = "pnpm";
-				args = [
-					"--filter",
-					"web-e2e",
-					group.shardCommand,
-					"--",
-					"--reporter=dot",
-				];
-				cwd = process.cwd();
-				log(
-					`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand} -- --reporter=dot`,
-				);
-			} else {
-				// Fallback to direct playwright execution (shouldn't happen with new configuration)
-				log(`${shardPrefix}⚠️ Using fallback execution for ${group.name}`);
-				command = "npx";
-				args = [
-					"playwright",
-					"test",
-					"--reporter=dot", // Use dot reporter for CI mode
-					"--workers=1",
-					...group.files,
-				];
-				cwd = path.join(process.cwd(), "apps", "e2e");
-			}
-
-			// Use the TEST_BASE_URL if set (from Docker container or external server)
-			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
-
-			const proc = spawn(command, args, {
-				cwd: cwd,
-				stdio: ["ignore", "pipe", "pipe"], // Use "ignore" for stdin to prevent hanging
-				shell: true,
-				env: {
-					...process.env,
-					PLAYWRIGHT_WORKERS: "1", // Run tests sequentially within group
-					PLAYWRIGHT_PARALLEL: "false", // Disable parallel mode - tests are more reliable in serial execution
-					BASE_URL: testUrl,
-					NODE_ENV: "test",
-					PLAYWRIGHT_BASE_URL: testUrl,
-					NEXT_PUBLIC_APP_URL: testUrl,
-					TEST_SHARD_MODE: "true",
-					CI: "1", // Force CI mode to prevent interactive behaviors (official Playwright env var)
-					PLAYWRIGHT_HTML_OPEN: "never", // Explicitly prevent HTML report from opening
-					FORCE_COLOR: "0", // Disable colored output that might cause issues
-				},
-			});
-
-			proc.stdout.on("data", (data) => {
-				const str = data.toString();
-				output += str;
-				process.stdout.write(`${shardPrefix}${data}`);
-			});
-
-			proc.stderr.on("data", (data) => {
-				const str = data.toString();
-				output += str;
-				process.stderr.write(`${shardPrefix}${data}`);
-			});
-
-			// Set timeout for this group
-			const timeout = setTimeout(() => {
-				logError(`${shardPrefix}Group '${group.name}' timed out`);
-				proc.kill("SIGKILL");
-			}, this.config.timeouts.shardTimeout);
-
-			proc.on("close", (code) => {
-				clearTimeout(timeout);
 				const duration = Math.round((Date.now() - startTime) / 1000);
-
-				// Parse results from output
-				const results = this.parseE2EResults(output);
-
-				log(`${shardPrefix}Group '${group.name}' completed in ${duration}s`);
-
+				const isTimeout =
+					reason.toLowerCase().includes("timed out") ||
+					reason.toLowerCase().includes("stalled") ||
+					reason.toLowerCase().includes("timeout");
 				resolve({
-					...results,
+					total: 0,
+					passed: 0,
+					failed: isTimeout ? 0 : 1, // Don't count timeouts as failures
+					skipped: 0,
+					error: reason,
 					groupName: group.name,
 					duration,
-					exitCode: code,
+					exitCode: -1,
+					timedOut: isTimeout,
 				});
-			});
+			};
+
+			try {
+				// Use the predefined shard command from package.json if available
+				let command, args, cwd;
+
+				if (group.shardCommand) {
+					command = "pnpm";
+					args = [
+						"--filter",
+						"web-e2e",
+						group.shardCommand,
+						"--",
+						"--reporter=dot",
+						"--retries=0", // Disable retries when running through test controller
+					];
+					cwd = process.cwd();
+					log(
+						`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand} -- --reporter=dot --retries=0`,
+					);
+				} else {
+					log(`${shardPrefix}⚠️ Using fallback execution for ${group.name}`);
+					command = "npx";
+					args = [
+						"playwright",
+						"test",
+						"--reporter=dot",
+						"--retries=0", // Disable retries when running through test controller
+						"--workers=1",
+						...group.files,
+					];
+					cwd = path.join(process.cwd(), "apps", "e2e");
+				}
+
+				// Use the TEST_BASE_URL if set
+				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+
+				proc = spawn(command, args, {
+					cwd: cwd,
+					stdio: ["ignore", "pipe", "pipe"],
+					shell: true,
+					detached: process.platform !== "win32", // Create process group on Unix
+					env: {
+						...process.env,
+						PLAYWRIGHT_WORKERS: "1",
+						PLAYWRIGHT_PARALLEL: "false",
+						BASE_URL: testUrl,
+						NODE_ENV: "test",
+						PLAYWRIGHT_BASE_URL: testUrl,
+						NEXT_PUBLIC_APP_URL: testUrl,
+						TEST_SHARD_MODE: "true",
+						CI: "1",
+						PLAYWRIGHT_HTML_OPEN: "never",
+						FORCE_COLOR: "0",
+					},
+				});
+
+				// Capture stdout
+				proc.stdout.on("data", (data) => {
+					const str = data.toString();
+					output += str;
+					lastOutputTime = Date.now(); // Update last output time
+					process.stdout.write(`${shardPrefix}${data}`);
+
+					// Check for hanging patterns
+					if (str.includes("Waiting for") && str.includes("to be visible")) {
+						log(`${shardPrefix}⚠️ Test may be hanging on element visibility`);
+					}
+
+					// Check for timeout patterns
+					if (
+						str.includes("Test timeout of") ||
+						str.includes("exceeded while") ||
+						str.includes("Timeout") ||
+						str.includes("TimeoutError")
+					) {
+						log(
+							`${shardPrefix}⚠️ Playwright timeout detected - aggressively killing test`,
+						);
+						if (proc && !proc.killed) {
+							try {
+								if (proc.detached && proc.pid) {
+									log(
+										`${shardPrefix}💥 Killing timeout process group ${proc.pid}`,
+									);
+									process.kill(-proc.pid, "SIGKILL");
+								} else {
+									proc.kill("SIGKILL");
+								}
+								// Also kill related processes immediately
+								const { execSync } = require("node:child_process");
+								execSync(`pkill -9 -f "chromium" || true`, {
+									stdio: "ignore",
+									timeout: 1000,
+								});
+								execSync(`pkill -9 -f "playwright" || true`, {
+									stdio: "ignore",
+									timeout: 1000,
+								});
+							} catch (error) {
+								log(
+									`${shardPrefix}⚠️ Failed to kill timeout process: ${error.message}`,
+								);
+							}
+						}
+					}
+				});
+
+				// Capture stderr
+				proc.stderr.on("data", (data) => {
+					const str = data.toString();
+					errorOutput += str;
+					lastOutputTime = Date.now(); // Update last output time
+					process.stderr.write(`${shardPrefix}${data}`);
+				});
+
+				// Start stall detection - check every 20 seconds for output
+				const stallTimeout = 45000; // Kill if no output for 45 seconds (more aggressive)
+				stallCheckInterval = setInterval(() => {
+					const timeSinceLastOutput = Date.now() - lastOutputTime;
+					if (timeSinceLastOutput > stallTimeout) {
+						logError(
+							`${shardPrefix}❌ Test stalled - no output for ${stallTimeout / 1000}s, aggressively killing process`,
+						);
+						// Aggressive kill for stalled processes
+						if (proc && !proc.killed) {
+							try {
+								if (proc.detached && proc.pid) {
+									log(
+										`${shardPrefix}💥 Killing stalled process group ${proc.pid}`,
+									);
+									process.kill(-proc.pid, "SIGKILL");
+								} else {
+									proc.kill("SIGKILL");
+								}
+								// Also kill any related processes
+								const { execSync } = require("node:child_process");
+								execSync(`pkill -9 -f "playwright" || true`, {
+									stdio: "ignore",
+									timeout: 1000,
+								});
+							} catch (error) {
+								log(
+									`${shardPrefix}⚠️ Failed to kill stalled process: ${error.message}`,
+								);
+							}
+						}
+						clearInterval(stallCheckInterval);
+						resolveWithError(
+							`Test stalled - no output for ${stallTimeout / 1000}s`,
+						);
+					}
+				}, 20000); // Check every 20 seconds
+
+				// Enhanced timeout with warning and aggressive termination
+				const timeoutMs = this.config.timeouts.shardTimeout || 180000; // 3 minutes default
+				const warningMs = timeoutMs * 0.6; // Warning at 60% of timeout
+				const killMs = timeoutMs * 0.9; // Start kill attempts at 90% of timeout
+
+				// Warning timeout
+				const warningTimeout = setTimeout(() => {
+					log(
+						`${shardPrefix}⚠️ Warning: Shard ${shardId} (${group.name}) has been running for ${warningMs / 1000}s`,
+					);
+					log(`${shardPrefix}📊 Current output length: ${output.length} chars`);
+				}, warningMs);
+
+				// Aggressive kill timeout - try SIGTERM first
+				const killTimeout = setTimeout(() => {
+					log(
+						`${shardPrefix}⚠️ Attempting graceful termination of Shard ${shardId} (${group.name})`,
+					);
+					if (proc && !proc.killed) {
+						// Kill entire process group if detached
+						try {
+							if (proc.detached && proc.pid) {
+								process.kill(-proc.pid, "SIGTERM");
+								log(
+									`${shardPrefix}🔄 Sent SIGTERM to process group ${proc.pid}`,
+								);
+							} else {
+								proc.kill("SIGTERM");
+							}
+						} catch (error) {
+							log(`${shardPrefix}⚠️ Failed to send SIGTERM: ${error.message}`);
+						}
+
+						// Force kill after 3 seconds if still running
+						setTimeout(() => {
+							if (proc && !proc.killed) {
+								log(`${shardPrefix}❌ Force killing hung process with SIGKILL`);
+								try {
+									if (proc.detached && proc.pid) {
+										process.kill(-proc.pid, "SIGKILL");
+										log(
+											`${shardPrefix}💥 Sent SIGKILL to process group ${proc.pid}`,
+										);
+									} else {
+										proc.kill("SIGKILL");
+									}
+								} catch (error) {
+									log(
+										`${shardPrefix}⚠️ Failed to send SIGKILL: ${error.message}`,
+									);
+								}
+							}
+						}, 3000); // Reduced from 5 to 3 seconds
+					}
+				}, killMs);
+
+				// Hard timeout - absolutely kill the process and all children
+				timeout = setTimeout(async () => {
+					logError(
+						`${shardPrefix}❌ Shard ${shardId} (${group.name}) timed out after ${timeoutMs / 1000}s`,
+					);
+
+					// Multi-step aggressive cleanup
+					try {
+						// Step 1: Kill the main process
+						if (proc && !proc.killed) {
+							if (proc.detached && proc.pid) {
+								log(`${shardPrefix}💥 Killing process group ${proc.pid}`);
+								process.kill(-proc.pid, "SIGKILL");
+							} else {
+								proc.kill("SIGKILL");
+							}
+						}
+
+						// Step 2: Kill by pattern matching
+						const { execSync } = require("node:child_process");
+						const killCommands = [
+							`pkill -f "playwright.*test" || true`,
+							`pkill -f "node.*playwright" || true`,
+							`pkill -f "${group.shardCommand}" || true`,
+							`pkill -f "chromium.*headless" || true`,
+							`pkill -9 -f "shard.*${shardId}" || true`,
+						];
+
+						log(
+							`${shardPrefix}🧹 Running ${killCommands.length} cleanup commands...`,
+						);
+						for (const cmd of killCommands) {
+							try {
+								execSync(cmd, { stdio: "ignore", timeout: 2000 });
+							} catch {
+								// Ignore individual command failures
+							}
+						}
+
+						// Step 3: Kill by port if we know it
+						if (proc.pid) {
+							try {
+								execSync(
+									"lsof -ti:3000 -ti:3001 | xargs kill -9 2>/dev/null || true",
+									{ stdio: "ignore", timeout: 2000 },
+								);
+							} catch {
+								// Ignore errors
+							}
+						}
+					} catch (error) {
+						log(`${shardPrefix}⚠️ Cleanup error: ${error.message}`);
+					}
+
+					// Final check if process is still running
+					setTimeout(() => {
+						if (proc?.pid && this.isProcessRunning(proc.pid)) {
+							logError(
+								`${shardPrefix}🚨 CRITICAL: Process ${proc.pid} still running after kill attempts!`,
+							);
+							// Last resort - try system kill
+							try {
+								const { execSync } = require("node:child_process");
+								execSync(`kill -9 ${proc.pid} 2>/dev/null || true`, {
+									stdio: "ignore",
+								});
+							} catch {
+								// If all else fails, log it but continue
+								logError(
+									`${shardPrefix}💀 Unable to kill process ${proc.pid} - manual intervention may be required`,
+								);
+							}
+						}
+					}, 2000);
+
+					resolveWithError(`Test group timed out after ${timeoutMs / 1000}s`);
+				}, timeoutMs);
+
+				// Handle process exit
+				proc.on("close", (code) => {
+					if (resolved) return;
+					resolved = true;
+
+					clearTimeout(warningTimeout);
+					clearTimeout(killTimeout);
+					clearTimeout(timeout);
+					if (stallCheckInterval) clearInterval(stallCheckInterval);
+
+					const duration = Math.round((Date.now() - startTime) / 1000);
+
+					// Parse results from output
+					const results = this.parseE2EResults(output);
+
+					// Add error information if exit code is non-zero
+					if (code !== 0 && errorOutput) {
+						results.errorOutput = errorOutput;
+					}
+
+					log(
+						`${shardPrefix}Shard ${shardId} (${group.name}) completed in ${duration}s with exit code ${code}`,
+					);
+
+					resolve({
+						...results,
+						groupName: group.name,
+						duration,
+						exitCode: code,
+					});
+				});
+
+				// Handle process errors
+				proc.on("error", (error) => {
+					clearTimeout(warningTimeout);
+					clearTimeout(killTimeout);
+					clearTimeout(timeout);
+					if (stallCheckInterval) clearInterval(stallCheckInterval);
+					logError(`${shardPrefix}Process error: ${error.message}`);
+					resolveWithError(`Process error: ${error.message}`);
+				});
+			} catch (error) {
+				logError(`${shardPrefix}Failed to start test group: ${error.message}`);
+				resolveWithError(`Failed to start: ${error.message}`);
+			}
 		});
+	}
+
+	/**
+	 * Run a single test group (legacy method)
+	 */
+	async runTestGroup(group, shardId = null) {
+		return this.runTestGroupWithTimeout(group, shardId);
 	}
 
 	/**
@@ -654,6 +1053,7 @@ class E2ETestRunner {
 			skipped: 0,
 			intentionalFailures: 0,
 			integrationTests: 0,
+			failedTests: [],
 		};
 
 		// Parse Playwright output patterns
@@ -666,6 +1066,26 @@ class E2ETestRunner {
 		if (failedMatch) results.failed = parseInt(failedMatch[1]);
 		if (skippedMatch) results.skipped = parseInt(skippedMatch[1]);
 		if (flakyMatch) results.passed += parseInt(flakyMatch[1]); // Count flaky as passed
+
+		// Extract specific failed test names
+		const failurePattern = /\s*\d+\)\s+\[.*?\]\s+›\s+(.*?)$/gm;
+		let match;
+		while ((match = failurePattern.exec(output)) !== null) {
+			results.failedTests.push({
+				name: match[1].trim(),
+				file: this.extractFileFromTestName(match[1]),
+			});
+		}
+
+		// Also check for error messages
+		const errorPattern = /Error:\s+(.*?)(?:\n|$)/g;
+		while ((match = errorPattern.exec(output)) !== null) {
+			const errorMsg = match[1].trim();
+			if (!results.errorMessages) {
+				results.errorMessages = [];
+			}
+			results.errorMessages.push(errorMsg);
+		}
 
 		// Check for deliberate failures in test-configuration-verification.spec.ts
 		if (
@@ -705,6 +1125,18 @@ class E2ETestRunner {
 	}
 
 	/**
+	 * Extract file name from test name
+	 */
+	extractFileFromTestName(testName) {
+		// Try to extract the file from the test name
+		const fileMatch = testName.match(/\[(.*?)\]/);
+		if (fileMatch) {
+			return fileMatch[1];
+		}
+		return "unknown";
+	}
+
+	/**
 	 * Log E2E test summary
 	 */
 	logE2ESummary(results, duration) {
@@ -723,7 +1155,23 @@ class E2ETestRunner {
 		if (Object.keys(results.shards).length > 0) {
 			log("\n📈 Shard Summary:");
 			for (const [shardId, shard] of Object.entries(results.shards)) {
-				log(`   Shard ${shardId}: ${shard.passed}/${shard.total} passed`);
+				const status = shard.failed === 0 ? "✅" : "❌";
+				log(
+					`   ${status} Shard ${shardId} (${shard.name || shard.groupName}): ${shard.passed}/${shard.total} passed`,
+				);
+
+				// Show failed tests for this shard
+				if (shard.failedTests && shard.failedTests.length > 0) {
+					log("      Failed tests:");
+					for (const test of shard.failedTests) {
+						log(`        • ${test.name}`);
+					}
+				}
+
+				// Show if timed out
+				if (shard.timedOut) {
+					log("      ⏱️ TIMED OUT");
+				}
 			}
 		}
 	}

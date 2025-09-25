@@ -249,6 +249,9 @@ class PayloadSchemaHandler {
 			// First, ensure payload schema exists
 			await this.ensurePayloadSchema(connectionString);
 
+			// Run Payload migrations to create missing tables
+			await this.runPayloadMigrations(instance);
+
 			// Verify critical tables exist
 			await this.verifyPayloadTables(connectionString);
 
@@ -336,6 +339,34 @@ class PayloadSchemaHandler {
 			this.reporter.info("Payload functionality test passed");
 		} catch (error) {
 			this.reporter.warning(`Payload functionality test warning: ${error}`);
+		}
+	}
+
+	private async runPayloadMigrations(
+		instance: SupabaseInstance,
+	): Promise<void> {
+		this.reporter.step(`Running Payload migrations for ${instance.name}`);
+
+		try {
+			// Navigate to the payload app directory to run migrations
+			const payloadDir = "/home/msmith/projects/2025slideheroes/apps/payload";
+
+			// Run Payload migrations
+			const migrateResult = execSync("npx payload migrate", {
+				cwd: payloadDir,
+				encoding: "utf8",
+				stdio: "pipe",
+			});
+
+			this.reporter.info(`Payload migrations output: ${migrateResult}`);
+			this.reporter.success(
+				`Payload migrations completed for ${instance.name}`,
+			);
+		} catch (error) {
+			this.reporter.error(
+				`Payload migration failed for ${instance.name}: ${error}`,
+			);
+			throw error;
 		}
 	}
 }

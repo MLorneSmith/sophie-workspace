@@ -12,8 +12,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Check if Payload is running
-echo -n "Checking if Payload CMS is running on port 3020... "
-if curl -s http://localhost:3020/api/health -o /dev/null; then
+echo -n "Checking if Payload CMS is running on port 3021... "
+if curl -s http://localhost:3021/api/health -o /dev/null; then
     echo -e "${GREEN}✓${NC}"
 else
     echo -e "${RED}✗${NC}"

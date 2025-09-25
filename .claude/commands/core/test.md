@@ -1,5 +1,5 @@
 ---
-description: Execute comprehensive test suites with real-time progress visibility and intelligent orchestration
+description: Execute comprehensive unit and e2e test suites
 allowed-tools: [Bash, Read]
 argument-hint: [--quick | --unit | --e2e | --debug | --continue]
 ---
@@ -22,18 +22,58 @@ Execute comprehensive test suites with real-time progress visibility and intelli
 ## Prompt
 
 <role>
-You are a Direct Test Executor specializing in running test suites with real-time progress visibility. You execute tests directly using bash commands to ensure users see live output exactly as if running pnpm commands directly. You never use agents or describe what would be done - you execute immediately.
+You are a Direct Test Executor specializing in running test suites with real-time progress visibility. You execute tests using a set of test orchestration scripts to ensure users see live output exactly as if running pnpm commands directly. You never use agents or describe what would be done - you execute immediately.
 </role>
 
 <instructions>
 # Test Execution Workflow - PRIME Framework
 
 **CORE REQUIREMENTS**:
-- **Execute** tests directly with bash tool for real-time visibility
+- **Execute** tests directly with test-controller script for real-time visibility
 - **Never** delegate to agents (causes output hiding)
 - **Load** essential e2e environment context before execution
 - **Report** failures immediately without auto-fix attempts
 - **Integrate** with existing test-controller.cjs infrastructure
+
+## CRITICAL EXECUTION RULES
+
+**NEVER:**
+1. ❌ Wrap test-controller.cjs in custom bash logic or complex scripts
+2. ❌ Run test-failure-analyzer.cjs separately (it's integrated into test-controller)
+3. ❌ Build custom argument parsing - just pass arguments directly
+4. ❌ Try to "fix" infrastructure issues - report them and stop
+
+**ALWAYS:**
+1. ✅ Call test-controller.cjs directly with simple `node` command
+2. ✅ Read the environment context file FIRST
+3. ✅ Parse test-controller output for failure categories
+4. ✅ Suggest debugging steps based on the failure type shown
+
+## OUTPUT ANALYSIS GUIDE
+
+### Where to Find Failure Information
+
+The test-controller provides structured output with clear failure indicators:
+
+```
+[timestamp] INFO: ⚠️ Infrastructure needs setup (6/7 healthy)  ← Infrastructure status
+[timestamp] INFO:   ❌ Health endpoint failed: 500            ← Specific failure
+[timestamp] INFO: ⚠️ Docker container unhealthy: ...         ← Root cause
+```
+
+**Look for these key patterns in output:**
+- `⚠️ Infrastructure needs setup` - Infrastructure problems
+- `❌ Health endpoint failed` - Application startup issues
+- `🧪 Test failures detected` - Actual test failures
+- `⚠️ Docker container unhealthy` - Container issues
+- `❌ Authentication failed` - Auth/login problems
+
+**Failure Categories (automatically shown):**
+- **Infrastructure**: Server, containers, connectivity
+- **Authentication**: Login, credentials, tokens
+- **UI/Element**: Selectors, visibility, rendering
+- **Database**: Connections, queries, permissions
+- **Application**: 500 errors, runtime issues
 
 ## PRIME Workflow
 
@@ -70,95 +110,54 @@ You are a Direct Test Executor specializing in running test suites with real-tim
 
 ### Phase M - METHOD
 <method>
-**Execute** tests using direct bash commands:
+**Execute tests using the test-controller directly:**
 
-1. **Parse** Arguments and Set Variables
-   ```bash
-   # Extract argument flags from user input
-   ARGS="${ARGUMENTS:-}"
+**Step 1: Read Environment Context**
+```
+Always read first: .claude/context/testing/environment/e2e-local-environment.md
+```
 
-   # Build test controller arguments
-   TEST_ARGS=""
-   [[ "$ARGS" == *"--quick"* ]] && TEST_ARGS="$TEST_ARGS --quick"
-   [[ "$ARGS" == *"--unit"* ]] && TEST_ARGS="$TEST_ARGS --unit"
-   [[ "$ARGS" == *"--e2e"* ]] && TEST_ARGS="$TEST_ARGS --e2e"
-   [[ "$ARGS" == *"--debug"* ]] && TEST_ARGS="$TEST_ARGS --debug"
-   [[ "$ARGS" == *"--continue"* ]] && TEST_ARGS="$TEST_ARGS --continue"
+**Step 2: Execute Test Controller Directly**
+```bash
+# Simple execution - let test-controller handle ALL complexity
+node .claude/scripts/testing/infrastructure/test-controller.cjs [ARGS]
 
-   echo "🚀 Starting test execution with live progress..."
-   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-   ```
+# Examples:
+node .claude/scripts/testing/infrastructure/test-controller.cjs           # Full suite
+node .claude/scripts/testing/infrastructure/test-controller.cjs --unit    # Unit only
+node .claude/scripts/testing/infrastructure/test-controller.cjs --e2e     # E2E only
+node .claude/scripts/testing/infrastructure/test-controller.cjs --debug   # Verbose
 
-2. **Execute** Tests with Controller Integration
-   ```bash
-   # Use existing test controller for organized execution
-   TEST_CONTROLLER=".claude/scripts/testing/infrastructure/test-controller.cjs"
+# With debug environment variable if needed
+DEBUG_TEST=true node .claude/scripts/testing/infrastructure/test-controller.cjs --debug
+```
 
-   if [[ -f "$TEST_CONTROLLER" ]]; then
-     # Use modular test controller with proper logging
-     if [[ "$ARGS" == *"--debug"* ]]; then
-       DEBUG_TEST=true node "$TEST_CONTROLLER" $TEST_ARGS
-     else
-       node "$TEST_CONTROLLER" $TEST_ARGS
-     fi
-     EXIT_CODE=$?
-   else
-     # Fallback to direct pnpm execution
-     echo "📦 Test controller not found, using direct execution..."
-
-     if [[ "$ARGS" == *"--unit"* ]]; then
-       pnpm test:unit
-       EXIT_CODE=$?
-     elif [[ "$ARGS" == *"--e2e"* ]]; then
-       pnpm test:e2e
-       EXIT_CODE=$?
-     elif [[ "$ARGS" == *"--quick"* ]]; then
-       pnpm test:unit -- --testPathPattern="smoke"
-       EXIT_CODE=$?
-     else
-       pnpm test:unit && pnpm test:e2e
-       EXIT_CODE=$?
-     fi
-   fi
-   ```
-
-3. **Report** Final Status
-   ```bash
-   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-   # Provide clear success/failure indication
-   if [[ $EXIT_CODE -eq 0 ]]; then
-     echo "✅ **TEST EXECUTION SUCCESSFUL**"
-     echo ""
-     echo "🎉 All test suites completed successfully"
-   else
-     echo "❌ **TEST EXECUTION FAILED**"
-     echo ""
-     echo "💡 Debugging Options:"
-     echo "  • Re-run with --debug for verbose output"
-     echo "  • Use --unit or --e2e to isolate test suites"
-     echo "  • Add --continue to run all tests despite failures"
-     echo "  • Check test logs above for specific failures"
-   fi
-
-   exit $EXIT_CODE
-   ```
+**Step 3: Let Controller Output Guide Next Steps**
+- The test-controller automatically categorizes failures
+- DO NOT run separate failure analyzers
+- Simply report what the controller shows
 </method>
 
 ### Phase E - EXPECTATIONS
 <expectations>
 **Deliver** real-time test execution with final summary:
 
-- **Format**: Direct bash execution with live console output
-- **Structure**: Controller integration with fallback options
-- **Location**: Console output with real-time progress visibility
-- **Quality Standards**: Immediate execution, accurate status reporting
+**Success Path:**
+1. Load environment context
+2. Call `node .claude/scripts/testing/infrastructure/test-controller.cjs [args]`
+3. Let it run with live output
+4. Report final status
 
-**Success Criteria**:
-- Tests execute immediately without description phase
-- Live output visible throughout execution process
-- Final summary clearly indicates success or failure
-- No agent buffering or output hiding occurs
+**Failure Path:**
+1. Parse test-controller output for failure categories
+2. Report the specific failure type (Infrastructure/Authentication/UI/Database/Application)
+3. Suggest debugging options based on failure category
+4. DO NOT attempt to fix - just report
+
+**Quality Standards:**
+- Immediate execution without pre-description
+- Direct output visibility
+- Clear failure categorization
 </expectations>
 </instructions>
 

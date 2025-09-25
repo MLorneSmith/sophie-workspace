@@ -97,23 +97,54 @@ class TestCleanupGuard {
 			}
 		}
 
-		// General cleanup commands
-		const cleanupCommands = [
-			// Kill test-related processes
-			'pkill -f "playwright" || true',
-			'pkill -f "vitest" || true',
-			'pkill -f "next-server" || true',
-			'pkill -f "dev:test" || true',
-			'pkill -f "test:shard" || true',
+		// Intelligent cleanup - only kill processes when actually needed
+		const currentPid = process.pid;
 
-			// Clean up ports
-			"lsof -ti:3000-3020 | xargs kill -9 2>/dev/null || true",
-			"lsof -ti:54321-54327 | xargs kill -9 2>/dev/null || true",
+		// First, check if there are actually stuck processes before attempting to kill anything
+		const processPatterns = ["playwright", "vitest", "next-server"];
+		const stuckProcesses = [];
 
-			// Clean up zombie processes
-			'pkill -f "zombie" || true',
-			'pkill -f "defunct" || true',
+		for (const pattern of processPatterns) {
+			try {
+				const { stdout } = await execAsync(
+					`pgrep -f "${pattern}" | grep -v ${currentPid} || true`,
+				);
+				if (stdout.trim()) {
+					stuckProcesses.push(pattern);
+				}
+			} catch {
+				// No processes found
+			}
+		}
 
+		// Only run aggressive cleanup if there are actually stuck processes
+		if (stuckProcesses.length > 0) {
+			console.log(
+				`🔧 Found stuck processes: ${stuckProcesses.join(", ")} - cleaning up...`,
+			);
+
+			for (const pattern of stuckProcesses) {
+				try {
+					// Use more precise cleanup to avoid signal conflicts
+					await execAsync(
+						`pgrep -f "${pattern}" | grep -v ${currentPid} | xargs -r kill -TERM 2>/dev/null || true`,
+					);
+					// Wait briefly for graceful shutdown
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					// Force kill only if still running
+					await execAsync(
+						`pgrep -f "${pattern}" | grep -v ${currentPid} | xargs -r kill -KILL 2>/dev/null || true`,
+					);
+				} catch {
+					// Ignore cleanup errors
+				}
+			}
+		} else {
+			console.log("✅ No stuck processes found - skipping process cleanup");
+		}
+
+		// Safe cleanup commands (no process killing)
+		const safeCleanupCommands = [
 			// Clean up lock files
 			"rm -rf /tmp/.claude_test_locks/* 2>/dev/null || true",
 
@@ -122,7 +153,7 @@ class TestCleanupGuard {
 			"rm -f /tmp/.claude_test_results.json 2>/dev/null || true",
 		];
 
-		for (const cmd of cleanupCommands) {
+		for (const cmd of safeCleanupCommands) {
 			try {
 				await execAsync(cmd);
 			} catch (error) {
@@ -300,19 +331,24 @@ class TestCleanupGuard {
 			}
 		}
 
-		// Kill any existing test processes by pattern
+		// Kill any existing test processes by pattern - exclude current process
+		const currentPid = process.pid;
 		const processPatterns = [
 			"playwright",
 			"vitest",
 			"next-server",
 			"next.*dev.*3000",
-			"dev:test",
-			"test:shard",
+			// Skip patterns that might match test controller:
+			// - "dev:test"
+			// - "test:shard"
 		];
 
 		for (const pattern of processPatterns) {
 			try {
-				await execAsync(`pkill -f "${pattern}" 2>/dev/null || true`);
+				// Use pgrep + grep to exclude current process, then kill
+				await execAsync(
+					`pgrep -f "${pattern}" | grep -v ${currentPid} | xargs -r kill 2>/dev/null || true`,
+				);
 			} catch {
 				// Ignore errors
 			}

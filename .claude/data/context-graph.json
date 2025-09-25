@@ -7,6 +7,7 @@
 		"tools/integrations/git-aliases.md",
 		"tools/integrations/perplexity.md",
 		"development/standards/code-standards.md",
+		"development/standards/frameworks/makerkit/template-usage.md",
 		"development/standards/frameworks/makerkit/upstream-sync.md",
 		"development/standards/react-query-patterns.md",
 		"development/standards/typography-system.md",
@@ -27,6 +28,7 @@
 		"foundation/project-overview.md",
 		"infrastructure/deployment/docker-architecture.md",
 		"team/roles/architecture-engineer.md",
+		"testing/environment/e2e-local-environment.md",
 		"data/migrations/ci-cd.md",
 		"data/migrations/patterns.md",
 		"data/models.md",
@@ -231,6 +233,29 @@
 				"instead"
 			],
 			"topics": ["Documentation"]
+		},
+		"development/standards/frameworks/makerkit/template-usage.md": {
+			"name": "MakerKit SaaS Template - Architecture & Usage Patterns",
+			"category": "general",
+			"priority": "essential",
+			"tokens": 2263,
+			"keywords": [
+				"makerkit",
+				"saas-template",
+				"next.js",
+				"supabase",
+				"monorepo",
+				"architecture",
+				"turbo",
+				"@kit-packages",
+				"authentication",
+				"multi-tenancy",
+				"upstream",
+				"template-usage",
+				"component-patterns",
+				"customization"
+			],
+			"topics": ["Architecture", "Templates", "SaaS", "Frameworks"]
 		},
 		"development/standards/frameworks/makerkit/upstream-sync.md": {
 			"name": "Identity",
@@ -578,6 +603,30 @@
 				"specified"
 			],
 			"topics": ["Documentation"]
+		},
+		"testing/environment/e2e-local-environment.md": {
+			"name": "Local E2E Testing Environment",
+			"category": "general",
+			"priority": "important",
+			"tokens": 1844,
+			"keywords": [
+				"e2e",
+				"docker",
+				"supabase",
+				"testing",
+				"environment",
+				"playwright",
+				"authentication",
+				"docker-compose",
+				"test-data",
+				"seeding",
+				"crypt",
+				"password-hashing",
+				"environment-variables",
+				"port-configuration",
+				"isolated-testing"
+			],
+			"topics": ["Testing", "Docker", "Environment", "E2E", "Supabase"]
 		},
 		"data/migrations/ci-cd.md": {
 			"name": "Identity",
@@ -1687,6 +1736,9 @@
 		}
 	},
 	"commandRelations": {
+		"/update:makerkit": [
+			"development/standards/frameworks/makerkit/template-usage.md"
+		],
 		"/feature": [
 			"security/auth/implementation.md",
 			"development/workflows/feature-implementation-workflow.md",
@@ -1725,7 +1777,9 @@
 			"testing/specialized/accessibility-testing-fundamentals.md",
 			"testing/specialized/performance-testing-fundamentals.md",
 			"testing/unit/vitest-setup.md"
-		]
+		],
+		"/test": ["testing/environment/e2e-local-environment.md"],
+		"/test --e2e": ["testing/environment/e2e-local-environment.md"]
 	},
-	"lastUpdated": "2025-09-22T19:26:06.655Z"
+	"lastUpdated": "2025-09-25T19:15:20.820Z"
 }

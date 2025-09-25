@@ -47,7 +47,7 @@ services:
         npx pnpm install &&
         echo '🚀 Starting test server on port 3001...' &&
         cd apps/web &&
-        npx pnpm dev --port 3001
+        NODE_ENV=test npx next dev --turbo --port 3001
       "
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]

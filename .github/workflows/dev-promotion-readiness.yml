@@ -9,10 +9,6 @@ on:
   workflow_run:
     workflows: ["Dev Integration Tests"]
     types: [completed]
-<<<<<<< HEAD
-=======
-    branches: [dev]  # Only trigger for dev branch deployments
->>>>>>> origin/main
 
 permissions:
   contents: write
@@ -351,4 +347,3 @@ jobs:
               console.log(`Created issue #${issue.data.number} for stale deployment`);
             } else {
               console.log(`Dev deployment is ${hoursOld.toFixed(1)} hours old (within 24h limit)`);
-            }
