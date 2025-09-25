@@ -1,0 +1,77 @@
+scripts/migrate-to-logger-advanced.js:2:1 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+  
+    1 │ #!/usr/bin/env node
+  > 2 │ // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    3 │ 
+    4 │ const fs = require("node:fs").promises;
+  
+
+scripts/migrate-to-logger.js:2:1 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+  
+    1 │ #!/usr/bin/env node
+  > 2 │ // biome-ignore lint/suspicious/noConsole: Migration script - console output is required
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    3 │ 
+    4 │ const fs = require("node:fs").promises;
+  
+
+apps/payload/src/app/(payload)/api/debug/deduplication/route.ts:147:17 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    145 │ 				const manager = getDeduplicationManager();
+    146 │ 				// Force cleanup by accessing the cache through reflection
+  > 147 │ 				(manager as any).cache?.clear();
+        │ 				            ^^^
+    148 │ 				return NextResponse.json({
+    149 │ 					success: true,
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/payload/src/app/(payload)/api/debug/deduplication/route.ts:25:11 lint/correctness/noUnusedVariables ━━━━━━━━━━
+
+  × This interface ErrorWithTimestamp is unused.
+  
+    24 │ // Type for error objects with timestamp
+  > 25 │ interface ErrorWithTimestamp {
+       │           ^^^^^^^^^^^^^^^^^^
+    26 │ 	timestamp: string;
+    27 │ 	[key: string]: unknown;
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+
+apps/payload/src/app/(payload)/api/debug/deduplication/route.ts:31:11 lint/correctness/noUnusedVariables ━━━━━━━━━━
+
+  × This interface DeduplicationManagerWithCache is unused.
+  
+    30 │ // Type for deduplication manager with cache access
+  > 31 │ interface DeduplicationManagerWithCache {
+       │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    32 │ 	cache?: {
+    33 │ 		clear(): void;
+  
+  i Unused variables are often the result of an incomplete refactoring, typos, or other sources of bugs.
+  
+
+apps/payload/src/lib/enhanced-api-wrapper.test.ts:81:68 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━
+
+  × Unexpected any. Specify a different type.
+  
+    79 │ 		// Mock logger
+    80 │ 		mockLogger = new MockEnvironmentLogger();
+  > 81 │ 		vi.mocked(createEnvironmentLogger).mockReturnValue(mockLogger as any);
+       │ 		                                                                 ^^^
+    82 │ 
+    83 │ 		// Mock Date.now for consistent timing
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+apps/payload/src/lib/enhanced-api-wrapper.ts

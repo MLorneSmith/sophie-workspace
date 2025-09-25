@@ -1,48 +1,35 @@
-# Test Scripts
+# SlideHeroes Scripts
 
-This directory contains test and utility scripts for development purposes.
+This directory contains utility scripts for the SlideHeroes application.
 
-## Setup
+## Update Test User Progress
 
-Before running any test scripts, you need to create a `.env.test` file in the root directory with the following variables:
+The `update-test-user-progress.ts` script is used to update the course progress for the <test2@slideheroes.com> user. It marks all lessons as complete except for lessons 702, 801, and 802.
 
-```bash
-# Test Environment Variables
-# This file contains credentials for local testing only
-# These are NOT production credentials
+### Prerequisites
 
-# Local Supabase credentials (from Supabase CLI)
-TEST_SUPABASE_URL=http://127.0.0.1:54321
-TEST_SUPABASE_SERVICE_ROLE_KEY=your-local-supabase-service-role-key
+- Node.js 18+
+- npm or pnpm
 
-# PDF.co API key for testing
-TEST_PDF_CO_API_KEY=your-test-pdf-co-api-key
-
-# Test user email
-TEST_USER_EMAIL=test2@slideheroes.com
-
-# Payload CMS URL for local development
-TEST_PAYLOAD_URL=http://localhost:3020
-```
-
-## Security Note
-
-The `.env.test` file is excluded from version control. Never commit credentials to the repository.
-
-## Available Scripts
-
-### test-certificate-generation.ts
-
-Tests the certificate generation process by marking all lessons as complete for a test user.
+### Installation
 
 ```bash
-pnpm tsx scripts/test-certificate-generation.ts
+# Install dependencies
+npm install
 ```
 
-### update-test-user-progress.ts
-
-Updates progress for a test user to simulate course completion.
+### Usage
 
 ```bash
-pnpm tsx scripts/update-test-user-progress.ts
+# Run the script
+npm run update-test-user
 ```
+
+### What the Script Does
+
+1. Gets the user ID for <test2@slideheroes.com>
+2. Fetches all lessons for the "Decks for Decision Makers" course
+3. Marks all lessons as complete except for lessons 702, 801, and 802
+4. Updates the overall course progress
+
+This script is useful for testing the certificate generation functionality, as it will trigger the certificate generation process when the course is marked as complete.
