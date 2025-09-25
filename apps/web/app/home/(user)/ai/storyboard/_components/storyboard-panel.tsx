@@ -11,6 +11,16 @@ import { usePresentationStoryboard } from "../_lib/hooks/use-presentation-storyb
 import type { StoryboardData } from "../_lib/types";
 import { SortableSlideList } from "./sortable-slide-list";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 interface StoryboardPanelProps {
 	presentationId: string;
 	onBack: () => void;
@@ -42,10 +52,7 @@ export function StoryboardPanel({
 			await saveStoryboard(storyboardData);
 			toast.success("Storyboard saved successfully");
 		} catch (_error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error saving storyboard:", {
-			// 	data: _error,
-			// });
+			logger.error("Error saving storyboard:", _error);
 			toast.error("Failed to save storyboard");
 		}
 	};

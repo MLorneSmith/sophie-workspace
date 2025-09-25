@@ -14,18 +14,15 @@
 		".": "./src/index.ts",
 		"./renderer": "./src/content-renderer.tsx"
 	},
-	"dependencies": {
-		"@kit/shared": "workspace:*"
-	},
 	"devDependencies": {
 		"@kit/cms-types": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"@types/node": "^24.0.1",
-		"@types/react": "19.1.8",
-		"wp-types": "^4.68.0"
+		"@types/node": "^24.3.1",
+		"@types/react": "19.1.12",
+		"wp-types": "^4.68.1"
 	},
 	"typesVersions": {
 		"*": {
@@ -33,5 +30,9 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
+		"@kit/shared": "workspace:*"
 	}
 }

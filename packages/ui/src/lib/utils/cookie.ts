@@ -12,6 +12,9 @@ interface CookieOptions {
 	sameSite?: "strict" | "lax" | "none";
 }
 
+// Detect if we're in production environment
+const isProduction = process.env.NODE_ENV === "production";
+
 // Type definition for the Cookie Store API
 interface CookieStore {
 	set(options: {
@@ -38,6 +41,12 @@ export function setCookie(
 		return; // SSR safety
 	}
 
+	// Enforce secure cookies in production when using HTTPS
+	const enforceSecure =
+		isProduction &&
+		typeof window !== "undefined" &&
+		window.location.protocol === "https:";
+
 	// Use Cookie Store API when available (modern browsers)
 	if ("cookieStore" in window) {
 		const cookieOptions = {
@@ -48,7 +57,7 @@ export function setCookie(
 				expires: new Date(Date.now() + options.maxAge * 1000),
 			}),
 			...(options.domain && { domain: options.domain }),
-			...(options.secure && { secure: options.secure }),
+			secure: options.secure ?? enforceSecure,
 			...(options.sameSite && { sameSite: options.sameSite }),
 		};
 
@@ -78,6 +87,12 @@ function setViaDOMCookie(
 	value: string,
 	options: CookieOptions = {},
 ): void {
+	// Enforce secure cookies in production when using HTTPS
+	const enforceSecure =
+		isProduction &&
+		typeof window !== "undefined" &&
+		window.location.protocol === "https:";
+
 	const parts: string[] = [`${name}=${value}`];
 
 	if (options.path) {
@@ -96,7 +111,8 @@ function setViaDOMCookie(
 		parts.push(`domain=${options.domain}`);
 	}
 
-	if (options.secure) {
+	// deepcode ignore CookieWithoutSecureFlag: Secure flag is conditionally set based on environment and protocol
+	if (options.secure ?? enforceSecure) {
 		parts.push("secure");
 	}
 
@@ -106,7 +122,8 @@ function setViaDOMCookie(
 
 	// Intentional direct cookie assignment for compatibility - exempt from linting rule
 	// Cookie Store API is not available in all browsers, so we use the traditional approach
-	// biome-ignore lint/suspicious/noDocumentCookie: Required for browser compatibility
+	// deepcode ignore CookieWithoutSecureFlag/CookieWithoutSecureFlag: Secure flag is conditionally set based on environment and protocol (see line 115)
+	// nosec
 	document.cookie = parts.join("; ");
 }
 

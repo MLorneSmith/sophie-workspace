@@ -1,0 +1,58 @@
+import path from "node:path";
+import react from "@vitejs/plugin-react";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { defineProject } from "vitest/config";
+
+/**
+ * Vitest configuration for admin package
+ * Extends base configuration with React testing support
+ */
+export default defineProject({
+	plugins: [
+		// Enable React support with automatic JSX transform
+		react({
+			jsxImportSource: "react",
+		}),
+		// Synchronize TypeScript paths with Vitest/Vite module resolution
+		tsconfigPaths(),
+	],
+	resolve: {
+		alias: {
+			// Mock server-only imports for testing
+			"server-only": path.resolve(
+				__dirname,
+				"src/test/__mocks__/server-only.ts",
+			),
+			// Mock Next.js modules for testing
+			"next/navigation": path.resolve(
+				__dirname,
+				"src/__mocks__/next/navigation.ts",
+			),
+			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+		},
+	},
+	esbuild: {
+		// Configure JSX transformation
+		jsx: "automatic",
+		jsxImportSource: "react",
+	},
+	test: {
+		name: "admin",
+		// React components need jsdom environment
+		environment: "jsdom",
+		globals: true,
+		// Setup files for testing utilities
+		setupFiles: ["./src/test/setup.ts"],
+		// Include both TS and TSX files for admin components
+		include: ["**/*.{test,spec}.{ts,tsx}"],
+		exclude: [
+			"**/node_modules/**",
+			"**/dist/**",
+			"**/coverage/**",
+			"**/build/**",
+		],
+		// Performance settings
+		testTimeout: 10000,
+		hookTimeout: 10000,
+	},
+});

@@ -1,6 +1,7 @@
 "use server";
 
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 import { generateCertificate } from "~/lib/certificates/certificate-service";
@@ -9,6 +10,8 @@ import {
 	TOTAL_REQUIRED_LESSONS,
 } from "~/lib/course/course-config";
 import type { Database } from "~/lib/database.types";
+
+const { getLogger } = createServiceLogger("COURSE-SERVER-ACTIONS");
 
 // Start or update course progress
 const _UpdateCourseProgressSchema = z.object({
@@ -72,13 +75,14 @@ export const updateCourseProgressAction = enhanceAction(
 
 						// Mark the certificate as generated
 						updateData.certificate_generated = true;
-					} catch (_error) {
-						// TODO: Async logger needed
-						// TODO: Async logger needed
-						// (await getLogger()).error(
-						// 	"Failed to generate certificate:",
-						// 	{ data: error }
-						// );
+					} catch (error) {
+						const logger = await getLogger();
+						logger.error("Failed to generate certificate", {
+							operation: "certificate_generation",
+							error,
+							userId: user.id,
+							courseId: data.courseId,
+						});
 						// Continue with the update even if certificate generation fails
 					}
 				}
@@ -183,16 +187,14 @@ export const updateLessonProgressAction = enhanceAction(
 
 			if (lessonsData?.docs && lessonProgress) {
 				// Log the required lesson numbers for debugging
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	"Required lesson numbers:",
-				// 	{ data: REQUIRED_LESSON_NUMBERS }
-				// );
-				// TODO: Async logger needed
-				// (await getLogger()).info("Total required lessons:", {
-				// 	data: TOTAL_REQUIRED_LESSONS,
-				// });
+				const logger = await getLogger();
+				logger.debug("Course progress calculation", {
+					operation: "lesson_progress_update",
+					requiredLessonNumbers: REQUIRED_LESSON_NUMBERS,
+					totalRequiredLessons: TOTAL_REQUIRED_LESSONS,
+					userId: user.id,
+					courseId: data.courseId,
+				});
 
 				// Count completed lessons that are in the required list
 				const completedRequiredLessons = lessonProgress.filter((p) => {
@@ -209,10 +211,13 @@ export const updateLessonProgressAction = enhanceAction(
 
 					// Log each completed required lesson for debugging
 					if (isCompleted) {
-						// TODO: Async logger needed
-						// (await getLogger()).info(
-						// 	`Lesson ${lesson.lesson_number} (${lesson.title}) is completed`,
-						// );
+						logger.debug("Required lesson completed", {
+							operation: "lesson_completion_tracking",
+							lessonNumber: lesson.lesson_number,
+							lessonTitle: lesson.title,
+							userId: user.id,
+							courseId: data.courseId,
+						});
 					}
 
 					return isCompleted;
@@ -226,14 +231,15 @@ export const updateLessonProgressAction = enhanceAction(
 				// Course is completed when all required lessons are done
 				const isCompleted = completedRequiredLessons >= TOTAL_REQUIRED_LESSONS;
 
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	`Course completion: ${completedRequiredLessons}/${TOTAL_REQUIRED_LESSONS} required lessons (${courseCompletionPercentage}%)`,
-				// );
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// 	`Course completed: ${isCompleted ? "Yes" : "No"}`,
-				// );
+				logger.info("Course progress updated", {
+					operation: "course_progress_calculation",
+					completedRequiredLessons,
+					totalRequiredLessons: TOTAL_REQUIRED_LESSONS,
+					courseCompletionPercentage,
+					isCompleted,
+					userId: user.id,
+					courseId: data.courseId,
+				});
 
 				// Update course progress with completion status
 				await updateCourseProgressAction({

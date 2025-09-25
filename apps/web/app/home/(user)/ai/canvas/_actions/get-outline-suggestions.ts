@@ -1,11 +1,15 @@
 "use server";
 
-import { type ChatMessage, getChatCompletion } from "@kit/ai-gateway";
-import { createQualityOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
-import { baseInstructions } from "@kit/ai-gateway/src/prompts/partials/base-instructions";
-import { improvementFormat } from "@kit/ai-gateway/src/prompts/partials/improvement-format";
-import { outlineRewriteInstructions } from "@kit/ai-gateway/src/prompts/partials/outline-rewrite";
+import {
+	baseInstructions,
+	type ChatMessage,
+	createQualityOptimizedConfig,
+	getChatCompletion,
+	improvementFormat,
+	outlineRewriteInstructions,
+} from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
+import { getLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { z } from "zod";
 
@@ -144,11 +148,13 @@ ${improvementFormat}`,
 				data: suggestions,
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error in outline suggestions action:",
-			// 	{ data: error }
-			// );
+			const logger = await getLogger();
+			logger.error("Error in outline suggestions action:", {
+				operation: "getOutlineSuggestionsAction",
+				error,
+				submissionId: data.submissionId,
+				userId: user.id,
+			});
 
 			return {
 				success: false,

@@ -4,23 +4,15 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ActionResult } from "@/test/test-types";
 
-// Setup mocks
+// Setup mocks - all exports from the main module
 vi.mock("@kit/ai-gateway", () => ({
 	getChatCompletion: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/configs/templates", () => ({
 	createReasoningOptimizedConfig: vi.fn(),
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/prompt-manager", () => ({
 	PromptManager: {
 		compileTemplate: vi.fn(),
 	},
-}));
-
-vi.mock("@kit/ai-gateway/src/prompts/templates/text-simplification", () => ({
 	textSimplificationTemplate: [
 		{
 			role: "system",
@@ -51,9 +43,11 @@ vi.mock("@kit/next/actions", () => ({
 }));
 
 // Import after mocks are set up
-import { getChatCompletion } from "@kit/ai-gateway";
-import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
+import {
+	createReasoningOptimizedConfig,
+	getChatCompletion,
+	PromptManager,
+} from "@kit/ai-gateway";
 import { expectError } from "../../../../../../test/test-helpers";
 import { simplifyTextAction } from "./simplify-text";
 
@@ -135,7 +129,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing userId field", async () => {
@@ -152,7 +146,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing canvasId field", async () => {
@@ -169,7 +163,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 
 		it("should reject missing sectionType field", async () => {
@@ -186,7 +180,7 @@ describe("simplifyTextAction", () => {
 			);
 
 			// Assert
-			expect(expectError(result as any)).toBe("Validation failed");
+			expect(expectError(result as ActionResult)).toBe("Validation failed");
 		});
 	});
 

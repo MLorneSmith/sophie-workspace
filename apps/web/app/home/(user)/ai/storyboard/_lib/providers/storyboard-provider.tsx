@@ -23,6 +23,16 @@ import type {
 	TipTapNode,
 } from "../types";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 // Basic debounce function
 function debounce<T extends (...args: unknown[]) => void>(
 	func: T,
@@ -111,8 +121,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 					});
 				}
 			} catch (err) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Failed to fetch presentation:", err);
 				setError(
 					err instanceof Error
 						? err
@@ -147,8 +156,7 @@ export function StoryboardProvider({ children }: StoryboardProviderProps) {
 				toast.success("Storyboard saved successfully");
 				return true;
 			} catch (err) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Failed to save storyboard:", err);
 				// Check if the error is an instance of Error and has a message property
 				const errorMessage =
 					err instanceof Error ? err.message : "Failed to save storyboard";

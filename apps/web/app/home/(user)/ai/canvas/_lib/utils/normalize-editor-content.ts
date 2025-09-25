@@ -42,9 +42,11 @@ export function normalizeEditorContent(
 	// Validate against schema (with safe fallback)
 	try {
 		validateAgainstSchema(parsedContent);
-	} catch (_error) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+	} catch (error) {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development debugging for schema validation errors
+			console.error("Schema validation failed:", error);
+		}
 		// Use safe fallback content if validation fails
 		return createSafeContent();
 	}
@@ -64,9 +66,11 @@ function parseContent(content: unknown): TiptapDocument {
 	if (typeof content === "string") {
 		try {
 			return JSON.parse(content);
-		} catch (_e) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+		} catch (e) {
+			if (process.env.NODE_ENV === "development") {
+				// biome-ignore lint/suspicious/noConsole: Development debugging for JSON parsing errors
+				console.error("Failed to parse content JSON:", e);
+			}
 			return createSafeContent();
 		}
 	}

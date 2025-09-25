@@ -1,16 +1,29 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 import { InvitationsPageObject } from "./invitations.po";
 
 test.describe("Invitations", () => {
-	let page: Page;
 	let invitations: InvitationsPageObject;
+	let slug: string;
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
+	test.beforeEach(async ({ page }) => {
 		invitations = new InvitationsPageObject(page);
 
-		await invitations.setup();
+		// Use pre-existing test user instead of bootstrapUser
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
+
+		await invitations.auth.loginAsUser({ email, password });
+
+		// Create a team for the test
+		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
+		slug = teamName.toLowerCase().replace(/ /g, "-");
+
+		await invitations.teamAccounts.createTeam({
+			teamName,
+			slug,
+		});
 	});
 
 	test("users can delete invites", async () => {
@@ -88,17 +101,27 @@ test.describe("Invitations", () => {
 });
 
 test.describe("Full Invitation Flow", () => {
-	let page: Page;
-	let invitations: InvitationsPageObject;
+	test("should invite users and let users accept an invite", async ({
+		page,
+	}) => {
+		const invitations = new InvitationsPageObject(page);
 
-	test.beforeAll(async ({ browser }) => {
-		page = await browser.newPage();
-		invitations = new InvitationsPageObject(page);
+		// Use pre-existing test user instead of bootstrapUser
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
 
-		await invitations.setup();
-	});
+		await invitations.auth.loginAsUser({ email, password });
 
-	test("should invite users and let users accept an invite", async () => {
+		// Create a team for the test
+		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
+		const slug = teamName.toLowerCase().replace(/ /g, "-");
+
+		await invitations.teamAccounts.createTeam({
+			teamName,
+			slug,
+		});
+
 		await invitations.navigateToMembers();
 
 		const invites = [
@@ -123,17 +146,11 @@ test.describe("Full Invitation Flow", () => {
 		await page.context().clearCookies();
 		await page.reload();
 
-		// Only log in debug mode to avoid Biome linting errors
-		if (process.env.DEBUG) {
-			process.stdout.write(`Finding email to ${firstEmail} ...\n`);
-		}
+		console.log(`Finding email to ${firstEmail} ...`);
 
 		await invitations.auth.visitConfirmEmailLink(firstEmail);
 
-		// Only log in debug mode to avoid Biome linting errors
-		if (process.env.DEBUG) {
-			process.stdout.write(`Signing up with ${firstEmail} ...\n`);
-		}
+		console.log(`Signing up with ${firstEmail} ...`);
 
 		await invitations.auth.signUp({
 			email: firstEmail,
@@ -143,10 +160,7 @@ test.describe("Full Invitation Flow", () => {
 
 		await invitations.auth.visitConfirmEmailLink(firstEmail);
 
-		// Only log in debug mode to avoid Biome linting errors
-		if (process.env.DEBUG) {
-			process.stdout.write(`Accepting invitation as ${firstEmail}\n`);
-		}
+		console.log(`Accepting invitation as ${firstEmail}`);
 
 		await invitations.acceptInvitation();
 

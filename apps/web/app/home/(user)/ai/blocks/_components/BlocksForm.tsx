@@ -26,8 +26,33 @@ import {
 } from "../_config/formContent";
 import { type FormData, useSetupForm } from "./BlocksFormContext";
 
-// Initialize service logger
-// const { getLogger } = createServiceLogger("HOME-(USER)");
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
 
 interface SetupFormProps {
 	userId: string; // For cache namespacing
@@ -65,9 +90,12 @@ function useSuggestions(_userId: string) {
 					]);
 				}
 			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
-				// console.error("Error getting suggestions:", error);
+				logger.error("Error getting suggestions:", {
+					field,
+					presentationType,
+					title,
+					error: _error,
+				});
 				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
 			} finally {
 				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
@@ -238,9 +266,11 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	const router = useRouter();
 
 	useEffect(() => {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
-	}, []);
+		logger.info("BlocksForm component initialized", {
+			userId: _userId,
+			currentQuestion,
+		});
+	}, [_userId, currentQuestion]);
 
 	useEffect(() => {
 		setErrors({});
@@ -256,8 +286,10 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		// Only fetch initial suggestions when entering the field
 		// or when presentation type changes
 		if (currentField === "title" && formData.presentation_type) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Fetching title suggestions", {
+				presentationType: formData.presentation_type,
+				currentField,
+			});
 			void fetchSuggestions("title", formData.presentation_type);
 		}
 	}, [
@@ -272,8 +304,11 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	useEffect(() => {
 		const currentField = currentPath[currentQuestion];
 		if (currentField === "audience" && formData.title && !isFromSuggestion) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Fetching audience suggestions", {
+				title: formData.title,
+				currentField,
+				isFromSuggestion,
+			});
 			void fetchSuggestions("audience", undefined, formData.title);
 		}
 	}, [
@@ -304,14 +339,18 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		};
 
 	const handleSelectChange = async (value: string) => {
-		// TODO: Async logger needed
-		// (await getLogger()).info("Selected presentation type:", { data: value });
+		logger.info("Selected presentation type:", {
+			presentationType: value,
+			previousType: formData.presentation_type,
+		});
 		setFormData({ ...formData, presentation_type: value });
 		setTouchedFields(new Set(touchedFields).add("presentation_type"));
 
 		const isValid = validateField("presentation_type");
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: info
+		logger.info("Presentation type validation result:", {
+			presentationType: value,
+			isValid,
+		});
 
 		if (isValid) {
 			// Small delay to allow path update effect to run
@@ -362,9 +401,10 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 			// Navigate back to AI home page
 			router.push("/home/ai");
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
-			// console.error("Form submission error:", error);
+			logger.error("Form submission error:", {
+				formData,
+				error: _error,
+			});
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -375,14 +415,17 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		try {
 			const currentField = currentPath[currentQuestion];
 			if (currentField) {
-				// TODO: Async logger needed
-				// (await getLogger()).info("Validating field:", { data: currentField });
+				logger.info("Validating field:", {
+					currentField,
+					currentQuestion,
+				});
 
 				const isValid = validateField(currentField);
-				// TODO: Async logger needed
-				// (await getLogger()).info("Field validation result:", {
-				// 	data: { field: currentField, isValid }
-				// });
+				logger.info("Field validation result:", {
+					field: currentField,
+					isValid,
+					currentQuestion,
+				});
 
 				if (isValid) {
 					// Add field to touched fields to ensure error state is shown
@@ -391,24 +434,34 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					// Small delay for UX
 					await new Promise((resolve) => setTimeout(resolve, 300));
 
-					// TODO: Async logger needed
-					// (await getLogger()).info("Moving to next question");
+					logger.info("Moving to next question", {
+						currentField,
+						currentQuestion,
+						nextQuestion: currentQuestion + 1,
+					});
 					handleNext();
 					setErrors({}); // Clear errors after successful navigation
 				} else {
-					// TODO: Async logger needed
-					// (await getLogger()).info("Validation failed, showing error");
+					logger.info("Validation failed, showing error", {
+						currentField,
+						currentQuestion,
+						touchedFields: Array.from(touchedFields),
+					});
 					// Ensure the field is marked as touched to show the error
 					setTouchedFields(new Set(touchedFields).add(currentField));
 				}
 			} else {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Missing current field in handleNextClick", {
+					currentQuestion,
+					currentPath,
+				});
 			}
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
-			// console.error("Form submission error:", error);
+			logger.error("Error in handleNextClick:", {
+				currentQuestion,
+				currentField: currentPath[currentQuestion],
+				error: _error,
+			});
 		} finally {
 			setIsValidating(false);
 		}

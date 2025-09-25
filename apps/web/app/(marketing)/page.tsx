@@ -46,12 +46,12 @@ const defaultHeroImage = "/images/video-hero-preview.avif";
 // Enhanced loading states
 const SectionLoader: React.FC = () => (
 	<div className="animate-pulse space-y-4">
-		<div className="mx-auto h-8 w-2/3 rounded-md bg-gray-200 dark:bg-gray-800" />
-		<div className="mx-auto h-4 w-1/2 rounded-md bg-gray-200 dark:bg-gray-800" />
+		<div className="mx-auto h-8 w-2/3 rounded-md bg-muted dark:bg-muted" />
+		<div className="mx-auto h-4 w-1/2 rounded-md bg-muted dark:bg-muted" />
 		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
-			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
-			<div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-800" />
+			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
+			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
+			<div className="h-64 rounded-lg bg-muted dark:bg-muted" />
 		</div>
 	</div>
 );
@@ -67,15 +67,17 @@ function Home() {
 					>
 						<div className={`${containerBase} ${widths.focused} text-center`}>
 							<Hero
-								title=<span className="text-display leading-tight tracking-tight">
-									{homepageContentConfig.hero.title}{" "}
-									<i className="relative inline-block">
-										faster
-										<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
-									</i>
-								</span>
+								title={
+									<span className="text-display leading-tight tracking-tight">
+										{homepageContentConfig.hero.title}{" "}
+										<i className="relative inline-block">
+											faster
+											<span className="animate-highlight absolute -bottom-2 left-0 h-3 w-full -rotate-1 bg-[#24a9e0]/40 [mask-image:linear-gradient(to_right,transparent,white_4%,white_96%,transparent)]" />
+										</i>
+									</span>
+								}
 								subtitle={
-									<span className="text-body sm:text-body-lg leading-relaxed text-gray-600 dark:text-gray-300">
+									<span className="text-body sm:text-body-lg leading-relaxed text-muted-foreground dark:text-muted-foreground">
 										{homepageContentConfig.hero.subtitle}
 									</span>
 								}
@@ -84,7 +86,7 @@ function Home() {
 						<div className={`${containerBase} ${widths.focused}`}>
 							<Suspense
 								fallback={
-									<div className="h-12 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+									<div className="h-12 animate-pulse rounded-lg bg-muted dark:bg-muted" />
 								}
 							>
 								<CtaPresentationName />
@@ -114,11 +116,11 @@ function Home() {
 			</div>
 
 			{/* Logo Cloud Section */}
-			<div className="bg-background dark:bg-background relative w-full border-y border-gray-100 dark:border-gray-800">
+			<div className="bg-background dark:bg-background relative w-full border-y border-border dark:border-border">
 				<div className={`${containerBase} ${widths.navigation}`}>
 					<Suspense
 						fallback={
-							<div className="h-20 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+							<div className="h-20 animate-pulse rounded-lg bg-muted dark:bg-muted" />
 						}
 					>
 						<LogoCloudMarquee className="[&_div[class*='bg-gradient-to-r']]:from-background [&_div[class*='bg-gradient-to-r']]:via-background/90 [&_div[class*='bg-gradient-to-l']]:from-background [&_div[class*='bg-gradient-to-l']]:via-background/90" />
@@ -134,7 +136,7 @@ function Home() {
 					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 						{homepageContentConfig.sticky.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-gray-600 dark:text-gray-300">
+					<p className="text-body sm:text-body-lg mx-auto max-w-4xl text-center leading-relaxed text-muted-foreground dark:text-muted-foreground">
 						{homepageContentConfig.sticky.subtitle}
 					</p>
 				</div>
@@ -165,13 +167,13 @@ function Home() {
 
 			{/* Features Section */}
 			<section
-				className={`${spacing.section} dark:bg-background bg-gray-50/50`}
+				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 						{homepageContentConfig.features.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">
+					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
 						{homepageContentConfig.features.subtitle}
 					</p>
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
@@ -179,7 +181,7 @@ function Home() {
 							<Suspense
 								key={`feature-${card.title}`}
 								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
 								}
 							>
 								<CardSpotlight
@@ -201,7 +203,7 @@ function Home() {
 					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 						{homepageContentConfig.testimonials.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">
+					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
 						{homepageContentConfig.testimonials.subtitle}
 					</p>
 					<Suspense fallback={<SectionLoader />}>
@@ -212,7 +214,7 @@ function Home() {
 
 			{/* Pricing Section */}
 			<section
-				className={`${spacing.section} dark:bg-background bg-gray-50/50`}
+				className={`${spacing.section} dark:bg-background bg-secondary/50`}
 			>
 				<div className={`${containerBase} ${widths.content}`}>
 					<div
@@ -226,7 +228,7 @@ function Home() {
 								</span>
 							}
 							subheading={
-								<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-gray-600 dark:text-gray-300">
+								<p className="text-body sm:text-body-lg max-w-4xl leading-relaxed text-muted-foreground dark:text-muted-foreground">
 									{homepageContentConfig.pricing.subtitle}
 								</p>
 							}
@@ -255,7 +257,7 @@ function Home() {
 					<h2 className="mb-3 text-center text-3xl leading-snug font-bold sm:mb-4 md:text-4xl lg:text-5xl">
 						{homepageContentConfig.essentialReads.title}
 					</h2>
-					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-gray-600 sm:mb-12 dark:text-gray-300">
+					<p className="text-body sm:text-body-lg mx-auto mb-8 max-w-4xl text-center leading-relaxed text-muted-foreground sm:mb-12 dark:text-muted-foreground">
 						{homepageContentConfig.essentialReads.subtitle}
 					</p>
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
@@ -263,7 +265,7 @@ function Home() {
 							<Suspense
 								key={`post-${post.title}`}
 								fallback={
-									<div className="h-64 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800" />
+									<div className="h-64 animate-pulse rounded-lg bg-muted dark:bg-muted" />
 								}
 							>
 								<BlogPostCard

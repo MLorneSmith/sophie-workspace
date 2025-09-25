@@ -4,11 +4,12 @@
  */
 
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+export default defineProject({
 	test: {
-		// Node.js environment for server-side testing
+		// Project-specific configuration only
+		name: "payload",
 		environment: "node",
 		globals: true,
 
@@ -21,46 +22,17 @@ export default defineConfig({
 			"**/coverage/**",
 		],
 
-		// Performance settings
+		// Project-specific performance settings
 		testTimeout: 15000, // Longer timeout for potential DB operations
 		hookTimeout: 10000,
-		teardownTimeout: 5000,
 
-		// Coverage configuration
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json"],
-			exclude: [
-				"coverage/**",
-				"dist/**",
-				"**/[.]**",
-				"**/*.d.ts",
-				"**/next.config.*",
-				// Payload-specific exclusions
-				"**/payload-types.ts",
-				"**/payload.config.ts", // Configuration files
-				"**/src/init-scripts/**", // Initialization scripts
-			],
-			thresholds: {
-				global: {
-					branches: 60, // Lower thresholds for CMS logic
-					functions: 60,
-					lines: 60,
-					statements: 60,
-				},
-			},
-		},
-
-		// Sequential execution for potential DB tests
-		pool: "threads",
+		// Project-specific thread pool settings (safer for database operations)
 		poolOptions: {
 			threads: {
-				singleThread: true, // Safer for database operations
+				singleThread: true,
+				isolate: true,
 			},
 		},
-
-		// Reporting
-		reporters: ["verbose"],
 	},
 
 	// Path resolution for Payload

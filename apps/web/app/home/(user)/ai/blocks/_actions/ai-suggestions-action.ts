@@ -4,17 +4,18 @@ import {
 	type ChatCompletionOptions,
 	type ChatMessage,
 	ConfigManager,
+	createAudienceSuggestionsConfig,
+	createBalancedOptimizedConfig,
+	createTitleSuggestionsConfig,
 	getChatCompletion,
+	PromptManager,
 } from "@kit/ai-gateway";
-import { createBalancedOptimizedConfig } from "@kit/ai-gateway/src/configs/templates/balanced-optimized";
-import { createAudienceSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/audience-suggestions/config";
-import { createTitleSuggestionsConfig } from "@kit/ai-gateway/src/configs/use-cases/title-suggestions/config";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
 import { enhanceAction } from "@kit/next/actions";
+import { createServiceLogger } from "@kit/shared/logger";
 import { z } from "zod";
 
 // Initialize service logger
-// const { getLogger } = createServiceLogger("HOME-(USER)");
+const { getLogger } = createServiceLogger("AI-SUGGESTIONS");
 
 // Define Zod schema for request validation
 const SuggestionsSchema = z
@@ -132,17 +133,20 @@ function generateMessages(
 
 export const getSuggestions = enhanceAction(
 	async (data: z.infer<typeof SuggestionsSchema>, user) => {
+		const logger = await getLogger();
+
 		try {
 			// Start performance tracking
-			const _startTime = performance.now();
+			const startTime = performance.now();
 
 			// Debug log the request
-			// (await getLogger()).info("Suggestions Request:", {
-			// 	title: data.title,
-			// 	field: data.field,
-			// 	presentationType: data.presentationType,
-			// 	userId: user.id,
-			// });
+			logger.info("Suggestions Request:", {
+				title: data.title,
+				field: data.field,
+				presentationType: data.presentationType,
+				userId: user.id,
+				operation: "get_suggestions",
+			});
 
 			// Create and normalize config
 			const config =
@@ -179,16 +183,16 @@ export const getSuggestions = enhanceAction(
 			} as ChatCompletionOptions);
 
 			// Calculate duration for monitoring
-			const _duration = performance.now() - _startTime;
+			const duration = performance.now() - startTime;
 
 			// Log metrics
-			// TODO: Async logger needed
-			// (await getLogger()).info("AI Request Metrics:", {
-			//		field: data.field,
-			//		duration: _duration,
-			//		userId: user.id,
-			//		status: "success",
-			// });
+			logger.info("AI Request Metrics:", {
+				field: data.field,
+				duration,
+				userId: user.id,
+				status: "success",
+				operation: "get_suggestions",
+			});
 
 			// Parse numbered list response and remove quotes
 			// Access the text content from the response before splitting
@@ -206,21 +210,24 @@ export const getSuggestions = enhanceAction(
 				.filter(Boolean);
 
 			// Debug log the suggestions
-			// TODO: Async logger needed
-			// (await getLogger()).info("Parsed Suggestions:", {
-			//		data: suggestions,
-			// });
+			logger.info("Parsed Suggestions:", {
+				data: suggestions,
+				field: data.field,
+				count: suggestions.length,
+				operation: "parse_suggestions",
+			});
 
 			return {
 				success: true,
 				data: suggestions,
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			//		"Error in suggestions action:",
-			//		{ data: error },
-			// );
+			logger.error("Error in suggestions action:", {
+				error,
+				field: data.field,
+				userId: user.id,
+				operation: "get_suggestions",
+			});
 
 			return {
 				success: false,

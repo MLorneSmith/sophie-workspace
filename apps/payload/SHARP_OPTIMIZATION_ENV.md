@@ -1,6 +1,7 @@
 # Sharp Optimization Environment Variables
 
-This document describes the required environment variables for enabling serverless-optimized Sharp image processing in Payload CMS, including platform-specific recommendations.
+This document describes the required environment variables for enabling serverless-optimized Sharp image processing in
+Payload CMS, including platform-specific recommendations.
 
 ---
 

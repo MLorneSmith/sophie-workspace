@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { analytics } from "@kit/analytics";
+import { createClientLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import { Checkbox } from "@kit/ui/checkbox";
 import {
@@ -15,7 +16,6 @@ import {
 } from "@kit/ui/form";
 import { Input } from "@kit/ui/input";
 import {
-	createValidationFunction,
 	MultiStepForm,
 	MultiStepFormContextProvider,
 	MultiStepFormHeader,
@@ -30,29 +30,31 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import type { Resolver } from "react-hook-form";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import {
-	FormSchemaShape,
-	validateGoalsStep,
-} from "../_lib/onboarding-form.schema";
+import { FormSchemaShape } from "../_lib/onboarding-form.schema";
 import { submitOnboardingFormAction } from "../_lib/server/server-actions";
+
+// Client-side logger for this component
+const { getLogger } = createClientLogger("ONBOARDING-FORM");
 
 // Create the client-side schema using z.object directly to avoid memory issues
 const FormSchema = z.object(FormSchemaShape);
+type FormData = z.infer<typeof FormSchema>;
 
-// Create validation function for each step
-const validation = createValidationFunction({
-	welcome: () => true, // Welcome step has no validation
-	profile: (data) => {
-		return Boolean(data.name && data.name.trim().length >= 2);
-	},
-	goals: (data) => {
-		return validateGoalsStep({ goals: data });
-	},
-	theme: () => true, // Theme step has no validation (has default)
-});
+// Validation functions for each step (not used in current implementation)
+// const _validation = {
+// 	welcome: () => true, // Welcome step has no validation
+// 	profile: (data: FormData) => {
+// 		return Boolean(data.profile?.name && data.profile.name.trim().length >= 2);
+// 	},
+// 	goals: (data: FormData) => {
+// 		return validateGoalsStep({ goals: data.goals });
+// 	},
+// 	theme: () => true, // Theme step has no validation (has default)
+// };
 
 // Dynamically import the Confetti component to avoid SSR issues
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
@@ -72,8 +74,8 @@ export function OnboardingForm() {
 	const formRef = useRef<HTMLDivElement>(null);
 
 	// Initialize form with React Hook Form
-	const form = useForm<z.infer<typeof FormSchema>>({
-		resolver: zodResolver(FormSchema),
+	const form = useForm<FormData>({
+		resolver: zodResolver(FormSchema) as Resolver<FormData>,
 		defaultValues: {
 			welcome: {},
 			profile: { name: "" },
@@ -142,13 +144,20 @@ export function OnboardingForm() {
 				if (result.success) {
 					localStorage.removeItem(STORAGE_KEY);
 					analytics.trackEvent("onboarding_completed", flattenFormData(data));
-					router.push("/home");
+
+					// If server action returned a redirect URL, use it
+					if (result.redirectUrl) {
+						// Use window.location.href for a full page refresh to ensure session is reloaded
+						window.location.href = result.redirectUrl;
+					} else {
+						// Fallback to router push
+						router.push("/home");
+					}
 				} else {
 					throw new Error(result.message || "Failed to submit form");
 				}
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+			} catch (error) {
+				getLogger().error("Onboarding form submission failed", { error });
 				analytics.trackEvent("onboarding_error", {
 					error: "Form submission failed",
 				});
@@ -181,9 +190,10 @@ export function OnboardingForm() {
 			try {
 				const parsedData = JSON.parse(savedData);
 				form.reset(parsedData);
-			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+			} catch (error) {
+				getLogger().error("Failed to parse saved onboarding form data", {
+					error,
+				});
 			}
 		}
 	}, [form.reset]);
@@ -206,7 +216,7 @@ export function OnboardingForm() {
 			<MultiStepForm
 				className="animate-in fade-in-90 zoom-in-95 slide-in-from-bottom-12 mx-auto w-full max-w-3xl space-y-8 rounded-lg border p-4 shadow-sm duration-500 sm:p-6 lg:p-8"
 				form={form}
-				validation={validation}
+				schema={FormSchema}
 				onSubmit={onSubmit}
 			>
 				<MultiStepFormHeader>
@@ -658,16 +668,19 @@ function ThemeStep() {
 												type="radio"
 												className="sr-only"
 												{...field}
+												id={`theme-${style}`}
 												checked={field.value === style}
 												onChange={() => field.onChange(style)}
+												aria-label={`${style.charAt(0).toUpperCase() + style.slice(1)} mode`}
 											/>
 										</FormControl>
 										<div
-											className={`items-center rounded-md border-2 p-1 transition-colors duration-200 ${
+											className={`items-center rounded-md border-2 p-1 transition-colors duration-200 cursor-pointer ${
 												field.value === style
 													? "border-primary hover:border-primary"
 													: "border-muted hover:border-accent"
 											}`}
+											data-theme-option={style}
 										>
 											<Image
 												src={`/images/${style}.webp`}
@@ -712,7 +725,7 @@ function ThemeStep() {
 
 // Complete step component
 function CompleteStep() {
-	const router = useRouter();
+	const _router = useRouter();
 	const { form } = useMultiStepFormContext();
 	const { setTheme } = useTheme();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -741,23 +754,42 @@ function CompleteStep() {
 
 			const isValid = await form.trigger();
 			if (!isValid) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
-				setIsSubmitting(false);
-				return;
+				const errors = form.formState.errors;
+				getLogger().error("Form validation failed on final submission", {
+					formData: finalFormData,
+					errors: errors,
+					formState: form.formState,
+				});
+				// Try to submit anyway since this is the final step
+				// The server will validate the data
 			}
 
 			const result = await submitOnboardingFormAction(finalFormData);
+			getLogger().info("Onboarding submission result", { result });
+
 			if (result.success && result.isComplete === true) {
-				router.push("/home");
+				getLogger().info("Onboarding successful, redirecting to home");
+
+				// Clear local storage to ensure clean state
+				localStorage.removeItem(STORAGE_KEY);
+
+				// Use the redirect URL from the server action
+				if (result.redirectUrl) {
+					window.location.href = result.redirectUrl;
+				} else {
+					// Fallback to hardcoded URL
+					const timestamp = Date.now();
+					window.location.href = `/home?onboarded=${timestamp}`;
+				}
 			} else {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				getLogger().error("Onboarding completion failed", {
+					result,
+					formData: finalFormData,
+				});
 				alert(`Failed to complete onboarding: ${result.message}`);
 			}
-		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+		} catch (error) {
+			getLogger().error("Error during onboarding completion", { error });
 			alert("An error occurred while submitting the form. Please try again.");
 		} finally {
 			setIsSubmitting(false);

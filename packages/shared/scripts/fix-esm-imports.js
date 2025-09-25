@@ -132,7 +132,6 @@ const distDir = join(__dirname, "..", "dist");
 fixEsmImports(distDir)
 	.then(() => {})
 	.catch((error) => {
-		// biome-ignore lint/suspicious/noConsole: Script error logging
 		console.error("Error fixing ESM imports:", error);
 		process.exit(1);
 	});

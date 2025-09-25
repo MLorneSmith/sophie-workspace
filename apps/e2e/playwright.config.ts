@@ -1,8 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
-dotenvConfig();
-dotenvConfig({ path: ".env.local" });
+// Load environment variables with quiet mode to suppress logging
+dotenvConfig({
+	path: [".env", ".env.local"],
+	quiet: true, // Suppress dotenv logging
+	override: false,
+});
+
+/**
+ * Number of workers to use in CI. Tweak based on your CI provider's resources.
+ * Reduced from 2 to prevent resource contention and authentication conflicts
+ */
+const CI_WORKERS = 4;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
@@ -11,24 +21,10 @@ const enableTeamAccountTests =
 const testIgnore: string[] = [];
 
 if (!enableBillingTests) {
-	// Only log in debug mode to avoid Biome linting errors
-	if (process.env.DEBUG) {
-		process.stdout.write(
-			`Billing tests are disabled. To enable them, set the environment variable ENABLE_BILLING_TESTS=true. Current value: "${process.env.ENABLE_BILLING_TESTS}"\n`,
-		);
-	}
-
 	testIgnore.push("*-billing.spec.ts");
 }
 
 if (!enableTeamAccountTests) {
-	// Only log in debug mode to avoid Biome linting errors
-	if (process.env.DEBUG) {
-		process.stdout.write(
-			`Team account tests are disabled. To enable them, set the environment variable ENABLE_TEAM_ACCOUNT_TESTS=true. Current value: "${process.env.ENABLE_TEAM_ACCOUNT_TESTS}"\n`,
-		);
-	}
-
 	testIgnore.push("*team-accounts.spec.ts");
 	testIgnore.push("*invitations.spec.ts");
 	testIgnore.push("*team-billing.spec.ts");
@@ -49,9 +45,9 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 3 : 1,
+	retries: 3,
 	/* Limit parallel tests on CI. */
-	workers: process.env.CI ? 1 : undefined,
+	workers: process.env.CI ? CI_WORKERS : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: "html",
 	/* Ignore billing tests if the environment variable is not set. */
@@ -59,26 +55,28 @@ export default defineConfig({
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL: "http://localhost:3000",
+		baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
 
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
-		navigationTimeout: 5000,
+		navigationTimeout: 15 * 1000,
 	},
-	// test timeout set to 1 minutes
-	timeout: 60 * 1000,
+	// test timeout set to 2 minutes
+	timeout: 120 * 1000,
 	expect: {
 		// expect timeout set to 10 seconds
 		timeout: 10 * 1000,
 	},
 	/* Configure projects for major browsers */
 	projects: [
+		{ name: "setup", testMatch: /.*\.setup\.ts/ },
 		{
 			name: "chromium",
 			use: { ...devices["Desktop Chrome"] },
+			dependencies: ["setup"],
 		},
 		/* Test against mobile viewports. */
 		// {

@@ -14,7 +14,9 @@ export function formatCurrency(params: {
 	locale: string;
 	value: string | number;
 }) {
-	const [lang, region] = params.locale.split("-");
+	// Default to 'en-US' if locale is undefined or empty
+	const locale = params.locale || "en-US";
+	const [lang, region] = locale.split("-");
 
 	return new Intl.NumberFormat(region ?? lang, {
 		style: "currency",

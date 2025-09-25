@@ -40,11 +40,11 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 	return (
 		<>
 			<div className={"flex flex-col items-center gap-1"}>
-				<Heading level={4} className={"tracking-tight"}>
+				<Heading level={1} className={"tracking-tight text-lg lg:text-xl"}>
 					<Trans i18nKey={"auth:signInHeading"} />
 				</Heading>
 
-				<p className={"text-muted-foreground text-sm"}>
+				<p className={"text-foreground text-sm"}>
 					<Trans i18nKey={"auth:signInSubheading"} />
 				</p>
 			</div>
@@ -56,7 +56,13 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 			/>
 
 			<div className={"flex justify-center"}>
-				<Button asChild variant={"link"} size={"sm"}>
+				<Button
+					asChild
+					variant={"link"}
+					size={"sm"}
+					className=""
+					style={{ color: "#1a1a1a", backgroundColor: "#ffffff" }}
+				>
 					<Link href={signUpPath} prefetch={true}>
 						<Trans i18nKey={"auth:doNotHaveAccountYet"} />
 					</Link>

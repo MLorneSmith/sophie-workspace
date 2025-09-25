@@ -4,29 +4,134 @@ on:
   pull_request:
     branches: [main, staging, dev]
     types: [opened, synchronize, reopened]
+  workflow_call:
+    secrets:
+      TURBO_TOKEN:
+        required: false
+      SUPABASE_SERVICE_ROLE_KEY:
+        required: false
+      SUPABASE_DB_WEBHOOK_SECRET:
+        required: false
+      STRIPE_SECRET_KEY:
+        required: false
+      STRIPE_WEBHOOK_SECRET:
+        required: false
+      CODECOV_TOKEN:
+        required: false
+
+# Allow only one validation per PR at a time
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true  # Cancel older runs when new commits are pushed
 
 permissions:
   contents: read
   pull-requests: write
   issues: write
   checks: write
+  security-events: write
+  actions: read
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9.12.0'
+  PNPM_VERSION: '10.14.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
 
 jobs:
+  # Check if we should skip validation for promotion PRs
+  check-skip:
+    name: Check Skip Conditions
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      should-skip: ${{ steps.check.outputs.skip }}
+      skip-reason: ${{ steps.check.outputs.reason }}
+    steps:
+      - name: Check if validation can be skipped
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Skip validation for promotion PRs if source branch recently passed
+          if [[ "${{ github.base_ref }}" == "staging" && "${{ github.head_ref }}" == "dev" ]]; then
+            echo "🔍 Checking if dev branch recently passed validation..."
+            
+            # Get most recent successful workflow run on dev
+            RECENT_RUN=$(gh api \
+              "/repos/${{ github.repository }}/actions/runs?branch=dev&status=success&per_page=1" \
+              --jq '.workflow_runs[0] | select(.conclusion == "success") | {created_at: .created_at}')
+            
+            if [ ! -z "$RECENT_RUN" ]; then
+              RUN_TIME=$(echo $RECENT_RUN | jq -r '.created_at')
+              RUN_AGE=$(( $(date +%s) - $(date -d "$RUN_TIME" +%s) ))
+              
+              # Skip if successful run was less than 30 minutes ago
+              if [ $RUN_AGE -lt 1800 ]; then
+                echo "skip=true" >> $GITHUB_OUTPUT
+                echo "reason=✅ Dev branch passed all checks $((RUN_AGE/60)) minutes ago" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          fi
+          
+          # Similar check for staging->main promotion
+          if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" == "staging" ]]; then
+            echo "🔍 Checking if staging branch recently passed validation..."
+            
+            RECENT_RUN=$(gh api \
+              "/repos/${{ github.repository }}/actions/runs?branch=staging&status=success&per_page=1" \
+              --jq '.workflow_runs[0] | select(.conclusion == "success") | {created_at: .created_at}')
+            
+            if [ ! -z "$RECENT_RUN" ]; then
+              RUN_TIME=$(echo $RECENT_RUN | jq -r '.created_at')
+              RUN_AGE=$(( $(date +%s) - $(date -d "$RUN_TIME" +%s) ))
+              
+              if [ $RUN_AGE -lt 1800 ]; then
+                echo "skip=true" >> $GITHUB_OUTPUT
+                echo "reason=✅ Staging branch passed all checks $((RUN_AGE/60)) minutes ago" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          fi
+          
+          echo "skip=false" >> $GITHUB_OUTPUT
+          echo "reason=Full validation required" >> $GITHUB_OUTPUT
+
+      - name: Comment skip status on PR
+        if: steps.check.outputs.skip == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ✅ Validation Skipped - Promotion PR
+            
+            **Reason**: ${{ steps.check.outputs.reason }}
+            
+            Since the source branch recently passed all validation checks, we're skipping redundant tests for this promotion PR.
+            
+            ✨ **This saves ~15 minutes of CI time!**
+            
+            You can safely merge this PR once any required reviews are complete.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
   # Check what files changed to optimize CI runs
   changes:
     name: Detect Changes
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: check-skip
+    if: needs.check-skip.outputs.should-skip != 'true'
     outputs:
       typescript: ${{ steps.filter.outputs.typescript }}
       markdown: ${{ steps.filter.outputs.markdown }}
       yaml: ${{ steps.filter.outputs.yaml }}
       dependencies: ${{ steps.filter.outputs.dependencies }}
+      docker: ${{ steps.filter.outputs.docker }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -50,41 +155,23 @@ jobs:
               - 'package.json'
               - 'pnpm-lock.yaml'
               - '**/package.json'
+            docker:
+              - '**/Dockerfile*'
+              - '**/*.dockerfile'
+              - '.dockerignore'
 
   # Lint and format check
   lint:
     name: Lint & Format
-    runs-on: ubuntu-latest
-    needs: changes
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Check formatting with Biome
         run: pnpm biome format . --diagnostic-level=error
@@ -98,9 +185,9 @@ jobs:
   # TypeScript type checking
   typecheck:
     name: TypeScript Check
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.typescript == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -112,30 +199,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Cache turbo
         uses: actions/cache@v4
@@ -148,12 +212,12 @@ jobs:
       - name: Run TypeScript check
         run: pnpm typecheck
 
-  # Unit tests
+  # Unit tests 
   test-unit:
     name: Unit Tests
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.typescript == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -165,30 +229,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Cache turbo
         uses: actions/cache@v4
@@ -215,36 +256,13 @@ jobs:
   # YAML linting
   yaml-lint:
     name: YAML Lint
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.yaml == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.yaml == 'true'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: YAML Lint
         run: pnpm lint:yaml
@@ -252,84 +270,289 @@ jobs:
   # Markdown linting
   markdown-lint:
     name: Markdown Lint
-    runs-on: ubuntu-latest
-    needs: changes
-    if: needs.changes.outputs.markdown == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.markdown == 'true'
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup-deps
 
       - name: Markdown Lint
         run: pnpm lint:md
 
-  # Security scan for dependencies
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
+  # Note: Secret scanning is handled by the dedicated trufflehog-scan.yml workflow
+  # to avoid duplicate scans when this workflow is called by dev-deploy.yml and staging-deploy.yml
+
+  # Aikido Security scan
+  aikido-security:
+    name: Aikido Security Scan
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
-    if: needs.changes.outputs.dependencies == 'true'
-    continue-on-error: true # Non-blocking for now
+    # Only run on pull requests with relevant changes
+    if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
-      - name: Security Scan
-        run: |
-          echo "Security scanning will be implemented in Week 3"
-          # TODO: Implement Snyk/TruffleHog
+
+      - name: Run Aikido Security Scan
+        uses: AikidoSec/github-actions-workflow@v1.0.13
+        with:
+          secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+          fail-on-timeout: true
+          fail-on-dependency-scan: true
+          fail-on-sast-scan: false  # Enable when on paid plan
+          fail-on-iac-scan: true    # IaC scanning enabled
+          minimum-severity: 'HIGH'
+          timeout-seconds: 180
+          post-scan-status-comment: 'only_if_new_findings'
+          post-sast-review-comments: 'off'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
 
   # Bundle size check
   bundle-size:
     name: Bundle Size Check
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     if: needs.changes.outputs.typescript == 'true'
     continue-on-error: true # Non-blocking for now
+    env:
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      DO_NOT_TRACK: 1
     steps:
       - uses: actions/checkout@v4
-      - name: Bundle Size Check
+      
+      - uses: ./.github/actions/setup-deps
+      
+      - name: Build applications
+        run: pnpm build
+      
+      - name: Check bundle sizes
         run: |
-          echo "Bundle size checking will be implemented in Week 2"
-          # TODO: Implement bundlewatch
+          echo "📦 Bundle Size Report"
+          echo "==================="
+          
+          # Check web app bundle sizes
+          if [ -d "apps/web/.next" ]; then
+            echo "🌐 Web App (.next):"
+            du -sh apps/web/.next || echo "  No .next directory found"
+            
+            if [ -d "apps/web/.next/static" ]; then
+              echo "  Static assets:"
+              du -sh apps/web/.next/static/* 2>/dev/null || echo "  No static assets found"
+            fi
+          fi
+          
+          # Check payload app bundle sizes  
+          if [ -d "apps/payload/dist" ]; then
+            echo "📝 Payload App (dist):"
+            du -sh apps/payload/dist || echo "  No dist directory found"
+          fi
+          
+          # Check if any bundles are unusually large (basic check)
+          echo "🔍 Large file detection:"
+          find apps/*/dist apps/*/.next -name "*.js" -size +1M 2>/dev/null | head -10 || echo "  No large JS files found"
+          
+          echo "✅ Bundle size check completed (advisory only)"
+
+  # Accessibility testing
+  accessibility-test:
+    name: Accessibility Tests
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, changes]
+    if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
+    continue-on-error: true  # Non-blocking for now - E2E database setup issues
+    env:
+      # E2E Database Configuration
+      E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+      E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      
+      # Chrome flags for Lighthouse in CI environment
+      CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
+      
+      # Legacy environment variables (for backward compatibility)
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      DO_NOT_TRACK: 1
+      PLAYWRIGHT_SERVER_COMMAND: 'pnpm dev'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Install Playwright browsers
+        run: pnpm --filter e2e playwright install --with-deps chromium
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Set up E2E database for accessibility tests
+        run: |
+          cd apps/e2e
+          # Start E2E Supabase instance
+          supabase start
+          
+          # Wait for database to be ready
+          sleep 5
+          
+          # Run database migrations
+          supabase db reset --linked=false
+          
+          # Seed test data
+          supabase db seed
+
+      - name: Run accessibility tests
+        run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
+        continue-on-error: true
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: apps/e2e/accessibility-report/
+          retention-days: 30
+
+      - name: Comment on PR with accessibility results
+        uses: actions/github-script@v7
+        if: always() && github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              // Check if accessibility report exists
+              const reportPath = 'apps/e2e/accessibility-report/index.html';
+              if (fs.existsSync(reportPath)) {
+                const comment = `## 🔍 Accessibility Test Results
+                
+                The accessibility tests have completed. 
+                
+                📊 **Report**: Download the \`accessibility-report\` artifact to view detailed results.
+                
+                💡 **WCAG 2.1 AA Compliance**: This test suite validates against WCAG 2.1 AA standards including:
+                - Color contrast requirements
+                - Keyboard navigation
+                - Screen reader compatibility
+                - Form accessibility
+                - Semantic HTML structure
+                
+                ⚠️ **Note**: Any violations found should be addressed before merging.`;
+                
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+              }
+            } catch (error) {
+              console.log('Could not post accessibility comment:', error);
+            }
+
+  # Docker container security scanning
+  docker-scan:
+    name: Docker Security Scan
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: changes
+    if: needs.changes.outputs.docker == 'true'
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Find Dockerfiles
+        id: dockerfiles
+        run: |
+          # Find all Dockerfiles that were changed
+          DOCKERFILES=$(find . -name "Dockerfile*" -type f | grep -v node_modules | grep -v ".mcp-servers" | head -5)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$DOCKERFILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check if we have critical Dockerfiles
+          if echo "$DOCKERFILES" | grep -E "(apps/payload/Dockerfile|.github/docker/Dockerfile.ci)"; then
+            echo "critical=true" >> $GITHUB_OUTPUT
+          else
+            echo "critical=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Scan Dockerfile configurations
+        if: steps.dockerfiles.outputs.files != ''
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-config.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'  # Don't fail on config issues
+
+      - name: Upload config scan results
+        if: steps.dockerfiles.outputs.files != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-config.sarif'
+          category: 'dockerfile-security'
+
+      - name: Fail if critical Dockerfiles have issues
+        if: steps.dockerfiles.outputs.critical == 'true'
+        run: |
+          echo "🔍 Scanning critical Dockerfiles for security issues..."
+          trivy config . --severity HIGH,CRITICAL --exit-code 1 || {
+            echo "❌ Critical Dockerfile security issues found!"
+            echo "Please fix HIGH and CRITICAL issues before merging."
+            exit 1
+          }
 
   # Final status check
   pr-status:
     name: PR Status Check
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck, test-unit, yaml-lint, markdown-lint]
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [check-skip, lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test, docker-scan]
     if: always()
     steps:
       - name: Check status
         run: |
+          # If validation was skipped, report success
+          if [[ "${{ needs.check-skip.outputs.should-skip }}" == "true" ]]; then
+            echo "✅ Validation skipped - promotion PR with recent successful checks"
+            echo "${{ needs.check-skip.outputs.skip-reason }}"
+            exit 0
+          fi
+          
+          # Otherwise, check individual job results
           if [[ "${{ needs.lint.result }}" == "failure" ]] || \
              [[ "${{ needs.typecheck.result }}" == "failure" ]] || \
              [[ "${{ needs.test-unit.result }}" == "failure" ]] || \
              [[ "${{ needs.yaml-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.markdown-lint.result }}" == "failure" ]]; then
+             [[ "${{ needs.markdown-lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.aikido-security.result }}" == "failure" ]] || \
+             [[ "${{ needs.docker-scan.result }}" == "failure" ]]; then
             echo "❌ PR validation failed"
             exit 1
+          elif [[ "${{ needs.accessibility-test.result }}" == "failure" ]]; then
+            echo "⚠️ Accessibility tests failed - please review violations"
+            echo "✅ Core PR validation passed (accessibility is advisory)"
           else
             echo "✅ PR validation passed"
           fi

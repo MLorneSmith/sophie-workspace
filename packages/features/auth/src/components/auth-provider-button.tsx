@@ -13,6 +13,7 @@ export function AuthProviderButton({
 	return (
 		<Button
 			className={"flex w-full gap-x-3 text-center"}
+			style={{ backgroundColor: "#ffffff" }}
 			data-provider={providerId}
 			data-test={"auth-provider-button"}
 			variant={"outline"}
@@ -20,7 +21,9 @@ export function AuthProviderButton({
 		>
 			<OauthProviderLogoImage providerId={providerId} />
 
-			<span>{children}</span>
+			<span className="font-medium" style={{ color: "#1a1a1a" }}>
+				{children}
+			</span>
 		</Button>
 	);
 }

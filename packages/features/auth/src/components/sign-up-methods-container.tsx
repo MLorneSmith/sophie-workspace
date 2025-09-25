@@ -69,7 +69,7 @@ export function SignUpMethodsContainer(props: {
 					</div>
 
 					<div className="relative flex justify-center text-xs uppercase">
-						<span className="bg-background text-muted-foreground px-2">
+						<span className="bg-background text-foreground px-2">
 							<Trans i18nKey="auth:orContinueWith" />
 						</span>
 					</div>

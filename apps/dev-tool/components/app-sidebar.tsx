@@ -13,6 +13,7 @@ import { isRouteActive } from "@kit/ui/utils";
 
 import {
 	BoltIcon,
+	ComponentIcon,
 	LanguagesIcon,
 	LayoutDashboardIcon,
 	MailIcon,
@@ -30,6 +31,11 @@ const routes = [
 		label: "Environment Variables",
 		path: "/variables",
 		Icon: BoltIcon,
+	},
+	{
+		label: "Components",
+		path: "/components",
+		Icon: ComponentIcon,
 	},
 	{
 		label: "Emails",

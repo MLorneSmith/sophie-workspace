@@ -96,7 +96,7 @@ export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
 										cursor: "crosshair",
 										WebkitTapHighlightColor: "transparent",
 										boxShadow: `
-                      inset -1px -1px 0 0 rgba(148, 163, 184, 0.4)
+                      inset -1px -1px 0 0 rgba(0, 0, 0, 0.1)
                     `,
 									}}
 								>
@@ -108,15 +108,7 @@ export const BoxesCore = ({ className, children, ...rest }: BoxesProps) => {
 											strokeWidth="1"
 											stroke="currentColor"
 											aria-hidden="true"
-											style={{
-												position: "absolute",
-												left: "-12px",
-												top: "-12px",
-												height: "24px",
-												width: "24px",
-												pointerEvents: "none",
-												color: "rgba(148, 163, 184, 0.45)",
-											}}
+											className="absolute -left-3 -top-3 h-6 w-6 pointer-events-none text-muted-foreground/60"
 										>
 											<path
 												strokeLinecap="round"

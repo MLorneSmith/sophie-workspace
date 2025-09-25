@@ -45,6 +45,7 @@ export function PasswordSignInForm({
 			<form
 				className={"flex w-full flex-col gap-y-4"}
 				onSubmit={form.handleSubmit(onSubmit)}
+				data-testid="auth-sign-in-form"
 			>
 				<FormField
 					control={form.control}
@@ -58,6 +59,7 @@ export function PasswordSignInForm({
 							<FormControl>
 								<Input
 									data-test={"email-input"}
+									data-testid="sign-in-email"
 									required
 									type="email"
 									placeholder={t("emailPlaceholder")}
@@ -83,6 +85,7 @@ export function PasswordSignInForm({
 								<Input
 									required
 									data-test={"password-input"}
+									data-testid="sign-in-password"
 									type="password"
 									placeholder={""}
 									{...field}
@@ -110,6 +113,7 @@ export function PasswordSignInForm({
 
 				<Button
 					data-test="auth-submit-button"
+					data-testid="sign-in-button"
 					className={"group w-full"}
 					type="submit"
 					disabled={loading || redirecting}
@@ -134,6 +138,7 @@ export function PasswordSignInForm({
 								className={
 									"zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500"
 								}
+								aria-hidden="true"
 							/>
 						</span>
 					</If>

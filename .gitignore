@@ -2,14 +2,22 @@
 
 # dependencies
 node_modules
+**/node_modules
+apps/*/node_modules
+packages/*/node_modules
 .pnp
 .pnp.js
+.pnpm-store
+.pnpm
+**/.pnpm
 
 # testing
 coverage
+test-results/
 
 # next.js
 .next/
+.next.old/
 out/
 next-env.d.ts
 
@@ -33,10 +41,40 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
+.env.test.locked
+.env.docker
 packages/*/.env
+apps/*/.env
+**/.env
+**/.env.test
+**/.env.test.locked
+*.env
 
 # MCP configuration (contains tokens)
 .mcp.json
+.mcp.local.json
+
+# Claude Code sensitive/local files
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/settings/permissions.json
+.claude/sessions/
+.claude/z.archive/
+.claude/context/testing/environment/password-synchronization.md
+# Note: .claude/scratch/ is now tracked (contains docs, not secrets)
+# Note: .claude/settings/environment.json is now tracked (non-sensitive)
+apps/e2e/.claude/
+reports/.claude/
+
+# Temporary and debug files
+temp/
+temp-*/
+test-*/
+debug-*.js
+test-*.js
+*-test.js
+*-debug.js
 
 # vercel
 .vercel
@@ -79,3 +117,8 @@ tasks.json
 
 # ts-node cache
 node-compile-cache/
+
+
+# Claude backup files
+.claude-backup-*.tar.gz
+*.backup

@@ -1,15 +1,23 @@
 {
-	"name": "claude-issue-sync",
+	"name": "@claude/scripts",
 	"version": "1.0.0",
+	"private": true,
 	"type": "module",
-	"description": "Auto-sync service for GitHub issues to local cache",
-	"main": "issue-sync.js",
+	"description": "Claude development scripts and utilities",
 	"scripts": {
-		"sync": "node issue-sync.js",
-		"test": "node test-sync.js"
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint .",
+		"format": "biome format .",
+		"format:fix": "biome format --write ."
 	},
-	"dependencies": {},
 	"engines": {
 		"node": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.3.1",
+		"typescript": "^5.9.2"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1"
 	}
 }

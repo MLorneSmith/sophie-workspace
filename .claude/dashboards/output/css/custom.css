@@ -1,0 +1,12 @@
+/* CCMP Dashboard Custom Styles */
+@media print {
+	.no-print {
+		display: none !important;
+	}
+	body {
+		font-size: 12pt;
+	}
+	.page-break {
+		page-break-after: always;
+	}
+}

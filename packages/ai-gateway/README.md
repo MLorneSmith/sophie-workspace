@@ -1,6 +1,7 @@
 # Portkey AI Gateway Integration
 
-This package provides a secure and type-safe integration with the Portkey AI Gateway, allowing server-side access to various AI providers through a unified interface.
+This package provides a secure and type-safe integration with the Portkey AI Gateway,
+allowing server-side access to various AI providers through a unified interface.
 
 ## Key Implementation Choices
 
@@ -92,7 +93,7 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
 1. **Directory Structure**
 
-   ```
+   ```text
    src/configs/
    ├── templates/       # Optimization-focused config templates
    ├── use-cases/      # Task-specific configs
@@ -199,7 +200,7 @@ This package provides a secure and type-safe integration with the Portkey AI Gat
 
 1. **Directory Structure**
 
-   ```
+   ```text
    src/prompts/
    ├── messages/          # Message components
    │   ├── system/       # System role definitions

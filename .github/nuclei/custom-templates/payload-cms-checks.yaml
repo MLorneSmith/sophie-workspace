@@ -1,0 +1,49 @@
+id: payload-cms-security-checks
+info:
+  name: Payload CMS Security Check
+  author: SlideHeroes Security
+  severity: high
+  description: Checks for Payload CMS misconfigurations and exposed admin panels
+  tags: cms,payloadcms,admin,exposure
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/admin"
+      - "{{BaseURL}}/api/admins"
+      - "{{BaseURL}}/api/users"
+      - "{{BaseURL}}/api/globals"
+      - "{{BaseURL}}/api/payload-preferences"
+      - "{{BaseURL}}/api/access"
+      - "{{BaseURL}}/_payload"
+      
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Payload Admin"
+          - "payload-config"
+          - "\"serverURL\":"
+          - "\"adminURL\":"
+          - "\"collection\":\"users\""
+        condition: or
+        
+      - type: status
+        status:
+          - 200
+          - 401
+        condition: and
+        
+      - type: word
+        part: header
+        words:
+          - "payload"
+        condition: or
+        
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - '"email":\s*"([^"]+)"'
+          - '"adminURL":\s*"([^"]+)"'

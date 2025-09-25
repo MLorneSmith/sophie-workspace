@@ -1,4 +1,4 @@
-import { createServiceLogger, type Logger } from "@kit/shared/logger";
+import { createServiceLogger } from "@kit/shared/logger";
 import pptxgen from "pptxgenjs";
 
 // Import Logger from the root
@@ -12,6 +12,10 @@ import type {
 	SlideContentFormatting,
 	StoryboardData,
 } from "../../types";
+
+export type { PositionMap } from "../../constants/layout-positions";
+// Re-export layout positions for backward compatibility
+export { LAYOUT_POSITIONS } from "../../constants/layout-positions";
 
 // Removed unused types - ChartType, ChartData, and ChartOptions were not being used
 
@@ -100,95 +104,13 @@ declare module "pptxgenjs" {
 	}
 }
 
-// Template positions for different elements in different slide layouts
-export interface PositionMap {
-	title: {
-		x: number;
-		y: number;
-		w: number;
-		h: number;
-		fontSize: number;
-		align: string;
-	};
-	subheadline1: { x: number; y: number; w: number; h: number };
-	subheadline2?: { x: number; y: number; w: number; h: number };
-	content1: { x: number; y: number; w: number; h: number };
-	content2?: { x: number; y: number; w: number; h: number };
-	[key: string]:
-		| {
-				// Add index signature
-				x: number;
-				y: number;
-				w: number;
-				h: number;
-				fontSize?: number; // Make optional as not all positions have it
-				align?: string; // Make optional as not all positions have it
-		  }
-		| undefined; // Allow undefined for keys that don't exist
-}
-
-// Layout definitions for different slide types
-export const LAYOUT_POSITIONS: Record<string, PositionMap> = {
-	title: {
-		title: { x: 0.5, y: 1.0, w: 9, h: 1.5, fontSize: 44, align: "center" },
-		subheadline1: { x: 0.5, y: 3.0, w: 9, h: 1 },
-		content1: { x: 0.5, y: 4.5, w: 9, h: 1.5 },
-	},
-	section: {
-		title: { x: 0.5, y: 2.5, w: 9, h: 1.5, fontSize: 40, align: "center" },
-		subheadline1: { x: 0.5, y: 4.0, w: 9, h: 1 },
-		content1: { x: 0.5, y: 4.0, w: 9, h: 1.5 },
-	},
-	"one-column": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 9, h: 4 },
-	},
-	"two-column": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.25, h: 0.4 },
-		subheadline2: { x: 5.25, y: 1.2, w: 4.25, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.25, h: 4 },
-		content2: { x: 5.25, y: 1.8, w: 4.25, h: 4 },
-	},
-	"bullet-list": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 9, h: 0.5 },
-	},
-	chart: {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 9, h: 0.4 },
-		content1: { x: 1.0, y: 1.8, w: 8, h: 4 },
-	},
-	"image-text": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 5.0, y: 1.2, w: 4.5, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.0, h: 4 }, // Image position
-		content2: { x: 5.0, y: 1.8, w: 4.5, h: 4 }, // Text position
-	},
-	"text-image": {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.5, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.5, h: 4 }, // Text position
-		content2: { x: 5.5, y: 1.8, w: 4.0, h: 4 }, // Image position
-	},
-	comparison: {
-		title: { x: 0.5, y: 0.6, w: 9, h: 0.5, fontSize: 24, align: "left" },
-		subheadline1: { x: 0.5, y: 1.2, w: 4.25, h: 0.4 },
-		subheadline2: { x: 5.25, y: 1.2, w: 4.25, h: 0.4 },
-		content1: { x: 0.5, y: 1.8, w: 4.25, h: 4 },
-		content2: { x: 5.25, y: 1.8, w: 4.25, h: 4 },
-	},
-};
-
 /**
  * PptxGenerator class for handling PowerPoint generation from storyboard data
  * using PptxGenJS library
  */
 export class PptxGenerator {
 	private pptx: pptxgen;
-	private logger: Logger;
+	private logger: import("@kit/shared/logger").EnhancedLogger;
 
 	/**
 	 * Initializes a new PptxGenerator instance and defines slide templates
@@ -198,8 +120,8 @@ export class PptxGenerator {
 		this.defineSlideTemplates();
 
 		// Initialize logger using createServiceLogger for synchronous access
-		const { getLogger } = createServiceLogger("PPTX-GENERATOR");
-		this.logger = getLogger();
+		const serviceLogger = createServiceLogger("PPTX-GENERATOR");
+		this.logger = serviceLogger.getLogger();
 	}
 
 	/**
@@ -529,13 +451,21 @@ export class PptxGenerator {
 
 			case "chart":
 				if (content.chartType && content.chartData) {
-					const chartData = this.parseChartData(content);
+					const parsedData = this.parseChartData(content);
+					// Extract chart data array and options separately
+					const chartDataArray = (parsedData.chartData as unknown[]) || [];
 					const chartOptions = {
-						...chartData,
 						x: position.x,
 						y: position.y,
 						w: position.w,
 						h: position.h,
+						chartColors: parsedData.chartColors,
+						title: parsedData.title,
+						showTitle: parsedData.showTitle,
+						showLegend: parsedData.showLegend,
+						legendPos: parsedData.legendPos,
+						dataLabelPosition: parsedData.dataLabelPosition,
+						showDataLabels: parsedData.showDataLabels,
 					};
 
 					try {
@@ -544,6 +474,7 @@ export class PptxGenerator {
 							case "bar":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -551,6 +482,7 @@ export class PptxGenerator {
 							case "line":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.line,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -558,6 +490,7 @@ export class PptxGenerator {
 							case "pie":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.pie,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -565,6 +498,7 @@ export class PptxGenerator {
 							case "area":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.area,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -572,6 +506,7 @@ export class PptxGenerator {
 							case "scatter":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.scatter,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -579,6 +514,7 @@ export class PptxGenerator {
 							case "bubble":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bubble,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -586,6 +522,7 @@ export class PptxGenerator {
 							case "radar":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.radar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -593,6 +530,7 @@ export class PptxGenerator {
 							case "doughnut":
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.doughnut,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -601,6 +539,7 @@ export class PptxGenerator {
 								// Default to bar chart if type is unknown
 								(slide as unknown as PptxSlide).addChart(
 									(this.pptx as unknown as pptxgen).ChartType.bar,
+									chartDataArray,
 									chartOptions,
 								);
 								break;
@@ -608,10 +547,9 @@ export class PptxGenerator {
 					} catch (error: unknown) {
 						const errorMessage =
 							error instanceof Error ? error.message : String(error);
-						this.logger.error({
+						this.logger.error("Error adding chart to slide", {
 							chartType: content.chartType,
 							error: errorMessage,
-							message: "Error adding chart to slide",
 						});
 
 						// Add error text instead of failing completely
@@ -644,10 +582,9 @@ export class PptxGenerator {
 					} catch (error: unknown) {
 						const errorMessage =
 							error instanceof Error ? error.message : String(error);
-						this.logger.error({
+						this.logger.error("Error adding image to slide", {
 							imageUrl: content.imageUrl,
 							error: errorMessage,
-							message: "Error adding image to slide",
 						});
 
 						// Add error text instead of failing completely

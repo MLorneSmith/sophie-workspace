@@ -1,9 +1,11 @@
 import "server-only";
 
+import { createServiceLogger } from "@kit/shared/logger";
 import type { SupabaseClient } from "@supabase/supabase-js";
-
 import { loadTeamWorkspace } from "~/home/[account]/_lib/server/team-account-workspace.loader";
 import type { Database } from "~/lib/database.types";
+
+const { getLogger } = createServiceLogger("MEMBERS-PAGE-LOADER");
 
 /**
  * Load data for the members page
@@ -50,8 +52,12 @@ async function loadAccountMembers(
 	});
 
 	if (error) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+		const logger = await getLogger();
+		logger.error("Error loading account members", {
+			operation: "load_account_members",
+			error,
+			account,
+		});
 		throw error;
 	}
 
@@ -72,8 +78,12 @@ async function loadInvitations(
 	});
 
 	if (error) {
-		// TODO: Async logger needed
-		// TODO: Fix logger call - was: error
+		const logger = await getLogger();
+		logger.error("Error loading account invitations", {
+			operation: "load_account_invitations",
+			error,
+			account,
+		});
 		throw error;
 	}
 

@@ -1,7 +1,36 @@
 "use client";
 
-import { createServiceLogger } from "@kit/shared/logger";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
+
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
+
+import type { SurveyQuestion } from "@kit/cms-types";
 import { Card } from "@kit/ui/card";
 import { Progress } from "@kit/ui/progress";
 import { useQuery } from "@tanstack/react-query";
@@ -11,8 +40,7 @@ import type { Database } from "~/lib/database.types";
 import { saveResponseAction } from "../../../../assessment/_lib/server/server-actions";
 import { QuestionCard } from "../../../../assessment/survey/_components/question-card";
 
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
+// Client component uses development-gated console wrapper above
 
 // Define proper types for survey data
 type PayloadSurvey = {
@@ -74,9 +102,7 @@ export function SurveyComponent({
 	const { data: questionsData, isLoading: isQuestionsLoading } = useQuery({
 		queryKey: ["survey-questions", survey?.id],
 		queryFn: async () => {
-			(await getLogger()).info(
-				`Processing questions for survey ID: ${survey?.id}`,
-			);
+			logger.info(`Processing questions for survey ID: ${survey?.id}`);
 
 			// First check if questions are already included in the survey object
 			if (
@@ -84,8 +110,10 @@ export function SurveyComponent({
 				Array.isArray(survey.questions) &&
 				survey.questions.length > 0
 			) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Survey has questions array", {
+					count: survey.questions.length,
+					surveyId: survey.id,
+				});
 
 				// Check if questions are fully populated with text
 				const hasFullyPopulatedQuestions = survey.questions.some(
@@ -93,30 +121,27 @@ export function SurveyComponent({
 				);
 
 				if (hasFullyPopulatedQuestions) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Questions are fully populated, using existing data");
 					return survey.questions;
 				}
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Questions need to be fetched - only references available");
 			}
 
 			// If questions aren't already available or are just references, fetch them
 			try {
 				// If we don't have a survey ID, we can't fetch questions
 				if (!survey?.id) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: warn
+					logger.warn("No survey ID available to fetch questions");
 					return [];
 				}
 
 				const { getSurveyQuestions } = await import("@kit/cms/payload");
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Fetching survey questions", { surveyId: survey.id });
 
 				const data = await getSurveyQuestions(survey.id);
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Survey questions response", {
+					questionCount: data.docs?.length || 0,
+				});
 
 				// If we got questions, return them
 				if (data.docs?.length > 0) {
@@ -125,20 +150,17 @@ export function SurveyComponent({
 
 				// If we didn't get questions but have references, try to use those
 				if (survey?.questions?.length && !data.docs?.length) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("No docs in response, using survey's existing questions");
 					return survey.questions;
 				}
 
 				return [];
 			} catch (_error) {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.error("Failed to fetch survey questions", _error);
 
 				// If we have any questions in the survey object, use those as fallback
 				if (survey?.questions?.length) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Using survey questions as fallback after error");
 					return survey.questions;
 				}
 
@@ -151,14 +173,18 @@ export function SurveyComponent({
 	// Set questions when data is loaded
 	useEffect(() => {
 		if (questionsData && questionsData.length > 0) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Questions loaded successfully", {
+				count: questionsData.length,
+				surveyId: survey.id,
+			});
 
 			// Transform questions to ensure they have the right format
 			const transformedQuestions = questionsData.map(
 				(q: NonNullable<PayloadSurvey["questions"]>[0]) => {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Transforming question", {
+						questionId: q.id,
+						type: q.type,
+					});
 
 					// Ensure each question has the required properties
 					const question: Question = {
@@ -217,8 +243,10 @@ export function SurveyComponent({
 						question.options = [];
 					}
 
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: info
+					logger.info("Question transformed", {
+						questionId: question.id,
+						optionsCount: question.options.length,
+					});
 					return question;
 				},
 			);
@@ -228,33 +256,32 @@ export function SurveyComponent({
 				(a, b) => (a.position || 0) - (b.position || 0),
 			);
 
-			// TODO: Async logger needed
-			// (await getLogger()).info(
-			// `Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
-			// );
+			logger.info(
+				`Survey ${survey?.id} (${survey?.title || survey?.slug}): Processed ${sortedQuestions.length} questions`,
+			);
 
 			// Log each question for debugging
-			for (const [_index, _q] of sortedQuestions.entries()) {
-				// TODO: Async logger needed
-				// (await getLogger()).info(
-				// `Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
-				// );
+			for (const [index, q] of sortedQuestions.entries()) {
+				logger.info(
+					`Question ${index + 1}: ${q.text} (ID: ${q.id}), Type: ${q.type}, Options: ${q.options.length}`,
+				);
 			}
 
 			setQuestions(sortedQuestions);
 		} else {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: warn
+			logger.warn("No questions data available, trying fallback options");
 
 			// Special handling for Three Quick Questions survey
 			if (survey?.id === "6f463bef-d7a0-4e5a-b0fa-a789b5d6f0e0") {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info(
+					"Using hardcoded questions for Three Quick Questions survey",
+				);
 
 				// Create hardcoded questions based on database query
 				const hardcodedQuestions = [
 					{
 						id: "61a8e0b5-c600-49cc-9b18-6ba0f158bed3",
+						title: "Goals Question",
 						text: "Fill in the blank: After taking this course, I will be able to ________________________.",
 						type: "text_field",
 						category: "goals",
@@ -263,6 +290,7 @@ export function SurveyComponent({
 					},
 					{
 						id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d",
+						title: "Experience Level",
 						text: "How experienced do you feel in this course's subject matter?",
 						type: "scale",
 						category: "experience",
@@ -292,6 +320,7 @@ export function SurveyComponent({
 					},
 					{
 						id: "e0b335b6-dde9-4117-963b-c482b3ae5595",
+						title: "Roadblocks",
 						text: "What's the biggest roadblock you have with this course's subject matter right now?",
 						type: "text_field",
 						category: "roadblocks",
@@ -300,12 +329,13 @@ export function SurveyComponent({
 					},
 				];
 
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
+				logger.info("Set hardcoded questions", {
+					count: hardcodedQuestions.length,
+				});
 				setQuestions(hardcodedQuestions);
 			}
 		}
-	}, [questionsData, survey?.id]);
+	}, [questionsData, survey?.id, survey?.title, survey?.slug]);
 
 	// Check if user has already completed this survey
 	useEffect(() => {
@@ -403,7 +433,23 @@ export function SurveyComponent({
 					{currentQuestion && (
 						<QuestionCard
 							key={currentQuestion.id}
-							question={currentQuestion}
+							question={
+								{
+									...currentQuestion,
+									questionSlug: currentQuestion.id,
+									type: currentQuestion.type as
+										| "multiple_choice"
+										| "text_field"
+										| "scale",
+									options: currentQuestion.options.map((opt) => ({
+										option: opt.text,
+										id: opt.id,
+									})),
+									questionspin: "Positive",
+									updatedAt: new Date().toISOString(),
+									createdAt: new Date().toISOString(),
+								} as SurveyQuestion
+							}
 							onAnswer={handleAnswer}
 							isLoading={isPending}
 						/>

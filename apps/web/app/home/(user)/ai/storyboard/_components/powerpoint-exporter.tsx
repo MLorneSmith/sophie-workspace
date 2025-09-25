@@ -4,9 +4,8 @@ import { getLogger } from "@kit/shared/logger";
 import { Button } from "@kit/ui/button";
 import { useState } from "react";
 
+import { generatePowerPointAction } from "../_lib/actions/powerpoint-actions";
 import { useStoryboard } from "../_lib/providers/storyboard-provider";
-// Assuming PptxGenerator is located here based on common project structure
-import { PptxGenerator } from "../_lib/services/powerpoint/pptx-generator";
 
 export function PowerPointExporter() {
 	const { storyboard } = useStoryboard();
@@ -24,15 +23,21 @@ export function PowerPointExporter() {
 		}
 
 		try {
-			// Instantiate the generator
-			const generator = new PptxGenerator();
+			// Call the server action to generate PowerPoint
+			const result = await generatePowerPointAction(storyboard);
 
-			// Generate the PowerPoint file (assuming generate method returns a Buffer)
-			// The PptxGenerator class details mention a generateFromStoryboard method.
-			const pptxBuffer = await generator.generateFromStoryboard(storyboard);
+			if (!result.success) {
+				throw new Error(result.error || "Failed to generate PowerPoint");
+			}
 
-			// Convert Buffer to Blob for download
-			const pptxBlob = new Blob([pptxBuffer], {
+			// Convert base64 to blob for download
+			const binaryData = atob(result.data as string);
+			const bytes = new Uint8Array(binaryData.length);
+			for (let i = 0; i < binaryData.length; i++) {
+				bytes[i] = binaryData.charCodeAt(i);
+			}
+
+			const pptxBlob = new Blob([bytes], {
 				type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 			});
 
@@ -40,7 +45,9 @@ export function PowerPointExporter() {
 			const url = URL.createObjectURL(pptxBlob);
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = "presentation.pptx"; // Default filename
+			a.download = storyboard.title
+				? `${storyboard.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pptx`
+				: "presentation.pptx";
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);

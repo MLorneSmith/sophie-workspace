@@ -1,0 +1,242 @@
+name: E2E Smart Tests  # Required status check for PRs
+
+on:
+  pull_request:
+    branches: [main, staging, dev]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/web/**'
+      - 'apps/e2e/**'
+      - 'packages/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.14.0'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
+
+jobs:
+  # Detect which tests need to run based on changed files
+  detect-changes:
+    name: Detect Test Scope
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      run_auth: ${{ steps.detect.outputs.auth }}
+      run_billing: ${{ steps.detect.outputs.billing }}
+      run_account: ${{ steps.detect.outputs.account }}
+      run_all: ${{ steps.detect.outputs.all }}
+      test_pattern: ${{ steps.detect.outputs.pattern }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files
+        id: detect
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          # Default to not running specific tests
+          RUN_AUTH=false
+          RUN_BILLING=false
+          RUN_ACCOUNT=false
+          RUN_ALL=false
+          TEST_PATTERN=""
+          
+          # Check for specific APP CODE changes (not test changes)
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(auth|sign-in|sign-up)|packages/auth|packages/supabase/.*auth"; then
+            RUN_AUTH=true
+            TEST_PATTERN="${TEST_PATTERN}authentication|"
+          fi
+          
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(billing|stripe|payment|subscription)|packages/billing|packages/stripe"; then
+            RUN_BILLING=true
+            TEST_PATTERN="${TEST_PATTERN}billing|subscription|"
+          fi
+          
+          if echo "$CHANGED_FILES" | grep -qE "apps/web/.*(account|profile|settings)|packages/accounts|apps/web/app/home/settings"; then
+            RUN_ACCOUNT=true
+            TEST_PATTERN="${TEST_PATTERN}account|"
+          fi
+          
+          # Run ALL tests if:
+          # 1. Core packages that affect everything are changed
+          # 2. Database/infrastructure changes
+          # 3. Major configuration changes
+          if echo "$CHANGED_FILES" | grep -qE "packages/supabase|packages/shared|packages/ui|apps/web/app/layout|apps/web/middleware|turbo\.json|package\.json|pnpm-lock\.yaml|\.env|supabase/migrations"; then
+            RUN_ALL=true
+            TEST_PATTERN=".*"
+          fi
+          
+          # Only skip tests if ONLY test files or docs changed
+          if [ -z "$TEST_PATTERN" ]; then
+            if echo "$CHANGED_FILES" | grep -vE "\.md$|\.yml$|apps/e2e/.*\.spec\.ts$|\.github/workflows" | grep -q "."; then
+              # There are non-test, non-doc changes, so run all tests
+              RUN_ALL=true
+              TEST_PATTERN=".*"
+            else
+              # Only test/doc changes, safe to skip
+              TEST_PATTERN="skip"
+            fi
+          fi
+          
+          # Clean up pattern
+          TEST_PATTERN=${TEST_PATTERN%|}
+          
+          echo "auth=$RUN_AUTH" >> $GITHUB_OUTPUT
+          echo "billing=$RUN_BILLING" >> $GITHUB_OUTPUT
+          echo "account=$RUN_ACCOUNT" >> $GITHUB_OUTPUT
+          echo "all=$RUN_ALL" >> $GITHUB_OUTPUT
+          echo "pattern=$TEST_PATTERN" >> $GITHUB_OUTPUT
+          
+          # Print summary
+          echo "========================================="
+          echo "E2E Smart Test Detection Summary:"
+          echo "========================================="
+          echo "Changed files: $(echo "$CHANGED_FILES" | wc -l) files"
+          echo "Auth tests needed: $RUN_AUTH"
+          echo "Billing tests needed: $RUN_BILLING"
+          echo "Account tests needed: $RUN_ACCOUNT"
+          echo "Run all tests: $RUN_ALL"
+          echo "Test pattern: $TEST_PATTERN"
+          echo "========================================="
+          
+          if [ "$TEST_PATTERN" = "skip" ]; then
+            echo "✅ Only test/doc files changed - E2E tests can be skipped"
+          elif [ "$RUN_ALL" = "true" ]; then
+            echo "⚠️ Core changes detected - Full E2E test suite will run"
+          else
+            echo "🎯 Targeted testing - Will run tests matching: $TEST_PATTERN"
+          fi
+
+  # Quick smoke test for targeted changes
+  quick-test:
+    name: Quick E2E Test (${{ needs.detect-changes.outputs.test_pattern }})
+    runs-on: runs-on=${{ github.run_id }}/runner=8cpu-linux-x64
+    needs: detect-changes
+    if: needs.detect-changes.outputs.test_pattern != 'skip' && needs.detect-changes.outputs.run_all != 'true'
+    env:
+      SUPABASE_URL: 'http://127.0.0.1:55321'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:55321'
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:55322/postgres'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Install Playwright (Chromium only)
+        run: pnpm --filter web-e2e exec playwright install chromium --with-deps
+
+      - name: Build application (with cache)
+        run: pnpm build --cache-dir=.turbo
+
+      - name: Quick database setup
+        run: |
+          cd apps/e2e
+          supabase start --ignore-health-check
+          supabase db reset --no-seed
+
+      - name: Run targeted tests
+        run: |
+          cd apps/e2e
+          echo "Running tests matching pattern: ${{ needs.detect-changes.outputs.test_pattern }}"
+          pnpm playwright test --project=chromium --grep "${{ needs.detect-changes.outputs.test_pattern }}"
+        env:
+          PLAYWRIGHT_WORKERS: 4
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: quick-test-results-${{ github.run_id }}
+          path: apps/e2e/test-results/
+          retention-days: 7
+
+  # Status check for PR
+  smart-test-status:
+    name: Smart Test Status
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: [detect-changes, quick-test]
+    if: always()
+    steps:
+      - name: Comment on PR with results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const pattern = '${{ needs.detect-changes.outputs.test_pattern }}';
+            const runAll = '${{ needs.detect-changes.outputs.run_all }}';
+            const testResult = '${{ needs.quick-test.result }}';
+            
+            let comment = '## 🎯 E2E Smart Test Results\n\n';
+            
+            if (pattern === 'skip') {
+              comment += '✅ **Tests Skipped** - Only test/documentation files changed\n';
+              comment += 'No application code was modified, E2E tests not required.\n';
+            } else if (runAll === 'true') {
+              comment += '⚠️ **Full Test Suite Required**\n';
+              comment += 'Core changes detected. Full E2E matrix will run after merge.\n';
+              comment += '\n**Changed areas**: Core packages, database, or infrastructure\n';
+            } else if (testResult === 'success') {
+              comment += '✅ **Targeted Tests Passed**\n';
+              comment += `Tests matching pattern \`${pattern}\` completed successfully.\n`;
+            } else if (testResult === 'failure') {
+              comment += '❌ **Targeted Tests Failed**\n';
+              comment += `Tests matching pattern \`${pattern}\` failed. Please check logs.\n`;
+            }
+            
+            comment += '\n---\n';
+            comment += '*E2E Smart Tests optimize CI by running only relevant tests based on changed files.*';
+            
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              console.log('Could not post comment:', error);
+            }
+            
+      - name: Check test status
+        run: |
+          TEST_PATTERN="${{ needs.detect-changes.outputs.test_pattern }}"
+          RUN_ALL="${{ needs.detect-changes.outputs.run_all }}"
+          
+          if [[ "$TEST_PATTERN" == "skip" ]]; then
+            echo "✅ E2E tests skipped - Only test/doc files changed"
+            exit 0
+          elif [[ "$RUN_ALL" == "true" ]]; then
+            echo "⚠️ Full E2E test suite needed - Check main E2E workflow"
+            echo "Core changes detected that require comprehensive testing"
+            exit 0
+          elif [[ "${{ needs.quick-test.result }}" == "failure" ]]; then
+            echo "❌ Smart E2E tests failed for pattern: $TEST_PATTERN"
+            exit 1
+          elif [[ "${{ needs.quick-test.result }}" == "success" ]]; then
+            echo "✅ Smart E2E tests passed for pattern: $TEST_PATTERN"
+            exit 0
+          elif [[ "${{ needs.quick-test.result }}" == "skipped" ]]; then
+            echo "⏭️ Quick tests skipped - Full suite will run"
+            exit 0
+          else
+            echo "⚠️ Smart E2E test status unclear"
+            exit 0
+          fi

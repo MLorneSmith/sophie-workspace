@@ -1,0 +1,190 @@
+name: Lighthouse CI
+
+on:
+  workflow_call:
+    inputs:
+      target_url:
+        description: 'URL to run Lighthouse tests against'
+        required: true
+        type: string
+      environment:
+        description: 'Environment name (staging, production)'
+        required: true
+        type: string
+    outputs:
+      report-url:
+        description: 'Lighthouse report URL'
+        value: ${{ jobs.lighthouse.outputs.report-url }}
+      performance-score:
+        description: 'Performance score'
+        value: ${{ jobs.lighthouse.outputs.performance-score }}
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  lighthouse:
+    name: Run Lighthouse CI
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      report-url: ${{ steps.lighthouse.outputs.report-url }}
+      performance-score: ${{ steps.lighthouse.outputs.performance-score }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Lighthouse CI
+        run: pnpm add -g @lhci/cli@latest
+
+      - name: Create custom Lighthouse config for remote URL
+        run: |
+          cat > lighthouserc.remote.json << EOF
+          {
+            "ci": {
+              "collect": {
+                "url": [
+                  "${{ inputs.target_url }}",
+                  "${{ inputs.target_url }}/sign-in",
+                  "${{ inputs.target_url }}/presentations",
+                  "${{ inputs.target_url }}/team"
+                ],
+                "numberOfRuns": 3,
+                "settings": {
+                  "preset": "desktop",
+                  "throttling": {
+                    "cpuSlowdownMultiplier": 1
+                  }
+                }
+              },
+              "assert": {
+                "preset": "lighthouse:no-pwa",
+                "assertions": {
+                  "categories:performance": ["error", {"minScore": 0.9}],
+                  "categories:accessibility": ["error", {"minScore": 0.95}],
+                  "categories:best-practices": ["error", {"minScore": 0.95}],
+                  "categories:seo": ["error", {"minScore": 0.95}],
+                  
+                  "first-contentful-paint": ["error", {"maxNumericValue": 1800}],
+                  "largest-contentful-paint": ["error", {"maxNumericValue": 2500}],
+                  "first-meaningful-paint": ["error", {"maxNumericValue": 2000}],
+                  "speed-index": ["error", {"maxNumericValue": 3400}],
+                  "total-blocking-time": ["error", {"maxNumericValue": 200}],
+                  "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}],
+                  "interactive": ["error", {"maxNumericValue": 3800}],
+                  
+                  "uses-long-cache-ttl": "off",
+                  "uses-rel-preconnect": "off",
+                  "font-display": "off",
+                  "unsized-images": "off",
+                  "unused-javascript": ["warn", {"maxNumericValue": 200000}],
+                  "uses-responsive-images": ["warn", {"maxNumericValue": 200000}],
+                  "modern-image-formats": "warn"
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage",
+                "outputDir": "./.lighthouseci"
+              }
+            }
+          }
+          EOF
+
+      - name: Run Lighthouse CI
+        id: lighthouse
+        run: |
+          # Run Lighthouse CI
+          lhci autorun --config=lighthouserc.remote.json || true
+          
+          # Extract results
+          REPORT_URL=$(find .lighthouseci -name 'lhr-*.html' | head -1)
+          
+          # Parse the JSON report to get scores
+          PERF_SCORE=0
+          if [ -f ".lighthouseci/lhr-*.json" ]; then
+            PERF_SCORE=$(cat .lighthouseci/lhr-*.json | jq -r '.categories.performance.score * 100' | head -1)
+          fi
+          
+          echo "report-url=$REPORT_URL" >> $GITHUB_OUTPUT
+          echo "performance-score=$PERF_SCORE" >> $GITHUB_OUTPUT
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports-${{ inputs.environment }}
+          path: .lighthouseci/
+          retention-days: 7
+
+      - name: Format Lighthouse score
+        id: format
+        if: always()
+        run: |
+          PERF_SCORE="${{ steps.lighthouse.outputs.performance-score }}"
+          
+          # Create color-coded badge based on score
+          if (( $(echo "$PERF_SCORE >= 90" | bc -l) )); then
+            COLOR="brightgreen"
+            EMOJI="🟢"
+          elif (( $(echo "$PERF_SCORE >= 70" | bc -l) )); then
+            COLOR="yellow"  
+            EMOJI="🟡"
+          else
+            COLOR="red"
+            EMOJI="🔴"
+          fi
+          
+          echo "color=$COLOR" >> $GITHUB_OUTPUT
+          echo "emoji=$EMOJI" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = ${{ steps.lighthouse.outputs.performance-score || 0 }};
+            const emoji = '${{ steps.format.outputs.emoji }}';
+            
+            const comment = `## Lighthouse Performance Report
+            
+            **Environment**: ${{ inputs.environment }}
+            **Performance Score**: ${emoji} ${score}/100
+            
+            ### Core Web Vitals
+            - **LCP**: < 2.5s (Target)
+            - **FID**: < 100ms (Target)  
+            - **CLS**: < 0.1 (Target)
+            
+            [View Full Report](${{ steps.lighthouse.outputs.report-url }})
+            
+            *Note: Scores are based on desktop performance with no throttling.*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Check performance regression
+        if: inputs.environment == 'staging'
+        run: |
+          PERF_SCORE="${{ steps.lighthouse.outputs.performance-score }}"
+          
+          # Fail if performance drops below 90
+          if (( $(echo "$PERF_SCORE < 90" | bc -l) )); then
+            echo "❌ Performance score ($PERF_SCORE) is below threshold (90)"
+            exit 1
+          else
+            echo "✅ Performance score ($PERF_SCORE) meets threshold"
+          fi

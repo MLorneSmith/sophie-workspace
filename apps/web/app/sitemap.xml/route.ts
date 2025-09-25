@@ -1,7 +1,10 @@
 import { createCmsClient } from "@kit/cms";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getServerSideSitemap } from "next-sitemap";
 
 import appConfig from "~/config/app.config";
+
+const { getLogger } = createServiceLogger("SITEMAP-GENERATOR");
 
 /**
  * @description The maximum age of the sitemap in seconds.
@@ -68,13 +71,13 @@ async function getContentItems() {
 						: new Date().toISOString(),
 				})),
 			)
-			.catch((_error) => {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Error fetching posts for sitemap:",
-				// 	{ data: error }
-				// );
+			.catch(async (error) => {
+				const logger = await getLogger();
+				logger.error("Error fetching posts for sitemap", {
+					operation: "fetch_posts_sitemap",
+					error,
+					collection: "posts",
+				});
 				return []; // Return empty array on error
 			});
 
@@ -94,13 +97,13 @@ async function getContentItems() {
 						: new Date().toISOString(),
 				})),
 			)
-			.catch((_error) => {
-				// TODO: Async logger needed
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Error fetching docs for sitemap:",
-				// 	{ data: error }
-				// );
+			.catch(async (error) => {
+				const logger = await getLogger();
+				logger.error("Error fetching docs for sitemap", {
+					operation: "fetch_docs_sitemap",
+					error,
+					collection: "documentation",
+				});
 				return []; // Return empty array on error
 			});
 
@@ -108,13 +111,12 @@ async function getContentItems() {
 		return Promise.all([postsPromise, docsPromise]).then((items) =>
 			items.flat(),
 		);
-	} catch (_error) {
-		// TODO: Async logger needed
-		// TODO: Async logger needed
-		// (await getLogger()).error(
-		// 	"Error generating content items for sitemap:",
-		// 	{ data: error }
-		// );
+	} catch (error) {
+		const logger = await getLogger();
+		logger.error("Error generating content items for sitemap", {
+			operation: "create_cms_client",
+			error,
+		});
 		return []; // Return empty array if CMS client creation fails
 	}
 }

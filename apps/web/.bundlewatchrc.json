@@ -1,0 +1,39 @@
+{
+	"files": [
+		{
+			"path": ".next/static/chunks/pages/_app-*.js",
+			"maxSize": "400kb",
+			"compression": "gzip"
+		},
+		{
+			"path": ".next/static/chunks/pages/index-*.js",
+			"maxSize": "300kb",
+			"compression": "gzip"
+		},
+		{
+			"path": ".next/static/chunks/framework-*.js",
+			"maxSize": "120kb",
+			"compression": "gzip"
+		},
+		{
+			"path": ".next/static/chunks/main-*.js",
+			"maxSize": "100kb",
+			"compression": "gzip"
+		},
+		{
+			"path": ".next/static/chunks/webpack-*.js",
+			"maxSize": "50kb",
+			"compression": "gzip"
+		},
+		{
+			"path": ".next/static/css/*.css",
+			"maxSize": "100kb",
+			"compression": "gzip"
+		}
+	],
+	"defaultCompression": "gzip",
+	"ci": {
+		"trackBranches": ["main", "staging", "dev"],
+		"repoBranchBase": "main"
+	}
+}

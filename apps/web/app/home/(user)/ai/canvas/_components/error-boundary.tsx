@@ -2,6 +2,16 @@
 
 import { Component, type ReactNode } from "react";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 interface Props {
 	children: ReactNode;
 	fallback: ReactNode;
@@ -23,10 +33,7 @@ export class ErrorBoundary extends Component<Props, State> {
 	}
 
 	componentDidCatch(_error: Error) {
-		// TODO: Async logger needed
-		// (await getLogger()).error("Error caught by boundary:", {
-		// 	data: _error,
-		// });
+		logger.error("Error caught by boundary:", _error);
 	}
 
 	render() {

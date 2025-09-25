@@ -15,11 +15,22 @@ export class TeamAccountsPageObject {
 	}
 
 	async setup(params = this.createTeamName()) {
-		const { email } = await this.auth.signUpFlow("/home");
+		const auth = new AuthPageObject(this.page);
+
+		// Use pre-existing test user from seed data with environment variables
+		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const password = process.env.E2E_TEST_USER_PASSWORD || "";
+		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
+
+		await auth.loginAsUser({ email, password });
 
 		await this.createTeam(params);
 
-		return { email, teamName: params.teamName, slug: params.slug };
+		return {
+			email: email,
+			teamName: params.teamName,
+			slug: params.slug,
+		};
 	}
 
 	getTeamFromSelector(teamName: string) {
@@ -81,6 +92,7 @@ export class TeamAccountsPageObject {
 	async tryCreateTeam(teamName: string) {
 		await this.page.locator('[data-test="create-team-form"] input').fill("");
 		await this.page.waitForTimeout(200);
+
 		await this.page
 			.locator('[data-test="create-team-form"] input')
 			.fill(teamName);
@@ -150,13 +162,13 @@ export class TeamAccountsPageObject {
 			await this.page.click('[data-test="role-selector-trigger"]');
 			await this.page.click(`[data-test="role-option-${newRole}"]`);
 
-			// Click the confirm button
-			const click = this.page.click('[data-test="confirm-update-member-role"]');
-
 			// Wait for the update to complete and page to reload
-			const response = this.page.waitForURL("**/home/*/members");
+			const response = this.page.waitForResponse("**/members");
 
-			return Promise.all([click, response]);
+			return Promise.all([
+				this.page.click('[data-test="confirm-update-member-role"]'),
+				response,
+			]);
 		}).toPass();
 	}
 
@@ -172,15 +184,13 @@ export class TeamAccountsPageObject {
 			// Complete OTP verification
 			await this.otp.completeOtpVerification(ownerEmail);
 
-			// Click the confirm button
-			const click = this.page.click(
-				'[data-test="confirm-transfer-ownership-button"]',
-			);
-
 			// Wait for the transfer to complete and page to reload
-			const response = this.page.waitForURL("**/home/*/members");
+			const response = this.page.waitForResponse("**/members");
 
-			return Promise.all([click, response]);
+			return Promise.all([
+				this.page.click('[data-test="confirm-transfer-ownership-button"]'),
+				response,
+			]);
 		}).toPass();
 	}
 

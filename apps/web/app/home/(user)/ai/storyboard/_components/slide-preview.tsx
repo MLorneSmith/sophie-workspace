@@ -3,7 +3,7 @@
 import { cn } from "@kit/ui/utils";
 import Image from "next/image";
 
-import { LAYOUT_POSITIONS } from "../_lib/services/powerpoint/pptx-generator";
+import { LAYOUT_POSITIONS } from "../_lib/constants/layout-positions";
 import type { Slide, SlideContent } from "../_lib/types";
 
 interface SlidePreviewProps {

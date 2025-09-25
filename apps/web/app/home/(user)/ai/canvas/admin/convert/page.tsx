@@ -7,6 +7,16 @@ import { useState } from "react";
 
 import { convertExistingRecordsToTiptap } from "../../_actions/convert-editor-data";
 
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
+
 export default function ConvertEditorDataPage() {
 	const [isConverting, setIsConverting] = useState(false);
 	const [results, setResults] = useState<{
@@ -28,10 +38,7 @@ export default function ConvertEditorDataPage() {
 			const result = await convertExistingRecordsToTiptap();
 			setResults(result);
 		} catch (err) {
-			// TODO: Async logger needed
-			// (await getLogger()).error("Error converting data:", {
-			// 	data: err,
-			// });
+			logger.error("Error converting data:", err);
 			setError(err instanceof Error ? err.message : "Unknown error occurred");
 		} finally {
 			setIsConverting(false);

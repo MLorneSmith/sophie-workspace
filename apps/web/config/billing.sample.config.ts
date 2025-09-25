@@ -7,9 +7,12 @@ import { BillingProviderSchema, createBillingSchema } from "@kit/billing";
 // The billing provider to use. This should be set in the environment variables
 // and should match the provider in the database. We also add it here so we can validate
 // your configuration against the selected provider at build time.
-const provider = BillingProviderSchema.parse(
-	process.env.NEXT_PUBLIC_BILLING_PROVIDER,
-);
+const providerValue = process.env.NEXT_PUBLIC_BILLING_PROVIDER || "stripe";
+
+if (!process.env.NEXT_PUBLIC_BILLING_PROVIDER) {
+}
+
+const provider = BillingProviderSchema.parse(providerValue);
 
 export default createBillingSchema({
 	// also update config.billing_provider in the DB to match the selected
@@ -30,7 +33,7 @@ export default createBillingSchema({
 					interval: "month",
 					lineItems: [
 						{
-							id: "price_1NNwYHI1i3VnbZTqI2UzaHIe",
+							id: "price_1S05jtS8mvjG8zYVqE8gnumz",
 							name: "Starter",
 							cost: 9.99,
 							type: "flat" as const,
@@ -44,7 +47,7 @@ export default createBillingSchema({
 					interval: "year",
 					lineItems: [
 						{
-							id: "starter-yearly",
+							id: "price_starter_yearly_placeholder",
 							name: "Base",
 							cost: 99.99,
 							type: "flat" as const,
@@ -69,7 +72,7 @@ export default createBillingSchema({
 					interval: "month",
 					lineItems: [
 						{
-							id: "price_1PGOAVI1i3VnbZTqc69xaypm",
+							id: "price_1S05l0S8mvjG8zYVSb0uCmtz",
 							name: "Base",
 							cost: 19.99,
 							type: "flat",
@@ -83,7 +86,7 @@ export default createBillingSchema({
 					interval: "year",
 					lineItems: [
 						{
-							id: "price_pro_yearly",
+							id: "price_pro_yearly_placeholder",
 							name: "Base",
 							cost: 199.99,
 							type: "flat",

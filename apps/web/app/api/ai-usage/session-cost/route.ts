@@ -1,7 +1,10 @@
 import { enhanceRouteHandler } from "@kit/next/routes";
+import { createServiceLogger } from "@kit/shared/logger";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+const { getLogger } = createServiceLogger("SESSION-COST-API");
 
 // Define the response schema
 const _SessionCostResponseSchema = z.object({
@@ -54,11 +57,14 @@ export const GET = enhanceRouteHandler(
 			const { data, error } = await query;
 
 			if (error) {
-				// TODO: Async logger needed
-				// (await getLogger()).error(
-				// 	"Error fetching session costs:",
-				// 	{ data: error },
-				// );
+				const logger = await getLogger();
+				logger.error("Error fetching session costs", {
+					operation: "fetch_session_costs",
+					error,
+					userId: user.id,
+					sessionId: sessionId || undefined,
+					timeframe,
+				});
 				return NextResponse.json({
 					success: false,
 					error: "Failed to fetch costs",
@@ -81,11 +87,12 @@ export const GET = enhanceRouteHandler(
 				cost: totalCost,
 			});
 		} catch (_error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error in session-cost API route:",
-			// 	{ data: error },
-			// );
+			const logger = await getLogger();
+			logger.error("Error in session-cost API route", {
+				operation: "session_cost_api",
+				error: _error,
+				userId: user.id,
+			});
 			return NextResponse.json({
 				success: false,
 				error: "Internal server error",

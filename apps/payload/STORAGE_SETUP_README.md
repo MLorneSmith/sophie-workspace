@@ -123,7 +123,7 @@ config: {
 
 ### Before Fix
 
-```
+```text
 [ERROR] ENOENT: no such file or directory, mkdir 'media'
 ❌ Media uploads fail
 ❌ Production deployment broken
@@ -131,7 +131,7 @@ config: {
 
 ### After Fix
 
-```
+```text
 [PAYLOAD-CONFIG] Configuring Cloudflare R2 storage
 [PAYLOAD-CONFIG] R2 Bucket: your-bucket-name
 ✅ Media uploads work
@@ -160,15 +160,15 @@ config: {
 
 ### Common Issues
 
-**"Access Denied"**
+#### "Access Denied"
 
 - Regenerate R2 API tokens with proper permissions
 
-**"SignatureDoesNotMatch"**
+#### "SignatureDoesNotMatch"
 
 - Double-check Account ID and secret key
 
-**"NoSuchBucket"**
+#### "NoSuchBucket"
 
 - Verify bucket name matches exactly
 

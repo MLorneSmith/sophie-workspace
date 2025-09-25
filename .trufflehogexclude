@@ -1,0 +1,44 @@
+# TruffleHog exclusion patterns
+# These are regex patterns that exclude file paths from secret scanning
+
+# Claude backup files
+.*\.claude-backup-.*\.tar\.gz
+.*\.tar\.gz
+
+# Development environment files with local credentials
+.*\.devcontainer/docker-compose\.yml
+.*\.devcontainer/docker-compose.*\.yml
+.*docker-compose.*\.yml
+
+# Environment files with example/test credentials
+.*\.env\.example
+.*\.env\.local\.example
+.*\.env\.test
+.*\.env\.development
+
+# Test and fixture files
+.*test.*
+.*spec.*
+.*fixture.*
+.*__tests__/.*
+.*__mocks__/.*
+
+# Documentation
+.*\.md
+.*docs/.*
+
+# Package files
+.*package\.json
+.*package-lock\.json
+.*pnpm-lock\.yaml
+
+# CI/CD files with placeholder values
+.*\.github/workflows/.*
+
+# Storybook files
+.*\.storybook/.*
+.*\.stories\.(ts|tsx|js|jsx)
+
+# Migration and seed files (often contain example data)
+.*migrations/.*
+.*seeds/.*

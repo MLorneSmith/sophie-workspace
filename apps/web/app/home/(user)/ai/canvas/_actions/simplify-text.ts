@@ -3,12 +3,13 @@
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
+	createReasoningOptimizedConfig,
 	getChatCompletion,
+	PromptManager,
+	textSimplificationTemplate,
 } from "@kit/ai-gateway";
-import { createReasoningOptimizedConfig } from "@kit/ai-gateway/src/configs/templates";
-import { PromptManager } from "@kit/ai-gateway/src/prompts/prompt-manager";
-import { textSimplificationTemplate } from "@kit/ai-gateway/src/prompts/templates/text-simplification";
 import { enhanceAction } from "@kit/next/actions";
+import { getLogger } from "@kit/shared/logger";
 import { z } from "zod";
 
 const SimplifyTextSchema = z.object({
@@ -53,11 +54,14 @@ export const simplifyTextAction = enhanceAction(
 				response,
 			};
 		} catch (error) {
-			// TODO: Async logger needed
-			// (await getLogger()).error(
-			// 	"Error in simplifyTextAction:",
-			// 	{ data: error }
-			// );
+			const logger = await getLogger();
+			logger.error("Error in simplifyTextAction:", {
+				operation: "simplifyTextAction",
+				error,
+				userId: data.userId,
+				canvasId: data.canvasId,
+				sectionType: data.sectionType,
+			});
 			return {
 				success: false,
 				error:

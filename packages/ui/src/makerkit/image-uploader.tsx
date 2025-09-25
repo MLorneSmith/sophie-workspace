@@ -1,8 +1,7 @@
 "use client";
 
 import { Image as ImageIcon } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "../shadcn/button";
@@ -16,7 +15,6 @@ export function ImageUploader(
 	}>,
 ) {
 	const [image, setImage] = useState(props.value);
-	const inputId = useId();
 
 	const { setValue, register } = useForm<{
 		value: string | null | FileList;
@@ -48,7 +46,6 @@ export function ImageUploader(
 	const Input = () => (
 		<ImageUploadInput
 			{...control}
-			id={inputId}
 			accept={"image/*"}
 			className={"absolute h-full w-full"}
 			visible={false}
@@ -63,7 +60,7 @@ export function ImageUploader(
 
 	if (!image) {
 		return (
-			<FallbackImage descriptionSection={props.children} inputId={inputId}>
+			<FallbackImage descriptionSection={props.children}>
 				<Input />
 			</FallbackImage>
 		);
@@ -71,20 +68,24 @@ export function ImageUploader(
 
 	return (
 		<div className={"flex items-center space-x-4"}>
-			<label
-				htmlFor={inputId}
-				className={"animate-in fade-in zoom-in-50 relative h-20 w-20"}
+			<div
+				className={
+					"animate-in fade-in zoom-in-50 group/label relative h-20 w-20 cursor-pointer"
+				}
 			>
-				<Image
-					className={"h-20 w-20 rounded-full object-cover"}
+				{/* eslint-disable-next-line @next/next/no-img-element */}
+				{/* biome-ignore lint/performance/noImgElement: Image upload preview needs img tag */}
+				<img
+					decoding="async"
+					className={
+						"h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80"
+					}
 					src={image}
-					alt=""
-					width={80}
-					height={80}
+					alt={""}
 				/>
 
 				<Input />
-			</label>
+			</div>
 
 			<div>
 				<Button onClick={onClear} size={"sm"} variant={"ghost"}>
@@ -98,13 +99,11 @@ export function ImageUploader(
 function FallbackImage(
 	props: React.PropsWithChildren<{
 		descriptionSection?: React.ReactNode;
-		inputId?: string;
 	}>,
 ) {
 	return (
 		<div className={"flex items-center space-x-4"}>
-			<label
-				htmlFor={props.inputId}
+			<div
 				className={
 					"border-border animate-in fade-in zoom-in-50 hover:border-primary relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-full border"
 				}
@@ -112,7 +111,7 @@ function FallbackImage(
 				<ImageIcon className={"text-primary h-8"} />
 
 				{props.children}
-			</label>
+			</div>
 
 			{props.descriptionSection}
 		</div>

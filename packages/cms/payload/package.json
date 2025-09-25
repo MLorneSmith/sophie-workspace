@@ -1,6 +1,6 @@
 {
 	"name": "@kit/payload",
-	"version": "3.43.0",
+	"version": "3.56.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -8,17 +8,18 @@
 		"dev": "tsc -w"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
 		"@kit/cms-types": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
-		"@supabase/supabase-js": "2.50.0",
-		"payload": "3.43.0",
-		"react": "19.1.0"
+		"@supabase/supabase-js": "2.57.2",
+		"payload": "3.56.0",
+		"react": "19.1.1"
 	},
 	"devDependencies": {
-		"@types/node": "^24.0.1",
-		"@types/react": "19.1.8",
-		"typescript": "^5.8.3"
+		"@types/node": "^24.3.1",
+		"@types/react": "19.1.12",
+		"typescript": "^5.9.2"
 	},
 	"exports": {
 		".": {

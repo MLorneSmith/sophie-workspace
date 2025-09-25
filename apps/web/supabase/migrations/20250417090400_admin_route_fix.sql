@@ -21,19 +21,18 @@ GRANT EXECUTE ON FUNCTION public.is_aal2() TO authenticated;
 
 -- Create or replace the is_super_admin function to check for the super-admin role
 -- in app_metadata instead of the is_super_admin column
-CREATE OR REPLACE FUNCTION public.is_super_admin() 
+CREATE OR REPLACE FUNCTION public.is_super_admin()
 RETURNS boolean
-SET search_path = '' 
+SET search_path = ''
 AS $$
 DECLARE
     is_super_admin boolean;
 BEGIN
-    -- Comment out MFA requirement for now to allow super-admin access without MFA
-    -- We can uncomment this block if we want to enforce MFA later
-    -- 
-    -- if not public.is_aal2() then
-    --     return false;
-    -- end if;
+    -- CRITICAL: MFA verification is REQUIRED for super-admin access
+    -- This check ensures that super-admins must have second-factor authentication
+    IF NOT public.is_aal2() THEN
+        RETURN false;
+    END IF;
 
     SELECT (auth.jwt() ->> 'app_metadata')::jsonb ->> 'role' = 'super-admin' INTO is_super_admin;
     RETURN COALESCE(is_super_admin, false);
@@ -48,5 +47,5 @@ DO $$
 BEGIN
     RAISE NOTICE 'Admin route fix has been successfully applied.';
     RAISE NOTICE 'The is_super_admin() function now checks for the super-admin role in app_metadata.';
-    RAISE NOTICE 'MFA requirement is currently disabled. Uncomment the appropriate block in the function to enable it.';
+    RAISE NOTICE 'MFA requirement is ENFORCED for super-admin access for security compliance.';
 END $$;

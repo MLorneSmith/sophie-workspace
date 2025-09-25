@@ -1,7 +1,6 @@
 "use client";
 
-import type { BaseImprovement } from "@kit/ai-gateway/src/prompts/types/improvements";
-import { createServiceLogger } from "@kit/shared/logger";
+import type { BaseImprovement } from "@kit/ai-gateway";
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import {
 	ResizableHandle,
@@ -13,7 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useRef, useState } from "react";
 import type { Database } from "~/lib/database.types";
-import { generateIdeasAction } from "../_actions/generate-ideas";
+import { generateIdeasActionEdge } from "../_actions/generate-ideas-edge";
 import { generateOutlineAction } from "../_actions/generate-outline";
 import { useActionWithCost } from "../_lib/hooks/use-action-with-cost";
 import { ActionToolbar } from "./action-toolbar";
@@ -23,8 +22,33 @@ import { LoadingAnimation } from "./suggestions/loading-animation";
 import { LOADING_MESSAGES } from "./suggestions/loading-messages";
 import { SuggestionsPane } from "./suggestions/suggestions-pane";
 
-// Initialize service logger
-const { getLogger } = createServiceLogger("HOME-(USER)");
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
 
 interface EditorPanelProps {
 	sectionType: "situation" | "complication" | "answer" | "outline";
@@ -54,7 +78,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 	// Use cost tracking hooks
 	// const { sessionId } = useCostTracking(); // Commented out as it's unused
-	const generateIdeasWithCost = useActionWithCost(generateIdeasAction);
+	const generateIdeasWithCost = useActionWithCost(generateIdeasActionEdge);
 
 	const editorRef = useRef<TiptapEditorRef>(null);
 	const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);
@@ -82,19 +106,25 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 					implementedSupportingPoints.length > 0
 				) {
 					const bulletList = `<ul>${implementedSupportingPoints
-						.map((point) => `<li>${point}</li>`)
+						.map((point: string) => `<li>${point}</li>`)
 						.join("")}</ul>`;
 					editorRef.current.insertContent(bulletList);
 				}
 
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: info
-			} catch {
-				// TODO: Async logger needed
-				// TODO: Fix logger call - was: error
+				logger.info("Improvement accepted and inserted", {
+					summary: implementedSummaryPoint,
+					supportingPointsCount: implementedSupportingPoints?.length || 0,
+					sectionType,
+				});
+			} catch (error) {
+				logger.error("Failed to insert improvement content", {
+					error,
+					improvement,
+					sectionType,
+				});
 			}
 		},
-		[],
+		[sectionType],
 	);
 
 	const handleImproveStructure = useCallback(async () => {
@@ -102,15 +132,21 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 		try {
 			// TODO: Implement improve structure functionality
-			(await getLogger()).info("Improve structure clicked");
+			logger.info("Improve structure clicked", {
+				submissionId,
+				sectionType,
+			});
 
 			// When implemented, this would use the same safety pattern as handleGenerateIdeas
 			// to safely get content from the editor
-		} catch {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: warn
+		} catch (error) {
+			logger.warn("Error in improve structure handler", {
+				error,
+				submissionId,
+				sectionType,
+			});
 		}
-	}, [submissionId]);
+	}, [submissionId, sectionType]);
 
 	const handleGenerateIdeas = useCallback(async () => {
 		if (!editorRef.current || !submissionId) return;
@@ -140,15 +176,21 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 							} else {
 								resolve("");
 							}
-						} catch {
-							// TODO: Async logger needed
-							// TODO: Fix logger call - was: warn
+						} catch (error) {
+							logger.warn("Error getting editor content in update callback", {
+								error,
+								submissionId,
+								sectionType,
+							});
 							resolve("");
 						}
 					});
-				} catch {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: warn
+				} catch (error) {
+					logger.warn("Error in editor update operation", {
+						error,
+						submissionId,
+						sectionType,
+					});
 					resolve("");
 				}
 			});
@@ -173,9 +215,13 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 			if (result.success && result.data?.improvements) {
 				setSuggestions(result.data.improvements);
 			}
-		} catch {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+		} catch (error) {
+			logger.error("Error generating ideas", {
+				error,
+				submissionId,
+				sectionType,
+				contentLength: content.length,
+			});
 			// Could add toast notification here if needed
 		} finally {
 			setIsGenerating(false);
@@ -227,10 +273,10 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 													);
 													setIsRegeneratingOutline(true);
 
-													(await getLogger()).info(
-														"Regenerating outline for submission:",
-														{ submissionId },
-													);
+													logger.info("Regenerating outline for submission", {
+														submissionId,
+														resetKey,
+													});
 
 													// Call generateOutlineAction with forceRegenerate: true
 													const result = (await generateOutlineAction({
@@ -244,8 +290,10 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 													// Invalidate the query to force a refetch AND fully remount the component
 													if (result.success) {
-														// TODO: Async logger needed
-														// TODO: Fix logger call - was: info
+														logger.info("Outline regeneration successful", {
+															submissionId,
+															resetKey: resetKey + 1,
+														});
 
 														// First, invalidate the query cache
 														await queryClient.invalidateQueries({
@@ -264,9 +312,11 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 															result.error || "Failed to regenerate outline",
 														);
 													}
-												} catch {
-													// TODO: Async logger needed
-													// TODO: Fix logger call - was: error
+												} catch (error) {
+													logger.error("Failed to regenerate outline", {
+														error,
+														submissionId,
+													});
 												} finally {
 													// Make sure we reset the loading state even if there's an error
 													setTimeout(() => {

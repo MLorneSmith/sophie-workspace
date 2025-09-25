@@ -2,7 +2,14 @@
 	"$schema": "https://turborepo.org/schema.json",
 	"globalDependencies": ["**/.env"],
 	"ui": "stream",
+	"remoteCache": {
+		"enabled": true,
+		"signature": true
+	},
 	"globalEnv": [
+		"GIT_HASH",
+		"CF_PAGES_COMMIT_SHA",
+		"VERCEL_GIT_COMMIT_SHA",
 		"STRIPE_SECRET_KEY",
 		"STRIPE_WEBHOOK_SECRET",
 		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
@@ -61,7 +68,34 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"next-env.d.ts",
+				"dist/**",
+				"build/**"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
+		},
+		"@kit/ai-gateway#build": {
+			"dependsOn": ["^build"],
+			"outputs": [],
+			"cache": true
+		},
+		"build:test": {
+			"dependsOn": ["^build"],
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"next-env.d.ts",
+				"dist/**",
+				"build/**"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
 		},
 		"dev": {
 			"persistent": true,
@@ -75,14 +109,24 @@
 		},
 		"lint": {
 			"dependsOn": ["^topo"],
-			"outputs": ["node_modules/.cache/.eslintcache"]
+			"outputs": ["node_modules/.cache/.eslintcache"],
+			"cache": true
 		},
 		"typecheck": {
-			"dependsOn": ["^topo"],
-			"outputs": ["node_modules/.cache/tsbuildinfo.json"]
+			"dependsOn": ["^build"],
+			"outputs": ["node_modules/.cache/tsbuildinfo.json", "*.tsbuildinfo"],
+			"cache": true
 		},
 		"test": {
-			"dependsOn": ["^topo"]
+			"dependsOn": ["^topo"],
+			"outputs": ["coverage/**", ".vitest/**"],
+			"cache": true,
+			"env": ["NODE_ENV"]
+		},
+		"test:coverage": {
+			"dependsOn": ["^topo"],
+			"outputs": ["coverage/**"],
+			"cache": true
 		},
 		"clean": {
 			"cache": false
@@ -92,6 +136,12 @@
 		},
 		"license#dev": {
 			"outputLogs": "errors-only"
+		},
+		"@kit/monitoring-newrelic#test": {
+			"dependsOn": ["^topo"],
+			"outputs": [],
+			"cache": true,
+			"env": ["NODE_ENV"]
 		}
 	}
 }

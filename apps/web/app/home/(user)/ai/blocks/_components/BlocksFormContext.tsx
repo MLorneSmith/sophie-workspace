@@ -8,8 +8,33 @@ import {
 	type QuestionField,
 } from "../_config/formContent";
 
-// Initialize service logger
-// const { getLogger } = createServiceLogger("HOME-(USER)");
+// Create a client-safe logger wrapper
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
 
 export interface FormData {
 	title: string;
@@ -59,14 +84,19 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		const type = formData.presentation_type as PresentationPathType;
 
 		if (type) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Presentation type changed, updating path", {
+				presentationType: type,
+				currentQuestion,
+			});
 			const newPath = getPath(type);
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("New path set for presentation type", {
+				presentationType: type,
+				newPath: newPath.join(", "),
+				pathLength: newPath.length,
+			});
 			setCurrentPath(newPath);
 		}
-	}, [formData.presentation_type]);
+	}, [formData.presentation_type, currentQuestion]);
 
 	const validateField = (field: keyof FormData): boolean => {
 		const value = formData[field];
@@ -76,12 +106,16 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		if (!value || value.trim() === "") {
 			newErrors[field] = "This field is required";
 			isValid = false;
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Field validation failed", {
+				field,
+				error: "Field is required",
+			});
 		} else {
 			delete newErrors[field];
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Field validation passed", {
+				field,
+				valueLength: value.trim().length,
+			});
 		}
 
 		setErrors(newErrors);
@@ -91,26 +125,33 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 	const handleNext = () => {
 		const currentField = currentPath[currentQuestion];
 		if (!currentField) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("No current field found for navigation", {
+				currentQuestion,
+				pathLength: currentPath.length,
+				currentPath: currentPath.join(", "),
+			});
 			return;
 		}
 
 		// Move to next question if we're not at the end
 		if (currentQuestion < currentPath.length - 1) {
-			// TODO: Async logger needed
-			// logger.info({
-			// 	currentQuestion,
-			// 	nextQuestion: currentQuestion + 1,
-			// });
-			// logger.info({
-			// 	currentPath: currentPath.join(", "),
-			// 	message: "Current path",
-			// });
+			logger.info("Moving to next question", {
+				currentQuestion,
+				nextQuestion: currentQuestion + 1,
+				currentField,
+				totalQuestions: currentPath.length,
+			});
+			logger.info("Current navigation path", {
+				currentPath: currentPath.join(", "),
+				progress: `${currentQuestion + 1}/${currentPath.length}`,
+			});
 			setCurrentQuestion((prev) => prev + 1);
 		} else {
-			// TODO: Async logger needed
-			// logger.info({ message: "Reached end of questions" });
+			logger.info("Reached end of questions", {
+				currentQuestion,
+				totalQuestions: currentPath.length,
+				currentField,
+			});
 		}
 	};
 
@@ -125,11 +166,17 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		const validations = currentPath.map((field) => validateField(field));
 
 		if (validations.every((valid) => valid)) {
-			// TODO: Async logger needed
-			// (await getLogger()).info("Form submitted:", { data: formData });
+			logger.info("Form submitted successfully", {
+				formData,
+				fieldsValidated: currentPath,
+				totalFields: currentPath.length,
+			});
 		} else {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: info
+			logger.info("Form submission failed validation", {
+				currentPath,
+				validationResults: validations,
+				errors,
+			});
 			// Find the first invalid field and set it as current
 			const firstInvalidIndex = validations.findIndex((valid) => !valid);
 			if (firstInvalidIndex !== -1) {

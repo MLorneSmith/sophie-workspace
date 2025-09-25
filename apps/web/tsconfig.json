@@ -1,7 +1,9 @@
 {
-	"extends": "@kit/tsconfig/base.json",
+	"extends": "../../tooling/typescript/base.json",
 	"compilerOptions": {
 		"baseUrl": ".",
+		"lib": ["dom", "dom.iterable", "esnext", "ES2017"],
+		"types": ["node"],
 		"paths": {
 			"~/*": ["./app/*"],
 			"~/config/*": ["./config/*"],
@@ -9,6 +11,7 @@
 			"~/lib/*": ["./lib/*"],
 			"@/test/*": ["./test/*"],
 			"@kit/*": ["../../packages/*/src"],
+			"@kit/mailers-shared": ["../../packages/mailers/shared/src"],
 			"@kit/supabase/server-client": [
 				"../../packages/supabase/src/clients/server-client.ts"
 			],
@@ -33,7 +36,20 @@
 				"../../packages/features/auth/src/captcha/client"
 			],
 			"@kit/payload": ["../../packages/cms/payload/src"],
-			"@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"]
+			"@kit/payload/renderer": ["../../packages/cms/payload/src/renderer"],
+			"@kit/cms-types": ["../../packages/cms/types/src"],
+			"@kit/testimonial/admin": [
+				"../../packages/plugins/testimonial/src/admin"
+			],
+			"@kit/testimonial/client": [
+				"../../packages/plugins/testimonial/src/client"
+			],
+			"@kit/testimonial/server": [
+				"../../packages/plugins/testimonial/src/server"
+			],
+			"@kit/testimonial/widgets": [
+				"../../packages/plugins/testimonial/src/widgets"
+			]
 		},
 		"plugins": [
 			{

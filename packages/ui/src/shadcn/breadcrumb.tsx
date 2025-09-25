@@ -1,5 +1,5 @@
 import { ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 import type * as React from "react";
 
 import { cn } from "../lib/utils";
@@ -41,7 +41,7 @@ const BreadcrumbLink: React.FC<
 		asChild?: boolean;
 	}
 > = ({ asChild, className, ...props }) => {
-	const Comp = asChild ? Slot : "a";
+	const Comp = asChild ? Slot.Root : "a";
 
 	return (
 		<Comp
@@ -59,7 +59,10 @@ const BreadcrumbPage: React.FC<React.ComponentPropsWithoutRef<"span">> = ({
 	className,
 	...props
 }) => (
+	// biome-ignore lint/a11y/useFocusableInteractive: Disabled breadcrumb item doesn't need to be focusable
 	<span
+		role="link"
+		aria-disabled="true"
 		aria-current="page"
 		className={cn("text-foreground font-normal", className)}
 		{...props}

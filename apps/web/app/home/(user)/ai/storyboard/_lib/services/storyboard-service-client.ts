@@ -15,6 +15,34 @@ import {
 	type TipTapTextNode,
 } from "../types/index";
 
+// Client-safe logger wrapper for development logging
+const logger = {
+	info: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.info(...args);
+		}
+	},
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+	warn: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.warn(...args);
+		}
+	},
+	debug: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.debug(...args);
+		}
+	},
+};
+
 /**
  * StoryboardService - Handles data operations for the storyboard system
  * Responsible for fetching, saving, and transforming presentation data
@@ -71,14 +99,19 @@ export class StoryboardService {
 					try {
 						await this.saveStoryboard(submissionId, storyboard);
 					} catch (_saveError) {
-						// TODO: Async logger needed
-						// TODO: Fix logger call - was: warn
+						logger.warn("Failed to save generated storyboard", {
+							submissionId,
+							error: _saveError,
+						});
 					}
 
 					return storyboard;
 				} catch (_err) {
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+					logger.error("Failed to generate storyboard from outline", {
+						submissionId,
+						outlineData: fallbackData.outline,
+						error: _err,
+					});
 					throw new Error("Failed to generate storyboard from outline");
 				}
 			} else {
@@ -112,8 +145,10 @@ export class StoryboardService {
 
 			return storyboard;
 		} catch (_err) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to generate storyboard from outline", {
+				submissionId,
+				error: _err,
+			});
 			throw new Error("Failed to generate storyboard from outline");
 		}
 	}
@@ -146,8 +181,10 @@ export class StoryboardService {
 					toast.error(
 						"Storyboard feature is not fully set up yet. Database migration needed.",
 					);
-					// TODO: Async logger needed
-					// TODO: Fix logger call - was: error
+					logger.error("Storyboard column does not exist", {
+						submissionId,
+						error: result.error.message,
+					});
 					return false;
 				}
 				throw result.error;
@@ -155,8 +192,10 @@ export class StoryboardService {
 
 			return true;
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to save storyboard", {
+				submissionId,
+				error: _error,
+			});
 			toast.error("Failed to save storyboard");
 			return false;
 		}
@@ -179,8 +218,9 @@ export class StoryboardService {
 
 			return data as BuildingBlocksSubmission[];
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to list presentations", {
+				error: _error,
+			});
 			throw new Error("Failed to list presentations");
 		}
 	}
@@ -198,8 +238,9 @@ export class StoryboardService {
 			// For now, we'll return a placeholder implementation
 			throw new Error("PowerPoint generation not implemented yet");
 		} catch (_error) {
-			// TODO: Async logger needed
-			// TODO: Fix logger call - was: error
+			logger.error("Failed to generate PowerPoint", {
+				error: _error,
+			});
 			throw new Error("Failed to generate PowerPoint");
 		}
 	}

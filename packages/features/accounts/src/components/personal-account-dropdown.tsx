@@ -1,5 +1,6 @@
 "use client";
 
+import type { JWTUserData } from "@kit/supabase/types";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,7 +13,6 @@ import { SubMenuModeToggle } from "@kit/ui/mode-toggle";
 import { ProfileAvatar } from "@kit/ui/profile-avatar";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
-import type { User } from "@supabase/supabase-js";
 import {
 	ChevronsUpDown,
 	Home,
@@ -34,7 +34,7 @@ export function PersonalAccountDropdown({
 	features,
 	account,
 }: {
-	user: User;
+	user: JWTUserData;
 
 	account?: {
 		id: string | null;
@@ -72,13 +72,10 @@ export function PersonalAccountDropdown({
 		personalAccountData?.name ?? account?.name ?? user?.email ?? "";
 
 	const isSuperAdmin = useMemo(() => {
-		const factors = user?.factors ?? [];
 		const hasAdminRole = user?.app_metadata.role === "super-admin";
-		const hasTotpFactor = factors.some(
-			(factor) => factor.factor_type === "totp" && factor.status === "verified",
-		);
+		const isAal2 = user?.aal === "aal2";
 
-		return hasAdminRole && hasTotpFactor;
+		return hasAdminRole && isAal2;
 	}, [user]);
 
 	return (
@@ -86,12 +83,13 @@ export function PersonalAccountDropdown({
 			<DropdownMenuTrigger
 				aria-label="Open your profile menu"
 				data-test={"account-dropdown-trigger"}
+				data-testid="account-dropdown"
 				className={cn(
-					"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]:px-0",
+					"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]/sidebar:px-0",
 					className ?? "",
 					{
 						["active:bg-secondary/50 items-center gap-4 rounded-md" +
-							" hover:bg-secondary p-2 transition-colors border border-dashed"]:
+							" hover:bg-secondary border border-dashed p-2 transition-colors"]:
 							showProfileName,
 					},
 				)}
@@ -108,7 +106,7 @@ export function PersonalAccountDropdown({
 				<If condition={showProfileName}>
 					<div
 						className={
-							"fade-in animate-in flex w-full flex-col truncate text-left group-data-[minimized=true]:hidden"
+							"fade-in animate-in flex w-full flex-col truncate text-left group-data-[minimized=true]/sidebar:hidden"
 						}
 					>
 						<span
@@ -128,7 +126,7 @@ export function PersonalAccountDropdown({
 
 					<ChevronsUpDown
 						className={
-							"text-muted-foreground mr-1 h-8 group-data-[minimized=true]:hidden"
+							"text-muted-foreground mr-1 h-8 group-data-[minimized=true]/sidebar:hidden"
 						}
 					/>
 				</If>

@@ -3,7 +3,7 @@
  * Tests cost calculation, state management, and API integration
  */
 
-import type { User } from "@supabase/supabase-js";
+import type { JWTUserData } from "@kit/supabase/types";
 import type { UseQueryResult } from "@tanstack/react-query";
 import {
 	act,
@@ -57,20 +57,18 @@ function TestWrapper({ children }: { children: ReactNode }) {
 	return <CostTrackingProvider>{children}</CostTrackingProvider>;
 }
 
-// Helper function to create a complete User mock
-function createMockUser(overrides: Partial<User> = {}): User {
+// Helper function to create a complete JWTUserData mock
+function createMockUser(overrides: Partial<JWTUserData> = {}): JWTUserData {
 	return {
 		id: "user-123",
 		email: "test@example.com",
-		aud: "authenticated",
-		role: "authenticated",
-		created_at: "2023-01-01T00:00:00.000Z",
-		updated_at: "2023-01-01T00:00:00.000Z",
+		is_anonymous: false,
+		aal: "aal1" as const,
+		phone: "",
 		app_metadata: {},
 		user_metadata: {},
-		identities: [],
 		...overrides,
-	} as User;
+	};
 }
 
 // Helper function to create a proper UseQueryResult mock
@@ -281,9 +279,6 @@ describe("CostTrackingContext", () => {
 
 		it("handles API failure response", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -308,15 +303,11 @@ describe("CostTrackingContext", () => {
 
 			// Assert - should remain at default
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("handles network error", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -338,19 +329,11 @@ describe("CostTrackingContext", () => {
 
 			// Assert
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to fetch initial costs:",
-				expect.any(Error),
-			);
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("handles malformed JSON response", async () => {
 			// Arrange
-			const consoleSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
 			mockUseUser.mockReturnValue(
 				createMockUseQueryResult(
 					createMockUser({ id: "user-123", email: "test@example.com" }),
@@ -377,12 +360,7 @@ describe("CostTrackingContext", () => {
 
 			// Assert
 			expect(screen.getByTestId("cost")).toHaveTextContent("0");
-			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to fetch initial costs:",
-				expect.any(Error),
-			);
-
-			consoleSpy.mockRestore();
+			// Note: console.error has been removed from implementation in favor of async logger
 		});
 
 		it("re-initializes when user ID changes", async () => {

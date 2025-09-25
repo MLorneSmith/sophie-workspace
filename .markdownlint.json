@@ -1,12 +1,27 @@
 {
+<<<<<<< HEAD
+	"default": true,
+	"MD013": {
+		"line_length": 120,
+		"tables": false,
+		"code_blocks": false,
+		"ignore_code_blocks": true,
+		"ignore_tables": true,
+		"ignore_urls": true
+=======
 	"MD013": {
 		"line_length": 120,
 		"tables": false,
 		"code_blocks": false
+>>>>>>> origin/main
 	},
 	"MD033": {
 		"allowed_elements": ["br", "details", "summary", "img", "kbd"]
 	},
+<<<<<<< HEAD
+	"MD041": false
+=======
 	"MD041": false,
 	"default": true
+>>>>>>> origin/main
 }

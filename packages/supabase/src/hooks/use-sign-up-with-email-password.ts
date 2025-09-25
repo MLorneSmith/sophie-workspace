@@ -16,6 +16,19 @@ export function useSignUpWithEmailAndPassword() {
 	const mutationFn = async (params: Credentials) => {
 		const { emailRedirectTo, captchaToken, ...credentials } = params;
 
+		// Log the sign-up attempt for debugging
+		if (
+			process.env.NODE_ENV === "test" ||
+			process.env.NODE_ENV === "development"
+		) {
+			// biome-ignore lint/suspicious/noConsole: Debug logging for auth in development/test
+			console.log("[Auth Debug] Sign-up attempt:", {
+				email: credentials.email,
+				emailRedirectTo,
+				hasCaptchaToken: !!captchaToken,
+			});
+		}
+
 		const response = await client.auth.signUp({
 			...credentials,
 			options: {
@@ -25,6 +38,19 @@ export function useSignUpWithEmailAndPassword() {
 		});
 
 		if (response.error) {
+			// Log the actual error for debugging
+			if (
+				process.env.NODE_ENV === "test" ||
+				process.env.NODE_ENV === "development"
+			) {
+				// biome-ignore lint/suspicious/noConsole: Debug logging for auth errors in development/test
+				console.error("[Auth Debug] Sign-up error:", {
+					error: response.error,
+					message: response.error.message,
+					status: response.error.status,
+					code: response.error.code,
+				});
+			}
 			throw response.error.message;
 		}
 

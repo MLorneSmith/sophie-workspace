@@ -10,16 +10,17 @@
 		"build": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"openai": "^4.28.0",
 		"portkey-ai": "^0.1.0",
-		"zod": "^3.25.67"
+		"zod": "^3.25.74"
 	},
 	"devDependencies": {
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.0.1",
-		"eslint": "^9.29.0",
-		"typescript": "^5.8.3"
+		"@types/node": "^24.3.1",
+		"eslint": "^9.35.0",
+		"typescript": "^5.9.2"
 	}
 }

@@ -1,0 +1,39 @@
+# TruffleHog Configuration
+# Custom regex patterns for detecting secrets specific to our tech stack
+
+# Paths to exclude from scanning
+exclude_paths:
+  - .git/**
+  - node_modules/**
+  - .next/**
+  - .turbo/**
+  - coverage/**
+  - dist/**
+  - build/**
+  - out/**
+  - .cache/**
+  - "*.min.js"
+  - "*.map"
+  - pnpm-lock.yaml
+  - package-lock.json
+  - yarn.lock
+
+# File types to include (scan only these)
+include_paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+  - "**/*.json"
+  - "**/*.env*"
+  - "**/*.yml"
+  - "**/*.yaml"
+  - "**/*.md"
+  - "**/*.sh"
+  - "**/Dockerfile*"
+  - "**/.github/**"
+
+# Alert thresholds
+thresholds:
+  high_entropy: 4.5  # Entropy threshold for detecting high-entropy strings
+  min_secret_length: 12  # Minimum length for a potential secret
