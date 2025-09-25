@@ -13,14 +13,14 @@ dotenv.config({
 });
 
 const PAYLOAD_URL =
-	process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3020";
+	process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
 
 export default defineConfig({
 	testDir: "./",
 	testMatch: ["**/*.spec.ts"],
 	fullyParallel: false, // Run tests sequentially to avoid database conflicts
 	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
+	retries: process.env.CI ? 1 : 0,
 	workers: process.env.CI ? 1 : 1, // Single worker to avoid database conflicts
 	reporter: [
 		["html", { open: "never" }],
@@ -81,11 +81,9 @@ export default defineConfig({
 	],
 
 	webServer: {
-		command: "cd ../../../payload && npm run dev",
+		// Use the Docker container instead of starting a new server
 		url: PAYLOAD_URL,
-		reuseExistingServer: !process.env.CI,
-		stdout: "pipe",
-		stderr: "pipe",
-		timeout: 120000, // 2 minutes to start
+		reuseExistingServer: true,
+		timeout: 10000, // Short timeout since server should already be running
 	},
 });

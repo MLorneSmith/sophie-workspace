@@ -24,6 +24,7 @@ const { TestReporter } = require("../utilities/test-reporter.cjs");
 const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
 const { ResourceLock } = require("../resource-lock.cjs");
 const { TestCleanupGuard } = require("../utilities/test-cleanup-guard.cjs");
+const { TestHealthMonitor } = require("../utilities/test-health-monitor.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -112,6 +113,7 @@ class TestController {
 
 		this.testReporter = new TestReporter(CONFIG, this.testStatus);
 		this.waiter = new ConditionWaiter();
+		this.healthMonitor = new TestHealthMonitor(CONFIG);
 
 		// Initialize resource management
 		this.resourceLock = new ResourceLock();
@@ -181,6 +183,167 @@ class TestController {
 	}
 
 	/**
+	 * Validate E2E test readiness with comprehensive checks
+	 */
+	async validateE2EReadiness() {
+		const readinessResult = {
+			ready: false,
+			reason: "Unknown validation error",
+			suggestions: [],
+			checks: {
+				serverHealth: false,
+				containerHealth: false,
+				applicationResponse: false,
+				authEndpoints: false,
+			},
+		};
+
+		try {
+			log("🔍 Validating E2E test readiness...");
+
+			// Check 1: Test server availability
+			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
+			log(`  🔍 Checking server at ${testUrl}...`);
+
+			try {
+				const response = await fetch(`${testUrl}/api/health`, {
+					signal: AbortSignal.timeout(5000),
+				});
+
+				if (response.status === 200) {
+					readinessResult.checks.serverHealth = true;
+					log("  ✅ Server health check passed");
+				} else if (response.status === 503) {
+					readinessResult.reason =
+						"Server is starting up (503 Service Unavailable)";
+					readinessResult.suggestions.push(
+						"Wait a few minutes for the server to fully start up",
+						"Check container logs: docker logs slideheroes-app-test",
+					);
+					return readinessResult;
+				} else {
+					readinessResult.reason = `Server health check failed (${response.status})`;
+					readinessResult.suggestions.push(
+						"Check server logs for errors",
+						"Verify the application is running correctly",
+						"Try restarting the container: docker restart slideheroes-app-test",
+					);
+					return readinessResult;
+				}
+			} catch (fetchError) {
+				readinessResult.reason = `Cannot reach test server: ${fetchError.message}`;
+				readinessResult.suggestions.push(
+					"Ensure the test server is running",
+					"Check if port 3001 is accessible",
+					"Verify Docker container is running: docker ps | grep slideheroes",
+				);
+				return readinessResult;
+			}
+
+			// Check 2: Container-specific health (if using Docker)
+			const dockerAvailable =
+				await this.infrastructureManager.checkDockerContainer();
+			if (dockerAvailable) {
+				readinessResult.checks.containerHealth = true;
+				log("  ✅ Docker container is healthy");
+			}
+
+			// Check 3: Application response with content
+			log("  🔍 Checking application content...");
+			try {
+				const homeResponse = await fetch(testUrl, {
+					signal: AbortSignal.timeout(10000),
+					headers: { Accept: "text/html" },
+				});
+
+				if (homeResponse.status === 200) {
+					const htmlContent = await homeResponse.text();
+					if (
+						htmlContent.includes("SlideHeroes") &&
+						htmlContent.length > 1000
+					) {
+						readinessResult.checks.applicationResponse = true;
+						log("  ✅ Application serving content correctly");
+					} else {
+						readinessResult.reason =
+							"Application loads but content is missing or incomplete";
+						readinessResult.suggestions.push(
+							"Check application build and deployment",
+							"Verify environment variables are set correctly",
+							"Check browser console for JavaScript errors",
+						);
+						return readinessResult;
+					}
+				} else {
+					readinessResult.reason = `Home page returned ${homeResponse.status}`;
+					readinessResult.suggestions.push(
+						"Check application routing configuration",
+						"Verify the Next.js application is built correctly",
+					);
+					return readinessResult;
+				}
+			} catch (contentError) {
+				readinessResult.reason = `Application content check failed: ${contentError.message}`;
+				readinessResult.suggestions.push(
+					"Application may be slow to respond - increase timeout",
+					"Check for application startup issues",
+				);
+				return readinessResult;
+			}
+
+			// Check 4: Authentication endpoints (critical for most E2E tests)
+			log("  🔍 Checking authentication endpoints...");
+			try {
+				const signInResponse = await fetch(`${testUrl}/auth/sign-in`, {
+					signal: AbortSignal.timeout(5000),
+					headers: { Accept: "text/html" },
+				});
+
+				if (signInResponse.status === 200) {
+					const signInContent = await signInResponse.text();
+					if (
+						signInContent.includes("sign-in") ||
+						signInContent.includes("email") ||
+						signInContent.includes("password")
+					) {
+						readinessResult.checks.authEndpoints = true;
+						log("  ✅ Authentication endpoints accessible");
+					}
+				}
+			} catch (authError) {
+				log("  ⚠️ Auth endpoint check failed but continuing");
+			}
+
+			// Final assessment
+			const criticalChecks = [
+				readinessResult.checks.serverHealth,
+				readinessResult.checks.applicationResponse,
+			];
+
+			if (criticalChecks.every((check) => check)) {
+				readinessResult.ready = true;
+				readinessResult.reason = "All critical checks passed";
+				log("  ✅ E2E infrastructure is ready for testing");
+			} else {
+				readinessResult.reason = "Critical infrastructure checks failed";
+				readinessResult.suggestions.push(
+					"Fix the server and application issues above",
+					"Consider running with --skip-e2e to run only unit tests",
+				);
+			}
+
+			return readinessResult;
+		} catch (error) {
+			readinessResult.reason = `E2E validation error: ${error.message}`;
+			readinessResult.suggestions.push(
+				"Check system resources and network connectivity",
+				"Try restarting the test infrastructure",
+			);
+			return readinessResult;
+		}
+	}
+
+	/**
 	 * Show help message
 	 */
 	showHelp() {
@@ -244,6 +407,16 @@ Examples:
 			// Generate report
 			const report = await this.testReporter.generateReport();
 
+			// Update statusline with final results
+			const summary = this.testStatus.getSummary();
+			const statusValue = summary.failed === 0 ? "success" : "failed";
+			await this.testStatus.updateStatusLine(
+				statusValue,
+				summary.passed,
+				summary.failed,
+				summary.total,
+			);
+
 			// Determine exit code
 			const exitCode = result.success ? 0 : 1;
 			const duration = Math.round((Date.now() - startTime) / 1000);
@@ -256,6 +429,14 @@ Examples:
 			process.exit(exitCode);
 		} catch (error) {
 			logError(`Fatal error: ${error.message}`);
+
+			// Update statusline to indicate failure
+			try {
+				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
+			} catch (statusError) {
+				// Don't let status update errors prevent cleanup
+				logError(`Failed to update status: ${statusError.message}`);
+			}
 
 			// Emergency cleanup
 			await this.emergencyCleanup();
@@ -313,7 +494,8 @@ Examples:
 						results[service] === "healthy" ||
 						results[service] === "ready" ||
 						results[service] === "started" ||
-						results[service] === "already_running",
+						results[service] === "already_running" ||
+						results[service] === "docker_container",
 				);
 
 				if (!allHealthy) {
@@ -350,18 +532,39 @@ Examples:
 			});
 		}
 
-		// Phase 4: E2E Tests
+		// Phase 4: E2E Tests with intelligent skipping
 		if (!this.options.skipE2E) {
 			phases.push({
 				name: "e2e_tests",
 				critical: false,
 				executor: async () => {
+					// Pre-flight check for E2E infrastructure
+					const e2eReadiness = await this.validateE2EReadiness();
+
+					if (!e2eReadiness.ready) {
+						log(`⚠️ E2E tests skipped: ${e2eReadiness.reason}`);
+						log(
+							"💡 Suggestion: Fix the infrastructure issues and re-run tests",
+						);
+
+						return {
+							success: false,
+							skipped: true,
+							reason: e2eReadiness.reason,
+							suggestions: e2eReadiness.suggestions,
+							testsRun: 0,
+							testsPassed: 0,
+							testsFailed: 0,
+						};
+					}
+
+					// Infrastructure is healthy, run E2E tests
 					const result = await this.e2eTestRunner.run();
 					return result;
 				},
 				options: {
 					timeout: CONFIG.timeouts.e2eTests,
-					canRecover: false,
+					canRecover: true, // Enable recovery for E2E tests
 				},
 			});
 		}
@@ -411,21 +614,61 @@ Examples:
 			// Kill managed processes
 			await this.processManager.killAll();
 
-			// Clear ports with enhanced retry logic
-			const portsCleared = await this.processManager.clearPorts(
-				[CONFIG.ports.web, CONFIG.ports.webTest, CONFIG.ports.payload],
-				{
+			// Clear ports with enhanced retry logic - only if ports are actually in use
+			let portsToCheck = [
+				CONFIG.ports.web,
+				CONFIG.ports.webTest,
+				CONFIG.ports.payload,
+			];
+
+			// Skip Docker container ports to avoid signal conflicts
+			const dockerAvailable =
+				await this.infrastructureManager.checkDockerContainer();
+			if (dockerAvailable) {
+				log("🐳 Skipping Docker container port (3001) from final cleanup");
+				portsToCheck = portsToCheck.filter((port) => port !== 3001);
+			}
+
+			const portsInUse = [];
+
+			// Check which ports actually have processes before trying to clear them
+			for (const port of portsToCheck) {
+				try {
+					const { exec } = require("node:child_process");
+					const { promisify } = require("node:util");
+					const execAsync = promisify(exec);
+					const { stdout } = await execAsync(
+						`lsof -ti:${port} 2>/dev/null || echo ""`,
+					);
+					if (stdout.trim()) {
+						portsInUse.push(port);
+					}
+				} catch {
+					// Port is free
+				}
+			}
+
+			if (portsInUse.length > 0) {
+				log(`🔧 Clearing ports in use: ${portsInUse.join(", ")}`);
+				const portsCleared = await this.processManager.clearPorts(portsInUse, {
 					maxRetries: 3,
 					waitTime: 2000,
-				},
-			);
+				});
 
-			if (!portsCleared) {
-				logError("Some ports could not be cleared completely");
+				if (!portsCleared) {
+					logError("Some ports could not be cleared completely");
+				}
+			} else {
+				log("✅ No ports need clearing");
 			}
 
 			// Release locks
 			await this.resourceLock.release("main");
+
+			// Cleanup health monitor
+			if (this.healthMonitor) {
+				this.healthMonitor.cleanup();
+			}
 
 			// Final cleanup guard
 			await this.cleanupGuard.executeCleanup();
@@ -492,6 +735,14 @@ Examples:
 			this.testStatus.status.status = "interrupted";
 			await this.testStatus.save();
 
+			// Update statusline to indicate interruption (treat as failure)
+			try {
+				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
+			} catch (statusError) {
+				// Don't let status update errors prevent cleanup
+				logError(`Failed to update status: ${statusError.message}`);
+			}
+
 			// Cleanup
 			await this.cleanup();
 
@@ -506,6 +757,13 @@ Examples:
 			logError(`Uncaught exception: ${error.message}`);
 			console.error(error.stack);
 
+			// Update statusline to indicate failure
+			try {
+				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
+			} catch (statusError) {
+				// Don't let status update errors prevent cleanup
+			}
+
 			await this.emergencyCleanup();
 			process.exit(1);
 		});
@@ -514,6 +772,13 @@ Examples:
 		process.on("unhandledRejection", async (reason, promise) => {
 			logError(`Unhandled rejection at: ${promise}`);
 			console.error(reason);
+
+			// Update statusline to indicate failure
+			try {
+				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
+			} catch (statusError) {
+				// Don't let status update errors prevent cleanup
+			}
 
 			await this.emergencyCleanup();
 			process.exit(1);

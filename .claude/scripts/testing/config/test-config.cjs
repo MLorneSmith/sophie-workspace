@@ -32,8 +32,8 @@ const CONFIG = {
 		unitTests: 15 * 60 * 1000, // 15 minutes
 		e2eSetup: 60000, // 1 minute
 		e2eTests: 45 * 60 * 1000, // 45 minutes
-		shardTimeout: 30 * 60 * 1000, // 30 minutes per shard
-		fileTimeout: 3 * 60 * 1000, // 3 minutes per test file
+		shardTimeout: 2 * 60 * 1000, // 2 minutes per shard (very aggressive timeout)
+		fileTimeout: 2 * 60 * 1000, // 2 minutes per test file
 		cleanup: 30000, // 30 seconds
 		reporting: 30000, // 30 seconds
 
@@ -73,8 +73,10 @@ const CONFIG = {
 			: 1, // Force sequential execution - parallel E2E tests cause system instability
 
 		// Test retry settings
-		maxTestRetries: 2,
+		maxTestRetries: 1,
 		retryFailedTests: true,
+		continueOnFailure: true, // Continue running tests even if some fail
+		continueOnTimeout: true, // Continue running tests even if some timeout
 
 		// Cache settings
 		useCache: process.env.TEST_USE_CACHE !== "false",

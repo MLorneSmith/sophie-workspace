@@ -5,6 +5,7 @@
 
 const fs = require("node:fs").promises;
 const path = require("node:path");
+const { TestFailureAnalyzer } = require("./test-failure-analyzer.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -20,6 +21,7 @@ class TestReporter {
 	constructor(config, testStatus) {
 		this.config = config;
 		this.testStatus = testStatus;
+		this.failureAnalyzer = new TestFailureAnalyzer();
 	}
 
 	/**
@@ -157,6 +159,9 @@ class TestReporter {
 				}
 			}
 		}
+
+		// Enhanced failure analysis for all tests
+		this.generateAndDisplayFailureAnalysis(report);
 
 		// Infrastructure status
 		console.log("\n🔧 INFRASTRUCTURE");
@@ -525,7 +530,66 @@ ${report.errors
 	}
 
 	/**
-	 * Generate failure analysis
+	 * Generate and display comprehensive failure analysis
+	 */
+	generateAndDisplayFailureAnalysis(report) {
+		const hasFailures = report.summary.failed > 0;
+		const hasSkipped = report.e2e.skipped > 0;
+		const hasInfrastructureIssues =
+			report.infrastructure.supabase !== "healthy" ||
+			report.infrastructure.database !== "healthy";
+
+		// Only show detailed analysis if there are issues to analyze
+		if (!hasFailures && !hasSkipped && !hasInfrastructureIssues) {
+			return;
+		}
+
+		// Combine all test results for analysis
+		const testResults = {
+			unit: report.unit,
+			e2e: report.e2e,
+			infrastructure: report.infrastructure,
+			errors: report.errors || [],
+			output: this.combineTestOutput(report),
+		};
+
+		// Analyze failures
+		const analysis = this.failureAnalyzer.analyzeFailures(testResults);
+
+		if (analysis.totalFailures > 0 || analysis.suggestions.length > 0) {
+			console.log("\n" + this.failureAnalyzer.formatAnalysis(analysis));
+		}
+	}
+
+	/**
+	 * Combine test output from various sources for analysis
+	 */
+	combineTestOutput(report) {
+		let output = "";
+
+		// Add unit test output if available
+		if (report.unit.output) {
+			output += `UNIT TESTS:\n${report.unit.output}\n\n`;
+		}
+
+		// Add E2E test output if available
+		if (report.e2e.output) {
+			output += `E2E TESTS:\n${report.e2e.output}\n\n`;
+		}
+
+		// Add error information
+		if (report.errors && report.errors.length > 0) {
+			output += "ERRORS:\n";
+			report.errors.forEach((error) => {
+				output += `[${error.phase}] ${error.message}\n`;
+			});
+		}
+
+		return output;
+	}
+
+	/**
+	 * Generate failure analysis (legacy method - kept for compatibility)
 	 */
 	generateFailureAnalysis(report) {
 		const analysis = {

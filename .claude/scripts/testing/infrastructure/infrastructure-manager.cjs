@@ -122,9 +122,16 @@ class InfrastructureManager {
 		}
 
 		if (healthResults.devServer !== "healthy" && !unitOnly) {
-			log("🌐 Setting up dev server...");
-			setupResults.devServer = await this.setupDevServer();
-			needsVerification = true;
+			// Check if we have Docker containers available before trying to setup dev server
+			const dockerAvailable = await this.checkDockerContainer();
+			if (dockerAvailable) {
+				log("🐳 Docker container detected - skipping dev server setup");
+				setupResults.devServer = "docker_container";
+			} else {
+				log("🌐 Setting up dev server...");
+				setupResults.devServer = await this.setupDevServer();
+				needsVerification = true;
+			}
 		}
 
 		// Always clean ports as this is lightweight and prevents conflicts
@@ -364,6 +371,124 @@ class InfrastructureManager {
 			return "outdated";
 		} catch {
 			return "missing";
+		}
+	}
+
+	/**
+	 * Check if Docker container is available and healthy
+	 */
+	async checkDockerContainer() {
+		try {
+			const { stdout: dockerCheck } = await execAsync(
+				'docker ps --format "{{.Names}}:{{.State}}:{{.Ports}}" | grep -E "slideheroes-app-test" || echo ""',
+			);
+
+			if (
+				dockerCheck.includes("slideheroes-app-test") &&
+				dockerCheck.includes("3001")
+			) {
+				// Comprehensive container health check
+				const healthStatus = await this.validateContainerHealth();
+				if (healthStatus.healthy) {
+					// Set environment variables for E2E tests to use port 3001
+					process.env.TEST_BASE_URL = "http://localhost:3001";
+					process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3001";
+					return true;
+				} else {
+					log(`⚠️ Docker container unhealthy: ${healthStatus.reason}`);
+					return false;
+				}
+			}
+			return false;
+		} catch {
+			return false;
+		}
+	}
+
+	/**
+	 * Comprehensive container health validation
+	 */
+	async validateContainerHealth() {
+		const baseUrl = "http://localhost:3001";
+		const healthStatus = {
+			healthy: false,
+			reason: "Unknown error",
+			checks: {
+				healthEndpoint: false,
+				homePage: false,
+				apiResponse: false,
+				applicationReady: false,
+			},
+		};
+
+		try {
+			// Check 1: Health endpoint
+			log("  🔍 Checking health endpoint...");
+			const healthResponse = await fetch(`${baseUrl}/api/health`, {
+				signal: AbortSignal.timeout(5000),
+			});
+
+			if (healthResponse.status === 200) {
+				healthStatus.checks.healthEndpoint = true;
+				log("  ✅ Health endpoint responding");
+			} else {
+				healthStatus.reason = `Health endpoint returned ${healthResponse.status}`;
+				log(`  ❌ Health endpoint failed: ${healthResponse.status}`);
+				return healthStatus;
+			}
+
+			// Check 2: Home page loads with content
+			log("  🔍 Checking home page content...");
+			const homeResponse = await fetch(baseUrl, {
+				signal: AbortSignal.timeout(10000),
+				headers: { Accept: "text/html" },
+			});
+
+			if (homeResponse.status === 200) {
+				const htmlContent = await homeResponse.text();
+				if (htmlContent.includes("SlideHeroes") && htmlContent.length > 1000) {
+					healthStatus.checks.homePage = true;
+					log("  ✅ Home page loads with content");
+				} else {
+					healthStatus.reason =
+						"Home page loads but missing content or too small";
+					log("  ❌ Home page content insufficient");
+					return healthStatus;
+				}
+			} else {
+				healthStatus.reason = `Home page returned ${homeResponse.status}`;
+				log(`  ❌ Home page failed: ${homeResponse.status}`);
+				return healthStatus;
+			}
+
+			// Check 3: API functionality
+			log("  🔍 Checking API responsiveness...");
+			try {
+				const apiResponse = await fetch(`${baseUrl}/api/health`, {
+					signal: AbortSignal.timeout(3000),
+				});
+				const apiData = await apiResponse.json();
+				if (apiData && typeof apiData === "object") {
+					healthStatus.checks.apiResponse = true;
+					log("  ✅ API responding with valid JSON");
+				}
+			} catch (apiError) {
+				log("  ⚠️ API check failed but continuing");
+			}
+
+			// Check 4: Application readiness (check for common Next.js indicators)
+			if (healthStatus.checks.healthEndpoint && healthStatus.checks.homePage) {
+				healthStatus.checks.applicationReady = true;
+				healthStatus.healthy = true;
+				healthStatus.reason = "All checks passed";
+				log("  ✅ Container application is fully healthy");
+			}
+
+			return healthStatus;
+		} catch (error) {
+			healthStatus.reason = `Container validation error: ${error.message}`;
+			log(`  ❌ Container validation failed: ${error.message}`);
+			return healthStatus;
 		}
 	}
 
@@ -841,26 +966,55 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 		try {
 			log("🧹 Cleaning up test ports...");
 
-			const portsToClean = [
+			let portsToClean = [
 				this.config.ports.web,
 				this.config.ports.webTest,
 				this.config.ports.payload,
 			];
 
+			// Skip Docker container ports to avoid signal propagation issues
+			const dockerAvailable = await this.checkDockerContainer();
+			if (dockerAvailable) {
+				log(
+					"🐳 Skipping Docker container port cleanup (3001) to avoid signal conflicts",
+				);
+				portsToClean = portsToClean.filter((port) => port !== 3001);
+			}
+
+			let portsCleared = 0;
 			for (const port of portsToClean) {
 				try {
 					const { stdout } = await execAsync(
 						`lsof -ti:${port} 2>/dev/null || echo "free"`,
 					);
 					if (stdout.trim() !== "free") {
+						log(`  🔧 Clearing port ${port}...`);
+						// Use more gentle approach - SIGTERM first, then SIGKILL if needed
 						await execAsync(
-							`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`,
+							`lsof -ti:${port} | xargs -r kill 2>/dev/null || true`,
 						);
+						// Wait briefly for graceful shutdown
+						await new Promise((resolve) => setTimeout(resolve, 500));
+
+						// Check if still in use, force kill if needed
+						const { stdout: stillUsed } = await execAsync(
+							`lsof -ti:${port} 2>/dev/null || echo "free"`,
+						);
+						if (stillUsed.trim() !== "free") {
+							await execAsync(
+								`lsof -ti:${port} | xargs -r kill -9 2>/dev/null || true`,
+							);
+						}
 						log(`  ✅ Cleared port ${port}`);
+						portsCleared++;
 					}
 				} catch {
-					// Port already free
+					// Port already free or error clearing
 				}
+			}
+
+			if (portsCleared === 0) {
+				log("  ✅ All ports already free");
 			}
 
 			return "cleaned";

@@ -7,9 +7,10 @@ const { promisify } = require("node:util");
 const execAsync = promisify(exec);
 
 // Configuration
-const AGENTS_DIR = path.join(__dirname, "..", "..", "agents");
+const AGENTS_DIR = path.join(__dirname, "..", "..", "..", "agents");
 const OUTPUT_FILE = path.join(
 	__dirname,
+	"..",
 	"..",
 	"..",
 	"data",

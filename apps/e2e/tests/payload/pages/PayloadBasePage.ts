@@ -16,7 +16,8 @@ export abstract class PayloadBasePage {
 
 	constructor(page: Page) {
 		this.page = page;
-		this.baseURL = process.env.PAYLOAD_URL || "http://localhost:3020";
+		this.baseURL =
+			process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
 
 		// Navigation elements
 		this.navSidebar = page.locator(".nav");

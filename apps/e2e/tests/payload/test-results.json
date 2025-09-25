@@ -1,0 +1,138 @@
+{
+	"config": {
+		"configFile": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/playwright.config.ts",
+		"rootDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+		"forbidOnly": false,
+		"fullyParallel": false,
+		"globalSetup": null,
+		"globalTeardown": null,
+		"globalTimeout": 0,
+		"grep": {},
+		"grepInvert": null,
+		"maxFailures": 0,
+		"metadata": {},
+		"preserveOutput": "always",
+		"reporter": [
+			[
+				"html",
+				{
+					"open": "never"
+				}
+			],
+			["list", null],
+			[
+				"json",
+				{
+					"outputFile": "test-results.json"
+				}
+			]
+		],
+		"reportSlowTests": {
+			"max": 5,
+			"threshold": 300000
+		},
+		"quiet": false,
+		"projects": [
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "setup",
+				"name": "setup",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["/.*setup\\.ts/"],
+				"timeout": 30000
+			},
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "cleanup",
+				"name": "cleanup",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["/.*teardown\\.ts/"],
+				"timeout": 30000
+			},
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "chromium",
+				"name": "chromium",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["**/*.spec.ts"],
+				"timeout": 30000
+			},
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "firefox",
+				"name": "firefox",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["**/*.spec.ts"],
+				"timeout": 30000
+			},
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "webkit",
+				"name": "webkit",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["**/*.spec.ts"],
+				"timeout": 30000
+			},
+			{
+				"outputDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {},
+				"id": "mobile",
+				"name": "mobile",
+				"testDir": "/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload",
+				"testIgnore": [],
+				"testMatch": ["**/*.spec.ts"],
+				"timeout": 30000
+			}
+		],
+		"shard": null,
+		"updateSnapshots": "missing",
+		"updateSourceMethod": "patch",
+		"version": "1.55.0",
+		"workers": 1,
+		"webServer": {
+			"command": "cd ../../../payload && npm run dev",
+			"url": "http://localhost:3020",
+			"reuseExistingServer": true,
+			"stdout": "pipe",
+			"stderr": "pipe",
+			"timeout": 120000
+		}
+	},
+	"suites": [],
+	"errors": [
+		{
+			"message": "Error: Process from config.webServer exited early.",
+			"stack": "Error: Process from config.webServer exited early."
+		}
+	],
+	"stats": {
+		"startTime": "2025-09-25T15:58:35.482Z",
+		"duration": 157962.37900000002,
+		"expected": 0,
+		"skipped": 0,
+		"unexpected": 0,
+		"flaky": 0
+	}
+}

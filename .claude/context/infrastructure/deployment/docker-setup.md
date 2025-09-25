@@ -25,9 +25,9 @@ cross_references:
 
 # Maintenance
 created: "2025-09-09"
-last_updated: "2025-09-19"
+last_updated: "2025-09-25"
 author: "create-context"
-revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Windows/WSL2 port binding issues, added test infrastructure integration documentation, fixed container permission issues, added hybrid Edge Functions architecture documentation (GitHub issue #29)"
+revised: "2025-09-25 - Updated to reflect single Supabase stack architecture using ports 54321-54323, removed E2E stack references, simplified testing infrastructure"
 ---
 
 # Docker Setup and Container Architecture
@@ -36,9 +36,9 @@ revised: "2025-09-19 - Updated port configuration to 39xxx range to resolve Wind
 
 The SlideHeroes project uses a **hybrid Docker architecture** that combines containerized services with host-based application development for optimal performance and flexibility. The setup consists of:
 
-1. **Supabase CLI Stacks** (Not docker-compose):
-   - **2025slideheroes-db** - Main Supabase services (database, auth, storage) on ports 39000-39006
-   - **2025slideheroes-e2e** - E2E test Supabase services on ports 55321/55322
+1. **Supabase CLI Stack** (Not docker-compose):
+   - **2025slideheroes-db** - Main Supabase services (database, auth, storage) on ports 54321-54323
+   - Used for both development and E2E testing
 
 2. **Docker Compose Stack** (`docker-compose.test.yml`):
    - **2025slideheroes-test** - Test environment stack with two containers:
@@ -57,46 +57,41 @@ The SlideHeroes project uses a **hybrid Docker architecture** that combines cont
 
 This hybrid approach provides the best of both worlds: fast local development with isolated, reproducible service dependencies.
 
-## Recent Updates (2025-09-19)
+## Recent Updates (2025-09-25)
 
-### Port Configuration Changes
-- **Main Stack**: Migrated from 54xxx to 39xxx port range to resolve Windows/WSL2 conflicts
-- **New URLs**:
-  - Studio: http://localhost:39002 (was 54323)
-  - API: http://localhost:39000 (was 54321)
-  - Database: postgresql://postgres:postgres@localhost:39001/postgres (was 54322)
+### Simplified Architecture
+- **Single Supabase Stack**: Consolidated to one stack on ports 54321-54323
+- **Unified Testing**: E2E tests now use the same database as development
+- **Removed Complexity**: No longer maintaining separate E2E Supabase instance
+
+### Current URLs:
+- Studio: http://localhost:54323
+- API: http://localhost:54321
+- Database: postgresql://postgres:postgres@localhost:54322/postgres
 
 ### RLS Performance Optimizations
 - Consolidated 45+ duplicate RLS policies across 15 tables
-- Applied optimizations to both main and E2E databases
+- Applied optimizations to single database
 - Expected 2-10x query performance improvement
 
-### Windows/WSL2 Compatibility
-- Documented port binding issues and solutions
-- Recommended WSL 2.6.1+ with mirrored networking mode
-- Implemented safe port range (39xxx) to avoid Hyper-V conflicts
-
-### Docker Compose Naming Clarity
-- Renamed Docker Compose project to `2025slideheroes-test` for clear distinction
+### Docker Compose Naming
 - Naming convention:
-  - `-db` suffix: Main Supabase development stack
-  - `-e2e` suffix: E2E Supabase testing stack
+  - `-db` suffix: Main Supabase development and testing stack
   - `-test` suffix: Docker Compose test containers
 
 ## Service Architecture
 
 ### Supabase Services (Managed by Supabase CLI)
 
-**Two Isolated Stacks**:
+**Single Unified Stack (2025slideheroes-db)**:
 
-| Service | Main Stack (2025slideheroes-db) | E2E Stack (2025slideheroes-e2e) |
-|---------|----------------------------------|----------------------------------|
-| API Gateway | 39000 | 55321 |
-| PostgreSQL | 39001 | 55322 |
-| Studio | 39002 | 55323 |
-| Inbucket | 39003-39005 | 55324-55326 |
-| Analytics | 39006 | 55327 |
-| **Edge Functions** | 39000/functions/v1/* | 55321/functions/v1/* |
+| Service | Port |
+|---------|------|
+| API Gateway | 54321 |
+| PostgreSQL | 54322 |
+| Studio | 54323 |
+| Inbucket | 54324-54326 |
+| **Edge Functions** | 54321/functions/v1/* |
 
 **Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, Supabase Studio, and **Edge Functions Runtime**
 
@@ -110,7 +105,7 @@ This hybrid approach provides the best of both worlds: fast local development wi
 - **Containers**:
   - `slideheroes-app-test`: Next.js on port 3001 (dev uses 3000)
   - `slideheroes-payload-test`: Payload CMS on port 3021 (dev uses 3020)
-- **Environment**: Connects to E2E Supabase stack (55321/55322)
+- **Environment**: Connects to main Supabase stack (54321/54322)
 - **Package Management**: Uses `npx pnpm@latest` to avoid permission issues
 - **Volume Strategy**: Simplified mounting without isolated node_modules to prevent permission conflicts
 - **Health Endpoints**: `/api/health` for container health verification
@@ -132,7 +127,7 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 **Supabase Edge Functions** (Deno Runtime):
 - **Location**: `apps/web/supabase/functions/`
 - **Runtime**: Integrated within Supabase Docker stack
-- **Access URL**: `http://localhost:39000/functions/v1/{function-name}`
+- **Access URL**: `http://localhost:54321/functions/v1/{function-name}`
 - **Use Case**: Heavy file processing and external API integrations
 - **Functions**:
   - `powerpoint-generator`: PowerPoint file generation with memory optimization
@@ -174,7 +169,7 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 
 ### Supporting Services
 
-**PostgreSQL** (39001 for main, 55322 for E2E):
+**PostgreSQL** (54322):
 - Supabase-optimized PostgreSQL 15.8
 - OrioleDB support (disabled by default in Codespaces)
 - Performance tuning for development
@@ -188,7 +183,7 @@ MCP servers are configured natively through Claude Code via `.mcp.json` at proje
 - SMTP server for email testing
 - Web UI for email inspection
 
-**Supabase Studio** (39002 for main, 55323 for E2E):
+**Supabase Studio** (54323):
 - Optional database management UI
 - Connected to local PostgreSQL
 
@@ -242,9 +237,9 @@ Windows with WSL2 and Docker Desktop can experience port binding conflicts due t
 
 ### Solutions
 
-1. **Port Range Change (Implemented)**: The main stack now uses ports 39000-39006 to avoid the problematic range.
+1. **Standard Ports**: The stack uses ports 54321-54323, which are typically outside the problematic range.
 
-2. **WSL Update**: Update to WSL 2.6.1+ and enable mirrored networking mode:
+2. **WSL Update**: If you experience issues, update to WSL 2.6.1+ and enable mirrored networking mode:
    ```powershell
    wsl --update
    ```
@@ -272,25 +267,25 @@ cd 2025slideheroes
 # 2. Install dependencies on host
 pnpm install
 
-# 3. Start Supabase services
-npx supabase start  # Main stack on ports 39000/39001
+# 3. Start Supabase services from apps/web directory
+cd apps/web
+npx supabase start  # Main stack on ports 54321/54322/54323
+cd ../..
 
-# 4. Start E2E Supabase services (in apps/e2e directory)
-cd apps/e2e && npx supabase start  # E2E stack on ports 55321/55322
-
-# 5. Configure MCP servers (for AI features)
+# 4. Configure MCP servers (for AI features)
 # MCP servers are now managed by Claude Code via .mcp.json
 # No Docker commands needed - they run automatically when Claude Code starts
 
-# 6. Start development server on host
+# 5. Start development server on host
 pnpm dev  # Runs on port 3000
 ```
 
 ### Daily Development (Hybrid Architecture)
 
 ```bash
-# Start backend services
-npx supabase start  # If not already running (ports 39000-39006)
+# Start backend services from apps/web directory
+cd apps/web && npx supabase start  # If not already running (ports 54321-54323)
+cd ../..
 
 # MCP servers start automatically with Claude Code (configured in .mcp.json)
 
@@ -307,17 +302,17 @@ curl http://localhost:3021/api/health    # Should return {"status":"ready"}
 # Run tests (auto-detects containers)
 /test --quick              # Quick infrastructure check, uses containers if available
 /test --unit              # Unit tests, uses containers if available
-/test --e2e               # E2E tests, requires containers for full suite
+/test --e2e               # E2E tests using main database
 ```
 
 ### Parallel Development and Testing
 
 ```bash
 # Terminal 1: Development (on host)
-pnpm dev  # Port 3000, uses main Supabase (39000/39001)
+pnpm dev  # Port 3000, uses main Supabase (54321/54322)
 
 # Terminal 2: Test servers (in containers)
-docker-compose -f docker-compose.test.yml up  # Ports 3001 & 3021, uses E2E Supabase (55321/55322)
+docker-compose -f docker-compose.test.yml up  # Ports 3001 & 3021, uses main Supabase (54321/54322)
 
 # Terminal 3: Run tests
 /test                                           # Auto-detects port 3001 containers
@@ -352,12 +347,11 @@ MCP servers are now managed directly by Claude Code through the `.mcp.json` conf
 
 ### Environment Variables
 
-**Critical Variables (Updated for new ports)**:
+**Critical Variables**:
 ```bash
 NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:39001/postgres  # Main stack
-# DATABASE_URL=postgresql://postgres:postgres@localhost:55322/postgres  # E2E stack
-SUPABASE_URL=http://localhost:39000  # Main API (was 54321)
+DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+SUPABASE_URL=http://localhost:54321
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
 ```
@@ -389,11 +383,8 @@ MCP_AUTH_TOKEN=[bearer-token]
 ### Supabase Management
 
 ```bash
-# Start main Supabase services
-npx supabase start
-
-# Start E2E Supabase services
-cd apps/e2e && npx supabase start
+# Start Supabase services (from apps/web directory)
+cd apps/web && npx supabase start
 
 # Stop Supabase services
 npx supabase stop
@@ -414,27 +405,23 @@ npx supabase gen types typescript --local
 ### Database Operations
 
 ```bash
-# Connect to main PostgreSQL
-psql postgresql://postgres:postgres@127.0.0.1:39001/postgres
-
-# Connect to E2E PostgreSQL
-psql postgresql://postgres:postgres@127.0.0.1:55322/postgres
+# Connect to PostgreSQL
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
 
 # View Supabase Studio
-open http://localhost:39002  # Main
-open http://localhost:55323  # E2E
+open http://localhost:54323
 ```
 
 ### Edge Functions Testing
 
 ```bash
 # Test Supabase Edge Functions (within Docker stack)
-curl -X POST http://localhost:39000/functions/v1/powerpoint-generator \
+curl -X POST http://localhost:54321/functions/v1/powerpoint-generator \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer [auth-token]" \
   -d '{"storyboard": {...}, "userId": "test-user"}'
 
-curl -X POST http://localhost:39000/functions/v1/certificate-generator \
+curl -X POST http://localhost:54321/functions/v1/certificate-generator \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer [auth-token]" \
   -d '{"userId": "test-user", "courseId": "course-123", "fullName": "Test User"}'
@@ -451,8 +438,8 @@ curl -X POST http://localhost:3000/api/ai/simplify-text \
   -d '{"content": "complex text", "userId": "test-user", "canvasId": "123", "sectionType": "situation"}'
 
 # Check Edge Functions are responding (should return 401 without auth)
-curl -X POST http://localhost:39000/functions/v1/powerpoint-generator -H "Content-Type: application/json" -d '{}'
-curl -X POST http://localhost:39000/functions/v1/certificate-generator -H "Content-Type: application/json" -d '{}'
+curl -X POST http://localhost:54321/functions/v1/powerpoint-generator -H "Content-Type: application/json" -d '{}'
+curl -X POST http://localhost:54321/functions/v1/certificate-generator -H "Content-Type: application/json" -d '{}'
 ```
 
 ### Test Container Management
@@ -483,12 +470,12 @@ docker-compose -f docker-compose.test.yml down
 lsof -i :3000  # Dev server
 lsof -i :3001  # Test server (Next.js)
 lsof -i :3021  # Test server (Payload CMS)
-lsof -i :39000  # Main Supabase API
-lsof -i :55321  # E2E Supabase
+lsof -i :54321  # Supabase API
+lsof -i :54322  # PostgreSQL
+lsof -i :54323  # Supabase Studio
 
 # View Supabase container logs
-docker logs supabase_db_2025slideheroes-db -f  # Main stack
-docker logs supabase_db_2025slideheroes-e2e -f  # E2E stack
+docker logs supabase_db_2025slideheroes-db -f
 
 # Check Docker compose stacks
 docker compose ls
@@ -500,9 +487,8 @@ docker ps --format "table {{.Names}}\t{{.Labels}}"
 ### Cleanup
 
 ```bash
-# Stop Supabase services
-npx supabase stop
-cd apps/e2e && npx supabase stop
+# Stop Supabase services (from apps/web directory)
+cd apps/web && npx supabase stop
 
 # Stop test containers (if running)
 docker-compose -f docker-compose.test.yml down
@@ -662,12 +648,9 @@ Consider moving to full containerization when:
 Use these commands to verify your entire Docker infrastructure is working correctly:
 
 ```bash
-# === Supabase Stacks ===
-echo "=== Main Supabase Stack ==="
-npx supabase status                           # Should show API on 39000, DB on 39001
-
-echo "=== E2E Supabase Stack ==="
-cd apps/e2e && npx supabase status            # Should show API on 55321, DB on 55322
+# === Supabase Stack ===
+echo "=== Supabase Stack ==="
+cd apps/web && npx supabase status            # Should show API on 54321, DB on 54322, Studio on 54323
 cd ../..
 
 # === Docker Containers ===
@@ -694,24 +677,23 @@ node .claude/scripts/testing/infrastructure/test-controller.cjs --quick
 
 **✅ Healthy Setup Should Show**:
 ```
-Main Supabase:   API=39000, DB=39001, Studio=39002
-E2E Supabase:    API=55321, DB=55322, Studio=55323
+Supabase:        API=54321, DB=54322, Studio=54323
 Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021)
 MCP Server:      docs-mcp-server (6280)
-Infrastructure:  All infrastructure healthy (7/7)
+Infrastructure:  All infrastructure healthy
 ```
 
 **❌ Common Issues**:
 - **Port conflicts**: Check `lsof -i :3001` and restart containers
 - **Container exits**: Check logs with `docker logs slideheroes-app-test`
-- **Supabase not running**: Run `npx supabase start` in main and `apps/e2e`
+- **Supabase not running**: Run `cd apps/web && npx supabase start`
 - **Infrastructure check fails**: Run `/test --debug` for detailed diagnostics
 
 ### Quick Diagnostic Commands
 
 ```bash
 # Check what's using key ports
-lsof -i :3000 :3001 :3021 :39000 :39001 :55321 :55322
+lsof -i :3000 :3001 :3021 :54321 :54322 :54323
 
 # View all running containers
 docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
@@ -728,72 +710,37 @@ curl http://localhost:3021/api/health
 /test --quick --debug
 ```
 
-## Prevention Mechanisms for Incorrect Stack Creation
+## Best Practices for Supabase Stack Management
 
-### Issue #348 Resolution
+### Directory-Specific Commands
 
-After resolving RLS performance issues, we implemented multiple prevention mechanisms to stop the creation of incorrect Supabase stacks:
-
-**Problem**: Running `npx supabase start` from project root creates wrong stack:
-- ❌ Stack: `2025slideheroes` (ports 54321/54322)
-- ✅ Correct: `2025slideheroes-db` (ports 39000-39006) or `2025slideheroes-e2e` (ports 55321/55322)
-
-### 1. Claude Code Hook Guard
-
-**Location**: `.claude/settings.local.json` and `.claude/hooks/supabase-directory-guard.sh`
-
-**How it works**: Intercepts all Bash commands containing "supabase" and blocks execution if run from project root.
-
-**Example Warning**:
-```
-🚨 SUPABASE DIRECTORY WARNING
-❌ You're running a Supabase command from the project root.
-🛑 Command blocked to prevent incorrect stack creation.
-
-✅ Correct usage:
-   cd apps/web && npx supabase start    # For main development
-   cd apps/e2e && npx supabase start    # For E2E testing
-```
-
-### 2. Root-Level Warning Config
-
-**Location**: `supabase/config.toml` (project root)
-
-**Purpose**: Creates invalid configuration with ports 99999/99998 to prevent accidental usage and shows clear warnings.
-
-### 3. Directory-Specific Best Practices
-
-**Always run Supabase commands from the correct directories**:
+**Always run Supabase commands from the apps/web directory**:
 
 ```bash
-# ✅ CORRECT - Main development
+# ✅ CORRECT - From apps/web directory
 cd apps/web
-npx supabase start    # Creates 2025slideheroes-db on ports 39000-39006
+npx supabase start    # Creates 2025slideheroes-db on ports 54321-54323
+npx supabase status   # Check status
+npx supabase stop     # Stop services
 
-# ✅ CORRECT - E2E testing
-cd apps/e2e
-npx supabase start    # Creates 2025slideheroes-e2e on ports 55321-55322
-
-# ❌ WRONG - Project root (blocked by hook)
+# ❌ WRONG - From project root
 cd /home/msmith/projects/2025slideheroes
-npx supabase start    # Would create wrong stack, now blocked
+npx supabase start    # Would create incorrect stack
 ```
 
-### 4. Container Cleanup Commands
+### Container Cleanup Commands
 
 If incorrect stacks are accidentally created:
 
 ```bash
-# Stop incorrect stack (from any directory)
-npx supabase stop
+# Stop services (from apps/web directory)
+cd apps/web && npx supabase stop
 
-# List and remove incorrect volumes
-docker volume ls --filter "label=com.supabase.cli.project=2025slideheroes"
-docker volume rm supabase_db_2025slideheroes supabase_config_2025slideheroes
+# List Supabase volumes
+docker volume ls --filter "label=com.supabase.cli.project=2025slideheroes-db"
 
-# Verify correct stacks are running
+# Verify correct stack is running
 docker ps --filter "name=2025slideheroes-db" --format "table {{.Names}}\t{{.Ports}}"
-docker ps --filter "name=2025slideheroes-e2e" --format "table {{.Names}}\t{{.Ports}}"
 ```
 
 ## Related Files
@@ -805,7 +752,6 @@ docker ps --filter "name=2025slideheroes-e2e" --format "table {{.Names}}\t{{.Por
 - `/home/msmith/projects/2025slideheroes/.claude/commands/core/test.md`: Test command documentation
 - `/home/msmith/projects/2025slideheroes/.devcontainer/docker-compose.yml`: DevContainer services (optional)
 - `/home/msmith/projects/2025slideheroes/.devcontainer/devcontainer.json`: VS Code integration
-- `/home/msmith/projects/2025slideheroes/apps/e2e/supabase/config.toml`: E2E Supabase configuration
 - `/home/msmith/projects/2025slideheroes/.dockerignore`: Build optimization
 - `/home/msmith/projects/2025slideheroes/.claude/settings.local.json`: Claude Code MCP enablement settings
 - `/home/msmith/projects/2025slideheroes/apps/web/supabase/functions/powerpoint-generator/index.ts`: Supabase Edge Function for PowerPoint generation
