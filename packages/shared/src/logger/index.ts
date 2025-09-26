@@ -1,4 +1,4 @@
-import { createRegistry } from "../registry/index.js";
+import { createRegistry } from "../registry";
 import type { Logger, Logger as LoggerInstance } from "./logger";
 
 // Import Logger and export it
@@ -42,9 +42,9 @@ export {
 	_createClientLogger as createClientLogger,
 	_createServerLogger as createServerLogger,
 	createMonitoredLogger,
-} from "./create-monitored-logger.js";
+} from "./create-monitored-logger";
 // Export enhanced types
-export type { LogLevel as EnhancedLogLevel } from "./enhanced-logger.js";
+export type { LogLevel as EnhancedLogLevel } from "./enhanced-logger";
 // Export enhanced logger (new unified approach)
 export {
 	createEnhancedLogger,
@@ -54,7 +54,7 @@ export {
 	type EnhancedLoggerConfig,
 	getEnhancedLoggerConfig,
 	type LogContext,
-} from "./enhanced-logger.js";
+} from "./enhanced-logger";
 // Export environment logger utilities (legacy compatibility)
 export {
 	createEnvironmentLogger,
@@ -62,4 +62,4 @@ export {
 	getLogLevel,
 	type LoggerConfig,
 	type LogLevel,
-} from "./utils/environment-logger.js";
+} from "./utils/environment-logger";
