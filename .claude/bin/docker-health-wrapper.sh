@@ -29,7 +29,8 @@ readonly PID_FILE="/tmp/.claude_docker_pid_${GIT_ROOT_HASH}"
 readonly BACKGROUND_LOCK_FILE="/tmp/.claude_docker_bg_lock_${GIT_ROOT_HASH}"
 
 # Status file configuration
-readonly STATUS_CACHE_TTL="${CLAUDE_STATUS_CACHE_TTL:-30}"  # 30 second cache TTL
+readonly STATUS_CACHE_TTL="${CLAUDE_STATUS_CACHE_TTL:-15}"  # 15 second cache TTL (reduced for faster statusline updates)
+readonly STATUSLINE_CACHE_TTL="${CLAUDE_STATUSLINE_CACHE_TTL:-10}"  # 10 second cache TTL for statusline (even more aggressive)
 readonly STATUS_LOCK_TIMEOUT="${CLAUDE_STATUS_LOCK_TIMEOUT:-5}"  # 5 second lock timeout
 
 # Background monitoring configuration
@@ -38,8 +39,8 @@ readonly PID_LOCK_TIMEOUT="${CLAUDE_PID_LOCK_TIMEOUT:-5}"   # 5 second PID lock 
 
 # Multi-level cache configuration
 readonly CACHE_L1_TTL="${CLAUDE_CACHE_L1_TTL:-5}"     # Level 1: In-memory cache TTL (5 seconds)
-readonly CACHE_L2_TTL="${CLAUDE_CACHE_L2_TTL:-30}"    # Level 2: File-based cache TTL (30 seconds)
-readonly CACHE_L3_TTL="${CLAUDE_CACHE_L3_TTL:-300}"   # Level 3: Stale fallback TTL (5 minutes)
+readonly CACHE_L2_TTL="${CLAUDE_CACHE_L2_TTL:-15}"    # Level 2: File-based cache TTL (15 seconds - reduced)
+readonly CACHE_L3_TTL="${CLAUDE_CACHE_L3_TTL:-60}"    # Level 3: Stale fallback TTL (1 minute - reduced from 5 minutes)
 
 # Cache file paths
 readonly CACHE_L1_DATA_FILE="/tmp/.claude_docker_cache_l1_${GIT_ROOT_HASH}"
@@ -72,6 +73,9 @@ declare -g CACHE_L1_DATA=""
 declare -g CACHE_L1_DOCKER_RUNNING=""
 declare -g CACHE_L1_DOCKER_TYPE=""
 declare -g CACHE_L1_CONTAINER_COUNT=""
+declare -g CACHE_L1_HEALTHY_COUNT=""
+declare -g CACHE_L1_UNHEALTHY_COUNT=""
+declare -g CACHE_L1_CONTAINER_HASH=""
 
 # Cache metrics tracking
 declare -g CACHE_HITS_L1=0
@@ -367,6 +371,9 @@ cache_l1_set() {
     local docker_running="$2"
     local docker_type="$3"
     local container_count="$4"
+    local healthy_count="$5"
+    local unhealthy_count="$6"
+    local container_hash="$7"
 
     debug "Setting Level 1 cache"
 
@@ -375,8 +382,11 @@ cache_l1_set() {
     CACHE_L1_DOCKER_RUNNING="$docker_running"
     CACHE_L1_DOCKER_TYPE="$docker_type"
     CACHE_L1_CONTAINER_COUNT="$container_count"
+    CACHE_L1_HEALTHY_COUNT="$healthy_count"
+    CACHE_L1_UNHEALTHY_COUNT="$unhealthy_count"
+    CACHE_L1_CONTAINER_HASH="$container_hash"
 
-    debug "Level 1 cache updated with timestamp: $CACHE_L1_TIMESTAMP"
+    debug "Level 1 cache updated with timestamp: $CACHE_L1_TIMESTAMP (containers: $container_count, healthy: $healthy_count, unhealthy: $unhealthy_count)"
 }
 
 cache_l1_invalidate() {
@@ -387,6 +397,9 @@ cache_l1_invalidate() {
     CACHE_L1_DOCKER_RUNNING=""
     CACHE_L1_DOCKER_TYPE=""
     CACHE_L1_CONTAINER_COUNT=""
+    CACHE_L1_HEALTHY_COUNT=""
+    CACHE_L1_UNHEALTHY_COUNT=""
+    CACHE_L1_CONTAINER_HASH=""
 }
 
 # Level 2 Cache: Enhanced file-based cache operations
@@ -535,7 +548,7 @@ cache_get_docker_status() {
     local l2_data
     if l2_data=$(cache_l2_get); then
         # Promote to Level 1
-        cache_l1_set "$l2_data" "" "" ""
+        cache_l1_set "$l2_data" "" "" "" "" "" ""
         local end_time elapsed_ms
         end_time=$(date +%s%3N 2>/dev/null || date +%s)
         if [ "$start_time" != "$end_time" ]; then
@@ -553,7 +566,7 @@ cache_get_docker_status() {
     if l3_data=$(cache_l3_get); then
         # Promote to Level 2 and Level 1
         cache_l2_set "$l3_data"
-        cache_l1_set "$l3_data" "" "" ""
+        cache_l1_set "$l3_data" "" "" "" "" "" ""
         local end_time elapsed_ms
         end_time=$(date +%s%3N 2>/dev/null || date +%s)
         if [ "$start_time" != "$end_time" ]; then
@@ -585,15 +598,18 @@ cache_set_docker_status() {
     local docker_running="$2"
     local docker_type="$3"
     local container_count="$4"
+    local healthy_count="$5"
+    local unhealthy_count="$6"
+    local container_hash="$7"
 
     debug "Storing data in all cache levels"
 
     # Store in all levels
-    cache_l1_set "$data" "$docker_running" "$docker_type" "$container_count"
+    cache_l1_set "$data" "$docker_running" "$docker_type" "$container_count" "$healthy_count" "$unhealthy_count" "$container_hash"
     cache_l2_set "$data"
     cache_l3_set "$data"
 
-    debug "Data cached at all levels"
+    debug "Data cached at all levels (containers: $container_count, healthy: $healthy_count, unhealthy: $unhealthy_count)"
 }
 
 # Invalidate all cache levels
@@ -642,23 +658,163 @@ cache_save_metrics() {
     mv "$CACHE_METRICS_FILE.tmp" "$CACHE_METRICS_FILE" 2>/dev/null || true
 }
 
-# Smart cache invalidation based on container changes
-cache_smart_invalidate() {
-    local current_container_list="$1"
-    local previous_container_list=""
+# Detect recent Docker activity to trigger cache invalidation
+detect_docker_activity() {
+    local threshold_seconds="${1:-30}"  # Default: last 30 seconds
 
-    # Get previous container list from Level 1 cache if available
-    if [ -n "$CACHE_L1_CONTAINER_COUNT" ]; then
-        previous_container_list="$CACHE_L1_CONTAINER_COUNT"
+    # Check for recent container restarts using docker events (if available)
+    if timeout 2s docker events --since="${threshold_seconds}s" --filter event=restart --filter event=start --filter event=stop 2>/dev/null | head -1 | grep -q .; then
+        debug "Recent Docker activity detected, cache should be invalidated"
+        return 0
     fi
 
-    # Check if container list has changed
-    if [ "$current_container_list" != "$previous_container_list" ]; then
-        debug "Container list changed, invalidating caches"
+    # Fallback: check for recent container status changes by comparing uptime
+    local recent_changes=false
+    if command -v docker >/dev/null 2>&1; then
+        # Check if any containers have been up for less than threshold_seconds
+        while IFS= read -r container_line; do
+            if [ -n "$container_line" ]; then
+                local uptime_info
+                uptime_info=$(echo "$container_line" | grep -o "Up [0-9]* seconds\|Up [0-9]* minutes")
+                if echo "$uptime_info" | grep -q "Up [0-9]* seconds"; then
+                    local seconds
+                    seconds=$(echo "$uptime_info" | grep -o "[0-9]*")
+                    if [ "$seconds" -lt "$threshold_seconds" ]; then
+                        debug "Container with recent restart detected (uptime: ${seconds}s)"
+                        recent_changes=true
+                        break
+                    fi
+                fi
+            fi
+        done < <(timeout 3s docker ps --format "{{.Status}}" 2>/dev/null || true)
+    fi
+
+    if [ "$recent_changes" = true ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Statusline-optimized cache check with faster TTL
+is_status_cache_valid_for_statusline() {
+    debug "Checking status cache validity for statusline"
+
+    if [ ! -f "$STATUS_FILE" ]; then
+        debug "Status file doesn't exist - cache invalid"
+        return 1
+    fi
+
+    local last_check cache_ttl
+    if command -v jq >/dev/null 2>&1; then
+        last_check=$(read_status field last_check 2>/dev/null || echo "")
+        cache_ttl=$(read_status field cache_ttl 2>/dev/null || echo "$STATUSLINE_CACHE_TTL")
+    else
+        # Fallback without jq
+        last_check=$(grep -o '"last_check": *"[^"]*"' "$STATUS_FILE" 2>/dev/null | cut -d'"' -f4)
+        cache_ttl="$STATUSLINE_CACHE_TTL"
+    fi
+
+    if [ -z "$last_check" ]; then
+        debug "No last_check time found - cache invalid"
+        return 1
+    fi
+
+    # Use the more aggressive statusline TTL
+    local current_time last_check_timestamp age_seconds
+    current_time=$(date +%s)
+
+    if last_check_timestamp=$(date -d "$last_check" +%s 2>/dev/null); then
+        age_seconds=$((current_time - last_check_timestamp))
+        debug "Cache age: ${age_seconds}s, statusline TTL: ${cache_ttl}s"
+
+        if [ "$age_seconds" -le "$cache_ttl" ]; then
+            debug "Status cache is valid for statusline"
+            return 0
+        else
+            debug "Status cache is too old for statusline (${age_seconds}s > ${cache_ttl}s)"
+            return 1
+        fi
+    else
+        debug "Cannot parse last_check time - cache invalid"
+        return 1
+    fi
+}
+
+# Force cache invalidation if recent Docker activity detected
+force_cache_invalidation_on_activity() {
+    if detect_docker_activity 60; then  # Check last 60 seconds for activity
+        debug "Recent Docker activity detected, forcing cache invalidation"
+        cache_invalidate_all
+        return 0
+    fi
+    return 1
+}
+
+# Generate a hash of container states for change detection
+generate_container_state_hash() {
+    local aggregated_stats="$1"
+
+    # Extract container data for hashing
+    local container_data=""
+    if command -v jq >/dev/null 2>&1; then
+        # Use jq to extract container names and health status
+        container_data=$(echo "$aggregated_stats" | jq -r '.[] | select(.type == "container") | "\(.name):\(.health_status)"' 2>/dev/null | sort)
+    else
+        # Fallback: use grep to extract basic container info
+        container_data=$(echo "$aggregated_stats" | grep -o '"name": *"[^"]*"' | sort)
+    fi
+
+    # Generate hash from container data
+    if [ -n "$container_data" ]; then
+        echo "$container_data" | sha256sum 2>/dev/null | cut -d' ' -f1 || echo "fallback_$(date +%s)"
+    else
+        echo "empty"
+    fi
+}
+
+# Smart cache invalidation based on container changes
+cache_smart_invalidate() {
+    local current_container_count="$1"
+    local current_healthy_count="$2"
+    local current_unhealthy_count="$3"
+    local current_container_hash="$4"  # Hash of container states
+
+    local previous_container_count=""
+    local previous_healthy_count=""
+    local previous_unhealthy_count=""
+    local previous_container_hash=""
+
+    # Get previous state from Level 1 cache if available
+    if [ -n "$CACHE_L1_CONTAINER_COUNT" ]; then
+        previous_container_count="$CACHE_L1_CONTAINER_COUNT"
+        previous_healthy_count="$CACHE_L1_HEALTHY_COUNT"
+        previous_unhealthy_count="$CACHE_L1_UNHEALTHY_COUNT"
+        previous_container_hash="$CACHE_L1_CONTAINER_HASH"
+    fi
+
+    # Check if any container state has changed
+    local changes_detected=false
+
+    if [ "$current_container_count" != "$previous_container_count" ]; then
+        debug "Container count changed ($previous_container_count -> $current_container_count), invalidating caches"
+        changes_detected=true
+    elif [ "$current_healthy_count" != "$previous_healthy_count" ]; then
+        debug "Healthy container count changed ($previous_healthy_count -> $current_healthy_count), invalidating caches"
+        changes_detected=true
+    elif [ "$current_unhealthy_count" != "$previous_unhealthy_count" ]; then
+        debug "Unhealthy container count changed ($previous_unhealthy_count -> $current_unhealthy_count), invalidating caches"
+        changes_detected=true
+    elif [ -n "$current_container_hash" ] && [ "$current_container_hash" != "$previous_container_hash" ]; then
+        debug "Container state hash changed, invalidating caches"
+        changes_detected=true
+    fi
+
+    if [ "$changes_detected" = true ]; then
         cache_invalidate_all
         return 0
     else
-        debug "Container list unchanged, keeping caches"
+        debug "No container state changes detected, keeping caches"
         return 1
     fi
 }
@@ -1038,31 +1194,67 @@ get_container_stats() {
 
     # Get container list with health status
     local container_list
-    if container_list=$(timeout 5s docker ps -a --format '{{.ID}}:{{.Status}}' 2>/dev/null); then
+    if container_list=$(timeout 5s docker ps -a --format '{{.Names}}:{{.ID}}:{{.Status}}' 2>/dev/null); then
         total=$(echo "$container_list" | wc -l)
 
         if [ "$total" -eq 0 ]; then
             debug "No containers found"
         else
-            running=$(echo "$container_list" | grep -c "Up " 2>/dev/null || echo "0")
-            running=$(echo "$running" | tr -d '\n\r')  # Clean newlines
+            # Process each container
+            while IFS=: read -r container_name container_id status_line; do
+                if echo "$status_line" | grep -q "Up "; then
+                    running=$((running + 1))
 
-            # Get health status for running containers
-            if [ "$running" -gt 0 ]; then
-                local health_list
-                if health_list=$(timeout 5s docker ps --format '{{.ID}}:{{.Status}}' 2>/dev/null | grep "healthy\|unhealthy"); then
-                    healthy=$(echo "$health_list" | grep -c "healthy" 2>/dev/null || echo "0")
-                    unhealthy=$(echo "$health_list" | grep -c "unhealthy" 2>/dev/null || echo "0")
-                    # Clean variables and ensure we have valid numbers
-                    healthy=$(echo "$healthy" | tr -d '\n\r')
-                    unhealthy=$(echo "$unhealthy" | tr -d '\n\r')
-                    healthy="${healthy:-0}"
-                    unhealthy="${unhealthy:-0}"
-                    unknown=$((running - healthy - unhealthy))
-                else
-                    unknown=$running
+                    # Check health status
+                    local health_status=""
+
+                    # Check for native health status
+                    if echo "$status_line" | grep -q "(healthy)"; then
+                        health_status="healthy"
+                    elif echo "$status_line" | grep -q "(unhealthy)"; then
+                        health_status="unhealthy"
+                    # Check for containers that need external health checks
+                    elif [ "$container_name" = "supabase_rest_2025slideheroes-db" ] || [ "$container_name" = "supabase_edge_runtime_2025slideheroes-db" ]; then
+                        debug "Checking external health for $container_name"
+                        # Apply external health check
+                        if [ "$container_name" = "supabase_rest_2025slideheroes-db" ]; then
+                            # Check PostgREST admin endpoint
+                            if timeout 2s curl -s -f http://localhost:3001/live >/dev/null 2>&1; then
+                                health_status="healthy"
+                                debug "PostgREST health check: healthy"
+                            else
+                                health_status="unknown"
+                                debug "PostgREST health check: unknown"
+                            fi
+                        elif [ "$container_name" = "supabase_edge_runtime_2025slideheroes-db" ]; then
+                            # Check if Deno process is running
+                            if docker top "$container_id" 2>/dev/null | grep -q "deno"; then
+                                health_status="healthy"
+                                debug "Edge Runtime health check: healthy"
+                            else
+                                health_status="unknown"
+                                debug "Edge Runtime health check: unknown"
+                            fi
+                        fi
+                    else
+                        # Container has no health check at all
+                        health_status="unknown"
+                    fi
+
+                    # Count based on health status
+                    case "$health_status" in
+                        "healthy")
+                            healthy=$((healthy + 1))
+                            ;;
+                        "unhealthy")
+                            unhealthy=$((unhealthy + 1))
+                            ;;
+                        "unknown"|"")
+                            unknown=$((unknown + 1))
+                            ;;
+                    esac
                 fi
-            fi
+            done <<< "$container_list"
         fi
 
         debug "Container stats: total=$total, running=$running, healthy=$healthy, unhealthy=$unhealthy, unknown=$unknown"
@@ -1121,7 +1313,7 @@ test_cache_performance() {
     info "Test 2: Level 1 cache hit performance"
 
     # Prime the cache
-    cache_l1_set '{"test": "data"}' "true" "Docker Test" "5"
+    cache_l1_set '{"test": "data"}' "true" "Docker Test" "5" "4" "1" "test_hash"
 
     start_time=$(date +%s%3N 2>/dev/null || date +%s)
     cache_l1_get >/dev/null 2>&1
@@ -1186,7 +1378,7 @@ test_cache_performance() {
         info "  ✓ Cache miss with expired timestamp"
 
         # Now set fresh data
-        cache_l1_set '{"test": "fresh_data"}' "true" "Docker Test" "3"
+        cache_l1_set '{"test": "fresh_data"}' "true" "Docker Test" "3" "2" "1" "fresh_hash"
 
         # Should hit with fresh timestamp
         if cache_l1_get >/dev/null 2>&1; then
@@ -1233,7 +1425,7 @@ test_cache_performance() {
     info "Test 6: Cache invalidation"
 
     # Prime all levels
-    cache_set_docker_status '{"test": "invalidation_test"}' "true" "Docker Test" "7"
+    cache_set_docker_status '{"test": "invalidation_test"}' "true" "Docker Test" "7" "5" "2" "invalidation_hash"
 
     # Verify all levels have data
     local l1_hit l2_hit l3_hit
@@ -3154,7 +3346,52 @@ parse_container_health() {
         return 1
     fi
 
-    echo "$parsed_data"
+    # Apply external health checks for containers without native health checks
+    echo "DEBUG: Starting external health check application" >&2
+    local enhanced_data=""
+    while IFS= read -r container_line; do
+        if [ -n "$container_line" ]; then
+            # Extract container details
+            local container_name container_id container_health
+            if command -v jq >/dev/null 2>&1; then
+                container_name=$(echo "$container_line" | jq -r '.name' 2>/dev/null)
+                container_id=$(echo "$container_line" | jq -r '.id' 2>/dev/null)
+                container_health=$(echo "$container_line" | jq -r '.health' 2>/dev/null)
+                echo "DEBUG: Processing container: $container_name with health: $container_health" >&2
+            else
+                container_name=$(echo "$container_line" | sed -n 's/.*name:\([^[:space:]]*\).*/\1/p')
+                container_id=$(echo "$container_line" | sed -n 's/.*id:\([^[:space:]]*\).*/\1/p')
+                container_health=$(echo "$container_line" | sed -n 's/.*health:\([^[:space:]]*\).*/\1/p')
+            fi
+
+            # Check if this container needs external health check
+            if [ "$container_health" = "none" ]; then
+                # Apply external health check for specific containers
+                if [ "$container_name" = "supabase_rest_2025slideheroes-db" ] || [ "$container_name" = "supabase_edge_runtime_2025slideheroes-db" ]; then
+                    echo "DEBUG: Found container $container_name with health=none, applying external check" >&2
+                    debug "Applying external health check for $container_name"
+                    local external_health
+                    external_health=$(check_external_health "$container_id" "$container_name" 2>/dev/null || echo "unknown")
+                    echo "DEBUG: External health check returned: $external_health for $container_name" >&2
+
+                    # Update the health status in the JSON line
+                    if command -v jq >/dev/null 2>&1; then
+                        container_line=$(echo "$container_line" | jq -c --arg health "$external_health" '.health = $health')
+                    else
+                        # Fallback update for non-jq environments
+                        container_line=$(echo "$container_line" | sed "s/health:none/health:$external_health/")
+                    fi
+                    echo "DEBUG: Updated health for $container_name from none to $external_health" >&2
+                    debug "Updated health for $container_name: $external_health"
+                fi
+            fi
+
+            enhanced_data="${enhanced_data}${container_line}"$'\n'
+        fi
+    done <<< "$parsed_data"
+
+    # Remove trailing newline and return enhanced data
+    echo "${enhanced_data%$'\n'}"
     return 0
 }
 
@@ -3449,8 +3686,17 @@ check_all_container_health() {
     # Write status using the new status management functions
     write_status "true" "${DOCKER_TYPE:-Docker}" "${total_containers:-0}" "${total_containers:-0}" "${healthy_count:-0}" "${unhealthy_count:-0}" "0"
 
+    # Generate container state hash for smart invalidation
+    container_hash=$(generate_container_state_hash "$aggregated_stats")
+
+    # Force cache invalidation if recent Docker activity detected
+    force_cache_invalidation_on_activity || true
+
+    # Check for container state changes and invalidate cache if needed
+    cache_smart_invalidate "${total_containers:-0}" "${healthy_count:-0}" "${unhealthy_count:-0}" "$container_hash"
+
     # Cache the results in all levels
-    cache_set_docker_status "$aggregated_stats" "true" "${DOCKER_TYPE:-Docker}" "${total_containers:-0}"
+    cache_set_docker_status "$aggregated_stats" "true" "${DOCKER_TYPE:-Docker}" "${total_containers:-0}" "${healthy_count:-0}" "${unhealthy_count:-0}" "$container_hash"
 
     # Save cache metrics
     cache_save_metrics

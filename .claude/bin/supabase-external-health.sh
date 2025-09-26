@@ -16,14 +16,14 @@ check_postgrest_health() {
         return 1
     fi
 
-    # Check admin server endpoint (exposed on host port 3001)
-    if curl -s -f -o /dev/null "http://localhost:3001/live" 2>/dev/null; then
+    # Check PostgREST via Kong gateway (accessible endpoint)
+    if curl -s -f -o /dev/null "http://localhost:54321/rest/v1/" 2>/dev/null; then
         echo "healthy"
         return 0
     else
         # Fallback to process check
         if docker top "$container_name" 2>/dev/null | grep -q "postgrest"; then
-            echo "degraded"  # Process running but admin endpoint not responding
+            echo "degraded"  # Process running but API not accessible via Kong
             return 0
         else
             echo "unhealthy"
@@ -72,8 +72,8 @@ output_json() {
       "name": "supabase_rest_2025slideheroes-db",
       "type": "PostgREST",
       "status": "$postgrest_status",
-      "health_check_method": "admin_endpoint",
-      "endpoint": "http://localhost:3001/live"
+      "health_check_method": "kong_gateway",
+      "endpoint": "http://localhost:54321/rest/v1/"
     },
     {
       "name": "supabase_edge_runtime_2025slideheroes-db",
@@ -104,7 +104,7 @@ case "${1:-status}" in
         echo "PostgREST (supabase_rest_2025slideheroes-db):"
         postgrest_status=$(check_postgrest_health)
         echo "  Status: $postgrest_status"
-        echo "  Admin endpoint: http://localhost:3001/live"
+        echo "  Kong gateway endpoint: http://localhost:54321/rest/v1/"
 
         echo ""
         echo "Edge Runtime (supabase_edge_runtime_2025slideheroes-db):"
