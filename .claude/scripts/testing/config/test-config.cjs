@@ -182,6 +182,12 @@ const CONFIG = {
 		includeSkippedTests: true,
 		generateSummary: true,
 		timestamps: true,
+		// Shard reporting configuration for E2E tests
+		generateShardReports: process.env.E2E_SHARD_REPORTS !== "false", // Default true, disable with E2E_SHARD_REPORTS=false
+		shardReportDir: path.join(PROJECT_ROOT, "reports", "testing"),
+		retentionDays: 30,
+		includeRawOutput: true,
+		maxOutputSize: 5120, // 5KB of raw output per report
 	},
 
 	// Cleanup settings

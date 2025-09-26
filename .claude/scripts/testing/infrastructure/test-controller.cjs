@@ -588,6 +588,24 @@ Examples:
 			name: "reporting",
 			critical: false,
 			executor: async () => {
+				// Analyze shard reports if E2E tests were run
+				if (!this.options.skipE2E && !this.options.unitOnly) {
+					const shardAnalysis = await this.analyzeShardReports();
+					if (shardAnalysis) {
+						log("✅ Shard reports analyzed successfully");
+						// Update test status with accurate information from reports
+						if (shardAnalysis.summary) {
+							await this.testStatus.updateE2ETests({
+								total: shardAnalysis.summary.overallResults.total,
+								passed: shardAnalysis.summary.overallResults.passed,
+								failed: shardAnalysis.summary.overallResults.failed,
+								skipped: shardAnalysis.summary.overallResults.skipped,
+								reportAnalyzed: true,
+							});
+						}
+					}
+				}
+
 				await this.testReporter.generateReport();
 				return { success: true };
 			},
@@ -597,6 +615,94 @@ Examples:
 		});
 
 		return phases;
+	}
+
+	/**
+	 * Read and analyze shard reports for accurate test status
+	 */
+	async analyzeShardReports() {
+		const fs = require("node:fs").promises;
+		const path = require("node:path");
+
+		try {
+			// Get report directory for today
+			const today = new Date().toISOString().split("T")[0];
+			const reportDir = path.join(
+				CONFIG.reporting.shardReportDir ||
+					path.join(process.cwd(), "reports", "testing"),
+				today,
+			);
+
+			// Check if report directory exists
+			try {
+				await fs.access(reportDir);
+			} catch {
+				log("📊 No shard reports found for today");
+				return null;
+			}
+
+			// Read execution summary if it exists
+			const summaryPath = path.join(reportDir, "execution-summary.json");
+			try {
+				const summaryContent = await fs.readFile(summaryPath, "utf8");
+				const summary = JSON.parse(summaryContent);
+
+				log("\n📈 Shard Report Analysis:");
+				log(`   Total Shards: ${summary.completedShards}`);
+				log(`   Failed Shards: ${summary.failedShards}`);
+				log(`   Timed Out Shards: ${summary.timedOutShards}`);
+				log(`   Total Tests: ${summary.overallResults.total}`);
+				log(`   Passed: ${summary.overallResults.passed}`);
+				log(`   Failed: ${summary.overallResults.failed}`);
+				log(`   Skipped: ${summary.overallResults.skipped}`);
+
+				// Read individual shard reports for detailed failure information
+				const shardFiles = await fs.readdir(reportDir);
+				const shardReports = [];
+
+				for (const file of shardFiles) {
+					if (file.startsWith("shard-") && file.endsWith(".json")) {
+						const filePath = path.join(reportDir, file);
+						const content = await fs.readFile(filePath, "utf8");
+						const report = JSON.parse(content);
+						shardReports.push(report);
+
+						// Log failed tests from this shard
+						if (report.failures && report.failures.length > 0) {
+							log(`\n❌ Failed tests in ${report.shard.name}:`);
+							for (const failure of report.failures) {
+								log(`   • ${failure.name}`);
+								if (failure.error && CONFIG.execution.verbose) {
+									const errorPreview = failure.error
+										.split("\n")[0]
+										.substring(0, 100);
+									log(`     Error: ${errorPreview}...`);
+								}
+							}
+						}
+
+						// Log timeout information
+						if (report.execution.timedOut) {
+							log(
+								`\n⏱️ Shard ${report.shard.name} timed out after ${report.execution.duration}`,
+							);
+						}
+					}
+				}
+
+				return {
+					summary,
+					shardReports,
+					success: summary.failedShards === 0 && summary.timedOutShards === 0,
+				};
+			} catch (error) {
+				log(`⚠️ Could not read execution summary: ${error.message}`);
+				return null;
+			}
+		} catch (error) {
+			logError(`Error analyzing shard reports: ${error.message}`);
+			return null;
+		}
 	}
 
 	/**

@@ -1,6 +1,7 @@
 /**
  * E2E Test Runner Module
  * Handles execution of end-to-end tests with shard management
+ * Enhanced with detailed shard completion reporting
  */
 
 const { spawn, exec } = require("node:child_process");
@@ -28,6 +29,11 @@ class E2ETestRunner {
 		this.phaseCoordinator = phaseCoordinator;
 		this.resourceLock = resourceLock;
 		this.waiter = new ConditionWaiter();
+
+		// Report generation configuration
+		this.reportingEnabled = config.reporting?.generateShardReports !== false; // Default to true
+		this.reportDir = path.join(process.cwd(), "reports", "testing");
+		this.reportRetentionDays = config.reporting?.retentionDays || 30;
 
 		this.intentionalShutdown = false;
 		this.servers = {};
@@ -1007,6 +1013,16 @@ class E2ETestRunner {
 						results.errorOutput = errorOutput;
 					}
 
+					// Generate shard report asynchronously (non-blocking)
+					this.generateShardReport(
+						results,
+						group,
+						shardId,
+						duration,
+						output,
+						errorOutput,
+					);
+
 					log(
 						`${shardPrefix}Shard ${shardId} (${group.name}) completed in ${duration}s with exit code ${code}`,
 					);
@@ -1134,6 +1150,250 @@ class E2ETestRunner {
 			return fileMatch[1];
 		}
 		return "unknown";
+	}
+
+	/**
+	 * Ensure report directory structure exists
+	 */
+	async ensureReportDirectory() {
+		try {
+			const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+			const fullPath = path.join(this.reportDir, today);
+			await fs.mkdir(fullPath, { recursive: true });
+			return fullPath;
+		} catch (error) {
+			logError(`Failed to create report directory: ${error.message}`);
+			return null;
+		}
+	}
+
+	/**
+	 * Generate comprehensive shard completion report
+	 */
+	async generateShardReport(
+		results,
+		group,
+		shardId,
+		duration,
+		output,
+		errorOutput,
+	) {
+		// Skip if reporting is disabled
+		if (!this.reportingEnabled) {
+			return;
+		}
+
+		try {
+			// Ensure directory exists
+			const reportPath = await this.ensureReportDirectory();
+			if (!reportPath) {
+				return;
+			}
+
+			// Prepare report data
+			const report = {
+				shard: {
+					id: shardId,
+					name: group.name,
+					files: group.files,
+					expectedTests: group.expectedTests || null,
+					shardCommand: group.shardCommand || null,
+				},
+				execution: {
+					startTime: new Date(Date.now() - duration * 1000).toISOString(),
+					endTime: new Date().toISOString(),
+					duration: `${duration}s`,
+					exitCode: results.exitCode || 0,
+					timedOut: results.timedOut || false,
+				},
+				results: {
+					total: results.total || 0,
+					passed: results.passed || 0,
+					failed: results.failed || 0,
+					skipped: results.skipped || 0,
+					intentionalFailures: results.intentionalFailures || 0,
+					integrationTests: results.integrationTests || 0,
+					success: results.failed === 0 && !results.timedOut,
+				},
+				failures: [],
+				errors: [],
+				rawOutput: "",
+			};
+
+			// Add failed test details
+			if (results.failedTests && results.failedTests.length > 0) {
+				report.failures = results.failedTests.map((test) => ({
+					name: test.name,
+					file: test.file || "unknown",
+					error:
+						this.extractErrorForTest(test.name, output) ||
+						"Error details not available",
+				}));
+			}
+
+			// Add error messages
+			if (results.errorMessages && results.errorMessages.length > 0) {
+				report.errors = results.errorMessages;
+			} else if (errorOutput && errorOutput.trim()) {
+				// Extract meaningful errors from stderr
+				const errorLines = errorOutput.split("\n").filter((line) => {
+					return (
+						line.trim() &&
+						(line.includes("Error") ||
+							line.includes("Failed") ||
+							line.includes("Timeout") ||
+							line.includes("CRITICAL"))
+					);
+				});
+				report.errors = errorLines.slice(0, 10); // Limit to 10 error lines
+			}
+
+			// Add last 5KB of raw output for debugging
+			if (output) {
+				const outputSize = output.length;
+				const maxSize = 5120; // 5KB
+				if (outputSize > maxSize) {
+					report.rawOutput = `...(truncated ${outputSize - maxSize} bytes)...\n${output.slice(-maxSize)}`;
+				} else {
+					report.rawOutput = output;
+				}
+			}
+
+			// Generate filename
+			const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+			const safeShardName = group.name.toLowerCase().replace(/\s+/g, "-");
+			const filename = `shard-${shardId}-${safeShardName}.json`;
+			const filePath = path.join(reportPath, filename);
+
+			// Write report asynchronously using setImmediate to not block test execution
+			setImmediate(async () => {
+				try {
+					await fs.writeFile(filePath, JSON.stringify(report, null, 2), "utf8");
+					log(`📝 Report generated: ${filename}`);
+
+					// Also generate a summary file that gets updated with each shard
+					await this.updateExecutionSummary(reportPath, report);
+				} catch (error) {
+					logError(`Failed to write shard report: ${error.message}`);
+				}
+			});
+		} catch (error) {
+			// Log error but don't fail test execution
+			logError(`Report generation error (non-blocking): ${error.message}`);
+		}
+	}
+
+	/**
+	 * Extract error message for a specific test from output
+	 */
+	extractErrorForTest(testName, output) {
+		if (!output || !testName) return null;
+
+		// Try to find error message associated with this test
+		const lines = output.split("\n");
+		let foundTest = false;
+		const errorLines = [];
+
+		for (let i = 0; i < lines.length; i++) {
+			const line = lines[i];
+
+			// Check if this line mentions our test
+			if (line.includes(testName)) {
+				foundTest = true;
+				continue;
+			}
+
+			// If we found the test, capture error lines
+			if (foundTest) {
+				if (
+					line.includes("Error:") ||
+					line.includes("at ") || // Stack trace
+					line.includes("expected") || // Assertion
+					line.includes("Timeout") ||
+					line.includes("Failed")
+				) {
+					errorLines.push(line.trim());
+
+					// Limit to 5 lines of error context
+					if (errorLines.length >= 5) {
+						break;
+					}
+				} else if (line.trim() === "" && errorLines.length > 0) {
+					// Empty line after collecting errors, stop
+					break;
+				}
+			}
+		}
+
+		return errorLines.length > 0 ? errorLines.join("\n") : null;
+	}
+
+	/**
+	 * Update execution summary with latest shard results
+	 */
+	async updateExecutionSummary(reportPath, shardReport) {
+		try {
+			const summaryPath = path.join(reportPath, "execution-summary.json");
+			let summary = {
+				executionDate: new Date().toISOString().split("T")[0],
+				lastUpdated: new Date().toISOString(),
+				totalShards: 0,
+				completedShards: 0,
+				failedShards: 0,
+				timedOutShards: 0,
+				overallResults: {
+					total: 0,
+					passed: 0,
+					failed: 0,
+					skipped: 0,
+				},
+				shards: [],
+			};
+
+			// Try to load existing summary
+			try {
+				const existing = await fs.readFile(summaryPath, "utf8");
+				summary = JSON.parse(existing);
+			} catch {
+				// File doesn't exist yet, use defaults
+			}
+
+			// Update summary with new shard data
+			summary.lastUpdated = new Date().toISOString();
+			summary.completedShards++;
+
+			// Update totals
+			summary.overallResults.total += shardReport.results.total;
+			summary.overallResults.passed += shardReport.results.passed;
+			summary.overallResults.failed += shardReport.results.failed;
+			summary.overallResults.skipped += shardReport.results.skipped;
+
+			// Track failed/timed out shards
+			if (shardReport.results.failed > 0) {
+				summary.failedShards++;
+			}
+			if (shardReport.execution.timedOut) {
+				summary.timedOutShards++;
+			}
+
+			// Add shard info
+			summary.shards.push({
+				id: shardReport.shard.id,
+				name: shardReport.shard.name,
+				success: shardReport.results.success,
+				duration: shardReport.execution.duration,
+				tests: shardReport.results.total,
+				failures: shardReport.results.failed,
+			});
+
+			// Sort shards by ID
+			summary.shards.sort((a, b) => a.id - b.id);
+
+			// Write updated summary
+			await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2), "utf8");
+		} catch (error) {
+			logError(`Failed to update execution summary: ${error.message}`);
+		}
 	}
 
 	/**
