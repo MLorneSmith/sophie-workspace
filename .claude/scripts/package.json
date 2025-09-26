@@ -8,7 +8,10 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "biome lint .",
 		"format": "biome format .",
-		"format:fix": "biome format --write ."
+		"format:fix": "biome format --write .",
+		"test": "bash ../bin/docker-health-unit-tests.sh",
+		"test:run": "bash ../bin/docker-health-unit-tests.sh",
+		"test:coverage": "bash ../bin/docker-health-unit-tests.sh"
 	},
 	"engines": {
 		"node": ">=18.0.0"
