@@ -108,7 +108,20 @@ class DataLoader {
 				plan: null,
 				status: "pending",
 				progress: 0,
+				isComplete: false,
 			};
+
+			// Check for execution-status.md to determine if feature is complete
+			const executionStatusPath = path.join(featurePath, "execution-status.md");
+			let isFeatureComplete = false;
+			if (fs.existsSync(executionStatusPath)) {
+				const executionStatus = this.parseMarkdownFile(executionStatusPath);
+				if (executionStatus && executionStatus.final_status === "COMPLETE") {
+					isFeatureComplete = true;
+					feature.isComplete = true;
+					feature.status = "completed";
+				}
+			}
 
 			// Load plan.md if exists
 			const planPath = path.join(featurePath, "plan.md");
@@ -129,6 +142,7 @@ class DataLoader {
 				if (taskData) {
 					taskData.featureName = featureName;
 					taskData.taskId = path.basename(taskFile, ".md");
+					taskData.isFeatureComplete = isFeatureComplete;
 					feature.tasks.push(taskData);
 					this.data.tasks.push(taskData);
 
@@ -137,19 +151,42 @@ class DataLoader {
 				}
 			}
 
-			// Calculate feature progress
+			// Calculate feature progress using mapped statuses
 			if (feature.tasks.length > 0) {
-				const completed = feature.tasks.filter(
-					(t) => t.status === "completed",
-				).length;
+				const completed = feature.tasks.filter((t) => {
+					const mappedStatus = this.mapGitHubStatusToProjectStatus(
+						t.status,
+						t.isFeatureComplete,
+					);
+					return mappedStatus === "completed";
+				}).length;
 				feature.progress = Math.round((completed / feature.tasks.length) * 100);
 
-				// Determine feature status
-				if (completed === feature.tasks.length) {
+				// Determine feature status using mapped statuses
+				if (isFeatureComplete) {
 					feature.status = "completed";
-				} else if (feature.tasks.some((t) => t.status === "in_progress")) {
+					feature.progress = 100;
+				} else if (completed === feature.tasks.length) {
+					feature.status = "completed";
+				} else if (
+					feature.tasks.some((t) => {
+						const mappedStatus = this.mapGitHubStatusToProjectStatus(
+							t.status,
+							t.isFeatureComplete,
+						);
+						return mappedStatus === "in_progress";
+					})
+				) {
 					feature.status = "in_progress";
-				} else if (feature.tasks.some((t) => t.status === "blocked")) {
+				} else if (
+					feature.tasks.some((t) => {
+						const mappedStatus = this.mapGitHubStatusToProjectStatus(
+							t.status,
+							t.isFeatureComplete,
+						);
+						return mappedStatus === "blocked";
+					})
+				) {
 					feature.status = "blocked";
 				}
 			}
@@ -162,11 +199,46 @@ class DataLoader {
 	}
 
 	/**
+	 * Map GitHub issue statuses to project management statuses
+	 */
+	mapGitHubStatusToProjectStatus(githubStatus, isFeatureComplete = false) {
+		// If feature is complete, all tasks are completed
+		if (isFeatureComplete) {
+			return "completed";
+		}
+
+		// Map GitHub statuses to project statuses
+		const statusMap = {
+			// GitHub issue statuses -> project statuses
+			open: "pending",
+			backlog: "pending",
+			ready: "pending",
+			"in-progress": "in_progress",
+			in_progress: "in_progress",
+			working: "in_progress",
+			blocked: "blocked",
+			done: "completed",
+			completed: "completed",
+			closed: "completed",
+			// Default fallback
+			pending: "pending",
+		};
+
+		return statusMap[githubStatus?.toLowerCase()] || "pending";
+	}
+
+	/**
 	 * Update metrics based on task data
 	 */
 	updateMetrics(task) {
-		// Status distribution
-		switch (task.status) {
+		// Map GitHub status to project status
+		const projectStatus = this.mapGitHubStatusToProjectStatus(
+			task.status,
+			task.isFeatureComplete,
+		);
+
+		// Status distribution using mapped status
+		switch (projectStatus) {
 			case "completed":
 				this.data.metrics.completedTasks++;
 				break;
