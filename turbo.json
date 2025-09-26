@@ -104,7 +104,7 @@
 			"cache": true
 		},
 		"@kit/shared#build": {
-			"dependsOn": ["^build"],
+			"dependsOn": [],
 			"outputs": ["dist/**"],
 			"cache": true
 		},
