@@ -1234,7 +1234,7 @@ class E2ETestRunner {
 			// Add error messages
 			if (results.errorMessages && results.errorMessages.length > 0) {
 				report.errors = results.errorMessages;
-			} else if (errorOutput && errorOutput.trim()) {
+			} else if (errorOutput?.trim()) {
 				// Extract meaningful errors from stderr
 				const errorLines = errorOutput.split("\n").filter((line) => {
 					return (
