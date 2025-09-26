@@ -364,6 +364,23 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Build required packages
+        run: |
+          echo "📦 Building @kit/shared package for module resolution..."
+          pnpm --filter @kit/shared build || {
+            echo "⚠️ Build failed, trying with turbo..."
+            pnpm turbo run build --filter=@kit/shared
+          }
+
+          # Verify the dist directory exists
+          if [ -d "packages/shared/dist" ]; then
+            echo "✅ @kit/shared dist directory created successfully"
+            ls -la packages/shared/dist/
+          else
+            echo "❌ Failed to create dist directory"
+            exit 1
+          fi
+
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -525,6 +542,10 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: dev  # Explicitly checkout dev branch to match deployment
+
+      - uses: ./.github/actions/setup-deps
 
       - name: Run Lighthouse performance test
         uses: treosh/lighthouse-ci-action@v11
@@ -535,6 +556,7 @@ jobs:
             ${{ needs.check-should-run.outputs.web_deployment_url }}/templates
           uploadArtifacts: true
           temporaryPublicStorage: true
+          artifactName: lighthouse-results
 
       - name: Store performance metrics
         uses: actions/github-script@v7
