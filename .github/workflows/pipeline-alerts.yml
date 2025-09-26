@@ -5,7 +5,7 @@ on:
     workflows: ["Deploy to Production", "Deploy to Staging"]
     types: [completed]
   schedule:
-    - cron: '*/30 * * * *'  # Check every 30 minutes
+    - cron: '0 9,15 * * *'  # Check twice daily at 9 AM and 3 PM UTC
 
 permissions:
   contents: read
@@ -150,8 +150,32 @@ jobs:
           script: |
             const violations = ${{ steps.slo-check.outputs.result }};
             const flakyTests = ${{ steps.flaky-check.outputs.result }};
-            
+
             if (violations.length === 0 && flakyTests.length === 0) {
+              return;
+            }
+
+            // Add grace period after deployments (30 minutes)
+            const gracePeriodMinutes = 30;
+            const now = new Date();
+            const gracePeriodAgo = new Date(now.getTime() - gracePeriodMinutes * 60 * 1000);
+
+            // Check if there was a recent deployment completion
+            const recentDeployments = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'production-deploy.yml',
+              status: 'completed',
+              per_page: 5
+            });
+
+            const veryRecentDeployment = recentDeployments.data.workflow_runs.some(run =>
+              new Date(run.updated_at) > gracePeriodAgo
+            );
+
+            if (veryRecentDeployment) {
+              console.log(`Skipping alerts - deployment completed within grace period (${gracePeriodMinutes} minutes)`);
+              core.summary.addRaw('⏳ Alerts suppressed due to recent deployment - grace period active').write();
               return;
             }
             
@@ -219,17 +243,59 @@ jobs:
             *This alert was automatically generated. Adjust alert thresholds in \`.github/workflows/pipeline-alerts.yml\`*
             `;
             
-            // Create an issue for critical alerts
+            // Create an issue for critical alerts with deduplication
             const criticalCount = violations.filter(v => v.severity === 'critical').length;
             if (criticalCount > 0) {
-              await github.rest.issues.create({
+              // Check for existing open CI/CD alert issues created in the last 24 hours
+              const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+              const existingIssues = await github.rest.issues.listForRepo({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: `🚨 Critical CI/CD Alert: ${criticalCount} SLO Violations`,
-                body: alertBody,
-                labels: ['ci-alert', 'critical', 'automated'],
-                assignees: ['MLorneSmith'] // Assign to team lead
+                state: 'open',
+                labels: 'ci-alert,automated',
+                since: oneDayAgo,
+                per_page: 10
               });
+
+              // Check if we already have a recent critical alert issue
+              const hasCriticalIssue = existingIssues.data.some(issue =>
+                issue.labels.some(label => label.name === 'critical') &&
+                issue.title.includes('Critical CI/CD Alert')
+              );
+
+              if (hasCriticalIssue) {
+                console.log('Recent critical alert issue already exists, updating with comment instead');
+
+                // Find the most recent critical issue
+                const mostRecentIssue = existingIssues.data
+                  .filter(issue =>
+                    issue.labels.some(label => label.name === 'critical') &&
+                    issue.title.includes('Critical CI/CD Alert')
+                  )
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+
+                if (mostRecentIssue) {
+                  // Add a comment to the existing issue
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: mostRecentIssue.number,
+                    body: `## 🔄 Alert Update - ${new Date().toISOString()}\n\n` + alertBody
+                  });
+                  console.log(`Updated existing issue #${mostRecentIssue.number} with new alert data`);
+                }
+              } else {
+                // No recent issue found, create a new one
+                const newIssue = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `🚨 Critical CI/CD Alert: ${criticalCount} SLO Violations`,
+                  body: alertBody,
+                  labels: ['ci-alert', 'critical', 'automated'],
+                  assignees: ['MLorneSmith'] // Assign to team lead
+                });
+                console.log(`Created new critical alert issue #${newIssue.data.number}`);
+              }
             } else {
               // For non-critical alerts, just add to summary
               console.log('Non-critical alerts detected, logging to summary only');
