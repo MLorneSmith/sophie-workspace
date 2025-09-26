@@ -9,6 +9,8 @@ on:
   workflow_run:
     workflows: ["Deploy to Dev"]
     types: [completed]
+    branches:
+      - dev
   workflow_dispatch:
     inputs:
       deployment_url:

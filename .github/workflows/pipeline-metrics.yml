@@ -4,6 +4,11 @@ on:
   workflow_run:
     workflows: ["PR Validation", "Deploy to Dev", "Deploy to Staging", "Deploy to Production"]
     types: [completed]
+    branches:
+      - dev
+      - main
+      - staging
+      - production
   workflow_dispatch:
   schedule:
     - cron: '0 8 * * 1'  # Weekly report on Monday at 8 AM

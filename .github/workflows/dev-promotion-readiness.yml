@@ -9,6 +9,8 @@ on:
   workflow_run:
     workflows: ["Dev Integration Tests"]
     types: [completed]
+    branches:
+      - dev
 
 permissions:
   contents: write
