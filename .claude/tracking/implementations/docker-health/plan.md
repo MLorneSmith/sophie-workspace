@@ -4,7 +4,7 @@ status: backlog
 created: 2025-09-26T13:21:18Z
 progress: 0%
 specification: .claude/tracking/specs/docker-health.md
-github:
+github: https://github.com/MLorneSmith/2025slideheroes/issues/419
 type: implementation-plan
 ---
 
