@@ -372,14 +372,36 @@ jobs:
             pnpm turbo run build --filter=@kit/shared
           }
 
-          # Verify the dist directory exists
-          if [ -d "packages/shared/dist" ]; then
+          # Verify the dist directory exists and contains expected files
+          if [ -d "packages/shared/dist" ] && [ -f "packages/shared/dist/logger/index.js" ]; then
             echo "✅ @kit/shared dist directory created successfully"
             ls -la packages/shared/dist/
+            echo "✅ Logger module verified:"
+            ls -la packages/shared/dist/logger/
           else
-            echo "❌ Failed to create dist directory"
+            echo "❌ Failed to create dist directory or logger module missing"
+            echo "Directory contents:"
+            ls -la packages/shared/ || echo "No packages/shared directory"
             exit 1
           fi
+
+          # Test that the module can be imported (additional verification)
+          echo "🔍 Testing module import in E2E context..."
+          cd apps/e2e
+          node -e "
+            import('@kit/shared/logger').then(m => {
+              console.log('✅ Module import successful, exports:', Object.keys(m));
+              if (m.createServiceLogger) {
+                console.log('✅ createServiceLogger export confirmed');
+              } else {
+                console.error('❌ createServiceLogger export missing');
+                process.exit(1);
+              }
+            }).catch(e => {
+              console.error('❌ Module import failed:', e.message);
+              process.exit(1);
+            });
+          "
 
       - name: Cache Playwright browsers
         id: playwright-cache

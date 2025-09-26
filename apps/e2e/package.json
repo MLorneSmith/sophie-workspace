@@ -52,6 +52,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",
-		"@kit/shared": "workspace:*"
+		"@kit/shared": "workspace:*",
+		"zod": "^3.25.76"
 	}
 }
