@@ -57,6 +57,8 @@ jobs:
           # Install dependencies if package.json exists
           if [ -f pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile --prefer-offline
+          elif [ -f package-lock.json ]; then
+            pnpm install
           else
             pnpm install || npm init -y
           fi
