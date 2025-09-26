@@ -1817,6 +1817,58 @@ check_native_health() {
     fi
 }
 
+# Check external health for specific containers without native health checks
+check_external_health() {
+    local container_id="$1"
+    local container_name="$2"
+
+    debug "Checking external health for container: $container_name"
+
+    # Check for specific Supabase containers that don't have native health checks
+    case "$container_name" in
+        "supabase_rest_2025slideheroes-db")
+            debug "Checking PostgREST health via admin endpoint"
+            # Check if PostgREST admin server is accessible on port 3001
+            if curl -s -f -o /dev/null "http://localhost:3001/live" 2>/dev/null; then
+                debug "External health check: HEALTHY for PostgREST (admin endpoint responding)"
+                echo "healthy"
+                return 0
+            else
+                # Fallback to process check
+                if docker top "$container_name" 2>/dev/null | grep -q "postgrest"; then
+                    debug "External health check: DEGRADED for PostgREST (process running but admin endpoint down)"
+                    echo "healthy"  # Still consider healthy if process is running
+                    return 0
+                else
+                    debug "External health check: UNHEALTHY for PostgREST"
+                    echo "unhealthy"
+                    return 0
+                fi
+            fi
+            ;;
+
+        "supabase_edge_runtime_2025slideheroes-db")
+            debug "Checking Edge Runtime health via process monitor"
+            # Check if Deno process is running
+            if docker top "$container_name" 2>/dev/null | grep -q "deno"; then
+                debug "External health check: HEALTHY for Edge Runtime (deno process running)"
+                echo "healthy"
+                return 0
+            else
+                debug "External health check: UNHEALTHY for Edge Runtime"
+                echo "unhealthy"
+                return 0
+            fi
+            ;;
+
+        *)
+            # Not a container we have external health checks for
+            debug "No external health check available for $container_name"
+            return 1
+            ;;
+    esac
+}
+
 # Level 2: Check port availability for exposed ports
 check_port_availability() {
     local container_id="$1"
@@ -2154,6 +2206,13 @@ check_container_health_progressive() {
         fi
     done
 
+    # Add external check for specific containers without native health checks
+    if [ "$container_name" = "supabase_rest_2025slideheroes-db" ] || [ "$container_name" = "supabase_edge_runtime_2025slideheroes-db" ]; then
+        if [[ ! " ${strategies[@]} " =~ " external " ]]; then
+            strategies=("external" "${strategies[@]}")  # Add external first for these containers
+        fi
+    fi
+
     local health_result=""
     local successful_strategy=""
 
@@ -2162,6 +2221,12 @@ check_container_health_progressive() {
         debug "Trying strategy: $strategy for $container_name"
 
         case "$strategy" in
+            "external")
+                if health_result=$(check_external_health "$container_id" "$container_name"); then
+                    successful_strategy="external"
+                    break
+                fi
+                ;;
             "native")
                 if health_result=$(check_native_health "$container_id" "$container_name"); then
                     successful_strategy="native"
@@ -2347,6 +2412,9 @@ smart_container_health_check() {
 
         # Try the detected strategy once more
         case "$detected_strategy" in
+            "external")
+                health_result=$(check_external_health "$container_id" "$container_name") || echo "unknown"
+                ;;
             "native")
                 health_result=$(check_native_health "$container_id" "$container_name") || echo "unknown"
                 ;;
