@@ -103,6 +103,35 @@
 			"outputs": [],
 			"cache": true
 		},
+		"@kit/shared#build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"],
+			"cache": true
+		},
+		"web#build": {
+			"dependsOn": ["^build", "@kit/shared#build"],
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
+				"next-env.d.ts"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
+		},
+		"payload#build": {
+			"dependsOn": ["^build", "@kit/shared#build"],
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
+				"next-env.d.ts"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
+		},
 		"build:test": {
 			"dependsOn": ["^build"],
 			"outputs": [
