@@ -49,6 +49,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Install root dependencies first
+          pnpm install --frozen-lockfile --prefer-offline
+
+          # Then install dashboard-specific dependencies
           cd .claude/dashboards
           # Create package.json if it doesn't exist
           if [ ! -f package.json ]; then
@@ -58,7 +62,7 @@ jobs:
           if [ -f pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile --prefer-offline
           elif [ -f package-lock.json ]; then
-            pnpm install
+            pnpm install --no-frozen-lockfile
           else
             pnpm install || npm init -y
           fi
