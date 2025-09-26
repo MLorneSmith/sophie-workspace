@@ -1,8 +1,6 @@
 {
 	"ci": {
 		"collect": {
-			"startServerCommand": "pnpm --filter web start",
-			"startServerReadyPattern": "Ready on",
 			"url": [
 				"http://localhost:3000/",
 				"http://localhost:3000/sign-in",
