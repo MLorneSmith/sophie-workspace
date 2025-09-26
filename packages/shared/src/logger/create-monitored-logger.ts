@@ -1,5 +1,5 @@
 import type { MonitoringService } from "@kit/monitoring-core";
-import { createServiceLogger } from "./enhanced-logger";
+import { createServiceLogger } from "./enhanced-logger.js";
 
 /**
  * Create a service logger with automatic monitoring integration
