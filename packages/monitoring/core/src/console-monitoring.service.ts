@@ -1,4 +1,4 @@
-import type { MonitoringService } from "@kit/monitoring-core";
+import type { MonitoringService } from "./monitoring.service";
 
 export class ConsoleMonitoringService implements MonitoringService {
 	identifyUser<Info extends { id: string }>(data: Info) {

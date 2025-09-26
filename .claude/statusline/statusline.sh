@@ -417,6 +417,14 @@ docker_status_file="/tmp/.claude_docker_status_${GIT_ROOT_HASH}"
 
 # Quick file existence and age check (avoids unnecessary processing)
 if [ -f "$docker_status_file" ]; then
+    # Check if cache is stale and trigger background refresh if needed
+    cache_mtime=$(stat -c %Y "$docker_status_file" 2>/dev/null || echo "0")
+    current_time=$(date +%s)
+    cache_age=$((current_time - cache_mtime))
+    if [ $cache_age -gt 300 ] && [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
+        # Trigger background refresh to avoid blocking statusline (5 minute threshold)
+        "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" health-check >/dev/null 2>&1 &
+    fi
     # Fast read with minimal processing
     if docker_status_content=$(cat "$docker_status_file" 2>/dev/null); then
         # Use optimized jq extraction in single call to minimize overhead
@@ -487,7 +495,16 @@ if [ -f "$docker_status_file" ]; then
                 # Extract basic numbers with simple grep
                 container_total=$(grep -o '"total": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
                 container_healthy=$(grep -o '"healthy": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
-                docker_status="🟡 docker (${container_healthy:-0}/${container_total:-0})"
+                container_unhealthy=$(grep -o '"unhealthy": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+
+                # Apply same logic as jq path
+                if [ "${container_unhealthy:-0}" -gt 0 ]; then
+                    docker_status="🔴 docker (${container_healthy:-0}/${container_total:-0})"
+                elif [ "${container_healthy:-0}" = "${container_total:-0}" ] && [ "${container_total:-0}" -gt 0 ]; then
+                    docker_status="🟢 docker (${container_healthy:-0}/${container_total:-0})"
+                else
+                    docker_status="🟡 docker (${container_healthy:-0}/${container_total:-0})"
+                fi
             else
                 docker_status="🔴 docker:off"
             fi
@@ -496,6 +513,8 @@ if [ -f "$docker_status_file" ]; then
         docker_status="⚪ docker:read-error"
     fi
 elif [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
+    # No cache file exists, trigger initial health check
+    "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" health-check >/dev/null 2>&1 &
     docker_status="⟳ docker"
 else
     docker_status="⚪ docker:none"
