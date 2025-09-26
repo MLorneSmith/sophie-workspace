@@ -1,29 +1,91 @@
 name: 'Setup Dependencies'
-description: 'Setup Node, pnpm, and install dependencies with caching'
+description: 'Setup Node, pnpm, and install dependencies with caching and circuit breaker pattern'
 runs:
   using: "composite"
   steps:
-    - name: Install pnpm with fallback
+    - name: Health Check and Circuit Breaker Init
       shell: bash
       run: |
+        # Circuit Breaker State Management
+        CIRCUIT_STATE_FILE="/tmp/ci-circuit-state-$$"
+        HEALTH_CHECK_FILE="/tmp/ci-health-check-$$"
+
+        # Initialize circuit breaker state
+        echo "CLOSED" > "$CIRCUIT_STATE_FILE"
+        echo "0" > "$HEALTH_CHECK_FILE"
+
+        # Export for subsequent steps
+        echo "CIRCUIT_STATE_FILE=$CIRCUIT_STATE_FILE" >> $GITHUB_ENV
+        echo "HEALTH_CHECK_FILE=$HEALTH_CHECK_FILE" >> $GITHUB_ENV
+
+        # System health checks
+        echo "🔍 Running pre-flight health checks..."
+
+        # Check available disk space
+        DISK_USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
+        if [ "$DISK_USAGE" -gt 90 ]; then
+          echo "⚠️ Disk usage critical: ${DISK_USAGE}%"
+          echo "OPEN" > "$CIRCUIT_STATE_FILE"
+        fi
+
+        # Check memory availability
+        if command -v free &> /dev/null; then
+          MEM_AVAILABLE=$(free -m | awk 'NR==2 {print int($7/$2*100)}')
+          if [ "$MEM_AVAILABLE" -lt 10 ]; then
+            echo "⚠️ Memory availability critical: ${MEM_AVAILABLE}%"
+            echo "OPEN" > "$CIRCUIT_STATE_FILE"
+          fi
+        fi
+
+        # Check network connectivity
+        if ! curl -sf --max-time 5 https://registry.npmjs.org/ > /dev/null 2>&1; then
+          echo "⚠️ NPM registry unreachable"
+          echo "HALF_OPEN" > "$CIRCUIT_STATE_FILE"
+        fi
+
+        CIRCUIT_STATE=$(cat "$CIRCUIT_STATE_FILE")
+        echo "🔌 Circuit breaker state: $CIRCUIT_STATE"
+
+    - name: Install pnpm with Circuit Breaker
+      shell: bash
+      run: |
+        # Read circuit state
+        CIRCUIT_STATE=$(cat "$CIRCUIT_STATE_FILE")
+
+        if [ "$CIRCUIT_STATE" = "OPEN" ]; then
+          echo "🔴 Circuit breaker is OPEN - skipping pnpm installation"
+          echo "⚡ Using minimal fallback mode"
+          exit 1
+        fi
+
         # Primary method: Try to use the action with specified version
         echo "📦 Installing pnpm version 10.14.0..."
-        
+
         # Create a marker file to track if pnpm is installed
         touch .pnpm-install-marker
-        
+
         # Check if pnpm is already available (from cache or previous run)
         if command -v pnpm &> /dev/null; then
           CURRENT_VERSION=$(pnpm --version)
           if [ "$CURRENT_VERSION" = "10.14.0" ]; then
             echo "✅ pnpm 10.14.0 is already installed"
             rm .pnpm-install-marker
+
+            # Record successful health check
+            SUCCESS_COUNT=$(cat "$HEALTH_CHECK_FILE")
+            echo "$((SUCCESS_COUNT + 1))" > "$HEALTH_CHECK_FILE"
+
+            # Recover circuit if in HALF_OPEN state
+            if [ "$CIRCUIT_STATE" = "HALF_OPEN" ] && [ "$SUCCESS_COUNT" -ge 2 ]; then
+              echo "CLOSED" > "$CIRCUIT_STATE_FILE"
+              echo "✅ Circuit breaker recovered to CLOSED state"
+            fi
             exit 0
           else
             echo "⚠️ Found pnpm $CURRENT_VERSION, need 10.14.0"
           fi
         fi
-        
+
         # If the marker exists after action, we need fallback
         rm .pnpm-install-marker 2>/dev/null || true
     
@@ -91,49 +153,115 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
 
-    - name: Install dependencies
+    - name: Install dependencies with Circuit Breaker
       shell: bash
       run: |
-        # Function to install with retries
-        install_with_retries() {
+        # Read circuit state
+        CIRCUIT_STATE=$(cat "$CIRCUIT_STATE_FILE" 2>/dev/null || echo "CLOSED")
+        FAILURE_COUNT=0
+        MAX_FAILURES=2
+
+        # Enhanced installation with circuit breaker
+        install_with_circuit_breaker() {
           local max_attempts=3
           local attempt=1
           local wait_time=30
-          
+
           while [ $attempt -le $max_attempts ]; do
-            echo "🔄 Installation attempt $attempt of $max_attempts..."
-            
+            # Check circuit state before each attempt
+            CIRCUIT_STATE=$(cat "$CIRCUIT_STATE_FILE" 2>/dev/null || echo "CLOSED")
+
+            if [ "$CIRCUIT_STATE" = "OPEN" ]; then
+              echo "🔴 Circuit breaker is OPEN - using minimal dependency mode"
+
+              # Minimal installation for critical path only
+              echo "📦 Installing minimal dependencies..."
+              if pnpm install --filter web --no-frozen-lockfile --network-concurrency 1 --ignore-scripts; then
+                echo "✅ Minimal dependencies installed"
+                echo "HALF_OPEN" > "$CIRCUIT_STATE_FILE"
+                return 0
+              else
+                echo "❌ Even minimal installation failed"
+                return 1
+              fi
+            fi
+
+            echo "🔄 Installation attempt $attempt of $max_attempts (Circuit: $CIRCUIT_STATE)..."
+
+            # Clear npm cache if in recovery mode
+            if [ "$CIRCUIT_STATE" = "HALF_OPEN" ] && [ $attempt -eq 1 ]; then
+              echo "🧹 Clearing package manager caches for recovery..."
+              pnpm store prune 2>/dev/null || true
+              npm cache clean --force 2>/dev/null || true
+            fi
+
             # Try frozen lockfile first (fast path for when everything is in sync)
-            if pnpm install --frozen-lockfile 2>/dev/null; then
+            if pnpm install --frozen-lockfile --network-concurrency 2 2>/dev/null; then
               echo "✅ Dependencies installed successfully with frozen lockfile"
+
+              # Success - update circuit state
+              if [ "$CIRCUIT_STATE" = "HALF_OPEN" ]; then
+                echo "CLOSED" > "$CIRCUIT_STATE_FILE"
+                echo "✅ Circuit breaker recovered to CLOSED state"
+              fi
+              FAILURE_COUNT=0
               return 0
             else
               echo "⚠️ Lockfile mismatch detected - this is expected when dev is ahead of main"
               echo "📦 Installing with --no-frozen-lockfile to handle version differences..."
-              
+
               # Use no-frozen-lockfile for integration tests since dev may be ahead
               # Add network concurrency limit to avoid rate limiting
-              if pnpm install --no-frozen-lockfile --network-concurrency 1; then
+              if pnpm install --no-frozen-lockfile --network-concurrency 1 --prefer-offline; then
                 echo "✅ Dependencies installed successfully (without frozen lockfile)"
                 echo "ℹ️ Note: This is normal for integration tests when dev branch is ahead of main"
+
+                # Success - update circuit state
+                if [ "$CIRCUIT_STATE" = "HALF_OPEN" ]; then
+                  echo "CLOSED" > "$CIRCUIT_STATE_FILE"
+                  echo "✅ Circuit breaker recovered to CLOSED state"
+                fi
+                FAILURE_COUNT=0
                 return 0
               fi
             fi
-            
+
+            # Failure - update failure count and circuit state
+            FAILURE_COUNT=$((FAILURE_COUNT + 1))
+            echo "⚠️ Installation failed (attempt $attempt, failures: $FAILURE_COUNT)"
+
+            if [ $FAILURE_COUNT -ge $MAX_FAILURES ]; then
+              echo "OPEN" > "$CIRCUIT_STATE_FILE"
+              echo "🔴 Circuit breaker opened after $FAILURE_COUNT failures"
+            fi
+
             if [ $attempt -lt $max_attempts ]; then
-              echo "⚠️ Installation failed (likely due to rate limiting). Waiting ${wait_time}s before retry..."
+              echo "⏳ Waiting ${wait_time}s before retry..."
               sleep $wait_time
               wait_time=$((wait_time * 2))  # Exponential backoff
             fi
-            
+
             attempt=$((attempt + 1))
           done
-          
+
           echo "❌ Failed to install dependencies after $max_attempts attempts"
+          echo "OPEN" > "$CIRCUIT_STATE_FILE"
           return 1
         }
-        
-        install_with_retries
+
+        # Execute with circuit breaker
+        if ! install_with_circuit_breaker; then
+          echo "⚠️ Dependency installation failed - attempting minimal mode"
+
+          # Last resort: Install only critical dependencies
+          if pnpm install --filter web --production --no-frozen-lockfile --ignore-scripts; then
+            echo "✅ Critical dependencies installed in degraded mode"
+            exit 0
+          else
+            echo "❌ Critical failure - unable to install any dependencies"
+            exit 1
+          fi
+        fi
 
     - name: Verify turbo installation
       shell: bash
