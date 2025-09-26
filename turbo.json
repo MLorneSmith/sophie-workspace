@@ -1,6 +1,6 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
-	"globalDependencies": ["**/.env"],
+	"globalDependencies": ["**/.env", ".nvmrc", "tsconfig.json"],
 	"ui": "stream",
 	"remoteCache": {
 		"enabled": true,
@@ -68,10 +68,29 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.js",
+				"*.jsx",
+				"*.json",
+				"!*.test.*",
+				"!*.spec.*",
+				"!**/__tests__/**",
+				"!**/test/**",
+				"!coverage/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
 			"outputs": [
 				".next/**",
 				"!.next/cache/**",
 				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
 				"next-env.d.ts",
 				"dist/**",
 				"build/**"
@@ -109,12 +128,45 @@
 		},
 		"lint": {
 			"dependsOn": ["^topo"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.js",
+				"*.jsx",
+				".eslintrc.*",
+				"eslint.config.*",
+				"!node_modules/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
 			"outputs": ["node_modules/.cache/.eslintcache"],
 			"cache": true
 		},
 		"typecheck": {
 			"dependsOn": ["^build"],
-			"outputs": ["node_modules/.cache/tsbuildinfo.json", "*.tsbuildinfo"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.d.ts",
+				"tsconfig.json",
+				"tsconfig.*.json",
+				"!node_modules/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
+			"outputs": [
+				"node_modules/.cache/tsbuildinfo.json",
+				"*.tsbuildinfo",
+				"**/*.tsbuildinfo"
+			],
 			"cache": true
 		},
 		"test": {
