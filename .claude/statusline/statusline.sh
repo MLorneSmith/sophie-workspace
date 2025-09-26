@@ -19,8 +19,8 @@ GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 # Get current git branch (skip locks for performance)
 branch=$(git -c core.preloadindex=false -c gc.auto=0 branch --show-current 2>/dev/null || echo "no-git")
 
-# Get current working directory (basename only for brevity)
-working_dir=$(basename "$PWD")
+# Get current working directory (basename only for brevity) - REMOVED from statusline display
+# working_dir=$(basename "$PWD")
 
 # Check build status
 build_status=""
@@ -401,13 +401,108 @@ if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
 fi
 
 # Build the output with conditional sections
-output="$model | ⎇ $branch | $working_dir"
+output="$model | ⎇ $branch"
 
 # Add build status
 [ -n "$build_status" ] && output="$output | $build_status"
 
 # Add codecheck status
 [ -n "$codecheck_status" ] && output="$output | $codecheck_status"
+
+# Check Docker status - optimized for performance
+docker_status=""
+# Use the same hash-based path as the docker-health-wrapper.sh
+GIT_ROOT_HASH="$(echo "${GIT_ROOT}" | sha256sum | cut -d' ' -f1 | head -c16)"
+docker_status_file="/tmp/.claude_docker_status_${GIT_ROOT_HASH}"
+
+# Quick file existence and age check (avoids unnecessary processing)
+if [ -f "$docker_status_file" ]; then
+    # Fast read with minimal processing
+    if docker_status_content=$(cat "$docker_status_file" 2>/dev/null); then
+        # Use optimized jq extraction in single call to minimize overhead
+        if command -v jq >/dev/null 2>&1; then
+            # Single jq call to extract all needed values
+            docker_data=$(echo "$docker_status_content" | jq -r '
+                (.docker_running // false) as $running |
+                (.containers.total // 0) as $total |
+                (.containers.healthy // 0) as $healthy |
+                (.containers.unhealthy // 0) as $unhealthy |
+                (.containers.unknown // 0) as $unknown |
+                (.last_check // "") as $last_check |
+                "\($running)|\($total)|\($healthy)|\($unhealthy)|\($unknown)|\($last_check)"
+            ' 2>/dev/null)
+
+            if [ -n "$docker_data" ] && [ "$docker_data" != "null" ]; then
+                # Parse the pipe-separated values
+                docker_running="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_total="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_healthy="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_unhealthy="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_unknown="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                last_check="$docker_data"
+
+                # Quick age calculation (only if needed for freshness check)
+                check_age=0
+                if [ -n "$last_check" ] && [ "$last_check" != "null" ] && [ "$last_check" != "" ]; then
+                    check_epoch=$(date -d "$last_check" +%s 2>/dev/null || echo "0")
+                    if [ "$check_epoch" -gt 0 ]; then
+                        check_age=$(( $(date +%s) - check_epoch ))
+                    fi
+                fi
+
+                # Determine status with minimal logic
+                if [ "$docker_running" = "false" ]; then
+                    docker_status="🔴 docker:off"
+                elif [ "$container_total" = "0" ]; then
+                    docker_status="🟡 docker (0/0)"
+                elif [ "$container_unhealthy" -gt 0 ]; then
+                    docker_status="🔴 docker (${container_healthy}/${container_total})"
+                elif [ "$container_unknown" = "0" ] && [ "$container_healthy" = "$container_total" ]; then
+                    # All healthy - check freshness only if needed
+                    if [ $check_age -lt 300 ]; then
+                        docker_status="🟢 docker (${container_healthy}/${container_total})"
+                    else
+                        docker_status="🟡 docker (${container_healthy}/${container_total})"
+                        # Add time indicator only for stale data
+                        if [ $check_age -ge 60 ]; then
+                            if [ $check_age -lt 3600 ]; then
+                                time_ago="$((check_age / 60))m"
+                            elif [ $check_age -lt 86400 ]; then
+                                time_ago="$((check_age / 3600))h"
+                            else
+                                time_ago="$((check_age / 86400))d"
+                            fi
+                            docker_status="$docker_status ($time_ago)"
+                        fi
+                    fi
+                else
+                    docker_status="🟡 docker (${container_healthy}/${container_total})"
+                fi
+            else
+                docker_status="⚪ docker:parse-error"
+            fi
+        else
+            # Fast fallback without jq - just check if docker is running
+            if grep -q '"docker_running": *true' "$docker_status_file" 2>/dev/null; then
+                # Extract basic numbers with simple grep
+                container_total=$(grep -o '"total": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+                container_healthy=$(grep -o '"healthy": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+                docker_status="🟡 docker (${container_healthy:-0}/${container_total:-0})"
+            else
+                docker_status="🔴 docker:off"
+            fi
+        fi
+    else
+        docker_status="⚪ docker:read-error"
+    fi
+elif [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
+    docker_status="⟳ docker"
+else
+    docker_status="⚪ docker:none"
+fi
+
+# Add Docker status
+[ -n "$docker_status" ] && output="$output | $docker_status"
 
 # Add test status
 [ -n "$test_status" ] && output="$output | $test_status"
