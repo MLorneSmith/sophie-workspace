@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { UserBillingPageObject } from "./user-billing.po";
 
-test.describe("User Billing", () => {
+test.describe("User Billing @billing @integration", () => {
 	test("user can subscribe to a plan", async ({ page }) => {
 		const po = new UserBillingPageObject(page);
 

@@ -148,8 +148,8 @@ class TestCleanupGuard {
 			// Clean up lock files
 			"rm -rf /tmp/.claude_test_locks/* 2>/dev/null || true",
 
-			// Clean up temp test files
-			"rm -f /tmp/.claude_test_status_* 2>/dev/null || true",
+			// Clean up temp test files (but preserve status file for Claude Code statusline)
+			// Status file should persist: /tmp/.claude_test_status_*
 			"rm -f /tmp/.claude_test_results.json 2>/dev/null || true",
 		];
 

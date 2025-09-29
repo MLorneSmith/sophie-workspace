@@ -1,0 +1,31 @@
+{
+	"shard": {
+		"id": 4,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 14,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-09-29T16:05:31.022Z",
+		"endTime": "2025-09-29T16:05:51.022Z",
+		"duration": "20s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard4 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0\n\n\nRunning 17 tests using 2 workers\nFilling email: test1@slideheroes.com\nFilling password: ***\nFilling email: test1@slideheroes.com\nEmail field value after fill: test1@slideheroes.com\nPassword field has value: yes\nFilling password: ***\nEmail field value after fill: test1@slideheroes.com\nPassword field has value: yes\nForm submitted, waiting for navigation...\nWaiting for navigation to: /home\nCurrent URL during wait: http://localhost:3001/auth/sign-in\nForm submitted, waiting for navigation...\nWaiting for navigation to: /home\nCurrent URL during wait: http://localhost:3001/auth/sign-in\nCurrent URL during wait: http://localhost:3001/home\nCurrent URL during wait: http://localhost:3001/home\nNavigation complete. Final URL: http://localhost:3001/home\nNavigation complete. Final URL: http://localhost:3001/home\n··Authenticating as test user for billing tests...\nFilling email: michael@slideheroes.com\nFilling password: ***\nFilling email: test1@slideheroes.com\nFilling password: ***\nEmail field value after fill: michael@slideheroes.com\nPassword field has value: yes\nEmail field value after fill: test1@slideheroes.com\nPassword field has value: yes\nForm submitted, waiting for navigation...\nWaiting for navigation to: /auth/verify\nCurrent URL during wait: http://localhost:3001/auth/sign-in?next=/auth/verify\nForm submitted, waiting for navigation...\nWaiting for navigation to: /home\nCurrent URL during wait: http://localhost:3001/auth/sign-in?next=/home\nCurrent URL during wait: http://localhost:3001/auth/verify\nCurrent URL during wait: http://localhost:3001/home\nNavigation complete. Final URL: http://localhost:3001/auth/verify\nNavigation complete. Final URL: http://localhost:3001/home\nAuthentication complete. Current URL: http://localhost:3001/home\nAuthentication state saved to /home/msmith/projects/2025slideheroes/apps/e2e/.auth/billing-user.json\n·/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n"
+}
