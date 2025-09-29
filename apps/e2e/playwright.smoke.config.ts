@@ -23,6 +23,12 @@ export default defineConfig({
 			process.env.TEST_BASE_URL ||
 			process.env.BASE_URL ||
 			"http://localhost:3001",
+		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+			? {
+					"x-vercel-protection-bypass":
+						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+				}
+			: undefined,
 		screenshot: "only-on-failure",
 		trace: "on-first-retry",
 		navigationTimeout: 15 * 1000,
