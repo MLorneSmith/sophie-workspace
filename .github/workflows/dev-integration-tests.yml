@@ -419,6 +419,7 @@ jobs:
           BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           SKIP_EMAIL_VERIFICATION: true
           CI: true
+          TEST_BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           PLAYWRIGHT_API_URL: ${{ needs.check-should-run.outputs.payload_deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

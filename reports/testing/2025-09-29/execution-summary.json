@@ -1,15 +1,15 @@
 {
 	"executionDate": "2025-09-29",
-	"lastUpdated": "2025-09-29T16:07:42.222Z",
+	"lastUpdated": "2025-09-29T18:06:40.873Z",
 	"totalShards": 0,
-	"completedShards": 9,
+	"completedShards": 11,
 	"failedShards": 0,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 136,
-		"passed": 110,
+		"total": 166,
+		"passed": 129,
 		"failed": 0,
-		"skipped": 26
+		"skipped": 37
 	},
 	"shards": [
 		{
@@ -29,6 +29,14 @@
 			"failures": 0
 		},
 		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0
+		},
+		{
 			"id": 2,
 			"name": "Authentication",
 			"success": true,
@@ -41,6 +49,14 @@
 			"name": "Authentication",
 			"success": true,
 			"duration": "24s",
+			"tests": 21,
+			"failures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "23s",
 			"tests": 21,
 			"failures": 0
 		},
