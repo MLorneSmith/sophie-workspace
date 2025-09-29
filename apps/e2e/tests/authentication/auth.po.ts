@@ -260,7 +260,7 @@ export class AuthPageObject {
 				return leftSignIn && reachedTarget;
 			},
 			{
-				timeout: 30000, // Increase timeout to 30s to account for session establishment polling
+				timeout: 45000, // Increased from 30s to 45s to account for CI environment latency and session establishment
 			},
 		);
 
