@@ -1,5 +1,5 @@
-import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
+import { getCourseLessons } from "@kit/payload";
 import { createServiceLogger } from "@kit/shared/logger";
 import { NextResponse } from "next/server";
 
