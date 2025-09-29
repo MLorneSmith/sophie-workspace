@@ -33,15 +33,44 @@ test("authenticate as test user", async ({ page }) => {
 	console.log(`🔐 Authenticating test user: ${credentials.email}`);
 
 	// Use toPass for reliable authentication with retries
-	await expect(async () => {
-		await auth.loginAsUser({
-			email: credentials.email,
-			password: credentials.password,
+	try {
+		await expect(async () => {
+			await auth.loginAsUser({
+				email: credentials.email,
+				password: credentials.password,
+			});
+		}).toPass({
+			intervals: testConfig.getRetryIntervals("auth"),
+			timeout: testConfig.getTimeout("medium"),
 		});
-	}).toPass({
-		intervals: testConfig.getRetryIntervals("auth"),
-		timeout: testConfig.getTimeout("medium"),
-	});
+	} catch (error) {
+		// Capture diagnostics on failure
+		await page.screenshot({
+			path: `./test-results/auth-failure-${credentials.email}-${Date.now()}.png`,
+			fullPage: true,
+		});
+
+		console.error(`❌ Authentication failed for ${credentials.email}`);
+		console.error(`Current URL: ${page.url()}`);
+
+		// Log available inputs for debugging selector issues
+		try {
+			const inputs = await page.$$eval("input", (els) =>
+				els.map((el) => ({
+					name: el.getAttribute("name"),
+					id: el.id,
+					type: el.type,
+					dataTest: el.dataset.test,
+					dataTestId: el.dataset.testid,
+				})),
+			);
+			console.error("Available inputs:", JSON.stringify(inputs, null, 2));
+		} catch (e) {
+			console.error("Could not enumerate inputs");
+		}
+
+		throw error;
+	}
 
 	await page.context().storageState({ path: testAuthFile });
 });
@@ -55,15 +84,44 @@ test("authenticate as owner user", async ({ page }) => {
 	console.log(`🔐 Authenticating owner user: ${credentials.email}`);
 
 	// Use toPass for reliable authentication with retries
-	await expect(async () => {
-		await auth.loginAsUser({
-			email: credentials.email,
-			password: credentials.password,
+	try {
+		await expect(async () => {
+			await auth.loginAsUser({
+				email: credentials.email,
+				password: credentials.password,
+			});
+		}).toPass({
+			intervals: testConfig.getRetryIntervals("auth"),
+			timeout: testConfig.getTimeout("medium"),
 		});
-	}).toPass({
-		intervals: testConfig.getRetryIntervals("auth"),
-		timeout: testConfig.getTimeout("medium"),
-	});
+	} catch (error) {
+		// Capture diagnostics on failure
+		await page.screenshot({
+			path: `./test-results/auth-failure-${credentials.email}-${Date.now()}.png`,
+			fullPage: true,
+		});
+
+		console.error(`❌ Authentication failed for ${credentials.email}`);
+		console.error(`Current URL: ${page.url()}`);
+
+		// Log available inputs for debugging selector issues
+		try {
+			const inputs = await page.$$eval("input", (els) =>
+				els.map((el) => ({
+					name: el.getAttribute("name"),
+					id: el.id,
+					type: el.type,
+					dataTest: el.dataset.test,
+					dataTestId: el.dataset.testid,
+				})),
+			);
+			console.error("Available inputs:", JSON.stringify(inputs, null, 2));
+		} catch (e) {
+			console.error("Could not enumerate inputs");
+		}
+
+		throw error;
+	}
 
 	await page.context().storageState({ path: ownerAuthFile });
 });
@@ -77,15 +135,44 @@ test("authenticate as super-admin user", async ({ page }) => {
 	console.log(`🔐 Authenticating super-admin user: ${credentials.email}`);
 
 	// Use toPass for reliable authentication with retries
-	await expect(async () => {
-		await auth.loginAsSuperAdmin({
-			email: credentials.email,
-			password: credentials.password,
+	try {
+		await expect(async () => {
+			await auth.loginAsSuperAdmin({
+				email: credentials.email,
+				password: credentials.password,
+			});
+		}).toPass({
+			intervals: testConfig.getRetryIntervals("auth"),
+			timeout: testConfig.getTimeout("long"), // Super admin with MFA needs more time
 		});
-	}).toPass({
-		intervals: testConfig.getRetryIntervals("auth"),
-		timeout: testConfig.getTimeout("long"), // Super admin with MFA needs more time
-	});
+	} catch (error) {
+		// Capture diagnostics on failure
+		await page.screenshot({
+			path: `./test-results/auth-failure-${credentials.email}-${Date.now()}.png`,
+			fullPage: true,
+		});
+
+		console.error(`❌ Authentication failed for ${credentials.email}`);
+		console.error(`Current URL: ${page.url()}`);
+
+		// Log available inputs for debugging selector issues
+		try {
+			const inputs = await page.$$eval("input", (els) =>
+				els.map((el) => ({
+					name: el.getAttribute("name"),
+					id: el.id,
+					type: el.type,
+					dataTest: el.dataset.test,
+					dataTestId: el.dataset.testid,
+				})),
+			);
+			console.error("Available inputs:", JSON.stringify(inputs, null, 2));
+		} catch (e) {
+			console.error("Could not enumerate inputs");
+		}
+
+		throw error;
+	}
 
 	await page.context().storageState({ path: superAdminAuthFile });
 });
