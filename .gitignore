@@ -118,7 +118,6 @@ tasks.json
 # ts-node cache
 node-compile-cache/
 
-
 # Claude backup files
 .claude-backup-*.tar.gz
 *.backup

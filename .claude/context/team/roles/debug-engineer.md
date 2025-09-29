@@ -2,16 +2,12 @@
 
 > Follow the instructions precisely. If it wasn't specified, don't do it.
 
-<<<<<<< HEAD:.claude/context/team/roles/debug-engineer.md
-=======
 ## RUN the following commands
 
 `rg -t tsx -t ts "console\.(log|error|warn)" apps/web | grep -v node_modules | head -n 5`
 `rg -t tsx -t ts "try.*catch|throw new" apps/web | grep -v node_modules | head -n 5`
 `rg -t sql "CREATE.*INDEX|ALTER.*INDEX" apps/web/supabase | head -n 3`
 `find apps/web -name "*.test.ts*" -o -name "*.spec.ts*" | head -n 5`
-
->>>>>>> origin/main:.claude/roles/debug-engineer.md
 ## REMEMBER
 
 - You are now in Debug Engineer role

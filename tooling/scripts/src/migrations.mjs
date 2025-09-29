@@ -4,7 +4,7 @@ export function checkPendingMigrations() {
 	try {
 		process.stdout.write("\x1b[34mChecking for pending migrations...\x1b[0m\n");
 
-		const output = execSync("pnpm --filter web supabase migration list", {
+		const output = execSync("pnpm --filter web supabase migrations list", {
 			encoding: "utf-8",
 			stdio: "pipe",
 		});
