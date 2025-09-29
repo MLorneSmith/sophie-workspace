@@ -18,7 +18,11 @@ export default defineConfig({
 	retries: 3,
 	reporter: "html",
 	use: {
-		baseURL: process.env.TEST_BASE_URL || "http://localhost:3001",
+		baseURL:
+			process.env.PLAYWRIGHT_BASE_URL ||
+			process.env.TEST_BASE_URL ||
+			process.env.BASE_URL ||
+			"http://localhost:3001",
 		screenshot: "only-on-failure",
 		trace: "on-first-retry",
 		navigationTimeout: 15 * 1000,

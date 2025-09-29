@@ -18,7 +18,11 @@ export default defineConfig({
 	workers: 1,
 	reporter: "list",
 	use: {
-		baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
+		baseURL:
+			process.env.PLAYWRIGHT_BASE_URL ||
+			process.env.TEST_BASE_URL ||
+			process.env.BASE_URL ||
+			"http://localhost:3000",
 		screenshot: "only-on-failure",
 		trace: "on-first-retry",
 		navigationTimeout: 15 * 1000,
