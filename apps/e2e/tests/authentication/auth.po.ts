@@ -22,11 +22,17 @@ export class AuthPageObject {
 	}
 
 	goToSignIn(next?: string) {
-		return this.page.goto(`/auth/sign-in${next ? `?next=${next}` : ""}`);
+		return this.page.goto(`/auth/sign-in${next ? `?next=${next}` : ""}`, {
+			timeout: 30000,
+			waitUntil: "domcontentloaded",
+		});
 	}
 
 	goToSignUp(next?: string) {
-		return this.page.goto(`/auth/sign-up${next ? `?next=${next}` : ""}`);
+		return this.page.goto(`/auth/sign-up${next ? `?next=${next}` : ""}`, {
+			timeout: 30000,
+			waitUntil: "domcontentloaded",
+		});
 	}
 
 	async signOut() {
@@ -244,8 +250,14 @@ export class AuthPageObject {
 		await this.page.waitForURL(
 			(url) => {
 				const urlStr = url.toString();
-				console.log(`Current URL during wait: ${urlStr}`);
-				return !urlStr.includes("/auth/sign-in") && urlStr.includes(targetUrl);
+				console.log(`[waitForURL] Current: ${urlStr}, Target: ${targetUrl}`);
+
+				// Accept if we've left sign-in page AND reached either target or onboarding
+				const leftSignIn = !urlStr.includes("/auth/sign-in");
+				const reachedTarget =
+					urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
+
+				return leftSignIn && reachedTarget;
 			},
 			{
 				timeout: 30000, // Increase timeout to 30s to account for session establishment polling

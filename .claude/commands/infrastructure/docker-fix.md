@@ -1,43 +1,41 @@
 ---
-description: Fix unhealthy Docker containers with diagnostic-driven approach using native and external health checks
+description: Fix unhealthy Docker containers with diagnostic-driven approach and aggressive recovery strategies
 allowed-tools: [Bash, Read, Grep, Task, TodoWrite]
 argument-hint: "[container-name|stack-name] [--auto] [--manual-approval]"
 ---
 
 # Infrastructure Docker Fix
 
-Intelligent Docker container health restoration using progressive fix strategies with integrated native and external health monitoring.
+Docker container health validation and aggressive restoration for all 16 containers.
 
 ## Key Features
-- **Multi-Strategy Health Detection**: Native Docker health checks + external monitoring (PostgREST, Edge Runtime)
-- **Diagnostic-Driven Workflow**: Comprehensive health analysis including external endpoints before applying fixes
-- **Progressive Fix Strategies**: Auto-escalation from restart → recreate → manual approval
-- **External Health Integration**: Leverages PostgREST admin endpoints and process monitoring
-- **Safety Controls**: Manual approval required for destructive operations (delete/recreate)
-- **Before/After Validation**: Status comparison with metrics using both native and external checks
+- **Complete Container Coverage**: Validates all 16 containers including Supabase-managed services
+- **Supabase Container Expertise**: Process-based health checks for PostgREST and Edge Runtime containers
+- **Aggressive Fix Strategies**: Auto-escalation from restart → recreate with minimal prompting
+- **Progressive Health Detection**: Native Docker health + process monitoring + container state
+- **Phase Progress Tracking**: Visual TodoWrite tracking for major workflow phases
+- **Sequential Processing**: One container at a time for reliable debugging and recovery
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/bin/docker-health-wrapper.sh
+- Read .claude/context/infrastructure/docker-health-debugging.md
 - Read .claude/bin/supabase-external-health.sh
-- Read .claude/context/infrastructure/docker-health-checks-implementation.md
 
 ## Prompt
 
 <role>
-You are a Docker Infrastructure Specialist with deep expertise in container health management, diagnostics, and recovery strategies. You understand both native Docker health checks and external monitoring patterns including PostgREST admin endpoints and process-based health validation. You have authority to execute safe fix operations autonomously but require manual approval for destructive actions.
+You are a Docker Infrastructure Specialist with deep expertise in container health management, diagnostics, and aggressive recovery strategies. You excel at validating all containers in the SlideHeroes environment (16 total), with specialized knowledge of Supabase container health verification using process-based checks for PostgREST and Edge Runtime.
 </role>
 
 <instructions>
 # Docker Fix Workflow - PRIME Framework
 
 **CORE REQUIREMENTS**:
-- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
-- **Start** all instructions with action verbs
-- **Include** decision trees for fix strategy selection
-- **Apply** security measures for Docker command execution
-- **Validate** all container operations before execution
-- **Integrate** external health checks for Supabase containers
+- **Track** major workflow phases using TodoWrite for visibility
+- **Validate** all 16 containers systematically (8 Supabase managed + 2 external + custom)
+- **Apply** aggressive fix strategies with auto-escalation
+- **Execute** sequential container processing for reliable recovery
+- **Confirm** health using native checks + process monitoring for Supabase containers
 
 ## PRIME Workflow
 
@@ -45,32 +43,41 @@ You are a Docker Infrastructure Specialist with deep expertise in container heal
 <purpose>
 **Define** clear restoration outcomes and success criteria:
 
-1. **Primary Objective**: Restore unhealthy Docker containers to healthy operational state using both native and external health monitoring
-2. **Success Criteria**: All targeted containers show "healthy" status after fixes (via Docker or external checks)
-3. **Scope Boundaries**: Fix unhealthy containers only, preserve healthy containers, support external health monitoring
-4. **Key Features**: Multi-strategy diagnostics, progressive fix strategies, external health integration, safety controls
+1. **Primary Objective**: Restore all unhealthy containers to healthy operational state across 16 total containers
+2. **Success Criteria**:
+   - All containers show "healthy" or "running" status
+   - PostgREST process confirmed running (docker top | grep postgrest)
+   - Edge Runtime Deno process confirmed running (docker top | grep deno)
+   - Before/after metrics show improvement
+3. **Scope Boundaries**:
+   - Include: All 16 containers (Supabase managed + external monitoring + custom)
+   - Focus: Unhealthy, stopped, or degraded containers only
+   - Exclude: Healthy containers (no unnecessary restarts)
+4. **Key Features**: Aggressive recovery, process-based Supabase validation, sequential execution, phase tracking
 
 Success Metrics:
-- Before/after health status comparison (native + external)
-- Successful container state transitions
-- Zero data loss during fix operations
-- Operational service continuity
-- External health endpoints responsive (PostgREST, etc.)
+- Before/after container health comparison
+- Successful state transitions (stopped → running, unhealthy → healthy)
+- PostgREST and Edge Runtime process confirmation
+- Zero data loss during operations
 </purpose>
 
 ### Phase R - ROLE
 <role_definition>
 **Establish** infrastructure expertise and decision authority:
 
-1. **Expertise Domain**: Docker container management, health diagnostics, external monitoring, system administration
-2. **Experience Level**: Senior Infrastructure Engineer with container orchestration and monitoring experience
-3. **Decision Authority**: Execute safe operations autonomously, require approval for destructive actions
-4. **Approach Style**: Systematic, safety-first, with comprehensive validation using multiple health sources
+1. **Expertise Domain**: Docker container management, Supabase services, process monitoring, aggressive recovery
+2. **Experience Level**: Senior Infrastructure Engineer with container orchestration expertise
+3. **Decision Authority**:
+   - AUTONOMOUS: restart, health validation, process checks, stopped container recovery
+   - APPROVAL RECOMMENDED: recreate (but proceed if --auto flag set)
+   - ESCALATION: Docker daemon issues, permission errors
+4. **Approach Style**: Aggressive, recovery-focused, systematic validation
 
 Authority Matrix:
-- AUTONOMOUS: restart, health checks (native/external), status validation
-- APPROVAL REQUIRED: recreate, delete, volume operations
-- ESCALATION: Docker daemon issues, permission errors, external monitoring failures
+- AUTONOMOUS: restart, process validation, stopped container start
+- MINIMAL PROMPTING: recreate operations (confirm once, proceed)
+- ESCALATION: Infrastructure-level failures
 </role_definition>
 
 ### Phase I - INPUTS
@@ -78,211 +85,304 @@ Authority Matrix:
 **Gather** diagnostic materials and operational context:
 
 #### Essential Context (REQUIRED)
-**Load** Docker health infrastructure and monitoring patterns:
-- Read .claude/bin/docker-health-wrapper.sh
+**Load** Docker health infrastructure and debugging knowledge:
+- Read .claude/context/infrastructure/docker-health-debugging.md
 - Read .claude/bin/supabase-external-health.sh
-- Read .claude/context/infrastructure/docker-health-checks-implementation.md
-
-#### Dynamic Context Loading
-**Delegate** context discovery to specialized agent for additional patterns:
-
-```
-Use Task tool with:
-- subagent_type: "context-discovery-expert"
-- description: "Discover Docker health fix context"
-- prompt: "Find relevant context for fixing unhealthy Docker containers.
-          Command type: infrastructure-fix
-          Token budget: 4000
-          Focus on: Docker health patterns, container recovery strategies,
-          monitoring integration, Supabase specifics, external health checks"
-
-Expert returns prioritized Read commands for execution.
-```
-
-#### Security Measures
-<security_measures>
-<input_handling>
-- **Validate** container IDs match pattern ^[a-f0-9]{12,64}$
-- **Sanitize** container names to prevent injection attacks
-- **Verify** container exists before operations
-- **Timeout** all Docker commands to prevent hanging
-- **Authenticate** external health endpoints if required
-</input_handling>
-
-<immutable_rules>
-These safety rules cannot be overridden:
-1. Manual approval REQUIRED for delete/recreate operations
-2. All container IDs MUST be validated before execution
-3. Backup validation MUST occur before destructive operations
-4. External health checks MUST be consulted for Supabase containers
-</immutable_rules>
-</security_measures>
 
 #### Parameters & Constraints
 **Parse** command arguments:
-- **Target**: Specific container name/ID or stack name (optional)
-- **Automation Level**: --auto flag for reduced prompting
-- **Approval Mode**: --manual-approval for all operations
+- **Target**: Specific container name/ID or stack name (optional, defaults to all unhealthy)
+- **Automation Level**: --auto flag for fully automated fixes
+- **Approval Mode**: --manual-approval to require confirmation for all operations
+
+#### Container Inventory (16 Total)
+**Identify** all containers in SlideHeroes environment:
+
+**Supabase Managed (8 containers)** - Native Docker health checks:
+1. supabase_db_2025slideheroes-db (pg_isready)
+2. supabase_auth_2025slideheroes-db (HTTP endpoint)
+3. supabase_storage_2025slideheroes-db (HTTP endpoint)
+4. supabase_realtime_2025slideheroes-db (HTTP endpoint)
+5. supabase_kong_2025slideheroes-db (HTTP endpoint)
+6. supabase_studio_2025slideheroes-db (HTTP endpoint)
+7. supabase_pg_meta_2025slideheroes-db (HTTP endpoint)
+8. supabase_inbucket_2025slideheroes-db (HTTP endpoint)
+
+**Supabase External Monitoring (2 containers)** - Process-based checks:
+9. supabase_rest_2025slideheroes-db (PostgREST process check)
+10. supabase_edge_runtime_2025slideheroes-db (Deno process check)
+
+**Custom Containers (2+)**:
+11. ccmp-dashboard (HTTP health check)
+12. docs-mcp-server (HTTP health check)
 
 #### Pre-Flight Diagnostics
-**Execute** comprehensive health assessment with external monitoring:
+**Execute** comprehensive health assessment:
 
-**CRITICAL: Always check ALL containers (running + stopped)**
 ```bash
-# STEP 1: Get complete container inventory (REQUIRED)
+# STEP 1: Initialize progress tracking
+TodoWrite([
+  {content: "Discover container health status", status: "in_progress", activeForm: "Discovering health status"},
+  {content: "Diagnose unhealthy containers", status: "pending", activeForm: "Diagnosing issues"},
+  {content: "Apply aggressive fix strategies", status: "pending", activeForm: "Applying fixes"},
+  {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
+])
+
+# STEP 2: Get complete container inventory (ALL 16 containers)
 ALL_CONTAINERS=$(docker ps -a --format "{{.Names}}\t{{.Status}}\t{{.State}}")
 TOTAL_CONTAINERS=$(docker ps -a --format "{{.Names}}" | wc -l)
 
-# STEP 2: Identify stopped containers (unhealthy by definition)
+# STEP 3: Identify stopped containers (unhealthy by definition)
 STOPPED_CONTAINERS=$(docker ps -a --filter "status=exited" --format "{{.Names}}")
 STOPPED_COUNT=$(echo "$STOPPED_CONTAINERS" | grep -v '^$' | wc -l)
 
-# STEP 3: Get current status using docker-health-wrapper.sh (includes external checks)
-HEALTH_STATUS=$(.claude/bin/docker-health-wrapper.sh health-check)
+# STEP 4: Check native Docker health for managed containers
+UNHEALTHY_NATIVE=$(docker ps --filter "health=unhealthy" --format "{{.Names}}")
 
-# STEP 4: Get external health status for Supabase containers
-EXTERNAL_HEALTH=$(.claude/bin/supabase-external-health.sh json)
+# STEP 5: Check Supabase external monitoring containers using process checks
+check_postgrest_health() {
+  local container="supabase_rest_2025slideheroes-db"
+  if docker top "$container" 2>/dev/null | grep -q "postgrest"; then
+    echo "healthy"
+  else
+    echo "unhealthy"
+  fi
+}
 
-# STEP 5: Cross-validate with statusline reporting (if available)
-STATUSLINE_STATUS=$(cat /tmp/.claude_statusline_docker_status 2>/dev/null || echo "unavailable")
+check_edge_runtime_health() {
+  local container="supabase_edge_runtime_2025slideheroes-db"
+  if docker top "$container" 2>/dev/null | grep -q "deno"; then
+    echo "healthy"
+  else
+    echo "unhealthy"
+  fi
+}
 
-# STEP 6: Comprehensive unhealthy container identification
-UNHEALTHY_CONTAINERS=$(.claude/bin/docker-health-wrapper.sh health-check | grep -E "unhealthy|degraded")
-UNHEALTHY_CONTAINERS+=$'\n'$STOPPED_CONTAINERS
+POSTGREST_HEALTH=$(check_postgrest_health)
+EDGE_RUNTIME_HEALTH=$(check_edge_runtime_health)
 
-# STEP 7: Validation reporting
-echo "=== CONTAINER INVENTORY VALIDATION ==="
-echo "Total containers found: $TOTAL_CONTAINERS"
-echo "Stopped containers (unhealthy): $STOPPED_COUNT"
-echo "Statusline reports: $STATUSLINE_STATUS"
-if [[ "$STOPPED_COUNT" -gt 0 ]]; then
-  echo "⚠️  STOPPED CONTAINERS FOUND:"
-  echo "$STOPPED_CONTAINERS"
+# STEP 6: Compile complete unhealthy list
+UNHEALTHY_CONTAINERS="$STOPPED_CONTAINERS"$'\n'"$UNHEALTHY_NATIVE"
+if [[ "$POSTGREST_HEALTH" == "unhealthy" ]]; then
+  UNHEALTHY_CONTAINERS+=$'\n'"supabase_rest_2025slideheroes-db"
 fi
+if [[ "$EDGE_RUNTIME_HEALTH" == "unhealthy" ]]; then
+  UNHEALTHY_CONTAINERS+=$'\n'"supabase_edge_runtime_2025slideheroes-db"
+fi
+
+# STEP 7: Report inventory validation
+echo "=== CONTAINER INVENTORY VALIDATION (16 TOTAL) ==="
+echo "Total containers found: $TOTAL_CONTAINERS"
+echo "Stopped containers: $STOPPED_COUNT"
+echo "Unhealthy (native): $(echo "$UNHEALTHY_NATIVE" | grep -v '^$' | wc -l)"
+echo "PostgREST health: $POSTGREST_HEALTH"
+echo "Edge Runtime health: $EDGE_RUNTIME_HEALTH"
+
+# STEP 8: Update progress
+TodoWrite([
+  {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Diagnose unhealthy containers", status: "in_progress", activeForm: "Diagnosing issues"},
+  {content: "Apply aggressive fix strategies", status: "pending", activeForm: "Applying fixes"},
+  {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
+])
 ```
 </inputs>
 
 ### Phase M - METHOD
 <method>
-**Execute** the main workflow with action verbs:
+**Execute** the main workflow with aggressive recovery:
 
-#### 1. **Discover** Current Health State
-**Analyze** container health status using multiple strategies:
+#### 1. **Analyze** Container Health Status
+**Examine** each unhealthy container systematically:
 
-**MANDATORY: Complete Container Discovery**
-- **Execute** `docker ps -a` to get ALL containers (running + stopped)
-- **Categorize** stopped containers as unhealthy requiring restart/recreation
-- **Cross-validate** total count with statusline reporting (expect matching numbers)
-- **Execute** docker-health-wrapper.sh health-check for running containers only
-- **Query** external health monitors for Supabase containers
-- **Check** PostgREST admin endpoint (http://localhost:3001/live) for REST API health
-- **Monitor** Edge Runtime via process inspection (docker top for Deno process)
-- **Parse** unhealthy container list with detailed diagnostics
-- **Identify** root causes (health check failures, resource issues, network problems, endpoint failures, stopped state)
-- **Categorize** containers by fix complexity and health check type (including stopped containers)
+- **Parse** unhealthy container list from pre-flight diagnostics
+- **Identify** failure modes:
+  - Stopped: exit code, restart policy, last log messages
+  - Unhealthy: health check logs, recent errors
+  - Process missing: PostgREST/Deno process not running
+- **Categorize** by container type (managed, external monitoring, custom)
+- **Prioritize** stopped containers first (highest impact)
 
-#### 2. **Initialize** Fix Strategy Selection
-**Determine** appropriate fix approach using enhanced decision tree:
+#### 2. **Select** Aggressive Fix Strategy
+**Determine** recovery approach using decision tree:
 
 ```
 IF container status == "exited" OR status == "stopped":
-  → **PRIORITY 1**: Stopped containers are unhealthy by definition
-  → **Check** exit code and restart policy
-  → **Analyze** container logs for failure reason
-  → IF exit_code == 0: **Execute** restart strategy (normal shutdown)
-  → IF exit_code != 0: **Prompt** for recreate approval (error shutdown)
-  → THEN **Monitor** startup and validate health
-ELSE IF container_type == "supabase_rest" AND external_health == "degraded":
-  → **Check** PostgREST admin endpoint connectivity
-  → **Verify** database connection status
-  → THEN **Execute** targeted fix for PostgREST issues
-ELSE IF container_type == "supabase_edge_runtime" AND process_check_failed:
-  → **Analyze** Deno process status
-  → **Check** CPU usage patterns
-  → THEN **Apply** Edge Runtime specific recovery
-ELSE IF container status == "unhealthy" AND uptime < 5min:
-  → **Execute** restart strategy (Docker restart command)
-  → THEN **Validate** health improvement within 60s
-ELSE IF container status == "unhealthy" AND restart_count > 3:
-  → **Prompt** for recreate approval (Docker recreate sequence)
-  → THEN **Execute** recreate with volume preservation
-ELSE IF external_health_only AND status == "degraded":
-  → **Diagnose** external endpoint issues
-  → **Execute** service-specific recovery procedures
-  → THEN **Validate** endpoint responsiveness
+  → **PRIORITY FIX**: Stopped containers are unhealthy
+  → **Check** exit code: docker inspect --format '{{.State.ExitCode}}' <container>
+  → **Analyze** logs: docker logs --tail 50 <container>
+  → **Execute** docker start <container> (AUTONOMOUS)
+  → **Monitor** for 60 seconds
+  → IF still failing: **Execute** recreate strategy
+
+ELSE IF container_name == "supabase_rest_*" AND process_check_failed:
+  → **Verify** postgrest process: docker top <container> | grep postgrest
+  → **Execute** docker restart <container> (AUTONOMOUS)
+  → **Confirm** process after 30 seconds
+  → IF still failing: **Execute** recreate strategy
+
+ELSE IF container_name == "supabase_edge_runtime_*" AND process_check_failed:
+  → **Verify** deno process: docker top <container> | grep deno
+  → **Execute** docker restart <container> (AUTONOMOUS)
+  → **Confirm** process after 30 seconds
+  → IF still failing: **Execute** recreate strategy
+
+ELSE IF container status == "unhealthy":
+  → **Execute** docker restart <container> (AUTONOMOUS)
+  → **Validate** health within 60 seconds
+  → IF still unhealthy: **Execute** recreate strategy
+
 ELSE:
-  → **Escalate** to manual diagnosis and custom fix strategy
-  → THEN **Document** resolution for future automation
+  → **Escalate** to manual diagnosis
 ```
 
-#### 3. **Process** Fix Operations with Progress Tracking
-**Apply** selected fix strategy with validation:
+#### 3. **Apply** Fix Operations Sequentially
+**Process** containers one at a time with progress tracking:
 
-**Initialize** progress tracking:
-```javascript
+**Update Progress**:
+```bash
 TodoWrite([
-  {content: "Diagnose container health", status: "in_progress", activeForm: "Diagnosing health"},
-  {content: "Apply fix strategy", status: "pending", activeForm: "Applying fixes"},
-  {content: "Validate restoration", status: "pending", activeForm: "Validating"}
+  {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
+  {content: "Apply aggressive fix strategies", status: "in_progress", activeForm: "Applying fixes"},
+  {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
 ])
 ```
 
-**For Stopped Container Recovery** (AUTONOMOUS - PRIORITY):
-- **Validate** container exists and is stopped
-- **Check** container exit code: `docker inspect <container> --format '{{.State.ExitCode}}'`
-- **Analyze** recent logs: `docker logs --tail 50 <container>`
-- **Execute** `docker start <container_id>` with 30s timeout
-- **Monitor** startup sequence for 90 seconds (longer for stopped containers)
-- **Verify** health check passes (native or external) within timeout
-- **Update** progress: Mark stopped container recovery as completed
+**For Each Unhealthy Container** (sequential processing):
 
-**For Restart Strategy** (AUTONOMOUS):
-- **Validate** container ID exists and is running
-- **Check** if container has external health monitoring
-- **Execute** `docker restart <container_id>` with 30s timeout
-- **Monitor** startup sequence for 60 seconds
-- **Verify** health check passes (native or external) within timeout
-- **Update** progress: Mark "Apply fix strategy" as completed
+**Stopped Container Recovery** (AUTONOMOUS):
+```bash
+# Extract exit code for diagnosis
+EXIT_CODE=$(docker inspect <container> --format '{{.State.ExitCode}}')
+echo "Container exit code: $EXIT_CODE"
 
-**For Recreate Strategy** (APPROVAL REQUIRED):
-- **Prompt** user: "Container requires recreation. Approve? [y/N]"
-- **Backup** container configuration and volumes
-- **Execute** `docker-compose up --force-recreate <service>` or equivalent
-- **Validate** service restoration and data integrity
-- **Test** external health endpoints if applicable
+# Show recent logs
+docker logs --tail 50 <container>
 
-**For External Health Recovery** (AUTONOMOUS for diagnostics):
-- **Identify** specific external health issue type
-- **Execute** targeted recovery based on service:
-  - PostgREST: Check database connectivity, restart if needed
-  - Edge Runtime: Monitor Deno process, check resource limits
-- **Validate** external endpoint responsiveness
-- **Fallback** to container restart if external recovery fails
+# Execute start
+docker start <container>
 
-**For Delete/Recreate Strategy** (MANUAL APPROVAL):
-- **Display** detailed impact analysis including external dependencies
-- **Require** explicit confirmation with typed container name
-- **Execute** supervised deletion with rollback capability
-- **Restore** from backup if recreation fails
-- **Verify** all health checks (native + external) post-recreation
+# Monitor startup for 60 seconds
+sleep 5
+for i in {1..12}; do
+  STATE=$(docker inspect --format '{{.State.Status}}' <container>)
+  if [[ "$STATE" == "running" ]]; then
+    echo "✅ Container started successfully"
+    break
+  fi
+  sleep 5
+done
 
-#### 4. **Validate** Fix Success
-**Confirm** health restoration and operational status:
+# Verify final state
+FINAL_STATE=$(docker inspect --format '{{.State.Status}}' <container>)
+if [[ "$FINAL_STATE" != "running" ]]; then
+  echo "⚠️ Container failed to start, proceeding to recreate strategy"
+  # Fall through to recreate
+fi
+```
 
-**CRITICAL: Complete Health Validation**
-- **Re-execute** `docker ps -a` to get ALL containers (running + stopped)
-- **Count** total containers and compare with initial inventory
-- **Identify** any remaining stopped containers as ongoing issues
-- **Re-execute** docker-health-wrapper.sh health-check for running containers
-- **Query** external health monitors for updated status
-- **Cross-validate** with statusline reporting: `cat /tmp/.claude_statusline_docker_status`
-- **Test** PostgREST admin endpoints if applicable
-- **Verify** Deno process health for Edge Runtime
-- **Compare** before/after status metrics (native + external + stopped containers)
-- **Verify** all target containers show "healthy" or "running" status
-- **Test** basic functionality (network connectivity, service endpoints)
-- **MANDATORY**: Report accurate counts that match statusline expectations
-- **Update** final progress: Mark "Validate restoration" as completed
+**Restart Strategy** (AUTONOMOUS):
+```bash
+# Execute restart with timeout
+timeout 60s docker restart <container>
+
+# Wait for health stabilization
+sleep 10
+
+# Verify health based on container type
+if [[ "$CONTAINER_TYPE" == "supabase_rest" ]]; then
+  # Process check for PostgREST
+  if docker top <container> | grep -q "postgrest"; then
+    echo "✅ PostgREST process confirmed running"
+  else
+    echo "⚠️ PostgREST process not found, proceeding to recreate"
+  fi
+elif [[ "$CONTAINER_TYPE" == "supabase_edge_runtime" ]]; then
+  # Process check for Deno
+  if docker top <container> | grep -q "deno"; then
+    echo "✅ Deno process confirmed running"
+  else
+    echo "⚠️ Deno process not found, proceeding to recreate"
+  fi
+else
+  # Native health check
+  HEALTH=$(docker inspect --format '{{.State.Health.Status}}' <container>)
+  echo "Container health: $HEALTH"
+fi
+```
+
+**Recreate Strategy** (MINIMAL PROMPTING):
+```bash
+# Prompt user unless --auto flag set
+if [[ "$AUTO_MODE" != "true" ]]; then
+  echo "Container requires recreation. Continue? [y/N]"
+  read -r response
+  if [[ "$response" != "y" ]]; then
+    echo "Skipping recreate for <container>"
+    continue
+  fi
+fi
+
+# Identify compose file for container
+COMPOSE_FILE=$(docker inspect <container> --format '{{.Config.Labels."com.docker.compose.project.working_dir"}}')/docker-compose.yml
+
+# Execute recreate
+docker-compose -f "$COMPOSE_FILE" up -d --force-recreate <service_name>
+
+# Wait for health stabilization (longer for recreate)
+sleep 15
+
+# Verify restoration
+echo "Verifying recreation..."
+```
+
+#### 4. **Confirm** Fix Success
+**Validate** health restoration across all 16 containers:
+
+```bash
+# Update progress
+TodoWrite([
+  {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
+  {content: "Apply aggressive fix strategies", status: "completed", activeForm: "Applying fixes"},
+  {content: "Validate restoration success", status: "in_progress", activeForm: "Validating fixes"}
+])
+
+# Re-check all 16 containers
+FINAL_TOTAL=$(docker ps -a --format "{{.Names}}" | wc -l)
+FINAL_RUNNING=$(docker ps --format "{{.Names}}" | wc -l)
+FINAL_STOPPED=$(docker ps -a --filter "status=exited" --format "{{.Names}}" | wc -l)
+FINAL_UNHEALTHY=$(docker ps --filter "health=unhealthy" --format "{{.Names}}" | wc -l)
+
+# Re-check Supabase external monitoring
+FINAL_POSTGREST=$(check_postgrest_health)
+FINAL_EDGE_RUNTIME=$(check_edge_runtime_health)
+
+# Compare before/after
+echo "=== VALIDATION COMPLETE ==="
+echo "Total containers: $TOTAL_CONTAINERS → $FINAL_TOTAL (expected: 16)"
+echo "Stopped: $STOPPED_COUNT → $FINAL_STOPPED (target: 0)"
+echo "Unhealthy (native): → $FINAL_UNHEALTHY (target: 0)"
+echo "PostgREST: $POSTGREST_HEALTH → $FINAL_POSTGREST (target: healthy)"
+echo "Edge Runtime: $EDGE_RUNTIME_HEALTH → $FINAL_EDGE_RUNTIME (target: healthy)"
+
+# Verify success
+if [[ "$FINAL_STOPPED" -eq 0 && "$FINAL_UNHEALTHY" -eq 0 &&
+      "$FINAL_POSTGREST" == "healthy" && "$FINAL_EDGE_RUNTIME" == "healthy" ]]; then
+  echo "✅ All containers healthy!"
+else
+  echo "⚠️ Some containers still unhealthy - manual intervention may be required"
+fi
+
+# Final progress update
+TodoWrite([
+  {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
+  {content: "Apply aggressive fix strategies", status: "completed", activeForm: "Applying fixes"},
+  {content: "Validate restoration success", status: "completed", activeForm: "Validating fixes"}
+])
+```
 </method>
 
 ### Phase E - EXPECTATIONS
@@ -291,33 +391,9 @@ TodoWrite([
 
 #### Output Specification
 **Present** fix results in structured format:
-- **Format**: Console output with JSON summary including external health data
-- **Structure**: Before/after comparison with native and external metrics
-- **Location**: Console display with optional log file
-- **Quality Standards**: 100% success rate for approved operations
-
-#### Validation Checks
-**Verify** fix operation quality using multiple health sources:
-```bash
-# Validate native Docker health status improvement
-FINAL_STATUS=$(.claude/bin/docker-health-wrapper.sh health-check)
-
-# Validate external health for Supabase containers
-EXTERNAL_FINAL=$(.claude/bin/supabase-external-health.sh json)
-
-# Check PostgREST admin endpoint if applicable
-if [[ "$CONTAINER_TYPE" == "supabase_rest" ]]; then
-  curl -f http://localhost:3001/ready || echo "PostgREST admin endpoint not ready"
-fi
-
-HEALTH_IMPROVEMENT=$(compare_health_status "$INITIAL_STATUS" "$FINAL_STATUS")
-
-if [[ "$HEALTH_IMPROVEMENT" == "true" ]]; then
-  echo "✅ Fix validation passed (native + external checks)"
-else
-  echo "⚠️ Fix validation failed - manual review required"
-fi
-```
+- **Format**: Console output with before/after metrics
+- **Structure**: Phase-tracked progress with TodoWrite visibility
+- **Quality Standards**: All 16 containers validated, Supabase processes confirmed
 
 #### Success Reporting
 **Report** completion with detailed metrics:
@@ -326,63 +402,47 @@ fi
 ✅ **Docker Fix Completed Successfully!**
 
 **PRIME Framework Results:**
-✅ Purpose: Container health restoration achieved (native + external)
-✅ Role: Infrastructure expertise applied with safety controls
-✅ Inputs: N containers diagnosed (M with external health)
-✅ Method: Progressive fix strategy executed
+✅ Purpose: All 16 containers validated and restored
+✅ Role: Aggressive recovery strategies applied autonomously
+✅ Inputs: Complete inventory assessed (16 containers)
+✅ Method: Sequential processing with phase tracking
 ✅ Expectations: All success criteria met
 
 **Fix Summary:**
-- Containers Processed: X total
-  - Native Health Checks: Y containers
-  - External Health Monitoring: Z containers
-- Restart Fixes: A successful
-- Recreate Fixes: B successful
-- External Recovery: C successful
-- Manual Interventions: D required
+- Containers Processed: X total (16 expected)
+- Stopped Container Fixes: A successful
+- Restart Fixes: B successful
+- Recreate Fixes: C successful
 - Success Rate: XX%
 - Total Duration: N minutes
 
-**Health Check Details:**
-- Native Docker Health: X/Y healthy
-- External PostgREST: Endpoint responsive on port 3001
-- External Edge Runtime: Deno process healthy
-- Combined Health Score: XX%
+**Container Health (16 Total):**
+- Supabase Managed (8): X/8 healthy
+- Supabase External (2): X/2 healthy
+  - PostgREST: ✅ Process running
+  - Edge Runtime: ✅ Process running
+- Custom Containers: X/X healthy
 
 **Before/After Comparison:**
-- Total Containers: X → Y (must remain consistent)
-- Running Containers: A → B
-- Stopped Containers: C → D (target: 0)
-- Healthy (Native): E → F containers
-- Healthy (External): G → H containers
-- Unhealthy: I → J containers
-- Degraded: K → L containers
-- Unknown: M → N containers
-
-**Critical Validation:**
-- Statusline Expected: X/Y containers healthy
-- Docker-Fix Actual: Z/Y containers healthy
-- Match Status: ✅/❌ (must match for success)
-
-**External Endpoint Status:**
-- PostgREST Admin: http://localhost:3001/live [STATUS]
-- PostgREST Ready: http://localhost:3001/ready [STATUS]
+- Total Containers: 16 → 16 ✅
+- Running: A → B
+- Stopped: C → 0 ✅ (target achieved)
+- Unhealthy (Native): D → 0 ✅
+- PostgREST Process: [status] → healthy ✅
+- Edge Runtime Process: [status] → healthy ✅
 
 **Next Steps:**
 - Monitor containers for 24h stability
-- Check external health endpoints periodically
-- Update monitoring thresholds if needed
-- Document any manual fixes for automation
+- Check logs if any containers show degraded performance
 ```
 
 #### Error Handling
-**Handle** failures gracefully with external monitoring awareness:
+**Handle** failures gracefully:
 - **Docker Daemon Errors**: Provide daemon restart guidance
-- **Permission Errors**: Guide user to proper Docker group membership
-- **External Endpoint Errors**: Diagnose connectivity to PostgREST admin endpoints
-- **Process Monitoring Failures**: Handle edge cases in Deno process detection
-- **Timeout Errors**: Implement retry with exponential backoff for both native and external checks
-- **Fix Failures**: Preserve original state, provide rollback options
+- **Permission Errors**: Guide to proper Docker permissions
+- **Process Check Failures**: Explain PostgREST/Deno verification steps
+- **Timeout Errors**: Extend timeouts and retry
+- **Recreation Failures**: Preserve state, provide rollback options
 </expectations>
 
 ## Error Handling
@@ -395,22 +455,16 @@ fi
 - **Network Issues**: Validate Docker network configuration
 
 ### Container Operation Errors
-- **Container Not Found**: Re-validate target containers using `docker ps -a`
-- **Recreation Failures**: Implement automatic rollback to previous state
-- **Health Check Timeouts**: Extend timeout and retry with logging
-- **Incomplete Container Discovery**: Always use `docker ps -a` not just `docker ps`
-- **Stopped Container Oversight**: Categorize stopped containers as unhealthy by definition
-- **Statusline Mismatch**: Cross-validate container counts with statusline reporting
+- **Container Not Found**: Re-validate with `docker ps -a`
+- **Start Failures**: Provide exit code diagnosis
+- **Process Check Failures**: Explain verification commands
+- **Health Check Timeouts**: Extend timeout and retry
+- **Stopped Container Oversight**: Always check `docker ps -a` not just `docker ps`
 
-### External Health Check Errors
-- **PostgREST Endpoint Down**: Check port 3001 availability, database connectivity
-- **Edge Runtime Process Missing**: Verify Deno installation in container
-- **External Script Missing**: Ensure supabase-external-health.sh is executable
-- **Network Connectivity**: Validate localhost:3001 is accessible
-
-### Safety Override Failures
-- **Approval Denied**: Preserve current state, document manual steps
-- **Validation Failures**: Halt operations, require manual intervention
+### Supabase-Specific Errors
+- **PostgREST Process Missing**: Check if postgrest binary exists in container
+- **Edge Runtime Process Missing**: Verify Deno installation
+- **Process Check Command Failure**: Fallback to container state check
 </error_handling>
 
 </instructions>
@@ -418,26 +472,30 @@ fi
 <help>
 🔧 **Infrastructure Docker Fix**
 
-Intelligently diagnose and fix unhealthy Docker containers using progressive fix strategies with native and external health monitoring.
+Aggressively diagnose and fix unhealthy containers across all 16 containers with specialized Supabase process validation.
 
 **Usage:**
-- `/infrastructure:docker-fix` - Fix all unhealthy containers with interactive prompts
-- `/infrastructure:docker-fix webapp` - Fix specific container/service
-- `/infrastructure:docker-fix --auto` - Automated fixes for safe operations only
-- `/infrastructure:docker-fix stack-name --manual-approval` - Require approval for all operations
+- `/infrastructure:docker-fix` - Fix all unhealthy containers with minimal prompting
+- `/infrastructure:docker-fix webapp` - Fix specific container
+- `/infrastructure:docker-fix --auto` - Fully automated fixes (no prompts)
+- `/infrastructure:docker-fix --manual-approval` - Require approval for all operations
 
 **PRIME Process:**
-1. **Purpose**: Restore container health with native + external validation
-2. **Role**: Infrastructure specialist with controlled autonomy
-3. **Inputs**: Health status via docker-health-wrapper.sh + external monitors
-4. **Method**: Progressive fix strategies (restart → recreate → manual) with external health integration
-5. **Expectations**: Validated health improvement with comprehensive metrics
+1. **Purpose**: Restore all 16 containers to healthy state
+2. **Role**: Aggressive recovery specialist with Supabase expertise
+3. **Inputs**: Complete health assessment with process validation
+4. **Method**: Sequential fixes with TodoWrite phase tracking
+5. **Expectations**: All containers healthy including PostgREST and Edge Runtime processes
+
+**Container Coverage (16 Total):**
+- 8 Supabase managed (native health checks)
+- 2 Supabase external (PostgREST + Edge Runtime process checks)
+- 2+ Custom containers (HTTP health checks)
 
 **Requirements:**
 - Docker daemon running and accessible
-- docker-health-wrapper.sh available at .claude/bin/
-- supabase-external-health.sh for external monitoring
-- Appropriate Docker permissions for target operations
+- Appropriate Docker permissions
+- docker-compose available for recreate operations
 
-Transform your unhealthy containers into a healthy, thriving Docker ecosystem with comprehensive health monitoring! 🚀
+Transform your unhealthy containers into a healthy ecosystem with aggressive recovery! 🚀
 </help>
