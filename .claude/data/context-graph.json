@@ -50,12 +50,9 @@
 		"infrastructure/deployment/docker-setup.md",
 		"infrastructure/deployment/docker-troubleshooting.md",
 		"infrastructure/deployment/vercel/vercel-deployment-guide.md",
+		"infrastructure/docker-health-debugging.md",
 		"infrastructure/environments/devcontainer-codespaces/devcontainer-implementation-analysis.md",
 		"infrastructure/environments/local-development-environment.md",
-		"infrastructure/statusline/docker-health-developer-notes.md",
-		"infrastructure/statusline/docker-health-quick-reference.md",
-		"infrastructure/statusline/docker-health-troubleshooting.md",
-		"infrastructure/statusline/docker-health-user-guide.md",
 		"infrastructure/statusline/README.md",
 		"integrations/api/api-patterns.md",
 		"integrations/api/endpoints.md",
@@ -1023,6 +1020,24 @@
 			],
 			"topics": ["Documentation"]
 		},
+		"infrastructure/docker-health-debugging.md": {
+			"name": "Docker Health Debugging Guide",
+			"category": "general",
+			"priority": "supplementary",
+			"tokens": 3124,
+			"keywords": [
+				"docker",
+				"health",
+				"debugging",
+				"guide",
+				"comprehensive",
+				"unhealthy",
+				"containers",
+				"slideheroes",
+				"project"
+			],
+			"topics": ["Docker"]
+		},
 		"infrastructure/environments/devcontainer-codespaces/devcontainer-implementation-analysis.md": {
 			"name": "Devcontainer Implementation Analysis for SlideHeroes",
 			"category": "general",
@@ -1058,82 +1073,6 @@
 				"slideheroes"
 			],
 			"topics": ["Documentation"]
-		},
-		"infrastructure/statusline/docker-health-developer-notes.md": {
-			"name": "Docker Health Monitoring - Developer Notes",
-			"category": "general",
-			"priority": "supplementary",
-			"tokens": 2633,
-			"keywords": [
-				"docker",
-				"health",
-				"monitoring",
-				"developer",
-				"notes",
-				"technical",
-				"architecture",
-				"documentation",
-				"implementation",
-				"details"
-			],
-			"topics": ["Docker"]
-		},
-		"infrastructure/statusline/docker-health-quick-reference.md": {
-			"name": "Docker Health Monitoring - Quick Reference",
-			"category": "general",
-			"priority": "supplementary",
-			"tokens": 1317,
-			"keywords": [
-				"docker",
-				"health",
-				"monitoring",
-				"quick",
-				"reference",
-				"command",
-				"emoji",
-				"meanings",
-				"common",
-				"usage"
-			],
-			"topics": ["Docker"]
-		},
-		"infrastructure/statusline/docker-health-troubleshooting.md": {
-			"name": "Docker Health Monitoring - Troubleshooting Guide",
-			"category": "general",
-			"priority": "supplementary",
-			"tokens": 2514,
-			"keywords": [
-				"docker",
-				"health",
-				"monitoring",
-				"troubleshooting",
-				"guide",
-				"comprehensive",
-				"system",
-				"solutions",
-				"common",
-				"issues"
-			],
-			"topics": ["Docker"]
-		},
-		"infrastructure/statusline/docker-health-user-guide.md": {
-			"name": "Docker Health Monitoring - User Guide",
-			"category": "general",
-			"priority": "supplementary",
-			"tokens": 1630,
-			"keywords": [
-				"docker",
-				"health",
-				"monitoring",
-				"guide",
-				"complete",
-				"documentation",
-				"system",
-				"including",
-				"setup",
-				"usage"
-			],
-			"topics": ["Docker"]
 		},
 		"infrastructure/statusline/README.md": {
 			"name": "Docker Health Monitoring Documentation",
@@ -1856,7 +1795,7 @@
 		"/debug-issue": [
 			"security/auth/troubleshooting.md",
 			"infrastructure/deployment/docker-troubleshooting.md",
-			"infrastructure/statusline/docker-health-troubleshooting.md",
+			"infrastructure/docker-health-debugging.md",
 			"team/roles/debug-engineer.md",
 			"testing/integration/integration-testing-troubleshooting.md"
 		],
@@ -1882,5 +1821,5 @@
 		"/test": ["testing/environment/e2e-local-environment.md"],
 		"/test --e2e": ["testing/environment/e2e-local-environment.md"]
 	},
-	"lastUpdated": "2025-09-26T15:53:40.134Z"
+	"lastUpdated": "2025-09-29T19:13:21.091Z"
 }
