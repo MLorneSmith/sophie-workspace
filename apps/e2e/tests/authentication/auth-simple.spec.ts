@@ -7,7 +7,7 @@ import { AuthPageObject } from "./auth.po";
  * These tests focus on core authentication functionality without
  * triggering the problematic dropdown components
  */
-test.describe("Authentication - Simple Tests @auth", () => {
+test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
 	test("sign in page loads with correct elements", async ({ page }) => {

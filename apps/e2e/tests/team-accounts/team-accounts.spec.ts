@@ -67,7 +67,7 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 	return { invitations, teamAccounts, ownerEmail, memberEmail, slug };
 }
 
-test.describe("Team Accounts", () => {
+test.describe("Team Accounts @team @integration", () => {
 	let teamAccounts: TeamAccountsPageObject;
 
 	test.beforeEach(async ({ page }) => {
@@ -189,7 +189,7 @@ test.describe("Team Accounts", () => {
 	});
 });
 
-test.describe("Team Account Deletion", () => {
+test.describe("Team Account Deletion @team @integration", () => {
 	test.skip("user can delete their team account", async ({ page }) => {
 		// SKIPPED: OTP verification in test mode only closes modal, doesn't complete deletion
 		const teamAccounts = new TeamAccountsPageObject(page);
@@ -207,7 +207,7 @@ test.describe("Team Account Deletion", () => {
 	});
 });
 
-test.describe("Team Member Role Management", () => {
+test.describe("Team Member Role Management @team @integration", () => {
 	test.skip("owner can update a team member's role", async ({ page }) => {
 		// SKIPPED: Requires email invitation token access which tests can't retrieve
 		// Setup team with a regular member
@@ -233,7 +233,7 @@ test.describe("Team Member Role Management", () => {
 	});
 });
 
-test.describe("Team Ownership Transfer", () => {
+test.describe("Team Ownership Transfer @team @integration", () => {
 	test.skip("owner can transfer ownership to another team member", async ({
 		// SKIPPED: Requires email invitation token access which tests can't retrieve
 		page,
@@ -265,7 +265,7 @@ test.describe("Team Ownership Transfer", () => {
 	});
 });
 
-test.describe("Team Account Security", () => {
+test.describe("Team Account Security @team @integration", () => {
 	test.skip("unauthorized user cannot access team account", async ({
 		// SKIPPED: Requires email confirmation for new user which tests can't access
 		page,

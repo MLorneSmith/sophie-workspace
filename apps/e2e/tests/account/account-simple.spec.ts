@@ -6,7 +6,7 @@ import { TEST_USERS } from "../helpers/test-users";
  * Simplified account settings tests that avoid networkidle hanging
  * These tests use domcontentloaded instead of networkidle
  */
-test.describe("Account Settings - Simple @account", () => {
+test.describe("Account Settings - Simple @account @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
 	test.beforeEach(async ({ page }) => {
