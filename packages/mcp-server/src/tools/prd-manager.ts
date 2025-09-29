@@ -90,6 +90,7 @@ interface StructuredPRD {
 	};
 }
 
+// biome-ignore lint/complexity/noStaticOnlyClass: PRDManager uses static methods as a namespace pattern for utility functions
 export class PRDManager {
 	private static ROOT_PATH = process.cwd();
 
