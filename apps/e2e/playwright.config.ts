@@ -62,6 +62,14 @@ export default defineConfig({
 			process.env.BASE_URL ||
 			"http://localhost:3000",
 
+		// Add Vercel protection bypass header for deployed environments
+		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+			? {
+					"x-vercel-protection-bypass":
+						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+				}
+			: undefined,
+
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",
 
