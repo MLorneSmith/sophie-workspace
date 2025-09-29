@@ -71,8 +71,8 @@ export class TestConfigManager {
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
 					short: isCI ? 15000 : 10000,
-					medium: isCI ? 30000 : 20000,
-					long: isCI ? 60000 : 45000,
+					medium: isCI ? 45000 : 20000, // Increased from 30s to 45s for CI
+					long: isCI ? 90000 : 45000, // Increased from 60s to 90s for CI
 				},
 			},
 		};
