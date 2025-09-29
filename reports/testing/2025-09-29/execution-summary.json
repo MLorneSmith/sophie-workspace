@@ -1,15 +1,15 @@
 {
 	"executionDate": "2025-09-29",
-	"lastUpdated": "2025-09-29T18:06:40.873Z",
+	"lastUpdated": "2025-09-29T18:15:04.484Z",
 	"totalShards": 0,
-	"completedShards": 11,
+	"completedShards": 16,
 	"failedShards": 0,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 166,
-		"passed": 129,
+		"total": 234,
+		"passed": 184,
 		"failed": 0,
-		"skipped": 37
+		"skipped": 50
 	},
 	"shards": [
 		{
@@ -33,6 +33,14 @@
 			"name": "Smoke Tests",
 			"success": true,
 			"duration": "7s",
+			"tests": 9,
+			"failures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
 			"tests": 9,
 			"failures": 0
 		},
@@ -61,6 +69,22 @@
 			"failures": 0
 		},
 		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "18s",
+			"tests": 21,
+			"failures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "20s",
+			"tests": 0,
+			"failures": 0
+		},
+		{
 			"id": 4,
 			"name": "Admin & Invitations",
 			"success": true,
@@ -85,6 +109,14 @@
 			"failures": 0
 		},
 		{
+			"id": 5,
+			"name": "Billing",
+			"success": true,
+			"duration": "59s",
+			"tests": 25,
+			"failures": 0
+		},
+		{
 			"id": 6,
 			"name": "Accessibility",
 			"success": true,
@@ -97,6 +129,14 @@
 			"name": "Accessibility",
 			"success": true,
 			"duration": "31s",
+			"tests": 13,
+			"failures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "9s",
 			"tests": 13,
 			"failures": 0
 		}
