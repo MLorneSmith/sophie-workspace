@@ -79,6 +79,7 @@ Use Task tool with:
 - target: REQUIRED - "local" or "remote"
 - --apps: OPTIONAL - Comma-separated list (web,e2e,payload), default: all
 - --confirm: OPTIONAL - Skip confirmation for remote (DANGEROUS)
+- --seed: OPTIONAL - Run Payload CMS seeding after reset
 - --run-tests: OPTIONAL - Execute E2E tests after reset
 - --verbose: OPTIONAL - Enable detailed logging
 
@@ -99,6 +100,7 @@ todos = [
   {content: "Execute port cleanup", status: "pending", activeForm: "Cleaning ports"},
   {content: "Reset database instances", status: "pending", activeForm: "Resetting databases"},
   {content: "Handle Payload schema", status: "pending", activeForm: "Configuring Payload"},
+  {content: "Run seeding (if --seed flag)", status: "pending", activeForm: "Seeding data"},
   {content: "Verify all instances", status: "pending", activeForm: "Verifying"}
 ]
 ```
@@ -146,7 +148,19 @@ IF payload instance included:
 
 **Update** TodoWrite: Mark Payload handling complete
 
-#### Step 5: Comprehensive Verification
+#### Step 5: Payload CMS Seeding (Optional)
+**Execute** Payload seeding if --seed flag provided:
+
+IF --seed flag provided:
+  → **Run** seeding orchestrator: `pnpm --filter payload seed:run`
+  → **Wait** for seeding to complete
+  → **Verify** data loaded correctly
+  → **Handle** seeding errors appropriately
+  → **Report** seeding results
+
+**Update** TodoWrite: Mark seeding complete
+
+#### Step 6: Comprehensive Verification
 **Execute** full instance verification:
 - **Test** database connectivity for all instances
 - **Verify** authentication systems functional
@@ -160,7 +174,7 @@ IF --run-tests flag provided:
 
 **Update** TodoWrite: Mark verification complete
 
-#### Step 6: Quick Smoke Test Verification of local dB (OPTIONAL)
+#### Step 7: Quick Smoke Test Verification of local dB (OPTIONAL)
   **Execute** minimal smoke tests for rapid validation of local db reset:
 
   IF --run-tests flag provided OR always for safety:
@@ -290,6 +304,7 @@ Reset all Supabase database instances with comprehensive safety mechanisms and s
 
 **Usage:**
 - `/supabase-reset local` - Reset all local database instances
+- `/supabase-reset local --seed` - Reset and run Payload seeding
 - `/supabase-reset local --apps=web,e2e` - Reset specific instances only
 - `/supabase-reset local --run-tests --verbose` - Reset with test verification
 - `/supabase-reset remote --confirm` - Reset remote databases (DANGEROUS)
