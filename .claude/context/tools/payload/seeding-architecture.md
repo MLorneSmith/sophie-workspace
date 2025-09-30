@@ -49,6 +49,7 @@ The Payload CMS Seeding Engine is a modular, type-safe infrastructure for popula
 **Choice**: Payload Local API using `getPayload()` and `payload.create()`
 
 **Rationale**:
+
 - Payload automatically handles complex polymorphic relationship tables (`*_rels`)
 - Built-in validation ensures data integrity
 - Zero maintenance when schemas change
@@ -83,6 +84,7 @@ VALUES
 ```
 
 **Trade-offs Accepted**:
+
 - 76-second slower execution (82s vs 6s for SQL)
 - Higher memory usage (~200-300MB vs <50MB)
 - Cannot bypass Payload validation (actually a benefit)
@@ -103,6 +105,7 @@ VALUES
 **Choice**: In-memory UUID cache with `{ref:collection:identifier}` pattern
 
 **Rationale**:
+
 - Existing JSON files already use this format (~400 references)
 - Human-readable and git-friendly
 - Simple regex replacement with O(1) lookup performance
@@ -137,6 +140,7 @@ export class ReferenceResolver {
 ```
 
 **Algorithm Complexity**:
+
 - Register: O(1) per record
 - Lookup: O(1) per reference
 - Resolve: O(n) where n = number of fields in record
@@ -158,6 +162,7 @@ export class ReferenceResolver {
 **Choice**: Fixed seed order based on foreign key dependencies
 
 **Rationale**:
+
 - Ensures references exist before use
 - Prevents foreign key constraint violations
 - Deterministic and predictable
@@ -244,6 +249,7 @@ export class ErrorHandler {
 | **Critical** | Missing refs, config errors | Stop immediately | Requires manual intervention |
 
 **Retry Schedule**:
+
 - Attempt 1: Immediate
 - Attempt 2: ~1 second delay
 - Attempt 3: ~2 second delay
@@ -281,6 +287,7 @@ const program = new Command()
 | `seed:courses` | `-c courses,course-lessons,course-quizzes` | Specific collections |
 
 **Design Principles**:
+
 - **Sensible defaults**: No flags needed for common use case
 - **Progressive disclosure**: Advanced options via flags
 - **Fail-fast validation**: Environment checks before seeding
@@ -293,6 +300,7 @@ const program = new Command()
 ### 1. CLI Entry Point (`index.ts`)
 
 **Responsibilities**:
+
 - Parse command-line arguments with Commander
 - Validate environment variables
 - Block production seeding (safety check)
@@ -316,6 +324,7 @@ export async function main(): Promise<void> {
 ```
 
 **Exit Codes**:
+
 - `0`: Success
 - `1`: Validation error (environment, configuration)
 - `2`: Initialization error (Payload, database)
@@ -326,6 +335,7 @@ export async function main(): Promise<void> {
 ### 2. Seed Orchestrator (`core/seed-orchestrator.ts`)
 
 **Responsibilities**:
+
 - Main workflow coordinator
 - Manage component lifecycle
 - Process collections in dependency order
@@ -357,12 +367,14 @@ export class SeedOrchestrator {
 ```
 
 **State Management**:
+
 - `payload`: Payload instance (singleton)
 - `resolver`: Reference resolver with cache
 - `tracker`: Progress tracker
 - `errorHandler`: Retry logic handler
 
 **Lifecycle**:
+
 1. Initialize (setup services)
 2. Load (read JSON files)
 3. Validate (pre-seed checks)
@@ -375,6 +387,7 @@ export class SeedOrchestrator {
 ### 3. Reference Resolver (`resolvers/reference-resolver.ts`)
 
 **Responsibilities**:
+
 - Parse `{ref:collection:identifier}` patterns
 - Maintain in-memory UUID cache
 - Recursively resolve references in data structures
@@ -411,12 +424,14 @@ private resolveValue(value: unknown, depth: number): unknown {
 ```
 
 **Performance Characteristics**:
+
 - **Time Complexity**: O(n) where n = number of fields
 - **Space Complexity**: O(d) where d = depth of nesting
 - **Cache Lookup**: O(1) with Map
 - **Max Recursion Depth**: 100 (prevents infinite loops)
 
 **Cache Statistics** (typical run):
+
 - Entries: ~316 (one per record with `_ref`)
 - Memory: ~50KB (UUID strings)
 - Collections: 10-11
@@ -935,16 +950,19 @@ export async function verifyRelationships(
 ### Test Categories
 
 **Unit Tests** (16 suites, ~450 tests):
+
 - Isolated module testing
 - Mock external dependencies
 - Fast execution (<5s total)
 
 **Integration Tests** (4 suites, ~120 tests):
+
 - Multi-component interaction
 - Real database (test instance)
 - Moderate execution (~30s total)
 
 **E2E Tests** (1 suite, ~12 tests):
+
 - Full workflow validation
 - Production-like environment
 - Slower execution (~60s total)

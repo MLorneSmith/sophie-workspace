@@ -45,6 +45,7 @@ tsx .claude/scripts/database/supabase-reset.ts local --seed
 ### Documentation
 
 For complete documentation on the seeding system, see:
+
 - [Seeding Guide](../../.claude/context/tools/payload/seeding-guide.md) - Complete usage guide
 - [Troubleshooting](../../.claude/context/tools/payload/seeding-troubleshooting.md) - Common issues and solutions
 - [Architecture](../../.claude/context/tools/payload/seeding-architecture.md) - Technical deep dive
@@ -122,6 +123,7 @@ Payload manages the following collections:
 ## Architecture
 
 Payload CMS is integrated with:
+
 - **Database**: PostgreSQL via Supabase
 - **Storage**: S3-compatible storage for media
 - **Auth**: Payload's built-in authentication
@@ -137,6 +139,7 @@ Payload CMS is integrated with:
 ## Support
 
 For issues or questions:
+
 - Check [seeding troubleshooting guide](../../.claude/context/tools/payload/seeding-troubleshooting.md)
 - Review implementation plan
 - Open GitHub issue with `[payload]` tag
