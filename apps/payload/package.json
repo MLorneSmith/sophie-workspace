@@ -29,7 +29,10 @@
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest run --coverage",
 		"seed:convert": "tsx src/seed/seed-conversion/index.ts",
-		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run"
+		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run",
+		"seed:run": "tsx src/seed/seed-engine/index.ts",
+		"seed:dry": "tsx src/seed/seed-engine/index.ts --dry-run",
+		"seed:validate": "tsx src/seed/seed-engine/index.ts --dry-run --verbose"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",
@@ -67,6 +70,7 @@
 		"@types/react-dom": "19.1.9",
 		"@types/uuid": "^10.0.0",
 		"@types/yargs": "^17.0.33",
+		"chalk": "5.3.0",
 		"commander": "^14.0.0",
 		"copyfiles": "^2.4.1",
 		"dotenv": "17.2.2",
