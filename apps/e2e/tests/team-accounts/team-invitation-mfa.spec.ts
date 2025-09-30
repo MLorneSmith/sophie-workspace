@@ -13,7 +13,7 @@ test.describe('Team Invitation with MFA Flow', () => {
     const invitations = new InvitationsPageObject(page);
 
     await auth.loginAsUser({
-      email: 'test@makerkit.dev',
+      email: 'owner@makerkit.dev',
     });
 
     const teamName = `test-team-${Math.random().toString(36).substring(2, 15)}`;

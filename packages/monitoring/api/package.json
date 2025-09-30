@@ -23,7 +23,7 @@
     "@kit/sentry": "workspace:*",
     "@kit/shared": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/react": "19.1.13",
+    "@types/react": "19.1.15",
     "react": "19.1.1",
     "zod": "^3.25.74"
   },

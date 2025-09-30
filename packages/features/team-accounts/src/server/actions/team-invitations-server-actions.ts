@@ -6,14 +6,18 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 import { enhanceAction } from '@kit/next/actions';
+import { getLogger } from '@kit/shared/logger';
 import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
 import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { JWTUserData } from '@kit/supabase/types';
 
 import { AcceptInvitationSchema } from '../../schema/accept-invitation.schema';
 import { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
 import { InviteMembersSchema } from '../../schema/invite-members.schema';
 import { RenewInvitationSchema } from '../../schema/renew-invitation.schema';
 import { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
+import { createInvitationContextBuilder } from '../policies/invitation-context-builder';
+import { createInvitationsPolicyEvaluator } from '../policies/invitation-policies';
 import { createAccountInvitationsService } from '../services/account-invitations.service';
 import { createAccountPerSeatBillingService } from '../services/account-per-seat-billing.service';
 
@@ -22,20 +26,47 @@ import { createAccountPerSeatBillingService } from '../services/account-per-seat
  * @description Creates invitations for inviting members.
  */
 export const createInvitationsAction = enhanceAction(
-  async (params) => {
-    const client = getSupabaseServerClient();
+  async (params, user) => {
+    const logger = await getLogger();
 
-    // Create the service
+    logger.info(
+      { params, userId: user.id },
+      'User requested to send invitations',
+    );
+
+    // Evaluate invitation policies
+    const policiesResult = await evaluateInvitationsPolicies(params, user);
+
+    // If the invitations are not allowed, throw an error
+    if (!policiesResult.allowed) {
+      logger.info(
+        { reasons: policiesResult?.reasons, userId: user.id },
+        'Invitations blocked by policies',
+      );
+
+      return {
+        success: false,
+        reasons: policiesResult?.reasons,
+      };
+    }
+
+    // invitations are allowed, so continue with the action
+    const client = getSupabaseServerClient();
     const service = createAccountInvitationsService(client);
 
-    // send invitations
-    await service.sendInvitations(params);
+    try {
+      await service.sendInvitations(params);
 
-    revalidateMemberPage();
+      revalidateMemberPage();
 
-    return {
-      success: true,
-    };
+      return {
+        success: true,
+      };
+    } catch {
+      return {
+        success: false,
+      };
+    }
   },
   {
     schema: InviteMembersSchema.and(
@@ -156,4 +187,31 @@ export const renewInvitationAction = enhanceAction(
 
 function revalidateMemberPage() {
   revalidatePath('/home/[account]/members', 'page');
+}
+
+/**
+ * @name evaluateInvitationsPolicies
+ * @description Evaluates invitation policies with performance optimization.
+ * @param params - The invitations to evaluate (emails and roles).
+ */
+async function evaluateInvitationsPolicies(
+  params: z.infer<typeof InviteMembersSchema> & { accountSlug: string },
+  user: JWTUserData,
+) {
+  const evaluator = createInvitationsPolicyEvaluator();
+  const hasPolicies = await evaluator.hasPoliciesForStage('submission');
+
+  // No policies to evaluate, skip
+  if (!hasPolicies) {
+    return {
+      allowed: true,
+      reasons: [],
+    };
+  }
+
+  const client = getSupabaseServerClient();
+  const builder = createInvitationContextBuilder(client);
+  const context = await builder.buildContext(params, user);
+
+  return evaluator.canInvite(context, 'submission');
 }

@@ -44,7 +44,8 @@ class AccountPerSeatBillingService {
           subscription_items !inner (
             quantity,
             id,
-            type
+            type,
+            variant_id
           )
         `,
       )

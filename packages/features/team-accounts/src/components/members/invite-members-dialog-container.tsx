@@ -3,10 +3,12 @@
 import { useState, useTransition } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import { Plus, X } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { Alert, AlertDescription } from '@kit/ui/alert';
 import { Button } from '@kit/ui/button';
 import {
   Dialog,
@@ -27,6 +29,7 @@ import {
 import { If } from '@kit/ui/if';
 import { Input } from '@kit/ui/input';
 import { toast } from '@kit/ui/sonner';
+import { Spinner } from '@kit/ui/spinner';
 import {
   Tooltip,
   TooltipContent,
@@ -62,6 +65,13 @@ export function InviteMembersDialogContainer({
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation('teams');
 
+  // Evaluate policies when dialog is open
+  const {
+    data: policiesResult,
+    isLoading: isLoadingPolicies,
+    error: policiesError,
+  } = useFetchInvitationsPolicies({ accountSlug, isOpen });
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen} modal>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -77,30 +87,70 @@ export function InviteMembersDialogContainer({
           </DialogDescription>
         </DialogHeader>
 
-        <RolesDataProvider maxRoleHierarchy={userRoleHierarchy}>
-          {(roles) => (
-            <InviteMembersForm
-              pending={pending}
-              roles={roles}
-              onSubmit={(data) => {
-                startTransition(() => {
-                  const promise = createInvitationsAction({
-                    accountSlug,
-                    invitations: data.invitations,
-                  });
+        <If condition={isLoadingPolicies}>
+          <div className="flex flex-col items-center justify-center gap-y-4 py-8">
+            <Spinner className="h-6 w-6" />
 
-                  toast.promise(() => promise, {
-                    loading: t('invitingMembers'),
-                    success: t('inviteMembersSuccessMessage'),
-                    error: t('inviteMembersErrorMessage'),
-                  });
+            <span className="text-muted-foreground text-sm">
+              <Trans i18nKey="teams:checkingPolicies" />
+            </span>
+          </div>
+        </If>
 
-                  setIsOpen(false);
-                });
-              }}
-            />
-          )}
-        </RolesDataProvider>
+        <If condition={policiesError}>
+          <Alert variant="destructive">
+            <AlertDescription>
+              <Trans
+                i18nKey="teams:policyCheckError"
+                values={{ error: policiesError?.message }}
+              />
+            </AlertDescription>
+          </Alert>
+        </If>
+
+        <If condition={policiesResult && !policiesResult.allowed}>
+          <Alert variant="destructive">
+            <AlertDescription>
+              <Trans
+                i18nKey={policiesResult?.reasons[0]}
+                defaults={policiesResult?.reasons[0]}
+              />
+            </AlertDescription>
+          </Alert>
+        </If>
+
+        <If condition={policiesResult?.allowed}>
+          <RolesDataProvider maxRoleHierarchy={userRoleHierarchy}>
+            {(roles) => (
+              <InviteMembersForm
+                pending={pending}
+                roles={roles}
+                onSubmit={(data) => {
+                  startTransition(async () => {
+                    const toastId = toast.loading(t('invitingMembers'));
+
+                    const result = await createInvitationsAction({
+                      accountSlug,
+                      invitations: data.invitations,
+                    });
+
+                    if (result.success) {
+                      toast.success(t('inviteMembersSuccessMessage'), {
+                        id: toastId,
+                      });
+                    } else {
+                      toast.error(t('inviteMembersErrorMessage'), {
+                        id: toastId,
+                      });
+                    }
+
+                    setIsOpen(false);
+                  });
+                }}
+              />
+            )}
+          </RolesDataProvider>
+        </If>
       </DialogContent>
     </Dialog>
   );
@@ -274,4 +324,28 @@ function InviteMembersForm({
 
 function createEmptyInviteModel() {
   return { email: '', role: 'member' as Role };
+}
+
+function useFetchInvitationsPolicies({
+  accountSlug,
+  isOpen,
+}: {
+  accountSlug: string;
+  isOpen: boolean;
+}) {
+  return useQuery({
+    queryKey: ['invitation-policies', accountSlug],
+    queryFn: async () => {
+      const response = await fetch(`./members/policies`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    },
+    enabled: isOpen,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 }

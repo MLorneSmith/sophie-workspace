@@ -12,6 +12,10 @@ import type { DeleteInvitationSchema } from '../../schema/delete-invitation.sche
 import type { InviteMembersSchema } from '../../schema/invite-members.schema';
 import type { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
 
+/**
+ *
+ * Create an account invitations service.
+ */
 export function createAccountInvitationsService(
   client: SupabaseClient<Database>,
 ) {
