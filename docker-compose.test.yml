@@ -14,8 +14,9 @@ services:
     working_dir: /app
     volumes:
       - .:/app:cached
-      - /app/apps/web/.next           # Exclude web .next (anonymous volume)
-      - /app/apps/payload/.next       # Exclude payload .next (anonymous volume)
+    tmpfs:
+      - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
+      - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
     ports:
       - "3001:3001"
     restart: unless-stopped
@@ -46,7 +47,6 @@ services:
       - CI=false
     command: >
       sh -c "
-        mkdir -p apps/web/.next apps/payload/.next &&
         echo '🔧 Installing dependencies with pnpm...' &&
         npx pnpm install &&
         echo '🚀 Starting test server on port 3001...' &&
@@ -78,8 +78,9 @@ services:
     working_dir: /app
     volumes:
       - .:/app:cached
-      - /app/apps/web/.next           # Exclude web .next (anonymous volume)
-      - /app/apps/payload/.next       # Exclude payload .next (anonymous volume)
+    tmpfs:
+      - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
+      - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
     ports:
       - "3021:3021"
     restart: unless-stopped
@@ -108,7 +109,6 @@ services:
       - NODE_OPTIONS=--no-deprecation
     command: >
       sh -c "
-        mkdir -p apps/web/.next apps/payload/.next &&
         echo '🔧 Installing dependencies with npx pnpm...' &&
         npx pnpm@latest install --frozen-lockfile &&
         echo '🚀 Starting Payload test server on port 3021...' &&
