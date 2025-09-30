@@ -23,6 +23,7 @@ interface ResetOptions {
 	target: "local" | "remote";
 	skipConfirmation?: boolean;
 	runTests?: boolean;
+	runSeed?: boolean;
 	apps?: ("web" | "payload" | "e2e")[];
 	verbose?: boolean;
 }
@@ -521,6 +522,9 @@ class SupabaseResetOrchestrator {
 		steps += this.instances.length; // Payload schema handling
 		steps += this.instances.length; // Start instances
 		steps += this.instances.length; // Verification
+		if (this.options.runSeed) {
+			steps += 1; // Run seeding
+		}
 		if (this.options.runTests) {
 			steps += 1; // Run tests
 		}
@@ -589,6 +593,11 @@ class SupabaseResetOrchestrator {
 				throw new Error("Some instances failed verification");
 			}
 
+			// Run seeding if requested
+			if (this.options.runSeed) {
+				await this.runSeeding();
+			}
+
 			// Run tests if requested
 			if (this.options.runTests) {
 				await this.runTests();
@@ -602,6 +611,21 @@ class SupabaseResetOrchestrator {
 			this.displayFinalStatus();
 		} catch (error) {
 			this.reporter.error(`Database reset failed: ${error}`);
+			throw error;
+		}
+	}
+
+	private async runSeeding(): Promise<void> {
+		this.reporter.step("Running Payload CMS seeding");
+
+		try {
+			execSync("pnpm --filter payload seed:run", {
+				encoding: "utf8",
+				stdio: "inherit",
+			});
+			this.reporter.success("Payload seeding completed");
+		} catch (error) {
+			this.reporter.error(`Seeding failed: ${error}`);
 			throw error;
 		}
 	}
@@ -654,12 +678,14 @@ function parseArgs(): ResetOptions {
 		console.error(
 			"  --confirm           Skip confirmation for remote operations",
 		);
+		console.error("  --seed              Run Payload seeding after reset");
 		console.error("  --run-tests         Run E2E tests after reset");
 		console.error("  --apps=web,e2e      Target specific apps (default: all)");
 		console.error("  --verbose           Show detailed logging");
 		console.error("");
 		console.error("Examples:");
 		console.error("  tsx supabase-reset.ts local");
+		console.error("  tsx supabase-reset.ts local --seed");
 		console.error("  tsx supabase-reset.ts remote --confirm");
 		console.error("  tsx supabase-reset.ts local --apps=web,e2e --run-tests");
 		process.exit(1);
@@ -673,6 +699,7 @@ function parseArgs(): ResetOptions {
 	const options: ResetOptions = {
 		target,
 		skipConfirmation: args.includes("--confirm"),
+		runSeed: args.includes("--seed"),
 		runTests: args.includes("--run-tests"),
 		verbose: args.includes("--verbose"),
 	};

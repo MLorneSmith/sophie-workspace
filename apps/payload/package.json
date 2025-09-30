@@ -32,7 +32,8 @@
 		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run",
 		"seed:run": "tsx src/seed/seed-engine/index.ts",
 		"seed:dry": "tsx src/seed/seed-engine/index.ts --dry-run",
-		"seed:validate": "tsx src/seed/seed-engine/index.ts --dry-run --verbose"
+		"seed:validate": "tsx src/seed/seed-engine/index.ts --dry-run --verbose",
+		"seed:courses": "tsx src/seed/seed-engine/index.ts -c courses,course-lessons,course-quizzes"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",
