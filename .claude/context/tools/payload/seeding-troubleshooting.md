@@ -53,6 +53,7 @@ lsof -ti:3020
 ### 1. Environment Variables Missing
 
 **Symptom**:
+
 ```
 ✗ Environment validation failed
 Missing required environment variables: DATABASE_URI, PAYLOAD_SECRET
@@ -75,6 +76,7 @@ echo 'NODE_ENV=development' >> apps/payload/.env
 ```
 
 **Verification**:
+
 ```bash
 pnpm --filter payload seed:dry
 ```
@@ -84,6 +86,7 @@ pnpm --filter payload seed:dry
 ### 2. Production Environment Block
 
 **Symptom**:
+
 ```
 ✗ SAFETY CHECK FAILED: Seeding is not allowed in production environment
 Set NODE_ENV to "development" or "test" to proceed
@@ -110,6 +113,7 @@ export NODE_ENV=test
 ### 3. Supabase Not Running
 
 **Symptom**:
+
 ```
 ✗ Database connection failed
 Error: connect ECONNREFUSED 127.0.0.1:54322
@@ -144,6 +148,7 @@ lsof -ti:54322
 ### 4. Unresolved References
 
 **Symptom**:
+
 ```
 ✗ course-lessons[lesson-3]: Reference resolution failed
   Unresolved reference: {ref:courses:nonexistent}
@@ -155,11 +160,13 @@ lsof -ti:54322
 **Solution**:
 
 1. **Find the problematic reference**:
+
    ```bash
    grep -r "{ref:courses:nonexistent}" apps/payload/src/seed/seed-data/
    ```
 
 2. **Check if target record exists**:
+
    ```bash
    grep -r '"_ref": "nonexistent"' apps/payload/src/seed/seed-data/courses.json
    ```
@@ -170,11 +177,13 @@ lsof -ti:54322
    - Option C: Remove reference if not needed
 
 4. **Validate fix**:
+
    ```bash
    pnpm seed:dry
    ```
 
 **Prevention**: Always validate after editing JSON files:
+
 ```bash
 pnpm seed:dry  # Before committing changes
 ```
@@ -184,6 +193,7 @@ pnpm seed:dry  # Before committing changes
 ### 5. JSON Parsing Errors
 
 **Symptom**:
+
 ```
 ✗ Failed to load collection: course-lessons
   Unexpected token } in JSON at position 1234
@@ -194,17 +204,20 @@ pnpm seed:dry  # Before committing changes
 **Solution**:
 
 1. **Find the file with error**:
+
    ```bash
    node -e "JSON.parse(require('fs').readFileSync('apps/payload/src/seed/seed-data/course-lessons.json', 'utf8'))"
    ```
 
 2. **Use JSON validator**:
+
    ```bash
    # Install jq if not available
    cat apps/payload/src/seed/seed-data/course-lessons.json | jq . > /dev/null
    ```
 
 3. **Common JSON mistakes**:
+
    ```json
    // ❌ WRONG
    {
@@ -220,6 +233,7 @@ pnpm seed:dry  # Before committing changes
    ```
 
 4. **Fix and validate**:
+
    ```bash
    pnpm seed:dry
    ```
@@ -231,6 +245,7 @@ pnpm seed:dry  # Before committing changes
 ### 6. Payload Initialization Failures
 
 **Symptom**:
+
 ```
 ✗ Initialization failed
 Error: Failed to initialize Payload CMS
@@ -241,26 +256,31 @@ Error: Failed to initialize Payload CMS
 **Solution**:
 
 1. **Reset database with migrations**:
+
    ```bash
    pnpm supabase:web:reset
    ```
 
 2. **Verify Payload config is valid**:
+
    ```bash
    pnpm --filter payload generate:types
    ```
 
 3. **Check for migration issues**:
+
    ```bash
    pnpm --filter web supabase migration list
    ```
 
 4. **Try seeding again**:
+
    ```bash
    pnpm seed:run
    ```
 
 **Deep Dive**: If issue persists, check:
+
 - `apps/payload/src/payload.config.ts` for syntax errors
 - Database user has correct permissions
 - PostgreSQL version is compatible (14+)
@@ -270,6 +290,7 @@ Error: Failed to initialize Payload CMS
 ### 7. Timeout Errors
 
 **Symptom**:
+
 ```
 ✗ Seeding operation timed out after 120000ms
 ```
@@ -279,16 +300,19 @@ Error: Failed to initialize Payload CMS
 **Solution**:
 
 1. **Increase timeout**:
+
    ```bash
    pnpm seed:run --timeout 300000  # 5 minutes
    ```
 
 2. **Use collection filtering** to reduce scope:
+
    ```bash
    pnpm seed:courses  # Instead of full seed
    ```
 
 3. **Check database performance**:
+
    ```sql
    -- Connect to database
    psql "$DATABASE_URI"
@@ -301,6 +325,7 @@ Error: Failed to initialize Payload CMS
    ```
 
 4. **Restart Supabase** if performance is degraded:
+
    ```bash
    pnpm supabase:web:stop
    pnpm supabase:web:start
@@ -311,6 +336,7 @@ Error: Failed to initialize Payload CMS
 ### 8. Permission Errors
 
 **Symptom**:
+
 ```
 ✗ Database error: permission denied for table course_lessons
 ```
@@ -320,17 +346,20 @@ Error: Failed to initialize Payload CMS
 **Solution**:
 
 1. **Check database user**:
+
    ```bash
    psql "$DATABASE_URI" -c "\du"
    ```
 
 2. **Grant permissions** (if using custom user):
+
    ```sql
    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO your_user;
    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO your_user;
    ```
 
 3. **For Supabase local**, use default superuser:
+
    ```bash
    DATABASE_URI=postgresql://postgres:postgres@localhost:54322/postgres
    ```
@@ -340,6 +369,7 @@ Error: Failed to initialize Payload CMS
 ### 9. Memory Errors
 
 **Symptom**:
+
 ```
 ✗ FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
 ```
@@ -349,16 +379,19 @@ Error: Failed to initialize Payload CMS
 **Solution**:
 
 1. **Increase Node.js memory**:
+
    ```bash
    NODE_OPTIONS="--max-old-space-size=4096" pnpm seed:run
    ```
 
 2. **Use collection filtering** to reduce memory footprint:
+
    ```bash
    pnpm seed:run -c courses,course-lessons
    ```
 
 3. **Check for memory leaks**:
+
    ```bash
    node --inspect apps/payload/src/seed/seed-engine/index.ts
    # Open chrome://inspect in browser
@@ -371,6 +404,7 @@ Error: Failed to initialize Payload CMS
 ### 10. Duplicate Key Violations
 
 **Symptom**:
+
 ```
 ✗ Database error: duplicate key value violates unique constraint "course_lessons_slug_key"
 ```
@@ -380,18 +414,21 @@ Error: Failed to initialize Payload CMS
 **Solution**:
 
 1. **Clean database before seeding**:
+
    ```bash
    pnpm supabase:web:reset
    pnpm seed:run
    ```
 
 2. **Or use idempotent seeding** (future feature - not yet implemented):
+
    ```bash
    # This will be available in future versions
    pnpm seed:run --upsert
    ```
 
 3. **Manually clear specific collection**:
+
    ```sql
    psql "$DATABASE_URI" -c "TRUNCATE TABLE payload.course_lessons CASCADE;"
    ```
@@ -413,6 +450,7 @@ All error messages follow this pattern:
 ```
 
 **Example**:
+
 ```
 ✗ course-lessons[lesson-3]: Reference resolution failed
   Unresolved reference: {ref:courses:nonexistent}
@@ -452,6 +490,7 @@ pnpm seed:run --verbose
 ```
 
 **Output includes**:
+
 - Each record being processed
 - Reference resolution details
 - Database query information
@@ -470,6 +509,7 @@ pnpm seed:dry
 ```
 
 **What It Checks**:
+
 - JSON file parsing
 - Reference pattern syntax
 - Dependency ordering
@@ -567,11 +607,13 @@ echo "All JSON files valid!"
 **Diagnosis**:
 
 1. **Check slowest collections**:
+
    ```bash
    pnpm seed:run --verbose | grep "Duration:"
    ```
 
 2. **Monitor database performance**:
+
    ```sql
    SELECT query, calls, mean_exec_time, total_exec_time
    FROM pg_stat_statements
@@ -581,6 +623,7 @@ echo "All JSON files valid!"
    ```
 
 3. **Check system resources**:
+
    ```bash
    # CPU usage
    top -p $(pgrep -f "seed-engine")
@@ -592,11 +635,13 @@ echo "All JSON files valid!"
 **Solutions**:
 
 1. **Use collection filtering**:
+
    ```bash
    pnpm seed:courses  # Only seed what you need
    ```
 
 2. **Increase database resources** (Docker):
+
    ```yaml
    # docker-compose.yml
    services:
@@ -607,6 +652,7 @@ echo "All JSON files valid!"
    ```
 
 3. **Restart Supabase** to clear cache:
+
    ```bash
    pnpm supabase:web:restart
    ```
@@ -651,11 +697,13 @@ pnpm seed:run
 **A**: Follow these steps:
 
 1. **Create JSON file**:
+
    ```bash
    touch apps/payload/src/seed/seed-data/my-collection.json
    ```
 
 2. **Add to config**:
+
    ```typescript
    // apps/payload/src/seed/seed-engine/config.ts
    export const COLLECTION_CONFIGS = {
@@ -669,6 +717,7 @@ pnpm seed:run
    ```
 
 3. **Add to seed order**:
+
    ```typescript
    export const SEED_ORDER = [
      // ... existing collections
@@ -677,6 +726,7 @@ pnpm seed:run
    ```
 
 4. **Validate and test**:
+
    ```bash
    pnpm seed:dry
    pnpm seed:run -c my-collection
@@ -689,6 +739,7 @@ pnpm seed:run
 **A**: Large Lexical content is supported. Current largest is `survey-questions.json` (246 records, 15,000+ lines).
 
 **Tips**:
+
 - Keep Lexical JSON well-formatted for readability
 - Use markdown conversion utilities to generate Lexical
 - Validate Lexical structure before seeding
@@ -700,6 +751,7 @@ pnpm seed:run
 **A**: **NO**. Seeding is blocked in production (`NODE_ENV=production`). This is a safety feature.
 
 **If you need production data**, use:
+
 - Database backups/restores
 - Data migration scripts
 - Manual admin UI entry
