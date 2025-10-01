@@ -23,7 +23,7 @@ import type {
 import { initializePayload, cleanupPayload } from './payload-initializer';
 import { loadCollection, loadAllCollections, type LoadResult } from '../loaders/json-loader';
 import { ReferenceResolver } from '../resolvers/reference-resolver';
-import { ContentProcessor, DownloadsProcessor } from '../processors';
+import { ContentProcessor, DownloadsProcessor, MediaProcessor } from '../processors';
 import type { BaseProcessor } from '../processors/base-processor';
 import { ProgressTracker } from '../utils/progress-tracker';
 import { ErrorHandler } from '../utils/error-handler';
@@ -457,11 +457,11 @@ export class SeedOrchestrator {
     switch (config.processor) {
       case 'downloads':
         return new DownloadsProcessor(payload, collectionName, referenceCache);
+      case 'media':
+        return new MediaProcessor(payload, collectionName, referenceCache);
       case 'content':
       case 'users':
-      case 'media':
-        // For now, all use ContentProcessor
-        // TODO: Implement specialized processors for users and media
+        // Content and users use standard ContentProcessor
         return new ContentProcessor(payload, collectionName, referenceCache);
       default:
         throw new Error(`Unknown processor type: ${config.processor}`);

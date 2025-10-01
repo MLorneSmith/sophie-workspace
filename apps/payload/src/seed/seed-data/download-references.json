@@ -1,8 +1,302 @@
 [
   {
-    "_ref": "downloads:template1",
-    "slug": "template1",
-    "title": "Template 1",
-    "filename": "template1.pdf"
+    "_ref": "lesson-101-welcome",
+    "filePath": "101 Welcome.pdf",
+    "title": "Lesson 101: Welcome to SlideHeroes",
+    "description": "Welcome to the SlideHeroes presentation mastery course",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "introduction"}
+    ]
+  },
+  {
+    "_ref": "lesson-103-overview",
+    "filePath": "103 Course Overview.pdf",
+    "title": "Lesson 103: Course Overview",
+    "description": "Complete overview of the SlideHeroes curriculum and learning path",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "overview"}
+    ]
+  },
+  {
+    "_ref": "lesson-201-process",
+    "filePath": "201 Our Process.pdf",
+    "title": "Lesson 201: Our Presentation Process",
+    "description": "Learn the systematic process for creating powerful presentations",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "process"}
+    ]
+  },
+  {
+    "_ref": "lesson-202-who",
+    "filePath": "202 The Who.pdf",
+    "title": "Lesson 202: Understanding Your Audience (The Who)",
+    "description": "Master audience analysis and tailoring your message",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "audience"}
+    ]
+  },
+  {
+    "_ref": "lesson-203-why-intro",
+    "filePath": "203 The Why - Introductions.pdf",
+    "title": "Lesson 203: The Why - Crafting Powerful Introductions",
+    "description": "Learn to create compelling presentation introductions that engage",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "introductions"}
+    ]
+  },
+  {
+    "_ref": "lesson-204-why-next",
+    "filePath": "204 The Why - Next Steps.pdf",
+    "title": "Lesson 204: The Why - Next Steps and Call to Action",
+    "description": "Design effective next steps and compelling calls to action",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "call-to-action"}
+    ]
+  },
+  {
+    "_ref": "lesson-301-idea-generation",
+    "filePath": "301 Idea Generation.pdf",
+    "title": "Lesson 301: Idea Generation Techniques",
+    "description": "Systematic approaches to generating and organizing presentation ideas",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "ideation"},
+      {"tag": "structure"}
+    ]
+  },
+  {
+    "_ref": "lesson-302-structure",
+    "filePath": "302 What is Structure.pdf",
+    "title": "Lesson 302: Presentation Structure Fundamentals",
+    "description": "Understanding and applying effective presentation structure",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "structure"}
+    ]
+  },
+  {
+    "_ref": "lesson-401-stories",
+    "filePath": "401 Using Stories.pdf",
+    "title": "Lesson 401: The Power of Storytelling",
+    "description": "Harness storytelling techniques to make your presentations memorable",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "storytelling"}
+    ]
+  },
+  {
+    "_ref": "lesson-403-storyboards",
+    "filePath": "403 Storyboards in Presentations.pdf",
+    "title": "Lesson 403: Storyboarding for Presentations",
+    "description": "Visual planning and storyboarding techniques for effective slides",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "storyboarding"},
+      {"tag": "planning"}
+    ]
+  },
+  {
+    "_ref": "lesson-501-perception",
+    "filePath": "501 Visual Perception.pdf",
+    "title": "Lesson 501: Visual Perception Principles",
+    "description": "Understanding how audiences perceive and process visual information",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "visual-design"},
+      {"tag": "psychology"}
+    ]
+  },
+  {
+    "_ref": "lesson-503-elements",
+    "filePath": "503 Detail Fundamental Elements.pdf",
+    "title": "Lesson 503: Fundamental Visual Elements",
+    "description": "Master the fundamental elements of effective slide design",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "visual-design"},
+      {"tag": "elements"}
+    ]
+  },
+  {
+    "_ref": "lesson-504-gestalt",
+    "filePath": "504 Gestalt Principles of Visual Perception.pdf",
+    "title": "Lesson 504: Gestalt Principles in Slide Design",
+    "description": "Apply Gestalt psychology principles to create cohesive visual designs",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "visual-design"},
+      {"tag": "gestalt"}
+    ]
+  },
+  {
+    "_ref": "lesson-505-composition",
+    "filePath": "505 Slide Composition.pdf",
+    "title": "Lesson 505: Advanced Slide Composition",
+    "description": "Professional techniques for composing effective slide layouts",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "visual-design"},
+      {"tag": "composition"}
+    ]
+  },
+  {
+    "_ref": "lesson-601-persuasion",
+    "filePath": "601 Fact-based Persuasion Overview.pdf",
+    "title": "Lesson 601: Fact-Based Persuasion",
+    "description": "Using data and evidence to build persuasive arguments",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "data"},
+      {"tag": "persuasion"}
+    ]
+  },
+  {
+    "_ref": "lesson-602-tables-graphs",
+    "filePath": "602 Tables v Graphs.pdf",
+    "title": "Lesson 602: Tables vs Graphs - Choosing the Right Format",
+    "description": "When to use tables versus graphs for data presentation",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "data"},
+      {"tag": "visualization"}
+    ]
+  },
+  {
+    "_ref": "lesson-604-standard-graphs",
+    "filePath": "604 Standard Graphs.pdf",
+    "title": "Lesson 604: Standard Graph Types",
+    "description": "Master the most common and effective graph types for presentations",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "data"},
+      {"tag": "graphs"}
+    ]
+  },
+  {
+    "_ref": "lesson-605-specialist-graphs",
+    "filePath": "605 Specialist Graphs.pdf",
+    "title": "Lesson 605: Specialist and Advanced Graphs",
+    "description": "Advanced graph types for complex data visualization",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "data"},
+      {"tag": "advanced"}
+    ]
+  },
+  {
+    "_ref": "lesson-701-preparation",
+    "filePath": "701 Preparation and Practice.pdf",
+    "title": "Lesson 701: Presentation Preparation and Practice",
+    "description": "Systematic approaches to preparing and practicing your presentation",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": false,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "delivery"},
+      {"tag": "practice"}
+    ]
+  },
+  {
+    "_ref": "lesson-702-performance",
+    "filePath": "702 Performance.pdf",
+    "title": "Lesson 702: Presentation Performance Skills",
+    "description": "Master the art of delivering powerful presentations with confidence",
+    "category": "document",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "course"},
+      {"tag": "delivery"},
+      {"tag": "performance"}
+    ]
+  },
+  {
+    "_ref": "tool-audience-map",
+    "filePath": "Audience Map.pdf",
+    "title": "Audience Analysis Map Template",
+    "description": "Downloadable template for mapping and analyzing your audience",
+    "category": "template",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "template"},
+      {"tag": "tool"},
+      {"tag": "audience"}
+    ]
+  },
+  {
+    "_ref": "reference-golden-rules",
+    "filePath": "SlideHeroes Golden Rules.pdf",
+    "title": "SlideHeroes Golden Rules",
+    "description": "Quick reference guide to the essential principles of great presentations",
+    "category": "resource",
+    "accessLevel": "public",
+    "featured": true,
+    "tags": [
+      {"tag": "reference"},
+      {"tag": "guide"},
+      {"tag": "principles"}
+    ]
   }
 ]

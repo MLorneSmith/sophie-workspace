@@ -190,13 +190,10 @@ export async function runSeeding(options: SeedOptions, logger: Logger): Promise<
       return EXIT_CODES.INITIALIZATION_ERROR;
     }
 
-    // Import orchestrator dynamically (allows parallel development)
-    let orchestrator: { run: (opts: SeedOptions) => Promise<void> };
+    // Import and run orchestrator
     try {
-      // TODO: Uncomment when orchestrator is implemented (Task #466)
-      // orchestrator = await import('./orchestrator');
+      const { runSeeding } = await import('./core/seed-orchestrator.js');
 
-      // Placeholder implementation for now
       logger.info('Starting seeding operation...');
       logger.debug('Seed options', options as unknown as Record<string, unknown>);
 
@@ -210,13 +207,18 @@ export async function runSeeding(options: SeedOptions, logger: Logger): Promise<
         logger.info('Processing all collections');
       }
 
-      // Placeholder - will be replaced when orchestrator is ready
-      logger.warn('Orchestrator not yet implemented (Task #466 in progress)');
-      logger.info('CLI interface is ready - waiting for orchestrator integration');
+      // Run the seeding orchestrator
+      const result = await runSeeding(options);
 
-      return EXIT_CODES.SUCCESS;
+      // Report results
+      if (result.success) {
+        logger.success(`Seeded ${result.totalRecords} records successfully`);
+        return EXIT_CODES.SUCCESS;
+      } else {
+        logger.error(`Seeding completed with errors: ${result.errors.length} failed`);
+        return EXIT_CODES.SEEDING_ERROR;
+      }
     } catch (error) {
-      // When orchestrator is implemented, this will catch its errors
       logger.error('Seeding operation failed', error instanceof Error ? error : undefined);
       return EXIT_CODES.SEEDING_ERROR;
     }

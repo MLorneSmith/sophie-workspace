@@ -273,7 +273,7 @@ export interface Post {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -343,7 +343,7 @@ export interface Documentation {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -410,7 +410,7 @@ export interface Private {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -481,7 +481,7 @@ export interface Course {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -533,11 +533,15 @@ export interface CourseLesson {
    */
   slug: string;
   description?: string | null;
+  /**
+   * Thumbnail image for this lesson
+   */
+  thumbnail?: (string | null) | Media;
   content?: {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -624,7 +628,7 @@ export interface QuizQuestion {
     root: {
       type: string;
       children: {
-        type: any;
+        type: string;
         version: number;
         [k: string]: unknown;
       }[];
@@ -1030,6 +1034,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   todo_complete_quiz?: T;
   slug?: T;
   description?: T;
+  thumbnail?: T;
   content?: T;
   lesson_number?: T;
   estimated_duration?: T;

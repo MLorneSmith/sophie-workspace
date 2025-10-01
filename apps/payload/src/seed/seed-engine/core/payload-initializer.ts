@@ -16,6 +16,7 @@ import { getPayload, type Payload } from 'payload';
 import type { InitOptions } from 'payload';
 import { logger } from '../utils/logger';
 import { ENV_VARS } from '../config';
+import payloadSeedingConfig from '../../../payload.seeding.config.js';
 
 /**
  * Singleton Payload instance
@@ -56,6 +57,10 @@ export function validateEnvironment(): ValidationResult {
 
   if (!process.env[ENV_VARS.PAYLOAD_SECRET]) {
     missing.push(ENV_VARS.PAYLOAD_SECRET);
+  }
+
+  if (!process.env[ENV_VARS.SEED_USER_PASSWORD]) {
+    missing.push(ENV_VARS.SEED_USER_PASSWORD);
   }
 
   return {
@@ -124,19 +129,17 @@ export async function initializePayload(): Promise<Payload> {
   }
 
   try {
-    // Get path to main payload config (it handles env vars better than seeding config)
-    const filename = fileURLToPath(import.meta.url);
-    const dirname = path.dirname(filename);
-    const configPath = path.resolve(dirname, '../../../payload.config.ts');
+    // Import the seeding config object (it explicitly loads .env.test)
+    logger.debug('Loading Payload seeding config object');
 
-    logger.debug('Loading Payload config', { configPath });
-
-    // Initialize Payload with minimal config for seeding
+    // Initialize Payload with config object (NOT file path)
+    // Per Payload 3.x docs: getPayload({ config }) expects imported config object
     const initOptions: InitOptions = {
-      config: configPath,
+      config: payloadSeedingConfig,
       disableOnInit: true, // Skip onInit hooks during seeding
     };
 
+    logger.debug('Calling getPayload with config object');
     payloadInstance = await getPayload(initOptions);
 
     logger.success('Payload Local API initialized successfully');

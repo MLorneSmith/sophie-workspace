@@ -133,6 +133,14 @@ export const CourseLessons: CollectionConfig = {
 			type: "textarea",
 		},
 		{
+			name: "thumbnail",
+			type: "upload",
+			relationTo: "media",
+			admin: {
+				description: "Thumbnail image for this lesson",
+			},
+		},
+		{
 			name: "content",
 			type: "richText",
 			editor: lexicalEditor({

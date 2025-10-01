@@ -178,6 +178,21 @@ export const DEFAULT_OPTIONS = {
 export const REFERENCE_PATTERN = /\{ref:([^:]+):([^}]+)\}/g;
 
 /**
+ * Environment variable pattern regex for substitution
+ *
+ * Matches: {env:VAR_NAME}
+ * - VAR_NAME: Environment variable name
+ *
+ * @example
+ * ```typescript
+ * const pattern = "{env:SEED_USER_PASSWORD}";
+ * const match = pattern.match(ENV_VAR_PATTERN);
+ * console.log(match[1]); // "SEED_USER_PASSWORD"
+ * ```
+ */
+export const ENV_VAR_PATTERN = /\{env:([^}]+)\}/g;
+
+/**
  * Environment variable names
  *
  * Required environment variables for seeding operation.
@@ -191,6 +206,9 @@ export const ENV_VARS = {
 
   /** Node environment (prevents production seeding) */
   NODE_ENV: 'NODE_ENV',
+
+  /** Default password for seeded user accounts */
+  SEED_USER_PASSWORD: 'SEED_USER_PASSWORD',
 } as const;
 
 /**

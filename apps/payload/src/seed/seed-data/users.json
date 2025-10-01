@@ -1,8 +1,9 @@
 [
   {
-    "_ref": "users:admin",
-    "email": "admin@example.com",
+    "_ref": "admin",
+    "email": "michael@slideheroes.com",
     "name": "Admin User",
-    "status": "active"
+    "password": "{env:SEED_USER_PASSWORD}",
+    "role": "admin"
   }
 ]
