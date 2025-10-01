@@ -8,12 +8,11 @@ import { Users } from "./collections/Users.js";
 const filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(filename);
 
-const serverURL = process.env.PAYLOAD_PUBLIC_SERVER_URL || "";
-const payloadSecret = process.env.PAYLOAD_SECRET || "";
-
+// Note: Environment variables are read at config evaluation time
+// Tests must ensure env vars are set before this module is imported
 export default buildConfig({
-	secret: payloadSecret,
-	serverURL: serverURL,
+	secret: process.env.PAYLOAD_SECRET || "",
+	serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || "",
 	collections: [
 		Users,
 		Media, // Uncommented Media

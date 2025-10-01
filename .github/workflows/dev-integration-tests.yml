@@ -24,37 +24,11 @@ permissions:
 
 env:
   DEPLOYMENT_URL: ${{ github.event.inputs.deployment_url || 'https://dev.slideheroes.com' }}
-<<<<<<< HEAD
   # URLs will be dynamically set from the Deploy to Dev workflow outputs
-=======
->>>>>>> origin/main
-
-jobs:
-  # Only run if the deployment was successful
-  check-should-run:
-<<<<<<< HEAD
-    name: Check if tests should run and get deployment URLs
-    runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.check.outputs.should_run }}
-      web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
-      payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
-    steps:
-      - name: Determine if we should run and get deployment URLs
-=======
-    name: Check if tests should run
-    runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.check.outputs.should_run }}
-      deployment_url: ${{ steps.check.outputs.deployment_url }}
-    steps:
-      - name: Determine if we should run
->>>>>>> origin/main
         id: check
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
-<<<<<<< HEAD
             # For manual dispatch, use the configured URL (defaults to dev.slideheroes.com for web)
             echo "web_deployment_url=${{ env.DEPLOYMENT_URL }}" >> $GITHUB_OUTPUT
             # TODO: Get payload URL from environment or make it configurable
@@ -70,12 +44,6 @@ jobs:
             echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
             echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"
             echo "ℹ️ This may need adjustment if services are on different domains"
-=======
-            echo "deployment_url=${{ env.DEPLOYMENT_URL }}" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-            echo "deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
->>>>>>> origin/main
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
             echo "Skipping: Deploy to Dev workflow did not succeed"
@@ -87,17 +55,12 @@ jobs:
     needs: check-should-run
     if: needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-latest
-<<<<<<< HEAD
     timeout-minutes: 15
-=======
-    timeout-minutes: 10
->>>>>>> origin/main
     outputs:
       deployment_ready: ${{ steps.wait.outputs.ready }}
     steps:
       - name: Wait for deployment to be ready
         id: wait
-<<<<<<< HEAD
         shell: bash {0}  # Prevent shell from auto-failing on non-zero exit
         run: |
           set +e  # Don't exit on error - handle it explicitly
@@ -126,13 +89,6 @@ jobs:
           CHECK_INTERVAL=15  # Increased from 10
           RETRY_COUNT=0
           MAX_RETRIES=5  # Increased from 3
-=======
-        run: |
-          echo "⏳ Waiting for deployment to be ready at ${{ needs.check-should-run.outputs.deployment_url }}"
-          
-          MAX_WAIT_TIME=300  # 5 minutes
-          CHECK_INTERVAL=10
->>>>>>> origin/main
           elapsed=0
           
           while [ $elapsed -lt $MAX_WAIT_TIME ]; do
@@ -140,7 +96,6 @@ jobs:
             
             # Try to get a response from the main page
             # Include protection bypass header if available
-<<<<<<< HEAD
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
               CURL_HEADERS="-H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
             else
@@ -187,21 +142,10 @@ jobs:
             fi
             
             # Check the HTTP response code
-=======
-            CURL_OPTS=""
-            if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-              CURL_OPTS="-H 'x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}'"
-            fi
-            
-            HTTP_CODE=$(eval "curl -s -o /dev/null -w '%{http_code}' --max-time 30 $CURL_OPTS \
-              '${{ needs.check-should-run.outputs.deployment_url }}'")
-            
->>>>>>> origin/main
             if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
               echo "✅ Deployment is ready (HTTP $HTTP_CODE)"
               echo "ready=true" >> $GITHUB_OUTPUT
               exit 0
-<<<<<<< HEAD
             elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
               echo "✅ Deployment is ready but protected (HTTP $HTTP_CODE) - this is expected for dev environment"
               echo "ready=true" >> $GITHUB_OUTPUT
@@ -218,14 +162,6 @@ jobs:
                 echo "ready=true" >> $GITHUB_OUTPUT
                 exit 0
               fi
-=======
-            elif [ "$HTTP_CODE" = "401" ]; then
-              echo "✅ Deployment is ready but protected (HTTP 401) - this is expected for dev environment"
-              echo "ready=true" >> $GITHUB_OUTPUT
-              exit 0
-            elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
-              echo "⚠️ Cloudflare error $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
->>>>>>> origin/main
             else
               echo "⚠️ Got HTTP $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
             fi
@@ -281,25 +217,15 @@ jobs:
               if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "204" ]; then
                 echo "✅ $name: HTTP $HTTP_CODE"
                 return 0
-<<<<<<< HEAD
               elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
                 echo "⚠️ $name: HTTP $HTTP_CODE (deployment protection) - considering as ready"
-=======
-              elif [ "$HTTP_CODE" = "401" ]; then
-                echo "⚠️ $name: HTTP 401 (deployment protection) - considering as ready"
->>>>>>> origin/main
                 return 0  # Consider protected deployment as ready
               elif [ "$HTTP_CODE" = "404" ]; then
                 # 404 might mean Vercel protection with incorrect bypass header
                 # Try without bypass header to confirm
                 HTTP_CODE_NO_HEADER=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url")
-<<<<<<< HEAD
                 if [ "$HTTP_CODE_NO_HEADER" = "401" ] || [ "$HTTP_CODE_NO_HEADER" = "403" ]; then
                   echo "⚠️ $name: HTTP 404 with bypass header, $HTTP_CODE_NO_HEADER without - deployment protected, considering as ready"
-=======
-                if [ "$HTTP_CODE_NO_HEADER" = "401" ]; then
-                  echo "⚠️ $name: HTTP 404 with bypass header, 401 without - deployment protected, considering as ready"
->>>>>>> origin/main
                   return 0
                 else
                   echo "❌ $name returned HTTP 404 (route not found)"
@@ -320,13 +246,8 @@ jobs:
           }
           
           # Test health endpoints with retry logic
-<<<<<<< HEAD
           test_endpoint "${{ needs.check-should-run.outputs.web_deployment_url }}/healthcheck" "Health check" || exit 1
           test_endpoint "${{ needs.check-should-run.outputs.web_deployment_url }}/api/health" "API health" || exit 1
-=======
-          test_endpoint "${{ needs.check-should-run.outputs.deployment_url }}/healthcheck" "Health check" || exit 1
-          test_endpoint "${{ needs.check-should-run.outputs.deployment_url }}/api/health" "API health" || exit 1
->>>>>>> origin/main
           
           # TODO: Add more comprehensive API testing
           # - Authentication endpoints
@@ -336,7 +257,6 @@ jobs:
 
       - name: Test GraphQL endpoint
         run: |
-<<<<<<< HEAD
           echo "🔍 Testing GraphQL endpoint..."
           
           # Skip introspection test entirely for dev environment
@@ -402,11 +322,6 @@ jobs:
           done
           
           echo "⚠️ GraphQL endpoint connectivity could not be verified - continuing anyway"
-=======
-          echo "⚠️ GraphQL introspection test temporarily disabled"
-          echo "ℹ️ GraphQL introspection is disabled in production/dev deployments"
-          echo "ℹ️ Skipping this test until proper connectivity testing is implemented"
->>>>>>> origin/main
           exit 0
 
   # Integration Tests
@@ -447,7 +362,6 @@ jobs:
         run: pnpm --filter web-e2e exec playwright install --with-deps chromium
 
       - name: Run integration test suite
-<<<<<<< HEAD
         env:
           BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           SKIP_EMAIL_VERIFICATION: true
@@ -477,15 +391,6 @@ jobs:
             echo "📝 Check test artifacts for screenshots and traces"
             exit $EXIT_CODE
           }
-=======
-        run: |
-          # Run integration tests (not just smoke tests)
-          pnpm --filter web-e2e test:integration
-        env:
-          PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.deployment_url }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-          CI: true
->>>>>>> origin/main
 
   # Security Quick Scan
   security-scan:
@@ -506,11 +411,7 @@ jobs:
           
           # Use system timeout to prevent infinite hangs - hard limit of 90 seconds
           timeout 90 bash -c '
-<<<<<<< HEAD
             URL="${{ needs.check-should-run.outputs.web_deployment_url }}"
-=======
-            URL="${{ needs.check-should-run.outputs.deployment_url }}"
->>>>>>> origin/main
             BYPASS_SECRET="${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
             
             echo "Testing connectivity to $URL..."
@@ -570,17 +471,10 @@ jobs:
               if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
                 STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
                   -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-<<<<<<< HEAD
                   "${{ needs.check-should-run.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
               else
                 STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
                   "${{ needs.check-should-run.outputs.web_deployment_url }}$path" 2>/dev/null) || STATUS="000"
-=======
-                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>/dev/null) || STATUS="000"
-              else
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
-                  "${{ needs.check-should-run.outputs.deployment_url }}$path" 2>/dev/null) || STATUS="000"
->>>>>>> origin/main
               fi
               
               # Check if it's a Cloudflare error that needs retry
@@ -622,15 +516,9 @@ jobs:
         uses: treosh/lighthouse-ci-action@v11
         with:
           urls: |
-<<<<<<< HEAD
             ${{ needs.check-should-run.outputs.web_deployment_url }}
             ${{ needs.check-should-run.outputs.web_deployment_url }}/pricing
             ${{ needs.check-should-run.outputs.web_deployment_url }}/templates
-=======
-            ${{ needs.check-should-run.outputs.deployment_url }}
-            ${{ needs.check-should-run.outputs.deployment_url }}/pricing
-            ${{ needs.check-should-run.outputs.deployment_url }}/templates
->>>>>>> origin/main
           uploadArtifacts: true
           temporaryPublicStorage: true
 

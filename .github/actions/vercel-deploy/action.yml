@@ -88,7 +88,6 @@ runs:
         elif [ "${{ inputs.environment }}" = "staging" ]; then
           url=$(vercel deploy --target=staging --token=${{ inputs.token }} --yes)
         else
-<<<<<<< HEAD
           # Preview environment deployment
           url=$(vercel deploy --token=${{ inputs.token }} --yes)
           
@@ -100,9 +99,6 @@ runs:
               echo "⚠️ Failed to set alias. Make sure dev.slideheroes.com is added as a domain in Vercel project settings"
             }
           fi
-=======
-          url=$(vercel deploy --token=${{ inputs.token }} --yes)
->>>>>>> origin/main
         fi
         
         echo "url=$url" >> $GITHUB_OUTPUT

@@ -1,6 +1,6 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-24",
+	"lastUpdated": "2025-09-30",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -43,6 +43,42 @@
 						"docker",
 						"github-cli"
 					]
+				},
+				{
+					"path": "tools/cli/vercel-cli.md",
+					"name": "Vercel CLI Tool Reference",
+					"description": "Comprehensive Vercel CLI reference for deployment, environment management, and development workflows in monorepo environments",
+					"lastUpdated": "2025-09-30",
+					"topics": [
+						"Vercel CLI",
+						"Deployment",
+						"Environment Variables",
+						"Monorepo Support",
+						"Turborepo Integration",
+						"CI/CD",
+						"DevOps"
+					],
+					"tokens": 2890,
+					"priority": "essential",
+					"keywords": [
+						"vercel",
+						"cli",
+						"deployment",
+						"monorepo",
+						"turborepo",
+						"pnpm",
+						"nextjs",
+						"environment-variables",
+						"preview",
+						"production",
+						"staging",
+						"devops",
+						"cicd"
+					],
+					"relatedCommands": ["/promote-production", "/promote-staging"],
+					"dependencies": ["vercel-deployment-guide"],
+					"antiPatterns": [],
+					"pairings": ["cicd-llm-context", "project-architecture"]
 				},
 				{
 					"path": "tools/cli/supabase-cli.md",
