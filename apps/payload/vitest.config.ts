@@ -13,6 +13,9 @@ export default defineProject({
 		environment: "node",
 		globals: true,
 
+		// Setup file to load environment variables before tests
+		setupFiles: ["./vitest.setup.ts"],
+
 		// Test discovery
 		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"],
 		exclude: [
@@ -31,6 +34,13 @@ export default defineProject({
 			threads: {
 				singleThread: true,
 				isolate: true,
+			},
+		},
+
+		// Server-side dependencies that need to be externalized (ESM only)
+		server: {
+			deps: {
+				inline: ["chalk"],
 			},
 		},
 	},

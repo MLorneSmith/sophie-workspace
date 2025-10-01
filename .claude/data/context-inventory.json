@@ -1,6 +1,6 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-29",
+	"lastUpdated": "2025-09-30",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -43,6 +43,42 @@
 						"docker",
 						"github-cli"
 					]
+				},
+				{
+					"path": "tools/cli/vercel-cli.md",
+					"name": "Vercel CLI Tool Reference",
+					"description": "Comprehensive Vercel CLI reference for deployment, environment management, and development workflows in monorepo environments",
+					"lastUpdated": "2025-09-30",
+					"topics": [
+						"Vercel CLI",
+						"Deployment",
+						"Environment Variables",
+						"Monorepo Support",
+						"Turborepo Integration",
+						"CI/CD",
+						"DevOps"
+					],
+					"tokens": 2890,
+					"priority": "essential",
+					"keywords": [
+						"vercel",
+						"cli",
+						"deployment",
+						"monorepo",
+						"turborepo",
+						"pnpm",
+						"nextjs",
+						"environment-variables",
+						"preview",
+						"production",
+						"staging",
+						"devops",
+						"cicd"
+					],
+					"relatedCommands": ["/promote-production", "/promote-staging"],
+					"dependencies": ["vercel-deployment-guide"],
+					"antiPatterns": [],
+					"pairings": ["cicd-llm-context", "project-architecture"]
 				},
 				{
 					"path": "tools/cli/supabase-cli.md",
@@ -184,6 +220,31 @@
 					"tokens": 1201
 				},
 				{
+					"path": "development/standards/frameworks/makerkit/upstream-sync.md",
+					"name": "Identity",
+					"description": "\"Comprehensive guide for synchronizing Makerkit Next.js Supabase Turbo template updates with custom project code while preserving modifications\"",
+					"lastUpdated": "2025-09-19",
+					"topics": ["Documentation"],
+					"priority": "essential",
+					"keywords": [
+						"identity",
+						"comprehensive",
+						"guide",
+						"synchronizing",
+						"makerkit",
+						"supabase",
+						"turbo",
+						"template",
+						"updates",
+						"custom"
+					],
+					"relatedCommands": [],
+					"dependencies": [],
+					"antiPatterns": [],
+					"pairings": [],
+					"tokens": 1543
+				},
+				{
 					"path": "development/standards/frameworks/makerkit/template-usage.md",
 					"name": "MakerKit SaaS Template - Architecture & Usage Patterns",
 					"description": "Comprehensive guide to SlideHeroes usage of the MakerKit Next.js Supabase Turbo template as upstream foundation",
@@ -211,31 +272,6 @@
 					"antiPatterns": [],
 					"pairings": ["code-standards", "project-architecture"],
 					"tokens": 2263
-				},
-				{
-					"path": "development/standards/frameworks/makerkit/upstream-sync.md",
-					"name": "Identity",
-					"description": "\"Comprehensive guide for synchronizing Makerkit Next.js Supabase Turbo template updates with custom project code while preserving modifications\"",
-					"lastUpdated": "2025-09-19",
-					"topics": ["Documentation"],
-					"priority": "essential",
-					"keywords": [
-						"identity",
-						"comprehensive",
-						"guide",
-						"synchronizing",
-						"makerkit",
-						"supabase",
-						"turbo",
-						"template",
-						"updates",
-						"custom"
-					],
-					"relatedCommands": [],
-					"dependencies": [],
-					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 1543
 				},
 				{
 					"path": "development/standards/react-query-patterns.md",
@@ -678,36 +714,6 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 262
-				},
-				{
-					"path": "testing/environment/e2e-local-environment.md",
-					"name": "Local E2E Testing Environment",
-					"description": "Comprehensive guide to the local E2E testing environment including Docker setup, Supabase configuration, test data seeding with crypt() password hashing, and environment variables",
-					"lastUpdated": "2025-09-24",
-					"topics": ["Testing", "Docker", "Environment", "E2E", "Supabase"],
-					"priority": "important",
-					"keywords": [
-						"e2e",
-						"docker",
-						"supabase",
-						"testing",
-						"environment",
-						"playwright",
-						"authentication",
-						"docker-compose",
-						"test-data",
-						"seeding",
-						"crypt",
-						"password-hashing",
-						"environment-variables",
-						"port-configuration",
-						"isolated-testing"
-					],
-					"relatedCommands": ["/test", "/test --e2e"],
-					"dependencies": ["e2e-testing-fundamentals", "docker-setup"],
-					"antiPatterns": [],
-					"pairings": ["docker-setup", "e2e-testing-fundamentals"],
-					"tokens": 1844
 				},
 				{
 					"path": "data/migrations/ci-cd.md",
@@ -1226,30 +1232,6 @@
 					"tokens": 3615
 				},
 				{
-					"path": "infrastructure/docker-health-debugging.md",
-					"name": "Docker Health Debugging Guide",
-					"description": "\"Comprehensive guide for debugging unhealthy Docker containers in SlideHeroes project\"",
-					"lastUpdated": "2025-09-29",
-					"topics": ["Docker"],
-					"priority": "supplementary",
-					"keywords": [
-						"docker",
-						"health",
-						"debugging",
-						"guide",
-						"comprehensive",
-						"unhealthy",
-						"containers",
-						"slideheroes",
-						"project"
-					],
-					"relatedCommands": ["/debug-issue"],
-					"dependencies": [],
-					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 3124
-				},
-				{
 					"path": "infrastructure/environments/devcontainer-codespaces/devcontainer-implementation-analysis.md",
 					"name": "Devcontainer Implementation Analysis for SlideHeroes",
 					"description": "This document analyzes the requirements and implications of implementing Claude Code devcontainers in the SlideHeroes project, based on the official Anthropic documentation and current project archite",
@@ -1296,31 +1278,6 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 1447
-				},
-				{
-					"path": "infrastructure/statusline/README.md",
-					"name": "Docker Health Monitoring Documentation",
-					"description": "\"Comprehensive navigation index for Docker Health Monitoring system documentation in Claude Code statusline\"",
-					"lastUpdated": "2025-09-26",
-					"topics": ["Documentation"],
-					"priority": "supplementary",
-					"keywords": [
-						"docker",
-						"health",
-						"monitoring",
-						"documentation",
-						"comprehensive",
-						"navigation",
-						"index",
-						"system",
-						"claude",
-						"statusline"
-					],
-					"relatedCommands": [],
-					"dependencies": [],
-					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 1234
 				},
 				{
 					"path": "integrations/api/api-patterns.md",
@@ -2233,6 +2190,36 @@
 					"antiPatterns": [],
 					"pairings": [],
 					"tokens": 1841
+				},
+				{
+					"path": "testing/environment/e2e-local-environment.md",
+					"name": "Local E2E Testing Environment",
+					"description": "Comprehensive guide to the local E2E testing environment including Docker setup, Supabase configuration, test data seeding with crypt() password hashing, and environment variables",
+					"lastUpdated": "2025-09-24",
+					"topics": ["Testing", "Docker", "Environment", "E2E", "Supabase"],
+					"priority": "important",
+					"keywords": [
+						"e2e",
+						"docker",
+						"supabase",
+						"testing",
+						"environment",
+						"playwright",
+						"authentication",
+						"docker-compose",
+						"test-data",
+						"seeding",
+						"crypt",
+						"password-hashing",
+						"environment-variables",
+						"port-configuration",
+						"isolated-testing"
+					],
+					"relatedCommands": ["/test", "/test --e2e"],
+					"dependencies": ["e2e-testing-fundamentals", "docker-setup"],
+					"antiPatterns": [],
+					"pairings": ["docker-setup", "e2e-testing-fundamentals"],
+					"tokens": 1844
 				}
 			]
 		}

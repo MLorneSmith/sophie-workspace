@@ -9,8 +9,6 @@ on:
   workflow_run:
     workflows: ["Deploy to Dev"]
     types: [completed]
-    branches:
-      - dev
   workflow_dispatch:
     inputs:
       deployment_url:
@@ -27,18 +25,6 @@ permissions:
 env:
   DEPLOYMENT_URL: ${{ github.event.inputs.deployment_url || 'https://dev.slideheroes.com' }}
   # URLs will be dynamically set from the Deploy to Dev workflow outputs
-
-jobs:
-  # Only run if the deployment was successful
-  check-should-run:
-    name: Check if tests should run and get deployment URLs
-    runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.check.outputs.should_run }}
-      web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
-      payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
-    steps:
-      - name: Determine if we should run and get deployment URLs
         id: check
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -53,7 +39,7 @@ jobs:
             # For now, use known dev domain for web and assume payload API is accessible there
             echo "web_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
             echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
-
+            
             echo "ℹ️ Note: Currently using dev.slideheroes.com for both services"
             echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
             echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"
@@ -79,7 +65,7 @@ jobs:
         run: |
           set +e  # Don't exit on error - handle it explicitly
           echo "⏳ Waiting for web deployment to be ready at ${{ needs.check-should-run.outputs.web_deployment_url }}"
-
+          
           # First, validate the deployment URL format and basic connectivity
           echo "🔍 Validating deployment URL format..."
           if [[ "${{ needs.check-should-run.outputs.web_deployment_url }}" =~ ^https?://[^/]+(/.*)?$ ]]; then
@@ -89,7 +75,7 @@ jobs:
             echo "ready=false" >> $GITHUB_OUTPUT
             exit 1
           fi
-
+          
           # Simple DNS resolution check
           DOMAIN=$(echo "${{ needs.check-should-run.outputs.web_deployment_url }}" | sed -E 's|^https?://([^/]+).*|\1|')
           echo "🔍 Checking DNS resolution for $DOMAIN..."
@@ -98,7 +84,7 @@ jobs:
           else
             echo "⚠️ DNS resolution failed - continuing anyway (might be temporary)"
           fi
-
+          
           MAX_WAIT_TIME=600  # 10 minutes (increased from 5)
           CHECK_INTERVAL=15  # Increased from 10
           RETRY_COUNT=0
@@ -364,45 +350,6 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
-      - name: Build required packages
-        run: |
-          echo "📦 Building @kit/shared package for module resolution..."
-          pnpm --filter @kit/shared build || {
-            echo "⚠️ Build failed, trying with turbo..."
-            pnpm turbo run build --filter=@kit/shared
-          }
-
-          # Verify the dist directory exists and contains expected files
-          if [ -d "packages/shared/dist" ] && [ -f "packages/shared/dist/logger/index.js" ]; then
-            echo "✅ @kit/shared dist directory created successfully"
-            ls -la packages/shared/dist/
-            echo "✅ Logger module verified:"
-            ls -la packages/shared/dist/logger/
-          else
-            echo "❌ Failed to create dist directory or logger module missing"
-            echo "Directory contents:"
-            ls -la packages/shared/ || echo "No packages/shared directory"
-            exit 1
-          fi
-
-          # Test that the module can be imported (additional verification)
-          echo "🔍 Testing module import in E2E context..."
-          cd apps/e2e
-          node -e "
-            import('@kit/shared/logger').then(m => {
-              console.log('✅ Module import successful, exports:', Object.keys(m));
-              if (m.createServiceLogger) {
-                console.log('✅ createServiceLogger export confirmed');
-              } else {
-                console.error('❌ createServiceLogger export missing');
-                process.exit(1);
-              }
-            }).catch(e => {
-              console.error('❌ Module import failed:', e.message);
-              process.exit(1);
-            });
-          "
-
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
@@ -419,102 +366,31 @@ jobs:
           BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           SKIP_EMAIL_VERIFICATION: true
           CI: true
-          TEST_BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           PLAYWRIGHT_BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
           PLAYWRIGHT_API_URL: ${{ needs.check-should-run.outputs.payload_deployment_url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
-          # Override Turnstile with Cloudflare test key for E2E testing
-          # This key always passes validation, allowing automated tests to complete authentication
-          # Reference: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
-          NEXT_PUBLIC_CAPTCHA_SITE_KEY: '2x00000000000000000000AB'
           ENABLE_BILLING_TESTS: true  # Enable billing integration tests
           ENABLE_TEAM_ACCOUNT_TESTS: true  # Enable team account integration tests
-          # E2E Test Credentials - Required for authentication setup
-          E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
-          E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
-          E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
-          E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
-          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
-          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
           # Add debug logging for Playwright
           DEBUG: pw:api
-          # Enable verbose credential logging for debugging
-          E2E_VERBOSE_CREDENTIALS: true
         run: |
           echo "🧪 Running integration tests..."
           echo "⚠️ Email verification will be SKIPPED (testing against deployed environment)"
           echo "ℹ️ Note: Tests may fail if Vercel protection bypass is not properly configured"
           echo "ℹ️ Ensure VERCEL_AUTOMATION_BYPASS_SECRET is set in GitHub Secrets"
-
-          # Pre-flight credential check
-          echo "🔍 Validating E2E credentials availability..."
-          CREDENTIAL_ISSUES=0
-
-          if [ -z "$E2E_TEST_USER_EMAIL" ] || [ -z "$E2E_TEST_USER_PASSWORD" ]; then
-            echo "❌ Missing E2E_TEST_USER credentials"
-            CREDENTIAL_ISSUES=$((CREDENTIAL_ISSUES + 1))
-          fi
-
-          if [ -z "$E2E_OWNER_EMAIL" ] || [ -z "$E2E_OWNER_PASSWORD" ]; then
-            echo "❌ Missing E2E_OWNER credentials"
-            CREDENTIAL_ISSUES=$((CREDENTIAL_ISSUES + 1))
-          fi
-
-          if [ -z "$E2E_ADMIN_EMAIL" ] || [ -z "$E2E_ADMIN_PASSWORD" ]; then
-            echo "❌ Missing E2E_ADMIN credentials"
-            CREDENTIAL_ISSUES=$((CREDENTIAL_ISSUES + 1))
-          fi
-
-          if [ $CREDENTIAL_ISSUES -gt 0 ]; then
-            echo "⚠️ Found $CREDENTIAL_ISSUES credential issues"
-            echo "📋 Required GitHub Secrets:"
-            echo "   - E2E_TEST_USER_EMAIL and E2E_TEST_USER_PASSWORD"
-            echo "   - E2E_OWNER_EMAIL and E2E_OWNER_PASSWORD"
-            echo "   - E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD"
-            echo "🔧 Please add these secrets in GitHub repository settings"
-            echo "⚠️ Proceeding with tests but authentication setup will likely fail"
-          else
-            echo "✅ All E2E credentials are available"
-          fi
-
-          # Run integration tests with fallback strategies
-          echo "🔍 Checking available integration tests..."
-
-          # First try to run all integration tests
-          if pnpm --filter web-e2e test:integration; then
-            echo "✅ Integration tests completed successfully"
-          else
+          
+          # Run integration tests (not just smoke tests)
+          pnpm --filter web-e2e test:integration || {
             EXIT_CODE=$?
-            echo "⚠️ Full integration test suite failed with exit code $EXIT_CODE"
-
-            # Try to run critical tests only (auth + basic functionality)
-            echo "🔄 Attempting to run critical integration tests only..."
-            if pnpm --filter web-e2e test:integration:auth; then
-              echo "⚠️ Critical auth tests passed, but other integration tests failed"
-              echo "📝 Check test artifacts for details on failed tests"
-            else
-              echo "❌ Critical auth integration tests also failed"
-              echo "ℹ️ Common issues:"
-              echo "  - Missing E2E test credentials (check GitHub Secrets)"
-              echo "  - Vercel protection blocking test automation"
-              echo "  - Missing or incorrect VERCEL_AUTOMATION_BYPASS_SECRET"
-              echo "  - Dev deployment not fully ready"
-              echo "  - Test accounts don't exist in target environment"
-              echo "📝 Check test artifacts for screenshots and traces"
-              exit $EXIT_CODE
-            fi
-          fi
-
-      - name: Upload test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-integration-results
-          path: |
-            apps/e2e/playwright-report/
-            apps/e2e/test-results/
-          retention-days: 7
+            echo "⚠️ Integration tests failed with exit code $EXIT_CODE"
+            echo "ℹ️ Common issues:"
+            echo "  - Vercel protection blocking test automation"
+            echo "  - Missing or incorrect VERCEL_AUTOMATION_BYPASS_SECRET"
+            echo "  - Dev deployment not fully ready"
+            echo "📝 Check test artifacts for screenshots and traces"
+            exit $EXIT_CODE
+          }
 
   # Security Quick Scan
   security-scan:
@@ -635,10 +511,6 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: dev  # Explicitly checkout dev branch to match deployment
-
-      - uses: ./.github/actions/setup-deps
 
       - name: Run Lighthouse performance test
         uses: treosh/lighthouse-ci-action@v11
@@ -649,7 +521,6 @@ jobs:
             ${{ needs.check-should-run.outputs.web_deployment_url }}/templates
           uploadArtifacts: true
           temporaryPublicStorage: true
-          artifactName: lighthouse-results
 
       - name: Store performance metrics
         uses: actions/github-script@v7
@@ -751,3 +622,4 @@ jobs:
               }
             });
             
+            console.log('✅ Triggered promotion readiness assessment');

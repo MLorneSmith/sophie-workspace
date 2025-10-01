@@ -1,44 +1,7 @@
 [
-	{
-		"id": "feedback",
-		"title": "Course Feedback",
-		"description": "Please share your thoughts on the course",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.916Z",
-		"updatedAt": "2025-06-30T17:27:17.916Z",
-		"course": "{ref:courses:course-8}",
-		"lesson": "{ref:course-lessons:before-you-go}",
-		"_ref": "surveys:feedback"
-	},
-	{
-		"id": "self-assessment",
-		"title": "High-Stakes Presentations Self-Assessment",
-		"description": "",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.917Z",
-		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:course-1}",
-		"lesson": "{ref:course-lessons:before-we-begin}",
-		"_ref": "surveys:self-assessment"
-	},
-	{
-		"id": "three-quick-questions",
-		"title": "Three Quick Questions",
-		"description": "A quick survey to help understand your goals",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.917Z",
-		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:course-1}",
-		"lesson": "{ref:course-lessons:lesson-0}",
-		"_ref": "surveys:three-quick-questions"
-	}
+  {
+    "_ref": "surveys:survey1",
+    "slug": "survey1",
+    "title": "Survey 1"
+  }
 ]
