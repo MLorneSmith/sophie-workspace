@@ -7,6 +7,7 @@ This document outlines the Vercel deployment configuration for SlideHeroes acros
 ### Production Environment
 
 <<<<<<< HEAD
+
 - Domain: `slideheroes.com`
 - Branch: `main`
 - Deployment: Automatic on push to main
@@ -60,6 +61,7 @@ This document outlines the Vercel deployment configuration for SlideHeroes acros
 - **Domain**: Auto-generated Vercel URLs
 - **Trigger**: Pull requests to any branch
 - **Purpose**: Feature preview and testing
+
 >>>>>>> origin/main
 
 ## 🔧 Vercel Project Configuration
@@ -134,6 +136,7 @@ NEW_RELIC_APP_NAME=SlideHeroes-Development
 ### Domain Setup via Vercel Dashboard
 
 <<<<<<< HEAD
+
 #### Important
 
 Custom domains should be configured in the Vercel project dashboard, not via CLI commands. This ensures proper
@@ -154,6 +157,7 @@ automatic routing.
    - `staging.slideheroes.com` (staging)
    - `dev.slideheroes.com` (development)
 3. **Configure branch targeting** for each domain in dashboard
+
 >>>>>>> origin/main
 
 ### Required DNS Records
@@ -181,6 +185,7 @@ Vercel automatically provisions and manages SSL certificates for all custom doma
 ### Automatic Deployments
 
 <<<<<<< HEAD
+
 1. Production: Push to `main` → Vercel production deployment
 2. Staging: Push to `staging` → Vercel staging deployment
 3. Development: Push to `dev` → Vercel dev deployment
@@ -190,6 +195,7 @@ Vercel automatically provisions and manages SSL certificates for all custom doma
 2. **Staging**: Push to `staging` → Vercel staging deployment
 3. **Development**: Push to `dev` → Vercel dev deployment
 4. **Preview**: Open PR → Vercel preview deployment
+
 >>>>>>> origin/main
 
 ### Manual Deployments
@@ -246,7 +252,9 @@ vercel --target development
 ### Common Issues
 
 <<<<<<< HEAD
+
 #### Build Failures
+
 =======
 **Build Failures**
 >>>>>>> origin/main
@@ -256,7 +264,9 @@ vercel --target development
 - Ensure pnpm lockfile is up to date
 
 <<<<<<< HEAD
+
 #### Domain Issues
+
 =======
 **Domain Issues**
 >>>>>>> origin/main
@@ -266,7 +276,9 @@ vercel --target development
 - Ensure domain is added in Vercel dashboard
 
 <<<<<<< HEAD
+
 #### Environment Variable Issues
+
 =======
 **Environment Variable Issues**
 >>>>>>> origin/main

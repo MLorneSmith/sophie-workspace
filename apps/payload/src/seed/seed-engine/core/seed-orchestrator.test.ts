@@ -27,18 +27,16 @@ describe('SeedOrchestrator', () => {
     // Reset Payload singleton
     resetPayloadInstance();
 
-    // Set up valid test environment
-    process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
-    process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    // Set up valid test environment - use actual test database credentials
+    process.env.DATABASE_URI = 'postgresql://postgres:postgres@localhost:55322/postgres';
+    process.env.PAYLOAD_SECRET = 'test_payload_secret_for_e2e_testing';
+    process.env.PAYLOAD_PUBLIC_SERVER_URL = 'http://localhost:3020';
     process.env.NODE_ENV = 'test';
 
     orchestrator = new SeedOrchestrator();
   });
 
   afterEach(() => {
-    // Restore original environment
-    process.env = { ...originalEnv };
-
     // Reset Payload singleton
     resetPayloadInstance();
 
@@ -88,6 +86,11 @@ describe('SeedOrchestrator', () => {
 
   describe('Data Loading', () => {
     it('should load all collections when no filter specified', async () => {
+      console.log('ENV VARS BEFORE TEST:');
+      console.log('  DATABASE_URI:', process.env.DATABASE_URI);
+      console.log('  PAYLOAD_SECRET:', process.env.PAYLOAD_SECRET);
+      console.log('  NODE_ENV:', process.env.NODE_ENV);
+
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
@@ -97,6 +100,10 @@ describe('SeedOrchestrator', () => {
       };
 
       const result = await orchestrator.run(options);
+
+      if (!result.success) {
+        console.log('Test failed with error:', result.error);
+      }
 
       expect(result.success).toBe(true);
       expect(result.summary.collectionResults.length).toBeGreaterThan(0);
