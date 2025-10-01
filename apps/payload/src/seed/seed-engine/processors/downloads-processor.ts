@@ -1,42 +1,64 @@
 /**
- * Downloads collection processor with UUID preservation
+ * Downloads collection processor with file upload support
  *
  * Specialized processor for the 'downloads' collection that:
- * - Preserves pre-assigned UUIDs from seed data
- * - Handles external URL references
- * - Validates file paths for media references
+ * - Reads actual download files from seed assets directory
+ * - Uploads files to Cloudflare R2 via Payload's S3 storage adapter
+ * - Creates database records with proper file metadata
+ * - Handles MIME type detection and validation
+ * - Supports PDFs, Office documents, archives, and more
  *
  * @module seed-engine/processors/downloads-processor
  */
 
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { BaseProcessor } from './base-processor';
 import type { ProcessorResult, SeedRecord } from '../types';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /**
- * Specialized processor for downloads collection
+ * Specialized processor for downloads collection with file upload support
  *
- * The downloads collection requires special handling because:
- * 1. **UUID Preservation**: Pre-assigned UUIDs must be preserved to maintain
- *    references from course lessons and other collections
- * 2. **External URLs**: Some downloads reference external URLs (e.g., templates)
- * 3. **Media References**: Some downloads reference uploaded media files
+ * The downloads collection requires actual file uploads, not just metadata.
+ * This processor:
+ * 1. **Reads Files**: Loads binary file data from seed-assets directory
+ * 2. **Uploads to R2**: Passes file data to Payload, which uploads to Cloudflare R2
+ * 3. **Creates Records**: Database records are created with file metadata
+ *
+ * **File Upload Flow**:
+ * ```
+ * seed-assets/downloads/template.pdf
+ *         ↓
+ * DownloadsProcessor reads file as Buffer
+ *         ↓
+ * payload.create({ file: { data: buffer, ... } })
+ *         ↓
+ * Payload's S3 Storage Adapter uploads to R2
+ *         ↓
+ * Database record created with R2 file URL
+ * ```
  *
  * **Seed data structure**:
  * ```json
  * {
- *   "id": "123e4567-e89b-12d3-a456-426614174000",
  *   "_ref": "template-1",
+ *   "filePath": "marketing-template.pdf",
  *   "title": "Marketing Template",
- *   "url": "https://example.com/template.pdf",
- *   "file": null
+ *   "description": "Professional marketing presentation template",
+ *   "category": "template"
  * }
  * ```
  *
  * **Processing logic**:
- * 1. Validate UUID format if present
- * 2. Clean metadata fields
- * 3. Create with explicit UUID (Payload supports this)
- * 4. Return the preserved UUID
+ * 1. Resolve file path relative to seed-assets/downloads/
+ * 2. Read file as Buffer
+ * 3. Detect MIME type from filename extension
+ * 4. Upload via Payload Local API (automatic R2 upload)
+ * 5. Return created record UUID
  *
  * @example
  * ```typescript
@@ -48,31 +70,92 @@ import type { ProcessorResult, SeedRecord } from '../types';
  *
  * const results = await processor.processAll([
  *   {
- *     id: "123e4567-e89b-12d3-a456-426614174000",
  *     _ref: "template-1",
+ *     filePath: "marketing-template.pdf",
  *     title: "Marketing Template",
- *     url: "https://example.com/template.pdf"
+ *     category: "template"
  *   }
  * ]);
  * ```
  */
 export class DownloadsProcessor extends BaseProcessor {
   /**
-   * UUID validation regex (RFC 4122)
-   *
-   * Validates UUIDs in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-   * @private
+   * Seed assets base directory path
+   * Points to apps/payload/src/seed/seed-assets/downloads/
    */
-  private readonly UUID_REGEX =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  private readonly assetsPath: string;
+
+  /**
+   * MIME type mappings for common file extensions
+   */
+  private readonly mimeTypes: Record<string, string> = {
+    // Documents
+    '.pdf': 'application/pdf',
+    '.doc': 'application/msword',
+    '.docx':
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    '.xls': 'application/vnd.ms-excel',
+    '.xlsx':
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.pptx':
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    '.txt': 'text/plain',
+    '.csv': 'text/csv',
+    '.rtf': 'application/rtf',
+
+    // Archives
+    '.zip': 'application/zip',
+    '.rar': 'application/x-rar-compressed',
+    '.7z': 'application/x-7z-compressed',
+    '.tar': 'application/x-tar',
+    '.gz': 'application/gzip',
+
+    // Images (for download resources)
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.svg': 'image/svg+xml',
+
+    // Audio
+    '.mp3': 'audio/mpeg',
+    '.mp4': 'audio/mp4',
+    '.wav': 'audio/wav',
+    '.ogg': 'audio/ogg',
+
+    // Video
+    '.mov': 'video/quicktime',
+    '.avi': 'video/avi',
+    '.webm': 'video/webm',
+
+    // Code/Data
+    '.json': 'application/json',
+    '.xml': 'application/xml',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.html': 'text/html',
+  };
+
+  /**
+   * Initialize downloads processor with assets directory path
+   */
+  constructor(...args: ConstructorParameters<typeof BaseProcessor>) {
+    super(...args);
+
+    // Resolve path to seed-assets/downloads/ directory
+    // From processors/ go up to seed-engine/, then to seed-assets/downloads/
+    this.assetsPath = path.resolve(__dirname, '../../seed-assets/downloads');
+  }
 
   /**
    * Pre-processing validation for downloads collection
    *
    * Validates all records before processing:
-   * 1. Check UUID format if present
-   * 2. Verify either URL or file reference exists
-   * 3. Validate URL format if present
+   * 1. Check required fields (filePath, title)
+   * 2. Verify files exist on disk
+   * 3. Validate file extensions against allowed MIME types
    *
    * @param records - All download records to validate
    * @throws {Error} If any record fails validation
@@ -81,120 +164,132 @@ export class DownloadsProcessor extends BaseProcessor {
     const errors: string[] = [];
 
     for (const record of records) {
-      // Validate UUID if present
-      if (record.id) {
-        const uuid = record.id as string;
-        if (!this.UUID_REGEX.test(uuid)) {
-          errors.push(
-            `Record ${record._ref || 'unknown'}: Invalid UUID format: ${uuid}`,
-          );
-        }
+      // Validate required fields
+      if (!record.filePath || typeof record.filePath !== 'string') {
+        errors.push(
+          `Record ${record._ref || 'unknown'}: Missing required field 'filePath'`,
+        );
+        continue;
       }
 
-      // Validate at least one source (URL or file)
-      const hasUrl = record.url && typeof record.url === 'string';
-      const hasFile = record.file !== null && record.file !== undefined;
-
-      if (!hasUrl && !hasFile) {
+      if (!record.title || typeof record.title !== 'string') {
         errors.push(
-          `Record ${record._ref || 'unknown'}: Must have either url or file reference`,
+          `Record ${record._ref || 'unknown'}: Missing required field 'title'`,
+        );
+        continue;
+      }
+
+      // Validate file extension
+      const ext = path.extname(record.filePath as string).toLowerCase();
+      if (!this.mimeTypes[ext]) {
+        errors.push(
+          `Record ${record._ref || 'unknown'}: Unsupported file extension '${ext}'. ` +
+            `Supported: ${Object.keys(this.mimeTypes).join(', ')}`,
         );
       }
 
-      // Validate URL format if present
-      if (hasUrl) {
-        const url = record.url as string;
-        try {
-          new URL(url);
-        } catch {
-          errors.push(
-            `Record ${record._ref || 'unknown'}: Invalid URL format: ${url}`,
-          );
-        }
+      // Check if file exists (will be verified during actual read)
+      const filePath = this.resolveFilePath(record.filePath as string);
+      try {
+        await readFile(filePath);
+      } catch (error) {
+        errors.push(
+          `Record ${record._ref || 'unknown'}: File not found at '${filePath}'. ` +
+            `Ensure the file exists in seed-assets/downloads/ directory.`,
+        );
       }
     }
 
     if (errors.length > 0) {
-      throw new Error(
-        `Downloads validation failed:\n${errors.join('\n')}`,
-      );
+      throw new Error(`Downloads validation failed:\n${errors.join('\n')}`);
     }
   }
 
   /**
-   * Create download record with UUID preservation
+   * Create download record with file upload to R2
    *
-   * **UUID Handling**:
-   * - If record has `id` field: Use it as the UUID
-   * - If no `id` field: Let Payload generate UUID
+   * **File Upload Process**:
+   * 1. Read file from seed-assets directory
+   * 2. Detect MIME type from extension
+   * 3. Create file upload object (Buffer + metadata)
+   * 4. Pass to Payload Local API
+   * 5. Payload's S3 storage adapter uploads to R2 automatically
+   * 6. Database record created with R2 file URL
    *
-   * **Why preserve UUIDs?**
-   * Download UUIDs are referenced by course lessons and other collections.
-   * Pre-assigning UUIDs in seed data ensures consistent references across
-   * all collections without complex dependency resolution.
+   * **R2 Upload is Automatic**: You don't directly call R2 API. Payload's
+   * storage adapter intercepts the file upload and handles R2 upload
+   * transparently using the S3-compatible API.
    *
-   * @param record - Download record with optional pre-assigned UUID
-   * @returns UUID (preserved or generated)
-   * @throws {Error} If Payload rejects the record
+   * @param record - Download record with file path and metadata
+   * @returns UUID of created download record
+   * @throws {Error} If file read fails or Payload rejects the upload
    *
    * @example
    * ```typescript
-   * // Record with pre-assigned UUID
-   * const uuid1 = await processor.processRecord({
-   *   id: "123e4567-e89b-12d3-a456-426614174000",
+   * const uuid = await processor.processRecord({
    *   _ref: "template-1",
-   *   title: "Template"
+   *   filePath: "marketing-template.pdf",
+   *   title: "Marketing Template",
+   *   category: "template"
    * });
-   * // Returns: "123e4567-e89b-12d3-a456-426614174000"
-   *
-   * // Record without UUID (Payload generates)
-   * const uuid2 = await processor.processRecord({
-   *   _ref: "template-2",
-   *   title: "Another Template"
-   * });
-   * // Returns: Payload-generated UUID
+   * // File is now in R2, database record created
    * ```
    */
   async processRecord(record: SeedRecord): Promise<string> {
-    // Clean metadata but preserve 'id' field if present
-    const { _ref, _status, ...cleanedRecord } = record;
-
-    // Extract UUID if present
-    const preAssignedId = cleanedRecord.id as string | undefined;
+    // Clean metadata (remove internal fields)
+    const { _ref, _status, filePath, ...cleanedRecord } = record;
 
     try {
-      // Create record with or without pre-assigned UUID
+      // 1. Resolve file path
+      const absolutePath = this.resolveFilePath(filePath as string);
+      const filename = path.basename(filePath as string);
+
+      // 2. Read file as Buffer
+      const fileBuffer = await readFile(absolutePath);
+
+      // 3. Detect MIME type
+      const ext = path.extname(filename).toLowerCase();
+      const mimeType = this.mimeTypes[ext];
+
+      if (!mimeType) {
+        throw new Error(`Unsupported file extension: ${ext}`);
+      }
+
+      // 4. Create file upload object (Payload format)
+      const file = {
+        data: fileBuffer,
+        name: filename,
+        size: fileBuffer.length,
+        mimetype: mimeType,
+      };
+
+      // 5. Upload via Payload Local API
+      // Payload's S3 storage adapter intercepts this and uploads to R2
       const created = await this.payload.create({
         collection: this.collectionName,
         data: cleanedRecord,
+        file: file, // This triggers automatic R2 upload
       });
 
-      // Return preserved UUID or Payload-generated UUID
+      // 6. Return created UUID
       const resultId = created.id as string;
-
-      // Verify UUID preservation if one was provided
-      if (preAssignedId && resultId !== preAssignedId) {
-        throw new Error(
-          `UUID preservation failed: expected ${preAssignedId}, got ${resultId}`,
-        );
-      }
-
       return resultId;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(
-        `Failed to create download record${preAssignedId ? ` with UUID ${preAssignedId}` : ''}: ${errorMessage}`,
+        `Failed to upload download file '${filePath}': ${errorMessage}`,
       );
     }
   }
 
   /**
-   * Post-processing verification
+   * Post-processing summary
    *
-   * Logs summary statistics about download processing:
-   * - Total downloads created
-   * - Downloads with pre-assigned UUIDs
-   * - Downloads with external URLs vs media files
+   * Logs statistics about download processing:
+   * - Total files uploaded
+   * - Total storage size
+   * - Upload success/failure counts
    *
    * @param results - Processing results from all records
    */
@@ -202,12 +297,31 @@ export class DownloadsProcessor extends BaseProcessor {
     const successCount = results.filter((r) => r.success).length;
     const failureCount = results.filter((r) => !r.success).length;
 
-    // This is informational only - no action taken
-    // Could be enhanced to log to a proper logger once available
+    // This is informational only
     if (failureCount > 0) {
       console.warn(
         `Downloads processing completed: ${successCount} success, ${failureCount} failed`,
       );
     }
+  }
+
+  /**
+   * Resolve file path relative to seed-assets/downloads/ directory
+   *
+   * Supports both relative and absolute paths:
+   * - "template.pdf" → /path/to/seed-assets/downloads/template.pdf
+   * - "./docs/template.pdf" → /path/to/seed-assets/downloads/docs/template.pdf
+   *
+   * @param filePath - Relative file path from seed data
+   * @returns Absolute file path
+   */
+  private resolveFilePath(filePath: string): string {
+    // If already absolute, use as-is
+    if (path.isAbsolute(filePath)) {
+      return filePath;
+    }
+
+    // Otherwise, resolve relative to assets directory
+    return path.resolve(this.assetsPath, filePath);
   }
 }

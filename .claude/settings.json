@@ -32,10 +32,6 @@
 					{
 						"type": "command",
 						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/codebase-map-compact.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/thinking-level.sh"
 					}
 				]
 			}

@@ -1,8 +1,191 @@
 [
   {
-    "_ref": "media:hero-image",
-    "slug": "hero-image",
-    "filename": "hero.jpg",
-    "mimeType": "image/jpeg"
+    "_ref": "lesson-0-thumb",
+    "filePath": "lesson_zero.png",
+    "alt": "Welcome to DDM lesson thumbnail",
+    "caption": "Thumbnail for lesson 0",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-7-thumb",
+    "filePath": "self_assessment.png",
+    "alt": "Self assessment lesson thumbnail",
+    "caption": "Thumbnail for lesson 7",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-8-thumb",
+    "filePath": "1-before_we_begin.png",
+    "alt": "Before we begin lesson thumbnail",
+    "caption": "Thumbnail for lesson 8",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-9-thumb",
+    "filePath": "tools_resources.png",
+    "alt": "Presentation Tools & Course Resources lesson thumbnail",
+    "caption": "Thumbnail for lesson 9",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-10-thumb",
+    "filePath": "1-our_process.png",
+    "alt": "Our Process lesson thumbnail",
+    "caption": "Thumbnail for lesson 10",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-11-thumb",
+    "filePath": "2-the_who.png",
+    "alt": "The Who lesson thumbnail",
+    "caption": "Thumbnail for lesson 11",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-12-thumb",
+    "filePath": "3-the_why_introductions.png",
+    "alt": "The Why: Building the Introduction lesson thumbnail",
+    "caption": "Thumbnail for lesson 12",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-13-thumb",
+    "filePath": "4-the_why_next_steps.png",
+    "alt": "The Why: Next Steps lesson thumbnail",
+    "caption": "Thumbnail for lesson 13",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-14-thumb",
+    "filePath": "5-idea_generation.png",
+    "alt": "Idea Generation lesson thumbnail",
+    "caption": "Thumbnail for lesson 14",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-15-thumb",
+    "filePath": "6-what_structure.png",
+    "alt": "What is Structure lesson thumbnail",
+    "caption": "Thumbnail for lesson 15",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-16-thumb",
+    "filePath": "7-using_stories.png",
+    "alt": "Using Stories lesson thumbnail",
+    "caption": "Thumbnail for lesson 16",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-17-thumb",
+    "filePath": "8-storyboards_in_film.png",
+    "alt": "Storyboards in Film lesson thumbnail",
+    "caption": "Thumbnail for lesson 17",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-18-thumb",
+    "filePath": "9-storyboards_in_presentations.png",
+    "alt": "Storyboards in Presentations lesson thumbnail",
+    "caption": "Thumbnail for lesson 18",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-19-thumb",
+    "filePath": "10-visual_perception.png",
+    "alt": "Visual Perception and Communication lesson thumbnail",
+    "caption": "Thumbnail for lesson 19",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-20-thumb",
+    "filePath": "11-overview_elements_design.png",
+    "alt": "Overview of the Fundamental Elements of Design lesson thumbnail",
+    "caption": "Thumbnail for lesson 20",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-21-thumb",
+    "filePath": "12-detail_elements_of_design.png",
+    "alt": "The Fundamental Elements of Design in Detail lesson thumbnail",
+    "caption": "Thumbnail for lesson 21",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-22-thumb",
+    "filePath": "13-gestalt_principles_of_perception.png",
+    "alt": "Gestalt Principles of Visual Perception lesson thumbnail",
+    "caption": "Thumbnail for lesson 22",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-23-thumb",
+    "filePath": "14-slide_composition.png",
+    "alt": "Slide Composition lesson thumbnail",
+    "caption": "Thumbnail for lesson 23",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-24-thumb",
+    "filePath": "15-fact_based_persuasion_overview.png",
+    "alt": "Overview of Fact-based Persuasion lesson thumbnail",
+    "caption": "Thumbnail for lesson 24",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-25-thumb",
+    "filePath": "16-tables_vs_graphs.png",
+    "alt": "Tables vs. Graphs lesson thumbnail",
+    "caption": "Thumbnail for lesson 25",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-26-thumb",
+    "filePath": "17-standard_graphs.png",
+    "alt": "Standard Graphs lesson thumbnail",
+    "caption": "Thumbnail for lesson 26",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-27-thumb",
+    "filePath": "18-specialist_graphs.png",
+    "alt": "Specialist Graphs lesson thumbnail",
+    "caption": "Thumbnail for lesson 27",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-28-thumb",
+    "filePath": "19-preparation_practice.png",
+    "alt": "Preparation and Practice lesson thumbnail",
+    "caption": "Thumbnail for lesson 28",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-29-thumb",
+    "filePath": "20-performance.png",
+    "alt": "Performance lesson thumbnail",
+    "caption": "Thumbnail for lesson 29",
+    "type": "image"
+  },
+  {
+    "_ref": "hero-image",
+    "filePath": "hero-image.jpg",
+    "alt": "Hero image for testing",
+    "caption": "Test hero image placeholder",
+    "type": "image"
+  },
+  {
+    "_ref": "thumbnail",
+    "filePath": "thumbnail.png",
+    "alt": "Thumbnail placeholder",
+    "caption": "Test thumbnail image",
+    "type": "image"
+  },
+  {
+    "_ref": "placeholder-webp",
+    "filePath": "placeholder.webp",
+    "alt": "WebP placeholder image",
+    "caption": "Test WebP format image",
+    "type": "image"
   }
 ]

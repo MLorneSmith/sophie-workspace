@@ -8,9 +8,14 @@
  */
 
 import { readFile } from 'fs/promises';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import type { SeedRecord } from '../types';
 import { COLLECTION_CONFIGS, SEED_DATA_DIR } from '../config';
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Error thrown when JSON parsing fails

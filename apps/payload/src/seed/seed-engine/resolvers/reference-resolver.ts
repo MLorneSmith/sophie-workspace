@@ -10,7 +10,7 @@
  * @module seed-engine/resolvers/reference-resolver
  */
 
-import { REFERENCE_PATTERN } from '../config';
+import { REFERENCE_PATTERN, ENV_VAR_PATTERN } from '../config';
 import type { ReferenceCache, SeedRecord } from '../types';
 
 /**
@@ -300,14 +300,27 @@ export class ReferenceResolver {
    * - Full string reference: `"{ref:courses:ddm}"` → UUID
    * - Embedded references: `"Text {ref:users:admin} more text"` → "Text UUID more text"
    * - Multiple references: `"{ref:users:1} and {ref:users:2}"` → "UUID1 and UUID2"
+   * - Environment variables: `"{env:SEED_USER_PASSWORD}"` → value from process.env
    *
    * @param str - String to resolve
    * @returns Resolved string or UUID
    * @throws Error if any reference cannot be resolved
    */
   private resolveString(str: string): string {
+    // First, resolve environment variables
+    let resolved = str.replace(ENV_VAR_PATTERN, (match, varName: string) => {
+      const value = process.env[varName];
+      if (value === undefined) {
+        throw new Error(
+          `Unresolved environment variable: ${match}. ` +
+            `Ensure environment variable "${varName}" is set.`,
+        );
+      }
+      return value;
+    });
+
     // Check if entire string is a single reference (common case optimization)
-    const singleMatch = str.match(/^\{ref:([^:]+):([^}]+)\}$/);
+    const singleMatch = resolved.match(/^\{ref:([^:]+):([^}]+)\}$/);
     if (singleMatch) {
       const [, collection, identifier] = singleMatch;
       const uuid = this.lookup(collection, identifier);
@@ -321,16 +334,21 @@ export class ReferenceResolver {
     }
 
     // Handle multiple or embedded references
-    return str.replace(REFERENCE_PATTERN, (match, collection, identifier) => {
-      const uuid = this.lookup(collection, identifier);
-      if (!uuid) {
-        throw new Error(
-          `Unresolved reference: ${match}. ` +
-            `Ensure collection "${collection}" with identifier "${identifier}" has been seeded.`,
-        );
-      }
-      return uuid;
-    });
+    resolved = resolved.replace(
+      REFERENCE_PATTERN,
+      (match, collection, identifier) => {
+        const uuid = this.lookup(collection, identifier);
+        if (!uuid) {
+          throw new Error(
+            `Unresolved reference: ${match}. ` +
+              `Ensure collection "${collection}" with identifier "${identifier}" has been seeded.`,
+          );
+        }
+        return uuid;
+      },
+    );
+
+    return resolved;
   }
 
   /**

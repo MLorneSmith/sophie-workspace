@@ -78,7 +78,7 @@ export default buildConfig({
 			pool: { ...poolConfig, connectionString: databaseURI },
 			schemaName: "payload",
 			idType: "uuid", // Explicitly set ID type to UUID
-			push: false, // Disable schema push for seeding
+			push: true, // Enable schema push for seeding - creates schema if missing
 		});
 	})(),
 	// Exclude editor, plugins, globals, bin array as they are not needed for seeding
