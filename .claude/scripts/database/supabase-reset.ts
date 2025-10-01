@@ -23,6 +23,7 @@ interface ResetOptions {
 	target: "local" | "remote";
 	skipConfirmation?: boolean;
 	runTests?: boolean;
+	runSeed?: boolean;
 	apps?: ("web" | "payload" | "e2e")[];
 	verbose?: boolean;
 }
@@ -249,9 +250,6 @@ class PayloadSchemaHandler {
 			// First, ensure payload schema exists
 			await this.ensurePayloadSchema(connectionString);
 
-			// Run Payload migrations to create missing tables
-			await this.runPayloadMigrations(instance);
-
 			// Verify critical tables exist
 			await this.verifyPayloadTables(connectionString);
 
@@ -339,34 +337,6 @@ class PayloadSchemaHandler {
 			this.reporter.info("Payload functionality test passed");
 		} catch (error) {
 			this.reporter.warning(`Payload functionality test warning: ${error}`);
-		}
-	}
-
-	private async runPayloadMigrations(
-		instance: SupabaseInstance,
-	): Promise<void> {
-		this.reporter.step(`Running Payload migrations for ${instance.name}`);
-
-		try {
-			// Navigate to the payload app directory to run migrations
-			const payloadDir = "/home/msmith/projects/2025slideheroes/apps/payload";
-
-			// Run Payload migrations
-			const migrateResult = execSync("npx payload migrate", {
-				cwd: payloadDir,
-				encoding: "utf8",
-				stdio: "pipe",
-			});
-
-			this.reporter.info(`Payload migrations output: ${migrateResult}`);
-			this.reporter.success(
-				`Payload migrations completed for ${instance.name}`,
-			);
-		} catch (error) {
-			this.reporter.error(
-				`Payload migration failed for ${instance.name}: ${error}`,
-			);
-			throw error;
 		}
 	}
 }
@@ -552,6 +522,9 @@ class SupabaseResetOrchestrator {
 		steps += this.instances.length; // Payload schema handling
 		steps += this.instances.length; // Start instances
 		steps += this.instances.length; // Verification
+		if (this.options.runSeed) {
+			steps += 1; // Run seeding
+		}
 		if (this.options.runTests) {
 			steps += 1; // Run tests
 		}
@@ -620,6 +593,11 @@ class SupabaseResetOrchestrator {
 				throw new Error("Some instances failed verification");
 			}
 
+			// Run seeding if requested
+			if (this.options.runSeed) {
+				await this.runSeeding();
+			}
+
 			// Run tests if requested
 			if (this.options.runTests) {
 				await this.runTests();
@@ -633,6 +611,21 @@ class SupabaseResetOrchestrator {
 			this.displayFinalStatus();
 		} catch (error) {
 			this.reporter.error(`Database reset failed: ${error}`);
+			throw error;
+		}
+	}
+
+	private async runSeeding(): Promise<void> {
+		this.reporter.step("Running Payload CMS seeding");
+
+		try {
+			execSync("pnpm --filter payload seed:run", {
+				encoding: "utf8",
+				stdio: "inherit",
+			});
+			this.reporter.success("Payload seeding completed");
+		} catch (error) {
+			this.reporter.error(`Seeding failed: ${error}`);
 			throw error;
 		}
 	}
@@ -685,12 +678,14 @@ function parseArgs(): ResetOptions {
 		console.error(
 			"  --confirm           Skip confirmation for remote operations",
 		);
+		console.error("  --seed              Run Payload seeding after reset");
 		console.error("  --run-tests         Run E2E tests after reset");
 		console.error("  --apps=web,e2e      Target specific apps (default: all)");
 		console.error("  --verbose           Show detailed logging");
 		console.error("");
 		console.error("Examples:");
 		console.error("  tsx supabase-reset.ts local");
+		console.error("  tsx supabase-reset.ts local --seed");
 		console.error("  tsx supabase-reset.ts remote --confirm");
 		console.error("  tsx supabase-reset.ts local --apps=web,e2e --run-tests");
 		process.exit(1);
@@ -704,6 +699,7 @@ function parseArgs(): ResetOptions {
 	const options: ResetOptions = {
 		target,
 		skipConfirmation: args.includes("--confirm"),
+		runSeed: args.includes("--seed"),
 		runTests: args.includes("--run-tests"),
 		verbose: args.includes("--verbose"),
 	};

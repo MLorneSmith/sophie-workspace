@@ -1,0 +1,8 @@
+[
+  {
+    "_ref": "users:admin",
+    "email": "admin@example.com",
+    "name": "Admin User",
+    "status": "active"
+  }
+]
