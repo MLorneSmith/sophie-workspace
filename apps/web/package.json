@@ -78,8 +78,8 @@
     "@kit/tsconfig": "workspace:*",
     "@next/bundle-analyzer": "15.5.4",
     "@tailwindcss/postcss": "^4.1.13",
-    "@types/node": "^24.5.2",
-    "@types/react": "19.1.15",
+    "@types/node": "^24.6.1",
+    "@types/react": "19.1.16",
     "@types/react-dom": "19.1.9",
     "babel-plugin-react-compiler": "19.1.0-rc.3",
     "cssnano": "^7.1.1",
@@ -88,7 +88,7 @@
     "supabase": "2.47.2",
     "tailwindcss": "4.1.13",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "prettier": "@kit/prettier-config",
   "browserslist": [
