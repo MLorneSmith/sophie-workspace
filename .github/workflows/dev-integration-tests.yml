@@ -24,7 +24,17 @@ permissions:
 
 env:
   DEPLOYMENT_URL: ${{ github.event.inputs.deployment_url || 'https://dev.slideheroes.com' }}
+
+jobs:
   # URLs will be dynamically set from the Deploy to Dev workflow outputs
+  check-should-run:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
+      payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
+    steps:
+      - name: Check conditions
         id: check
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -39,7 +49,7 @@ env:
             # For now, use known dev domain for web and assume payload API is accessible there
             echo "web_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
             echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
-            
+
             echo "ℹ️ Note: Currently using dev.slideheroes.com for both services"
             echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
             echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"

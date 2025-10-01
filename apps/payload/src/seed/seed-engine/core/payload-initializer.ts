@@ -124,10 +124,10 @@ export async function initializePayload(): Promise<Payload> {
   }
 
   try {
-    // Get path to seeding config
+    // Get path to main payload config (it handles env vars better than seeding config)
     const filename = fileURLToPath(import.meta.url);
     const dirname = path.dirname(filename);
-    const configPath = path.resolve(dirname, '../../../payload.seeding.config.ts');
+    const configPath = path.resolve(dirname, '../../../payload.config.ts');
 
     logger.debug('Loading Payload config', { configPath });
 
