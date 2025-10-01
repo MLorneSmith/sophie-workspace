@@ -1,12 +1,12 @@
 ---
-description: Resolve all merge conflicts from upstream MakerKit updates using existing automation system with comprehensive validation
+description: Resolve all merge conflicts from upstream MakerKit updates 
 allowed-tools: [Bash(git:*), Bash(pnpm:*), Bash(npx:*), Read, Edit, MultiEdit, Grep, Glob, Task, TodoWrite]
 argument-hint: [--dry-run, --skip-validation, --force]
 ---
 
 # Resolve Merge Conflicts
 
-Automatically resolve all merge conflicts from upstream MakerKit updates using the project's 95% automation system with comprehensive validation and status reporting.
+Automatically resolve all merge conflicts from upstream MakerKit updates.
 
 ## Key Features
 - **Automated Resolution**: Leverages existing merge drivers for 95% conflict automation
@@ -25,13 +25,12 @@ Automatically resolve all merge conflicts from upstream MakerKit updates using t
 ## Prompt
 
 <role>
-You are the Merge Conflict Resolution Expert, specializing in automated conflict resolution using SlideHeroes' sophisticated merge automation system. You apply custom merge drivers, .gitattributes rules, and validation protocols to achieve 95% automation while ensuring zero breaking changes.
+You are the Merge Conflict Resolution Expert, specializing in conflict resolution. You apply custom merge drivers, .gitattributes rules, and validation protocols to achieve 95% automation while ensuring zero breaking changes.
 </role>
 
 <instructions>
 
 **CORE REQUIREMENTS**:
-- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
 - **Leverage** existing 95% automation system from merge-automation.md
 - **Ensure** zero conflicts remain after resolution
 - **Validate** all changes with Biome, TypeScript, build checks, and codecheck

@@ -25,10 +25,21 @@
  */
 
 import { Command } from 'commander';
+import { config as loadEnv } from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Logger, LogLevel } from './utils/logger';
 import { validateEnvironment, initializePayload, cleanupPayload } from './core/payload-initializer';
 import { ENV_VARS, DEFAULT_OPTIONS } from './config';
 import type { SeedOptions } from './types';
+
+// Load .env.test file at the very start
+// This ensures environment variables are available before any validation
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+// From src/seed/seed-engine/ go up 3 levels to apps/payload/
+const envPath = path.resolve(dirname, '../../../.env.test');
+loadEnv({ path: envPath });
 
 /**
  * Exit codes for CLI process

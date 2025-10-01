@@ -3277,7 +3277,8 @@ get_container_health_batch() {
 
     # Use timeout to prevent hanging on large numbers of containers
     # Note: docker inspect returns a JSON array when given multiple IDs
-    if inspect_output=$(timeout 10s docker inspect $container_ids 2>/dev/null); then
+    # Increased timeout to 30s to handle larger numbers of containers (16+)
+    if inspect_output=$(timeout 30s docker inspect $container_ids 2>/dev/null); then
         debug "Batch inspect completed successfully"
     else
         inspect_exit_code=$?

@@ -29,7 +29,11 @@
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest run --coverage",
 		"seed:convert": "tsx src/seed/seed-conversion/index.ts",
-		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run"
+		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run",
+		"seed:run": "tsx src/seed/seed-engine/index.ts",
+		"seed:dry": "tsx src/seed/seed-engine/index.ts --dry-run",
+		"seed:validate": "tsx src/seed/seed-engine/index.ts --dry-run --verbose",
+		"seed:courses": "tsx src/seed/seed-engine/index.ts -c courses,course-lessons,course-quizzes"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",

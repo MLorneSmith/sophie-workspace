@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { config as loadEnv } from "dotenv";
 import { buildConfig } from "payload";
 import { Media } from "./collections/Media.js";
 import { Users } from "./collections/Users.js";
@@ -8,10 +9,30 @@ import { Users } from "./collections/Users.js";
 const filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(filename);
 
+// Load .env.test file explicitly for seeding
+// This ensures environment variables are available at module evaluation time
+// From src/ go up 1 level to apps/payload/
+const envPath = path.resolve(_dirname, "../.env.test");
+loadEnv({ path: envPath });
+
 // Note: Environment variables are read at config evaluation time
 // Tests must ensure env vars are set before this module is imported
+
+// Validate required environment variables
+const payloadSecret = process.env.PAYLOAD_SECRET;
+if (!payloadSecret) {
+	throw new Error(
+		"PAYLOAD_SECRET environment variable is required for seeding",
+	);
+}
+
+const databaseURI = process.env.DATABASE_URI;
+if (!databaseURI) {
+	throw new Error("DATABASE_URI environment variable is required for seeding");
+}
+
 export default buildConfig({
-	secret: process.env.PAYLOAD_SECRET || "",
+	secret: payloadSecret,
 	serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || "",
 	collections: [
 		Users,
@@ -54,7 +75,7 @@ export default buildConfig({
 		};
 
 		return postgresAdapter({
-			pool: poolConfig,
+			pool: { ...poolConfig, connectionString: databaseURI },
 			schemaName: "payload",
 			idType: "uuid", // Explicitly set ID type to UUID
 			push: false, // Disable schema push for seeding
