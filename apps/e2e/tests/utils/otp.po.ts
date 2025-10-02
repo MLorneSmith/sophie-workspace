@@ -1,9 +1,13 @@
-import { createServiceLogger } from "@kit/shared/logger";
 import type { Page } from "@playwright/test";
 import { Mailbox } from "./mailbox";
 
-// Initialize service logger
-const { getLogger: _getLogger } = createServiceLogger("OTP_PO");
+// Simple console logger for E2E tests
+const _getLogger = () => ({
+	info: (...args: unknown[]) => console.log("[OTP_PO]", ...args),
+	error: (...args: unknown[]) => console.error("[OTP_PO]", ...args),
+	warn: (...args: unknown[]) => console.warn("[OTP_PO]", ...args),
+	debug: (...args: unknown[]) => console.log("[OTP_PO DEBUG]", ...args),
+});
 
 export class OtpPo {
 	private readonly page: Page;
