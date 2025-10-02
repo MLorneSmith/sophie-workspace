@@ -69,7 +69,7 @@ test("admin access with forced MFA", async ({ page }) => {
 		// Wait for redirect after MFA
 		await page.waitForURL(
 			(url) => {
-				return !url.includes("/auth/verify");
+				return !url.href.includes("/auth/verify");
 			},
 			{ timeout: 10000 },
 		);

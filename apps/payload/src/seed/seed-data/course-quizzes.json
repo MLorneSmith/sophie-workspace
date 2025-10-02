@@ -26,7 +26,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.896Z",
 		"updatedAt": "2025-06-30T17:27:17.896Z",
-		"lesson": "{ref:course-lessons:elements-of-design-detail}",
+		"lesson": "{ref:course-lessons:fundamental-design-detail}",
 		"_ref": "course-quizzes:elements-of-design-detail"
 	},
 	{
@@ -41,7 +41,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.896Z",
 		"updatedAt": "2025-06-30T17:27:17.896Z",
-		"lesson": "{ref:course-lessons:fact-persuasion}",
+		"lesson": "{ref:course-lessons:fact-based-persuasion}",
 		"_ref": "course-quizzes:fact-persuasion"
 	},
 	{
@@ -86,7 +86,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.898Z",
 		"updatedAt": "2025-06-30T17:27:17.898Z",
-		"lesson": "{ref:course-lessons:introductions}",
+		"lesson": "{ref:course-lessons:the-why-introductions}",
 		"_ref": "course-quizzes:introductions"
 	},
 	{
@@ -116,7 +116,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.899Z",
 		"updatedAt": "2025-06-30T17:27:17.899Z",
-		"lesson": "{ref:course-lessons:overview-elements-of-design}",
+		"lesson": "{ref:course-lessons:fundamental-design-overview}",
 		"_ref": "course-quizzes:overview-elements-of-design"
 	},
 	{
@@ -191,7 +191,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:storyboards-in-film}",
+		"lesson": "{ref:course-lessons:storyboards-film}",
 		"_ref": "course-quizzes:storyboards-in-film"
 	},
 	{
@@ -206,7 +206,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.901Z",
 		"updatedAt": "2025-06-30T17:27:17.901Z",
-		"lesson": "{ref:course-lessons:storyboards-in-presentations}",
+		"lesson": "{ref:course-lessons:storyboards-presentations}",
 		"_ref": "course-quizzes:storyboards-in-presentations"
 	},
 	{
@@ -221,7 +221,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.902Z",
 		"updatedAt": "2025-06-30T17:27:17.902Z",
-		"lesson": "{ref:course-lessons:structure}",
+		"lesson": "{ref:course-lessons:what-is-structure}",
 		"_ref": "course-quizzes:structure"
 	},
 	{
@@ -296,7 +296,7 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.903Z",
 		"updatedAt": "2025-06-30T17:27:17.903Z",
-		"lesson": "{ref:course-lessons:why-next-steps}",
+		"lesson": "{ref:course-lessons:the-why-next-steps}",
 		"_ref": "course-quizzes:why-next-steps"
 	}
 ]

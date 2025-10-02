@@ -93,6 +93,7 @@ test.describe.skip("Protected routes", () => {
 
 		await auth.loginAsUser({
 			email: "test@makerkit.dev",
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
 			next: path,
 		});
 	});

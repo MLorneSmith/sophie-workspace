@@ -163,9 +163,10 @@ export class Mailbox {
 
 		const message = params.subject
 			? (() => {
-					const filtered = messagesResponse.messages.filter(
-						(item) => item.Subject.indexOf(params.subject) !== -1,
-					);
+					const filtered = messagesResponse.messages.filter((item) => {
+						if (!params.subject) return false;
+						return item.Subject.indexOf(params.subject) !== -1;
+					});
 
 					// TODO: Async logger needed
 

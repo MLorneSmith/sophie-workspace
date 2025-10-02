@@ -83,9 +83,11 @@ export class OnboardingPageObject {
 				timeout: 10000,
 			});
 		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
 			console.log(
 				"Onboarding flow failed, attempting direct navigation:",
-				error.message,
+				errorMessage,
 			);
 			// If onboarding fails, try direct navigation as fallback
 			await this.page.goto("/home");

@@ -75,8 +75,11 @@ class FailureReporter implements Reporter {
 				}
 				break;
 
-			case "flaky":
-				this.stats.flaky++;
+			default:
+				// Handle 'flaky' or any other status
+				if (result.status === ("flaky" as unknown)) {
+					this.stats.flaky++;
+				}
 				break;
 		}
 	}

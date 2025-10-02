@@ -1,6 +1,6 @@
 [
   {
-    "_ref": "course-lessons:lesson-0",
+    "_ref": "lesson-0",
     "title": "Welcome to DDM",
     "slug": "lesson-0",
     "description": "A taster. A preview. An overview of SlideHeroes' flagship presentations course - Decks for Decision Makers",
@@ -26,7 +26,7 @@
     "bunny_video_id": "2620df68-c2a8-4255-986e-24c1d4c1dbf2",
     "bunny_library_id": "264486",
     "lesson_number": 6,
-    "course_id": "{ref:courses:getting-started}",
+    "course_id": "{ref:courses:ddm}",
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-101-welcome}"],
     "publishedAt": "2025-06-30T17:27:17.923Z",
@@ -34,7 +34,7 @@
     "thumbnail": "{ref:media:lesson-0-thumb}"
   },
   {
-    "_ref": "course-lessons:self-assessment",
+    "_ref": "self-assessment",
     "title": "Self Assessment",
     "slug": "self-assessment",
     "description": "Assess your current presentation skills and knowledge",
@@ -48,7 +48,7 @@
       }
     },
     "lesson_number": 7,
-    "course_id": "{ref:courses:self-assessment}",
+    "course_id": "{ref:courses:ddm}",
     "todo_complete_quiz": false,
     "downloads": [],
     "publishedAt": "2025-06-30T17:27:17.922Z",
@@ -56,7 +56,7 @@
     "thumbnail": "{ref:media:lesson-7-thumb}"
   },
   {
-    "_ref": "course-lessons:before-we-begin",
+    "_ref": "before-we-begin",
     "title": "Before we begin...",
     "slug": "before-we-begin",
     "description": "A three question survey to help me understand your goals so I can better help you achieve them",
@@ -80,7 +80,7 @@
       }
     },
     "lesson_number": 8,
-    "course_id": "{ref:courses:getting-started}",
+    "course_id": "{ref:courses:ddm}",
     "survey_id": "{ref:surveys:three-quick-questions}",
     "todo_complete_quiz": false,
     "downloads": [],
@@ -89,7 +89,7 @@
     "thumbnail": "{ref:media:lesson-8-thumb}"
   },
   {
-    "_ref": "course-lessons:tools-and-resources",
+    "_ref": "tools-and-resources",
     "title": "Presentation Tools & Course Resources",
     "slug": "tools-and-resources",
     "description": "Links to some recommended presentation tools + all course materials and downloads",
@@ -194,7 +194,7 @@
       }
     },
     "lesson_number": 9,
-    "course_id": "{ref:courses:conclusion}",
+    "course_id": "{ref:courses:ddm}",
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:tool-audience-map}", "{ref:downloads:reference-golden-rules}"],
     "publishedAt": "2025-06-30T17:27:17.926Z",
@@ -332,9 +332,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:our-process",
+    "_ref": "our-process",
     "slug": "our-process",
-    "course_id": "{ref:courses:getting-started}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 10,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-201-process}", "{ref:downloads:lesson-202-who}"],
@@ -364,9 +364,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:the-who",
+    "_ref": "the-who",
     "slug": "the-who",
-    "course_id": "{ref:courses:the-start}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 11,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-202-who}"],
@@ -396,9 +396,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:the-why-introductions",
+    "_ref": "the-why-introductions",
     "slug": "the-why-introductions",
-    "course_id": "{ref:courses:the-start}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 12,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-203-why-intro}"],
@@ -428,9 +428,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:the-why-next-steps",
+    "_ref": "the-why-next-steps",
     "slug": "the-why-next-steps",
-    "course_id": "{ref:courses:the-start}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 13,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-204-why-next}"],
@@ -460,9 +460,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:idea-generation",
+    "_ref": "idea-generation",
     "slug": "idea-generation",
-    "course_id": "{ref:courses:structure}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 14,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-301-idea-generation}"],
@@ -492,9 +492,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:what-is-structure",
+    "_ref": "what-is-structure",
     "slug": "what-is-structure",
-    "course_id": "{ref:courses:the-start}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 15,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-302-structure}"],
@@ -524,9 +524,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:using-stories",
+    "_ref": "using-stories",
     "slug": "using-stories",
-    "course_id": "{ref:courses:structure}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 16,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-401-stories}"],
@@ -546,9 +546,9 @@
         "children": []
       }
     },
-    "_ref": "course-lessons:storyboards-film",
+    "_ref": "storyboards-film",
     "slug": "storyboards-film",
-    "course_id": "{ref:courses:structure}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 17,
     "todo_complete_quiz": false,
     "downloads": [],
@@ -578,9 +578,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:storyboards-presentations",
+    "_ref": "storyboards-presentations",
     "slug": "storyboards-presentations",
-    "course_id": "{ref:courses:structure}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 18,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-403-storyboards}"],
@@ -610,9 +610,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:visual-perception",
+    "_ref": "visual-perception",
     "slug": "visual-perception",
-    "course_id": "{ref:courses:design}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 19,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-501-perception}"],
@@ -632,9 +632,9 @@
         "children": []
       }
     },
-    "_ref": "course-lessons:fundamental-design-overview",
+    "_ref": "fundamental-design-overview",
     "slug": "fundamental-design-overview",
-    "course_id": "{ref:courses:design}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 20,
     "todo_complete_quiz": false,
     "downloads": [],
@@ -664,9 +664,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:fundamental-design-detail",
+    "_ref": "fundamental-design-detail",
     "slug": "fundamental-design-detail",
-    "course_id": "{ref:courses:design}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 21,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-503-elements}"],
@@ -696,9 +696,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:gestalt-principles",
+    "_ref": "gestalt-principles",
     "slug": "gestalt-principles",
-    "course_id": "{ref:courses:design}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 22,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-504-gestalt}"],
@@ -728,9 +728,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:slide-composition",
+    "_ref": "slide-composition",
     "slug": "slide-composition",
-    "course_id": "{ref:courses:facts-and-data}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 23,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-505-composition}"],
@@ -760,9 +760,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:fact-based-persuasion",
+    "_ref": "fact-based-persuasion",
     "slug": "fact-based-persuasion",
-    "course_id": "{ref:courses:storytelling}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 24,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-601-persuasion}"],
@@ -792,9 +792,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:tables-vs-graphs",
+    "_ref": "tables-vs-graphs",
     "slug": "tables-vs-graphs",
-    "course_id": "{ref:courses:performance}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 25,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-602-tables-graphs}"],
@@ -824,9 +824,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:basic-graphs",
+    "_ref": "basic-graphs",
     "slug": "basic-graphs",
-    "course_id": "{ref:courses:performance}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 26,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-604-standard-graphs}"],
@@ -856,9 +856,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:specialist-graphs",
+    "_ref": "specialist-graphs",
     "slug": "specialist-graphs",
-    "course_id": "{ref:courses:performance}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 27,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-605-specialist-graphs}"],
@@ -888,9 +888,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:preparation-practice",
+    "_ref": "preparation-practice",
     "slug": "preparation-practice",
-    "course_id": "{ref:courses:storytelling}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 28,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-701-preparation}"],
@@ -920,9 +920,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:performance",
+    "_ref": "performance",
     "slug": "performance",
-    "course_id": "{ref:courses:storytelling}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 29,
     "todo_complete_quiz": false,
     "downloads": ["{ref:downloads:lesson-702-performance}"],
@@ -952,9 +952,9 @@
         ]
       }
     },
-    "_ref": "course-lessons:congratulations",
+    "_ref": "congratulations",
     "slug": "congratulations",
-    "course_id": "{ref:courses:getting-started}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 30,
     "todo_complete_quiz": false,
     "downloads": [],
@@ -973,9 +973,9 @@
         "children": []
       }
     },
-    "_ref": "course-lessons:before-you-go",
+    "_ref": "before-you-go",
     "slug": "before-you-go",
-    "course_id": "{ref:courses:getting-started}",
+    "course_id": "{ref:courses:ddm}",
     "lesson_number": 31,
     "todo_complete_quiz": false,
     "downloads": [],

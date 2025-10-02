@@ -47,13 +47,15 @@ export function generateTestData(
 	collection: string,
 	override: Record<string, any> = {},
 ) {
-	const baseData = TEST_COLLECTIONS[collection] || {};
+	const baseData =
+		TEST_COLLECTIONS[collection as keyof typeof TEST_COLLECTIONS] || {};
 	const uniqueId = generateUniqueId();
 
 	return {
 		...baseData,
 		...override,
 		title: override.title || `${baseData.title} ${uniqueId}`,
-		slug: override.slug || `${baseData.slug || collection}-${uniqueId}`,
+		slug:
+			override.slug || `${(baseData as any).slug || collection}-${uniqueId}`,
 	};
 }

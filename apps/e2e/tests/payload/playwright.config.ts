@@ -82,8 +82,9 @@ export default defineConfig({
 
 	webServer: {
 		// Use the Docker container instead of starting a new server
+		command: `echo "Using existing server at ${PAYLOAD_URL}"`,
 		url: PAYLOAD_URL,
 		reuseExistingServer: true,
-		timeout: 10000, // Short timeout since server should already be running
+		timeout: 5000,
 	},
 });
