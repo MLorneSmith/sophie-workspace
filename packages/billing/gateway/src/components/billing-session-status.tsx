@@ -24,7 +24,7 @@ export function BillingSessionStatus({
       className={
         'fade-in dark:border-border mx-auto max-w-xl rounded-xl border border-transparent p-16 xl:drop-shadow-2xl' +
         ' bg-background animate-in slide-in-from-bottom-8 ease-out' +
-        ' zoom-in-50 dark:shadow-primary/20 duration-1000 dark:shadow-2xl'
+        ' zoom-in-50 dark:shadow-primary/5 duration-1000 dark:shadow-2xl'
       }
     >
       <div

@@ -25,13 +25,13 @@ const RadioGroupItem: React.FC<
   return (
     <RadioGroupPrimitive.Item
       className={cn(
-        'border-primary text-primary focus-visible:ring-ring aspect-square h-4 w-4 rounded-full border shadow-xs focus:outline-hidden focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
+        'border-primary text-primary focus-visible:ring-ring aspect-square h-4 w-4 rounded-full border focus:outline-hidden focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <CheckIcon className="fill-primary h-3.5 w-3.5" />
+        <CheckIcon className="fill-primary animate-in fade-in slide-in-from-left-4 h-3.5 w-3.5" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );
@@ -46,14 +46,15 @@ const RadioGroupItemLabel = (
 ) => {
   return (
     <label
+      data-selected={props.selected}
       className={cn(
         props.className,
         'flex cursor-pointer rounded-md' +
           ' border-input items-center space-x-4 border' +
-          ' transition-duration-500 focus-within:border-primary p-4 text-sm transition-all',
+          'focus-within:border-primary active:bg-muted p-2.5 text-sm transition-all',
         {
-          [`bg-muted`]: props.selected,
-          [`hover:bg-muted`]: !props.selected,
+          [`bg-muted/70`]: props.selected,
+          [`hover:bg-muted/50`]: !props.selected,
         },
       )}
     >

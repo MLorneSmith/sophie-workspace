@@ -71,7 +71,7 @@ export function PricingTable({
       <div
         className={
           'flex flex-col items-start space-y-6 lg:space-y-0' +
-          ' justify-center lg:flex-row lg:space-x-4'
+          ' justify-center lg:flex-row lg:gap-x-2.5'
         }
       >
         {visibleProducts.map((product) => {
@@ -171,17 +171,13 @@ function PricingItem(
       data-cy={'subscription-plan'}
       className={cn(
         props.className,
-        `s-full relative flex flex-1 grow flex-col items-stretch justify-between self-stretch rounded-lg border px-6 py-5 lg:w-4/12 xl:max-w-[20rem]`,
-        {
-          ['border-primary']: highlighted,
-          ['border-border']: !highlighted,
-        },
+        `s-full bg-muted/50 relative flex flex-1 grow flex-col items-stretch justify-between self-stretch rounded px-6 py-5 lg:w-4/12 xl:max-w-[20rem]`,
       )}
     >
       <If condition={props.product.badge}>
         <div className={'absolute -top-2.5 left-0 flex w-full justify-center'}>
           <Badge
-            className={highlighted ? '' : 'bg-background'}
+            className={highlighted ? '' : 'bg-muted'}
             variant={highlighted ? 'default' : 'outline'}
           >
             <span>
@@ -194,12 +190,12 @@ function PricingItem(
         </div>
       </If>
 
-      <div className={'flex flex-col gap-y-5'}>
-        <div className={'flex flex-col gap-y-1'}>
+      <div className={'flex flex-col gap-y-4'}>
+        <div className={'flex flex-col'}>
           <div className={'flex items-center space-x-6'}>
             <b
               className={
-                'text-secondary-foreground font-heading text-xl font-medium tracking-tight'
+                'text-secondary-foreground font-heading text-xl font-medium tracking-tight text-orange-800'
               }
             >
               <Trans
@@ -208,9 +204,20 @@ function PricingItem(
               />
             </b>
           </div>
+
+          <span
+            className={cn(`text-muted-foreground text-base tracking-tight`)}
+          >
+            <Trans
+              i18nKey={props.product.description}
+              defaults={props.product.description}
+            />
+          </span>
         </div>
 
-        <div className={'mt-6 flex flex-col gap-y-1'}>
+        <div className={'h-px w-full border border-dashed'} />
+
+        <div className={'flex flex-col gap-y-1'}>
           <Price
             isMonthlyPrice={props.alwaysDisplayMonthlyPrice}
             displayBillingPeriod={!props.plan.label}
@@ -295,13 +302,6 @@ function PricingItem(
             )}
           </If>
         </If>
-
-        <span className={cn(`text-muted-foreground text-base tracking-tight`)}>
-          <Trans
-            i18nKey={props.product.description}
-            defaults={props.product.description}
-          />
-        </span>
 
         <div className={'h-px w-full border border-dashed'} />
 
@@ -389,9 +389,9 @@ function ListItem({
   highlighted: boolean;
 }>) {
   return (
-    <li className={'flex items-center gap-x-2.5'}>
+    <li className={'flex items-center gap-x-2'}>
       <CheckCircle
-        className={cn('h-4 min-h-4 w-4 min-w-4', {
+        className={cn('h-3.5 min-h-3.5 w-3.5 min-w-3.5', {
           'text-secondary-foreground': highlighted,
           'text-muted-foreground': !highlighted,
         })}
@@ -417,7 +417,7 @@ function PlanIntervalSwitcher(
   }>,
 ) {
   return (
-    <div className={'flex gap-x-1 rounded-full border p-1.5'}>
+    <div className={'flex gap-x-1 rounded-full border'}>
       {props.intervals.map((plan, index) => {
         const selected = plan === props.interval;
 
@@ -434,8 +434,7 @@ function PlanIntervalSwitcher(
         return (
           <Button
             key={plan}
-            size={'sm'}
-            variant={selected ? 'default' : 'ghost'}
+            variant={selected ? 'secondary' : 'ghost'}
             className={className}
             onClick={() => props.setInterval(plan)}
           >

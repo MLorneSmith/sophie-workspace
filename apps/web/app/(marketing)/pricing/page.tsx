@@ -23,7 +23,7 @@ async function PricingPage() {
   const { t } = await createI18nServerInstance();
 
   return (
-    <div className={'flex flex-col space-y-12'}>
+    <div className={'flex flex-col space-y-8'}>
       <SitePageHeader
         title={t('marketing:pricing')}
         subtitle={t('marketing:pricingSubtitle')}

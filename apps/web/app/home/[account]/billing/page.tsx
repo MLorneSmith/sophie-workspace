@@ -1,7 +1,5 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { z } from 'zod';
 
-import { PlanSchema, ProductSchema } from '@kit/billing';
 import { resolveProductPlan } from '@kit/billing-gateway';
 import {
   BillingPortalCard,
@@ -47,15 +45,15 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
   const [subscription, order, customerId] =
     await loadTeamAccountBillingPage(accountId);
 
-  const subscriptionProductPlan = subscription
-    ? await getProductPlan(
-        subscription.items[0]?.variant_id,
-        subscription.currency,
-      )
+  const variantId = subscription?.items[0]?.variant_id;
+  const orderVariantId = order?.items[0]?.variant_id;
+
+  const subscriptionProductPlan = variantId
+    ? await resolveProductPlan(billingConfig, variantId, subscription.currency)
     : undefined;
 
-  const orderProductPlan = order
-    ? await getProductPlan(order.items[0]?.variant_id, order.currency)
+  const orderProductPlan = orderVariantId
+    ? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
     : undefined;
 
   const hasBillingData = subscription || order;
@@ -97,11 +95,7 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
       />
 
       <PageBody>
-        <div
-          className={cn(`flex w-full flex-col space-y-4`, {
-            'max-w-2xl': hasBillingData,
-          })}
-        >
+        <div className={cn(`flex max-w-2xl flex-col space-y-4`)}>
           <If condition={!hasBillingData}>
             <Checkout />
           </If>
@@ -153,21 +147,4 @@ function CannotManageBillingAlert() {
       </AlertDescription>
     </Alert>
   );
-}
-
-async function getProductPlan(
-  variantId: string | undefined,
-  currency: string,
-): Promise<
-  | {
-      product: ProductSchema;
-      plan: z.infer<typeof PlanSchema>;
-    }
-  | undefined
-> {
-  if (!variantId) {
-    return undefined;
-  }
-
-  return resolveProductPlan(billingConfig, variantId, currency);
 }

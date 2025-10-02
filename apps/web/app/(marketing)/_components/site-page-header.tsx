@@ -14,11 +14,21 @@ export function SitePageHeader({
   const containerClass = container ? 'container' : '';
 
   return (
-    <div className={cn('border-b py-8 xl:py-10 2xl:py-12', className)}>
-      <div className={cn('flex flex-col gap-y-3 lg:gap-y-4', containerClass)}>
+    <div
+      className={cn(
+        'border-border/40 border-b py-6 xl:py-8 2xl:py-10',
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          'flex flex-col items-center gap-y-2 lg:gap-y-3',
+          containerClass,
+        )}
+      >
         <h1
           className={
-            'font-heading text-3xl font-medium tracking-tighter xl:text-5xl dark:text-white'
+            'font-heading text-3xl tracking-tighter xl:text-5xl dark:text-white'
           }
         >
           {title}

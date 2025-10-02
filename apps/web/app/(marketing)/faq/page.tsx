@@ -79,8 +79,8 @@ async function FAQPage() {
           subtitle={t('marketing:faqSubtitle')}
         />
 
-        <div className={'container flex flex-col space-y-8 pb-16'}>
-          <div className="flex w-full max-w-xl flex-col">
+        <div className={'container flex flex-col items-center space-y-8 pb-16'}>
+          <div className="divide-border flex w-full max-w-xl flex-col divide-y divide-dashed rounded-md border">
             {faqItems.map((item, index) => {
               return <FaqItem key={index} item={item} />;
             })}
@@ -114,17 +114,15 @@ function FaqItem({
   };
 }>) {
   return (
-    <details className={'group border-b px-2 py-4 last:border-b-transparent'}>
+    <details
+      className={
+        'hover:bg-muted/70 [&:open]:bg-muted/70 [&:open]:hover:bg-muted transition-all'
+      }
+    >
       <summary
-        className={
-          'flex items-center justify-between hover:cursor-pointer hover:underline'
-        }
+        className={'flex items-center justify-between p-4 hover:cursor-pointer'}
       >
-        <h2
-          className={
-            'hover:underline-none cursor-pointer font-sans font-medium'
-          }
-        >
+        <h2 className={'cursor-pointer font-sans text-base'}>
           <Trans i18nKey={item.question} defaults={item.question} />
         </h2>
 
@@ -135,7 +133,7 @@ function FaqItem({
         </div>
       </summary>
 
-      <div className={'text-muted-foreground flex flex-col gap-y-3 py-1'}>
+      <div className={'text-muted-foreground flex flex-col gap-y-2 px-4 pb-2'}>
         <Trans i18nKey={item.answer} defaults={item.answer} />
       </div>
     </details>

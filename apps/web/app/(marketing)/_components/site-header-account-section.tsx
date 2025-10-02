@@ -59,7 +59,9 @@ export function SiteHeaderAccountSection({
 
 function AuthButtons() {
   return (
-    <div className={'animate-in fade-in flex gap-x-2.5 duration-500'}>
+    <div
+      className={'animate-in fade-in flex items-center gap-x-2 duration-500'}
+    >
       <div className={'hidden md:flex'}>
         <If condition={features.enableThemeToggle}>
           <ModeToggle />
@@ -72,14 +74,24 @@ function AuthButtons() {
         </If>
       </div>
 
-      <div className={'flex gap-x-2.5'}>
-        <Button className={'hidden md:block'} asChild variant={'ghost'}>
+      <div className={'flex items-center gap-x-2'}>
+        <Button
+          className={'hidden md:flex md:text-sm'}
+          asChild
+          variant={'outline'}
+          size={'sm'}
+        >
           <Link href={pathsConfig.auth.signIn}>
             <Trans i18nKey={'auth:signIn'} />
           </Link>
         </Button>
 
-        <Button asChild className="text-xs md:text-sm" variant={'default'}>
+        <Button
+          asChild
+          className="text-xs md:text-sm"
+          variant={'default'}
+          size={'sm'}
+        >
           <Link href={pathsConfig.auth.signUp}>
             <Trans i18nKey={'auth:signUp'} />
           </Link>

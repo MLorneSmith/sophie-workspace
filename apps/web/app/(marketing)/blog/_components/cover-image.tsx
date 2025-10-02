@@ -12,13 +12,9 @@ type Props = {
 export function CoverImage({ title, src, preloadImage, className }: Props) {
   return (
     <Image
-      className={cn(
-        'block rounded-xl object-cover duration-250' +
-          ' transition-all hover:opacity-90',
-        {
-          className,
-        },
-      )}
+      className={cn('block rounded-md object-cover', {
+        className,
+      })}
       src={src}
       priority={preloadImage}
       alt={`Cover Image for ${title}`}

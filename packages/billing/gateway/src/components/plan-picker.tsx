@@ -22,7 +22,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
@@ -32,7 +31,6 @@ import {
   RadioGroupItem,
   RadioGroupItemLabel,
 } from '@kit/ui/radio-group';
-import { Separator } from '@kit/ui/separator';
 import { Trans } from '@kit/ui/trans';
 import { cn } from '@kit/ui/utils';
 
@@ -125,7 +123,7 @@ export function PlanPicker(
         className={'flex flex-col gap-y-4 lg:flex-row lg:gap-x-4 lg:gap-y-0'}
       >
         <form
-          className={'flex w-full max-w-xl flex-col gap-y-8'}
+          className={'flex w-full flex-col gap-y-4'}
           onSubmit={form.handleSubmit(props.onSubmit)}
         >
           <If condition={intervals.length}>
@@ -139,13 +137,9 @@ export function PlanPicker(
                 render={({ field }) => {
                   return (
                     <FormItem className={'flex flex-col gap-4'}>
-                      <FormLabel htmlFor={'plan-picker-id'}>
-                        <Trans i18nKey={'common:billingInterval.label'} />
-                      </FormLabel>
-
                       <FormControl id={'plan-picker-id'}>
                         <RadioGroup name={field.name} value={field.value}>
-                          <div className={'flex space-x-2.5'}>
+                          <div className={'flex space-x-1'}>
                             {intervals.map((interval) => {
                               const selected = field.value === interval;
 
@@ -154,11 +148,10 @@ export function PlanPicker(
                                   htmlFor={interval}
                                   key={interval}
                                   className={cn(
-                                    'focus-within:border-primary flex items-center gap-x-2.5 rounded-md border px-2.5 py-2 transition-colors',
+                                    'focus-within:border-primary flex items-center gap-x-2.5 rounded-md px-2.5 py-2 transition-colors',
                                     {
-                                      ['bg-muted border-input']: selected,
-                                      ['hover:border-input border-transparent']:
-                                        !selected,
+                                      ['bg-muted']: selected,
+                                      ['hover:bg-muted/50']: !selected,
                                     },
                                   )}
                                 >
@@ -216,12 +209,12 @@ export function PlanPicker(
             name={'planId'}
             render={({ field }) => (
               <FormItem className={'flex flex-col gap-4'}>
-                <FormLabel>
-                  <Trans i18nKey={'common:planPickerLabel'} />
-                </FormLabel>
-
                 <FormControl>
-                  <RadioGroup value={field.value} name={field.name}>
+                  <RadioGroup
+                    value={field.value}
+                    name={field.name}
+                    className="gap-y-0.5"
+                  >
                     {visibleProducts.map((product) => {
                       const plan = product.plans.find((item) => {
                         if (item.paymentType === 'one-time') {
@@ -251,27 +244,8 @@ export function PlanPicker(
                         <RadioGroupItemLabel
                           selected={selected}
                           key={primaryLineItem.id}
+                          className="rounded-md !border-transparent"
                         >
-                          <RadioGroupItem
-                            data-test-plan={plan.id}
-                            key={plan.id + selected}
-                            id={plan.id}
-                            value={plan.id}
-                            onClick={() => {
-                              if (selected) {
-                                return;
-                              }
-
-                              form.setValue('planId', planId, {
-                                shouldValidate: true,
-                              });
-
-                              form.setValue('productId', product.id, {
-                                shouldValidate: true,
-                              });
-                            }}
-                          />
-
                           <div
                             className={
                               'flex w-full flex-col content-center gap-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0'
@@ -280,10 +254,30 @@ export function PlanPicker(
                             <Label
                               htmlFor={plan.id}
                               className={
-                                'flex flex-col justify-center space-y-2'
+                                'flex flex-col justify-center space-y-2.5'
                               }
                             >
                               <div className={'flex items-center space-x-2.5'}>
+                                <RadioGroupItem
+                                  data-test-plan={plan.id}
+                                  key={plan.id + selected}
+                                  id={plan.id}
+                                  value={plan.id}
+                                  onClick={() => {
+                                    if (selected) {
+                                      return;
+                                    }
+
+                                    form.setValue('planId', planId, {
+                                      shouldValidate: true,
+                                    });
+
+                                    form.setValue('productId', product.id, {
+                                      shouldValidate: true,
+                                    });
+                                  }}
+                                />
+
                                 <span className="font-semibold">
                                   <Trans
                                     i18nKey={`billing:plans.${product.id}.name`}
@@ -363,6 +357,14 @@ export function PlanPicker(
             )}
           />
 
+          {selectedPlan && selectedInterval && selectedProduct ? (
+            <PlanDetails
+              selectedInterval={selectedInterval}
+              selectedPlan={selectedPlan}
+              selectedProduct={selectedProduct}
+            />
+          ) : null}
+
           <div>
             <Button
               data-test="checkout-submit-button"
@@ -385,14 +387,6 @@ export function PlanPicker(
             </Button>
           </div>
         </form>
-
-        {selectedPlan && selectedInterval && selectedProduct ? (
-          <PlanDetails
-            selectedInterval={selectedInterval}
-            selectedPlan={selectedPlan}
-            selectedProduct={selectedProduct}
-          />
-        ) : null}
       </div>
     </Form>
   );
@@ -427,78 +421,49 @@ function PlanDetails({
     <div
       key={key}
       className={
-        'fade-in animate-in zoom-in-95 flex w-full flex-col space-y-4 py-2 lg:px-8'
+        'fade-in animate-in flex w-full flex-col space-y-2 rounded-md border p-4'
       }
     >
-      <div className={'flex flex-col space-y-0.5'}>
-        <span className={'text-sm font-medium'}>
-          <b>
-            <Trans
-              i18nKey={`billing:plans.${selectedProduct.id}.name`}
-              defaults={selectedProduct.name}
-            />
-          </b>{' '}
-          <If condition={isRecurring}>
-            / <Trans i18nKey={`billing:billingInterval.${selectedInterval}`} />
-          </If>
-        </span>
-
-        <p>
-          <span className={'text-muted-foreground text-sm'}>
-            <Trans
-              i18nKey={`billing:plans.${selectedProduct.id}.description`}
-              defaults={selectedProduct.description}
-            />
-          </span>
-        </p>
+      <div className={'flex flex-col space-y-1'}>
+        <span className={'text-sm font-semibold'}>{selectedProduct.name}</span>
       </div>
 
       <If condition={selectedPlan.lineItems.length > 0}>
-        <Separator />
+        <div className={'flex flex-col space-y-1'}>
+          <div className={'flex flex-col space-y-2'}>
+            <LineItemDetails
+              lineItems={selectedPlan.lineItems ?? []}
+              selectedInterval={isRecurring ? selectedInterval : undefined}
+              currency={selectedProduct.currency}
+            />
 
-        <div className={'flex flex-col space-y-2'}>
-          <span className={'text-sm font-semibold'}>
-            <Trans i18nKey={'billing:detailsLabel'} />
-          </span>
+            <div className={'flex flex-wrap gap-1'}>
+              {selectedProduct.features.map((item) => {
+                return (
+                  <Badge
+                    key={item}
+                    className={'flex items-center gap-x-2'}
+                    variant={'outline'}
+                  >
+                    <CheckCircle className={'h-3 w-3 text-green-500'} />
 
-          <LineItemDetails
-            lineItems={selectedPlan.lineItems ?? []}
-            selectedInterval={isRecurring ? selectedInterval : undefined}
-            currency={selectedProduct.currency}
-          />
+                    <span className={'text-muted-foreground'}>
+                      <Trans i18nKey={item} defaults={item} />
+                    </span>
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </If>
-
-      <Separator />
-
-      <div className={'flex flex-col space-y-2'}>
-        <span className={'text-sm font-semibold'}>
-          <Trans i18nKey={'billing:featuresLabel'} />
-        </span>
-
-        {selectedProduct.features.map((item) => {
-          return (
-            <div key={item} className={'flex items-center gap-x-2 text-sm'}>
-              <CheckCircle className={'h-4 text-green-500'} />
-
-              <span className={'text-secondary-foreground'}>
-                <Trans i18nKey={item} defaults={item} />
-              </span>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
 
 function Price(props: React.PropsWithChildren) {
   return (
-    <span
-      className={
-        'animate-in slide-in-from-left-4 fade-in text-xl font-semibold tracking-tight duration-500'
-      }
-    >
+    <span className={'animate-in fade-in text-xl font-medium tracking-tight'}>
       {props.children}
     </span>
   );

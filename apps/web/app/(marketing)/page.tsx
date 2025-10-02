@@ -6,6 +6,7 @@ import { ArrowRightIcon, LayoutDashboard } from 'lucide-react';
 import { PricingTable } from '@kit/billing-gateway/marketing';
 import {
   CtaButton,
+  EcosystemShowcase,
   FeatureCard,
   FeatureGrid,
   FeatureShowcase,
@@ -24,7 +25,7 @@ import { withI18n } from '~/lib/i18n/with-i18n';
 function Home() {
   return (
     <div className={'mt-4 flex flex-col space-y-24 py-14'}>
-      <div className={'container mx-auto'}>
+      <div className={'mx-auto'}>
         <Hero
           pill={
             <Pill label={'New'}>
@@ -37,15 +38,15 @@ function Home() {
             </Pill>
           }
           title={
-            <>
-              <span>The ultimate SaaS Starter</span>
-              <span>for your next project</span>
-            </>
+            <span className="text-secondary-foreground">
+              <span>Ship a SaaS faster than ever.</span>
+            </span>
           }
           subtitle={
             <span>
-              Build and Ship a SaaS faster than ever before with the next-gen
-              SaaS Starter Kit. Ship your SaaS in days, not months.
+              Makerkit gives you a production-ready boilerplate to build your
+              SaaS faster than ever before with the next-gen SaaS Starter Kit.
+              Get started in minutes.
             </span>
           }
           cta={<MainCallToActionButton />}
@@ -53,7 +54,7 @@ function Home() {
             <Image
               priority
               className={
-                'dark:border-primary/10 rounded-xl border border-gray-200'
+                'dark:border-primary/10 w-full rounded-lg border border-gray-200'
               }
               width={3558}
               height={2222}
@@ -65,17 +66,15 @@ function Home() {
       </div>
 
       <div className={'container mx-auto'}>
-        <div
-          className={'flex flex-col space-y-16 xl:space-y-32 2xl:space-y-36'}
-        >
+        <div className={'py-4 xl:py-8'}>
           <FeatureShowcase
             heading={
               <>
-                <b className="font-medium tracking-tighter dark:text-white">
+                <b className="font-medium tracking-tight dark:text-white">
                   The ultimate SaaS Starter Kit
                 </b>
                 .{' '}
-                <span className="text-muted-foreground font-normal tracking-tighter">
+                <span className="text-secondary-foreground/70 block font-normal tracking-tight">
                   Unleash your creativity and build your SaaS faster than ever
                   with Makerkit.
                 </span>
@@ -83,7 +82,7 @@ function Home() {
             }
             icon={
               <FeatureShowcaseIconContainer>
-                <LayoutDashboard className="h-5" />
+                <LayoutDashboard className="h-4 w-4" />
                 <span>All-in-one solution</span>
               </FeatureShowcaseIconContainer>
             }
@@ -108,7 +107,7 @@ function Home() {
               />
 
               <FeatureCard
-                className={'relative col-span-1 overflow-hidden md:col-span-2'}
+                className={'relative col-span-1 overflow-hidden'}
                 label={'Billing'}
                 description={`Makerkit supports multiple payment gateways to charge your customers.`}
               />
@@ -118,15 +117,36 @@ function Home() {
                 label={'Plugins'}
                 description={`Extend your SaaS with plugins that you can install using the CLI.`}
               />
+
+              <FeatureCard
+                className={'relative col-span-1 overflow-hidden'}
+                label={'Documentation'}
+                description={`Makerkit provides a comprehensive documentation to help you get started.`}
+              />
             </FeatureGrid>
           </FeatureShowcase>
         </div>
       </div>
 
       <div className={'container mx-auto'}>
+        <EcosystemShowcase
+          heading="The ultimate SaaS Starter Kit for founders."
+          description="Unleash your creativity and build your SaaS faster than ever with Makerkit. Get started in minutes and ship your SaaS in no time."
+        >
+          <Image
+            className="rounded-md"
+            src={'/images/sign-in.webp'}
+            alt="Sign in"
+            width={1000}
+            height={1000}
+          />
+        </EcosystemShowcase>
+      </div>
+
+      <div className={'container mx-auto'}>
         <div
           className={
-            'flex flex-col items-center justify-center space-y-16 py-16'
+            'flex flex-col items-center justify-center space-y-12 py-4 xl:py-8'
           }
         >
           <SecondaryHero
@@ -154,8 +174,8 @@ export default withI18n(Home);
 
 function MainCallToActionButton() {
   return (
-    <div className={'flex space-x-4'}>
-      <CtaButton>
+    <div className={'flex space-x-2.5'}>
+      <CtaButton className="h-10 text-sm">
         <Link href={'/auth/sign-up'}>
           <span className={'flex items-center space-x-0.5'}>
             <span>
@@ -172,9 +192,9 @@ function MainCallToActionButton() {
         </Link>
       </CtaButton>
 
-      <CtaButton variant={'link'}>
-        <Link href={'/contact'}>
-          <Trans i18nKey={'common:contactUs'} />
+      <CtaButton variant={'link'} className="h-10 text-sm">
+        <Link href={'/pricing'}>
+          <Trans i18nKey={'common:pricing'} />
         </Link>
       </CtaButton>
     </div>

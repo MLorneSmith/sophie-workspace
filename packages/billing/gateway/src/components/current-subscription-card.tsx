@@ -1,5 +1,5 @@
 import { formatDate } from 'date-fns';
-import { BadgeCheck } from 'lucide-react';
+import { BadgeCheck, InfoIcon, MessageCircleWarning } from 'lucide-react';
 
 import { PlanSchema, type ProductSchema } from '@kit/billing';
 import { Tables } from '@kit/supabase/database';
@@ -58,15 +58,15 @@ export function CurrentSubscriptionCard({
 
       <CardContent className={'space-y-4 border-t pt-4 text-sm'}>
         <div className={'flex flex-col space-y-1'}>
-          <div className={'flex items-center gap-x-3 text-lg font-semibold'}>
-            <BadgeCheck
-              className={
-                's-6 fill-green-500 text-white dark:fill-white dark:text-black'
-              }
-            />
+          <div className={'flex items-center gap-x-4 text-lg font-semibold'}>
+            <span className={'flex items-center gap-x-1.5'}>
+              <BadgeCheck
+                className={'s-6 fill-green-500 text-white dark:text-stone-900'}
+              />
 
-            <span data-test={'current-plan-card-product-name'}>
-              <Trans i18nKey={product.name} defaults={product.name} />
+              <span data-test={'current-plan-card-product-name'}>
+                <Trans i18nKey={product.name} defaults={product.name} />
+              </span>
             </span>
 
             <CurrentPlanBadge status={subscription.status} />
@@ -92,38 +92,7 @@ export function CurrentSubscriptionCard({
           </div>
         </If>
 
-        <If condition={subscription.status === 'trialing'}>
-          <div className="flex flex-col gap-y-1">
-            <span className="font-semibold">
-              <Trans i18nKey="billing:trialEndsOn" />
-            </span>
-
-            <div className={'text-muted-foreground'}>
-              <span>
-                {subscription.trial_ends_at
-                  ? formatDate(subscription.trial_ends_at, 'P')
-                  : ''}
-              </span>
-            </div>
-          </div>
-        </If>
-
-        <If condition={subscription.cancel_at_period_end}>
-          <Alert variant={'warning'}>
-            <AlertTitle>
-              <Trans i18nKey="billing:subscriptionCancelled" />
-            </AlertTitle>
-
-            <AlertDescription>
-              <Trans i18nKey="billing:cancelSubscriptionDate" />:
-              <span className={'ml-1'}>
-                {formatDate(subscription.period_ends_at ?? '', 'P')}
-              </span>
-            </AlertDescription>
-          </Alert>
-        </If>
-
-        <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1 border-y border-dashed py-4">
           <span className="font-semibold">
             <Trans i18nKey="billing:detailsLabel" />
           </span>
@@ -134,6 +103,54 @@ export function CurrentSubscriptionCard({
             selectedInterval={firstLineItem.interval}
           />
         </div>
+
+        <If condition={subscription.status === 'trialing'}>
+          {() => (
+            <Alert variant={'info'}>
+              <InfoIcon className={'h-4 w-4'} />
+
+              <AlertTitle>
+                <Trans i18nKey="billing:trialAlertTitle" />
+              </AlertTitle>
+
+              <AlertDescription>
+                <Trans
+                  i18nKey="billing:trialAlertDescription"
+                  values={{
+                    date: formatDate(
+                      subscription.trial_ends_at ?? '',
+                      'MMMM d, yyyy',
+                    ),
+                  }}
+                />
+              </AlertDescription>
+            </Alert>
+          )}
+        </If>
+
+        <If condition={subscription.cancel_at_period_end}>
+          {() => (
+            <Alert variant={'warning'}>
+              <MessageCircleWarning className={'h-4 w-4'} />
+
+              <AlertTitle>
+                <Trans i18nKey="billing:subscriptionCancelled" />
+              </AlertTitle>
+
+              <AlertDescription>
+                <Trans
+                  i18nKey="billing:cancelSubscriptionDate"
+                  values={{
+                    date: formatDate(
+                      subscription.period_ends_at ?? '',
+                      'MMMM d, yyyy',
+                    ),
+                  }}
+                />
+              </AlertDescription>
+            </Alert>
+          )}
+        </If>
       </CardContent>
     </Card>
   );
