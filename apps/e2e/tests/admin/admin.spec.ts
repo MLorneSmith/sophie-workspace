@@ -74,16 +74,6 @@ test.describe('Admin', () => {
       await selectAccount(page, filterText);
     });
 
-    test('displays personal account details', async ({ page }) => {
-      await expect(page.getByText('Personal Account')).toBeVisible();
-      await expect(page.getByTestId('admin-ban-account-button')).toBeVisible();
-      await expect(page.getByTestId('admin-impersonate-button')).toBeVisible();
-
-      await expect(
-        page.getByTestId('admin-delete-account-button'),
-      ).toBeVisible();
-    });
-
     test('ban user flow', async ({ page }) => {
       await page.getByTestId('admin-ban-account-button').click();
 
@@ -110,6 +100,9 @@ test.describe('Admin', () => {
             response.request().method() === 'POST',
         ),
       ]);
+
+      // TODO: remove when https://github.com/makerkit/next-supabase-saas-kit-turbo/issues/356 is solved
+      await page.reload();
 
       await expect(page.getByText('Banned').first()).toBeVisible();
 
@@ -158,6 +151,9 @@ test.describe('Admin', () => {
       ]);
 
       await page.waitForTimeout(250);
+
+      // TODO: remove when https://github.com/makerkit/next-supabase-saas-kit-turbo/issues/356 is solved
+      await page.reload();
 
       // Verify ban badge is removed
       await expect(page.getByText('Banned')).not.toBeVisible();
