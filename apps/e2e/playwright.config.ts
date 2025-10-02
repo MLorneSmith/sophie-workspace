@@ -68,7 +68,7 @@ export default defineConfig({
 					"x-vercel-protection-bypass":
 						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
 				}
-			: undefined,
+			: {},
 
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",

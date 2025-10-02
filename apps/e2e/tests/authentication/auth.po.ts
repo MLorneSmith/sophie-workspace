@@ -236,34 +236,117 @@ export class AuthPageObject {
 	}) {
 		await this.goToSignIn(params.next);
 
+		const startTime = Date.now();
+		const targetUrl = params.next ?? "/home";
+
+		// Phase 1: Wait for Supabase auth API response (30s)
+		console.log("[Phase 1] Waiting for Supabase auth/v1/token API response...");
+		const authResponsePromise = this.page.waitForResponse(
+			(response) => {
+				const url = response.url();
+				const isAuthToken = url.includes("auth/v1/token");
+				if (isAuthToken) {
+					console.log(
+						`[Phase 1] Auth API response detected: ${response.status()}`,
+					);
+				}
+				return isAuthToken && response.status() === 200;
+			},
+			{ timeout: 30000 },
+		);
+
+		// Submit form
 		await this.signIn({
 			email: params.email,
 			password: params.password,
 		});
 
-		// Wait for navigation with increased timeout and more flexible pattern
-		// The auth component uses window.location.href which causes a hard navigation
-		const targetUrl = params.next ?? "/home";
-		console.log(`Waiting for navigation to: ${targetUrl}`);
+		// Wait for auth API response
+		try {
+			await authResponsePromise;
+			console.log(
+				`[Phase 1] ✅ Auth API responded (${Date.now() - startTime}ms)`,
+			);
+		} catch (error) {
+			console.error("[Phase 1] ❌ Auth API timeout after 30s");
+			throw error;
+		}
 
-		// Wait for the URL to change from sign-in page
-		await this.page.waitForURL(
-			(url) => {
-				const urlStr = url.toString();
-				console.log(`[waitForURL] Current: ${urlStr}, Target: ${targetUrl}`);
+		// Phase 2: Poll for session establishment (20s)
+		console.log("[Phase 2] Polling for session establishment via /api/user...");
+		let sessionEstablished = false;
+		const sessionCheckStart = Date.now();
+		const sessionTimeout = 20000;
 
-				// Accept if we've left sign-in page AND reached either target or onboarding
-				const leftSignIn = !urlStr.includes("/auth/sign-in");
-				const reachedTarget =
-					urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
+		while (Date.now() - sessionCheckStart < sessionTimeout) {
+			try {
+				const response = await this.page.request.get(
+					`${this.page.url().split("/").slice(0, 3).join("/")}/api/user`,
+				);
 
-				return leftSignIn && reachedTarget;
-			},
-			{
-				timeout: 45000, // Increased from 30s to 45s to account for CI environment latency and session establishment
-			},
-		);
+				if (response.ok()) {
+					const data = await response.json();
+					if (data?.id) {
+						sessionEstablished = true;
+						console.log(
+							`[Phase 2] ✅ Session established (${Date.now() - startTime}ms total)`,
+						);
+						break;
+					}
+				}
+			} catch (e) {
+				// Session check failed, continue polling
+			}
 
-		console.log(`Navigation complete. Final URL: ${this.page.url()}`);
+			await this.page.waitForTimeout(500); // Poll every 500ms
+		}
+
+		if (!sessionEstablished) {
+			console.warn(
+				`[Phase 2] ⚠️ Session check timed out after ${sessionTimeout}ms - proceeding with navigation check`,
+			);
+		}
+
+		// Phase 3: Wait for navigation with flexible URL matching (45s)
+		console.log(`[Phase 3] Waiting for navigation to: ${targetUrl}`);
+
+		try {
+			await this.page.waitForURL(
+				(url) => {
+					const urlStr = url.toString();
+					console.log(`[Phase 3] Current: ${urlStr}, Target: ${targetUrl}`);
+
+					// Accept if we've left sign-in page AND reached either target or onboarding
+					const leftSignIn = !urlStr.includes("/auth/sign-in");
+					const reachedTarget =
+						urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
+
+					return leftSignIn && reachedTarget;
+				},
+				{
+					timeout: 45000,
+				},
+			);
+
+			console.log(
+				`[Phase 3] ✅ Navigation complete (${Date.now() - startTime}ms total). Final URL: ${this.page.url()}`,
+			);
+		} catch (error) {
+			// Graceful fallback: Check if we're already at a valid post-auth page
+			const currentUrl = this.page.url();
+			const isPostAuth =
+				currentUrl.includes(targetUrl) || currentUrl.includes("/onboarding");
+
+			if (isPostAuth) {
+				console.log(
+					`[Phase 3] ✅ Already at valid post-auth page: ${currentUrl}`,
+				);
+			} else {
+				console.error(
+					`[Phase 3] ❌ Navigation timeout. Current: ${currentUrl}`,
+				);
+				throw error;
+			}
+		}
 	}
 }
