@@ -425,7 +425,12 @@ function PlanDetails({
       }
     >
       <div className={'flex flex-col space-y-1'}>
-        <span className={'text-sm font-semibold'}>{selectedProduct.name}</span>
+        <span className={'text-sm font-semibold'}>
+          <Trans
+            i18nKey={selectedProduct.name}
+            defaults={selectedProduct.name}
+          />
+        </span>
       </div>
 
       <If condition={selectedPlan.lineItems.length > 0}>
