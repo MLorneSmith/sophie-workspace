@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"typecheck": "tsc --noEmit",
 		"report": "playwright show-report",
 		"test": "playwright test",
 		"test:ui": "playwright test --ui",

@@ -300,7 +300,9 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 			await loginPage.expectNoErrors();
 		} catch (error) {
 			// Should handle timeout gracefully
-			console.log("Timeout handled:", error.message);
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			console.log("Timeout handled:", errorMessage);
 
 			// Increase timeout and retry
 			page.setDefaultTimeout(30000);

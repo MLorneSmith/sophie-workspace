@@ -386,11 +386,13 @@ test.describe("Accessibility Tests - Comprehensive Reporting", () => {
 					console.log(`  - Minor: ${results.summary.minorViolations}`);
 				}
 			} catch (error) {
-				console.error(`❌ Error testing ${pageInfo.name}:`, error.message);
+				const errorMessage =
+					error instanceof Error ? error.message : String(error);
+				console.error(`❌ Error testing ${pageInfo.name}:`, errorMessage);
 				overallReport.details.push({
 					name: pageInfo.name,
 					path: pageInfo.path,
-					error: error.message,
+					error: errorMessage,
 					passed: false,
 				});
 				overallReport.failedPages++;

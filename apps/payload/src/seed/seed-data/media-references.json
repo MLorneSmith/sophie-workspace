@@ -15,7 +15,7 @@
   },
   {
     "_ref": "lesson-8-thumb",
-    "filePath": "1-before_we_begin.png",
+    "filePath": "before_we_begin.png",
     "alt": "Before we begin lesson thumbnail",
     "caption": "Thumbnail for lesson 8",
     "type": "image"
@@ -186,6 +186,62 @@
     "filePath": "placeholder.webp",
     "alt": "WebP placeholder image",
     "caption": "Test WebP format image",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/art-craft-business-presentation-creation/image.png",
+    "filePath": "blog-brainstorming.webp",
+    "alt": "Art & Craft of Business Presentation Creation",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/pitch-deck/image.png",
+    "filePath": "blog-indie-hacker.webp",
+    "alt": "Pitch Deck",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/powerpoint-presentations-defense/image.png",
+    "filePath": "blog-saas-starter-post.webp",
+    "alt": "PowerPoint Presentations Defense",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/presentation-review-bcg/image.png",
+    "filePath": "blog-brainstorming.webp",
+    "alt": "Presentation Review BCG",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/presentation-tips/image.png",
+    "filePath": "blog-indie-hacker.webp",
+    "alt": "Presentation Tips",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/presentation-tools/image.png",
+    "filePath": "blog-saas-starter-post.webp",
+    "alt": "Presentation Tools",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/seneca-partnership/image.png",
+    "filePath": "blog-brainstorming.webp",
+    "alt": "Seneca Partnership",
+    "caption": "Featured image for blog post",
+    "type": "image"
+  },
+  {
+    "_ref": "/cms/images/typology-business-charts/image.png",
+    "filePath": "blog-indie-hacker.webp",
+    "alt": "Typology of Business Charts",
+    "caption": "Featured image for blog post",
     "type": "image"
   }
 ]

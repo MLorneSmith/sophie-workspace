@@ -58,6 +58,7 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 
 	await invitations.auth.loginAsUser({
 		email: ownerEmail,
+		password: process.env.E2E_TEST_USER_PASSWORD || "",
 		next: "/home",
 	});
 

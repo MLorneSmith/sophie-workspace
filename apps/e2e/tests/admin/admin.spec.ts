@@ -187,6 +187,7 @@ test.describe("Admin", () => {
 
 			await auth.loginAsUser({
 				email: testUserEmail,
+				password: process.env.E2E_TEST_USER_PASSWORD || "",
 			});
 		});
 
@@ -238,7 +239,10 @@ test.describe("Admin", () => {
 		test("can sign in as a user", async ({ page }) => {
 			const auth = new AuthPageObject(page);
 
-			await auth.loginAsSuperAdmin({});
+			await auth.loginAsSuperAdmin({
+				email: process.env.E2E_ADMIN_EMAIL || "michael@slideheroes.com",
+				password: process.env.E2E_ADMIN_PASSWORD || "",
+			});
 			const filterText = await createUser(page);
 
 			await page.goto("/admin/accounts");
@@ -281,7 +285,10 @@ test.describe("Team Account Management", () => {
 
 		teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
 
-		await auth.loginAsUser({ email: testUserEmail });
+		await auth.loginAsUser({
+			email: testUserEmail,
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
+		});
 
 		const teamAccountPo = new TeamAccountsPageObject(page);
 		const teamSlug = teamName.toLowerCase().replace(/ /g, "-");
@@ -298,7 +305,10 @@ test.describe("Team Account Management", () => {
 		await auth.signOut();
 		await page.waitForURL("/");
 
-		await auth.loginAsSuperAdmin({});
+		await auth.loginAsSuperAdmin({
+			email: process.env.E2E_ADMIN_EMAIL || "michael@slideheroes.com",
+			password: process.env.E2E_ADMIN_PASSWORD || "",
+		});
 
 		await page.goto("/admin/accounts");
 

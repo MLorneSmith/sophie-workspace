@@ -15,6 +15,7 @@ test.describe("Team Invitation with MFA Flow", () => {
 
 		await auth.loginAsUser({
 			email: "test@makerkit.dev",
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
 		});
 
 		const teamName = `test-team-${Math.random().toString(36).substring(2, 15)}`;

@@ -131,7 +131,8 @@ export class OtpPo {
 					url: res.url,
 				};
 			} catch (err) {
-				return { error: err.message };
+				const errorMessage = err instanceof Error ? err.message : String(err);
+				return { error: errorMessage };
 			}
 		});
 

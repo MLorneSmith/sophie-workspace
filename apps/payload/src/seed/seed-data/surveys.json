@@ -9,9 +9,9 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.916Z",
 		"updatedAt": "2025-06-30T17:27:17.916Z",
-		"course": "{ref:courses:course-8}",
+		"course": "{ref:courses:ddm}",
 		"lesson": "{ref:course-lessons:before-you-go}",
-		"_ref": "surveys:feedback"
+		"_ref": "feedback"
 	},
 	{
 		"id": "self-assessment",
@@ -23,9 +23,9 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.917Z",
 		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:course-1}",
+		"course": "{ref:courses:ddm}",
 		"lesson": "{ref:course-lessons:before-we-begin}",
-		"_ref": "surveys:self-assessment"
+		"_ref": "self-assessment"
 	},
 	{
 		"id": "three-quick-questions",
@@ -37,8 +37,8 @@
 		"published": true,
 		"createdAt": "2025-06-30T17:27:17.917Z",
 		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:course-1}",
-		"lesson": "{ref:course-lessons:lesson-0}",
-		"_ref": "surveys:three-quick-questions"
+		"course": "{ref:courses:ddm}",
+		"lesson": "{ref:course-lessons:before-we-begin}",
+		"_ref": "three-quick-questions"
 	}
 ]

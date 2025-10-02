@@ -160,7 +160,7 @@ export class HybridAccessibilityTester {
 			const options = {
 				logLevel: "silent" as const,
 				output: "json" as const,
-				onlyCategories: ["accessibility"] as const,
+				onlyCategories: ["accessibility"],
 				port: chrome.port,
 				disableStorageReset: true,
 			};
@@ -194,7 +194,7 @@ export class HybridAccessibilityTester {
 								impact: this.mapLighthouseImpact(audit.score),
 								description: audit.description || "",
 								help: audit.title || "",
-								helpUrl: audit.helpText || undefined,
+								helpUrl: undefined,
 								nodes: items.map((item: unknown) => {
 									const itemObj = item as {
 										snippet?: string;
@@ -216,9 +216,11 @@ export class HybridAccessibilityTester {
 				violations,
 			};
 		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
 			console.warn(
 				"Lighthouse audit failed, falling back to basic checks:",
-				error.message,
+				errorMessage,
 			);
 			// Return a neutral result if Lighthouse fails
 			return { score: 1, violations: [] };
@@ -256,7 +258,7 @@ export class HybridAccessibilityTester {
 				backgroundColor: string;
 			}> = [];
 
-			for (const element of elements) {
+			for (const element of Array.from(elements)) {
 				const style = window.getComputedStyle(element);
 				const text = element.textContent?.trim();
 
@@ -368,7 +370,7 @@ export class HybridAccessibilityTester {
 			const buttons = document.querySelectorAll("button");
 			const empty: Array<{ html: string; selector: string }> = [];
 
-			for (const button of buttons) {
+			for (const button of Array.from(buttons)) {
 				const text = button.textContent?.trim();
 				const aria = button.getAttribute("aria-label");
 				if (!text && !aria) {
@@ -403,7 +405,7 @@ export class HybridAccessibilityTester {
 			);
 			const missing: Array<{ html: string; selector: string }> = [];
 
-			for (const input of inputs) {
+			for (const input of Array.from(inputs)) {
 				const id = input.getAttribute("id");
 				const label = id ? document.querySelector(`label[for="${id}"]`) : null;
 				const ariaLabel = input.getAttribute("aria-label");
@@ -440,7 +442,7 @@ export class HybridAccessibilityTester {
 			const issues: Array<{ html: string; selector: string }> = [];
 			let lastLevel = 0;
 
-			for (const heading of headings) {
+			for (const heading of Array.from(headings)) {
 				const level = Number.parseInt(heading.tagName.charAt(1));
 				if (level - lastLevel > 1) {
 					issues.push({

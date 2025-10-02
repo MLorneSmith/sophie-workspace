@@ -77,7 +77,11 @@ test.describe("Account Deletion", () => {
 			name: "Test User",
 		});
 
-		await auth.loginAsUser({ email, next: "/home/settings" });
+		await auth.loginAsUser({
+			email,
+			password: process.env.E2E_TEST_USER_PASSWORD || "",
+			next: "/home/settings",
+		});
 
 		await account.deleteAccount(email);
 
