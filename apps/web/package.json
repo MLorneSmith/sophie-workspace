@@ -85,7 +85,7 @@
     "cssnano": "^7.1.1",
     "pino-pretty": "13.0.0",
     "prettier": "^3.6.2",
-    "supabase": "2.47.2",
+    "supabase": "2.48.3",
     "tailwindcss": "4.1.14",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3"

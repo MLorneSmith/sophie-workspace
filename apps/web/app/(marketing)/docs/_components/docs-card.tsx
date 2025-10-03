@@ -16,7 +16,7 @@ export function DocsCard({
         className={`bg-muted/50 hover:bg-muted/70 flex grow flex-col gap-y-2 rounded p-4`}
       >
         <h3 className="mt-0 text-lg font-medium hover:underline dark:text-white">
-          <Link href={link.url}>{title}</Link>
+          {title}
         </h3>
 
         {subtitle && (
