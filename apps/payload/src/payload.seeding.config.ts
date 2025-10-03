@@ -3,7 +3,17 @@ import { fileURLToPath } from "node:url";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { config as loadEnv } from "dotenv";
 import { buildConfig } from "payload";
+import { CourseLessons } from "./collections/CourseLessons.js";
+import { CourseQuizzes } from "./collections/CourseQuizzes.js";
+import { Courses } from "./collections/Courses.js";
+import { Documentation } from "./collections/Documentation.js";
+import { Downloads } from "./collections/Downloads.js";
 import { Media } from "./collections/Media.js";
+import { Posts } from "./collections/Posts.js";
+import { Private } from "./collections/Private.js";
+import { QuizQuestions } from "./collections/QuizQuestions.js";
+import { SurveyQuestions } from "./collections/SurveyQuestions.js";
+import { Surveys } from "./collections/Surveys.js";
 import { Users } from "./collections/Users.js";
 
 const filename = fileURLToPath(import.meta.url);
@@ -36,17 +46,17 @@ export default buildConfig({
 	serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || "",
 	collections: [
 		Users,
-		Media, // Uncommented Media
-		// Courses, // Uncommented Courses
-		// CourseLessons, // Uncomment simplified CourseLessons
-		// CourseQuizzes, // Uncommented CourseQuizzes
-		// QuizQuestions, // Uncomment QuizQuestions
-		// Surveys, // Uncommented Surveys
-		// SurveyQuestions, // Comment out SurveyQuestions
-		// Documentation, // Comment out Documentation
-		// Posts, // Comment out Posts
-		// Private, // Comment out Private
-		// Downloads, // Comment out Downloads
+		Media,
+		Courses,
+		CourseLessons,
+		CourseQuizzes,
+		QuizQuestions,
+		Surveys,
+		SurveyQuestions,
+		Documentation,
+		Posts,
+		Private,
+		Downloads,
 	],
 	// Only include the database adapter, exclude other plugins/editor for seeding config
 	db: (() => {
@@ -78,7 +88,7 @@ export default buildConfig({
 			pool: { ...poolConfig, connectionString: databaseURI },
 			schemaName: "payload",
 			idType: "uuid", // Explicitly set ID type to UUID
-			push: true, // Enable schema push for seeding - creates schema if missing
+			push: false, // Disable schema push - tables already exist from migrations
 		});
 	})(),
 	// Exclude editor, plugins, globals, bin array as they are not needed for seeding

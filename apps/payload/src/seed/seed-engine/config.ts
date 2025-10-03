@@ -41,6 +41,7 @@ export const SEED_ORDER: readonly string[] = [
   // Level 1: Depend on Level 0 (media, downloads, users)
   'posts', // Blog posts (may reference media)
   'courses', // Course definitions (may reference media/downloads)
+  'private', // Private posts (may reference media/downloads)
 
   // Level 2: Depend on Level 0-1 (courses, media, downloads)
   'course-lessons', // Course lessons (reference courses, media, downloads)
@@ -76,13 +77,13 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
   },
   media: {
     name: 'media',
-    dataFile: 'media-references.json',
+    dataFile: 'media.json',
     processor: 'media',
     dependencies: [],
   },
   downloads: {
     name: 'downloads',
-    dataFile: 'download-references.json',
+    dataFile: 'downloads.json',
     processor: 'downloads',
     dependencies: [],
   },
@@ -133,6 +134,12 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
     dataFile: 'survey-questions.json',
     processor: 'content',
     dependencies: ['surveys'],
+  },
+  private: {
+    name: 'private',
+    dataFile: 'private.json',
+    processor: 'content',
+    dependencies: ['media', 'downloads'],
   },
 };
 

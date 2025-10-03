@@ -189,13 +189,14 @@ function validateStructure(
       return;
     }
 
-    // Check for identifier field (_ref or slug)
+    // Check for identifier field (_ref, slug, or id)
     const hasRef = '_ref' in record;
     const hasSlug = 'slug' in record;
+    const hasId = 'id' in record;
 
-    if (!hasRef && !hasSlug) {
+    if (!hasRef && !hasSlug && !hasId) {
       issues.push(
-        `Record at index ${index} is missing identifier field (_ref or slug)`,
+        `Record at index ${index} is missing identifier field (_ref, slug, or id)`,
       );
     }
 
@@ -361,8 +362,10 @@ export async function loadAllCollections(): Promise<LoadResult[]> {
       results.push(result);
     } catch (error) {
       if (error instanceof Error) {
-        errors.push(error);
+        console.error(`[ERROR] Failed to load collection "${collection}":`, error.message);
+        errors.push(new Error(`Collection "${collection}": ${error.message}`));
       } else {
+        console.error(`[ERROR] Unknown error loading collection "${collection}"`);
         errors.push(new Error(`Unknown error loading collection "${collection}"`));
       }
     }

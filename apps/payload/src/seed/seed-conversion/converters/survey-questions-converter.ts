@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
-import type { SurveyQuestion } from "../../payload-types";
+import type { SurveyQuestion } from "../../../../payload-types";
 import type { ReferenceManager } from "../utils/reference-manager";
 import { createServiceLogger } from "@kit/shared/logger";
 import { v4 as uuidv4 } from "uuid";
@@ -60,19 +60,21 @@ export async function convertSurveyQuestions(
 				const questionId = uuidv4();
 				questionIds.push(questionId);
 
-				const surveyQuestion: Partial<SurveyQuestion> = {
+				// Generate slug from survey slug and index
+				const questionSlug = `${surveySlug}-q${index + 1}`;
+
+				const surveyQuestion: Partial<SurveyQuestion> & { _ref?: string; scaleMin?: number; scaleMax?: number } = {
 					id: questionId,
+					_ref: `survey-questions:${questionId}`,
+					questionSlug: questionSlug,
 					text: question.question,
-					type: mapQuestionType(question),
+					type: mapQuestionType(question) as SurveyQuestion['type'],
 					options:
 						question.answers && question.answers.length > 0
-							? question.answers.map((a) => a.answer)
+							? question.answers.map((a) => ({ option: a.answer }))
 							: undefined,
 					required: true,
-					order: index + 1,
 					category: question.questioncategory || "general",
-					scoring: question.questionspin === "negative" ? "reverse" : "normal",
-					tags: [],
 					_status: "published",
 				};
 
@@ -83,19 +85,19 @@ export async function convertSurveyQuestions(
 				) {
 					if (question.question.toLowerCase().includes("recommend")) {
 						// NPS-style question (0-10)
-						surveyQuestion.options = Array.from({ length: 11 }, (_, i) =>
-							i.toString(),
-						);
+						surveyQuestion.options = Array.from({ length: 11 }, (_, i) => ({
+							option: i.toString(),
+						}));
 						surveyQuestion.scaleMin = 0;
 						surveyQuestion.scaleMax = 10;
 					} else {
 						// Default 5-point Likert scale
 						surveyQuestion.options = [
-							"Strongly Disagree",
-							"Disagree",
-							"Neutral",
-							"Agree",
-							"Strongly Agree",
+							{ option: "Strongly Disagree" },
+							{ option: "Disagree" },
+							{ option: "Neutral" },
+							{ option: "Agree" },
+							{ option: "Strongly Agree" },
 						];
 						surveyQuestion.scaleMin = 1;
 						surveyQuestion.scaleMax = 5;

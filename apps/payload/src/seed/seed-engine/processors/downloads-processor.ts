@@ -266,7 +266,7 @@ export class DownloadsProcessor extends BaseProcessor {
       // 5. Upload via Payload Local API
       // Payload's S3 storage adapter intercepts this and uploads to R2
       const created = await this.payload.create({
-        collection: this.collectionName,
+        collection: this.collectionName as any,
         data: cleanedRecord,
         file: file, // This triggers automatic R2 upload
       });

@@ -93,8 +93,10 @@ export class ContentProcessor extends BaseProcessor {
     try {
       // Create record via Payload Local API
       const created = await this.payload.create({
-        collection: this.collectionName,
+        collection: this.collectionName as any,
         data: cleanedRecord,
+        overrideAccess: true, // Skip access control for seeding
+        disableVerificationEmail: true, // Skip email verification during seeding
       });
 
       // Return UUID of created record

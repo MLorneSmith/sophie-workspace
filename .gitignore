@@ -121,3 +121,6 @@ node-compile-cache/
 # Claude backup files
 .claude-backup-*.tar.gz
 *.backup
+
+# Payload CMS seed data downloads
+apps/payload/downloads/

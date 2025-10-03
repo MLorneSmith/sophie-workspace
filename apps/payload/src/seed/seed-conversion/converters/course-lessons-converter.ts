@@ -19,7 +19,9 @@ interface LessonMeta {
 }
 
 interface CourseLessonJson {
+	_ref: string;
 	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	content: {
@@ -44,7 +46,7 @@ interface CourseLessonJson {
 	quiz?: string; // Reference to quiz
 	surveys?: string[]; // References to surveys
 	downloads?: string[]; // References to downloads
-	order: number;
+	lesson_number: number;
 	duration?: number;
 	course: string; // Reference to course
 	published: boolean;
@@ -101,12 +103,15 @@ export async function convertCourseLessons(
 			const lessonId = file.replace(".mdoc", "");
 
 			// Build lesson object
+			const lessonNumber = lessonMeta.order || getOrderFromFilename(file);
 			const lesson: CourseLessonJson = {
+				_ref: lessonId,
 				id: lessonId,
+				slug: lessonId, // Use lessonId as slug (URL-friendly identifier)
 				title: lessonMeta.title,
 				description: lessonMeta.description,
 				content: lexicalContent,
-				order: lessonMeta.order || getOrderFromFilename(file),
+				lesson_number: lessonNumber,
 				duration: lessonMeta.duration,
 				course: `{ref:courses:${courseId}}`,
 				published: true,
@@ -153,8 +158,8 @@ export async function convertCourseLessons(
 		}
 	}
 
-	// Sort lessons by order
-	lessons.sort((a, b) => a.order - b.order);
+	// Sort lessons by lesson_number
+	lessons.sort((a, b) => a.lesson_number - b.lesson_number);
 
 	// Successfully converted lessons
 	if (warnings.length > 0) {
@@ -174,49 +179,8 @@ function determineCourseFromLesson(filename: string, frontmatter: Record<string,
 		return typeof courseValue === 'string' ? courseValue : String(courseValue);
 	}
 
-	// Try to determine from lesson numbering pattern
-	// Lessons are numbered like: 101, 102, 201, 202, etc.
-	// Where first digit = course, remaining digits = lesson order
-	const orderMatch = filename.match(/(\d+)/);
-	if (orderMatch) {
-		const orderNum = parseInt(orderMatch[1]);
-		if (orderNum >= 100) {
-			const courseNum = Math.floor(orderNum / 100);
-			return `course-${courseNum}`;
-		}
-	}
-
-	// Fallback mapping based on content or filename patterns
-	const contentMappings: Record<string, string> = {
-		"lesson-0": "course-1",
-		"before-we-begin": "course-1",
-		congratulations: "course-1",
-		"before-you-go": "course-1",
-		"our-process": "course-1",
-		"what-is-structure": "course-2",
-		"the-who": "course-2",
-		"the-why-introductions": "course-2",
-		"the-why-next-steps": "course-2",
-		"idea-generation": "course-3",
-		"using-stories": "course-3",
-		"storyboards-film": "course-3",
-		"storyboards-presentations": "course-3",
-		"fact-based-persuasion": "course-4",
-		"preparation-practice": "course-4",
-		performance: "course-4",
-		"fundamental-design-overview": "course-5",
-		"fundamental-design-detail": "course-5",
-		"visual-perception": "course-5",
-		"gestalt-principles": "course-5",
-		"slide-composition": "course-6",
-		"tables-vs-graphs": "course-7",
-		"basic-graphs": "course-7",
-		"specialist-graphs": "course-7",
-		"tools-and-resources": "course-8",
-	};
-
-	const baseName = filename.replace(".mdoc", "");
-	return contentMappings[baseName] || "course-1";
+	// All lessons belong to the single "Decks for Decision Makers" course
+	return "decks-for-decision-makers";
 }
 
 function getOrderFromFilename(filename: string): number {
@@ -340,7 +304,8 @@ function extractSurveyReferences(content: string, frontmatter: Record<string, un
 
 	// Check frontmatter for survey references
 	if (frontmatter.survey || frontmatter.surveyId) {
-		surveyRefs.push(frontmatter.survey || frontmatter.surveyId);
+		const surveyValue = frontmatter.survey || frontmatter.surveyId;
+		surveyRefs.push(String(surveyValue));
 	}
 
 	if (frontmatter.surveys) {

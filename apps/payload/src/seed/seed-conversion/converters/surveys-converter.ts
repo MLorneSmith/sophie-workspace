@@ -220,9 +220,9 @@ function determineCourseFromSurvey(
 
 	// Map survey names to courses based on content
 	const surveyToCourseMapping: Record<string, string> = {
-		"self-assessment": "course-1", // General assessment
-		feedback: "course-8", // End-of-course feedback
-		"three-quick-questions": "course-1", // Quick intro survey
+		"self-assessment": "decks-for-decision-makers", // General assessment
+		feedback: "decks-for-decision-makers", // End-of-course feedback
+		"three-quick-questions": "decks-for-decision-makers", // Quick intro survey
 	};
 
 	return surveyToCourseMapping[surveyId];

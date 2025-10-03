@@ -23,6 +23,7 @@
 			"!**/apps/payload/payload-types.ts",
 			"!**/packages/cms/types/src/payload-types.ts",
 			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
+			"!**/apps/payload/src/migrations/**",
 			"!**/apps/payload/src/seed/**",
 			"!**/z.docs/**",
 			"!**/z.old/**",

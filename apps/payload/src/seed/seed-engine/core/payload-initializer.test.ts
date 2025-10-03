@@ -29,6 +29,7 @@ describe('payload-initializer', () => {
     // Set up valid test environment
     process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
   });
 
@@ -90,6 +91,7 @@ describe('payload-initializer', () => {
 
   describe('initializePayload - production protection', () => {
     it('should throw error when NODE_ENV is production', async () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'production';
 
       await expect(initializePayload()).rejects.toThrow(
@@ -98,6 +100,7 @@ describe('payload-initializer', () => {
     });
 
     it('should allow initialization in development', async () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'development';
 
       // This will fail because we don't have actual Payload setup in tests,
@@ -108,6 +111,7 @@ describe('payload-initializer', () => {
     });
 
     it('should allow initialization in test environment', async () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'test';
 
       // This will fail at Payload init, but should pass production check

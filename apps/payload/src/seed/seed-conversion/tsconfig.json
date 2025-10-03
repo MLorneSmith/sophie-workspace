@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"module": "commonjs",
+		"moduleResolution": "node",
 		"lib": ["ES2022"],
 		"outDir": "./dist",
 		"rootDir": "./",
@@ -13,8 +14,8 @@
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": false,
 		"paths": {
-			"@/*": ["../src/*"],
-			"@payload-config": ["../payload.config.ts"]
+			"@/*": ["../../*"],
+			"@payload-config": ["../../payload.config.ts"]
 		}
 	},
 	"include": ["./**/*.ts", "../payload-types.ts"],

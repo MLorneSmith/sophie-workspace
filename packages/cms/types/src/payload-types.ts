@@ -74,10 +74,10 @@ export interface Config {
     documentation: Documentation;
     private: Private;
     courses: Course;
-    course_lessons: CourseLesson;
-    course_quizzes: CourseQuizz;
-    quiz_questions: QuizQuestion;
-    survey_questions: SurveyQuestion;
+    'course-lessons': CourseLesson;
+    'course-quizzes': CourseQuizz;
+    'quiz-questions': QuizQuestion;
+    'survey-questions': SurveyQuestion;
     surveys: Survey;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,10 +92,10 @@ export interface Config {
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
     private: PrivateSelect<false> | PrivateSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
-    course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
-    course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
-    quiz_questions: QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
-    survey_questions: SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
+    'course-lessons': CourseLessonsSelect<false> | CourseLessonsSelect<true>;
+    'course-quizzes': CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
+    'quiz-questions': QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
+    'survey-questions': SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
     surveys: SurveysSelect<false> | SurveysSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -506,7 +506,7 @@ export interface Course {
  * Lessons for courses in the learning management system
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons".
+ * via the `definition` "course-lessons".
  */
 export interface CourseLesson {
   id: string;
@@ -533,6 +533,10 @@ export interface CourseLesson {
    */
   slug: string;
   description?: string | null;
+  /**
+   * Thumbnail image for this lesson
+   */
+  thumbnail?: (string | null) | Media;
   content?: {
     root: {
       type: string;
@@ -575,7 +579,7 @@ export interface CourseLesson {
  * Quizzes for courses in the learning management system
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes".
+ * via the `definition` "course-quizzes".
  */
 export interface CourseQuizz {
   id: string;
@@ -602,7 +606,7 @@ export interface CourseQuizz {
  * Questions for course quizzes
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions".
+ * via the `definition` "quiz-questions".
  */
 export interface QuizQuestion {
   id: string;
@@ -679,7 +683,7 @@ export interface Survey {
  * Questions for surveys
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "survey_questions".
+ * via the `definition` "survey-questions".
  */
 export interface SurveyQuestion {
   id: string;
@@ -764,19 +768,19 @@ export interface PayloadLockedDocument {
         value: string | Course;
       } | null)
     | ({
-        relationTo: 'course_lessons';
+        relationTo: 'course-lessons';
         value: string | CourseLesson;
       } | null)
     | ({
-        relationTo: 'course_quizzes';
+        relationTo: 'course-quizzes';
         value: string | CourseQuizz;
       } | null)
     | ({
-        relationTo: 'quiz_questions';
+        relationTo: 'quiz-questions';
         value: string | QuizQuestion;
       } | null)
     | ({
-        relationTo: 'survey_questions';
+        relationTo: 'survey-questions';
         value: string | SurveyQuestion;
       } | null)
     | ({
@@ -1019,7 +1023,7 @@ export interface CoursesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons_select".
+ * via the `definition` "course-lessons_select".
  */
 export interface CourseLessonsSelect<T extends boolean = true> {
   title?: T;
@@ -1030,6 +1034,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   todo_complete_quiz?: T;
   slug?: T;
   description?: T;
+  thumbnail?: T;
   content?: T;
   lesson_number?: T;
   estimated_duration?: T;
@@ -1044,7 +1049,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes_select".
+ * via the `definition` "course-quizzes_select".
  */
 export interface CourseQuizzesSelect<T extends boolean = true> {
   title?: T;
@@ -1059,7 +1064,7 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions_select".
+ * via the `definition` "quiz-questions_select".
  */
 export interface QuizQuestionsSelect<T extends boolean = true> {
   question?: T;
@@ -1079,7 +1084,7 @@ export interface QuizQuestionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "survey_questions_select".
+ * via the `definition` "survey-questions_select".
  */
 export interface SurveyQuestionsSelect<T extends boolean = true> {
   questionSlug?: T;

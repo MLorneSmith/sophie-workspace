@@ -1,44 +1,41 @@
 [
-	{
-		"id": "feedback",
-		"title": "Course Feedback",
-		"description": "Please share your thoughts on the course",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.916Z",
-		"updatedAt": "2025-06-30T17:27:17.916Z",
-		"course": "{ref:courses:ddm}",
-		"lesson": "{ref:course-lessons:before-you-go}",
-		"_ref": "feedback"
-	},
-	{
-		"id": "self-assessment",
-		"title": "High-Stakes Presentations Self-Assessment",
-		"description": "",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.917Z",
-		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:ddm}",
-		"lesson": "{ref:course-lessons:before-we-begin}",
-		"_ref": "self-assessment"
-	},
-	{
-		"id": "three-quick-questions",
-		"title": "Three Quick Questions",
-		"description": "A quick survey to help understand your goals",
-		"anonymous": true,
-		"multipleSubmissions": false,
-		"questions": [],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.917Z",
-		"updatedAt": "2025-06-30T17:27:17.917Z",
-		"course": "{ref:courses:ddm}",
-		"lesson": "{ref:course-lessons:before-we-begin}",
-		"_ref": "three-quick-questions"
-	}
+  {
+    "id": "feedback",
+    "title": "Course Feedback",
+    "description": "Please share your thoughts on the course",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [],
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.709Z",
+    "updatedAt": "2025-10-03T20:57:57.709Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:before-you-go}"
+  },
+  {
+    "id": "self-assessment",
+    "title": "High-Stakes Presentations Self-Assessment",
+    "description": "",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [],
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.710Z",
+    "updatedAt": "2025-10-03T20:57:57.710Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:before-we-begin}"
+  },
+  {
+    "id": "three-quick-questions",
+    "title": "Three Quick Questions",
+    "description": "A quick survey to help understand your goals",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [],
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.710Z",
+    "updatedAt": "2025-10-03T20:57:57.710Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:lesson-0}"
+  }
 ]

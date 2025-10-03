@@ -4,7 +4,7 @@ import type { CollectionConfig } from "payload";
 // import { BunnyVideo, YouTubeVideo } from '../blocks'
 
 export const CourseLessons: CollectionConfig = {
-	slug: "course_lessons",
+	slug: "course-lessons",
 	labels: {
 		singular: "Course Lesson",
 		plural: "Course Lessons",
@@ -176,7 +176,7 @@ export const CourseLessons: CollectionConfig = {
 		{
 			name: "quiz_id",
 			type: "relationship",
-			relationTo: "course_quizzes",
+			relationTo: "course-quizzes",
 			hasMany: false,
 			admin: {
 				description: "The quiz associated with this lesson (if any)",

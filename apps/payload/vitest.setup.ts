@@ -21,6 +21,8 @@ if (!process.env.PAYLOAD_SECRET) {
 if (!process.env.PAYLOAD_PUBLIC_SERVER_URL) {
 	process.env.PAYLOAD_PUBLIC_SERVER_URL = "http://localhost:3020";
 }
+// @ts-ignore - NODE_ENV is read-only in strict mode but writable at runtime
 if (!process.env.NODE_ENV) {
-	process.env.NODE_ENV = "test";
+	// biome-ignore lint/suspicious/noExplicitAny: Required for test environment setup
+	(process.env as any).NODE_ENV = "test";
 }

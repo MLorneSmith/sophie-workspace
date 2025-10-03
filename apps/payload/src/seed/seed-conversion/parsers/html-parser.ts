@@ -1,3 +1,6 @@
+// @ts-expect-error - jsdom types not available
+import type { Element } from "jsdom";
+// @ts-expect-error - jsdom types not available
 import { JSDOM } from "jsdom";
 import type { ParsedContent } from "../types";
 
@@ -20,7 +23,7 @@ export function parseHtmlFile(
 
 	// Find all images
 	const images = document.querySelectorAll("img");
-	images.forEach((img) => {
+	images.forEach((img: Element) => {
 		const src = img.getAttribute("src");
 		if (src && (src.includes("/cms/images/") || src.includes("/images/"))) {
 			mediaReferences.push(src);
@@ -31,11 +34,11 @@ export function parseHtmlFile(
 	const elementsWithStyle = document.querySelectorAll(
 		'[style*="background-image"]',
 	);
-	elementsWithStyle.forEach((element) => {
+	elementsWithStyle.forEach((element: Element) => {
 		const style = element.getAttribute("style") || "";
 		const matches = style.match(/url\(['"]?([^'"]+)['"]?\)/g);
 		if (matches) {
-			matches.forEach((match) => {
+			matches.forEach((match: string) => {
 				const url = match.match(/url\(['"]?([^'"]+)['"]?\)/)?.[1];
 				if (url && (url.includes("/cms/images/") || url.includes("/images/"))) {
 					mediaReferences.push(url);
@@ -47,7 +50,7 @@ export function parseHtmlFile(
 	// Extract download references
 	const downloadReferences: string[] = [];
 	const links = document.querySelectorAll("a[href]");
-	links.forEach((link) => {
+	links.forEach((link: Element) => {
 		const href = link.getAttribute("href");
 		if (
 			href &&

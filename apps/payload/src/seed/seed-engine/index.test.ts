@@ -24,6 +24,7 @@ describe('CLI Interface', () => {
     // Set up valid test environment
     process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
 
     // Reset argv
@@ -174,6 +175,7 @@ describe('CLI Interface', () => {
     });
 
     it('should fail validation in production environment', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'production';
 
       const result = validateEnvironmentSafety(logger);
@@ -185,6 +187,7 @@ describe('CLI Interface', () => {
     });
 
     it('should pass validation in development environment', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'development';
 
       const result = validateEnvironmentSafety(logger);
@@ -193,6 +196,7 @@ describe('CLI Interface', () => {
     });
 
     it('should pass validation in test environment', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'test';
 
       const result = validateEnvironmentSafety(logger);
@@ -327,6 +331,7 @@ describe('CLI Interface', () => {
     });
 
     it('should handle undefined NODE_ENV', () => {
+      // @ts-expect-error - delete operator on read-only property for testing
       delete process.env.NODE_ENV;
 
       const logger = new Logger({ verbose: false, level: LogLevel.ERROR });
@@ -375,6 +380,7 @@ describe('CLI Interface', () => {
 
   describe('Validation Order', () => {
     it('should check production environment before other validations', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'production';
       delete process.env.DATABASE_URI; // Also missing variable
 
@@ -391,6 +397,7 @@ describe('CLI Interface', () => {
     });
 
     it('should check environment variables after production check', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'development';
       delete process.env.DATABASE_URI;
 

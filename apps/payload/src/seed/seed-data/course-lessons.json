@@ -1,8 +1,9 @@
 [
   {
     "_ref": "lesson-0",
-    "title": "Welcome to DDM",
+    "id": "lesson-0",
     "slug": "lesson-0",
+    "title": "Welcome to DDM",
     "description": "A taster. A preview. An overview of SlideHeroes' flagship presentations course - Decks for Decision Makers",
     "content": {
       "root": {
@@ -10,9 +11,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -23,42 +26,17 @@
         ]
       }
     },
-    "bunny_video_id": "2620df68-c2a8-4255-986e-24c1d4c1dbf2",
-    "bunny_library_id": "264486",
     "lesson_number": 6,
-    "course_id": "{ref:courses:ddm}",
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-101-welcome}"],
-    "publishedAt": "2025-06-30T17:27:17.923Z",
-    "status": "published",
-    "thumbnail": "{ref:media:lesson-0-thumb}"
-  },
-  {
-    "_ref": "self-assessment",
-    "title": "Self Assessment",
-    "slug": "self-assessment",
-    "description": "Assess your current presentation skills and knowledge",
-    "content": {
-      "root": {
-        "type": "root",
-        "format": "",
-        "indent": 0,
-        "version": 1,
-        "children": []
-      }
-    },
-    "lesson_number": 7,
-    "course_id": "{ref:courses:ddm}",
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "publishedAt": "2025-06-30T17:27:17.922Z",
-    "status": "published",
-    "thumbnail": "{ref:media:lesson-7-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.717Z",
+    "updatedAt": "2025-10-03T20:57:57.717Z"
   },
   {
     "_ref": "before-we-begin",
-    "title": "Before we begin...",
+    "id": "before-we-begin",
     "slug": "before-we-begin",
+    "title": "Before we begin...",
     "description": "A three question survey to help me understand your goals so I can better help you achieve them",
     "content": {
       "root": {
@@ -66,9 +44,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -80,18 +60,16 @@
       }
     },
     "lesson_number": 8,
-    "course_id": "{ref:courses:ddm}",
-    "survey_id": "{ref:surveys:three-quick-questions}",
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "publishedAt": "2025-06-30T17:27:17.921Z",
-    "status": "published",
-    "thumbnail": "{ref:media:lesson-8-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.715Z",
+    "updatedAt": "2025-10-03T20:57:57.715Z"
   },
   {
     "_ref": "tools-and-resources",
-    "title": "Presentation Tools & Course Resources",
+    "id": "tools-and-resources",
     "slug": "tools-and-resources",
+    "title": "Presentation Tools & Course Resources",
     "description": "Links to some recommended presentation tools + all course materials and downloads",
     "content": {
       "root": {
@@ -99,9 +77,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -111,6 +91,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -120,6 +101,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -129,6 +111,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -138,6 +121,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -147,6 +131,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -156,6 +141,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -165,6 +151,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -174,6 +161,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -183,6 +171,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -194,14 +183,15 @@
       }
     },
     "lesson_number": 9,
-    "course_id": "{ref:courses:ddm}",
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:tool-audience-map}", "{ref:downloads:reference-golden-rules}"],
-    "publishedAt": "2025-06-30T17:27:17.926Z",
-    "status": "published",
-    "thumbnail": "{ref:media:lesson-9-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "our-process",
+    "id": "our-process",
+    "slug": "our-process",
     "title": "Our Process",
     "description": "Our blueprint for creating high quality presentations",
     "content": {
@@ -210,9 +200,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -222,6 +214,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -231,6 +224,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -240,6 +234,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -249,6 +244,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -258,6 +254,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -267,6 +264,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -276,6 +274,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -285,6 +284,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -295,6 +295,7 @@
           {
             "type": "heading",
             "tag": "h3",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -304,6 +305,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -313,6 +315,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -322,6 +325,7 @@
           },
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -332,17 +336,16 @@
         ]
       }
     },
-    "_ref": "our-process",
-    "slug": "our-process",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 10,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-201-process}", "{ref:downloads:lesson-202-who}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.923Z",
-    "thumbnail": "{ref:media:lesson-10-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.717Z",
+    "updatedAt": "2025-10-03T20:57:57.717Z"
   },
   {
+    "_ref": "the-who",
+    "id": "the-who",
+    "slug": "the-who",
     "title": "The Who",
     "description": "Where do we start? We start with defining who our actual audience is",
     "content": {
@@ -351,9 +354,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -364,17 +369,16 @@
         ]
       }
     },
-    "_ref": "the-who",
-    "slug": "the-who",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 11,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-202-who}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-11-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "the-why-introductions",
+    "id": "the-why-introductions",
+    "slug": "the-why-introductions",
     "title": "The Why: Building the Introduction",
     "description": "How to tee-up your presentation",
     "content": {
@@ -383,9 +387,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -396,17 +402,16 @@
         ]
       }
     },
-    "_ref": "the-why-introductions",
-    "slug": "the-why-introductions",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 12,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-203-why-intro}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-12-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "the-why-next-steps",
+    "id": "the-why-next-steps",
+    "slug": "the-why-next-steps",
     "title": "The Why: Next Steps",
     "description": "What do we want to accomplish from our presentation? What is our ultimate objective?",
     "content": {
@@ -415,9 +420,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -428,17 +435,16 @@
         ]
       }
     },
-    "_ref": "the-why-next-steps",
-    "slug": "the-why-next-steps",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 13,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-204-why-next}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-13-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "idea-generation",
+    "id": "idea-generation",
+    "slug": "idea-generation",
     "title": "Idea Generation",
     "description": "How do we generate ideas on how to answer the audience's question?",
     "content": {
@@ -447,9 +453,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -460,17 +468,16 @@
         ]
       }
     },
-    "_ref": "idea-generation",
-    "slug": "idea-generation",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 14,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-301-idea-generation}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.923Z",
-    "thumbnail": "{ref:media:lesson-14-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.717Z",
+    "updatedAt": "2025-10-03T20:57:57.717Z"
   },
   {
+    "_ref": "what-is-structure",
+    "id": "what-is-structure",
+    "slug": "what-is-structure",
     "title": "What is Structure?",
     "description": "Techniques to develop ensure clarity through structure",
     "content": {
@@ -479,9 +486,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -492,17 +501,16 @@
         ]
       }
     },
-    "_ref": "what-is-structure",
-    "slug": "what-is-structure",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 15,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-302-structure}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.926Z",
-    "thumbnail": "{ref:media:lesson-15-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.720Z",
+    "updatedAt": "2025-10-03T20:57:57.720Z"
   },
   {
+    "_ref": "using-stories",
+    "id": "using-stories",
+    "slug": "using-stories",
     "title": "Using Stories",
     "description": "Using stories to powerfully convey your ideas",
     "content": {
@@ -511,9 +519,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -524,17 +534,16 @@
         ]
       }
     },
-    "_ref": "using-stories",
-    "slug": "using-stories",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 16,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-401-stories}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.926Z",
-    "thumbnail": "{ref:media:lesson-16-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "storyboards-film",
+    "id": "storyboards-film",
+    "slug": "storyboards-film",
     "title": "Storyboards in Film",
     "description": "The origin of storyboarding",
     "content": {
@@ -543,20 +552,20 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": []
       }
     },
-    "_ref": "storyboards-film",
-    "slug": "storyboards-film",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 17,
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-17-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.718Z",
+    "updatedAt": "2025-10-03T20:57:57.718Z"
   },
   {
+    "_ref": "storyboards-presentations",
+    "id": "storyboards-presentations",
+    "slug": "storyboards-presentations",
     "title": "Storyboards in Presentations",
     "description": "",
     "content": {
@@ -565,9 +574,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -578,17 +589,16 @@
         ]
       }
     },
-    "_ref": "storyboards-presentations",
-    "slug": "storyboards-presentations",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 18,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-403-storyboards}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-18-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.718Z",
+    "updatedAt": "2025-10-03T20:57:57.718Z"
   },
   {
+    "_ref": "visual-perception",
+    "id": "visual-perception",
+    "slug": "visual-perception",
     "title": "Visual Perception and Communication",
     "description": "What are the implications from how people process information?",
     "content": {
@@ -597,9 +607,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -610,17 +622,16 @@
         ]
       }
     },
-    "_ref": "visual-perception",
-    "slug": "visual-perception",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 19,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-501-perception}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.926Z",
-    "thumbnail": "{ref:media:lesson-19-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.720Z",
+    "updatedAt": "2025-10-03T20:57:57.720Z"
   },
   {
+    "_ref": "fundamental-design-overview",
+    "id": "fundamental-design-overview",
+    "slug": "fundamental-design-overview",
     "title": "Overview of the Fundamental Elements of Design",
     "description": "A brief overview of the fundamentals",
     "content": {
@@ -629,20 +640,20 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": []
       }
     },
-    "_ref": "fundamental-design-overview",
-    "slug": "fundamental-design-overview",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 20,
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.922Z",
-    "thumbnail": "{ref:media:lesson-20-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.716Z",
+    "updatedAt": "2025-10-03T20:57:57.716Z"
   },
   {
+    "_ref": "fundamental-design-detail",
+    "id": "fundamental-design-detail",
+    "slug": "fundamental-design-detail",
     "title": "The Fundamental Elements of Design in Detail",
     "description": "Let's go deep",
     "content": {
@@ -651,9 +662,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -664,17 +677,16 @@
         ]
       }
     },
-    "_ref": "fundamental-design-detail",
-    "slug": "fundamental-design-detail",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 21,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-503-elements}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.922Z",
-    "thumbnail": "{ref:media:lesson-21-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.716Z",
+    "updatedAt": "2025-10-03T20:57:57.716Z"
   },
   {
+    "_ref": "gestalt-principles",
+    "id": "gestalt-principles",
+    "slug": "gestalt-principles",
     "title": "Gestalt Principles of Visual Perception",
     "description": "How we can apply principles of visual perception to better communicate our ideas",
     "content": {
@@ -683,9 +695,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -696,17 +710,16 @@
         ]
       }
     },
-    "_ref": "gestalt-principles",
-    "slug": "gestalt-principles",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 22,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-504-gestalt}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.923Z",
-    "thumbnail": "{ref:media:lesson-22-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.716Z",
+    "updatedAt": "2025-10-03T20:57:57.716Z"
   },
   {
+    "_ref": "slide-composition",
+    "id": "slide-composition",
+    "slug": "slide-composition",
     "title": "Slide Composition",
     "description": "How to best design slides",
     "content": {
@@ -715,9 +728,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -728,17 +743,16 @@
         ]
       }
     },
-    "_ref": "slide-composition",
-    "slug": "slide-composition",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 23,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-505-composition}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.924Z",
-    "thumbnail": "{ref:media:lesson-23-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.718Z",
+    "updatedAt": "2025-10-03T20:57:57.718Z"
   },
   {
+    "_ref": "fact-based-persuasion",
+    "id": "fact-based-persuasion",
+    "slug": "fact-based-persuasion",
     "title": "Overview of Fact-based Persuasion",
     "description": "Facts and how to present them",
     "content": {
@@ -747,9 +761,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -760,17 +776,16 @@
         ]
       }
     },
-    "_ref": "fact-based-persuasion",
-    "slug": "fact-based-persuasion",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 24,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-601-persuasion}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.922Z",
-    "thumbnail": "{ref:media:lesson-24-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.716Z",
+    "updatedAt": "2025-10-03T20:57:57.716Z"
   },
   {
+    "_ref": "tables-vs-graphs",
+    "id": "tables-vs-graphs",
+    "slug": "tables-vs-graphs",
     "title": "Tables vs. Graphs",
     "description": "How to use graphs and tabl;es to present quantitative information",
     "content": {
@@ -779,9 +794,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -792,17 +809,16 @@
         ]
       }
     },
-    "_ref": "tables-vs-graphs",
-    "slug": "tables-vs-graphs",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 25,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-602-tables-graphs}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.925Z",
-    "thumbnail": "{ref:media:lesson-25-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.719Z",
+    "updatedAt": "2025-10-03T20:57:57.719Z"
   },
   {
+    "_ref": "basic-graphs",
+    "id": "basic-graphs",
+    "slug": "basic-graphs",
     "title": "Standard Graphs",
     "description": "How to properly use graphs to display information",
     "content": {
@@ -811,9 +827,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -824,17 +842,16 @@
         ]
       }
     },
-    "_ref": "basic-graphs",
-    "slug": "basic-graphs",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 26,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-604-standard-graphs}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.921Z",
-    "thumbnail": "{ref:media:lesson-26-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.714Z",
+    "updatedAt": "2025-10-03T20:57:57.714Z"
   },
   {
+    "_ref": "specialist-graphs",
+    "id": "specialist-graphs",
+    "slug": "specialist-graphs",
     "title": "Specialist Graphs",
     "description": "Introduction to some common business graphs like the Marimekko and Waterfall",
     "content": {
@@ -843,9 +860,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -856,17 +875,16 @@
         ]
       }
     },
-    "_ref": "specialist-graphs",
-    "slug": "specialist-graphs",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 27,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-605-specialist-graphs}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.924Z",
-    "thumbnail": "{ref:media:lesson-27-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.718Z",
+    "updatedAt": "2025-10-03T20:57:57.718Z"
   },
   {
+    "_ref": "preparation-practice",
+    "id": "preparation-practice",
+    "slug": "preparation-practice",
     "title": "Preparation and Practice",
     "description": "How to prepare for your presentation",
     "content": {
@@ -875,9 +893,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -888,17 +908,16 @@
         ]
       }
     },
-    "_ref": "preparation-practice",
-    "slug": "preparation-practice",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 28,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-701-preparation}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.924Z",
-    "thumbnail": "{ref:media:lesson-28-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.718Z",
+    "updatedAt": "2025-10-03T20:57:57.718Z"
   },
   {
+    "_ref": "performance",
+    "id": "performance",
+    "slug": "performance",
     "title": "Performance",
     "description": "Tips and techniques to improve the delivery of your presentation",
     "content": {
@@ -907,9 +926,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -920,17 +941,16 @@
         ]
       }
     },
-    "_ref": "performance",
-    "slug": "performance",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 29,
-    "todo_complete_quiz": false,
-    "downloads": ["{ref:downloads:lesson-702-performance}"],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.924Z",
-    "thumbnail": "{ref:media:lesson-29-thumb}"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.717Z",
+    "updatedAt": "2025-10-03T20:57:57.717Z"
   },
   {
+    "_ref": "congratulations",
+    "id": "congratulations",
+    "slug": "congratulations",
     "title": "Congratulations",
     "description": "Congratulations",
     "content": {
@@ -939,9 +959,11 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": [
           {
             "type": "paragraph",
+            "version": 1,
             "children": [
               {
                 "type": "text",
@@ -952,16 +974,16 @@
         ]
       }
     },
-    "_ref": "congratulations",
-    "slug": "congratulations",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 30,
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.922Z"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.715Z",
+    "updatedAt": "2025-10-03T20:57:57.715Z"
   },
   {
+    "_ref": "before-you-go",
+    "id": "before-you-go",
+    "slug": "before-you-go",
     "title": "Before you go...",
     "description": "Feedback",
     "content": {
@@ -970,16 +992,14 @@
         "format": "",
         "indent": 0,
         "version": 1,
+        "direction": null,
         "children": []
       }
     },
-    "_ref": "before-you-go",
-    "slug": "before-you-go",
-    "course_id": "{ref:courses:ddm}",
     "lesson_number": 31,
-    "todo_complete_quiz": false,
-    "downloads": [],
-    "status": "published",
-    "publishedAt": "2025-06-30T17:27:17.921Z"
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "published": true,
+    "createdAt": "2025-10-03T20:57:57.715Z",
+    "updatedAt": "2025-10-03T20:57:57.715Z"
   }
 ]
