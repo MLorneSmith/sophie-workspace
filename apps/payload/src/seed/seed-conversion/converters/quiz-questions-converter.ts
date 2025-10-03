@@ -1,9 +1,9 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
-import type { QuizQuestion } from "../../payload-types";
+import type { QuizQuestion } from "../../../../payload-types";
 import type { ReferenceManager } from "../utils/reference-manager";
 import { createServiceLogger } from "@kit/shared/logger";
-import { parseMdoc } from "../parsers/mdoc-parser";
+import { parseMarkdownWithFrontmatter } from "../parsers/mdoc-parser-simple";
 import { v4 as uuidv4 } from "uuid";
 import * as yaml from "js-yaml";
 
@@ -62,38 +62,21 @@ export async function convertQuizQuestions(
 				const questionId = uuidv4();
 				questionIds.push(questionId);
 
+				// Generate slug from question text
+				const questionSlug = `${quizSlug}-q${index + 1}`;
+
 				const quizQuestion: Partial<QuizQuestion> = {
 					id: questionId,
-					text: question.question,
-					type:
-						question.questiontype === "multi-answer"
-							? "multipleChoice"
-							: "singleChoice",
-					options: question.answers.map((answer) => answer.answer),
-					correctOptionIndices: question.answers
-						.map((answer, idx) => (answer.correct ? idx : -1))
-						.filter((idx) => idx !== -1),
+					question: question.question,
+					type: "multiple_choice",
+					questionSlug: questionSlug,
+					options: question.answers.map((answer) => ({
+						text: answer.answer,
+						isCorrect: answer.correct,
+					})),
 					explanation: createLexicalExplanation(question),
 					order: index + 1,
-					points: 1,
-					tags: [],
-					_status: "published",
 				};
-
-				// For single choice questions, ensure only one correct answer
-				if (
-					question.questiontype === "single-answer" &&
-					quizQuestion.correctOptionIndices &&
-					quizQuestion.correctOptionIndices.length > 1
-				) {
-					logger.warn(
-						`Quiz ${quizSlug} question ${index + 1} marked as single-answer but has multiple correct answers`,
-					);
-					// Take only the first correct answer
-					quizQuestion.correctOptionIndices = [
-						quizQuestion.correctOptionIndices[0],
-					];
-				}
 
 				allQuestions.push(quizQuestion);
 
@@ -121,7 +104,7 @@ export async function convertQuizQuestions(
 
 			for (const tsQuestion of tsQuestions) {
 				// Check if we already have this question from mdoc
-				const exists = allQuestions.some((q) => q.text === tsQuestion.text);
+				const exists = allQuestions.some((q) => q.question === tsQuestion.question);
 				if (!exists) {
 					allQuestions.push(tsQuestion);
 				}
@@ -169,18 +152,20 @@ function parseMdocQuiz(content: string): MdocQuizData {
 	const frontmatterYaml = lines
 		.slice(frontmatterStart + 1, frontmatterEnd)
 		.join("\n");
-	const frontmatter = yaml.load(frontmatterYaml);
+	const frontmatter = yaml.load(frontmatterYaml) as Record<string, unknown>;
 
 	// Questions are in the frontmatter
-	const questions: MdocQuizQuestion[] = frontmatter.questions || [];
+	const questions: MdocQuizQuestion[] = Array.isArray(frontmatter.questions)
+		? frontmatter.questions
+		: [];
 
 	return {
 		frontmatter: {
-			title: frontmatter.title || "",
-			status: frontmatter.status || "published",
-			publishedAt: frontmatter.publishedAt || "",
-			language: frontmatter.language || "en",
-			order: frontmatter.order || 0,
+			title: String(frontmatter.title || ""),
+			status: String(frontmatter.status || "published"),
+			publishedAt: String(frontmatter.publishedAt || ""),
+			language: String(frontmatter.language || "en"),
+			order: typeof frontmatter.order === 'number' ? frontmatter.order : 0,
 		},
 		questions,
 	};
@@ -240,18 +225,42 @@ async function parseTypeScriptQuizQuestions(
 
 		for (const quiz of quizzesData) {
 			if (quiz.questions) {
+				const quizSlug = quiz.slug || "unknown-quiz";
 				quiz.questions.forEach((q: any, index: number) => {
+					// Handle both string array and object array options
+					let options: Array<{ text: string; isCorrect: boolean }>;
+					if (Array.isArray(q.options)) {
+						if (typeof q.options[0] === "string") {
+							// Convert string array to object array
+							const correctIndex = q.correctOptionIndex || 0;
+							options = q.options.map((opt: string, idx: number) => ({
+								text: opt.replace(/\s*\(correct\)\s*/i, ""),
+								isCorrect: idx === correctIndex || /\(correct\)/i.test(opt),
+							}));
+						} else {
+							// Already in object format
+							options = q.options;
+						}
+					} else {
+						// No options provided, use defaults
+						options = [
+							{ text: "Option A", isCorrect: true },
+							{ text: "Option B", isCorrect: false },
+							{ text: "Option C", isCorrect: false },
+							{ text: "Option D", isCorrect: false },
+						];
+					}
+
+					// Generate questionSlug
+					const questionSlug = `${quizSlug}-q${index + 1}`;
+
+					const qId = q.id || uuidv4();
 					questions.push({
-						id: q.id || uuidv4(),
-						text: q.text,
-						type: "singleChoice", // Default to single choice
-						options: q.options || [
-							"Option A",
-							"Option B",
-							"Option C",
-							"Option D",
-						],
-						correctOptionIndices: [q.correctOptionIndex || 0],
+						id: qId,
+						question: q.text,
+						type: "multiple_choice",
+						questionSlug: questionSlug,
+						options,
 						explanation:
 							q.explanation ||
 							createLexicalExplanation({
@@ -260,9 +269,6 @@ async function parseTypeScriptQuizQuestions(
 								answers: [],
 							}),
 						order: index + 1,
-						points: 1,
-						tags: [],
-						_status: "published",
 					});
 				});
 			}

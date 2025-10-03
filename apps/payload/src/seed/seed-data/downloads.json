@@ -1,0 +1,140 @@
+[
+  {
+    "_ref": "101-welcome",
+    "filePath": "101 Welcome.pdf",
+    "title": "101 Welcome",
+    "description": "Welcome to SlideHeroes course"
+  },
+  {
+    "_ref": "103-course-overview",
+    "filePath": "103 Course Overview.pdf",
+    "title": "103 Course Overview",
+    "description": "Complete course overview and syllabus"
+  },
+  {
+    "_ref": "201-our-process",
+    "filePath": "201 Our Process.pdf",
+    "title": "201 Our Process",
+    "description": "SlideHeroes presentation development process"
+  },
+  {
+    "_ref": "202-the-who",
+    "filePath": "202 The Who.pdf",
+    "title": "202 The Who",
+    "description": "Understanding your audience"
+  },
+  {
+    "_ref": "203-the-why-introductions",
+    "filePath": "203 The Why - Introductions.pdf",
+    "title": "203 The Why - Introductions",
+    "description": "Crafting effective introductions"
+  },
+  {
+    "_ref": "204-the-why-next-steps",
+    "filePath": "204 The Why - Next Steps.pdf",
+    "title": "204 The Why - Next Steps",
+    "description": "Defining clear next steps"
+  },
+  {
+    "_ref": "301-idea-generation",
+    "filePath": "301 Idea Generation.pdf",
+    "title": "301 Idea Generation",
+    "description": "Techniques for generating presentation ideas"
+  },
+  {
+    "_ref": "302-what-is-structure",
+    "filePath": "302 What is Structure.pdf",
+    "title": "302 What is Structure",
+    "description": "Understanding presentation structure"
+  },
+  {
+    "_ref": "401-using-stories",
+    "filePath": "401 Using Stories.pdf",
+    "title": "401 Using Stories",
+    "description": "Storytelling techniques for presentations"
+  },
+  {
+    "_ref": "403-storyboards-in-presentations",
+    "filePath": "403 Storyboards in Presentations.pdf",
+    "title": "403 Storyboards in Presentations",
+    "description": "Using storyboards to plan presentations"
+  },
+  {
+    "_ref": "501-visual-perception",
+    "filePath": "501 Visual Perception.pdf",
+    "title": "501 Visual Perception",
+    "description": "Understanding how audiences perceive visuals"
+  },
+  {
+    "_ref": "503-detail-fundamental-elements",
+    "filePath": "503 Detail Fundamental Elements.pdf",
+    "title": "503 Detail Fundamental Elements",
+    "description": "Detailed guide to fundamental design elements"
+  },
+  {
+    "_ref": "504-gestalt-principles",
+    "filePath": "504 Gestalt Principles of Visual Perception.pdf",
+    "title": "504 Gestalt Principles of Visual Perception",
+    "description": "Gestalt principles applied to presentation design"
+  },
+  {
+    "_ref": "505-slide-composition",
+    "filePath": "505 Slide Composition.pdf",
+    "title": "505 Slide Composition",
+    "description": "Principles of effective slide composition"
+  },
+  {
+    "_ref": "601-fact-based-persuasion",
+    "filePath": "601 Fact-based Persuasion Overview.pdf",
+    "title": "601 Fact-based Persuasion Overview",
+    "description": "Using data and facts to persuade"
+  },
+  {
+    "_ref": "602-tables-v-graphs",
+    "filePath": "602 Tables v Graphs.pdf",
+    "title": "602 Tables v Graphs",
+    "description": "When to use tables versus graphs"
+  },
+  {
+    "_ref": "604-standard-graphs",
+    "filePath": "604 Standard Graphs.pdf",
+    "title": "604 Standard Graphs",
+    "description": "Guide to standard business graphs"
+  },
+  {
+    "_ref": "605-specialist-graphs",
+    "filePath": "605 Specialist Graphs.pdf",
+    "title": "605 Specialist Graphs",
+    "description": "Advanced and specialist graph types"
+  },
+  {
+    "_ref": "701-preparation-practice",
+    "filePath": "701 Preparation and Practice.pdf",
+    "title": "701 Preparation and Practice",
+    "description": "Preparing and practicing your presentation"
+  },
+  {
+    "_ref": "702-performance",
+    "filePath": "702 Performance.pdf",
+    "title": "702 Performance",
+    "description": "Delivering your presentation effectively"
+  },
+  {
+    "_ref": "audience-map",
+    "filePath": "Audience Map.pdf",
+    "title": "Audience Map",
+    "description": "Template for mapping your audience"
+  },
+  {
+    "_ref": "golden-rules",
+    "filePath": "SlideHeroes Golden Rules.pdf",
+    "title": "SlideHeroes Golden Rules",
+    "description": "Core principles of effective presentations"
+  },
+  {
+    "_ref": "marketing-template",
+    "filePath": "marketing-template.pdf",
+    "title": "Marketing Template",
+    "description": "Professional marketing presentation template"
+  }
+]

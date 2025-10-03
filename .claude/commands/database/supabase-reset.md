@@ -1,325 +1,505 @@
 ---
-description: Reset Supabase databases across all turborepo instances with safety mechanisms and schema validation
+description: Reset local Supabase database and seed Payload CMS
 allowed-tools: [Read, Write, Bash, Task, TodoWrite]
-argument-hint: <target> [--apps=LIST] [--confirm] [--run-tests] [--verbose]
+argument-hint: [--regenerate-payload-migrations] [--schema-only] [--verbose]
 ---
 
 # Supabase Database Reset
 
-Reset all Supabase database instances in the turborepo with comprehensive safety mechanisms, multi-instance coordination, and Payload CMS schema handling.
+Reset local Supabase database and seed Payload CMS with fresh data.
 
 ## Key Features
-- **Multi-Instance Reset**: Coordinates web, e2e, and payload databases with proper dependency management
-- **Safety Mechanisms**: Port cleanup, confirmation prompts, and verification suite for safe operations
-- **Payload Schema Handling**: Automatic resolution of Payload CMS schema issues after database resets
-- **Progress Tracking**: Real-time progress reporting with detailed logging and error recovery
-
-## Essential Context
-<!-- Always read for this command -->
-- Read .claude/context/tools/cli/supabase-cli.md
-- Read .claude/context/data/migrations/overview.md
+- **Local Development Focus**: Optimized for solo development workflows
+- **Default Seeding**: Automatically seeds Payload CMS after reset
+- **Safety Mechanisms**: Pre-flight validation and comprehensive error handling
+- **Script-Based**: Leverages reusable bash scripts for maintainability
 
 ## Prompt
 
 <role>
-You are a Database Operations Specialist with expertise in Supabase multi-instance management, PostgreSQL administration, and Payload CMS integration. You coordinate complex database reset operations across development environments with zero-downtime principles and comprehensive safety validation.
+You are a Database Operations Specialist with expertise in Supabase management, PostgreSQL administration, and Payload CMS integration. You execute local database resets with safety validation and comprehensive progress tracking.
 </role>
 
 <instructions>
-# Supabase Reset Workflow - PRIME Framework
 
 **CORE REQUIREMENTS**:
-- **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
-- **Start** all instructions with action verbs (Execute, Validate, Reset, etc.)
-- **Implement** sequential execution for database dependencies
-- **Maintain** safety mechanisms for remote operations
-- **Preserve** all data integrity during reset operations
+- **Execute** sequential database reset workflow
+- **Validate** configurations before destructive operations
+- **Seed** Payload CMS by default unless --schema-only specified
+- **Track** progress with TodoWrite for visibility
 
-## PRIME Workflow
+## PRIME Framework
 
 ### Phase P - PURPOSE
 <purpose>
-**Define** clear database reset outcomes:
 
-1. **Primary Objective**: Reset all Supabase instances (web, e2e, payload) with fresh schemas and working functionality
-2. **Success Criteria**: All instances running, schemas validated, authentication working, Payload CMS operational
-3. **Scope Boundaries**: Include all three instances with dependency coordination, exclude production data preservation
-4. **Safety Features**: Port cleanup, confirmation prompts, verification testing, rollback capability
+**Database reset outcomes**:
+1. **Primary Objective**: Fresh local Supabase database with seeded Payload CMS
+2. **Success Criteria**: Database reset, migrations applied, 249 records seeded across 12 collections
+3. **Safety Features**: Pre-flight validation, automatic cleanup, duplicate prevention
+
 </purpose>
 
 ### Phase R - ROLE
 <role_definition>
-**Establish** database operations expertise:
 
-1. **Expertise Domain**: Supabase CLI, PostgreSQL administration, Docker orchestration, Payload CMS schema management
-2. **Experience Level**: Senior database administrator with multi-instance coordination experience
-3. **Decision Authority**: Autonomous execution of reset procedures, schema validation, error recovery
-4. **Approach Style**: Safety-first with comprehensive verification and detailed progress reporting
+1. **Expertise Domain**: Supabase CLI, PostgreSQL, Payload CMS, local Docker orchestration
+2. **Experience Level**: Senior database administrator for local development environments
+3. **Decision Authority**: Autonomous execution of local reset procedures
+4. **Approach Style**: Safety-first with validation and detailed progress reporting
+
 </role_definition>
 
 ### Phase I - INPUTS
 <inputs>
-**Gather** all necessary materials and context:
 
-#### Essential Context (REQUIRED)
-**Load** critical documentation that is always needed:
+**Essential Context**:
 - Read .claude/context/tools/cli/supabase-cli.md
-- Read .claude/context/data/migrations/overview.md
 
-#### Dynamic Context Loading
-**Delegate** to database expert for intelligent context discovery:
+**Arguments & Validation**:
+- `--regenerate-payload-migrations`: Delete and regenerate Payload migrations (fresh schema)
+- `--schema-only`: Skip seeding, only reset database and run migrations
+- `--verbose`: Enable detailed logging
 
-Use Task tool with:
-- subagent_type: "database-expert"
-- description: "Discover relevant context for Supabase database reset operation"
-- prompt: "Find context for resetting Supabase databases in turborepo. Command type: database-reset, Token budget: 4000, Focus on: PostgreSQL configuration, Supabase CLI patterns, multi-instance coordination, Payload CMS integration"
+**Validate**:
+- Docker daemon is running
+- Supabase CLI is available
+- Required bash scripts exist in `.claude/scripts/database/`
 
-#### Arguments & Validation
-**Parse** and **validate** command arguments:
-- target: REQUIRED - "local" or "remote"
-- --apps: OPTIONAL - Comma-separated list (web,e2e,payload), default: all
-- --confirm: OPTIONAL - Skip confirmation for remote (DANGEROUS)
-- --seed: OPTIONAL - Run Payload CMS seeding after reset
-- --run-tests: OPTIONAL - Execute E2E tests after reset
-- --verbose: OPTIONAL - Enable detailed logging
-
-**Validate** target parameter against allowed values
-**Verify** Docker running for local operations
-**Check** Supabase CLI availability and authentication
 </inputs>
 
 ### Phase M - METHOD
 <method>
-**Execute** the database reset workflow with comprehensive safety:
+
+**Execute** the 5-phase reset workflow:
 
 #### Progress Tracking Setup
 **Initialize** TodoWrite progress tracking:
 ```javascript
 todos = [
-  {content: "Validate environment and inputs", status: "pending", activeForm: "Validating"},
-  {content: "Execute port cleanup", status: "pending", activeForm: "Cleaning ports"},
-  {content: "Reset database instances", status: "pending", activeForm: "Resetting databases"},
-  {content: "Handle Payload schema", status: "pending", activeForm: "Configuring Payload"},
-  {content: "Run seeding (if --seed flag)", status: "pending", activeForm: "Seeding data"},
-  {content: "Verify all instances", status: "pending", activeForm: "Verifying"}
+  {content: "Validate environment and configuration", status: "pending", activeForm: "Validating environment"},
+  {content: "Reset Supabase database", status: "pending", activeForm: "Resetting database"},
+  {content: "Setup Payload schema and migrations", status: "pending", activeForm: "Setting up Payload"},
+  {content: "Seed Payload CMS (unless --schema-only)", status: "pending", activeForm: "Seeding Payload"},
+  {content: "Verify database state", status: "pending", activeForm: "Verifying database"}
 ]
 ```
 
-#### Step 1: Safety Validation
-**Execute** pre-reset validation:
-- **Parse** command arguments with input validation
-- **Verify** Docker daemon running for local operations
-- **Check** Supabase CLI installation and version
-- **Validate** authentication for remote operations
-- **Confirm** destructive operation if target is remote and --confirm not provided
-- **Update** TodoWrite: Mark validation complete
+#### Phase 1: Initialize & Validate Environment
+**Execute** pre-flight checks:
 
-#### Step 2: Port Management
-**Execute** comprehensive port cleanup:
-- **Scan** ports 54321-54327 (web instance)
-- **Scan** ports 55321-55327 (e2e instance)
-- **Kill** conflicting processes using `lsof` and `kill`
-- **Verify** ports available before proceeding
-- **Update** TodoWrite: Mark port cleanup complete
+```bash
+# 1.1 Parse arguments
+REGENERATE_MIGRATIONS=false
+SCHEMA_ONLY=false
+VERBOSE=false
 
-#### Step 3: Instance Reset Coordination
-**Execute** sequential database resets:
+for arg in "$@"; do
+  case $arg in
+    --regenerate-payload-migrations) REGENERATE_MIGRATIONS=true ;;
+    --schema-only) SCHEMA_ONLY=true ;;
+    --verbose) VERBOSE=true ;;
+    *) echo "Unknown argument: $arg"; exit 1 ;;
+  esac
+done
 
-**FOR EACH** instance in dependency order (web → e2e → payload):
-- **Navigate** to instance directory
-- **Stop** Supabase instance gracefully: `npx supabase stop`
-- **Reset** database with migrations: `npx supabase db reset --skip-confirmations`
-- **Start** instance with fresh database: `npx supabase start`
-- **Wait** for instance startup completion
-- **Verify** instance connectivity and basic functionality
+# 1.2 Verify Docker running
+if ! docker info >/dev/null 2>&1; then
+  echo "❌ ERROR: Docker is not running"
+  echo "Start Docker and try again"
+  exit 1
+fi
 
-**Update** TodoWrite progress after each instance reset
+# 1.3 Verify Supabase CLI
+if ! command -v supabase >/dev/null 2>&1; then
+  echo "❌ ERROR: Supabase CLI not found"
+  echo "Install: pnpm add supabase --save-dev"
+  exit 1
+fi
 
-#### Step 4: Payload Schema Handling
-**Execute** Payload CMS specific validation:
+# 1.4 Validate Payload configuration (unless regenerating)
+if [ "$REGENERATE_MIGRATIONS" = false ]; then
+  bash .claude/scripts/database/validate-payload-config.sh || exit 1
+fi
 
-IF payload instance included:
-  → **Connect** to payload database
-  → **Verify** payload schema exists in PostgreSQL
-  → **Check** critical tables: payload_users, payload_preferences
-  → **Test** user creation functionality
-  → **Validate** admin interface accessibility
-  → **Fix** schema issues if detected
+echo "✅ Environment validation complete"
+```
 
-**Update** TodoWrite: Mark Payload handling complete
+**Update** TodoWrite: Mark Phase 1 complete
 
-#### Step 5: Payload CMS Seeding (Optional)
-**Execute** Payload seeding if --seed flag provided:
+#### Phase 2: Reset Supabase Database
+**Execute** database reset with port cleanup:
 
-IF --seed flag provided:
-  → **Run** seeding orchestrator: `pnpm --filter payload seed:run`
-  → **Wait** for seeding to complete
-  → **Verify** data loaded correctly
-  → **Handle** seeding errors appropriately
-  → **Report** seeding results
+```bash
+# 2.1 Cleanup conflicting ports (54321-54327 for web instance)
+bash .claude/scripts/development/cleanup-ports.sh 54321 54327 || {
+  echo "⚠️  Port cleanup failed, attempting to continue..."
+}
 
-**Update** TodoWrite: Mark seeding complete
+# 2.2 Stop Supabase if running
+cd apps/web
+npx supabase stop 2>/dev/null || true
 
-#### Step 6: Comprehensive Verification
-**Execute** full instance verification:
-- **Test** database connectivity for all instances
-- **Verify** authentication systems functional
-- **Check** schema integrity and migrations applied
-- **Validate** port accessibility and no conflicts
-- **Confirm** all services responding correctly
+# 2.3 Reset database with migrations
+echo "🔄 Resetting Supabase database..."
+npx supabase db reset --debug
 
-IF --run-tests flag provided:
-  → **Execute** E2E test suite
-  → **Report** test results (warnings acceptable)
+# 2.4 Start Supabase
+npx supabase start
 
-**Update** TodoWrite: Mark verification complete
+# 2.5 Verify database connection
+DATABASE_URL=$(npx supabase status | grep "DB URL" | awk '{print $3}')
+if [ -z "$DATABASE_URL" ]; then
+  echo "❌ ERROR: Could not get database URL from Supabase"
+  exit 1
+fi
 
-#### Step 7: Quick Smoke Test Verification of local dB (OPTIONAL)
-  **Execute** minimal smoke tests for rapid validation of local db reset:
+echo "✅ Database reset complete"
+echo "   Database URL: $DATABASE_URL"
+```
 
-  IF --run-tests flag provided OR always for safety:
-    → **Execute** smoke tests only: `pnpm --filter web-e2e test:smoke`
-    → **Expect** some failures on fresh database (auth tests may fail without seeded users)
-    → **Success Criteria**:
-      - Homepage loads (MUST PASS)
-      - Health check responds (MUST PASS)
-      - Auth pages render (SHOULD PASS)
-    → **Report** results as informational (non-blocking)
-    → **Time Budget**: Maximum 30 seconds
+**Update** TodoWrite: Mark Phase 2 complete
 
-  **Note**: Fresh database resets may cause auth-related test failures. This is expected and non-blocking.
+#### Phase 3: Setup Payload (Schema + Migrations)
+**Execute** Payload schema and migration setup:
+
+```bash
+cd apps/payload
+
+# 3.1 Drop and recreate payload schema (CRITICAL - always run first)
+echo "🗑️  Dropping payload schema..."
+psql "$DATABASE_URL" -c "DROP SCHEMA IF EXISTS payload CASCADE;" || exit 1
+psql "$DATABASE_URL" -c "CREATE SCHEMA payload;" || exit 1
+echo "✅ Payload schema recreated"
+
+# 3.2 Option A: Regenerate Migrations (if flag provided)
+if [ "$REGENERATE_MIGRATIONS" = true ]; then
+  echo "🔄 Regenerating Payload migrations..."
+  bash .claude/scripts/database/regenerate-payload-migrations.sh "$DATABASE_URL" || exit 1
+  echo "✅ Payload migrations regenerated"
+
+# 3.3 Option B: Use Existing Migrations (default)
+else
+  # Run existing migrations
+  echo "🔄 Running Payload migrations..."
+  pnpm run payload migrate --forceAcceptWarning || {
+    echo "❌ ERROR: Migration failed"
+    echo "Try: --regenerate-payload-migrations flag"
+    exit 1
+  }
+
+  # Verify migrations created tables
+  TABLE_COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';" | tr -d ' ')
+  echo "✅ Migrations complete ($TABLE_COUNT tables created)"
+
+  if [ "$TABLE_COUNT" -lt 40 ]; then
+    echo "⚠️  WARNING: Expected 40+ tables, found $TABLE_COUNT"
+    echo "Consider using --regenerate-payload-migrations flag"
+  fi
+fi
+```
+
+**Update** TodoWrite: Mark Phase 3 complete
+
+#### Phase 4: Seed Payload Data (Default)
+**Execute** seeding unless --schema-only:
+
+```bash
+if [ "$SCHEMA_ONLY" = false ]; then
+  echo "🌱 Seeding Payload CMS..."
+
+  # 4.1 Validate seeding configuration
+  bash .claude/scripts/database/validate-seeding-config.sh || exit 1
+
+  # 4.2 Cleanup existing data (prevent duplicates)
+  bash .claude/scripts/database/cleanup-payload-tables.sh "$DATABASE_URL" || {
+    echo "⚠️  Cleanup failed, proceeding with seeding..."
+  }
+
+  # 4.3 Run seeding
+  pnpm run seed:run || {
+    echo "❌ ERROR: Seeding failed"
+    echo "Check collection configuration and try --regenerate-payload-migrations"
+    exit 1
+  }
+
+  # 4.4 Validate seeded data (check for duplicates)
+  echo "🔍 Validating seeded data..."
+  VALIDATION_RESULT=$(psql "$DATABASE_URL" -t -c "
+    SELECT
+      collection,
+      actual,
+      expected,
+      CASE
+        WHEN actual = expected THEN 'OK'
+        WHEN actual > expected THEN 'DUPLICATE'
+        ELSE 'MISSING'
+      END as status
+    FROM (
+      SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
+      UNION ALL SELECT 'media', COUNT(*)::int, 21 FROM payload.media
+      UNION ALL SELECT 'downloads', COUNT(*)::int, 23 FROM payload.downloads
+      UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
+      UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
+      UNION ALL SELECT 'course_lessons', COUNT(*)::int, 25 FROM payload.course_lessons
+      UNION ALL SELECT 'course_quizzes', COUNT(*)::int, 20 FROM payload.course_quizzes
+      UNION ALL SELECT 'quiz_questions', COUNT(*)::int, 94 FROM payload.quiz_questions
+      UNION ALL SELECT 'survey_questions', COUNT(*)::int, 32 FROM payload.survey_questions
+      UNION ALL SELECT 'surveys', COUNT(*)::int, 3 FROM payload.surveys
+      UNION ALL SELECT 'documentation', COUNT(*)::int, 16 FROM payload.documentation
+      UNION ALL SELECT 'private', COUNT(*)::int, 5 FROM payload.private
+    ) counts;
+  ")
+
+  echo "$VALIDATION_RESULT"
+
+  # Check for duplicates
+  if echo "$VALIDATION_RESULT" | grep -q "DUPLICATE"; then
+    echo "❌ ERROR: Duplicate records detected!"
+    echo "Re-run with --regenerate-payload-migrations flag"
+    exit 1
+  fi
+
+  echo "✅ Seeding complete - all collections validated"
+else
+  echo "⏭️  Skipping seeding (--schema-only flag)"
+fi
+```
+
+**Update** TodoWrite: Mark Phase 4 complete
+
+#### Phase 5: Verify Database
+**Execute** final verification:
+
+```bash
+# 5.1 Check Supabase status
+cd apps/web
+npx supabase status
+
+# 5.2 Verify database connectivity
+if psql "$DATABASE_URL" -c "SELECT 1;" >/dev/null 2>&1; then
+  echo "✅ Database connection verified"
+else
+  echo "⚠️  Database connection issues detected"
+fi
+
+# 5.3 Report completion
+echo ""
+echo "✅ Supabase Reset Complete!"
+echo ""
+echo "Database URL: $DATABASE_URL"
+echo "Studio URL: http://localhost:54323"
+echo ""
+
+if [ "$SCHEMA_ONLY" = false ]; then
+  echo "📊 Seeded Collections:"
+  psql "$DATABASE_URL" -c "
+    SELECT schemaname, relname as table, n_live_tup as records
+    FROM pg_stat_user_tables
+    WHERE schemaname = 'payload' AND relname != 'payload_migrations'
+    ORDER BY n_live_tup DESC;
+  "
+fi
+```
+
+**Update** TodoWrite: Mark Phase 5 complete
 
 #### Error Handling
-**Handle** failures at each step:
+**Handle** failures at each phase:
 
-IF port cleanup fails:
-  → **Report** conflicting processes
-  → **Provide** manual cleanup commands
-  → **Abort** operation safely
+**Phase 1 Errors**:
+- Docker not running → Guide to start Docker
+- Supabase CLI missing → Provide installation command
+- Validation failure → Show specific fix from validate-payload-config.sh
 
-IF instance reset fails:
-  → **Log** detailed error information
-  → **Attempt** instance restart
-  → **Provide** recovery suggestions
+**Phase 2 Errors**:
+- Port conflicts → Manual cleanup instructions
+- Database reset fails → Check Docker status and Supabase logs
 
-IF verification fails:
-  → **Report** specific failure details
-  → **Suggest** troubleshooting steps
-  → **Continue** with warnings for non-critical issues
+**Phase 3 Errors**:
+- Schema creation fails → Verify database connection
+- Migration fails → Suggest --regenerate-payload-migrations flag
+- Low table count → Recommend regenerating migrations
+
+**Phase 4 Errors**:
+- Seeding validation fails → Check seeding config consistency
+- Cleanup fails → Continue with warning (seeding may catch duplicates)
+- Seeding fails → Check for "collection not found" and suggest regeneration
+- Duplicate detection → Recommend full reset with regeneration
+
+**Phase 5 Errors**:
+- Connection issues → Retry Supabase start
+- Missing data → Check seeding logs
+
 </method>
 
 ### Phase E - EXPECTATIONS
 <expectations>
-**Validate** and **deliver** reset results:
 
-#### Output Specification
-**Report** comprehensive reset status:
+**Output Specification**:
 - **Format**: Console output with progress indicators and final status
-- **Structure**: Tabular instance status, port assignments, connection details
-- **Location**: Terminal display with option for verbose logging
-- **Quality Standards**: All instances operational, schemas validated, no port conflicts
+- **Structure**: 5-phase workflow with clear completion messages
+- **Quality Standards**: Database operational, migrations applied, seeding validated
 
-#### Success Validation
-**Verify** reset completion criteria:
-- All targeted instances running and responsive
-- Database schemas present and migrations applied
-- Port assignments correct and accessible
-- Authentication systems functional
-- Payload CMS operational (if included)
+**Success Validation**:
+- Supabase running on localhost:54321
+- Payload schema with 40+ tables
+- 249 records seeded across 12 collections (if not --schema-only)
+- No duplicate records detected
 
-#### Final Status Report
-**Present** operation results:
-
+**Final Status Report**:
 ```
-✅ **Supabase Reset Completed Successfully!**
+✅ Supabase Reset Complete!
 
-**PRIME Framework Results:**
-✅ Purpose: Multi-instance database reset achieved
-✅ Role: Database operations expertise applied
-✅ Inputs: Configuration validated, context loaded
-✅ Method: Sequential reset with safety mechanisms
-✅ Expectations: All verification criteria met
-
-**Instance Status:**
-| Instance | Status | Ports | Database |
-|----------|--------|-------|----------|
-| Web      | ✅ Running | 54321-54327 | Reset & Verified |
-| E2E      | ✅ Running | 55321-55327 | Reset & Verified |
-| Payload  | ✅ Running | [ports] | Schema Validated |
+**Results:**
+✅ Phase 1: Environment validated
+✅ Phase 2: Database reset
+✅ Phase 3: Payload migrations applied (42 tables)
+✅ Phase 4: Seeding complete (249/249 records)
+✅ Phase 5: Database verified
 
 **Connection Details:**
-- Web API: http://localhost:54321
-- E2E API: http://localhost:55321
-- Studio: http://localhost:54323 (web), http://localhost:55323 (e2e)
+- Database: localhost:54321
+- Studio: http://localhost:54323
+- Status: All services running
 
 **Next Steps:**
-- Instances ready for development
-- Run /test for comprehensive validation
-- Use /codecheck for quality verification
+- Start development: pnpm dev
+- Run tests: pnpm test
+- Verify data: Open Studio at http://localhost:54323
 ```
 
-#### Error Recovery Documentation
-**Provide** troubleshooting guidance:
-- Port conflict resolution commands
-- Manual instance restart procedures
-- Schema validation SQL queries
-- Recovery from partial reset states
 </expectations>
-
-## Error Handling
-<error_handling>
-**Handle** errors across all PRIME phases:
-
-### Input Validation Errors
-- Invalid target: **Prompt** for "local" or "remote"
-- Missing Docker: **Guide** to Docker installation
-- Supabase CLI missing: **Provide** installation commands
-
-### Execution Errors
-- Port conflicts: **Execute** automatic cleanup with manual fallback
-- Instance failures: **Restart** with detailed logging and recovery steps
-- Schema corruption: **Delegate** to database-expert for advanced recovery
-
-### Verification Errors
-- Connectivity issues: **Retry** with exponential backoff
-- Authentication failures: **Guide** through re-authentication
-- Test failures: **Report** with warnings (expected for fresh resets)
-</error_handling>
 
 </instructions>
 
-<patterns>
-### Implemented Patterns
-- **Dynamic Context Loading**: Via database-expert agent for Supabase expertise
-- **Progress Tracking**: TodoWrite tool for multi-step visibility
-- **Agent Delegation**: Database-expert for schema validation and recovery
-- **Sequential Execution**: Dependency-aware instance coordination
-- **Safety Mechanisms**: Confirmation prompts and verification suites
-</patterns>
+## Error Handling
+
+### Common Issues
+
+**Docker Not Running**
+```
+ERROR: Docker is not running
+Fix: Start Docker Desktop and retry
+```
+
+**Migration Failures**
+```
+ERROR: Migration failed - table already exists
+Fix: Use --regenerate-payload-migrations flag
+```
+
+**Seeding Failures**
+```
+ERROR: Collection 'downloads' can't be found
+Root cause: Migration-config mismatch
+
+Fix:
+1. Check seeding config has all collections
+2. Regenerate migrations:
+   /database:supabase-reset --regenerate-payload-migrations
+```
+
+**Duplicate Records**
+```
+ERROR: Duplicate records detected (2x expected)
+Root cause: Cleanup failed or seeding ran twice
+
+Fix:
+1. Full reset with regeneration:
+   /database:supabase-reset --regenerate-payload-migrations
+
+2. Manual cleanup:
+   psql $DATABASE_URL -c "TRUNCATE TABLE payload.users, ... CASCADE;"
+```
+
+**Port Conflicts**
+```
+ERROR: Port 54321 already in use
+Fix: Script will attempt automatic cleanup
+Manual: lsof -ti:54321 | xargs kill -9
+```
+
+### Recovery Procedures
+
+**If reset fails mid-process**:
+1. Check TodoWrite progress to see which phase failed
+2. Review error messages for specific guidance
+3. Use --verbose flag for detailed logging
+4. Try --regenerate-payload-migrations for schema issues
+
+**Complete cleanup** (nuclear option):
+```bash
+# Stop Supabase
+cd apps/web && npx supabase stop
+
+# Drop payload schema
+psql $DATABASE_URL -c "DROP SCHEMA IF EXISTS payload CASCADE;"
+
+# Kill processes
+pkill -f "supabase"
+
+# Restart fresh
+/database:supabase-reset --regenerate-payload-migrations
+```
+
+## Migration Guide
+
+### When to Regenerate Migrations
+
+**Always regenerate when:**
+- ✅ Adding new collections to Payload config
+- ✅ Modifying collection schemas significantly
+- ✅ Seeding fails with "collection not found"
+- ✅ After major Payload CMS upgrades
+
+**Use existing migrations when:**
+- ✅ Normal daily development reset
+- ✅ Migrations are up-to-date with config
+- ✅ Just need fresh data
+
+### Best Practices
+
+**Solo Development** (Current Focus):
+- Use `--regenerate-payload-migrations` freely for config changes
+- Default reset + seed for daily workflow
+- Keep single base migration up-to-date
+
+**Team Collaboration** (Future):
+- Use incremental migrations
+- Commit migrations to git
+- Coordinate regeneration with team
 
 <help>
 🗄️ **Supabase Database Reset**
 
-Reset all Supabase database instances with comprehensive safety mechanisms and schema validation.
+Reset local Supabase database and seed Payload CMS with fresh data.
 
 **Usage:**
-- `/supabase-reset local` - Reset all local database instances
-- `/supabase-reset local --seed` - Reset and run Payload seeding
-- `/supabase-reset local --apps=web,e2e` - Reset specific instances only
-- `/supabase-reset local --run-tests --verbose` - Reset with test verification
-- `/supabase-reset remote --confirm` - Reset remote databases (DANGEROUS)
+- `/database:supabase-reset` - Full reset + seed (default)
+- `/database:supabase-reset --schema-only` - Reset without seeding
+- `/database:supabase-reset --regenerate-payload-migrations` - Fresh migrations + seed
+- `/database:supabase-reset --verbose` - Detailed logging
 
-**PRIME Process:**
-1. **Purpose**: Fresh database instances with validated schemas
-2. **Role**: Database operations specialist with safety expertise
-3. **Inputs**: Target validation, Docker verification, context loading
-4. **Method**: Sequential reset with port cleanup and schema validation
-5. **Expectations**: All instances operational with comprehensive verification
+**Flags:**
+- `--regenerate-payload-migrations` - Delete and regenerate Payload migrations
+- `--schema-only` - Skip seeding, only reset database and migrations
+- `--verbose` - Enable detailed logging
+
+**What It Does:**
+1. ✅ Validates environment and configuration
+2. ✅ Resets Supabase database (drops and recreates)
+3. ✅ Sets up Payload schema and runs migrations
+4. ✅ Seeds Payload CMS with 249 records (unless --schema-only)
+5. ✅ Verifies database state
 
 **Requirements:**
-- Docker running for local operations
-- Supabase CLI installed and authenticated
-- Valid Supabase configurations in app directories
+- Docker running
+- Supabase CLI installed
+- Valid Payload configuration
 
-Your databases will be reset safely with full verification and schema validation!
+**Default Behavior:**
+Full reset WITH seeding - the most common workflow for local development.
+
+Your local database will be reset safely with comprehensive validation!
 </help>

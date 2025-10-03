@@ -2,7 +2,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 
 export const QuizQuestions: CollectionConfig = {
-	slug: "quiz_questions",
+	slug: "quiz-questions",
 	labels: {
 		singular: "Quiz Question",
 		plural: "Quiz Questions",

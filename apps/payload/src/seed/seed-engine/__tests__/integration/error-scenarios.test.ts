@@ -26,6 +26,7 @@ describe('Integration: Error Scenarios', () => {
 
     process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
 
     orchestrator = new SeedOrchestrator();

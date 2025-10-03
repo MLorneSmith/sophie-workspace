@@ -347,7 +347,7 @@ export class SeedOrchestrator {
     this.tracker.startCollection(collectionName, records.length);
 
     // Create processor for collection
-    const processor = this.createProcessor(collectionName, this.payload, this.resolver.getCache());
+    const processor = this.createProcessor(collectionName, this.payload, new Map(this.resolver.getCache()));
 
     // Pre-process hook
     try {
@@ -420,7 +420,7 @@ export class SeedOrchestrator {
     try {
       await processor.postProcess(results);
     } catch (error) {
-      logger.warn(`Post-processing warning for ${collectionName}`, error instanceof Error ? error : undefined);
+      logger.warn(`Post-processing warning for ${collectionName}`, error instanceof Error ? { message: error.message, stack: error.stack } : undefined);
     }
 
     const batchResult: BatchProcessorResult = {
@@ -508,7 +508,7 @@ export class SeedOrchestrator {
     for (const result of summary.collectionResults) {
       try {
         const count = await this.payload.count({
-          collection: result.collection,
+          collection: result.collection as any,
         });
 
         if (count.totalDocs !== result.successCount) {

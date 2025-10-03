@@ -1,15 +1,7 @@
-import {
-	type MigrateDownArgs,
-	type MigrateUpArgs,
-	sql,
-} from "@payloadcms/db-postgres";
+import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
-export async function up({
-	db,
-	payload: _payload,
-	req: _req,
-}: MigrateUpArgs): Promise<void> {
-	await db.execute(sql`
+export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
   CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
   CREATE TYPE "payload"."enum_downloads_category" AS ENUM('document', 'template', 'resource', 'software', 'media', 'archive', 'other');
@@ -29,14 +21,22 @@ export async function up({
   CREATE TYPE "payload"."enum_course_quizzes_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__course_quizzes_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_quiz_questions_type" AS ENUM('multiple_choice');
-  CREATE TYPE "payload"."enum_survey_questions_type" AS ENUM('multiple_choice', 'text_field', 'scale');
+  CREATE TYPE "payload"."enum_survey_questions_type" AS ENUM('multiple_choice', 'text_field', 'textarea', 'scale');
   CREATE TYPE "payload"."enum_survey_questions_questionspin" AS ENUM('Positive', 'Negative');
   CREATE TYPE "payload"."enum_survey_questions_status" AS ENUM('draft', 'published');
-  CREATE TYPE "payload"."enum__survey_questions_v_version_type" AS ENUM('multiple_choice', 'text_field', 'scale');
+  CREATE TYPE "payload"."enum__survey_questions_v_version_type" AS ENUM('multiple_choice', 'text_field', 'textarea', 'scale');
   CREATE TYPE "payload"."enum__survey_questions_v_version_questionspin" AS ENUM('Positive', 'Negative');
   CREATE TYPE "payload"."enum__survey_questions_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_surveys_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__surveys_v_version_status" AS ENUM('draft', 'published');
+  CREATE TABLE "payload"."users_sessions" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" uuid NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"created_at" timestamp(3) with time zone,
+  	"expires_at" timestamp(3) with time zone NOT NULL
+  );
+  
   CREATE TABLE "payload"."users" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"name" varchar,
@@ -418,6 +418,7 @@ export async function up({
   	"todo_complete_quiz" boolean DEFAULT false,
   	"slug" varchar,
   	"description" varchar,
+  	"thumbnail_id" uuid,
   	"content" jsonb,
   	"lesson_number" numeric,
   	"estimated_duration" numeric,
@@ -449,6 +450,7 @@ export async function up({
   	"version_todo_complete_quiz" boolean DEFAULT false,
   	"version_slug" varchar,
   	"version_description" varchar,
+  	"version_thumbnail_id" uuid,
   	"version_content" jsonb,
   	"version_lesson_number" numeric,
   	"version_estimated_duration" numeric,
@@ -678,6 +680,7 @@ export async function up({
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
+  ALTER TABLE "payload"."users_sessions" ADD CONSTRAINT "users_sessions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."media_tags" ADD CONSTRAINT "media_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."media"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."downloads_tags" ADD CONSTRAINT "downloads_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."posts_categories" ADD CONSTRAINT "posts_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."posts"("id") ON DELETE cascade ON UPDATE no action;
@@ -724,12 +727,14 @@ export async function up({
   ALTER TABLE "payload"."_courses_v" ADD CONSTRAINT "_courses_v_parent_id_courses_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."courses"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_courses_v_rels" ADD CONSTRAINT "_courses_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_courses_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_courses_v_rels" ADD CONSTRAINT "_courses_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."course_lessons" ADD CONSTRAINT "course_lessons_thumbnail_id_media_id_fk" FOREIGN KEY ("thumbnail_id") REFERENCES "payload"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."course_lessons" ADD CONSTRAINT "course_lessons_course_id_id_courses_id_fk" FOREIGN KEY ("course_id_id") REFERENCES "payload"."courses"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."course_lessons" ADD CONSTRAINT "course_lessons_quiz_id_id_course_quizzes_id_fk" FOREIGN KEY ("quiz_id_id") REFERENCES "payload"."course_quizzes"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."course_lessons" ADD CONSTRAINT "course_lessons_survey_id_id_surveys_id_fk" FOREIGN KEY ("survey_id_id") REFERENCES "payload"."surveys"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."course_lessons_rels" ADD CONSTRAINT "course_lessons_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."course_lessons"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."course_lessons_rels" ADD CONSTRAINT "course_lessons_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_course_lessons_v" ADD CONSTRAINT "_course_lessons_v_parent_id_course_lessons_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."course_lessons"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."_course_lessons_v" ADD CONSTRAINT "_course_lessons_v_version_thumbnail_id_media_id_fk" FOREIGN KEY ("version_thumbnail_id") REFERENCES "payload"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_course_lessons_v" ADD CONSTRAINT "_course_lessons_v_version_course_id_id_courses_id_fk" FOREIGN KEY ("version_course_id_id") REFERENCES "payload"."courses"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_course_lessons_v" ADD CONSTRAINT "_course_lessons_v_version_quiz_id_id_course_quizzes_id_fk" FOREIGN KEY ("version_quiz_id_id") REFERENCES "payload"."course_quizzes"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_course_lessons_v" ADD CONSTRAINT "_course_lessons_v_version_survey_id_id_surveys_id_fk" FOREIGN KEY ("version_survey_id_id") REFERENCES "payload"."surveys"("id") ON DELETE set null ON UPDATE no action;
@@ -766,6 +771,8 @@ export async function up({
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_surveys_fk" FOREIGN KEY ("surveys_id") REFERENCES "payload"."surveys"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."payload_preferences"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "payload"."users"("id") ON DELETE cascade ON UPDATE no action;
+  CREATE INDEX "users_sessions_order_idx" ON "payload"."users_sessions" USING btree ("_order");
+  CREATE INDEX "users_sessions_parent_id_idx" ON "payload"."users_sessions" USING btree ("_parent_id");
   CREATE INDEX "users_updated_at_idx" ON "payload"."users" USING btree ("updated_at");
   CREATE INDEX "users_created_at_idx" ON "payload"."users" USING btree ("created_at");
   CREATE UNIQUE INDEX "users_email_idx" ON "payload"."users" USING btree ("email");
@@ -892,6 +899,7 @@ export async function up({
   CREATE INDEX "_courses_v_rels_path_idx" ON "payload"."_courses_v_rels" USING btree ("path");
   CREATE INDEX "_courses_v_rels_downloads_id_idx" ON "payload"."_courses_v_rels" USING btree ("downloads_id");
   CREATE UNIQUE INDEX "course_lessons_slug_idx" ON "payload"."course_lessons" USING btree ("slug");
+  CREATE INDEX "course_lessons_thumbnail_idx" ON "payload"."course_lessons" USING btree ("thumbnail_id");
   CREATE INDEX "course_lessons_course_id_idx" ON "payload"."course_lessons" USING btree ("course_id_id");
   CREATE INDEX "course_lessons_quiz_id_idx" ON "payload"."course_lessons" USING btree ("quiz_id_id");
   CREATE INDEX "course_lessons_survey_id_idx" ON "payload"."course_lessons" USING btree ("survey_id_id");
@@ -904,6 +912,7 @@ export async function up({
   CREATE INDEX "course_lessons_rels_downloads_id_idx" ON "payload"."course_lessons_rels" USING btree ("downloads_id");
   CREATE INDEX "_course_lessons_v_parent_idx" ON "payload"."_course_lessons_v" USING btree ("parent_id");
   CREATE INDEX "_course_lessons_v_version_version_slug_idx" ON "payload"."_course_lessons_v" USING btree ("version_slug");
+  CREATE INDEX "_course_lessons_v_version_version_thumbnail_idx" ON "payload"."_course_lessons_v" USING btree ("version_thumbnail_id");
   CREATE INDEX "_course_lessons_v_version_version_course_id_idx" ON "payload"."_course_lessons_v" USING btree ("version_course_id_id");
   CREATE INDEX "_course_lessons_v_version_version_quiz_id_idx" ON "payload"."_course_lessons_v" USING btree ("version_quiz_id_id");
   CREATE INDEX "_course_lessons_v_version_version_survey_id_idx" ON "payload"."_course_lessons_v" USING btree ("version_survey_id_id");
@@ -1006,16 +1015,13 @@ export async function up({
   CREATE INDEX "payload_preferences_rels_path_idx" ON "payload"."payload_preferences_rels" USING btree ("path");
   CREATE INDEX "payload_preferences_rels_users_id_idx" ON "payload"."payload_preferences_rels" USING btree ("users_id");
   CREATE INDEX "payload_migrations_updated_at_idx" ON "payload"."payload_migrations" USING btree ("updated_at");
-  CREATE INDEX "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`);
+  CREATE INDEX "payload_migrations_created_at_idx" ON "payload"."payload_migrations" USING btree ("created_at");`)
 }
 
-export async function down({
-	db,
-	payload: _payload,
-	req: _req,
-}: MigrateDownArgs): Promise<void> {
-	await db.execute(sql`
-   DROP TABLE "payload"."users" CASCADE;
+export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
+   DROP TABLE "payload"."users_sessions" CASCADE;
+  DROP TABLE "payload"."users" CASCADE;
   DROP TABLE "payload"."media_tags" CASCADE;
   DROP TABLE "payload"."media" CASCADE;
   DROP TABLE "payload"."downloads_tags" CASCADE;
@@ -1099,5 +1105,5 @@ export async function down({
   DROP TYPE "payload"."enum__survey_questions_v_version_questionspin";
   DROP TYPE "payload"."enum__survey_questions_v_version_status";
   DROP TYPE "payload"."enum_surveys_status";
-  DROP TYPE "payload"."enum__surveys_v_version_status";`);
+  DROP TYPE "payload"."enum__surveys_v_version_status";`)
 }

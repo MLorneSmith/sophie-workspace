@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ContentProcessor } from './content-processor';
 import type { Payload, ReferenceCache, SeedRecord } from '../types';
+import type { DataFromCollectionSlug } from 'payload';
 
 describe('ContentProcessor', () => {
   let mockPayload: Payload;
@@ -39,7 +40,7 @@ describe('ContentProcessor', () => {
         title: 'Data-Driven Marketing',
       };
 
-      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord);
+      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord as DataFromCollectionSlug<'courses'>);
 
       const uuid = await processor.processRecord(record);
 
@@ -61,7 +62,7 @@ describe('ContentProcessor', () => {
         slug: 'test-course',
       };
 
-      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord);
+      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord as DataFromCollectionSlug<'courses'>);
 
       await processor.processRecord(record);
 
@@ -82,7 +83,7 @@ describe('ContentProcessor', () => {
       };
 
       const mockCreatedRecord = { id: 'uuid-123', title: 'Test' };
-      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord);
+      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord as DataFromCollectionSlug<'courses'>);
 
       await processor.processRecord(record);
 
@@ -105,7 +106,7 @@ describe('ContentProcessor', () => {
       };
 
       const mockCreatedRecord = { id: 'uuid-123', ...record };
-      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord);
+      vi.mocked(mockPayload.create).mockResolvedValue(mockCreatedRecord as DataFromCollectionSlug<'courses'>);
 
       await processor.processRecord(record);
 
@@ -191,9 +192,9 @@ describe('ContentProcessor', () => {
       ];
 
       vi.mocked(mockPayload.create)
-        .mockResolvedValueOnce({ id: 'uuid-1', title: 'Course 1' })
-        .mockResolvedValueOnce({ id: 'uuid-2', title: 'Course 2' })
-        .mockResolvedValueOnce({ id: 'uuid-3', title: 'Course 3' });
+        .mockResolvedValueOnce({ id: 'uuid-1', title: 'Course 1' } as DataFromCollectionSlug<'courses'>)
+        .mockResolvedValueOnce({ id: 'uuid-2', title: 'Course 2' } as DataFromCollectionSlug<'courses'>)
+        .mockResolvedValueOnce({ id: 'uuid-3', title: 'Course 3' } as DataFromCollectionSlug<'courses'>);
 
       const results = await processor.processAll(records);
 
@@ -213,8 +214,8 @@ describe('ContentProcessor', () => {
       ];
 
       vi.mocked(mockPayload.create)
-        .mockResolvedValueOnce({ id: 'uuid-ddm', title: 'Data-Driven Marketing' })
-        .mockResolvedValueOnce({ id: 'uuid-ai', title: 'AI Basics' });
+        .mockResolvedValueOnce({ id: 'uuid-ddm', title: 'Data-Driven Marketing' } as DataFromCollectionSlug<'courses'>)
+        .mockResolvedValueOnce({ id: 'uuid-ai', title: 'AI Basics' } as DataFromCollectionSlug<'courses'>);
 
       await processor.processAll(records);
 
@@ -230,9 +231,9 @@ describe('ContentProcessor', () => {
       ];
 
       vi.mocked(mockPayload.create)
-        .mockResolvedValueOnce({ id: 'uuid-1', title: 'Course 1' })
+        .mockResolvedValueOnce({ id: 'uuid-1', title: 'Course 1' } as DataFromCollectionSlug<'courses'>)
         .mockRejectedValueOnce(new Error('Validation failed'))
-        .mockResolvedValueOnce({ id: 'uuid-3', title: 'Course 3' });
+        .mockResolvedValueOnce({ id: 'uuid-3', title: 'Course 3' } as DataFromCollectionSlug<'courses'>);
 
       const results = await processor.processAll(records);
 
@@ -266,7 +267,7 @@ describe('ContentProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'lesson-uuid',
         ...record,
-      });
+      } as DataFromCollectionSlug<'course-lessons'>);
 
       const uuid = await lessonProcessor.processRecord(record);
 
@@ -298,7 +299,7 @@ describe('ContentProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'post-uuid',
         ...record,
-      });
+      } as DataFromCollectionSlug<'posts'>);
 
       const uuid = await postsProcessor.processRecord(record);
 
@@ -323,7 +324,7 @@ describe('ContentProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'uuid-minimal',
         title: 'Minimal Course',
-      });
+      } as DataFromCollectionSlug<'courses'>);
 
       const uuid = await processor.processRecord(record);
 
@@ -342,7 +343,7 @@ describe('ContentProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'uuid-no-ref',
         title: 'No Ref Course',
-      });
+      } as DataFromCollectionSlug<'courses'>);
 
       const uuid = await processor.processRecord(record);
 
@@ -360,7 +361,7 @@ describe('ContentProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'uuid-nullable',
         ...record,
-      });
+      } as DataFromCollectionSlug<'courses'>);
 
       await processor.processRecord(record);
 

@@ -36,7 +36,7 @@ export function parseYamlFile(content: string): ParsedContent {
 		}
 
 		return {
-			frontmatter: data,
+			frontmatter: data as unknown as Record<string, unknown>,
 			content: "", // YAML files don't have separate content
 			references: {
 				media: [],

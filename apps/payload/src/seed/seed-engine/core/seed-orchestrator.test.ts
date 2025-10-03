@@ -31,6 +31,7 @@ describe('SeedOrchestrator', () => {
     process.env.DATABASE_URI = 'postgresql://postgres:postgres@localhost:55322/postgres';
     process.env.PAYLOAD_SECRET = 'test_payload_secret_for_e2e_testing';
     process.env.PAYLOAD_PUBLIC_SERVER_URL = 'http://localhost:3020';
+    // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
 
     orchestrator = new SeedOrchestrator();

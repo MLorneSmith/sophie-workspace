@@ -118,7 +118,11 @@ export async function convertMdocToLexical(
 	const parsed = await parseMdocFile(content, payloadConfig);
 
 	// Use the default editor config
-	const editorConfig = defaultEditorConfig;
+	// @ts-ignore - Add resolvedFeatureMap
+	const editorConfig: any = {
+		...defaultEditorConfig,
+		resolvedFeatureMap: new Map(),
+	};
 
 	// Convert markdown to Lexical, handling special components
 	let processedMarkdown = parsed.content;

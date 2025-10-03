@@ -22,6 +22,7 @@ interface QuizMeta {
 
 interface CourseQuizJson {
 	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	instructions?: {
@@ -80,22 +81,22 @@ export async function convertCourseQuizzes(
 			// Extract quiz metadata
 			const quizMeta: QuizMeta = {
 				title:
-					frontmatter.title ||
+					String(frontmatter.title) ||
 					file.replace("-quiz.mdoc", "").replace(".mdoc", ""),
-				description: frontmatter.description || "",
+				description: String(frontmatter.description) || "",
 				timeLimit: frontmatter.timeLimit
-					? parseInt(frontmatter.timeLimit)
+					? parseInt(String(frontmatter.timeLimit))
 					: undefined,
 				passingScore: frontmatter.passingScore
-					? parseInt(frontmatter.passingScore)
+					? parseInt(String(frontmatter.passingScore))
 					: 70,
 				maxAttempts: frontmatter.maxAttempts
-					? parseInt(frontmatter.maxAttempts)
+					? parseInt(String(frontmatter.maxAttempts))
 					: 3,
-				showCorrectAnswers: frontmatter.showCorrectAnswers ?? true,
-				randomizeQuestions: frontmatter.randomizeQuestions ?? false,
-				course: frontmatter.course || frontmatter.courseId,
-				lesson: frontmatter.lesson || frontmatter.lessonId,
+				showCorrectAnswers: typeof frontmatter.showCorrectAnswers === "boolean" ? frontmatter.showCorrectAnswers : true,
+				randomizeQuestions: typeof frontmatter.randomizeQuestions === "boolean" ? frontmatter.randomizeQuestions : false,
+				course: frontmatter.course || frontmatter.courseId ? String(frontmatter.course || frontmatter.courseId) : undefined,
+				lesson: frontmatter.lesson || frontmatter.lessonId ? String(frontmatter.lesson || frontmatter.lessonId) : undefined,
 				sourceFile: file,
 			};
 
@@ -137,6 +138,7 @@ export async function convertCourseQuizzes(
 			// Build quiz object
 			const quiz: CourseQuizJson = {
 				id: quizId,
+				slug: quizId, // Add slug field for Payload CMS validation
 				title: quizMeta.title,
 				description: quizMeta.description,
 				passingScore: quizMeta.passingScore || 70,
@@ -207,7 +209,7 @@ async function loadQuizQuestionsMapping(): Promise<Record<string, unknown>> {
 function getQuestionReferencesForQuiz(quizId: string, mapping: Record<string, unknown>): string[] {
 	// Look for quiz in mapping
 	if (mapping[quizId]) {
-		return mapping[quizId].map(
+		return (mapping[quizId] as string[]).map(
 			(questionId: string) => `{ref:quiz-questions:${questionId}}`,
 		);
 	}
@@ -225,7 +227,7 @@ function getQuestionReferencesForQuiz(quizId: string, mapping: Record<string, un
 
 	for (const variation of variations) {
 		if (mapping[variation]) {
-			return mapping[variation].map(
+			return (mapping[variation] as string[]).map(
 				(questionId: string) => `{ref:quiz-questions:${questionId}}`,
 			);
 		}
@@ -282,28 +284,28 @@ function determineLessonFromQuiz(
 	// Map quiz names to lessons (remove -quiz suffix)
 	const lessonId = quizId.replace("-quiz", "");
 
-	// Common lesson mappings
+	// Common lesson mappings (keys without -quiz suffix since quizId has it stripped)
 	const quizToLessonMapping: Record<string, string> = {
-		"our-process-quiz": "our-process",
-		"structure-quiz": "what-is-structure",
-		"the-who-quiz": "the-who",
-		"introductions-quiz": "the-why-introductions",
-		"why-next-steps-quiz": "the-why-next-steps",
-		"idea-generation-quiz": "idea-generation",
-		"using-stories-quiz": "using-stories",
-		"storyboards-in-film-quiz": "storyboards-film",
-		"storyboards-in-presentations-quiz": "storyboards-presentations",
-		"fact-persuasion-quiz": "fact-based-persuasion",
-		"preparation-practice-quiz": "preparation-practice",
-		"performance-quiz": "performance",
-		"overview-elements-of-design-quiz": "fundamental-design-overview",
-		"elements-of-design-detail-quiz": "fundamental-design-detail",
-		"visual-perception-quiz": "visual-perception",
-		"gestalt-principles-quiz": "gestalt-principles",
-		"slide-composition-quiz": "slide-composition",
-		"tables-vs-graphs-quiz": "tables-vs-graphs",
-		"basic-graphs-quiz": "basic-graphs",
-		"specialist-graphs-quiz": "specialist-graphs",
+		"our-process": "our-process",
+		"structure": "what-is-structure",
+		"the-who": "the-who",
+		"introductions": "the-why-introductions",
+		"why-next-steps": "the-why-next-steps",
+		"idea-generation": "idea-generation",
+		"using-stories": "using-stories",
+		"storyboards-in-film": "storyboards-film",
+		"storyboards-in-presentations": "storyboards-presentations",
+		"fact-persuasion": "fact-based-persuasion",
+		"preparation-practice": "preparation-practice",
+		"performance": "performance",
+		"overview-elements-of-design": "fundamental-design-overview",
+		"elements-of-design-detail": "fundamental-design-detail",
+		"visual-perception": "visual-perception",
+		"gestalt-principles": "gestalt-principles",
+		"slide-composition": "slide-composition",
+		"tables-vs-graphs": "tables-vs-graphs",
+		"basic-graphs": "basic-graphs",
+		"specialist-graphs": "specialist-graphs",
 	};
 
 	return quizToLessonMapping[quizId] || lessonId;
@@ -339,14 +341,14 @@ function convertToSimpleLexical(markdown: string): {
 			return {
 				type: "heading",
 				tag: `h${Math.min(level, 6)}`,
-				children: [{ type: "text", text }],
+				children: [{ type: "text", text }], version: 1,
 			};
 		}
 
 		// Regular paragraph
 		return {
 			type: "paragraph",
-			children: [{ type: "text", text: paragraph }],
+			children: [{ type: "text", text: paragraph }], version: 1,
 		};
 	});
 
@@ -357,6 +359,7 @@ function convertToSimpleLexical(markdown: string): {
 			indent: 0,
 			version: 1,
 			children,
+			direction: null,
 		},
 	};
 }

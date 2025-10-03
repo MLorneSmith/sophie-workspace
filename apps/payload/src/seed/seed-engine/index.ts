@@ -212,10 +212,10 @@ export async function runSeeding(options: SeedOptions, logger: Logger): Promise<
 
       // Report results
       if (result.success) {
-        logger.success(`Seeded ${result.totalRecords} records successfully`);
+        logger.success(`Seeded ${result.summary.totalRecords} records successfully`);
         return EXIT_CODES.SUCCESS;
       } else {
-        logger.error(`Seeding completed with errors: ${result.errors.length} failed`);
+        logger.error(`Seeding completed with ${result.summary.failureCount} errors`);
         return EXIT_CODES.SEEDING_ERROR;
       }
     } catch (error) {

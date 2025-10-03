@@ -1,4 +1,4 @@
-import type { QuizDefinition } from "./definitions/quiz-types.js";
+import type { QuizDefinition } from "./definitions/quiz-types";
 
 // Corrected import path to source file
 

@@ -21,6 +21,7 @@ import { convertCourseLessons } from "./converters/course-lessons-converter";
 import { convertCourseQuizzes } from "./converters/course-quizzes-converter";
 import { convertSurveys } from "./converters/surveys-converter";
 import { convertDocumentation } from "./converters/documentation-converter";
+import { convertPrivate } from "./converters/private-converter";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -189,8 +190,9 @@ async function main() {
 					break;
 
 				case "private":
-					console.log("    ⏭️  Private converter not yet implemented");
-					continue;
+					await convertPrivate(referenceManager);
+					result = { success: true, data: [] };
+					break;
 
 				case "users":
 				case "media":
