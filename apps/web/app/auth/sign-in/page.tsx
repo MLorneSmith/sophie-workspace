@@ -26,11 +26,7 @@ export const generateMetadata = async () => {
 };
 
 async function SignInPage({ searchParams }: SignInPageProps) {
-  const { invite_token: inviteToken, next } = await searchParams;
-
-  const signUpPath =
-    pathsConfig.auth.signUp +
-    (inviteToken ? `?invite_token=${inviteToken}` : '');
+  const { next } = await searchParams;
 
   const paths = {
     callback: pathsConfig.auth.callback,
@@ -50,15 +46,11 @@ async function SignInPage({ searchParams }: SignInPageProps) {
         </p>
       </div>
 
-      <SignInMethodsContainer
-        inviteToken={inviteToken}
-        paths={paths}
-        providers={authConfig.providers}
-      />
+      <SignInMethodsContainer paths={paths} providers={authConfig.providers} />
 
       <div className={'flex justify-center'}>
         <Button asChild variant={'link'} size={'sm'}>
-          <Link href={signUpPath} prefetch={true}>
+          <Link href={pathsConfig.auth.signUp} prefetch={true}>
             <Trans i18nKey={'auth:doNotHaveAccountYet'} />
           </Link>
         </Button>

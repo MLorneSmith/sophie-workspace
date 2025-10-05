@@ -19,7 +19,7 @@ export function DocsContent({ selectedComponent }: DocsContentProps) {
   }
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="flex-1 overflow-y-auto">
       <Suspense fallback={<LoadingFallback />}>
         <div className="p-4">
           <component.component />

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Check } from 'lucide-react';
+import { Check, Lock } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,12 +17,14 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
@@ -101,62 +103,68 @@ export const UpdatePasswordForm = ({
             <NeedsReauthenticationAlert />
           </If>
 
-          <FormField
-            name={'newPassword'}
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>
-                    <Label>
-                      <Trans i18nKey={'account:newPassword'} />
-                    </Label>
-                  </FormLabel>
+          <div className="flex flex-col space-y-2">
+            <FormField
+              name={'newPassword'}
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <InputGroup className="dark:bg-background">
+                        <InputGroupAddon align="inline-start">
+                          <Lock className="h-4 w-4" />
+                        </InputGroupAddon>
 
-                  <FormControl>
-                    <Input
-                      data-test={'account-password-form-password-input'}
-                      autoComplete={'new-password'}
-                      required
-                      type={'password'}
-                      {...field}
-                    />
-                  </FormControl>
+                        <InputGroupInput
+                          data-test={'account-password-form-password-input'}
+                          autoComplete={'new-password'}
+                          required
+                          type={'password'}
+                          placeholder={t('account:newPassword')}
+                          {...field}
+                        />
+                      </InputGroup>
+                    </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
 
-          <FormField
-            name={'repeatPassword'}
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>
-                    <Label>
-                      <Trans i18nKey={'account:repeatPassword'} />
-                    </Label>
-                  </FormLabel>
+            <FormField
+              name={'repeatPassword'}
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <InputGroup className="dark:bg-background">
+                        <InputGroupAddon align="inline-start">
+                          <Lock className="h-4 w-4" />
+                        </InputGroupAddon>
 
-                  <FormControl>
-                    <Input
-                      data-test={'account-password-form-repeat-password-input'}
-                      required
-                      type={'password'}
-                      {...field}
-                    />
-                  </FormControl>
+                        <InputGroupInput
+                          data-test={
+                            'account-password-form-repeat-password-input'
+                          }
+                          required
+                          type={'password'}
+                          placeholder={t('account:repeatPassword')}
+                          {...field}
+                        />
+                      </InputGroup>
+                    </FormControl>
 
-                  <FormDescription>
-                    <Trans i18nKey={'account:repeatPasswordDescription'} />
-                  </FormDescription>
+                    <FormDescription>
+                      <Trans i18nKey={'account:repeatPasswordDescription'} />
+                    </FormDescription>
 
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
 
           <div>
             <Button disabled={updateUserMutation.isPending}>

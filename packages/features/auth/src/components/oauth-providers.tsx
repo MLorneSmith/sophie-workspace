@@ -32,7 +32,6 @@ const OAUTH_SCOPES: Partial<Record<Provider, string>> = {
 };
 
 export const OauthProviders: React.FC<{
-  inviteToken?: string;
   shouldCreateUser: boolean;
   enabledProviders: Provider[];
   queryParams?: Record<string, string>;
@@ -84,10 +83,6 @@ export const OauthProviders: React.FC<{
 
                   if (props.paths.returnPath) {
                     queryParams.set('next', props.paths.returnPath);
-                  }
-
-                  if (props.inviteToken) {
-                    queryParams.set('invite_token', props.inviteToken);
                   }
 
                   const redirectPath = [

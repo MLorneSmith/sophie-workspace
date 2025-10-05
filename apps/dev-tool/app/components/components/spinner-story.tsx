@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@kit/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +11,11 @@ import {
 import { Label } from '@kit/ui/label';
 import { Spinner } from '@kit/ui/spinner';
 
-import { generatePropsString, useStoryControls } from '../lib/story-utils';
+import {
+  formatCodeBlock,
+  generatePropsString,
+  useStoryControls,
+} from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
 import { SimpleStorySelect } from './story-select';
 
@@ -44,7 +49,9 @@ export function SpinnerStory() {
       { className: undefined },
     );
 
-    return `<Spinner${propsString} />`;
+    return formatCodeBlock(`<Spinner${propsString} />`, [
+      "import { Spinner } from '@kit/ui/spinner';",
+    ]);
   };
 
   const renderPreview = () => (
@@ -105,10 +112,10 @@ export function SpinnerStory() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <h4 className="text-sm font-semibold">Button Loading</h4>
-            <button className="bg-primary text-primary-foreground inline-flex items-center rounded-md px-4 py-2">
-              <Spinner className="mr-2 h-4 w-4" />
+            <Button className="gap-2" disabled>
+              <Spinner className="h-4 w-4" />
               Loading...
-            </button>
+            </Button>
           </div>
 
           <div className="space-y-2">

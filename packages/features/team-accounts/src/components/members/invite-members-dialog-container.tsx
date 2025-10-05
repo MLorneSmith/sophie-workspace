@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, X } from 'lucide-react';
+import { Mail, Plus, X } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -23,11 +23,14 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { toast } from '@kit/ui/sonner';
 import { Spinner } from '@kit/ui/spinner';
 import {
@@ -188,28 +191,26 @@ function InviteMembersForm({
         data-test={'invite-members-form'}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-2.5">
           {fieldArray.fields.map((field, index) => {
-            const isFirst = index === 0;
-
             const emailInputName = `invitations.${index}.email` as const;
             const roleInputName = `invitations.${index}.role` as const;
 
             return (
               <div data-test={'invite-member-form-item'} key={field.id}>
-                <div className={'flex items-end gap-x-1 md:space-x-2'}>
-                  <div className={'w-7/12'}>
+                <div className={'flex items-end gap-x-2'}>
+                  <InputGroup className={'bg-background w-full'}>
+                    <InputGroupAddon align="inline-start">
+                      <Mail className="h-4 w-4" />
+                    </InputGroupAddon>
+
                     <FormField
                       name={emailInputName}
                       render={({ field }) => {
                         return (
-                          <FormItem>
-                            <If condition={isFirst}>
-                              <FormLabel>{t('emailLabel')}</FormLabel>
-                            </If>
-
+                          <FormItem className="w-full">
                             <FormControl>
-                              <Input
+                              <InputGroupInput
                                 data-test={'invite-email-input'}
                                 placeholder={t('emailPlaceholder')}
                                 type="email"
@@ -223,39 +224,31 @@ function InviteMembersForm({
                         );
                       }}
                     />
-                  </div>
+                  </InputGroup>
 
-                  <div className={'w-4/12'}>
-                    <FormField
-                      name={roleInputName}
-                      render={({ field }) => {
-                        return (
-                          <FormItem>
-                            <If condition={isFirst}>
-                              <FormLabel>
-                                <Trans i18nKey={'teams:roleLabel'} />
-                              </FormLabel>
-                            </If>
+                  <FormField
+                    name={roleInputName}
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <MembershipRoleSelector
+                              triggerClassName={'m-0 bg-muted'}
+                              roles={roles}
+                              value={field.value}
+                              onChange={(role) => {
+                                form.setValue(field.name, role);
+                              }}
+                            />
+                          </FormControl>
 
-                            <FormControl>
-                              <MembershipRoleSelector
-                                triggerClassName={'m-0'}
-                                roles={roles}
-                                value={field.value}
-                                onChange={(role) => {
-                                  form.setValue(field.name, role);
-                                }}
-                              />
-                            </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
 
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </div>
-
-                  <div className={'flex w-[40px] items-end justify-end'}>
+                  <div className={'flex items-end justify-end'}>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -271,7 +264,7 @@ function InviteMembersForm({
                               form.clearErrors(emailInputName);
                             }}
                           >
-                            <X className={'h-4 lg:h-5'} />
+                            <X className={'h-4'} />
                           </Button>
                         </TooltipTrigger>
 

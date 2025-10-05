@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
+  devIndicators: {
+    position: 'bottom-right',
+  },
   logging: {
     fetches: {
       fullUrl: true,

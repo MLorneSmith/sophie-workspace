@@ -85,8 +85,10 @@ export const deletePersonalAccountAction = enhanceAction(
     // delete the user's account and cancel all subscriptions
     await service.deletePersonalAccount({
       adminClient: getSupabaseServerAdminClient(),
-      userId: user.id,
-      userEmail: user.email ?? null,
+      account: {
+        id: user.id,
+        email: user.email ?? null,
+      },
     });
 
     // sign out the user after deleting their account

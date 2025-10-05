@@ -49,26 +49,26 @@ class AuthCallbackService {
 
     const token_hash = searchParams.get('token_hash');
     const type = searchParams.get('type') as EmailOtpType | null;
-    const callbackParam =
-      searchParams.get('next') ?? searchParams.get('callback');
+
+    const redirectInfo = this.parseRedirectDestination(
+      searchParams.get('next') ?? searchParams.get('callback'),
+    );
 
     let nextPath: string | null = null;
-    const callbackUrl = callbackParam ? new URL(callbackParam) : null;
 
-    // if we have a callback url, we check if it has a next path
-    if (callbackUrl) {
-      // if we have a callback url, we check if it has a next path
-      const callbackNextPath = callbackUrl.searchParams.get('next');
+    // if we have a valid redirect destination
+    if (redirectInfo) {
+      nextPath = redirectInfo.path;
 
-      // if we have a next path in the callback url, we use that
-      if (callbackNextPath) {
-        nextPath = callbackNextPath;
-      } else {
-        nextPath = callbackUrl.pathname;
-      }
+      // preserve any query params from the redirect URL (e.g., invite_token)
+      // but exclude 'next' to avoid duplication
+      redirectInfo.params.forEach((value, key) => {
+        if (key !== 'next') {
+          url.searchParams.set(key, value);
+        }
+      });
     }
 
-    const inviteToken = callbackUrl?.searchParams.get('invite_token');
     const errorPath = params.errorPath ?? '/auth/callback/error';
 
     // remove the query params from the url
@@ -79,22 +79,6 @@ class AuthCallbackService {
     // if we have a next path, we redirect to that path
     if (nextPath) {
       url.pathname = nextPath;
-    }
-
-    // if we have an invite token, we append it to the redirect url
-    if (inviteToken) {
-      // if we have an invite token, we redirect to the join team page
-      // instead of the default next url. This is because the user is trying
-      // to join a team and we want to make sure they are redirected to the
-      // correct page.
-      url.pathname = params.joinTeamPath;
-      searchParams.set('invite_token', inviteToken);
-
-      const emailParam = callbackUrl?.searchParams.get('email');
-
-      if (emailParam) {
-        searchParams.set('email', emailParam);
-      }
     }
 
     if (token_hash && type) {
@@ -147,25 +131,9 @@ class AuthCallbackService {
     const authCode = searchParams.get('code');
     const error = searchParams.get('error');
     const nextUrlPathFromParams = searchParams.get('next');
-    const inviteToken = searchParams.get('invite_token');
     const errorPath = params.errorPath ?? '/auth/callback/error';
 
-    let nextUrl = nextUrlPathFromParams ?? params.redirectPath;
-
-    // if we have an invite token, we redirect to the join team page
-    // instead of the default next url. This is because the user is trying
-    // to join a team and we want to make sure they are redirected to the
-    // correct page.
-    if (inviteToken) {
-      const emailParam = searchParams.get('email');
-
-      const urlParams = new URLSearchParams({
-        invite_token: inviteToken,
-        email: emailParam ?? '',
-      });
-
-      nextUrl = `${params.joinTeamPath}?${urlParams.toString()}`;
-    }
+    const nextUrl = nextUrlPathFromParams ?? params.redirectPath;
 
     if (authCode) {
       try {
@@ -212,9 +180,46 @@ class AuthCallbackService {
   }
 
   private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) {
-    if (this.isLocalhost(url.host) && !this.isLocalhost(host)) {
-      url.host = host as string;
+    if (host && this.isLocalhost(url.host) && !this.isLocalhost(host)) {
+      url.host = host;
       url.port = '';
+    }
+  }
+
+  /**
+   * Parses a redirect URL and extracts the destination path and query params
+   * Handles nested 'next' parameters for chained redirects
+   */
+  private parseRedirectDestination(redirectParam: string | null): {
+    path: string;
+    params: URLSearchParams;
+  } | null {
+    if (!redirectParam) {
+      return null;
+    }
+
+    try {
+      const redirectUrl = new URL(redirectParam);
+
+      // check for nested 'next' parameter (chained redirect)
+      const nestedNext = redirectUrl.searchParams.get('next');
+
+      if (nestedNext) {
+        // use the nested path as the final destination
+        return {
+          path: nestedNext,
+          params: redirectUrl.searchParams,
+        };
+      }
+
+      // no nested redirect, use the pathname directly
+      return {
+        path: redirectUrl.pathname,
+        params: redirectUrl.searchParams,
+      };
+    } catch {
+      // invalid URL, ignore
+      return null;
     }
   }
 

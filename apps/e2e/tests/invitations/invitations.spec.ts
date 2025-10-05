@@ -120,16 +120,6 @@ test.describe('Full Invitation Flow', () => {
 
     await invitations.auth.visitConfirmEmailLink(firstEmail);
 
-    console.log(`Signing up with ${firstEmail} ...`);
-
-    await invitations.auth.signUp({
-      email: firstEmail,
-      password: 'password',
-      repeatPassword: 'password',
-    });
-
-    await invitations.auth.visitConfirmEmailLink(firstEmail);
-
     console.log(`Accepting invitation as ${firstEmail}`);
 
     await invitations.acceptInvitation();

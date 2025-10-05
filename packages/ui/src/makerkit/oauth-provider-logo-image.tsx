@@ -33,8 +33,8 @@ export function OauthProviderLogoImage({
 
 function getOAuthProviderLogos(): Record<string, string | React.ReactNode> {
   return {
-    email: <AtSign className={'size-[18px]'} />,
-    phone: <Phone className={'size-[18x]'} />,
+    email: <AtSign className={'size-[16px]'} />,
+    phone: <Phone className={'size-[16px]'} />,
     google: '/images/oauth/google.webp',
     facebook: '/images/oauth/facebook.webp',
     github: '/images/oauth/github.webp',

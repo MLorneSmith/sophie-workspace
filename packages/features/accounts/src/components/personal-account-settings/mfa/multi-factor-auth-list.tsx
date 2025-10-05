@@ -26,6 +26,13 @@ import {
 import { Badge } from '@kit/ui/badge';
 import { Button } from '@kit/ui/button';
 import { If } from '@kit/ui/if';
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@kit/ui/item';
 import { toast } from '@kit/ui/sonner';
 import { Spinner } from '@kit/ui/spinner';
 import {
@@ -100,17 +107,21 @@ function FactorsTableContainer(props: { userId: string }) {
   if (!allFactors.length) {
     return (
       <div className={'flex flex-col space-y-4'}>
-        <Alert>
-          <ShieldCheck className={'h-4'} />
+        <Item variant="outline">
+          <ItemMedia>
+            <ShieldCheck className={'h-4'} />
+          </ItemMedia>
 
-          <AlertTitle>
-            <Trans i18nKey={'account:multiFactorAuthHeading'} />
-          </AlertTitle>
+          <ItemContent>
+            <ItemTitle>
+              <Trans i18nKey={'account:multiFactorAuthHeading'} />
+            </ItemTitle>
 
-          <AlertDescription>
-            <Trans i18nKey={'account:multiFactorAuthDescription'} />
-          </AlertDescription>
-        </Alert>
+            <ItemDescription>
+              <Trans i18nKey={'account:multiFactorAuthDescription'} />
+            </ItemDescription>
+          </ItemContent>
+        </Item>
       </div>
     );
   }

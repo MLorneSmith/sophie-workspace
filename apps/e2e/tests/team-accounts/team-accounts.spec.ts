@@ -37,14 +37,6 @@ async function setupTeamWithMember(page: Page, memberRole = 'member') {
   // Sign up with the new member email and accept the invitation
   await invitations.auth.visitConfirmEmailLink(memberEmail);
 
-  await invitations.auth.signUp({
-    email: memberEmail,
-    password: 'password',
-    repeatPassword: 'password',
-  });
-
-  await invitations.auth.visitConfirmEmailLink(memberEmail);
-
   await invitations.acceptInvitation();
 
   await invitations.teamAccounts.openAccountsSelector();
@@ -248,9 +240,7 @@ test.describe('Team Ownership Transfer', () => {
     const memberRow = page.getByRole('row', { name: memberEmail });
 
     // Check for the primary owner badge on the member's row
-    await expect(memberRow.locator('text=Primary Owner')).toBeVisible({
-      timeout: 5000,
-    });
+    await expect(memberRow.locator('text=Primary Owner')).toBeVisible();
 
     // The original owner should no longer have the primary owner badge
     const ownerRow = page.getByRole('row', { name: ownerEmail.split('@')[0] });

@@ -18,8 +18,6 @@ import { OtpSignInContainer } from './otp-sign-in-container';
 import { PasswordSignInContainer } from './password-sign-in-container';
 
 export function SignInMethodsContainer(props: {
-  inviteToken?: string;
-
   paths: {
     callback: string;
     joinTeam: string;
@@ -40,22 +38,10 @@ export function SignInMethodsContainer(props: {
     : '';
 
   const onSignIn = useCallback(() => {
-    // if the user has an invite token, we should join the team
-    if (props.inviteToken) {
-      const searchParams = new URLSearchParams({
-        invite_token: props.inviteToken,
-      });
+    const returnPath = props.paths.returnPath || '/home';
 
-      const joinTeamPath = props.paths.joinTeam + '?' + searchParams.toString();
-
-      router.replace(joinTeamPath);
-    } else {
-      const returnPath = props.paths.returnPath || '/home';
-
-      // otherwise, we should redirect to the return path
-      router.replace(returnPath);
-    }
-  }, [props.inviteToken, props.paths.joinTeam, props.paths.returnPath, router]);
+    router.replace(returnPath);
+  }, [props.paths.returnPath, router]);
 
   return (
     <>
@@ -67,17 +53,13 @@ export function SignInMethodsContainer(props: {
 
       <If condition={props.providers.magicLink}>
         <MagicLinkAuthContainer
-          inviteToken={props.inviteToken}
           redirectUrl={redirectUrl}
           shouldCreateUser={false}
         />
       </If>
 
       <If condition={props.providers.otp}>
-        <OtpSignInContainer
-          inviteToken={props.inviteToken}
-          shouldCreateUser={false}
-        />
+        <OtpSignInContainer shouldCreateUser={false} />
       </If>
 
       <If condition={props.providers.oAuth.length}>
@@ -95,7 +77,6 @@ export function SignInMethodsContainer(props: {
 
         <OauthProviders
           enabledProviders={props.providers.oAuth}
-          inviteToken={props.inviteToken}
           shouldCreateUser={false}
           paths={{
             callback: props.paths.callback,

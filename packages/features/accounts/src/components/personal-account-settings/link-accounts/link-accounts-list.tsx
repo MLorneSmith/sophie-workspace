@@ -20,6 +20,15 @@ import {
 } from '@kit/ui/alert-dialog';
 import { Button } from '@kit/ui/button';
 import { If } from '@kit/ui/if';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from '@kit/ui/item';
 import { OauthProviderLogoImage } from '@kit/ui/oauth-provider-logo-image';
 import { Separator } from '@kit/ui/separator';
 import { toast } from '@kit/ui/sonner';
@@ -90,73 +99,76 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 
           <div className="flex flex-col space-y-2">
             {connectedIdentities.map((identity) => (
-              <div
-                key={identity.id}
-                className="bg-muted/50 flex h-14 items-center justify-between rounded-lg border p-3"
-              >
-                <div className="flex items-center gap-3">
+              <Item key={identity.id} variant="outline">
+                <ItemMedia>
                   <OauthProviderLogoImage providerId={identity.provider} />
+                </ItemMedia>
 
-                  <div className="flex flex-col">
-                    <span className="flex items-center gap-x-2 text-sm font-medium capitalize">
-                      <CheckCircle className="h-3 w-3 text-green-500" />
+                <ItemContent>
+                  <ItemHeader className="flex items-center gap-3">
+                    <div className="flex flex-col">
+                      <ItemTitle className="flex items-center gap-x-2 text-sm font-medium capitalize">
+                        <CheckCircle className="h-3 w-3 text-green-500" />
 
-                      <span>{identity.provider}</span>
-                    </span>
+                        <span>{identity.provider}</span>
+                      </ItemTitle>
 
-                    <If condition={identity.identity_data?.email}>
-                      <span className="text-muted-foreground text-xs">
-                        {identity.identity_data?.email as string}
-                      </span>
-                    </If>
-                  </div>
-                </div>
+                      <If condition={identity.identity_data?.email}>
+                        <ItemDescription>
+                          {identity.identity_data?.email as string}
+                        </ItemDescription>
+                      </If>
+                    </div>
+                  </ItemHeader>
+                </ItemContent>
 
-                <If condition={hasMultipleIdentities}>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={unlinkMutation.isPending}
-                      >
-                        <If condition={unlinkMutation.isPending}>
-                          <Spinner className="mr-2 h-3 w-3" />
-                        </If>
-                        <Trans i18nKey={'account:unlinkAccount'} />
-                      </Button>
-                    </AlertDialogTrigger>
-
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          <Trans i18nKey={'account:confirmUnlinkAccount'} />
-                        </AlertDialogTitle>
-
-                        <AlertDialogDescription>
-                          <Trans
-                            i18nKey={'account:unlinkAccountConfirmation'}
-                            values={{ provider: identity.provider }}
-                          />
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          <Trans i18nKey={'common:cancel'} />
-                        </AlertDialogCancel>
-
-                        <AlertDialogAction
-                          onClick={() => handleUnlinkAccount(identity)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                <ItemActions>
+                  <If condition={hasMultipleIdentities}>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={unlinkMutation.isPending}
                         >
+                          <If condition={unlinkMutation.isPending}>
+                            <Spinner className="mr-2 h-3 w-3" />
+                          </If>
                           <Trans i18nKey={'account:unlinkAccount'} />
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </If>
-              </div>
+                        </Button>
+                      </AlertDialogTrigger>
+
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            <Trans i18nKey={'account:confirmUnlinkAccount'} />
+                          </AlertDialogTitle>
+
+                          <AlertDialogDescription>
+                            <Trans
+                              i18nKey={'account:unlinkAccountConfirmation'}
+                              values={{ provider: identity.provider }}
+                            />
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>
+                            <Trans i18nKey={'common:cancel'} />
+                          </AlertDialogCancel>
+
+                          <AlertDialogAction
+                            onClick={() => handleUnlinkAccount(identity)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            <Trans i18nKey={'account:unlinkAccount'} />
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </If>
+                </ItemActions>
+              </Item>
             ))}
           </div>
         </div>
@@ -179,19 +191,28 @@ export function LinkAccountsList(props: { providers: Provider[] }) {
 
           <div className="flex flex-col space-y-2">
             {availableProviders.map((provider) => (
-              <button
+              <Item
                 key={provider}
-                className="hover:bg-muted/50 flex h-14 items-center justify-between rounded-lg border p-3 transition-colors"
+                variant="outline"
                 onClick={() => handleLinkAccount(provider)}
+                role="button"
+                className="hover:bg-muted/50"
               >
-                <div className="flex items-center gap-3">
+                <ItemMedia>
                   <OauthProviderLogoImage providerId={provider} />
+                </ItemMedia>
 
-                  <span className="text-sm font-medium capitalize">
-                    {provider}
-                  </span>
-                </div>
-              </button>
+                <ItemContent>
+                  <ItemTitle className="capitalize">{provider}</ItemTitle>
+
+                  <ItemDescription>
+                    <Trans
+                      i18nKey={'account:linkAccountDescription'}
+                      values={{ provider }}
+                    />
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
             ))}
           </div>
         </div>

@@ -135,5 +135,6 @@
   "accountUnlinked": "Account successfully unlinked",
   "linkEmailPassword": "Email & Password",
   "linkEmailPasswordDescription": "Add an email and password to your account for additional sign-in options",
-  "noAccountsAvailable": "No additional accounts available to link"
+  "noAccountsAvailable": "No additional accounts available to link",
+  "linkAccountDescription": "Link account to sign in with {{provider}}"
 }

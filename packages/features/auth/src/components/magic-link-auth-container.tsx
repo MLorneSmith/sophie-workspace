@@ -28,13 +28,11 @@ import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 import { TermsAndConditionsFormField } from './terms-and-conditions-form-field';
 
 export function MagicLinkAuthContainer({
-  inviteToken,
   redirectUrl,
   shouldCreateUser,
   defaultValues,
   displayTermsCheckbox,
 }: {
-  inviteToken?: string;
   redirectUrl: string;
   shouldCreateUser: boolean;
   displayTermsCheckbox?: boolean;
@@ -62,10 +60,6 @@ export function MagicLinkAuthContainer({
 
   const onSubmit = ({ email }: { email: string }) => {
     const url = new URL(redirectUrl);
-
-    if (inviteToken) {
-      url.searchParams.set('invite_token', inviteToken);
-    }
 
     const emailRedirectTo = url.href;
 

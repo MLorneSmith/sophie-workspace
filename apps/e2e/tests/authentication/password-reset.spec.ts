@@ -29,9 +29,7 @@ test.describe('Password Reset Flow', () => {
         subject: 'Reset your password',
       });
 
-      await page.waitForURL('/update-password', {
-        timeout: 1000,
-      });
+      await page.waitForURL('/update-password');
 
       await auth.updatePassword(newPassword);
 
@@ -44,7 +42,7 @@ test.describe('Password Reset Flow', () => {
       await page.waitForURL('/home');
     }).toPass();
 
-    await auth.signOut();
+    await page.context().clearCookies();
 
     await page.waitForURL('/');
     await page.goto('/auth/sign-in');

@@ -56,12 +56,12 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
 
       const verifyMfaUrl = `${pathsConfig.auth.verifyMfa}?${urlParams.toString()}`;
 
-      // if the user needs to verify MFA, redirect them to the MFA verification page
+      // if the user needs to verify MFA
+      // redirect them to the MFA verification page
       redirect(verifyMfaUrl);
     } else {
       const urlParams = new URLSearchParams({
         invite_token: token,
-        email: searchParams.email ?? '',
       });
 
       const nextUrl = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
@@ -78,8 +78,10 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   // the user is logged in, we can now check if the token is valid
   const invitation = await api.getInvitation(adminClient, token);
 
-  // the invitation is not found or expired
-  if (!invitation) {
+  // the invitation is not found or expired or the email is not the same as the user's email
+  const isInvitationValid = invitation?.email === auth.data.email;
+
+  if (!isInvitationValid) {
     return (
       <AuthLayoutShell Logo={AppLogo}>
         <InviteNotFoundOrExpired />

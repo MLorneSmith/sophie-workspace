@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@kit/ui/card';
 import {
+  EmptyMedia,
   EmptyState,
   EmptyStateButton,
   EmptyStateHeading,
@@ -290,7 +291,9 @@ export function EmptyStateStory() {
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
           <EmptyState className="min-h-[200px]">
-            <Package className="text-muted-foreground mb-4 h-12 w-12" />
+            <EmptyMedia variant="icon">
+              <Package className="text-muted-foreground h-8 w-8" />
+            </EmptyMedia>
             <EmptyStateHeading>No products</EmptyStateHeading>
             <EmptyStateText>
               Add your first product to start selling.
@@ -299,7 +302,9 @@ export function EmptyStateStory() {
           </EmptyState>
 
           <EmptyState className="min-h-[200px]">
-            <FileText className="text-muted-foreground mb-4 h-12 w-12" />
+            <EmptyMedia variant="icon">
+              <FileText className="text-muted-foreground h-8 w-8" />
+            </EmptyMedia>
             <EmptyStateHeading>No documents</EmptyStateHeading>
             <EmptyStateText>
               Upload or create your first document.

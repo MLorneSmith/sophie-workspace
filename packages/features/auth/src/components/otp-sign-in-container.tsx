@@ -36,7 +36,6 @@ const OtpSchema = z.object({ token: z.string().min(6).max(6) });
 
 type OtpSignInContainerProps = {
   shouldCreateUser: boolean;
-  inviteToken?: string;
 };
 
 export function OtpSignInContainer(props: OtpSignInContainerProps) {
@@ -80,19 +79,9 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
     recordAuthMethod('otp', { email });
 
     // on sign ups we redirect to the app home
-    const inviteToken = props.inviteToken;
     const next = params.get('next') ?? '/home';
 
-    if (inviteToken) {
-      const params = new URLSearchParams({
-        invite_token: inviteToken,
-        next,
-      });
-
-      router.replace(`/join?${params.toString()}`);
-    } else {
-      router.replace(next);
-    }
+    router.replace(next);
   };
 
   if (isEmailStep) {

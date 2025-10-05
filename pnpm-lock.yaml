@@ -634,9 +634,6 @@ importers:
       '@kit/supabase':
         specifier: workspace:*
         version: link:../supabase
-      '@kit/team-accounts':
-        specifier: workspace:*
-        version: link:../features/team-accounts
       '@kit/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript

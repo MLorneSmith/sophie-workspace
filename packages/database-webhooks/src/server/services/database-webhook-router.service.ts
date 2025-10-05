@@ -24,38 +24,12 @@ class DatabaseWebhookRouterService {
    */
   async handleWebhook(body: RecordChange<keyof Tables>) {
     switch (body.table) {
-      case 'invitations': {
-        const payload = body as RecordChange<typeof body.table>;
-
-        return this.handleInvitationsWebhook(payload);
-      }
-
       case 'subscriptions': {
         const payload = body as RecordChange<typeof body.table>;
 
         return this.handleSubscriptionsWebhook(payload);
       }
-
-      case 'accounts': {
-        const payload = body as RecordChange<typeof body.table>;
-
-        return this.handleAccountsWebhook(payload);
-      }
-
-      default: {
-        return;
-      }
     }
-  }
-
-  private async handleInvitationsWebhook(body: RecordChange<'invitations'>) {
-    const { createAccountInvitationsWebhookService } = await import(
-      '@kit/team-accounts/webhooks'
-    );
-
-    const service = createAccountInvitationsWebhookService(this.adminClient);
-
-    return service.handleInvitationWebhook(body.record);
   }
 
   private async handleSubscriptionsWebhook(
@@ -69,18 +43,6 @@ class DatabaseWebhookRouterService {
       const service = createBillingWebhooksService();
 
       return service.handleSubscriptionDeletedWebhook(body.old_record);
-    }
-  }
-
-  private async handleAccountsWebhook(body: RecordChange<'accounts'>) {
-    if (body.type === 'DELETE' && body.old_record) {
-      const { createAccountWebhooksService } = await import(
-        '@kit/team-accounts/webhooks'
-      );
-
-      const service = createAccountWebhooksService();
-
-      return service.handleAccountDeletedWebhook(body.old_record);
     }
   }
 }

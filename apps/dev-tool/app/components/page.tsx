@@ -18,10 +18,10 @@ async function ComponentDocsPage(props: ComponentDocsPageProps) {
   }
 
   return (
-    <div className="bg-background flex h-screen">
+    <div className="bg-background flex h-screen overflow-x-hidden">
       <DocsSidebar selectedComponent={component} selectedCategory={category} />
 
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-x-hidden">
         <DocsHeader selectedComponent={component} />
         <DocsContent selectedComponent={component} />
       </div>

@@ -5,6 +5,7 @@ import { useTransition } from 'react';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Building } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -14,10 +15,13 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
@@ -87,17 +91,19 @@ export const UpdateTeamAccountNameForm = (props: {
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>
-                    <Trans i18nKey={'teams:teamNameInputLabel'} />
-                  </FormLabel>
-
                   <FormControl>
-                    <Input
-                      data-test={'team-name-input'}
-                      required
-                      placeholder={''}
-                      {...field}
-                    />
+                    <InputGroup className="dark:bg-background">
+                      <InputGroupAddon align="inline-start">
+                        <Building className="h-4 w-4" />
+                      </InputGroupAddon>
+
+                      <InputGroupInput
+                        data-test={'team-name-input'}
+                        required
+                        placeholder={t('teams:teamNameInputLabel')}
+                        {...field}
+                      />
+                    </InputGroup>
                   </FormControl>
 
                   <FormMessage />

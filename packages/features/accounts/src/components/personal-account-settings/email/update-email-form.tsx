@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckIcon } from '@radix-ui/react-icons';
+import { Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,11 +14,14 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
@@ -89,50 +93,57 @@ export function UpdateEmailForm({
         </If>
 
         <div className={'flex flex-col space-y-4'}>
-          <FormField
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'account:newEmail'} />
-                </FormLabel>
+          <div className="flex flex-col space-y-2">
+            <FormField
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <InputGroup className="dark:bg-background">
+                      <InputGroupAddon align="inline-start">
+                        <Mail className="h-4 w-4" />
+                      </InputGroupAddon>
 
-                <FormControl>
-                  <Input
-                    data-test={'account-email-form-email-input'}
-                    required
-                    type={'email'}
-                    placeholder={''}
-                    {...field}
-                  />
-                </FormControl>
+                      <InputGroupInput
+                        data-test={'account-email-form-email-input'}
+                        required
+                        type={'email'}
+                        placeholder={t('account:newEmail')}
+                        {...field}
+                      />
+                    </InputGroup>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-            name={'email'}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+              name={'email'}
+            />
 
-          <FormField
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'account:repeatEmail'} />
-                </FormLabel>
+            <FormField
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <InputGroup className="dark:bg-background">
+                      <InputGroupAddon align="inline-start">
+                        <Mail className="h-4 w-4" />
+                      </InputGroupAddon>
 
-                <FormControl>
-                  <Input
-                    {...field}
-                    data-test={'account-email-form-repeat-email-input'}
-                    required
-                    type={'email'}
-                  />
-                </FormControl>
+                      <InputGroupInput
+                        {...field}
+                        data-test={'account-email-form-repeat-email-input'}
+                        required
+                        type={'email'}
+                        placeholder={t('account:repeatEmail')}
+                      />
+                    </InputGroup>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-            name={'repeatEmail'}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+              name={'repeatEmail'}
+            />
+          </div>
 
           <div>
             <Button disabled={updateUserMutation.isPending}>

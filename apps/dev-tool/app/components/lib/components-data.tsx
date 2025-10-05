@@ -77,6 +77,16 @@ const ButtonStory = dynamic(
   },
 );
 
+const ButtonGroupStory = dynamic(
+  () =>
+    import('../components/button-group-story').then((mod) => ({
+      default: mod.ButtonGroupStory,
+    })),
+  {
+    loading: () => <LoadingFallback />,
+  },
+);
+
 const CardStory = dynamic(
   () =>
     import('../components/card-story').then((mod) => ({
@@ -287,6 +297,16 @@ const FormStory = dynamic(
   },
 );
 
+const FieldStory = dynamic(
+  () =>
+    import('../components/field-story').then((mod) => ({
+      default: mod.FieldStory,
+    })),
+  {
+    loading: () => <LoadingFallback />,
+  },
+);
+
 const HeadingStory = dynamic(
   () =>
     import('../components/heading-story').then((mod) => ({
@@ -297,10 +317,30 @@ const HeadingStory = dynamic(
   },
 );
 
+const KbdStory = dynamic(
+  () =>
+    import('../components/kbd-story').then((mod) => ({
+      default: mod.KbdStory,
+    })),
+  {
+    loading: () => <LoadingFallback />,
+  },
+);
+
 const InputOTPStory = dynamic(
   () =>
     import('../components/input-otp-story').then((mod) => ({
       default: mod.InputOTPStory,
+    })),
+  {
+    loading: () => <LoadingFallback />,
+  },
+);
+
+const InputGroupStory = dynamic(
+  () =>
+    import('../components/input-group-story').then((mod) => ({
+      default: mod.InputGroupStory,
     })),
   {
     loading: () => <LoadingFallback />,
@@ -367,6 +407,16 @@ const SimpleTableStory = dynamic(
   },
 );
 
+const ItemStory = dynamic(
+  () =>
+    import('../components/item-story').then((mod) => ({
+      default: mod.ItemStory,
+    })),
+  {
+    loading: () => <LoadingFallback />,
+  },
+);
+
 // Component type definition
 export interface ComponentInfo {
   id: string;
@@ -403,6 +453,34 @@ export const COMPONENTS_REGISTRY: ComponentInfo[] = [
       'className',
     ],
     icon: Type,
+  },
+
+  {
+    id: 'field',
+    name: 'Field',
+    category: 'Forms',
+    subcategory: 'Structure',
+    description:
+      'Primitive set for arranging labels, descriptions, and validation messaging.',
+    status: 'stable',
+    component: FieldStory,
+    sourceFile: '@kit/ui/field',
+    props: ['orientation', 'className', 'data-invalid'],
+    icon: FileText,
+  },
+
+  {
+    id: 'input-group',
+    name: 'Input Group',
+    category: 'Forms',
+    subcategory: 'Fields',
+    description:
+      'Wrap inputs with inline addons, keyboard hints, and primary actions.',
+    status: 'stable',
+    component: InputGroupStory,
+    sourceFile: '@kit/ui/input-group',
+    props: ['className', 'role', 'children'],
+    icon: ToggleLeft,
   },
 
   {
@@ -806,6 +884,20 @@ export const COMPONENTS_REGISTRY: ComponentInfo[] = [
     icon: HeadingIcon,
   },
 
+  {
+    id: 'kbd',
+    name: 'Keyboard Key',
+    category: 'Display',
+    subcategory: 'Helpers',
+    description:
+      'Display keyboard shortcuts inline, in tooltips, or within helper text.',
+    status: 'stable',
+    component: KbdStory,
+    sourceFile: '@kit/ui/kbd',
+    props: ['className', 'children'],
+    icon: Command,
+  },
+
   // Interaction Components
   {
     id: 'button',
@@ -820,6 +912,20 @@ export const COMPONENTS_REGISTRY: ComponentInfo[] = [
     icon: MousePointer,
   },
 
+  {
+    id: 'button-group',
+    name: 'Button Group',
+    category: 'Interaction',
+    subcategory: 'Actions',
+    description:
+      'Coordinate related buttons, dropdowns, and inputs within a shared toolbar.',
+    status: 'stable',
+    component: ButtonGroupStory,
+    sourceFile: '@kit/ui/button-group',
+    props: ['orientation', 'className', 'children'],
+    icon: CircleDot,
+  },
+
   // Layout Components
   {
     id: 'card',
@@ -832,6 +938,20 @@ export const COMPONENTS_REGISTRY: ComponentInfo[] = [
     sourceFile: '@kit/ui/card',
     props: ['className', 'children'],
     icon: Layout,
+  },
+
+  {
+    id: 'item',
+    name: 'Item',
+    category: 'Layout',
+    subcategory: 'Lists',
+    description:
+      'Composable list item primitive with media, actions, and metadata slots.',
+    status: 'stable',
+    component: ItemStory,
+    sourceFile: '@kit/ui/item',
+    props: ['variant', 'size', 'asChild', 'className'],
+    icon: Layers,
   },
 
   {

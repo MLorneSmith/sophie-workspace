@@ -70,8 +70,10 @@ test.describe('Admin', () => {
       // use the email as the filter text
       const filterText = testUserEmail;
 
-      await filterAccounts(page, filterText);
-      await selectAccount(page, filterText);
+      await expect(async () => {
+        await filterAccounts(page, filterText);
+        await selectAccount(page, filterText);
+      }).toPass();
     });
 
     test('ban user flow', async ({ page }) => {
@@ -224,8 +226,10 @@ test.describe('Admin', () => {
 
       await page.goto(`/admin/accounts`);
 
-      await filterAccounts(page, filterText);
-      await selectAccount(page, filterText);
+      await expect(async () => {
+        await filterAccounts(page, filterText);
+        await selectAccount(page, filterText);
+      }).toPass();
 
       await page.getByTestId('admin-impersonate-button').click();
 
@@ -283,8 +287,10 @@ test.describe('Team Account Management', () => {
 
     await page.goto(`/admin/accounts`);
 
-    await filterAccounts(page, teamName);
-    await selectAccount(page, teamName);
+    await expect(async () => {
+      await filterAccounts(page, teamName);
+      await selectAccount(page, teamName);
+    }).toPass();
   });
 
   test('delete team account flow', async ({ page }) => {
@@ -340,15 +346,13 @@ async function filterAccounts(page: Page, email: string) {
 }
 
 async function selectAccount(page: Page, email: string) {
-  await expect(async () => {
-    const link = page
-      .locator('tr', { hasText: email.split('@')[0] })
-      .locator('a');
+  const link = page
+    .locator('tr', { hasText: email.split('@')[0] })
+    .locator('a');
 
-    await expect(link).toBeVisible();
+  await expect(link).toBeVisible();
 
-    await link.click();
+  await link.click();
 
-    await page.waitForURL(/\/admin\/accounts\/[^\/]+/);
-  }).toPass();
+  await page.waitForURL(/\/admin\/accounts\/[^\/]+/);
 }

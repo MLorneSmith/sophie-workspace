@@ -3,7 +3,6 @@
 import type { Provider } from '@supabase/supabase-js';
 
 import { isBrowser } from '@kit/shared/utils';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
 import { If } from '@kit/ui/if';
 import { Separator } from '@kit/ui/separator';
 import { Trans } from '@kit/ui/trans';
@@ -28,7 +27,6 @@ export function SignUpMethodsContainer(props: {
   };
 
   displayTermsCheckbox?: boolean;
-  inviteToken?: string;
 }) {
   const redirectUrl = getCallbackUrl(props);
   const defaultValues = getDefaultValues();
@@ -37,10 +35,6 @@ export function SignUpMethodsContainer(props: {
     <>
       {/* Show hint if user might already have an account */}
       <ExistingAccountHint />
-
-      <If condition={props.inviteToken}>
-        <InviteAlert />
-      </If>
 
       <If condition={props.providers.password}>
         <EmailPasswordSignUpContainer
@@ -51,15 +45,11 @@ export function SignUpMethodsContainer(props: {
       </If>
 
       <If condition={props.providers.otp}>
-        <OtpSignInContainer
-          inviteToken={props.inviteToken}
-          shouldCreateUser={true}
-        />
+        <OtpSignInContainer shouldCreateUser={true} />
       </If>
 
       <If condition={props.providers.magicLink}>
         <MagicLinkAuthContainer
-          inviteToken={props.inviteToken}
           redirectUrl={redirectUrl}
           shouldCreateUser={true}
           defaultValues={defaultValues}
@@ -82,7 +72,6 @@ export function SignUpMethodsContainer(props: {
 
         <OauthProviders
           enabledProviders={props.providers.oAuth}
-          inviteToken={props.inviteToken}
           shouldCreateUser={true}
           paths={{
             callback: props.paths.callback,
@@ -99,8 +88,6 @@ function getCallbackUrl(props: {
     callback: string;
     appHome: string;
   };
-
-  inviteToken?: string;
 }) {
   if (!isBrowser()) {
     return '';
@@ -109,10 +96,6 @@ function getCallbackUrl(props: {
   const redirectPath = props.paths.callback;
   const origin = window.location.origin;
   const url = new URL(redirectPath, origin);
-
-  if (props.inviteToken) {
-    url.searchParams.set('invite_token', props.inviteToken);
-  }
 
   const searchParams = new URLSearchParams(window.location.search);
   const next = searchParams.get('next');
@@ -130,27 +113,8 @@ function getDefaultValues() {
   }
 
   const searchParams = new URLSearchParams(window.location.search);
-  const inviteToken = searchParams.get('invite_token');
-
-  if (!inviteToken) {
-    return { email: '' };
-  }
 
   return {
     email: searchParams.get('email') ?? '',
   };
-}
-
-function InviteAlert() {
-  return (
-    <Alert variant={'info'}>
-      <AlertTitle>
-        <Trans i18nKey={'auth:inviteAlertHeading'} />
-      </AlertTitle>
-
-      <AlertDescription>
-        <Trans i18nKey={'auth:inviteAlertBody'} />
-      </AlertDescription>
-    </Alert>
-  );
 }

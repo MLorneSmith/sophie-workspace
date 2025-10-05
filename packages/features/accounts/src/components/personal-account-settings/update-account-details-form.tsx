@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -9,10 +10,13 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
@@ -66,18 +70,20 @@ export function UpdateAccountDetailsForm({
             name={'displayName'}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'account:name'} />
-                </FormLabel>
-
                 <FormControl>
-                  <Input
-                    data-test={'account-display-name'}
-                    minLength={2}
-                    placeholder={''}
-                    maxLength={100}
-                    {...field}
-                  />
+                  <InputGroup className="dark:bg-background">
+                    <InputGroupAddon align="inline-start">
+                      <User className="h-4 w-4" />
+                    </InputGroupAddon>
+
+                    <InputGroupInput
+                      data-test={'account-display-name'}
+                      minLength={2}
+                      placeholder={t('account:name')}
+                      maxLength={100}
+                      {...field}
+                    />
+                  </InputGroup>
                 </FormControl>
 
                 <FormMessage />
