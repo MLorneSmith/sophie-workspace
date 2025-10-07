@@ -123,11 +123,11 @@ function safeClone<T>(obj: T): T {
 			for (const [key, value] of Object.entries(obj)) {
 				try {
 					// Try to clone individual properties
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					// biome-ignore lint/suspicious/noExplicitAny: Safe type assertion for dynamic property access during cloning
 					(cloned as any)[key] = structuredClone(value);
 				} catch {
 					// If individual property can't be cloned (like functions), keep as-is
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					// biome-ignore lint/suspicious/noExplicitAny: Safe type assertion for dynamic property access during cloning
 					(cloned as any)[key] = value;
 				}
 			}
