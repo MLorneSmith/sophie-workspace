@@ -18,12 +18,14 @@
 		"format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@kit/shared": "workspace:*",
+		"zod": "^3.25.74"
+	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
-		"@kit/shared": "workspace:*",
-		"@kit/tsconfig": "workspace:*",
-		"zod": "^3.25.74"
+		"@kit/tsconfig": "workspace:*"
 	},
 	"prettier": "@kit/prettier-config"
 }
