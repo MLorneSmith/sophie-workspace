@@ -698,7 +698,7 @@ export interface SurveyQuestion {
   /**
    * The type of question
    */
-  type: 'multiple_choice' | 'text_field' | 'scale';
+  type: 'multiple_choice' | 'text_field' | 'textarea' | 'scale';
   /**
    * Additional context or instructions for the question
    */
