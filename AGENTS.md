@@ -73,6 +73,7 @@ pnpm typecheck
 
 - Run the typecheck command regularly to ensure your code is type-safe.
 - Run the linter and the formatter when your task is complete.
+
 ## Typescript
 
 - Write clean, clear, well-designed, explicit TypeScript
@@ -107,7 +108,8 @@ pnpm typecheck
 - Export page components using the `withI18n` utility
 - Add well-written page metadata to pages
 - Redirect using `redirect` following a server action instead of using client-side router
-- Since `redirect` throws an error, handle `catch` block using `isRedirectError` from `next/dist/client/components/redirect-error` in client-side forms when calling the server action
+- Since `redirect` throws an error, handle `catch` block using `isRedirectError` from
+  `next/dist/client/components/redirect-error` in client-side forms
 
 ## UI Components
 
@@ -117,7 +119,7 @@ pnpm typecheck
 
 Always organize schemas for reusability between server actions and client forms:
 
-```
+```text
 _lib/
 ├── schemas/
 │   └── feature.schema.ts    # Shared Zod schemas
@@ -155,11 +157,13 @@ const form = useForm({
 ## Import Guidelines - ALWAYS Check These
 
 **UI Components**: Always check `@kit/ui` first before external packages:
+
 - Toast notifications: `import { toast } from '@kit/ui/sonner'`
 - Forms: `import { Form, FormField, ... } from '@kit/ui/form'`
 - All UI components: Use MCP tool to verify: `mcp__makerkit__get_components`
 
 **React Hook Form Pattern**:
+
 ```typescript
 // ❌ WRONG - Redundant generic with resolver
 const form = useForm<FormData>({
@@ -256,7 +260,8 @@ export const createProject = enhanceAction(
 ## File Organization Patterns
 
 ### Route Structure
-```
+
+```text
 apps/web/app/home/[account]/
 ├── page.tsx                    # Team dashboard
 ├── members/
@@ -281,6 +286,7 @@ apps/web/app/home/[account]/
 ```
 
 ### Naming Conventions
+
 - **Pages**: `page.tsx` (Next.js convention)
 - **Loaders**: `{feature}-page.loader.ts`
 - **Actions**: `{feature}-server-actions.ts`
