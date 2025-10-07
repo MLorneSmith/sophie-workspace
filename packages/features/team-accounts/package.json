@@ -12,6 +12,7 @@
 		"./api": "./src/server/api.ts",
 		"./components": "./src/components/index.ts",
 		"./hooks/*": "./src/hooks/*.ts",
+		"./policies": "./src/server/policies/index.ts",
 		"./webhooks": "./src/server/services/webhooks/index.ts"
 	},
 	"dependencies": {
@@ -27,6 +28,7 @@
 		"@kit/monitoring": "workspace:*",
 		"@kit/next": "workspace:*",
 		"@kit/otp": "workspace:*",
+		"@kit/policies": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
