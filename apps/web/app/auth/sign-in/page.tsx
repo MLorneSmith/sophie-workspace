@@ -25,11 +25,7 @@ export const generateMetadata = async () => {
 };
 
 async function SignInPage({ searchParams }: SignInPageProps) {
-	const { invite_token: inviteToken, next } = await searchParams;
-
-	const signUpPath =
-		pathsConfig.auth.signUp +
-		(inviteToken ? `?invite_token=${inviteToken}` : "");
+	const { next } = await searchParams;
 
 	const paths = {
 		callback: pathsConfig.auth.callback,
@@ -40,30 +36,20 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 	return (
 		<>
 			<div className={"flex flex-col items-center gap-1"}>
-				<Heading level={1} className={"tracking-tight text-lg lg:text-xl"}>
+				<Heading level={4} className={"tracking-tight"}>
 					<Trans i18nKey={"auth:signInHeading"} />
 				</Heading>
 
-				<p className={"text-foreground text-sm"}>
+				<p className={"text-muted-foreground text-sm"}>
 					<Trans i18nKey={"auth:signInSubheading"} />
 				</p>
 			</div>
 
-			<SignInMethodsContainer
-				inviteToken={inviteToken}
-				paths={paths}
-				providers={authConfig.providers}
-			/>
+			<SignInMethodsContainer paths={paths} providers={authConfig.providers} />
 
 			<div className={"flex justify-center"}>
-				<Button
-					asChild
-					variant={"link"}
-					size={"sm"}
-					className=""
-					style={{ color: "#1a1a1a", backgroundColor: "#ffffff" }}
-				>
-					<Link href={signUpPath} prefetch={true}>
+				<Button asChild variant={"link"} size={"sm"}>
+					<Link href={pathsConfig.auth.signUp} prefetch={true}>
 						<Trans i18nKey={"auth:doNotHaveAccountYet"} />
 					</Link>
 				</Button>

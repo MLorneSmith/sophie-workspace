@@ -116,6 +116,7 @@ tasks.json
 .vscode/tasks/
 
 # ts-node cache
+<<<<<<< HEAD
 node-compile-cache/
 
 # Claude backup files
@@ -124,3 +125,6 @@ node-compile-cache/
 
 # Payload CMS seed data downloads
 apps/payload/downloads/
+=======
+node-compile-cache/
+>>>>>>> upstream/main

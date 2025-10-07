@@ -10,6 +10,7 @@ import type {
 } from "@supabase/supabase-js";
 import { useCallback } from "react";
 
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
 import { AuthProviderButton } from "./auth-provider-button";
 
@@ -29,7 +30,6 @@ const OAUTH_SCOPES: Partial<Record<Provider, string>> = {
 };
 
 export const OauthProviders: React.FC<{
-	inviteToken?: string;
 	shouldCreateUser: boolean;
 	enabledProviders: Provider[];
 	queryParams?: Record<string, string>;
@@ -40,6 +40,7 @@ export const OauthProviders: React.FC<{
 	};
 }> = (props) => {
 	const signInWithProviderMutation = useSignInWithProvider();
+	const { recordAuthMethod } = useLastAuthMethod();
 
 	// we make the UI "busy" until the next page is fully loaded
 	const loading = signInWithProviderMutation.isPending;
@@ -82,10 +83,6 @@ export const OauthProviders: React.FC<{
 										queryParams.set("next", props.paths.returnPath);
 									}
 
-									if (props.inviteToken) {
-										queryParams.set("invite_token", props.inviteToken);
-									}
-
 									const redirectPath = [
 										props.paths.callback,
 										queryParams.toString(),
@@ -103,9 +100,15 @@ export const OauthProviders: React.FC<{
 										},
 									} satisfies SignInWithOAuthCredentials;
 
-									return onSignInWithProvider(() =>
-										signInWithProviderMutation.mutateAsync(credentials),
-									);
+									return onSignInWithProvider(async () => {
+										const result =
+											await signInWithProviderMutation.mutateAsync(credentials);
+
+										// Record successful OAuth sign-in
+										recordAuthMethod("oauth", { provider });
+
+										return result;
+									});
 								}}
 							>
 								<Trans
@@ -130,8 +133,7 @@ function getProviderName(providerId: string) {
 		value.slice(0, 1).toUpperCase() + value.slice(1);
 
 	if (providerId.endsWith(".com")) {
-		const providerBase = providerId.split(".com")[0];
-		return providerBase ? capitalize(providerBase) : capitalize(providerId);
+		return capitalize(providerId.split(".com")[0]!);
 	}
 
 	return capitalize(providerId);
