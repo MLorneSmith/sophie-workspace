@@ -101,7 +101,11 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
 			this.registryPolicyCache.set(registry, new LRUCache(this.maxCacheSize));
 		}
 
-		const cache = this.registryPolicyCache.get(registry)!;
+		const cache = this.registryPolicyCache.get(registry);
+
+		if (!cache) {
+			throw new Error("Registry cache not found");
+		}
 
 		let definition = cache.get(policyId);
 
