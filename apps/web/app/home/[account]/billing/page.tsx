@@ -1,3 +1,4 @@
+import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -35,14 +36,13 @@ export const generateMetadata = async () => {
 	};
 };
 
-// Extract components outside of the page component
-const CheckoutSection = ({
+const Checkout = ({
 	canManageBilling,
 	customerId,
 	accountId,
 }: {
 	canManageBilling: boolean;
-	customerId: string | undefined;
+	customerId: string;
 	accountId: string;
 }) => {
 	if (!canManageBilling) {
@@ -54,14 +54,14 @@ const CheckoutSection = ({
 	);
 };
 
-const BillingPortalSection = ({
+const BillingPortal = ({
 	canManageBilling,
 	customerId,
 	accountId,
 	account,
 }: {
 	canManageBilling: boolean;
-	customerId: string | undefined;
+	customerId?: string;
 	accountId: string;
 	account: string;
 }) => {
@@ -87,6 +87,17 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 	const [subscription, order, customerId] =
 		await loadTeamAccountBillingPage(accountId);
 
+	const variantId = subscription?.items[0]?.variant_id;
+	const orderVariantId = order?.items[0]?.variant_id;
+
+	const subscriptionProductPlan = variantId
+		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
+		: undefined;
+
+	const orderProductPlan = orderVariantId
+		? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
+		: undefined;
+
 	const hasBillingData = subscription || order;
 
 	const canManageBilling =
@@ -101,13 +112,9 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 			/>
 
 			<PageBody>
-				<div
-					className={cn("flex w-full flex-col space-y-4", {
-						"max-w-2xl": hasBillingData,
-					})}
-				>
+				<div className={cn("flex max-w-2xl flex-col space-y-4")}>
 					<If condition={!hasBillingData}>
-						<CheckoutSection
+						<Checkout
 							canManageBilling={canManageBilling}
 							customerId={customerId}
 							accountId={accountId}
@@ -119,7 +126,8 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							return (
 								<CurrentSubscriptionCard
 									subscription={subscription}
-									config={billingConfig}
+									product={subscriptionProductPlan?.product}
+									plan={subscriptionProductPlan?.plan}
 								/>
 							);
 						}}
@@ -130,13 +138,14 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							return (
 								<CurrentLifetimeOrderCard
 									order={order}
-									config={billingConfig}
+									product={orderProductPlan?.product}
+									plan={orderProductPlan?.plan}
 								/>
 							);
 						}}
 					</If>
 
-					<BillingPortalSection
+					<BillingPortal
 						canManageBilling={canManageBilling}
 						customerId={customerId}
 						accountId={accountId}

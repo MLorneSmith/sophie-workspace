@@ -1,3 +1,4 @@
+import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -34,6 +35,23 @@ async function PersonalAccountBillingPage() {
 	const [subscription, order, customerId] =
 		await loadPersonalAccountBillingPageData(user.id);
 
+	const subscriptionVariantId = subscription?.items[0]?.variant_id;
+	const orderVariantId = order?.items[0]?.variant_id;
+
+	const subscriptionProductPlan =
+		subscription && subscriptionVariantId
+			? await resolveProductPlan(
+					billingConfig,
+					subscriptionVariantId,
+					subscription.currency,
+				)
+			: undefined;
+
+	const orderProductPlan =
+		order && orderVariantId
+			? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
+			: undefined;
+
 	const hasBillingData = subscription || order;
 
 	return (
@@ -44,18 +62,19 @@ async function PersonalAccountBillingPage() {
 			/>
 
 			<PageBody>
-				<div className={"flex flex-col space-y-4"}>
+				<div className={"flex max-w-2xl flex-col space-y-4"}>
 					<If
 						condition={hasBillingData}
 						fallback={<PersonalAccountCheckoutForm customerId={customerId} />}
 					>
-						<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
+						<div className={"flex w-full flex-col space-y-6"}>
 							<If condition={subscription}>
 								{(subscription) => {
 									return (
 										<CurrentSubscriptionCard
 											subscription={subscription}
-											config={billingConfig}
+											product={subscriptionProductPlan?.product}
+											plan={subscriptionProductPlan?.plan}
 										/>
 									);
 								}}
@@ -66,7 +85,8 @@ async function PersonalAccountBillingPage() {
 									return (
 										<CurrentLifetimeOrderCard
 											order={order}
-											config={billingConfig}
+											product={orderProductPlan?.product}
+											plan={orderProductPlan?.plan}
 										/>
 									);
 								}}
@@ -74,9 +94,7 @@ async function PersonalAccountBillingPage() {
 						</div>
 					</If>
 
-					<If condition={customerId}>
-						<CustomerBillingPortalForm />
-					</If>
+					<If condition={customerId}>{() => <CustomerBillingPortalForm />}</If>
 				</div>
 			</PageBody>
 		</>
