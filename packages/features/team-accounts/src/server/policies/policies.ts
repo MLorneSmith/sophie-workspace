@@ -15,8 +15,8 @@ export const subscriptionRequiredInvitationsPolicy =
 	definePolicy<FeaturePolicyInvitationContext>({
 		id: "subscription-required",
 		stages: ["preliminary", "submission"],
-		evaluate: async ({ subscription }) => {
-			if (!subscription || !subscription.active) {
+		evaluate: async (context) => {
+			if (!context.subscription || !context.subscription.active) {
 				return deny({
 					code: "SUBSCRIPTION_REQUIRED",
 					message: "teams:policyErrors.subscriptionRequired",
@@ -36,18 +36,18 @@ export const paddleBillingInvitationsPolicy =
 	definePolicy<FeaturePolicyInvitationContext>({
 		id: "paddle-billing",
 		stages: ["preliminary", "submission"],
-		evaluate: async ({ subscription }) => {
+		evaluate: async (context) => {
 			// combine with subscriptionRequiredPolicy if subscription must be required
-			if (!subscription) {
+			if (!context.subscription) {
 				return allow();
 			}
 
 			// Paddle specific constraint: cannot update subscription items during trial
 			if (
-				subscription.provider === "paddle" &&
-				subscription.status === "trialing"
+				context.subscription.provider === "paddle" &&
+				context.subscription.status === "trialing"
 			) {
-				const hasPerSeatItems = subscription.items.some(
+				const hasPerSeatItems = context.subscription.items.some(
 					(item) => item.type === "per_seat",
 				);
 
