@@ -2,6 +2,7 @@
 
 import { Fragment } from 'react';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import {
@@ -59,13 +60,17 @@ export function AppBreadcrumbs(props: {
                   condition={index < visiblePaths.length - 1}
                   fallback={label}
                 >
-                  <BreadcrumbLink
-                    href={
-                      '/' +
-                      splitPath.slice(0, splitPath.indexOf(path) + 1).join('/')
-                    }
-                  >
-                    {label}
+                  <BreadcrumbLink asChild>
+                    <Link
+                      href={
+                        '/' +
+                        splitPath
+                          .slice(0, splitPath.indexOf(path) + 1)
+                          .join('/')
+                      }
+                    >
+                      {label}
+                    </Link>
                   </BreadcrumbLink>
                 </If>
               </BreadcrumbItem>
