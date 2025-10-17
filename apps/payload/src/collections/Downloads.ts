@@ -67,7 +67,7 @@ export const Downloads: CollectionConfig = {
 		filesRequiredOnCreate: false,
 
 		// No image processing for downloads collection
-		disableLocalStorage: false, // Will be handled by storage plugin
+		disableLocalStorage: true, // Use R2 storage via s3-adapter
 	},
 	access: {
 		read: () => true,

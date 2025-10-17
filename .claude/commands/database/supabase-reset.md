@@ -131,23 +131,23 @@ echo "✅ Environment validation complete"
 **Execute** database reset with port cleanup:
 
 ```bash
-# 2.1 Cleanup conflicting ports (54321-54327 for web instance)
+# 3.1 Cleanup conflicting ports (54321-54327 for web instance)
 bash .claude/scripts/development/cleanup-ports.sh 54321 54327 || {
   echo "⚠️  Port cleanup failed, attempting to continue..."
 }
 
-# 2.2 Stop Supabase if running
+# 3.2 Stop Supabase if running
 cd apps/web
 npx supabase stop 2>/dev/null || true
 
-# 2.3 Reset database with migrations
+# 3.3 Reset database with migrations
 echo "🔄 Resetting Supabase database..."
 npx supabase db reset --debug
 
-# 2.4 Start Supabase
+# 3.4 Start Supabase
 npx supabase start
 
-# 2.5 Verify database connection
+# 3.5 Verify database connection
 DATABASE_URL=$(npx supabase status | grep "DB URL" | awk '{print $3}')
 if [ -z "$DATABASE_URL" ]; then
   echo "❌ ERROR: Could not get database URL from Supabase"
@@ -158,27 +158,27 @@ echo "✅ Database reset complete"
 echo "   Database URL: $DATABASE_URL"
 ```
 
-**Update** TodoWrite: Mark Phase 2 complete
+**Update** TodoWrite: Mark Phase 3 complete
 
-#### Phase 3: Setup Payload (Schema + Migrations)
+#### Phase 4 (was 5): Setup Payload (Schema + Migrations)
 **Execute** Payload schema and migration setup:
 
 ```bash
 cd apps/payload
 
-# 3.1 Drop and recreate payload schema (CRITICAL - always run first)
+# 4.1 Drop and recreate payload schema (CRITICAL - always run first)
 echo "🗑️  Dropping payload schema..."
 psql "$DATABASE_URL" -c "DROP SCHEMA IF EXISTS payload CASCADE;" || exit 1
 psql "$DATABASE_URL" -c "CREATE SCHEMA payload;" || exit 1
 echo "✅ Payload schema recreated"
 
-# 3.2 Option A: Regenerate Migrations (if flag provided)
+# 4.2 Option A: Regenerate Migrations (if flag provided)
 if [ "$REGENERATE_MIGRATIONS" = true ]; then
   echo "🔄 Regenerating Payload migrations..."
   bash .claude/scripts/database/regenerate-payload-migrations.sh "$DATABASE_URL" || exit 1
   echo "✅ Payload migrations regenerated"
 
-# 3.3 Option B: Use Existing Migrations (default)
+# 4.3 Option B: Use Existing Migrations (default)
 else
   # Run existing migrations
   echo "🔄 Running Payload migrations..."
@@ -199,31 +199,32 @@ else
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 3 complete
+**Update** TodoWrite: Mark Phase 4 complete
 
-#### Phase 4: Seed Payload Data (Default)
+#### Phase 5 (was 6): Seed Payload Data (Default)
 **Execute** seeding unless --schema-only:
 
 ```bash
 if [ "$SCHEMA_ONLY" = false ]; then
   echo "🌱 Seeding Payload CMS..."
 
-  # 4.1 Validate seeding configuration
+  # 5.1 Validate seeding configuration
   bash .claude/scripts/database/validate-seeding-config.sh || exit 1
 
-  # 4.2 Cleanup existing data (prevent duplicates)
+  # 5.2 Cleanup existing data (prevent duplicates)
   bash .claude/scripts/database/cleanup-payload-tables.sh "$DATABASE_URL" || {
     echo "⚠️  Cleanup failed, proceeding with seeding..."
   }
 
-  # 4.3 Run seeding
+  # 5.3 Run seeding (files already pre-uploaded to R2)
+  echo "📤 Seeding database with pre-uploaded R2 file URLs..."
   pnpm run seed:run || {
     echo "❌ ERROR: Seeding failed"
     echo "Check collection configuration and try --regenerate-payload-migrations"
     exit 1
   }
 
-  # 4.4 Validate seeded data (check for duplicates)
+  # 5.4 Validate seeded data (check for duplicates)
   echo "🔍 Validating seeded data..."
   VALIDATION_RESULT=$(psql "$DATABASE_URL" -t -c "
     SELECT
@@ -266,24 +267,24 @@ else
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 4 complete
+**Update** TodoWrite: Mark Phase 5 complete
 
-#### Phase 5: Verify Database
+#### Phase 6: Verify Database
 **Execute** final verification:
 
 ```bash
-# 5.1 Check Supabase status
+# 6.1 Check Supabase status
 cd apps/web
 npx supabase status
 
-# 5.2 Verify database connectivity
+# 6.2 Verify database connectivity
 if psql "$DATABASE_URL" -c "SELECT 1;" >/dev/null 2>&1; then
   echo "✅ Database connection verified"
 else
   echo "⚠️  Database connection issues detected"
 fi
 
-# 5.3 Report completion
+# 6.3 Report completion
 echo ""
 echo "✅ Supabase Reset Complete!"
 echo ""
@@ -302,7 +303,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 5 complete
+**Update** TodoWrite: Mark Phase 6 complete
 
 #### Error Handling
 **Handle** failures at each phase:
@@ -313,21 +314,26 @@ fi
 - Validation failure → Show specific fix from validate-payload-config.sh
 
 **Phase 2 Errors**:
+- R2 URL errors → Verify files were uploaded to Cloudflare R2
+- 
+
+**Phase 3 Errors**:
 - Port conflicts → Manual cleanup instructions
 - Database reset fails → Check Docker status and Supabase logs
 
-**Phase 3 Errors**:
+**Phase 4 Errors**:
 - Schema creation fails → Verify database connection
 - Migration fails → Suggest --regenerate-payload-migrations flag
 - Low table count → Recommend regenerating migrations
 
-**Phase 4 Errors**:
+**Phase 5 Errors**:
 - Seeding validation fails → Check seeding config consistency
 - Cleanup fails → Continue with warning (seeding may catch duplicates)
 - Seeding fails → Check for "collection not found" and suggest regeneration
+- File URL errors → Verify R2 credentials in .env.test
 - Duplicate detection → Recommend full reset with regeneration
 
-**Phase 5 Errors**:
+**Phase 6 Errors**:
 - Connection issues → Retry Supabase start
 - Missing data → Check seeding logs
 
@@ -342,9 +348,11 @@ fi
 - **Quality Standards**: Database operational, migrations applied, seeding validated
 
 **Success Validation**:
-- Supabase running on localhost:54321
+- R2 storage configured with production credentials
+- Supabase running on localhost:54321-54323
 - Payload schema with 40+ tables
 - 249 records seeded across 12 collections (if not --schema-only)
+- Media files (28) and downloads (23) with R2 URLs
 - No duplicate records detected
 
 **Final Status Report**:
@@ -353,20 +361,24 @@ fi
 
 **Results:**
 ✅ Phase 1: Environment validated
-✅ Phase 2: Database reset
-✅ Phase 3: Payload migrations applied (42 tables)
-✅ Phase 4: Seeding complete (249/249 records)
-✅ Phase 5: Database verified
+✅ Phase 2: Supabase database reset
+✅ Phase 3 (was 4): Database reset
+✅ Phase 4 (was 5): Payload migrations applied (42 tables)
+✅ Phase 5 (was 6): Seeding complete (249/249 records + files uploaded)
+✅ Phase 6: Database verified
 
 **Connection Details:**
-- Database: localhost:54321
+- Database: localhost:54322
 - Studio: http://localhost:54323
+- R2 Storage: Cloudflare (production buckets)
+- 
 - Status: All services running
 
 **Next Steps:**
 - Start development: pnpm dev
 - Run tests: pnpm test
 - Verify data: Open Studio at http://localhost:54323
+- Files are pre-uploaded to R2, accessed via CDN URLs
 ```
 
 </expectations>

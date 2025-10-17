@@ -21,6 +21,7 @@ interface QuizMeta {
 }
 
 interface CourseQuizJson {
+	_ref: string;
 	id: string;
 	slug: string;
 	title: string;
@@ -83,7 +84,7 @@ export async function convertCourseQuizzes(
 				title:
 					String(frontmatter.title) ||
 					file.replace("-quiz.mdoc", "").replace(".mdoc", ""),
-				description: String(frontmatter.description) || "",
+				description: frontmatter.description ? String(frontmatter.description) : "",
 				timeLimit: frontmatter.timeLimit
 					? parseInt(String(frontmatter.timeLimit))
 					: undefined,
@@ -100,8 +101,8 @@ export async function convertCourseQuizzes(
 				sourceFile: file,
 			};
 
-			// Generate quiz ID from filename
-			const quizId = file.replace("-quiz.mdoc", "").replace(".mdoc", "");
+			// Generate quiz ID from filename (keep -quiz suffix to match lesson-quiz-mappings)
+			const quizId = file.replace(".mdoc", "");
 
 			// Convert instructions to Lexical format if present
 			let instructions: {
@@ -137,6 +138,7 @@ export async function convertCourseQuizzes(
 
 			// Build quiz object
 			const quiz: CourseQuizJson = {
+				_ref: quizId,
 				id: quizId,
 				slug: quizId, // Add slug field for Payload CMS validation
 				title: quizMeta.title,
@@ -245,31 +247,8 @@ function determineCourseFromQuiz(
 		return meta.course;
 	}
 
-	// Map quiz names to courses based on content
-	const quizToCourseMapping: Record<string, string> = {
-		"our-process-quiz": "course-1",
-		"structure-quiz": "course-2",
-		"the-who-quiz": "course-2",
-		"introductions-quiz": "course-2",
-		"why-next-steps-quiz": "course-2",
-		"idea-generation-quiz": "course-3",
-		"using-stories-quiz": "course-3",
-		"storyboards-in-film-quiz": "course-3",
-		"storyboards-in-presentations-quiz": "course-3",
-		"fact-persuasion-quiz": "course-4",
-		"preparation-practice-quiz": "course-4",
-		"performance-quiz": "course-4",
-		"overview-elements-of-design-quiz": "course-5",
-		"elements-of-design-detail-quiz": "course-5",
-		"visual-perception-quiz": "course-5",
-		"gestalt-principles-quiz": "course-5",
-		"slide-composition-quiz": "course-6",
-		"tables-vs-graphs-quiz": "course-7",
-		"basic-graphs-quiz": "course-7",
-		"specialist-graphs-quiz": "course-7",
-	};
-
-	return quizToCourseMapping[quizId];
+	// All quizzes belong to the single "Decks for Decision Makers" course
+	return "decks-for-decision-makers";
 }
 
 function determineLessonFromQuiz(
@@ -281,33 +260,32 @@ function determineLessonFromQuiz(
 		return meta.lesson;
 	}
 
-	// Map quiz names to lessons (remove -quiz suffix)
-	const lessonId = quizId.replace("-quiz", "");
-
-	// Common lesson mappings (keys without -quiz suffix since quizId has it stripped)
+	// Map quiz names to lessons (keys include -quiz suffix now)
 	const quizToLessonMapping: Record<string, string> = {
-		"our-process": "our-process",
-		"structure": "what-is-structure",
-		"the-who": "the-who",
-		"introductions": "the-why-introductions",
-		"why-next-steps": "the-why-next-steps",
-		"idea-generation": "idea-generation",
-		"using-stories": "using-stories",
-		"storyboards-in-film": "storyboards-film",
-		"storyboards-in-presentations": "storyboards-presentations",
-		"fact-persuasion": "fact-based-persuasion",
-		"preparation-practice": "preparation-practice",
-		"performance": "performance",
-		"overview-elements-of-design": "fundamental-design-overview",
-		"elements-of-design-detail": "fundamental-design-detail",
-		"visual-perception": "visual-perception",
-		"gestalt-principles": "gestalt-principles",
-		"slide-composition": "slide-composition",
-		"tables-vs-graphs": "tables-vs-graphs",
-		"basic-graphs": "basic-graphs",
-		"specialist-graphs": "specialist-graphs",
+		"our-process-quiz": "our-process",
+		"structure-quiz": "what-is-structure",
+		"the-who-quiz": "the-who",
+		"introductions-quiz": "the-why-introductions",
+		"why-next-steps-quiz": "the-why-next-steps",
+		"idea-generation-quiz": "idea-generation",
+		"using-stories-quiz": "using-stories",
+		"storyboards-in-film-quiz": "storyboards-film",
+		"storyboards-in-presentations-quiz": "storyboards-presentations",
+		"fact-persuasion-quiz": "fact-based-persuasion",
+		"preparation-practice-quiz": "preparation-practice",
+		"performance-quiz": "performance",
+		"overview-elements-of-design-quiz": "fundamental-design-overview",
+		"elements-of-design-detail-quiz": "fundamental-design-detail",
+		"visual-perception-quiz": "visual-perception",
+		"gestalt-principles-quiz": "gestalt-principles",
+		"slide-composition-quiz": "slide-composition",
+		"tables-vs-graphs-quiz": "tables-vs-graphs",
+		"basic-graphs-quiz": "basic-graphs",
+		"specialist-graphs-quiz": "specialist-graphs",
 	};
 
+	// Default: remove -quiz suffix and return
+	const lessonId = quizId.replace("-quiz", "");
 	return quizToLessonMapping[quizId] || lessonId;
 }
 

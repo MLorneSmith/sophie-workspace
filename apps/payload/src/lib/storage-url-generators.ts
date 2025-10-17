@@ -27,7 +27,13 @@ export function generateMediaURL({ filename }: GenerateFileURLArgs): string {
 		return `${config.mediaBaseUrl}/${filename}`;
 	}
 
-	// Construct URL from R2 bucket settings
+	// Use endpoint if configured (for local MinIO or custom S3-compatible storage)
+	if (config.endpoint) {
+		const baseUrl = config.endpoint.replace(/\/$/, "");
+		return `${baseUrl}/${config.mediaBucket}/${filename}`;
+	}
+
+	// Construct URL from R2 bucket settings (production Cloudflare R2)
 	const baseUrl = `https://${config.mediaBucket}.${config.accountId}.r2.cloudflarestorage.com`;
 	return `${baseUrl}/${filename}`;
 }
@@ -45,7 +51,13 @@ export function generateDownloadsURL({
 		return `${config.downloadsBaseUrl}/${filename}`;
 	}
 
-	// Construct URL from R2 bucket settings
+	// Use endpoint if configured (for local MinIO or custom S3-compatible storage)
+	if (config.endpoint) {
+		const baseUrl = config.endpoint.replace(/\/$/, "");
+		return `${baseUrl}/${config.downloadsBucket}/${filename}`;
+	}
+
+	// Construct URL from R2 bucket settings (production Cloudflare R2)
 	const baseUrl = `https://${config.downloadsBucket}.${config.accountId}.r2.cloudflarestorage.com`;
 	return `${baseUrl}/${filename}`;
 }
