@@ -55,17 +55,18 @@ export async function convertQuizQuestions(
 			const quizData = parseMdocQuiz(content);
 			const quizSlug = file.replace(".mdoc", "");
 
-			const questionIds: string[] = [];
+			const questionSlugs: string[] = [];
 
 			// Convert each question
 			quizData.questions.forEach((question, index) => {
 				const questionId = uuidv4();
-				questionIds.push(questionId);
 
-				// Generate slug from question text
+				// Generate slug from question text - this becomes the _ref identifier
 				const questionSlug = `${quizSlug}-q${index + 1}`;
+				questionSlugs.push(questionSlug);
 
 				const quizQuestion: Partial<QuizQuestion> = {
+					_ref: questionSlug, // ✅ Add _ref field for seeding engine
 					id: questionId,
 					question: question.question,
 					type: "multiple_choice",
@@ -76,7 +77,7 @@ export async function convertQuizQuestions(
 					})),
 					explanation: createLexicalExplanation(question),
 					order: index + 1,
-				};
+				} as Partial<QuizQuestion> & { _ref: string };
 
 				allQuestions.push(quizQuestion);
 
@@ -91,7 +92,8 @@ export async function convertQuizQuestions(
 			});
 
 			// Store mapping of quiz to its questions for course-quizzes converter
-			quizToQuestionsMap.set(quizSlug, questionIds);
+			// Use questionSlugs (the _ref identifiers) not UUIDs
+			quizToQuestionsMap.set(quizSlug, questionSlugs);
 		}
 
 		// Also parse the TypeScript file if it exists for additional questions
@@ -256,6 +258,7 @@ async function parseTypeScriptQuizQuestions(
 
 					const qId = q.id || uuidv4();
 					questions.push({
+						_ref: questionSlug, // ✅ Add _ref field for seeding engine
 						id: qId,
 						question: q.text,
 						type: "multiple_choice",
@@ -269,7 +272,7 @@ async function parseTypeScriptQuizQuestions(
 								answers: [],
 							}),
 						order: index + 1,
-					});
+					} as Partial<QuizQuestion> & { _ref: string });
 				});
 			}
 		}

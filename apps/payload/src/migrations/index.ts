@@ -1,5 +1,5 @@
-import * as migration_20251003_205628 from './20251003_205628';
+import * as migration_20251017_185320 from './20251017_185320';
 
 export const migrations = [
-  migration_20251003_205628,
+  migration_20251017_185320,
 ];

@@ -68,8 +68,6 @@ export async function convertPrivate(
           content: lexicalContent,
           status: 'published',
           publishedAt: new Date().toISOString(),
-          categories: [{ category: 'BPM' }],
-          tags: [{ tag: 'business-presentation' }, { tag: 'management' }],
         };
 
         // Add reference mapping for this post

@@ -47,7 +47,7 @@ interface CourseQuizJson {
 	showCorrectAnswers: boolean;
 	randomizeQuestions: boolean;
 	questions: string[]; // References to quiz questions
-	course?: string; // Reference to course
+	course_id?: string; // Reference to course (renamed from 'course' to match schema)
 	lesson?: string; // Reference to lesson
 	published: boolean;
 	createdAt: string;
@@ -163,7 +163,7 @@ export async function convertCourseQuizzes(
 			}
 
 			if (courseRef) {
-				quiz.course = `{ref:courses:${courseRef}}`;
+				quiz.course_id = `{ref:courses:${courseRef}}`;
 			}
 
 			if (lessonRef) {
@@ -198,7 +198,7 @@ async function loadQuizQuestionsMapping(): Promise<Record<string, unknown>> {
 	try {
 		const mappingPath = path.join(
 			__dirname,
-			"../../../seed-data/quiz-questions-mapping.json",
+			"../../seed-data/quiz-questions-mapping.json",
 		);
 		const content = await fs.readFile(mappingPath, "utf-8");
 		return JSON.parse(content);

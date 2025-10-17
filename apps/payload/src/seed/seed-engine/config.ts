@@ -42,19 +42,45 @@ export const SEED_ORDER: readonly string[] = [
   'posts', // Blog posts (may reference media)
   'courses', // Course definitions (may reference media/downloads)
   'private', // Private posts (may reference media/downloads)
+  'quiz-questions', // Quiz questions (independent of quizzes/lessons)
+  'survey-questions', // Survey questions (independent of surveys)
 
-  // Level 2: Depend on Level 0-1 (courses, media, downloads)
-  'course-lessons', // Course lessons (reference courses, media, downloads)
+  // Level 2: Depend on Level 0-1 (quiz-questions, courses, media)
+  'course-quizzes', // Quizzes (reference courses and quiz-questions)
   'documentation', // Help documentation (may reference media)
 
-  // Level 3: Depend on Level 0-2 (lessons, courses)
-  'course-quizzes', // Quizzes (reference courses)
-  'surveys', // Surveys (may reference courses or lessons)
-
-  // Level 4: Depend on Level 0-3 (quizzes, surveys)
-  'quiz-questions', // Quiz questions (reference quizzes)
-  'survey-questions', // Survey questions (reference surveys)
+  // Level 3: Depend on Level 0-2 (quizzes, courses)
+  'course-lessons', // Course lessons (reference courses, course-quizzes, media, downloads)
+  'surveys', // Surveys (reference courses, lessons, and survey-questions)
 ] as const;
+
+/**
+ * Circular reference configurations
+ *
+ * Defines bidirectional relationships that need special handling during seeding.
+ * These references are skipped during initial seeding and resolved in a second pass.
+ *
+ * @example
+ * ```typescript
+ * // course-lessons.quiz_id ↔ course-quizzes.lesson
+ * const config = CIRCULAR_REFERENCES['course-lessons'];
+ * console.log(config.fields); // ['quiz_id']
+ * console.log(config.targetCollection); // 'course-quizzes'
+ * ```
+ */
+export const CIRCULAR_REFERENCES: Record<string, {
+  fields: string[];
+  targetCollection: string;
+}> = {
+  'course-lessons': {
+    fields: ['quiz_id'],
+    targetCollection: 'course-quizzes',
+  },
+  'course-quizzes': {
+    fields: ['lesson'],
+    targetCollection: 'course-lessons',
+  },
+};
 
 /**
  * Collection configurations with metadata
@@ -103,7 +129,7 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
     name: 'course-lessons',
     dataFile: 'course-lessons.json',
     processor: 'content',
-    dependencies: ['courses', 'media', 'downloads'],
+    dependencies: ['courses', 'course-quizzes', 'media', 'downloads'],
   },
   documentation: {
     name: 'documentation',
@@ -115,25 +141,25 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
     name: 'course-quizzes',
     dataFile: 'course-quizzes.json',
     processor: 'content',
-    dependencies: ['courses'],
+    dependencies: ['courses', 'quiz-questions'],
   },
   surveys: {
     name: 'surveys',
     dataFile: 'surveys.json',
     processor: 'content',
-    dependencies: ['courses', 'course-lessons'],
+    dependencies: ['courses', 'course-lessons', 'survey-questions'],
   },
   'quiz-questions': {
     name: 'quiz-questions',
     dataFile: 'quiz-questions.json',
     processor: 'content',
-    dependencies: ['course-quizzes'],
+    dependencies: [],
   },
   'survey-questions': {
     name: 'survey-questions',
     dataFile: 'survey-questions.json',
     processor: 'content',
-    dependencies: ['surveys'],
+    dependencies: [],
   },
   private: {
     name: 'private',

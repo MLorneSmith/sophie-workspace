@@ -9,11 +9,20 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:basic-graphs-quiz-q1}",
+      "{ref:quiz-questions:basic-graphs-quiz-q2}",
+      "{ref:quiz-questions:basic-graphs-quiz-q3}",
+      "{ref:quiz-questions:basic-graphs-quiz-q4}",
+      "{ref:quiz-questions:basic-graphs-quiz-q5}",
+      "{ref:quiz-questions:basic-graphs-quiz-q6}",
+      "{ref:quiz-questions:basic-graphs-quiz-q7}",
+      "{ref:quiz-questions:basic-graphs-quiz-q8}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.021Z",
-    "updatedAt": "2025-10-09T16:21:50.021Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.870Z",
+    "updatedAt": "2025-10-17T19:36:07.870Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:basic-graphs}"
   },
   {
@@ -26,11 +35,18 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q1}",
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q2}",
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q3}",
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q4}",
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q5}",
+      "{ref:quiz-questions:elements-of-design-detail-quiz-q6}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.022Z",
-    "updatedAt": "2025-10-09T16:21:50.022Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.871Z",
+    "updatedAt": "2025-10-17T19:36:07.871Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fundamental-design-detail}"
   },
   {
@@ -43,11 +59,14 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:fact-persuasion-quiz-q1}",
+      "{ref:quiz-questions:fact-persuasion-quiz-q2}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.022Z",
-    "updatedAt": "2025-10-09T16:21:50.022Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.871Z",
+    "updatedAt": "2025-10-17T19:36:07.871Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fact-based-persuasion}"
   },
   {
@@ -60,11 +79,16 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:gestalt-principles-quiz-q1}",
+      "{ref:quiz-questions:gestalt-principles-quiz-q2}",
+      "{ref:quiz-questions:gestalt-principles-quiz-q3}",
+      "{ref:quiz-questions:gestalt-principles-quiz-q4}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.023Z",
-    "updatedAt": "2025-10-09T16:21:50.023Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.872Z",
+    "updatedAt": "2025-10-17T19:36:07.872Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:gestalt-principles}"
   },
   {
@@ -77,11 +101,15 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:idea-generation-quiz-q1}",
+      "{ref:quiz-questions:idea-generation-quiz-q2}",
+      "{ref:quiz-questions:idea-generation-quiz-q3}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.023Z",
-    "updatedAt": "2025-10-09T16:21:50.023Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.872Z",
+    "updatedAt": "2025-10-17T19:36:07.872Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:idea-generation}"
   },
   {
@@ -94,11 +122,18 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:introductions-quiz-q1}",
+      "{ref:quiz-questions:introductions-quiz-q2}",
+      "{ref:quiz-questions:introductions-quiz-q3}",
+      "{ref:quiz-questions:introductions-quiz-q4}",
+      "{ref:quiz-questions:introductions-quiz-q5}",
+      "{ref:quiz-questions:introductions-quiz-q6}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.024Z",
-    "updatedAt": "2025-10-09T16:21:50.024Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.873Z",
+    "updatedAt": "2025-10-17T19:36:07.873Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-why-introductions}"
   },
   {
@@ -111,11 +146,21 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:our-process-quiz-q1}",
+      "{ref:quiz-questions:our-process-quiz-q2}",
+      "{ref:quiz-questions:our-process-quiz-q3}",
+      "{ref:quiz-questions:our-process-quiz-q4}",
+      "{ref:quiz-questions:our-process-quiz-q5}",
+      "{ref:quiz-questions:our-process-quiz-q6}",
+      "{ref:quiz-questions:our-process-quiz-q7}",
+      "{ref:quiz-questions:our-process-quiz-q8}",
+      "{ref:quiz-questions:our-process-quiz-q9}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.025Z",
-    "updatedAt": "2025-10-09T16:21:50.025Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.874Z",
+    "updatedAt": "2025-10-17T19:36:07.874Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:our-process}"
   },
   {
@@ -128,11 +173,13 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:overview-elements-of-design-quiz-q1}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.025Z",
-    "updatedAt": "2025-10-09T16:21:50.025Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.874Z",
+    "updatedAt": "2025-10-17T19:36:07.874Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fundamental-design-overview}"
   },
   {
@@ -145,11 +192,15 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:performance-quiz-q1}",
+      "{ref:quiz-questions:performance-quiz-q2}",
+      "{ref:quiz-questions:performance-quiz-q3}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.026Z",
-    "updatedAt": "2025-10-09T16:21:50.026Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.875Z",
+    "updatedAt": "2025-10-17T19:36:07.875Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:performance}"
   },
   {
@@ -162,11 +213,20 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:preparation-practice-quiz-q1}",
+      "{ref:quiz-questions:preparation-practice-quiz-q2}",
+      "{ref:quiz-questions:preparation-practice-quiz-q3}",
+      "{ref:quiz-questions:preparation-practice-quiz-q4}",
+      "{ref:quiz-questions:preparation-practice-quiz-q5}",
+      "{ref:quiz-questions:preparation-practice-quiz-q6}",
+      "{ref:quiz-questions:preparation-practice-quiz-q7}",
+      "{ref:quiz-questions:preparation-practice-quiz-q8}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.026Z",
-    "updatedAt": "2025-10-09T16:21:50.026Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.876Z",
+    "updatedAt": "2025-10-17T19:36:07.876Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:preparation-practice}"
   },
   {
@@ -179,11 +239,17 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:slide-composition-quiz-q1}",
+      "{ref:quiz-questions:slide-composition-quiz-q2}",
+      "{ref:quiz-questions:slide-composition-quiz-q3}",
+      "{ref:quiz-questions:slide-composition-quiz-q4}",
+      "{ref:quiz-questions:slide-composition-quiz-q5}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.027Z",
-    "updatedAt": "2025-10-09T16:21:50.027Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.876Z",
+    "updatedAt": "2025-10-17T19:36:07.876Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:slide-composition}"
   },
   {
@@ -196,11 +262,18 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:specialist-graphs-quiz-q1}",
+      "{ref:quiz-questions:specialist-graphs-quiz-q2}",
+      "{ref:quiz-questions:specialist-graphs-quiz-q3}",
+      "{ref:quiz-questions:specialist-graphs-quiz-q4}",
+      "{ref:quiz-questions:specialist-graphs-quiz-q5}",
+      "{ref:quiz-questions:specialist-graphs-quiz-q6}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.027Z",
-    "updatedAt": "2025-10-09T16:21:50.027Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.877Z",
+    "updatedAt": "2025-10-17T19:36:07.877Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:specialist-graphs}"
   },
   {
@@ -213,11 +286,15 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:storyboards-in-film-quiz-q1}",
+      "{ref:quiz-questions:storyboards-in-film-quiz-q2}",
+      "{ref:quiz-questions:storyboards-in-film-quiz-q3}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.028Z",
-    "updatedAt": "2025-10-09T16:21:50.028Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.877Z",
+    "updatedAt": "2025-10-17T19:36:07.877Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:storyboards-film}"
   },
   {
@@ -230,11 +307,14 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:storyboards-in-presentations-quiz-q1}",
+      "{ref:quiz-questions:storyboards-in-presentations-quiz-q2}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.028Z",
-    "updatedAt": "2025-10-09T16:21:50.028Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.877Z",
+    "updatedAt": "2025-10-17T19:36:07.877Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:storyboards-presentations}"
   },
   {
@@ -247,11 +327,18 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:structure-quiz-q1}",
+      "{ref:quiz-questions:structure-quiz-q2}",
+      "{ref:quiz-questions:structure-quiz-q3}",
+      "{ref:quiz-questions:structure-quiz-q4}",
+      "{ref:quiz-questions:structure-quiz-q5}",
+      "{ref:quiz-questions:structure-quiz-q6}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.028Z",
-    "updatedAt": "2025-10-09T16:21:50.028Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.878Z",
+    "updatedAt": "2025-10-17T19:36:07.878Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:what-is-structure}"
   },
   {
@@ -264,11 +351,16 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:tables-vs-graphs-quiz-q1}",
+      "{ref:quiz-questions:tables-vs-graphs-quiz-q2}",
+      "{ref:quiz-questions:tables-vs-graphs-quiz-q3}",
+      "{ref:quiz-questions:tables-vs-graphs-quiz-q4}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.029Z",
-    "updatedAt": "2025-10-09T16:21:50.029Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.878Z",
+    "updatedAt": "2025-10-17T19:36:07.878Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:tables-vs-graphs}"
   },
   {
@@ -281,11 +373,19 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:the-who-quiz-q1}",
+      "{ref:quiz-questions:the-who-quiz-q2}",
+      "{ref:quiz-questions:the-who-quiz-q3}",
+      "{ref:quiz-questions:the-who-quiz-q4}",
+      "{ref:quiz-questions:the-who-quiz-q5}",
+      "{ref:quiz-questions:the-who-quiz-q6}",
+      "{ref:quiz-questions:the-who-quiz-q7}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.029Z",
-    "updatedAt": "2025-10-09T16:21:50.029Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.879Z",
+    "updatedAt": "2025-10-17T19:36:07.879Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-who}"
   },
   {
@@ -298,11 +398,15 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:using-stories-quiz-q1}",
+      "{ref:quiz-questions:using-stories-quiz-q2}",
+      "{ref:quiz-questions:using-stories-quiz-q3}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.029Z",
-    "updatedAt": "2025-10-09T16:21:50.029Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.879Z",
+    "updatedAt": "2025-10-17T19:36:07.879Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:using-stories}"
   },
   {
@@ -315,11 +419,16 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:visual-perception-quiz-q1}",
+      "{ref:quiz-questions:visual-perception-quiz-q2}",
+      "{ref:quiz-questions:visual-perception-quiz-q3}",
+      "{ref:quiz-questions:visual-perception-quiz-q4}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.030Z",
-    "updatedAt": "2025-10-09T16:21:50.030Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.879Z",
+    "updatedAt": "2025-10-17T19:36:07.879Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:visual-perception}"
   },
   {
@@ -332,11 +441,16 @@
     "maxAttempts": 3,
     "showCorrectAnswers": true,
     "randomizeQuestions": false,
-    "questions": [],
+    "questions": [
+      "{ref:quiz-questions:why-next-steps-quiz-q1}",
+      "{ref:quiz-questions:why-next-steps-quiz-q2}",
+      "{ref:quiz-questions:why-next-steps-quiz-q3}",
+      "{ref:quiz-questions:why-next-steps-quiz-q4}"
+    ],
     "published": true,
-    "createdAt": "2025-10-09T16:21:50.030Z",
-    "updatedAt": "2025-10-09T16:21:50.030Z",
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "createdAt": "2025-10-17T19:36:07.880Z",
+    "updatedAt": "2025-10-17T19:36:07.880Z",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-why-next-steps}"
   }
 ]
