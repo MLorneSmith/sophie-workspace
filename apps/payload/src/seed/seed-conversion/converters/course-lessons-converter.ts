@@ -54,7 +54,7 @@ interface CourseLessonJson {
  thumbnail?: string; // Reference to media
  publishedAt?: string; // Published date from frontmatter
  todo_complete_quiz?: boolean; // Parse from To-Do section
- published: boolean;
+ _status: 'draft' | 'published'; // Payload draft status
  createdAt: string;
  updatedAt: string;
 }
@@ -125,7 +125,7 @@ export async function convertCourseLessons(
     lesson_number: lessonNumber,
     estimated_duration: lessonMeta.lessonLength || lessonMeta.duration,
     course_id: `{ref:courses:${courseId}}`,
-    published: true,
+    _status: 'published' as const, // Use _status instead of published for Payload drafts
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
    };
@@ -160,18 +160,38 @@ export async function convertCourseLessons(
     const pathParts = lessonMeta.thumbnail.split('/').filter(p => p);
     const lessonDir = pathParts[pathParts.length - 2]; // Get directory name before filename
     if (lessonDir && lessonDir !== 'images') {
-     // Map lesson directory names to media _ref values
+     // Map lesson directory names to media _ref values (using underscores)
      // Some media files have different naming conventions than lesson directories
      const mediaRefMap: Record<string, string> = {
-      'lesson-0': 'lesson-0',
-      'before-we-begin': 'before-we-begin',
-      'tools-and-resources': 'tools-and-resources',
-      'what-is-structure': 'what-structure',
-      'storyboards-film': 'storyboards-in-film',
-      'storyboards-presentations': 'storyboards-in-presentations',
-      'fundamental-design-overview': 'overview-elements-design',
-      'fundamental-design-detail': 'detail-elements-of-design',
-      'basic-graphs': 'standard-graphs',
+      'lesson-0': 'lesson_zero',
+      'before-we-begin': 'before_we_begin',
+      'tools-and-resources': 'tools_resources',
+      'our-process': '1-our_process',
+      'the-who': '2-the_who',
+      'the-why-introductions': '3-the_why_introductions',
+      'the-why-next-steps': '4-the_why_next_steps',
+      'idea-generation': '5-idea_generation',
+      'what-is-structure': '6-what_structure',
+      'what-structure': '6-what_structure',
+      'using-stories': '7-using_stories',
+      'storyboards-film': '8-storyboards_in_film',
+      'storyboards-in-film': '8-storyboards_in_film',
+      'storyboards-presentations': '9-storyboards_in_presentations',
+      'storyboards-in-presentations': '9-storyboards_in_presentations',
+      'visual-perception': '10-visual_perception',
+      'fundamental-design-overview': '11-overview_elements_design',
+      'overview-elements-design': '11-overview_elements_design',
+      'fundamental-design-detail': '12-detail_elements_of_design',
+      'detail-elements-of-design': '12-detail_elements_of_design',
+      'gestalt-principles': '13-gestalt_principles_of_perception',
+      'slide-composition': '14-slide_composition',
+      'fact-based-persuasion': '15-fact_based_persuasion_overview',
+      'tables-vs-graphs': '16-tables_vs_graphs',
+      'basic-graphs': '17-standard_graphs',
+      'standard-graphs': '17-standard_graphs',
+      'specialist-graphs': '18-specialist_graphs',
+      'preparation-practice': '19-preparation_practice',
+      'performance': '20-performance',
      };
 
      const mediaRef = mediaRefMap[lessonDir] || lessonDir;

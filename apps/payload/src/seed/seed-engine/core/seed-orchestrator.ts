@@ -28,7 +28,7 @@ import type { BaseProcessor } from '../processors/base-processor';
 import { ProgressTracker } from '../utils/progress-tracker';
 import { ErrorHandler } from '../utils/error-handler';
 import { logger } from '../utils/logger';
-import { SEED_ORDER, COLLECTION_CONFIGS } from '../config';
+import { SEED_ORDER, COLLECTION_CONFIGS, CIRCULAR_REFERENCES } from '../config';
 import {
   validateCollectionData,
   buildReferenceMap,
@@ -288,6 +288,11 @@ export class SeedOrchestrator {
   /**
    * Process all collections in dependency order
    *
+   * Implements three-pass strategy to handle circular dependencies:
+   * - Pass 1: Seed all collections, skipping circular reference fields
+   * - Pass 2: Resolve circular references after both collections exist
+   * - Pass 3: Verify all references are resolved (happens in postSeedValidation)
+   *
    * @param loadResults - Load results to process
    * @param options - Seeding options
    * @returns Array of batch results
@@ -300,12 +305,12 @@ export class SeedOrchestrator {
       throw new Error('Services not initialized');
     }
 
-    logger.info('Processing collections in dependency order...');
+    logger.info('Processing collections in dependency order (Pass 1: Core records)...');
 
     const batchResults: BatchProcessorResult[] = [];
     const loadResultMap = new Map(loadResults.map((r) => [r.collection, r]));
 
-    // Process collections in SEED_ORDER
+    // Pass 1: Process collections in SEED_ORDER, skipping circular reference fields
     for (const collectionName of SEED_ORDER) {
       const loadResult = loadResultMap.get(collectionName);
       if (!loadResult) {
@@ -315,9 +320,27 @@ export class SeedOrchestrator {
       const batchResult = await this.processCollection(
         collectionName,
         loadResult.records,
-        options
+        options,
+        true // skipCircularRefs = true for first pass
       );
       batchResults.push(batchResult);
+    }
+
+    logger.success('Pass 1 complete - Core records seeded');
+
+    // Pass 2: Resolve circular references
+    const circularCollections = Object.keys(CIRCULAR_REFERENCES).filter((name) =>
+      loadResultMap.has(name)
+    );
+
+    if (circularCollections.length > 0) {
+      logger.info('Pass 2: Resolving circular references...');
+
+      for (const collectionName of circularCollections) {
+        await this.resolveCircularReferences(collectionName, loadResultMap);
+      }
+
+      logger.success('Pass 2 complete - Circular references resolved');
     }
 
     logger.success('All collections processed');
@@ -330,12 +353,14 @@ export class SeedOrchestrator {
    * @param collectionName - Collection name
    * @param records - Records to process
    * @param options - Seeding options
+   * @param skipCircularRefs - Whether to skip circular reference fields (default: false)
    * @returns Batch processing result
    */
   private async processCollection(
     collectionName: string,
     records: SeedRecord[],
-    options: SeedOptions
+    options: SeedOptions,
+    skipCircularRefs: boolean = false
   ): Promise<BatchProcessorResult> {
     if (!this.payload || !this.resolver || !this.tracker || !this.errorHandler) {
       throw new Error('Services not initialized');
@@ -364,10 +389,35 @@ export class SeedOrchestrator {
     for (const record of records) {
       currentRecord++;
 
+      // Prepare record for resolution (skip circular refs if needed)
+      let recordToResolve = record;
+      let skippedCircularFields: Record<string, unknown> = {};
+
+      if (skipCircularRefs && CIRCULAR_REFERENCES[collectionName]) {
+        const circularConfig = CIRCULAR_REFERENCES[collectionName];
+        const recordCopy = { ...record };
+
+        // Extract and remove circular reference fields
+        for (const field of circularConfig.fields) {
+          if (field in recordCopy) {
+            skippedCircularFields[field] = recordCopy[field];
+            delete recordCopy[field];
+          }
+        }
+
+        recordToResolve = recordCopy;
+
+        if (Object.keys(skippedCircularFields).length > 0) {
+          logger.debug(
+            `Skipping circular refs for ${collectionName}[${record._ref || 'unknown'}]: ${Object.keys(skippedCircularFields).join(', ')}`
+          );
+        }
+      }
+
       // Resolve references
       let resolvedRecord: SeedRecord;
       try {
-        resolvedRecord = this.resolver.resolve(record);
+        resolvedRecord = this.resolver.resolve(recordToResolve);
       } catch (error) {
         logger.error(
           `Reference resolution failed for ${collectionName}[${record._ref || 'unknown'}]`,
@@ -434,6 +484,93 @@ export class SeedOrchestrator {
     this.tracker.completeCollection(batchResult);
 
     return batchResult;
+  }
+
+  /**
+   * Resolve circular references for a collection
+   *
+   * Updates existing records with circular reference fields that were skipped
+   * during initial seeding.
+   *
+   * @param collectionName - Collection name
+   * @param loadResultMap - Map of collection names to load results
+   */
+  private async resolveCircularReferences(
+    collectionName: string,
+    loadResultMap: Map<string, LoadResult>
+  ): Promise<void> {
+    if (!this.payload || !this.resolver) {
+      throw new Error('Services not initialized');
+    }
+
+    const circularConfig = CIRCULAR_REFERENCES[collectionName];
+    if (!circularConfig) {
+      return;
+    }
+
+    const loadResult = loadResultMap.get(collectionName);
+    if (!loadResult) {
+      return;
+    }
+
+    logger.info(`Resolving circular refs for ${collectionName}: ${circularConfig.fields.join(', ')}`);
+
+    let updated = 0;
+    let failed = 0;
+
+    for (const record of loadResult.records) {
+      // Skip records without circular reference fields
+      const hasCircularRefs = circularConfig.fields.some((field) => field in record);
+      if (!hasCircularRefs) {
+        continue;
+      }
+
+      // Get UUID for this record from cache
+      const recordId = record._ref ? this.resolver.lookup(collectionName, record._ref as string) : undefined;
+      if (!recordId) {
+        logger.warn(`Cannot resolve circular refs for ${collectionName}[${record._ref || 'unknown'}]: Record not found in cache`);
+        failed++;
+        continue;
+      }
+
+      // Extract and resolve circular reference fields
+      const updateData: Record<string, unknown> = {};
+      for (const field of circularConfig.fields) {
+        if (field in record) {
+          try {
+            const resolvedValue = this.resolver.resolve({ [field]: record[field] });
+            updateData[field] = resolvedValue[field];
+          } catch (error) {
+            logger.warn(
+              `Failed to resolve circular ref ${collectionName}[${record._ref || 'unknown'}].${field}`,
+              error instanceof Error ? { message: error.message, stack: error.stack } : undefined
+            );
+            // Continue with other fields even if one fails
+          }
+        }
+      }
+
+      // Update record if we have fields to update
+      if (Object.keys(updateData).length > 0) {
+        try {
+          await this.payload.update({
+            collection: collectionName as any,
+            id: recordId,
+            data: updateData as any,
+          });
+          updated++;
+          logger.debug(`Updated circular refs for ${collectionName}[${record._ref || 'unknown'}]`);
+        } catch (error) {
+          logger.error(
+            `Failed to update circular refs for ${collectionName}[${record._ref || 'unknown'}]`,
+            error instanceof Error ? error : undefined
+          );
+          failed++;
+        }
+      }
+    }
+
+    logger.success(`Resolved circular refs for ${collectionName}: ${updated} updated, ${failed} failed`);
   }
 
   /**

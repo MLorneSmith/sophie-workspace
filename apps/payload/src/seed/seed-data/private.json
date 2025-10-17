@@ -2,8 +2,8 @@
   {
     "_ref": "private-bpm-blueprint",
     "slug": "bpm-blueprint",
-    "title": "Business Presentation Design",
-    "description": "The first post of our blog. What it takes to navigate the art and science of designing business presentations.",
+    "title": "[BPM] Presentations Reinvented: The Blueprint",
+    "description": "Today I am going to share with you the ENTIRE blueprint of Decks for Decision Makers. (you read that right.)This is a system I’ve honed through in-the-trenches practice over the past twenty years. It ...",
     "content": {
       "root": {
         "type": "root",
@@ -12,38 +12,35 @@
         "version": 1,
         "children": [
           {
-            "type": "block",
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "[BPM] Presentations Reinvented: The BlueprintToday I am going to share with you the ENTIRE blueprint of Decks for Decision Makers. (you read that right.)This is a system I’ve honed through in-the-trenches practice over the past twenty years. It is a process and strategy that eliminates all of the common pitfalls and traps professionals encounter when creating business presentations.And I am going to share all of it with you right now...But first, let me ask you...Did you pick-up a copy of Barbara Minto's book? Pretty useful, eh? (I know I just told you about it yesterday - but hey, Amazon Prime delivers next day!).Barbara does an outstanding job of explaining how to structure your ideas.But here's the thing.Structure isn't the complete answer.I love Barbara. But in today's world there is a whole lot more to a presentation than just structuring your ideas.No point in structuring a great answer to the wrong question...No point in presenting a bunch of assertions, without clearly communicating supporting facts and data that prove those assertions...No point in presenting a great argument if it is so complicated and boring that no one can understand or remember it...No point in presenting at all if your slides are so ugly that you lose all credibility before you even start speaking...To create a killer presentation requires a more HOLISTIC approach.Here's an illustration to help paint the picture for you...See that Who, Why, What, How row? This is a simple conceptual framework designed to do a couple of things that most people COMPLETELY GET WRONG.1. Understand, in depth, who it is you are presenting to2. Plant a question in the mind of that audience and then answer it (rather than talk about a topic)3. Communicate that answer clearly, concisely, convincingly4. Inspire your audience to act through your deliveryThe SECRET SAUCE is in the tools that allow you to accomplish this.Through-out the rest of this email course we are going to cover the key components of this Decks for Decision Makers process - in particular the 5S-es of communicating your answer clearly, concisely, convincingly.(and we go into MUCH more DEPTH in DDM itself).So hang on tight!More to come.Same time, same place.Michael \"follow a Blueprint\" SmithP.S.The previous emails in the series:Business Presentation Mastery [Prologue] - Resource links[BPM] Presentations Reinvented (1/3) - Why this stuff matters?[BPM] Presentations Reinvented (2/3) - What does good look like?[BPM] Presentations Reinvented (3/3) - Structure as a Super PowerToday — [BPM] Presentations Reinvented: The Blueprint - The DDM Blueprint",
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "detail": 0,
+                "version": 1
+              }
+            ],
+            "format": "",
+            "indent": 0,
             "version": 1,
-            "blockType": "htmlContent",
-            "fields": {
-              "html": "\n        <div class=\"row\">\n          <div class=\"col-lg-12\">\n            <nav class=\"navbar navbar-expand-lg\">\n              <a class=\"navbar-brand\" href=\"https://www.slideheroes.com\">\n                <img src=\"../assets/img/Nav/slideHeroes_final_white.svg\" alt=\"SlideHeroes\" height=\"40\">\n              </a>\n\n              <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNine\" aria-controls=\"navbarNine\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n              </button>\n\n              <div class=\"collapse navbar-collapse sub-menu-bar\" id=\"navbarNine\">\n                <ul class=\"navbar-nav me-auto\">\n\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-sm-inline-block\">\n                <ul class=\"ul-navbar\">\n                  <li>\n                    <a class=\"btn primary-btn sleeknote-individual\" type=\"button\" data-bs-toggle=\"modal\" onclick=\"SleekNote.triggerOnclick('cb4bc74d-22e2-4466-9649-27a9921ce969')\">Sign Up</a>\n                  </li>\n                  <li>\n                    <a class=\"btn primary-btn primary-color login-navbar\" href=\"https://learn.slideheroes.com/login\">Log In</a>\n                  </li>\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-none d-lg-inline-block\">\n                <a class=\"menu-bar\" href=\"#side-menu-left\">\n                  <svg fill=\"#000000\" stroke=\"#ffffff\" stroke-opacity=\"1.0\" stroke-width=\"6%\" width=\"20\" height=\"20\" version=\"1.1\" id=\"lni_lni-menu\" x=\"0px\" y=\"10px\" viewBox=\"0 0 64 64\">\n                  <g>\n\t                    <path d=\"M61,30.3H3c-1,0-1.8,0.8-1.8,1.8S2,33.8,3,33.8h58c1,0,1.8-0.8,1.8-1.8S62,30.3,61,30.3z\"></path>\n\t                     <path d=\"M61,47.9H3c-1,0-1.8,0.8-1.8,1.8S2,51.4,3,51.4h58c1,0,1.8-0.8,1.8-1.8S62,47.9,61,47.9z\"></path>\n\t                      <path d=\"M3,16.1h58c1,0,1.8-0.8,1.8-1.8S62,12.6,61,12.6H3c-1,0-1.8,0.8-1.8,1.8S2,16.1,3,16.1z\"></path>\n                  </g>\n                 </svg>\n                </a>\n              </div>\n            </nav>\n            <!-- navbar -->\n          </div>\n        </div>\n        <!-- row -->\n      "
-            }
+            "direction": "ltr"
           }
         ],
-        "direction": null
+        "direction": "ltr"
       }
     },
     "status": "published",
-    "publishedAt": "2025-10-09T16:21:50.131Z",
-    "categories": [
-      {
-        "category": "BPM"
-      }
-    ],
-    "tags": [
-      {
-        "tag": "business-presentation"
-      },
-      {
-        "tag": "management"
-      }
-    ]
+    "publishedAt": "2025-10-17T19:28:39.061Z"
   },
   {
     "_ref": "private-bpm-prologue",
     "slug": "bpm-prologue",
-    "title": "Business Presentation Design",
-    "description": "The first post of our blog. What it takes to navigate the art and science of designing business presentations.",
+    "title": "[BPM] Business Presentation Mastery: Prologue",
+    "description": "Thanks for signing up for 'Lesson Zero' of SlideHeroes' signature business presentation training 'Decks for Decision Makers' (or DDM for short).Really glad you are here. (If you have not had a chance ...",
     "content": {
       "root": {
         "type": "root",
@@ -52,38 +49,35 @@
         "version": 1,
         "children": [
           {
-            "type": "block",
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "[BPM] Business Presentation Mastery: PrologueThanks for signing up for 'Lesson Zero' of SlideHeroes' signature business presentation training 'Decks for Decision Makers' (or DDM for short).Really glad you are here. (If you have not had a chance to watch the lesson, you can see it here.)And welcome to the 'Business Presentation Mastery' email series (or 'BPM', for short), where I will dive deeper into many of the ideas we touch on in Lesson Zero and throughout the DDM course.DDM is used by employees at large companies (e.g. Walmart, Pfizer, npower, Swiss Re), financial service providers and investment banks (Goldman Sachs, Swiss Re, Travelers), Silicon Valley start-ups (OneLeap), non-profits (Teach for America), the public sector (US Department of Energy) and is part of the teaching curriculum at colleges in Canada and the United States.Over the last few years we have had thousands of graduates.Here’s what venture capitalists say about SlideHeroes:And John Lushetsky, the Chief Operating Officer of the Office of Policy at the US Department of Energy, had this to say about DDM:",
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "detail": 0,
+                "version": 1
+              }
+            ],
+            "format": "",
+            "indent": 0,
             "version": 1,
-            "blockType": "htmlContent",
-            "fields": {
-              "html": "\n        <div class=\"row\">\n          <div class=\"col-lg-12\">\n            <nav class=\"navbar navbar-expand-lg\">\n              <a class=\"navbar-brand\" href=\"https://www.slideheroes.com\">\n                <img src=\"../assets/img/Nav/slideHeroes_final_white.svg\" alt=\"SlideHeroes\" height=\"40\">\n              </a>\n\n              <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNine\" aria-controls=\"navbarNine\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n              </button>\n\n              <div class=\"collapse navbar-collapse sub-menu-bar\" id=\"navbarNine\">\n                <ul class=\"navbar-nav me-auto\">\n\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-sm-inline-block\">\n                <ul class=\"ul-navbar\">\n                  <li>\n                    <a class=\"btn primary-btn sleeknote-individual\" type=\"button\" data-bs-toggle=\"modal\" onclick=\"SleekNote.triggerOnclick('cb4bc74d-22e2-4466-9649-27a9921ce969')\">Sign Up</a>\n                  </li>\n                  <li>\n                    <a class=\"btn primary-btn primary-color login-navbar\" href=\"https://learn.slideheroes.com/login\">Log In</a>\n                  </li>\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-none d-lg-inline-block\">\n                <a class=\"menu-bar\" href=\"#side-menu-left\">\n                  <svg fill=\"#000000\" stroke=\"#ffffff\" stroke-opacity=\"1.0\" stroke-width=\"6%\" width=\"20\" height=\"20\" version=\"1.1\" id=\"lni_lni-menu\" x=\"0px\" y=\"10px\" viewBox=\"0 0 64 64\">\n                  <g>\n\t                    <path d=\"M61,30.3H3c-1,0-1.8,0.8-1.8,1.8S2,33.8,3,33.8h58c1,0,1.8-0.8,1.8-1.8S62,30.3,61,30.3z\"></path>\n\t                     <path d=\"M61,47.9H3c-1,0-1.8,0.8-1.8,1.8S2,51.4,3,51.4h58c1,0,1.8-0.8,1.8-1.8S62,47.9,61,47.9z\"></path>\n\t                      <path d=\"M3,16.1h58c1,0,1.8-0.8,1.8-1.8S62,12.6,61,12.6H3c-1,0-1.8,0.8-1.8,1.8S2,16.1,3,16.1z\"></path>\n                  </g>\n                 </svg>\n                </a>\n              </div>\n            </nav>\n            <!-- navbar -->\n          </div>\n        </div>\n        <!-- row -->\n      "
-            }
+            "direction": "ltr"
           }
         ],
-        "direction": null
+        "direction": "ltr"
       }
     },
     "status": "published",
-    "publishedAt": "2025-10-09T16:21:50.151Z",
-    "categories": [
-      {
-        "category": "BPM"
-      }
-    ],
-    "tags": [
-      {
-        "tag": "business-presentation"
-      },
-      {
-        "tag": "management"
-      }
-    ]
+    "publishedAt": "2025-10-17T19:28:39.086Z"
   },
   {
     "_ref": "private-bpm-reinvented-1",
     "slug": "bpm-reinvented-1",
-    "title": "Business Presentation Design",
-    "description": "The first post of our blog. What it takes to navigate the art and science of designing business presentations.",
+    "title": "[BPM] Presentations Reinvented (1 of 3)",
+    "description": "Do you struggle to:",
     "content": {
       "root": {
         "type": "root",
@@ -92,38 +86,35 @@
         "version": 1,
         "children": [
           {
-            "type": "block",
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "[BPM] Presentations Reinvented (1 of 3)Do you struggle to:Strategically communicate with and influence the C-Suite and senior executives?Deliver concise, coherent, consistent, compelling narratives?Overcome the notoriously short attention spans & zero tolerance for waffle of senior executives?You are not alone.You will recall that in Lesson Zero of DDM I talked about how MILLIONS of presentations are given every day and how nearly all of them stink.Here’s why that is important.These bad presentations matter a lot.They are how we represent ourselves and our work to the world.They are the lingua franca of Corporate America.They are how we influence, inspire others to achieve goals, get buy-in for new concepts, and successfully navigate challenging conversations.And, as I said in the video, if we are honest with ourselves, they just aren't very good.Winging-it isn't the answer – our career success depends on these presentations not being bad.I am guessing (because you are HERE, reading this email) that you suspect you can get better results...Let me tell you...You can ABSOLUTELY get better results...I'll put money on it.And I'm talking about better presentations and better communication skills that act as rocket fuel to your career.Lift-off.\"Whoa, whoa whoa Michael!\"(That's the sound of my lawyer about to develop a serious bout of hives.)He doesn't like me making promises I can't control.So to not violate any FTC guidelines, I have to do what my lawyer calls \"cover my ass\".DISCLAIMER:In these emails I may reveal how my customers, clients, and colleagues have created some very successful business presentations.They have raised millions of dollars, convinced CEOs to spend billions, and inspired millions to ACT (seriously).Please understand that I am absolutely NOT—repeat, am NOT—implying that these results are typical and that you will match them.Such a claim would be ridiculous.Especially considering we've (probably) never met, and I don't know your business, your employees, or anything else about what you and your organization do.Just passively reading what I write in these emails won't transform the effectiveness of your presentations. Wouldn't it be nice if it worked that way, eh? :-)Reading is not enough.Serious execution (action) is required.And only YOU can do that!Having said this...What I'll be showing and revealing to you in these emails (and ESPECIALLY in my signature program, DDM) has worked very well for me and my clients and customers.What I teach is trusted by smart people - like the folks at Goldman Sachs (a multinational investment bank).\"This is one of the best online training [programs] available.In a very short time it improved my storytelling skills and presentation abilities. The material was broken down just right, so that I could learn and take action piece-by-piece.Over a year later I’m about to study the material again and I’m looking forward to it. While content is king, the production value in the training is amazing. It’s very enjoyable to watch.\"- Nathan Slaughter, Vice President, Goldman SachsI only say this to demonstrate that what I teach not only works for others...... but it'll also completely shift how you approach ALL OF YOUR PRESENTATIONS, moving forward:With me so far?Well...I've been rambling on for way too long already in this email.Let's hook-up tomorrow, same place, same time.Will ratchet up the nitty-gritty stuff then.Michael ‘serious action’ SmithP.S.Your attention is precious.We’re all struggling to keep up – with the news, social media, our inbox. The irony is not lost on me as I reach out to you via this email. But I believe a more personal connection can make good things even better.And since I’ll be taking up space in your inbox, I’d like to tell you a bit more about myself.You might be wondering… Michael Smith... didn't he:Win a Grammy.Win a Nobel Prize.Spy for the KBG!My name is also Michael. You can read more about THIS Michael Smith's journey here.I always like to hear from readers, so don’t hesitate to share your thoughts and feedback with me by simply hitting ‘reply’.",
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "detail": 0,
+                "version": 1
+              }
+            ],
+            "format": "",
+            "indent": 0,
             "version": 1,
-            "blockType": "htmlContent",
-            "fields": {
-              "html": "\n        <div class=\"row\">\n          <div class=\"col-lg-12\">\n            <nav class=\"navbar navbar-expand-lg\">\n              <a class=\"navbar-brand\" href=\"https://www.slideheroes.com\">\n                <img src=\"../assets/img/Nav/slideHeroes_final_white.svg\" alt=\"SlideHeroes\" height=\"40\">\n              </a>\n\n              <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNine\" aria-controls=\"navbarNine\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n              </button>\n\n              <div class=\"collapse navbar-collapse sub-menu-bar\" id=\"navbarNine\">\n                <ul class=\"navbar-nav me-auto\">\n\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-sm-inline-block\">\n                <ul class=\"ul-navbar\">\n                  <li>\n                    <a class=\"btn primary-btn sleeknote-individual\" type=\"button\" data-bs-toggle=\"modal\" onclick=\"SleekNote.triggerOnclick('cb4bc74d-22e2-4466-9649-27a9921ce969')\">Sign Up</a>\n                  </li>\n                  <li>\n                    <a class=\"btn primary-btn primary-color login-navbar\" href=\"https://learn.slideheroes.com/login\">Log In</a>\n                  </li>\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-none d-lg-inline-block\">\n                <a class=\"menu-bar\" href=\"#side-menu-left\">\n                  <svg fill=\"#000000\" stroke=\"#ffffff\" stroke-opacity=\"1.0\" stroke-width=\"6%\" width=\"20\" height=\"20\" version=\"1.1\" id=\"lni_lni-menu\" x=\"0px\" y=\"10px\" viewBox=\"0 0 64 64\">\n                  <g>\n\t                    <path d=\"M61,30.3H3c-1,0-1.8,0.8-1.8,1.8S2,33.8,3,33.8h58c1,0,1.8-0.8,1.8-1.8S62,30.3,61,30.3z\"></path>\n\t                     <path d=\"M61,47.9H3c-1,0-1.8,0.8-1.8,1.8S2,51.4,3,51.4h58c1,0,1.8-0.8,1.8-1.8S62,47.9,61,47.9z\"></path>\n\t                      <path d=\"M3,16.1h58c1,0,1.8-0.8,1.8-1.8S62,12.6,61,12.6H3c-1,0-1.8,0.8-1.8,1.8S2,16.1,3,16.1z\"></path>\n                  </g>\n                 </svg>\n                </a>\n              </div>\n            </nav>\n            <!-- navbar -->\n          </div>\n        </div>\n        <!-- row -->\n      "
-            }
+            "direction": "ltr"
           }
         ],
-        "direction": null
+        "direction": "ltr"
       }
     },
     "status": "published",
-    "publishedAt": "2025-10-09T16:21:50.166Z",
-    "categories": [
-      {
-        "category": "BPM"
-      }
-    ],
-    "tags": [
-      {
-        "tag": "business-presentation"
-      },
-      {
-        "tag": "management"
-      }
-    ]
+    "publishedAt": "2025-10-17T19:28:39.109Z"
   },
   {
     "_ref": "private-bpm-reinvented-2",
     "slug": "bpm-reinvented-2",
-    "title": "Business Presentation Design",
-    "description": "The first post of our blog. What it takes to navigate the art and science of designing business presentations.",
+    "title": "[BPM] Presentations Reinvented (2 of 3)",
+    "description": "I have a confession to make…When I first started... I was no different than anyone else. My decks (presentations) stunk.They were awful. LOL! Here are some examples of the kinds of business presentati...",
     "content": {
       "root": {
         "type": "root",
@@ -132,38 +123,35 @@
         "version": 1,
         "children": [
           {
-            "type": "block",
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "[BPM] Presentations Reinvented (2 of 3)I have a confession to make…When I first started... I was no different than anyone else. My decks (presentations) stunk.They were awful. LOL! Here are some examples of the kinds of business presentations being created every day:This one is a lot more fun than you'd expect! Have a listen...",
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "detail": 0,
+                "version": 1
+              }
+            ],
+            "format": "",
+            "indent": 0,
             "version": 1,
-            "blockType": "htmlContent",
-            "fields": {
-              "html": "\n        <div class=\"row\">\n          <div class=\"col-lg-12\">\n            <nav class=\"navbar navbar-expand-lg\">\n              <a class=\"navbar-brand\" href=\"https://www.slideheroes.com\">\n                <img src=\"../assets/img/Nav/slideHeroes_final_white.svg\" alt=\"SlideHeroes\" height=\"40\">\n              </a>\n\n              <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNine\" aria-controls=\"navbarNine\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n              </button>\n\n              <div class=\"collapse navbar-collapse sub-menu-bar\" id=\"navbarNine\">\n                <ul class=\"navbar-nav me-auto\">\n\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-sm-inline-block\">\n                <ul class=\"ul-navbar\">\n                  <li>\n                    <a class=\"btn primary-btn sleeknote-individual\" type=\"button\" data-bs-toggle=\"modal\" onclick=\"SleekNote.triggerOnclick('cb4bc74d-22e2-4466-9649-27a9921ce969')\">Sign Up</a>\n                  </li>\n                  <li>\n                    <a class=\"btn primary-btn primary-color login-navbar\" href=\"https://learn.slideheroes.com/login\">Log In</a>\n                  </li>\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-none d-lg-inline-block\">\n                <a class=\"menu-bar\" href=\"#side-menu-left\">\n                  <svg fill=\"#000000\" stroke=\"#ffffff\" stroke-opacity=\"1.0\" stroke-width=\"6%\" width=\"20\" height=\"20\" version=\"1.1\" id=\"lni_lni-menu\" x=\"0px\" y=\"10px\" viewBox=\"0 0 64 64\">\n                  <g>\n\t                    <path d=\"M61,30.3H3c-1,0-1.8,0.8-1.8,1.8S2,33.8,3,33.8h58c1,0,1.8-0.8,1.8-1.8S62,30.3,61,30.3z\"></path>\n\t                     <path d=\"M61,47.9H3c-1,0-1.8,0.8-1.8,1.8S2,51.4,3,51.4h58c1,0,1.8-0.8,1.8-1.8S62,47.9,61,47.9z\"></path>\n\t                      <path d=\"M3,16.1h58c1,0,1.8-0.8,1.8-1.8S62,12.6,61,12.6H3c-1,0-1.8,0.8-1.8,1.8S2,16.1,3,16.1z\"></path>\n                  </g>\n                 </svg>\n                </a>\n              </div>\n            </nav>\n            <!-- navbar -->\n          </div>\n        </div>\n        <!-- row -->\n      "
-            }
+            "direction": "ltr"
           }
         ],
-        "direction": null
+        "direction": "ltr"
       }
     },
     "status": "published",
-    "publishedAt": "2025-10-09T16:21:50.185Z",
-    "categories": [
-      {
-        "category": "BPM"
-      }
-    ],
-    "tags": [
-      {
-        "tag": "business-presentation"
-      },
-      {
-        "tag": "management"
-      }
-    ]
+    "publishedAt": "2025-10-17T19:28:39.133Z"
   },
   {
     "_ref": "private-bpm-reinvented-3",
     "slug": "bpm-reinvented-3",
-    "title": "Business Presentation Design",
-    "description": "The first post of our blog. What it takes to navigate the art and science of designing business presentations.",
+    "title": "[BPM] Presentations Reinvented (3 of 3)",
+    "description": "Today I will share the 4 Biggest Mistakes I see people make when creating high-stakes presentations (and I'll map out what to do to avoid them).But first... did you guess correctly what presentations ...",
     "content": {
       "root": {
         "type": "root",
@@ -172,31 +160,28 @@
         "version": 1,
         "children": [
           {
-            "type": "block",
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "[BPM] Presentations Reinvented (3 of 3)Today I will share the 4 Biggest Mistakes I see people make when creating high-stakes presentations (and I'll map out what to do to avoid them).But first... did you guess correctly what presentations (killer, tightly structured presentations) allow you to CONTROL?Here goes...The narrative...CONTEXT.The story you tell to your audience, in the ORDER you want them to consume it...Piece by piece...Bit by bit...Meaning...And this... is real POWER.The question is ‘how do you tap into this POWER?’.The answer... is through STRUCTURE.And it won't surprise you that failing to focus on structure is one of the four Biggest Mistakes.But, I am getting ahead of myself.Yesterday we started to peal back the onion and explore what makes high-stakes business presentations uniquely challenging. And because this stuff is hard (mastery is very hard), mistakes are inevitable.But not all mistakes are created equal.Sometimes mistakes are a result of a lack of application (intentionality), sometime they are a result of pushing ourselves in directions we have previously not been (and are a source of learning). Here are four critically important mistakes commonly made when developing high-stakes presentations (have a read here for 6 more)'Sloppy' Mistake #1: Worrying about your opening joke, your ‘intro’, your hairYesterday we talked about how high-stakes business presentations around a board table are FUNDAMENTALLY DIFFERENT to public speaking and require a completely different approach to communicationThis is not a performance. It is business. Your presentation to your board, boss, customer, or investor is not a TED Talk. It is not a speech. It is not public speaking.'Sit-down' business presentations require: That your message is written down (not every word, just enough that you aren’t needed); Clarity of purpose, tailored to the need of your audience (what is their question?); Transparent, ruthless structure (a well constructed answer); Facts, in high resolution; Style, minimalist is designTo Do’s: Write, write, and Rewrite; Focus on structure; Don’t be the joke, skip the joke'Sloppy' BONUS Mistake (The corollary of Mistake #1): Not worrying about your hairHave I convinced you of the fundamental differences between sit-down business presentations and public speaking? Good. Now ignore what I said. Because you better believe business presentations are a performance. Just not in the same way speeches are. And Performance is certainly NOT where you should start. But once your deck is in place, once your answer to the question is nailed, a focus on your performance in the room can make a huge difference.To Do’s: Develop a script; Practice, practice, practice; Plan for answering questions; Have conviction in the material you are presenting (If you don’t, polish further); Demonstrate passion and enthusiasm (If you are not feeling it, drink some coffee); Manage public speaking anxiety with these tips'Aha' Mistake #2: Presenting a topic, rather than answering a questionThe most effective formula to ensuring your audience connects with your material and is engaged with your presentation is to give a presentation about something they care about. The best way to do this is to answer a question that they have.Rather than presenting about ‘Customer Relationship Management Software’, instead a presentation that answers the question ‘Our CRM software is old, does it need to be replaced?’ will prove to be much more relevant and topical for the audience.Here are a couple of examples:Question: ‘Do I have the problem your product solves?’NOT Topic: ‘This is what our product does’Question: ‘What is the best plan for accelerating growth?’NOT Topic: ‘2015 Marketing Plan’This process will very often result in much greater clarity around what EXACTLY the presentation should focus on.The topic Customer Relationship Management Software could, for example, answer: ‘Our CRM Software is old, does it need to be replaced?’, or ‘Our CRM software is inefficient and needs to be replaced, how do we go about installing and selecting an alternative?’The resulting presentations for each of these questions, as you can image, would be very different.To Do’s: Always present a ‘topic’ that is the answer to a question that is in the mind of your audience; Plant the question in the mind of the audience before answering it'Stretch' Mistake #3: Failing to leverage the SUPERPOWER of StructureYour job is to communicate your answer to your audience’s question.When the audience cannot follow your logic, or the flow of your argument, they become frustrated. They get pissed off. They stop paying attention to you.Your audience wants to follow what you are saying; the logic of your argument. But they need your help. Structure is how you signpost where you are going and help your audience internalize what you are saying.Listen, structure is a very, very good thing. But sometimes it just isn’t easy. Expect half your time to be spent working on structure. We talked about this extensively in Lesson Zero (and DDM goes much deeper).If you are looking for additional help, have a listen to this amazing training from Barbara Minto below. It is a little dated, a little long, and a whole lot AWESOME.To Do’s: Adopt common presentation structure blueprints; Focus on structure obsessively; Apply MECE principles (mutually exclusive, collectively exhaustive); Limit your lists to no more than 5 items (If you have more, bucket these ideas into a new set of groupings, one level of abstraction higher)   \n'High-Stakes' Mistake #4: Not identifying the ‘Power Behind The Throne’Who is your audience? Who has power? Who makes decisions?Sometimes it is not clear who the real decision makers are, or where power lies.This is especially true when you are presenting to a group, are an ‘outsider’ or are not part of the company.Once you have identified who you are really speaking to, determine what they are like. How do they like to consume information? What is the best way to reach them?To Do: Profile your Audience – understand the power, personality, communication preferences and sources of resistance amongst your audience (who you are really presenting to, what are they like)Michael ‘making new mistakes’ SmithP.S.Tomorrow I will reveal the ENTIRE blueprint of Decks for Decision Makers.Be sure not to miss it.",
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "detail": 0,
+                "version": 1
+              }
+            ],
+            "format": "",
+            "indent": 0,
             "version": 1,
-            "blockType": "htmlContent",
-            "fields": {
-              "html": "\n        <div class=\"row\">\n          <div class=\"col-lg-12\">\n            <nav class=\"navbar navbar-expand-lg\">\n              <a class=\"navbar-brand\" href=\"https://www.slideheroes.com\">\n                <img src=\"../assets/img/Nav/slideHeroes_final_white.svg\" alt=\"SlideHeroes\" height=\"40\">\n              </a>\n\n              <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNine\" aria-controls=\"navbarNine\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n                <span class=\"toggler-icon\"></span>\n              </button>\n\n              <div class=\"collapse navbar-collapse sub-menu-bar\" id=\"navbarNine\">\n                <ul class=\"navbar-nav me-auto\">\n\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-sm-inline-block\">\n                <ul class=\"ul-navbar\">\n                  <li>\n                    <a class=\"btn primary-btn sleeknote-individual\" type=\"button\" data-bs-toggle=\"modal\" onclick=\"SleekNote.triggerOnclick('cb4bc74d-22e2-4466-9649-27a9921ce969')\">Sign Up</a>\n                  </li>\n                  <li>\n                    <a class=\"btn primary-btn primary-color login-navbar\" href=\"https://learn.slideheroes.com/login\">Log In</a>\n                  </li>\n                </ul>\n              </div>\n              <div class=\"navbar-btn d-none d-lg-inline-block\">\n                <a class=\"menu-bar\" href=\"#side-menu-left\">\n                  <svg fill=\"#000000\" stroke=\"#ffffff\" stroke-opacity=\"1.0\" stroke-width=\"6%\" width=\"20\" height=\"20\" version=\"1.1\" id=\"lni_lni-menu\" x=\"0px\" y=\"10px\" viewBox=\"0 0 64 64\">\n                  <g>\n\t                    <path d=\"M61,30.3H3c-1,0-1.8,0.8-1.8,1.8S2,33.8,3,33.8h58c1,0,1.8-0.8,1.8-1.8S62,30.3,61,30.3z\"></path>\n\t                     <path d=\"M61,47.9H3c-1,0-1.8,0.8-1.8,1.8S2,51.4,3,51.4h58c1,0,1.8-0.8,1.8-1.8S62,47.9,61,47.9z\"></path>\n\t                      <path d=\"M3,16.1h58c1,0,1.8-0.8,1.8-1.8S62,12.6,61,12.6H3c-1,0-1.8,0.8-1.8,1.8S2,16.1,3,16.1z\"></path>\n                  </g>\n                 </svg>\n                </a>\n              </div>\n            </nav>\n            <!-- navbar -->\n          </div>\n        </div>\n        <!-- row -->\n      "
-            }
+            "direction": "ltr"
           }
         ],
-        "direction": null
+        "direction": "ltr"
       }
     },
     "status": "published",
-    "publishedAt": "2025-10-09T16:21:50.203Z",
-    "categories": [
-      {
-        "category": "BPM"
-      }
-    ],
-    "tags": [
-      {
-        "tag": "business-presentation"
-      },
-      {
-        "tag": "management"
-      }
-    ]
+    "publishedAt": "2025-10-17T19:28:39.158Z"
   }
 ]

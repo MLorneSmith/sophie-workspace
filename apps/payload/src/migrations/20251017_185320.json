@@ -1,5 +1,5 @@
 {
-  "id": "a9106eba-6f3b-40e1-aebe-0be4c6fb4540",
+  "id": "08e95431-ff53-4ea1-9869-eb0647006b06",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -361,7 +361,7 @@
           "name": "url",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "thumbnail_u_r_l": {
           "name": "thumbnail_u_r_l",
@@ -373,7 +373,7 @@
           "name": "filename",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "mime_type": {
           "name": "mime_type",
@@ -619,7 +619,7 @@
           "name": "url",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "thumbnail_u_r_l": {
           "name": "thumbnail_u_r_l",
@@ -631,7 +631,7 @@
           "name": "filename",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "mime_type": {
           "name": "mime_type",
@@ -7460,8 +7460,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "downloads_id": {
-          "name": "downloads_id",
+        "survey_questions_id": {
+          "name": "survey_questions_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -7513,11 +7513,11 @@
           "method": "btree",
           "with": {}
         },
-        "surveys_rels_downloads_id_idx": {
-          "name": "surveys_rels_downloads_id_idx",
+        "surveys_rels_survey_questions_id_idx": {
+          "name": "surveys_rels_survey_questions_id_idx",
           "columns": [
             {
-              "expression": "downloads_id",
+              "expression": "survey_questions_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -7544,13 +7544,13 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "surveys_rels_downloads_fk": {
-          "name": "surveys_rels_downloads_fk",
+        "surveys_rels_survey_questions_fk": {
+          "name": "surveys_rels_survey_questions_fk",
           "tableFrom": "surveys_rels",
-          "tableTo": "downloads",
+          "tableTo": "survey_questions",
           "schemaTo": "payload",
           "columnsFrom": [
-            "downloads_id"
+            "survey_questions_id"
           ],
           "columnsTo": [
             "id"
@@ -7827,8 +7827,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "downloads_id": {
-          "name": "downloads_id",
+        "survey_questions_id": {
+          "name": "survey_questions_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -7880,11 +7880,11 @@
           "method": "btree",
           "with": {}
         },
-        "_surveys_v_rels_downloads_id_idx": {
-          "name": "_surveys_v_rels_downloads_id_idx",
+        "_surveys_v_rels_survey_questions_id_idx": {
+          "name": "_surveys_v_rels_survey_questions_id_idx",
           "columns": [
             {
-              "expression": "downloads_id",
+              "expression": "survey_questions_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -7911,13 +7911,13 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "_surveys_v_rels_downloads_fk": {
-          "name": "_surveys_v_rels_downloads_fk",
+        "_surveys_v_rels_survey_questions_fk": {
+          "name": "_surveys_v_rels_survey_questions_fk",
           "tableFrom": "_surveys_v_rels",
-          "tableTo": "downloads",
+          "tableTo": "survey_questions",
           "schemaTo": "payload",
           "columnsFrom": [
-            "downloads_id"
+            "survey_questions_id"
           ],
           "columnsTo": [
             "id"

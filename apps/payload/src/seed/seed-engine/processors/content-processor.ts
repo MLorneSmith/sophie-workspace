@@ -87,14 +87,26 @@ export class ContentProcessor extends BaseProcessor {
    * ```
    */
   async processRecord(record: SeedRecord): Promise<string> {
+    // Extract _status for draft handling
+    const status = (record._status as string) || 'published';
+    const isDraft = status === 'draft';
+
     // Remove internal metadata fields
     const cleanedRecord = this.cleanRecord(record);
 
     try {
       // Create record via Payload Local API
+      // IMPORTANT: Payload CMS 3.x with versions.drafts requires BOTH:
+      // 1. _status field in the data payload
+      // 2. draft boolean option
+      // Without _status in data, records default to draft state regardless of draft flag
       const created = await this.payload.create({
         collection: this.collectionName as any,
-        data: cleanedRecord,
+        data: {
+          ...cleanedRecord,
+          _status: status, // Re-add _status field for Payload versioning system
+        },
+        draft: isDraft, // Set draft status based on _status field
         overrideAccess: true, // Skip access control for seeding
         disableVerificationEmail: true, // Skip email verification during seeding
       });

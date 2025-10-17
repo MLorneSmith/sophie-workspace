@@ -7,68 +7,8 @@ const _dirname = path.dirname(filename);
 
 export const Downloads: CollectionConfig = {
 	slug: "downloads",
-	upload: {
-		// Comprehensive MIME types for downloads collection
-		mimeTypes: [
-			// Images
-			"image/jpeg",
-			"image/jpg",
-			"image/png",
-			"image/gif",
-			"image/webp",
-			"image/svg+xml",
-
-			// Documents
-			"application/pdf",
-			"application/msword",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			"application/vnd.ms-excel",
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-powerpoint",
-			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
-			"text/plain",
-			"text/csv",
-			"application/rtf",
-
-			// Archives
-			"application/zip",
-			"application/x-rar-compressed",
-			"application/x-7z-compressed",
-			"application/gzip",
-			"application/x-tar",
-
-			// Audio
-			"audio/mpeg",
-			"audio/mp4",
-			"audio/wav",
-			"audio/ogg",
-			"audio/webm",
-
-			// Video
-			"video/mp4",
-			"video/quicktime",
-			"video/webm",
-			"video/avi",
-			"video/mov",
-
-			// Code and data files
-			"application/json",
-			"application/xml",
-			"text/xml",
-			"application/javascript",
-			"text/css",
-			"text/html",
-
-			// Other common formats
-			"application/octet-stream",
-		],
-
-		// File size limits - more generous for downloads
-		filesRequiredOnCreate: false,
-
-		// No image processing for downloads collection
-		disableLocalStorage: true, // Use R2 storage via s3-adapter
-	},
+	// Upload config removed - using pre-uploaded R2 files with manual URL management
+	// This allows seeding with existing R2 files without Payload's automatic upload handling
 	access: {
 		read: () => true,
 		create: ({ req }) => {
@@ -87,6 +27,37 @@ export const Downloads: CollectionConfig = {
 		defaultColumns: ["title", "filename", "mimeType", "filesize", "updatedAt"],
 	},
 	fields: [
+		// File metadata fields (manually managed since upload config removed)
+		{
+			name: "filename",
+			type: "text",
+			required: true,
+			admin: {
+				description: "Original filename of the uploaded file",
+			},
+		},
+		{
+			name: "url",
+			type: "text",
+			required: true,
+			admin: {
+				description: "Public URL to access the file (R2 CDN URL)",
+			},
+		},
+		{
+			name: "mimeType",
+			type: "text",
+			admin: {
+				description: "MIME type of the file (e.g., application/pdf)",
+			},
+		},
+		{
+			name: "filesize",
+			type: "number",
+			admin: {
+				description: "File size in bytes",
+			},
+		},
 		{
 			name: "title",
 			type: "text",

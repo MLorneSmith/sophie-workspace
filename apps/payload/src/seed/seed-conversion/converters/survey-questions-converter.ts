@@ -65,7 +65,7 @@ export async function convertSurveyQuestions(
 
 				const surveyQuestion: Partial<SurveyQuestion> & { _ref?: string; scaleMin?: number; scaleMax?: number } = {
 					id: questionId,
-					_ref: `survey-questions:${questionId}`,
+					_ref: questionId,
 					questionSlug: questionSlug,
 					text: question.question,
 					type: mapQuestionType(question) as SurveyQuestion['type'],

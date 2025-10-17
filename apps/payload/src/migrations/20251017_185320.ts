@@ -66,9 +66,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"type" "payload"."enum_media_type",
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"url" varchar,
+  	"url" varchar NOT NULL,
   	"thumbnail_u_r_l" varchar,
-  	"filename" varchar,
+  	"filename" varchar NOT NULL,
   	"mime_type" varchar,
   	"filesize" numeric,
   	"width" numeric,
@@ -94,9 +94,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"access_level" "payload"."enum_downloads_access_level" DEFAULT 'public',
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"url" varchar,
+  	"url" varchar NOT NULL,
   	"thumbnail_u_r_l" varchar,
-  	"filename" varchar,
+  	"filename" varchar NOT NULL,
   	"mime_type" varchar,
   	"filesize" numeric,
   	"width" numeric,
@@ -603,7 +603,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" uuid NOT NULL,
   	"path" varchar NOT NULL,
-  	"downloads_id" uuid
+  	"survey_questions_id" uuid
   );
   
   CREATE TABLE "payload"."_surveys_v" (
@@ -627,7 +627,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" uuid NOT NULL,
   	"path" varchar NOT NULL,
-  	"downloads_id" uuid
+  	"survey_questions_id" uuid
   );
   
   CREATE TABLE "payload"."payload_locked_documents" (
@@ -752,10 +752,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload"."_survey_questions_v_version_options" ADD CONSTRAINT "_survey_questions_v_version_options_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_survey_questions_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_survey_questions_v" ADD CONSTRAINT "_survey_questions_v_parent_id_survey_questions_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."survey_questions"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."surveys_rels" ADD CONSTRAINT "surveys_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."surveys"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."surveys_rels" ADD CONSTRAINT "surveys_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."surveys_rels" ADD CONSTRAINT "surveys_rels_survey_questions_fk" FOREIGN KEY ("survey_questions_id") REFERENCES "payload"."survey_questions"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_surveys_v" ADD CONSTRAINT "_surveys_v_parent_id_surveys_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."surveys"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_surveys_v_rels" ADD CONSTRAINT "_surveys_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_surveys_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_surveys_v_rels" ADD CONSTRAINT "_surveys_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_surveys_v_rels" ADD CONSTRAINT "_surveys_v_rels_survey_questions_fk" FOREIGN KEY ("survey_questions_id") REFERENCES "payload"."survey_questions"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."payload_locked_documents"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "payload"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_fk" FOREIGN KEY ("media_id") REFERENCES "payload"."media"("id") ON DELETE cascade ON UPDATE no action;
@@ -976,7 +976,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "surveys_rels_order_idx" ON "payload"."surveys_rels" USING btree ("order");
   CREATE INDEX "surveys_rels_parent_idx" ON "payload"."surveys_rels" USING btree ("parent_id");
   CREATE INDEX "surveys_rels_path_idx" ON "payload"."surveys_rels" USING btree ("path");
-  CREATE INDEX "surveys_rels_downloads_id_idx" ON "payload"."surveys_rels" USING btree ("downloads_id");
+  CREATE INDEX "surveys_rels_survey_questions_id_idx" ON "payload"."surveys_rels" USING btree ("survey_questions_id");
   CREATE INDEX "_surveys_v_parent_idx" ON "payload"."_surveys_v" USING btree ("parent_id");
   CREATE INDEX "_surveys_v_version_version_slug_idx" ON "payload"."_surveys_v" USING btree ("version_slug");
   CREATE INDEX "_surveys_v_version_version_updated_at_idx" ON "payload"."_surveys_v" USING btree ("version_updated_at");
@@ -988,7 +988,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_surveys_v_rels_order_idx" ON "payload"."_surveys_v_rels" USING btree ("order");
   CREATE INDEX "_surveys_v_rels_parent_idx" ON "payload"."_surveys_v_rels" USING btree ("parent_id");
   CREATE INDEX "_surveys_v_rels_path_idx" ON "payload"."_surveys_v_rels" USING btree ("path");
-  CREATE INDEX "_surveys_v_rels_downloads_id_idx" ON "payload"."_surveys_v_rels" USING btree ("downloads_id");
+  CREATE INDEX "_surveys_v_rels_survey_questions_id_idx" ON "payload"."_surveys_v_rels" USING btree ("survey_questions_id");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload"."payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX "payload_locked_documents_updated_at_idx" ON "payload"."payload_locked_documents" USING btree ("updated_at");
   CREATE INDEX "payload_locked_documents_created_at_idx" ON "payload"."payload_locked_documents" USING btree ("created_at");

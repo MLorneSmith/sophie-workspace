@@ -35,7 +35,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 
 **Database reset outcomes**:
 1. **Primary Objective**: Fresh local Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, migrations applied, 249 records seeded across 12 collections
+2. **Success Criteria**: Database reset, migrations applied, 252 records seeded across 12 collections
 3. **Safety Features**: Pre-flight validation, automatic cleanup, duplicate prevention
 
 </purpose>
@@ -238,8 +238,8 @@ if [ "$SCHEMA_ONLY" = false ]; then
       END as status
     FROM (
       SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
-      UNION ALL SELECT 'media', COUNT(*)::int, 21 FROM payload.media
-      UNION ALL SELECT 'downloads', COUNT(*)::int, 23 FROM payload.downloads
+      UNION ALL SELECT 'media', COUNT(*)::int, 24 FROM payload.media
+      UNION ALL SELECT 'downloads', COUNT(*)::int, 20 FROM payload.downloads
       UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
       UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
       UNION ALL SELECT 'course_lessons', COUNT(*)::int, 25 FROM payload.course_lessons
@@ -247,7 +247,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
       UNION ALL SELECT 'quiz_questions', COUNT(*)::int, 94 FROM payload.quiz_questions
       UNION ALL SELECT 'survey_questions', COUNT(*)::int, 32 FROM payload.survey_questions
       UNION ALL SELECT 'surveys', COUNT(*)::int, 3 FROM payload.surveys
-      UNION ALL SELECT 'documentation', COUNT(*)::int, 16 FROM payload.documentation
+      UNION ALL SELECT 'documentation', COUNT(*)::int, 19 FROM payload.documentation
       UNION ALL SELECT 'private', COUNT(*)::int, 5 FROM payload.private
     ) counts;
   ")
@@ -351,8 +351,8 @@ fi
 - R2 storage configured with production credentials
 - Supabase running on localhost:54321-54323
 - Payload schema with 40+ tables
-- 249 records seeded across 12 collections (if not --schema-only)
-- Media files (28) and downloads (23) with R2 URLs
+- 252 records seeded across 12 collections (if not --schema-only)
+- Media files (24) and downloads (20) with R2 URLs
 - No duplicate records detected
 
 **Final Status Report**:
@@ -364,7 +364,7 @@ fi
 ✅ Phase 2: Supabase database reset
 ✅ Phase 3 (was 4): Database reset
 ✅ Phase 4 (was 5): Payload migrations applied (42 tables)
-✅ Phase 5 (was 6): Seeding complete (249/249 records + files uploaded)
+✅ Phase 5 (was 6): Seeding complete (252/252 records + files uploaded)
 ✅ Phase 6: Database verified
 
 **Connection Details:**
@@ -502,7 +502,7 @@ Reset local Supabase database and seed Payload CMS with fresh data.
 1. ✅ Validates environment and configuration
 2. ✅ Resets Supabase database (drops and recreates)
 3. ✅ Sets up Payload schema and runs migrations
-4. ✅ Seeds Payload CMS with 249 records (unless --schema-only)
+4. ✅ Seeds Payload CMS with 252 records (unless --schema-only)
 5. ✅ Verifies database state
 
 **Requirements:**

@@ -121,8 +121,8 @@ async function main() {
 			"courses", // Depends on: downloads
 			"course-quizzes", // Depends on: courses
 			"quiz-questions", // No dependencies
-			"surveys", // Depends on: downloads
-			"survey-questions", // No dependencies
+			"survey-questions", // No dependencies (must be before surveys)
+			"surveys", // Depends on: downloads, survey-questions (mapping file)
 			"course-lessons", // Depends on: courses, quizzes, surveys, downloads
 			"documentation", // Depends on: media
 			"private", // Depends on: users, media

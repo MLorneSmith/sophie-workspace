@@ -22,7 +22,8 @@
       "mcp__context7__resolve-library-id",
       "Read(//tmp/**)",
       "Bash(find:*)",
-      "Bash(vercel:*)"
+      "Bash(vercel:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": [],
