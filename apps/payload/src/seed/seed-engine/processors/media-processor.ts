@@ -1,62 +1,53 @@
 /**
- * Media collection processor with file upload support
+ * Media collection processor with URL-based seeding
  *
  * Specialized processor for the 'media' collection that:
- * - Reads actual image/video files from seed assets directory
- * - Uploads files to Cloudflare R2 via Payload's S3 storage adapter
- * - Creates database records with proper file metadata
- * - Handles MIME type detection and validation
+ * - Creates database records with pre-uploaded R2 file URLs
+ * - Uses files already uploaded to Cloudflare R2
+ * - No local file reading or upload during seeding
+ * - Validates URL and metadata presence
  *
  * @module seed-engine/processors/media-processor
  */
 
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { BaseProcessor } from './base-processor';
 import type { ProcessorResult, SeedRecord } from '../types';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /**
- * Specialized processor for media collection with file upload support
+ * Specialized processor for media collection with URL-based seeding
  *
- * The media collection requires actual file uploads, not just metadata.
+ * The media collection uses pre-uploaded files from Cloudflare R2.
  * This processor:
- * 1. **Reads Files**: Loads binary file data from seed-assets directory
- * 2. **Uploads to R2**: Passes file data to Payload, which uploads to Cloudflare R2
- * 3. **Creates Records**: Database records are created with file metadata
+ * 1. **Validates URLs**: Ensures each record has a valid R2 URL
+ * 2. **Creates Records**: Database records are created with R2 URLs
+ * 3. **No File Upload**: Files are already in R2, no upload during seeding
  *
- * **File Upload Flow**:
+ * **URL-Based Flow**:
  * ```
- * seed-assets/media/hero.jpg
+ * Files pre-uploaded to R2
  *         ↓
- * MediaProcessor reads file as Buffer
+ * Seed data contains R2 URLs
  *         ↓
- * payload.create({ file: { data: buffer, ... } })
+ * payload.create({ data: { url, filename, ... } })
  *         ↓
- * Payload's S3 Storage Adapter uploads to R2
- *         ↓
- * Database record created with R2 file URL
+ * Database record created with R2 URL
  * ```
  *
  * **Seed data structure**:
  * ```json
  * {
  *   "_ref": "hero-image",
- *   "filePath": "hero-image.jpg",
+ *   "filename": "hero-image.jpg",
+ *   "url": "https://media.{account_id}.r2.cloudflarestorage.com/hero-image.jpg",
  *   "alt": "Hero image",
  *   "type": "image"
  * }
  * ```
  *
  * **Processing logic**:
- * 1. Resolve file path relative to seed-assets/media/
- * 2. Read file as Buffer
- * 3. Detect MIME type from filename extension
- * 4. Upload via Payload Local API (automatic R2 upload)
- * 5. Return created record UUID
+ * 1. Validate URL and filename presence
+ * 2. Create record with URL and metadata
+ * 3. Return created record UUID
  *
  * @example
  * ```typescript
@@ -69,7 +60,8 @@ const __dirname = path.dirname(__filename);
  * const results = await processor.processAll([
  *   {
  *     _ref: "hero-image",
- *     filePath: "hero-image.jpg",
+ *     filename: "hero-image.jpg",
+ *     url: "https://media.account.r2.cloudflarestorage.com/hero-image.jpg",
  *     alt: "Hero image for testing",
  *     type: "image"
  *   }
@@ -77,49 +69,13 @@ const __dirname = path.dirname(__filename);
  * ```
  */
 export class MediaProcessor extends BaseProcessor {
-  /**
-   * Seed assets base directory path
-   * Points to apps/payload/src/seed/seed-assets/media/
-   */
-  private readonly assetsPath: string;
-
-  /**
-   * MIME type mappings for common file extensions
-   */
-  private readonly mimeTypes: Record<string, string> = {
-    // Images
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.png': 'image/png',
-    '.gif': 'image/gif',
-    '.webp': 'image/webp',
-    '.svg': 'image/svg+xml',
-
-    // Videos
-    '.mp4': 'video/mp4',
-    '.mov': 'video/quicktime',
-    '.webm': 'video/webm',
-    '.avi': 'video/avi',
-  };
-
-  /**
-   * Initialize media processor with assets directory path
-   */
-  constructor(...args: ConstructorParameters<typeof BaseProcessor>) {
-    super(...args);
-
-    // Resolve path to seed-assets/media/ directory
-    // From processors/ go up to seed-engine/, then to seed-assets/media/
-    this.assetsPath = path.resolve(__dirname, '../../seed-assets/media');
-  }
 
   /**
    * Pre-processing validation for media collection
    *
    * Validates all records before processing:
-   * 1. Check required fields (filePath, alt)
-   * 2. Verify files exist on disk
-   * 3. Validate file extensions against allowed MIME types
+   * 1. Check required fields (url, filename, alt)
+   * 2. Verify URL format is valid
    *
    * @param records - All media records to validate
    * @throws {Error} If any record fails validation
@@ -129,9 +85,16 @@ export class MediaProcessor extends BaseProcessor {
 
     for (const record of records) {
       // Validate required fields
-      if (!record.filePath || typeof record.filePath !== 'string') {
+      if (!record.url || typeof record.url !== 'string') {
         errors.push(
-          `Record ${record._ref || 'unknown'}: Missing required field 'filePath'`,
+          `Record ${record._ref || 'unknown'}: Missing required field 'url'`,
+        );
+        continue;
+      }
+
+      if (!record.filename || typeof record.filename !== 'string') {
+        errors.push(
+          `Record ${record._ref || 'unknown'}: Missing required field 'filename'`,
         );
         continue;
       }
@@ -143,23 +106,12 @@ export class MediaProcessor extends BaseProcessor {
         continue;
       }
 
-      // Validate file extension
-      const ext = path.extname(record.filePath as string).toLowerCase();
-      if (!this.mimeTypes[ext]) {
-        errors.push(
-          `Record ${record._ref || 'unknown'}: Unsupported file extension '${ext}'. ` +
-            `Supported: ${Object.keys(this.mimeTypes).join(', ')}`,
-        );
-      }
-
-      // Check if file exists (will be verified during actual read)
-      const filePath = this.resolveFilePath(record.filePath as string);
+      // Validate URL format
       try {
-        await readFile(filePath);
-      } catch (error) {
+        new URL(record.url as string);
+      } catch {
         errors.push(
-          `Record ${record._ref || 'unknown'}: File not found at '${filePath}'. ` +
-            `Ensure the file exists in seed-assets/media/ directory.`,
+          `Record ${record._ref || 'unknown'}: Invalid URL format '${record.url}'`,
         );
       }
     }
@@ -170,91 +122,90 @@ export class MediaProcessor extends BaseProcessor {
   }
 
   /**
-   * Create media record with file upload to R2
+   * Create media record with pre-uploaded R2 URL
    *
-   * **File Upload Process**:
-   * 1. Read file from seed-assets directory
-   * 2. Detect MIME type from extension
-   * 3. Create file upload object (Buffer + metadata)
-   * 4. Pass to Payload Local API
-   * 5. Payload's S3 storage adapter uploads to R2 automatically
-   * 6. Database record created with R2 file URL
+   * **URL-Based Process**:
+   * 1. Validate URL and metadata from seed data
+   * 2. Create database record with R2 URL
+   * 3. No file upload (files already in R2)
    *
-   * **R2 Upload is Automatic**: You don't directly call R2 API. Payload's
-   * storage adapter intercepts the file upload and handles R2 upload
-   * transparently using the S3-compatible API.
-   *
-   * @param record - Media record with file path and metadata
+   * @param record - Media record with R2 URL and metadata
    * @returns UUID of created media record
-   * @throws {Error} If file read fails or Payload rejects the upload
+   * @throws {Error} If record creation fails
    *
    * @example
    * ```typescript
    * const uuid = await processor.processRecord({
    *   _ref: "hero-image",
-   *   filePath: "hero-image.jpg",
+   *   filename: "hero-image.jpg",
+   *   url: "https://media.account.r2.cloudflarestorage.com/hero-image.jpg",
    *   alt: "Hero image",
    *   type: "image"
    * });
-   * // File is now in R2, database record created
+   * // Database record created with R2 URL
    * ```
    */
   async processRecord(record: SeedRecord): Promise<string> {
     // Clean metadata (remove internal fields)
-    const { _ref, _status, filePath, ...cleanedRecord } = record;
+    const { _ref, _status, ...cleanedRecord } = record;
+
+    // Infer mimeType if missing
+    if (!cleanedRecord.mimeType && cleanedRecord.filename) {
+      cleanedRecord.mimeType = this.inferMimeType(cleanedRecord.filename as string);
+    }
+
+    // Set placeholder filesize if missing (will be updated when file is accessed)
+    if (!cleanedRecord.filesize) {
+      cleanedRecord.filesize = 0;
+    }
 
     try {
-      // 1. Resolve file path
-      const absolutePath = this.resolveFilePath(filePath as string);
-      const filename = path.basename(filePath as string);
-
-      // 2. Read file as Buffer
-      const fileBuffer = await readFile(absolutePath);
-
-      // 3. Detect MIME type
-      const ext = path.extname(filename).toLowerCase();
-      const mimeType = this.mimeTypes[ext];
-
-      if (!mimeType) {
-        throw new Error(`Unsupported file extension: ${ext}`);
-      }
-
-      // 4. Create file upload object (Payload format)
-      const file = {
-        data: fileBuffer,
-        name: filename,
-        size: fileBuffer.length,
-        mimetype: mimeType,
-      };
-
-      // 5. Upload via Payload Local API
-      // Payload's S3 storage adapter intercepts this and uploads to R2
+      // Create record with pre-existing R2 file metadata
       const created = await this.payload.create({
         collection: this.collectionName as any,
         data: cleanedRecord,
-        file: file, // This triggers automatic R2 upload
       });
 
-      // 6. Return created UUID
+      // Return created UUID
       const resultId = created.id as string;
       return resultId;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
       throw new Error(
-        `Failed to upload media file '${filePath}': ${errorMessage}`,
+        `Failed to create media record for '${record.filename}': ${errorMessage}`,
       );
     }
+  }
+
+  /**
+   * Infer MIME type from filename extension
+   *
+   * @param filename - File name with extension
+   * @returns MIME type string
+   */
+  private inferMimeType(filename: string): string {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'gif': 'image/gif',
+      'webp': 'image/webp',
+      'svg': 'image/svg+xml',
+      'mp4': 'video/mp4',
+      'mov': 'video/quicktime',
+      'webm': 'video/webm',
+    };
+    return mimeTypes[ext || ''] || 'application/octet-stream';
   }
 
   /**
    * Post-processing summary
    *
    * Logs statistics about media processing:
-   * - Total files uploaded
-   * - Total storage size
-   * - Average file size
-   * - Upload success/failure counts
+   * - Total records created
+   * - Success/failure counts
    *
    * @param results - Processing results from all records
    */
@@ -268,25 +219,5 @@ export class MediaProcessor extends BaseProcessor {
         `Media processing completed: ${successCount} success, ${failureCount} failed`,
       );
     }
-  }
-
-  /**
-   * Resolve file path relative to seed-assets/media/ directory
-   *
-   * Supports both relative and absolute paths:
-   * - "hero.jpg" → /path/to/seed-assets/media/hero.jpg
-   * - "./images/hero.jpg" → /path/to/seed-assets/media/images/hero.jpg
-   *
-   * @param filePath - Relative file path from seed data
-   * @returns Absolute file path
-   */
-  private resolveFilePath(filePath: string): string {
-    // If already absolute, use as-is
-    if (path.isAbsolute(filePath)) {
-      return filePath;
-    }
-
-    // Otherwise, resolve relative to assets directory
-    return path.resolve(this.assetsPath, filePath);
   }
 }

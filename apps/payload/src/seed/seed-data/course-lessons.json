@@ -27,10 +27,14 @@
       }
     },
     "lesson_number": 6,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 8,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.717Z",
-    "updatedAt": "2025-10-03T20:57:57.717Z"
+    "createdAt": "2025-10-09T16:21:50.051Z",
+    "updatedAt": "2025-10-09T16:21:50.051Z",
+    "bunny_video_id": "2620df68-c2a8-4255-986e-24c1d4c1dbf2",
+    "thumbnail": "{ref:media:lesson-0}",
+    "publishedAt": "2024-09-06T00:00:00.000Z"
   },
   {
     "_ref": "before-we-begin",
@@ -60,10 +64,13 @@
       }
     },
     "lesson_number": 8,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 3,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.715Z",
-    "updatedAt": "2025-10-03T20:57:57.715Z"
+    "createdAt": "2025-10-09T16:21:50.049Z",
+    "updatedAt": "2025-10-09T16:21:50.049Z",
+    "thumbnail": "{ref:media:before-we-begin}",
+    "publishedAt": "2024-09-06T00:00:00.000Z"
   },
   {
     "_ref": "tools-and-resources",
@@ -183,10 +190,17 @@
       }
     },
     "lesson_number": 9,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 10,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.058Z",
+    "updatedAt": "2025-10-09T16:21:50.058Z",
+    "downloads": [
+      "{ref:downloads:slide-templates}",
+      "{ref:downloads:swipe-file}"
+    ],
+    "thumbnail": "{ref:media:tools-and-resources}",
+    "publishedAt": "2024-09-06T00:00:00.000Z"
   },
   {
     "_ref": "our-process",
@@ -337,10 +351,19 @@
       }
     },
     "lesson_number": 10,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 6,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.717Z",
-    "updatedAt": "2025-10-03T20:57:57.717Z"
+    "createdAt": "2025-10-09T16:21:50.052Z",
+    "updatedAt": "2025-10-09T16:21:50.052Z",
+    "bunny_video_id": "70b1f616-8e55-4c58-8898-c5cefa05417b",
+    "quiz_id": "{ref:course-quizzes:our-process-quiz}",
+    "downloads": [
+      "{ref:downloads:our-process-slides}"
+    ],
+    "thumbnail": "{ref:media:our-process}",
+    "publishedAt": "2024-08-23T00:00:00.000Z",
+    "todo_complete_quiz": true
   },
   {
     "_ref": "the-who",
@@ -370,10 +393,18 @@
       }
     },
     "lesson_number": 11,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 15,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.055Z",
+    "updatedAt": "2025-10-09T16:21:50.056Z",
+    "bunny_video_id": "8e80b4f3-76d4-44a3-994b-29937ee870ec",
+    "quiz_id": "{ref:course-quizzes:the-who-quiz}",
+    "downloads": [
+      "{ref:downloads:the-who-slides}"
+    ],
+    "thumbnail": "{ref:media:the-who}",
+    "publishedAt": "2024-08-26T00:00:00.000Z"
   },
   {
     "_ref": "the-why-introductions",
@@ -403,10 +434,17 @@
       }
     },
     "lesson_number": 12,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 13,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.056Z",
+    "updatedAt": "2025-10-09T16:21:50.056Z",
+    "bunny_video_id": "eaa1e745-ec67-42c4-b474-e34bd6bdc830",
+    "quiz_id": "{ref:course-quizzes:introductions-quiz}",
+    "downloads": [
+      "{ref:downloads:introduction-slides}"
+    ],
+    "thumbnail": "{ref:media:the-why-introductions}"
   },
   {
     "_ref": "the-why-next-steps",
@@ -436,10 +474,17 @@
       }
     },
     "lesson_number": 13,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 5,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.056Z",
+    "updatedAt": "2025-10-09T16:21:50.056Z",
+    "bunny_video_id": "22511e58-40ce-4f11-9961-90070c1a3e94",
+    "quiz_id": "{ref:course-quizzes:why-next-steps-quiz}",
+    "downloads": [
+      "{ref:downloads:next-steps-slides}"
+    ],
+    "thumbnail": "{ref:media:the-why-next-steps}"
   },
   {
     "_ref": "idea-generation",
@@ -469,10 +514,18 @@
       }
     },
     "lesson_number": 14,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 13,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.717Z",
-    "updatedAt": "2025-10-03T20:57:57.717Z"
+    "createdAt": "2025-10-09T16:21:50.051Z",
+    "updatedAt": "2025-10-09T16:21:50.051Z",
+    "bunny_video_id": "2caf80c4-e364-4565-b92e-a353d4e531ff",
+    "quiz_id": "{ref:course-quizzes:idea-generation-quiz}",
+    "downloads": [
+      "{ref:downloads:idea-generation-slides}"
+    ],
+    "thumbnail": "{ref:media:idea-generation}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "what-is-structure",
@@ -502,10 +555,18 @@
       }
     },
     "lesson_number": 15,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 22,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.720Z",
-    "updatedAt": "2025-10-03T20:57:57.720Z"
+    "createdAt": "2025-10-09T16:21:50.059Z",
+    "updatedAt": "2025-10-09T16:21:50.059Z",
+    "bunny_video_id": "17d23794-696e-41df-af6c-faf9b54bd87d",
+    "quiz_id": "{ref:course-quizzes:structure-quiz}",
+    "downloads": [
+      "{ref:downloads:what-is-structure-slides}"
+    ],
+    "thumbnail": "{ref:media:what-structure}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "using-stories",
@@ -535,10 +596,18 @@
       }
     },
     "lesson_number": 16,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 15,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.058Z",
+    "updatedAt": "2025-10-09T16:21:50.058Z",
+    "bunny_video_id": "f311d324-c0ca-4157-afeb-bba29e71a9ce",
+    "quiz_id": "{ref:course-quizzes:using-stories-quiz}",
+    "downloads": [
+      "{ref:downloads:using-stories-slides}"
+    ],
+    "thumbnail": "{ref:media:using-stories}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "storyboards-film",
@@ -557,10 +626,13 @@
       }
     },
     "lesson_number": 17,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.718Z",
-    "updatedAt": "2025-10-03T20:57:57.718Z"
+    "createdAt": "2025-10-09T16:21:50.055Z",
+    "updatedAt": "2025-10-09T16:21:50.055Z",
+    "quiz_id": "{ref:course-quizzes:storyboards-in-film-quiz}",
+    "thumbnail": "{ref:media:storyboards-in-film}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "storyboards-presentations",
@@ -590,10 +662,18 @@
       }
     },
     "lesson_number": 18,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 10,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.718Z",
-    "updatedAt": "2025-10-03T20:57:57.718Z"
+    "createdAt": "2025-10-09T16:21:50.055Z",
+    "updatedAt": "2025-10-09T16:21:50.055Z",
+    "bunny_video_id": "7f63356c-2bca-4c36-8765-4fe9efd59d71",
+    "quiz_id": "{ref:course-quizzes:storyboards-in-presentations-quiz}",
+    "downloads": [
+      "{ref:downloads:storyboards-presentations-slides}"
+    ],
+    "thumbnail": "{ref:media:storyboards-in-presentations}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "visual-perception",
@@ -623,10 +703,18 @@
       }
     },
     "lesson_number": 19,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 8,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.720Z",
-    "updatedAt": "2025-10-03T20:57:57.720Z"
+    "createdAt": "2025-10-09T16:21:50.058Z",
+    "updatedAt": "2025-10-09T16:21:50.058Z",
+    "bunny_video_id": "5c9b5f03-f5d0-479a-84b2-2cd489fc8584",
+    "quiz_id": "{ref:course-quizzes:visual-perception-quiz}",
+    "downloads": [
+      "{ref:downloads:visual-perception-slides}"
+    ],
+    "thumbnail": "{ref:media:visual-perception}",
+    "publishedAt": "2024-08-29T00:00:00.000Z"
   },
   {
     "_ref": "fundamental-design-overview",
@@ -645,10 +733,16 @@
       }
     },
     "lesson_number": 20,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.716Z",
-    "updatedAt": "2025-10-03T20:57:57.716Z"
+    "createdAt": "2025-10-09T16:21:50.051Z",
+    "updatedAt": "2025-10-09T16:21:50.051Z",
+    "quiz_id": "{ref:course-quizzes:overview-elements-of-design-quiz}",
+    "downloads": [
+      "{ref:downloads:fundamental-elements-slides}"
+    ],
+    "thumbnail": "{ref:media:overview-elements-design}",
+    "publishedAt": "2024-09-09T00:00:00.000Z"
   },
   {
     "_ref": "fundamental-design-detail",
@@ -678,10 +772,18 @@
       }
     },
     "lesson_number": 21,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 16,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.716Z",
-    "updatedAt": "2025-10-03T20:57:57.716Z"
+    "createdAt": "2025-10-09T16:21:50.050Z",
+    "updatedAt": "2025-10-09T16:21:50.050Z",
+    "bunny_video_id": "d91060f9-9a36-4827-8f15-aa56cf8f6b7c",
+    "quiz_id": "{ref:course-quizzes:elements-of-design-detail-quiz}",
+    "downloads": [
+      "{ref:downloads:fundamental-elements-slides}"
+    ],
+    "thumbnail": "{ref:media:detail-elements-of-design}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "gestalt-principles",
@@ -711,10 +813,18 @@
       }
     },
     "lesson_number": 22,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 6,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.716Z",
-    "updatedAt": "2025-10-03T20:57:57.716Z"
+    "createdAt": "2025-10-09T16:21:50.051Z",
+    "updatedAt": "2025-10-09T16:21:50.051Z",
+    "bunny_video_id": "e2256d0f-8a14-4567-9992-ac20713c9793",
+    "quiz_id": "{ref:course-quizzes:gestalt-principles-quiz}",
+    "downloads": [
+      "{ref:downloads:gestalt-principles-slides}"
+    ],
+    "thumbnail": "{ref:media:gestalt-principles}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "slide-composition",
@@ -744,10 +854,18 @@
       }
     },
     "lesson_number": 23,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 13,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.718Z",
-    "updatedAt": "2025-10-03T20:57:57.718Z"
+    "createdAt": "2025-10-09T16:21:50.054Z",
+    "updatedAt": "2025-10-09T16:21:50.054Z",
+    "bunny_video_id": "08100ca6-f998-42dc-8924-4a6d7f8bffeb",
+    "quiz_id": "{ref:course-quizzes:slide-composition-quiz}",
+    "downloads": [
+      "{ref:downloads:slide-composition-slides}"
+    ],
+    "thumbnail": "{ref:media:slide-composition}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "fact-based-persuasion",
@@ -777,10 +895,18 @@
       }
     },
     "lesson_number": 24,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 10,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.716Z",
-    "updatedAt": "2025-10-03T20:57:57.716Z"
+    "createdAt": "2025-10-09T16:21:50.050Z",
+    "updatedAt": "2025-10-09T16:21:50.050Z",
+    "bunny_video_id": "1a745407-88b6-41ea-bfe1-fb1e5da7f2ef",
+    "quiz_id": "{ref:course-quizzes:fact-persuasion-quiz}",
+    "downloads": [
+      "{ref:downloads:fact-based-persuasion-slides}"
+    ],
+    "thumbnail": "{ref:media:fact-based-persuasion}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "tables-vs-graphs",
@@ -810,10 +936,18 @@
       }
     },
     "lesson_number": 25,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 5,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.719Z",
-    "updatedAt": "2025-10-03T20:57:57.719Z"
+    "createdAt": "2025-10-09T16:21:50.055Z",
+    "updatedAt": "2025-10-09T16:21:50.055Z",
+    "bunny_video_id": "aae42644-8e3a-4ef3-a186-869f802869eb",
+    "quiz_id": "{ref:course-quizzes:tables-vs-graphs-quiz}",
+    "downloads": [
+      "{ref:downloads:tables-vs-graphs-slides}"
+    ],
+    "thumbnail": "{ref:media:tables-vs-graphs}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "basic-graphs",
@@ -843,10 +977,18 @@
       }
     },
     "lesson_number": 26,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 17,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.714Z",
-    "updatedAt": "2025-10-03T20:57:57.714Z"
+    "createdAt": "2025-10-09T16:21:50.049Z",
+    "updatedAt": "2025-10-09T16:21:50.049Z",
+    "bunny_video_id": "74be3c05-f774-4e3c-bbe0-495580a17931",
+    "quiz_id": "{ref:course-quizzes:basic-graphs-quiz}",
+    "downloads": [
+      "{ref:downloads:standard-graphs-slides}"
+    ],
+    "thumbnail": "{ref:media:standard-graphs}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "specialist-graphs",
@@ -876,10 +1018,18 @@
       }
     },
     "lesson_number": 27,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 8,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.718Z",
-    "updatedAt": "2025-10-03T20:57:57.718Z"
+    "createdAt": "2025-10-09T16:21:50.054Z",
+    "updatedAt": "2025-10-09T16:21:50.054Z",
+    "bunny_video_id": "579076d8-e225-497d-8ff3-52fad07c9640",
+    "quiz_id": "{ref:course-quizzes:specialist-graphs-quiz}",
+    "downloads": [
+      "{ref:downloads:specialist-graphs-slides}"
+    ],
+    "thumbnail": "{ref:media:specialist-graphs}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "preparation-practice",
@@ -909,10 +1059,18 @@
       }
     },
     "lesson_number": 28,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 16,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.718Z",
-    "updatedAt": "2025-10-03T20:57:57.718Z"
+    "createdAt": "2025-10-09T16:21:50.052Z",
+    "updatedAt": "2025-10-09T16:21:50.052Z",
+    "bunny_video_id": "582ab921-8eec-45c2-9223-c54fed288be9",
+    "quiz_id": "{ref:course-quizzes:preparation-practice-quiz}",
+    "downloads": [
+      "{ref:downloads:preparation-practice-slides}"
+    ],
+    "thumbnail": "{ref:media:preparation-practice}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "performance",
@@ -942,10 +1100,18 @@
       }
     },
     "lesson_number": 29,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "estimated_duration": 14,
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.717Z",
-    "updatedAt": "2025-10-03T20:57:57.717Z"
+    "createdAt": "2025-10-09T16:21:50.052Z",
+    "updatedAt": "2025-10-09T16:21:50.052Z",
+    "bunny_video_id": "04697977-e686-43c2-b12b-cc81ba1e5aec",
+    "quiz_id": "{ref:course-quizzes:performance-quiz}",
+    "downloads": [
+      "{ref:downloads:performance-slides}"
+    ],
+    "thumbnail": "{ref:media:performance}",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "congratulations",
@@ -975,10 +1141,11 @@
       }
     },
     "lesson_number": 30,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.715Z",
-    "updatedAt": "2025-10-03T20:57:57.715Z"
+    "createdAt": "2025-10-09T16:21:50.050Z",
+    "updatedAt": "2025-10-09T16:21:50.050Z",
+    "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
     "_ref": "before-you-go",
@@ -997,9 +1164,10 @@
       }
     },
     "lesson_number": 31,
-    "course": "{ref:courses:decks-for-decision-makers}",
+    "course_id": "{ref:courses:decks-for-decision-makers}",
     "published": true,
-    "createdAt": "2025-10-03T20:57:57.715Z",
-    "updatedAt": "2025-10-03T20:57:57.715Z"
+    "createdAt": "2025-10-09T16:21:50.050Z",
+    "updatedAt": "2025-10-09T16:21:50.050Z",
+    "publishedAt": "2024-09-06T00:00:00.000Z"
   }
 ]

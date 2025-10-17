@@ -24,7 +24,7 @@ export const Media: CollectionConfig = {
 			"video/quicktime",
 			"video/webm",
 		],
-		filesRequiredOnCreate: true,
+		filesRequiredOnCreate: false, // Allow seeding pre-existing R2 files
 		disableLocalStorage: true,
 	},
 	fields: [

@@ -1,128 +1,170 @@
 [
   {
-    "_ref": "1-our-process",
-    "filePath": "1-our_process.png",
+    "_ref": "our-process",
+    "filename": "1-our_process.png",
+    "url": "https://media.slideheroes.com/1-our_process.png",
     "alt": "Our Process - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "2-the-who",
-    "filePath": "2-the_who.png",
+    "_ref": "the-who",
+    "filename": "2-the_who.png",
+    "url": "https://media.slideheroes.com/2-the_who.png",
     "alt": "The Who - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "3-the-why-introductions",
-    "filePath": "3-the_why_introductions.png",
+    "_ref": "the-why-introductions",
+    "filename": "3-the_why_introductions.png",
+    "url": "https://media.slideheroes.com/3-the_why_introductions.png",
     "alt": "The Why Introductions - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "4-the-why-next-steps",
-    "filePath": "4-the_why_next_steps.png",
+    "_ref": "the-why-next-steps",
+    "filename": "4-the_why_next_steps.png",
+    "url": "https://media.slideheroes.com/4-the_why_next_steps.png",
     "alt": "The Why Next Steps - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "5-idea-generation",
-    "filePath": "5-idea_generation.png",
+    "_ref": "idea-generation",
+    "filename": "5-idea_generation.png",
+    "url": "https://media.slideheroes.com/5-idea_generation.png",
     "alt": "Idea Generation - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "6-what-structure",
-    "filePath": "6-what_structure.png",
+    "_ref": "what-structure",
+    "filename": "6-what_structure.png",
+    "url": "https://media.slideheroes.com/6-what_structure.png",
     "alt": "What Structure - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "7-using-stories",
-    "filePath": "7-using_stories.png",
+    "_ref": "using-stories",
+    "filename": "7-using_stories.png",
+    "url": "https://media.slideheroes.com/7-using_stories.png",
     "alt": "Using Stories - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "8-storyboards-in-film",
-    "filePath": "8-storyboards_in_film.png",
+    "_ref": "storyboards-in-film",
+    "filename": "8-storyboards_in_film.png",
+    "url": "https://media.slideheroes.com/8-storyboards_in_film.png",
     "alt": "Storyboards in Film - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "9-storyboards-in-presentations",
-    "filePath": "9-storyboards_in_presentations.png",
+    "_ref": "storyboards-in-presentations",
+    "filename": "9-storyboards_in_presentations.png",
+    "url": "https://media.slideheroes.com/9-storyboards_in_presentations.png",
     "alt": "Storyboards in Presentations - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "10-visual-perception",
-    "filePath": "10-visual_perception.png",
+    "_ref": "visual-perception",
+    "filename": "10-visual_perception.png",
+    "url": "https://media.slideheroes.com/10-visual_perception.png",
     "alt": "Visual Perception - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "11-overview-elements-design",
-    "filePath": "11-overview_elements_design.png",
+    "_ref": "overview-elements-design",
+    "filename": "11-overview_elements_design.png",
+    "url": "https://media.slideheroes.com/11-overview_elements_design.png",
     "alt": "Overview Elements Design - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "12-detail-elements-of-design",
-    "filePath": "12-detail_elements_of_design.png",
+    "_ref": "detail-elements-of-design",
+    "filename": "12-detail_elements_of_design.png",
+    "url": "https://media.slideheroes.com/12-detail_elements_of_design.png",
     "alt": "Detail Elements of Design - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "13-gestalt-principles",
-    "filePath": "13-gestalt_principles_of_perception.png",
+    "_ref": "gestalt-principles",
+    "filename": "13-gestalt_principles_of_perception.png",
+    "url": "https://media.slideheroes.com/13-gestalt_principles_of_perception.png",
     "alt": "Gestalt Principles of Perception - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "14-slide-composition",
-    "filePath": "14-slide_composition.png",
+    "_ref": "slide-composition",
+    "filename": "14-slide_composition.png",
+    "url": "https://media.slideheroes.com/14-slide_composition.png",
     "alt": "Slide Composition - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "15-fact-based-persuasion",
-    "filePath": "15-fact_based_persuasion_overview.png",
+    "_ref": "fact-based-persuasion",
+    "filename": "15-fact_based_persuasion_overview.png",
+    "url": "https://media.slideheroes.com/15-fact_based_persuasion_overview.png",
     "alt": "Fact Based Persuasion Overview - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "16-tables-vs-graphs",
-    "filePath": "16-tables_vs_graphs.png",
+    "_ref": "tables-vs-graphs",
+    "filename": "16-tables_vs_graphs.png",
+    "url": "https://media.slideheroes.com/16-tables_vs_graphs.png",
     "alt": "Tables vs Graphs - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "17-standard-graphs",
-    "filePath": "17-standard_graphs.png",
+    "_ref": "standard-graphs",
+    "filename": "17-standard_graphs.png",
+    "url": "https://media.slideheroes.com/17-standard_graphs.png",
     "alt": "Standard Graphs - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "18-specialist-graphs",
-    "filePath": "18-specialist_graphs.png",
+    "_ref": "specialist-graphs",
+    "filename": "18-specialist_graphs.png",
+    "url": "https://media.slideheroes.com/18-specialist_graphs.png",
     "alt": "Specialist Graphs - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "19-preparation-practice",
-    "filePath": "19-preparation_practice.png",
+    "_ref": "preparation-practice",
+    "filename": "19-preparation_practice.png",
+    "url": "https://media.slideheroes.com/19-preparation_practice.png",
     "alt": "Preparation Practice - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "20-performance",
-    "filePath": "20-performance.png",
+    "_ref": "performance",
+    "filename": "20-performance.png",
+    "url": "https://media.slideheroes.com/20-performance.png",
     "alt": "Performance - SlideHeroes course content",
     "type": "image"
   },
   {
-    "_ref": "blog-brainstorming",
-    "filePath": "blog-brainstorming.webp",
+    "_ref": "brainstorming",
+    "filename": "blog-brainstorming.webp",
+    "url": "https://media.slideheroes.com/blog-brainstorming.webp",
     "alt": "Blog post featured image",
+    "type": "image"
+  },
+  {
+    "_ref": "lesson-0",
+    "filename": "lesson_zero.png",
+    "url": "https://media.slideheroes.com/lesson_zero.png",
+    "alt": "Welcome to DDM - SlideHeroes course content",
+    "type": "image"
+  },
+  {
+    "_ref": "before-we-begin",
+    "filename": "before_we_begin.png",
+    "url": "https://media.slideheroes.com/before_we_begin.png",
+    "alt": "Before We Begin - SlideHeroes course content",
+    "type": "image"
+  },
+  {
+    "_ref": "tools-and-resources",
+    "filename": "tools_resources.png",
+    "url": "https://media.slideheroes.com/tools_resources.png",
+    "alt": "Tools and Resources - SlideHeroes course content",
     "type": "image"
   }
 ]
