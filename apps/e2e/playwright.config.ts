@@ -75,13 +75,16 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
-		navigationTimeout: 45 * 1000, // Increased from 30s to account for CI environment latency
+		// Increased navigation timeout for deployed environments
+		// Accounts for: Vercel cold starts, network latency, edge function initialization
+		navigationTimeout: process.env.CI ? 90 * 1000 : 45 * 1000,
 	},
-	// test timeout set to 2 minutes
-	timeout: 120 * 1000,
+	// Test timeout increased for CI to handle deployed environment latency
+	// Setup tests (auth.setup.ts) need more time for authentication flows
+	timeout: process.env.CI ? 180 * 1000 : 120 * 1000, // 3 min in CI, 2 min local
 	expect: {
-		// expect timeout set to 10 seconds
-		timeout: 10 * 1000,
+		// Expect timeout for assertions
+		timeout: process.env.CI ? 15 * 1000 : 10 * 1000, // 15s in CI, 10s local
 	},
 	/* Configure projects for major browsers */
 	projects: [

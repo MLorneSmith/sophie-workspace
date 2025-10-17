@@ -22,15 +22,16 @@ export class AuthPageObject {
 	}
 
 	goToSignIn(next?: string) {
+		// Use configured navigation timeout instead of hardcoded value
+		// Defaults to 45s in CI environments to handle network latency
 		return this.page.goto(`/auth/sign-in${next ? `?next=${next}` : ""}`, {
-			timeout: 30000,
 			waitUntil: "domcontentloaded",
 		});
 	}
 
 	goToSignUp(next?: string) {
+		// Use configured navigation timeout instead of hardcoded value
 		return this.page.goto(`/auth/sign-up${next ? `?next=${next}` : ""}`, {
-			timeout: 30000,
 			waitUntil: "domcontentloaded",
 		});
 	}
@@ -239,8 +240,18 @@ export class AuthPageObject {
 		const startTime = Date.now();
 		const targetUrl = params.next ?? "/home";
 
-		// Phase 1: Wait for Supabase auth API response (30s)
-		console.log("[Phase 1] Waiting for Supabase auth/v1/token API response...");
+		// Phase 1: Wait for Supabase auth API response
+		// Use 60s timeout in CI/deployed environments to handle:
+		// - Vercel cold starts
+		// - Network latency
+		// - API gateway overhead
+		// - Cloudflare routing
+		const isCI = process.env.CI === "true";
+		const authTimeout = isCI ? 60000 : 30000;
+
+		console.log(
+			`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,
+		);
 		const authResponsePromise = this.page.waitForResponse(
 			(response) => {
 				const url = response.url();
@@ -252,7 +263,7 @@ export class AuthPageObject {
 				}
 				return isAuthToken && response.status() === 200;
 			},
-			{ timeout: 30000 },
+			{ timeout: authTimeout },
 		);
 
 		// Submit form
@@ -268,7 +279,22 @@ export class AuthPageObject {
 				`[Phase 1] ✅ Auth API responded (${Date.now() - startTime}ms)`,
 			);
 		} catch (error) {
-			console.error("[Phase 1] ❌ Auth API timeout after 30s");
+			console.error(`[Phase 1] ❌ Auth API timeout after ${authTimeout}ms`);
+			console.error(`Current URL: ${this.page.url()}`);
+			console.error(`Credentials: ${params.email}`);
+
+			// Capture additional diagnostics
+			try {
+				const networkErrors = await this.page.evaluate(() => {
+					return (window as any).__networkErrors || [];
+				});
+				if (networkErrors.length > 0) {
+					console.error("Network errors:", networkErrors);
+				}
+			} catch (e) {
+				// Ignore diagnostics failure
+			}
+
 			throw error;
 		}
 
@@ -307,8 +333,16 @@ export class AuthPageObject {
 			);
 		}
 
-		// Phase 3: Wait for navigation with flexible URL matching (45s)
-		console.log(`[Phase 3] Waiting for navigation to: ${targetUrl}`);
+		// Phase 3: Wait for navigation with flexible URL matching
+		// Use 90s timeout in CI to account for:
+		// - Server-side redirects
+		// - Middleware processing
+		// - Session establishment
+		const navigationTimeout = isCI ? 90000 : 45000;
+
+		console.log(
+			`[Phase 3] Waiting for navigation to: ${targetUrl} (timeout: ${navigationTimeout}ms)`,
+		);
 
 		try {
 			await this.page.waitForURL(
@@ -324,7 +358,7 @@ export class AuthPageObject {
 					return leftSignIn && reachedTarget;
 				},
 				{
-					timeout: 45000,
+					timeout: navigationTimeout,
 				},
 			);
 

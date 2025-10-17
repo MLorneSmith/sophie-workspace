@@ -71,8 +71,13 @@ export class TestConfigManager {
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
 					short: isCI ? 15000 : 10000,
-					medium: isCI ? 45000 : 20000, // Increased from 30s to 45s for CI
-					long: isCI ? 90000 : 45000, // Increased from 60s to 90s for CI
+					// Increased for deployed environments to handle:
+					// - Vercel cold starts and edge function initialization
+					// - Network latency from GitHub Actions to deployment
+					// - Supabase API response time in production
+					// - Middleware and auth processing overhead
+					medium: isCI ? 90000 : 20000, // Auth operations: 90s in CI, 20s local
+					long: isCI ? 120000 : 45000, // Complex operations: 120s in CI, 45s local
 				},
 			},
 		};
@@ -99,8 +104,12 @@ export class TestConfigManager {
 		switch (type) {
 			case "auth":
 				// Authentication operations need more time in CI
+				// Extended intervals to handle cold starts and network latency
 				if (config.isCI) {
-					return [500, 1000, 2500, 5000, 8000, 12000].slice(0, maxRetries + 2);
+					return [1000, 2000, 5000, 10000, 15000, 20000, 25000, 30000].slice(
+						0,
+						maxRetries + 3,
+					);
 				}
 				return [500, 1500, 3000, 6000].slice(0, maxRetries + 1);
 
