@@ -1,125 +1,125 @@
 {
-	"name": "slideheroes",
-	"version": "2.13.1",
-	"private": true,
-	"sideEffects": false,
-	"engines": {
-		"node": ">=v18.18.0"
-	},
-	"author": {
-		"url": "https://makerkit.dev",
-		"name": "MakerKit"
-	},
-	"scripts": {
-		"turbo": "turbo",
-		"preinstall": "pnpm run --filter scripts requirements",
-		"postinstall": "manypkg fix",
-		"prebuild": "[ -f ./fix-build-permissions.sh ] && ./fix-build-permissions.sh || true",
-		"build": "./.claude/statusline/build-wrapper.sh",
-		"clean": "git clean -xdf node_modules dist .next",
-		"clean:workspaces": "turbo clean",
-		"dev": "cross-env FORCE_COLOR=1 turbo dev --parallel",
-		"format": "biome format .",
-		"format:fix": "biome format --write .",
-		"lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
-		"lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
-		"typecheck": "./.claude/statusline/typecheck-wrapper.sh",
-		"test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
-		"update": "pnpm update -r",
-		"syncpack:list": "pnpm dlx syncpack list-mismatches",
-		"syncpack:fix": "pnpm dlx syncpack fix-mismatches",
-		"supabase:web:start": "pnpm --filter web supabase:start",
-		"supabase:web:stop": "pnpm --filter web supabase:stop",
-		"supabase:web:typegen": "pnpm --filter web supabase:typegen",
-		"supabase:web:reset": "pnpm --filter web supabase:reset",
-		"supabase:web:test": "pnpm --filter web supabase:test",
-		"stripe:listen": "pnpm --filter '@kit/stripe' start",
-		"env:generate": "turbo gen env",
-		"env:validate": "turbo gen validate-env",
-		"build:raw": "turbo build --cache-dir=.turbo",
-		"lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
-		"lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**' '!**/reports/**' '!**/test-results/**' '!CLAUDE.md'",
-		"lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**' '!**/reports/**' '!**/test-results/**' '!CLAUDE.md'",
-		"codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
-		"typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
-		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
-		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
-		"test:e2e": "turbo test --filter=web-e2e",
-		"ci-metrics:collect": "node scripts/collect-ci-metrics.js",
-		"ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
-		"ci-metrics:weekly": "node scripts/weekly-ci-report.js",
-		"fetch-questions-temp": "tsx fetch-questions-temp.ts",
-		"manypkg:check": "manypkg check",
-		"manypkg:fix": "manypkg fix",
-		"payload:migrate:ssl": "PAYLOAD_ENABLE_SSL=true pnpm --filter payload payload migrate",
-		"payload:migrate:production": "PAYLOAD_MIGRATION_MODE=production pnpm --filter payload payload migrate",
-		"prepare": "husky",
-		"commit": "cz",
-		"knip": "knip",
-		"knip:production": "knip --production",
-		"knip:workspace": "knip --workspace",
-		"knip:fix": "knip --fix",
-		"a11y:test": "turbo a11y:test",
-		"a11y:report": "turbo a11y:report"
-	},
-	"prettier": "@kit/prettier-config",
-	"lint-staged": {
-		"*": [
-			"bash ./scripts/trufflehog-scan.sh"
-		],
-		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'cd apps/payload && pnpm lint'"
-		],
-		"packages/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
-		],
-		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
-			"biome format --write",
-			"biome lint --write"
-		],
-		"**/*.{md,mdx}": [
-			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
-		],
-		"**/*.{yaml,yml}": [
-			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
-		],
-		"**/*.{ts,tsx}": [
-			"bash ./scripts/type-check-staged.sh"
-		]
-	},
-	"packageManager": "pnpm@10.14.0",
-	"pnpm": {
-		"overrides": {
-			"react-is": "19.0.0",
-			"require-in-the-middle": "7.5.2",
-			"tar-fs": "^3.1.1"
-		}
-	},
-	"devDependencies": {
-		"@ast-grep/napi": "^0.39.5",
-		"@biomejs/biome": "2.0.0",
-		"@commitlint/cli": "^19.8.1",
-		"@commitlint/config-conventional": "^19.8.1",
-		"@manypkg/cli": "^0.25.1",
-		"@playwright/test": "^1.55.0",
-		"@turbo/gen": "^2.5.6",
-		"@vitest/coverage-v8": "^3.1.2",
-		"codebase-map": "^0.6.0",
-		"commitizen": "^4.3.1",
-		"cross-env": "^10.0.0",
-		"cz-conventional-changelog": "^3.3.0",
-		"fuse.js": "^7.1.0",
-		"graph-data-structure": "^4.5.0",
-		"husky": "^9.1.7",
-		"js-yaml": "^4.1.0",
-		"knip": "^5.61.0",
-		"lint-staged": "^16.1.0",
-		"markdownlint-cli2": "^0.18.1",
-		"prettier": "^3.6.2",
-		"tailwind-merge": "^3.3.1",
-		"turbo": "2.5.6",
-		"typescript": "^5.9.2",
-		"vitest": "^3.1.2",
-		"yaml-lint": "^1.7.0"
-	}
+  "name": "slideheroes",
+  "version": "2.13.1",
+  "private": true,
+  "sideEffects": false,
+  "engines": {
+    "node": ">=v18.18.0"
+  },
+  "author": {
+    "url": "https://makerkit.dev",
+    "name": "MakerKit"
+  },
+  "scripts": {
+    "turbo": "turbo",
+    "preinstall": "pnpm run --filter scripts requirements",
+    "postinstall": "manypkg fix",
+    "prebuild": "[ -f ./fix-build-permissions.sh ] && ./fix-build-permissions.sh || true",
+    "build": "./.claude/statusline/build-wrapper.sh",
+    "clean": "git clean -xdf node_modules dist .next",
+    "clean:workspaces": "turbo clean",
+    "dev": "cross-env FORCE_COLOR=1 turbo dev --parallel",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "lint": "biome lint . && manypkg check && pnpm lint:yaml && pnpm lint:md",
+    "lint:fix": "biome lint --write . && manypkg fix && pnpm lint:md:fix",
+    "typecheck": "./.claude/statusline/typecheck-wrapper.sh",
+    "test": "turbo test --cache-dir=.turbo --filter=!web-e2e",
+    "update": "pnpm update -r",
+    "syncpack:list": "pnpm dlx syncpack list-mismatches",
+    "syncpack:fix": "pnpm dlx syncpack fix-mismatches",
+    "supabase:web:start": "pnpm --filter web supabase:start",
+    "supabase:web:stop": "pnpm --filter web supabase:stop",
+    "supabase:web:typegen": "pnpm --filter web supabase:typegen",
+    "supabase:web:reset": "pnpm --filter web supabase:reset",
+    "supabase:web:test": "pnpm --filter web supabase:test",
+    "stripe:listen": "pnpm --filter '@kit/stripe' start",
+    "env:generate": "turbo gen env",
+    "env:validate": "turbo gen validate-env",
+    "build:raw": "turbo build --cache-dir=.turbo",
+    "lint:yaml": "npx yaml-lint '**/*.{yml,yaml}' --ignore='**/node_modules/**' --ignore='**/.next/**' --ignore='**/dist/**'",
+    "lint:md": "markdownlint-cli2 '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**' '!**/reports/**' '!**/test-results/**' '!CLAUDE.md'",
+    "lint:md:fix": "markdownlint-cli2 --fix '**/*.md' '!node_modules' '!**/node_modules' '!.claude/**' '!.mcp-servers/**' '!.roo/**' '!**/playwright-report/**' '!**/reports/**' '!**/test-results/**' '!CLAUDE.md'",
+    "codecheck": "./.claude/statusline/codecheck-wrapper.sh \"pnpm typecheck && pnpm lint && pnpm format\"",
+    "typecheck:raw": "turbo typecheck --affected --cache-dir=.turbo",
+    "test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
+    "test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
+    "test:e2e": "turbo test --filter=web-e2e",
+    "ci-metrics:collect": "node scripts/collect-ci-metrics.js",
+    "ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
+    "ci-metrics:weekly": "node scripts/weekly-ci-report.js",
+    "fetch-questions-temp": "tsx fetch-questions-temp.ts",
+    "manypkg:check": "manypkg check",
+    "manypkg:fix": "manypkg fix",
+    "payload:migrate:ssl": "PAYLOAD_ENABLE_SSL=true pnpm --filter payload payload migrate",
+    "payload:migrate:production": "PAYLOAD_MIGRATION_MODE=production pnpm --filter payload payload migrate",
+    "prepare": "husky",
+    "commit": "cz",
+    "knip": "knip",
+    "knip:production": "knip --production",
+    "knip:workspace": "knip --workspace",
+    "knip:fix": "knip --fix",
+    "a11y:test": "turbo a11y:test",
+    "a11y:report": "turbo a11y:report"
+  },
+  "prettier": "@kit/prettier-config",
+  "lint-staged": {
+    "*": [
+      "bash ./scripts/trufflehog-scan.sh"
+    ],
+    "apps/payload/**/*.{js,jsx,ts,tsx,json}": [
+      "bash -c 'cd apps/payload && pnpm lint'"
+    ],
+    "packages/**/*.{js,jsx,ts,tsx,json}": [
+      "bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
+    ],
+    "!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
+      "biome format --write",
+      "biome lint --write"
+    ],
+    "**/*.{md,mdx}": [
+      "bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+    ],
+    "**/*.{yaml,yml}": [
+      "bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
+    ],
+    "**/*.{ts,tsx}": [
+      "bash ./scripts/type-check-staged.sh"
+    ]
+  },
+  "packageManager": "pnpm@10.14.0",
+  "pnpm": {
+    "overrides": {
+      "react-is": "19.0.0",
+      "require-in-the-middle": "7.5.2",
+      "tar-fs": "^3.1.1"
+    }
+  },
+  "devDependencies": {
+    "@ast-grep/napi": "^0.39.5",
+    "@biomejs/biome": "2.0.0",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@manypkg/cli": "^0.25.1",
+    "@playwright/test": "^1.55.1",
+    "@turbo/gen": "^2.5.8",
+    "@vitest/coverage-v8": "^3.1.2",
+    "codebase-map": "^0.6.0",
+    "commitizen": "^4.3.1",
+    "cross-env": "^10.0.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "fuse.js": "^7.1.0",
+    "graph-data-structure": "^4.5.0",
+    "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
+    "knip": "^5.61.0",
+    "lint-staged": "^16.1.0",
+    "markdownlint-cli2": "^0.18.1",
+    "prettier": "^3.6.2",
+    "tailwind-merge": "^3.3.1",
+    "turbo": "2.5.8",
+    "typescript": "^5.9.3",
+    "vitest": "^3.1.2",
+    "yaml-lint": "^1.7.0"
+  }
 }
