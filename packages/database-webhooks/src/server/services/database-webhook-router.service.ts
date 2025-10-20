@@ -23,11 +23,12 @@ class DatabaseWebhookRouterService {
 	 */
 	async handleWebhook(body: RecordChange<keyof Tables>) {
 		switch (body.table) {
-			case "invitations": {
-				const payload = body as RecordChange<typeof body.table>;
-
-				return this.handleInvitationsWebhook(payload);
-			}
+			// NOTE: Upstream removed webhook handlers for invitations and accounts
+			// These cases are commented out until the functionality is reimplemented
+			// case "invitations": {
+			// 	const payload = body as RecordChange<typeof body.table>;
+			// 	return this.handleInvitationsWebhook(payload);
+			// }
 
 			case "subscriptions": {
 				const payload = body as RecordChange<typeof body.table>;
@@ -35,11 +36,10 @@ class DatabaseWebhookRouterService {
 				return this.handleSubscriptionsWebhook(payload);
 			}
 
-			case "accounts": {
-				const payload = body as RecordChange<typeof body.table>;
-
-				return this.handleAccountsWebhook(payload);
-			}
+			// case "accounts": {
+			// 	const payload = body as RecordChange<typeof body.table>;
+			// 	return this.handleAccountsWebhook(payload);
+			// }
 
 			default: {
 				return;
@@ -47,15 +47,14 @@ class DatabaseWebhookRouterService {
 		}
 	}
 
-	private async handleInvitationsWebhook(body: RecordChange<"invitations">) {
-		const { createAccountInvitationsWebhookService } = await import(
-			"@kit/team-accounts/webhooks"
-		);
-
-		const service = createAccountInvitationsWebhookService(this.adminClient);
-
-		return service.handleInvitationWebhook(body.record);
-	}
+	// NOTE: Commented out - upstream removed @kit/team-accounts/webhooks module
+	// private async handleInvitationsWebhook(body: RecordChange<"invitations">) {
+	// 	const { createAccountInvitationsWebhookService } = await import(
+	// 		"@kit/team-accounts/webhooks"
+	// 	);
+	// 	const service = createAccountInvitationsWebhookService(this.adminClient);
+	// 	return service.handleInvitationWebhook(body.record);
+	// }
 
 	private async handleSubscriptionsWebhook(
 		body: RecordChange<"subscriptions">,
@@ -71,15 +70,14 @@ class DatabaseWebhookRouterService {
 		}
 	}
 
-	private async handleAccountsWebhook(body: RecordChange<"accounts">) {
-		if (body.type === "DELETE" && body.old_record) {
-			const { createAccountWebhooksService } = await import(
-				"@kit/team-accounts/webhooks"
-			);
-
-			const service = createAccountWebhooksService();
-
-			return service.handleAccountDeletedWebhook(body.old_record);
-		}
-	}
+	// NOTE: Commented out - upstream removed @kit/team-accounts/webhooks module
+	// private async handleAccountsWebhook(body: RecordChange<"accounts">) {
+	// 	if (body.type === "DELETE" && body.old_record) {
+	// 		const { createAccountWebhooksService } = await import(
+	// 			"@kit/team-accounts/webhooks"
+	// 		);
+	// 		const service = createAccountWebhooksService();
+	// 		return service.handleAccountDeletedWebhook(body.old_record);
+	// 	}
+	// }
 }
