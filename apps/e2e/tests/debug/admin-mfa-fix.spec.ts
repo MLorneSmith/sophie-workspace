@@ -60,7 +60,7 @@ test("admin access with forced MFA", async ({ page }) => {
 		console.log("On MFA verification page, submitting OTP");
 
 		// Generate and submit OTP
-		const { otp } = TOTP.generate(MFA_KEY, { period: 30 });
+		const { otp } = await TOTP.generate(MFA_KEY, { period: 30 });
 		console.log(`Generated OTP: ${otp}`);
 
 		await page.fill("[data-input-otp]", otp);
