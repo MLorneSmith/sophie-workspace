@@ -1,19 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, CheckCircle } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { z } from "zod";
-
 import {
 	type BillingConfig,
-	type LineItemSchema,
 	getPlanIntervals,
 	getPrimaryLineItem,
 	getProductPlanPair,
+	type LineItemSchema,
 } from "@kit/billing";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
@@ -33,6 +26,11 @@ import {
 } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ArrowRight, CheckCircle } from "lucide-react";
+import { useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
 
 import { LineItemDetails } from "./line-item-details";
 import { PlanCostDisplay } from "./plan-cost-display";

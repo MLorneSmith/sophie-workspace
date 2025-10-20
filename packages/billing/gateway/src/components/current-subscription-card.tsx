@@ -1,6 +1,3 @@
-import { formatDate } from "date-fns";
-import { BadgeCheck, InfoIcon, MessageCircleWarning } from "lucide-react";
-
 import type { PlanSchema, ProductSchema } from "@kit/billing";
 import type { Tables } from "@kit/supabase/database";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
@@ -13,6 +10,8 @@ import {
 } from "@kit/ui/card";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { formatDate } from "date-fns";
+import { BadgeCheck, InfoIcon, MessageCircleWarning } from "lucide-react";
 
 import { CurrentPlanAlert } from "./current-plan-alert";
 import { CurrentPlanBadge } from "./current-plan-badge";

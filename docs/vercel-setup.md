@@ -196,25 +196,19 @@ vercel --target development
 
 ### Common Issues
 
-
 #### Build Failures
-
 
 - Check build logs in Vercel dashboard
 - Verify all environment variables are set
 - Ensure pnpm lockfile is up to date
 
-
 #### Domain Issues
-
 
 - Verify DNS propagation (can take up to 48 hours)
 - Check DNS records are correctly configured
 - Ensure domain is added in Vercel dashboard
 
-
 #### Environment Variable Issues
-
 
 - Ensure variables are set for the correct environment
 - Check variable names match exactly (case-sensitive)

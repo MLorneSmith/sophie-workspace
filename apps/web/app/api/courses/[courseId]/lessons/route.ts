@@ -6,7 +6,9 @@ import { NextResponse } from "next/server";
 const { getLogger } = createServiceLogger("COURSE-LESSONS-API");
 
 export const GET = enhanceRouteHandler(
-	async ({ params, user: _user }) => {
+	async ({ params: asyncParams, user: _user }) => {
+		const params = await asyncParams;
+
 		if (!params?.courseId) {
 			return NextResponse.json(
 				{ error: "Course ID is required" },

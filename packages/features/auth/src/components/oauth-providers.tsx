@@ -1,16 +1,14 @@
 "use client";
 
-import { useCallback } from "react";
-
-import type {
-	Provider,
-	SignInWithOAuthCredentials,
-} from "@supabase/supabase-js";
-
 import { useSignInWithProvider } from "@kit/supabase/hooks/use-sign-in-with-provider";
 import { If } from "@kit/ui/if";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
 import { Trans } from "@kit/ui/trans";
+import type {
+	Provider,
+	SignInWithOAuthCredentials,
+} from "@supabase/supabase-js";
+import { useCallback } from "react";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
@@ -135,7 +133,8 @@ function getProviderName(providerId: string) {
 		value.slice(0, 1).toUpperCase() + value.slice(1);
 
 	if (providerId.endsWith(".com")) {
-		return capitalize(providerId.split(".com")[0]!);
+		const parts = providerId.split(".com");
+		return capitalize(parts[0] ?? providerId);
 	}
 
 	return capitalize(providerId);

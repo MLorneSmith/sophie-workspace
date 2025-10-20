@@ -188,12 +188,30 @@ export interface Media {
     | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
+  /**
+   * Public URL to access the file (R2 CDN URL)
+   */
+  url: string;
   thumbnailURL?: string | null;
-  filename?: string | null;
+  /**
+   * Original filename of the media file
+   */
+  filename: string;
+  /**
+   * MIME type of the file (e.g., image/png, video/mp4)
+   */
   mimeType?: string | null;
+  /**
+   * File size in bytes
+   */
   filesize?: number | null;
+  /**
+   * Image/video width in pixels (if applicable)
+   */
   width?: number | null;
+  /**
+   * Image/video height in pixels (if applicable)
+   */
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
@@ -239,10 +257,22 @@ export interface Download {
   accessLevel?: ('public' | 'registered' | 'premium') | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
+  /**
+   * Public URL to access the file (R2 CDN URL)
+   */
+  url: string;
   thumbnailURL?: string | null;
-  filename?: string | null;
+  /**
+   * Original filename of the uploaded file
+   */
+  filename: string;
+  /**
+   * MIME type of the file (e.g., application/pdf)
+   */
   mimeType?: string | null;
+  /**
+   * File size in bytes
+   */
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
@@ -664,17 +694,13 @@ export interface Survey {
    */
   description?: string | null;
   /**
-   * Only published surveys will be visible to users
+   * Questions included in this survey
    */
-  status: 'draft' | 'published';
+  questions?: (string | SurveyQuestion)[] | null;
   /**
    * The date and time this survey was published
    */
   publishedAt?: string | null;
-  /**
-   * Files for download in this survey
-   */
-  downloads?: (string | Download)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1113,9 +1139,8 @@ export interface SurveysSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
-  status?: T;
+  questions?: T;
   publishedAt?: T;
-  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
