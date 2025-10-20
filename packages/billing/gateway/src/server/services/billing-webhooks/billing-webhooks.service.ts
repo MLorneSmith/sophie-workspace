@@ -1,13 +1,13 @@
-import 'server-only';
+import "server-only";
 
-import { Tables } from '@kit/supabase/database';
+import type { Tables } from "@kit/supabase/database";
 
-import { createBillingGatewayService } from '../billing-gateway/billing-gateway.service';
+import { createBillingGatewayService } from "../billing-gateway/billing-gateway.service";
 
-type Subscription = Tables<'subscriptions'>;
+type Subscription = Tables<"subscriptions">;
 
 export function createBillingWebhooksService() {
-  return new BillingWebhooksService();
+	return new BillingWebhooksService();
 }
 
 /**
@@ -15,24 +15,24 @@ export function createBillingWebhooksService() {
  * @description Service for handling billing webhooks.
  */
 class BillingWebhooksService {
-  /**
-   * @name handleSubscriptionDeletedWebhook
-   * @description Handles the webhook for when a subscription is deleted.
-   * @param subscription
-   */
-  async handleSubscriptionDeletedWebhook(subscription: Subscription) {
-    const gateway = createBillingGatewayService(subscription.billing_provider);
+	/**
+	 * @name handleSubscriptionDeletedWebhook
+	 * @description Handles the webhook for when a subscription is deleted.
+	 * @param subscription
+	 */
+	async handleSubscriptionDeletedWebhook(subscription: Subscription) {
+		const gateway = createBillingGatewayService(subscription.billing_provider);
 
-    const subscriptionData = await gateway.getSubscription(subscription.id);
-    const isCanceled = subscriptionData.status === 'canceled';
+		const subscriptionData = await gateway.getSubscription(subscription.id);
+		const isCanceled = subscriptionData.status === "canceled";
 
-    if (isCanceled) {
-      return;
-    }
+		if (isCanceled) {
+			return;
+		}
 
-    return gateway.cancelSubscription({
-      subscriptionId: subscription.id,
-      invoiceNow: true,
-    });
-  }
+		return gateway.cancelSubscription({
+			subscriptionId: subscription.id,
+			invoiceNow: true,
+		});
+	}
 }
