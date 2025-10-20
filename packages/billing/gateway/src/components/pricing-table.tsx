@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
-
-import Link from "next/link";
-
-import { ArrowRight, CheckCircle } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import type { z } from "zod";
-
 import {
 	type BillingConfig,
-	type LineItemSchema,
 	getPlanIntervals,
 	getPrimaryLineItem,
+	type LineItemSchema,
 } from "@kit/billing";
 import { Badge } from "@kit/ui/badge";
 import { Button } from "@kit/ui/button";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ArrowRight, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
 
 import { LineItemDetails } from "./line-item-details";
 import { PlanCostDisplay } from "./plan-cost-display";
@@ -51,7 +48,7 @@ export function PricingTable({
 	}>;
 }) {
 	const intervals = getPlanIntervals(config).filter(Boolean) as Interval[];
-	const [interval, setInterval] = useState(intervals[0]!);
+	const [interval, setInterval] = useState(intervals[0] ?? "month");
 
 	// Always filter out hidden products
 	const visibleProducts = config.products.filter((product) => !product.hidden);
@@ -155,7 +152,7 @@ function PricingItem(
 	}>,
 ) {
 	const highlighted = props.product.highlighted ?? false;
-	const lineItem = props.primaryLineItem!;
+	const lineItem = props.primaryLineItem;
 	const isCustom = props.plan.custom ?? false;
 
 	// we exclude flat line items from the details since
@@ -223,17 +220,19 @@ function PricingItem(
 						displayBillingPeriod={!props.plan.label}
 					>
 						<If
-							condition={!isCustom}
+							condition={!isCustom && lineItem}
 							fallback={
 								<Trans i18nKey={props.plan.label} defaults={props.plan.label} />
 							}
 						>
-							<PlanCostDisplay
-								primaryLineItem={lineItem}
-								currencyCode={props.product.currency}
-								interval={interval}
-								alwaysDisplayMonthlyPrice={props.alwaysDisplayMonthlyPrice}
-							/>
+							{(lineItem) => (
+								<PlanCostDisplay
+									primaryLineItem={lineItem}
+									currencyCode={props.product.currency}
+									interval={interval}
+									alwaysDisplayMonthlyPrice={props.alwaysDisplayMonthlyPrice}
+								/>
+							)}
 						</If>
 					</Price>
 

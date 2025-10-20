@@ -1,5 +1,3 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-
 import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
@@ -12,6 +10,7 @@ import { If } from "@kit/ui/if";
 import { PageBody } from "@kit/ui/page";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 import billingConfig from "~/config/billing.config";
 import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
@@ -46,15 +45,12 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 		await loadTeamAccountBillingPage(accountId);
 
 	const variantId = subscription?.items[0]?.variant_id;
-	const orderVariantId = order?.items[0]?.variant_id;
 
 	const subscriptionProductPlan = variantId
 		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
 		: undefined;
 
-	const orderProductPlan = orderVariantId
-		? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
-		: undefined;
+	// orderProductPlan not needed - CurrentLifetimeOrderCard uses billingConfig directly
 
 	const hasBillingData = subscription || order;
 
@@ -81,11 +77,13 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 
 					<If condition={subscription}>
 						{(subscription) => {
+							if (!subscriptionProductPlan) return null;
+
 							return (
 								<CurrentSubscriptionCard
 									subscription={subscription}
-									product={subscriptionProductPlan?.product}
-									plan={subscriptionProductPlan?.plan}
+									product={subscriptionProductPlan.product}
+									plan={subscriptionProductPlan.plan}
 								/>
 							);
 						}}
@@ -96,8 +94,7 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							return (
 								<CurrentLifetimeOrderCard
 									order={order}
-									product={orderProductPlan?.product}
-									plan={orderProductPlan?.plan}
+									config={billingConfig}
 								/>
 							);
 						}}

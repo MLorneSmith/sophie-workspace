@@ -36,7 +36,6 @@ async function PersonalAccountBillingPage() {
 		await loadPersonalAccountBillingPageData(user.id);
 
 	const subscriptionVariantId = subscription?.items[0]?.variant_id;
-	const orderVariantId = order?.items[0]?.variant_id;
 
 	const subscriptionProductPlan =
 		subscription && subscriptionVariantId
@@ -47,10 +46,7 @@ async function PersonalAccountBillingPage() {
 				)
 			: undefined;
 
-	const orderProductPlan =
-		order && orderVariantId
-			? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
-			: undefined;
+	// orderProductPlan not needed - CurrentLifetimeOrderCard uses billingConfig directly
 
 	const hasBillingData = subscription || order;
 
@@ -70,11 +66,13 @@ async function PersonalAccountBillingPage() {
 						<div className={"flex w-full flex-col space-y-6"}>
 							<If condition={subscription}>
 								{(subscription) => {
+									if (!subscriptionProductPlan) return null;
+
 									return (
 										<CurrentSubscriptionCard
 											subscription={subscription}
-											product={subscriptionProductPlan?.product}
-											plan={subscriptionProductPlan?.plan}
+											product={subscriptionProductPlan.product}
+											plan={subscriptionProductPlan.plan}
 										/>
 									);
 								}}
@@ -85,8 +83,7 @@ async function PersonalAccountBillingPage() {
 									return (
 										<CurrentLifetimeOrderCard
 											order={order}
-											product={orderProductPlan?.product}
-											plan={orderProductPlan?.plan}
+											config={billingConfig}
 										/>
 									);
 								}}
