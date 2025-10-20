@@ -17,7 +17,7 @@ test("debug admin access", async ({ page }) => {
 	console.log("✓ Redirected to MFA verification");
 
 	// Generate and submit OTP
-	const { otp } = TOTP.generate(MFA_KEY, { period: 30 });
+	const { otp } = await TOTP.generate(MFA_KEY, { period: 30 });
 	console.log(`✓ Generated OTP: ${otp}`);
 
 	await page.fill("[data-input-otp]", otp);
