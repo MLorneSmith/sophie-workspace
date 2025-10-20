@@ -1,171 +1,150 @@
-import { resolveProductPlan } from "@kit/billing-gateway";
-import {
-	BillingPortalCard,
-	CurrentLifetimeOrderCard,
-	CurrentSubscriptionCard,
-} from "@kit/billing-gateway/components";
-import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
-import { AppBreadcrumbs } from "@kit/ui/app-breadcrumbs";
-import { If } from "@kit/ui/if";
-import { PageBody } from "@kit/ui/page";
-import { Trans } from "@kit/ui/trans";
-import { cn } from "@kit/ui/utils";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
-import billingConfig from "~/config/billing.config";
-import { createI18nServerInstance } from "~/lib/i18n/i18n.server";
-import { withI18n } from "~/lib/i18n/with-i18n";
+import { resolveProductPlan } from '@kit/billing-gateway';
+import {
+  BillingPortalCard,
+  CurrentLifetimeOrderCard,
+  CurrentSubscriptionCard,
+} from '@kit/billing-gateway/components';
+import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
+import { If } from '@kit/ui/if';
+import { PageBody } from '@kit/ui/page';
+import { Trans } from '@kit/ui/trans';
+import { cn } from '@kit/ui/utils';
+
+import billingConfig from '~/config/billing.config';
+import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
+import { withI18n } from '~/lib/i18n/with-i18n';
 
 // local imports
-import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
-import { loadTeamAccountBillingPage } from "../_lib/server/team-account-billing-page.loader";
-import { loadTeamWorkspace } from "../_lib/server/team-account-workspace.loader";
-import { TeamAccountCheckoutForm } from "./_components/team-account-checkout-form";
-import { createBillingPortalSession } from "./_lib/server/server-actions";
+import { TeamAccountLayoutPageHeader } from '../_components/team-account-layout-page-header';
+import { loadTeamAccountBillingPage } from '../_lib/server/team-account-billing-page.loader';
+import { loadTeamWorkspace } from '../_lib/server/team-account-workspace.loader';
+import { TeamAccountCheckoutForm } from './_components/team-account-checkout-form';
+import { createBillingPortalSession } from './_lib/server/server-actions';
 
 interface TeamAccountBillingPageProps {
-	params: Promise<{ account: string }>;
+  params: Promise<{ account: string }>;
 }
 
 export const generateMetadata = async () => {
-	const i18n = await createI18nServerInstance();
-	const title = i18n.t("teams:billing.pageTitle");
+  const i18n = await createI18nServerInstance();
+  const title = i18n.t('teams:billing.pageTitle');
 
-	return {
-		title,
-	};
-};
-
-const Checkout = ({
-	canManageBilling,
-	customerId,
-	accountId,
-}: {
-	canManageBilling: boolean;
-	customerId: string | undefined;
-	accountId: string;
-}) => {
-	if (!canManageBilling) {
-		return <CannotManageBillingAlert />;
-	}
-
-	return (
-		<TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
-	);
-};
-
-const BillingPortal = ({
-	canManageBilling,
-	customerId,
-	accountId,
-	account,
-}: {
-	canManageBilling: boolean;
-	customerId?: string;
-	accountId: string;
-	account: string;
-}) => {
-	if (!canManageBilling || !customerId) {
-		return null;
-	}
-
-	return (
-		<form action={createBillingPortalSession}>
-			<input type="hidden" name={"accountId"} value={accountId} />
-			<input type="hidden" name={"slug"} value={account} />
-
-			<BillingPortalCard />
-		</form>
-	);
+  return {
+    title,
+  };
 };
 
 async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
-	const account = (await params).account;
-	const workspace = await loadTeamWorkspace(account);
-	const accountId = workspace.account.id;
+  const account = (await params).account;
+  const workspace = await loadTeamWorkspace(account);
+  const accountId = workspace.account.id;
 
-	const [subscription, order, customerId] =
-		await loadTeamAccountBillingPage(accountId);
+  const [subscription, order, customerId] =
+    await loadTeamAccountBillingPage(accountId);
 
-	const variantId = subscription?.items[0]?.variant_id;
+  const variantId = subscription?.items[0]?.variant_id;
+  const orderVariantId = order?.items[0]?.variant_id;
 
-	const subscriptionProductPlan = variantId
-		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
-		: undefined;
+  const subscriptionProductPlan = variantId
+    ? await resolveProductPlan(billingConfig, variantId, subscription.currency)
+    : undefined;
 
-	const hasBillingData = subscription || order;
+  const orderProductPlan = orderVariantId
+    ? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
+    : undefined;
 
-	const canManageBilling =
-		workspace.account.permissions.includes("billing.manage");
+  const hasBillingData = subscription || order;
 
-	return (
-		<>
-			<TeamAccountLayoutPageHeader
-				account={account}
-				title={<Trans i18nKey={"common:routes.billing"} />}
-				description={<AppBreadcrumbs />}
-			/>
+  const canManageBilling =
+    workspace.account.permissions.includes('billing.manage');
 
-			<PageBody>
-				<div className={cn("flex max-w-2xl flex-col space-y-4")}>
-					<If condition={!hasBillingData}>
-						<Checkout
-							canManageBilling={canManageBilling}
-							customerId={customerId}
-							accountId={accountId}
-						/>
-					</If>
+  const Checkout = () => {
+    if (!canManageBilling) {
+      return <CannotManageBillingAlert />;
+    }
 
-					<If condition={subscriptionProductPlan}>
-						{() => {
-							if (!subscription || !subscriptionProductPlan) return null;
-							return (
-								<CurrentSubscriptionCard
-									subscription={subscription}
-									product={subscriptionProductPlan.product}
-									plan={subscriptionProductPlan.plan}
-								/>
-							);
-						}}
-					</If>
+    return (
+      <TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
+    );
+  };
 
-					<If condition={order}>
-						{(order) => {
-							return (
-								<CurrentLifetimeOrderCard
-									order={order}
-									config={billingConfig}
-								/>
-							);
-						}}
-					</If>
+  const BillingPortal = () => {
+    if (!canManageBilling || !customerId) {
+      return null;
+    }
 
-					<BillingPortal
-						canManageBilling={canManageBilling}
-						customerId={customerId}
-						accountId={accountId}
-						account={account}
-					/>
-				</div>
-			</PageBody>
-		</>
-	);
+    return (
+      <form action={createBillingPortalSession}>
+        <input type="hidden" name={'accountId'} value={accountId} />
+        <input type="hidden" name={'slug'} value={account} />
+
+        <BillingPortalCard />
+      </form>
+    );
+  };
+
+  return (
+    <>
+      <TeamAccountLayoutPageHeader
+        account={account}
+        title={<Trans i18nKey={'common:routes.billing'} />}
+        description={<AppBreadcrumbs />}
+      />
+
+      <PageBody>
+        <div className={cn(`flex max-w-2xl flex-col space-y-4`)}>
+          <If condition={!hasBillingData}>
+            <Checkout />
+          </If>
+
+          <If condition={subscription}>
+            {(subscription) => {
+              return (
+                <CurrentSubscriptionCard
+                  subscription={subscription}
+                  product={subscriptionProductPlan!.product}
+                  plan={subscriptionProductPlan!.plan}
+                />
+              );
+            }}
+          </If>
+
+          <If condition={order}>
+            {(order) => {
+              return (
+                <CurrentLifetimeOrderCard
+                  order={order}
+                  product={orderProductPlan!.product}
+                  plan={orderProductPlan!.plan}
+                />
+              );
+            }}
+          </If>
+
+          <BillingPortal />
+        </div>
+      </PageBody>
+    </>
+  );
 }
 
 export default withI18n(TeamAccountBillingPage);
 
 function CannotManageBillingAlert() {
-	return (
-		<Alert variant={"warning"}>
-			<ExclamationTriangleIcon className={"h-4"} />
+  return (
+    <Alert variant={'warning'}>
+      <ExclamationTriangleIcon className={'h-4'} />
 
-			<AlertTitle>
-				<Trans i18nKey={"billing:cannotManageBillingAlertTitle"} />
-			</AlertTitle>
+      <AlertTitle>
+        <Trans i18nKey={'billing:cannotManageBillingAlertTitle'} />
+      </AlertTitle>
 
-			<AlertDescription>
-				<Trans i18nKey={"billing:cannotManageBillingAlertDescription"} />
-			</AlertDescription>
-		</Alert>
-	);
+      <AlertDescription>
+        <Trans i18nKey={'billing:cannotManageBillingAlertDescription'} />
+      </AlertDescription>
+    </Alert>
+  );
 }

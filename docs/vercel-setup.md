@@ -196,37 +196,25 @@ vercel --target development
 
 ### Common Issues
 
-<<<<<<< HEAD
 
 #### Build Failures
 
-=======
-**Build Failures**
->>>>>>> origin/main
 
 - Check build logs in Vercel dashboard
 - Verify all environment variables are set
 - Ensure pnpm lockfile is up to date
 
-<<<<<<< HEAD
 
 #### Domain Issues
 
-=======
-**Domain Issues**
->>>>>>> origin/main
 
 - Verify DNS propagation (can take up to 48 hours)
 - Check DNS records are correctly configured
 - Ensure domain is added in Vercel dashboard
 
-<<<<<<< HEAD
 
 #### Environment Variable Issues
 
-=======
-**Environment Variable Issues**
->>>>>>> origin/main
 
 - Ensure variables are set for the correct environment
 - Check variable names match exactly (case-sensitive)

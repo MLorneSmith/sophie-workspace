@@ -116,7 +116,6 @@ tasks.json
 .vscode/tasks/
 
 # ts-node cache
-<<<<<<< HEAD
 node-compile-cache/
 
 # Claude backup files
@@ -129,5 +128,3 @@ apps/payload/downloads/
 # Cloudflare Wrangler
 .wrangler/
 **/.wrangler/
-
-node-compile-cache/
