@@ -6,7 +6,7 @@ import type { z } from 'zod';
 
 import { useSignInWithEmailPassword } from '@kit/supabase/hooks/use-sign-in-with-email-password';
 
-import { useCaptchaToken } from '../captcha/client';
+import { useCaptcha } from '../captcha/client';
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 import type { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
 import { AuthErrorAlert } from './auth-error-alert';
@@ -14,10 +14,12 @@ import { PasswordSignInForm } from './password-sign-in-form';
 
 export function PasswordSignInContainer({
   onSignIn,
+  captchaSiteKey,
 }: {
   onSignIn?: (userId?: string) => unknown;
+  captchaSiteKey?: string;
 }) {
-  const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+  const captcha = useCaptcha({ siteKey: captchaSiteKey });
   const signInMutation = useSignInWithEmailPassword();
   const { recordAuthMethod } = useLastAuthMethod();
   const isLoading = signInMutation.isPending;
@@ -28,7 +30,7 @@ export function PasswordSignInContainer({
       try {
         const data = await signInMutation.mutateAsync({
           ...credentials,
-          options: { captchaToken },
+          options: { captchaToken: captcha.token },
         });
 
         // Record successful password sign-in
@@ -42,21 +44,17 @@ export function PasswordSignInContainer({
       } catch {
         // wrong credentials, do nothing
       } finally {
-        resetCaptchaToken();
+        captcha.reset();
       }
     },
-    [
-      captchaToken,
-      onSignIn,
-      resetCaptchaToken,
-      signInMutation,
-      recordAuthMethod,
-    ],
+    [captcha, onSignIn, signInMutation, recordAuthMethod],
   );
 
   return (
     <>
       <AuthErrorAlert error={signInMutation.error} />
+
+      {captcha.field}
 
       <PasswordSignInForm
         onSubmit={onSubmit}

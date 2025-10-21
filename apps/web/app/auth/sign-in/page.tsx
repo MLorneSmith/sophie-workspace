@@ -46,7 +46,11 @@ async function SignInPage({ searchParams }: SignInPageProps) {
         </p>
       </div>
 
-      <SignInMethodsContainer paths={paths} providers={authConfig.providers} />
+      <SignInMethodsContainer
+        paths={paths}
+        providers={authConfig.providers}
+        captchaSiteKey={authConfig.captchaTokenSiteKey}
+      />
 
       <div className={'flex justify-center'}>
         <Button asChild variant={'link'} size={'sm'}>

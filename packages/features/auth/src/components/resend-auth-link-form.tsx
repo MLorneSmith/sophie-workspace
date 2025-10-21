@@ -18,10 +18,14 @@ import {
 import { Input } from '@kit/ui/input';
 import { Trans } from '@kit/ui/trans';
 
-import { useCaptchaToken } from '../captcha/client';
+import { useCaptcha } from '../captcha/client';
 
-export function ResendAuthLinkForm(props: { redirectPath?: string }) {
-  const resendLink = useResendLink();
+export function ResendAuthLinkForm(props: {
+  redirectPath?: string;
+  captchaSiteKey?: string;
+}) {
+  const captcha = useCaptcha({ siteKey: props.captchaSiteKey });
+  const resendLink = useResendLink(captcha.token);
 
   const form = useForm({
     resolver: zodResolver(z.object({ email: z.string().email() })),
@@ -52,12 +56,20 @@ export function ResendAuthLinkForm(props: { redirectPath?: string }) {
       <form
         className={'flex flex-col space-y-2'}
         onSubmit={form.handleSubmit((data) => {
-          return resendLink.mutate({
+          const promise = resendLink.mutateAsync({
             email: data.email,
             redirectPath: props.redirectPath,
           });
+
+          promise.finally(() => {
+            captcha.reset();
+          });
+
+          return promise;
         })}
       >
+        {captcha.field}
+
         <FormField
           render={({ field }) => {
             return (
@@ -83,9 +95,8 @@ export function ResendAuthLinkForm(props: { redirectPath?: string }) {
   );
 }
 
-function useResendLink() {
+function useResendLink(captchaToken: string) {
   const supabase = useSupabase();
-  const { captchaToken } = useCaptchaToken();
 
   const mutationFn = async (props: {
     email: string;
