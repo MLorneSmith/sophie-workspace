@@ -241,13 +241,15 @@ export class AuthPageObject {
 		const targetUrl = params.next ?? "/home";
 
 		// Phase 1: Wait for Supabase auth API response
-		// Use 60s timeout in CI/deployed environments to handle:
+		// Use test-config timeouts (90s in CI, 30s local) to handle:
 		// - Vercel cold starts
 		// - Network latency
 		// - API gateway overhead
 		// - Cloudflare routing
 		const isCI = process.env.CI === "true";
-		const authTimeout = isCI ? 60000 : 30000;
+		// Import test-config for consistent timeout values
+		const { testConfig } = await import("../utils/test-config");
+		const authTimeout = testConfig.getTimeout("medium");
 
 		console.log(
 			`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,
@@ -298,57 +300,22 @@ export class AuthPageObject {
 			throw error;
 		}
 
-		// Phase 2: Poll for session establishment (20s)
-		console.log("[Phase 2] Polling for session establishment via /api/user...");
-		let sessionEstablished = false;
-		const sessionCheckStart = Date.now();
-		const sessionTimeout = 20000;
-
-		while (Date.now() - sessionCheckStart < sessionTimeout) {
-			try {
-				const response = await this.page.request.get(
-					`${this.page.url().split("/").slice(0, 3).join("/")}/api/user`,
-				);
-
-				if (response.ok()) {
-					const data = await response.json();
-					if (data?.id) {
-						sessionEstablished = true;
-						console.log(
-							`[Phase 2] ✅ Session established (${Date.now() - startTime}ms total)`,
-						);
-						break;
-					}
-				}
-			} catch (e) {
-				// Session check failed, continue polling
-			}
-
-			await this.page.waitForTimeout(500); // Poll every 500ms
-		}
-
-		if (!sessionEstablished) {
-			console.warn(
-				`[Phase 2] ⚠️ Session check timed out after ${sessionTimeout}ms - proceeding with navigation check`,
-			);
-		}
-
-		// Phase 3: Wait for navigation with flexible URL matching
-		// Use 90s timeout in CI to account for:
+		// Phase 2: Wait for navigation with flexible URL matching
+		// Use test-config timeout (90s CI, 45s local) to account for:
 		// - Server-side redirects
 		// - Middleware processing
 		// - Session establishment
-		const navigationTimeout = isCI ? 90000 : 45000;
+		const navigationTimeout = testConfig.getTimeout("medium");
 
 		console.log(
-			`[Phase 3] Waiting for navigation to: ${targetUrl} (timeout: ${navigationTimeout}ms)`,
+			`[Phase 2] Waiting for navigation to: ${targetUrl} (timeout: ${navigationTimeout}ms)`,
 		);
 
 		try {
 			await this.page.waitForURL(
 				(url) => {
 					const urlStr = url.toString();
-					console.log(`[Phase 3] Current: ${urlStr}, Target: ${targetUrl}`);
+					console.log(`[Phase 2] Current: ${urlStr}, Target: ${targetUrl}`);
 
 					// Accept if we've left sign-in page AND reached either target or onboarding
 					const leftSignIn = !urlStr.includes("/auth/sign-in");
@@ -363,7 +330,7 @@ export class AuthPageObject {
 			);
 
 			console.log(
-				`[Phase 3] ✅ Navigation complete (${Date.now() - startTime}ms total). Final URL: ${this.page.url()}`,
+				`[Phase 2] ✅ Navigation complete (${Date.now() - startTime}ms total). Final URL: ${this.page.url()}`,
 			);
 		} catch (error) {
 			// Graceful fallback: Check if we're already at a valid post-auth page
@@ -373,11 +340,11 @@ export class AuthPageObject {
 
 			if (isPostAuth) {
 				console.log(
-					`[Phase 3] ✅ Already at valid post-auth page: ${currentUrl}`,
+					`[Phase 2] ✅ Already at valid post-auth page: ${currentUrl}`,
 				);
 			} else {
 				console.error(
-					`[Phase 3] ❌ Navigation timeout. Current: ${currentUrl}`,
+					`[Phase 2] ❌ Navigation timeout. Current: ${currentUrl}`,
 				);
 				throw error;
 			}
