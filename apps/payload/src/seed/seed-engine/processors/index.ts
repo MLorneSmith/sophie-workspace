@@ -10,3 +10,4 @@ export { BaseProcessor } from './base-processor';
 export { ContentProcessor } from './content-processor';
 export { DownloadsProcessor } from './downloads-processor';
 export { MediaProcessor } from './media-processor';
+export { DocumentationProcessor } from './documentation-processor';

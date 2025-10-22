@@ -13,6 +13,15 @@ function log(message, type = "info") {
 	process.stdout.write(`[${timestamp}] ${type.toUpperCase()}: ${message}\n`);
 }
 
+/**
+ * Stringify JSON with tab indentation for Biome compatibility
+ * @param {*} data - Data to stringify
+ * @returns {string} JSON string with tab indentation
+ */
+function stringifyWithTabs(data) {
+	return JSON.stringify(data, null, "\t");
+}
+
 function logError(message) {
 	log(message, "error");
 }
@@ -201,15 +210,12 @@ class TestReporter {
 		);
 
 		await this.ensureDir(path.dirname(outputPath));
-		await fs.writeFile(outputPath, JSON.stringify(report, null, 2));
+		await fs.writeFile(outputPath, stringifyWithTabs(report));
 
 		log(`📄 JSON report saved to: ${outputPath}`);
 
 		// Also save to the standard result file
-		await fs.writeFile(
-			this.config.paths.resultFile,
-			JSON.stringify(report, null, 2),
-		);
+		await fs.writeFile(this.config.paths.resultFile, stringifyWithTabs(report));
 	}
 
 	/**

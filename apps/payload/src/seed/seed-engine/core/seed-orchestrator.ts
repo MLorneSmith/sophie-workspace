@@ -23,7 +23,7 @@ import type {
 import { initializePayload, cleanupPayload } from './payload-initializer';
 import { loadCollection, loadAllCollections, type LoadResult } from '../loaders/json-loader';
 import { ReferenceResolver } from '../resolvers/reference-resolver';
-import { ContentProcessor, DownloadsProcessor, MediaProcessor } from '../processors';
+import { ContentProcessor, DownloadsProcessor, MediaProcessor, DocumentationProcessor } from '../processors';
 import type { BaseProcessor } from '../processors/base-processor';
 import { ProgressTracker } from '../utils/progress-tracker';
 import { ErrorHandler } from '../utils/error-handler';
@@ -371,6 +371,12 @@ export class SeedOrchestrator {
     logger.info(`Processing ${collectionName}: ${records.length} records`);
     this.tracker.startCollection(collectionName, records.length);
 
+    // Sort documentation records by depth to ensure parents are created before children
+    if (collectionName === 'documentation') {
+      records = this.sortRecordsByDepth(records);
+      logger.debug(`Sorted ${records.length} documentation records by hierarchy depth`);
+    }
+
     // Create processor for collection
     const processor = this.createProcessor(collectionName, this.payload, new Map(this.resolver.getCache()));
 
@@ -574,6 +580,66 @@ export class SeedOrchestrator {
   }
 
   /**
+   * Sort records by hierarchy depth based on breadcrumbs
+   *
+   * Ensures parent documents are created before children by sorting
+   * records from shallowest (top-level) to deepest (nested).
+   *
+   * Special handling for doubled-slug pattern (e.g., "affiliates/affiliates"):
+   * - These are parent documents and must come before children
+   * - Both parent and child may have same breadcrumb length (2)
+   * - Parent documents are identified by doubled slug pattern
+   *
+   * @param records - Records to sort
+   * @returns Sorted records (shallow to deep, parents before children)
+   * @private
+   */
+  private sortRecordsByDepth(records: SeedRecord[]): SeedRecord[] {
+    return [...records].sort((a, b) => {
+      // Get breadcrumb depth (top-level documents have 1 breadcrumb, children have 2+)
+      const depthA = Array.isArray(a.breadcrumbs) ? a.breadcrumbs.length : 0;
+      const depthB = Array.isArray(b.breadcrumbs) ? b.breadcrumbs.length : 0;
+
+      // Primary sort: by depth (shallowest first)
+      if (depthA !== depthB) {
+        return depthA - depthB;
+      }
+
+      // Secondary sort for same depth: parent documents first
+      // Parent documents have doubled slug pattern (e.g., "affiliates/affiliates")
+      // Child documents have different segments (e.g., "affiliates/apply-for-affiliate")
+      const isParentA = this.isParentDocument(a.slug as string);
+      const isParentB = this.isParentDocument(b.slug as string);
+
+      if (isParentA && !isParentB) return -1; // A is parent, comes first
+      if (!isParentA && isParentB) return 1; // B is parent, comes first
+
+      // Both are same type, maintain order
+      return 0;
+    });
+  }
+
+  /**
+   * Check if a slug represents a parent document
+   *
+   * Parent documents follow the doubled pattern: "segment/segment"
+   * Examples: "affiliates/affiliates", "refunds/refunds"
+   *
+   * @param slug - Document slug to check
+   * @returns True if slug indicates a parent document
+   * @private
+   */
+  private isParentDocument(slug: string): boolean {
+    if (!slug || !slug.includes('/')) return false;
+
+    const segments = slug.split('/');
+    if (segments.length !== 2) return false;
+
+    // Check if both segments are the same (doubled pattern)
+    return segments[0] === segments[1];
+  }
+
+  /**
    * Create processor for collection based on configuration
    *
    * @param collectionName - Collection name
@@ -596,6 +662,8 @@ export class SeedOrchestrator {
         return new DownloadsProcessor(payload, collectionName, referenceCache);
       case 'media':
         return new MediaProcessor(payload, collectionName, referenceCache);
+      case 'documentation':
+        return new DocumentationProcessor(payload, collectionName, referenceCache);
       case 'content':
       case 'users':
         // Content and users use standard ContentProcessor

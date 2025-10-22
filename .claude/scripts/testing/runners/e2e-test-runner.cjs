@@ -22,6 +22,15 @@ function logError(message) {
 	log(message, "error");
 }
 
+/**
+ * Stringify JSON with tab indentation for Biome compatibility
+ * @param {*} data - Data to stringify
+ * @returns {string} JSON string with tab indentation
+ */
+function stringifyWithTabs(data) {
+	return JSON.stringify(data, null, "\t");
+}
+
 class E2ETestRunner {
 	constructor(config, testStatus, phaseCoordinator, resourceLock) {
 		this.config = config;
@@ -1268,7 +1277,7 @@ class E2ETestRunner {
 			// Write report asynchronously using setImmediate to not block test execution
 			setImmediate(async () => {
 				try {
-					await fs.writeFile(filePath, JSON.stringify(report, null, 2), "utf8");
+					await fs.writeFile(filePath, stringifyWithTabs(report), "utf8");
 					log(`📝 Report generated: ${filename}`);
 
 					// Also generate a summary file that gets updated with each shard
@@ -1390,7 +1399,7 @@ class E2ETestRunner {
 			summary.shards.sort((a, b) => a.id - b.id);
 
 			// Write updated summary
-			await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2), "utf8");
+			await fs.writeFile(summaryPath, stringifyWithTabs(summary), "utf8");
 		} catch (error) {
 			logError(`Failed to update execution summary: ${error.message}`);
 		}

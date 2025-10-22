@@ -10,6 +10,15 @@ const fs = require("node:fs").promises;
 const path = require("node:path");
 const { execSync } = require("node:child_process");
 
+/**
+ * Stringify JSON with tab indentation for Biome compatibility
+ * @param {*} data - Data to stringify
+ * @returns {string} JSON string with tab indentation
+ */
+function stringifyWithTabs(data) {
+	return JSON.stringify(data, null, "\t");
+}
+
 // Helper function to glob files
 async function glob(pattern) {
 	try {
@@ -104,11 +113,11 @@ class TestCacheManager {
 	 */
 	async saveCache() {
 		this.cache.metadata.lastUpdated = new Date().toISOString();
-		await fs.writeFile(this.resultCache, JSON.stringify(this.cache, null, 2));
-		await fs.writeFile(this.hashFile, JSON.stringify(this.hashes, null, 2));
+		await fs.writeFile(this.resultCache, stringifyWithTabs(this.cache));
+		await fs.writeFile(this.hashFile, stringifyWithTabs(this.hashes));
 		await fs.writeFile(
 			this.dependencyMap,
-			JSON.stringify(this.dependencies, null, 2),
+			stringifyWithTabs(this.dependencies),
 		);
 	}
 
@@ -494,7 +503,7 @@ class TestCacheManager {
 			dependencies: this.dependencies,
 		};
 
-		await fs.writeFile(outputPath, JSON.stringify(exportData, null, 2));
+		await fs.writeFile(outputPath, stringifyWithTabs(exportData));
 		console.log(`📦 Cache exported to ${outputPath}`);
 		return exportData;
 	}

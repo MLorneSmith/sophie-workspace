@@ -365,6 +365,21 @@ export interface Documentation {
    * The URL-friendly identifier for this document
    */
   slug: string;
+  /**
+   * Parent documentation page
+   */
+  parent?: (string | null) | Documentation;
+  /**
+   * Auto-generated path from root to this document
+   */
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Documentation;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   description?: string | null;
   /**
    * The main content of the documentation
@@ -400,15 +415,6 @@ export interface Documentation {
   tags?:
     | {
         tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  parent?: (string | null) | Documentation;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | Documentation;
-        url?: string | null;
-        label?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -970,6 +976,15 @@ export interface PostsSelect<T extends boolean = true> {
 export interface DocumentationSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
   description?: T;
   content?: T;
   downloads?: T;
@@ -986,15 +1001,6 @@ export interface DocumentationSelect<T extends boolean = true> {
     | T
     | {
         tag?: T;
-        id?: T;
-      };
-  parent?: T;
-  breadcrumbs?:
-    | T
-    | {
-        doc?: T;
-        url?: T;
-        label?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -1176,6 +1182,93 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BunnyVideoBlock".
+ */
+export interface BunnyVideoBlock {
+  /**
+   * Enter the Bunny.net Video ID (alternative to Direct Play URL)
+   */
+  videoId?: string | null;
+  /**
+   * Enter the Bunny.net Library ID
+   */
+  libraryId?: string | null;
+  /**
+   * Custom preview image URL (optional)
+   */
+  previewUrl?: string | null;
+  /**
+   * Show preview image before playing the video
+   */
+  showPreview?: boolean | null;
+  /**
+   * Enter a title for the video (optional)
+   */
+  title?: string | null;
+  /**
+   * Select the aspect ratio for the video player
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'bunny-video';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  headline: string;
+  subheadline: string;
+  leftButtonLabel: string;
+  leftButtonUrl: string;
+  rightButtonLabel: string;
+  rightButtonUrl: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'call-to-action';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestBlock".
+ */
+export interface TestBlock {
+  text?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'test-block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeVideoBlock".
+ */
+export interface YouTubeVideoBlock {
+  /**
+   * Enter a YouTube video ID (e.g., dQw4w9WgXcQ) or full URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   */
+  videoId?: string | null;
+  /**
+   * Custom preview image URL (optional)
+   */
+  previewUrl?: string | null;
+  /**
+   * Show preview image before playing the video
+   */
+  showPreview?: boolean | null;
+  /**
+   * Enter a title for the video (optional)
+   */
+  title?: string | null;
+  /**
+   * Select the aspect ratio for the video player
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube-video';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

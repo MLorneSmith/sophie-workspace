@@ -134,7 +134,7 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
   documentation: {
     name: 'documentation',
     dataFile: 'documentation.json',
-    processor: 'content',
+    processor: 'documentation',
     dependencies: ['media'],
   },
   'course-quizzes': {

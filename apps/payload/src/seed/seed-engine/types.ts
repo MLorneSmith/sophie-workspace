@@ -77,8 +77,9 @@ export interface CollectionConfig {
  * - `downloads`: Specialized processor preserving pre-assigned UUIDs
  * - `users`: User-specific processor with auth logic
  * - `media`: Media file upload processor
+ * - `documentation`: Documentation-specific processor for structured content
  */
-export type ProcessorType = 'content' | 'downloads' | 'users' | 'media';
+export type ProcessorType = 'content' | 'downloads' | 'users' | 'media' | 'documentation';
 
 /**
  * In-memory cache for reference resolution

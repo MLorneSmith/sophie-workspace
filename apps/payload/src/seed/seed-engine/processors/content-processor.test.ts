@@ -66,13 +66,17 @@ describe('ContentProcessor', () => {
 
       await processor.processRecord(record);
 
-      // Verify _ref and _status were not passed to Payload
+      // Verify _ref was removed but _status is re-added for Payload versioning
       expect(mockPayload.create).toHaveBeenCalledWith({
         collection: 'courses',
         data: {
           title: 'Test Course',
           slug: 'test-course',
+          _status: 'pending',
         },
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
     });
 
@@ -90,6 +94,9 @@ describe('ContentProcessor', () => {
       expect(mockPayload.create).toHaveBeenCalledWith(
         expect.objectContaining({
           collection: 'courses',
+          draft: false,
+          overrideAccess: true,
+          disableVerificationEmail: true,
         }),
       );
     });
@@ -119,7 +126,11 @@ describe('ContentProcessor', () => {
             level: 'advanced',
           },
           lessons: [1, 2, 3],
+          _status: 'published',
         }),
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
     });
 
@@ -277,7 +288,11 @@ describe('ContentProcessor', () => {
           course: 'uuid-of-course',
           title: 'Introduction',
           order: 1,
+          _status: 'published',
         }),
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
       expect(uuid).toBe('lesson-uuid');
     });
@@ -308,7 +323,11 @@ describe('ContentProcessor', () => {
         data: expect.objectContaining({
           title: 'Blog Post',
           slug: 'blog-post',
+          _status: 'published',
         }),
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
       expect(uuid).toBe('post-uuid');
     });
@@ -331,7 +350,10 @@ describe('ContentProcessor', () => {
       expect(uuid).toBe('uuid-minimal');
       expect(mockPayload.create).toHaveBeenCalledWith({
         collection: 'courses',
-        data: { title: 'Minimal Course' },
+        data: { title: 'Minimal Course', _status: 'published' },
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
     });
 
@@ -371,7 +393,11 @@ describe('ContentProcessor', () => {
           title: 'Test',
           description: null,
           metadata: undefined,
+          _status: 'published',
         }),
+        draft: false,
+        overrideAccess: true,
+        disableVerificationEmail: true,
       });
     });
   });
