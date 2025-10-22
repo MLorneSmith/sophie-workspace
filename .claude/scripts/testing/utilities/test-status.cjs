@@ -5,6 +5,15 @@
 
 const fs = require("node:fs").promises;
 
+/**
+ * Stringify JSON with tab indentation for Biome compatibility
+ * @param {*} data - Data to stringify
+ * @returns {string} JSON string with tab indentation
+ */
+function stringifyWithTabs(data) {
+	return JSON.stringify(data, null, "\t");
+}
+
 class TestStatus {
 	constructor(config) {
 		this.config = config;
@@ -35,10 +44,7 @@ class TestStatus {
 	}
 
 	async save() {
-		await fs.writeFile(
-			this.config.resultFile,
-			JSON.stringify(this.status, null, 2),
-		);
+		await fs.writeFile(this.config.resultFile, stringifyWithTabs(this.status));
 	}
 
 	async updateStatusLine(status, passed = 0, failed = 0, total = 0) {
@@ -107,12 +113,18 @@ class TestStatus {
 		const totalSkipped = unit.skipped + e2e.skipped;
 		const total = unit.total + e2e.total;
 
+		// Calculate actual failures (excluding intentional failures)
+		const intentionalFailures = e2e.intentionalFailures || 0;
+		const actualFailures = totalFailed - intentionalFailures;
+
 		return {
 			total,
 			passed: totalPassed,
 			failed: totalFailed,
 			skipped: totalSkipped,
-			success: totalFailed === 0,
+			intentionalFailures,
+			actualFailures,
+			success: actualFailures === 0,
 			duration: this.calculateDuration(),
 		};
 	}

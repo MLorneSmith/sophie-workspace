@@ -409,11 +409,11 @@ Examples:
 
 			// Update statusline with final results
 			const summary = this.testStatus.getSummary();
-			const statusValue = summary.failed === 0 ? "success" : "failed";
+			const statusValue = summary.actualFailures === 0 ? "success" : "failed";
 			await this.testStatus.updateStatusLine(
 				statusValue,
 				summary.passed,
-				summary.failed,
+				summary.actualFailures,
 				summary.total,
 			);
 

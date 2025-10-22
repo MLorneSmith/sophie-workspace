@@ -163,6 +163,11 @@ function createSimpleLexicalContent(markdown: string): {
 		const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
 		if (headerMatch) {
 			const level = headerMatch[1].length;
+			// Strip shortcodes from header text
+			const cleanedHeaderText = headerMatch[2]
+				.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, '')
+				.replace(/{%\s*\/highlight\s*%}/g, '');
+
 			children.push({
 				type: "heading",
 				version: 1,
@@ -173,8 +178,91 @@ function createSimpleLexicalContent(markdown: string): {
 					{
 						type: "text",
 						version: 1,
-						text: headerMatch[2],
+						text: cleanedHeaderText,
 						format: 0,
+						detail: 0,
+						style: "",
+						mode: "normal",
+					},
+				],
+			});
+			continue;
+		}
+
+		// YouTube video shortcode: {% youtube src="videoId" /%}
+		const youtubeMatch = line.match(/^{%\s*youtube\s+src="([^"]+)"\s*\/%}$/);
+		if (youtubeMatch) {
+			children.push({
+				type: "block",
+				version: 1,
+				blockType: "youtube-video",
+				fields: {
+					videoId: youtubeMatch[1],
+				},
+			});
+			continue;
+		}
+
+		// CTA shortcode (multi-line): {% cta ... /%}
+		if (line.startsWith("{% cta")) {
+			const ctaLines: string[] = [line];
+
+			// Collect all lines until we find the closing /%}
+			while (i < lines.length - 1 && !line.includes("/%}")) {
+				i++;
+				const nextLine = lines[i].trim();
+				ctaLines.push(nextLine);
+				if (nextLine.includes("/%}")) break;
+			}
+
+			// Parse CTA attributes
+			const ctaText = ctaLines.join(" ");
+			const ctatextMatch = ctaText.match(/ctatext="([^"]+)"/);
+			const ctadescriptionMatch = ctaText.match(/ctadescription="([^"]+)"/);
+			const ctabuttontextMatch = ctaText.match(/ctabuttontext="([^"]+)"/);
+
+			children.push({
+				type: "block",
+				version: 1,
+				blockType: "call-to-action",
+				fields: {
+					text: ctatextMatch?.[1] || "Call to Action",
+					description: ctadescriptionMatch?.[1] || "",
+					buttonText: ctabuttontextMatch?.[1] || "Learn More",
+				},
+			});
+			continue;
+		}
+
+		// Quote shortcode (multi-line): {% quote ... /%}
+		if (line.startsWith("{% quote")) {
+			const quoteLines: string[] = [line];
+
+			// Collect all lines until we find the closing /%}
+			while (i < lines.length - 1 && !line.includes("/%}")) {
+				i++;
+				const nextLine = lines[i].trim();
+				quoteLines.push(nextLine);
+				if (nextLine.includes("/%}")) break;
+			}
+
+			// Parse quote attributes
+			const quoteText = quoteLines.join(" ");
+			const quoteMatch = quoteText.match(/quote="([^"]+)"/);
+			const citationMatch = quoteText.match(/citation="([^"]+)"/);
+
+			// Convert to a styled paragraph (quote block)
+			children.push({
+				type: "paragraph",
+				version: 1,
+				format: "",
+				indent: 1,
+				children: [
+					{
+						type: "text",
+						version: 1,
+						text: `"${quoteMatch?.[1] || ""}" — ${citationMatch?.[1] || ""}`,
+						format: 2, // italic
 						detail: 0,
 						style: "",
 						mode: "normal",
@@ -192,16 +280,24 @@ function createSimpleLexicalContent(markdown: string): {
 			children.push({
 				type: "block",
 				version: 1,
-				blockType: "video",
+				blockType: "bunny-video",
 				fields: {
 					videoId: bunnyMatch[1],
-					provider: "bunny",
 				},
 			});
 			continue;
 		}
 
 		// Default to paragraph
+		// Strip any remaining shortcodes from the text (inline highlights, etc.)
+		const cleanedLine = line
+			.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, '')  // Remove opening {% highlight %}
+			.replace(/{%\s*\/highlight\s*%}/g, '')  // Remove closing {% /highlight %}
+			.trim();
+
+		// Skip if line is empty after cleaning
+		if (!cleanedLine) continue;
+
 		children.push({
 			type: "paragraph",
 			version: 1,
@@ -211,7 +307,7 @@ function createSimpleLexicalContent(markdown: string): {
 				{
 					type: "text",
 					version: 1,
-					text: line,
+					text: cleanedLine,
 					format: 0,
 					detail: 0,
 					style: "",

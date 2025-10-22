@@ -1,7 +1,6 @@
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
-// Assuming blocks like CallToAction and TestBlock will be defined elsewhere
-// import { CallToAction, TestBlock } from '../blocks'
+import { CallToAction, TestBlock } from "../blocks";
 
 export const Documentation: CollectionConfig = {
 	slug: "documentation",
@@ -35,6 +34,38 @@ export const Documentation: CollectionConfig = {
 			},
 		},
 		{
+			name: "parent",
+			type: "relationship",
+			relationTo: "documentation",
+			admin: {
+				position: "sidebar",
+				description: "Parent documentation page",
+			},
+		},
+		{
+			name: "breadcrumbs",
+			type: "array",
+			admin: {
+				readOnly: true,
+				description: "Auto-generated path from root to this document",
+			},
+			fields: [
+				{
+					name: "doc",
+					type: "relationship",
+					relationTo: "documentation",
+				},
+				{
+					name: "url",
+					type: "text",
+				},
+				{
+					name: "label",
+					type: "text",
+				},
+			],
+		},
+		{
 			name: "description",
 			type: "textarea",
 		},
@@ -45,7 +76,9 @@ export const Documentation: CollectionConfig = {
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
-					// BlocksFeature will be added when blocks are properly configured
+					BlocksFeature({
+						blocks: [CallToAction, TestBlock],
+					}),
 				],
 			}),
 			admin: {

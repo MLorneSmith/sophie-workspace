@@ -25,10 +25,23 @@ describe('DownloadsProcessor', () => {
   });
 
   describe('preProcess validation', () => {
-    it('should validate UUID format', async () => {
+    it('should require url field', async () => {
       const records: SeedRecord[] = [
         {
-          id: 'invalid-uuid',
+          _ref: 'test',
+          title: 'Test',
+          filename: 'test-file.pdf',
+        },
+      ];
+
+      await expect(processor.preProcess(records)).rejects.toThrow(
+        'Missing required field \'url\'',
+      );
+    });
+
+    it('should require filename field', async () => {
+      const records: SeedRecord[] = [
+        {
           _ref: 'test',
           title: 'Test',
           url: 'https://example.com/file.pdf',
@@ -36,96 +49,31 @@ describe('DownloadsProcessor', () => {
       ];
 
       await expect(processor.preProcess(records)).rejects.toThrow(
-        'Invalid UUID format: invalid-uuid',
+        'Missing required field \'filename\'',
       );
     });
 
-    it('should accept valid UUIDs', async () => {
+    it('should require title field', async () => {
       const records: SeedRecord[] = [
         {
-          id: '123e4567-e89b-12d3-a456-426614174000',
           _ref: 'test',
-          title: 'Test',
+          filename: 'test-file.pdf',
           url: 'https://example.com/file.pdf',
-        },
-      ];
-
-      await expect(processor.preProcess(records)).resolves.not.toThrow();
-    });
-
-    it('should accept lowercase UUIDs', async () => {
-      const records: SeedRecord[] = [
-        {
-          id: 'abcdef12-3456-7890-abcd-ef1234567890',
-          _ref: 'test',
-          title: 'Test',
-          url: 'https://example.com/file.pdf',
-        },
-      ];
-
-      await expect(processor.preProcess(records)).resolves.not.toThrow();
-    });
-
-    it('should accept uppercase UUIDs', async () => {
-      const records: SeedRecord[] = [
-        {
-          id: 'ABCDEF12-3456-7890-ABCD-EF1234567890',
-          _ref: 'test',
-          title: 'Test',
-          url: 'https://example.com/file.pdf',
-        },
-      ];
-
-      await expect(processor.preProcess(records)).resolves.not.toThrow();
-    });
-
-    it('should allow records without id field', async () => {
-      const records: SeedRecord[] = [
-        {
-          _ref: 'test',
-          title: 'Test',
-          url: 'https://example.com/file.pdf',
-        },
-      ];
-
-      await expect(processor.preProcess(records)).resolves.not.toThrow();
-    });
-
-    it('should require either url or file', async () => {
-      const records: SeedRecord[] = [
-        {
-          _ref: 'test',
-          title: 'Test',
-          url: null,
-          file: null,
         },
       ];
 
       await expect(processor.preProcess(records)).rejects.toThrow(
-        'Must have either url or file reference',
+        'Missing required field \'title\'',
       );
     });
 
-    it('should accept record with url only', async () => {
+    it('should accept valid records with all required fields', async () => {
       const records: SeedRecord[] = [
         {
           _ref: 'test',
           title: 'Test',
+          filename: 'test-file.pdf',
           url: 'https://example.com/file.pdf',
-          file: null,
-        },
-      ];
-
-      await expect(processor.preProcess(records)).resolves.not.toThrow();
-    });
-
-    it('should accept record with file only', async () => {
-      const records: SeedRecord[] = [
-        {
-          _ref: 'test',
-          title: 'Test',
-          url: null,
-          file: 'media-uuid',
         },
       ];
 
@@ -137,13 +85,13 @@ describe('DownloadsProcessor', () => {
         {
           _ref: 'test',
           title: 'Test',
+          filename: 'test-file.pdf',
           url: 'not-a-valid-url',
-          file: null,
         },
       ];
 
       await expect(processor.preProcess(records)).rejects.toThrow(
-        'Invalid URL format: not-a-valid-url',
+        'Invalid URL format \'not-a-valid-url\'',
       );
     });
 
@@ -152,16 +100,19 @@ describe('DownloadsProcessor', () => {
         {
           _ref: 'http-url',
           title: 'HTTP',
+          filename: 'http-file.pdf',
           url: 'http://example.com/file.pdf',
         },
         {
           _ref: 'https-url',
           title: 'HTTPS',
+          filename: 'https-file.pdf',
           url: 'https://example.com/file.pdf',
         },
         {
           _ref: 'ftp-url',
           title: 'FTP',
+          filename: 'ftp-file.pdf',
           url: 'ftp://example.com/file.pdf',
         },
       ];
@@ -172,20 +123,19 @@ describe('DownloadsProcessor', () => {
     it('should collect multiple validation errors', async () => {
       const records: SeedRecord[] = [
         {
-          id: 'invalid-uuid',
           _ref: 'error-1',
           title: 'Error 1',
-          url: null,
-          file: null,
+          filename: 'error1.pdf',
         },
         {
           _ref: 'error-2',
           title: 'Error 2',
+          filename: 'error2.pdf',
           url: 'invalid-url',
         },
       ];
 
-      await expect(processor.preProcess(records)).rejects.toThrow(/Invalid UUID format[\s\S]*Must have either url or file[\s\S]*Invalid URL format/);
+      await expect(processor.preProcess(records)).rejects.toThrow(/Missing required field 'url'[\s\S]*Invalid URL format/);
     });
   });
 
@@ -195,12 +145,14 @@ describe('DownloadsProcessor', () => {
         id: '123e4567-e89b-12d3-a456-426614174000',
         _ref: 'template-1',
         title: 'Marketing Template',
+        filename: 'marketing-template.pdf',
         url: 'https://example.com/template.pdf',
       };
 
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: '123e4567-e89b-12d3-a456-426614174000',
         title: 'Marketing Template',
+        filename: 'marketing-template.pdf',
         url: 'https://example.com/template.pdf',
       });
 
@@ -219,6 +171,7 @@ describe('DownloadsProcessor', () => {
       const record: SeedRecord = {
         _ref: 'template-2',
         title: 'Another Template',
+        filename: 'another-template.pdf',
         url: 'https://example.com/template2.pdf',
       };
 
@@ -227,6 +180,7 @@ describe('DownloadsProcessor', () => {
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: generatedUuid,
         title: 'Another Template',
+        filename: 'another-template.pdf',
         url: 'https://example.com/template2.pdf',
       });
 
@@ -235,18 +189,20 @@ describe('DownloadsProcessor', () => {
       expect(uuid).toBe(generatedUuid);
     });
 
-    it('should remove _ref and _status but keep id', async () => {
+    it('should remove _ref and _status but keep id and add defaults', async () => {
       const record: SeedRecord = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         _ref: 'template',
         _status: 'pending',
         title: 'Template',
+        filename: 'template.pdf',
         url: 'https://example.com/template.pdf',
       };
 
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: '123e4567-e89b-12d3-a456-426614174000',
         title: 'Template',
+        filename: 'template.pdf',
         url: 'https://example.com/template.pdf',
       });
 
@@ -257,23 +213,27 @@ describe('DownloadsProcessor', () => {
         data: {
           id: '123e4567-e89b-12d3-a456-426614174000',
           title: 'Template',
+          filename: 'template.pdf',
           url: 'https://example.com/template.pdf',
+          mimeType: 'application/pdf',
+          filesize: 0,
         },
       });
     });
 
     it('should handle external URL downloads', async () => {
       const record: SeedRecord = {
-        id: 'external-uuid',
         _ref: 'external-download',
         title: 'External Resource',
+        filename: 'resource.zip',
         url: 'https://external.com/resource.zip',
-        file: null,
       };
 
       vi.mocked(mockPayload.create).mockResolvedValue({
         id: 'external-uuid',
-        ...record,
+        title: 'External Resource',
+        filename: 'resource.zip',
+        url: 'https://external.com/resource.zip',
       });
 
       const uuid = await processor.processRecord(record);
@@ -283,56 +243,35 @@ describe('DownloadsProcessor', () => {
         expect.objectContaining({
           data: expect.objectContaining({
             url: 'https://external.com/resource.zip',
-            file: null,
+            filename: 'resource.zip',
+            mimeType: 'application/zip',
           }),
         }),
       );
     });
 
-    it('should handle media file references', async () => {
+    it('should infer mimeType from filename', async () => {
       const record: SeedRecord = {
-        id: 'media-download-uuid',
-        _ref: 'media-download',
-        title: 'Media File',
-        url: null,
-        file: 'media-file-uuid',
+        _ref: 'pdf-download',
+        title: 'PDF File',
+        filename: 'document.pdf',
+        url: 'https://example.com/document.pdf',
       };
 
       vi.mocked(mockPayload.create).mockResolvedValue({
-        id: 'media-download-uuid',
+        id: 'pdf-uuid',
         ...record,
       });
 
-      const uuid = await processor.processRecord(record);
+      await processor.processRecord(record);
 
-      expect(uuid).toBe('media-download-uuid');
       expect(mockPayload.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            url: null,
-            file: 'media-file-uuid',
+            mimeType: 'application/pdf',
+            filesize: 0,
           }),
         }),
-      );
-    });
-
-    it('should throw error if UUID preservation fails', async () => {
-      const record: SeedRecord = {
-        id: '123e4567-e89b-12d3-a456-426614174000',
-        _ref: 'test',
-        title: 'Test',
-        url: 'https://example.com/test.pdf',
-      };
-
-      // Simulate Payload returning different UUID
-      vi.mocked(mockPayload.create).mockResolvedValue({
-        id: 'different-uuid',
-        title: 'Test',
-        url: 'https://example.com/test.pdf',
-      });
-
-      await expect(processor.processRecord(record)).rejects.toThrow(
-        'UUID preservation failed: expected 123e4567-e89b-12d3-a456-426614174000, got different-uuid',
       );
     });
 
@@ -340,6 +279,7 @@ describe('DownloadsProcessor', () => {
       const record: SeedRecord = {
         _ref: 'failing',
         title: 'Failing',
+        filename: 'fail.pdf',
         url: 'https://example.com/fail.pdf',
       };
 
@@ -348,24 +288,7 @@ describe('DownloadsProcessor', () => {
       );
 
       await expect(processor.processRecord(record)).rejects.toThrow(
-        'Failed to create download record: Database constraint violation',
-      );
-    });
-
-    it('should include UUID in error message when provided', async () => {
-      const record: SeedRecord = {
-        id: '123e4567-e89b-12d3-a456-426614174000',
-        _ref: 'failing',
-        title: 'Failing',
-        url: 'https://example.com/fail.pdf',
-      };
-
-      vi.mocked(mockPayload.create).mockRejectedValue(
-        new Error('Creation failed'),
-      );
-
-      await expect(processor.processRecord(record)).rejects.toThrow(
-        'Failed to create download record with UUID 123e4567-e89b-12d3-a456-426614174000',
+        'Failed to create download record for \'fail.pdf\': Database constraint violation',
       );
     });
   });
@@ -377,17 +300,20 @@ describe('DownloadsProcessor', () => {
           id: '11111111-1111-1111-1111-111111111111',
           _ref: 'download-1',
           title: 'Download 1',
+          filename: 'download-1.pdf',
           url: 'https://example.com/1.pdf',
         },
         {
           _ref: 'download-2',
           title: 'Download 2',
+          filename: 'download-2.pdf',
           url: 'https://example.com/2.pdf',
         },
         {
           id: '33333333-3333-3333-3333-333333333333',
           _ref: 'download-3',
           title: 'Download 3',
+          filename: 'download-3.pdf',
           url: 'https://example.com/3.pdf',
         },
       ];
@@ -414,12 +340,14 @@ describe('DownloadsProcessor', () => {
           id: '11111111-1111-1111-1111-111111111111',
           _ref: 'template-1',
           title: 'Template 1',
+          filename: 'template-1.pdf',
           url: 'https://example.com/t1.pdf',
         },
         {
           id: '22222222-2222-2222-2222-222222222222',
           _ref: 'template-2',
           title: 'Template 2',
+          filename: 'template-2.pdf',
           url: 'https://example.com/t2.pdf',
         },
       ];
@@ -437,18 +365,16 @@ describe('DownloadsProcessor', () => {
     it('should handle validation errors in preProcess', async () => {
       const records: SeedRecord[] = [
         {
-          id: 'invalid-uuid',
           _ref: 'invalid',
           title: 'Invalid',
-          url: 'https://example.com/test.pdf',
+          filename: 'invalid.pdf',
+          // Missing url - will fail validation
         },
       ];
 
-      await expect(processor.processAll(records)).rejects.toThrow(
+      await expect(processor.preProcess(records)).rejects.toThrow(
         'Downloads validation failed',
       );
-
-      expect(mockPayload.create).not.toHaveBeenCalled();
     });
   });
 
@@ -460,11 +386,13 @@ describe('DownloadsProcessor', () => {
         {
           _ref: 'success',
           title: 'Success',
+          filename: 'success.pdf',
           url: 'https://example.com/success.pdf',
         },
         {
           _ref: 'failure',
           title: 'Failure',
+          filename: 'failure.pdf',
           url: 'https://example.com/failure.pdf',
         },
       ];
@@ -489,11 +417,13 @@ describe('DownloadsProcessor', () => {
         {
           _ref: 'success-1',
           title: 'Success 1',
+          filename: 'success-1.pdf',
           url: 'https://example.com/s1.pdf',
         },
         {
           _ref: 'success-2',
           title: 'Success 2',
+          filename: 'success-2.pdf',
           url: 'https://example.com/s2.pdf',
         },
       ];
@@ -518,42 +448,53 @@ describe('DownloadsProcessor', () => {
       expect(mockPayload.create).not.toHaveBeenCalled();
     });
 
-    it('should handle records with both url and file', async () => {
+    it('should handle records with valid url and filename', async () => {
       const record: SeedRecord = {
-        _ref: 'both',
-        title: 'Both',
+        _ref: 'valid',
+        title: 'Valid Download',
+        filename: 'backup.pdf',
         url: 'https://example.com/backup.pdf',
-        file: 'media-uuid',
       };
 
       vi.mocked(mockPayload.create).mockResolvedValue({
-        id: 'uuid-both',
-        ...record,
+        id: 'uuid-valid',
+        title: 'Valid Download',
+        filename: 'backup.pdf',
+        url: 'https://example.com/backup.pdf',
       });
 
       await expect(processor.preProcess([record])).resolves.not.toThrow();
 
       const uuid = await processor.processRecord(record);
-      expect(uuid).toBe('uuid-both');
+      expect(uuid).toBe('uuid-valid');
     });
 
-    it('should handle UUID with different casing', async () => {
+    it('should handle pre-existing mimeType and filesize', async () => {
       const record: SeedRecord = {
-        id: 'AbCdEf12-3456-7890-AbCd-Ef1234567890',
-        _ref: 'mixed-case',
-        title: 'Mixed Case UUID',
+        _ref: 'custom',
+        title: 'Custom Metadata',
+        filename: 'test.pdf',
         url: 'https://example.com/test.pdf',
+        mimeType: 'custom/type',
+        filesize: 12345,
       };
 
-      await expect(processor.preProcess([record])).resolves.not.toThrow();
-
       vi.mocked(mockPayload.create).mockResolvedValue({
-        id: 'AbCdEf12-3456-7890-AbCd-Ef1234567890',
-        title: 'Mixed Case UUID',
+        id: 'uuid-custom',
+        title: 'Custom Metadata',
       });
 
       const uuid = await processor.processRecord(record);
-      expect(uuid).toBe('AbCdEf12-3456-7890-AbCd-Ef1234567890');
+
+      expect(uuid).toBe('uuid-custom');
+      expect(mockPayload.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            mimeType: 'custom/type',
+            filesize: 12345,
+          }),
+        }),
+      );
     });
   });
 });

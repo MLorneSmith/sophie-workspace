@@ -9,9 +9,10 @@ dotenvConfig({
 });
 
 /**
- * Number of workers to use in CI. Tweak based on your CI provider's resources.
- * Reduced from 4 to 2 to prevent resource contention and authentication conflicts
- * This improves stability at the cost of slightly increased test duration
+
+* Number of workers to use in CI. Tweak based on your CI provider's resources.
+* Reduced from 4 to 2 to prevent resource contention and authentication conflicts
+* This improves stability at the cost of slightly increased test duration
  */
 const CI_WORKERS = 2;
 
@@ -32,13 +33,15 @@ if (!enableTeamAccountTests) {
 }
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+
+* Read environment variables from file.
+* <https://github.com/motdotla/dotenv>
  */
 // require('dotenv').config();
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+
+* See <https://playwright.dev/docs/test-configuration>.
  */
 export default defineConfig({
 	testDir: "./tests",
@@ -49,23 +52,27 @@ export default defineConfig({
 	retries: 1,
 	/* Limit parallel tests on CI. */
 	workers: process.env.CI ? CI_WORKERS : undefined,
-	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
+	/* Reporter to use. See <https://playwright.dev/docs/test-reporters> */
 	reporter: "html",
 	/* Ignore billing tests if the environment variable is not set. */
 	testIgnore,
-	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+	/* Shared settings for all the projects below. See <https://playwright.dev/docs/api/class-testoptions>. */
 	use: {
 		/* Base URL to use in actions like `await page.goto('/')`. */
 		baseURL:
 			process.env.PLAYWRIGHT_BASE_URL ||
 			process.env.TEST_BASE_URL ||
 			process.env.BASE_URL ||
-			"http://localhost:3000",
+			"<http://localhost:3000>",
 
-		// Add Vercel protection bypass header for deployed environments
+		// Add Vercel protection bypass headers for deployed environments
+		// x-vercel-protection-bypass: For direct API/HTTP requests
+		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows
 		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 			? {
 					"x-vercel-protection-bypass":
+						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					"x-vercel-set-bypass-cookie":
 						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
 				}
 			: {},
@@ -86,7 +93,7 @@ export default defineConfig({
 		// Expect timeout for assertions
 		timeout: process.env.CI ? 15 * 1000 : 10 * 1000, // 15s in CI, 10s local
 	},
-	/* Configure projects for major browsers */
+	/*Configure projects for major browsers */
 	projects: [
 		{ name: "setup", testMatch: /.*\.setup\.ts/ },
 		{
@@ -115,12 +122,12 @@ export default defineConfig({
 		// },
 	],
 
-	/* Run your local dev server before starting the tests */
+	/*Run your local dev server before starting the tests*/
 	webServer: process.env.PLAYWRIGHT_SERVER_COMMAND
 		? {
 				cwd: "../../",
 				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
-				url: "http://localhost:3000",
+				url: "<http://localhost:3000>",
 				reuseExistingServer: !process.env.CI,
 				stdout: "pipe",
 				stderr: "pipe",

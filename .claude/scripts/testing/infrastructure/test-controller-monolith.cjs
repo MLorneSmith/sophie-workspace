@@ -21,6 +21,15 @@ const execAsync = promisify(exec);
 const { ResourceLock } = require("./resource-lock.cjs");
 const { TestCleanupGuard } = require("./test-cleanup-guard.cjs");
 
+/**
+ * Stringify JSON with tab indentation for Biome compatibility
+ * @param {*} data - Data to stringify
+ * @returns {string} JSON string with tab indentation
+ */
+function stringifyWithTabs(data) {
+	return JSON.stringify(data, null, "\t");
+}
+
 // Import optimization modules if available
 let TestCacheManager;
 try {
@@ -88,7 +97,7 @@ class TestStatus {
 	}
 
 	async save() {
-		await fs.writeFile(CONFIG.resultFile, JSON.stringify(this.status, null, 2));
+		await fs.writeFile(CONFIG.resultFile, stringifyWithTabs(this.status));
 	}
 
 	async updateStatusLine(status, passed = 0, failed = 0, total = 0) {

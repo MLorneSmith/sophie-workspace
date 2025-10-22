@@ -1,7 +1,6 @@
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
-// Assuming blocks like BunnyVideo and YouTubeVideo will be defined elsewhere
-// import { BunnyVideo, YouTubeVideo } from '../blocks'
+import { BunnyVideo, YouTubeVideo } from "../blocks";
 
 export const CourseLessons: CollectionConfig = {
 	slug: "course-lessons",
@@ -146,7 +145,9 @@ export const CourseLessons: CollectionConfig = {
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
-					// BlocksFeature will be added when blocks are properly configured
+					BlocksFeature({
+						blocks: [BunnyVideo, YouTubeVideo],
+					}),
 				],
 			}),
 		},
