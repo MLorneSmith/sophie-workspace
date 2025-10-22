@@ -72,10 +72,10 @@ export function CaptchaField<
   const controller =
     'control' in props && props.control
       ? // eslint-disable-next-line react-hooks/rules-of-hooks
-      useController({
-        control: props.control,
-        name: props.name,
-      })
+        useController({
+          control: props.control,
+          name: props.name,
+        })
       : null;
 
   if (!siteKey) {

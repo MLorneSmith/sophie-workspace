@@ -21,10 +21,12 @@ const ModeToggle = dynamic(
   { ssr: false },
 );
 
-const MobileModeToggle = dynamic(() =>
-  import('@kit/ui/mobile-mode-toggle').then((mod) => ({
-    default: mod.MobileModeToggle,
-  })),
+const MobileModeToggle = dynamic(
+  () =>
+    import('@kit/ui/mobile-mode-toggle').then((mod) => ({
+      default: mod.MobileModeToggle,
+    })),
+  { ssr: false },
 );
 
 const paths = {

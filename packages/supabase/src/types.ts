@@ -1,3 +1,5 @@
+import type { AMREntry } from '@supabase/supabase-js';
+
 /**
  * @name JWTUserData
  * @description The user data mapped from the JWT claims.
@@ -10,4 +12,5 @@ export type JWTUserData = {
   app_metadata: Record<string, unknown>;
   user_metadata: Record<string, unknown>;
   id: string;
+  amr: AMREntry[];
 };

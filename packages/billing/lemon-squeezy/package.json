@@ -24,9 +24,9 @@
     "@kit/supabase": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@types/react": "19.1.16",
-    "next": "15.5.5",
-    "react": "19.1.1",
+    "@types/react": "catalog:",
+    "next": "16.0.0",
+    "react": "19.2.0",
     "zod": "^3.25.74"
   },
   "typesVersions": {

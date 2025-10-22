@@ -23,7 +23,7 @@ const getUser = (request: NextRequest, response: NextResponse) => {
   return supabase.auth.getClaims();
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const secureHeaders = await createResponseWithSecureHeaders();
   const response = NextResponse.next(secureHeaders);
 
@@ -164,9 +164,7 @@ function getPatterns() {
       pattern: new URLPattern({ pathname: '/home/*?' }),
       handler: async (req: NextRequest, res: NextResponse) => {
         const { data } = await getUser(req, res);
-
-        const origin = req.nextUrl.origin;
-        const next = req.nextUrl.pathname;
+        const { origin, pathname: next } = req.nextUrl;
 
         // If user is not logged in, redirect to sign in page.
         if (!data?.claims) {

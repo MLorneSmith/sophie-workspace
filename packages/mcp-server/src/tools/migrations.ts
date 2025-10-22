@@ -1,8 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { exec } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { promisify } from 'node:util';
 import { z } from 'zod';
 
 export class MigrationsTool {
@@ -20,11 +19,11 @@ export class MigrationsTool {
   }
 
   static CreateMigration(name: string) {
-    return promisify(exec)(`pnpm --filter web supabase migrations new ${name}`);
+    return execSync(`pnpm --filter web supabase migrations new ${name}`);
   }
 
   static Diff() {
-    return promisify(exec)(`supabase db diff`);
+    return execSync(`pnpm --filter web supabase db diff`);
   }
 }
 
@@ -40,13 +39,14 @@ function createDiffMigrationTool(server: McpServer) {
     'diff_migrations',
     'Compare differences between the declarative schemas and the applied migrations in Supabase',
     async () => {
-      const { stdout } = await MigrationsTool.Diff();
+      const result = MigrationsTool.Diff();
+      const text = result.toString('utf8');
 
       return {
         content: [
           {
             type: 'text',
-            text: stdout,
+            text,
           },
         ],
       };
@@ -64,13 +64,14 @@ function createCreateMigrationTool(server: McpServer) {
       }),
     },
     async ({ state }) => {
-      const { stdout } = await MigrationsTool.CreateMigration(state.name);
+      const result = MigrationsTool.CreateMigration(state.name);
+      const text = result.toString('utf8');
 
       return {
         content: [
           {
             type: 'text',
-            text: stdout,
+            text,
           },
         ],
       };

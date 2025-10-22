@@ -25,7 +25,7 @@ export function AcceptInvitationContainer(props: {
 
   paths: {
     signOutNext: string;
-    accountHome: string;
+    nextPath: string;
   };
 }) {
   return (
@@ -71,7 +71,7 @@ export function AcceptInvitationContainer(props: {
           <input
             type={'hidden'}
             name={'nextPath'}
-            value={props.paths.accountHome}
+            value={props.paths.nextPath}
           />
 
           <InvitationSubmitButton

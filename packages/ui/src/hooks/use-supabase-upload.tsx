@@ -196,19 +196,23 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
     setLoading(false);
   }, [
-    files,
-    path,
     bucketName,
-    errors,
-    successes,
-    onUploadSuccess,
-    client,
     cacheControl,
+    client.storage,
+    errors,
+    files,
+    onUploadSuccess,
+    setLoading,
+    setErrors,
+    setSuccesses,
+    path,
+    successes,
     upsert,
   ]);
 
   useEffect(() => {
     if (files.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrors([]);
     }
 

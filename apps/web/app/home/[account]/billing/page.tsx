@@ -61,30 +61,7 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
   const canManageBilling =
     workspace.account.permissions.includes('billing.manage');
 
-  const Checkout = () => {
-    if (!canManageBilling) {
-      return <CannotManageBillingAlert />;
-    }
-
-    return (
-      <TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
-    );
-  };
-
-  const BillingPortal = () => {
-    if (!canManageBilling || !customerId) {
-      return null;
-    }
-
-    return (
-      <form action={createBillingPortalSession}>
-        <input type="hidden" name={'accountId'} value={accountId} />
-        <input type="hidden" name={'slug'} value={account} />
-
-        <BillingPortalCard />
-      </form>
-    );
-  };
+  const shouldShowBillingPortal = canManageBilling && customerId;
 
   return (
     <>
@@ -97,7 +74,15 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
       <PageBody>
         <div className={cn(`flex max-w-2xl flex-col space-y-4`)}>
           <If condition={!hasBillingData}>
-            <Checkout />
+            <If
+              condition={canManageBilling}
+              fallback={<CannotManageBillingAlert />}
+            >
+              <TeamAccountCheckoutForm
+                customerId={customerId}
+                accountId={accountId}
+              />
+            </If>
           </If>
 
           <If condition={subscription}>
@@ -124,7 +109,9 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
             }}
           </If>
 
-          <BillingPortal />
+          {shouldShowBillingPortal ? (
+            <BillingPortalForm accountId={accountId} account={account} />
+          ) : null}
         </div>
       </PageBody>
     </>
@@ -146,5 +133,22 @@ function CannotManageBillingAlert() {
         <Trans i18nKey={'billing:cannotManageBillingAlertDescription'} />
       </AlertDescription>
     </Alert>
+  );
+}
+
+function BillingPortalForm({
+  accountId,
+  account,
+}: {
+  accountId: string;
+  account: string;
+}) {
+  return (
+    <form action={createBillingPortalSession}>
+      <input type="hidden" name={'accountId'} value={accountId} />
+      <input type="hidden" name={'slug'} value={account} />
+
+      <BillingPortalCard />
+    </form>
   );
 }

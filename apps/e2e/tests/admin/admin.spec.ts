@@ -103,9 +103,6 @@ test.describe('Admin', () => {
         ),
       ]);
 
-      // TODO: remove when https://github.com/makerkit/next-supabase-saas-kit-turbo/issues/356 is solved
-      await page.reload();
-
       await expect(page.getByText('Banned').first()).toBeVisible();
 
       await page.context().clearCookies();
@@ -153,9 +150,6 @@ test.describe('Admin', () => {
       ]);
 
       await page.waitForTimeout(250);
-
-      // TODO: remove when https://github.com/makerkit/next-supabase-saas-kit-turbo/issues/356 is solved
-      await page.reload();
 
       // Verify ban badge is removed
       await expect(page.getByText('Banned')).not.toBeVisible();

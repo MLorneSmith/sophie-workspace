@@ -386,6 +386,7 @@ function AnimatedStep({
 
   useEffect(() => {
     if (isActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldRender(true);
     } else {
       const timer = setTimeout(() => setShouldRender(false), 300);

@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 
+import type { PostgrestError } from '@supabase/supabase-js';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Check, Lock } from 'lucide-react';
+import { Check, Lock, XIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -33,9 +35,11 @@ import { PasswordUpdateSchema } from '../../../schema/update-password.schema';
 export const UpdatePasswordForm = ({
   email,
   callbackPath,
+  onSuccess,
 }: {
   email: string;
   callbackPath: string;
+  onSuccess?: () => void;
 }) => {
   const { t } = useTranslation('account');
   const updateUserMutation = useUpdateUser();
@@ -46,6 +50,7 @@ export const UpdatePasswordForm = ({
 
     const promise = updateUserMutation
       .mutateAsync({ password, redirectTo })
+      .then(onSuccess)
       .catch((error) => {
         if (
           typeof error === 'string' &&
@@ -57,11 +62,13 @@ export const UpdatePasswordForm = ({
         }
       });
 
-    toast.promise(() => promise, {
-      success: t(`updatePasswordSuccess`),
-      error: t(`updatePasswordError`),
-      loading: t(`updatePasswordLoading`),
-    });
+    toast
+      .promise(() => promise, {
+        success: t(`updatePasswordSuccess`),
+        error: t(`updatePasswordError`),
+        loading: t(`updatePasswordLoading`),
+      })
+      .unwrap();
   };
 
   const updatePasswordCallback = async ({
@@ -97,6 +104,10 @@ export const UpdatePasswordForm = ({
         <div className={'flex flex-col space-y-4'}>
           <If condition={updateUserMutation.data}>
             <SuccessAlert />
+          </If>
+
+          <If condition={updateUserMutation.error}>
+            {(error) => <ErrorAlert error={error as PostgrestError} />}
           </If>
 
           <If condition={needsReauthentication}>
@@ -176,6 +187,27 @@ export const UpdatePasswordForm = ({
     </Form>
   );
 };
+
+function ErrorAlert({ error }: { error: { code: string } }) {
+  const { t } = useTranslation();
+
+  return (
+    <Alert variant={'destructive'}>
+      <XIcon className={'h-4'} />
+
+      <AlertTitle>
+        <Trans i18nKey={'account:updatePasswordError'} />
+      </AlertTitle>
+
+      <AlertDescription>
+        <Trans
+          i18nKey={`auth:errors.${error.code}`}
+          defaults={t('auth:resetPasswordError')}
+        />
+      </AlertDescription>
+    </Alert>
+  );
+}
 
 function SuccessAlert() {
   return (

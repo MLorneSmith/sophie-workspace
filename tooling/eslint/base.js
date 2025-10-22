@@ -1,17 +1,21 @@
+import { defineConfig } from '@eslint/config-helpers';
 import eslint from '@eslint/js';
-import turboConfig from 'eslint-config-turbo/flat';
+import turbo from 'eslint-config-turbo';
 import tsEsLint from 'typescript-eslint';
 
 import nextConfig from './nextjs.js';
 
-export default tsEsLint.config(
+export default defineConfig(
   eslint.configs.recommended,
+  tsEsLint.configs.recommended,
   nextConfig,
-  turboConfig,
   {
+    plugins: {
+      turbo,
+    },
     settings: {
       react: {
-        version: '19.0',
+        version: '19.2',
       },
     },
     languageOptions: {

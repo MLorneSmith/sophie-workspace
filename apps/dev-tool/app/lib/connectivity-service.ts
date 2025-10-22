@@ -19,10 +19,9 @@ class ConnectivityService {
       };
     }
 
-    const anonKey = await getVariable(
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-      this.mode,
-    );
+    const anonKey =
+      (await getVariable('NEXT_PUBLIC_SUPABASE_ANON_KEY', this.mode)) ||
+      (await getVariable('NEXT_PUBLIC_SUPABASE_PUBLIC_KEY', this.mode));
 
     if (!anonKey) {
       return {
@@ -71,10 +70,9 @@ class ConnectivityService {
 
     const endpoint = `${url}/rest/v1/accounts`;
 
-    const apikey = await getVariable(
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-      this.mode,
-    );
+    const apikey =
+      (await getVariable('NEXT_PUBLIC_SUPABASE_ANON_KEY', this.mode)) ||
+      (await getVariable('NEXT_PUBLIC_SUPABASE_PUBLIC_KEY', this.mode));
 
     if (!apikey) {
       return {
@@ -83,7 +81,9 @@ class ConnectivityService {
       };
     }
 
-    const adminKey = await getVariable('SUPABASE_SERVICE_ROLE_KEY', this.mode);
+    const adminKey =
+      (await getVariable('SUPABASE_SERVICE_ROLE_KEY', this.mode)) ||
+      (await getVariable('SUPABASE_SECRET_KEY', this.mode));
 
     if (!adminKey) {
       return {

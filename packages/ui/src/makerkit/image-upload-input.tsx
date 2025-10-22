@@ -109,30 +109,19 @@ export const ImageUploadInput: React.FC<Props> =
       [forwardedRef],
     );
 
-    useEffect(() => {
+    if (image !== state.image) {
       setState((state) => ({ ...state, image }));
-    }, [image]);
+    }
 
     useEffect(() => {
       if (!image) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         onRemove();
       }
     }, [image, onRemove]);
 
-    const Input = () => (
-      <input
-        {...props}
-        className={cn('hidden', props.className)}
-        ref={setRef}
-        type={'file'}
-        onInput={onInputChange}
-        accept="image/*"
-        aria-labelledby={'image-upload-input'}
-      />
-    );
-
     if (!visible) {
-      return <Input />;
+      return <Input {...props} onInput={onInputChange} ref={setRef} />;
     }
 
     return (
@@ -140,7 +129,7 @@ export const ImageUploadInput: React.FC<Props> =
         id={'image-upload-input'}
         className={`border-input bg-background ring-primary ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring relative flex h-10 w-full cursor-pointer rounded-md border border-dashed px-3 py-2 text-sm ring-offset-2 outline-hidden transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50`}
       >
-        <Input />
+        <Input ref={setRef} onInput={onInputChange} />
 
         <div className={'flex items-center space-x-4'}>
           <div className={'flex'}>
@@ -198,3 +187,19 @@ export const ImageUploadInput: React.FC<Props> =
       </label>
     );
   };
+
+function Input(
+  props: React.InputHTMLAttributes<unknown> & {
+    ref: (input: HTMLInputElement) => void;
+  },
+) {
+  return (
+    <input
+      {...props}
+      className={cn('hidden', props.className)}
+      type={'file'}
+      accept="image/*"
+      aria-labelledby={'image-upload-input'}
+    />
+  );
+}

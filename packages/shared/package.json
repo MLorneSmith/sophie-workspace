@@ -20,10 +20,10 @@
     "@kit/eslint-config": "workspace:*",
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
-    "@types/react": "19.1.16"
+    "@types/react": "catalog:"
   },
   "dependencies": {
-    "pino": "^9.12.0"
+    "pino": "^10.1.0"
   },
   "typesVersions": {
     "*": {

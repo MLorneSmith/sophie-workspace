@@ -190,13 +190,13 @@ export function createEnvironmentVariablesGenerator(
       },
       {
         type: 'input',
-        name: 'values.NEXT_PUBLIC_SUPABASE_ANON_KEY',
-        message: `What is the Supabase anon key?\nFor more info: ${getUrlToDocs('NEXT_PUBLIC_SUPABASE_ANON_KEY')}\n`,
+        name: 'values.NEXT_PUBLIC_SUPABASE_PUBLIC_KEY',
+        message: `What is the Supabase public key?\nFor more info: ${getUrlToDocs('NEXT_PUBLIC_SUPABASE_PUBLIC_KEY')}\n`,
       },
       {
         type: 'input',
-        name: 'values.SUPABASE_SERVICE_ROLE_KEY',
-        message: `What is the Supabase Service Role Key?\nFor more info: ${getUrlToDocs('SUPABASE_SERVICE_ROLE_KEY')}\n`,
+        name: 'values.SUPABASE_SECRET_KEY',
+        message: `What is the Supabase secret key?\nFor more info: ${getUrlToDocs('SUPABASE_SECRET_KEY')}\n`,
       },
       {
         type: 'list',

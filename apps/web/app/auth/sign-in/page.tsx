@@ -12,7 +12,6 @@ import { withI18n } from '~/lib/i18n/with-i18n';
 
 interface SignInPageProps {
   searchParams: Promise<{
-    invite_token?: string;
     next?: string;
   }>;
 }

@@ -116,7 +116,7 @@ export function NotificationsPopover(params: {
 
           <span
             className={cn(
-              `fade-in animate-in zoom-in absolute right-1 top-1 mt-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[0.65rem] text-white`,
+              `fade-in animate-in zoom-in absolute top-1 right-1 mt-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[0.65rem] text-white`,
               {
                 hidden: !notifications.length,
               },
@@ -176,7 +176,7 @@ export function NotificationsPopover(params: {
               <div
                 key={notification.id.toString()}
                 className={cn(
-                  'min-h-18 flex flex-col items-start justify-center gap-y-1 px-3 py-2',
+                  'flex min-h-18 flex-col items-start justify-center gap-y-1 px-3 py-2',
                 )}
                 onClick={() => {
                   if (params.onClick) {

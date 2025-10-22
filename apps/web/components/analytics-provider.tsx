@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useEffectEvent } from 'react';
 
 import { usePathname, useSearchParams } from 'next/navigation';
 
@@ -28,19 +28,38 @@ function useAnalyticsMapping<T extends ConsumerProvidedEventTypes>(
 ) {
   const appEvents = useAppEvents<T>();
 
+  const subscribeToAppEvent = useEffectEvent(
+    (
+      eventType: AppEventType<T>,
+      handler: (event: AppEvent<T, AppEventType<T>>) => unknown,
+    ) => {
+      appEvents.on(eventType, handler);
+    },
+  );
+
+  const unsubscribeFromAppEvent = useEffectEvent(
+    (
+      eventType: AppEventType<T>,
+      handler: (event: AppEvent<T, AppEventType<T>>) => unknown,
+    ) => {
+      appEvents.off(eventType, handler);
+    },
+  );
+
   useEffect(() => {
     const subscriptions = Object.entries(mapping).map(
       ([eventType, handler]) => {
-        appEvents.on(eventType as AppEventType<T>, handler);
+        subscribeToAppEvent(eventType as AppEventType<T>, handler);
 
-        return () => appEvents.off(eventType as AppEventType<T>, handler);
+        return () =>
+          unsubscribeFromAppEvent(eventType as AppEventType<T>, handler);
       },
     );
 
     return () => {
       subscriptions.forEach((unsubscribe) => unsubscribe());
     };
-  }, [appEvents, mapping]);
+  }, [mapping]);
 }
 
 /**
@@ -96,9 +115,14 @@ function useReportPageView(reportAnalyticsFn: (url: string) => unknown) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
+  const callAnalyticsOnPathChange = useEffectEvent(() => {
     const url = [pathname, searchParams.toString()].filter(Boolean).join('?');
 
-    reportAnalyticsFn(url);
-  }, [pathname, reportAnalyticsFn, searchParams]);
+    return reportAnalyticsFn(url);
+  });
+
+  useEffect(() => {
+    callAnalyticsOnPathChange();
+    // call whenever the pathname changes
+  }, [pathname]);
 }

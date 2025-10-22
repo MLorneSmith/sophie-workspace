@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -227,12 +227,16 @@ function FactorsListContainer({
 
   const isSuccess = factors && !isLoading && !error;
 
+  const signOutFn = useEffectEvent(() => {
+    void signOut.mutateAsync();
+  });
+
   useEffect(() => {
     // If there is an error, sign out
     if (error) {
-      void signOut.mutateAsync();
+      void signOutFn();
     }
-  }, [error, signOut]);
+  }, [error]);
 
   useEffect(() => {
     // If there is only one factor, select it automatically

@@ -422,7 +422,7 @@ function PlanIntervalSwitcher(
         const selected = plan === props.interval;
 
         const className = cn(
-          'animate-in fade-in !outline-hidden rounded-full transition-all focus:!ring-0',
+          'animate-in fade-in rounded-full !outline-hidden transition-all focus:!ring-0',
           {
             'border-r-transparent': index === 0,
             ['hover:text-primary text-muted-foreground']: !selected,

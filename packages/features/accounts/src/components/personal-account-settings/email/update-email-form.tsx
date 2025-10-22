@@ -27,26 +27,46 @@ import { Trans } from '@kit/ui/trans';
 
 import { UpdateEmailSchema } from '../../../schema/update-email.schema';
 
-function createEmailResolver(currentEmail: string, errorMessage: string) {
-  return zodResolver(
-    UpdateEmailSchema.withTranslation(errorMessage).refine((schema) => {
-      return schema.email !== currentEmail;
-    }),
-  );
+function createEmailResolver(
+  currentEmail: string | null,
+  emailsNotMatchingMessage: string,
+  emailNotChangedMessage: string,
+) {
+  const schema = UpdateEmailSchema.withTranslation(emailsNotMatchingMessage);
+
+  // If there's a current email, ensure the new email is different
+  if (currentEmail) {
+    return zodResolver(
+      schema.refine(
+        (data) => {
+          return data.email !== currentEmail;
+        },
+        {
+          path: ['email'],
+          message: emailNotChangedMessage,
+        },
+      ),
+    );
+  }
+
+  // If no current email, just validate the schema
+  return zodResolver(schema);
 }
 
 export function UpdateEmailForm({
   email,
   callbackPath,
+  onSuccess,
 }: {
-  email: string;
+  email?: string | null;
   callbackPath: string;
+  onSuccess?: () => void;
 }) {
   const { t } = useTranslation('account');
   const updateUserMutation = useUpdateUser();
+  const isSettingEmail = !email;
 
   const updateEmail = ({ email }: { email: string }) => {
-    // then, we update the user's email address
     const promise = async () => {
       const redirectTo = new URL(
         callbackPath,
@@ -54,17 +74,25 @@ export function UpdateEmailForm({
       ).toString();
 
       await updateUserMutation.mutateAsync({ email, redirectTo });
+
+      if (onSuccess) {
+        onSuccess();
+      }
     };
 
     toast.promise(promise, {
-      success: t(`updateEmailSuccess`),
-      loading: t(`updateEmailLoading`),
-      error: t(`updateEmailError`),
+      success: t(isSettingEmail ? 'setEmailSuccess' : 'updateEmailSuccess'),
+      loading: t(isSettingEmail ? 'setEmailLoading' : 'updateEmailLoading'),
+      error: t(isSettingEmail ? 'setEmailError' : 'updateEmailError'),
     });
   };
 
   const form = useForm({
-    resolver: createEmailResolver(email, t('emailNotMatching')),
+    resolver: createEmailResolver(
+      email ?? null,
+      t('emailNotMatching'),
+      t('emailNotChanged'),
+    ),
     defaultValues: {
       email: '',
       repeatEmail: '',
@@ -83,11 +111,23 @@ export function UpdateEmailForm({
             <CheckIcon className={'h-4'} />
 
             <AlertTitle>
-              <Trans i18nKey={'account:updateEmailSuccess'} />
+              <Trans
+                i18nKey={
+                  isSettingEmail
+                    ? 'account:setEmailSuccess'
+                    : 'account:updateEmailSuccess'
+                }
+              />
             </AlertTitle>
 
             <AlertDescription>
-              <Trans i18nKey={'account:updateEmailSuccessMessage'} />
+              <Trans
+                i18nKey={
+                  isSettingEmail
+                    ? 'account:setEmailSuccessMessage'
+                    : 'account:updateEmailSuccessMessage'
+                }
+              />
             </AlertDescription>
           </Alert>
         </If>
@@ -107,7 +147,11 @@ export function UpdateEmailForm({
                         data-test={'account-email-form-email-input'}
                         required
                         type={'email'}
-                        placeholder={t('account:newEmail')}
+                        placeholder={t(
+                          isSettingEmail
+                            ? 'account:emailAddress'
+                            : 'account:newEmail',
+                        )}
                         {...field}
                       />
                     </InputGroup>
@@ -147,7 +191,13 @@ export function UpdateEmailForm({
 
           <div>
             <Button disabled={updateUserMutation.isPending}>
-              <Trans i18nKey={'account:updateEmailSubmitLabel'} />
+              <Trans
+                i18nKey={
+                  isSettingEmail
+                    ? 'account:setEmailAddress'
+                    : 'account:updateEmailSubmitLabel'
+                }
+              />
             </Button>
           </div>
         </div>

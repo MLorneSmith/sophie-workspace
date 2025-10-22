@@ -19,13 +19,13 @@
     "@kit/supabase": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@kit/ui": "workspace:*",
-    "@supabase/supabase-js": "2.58.0",
-    "@tanstack/react-query": "5.90.2",
-    "@types/react": "19.1.16",
-    "lucide-react": "^0.544.0",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "react-i18next": "^16.0.0"
+    "@supabase/supabase-js": "2.76.1",
+    "@tanstack/react-query": "5.90.5",
+    "@types/react": "catalog:",
+    "lucide-react": "^0.546.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-i18next": "^16.1.4"
   },
   "prettier": "@kit/prettier-config",
   "typesVersions": {
@@ -34,5 +34,8 @@
         "src/*"
       ]
     }
+  },
+  "dependencies": {
+    "@types/node": "catalog:"
   }
 }

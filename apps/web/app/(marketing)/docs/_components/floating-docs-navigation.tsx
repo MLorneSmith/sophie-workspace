@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 
 import { usePathname } from 'next/navigation';
 
@@ -21,27 +21,26 @@ export function FloatingDocumentationNavigation(
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const enableScrolling = (element: HTMLElement) =>
-    (element.style.overflowY = '');
+  const enableScrolling = useEffectEvent(
+    () => body && (body.style.overflowY = ''),
+  );
 
-  const disableScrolling = (element: HTMLElement) =>
-    (element.style.overflowY = 'hidden');
+  const disableScrolling = useEffectEvent(
+    () => body && (body.style.overflowY = 'hidden'),
+  );
 
   // enable/disable body scrolling when the docs are toggled
   useEffect(() => {
-    if (!body) {
-      return;
-    }
-
     if (isVisible) {
-      disableScrolling(body);
+      disableScrolling();
     } else {
-      enableScrolling(body);
+      enableScrolling();
     }
-  }, [isVisible, body]);
+  }, [isVisible]);
 
   // hide docs when navigating to another page
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVisible(false);
   }, [activePath]);
 

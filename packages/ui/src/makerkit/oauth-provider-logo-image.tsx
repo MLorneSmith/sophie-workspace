@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { AtSign, Phone } from 'lucide-react';
+import { AtSign, Mail, Phone } from 'lucide-react';
 
 const DEFAULT_IMAGE_SIZE = 18;
 
@@ -33,7 +33,8 @@ export function OauthProviderLogoImage({
 
 function getOAuthProviderLogos(): Record<string, string | React.ReactNode> {
   return {
-    email: <AtSign className={'size-[16px]'} />,
+    password: <AtSign className={'s-[18px]'} />,
+    email: <Mail className={'s-[18px]'} />,
     phone: <Phone className={'size-[16px]'} />,
     google: '/images/oauth/google.webp',
     facebook: '/images/oauth/facebook.webp',

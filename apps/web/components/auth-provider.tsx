@@ -8,8 +8,6 @@ import { useMonitoring } from '@kit/monitoring/hooks';
 import { useAppEvents } from '@kit/shared/events';
 import { useAuthChangeListener } from '@kit/supabase/hooks/use-auth-change-listener';
 
-import pathsConfig from '~/config/paths.config';
-
 export function AuthProvider(props: React.PropsWithChildren) {
   const dispatchEvent = useDispatchAppEventFromAuthEvent();
 
@@ -23,7 +21,6 @@ export function AuthProvider(props: React.PropsWithChildren) {
   );
 
   useAuthChangeListener({
-    appHomePath: pathsConfig.app.home,
     onEvent,
   });
 

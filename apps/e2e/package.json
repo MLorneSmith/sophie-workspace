@@ -11,9 +11,9 @@
   },
   "author": "Makerkit",
   "devDependencies": {
-    "@playwright/test": "^1.55.1",
-    "@supabase/supabase-js": "2.58.0",
-    "@types/node": "^24.6.2",
+    "@playwright/test": "^1.56.1",
+    "@supabase/supabase-js": "2.76.1",
+    "@types/node": "catalog:",
     "dotenv": "17.2.3",
     "node-html-parser": "^7.0.1",
     "totp-generator": "^2.0.0"

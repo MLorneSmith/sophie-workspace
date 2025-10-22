@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-
-import { usePathname } from 'next/navigation';
+import { useEffect, useEffectEvent } from 'react';
 
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -12,7 +10,13 @@ import { useSupabase } from './use-supabase';
  * @name PRIVATE_PATH_PREFIXES
  * @description A list of private path prefixes
  */
-const PRIVATE_PATH_PREFIXES = ['/home', '/admin', '/join', '/update-password'];
+const PRIVATE_PATH_PREFIXES = [
+  '/home',
+  '/admin',
+  '/join',
+  '/identities',
+  '/update-password',
+];
 
 /**
  * @name AUTH_PATHS
@@ -28,19 +32,23 @@ const AUTH_PATHS = ['/auth'];
  */
 export function useAuthChangeListener({
   privatePathPrefixes = PRIVATE_PATH_PREFIXES,
-  appHomePath,
   onEvent,
 }: {
-  appHomePath: string;
   privatePathPrefixes?: string[];
   onEvent?: (event: AuthChangeEvent, user: Session | null) => void;
 }) {
   const client = useSupabase();
-  const pathName = usePathname();
 
-  useEffect(() => {
+  const setupAuthListener = useEffectEvent(() => {
+    // don't run on the server
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     // keep this running for the whole session unless the component was unmounted
-    const listener = client.auth.onAuthStateChange((event, user) => {
+    return client.auth.onAuthStateChange((event, user) => {
+      const pathName = window.location.pathname;
+
       if (onEvent) {
         onEvent(event, user);
       }
@@ -68,10 +76,16 @@ export function useAuthChangeListener({
         window.location.reload();
       }
     });
+  });
+
+  useEffect(() => {
+    const listener = setupAuthListener();
 
     // destroy listener on un-mounts
-    return () => listener.data.subscription.unsubscribe();
-  }, [client.auth, pathName, appHomePath, privatePathPrefixes, onEvent]);
+    return () => {
+      listener?.data.subscription.unsubscribe();
+    };
+  }, []);
 }
 
 /**

@@ -29,22 +29,15 @@ test.describe('Password Reset Flow', () => {
         subject: 'Reset your password',
       });
 
-      await page.waitForURL('/update-password');
+      await page.waitForURL(new RegExp('/update-password?.*'));
 
       await auth.updatePassword(newPassword);
-
-      await page
-        .locator('a', {
-          hasText: 'Back to Home Page',
-        })
-        .click();
 
       await page.waitForURL('/home');
     }).toPass();
 
     await page.context().clearCookies();
-
-    await page.waitForURL('/');
+    await page.reload();
     await page.goto('/auth/sign-in');
 
     await auth.loginAsUser({

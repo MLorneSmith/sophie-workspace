@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnDef } from '@tanstack/react-table';
 import { EllipsisVertical } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Tables } from '@kit/supabase/database';
@@ -103,6 +103,8 @@ function AccountsTableFilters(props: {
     router.push(url);
   };
 
+  const type = useWatch({ control: form.control, name: 'type' });
+
   return (
     <Form {...form}>
       <form
@@ -110,7 +112,7 @@ function AccountsTableFilters(props: {
         onSubmit={form.handleSubmit((data) => onSubmit(data))}
       >
         <Select
-          value={form.watch('type')}
+          value={type}
           onValueChange={(value) => {
             form.setValue(
               'type',

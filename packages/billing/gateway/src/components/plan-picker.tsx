@@ -316,7 +316,7 @@ export function PlanPicker(
 
                             <div
                               className={
-                                'flex flex-col gap-y-3 lg:flex-row lg:items-center lg:space-x-4 lg:space-y-0 lg:text-right'
+                                'flex flex-col gap-y-3 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4 lg:text-right'
                               }
                             >
                               <div>
@@ -415,6 +415,7 @@ function PlanDetails({
   const isRecurring = selectedPlan.paymentType === 'recurring';
 
   // trick to force animation on re-render
+  // eslint-disable-next-line react-hooks/purity
   const key = Math.random();
 
   return (

@@ -14,6 +14,7 @@ import { Heading } from '@kit/ui/heading';
 import { Trans } from '@kit/ui/trans';
 
 import { AppLogo } from '~/components/app-logo';
+import authConfig from '~/config/auth.config';
 import pathsConfig from '~/config/paths.config';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
@@ -21,6 +22,7 @@ import { withI18n } from '~/lib/i18n/with-i18n';
 interface JoinTeamAccountPageProps {
   searchParams: Promise<{
     invite_token?: string;
+    type?: 'invite' | 'magic-link';
     email?: string;
   }>;
 }
@@ -127,6 +129,26 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
     invitation.account.slug,
   );
 
+  // Determine if we should show the account setup step (Step 2)
+  // Decision logic:
+  // 1. Only show for new accounts (linkType === 'invite')
+  // 2. Only if we have auth options available (password OR OAuth)
+  // 3. Users can always skip and set up auth later in account settings
+  const linkType = searchParams.type;
+  const supportsPasswordSignUp = authConfig.providers.password;
+  const supportsOAuthProviders = authConfig.providers.oAuth.length > 0;
+  const isNewAccount = linkType === 'invite';
+
+  const shouldSetupAccount =
+    isNewAccount && (supportsPasswordSignUp || supportsOAuthProviders);
+
+  // Determine redirect destination after joining:
+  // - If shouldSetupAccount: redirect to /identities with next param (Step 2)
+  // - Otherwise: redirect directly to team home (skip Step 2)
+  const nextPath = shouldSetupAccount
+    ? `/identities?next=${encodeURIComponent(accountHome)}`
+    : accountHome;
+
   const email = auth.data.email ?? '';
 
   return (
@@ -137,7 +159,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
         invitation={invitation}
         paths={{
           signOutNext,
-          accountHome,
+          nextPath,
         }}
       />
     </AuthLayoutShell>

@@ -28,9 +28,7 @@ const config = {
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: INTERNAL_PACKAGES,
-  images: {
-    remotePatterns: getRemotePatterns(),
-  },
+  images: getImagesConfig(),
   logging: {
     fetches: {
       fullUrl: true,
@@ -52,10 +50,10 @@ const config = {
       : {
           position: 'bottom-right',
         },
+  reactCompiler: ENABLE_REACT_COMPILER,
   experimental: {
     mdxRs: true,
-    reactCompiler: ENABLE_REACT_COMPILER,
-    clientSegmentCache: true,
+    turbopackFileSystemCacheForDev: true,
     optimizePackageImports: [
       'recharts',
       'lucide-react',
@@ -72,7 +70,6 @@ const config = {
     },
   },
   /** We already do linting and typechecking as separate tasks in CI */
-  eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
 };
 
@@ -80,8 +77,8 @@ export default withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })(config);
 
-function getRemotePatterns() {
-  /** @type {import('next').NextConfig['remotePatterns']} */
+/** @returns {import('next').NextConfig['images']} */
+function getImagesConfig() {
   const remotePatterns = [];
 
   if (SUPABASE_URL) {
@@ -93,18 +90,28 @@ function getRemotePatterns() {
     });
   }
 
-  return IS_PRODUCTION
-    ? remotePatterns
-    : [
-        {
-          protocol: 'http',
-          hostname: '127.0.0.1',
-        },
-        {
-          protocol: 'http',
-          hostname: 'localhost',
-        },
-      ];
+  if (IS_PRODUCTION) {
+    return {
+      remotePatterns,
+    };
+  }
+
+  remotePatterns.push(
+    ...[
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
+  );
+
+  return {
+    remotePatterns,
+  };
 }
 
 async function getRedirects() {

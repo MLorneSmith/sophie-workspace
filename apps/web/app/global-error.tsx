@@ -26,14 +26,14 @@ const GlobalErrorPage = ({
     <html lang="en">
       <body>
         <RootProviders>
-          <GlobalErrorPageContent reset={reset} />
+          <GlobalErrorContent reset={reset} />
         </RootProviders>
       </body>
     </html>
   );
 };
 
-function GlobalErrorPageContent({ reset }: { reset: () => void }) {
+function GlobalErrorContent({ reset }: { reset: () => void }) {
   const user = useUser();
 
   return (

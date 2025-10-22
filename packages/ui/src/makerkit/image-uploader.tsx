@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Image as ImageIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -44,25 +44,21 @@ export function ImageUploader(
     [props],
   );
 
-  const Input = () => (
-    <ImageUploadInput
-      {...control}
-      accept={'image/*'}
-      className={'absolute h-full w-full'}
-      visible={false}
-      multiple={false}
-      onValueChange={onValueChange}
-    />
-  );
-
-  useEffect(() => {
+  if (props.value !== image) {
     setImage(props.value);
-  }, [props.value]);
+  }
 
   if (!image) {
     return (
       <FallbackImage descriptionSection={props.children}>
-        <Input />
+        <ImageUploadInput
+          {...control}
+          accept={'image/*'}
+          className={'absolute h-full w-full'}
+          visible={false}
+          multiple={false}
+          onValueChange={onValueChange}
+        />
       </FallbackImage>
     );
   }
@@ -84,7 +80,14 @@ export function ImageUploader(
           alt={''}
         />
 
-        <Input />
+        <ImageUploadInput
+          {...control}
+          accept={'image/*'}
+          className={'absolute h-full w-full'}
+          visible={false}
+          multiple={false}
+          onValueChange={onValueChange}
+        />
       </label>
 
       <div>

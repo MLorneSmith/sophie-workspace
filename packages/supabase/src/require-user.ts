@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { AMREntry, SupabaseClient } from '@supabase/supabase-js';
 
 import { checkRequiresMultiFactorAuthentication } from './check-requires-mfa';
 import { JWTUserData } from './types';
@@ -24,6 +24,7 @@ type UserClaims = {
   aal: `aal1` | `aal2`;
   session_id: string;
   is_anonymous: boolean;
+  amr: AMREntry[];
 };
 
 /**
@@ -97,6 +98,7 @@ export async function requireUser(
       app_metadata: user.app_metadata,
       user_metadata: user.user_metadata,
       id: user.sub,
+      amr: user.amr,
     },
   };
 }

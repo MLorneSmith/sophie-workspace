@@ -13,7 +13,12 @@ export type Translations = {
 
 export async function loadTranslations() {
   const localesPath = join(process.cwd(), '../web/public/locales');
-  const locales = readdirSync(localesPath);
+  const localesDirents = readdirSync(localesPath, { withFileTypes: true });
+
+  const locales = localesDirents
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+
   const translations: Translations = {};
 
   for (const locale of locales) {

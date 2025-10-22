@@ -19,10 +19,10 @@ const features = {
 const providers = authConfig.providers.oAuth;
 
 const callbackPath = pathsConfig.auth.callback;
-const accountHomePath = pathsConfig.app.accountHome;
+const accountSettingsPath = pathsConfig.app.accountSettings;
 
 const paths = {
-  callback: callbackPath + `?next=${accountHomePath}`,
+  callback: callbackPath + `?next=${accountSettingsPath}`,
 };
 
 export const generateMetadata = async () => {

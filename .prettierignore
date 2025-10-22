@@ -2,3 +2,7 @@ database.types.ts
 playwright-report
 *.hbs
 *.md
+dist
+build
+.next
+next-env.d.ts
