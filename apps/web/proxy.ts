@@ -1,7 +1,8 @@
 import type { NextRequest } from 'next/server';
-import { NextResponse, URLPattern } from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { CsrfError, createCsrfProtect } from '@edge-csrf/nextjs';
+import { URLPattern } from 'node:url';
 
 import { isSuperAdmin } from '@kit/admin';
 import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
