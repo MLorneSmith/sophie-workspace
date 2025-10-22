@@ -2,7 +2,6 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { CsrfError, createCsrfProtect } from '@edge-csrf/nextjs';
-import { URLPattern } from 'node:url';
 
 import { isSuperAdmin } from '@kit/admin';
 import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
@@ -36,7 +35,7 @@ export async function proxy(request: NextRequest) {
   const csrfResponse = await withCsrfMiddleware(request, response);
 
   // handle patterns for specific routes
-  const handlePattern = matchUrlPattern(request.url);
+  const handlePattern = await matchUrlPattern(request.url);
 
   // if a pattern handler exists, call it
   if (handlePattern) {
@@ -130,7 +129,14 @@ async function adminMiddleware(request: NextRequest, response: NextResponse) {
 /**
  * Define URL patterns and their corresponding handlers.
  */
-function getPatterns() {
+async function getPatterns() {
+  let URLPattern = globalThis.URLPattern;
+
+  if (!URLPattern) {
+    const { URLPattern: polyfill } = await import('urlpattern-polyfill');
+    URLPattern = polyfill as typeof URLPattern;
+  }
+
   return [
     {
       pattern: new URLPattern({ pathname: '/admin/*?' }),
@@ -195,8 +201,8 @@ function getPatterns() {
  * Match URL patterns to specific handlers.
  * @param url
  */
-function matchUrlPattern(url: string) {
-  const patterns = getPatterns();
+async function matchUrlPattern(url: string) {
+  const patterns = await getPatterns();
   const input = url.split('?')[0];
 
   for (const pattern of patterns) {

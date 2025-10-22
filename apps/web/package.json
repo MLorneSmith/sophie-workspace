@@ -70,6 +70,7 @@
     "react-i18next": "^16.1.4",
     "recharts": "2.15.3",
     "tailwind-merge": "^3.3.1",
+    "urlpattern-polyfill": "^10.1.0",
     "zod": "^3.25.74"
   },
   "devDependencies": {
