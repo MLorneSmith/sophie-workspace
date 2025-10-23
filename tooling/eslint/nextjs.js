@@ -1,17 +1,10 @@
-import { FlatCompat } from '@eslint/eslintrc';
+import nextCoreVitals from 'eslint-config-next/core-web-vitals';
+import nextTypescript from 'eslint-config-next/typescript';
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
+const nextEslintConfig = [...nextCoreVitals, ...nextTypescript];
 
-const nextEslintConfig = [
-  ...compat.config({
-    extends: ['next/core-web-vitals', 'next/typescript'],
-    rules: {
-      '@next/next/no-html-link-for-pages': 'off',
-      'no-undef': 'off',
-    },
-  }),
-];
+const rules = {
+  '@next/next/no-html-link-for-pages': 'off',
+};
 
-export default nextEslintConfig;
+export { nextEslintConfig, rules };

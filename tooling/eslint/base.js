@@ -1,14 +1,12 @@
 import { defineConfig } from '@eslint/config-helpers';
 import eslint from '@eslint/js';
 import turbo from 'eslint-config-turbo';
-import tsEsLint from 'typescript-eslint';
 
-import nextConfig from './nextjs.js';
+import { nextEslintConfig, rules as nextjsEslintRules } from './nextjs.js';
 
 export default defineConfig(
   eslint.configs.recommended,
-  tsEsLint.configs.recommended,
-  nextConfig,
+  ...nextEslintConfig,
   {
     plugins: {
       turbo,
@@ -26,6 +24,8 @@ export default defineConfig(
   },
   {
     rules: {
+      ...nextjsEslintRules,
+      'no-undef': 'off',
       '@typescript-eslint/triple-slash-reference': 'off',
       'react/react-in-jsx-scope': 'off',
       'import/no-anonymous-default-export': 'off',
