@@ -67,6 +67,7 @@ function CaptchaFieldWithForm<
 >(
 	props: ReactHookFormCaptchaFieldProps<TFieldValues, TName> & {
 		instanceRef: React.RefObject<TurnstileInstance | null>;
+		siteKey: string; // Override to narrow type - parent already guards against undefined
 	},
 ) {
 	const { siteKey, options, nonce, control, name, instanceRef } = props;
@@ -112,6 +113,7 @@ function CaptchaFieldWithForm<
 function CaptchaFieldStandalone(
 	props: StandaloneCaptchaFieldProps & {
 		instanceRef: React.RefObject<TurnstileInstance | null>;
+		siteKey: string; // Override to narrow type - parent already guards against undefined
 	},
 ) {
 	const {
@@ -171,9 +173,22 @@ export function CaptchaField<
 	}
 
 	// Route to appropriate internal component based on props
+	// At this point, siteKey is guaranteed to be a non-empty string
 	if ("control" in props && props.control) {
-		return <CaptchaFieldWithForm {...props} instanceRef={instanceRef} />;
+		return (
+			<CaptchaFieldWithForm
+				{...props}
+				siteKey={siteKey}
+				instanceRef={instanceRef}
+			/>
+		);
 	}
 
-	return <CaptchaFieldStandalone {...props} instanceRef={instanceRef} />;
+	return (
+		<CaptchaFieldStandalone
+			{...props}
+			siteKey={siteKey}
+			instanceRef={instanceRef}
+		/>
+	);
 }
