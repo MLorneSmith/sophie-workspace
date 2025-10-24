@@ -48,7 +48,7 @@ export function PricingTable({
 	}>;
 }) {
 	const intervals = getPlanIntervals(config).filter(Boolean) as Interval[];
-	const [interval, setInterval] = useState(intervals[0] ?? "month");
+	const [interval, setInterval] = useState(intervals[0]!);
 
 	// Always filter out hidden products
 	const visibleProducts = config.products.filter((product) => !product.hidden);
@@ -152,7 +152,7 @@ function PricingItem(
 	}>,
 ) {
 	const highlighted = props.product.highlighted ?? false;
-	const lineItem = props.primaryLineItem;
+	const lineItem = props.primaryLineItem!;
 	const isCustom = props.plan.custom ?? false;
 
 	// we exclude flat line items from the details since
@@ -220,19 +220,17 @@ function PricingItem(
 						displayBillingPeriod={!props.plan.label}
 					>
 						<If
-							condition={!isCustom && lineItem}
+							condition={!isCustom}
 							fallback={
 								<Trans i18nKey={props.plan.label} defaults={props.plan.label} />
 							}
 						>
-							{(lineItem) => (
-								<PlanCostDisplay
-									primaryLineItem={lineItem}
-									currencyCode={props.product.currency}
-									interval={interval}
-									alwaysDisplayMonthlyPrice={props.alwaysDisplayMonthlyPrice}
-								/>
-							)}
+							<PlanCostDisplay
+								primaryLineItem={lineItem}
+								currencyCode={props.product.currency}
+								interval={interval}
+								alwaysDisplayMonthlyPrice={props.alwaysDisplayMonthlyPrice}
+							/>
 						</If>
 					</Price>
 
@@ -423,7 +421,7 @@ function PlanIntervalSwitcher(
 				const selected = plan === props.interval;
 
 				const className = cn(
-					"animate-in fade-in !outline-hidden rounded-full transition-all focus:!ring-0",
+					"animate-in fade-in rounded-full !outline-hidden transition-all focus:!ring-0",
 					{
 						"border-r-transparent": index === 0,
 						"hover:text-primary text-muted-foreground": !selected,

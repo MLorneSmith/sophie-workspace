@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import { useCaptchaToken } from "../captcha/client";
+import { useCaptcha } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { TermsAndConditionsFormField } from "./terms-and-conditions-form-field";
 
@@ -31,16 +31,18 @@ export function MagicLinkAuthContainer({
 	shouldCreateUser,
 	defaultValues,
 	displayTermsCheckbox,
+	captchaSiteKey,
 }: {
 	redirectUrl: string;
 	shouldCreateUser: boolean;
 	displayTermsCheckbox?: boolean;
+	captchaSiteKey?: string;
 
 	defaultValues?: {
 		email: string;
 	};
 }) {
-	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+	const captcha = useCaptcha({ siteKey: captchaSiteKey });
 	const { t } = useTranslation();
 	const signInWithOtpMutation = useSignInWithOtp();
 	const appEvents = useAppEvents();
@@ -67,7 +69,7 @@ export function MagicLinkAuthContainer({
 				email,
 				options: {
 					emailRedirectTo,
-					captchaToken,
+					captchaToken: captcha.token,
 					shouldCreateUser,
 				},
 			});
@@ -90,7 +92,7 @@ export function MagicLinkAuthContainer({
 			error: t("auth:errors.linkTitle"),
 		});
 
-		resetCaptchaToken();
+		captcha.reset();
 	};
 
 	if (signInWithOtpMutation.data) {
@@ -104,6 +106,8 @@ export function MagicLinkAuthContainer({
 					<If condition={signInWithOtpMutation.error}>
 						<ErrorAlert />
 					</If>
+
+					{captcha.field}
 
 					<FormField
 						render={({ field }) => (

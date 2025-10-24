@@ -6,8 +6,7 @@ This file contains instructions for working with Next.js utilities including ser
 
 - Don't use Server Actions for data-fetching, use for mutations only
 - Best Practice: Keep actions light, move business logic to ad-hoc services
-- Authorization logic must be defined in RLS and DB, not Server Actions or application code
-  (unless using the admin client, use sparingly!)
+- Authorization logic must be defined in RLS and DB, not Server Actions or application code (unless using the admin client, use sparinlgy!)
 - Do not expose sensitive data
 - Log async operations
 - Validate body with Zod
@@ -43,7 +42,7 @@ export function createNotesService() {
 class NotesService {
   createNote(data: z.infer<CreateNoteSchema>) {
     const client = getSupabaseServerClient();
-
+    
     const { data: note, error } = await client
       .from('notes')
       .insert({
@@ -54,7 +53,7 @@ class NotesService {
       })
       .select()
       .single();
-
+    
     if (error) {
       throw error;
     }
@@ -74,16 +73,16 @@ export const createNoteAction = enhanceAction(
   async function (data, user) {
     // data is automatically validated against the schema
     // user is automatically authenticated if auth: true
-
+    
     const service = createNotesService();
     const logger = await getLogger();
 
     logger.info({
       userId: user.id,
     }, `Creating note...`);
-
+    
     const { data: note, error } = await service.createNote(data);
-
+    
     if (error) {
       logger.error({
         error: error.message
@@ -95,10 +94,10 @@ export const createNoteAction = enhanceAction(
     logger.info({
       noteId: note.id
     }, `Note successfully created`);
-
+    
     return {
       success: true,
-      note
+      note 
     };
   },
   {
@@ -106,7 +105,7 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema, // Validate input with Zod
   },
 );
-```text
+```
 
 ### Server Action Examples
 
@@ -120,7 +119,7 @@ export const myAction = enhanceAction(
   async function (data, user) {
     // data: validated input data
     // user: authenticated user (if auth: true)
-
+    
     return { success: true };
   },
   {
@@ -129,7 +128,7 @@ export const myAction = enhanceAction(
     // Additional options available
   },
 );
-```text
+```
 
 ## Route Handlers (API Routes)
 
@@ -159,9 +158,9 @@ export const POST = enhanceRouteHandler(
     // body is validated against schema
     // user is available if auth: true
     // request is the original NextRequest
-
+    
     const client = getSupabaseServerClient();
-
+    
     const { data, error } = await client
       .from('items')
       .insert({
@@ -171,14 +170,14 @@ export const POST = enhanceRouteHandler(
       })
       .select()
       .single();
-
+    
     if (error) {
       return NextResponse.json(
         { error: 'Failed to create item' },
         { status: 500 }
       );
     }
-
+    
     return NextResponse.json({ success: true, data });
   },
   {
@@ -191,22 +190,22 @@ export const GET = enhanceRouteHandler(
   async function ({ user, request }) {
     const url = new URL(request.url);
     const limit = url.searchParams.get('limit') || '10';
-
+    
     const client = getSupabaseServerClient();
-
+    
     const { data, error } = await client
       .from('items')
       .select('*')
       .eq('user_id', user.id)
       .limit(parseInt(limit));
-
+    
     if (error) {
       return NextResponse.json(
         { error: 'Failed to fetch items' },
         { status: 500 }
       );
     }
-
+    
     return NextResponse.json({ data });
   },
   {
@@ -214,7 +213,7 @@ export const GET = enhanceRouteHandler(
     // No schema needed for GET requests
   },
 );
-```text
+```
 
 ### Route Handler Options
 
@@ -230,7 +229,7 @@ export const POST = enhanceRouteHandler(
     // Additional options available
   },
 );
-```text
+```
 
 ## Revalidation
 
@@ -246,12 +245,12 @@ export const createNoteAction = enhanceAction(
   async function (data, user) {
     const logger = await getLogger();
     const ctx = { name: 'create-note', userId: user.id };
-
+    
     try {
       logger.info(ctx, 'Creating note');
-
+      
       const client = getSupabaseServerClient();
-
+      
       const { data: note, error } = await client
         .from('notes')
         .insert({
@@ -261,14 +260,14 @@ export const createNoteAction = enhanceAction(
         })
         .select()
         .single();
-
+      
       if (error) {
         logger.error({ ...ctx, error }, 'Failed to create note');
         throw error;
       }
-
+      
       logger.info({ ...ctx, noteId: note.id }, 'Note created successfully');
-
+      
       return { success: true, note };
     } catch (error) {
       if (!isRedirectError(error)) {
@@ -282,7 +281,8 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema,
   },
 );
-```text
+```
+
 
 ### Server Action Redirects - Client Handling
 
@@ -302,7 +302,6 @@ async function handleSubmit(formData: FormData) {
     }
   }
 }
-```text
 
 ### Route Handler with Error Handling
 
@@ -311,26 +310,26 @@ export const POST = enhanceRouteHandler(
   async function ({ body, user }) {
     const logger = await getLogger();
     const ctx = { name: 'api-create-item', userId: user.id };
-
+    
     try {
       logger.info(ctx, 'Processing API request');
-
+      
       // Process request
       const result = await processRequest(body, user);
-
+      
       logger.info({ ...ctx, result }, 'API request successful');
-
+      
       return NextResponse.json({ success: true, data: result });
     } catch (error) {
       logger.error({ ...ctx, error }, 'API request failed');
-
+      
       if (error.message.includes('validation')) {
         return NextResponse.json(
           { error: 'Invalid input data' },
           { status: 400 }
         );
       }
-
+      
       return NextResponse.json(
         { error: 'Internal server error' },
         { status: 500 }
@@ -342,7 +341,7 @@ export const POST = enhanceRouteHandler(
     schema: CreateItemSchema,
   },
 );
-```text
+```
 
 ## Client-Side Integration
 
@@ -362,7 +361,7 @@ import { CreateNoteSchema } from './schemas';
 
 function CreateNoteForm() {
   const [isPending, startTransition] = useTransition();
-
+  
   const form = useForm({
     resolver: zodResolver(CreateNoteSchema),
     defaultValues: {
@@ -370,12 +369,12 @@ function CreateNoteForm() {
       content: '',
     },
   });
-
+  
   const onSubmit = (data) => {
     startTransition(async () => {
       try {
         const result = await createNoteAction(data);
-
+        
         if (result.success) {
           toast.success('Note created successfully!');
           form.reset();
@@ -386,18 +385,18 @@ function CreateNoteForm() {
       }
     });
   };
-
+  
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       {/* Form fields */}
-
+      
       <Button type="submit" disabled={isPending}>
         {isPending ? 'Creating...' : 'Create Note'}
       </Button>
     </form>
   );
 }
-```text
+```
 
 NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
 
@@ -414,12 +413,12 @@ async function createItem(data: CreateItemInput) {
     },
     body: JSON.stringify(data),
   });
-
+  
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.message || 'Failed to create item');
   }
-
+  
   return response.json();
 }
 
@@ -434,78 +433,41 @@ const handleCreateItem = async (data) => {
     throw error;
   }
 };
-```text
+```
 
-## Security Best Practices
-
-### Input Validation
-
-Always use Zod schemas for input validation:
-
-```typescript
-// Define strict schemas
-const UpdateUserSchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email(),
-  age: z.number().int().min(18).max(120),
-});
-
-// Server action with validation
-export const updateUserAction = enhanceAction(
-  async function (data, user) {
-    // data is guaranteed to match the schema
-    // Additional business logic validation can go here
-
-    if (data.email !== user.email) {
-      // Check if email change is allowed
-      const canChangeEmail = await checkEmailChangePermission(user);
-      if (!canChangeEmail) {
-        throw new Error('Email change not allowed');
-      }
-    }
-
-    // Update user
-    return await updateUser(user.id, data);
-  },
-  {
-    auth: true,
-    schema: UpdateUserSchema,
-  },
-);
-```text
 ### Authorization Checks
 
 ```typescript
 export const deleteAccountAction = enhanceAction(
   async function (data, user) {
     const client = getSupabaseServerClient();
-
+    
     // Verify user owns the account
     const { data: account, error } = await client
       .from('accounts')
       .select('id, primary_owner_user_id')
       .eq('id', data.accountId)
       .single();
-
+    
     if (error || !account) {
       throw new Error('Account not found');
     }
-
+    
     if (account.primary_owner_user_id !== user.id) {
       throw new Error('Only account owners can delete accounts');
     }
-
+    
     // Additional checks
     const hasActiveSubscription = await client
       .rpc('has_active_subscription', { account_id: data.accountId });
-
+    
     if (hasActiveSubscription) {
       throw new Error('Cannot delete account with active subscription');
     }
-
+    
     // Proceed with deletion
     await deleteAccount(data.accountId);
-
+    
     return { success: true };
   },
   {
@@ -513,6 +475,4 @@ export const deleteAccountAction = enhanceAction(
     schema: DeleteAccountSchema,
   },
 );
-```text
-
-This ensures consistent security and monitoring across all server actions and API routes.
+```

@@ -5,7 +5,7 @@ import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 
-import { useCaptchaToken } from "../captcha/client";
+import { useCaptcha } from "../captcha/client";
 import { usePasswordSignUpFlow } from "../hooks/use-sign-up-flow";
 import { AuthErrorAlert } from "./auth-error-alert";
 import { PasswordSignUpForm } from "./password-sign-up-form";
@@ -17,6 +17,7 @@ interface EmailPasswordSignUpContainerProps {
 	};
 	onSignUp?: (userId?: string) => unknown;
 	emailRedirectTo: string;
+	captchaSiteKey?: string;
 }
 
 export function EmailPasswordSignUpContainer({
@@ -24,8 +25,9 @@ export function EmailPasswordSignUpContainer({
 	onSignUp,
 	emailRedirectTo,
 	displayTermsCheckbox,
+	captchaSiteKey,
 }: EmailPasswordSignUpContainerProps) {
-	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+	const captcha = useCaptcha({ siteKey: captchaSiteKey });
 
 	const {
 		signUp: onSignupRequested,
@@ -35,8 +37,8 @@ export function EmailPasswordSignUpContainer({
 	} = usePasswordSignUpFlow({
 		emailRedirectTo,
 		onSignUp,
-		captchaToken,
-		resetCaptchaToken,
+		captchaToken: captcha.token,
+		resetCaptchaToken: captcha.reset,
 	});
 
 	return (
@@ -47,6 +49,8 @@ export function EmailPasswordSignUpContainer({
 
 			<If condition={!showVerifyEmailAlert}>
 				<AuthErrorAlert error={error} />
+
+				{captcha.field}
 
 				<PasswordSignUpForm
 					onSubmit={onSignupRequested}

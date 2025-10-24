@@ -27,7 +27,7 @@ import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -224,12 +224,16 @@ function FactorsListContainer({
 
 	const isSuccess = factors && !isLoading && !error;
 
+	const signOutFn = useEffectEvent(() => {
+		void signOut.mutateAsync();
+	});
+
 	useEffect(() => {
 		// If there is an error, sign out
 		if (error) {
-			void signOut.mutateAsync();
+			void signOutFn();
 		}
-	}, [error, signOut]);
+	}, [error, signOutFn]);
 
 	useEffect(() => {
 		// If there is only one factor, select it automatically

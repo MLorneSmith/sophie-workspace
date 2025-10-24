@@ -25,7 +25,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { useCaptchaToken } from "../captcha/client";
+import { useCaptcha } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
 
@@ -34,6 +34,7 @@ const OtpSchema = z.object({ token: z.string().min(6).max(6) });
 
 type OtpSignInContainerProps = {
 	shouldCreateUser: boolean;
+	captchaSiteKey?: string;
 };
 
 export function OtpSignInContainer(props: OtpSignInContainerProps) {
@@ -86,6 +87,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 		return (
 			<OtpEmailForm
 				shouldCreateUser={shouldCreateUser}
+				captchaSiteKey={props.captchaSiteKey}
 				onSendOtp={(email) => {
 					otpForm.setValue("email", email, {
 						shouldValidate: true,
@@ -172,12 +174,14 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 
 function OtpEmailForm({
 	shouldCreateUser,
+	captchaSiteKey,
 	onSendOtp,
 }: {
 	shouldCreateUser: boolean;
+	captchaSiteKey?: string;
 	onSendOtp: (email: string) => void;
 }) {
-	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+	const captcha = useCaptcha({ siteKey: captchaSiteKey });
 	const signInMutation = useSignInWithOtp();
 
 	const emailForm = useForm({
@@ -188,10 +192,10 @@ function OtpEmailForm({
 	const handleSendOtp = async ({ email }: z.infer<typeof EmailSchema>) => {
 		await signInMutation.mutateAsync({
 			email,
-			options: { captchaToken, shouldCreateUser },
+			options: { captchaToken: captcha.token, shouldCreateUser },
 		});
 
-		resetCaptchaToken();
+		captcha.reset();
 		onSendOtp(email);
 	};
 
@@ -202,6 +206,8 @@ function OtpEmailForm({
 				onSubmit={emailForm.handleSubmit(handleSendOtp)}
 			>
 				<AuthErrorAlert error={signInMutation.error} />
+
+				{captcha.field}
 
 				<FormField
 					name="email"

@@ -133,8 +133,7 @@ function getProviderName(providerId: string) {
 		value.slice(0, 1).toUpperCase() + value.slice(1);
 
 	if (providerId.endsWith(".com")) {
-		const parts = providerId.split(".com");
-		return capitalize(parts[0] ?? providerId);
+		return capitalize(providerId.split(".com")[0]!);
 	}
 
 	return capitalize(providerId);

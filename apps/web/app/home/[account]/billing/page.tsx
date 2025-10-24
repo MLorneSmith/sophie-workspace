@@ -45,17 +45,22 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 		await loadTeamAccountBillingPage(accountId);
 
 	const variantId = subscription?.items[0]?.variant_id;
+	const orderVariantId = order?.items[0]?.variant_id;
 
 	const subscriptionProductPlan = variantId
 		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
 		: undefined;
 
-	// orderProductPlan not needed - CurrentLifetimeOrderCard uses billingConfig directly
+	const orderProductPlan = orderVariantId
+		? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
+		: undefined;
 
 	const hasBillingData = subscription || order;
 
 	const canManageBilling =
 		workspace.account.permissions.includes("billing.manage");
+
+	const shouldShowBillingPortal = canManageBilling && customerId;
 
 	return (
 		<>
@@ -68,22 +73,24 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 			<PageBody>
 				<div className={cn("flex max-w-2xl flex-col space-y-4")}>
 					<If condition={!hasBillingData}>
-						<CheckoutSection
-							canManageBilling={canManageBilling}
-							customerId={customerId}
-							accountId={accountId}
-						/>
+						<If
+							condition={canManageBilling}
+							fallback={<CannotManageBillingAlert />}
+						>
+							<TeamAccountCheckoutForm
+								customerId={customerId}
+								accountId={accountId}
+							/>
+						</If>
 					</If>
 
 					<If condition={subscription}>
 						{(subscription) => {
-							if (!subscriptionProductPlan) return null;
-
 							return (
 								<CurrentSubscriptionCard
 									subscription={subscription}
-									product={subscriptionProductPlan.product}
-									plan={subscriptionProductPlan.plan}
+									product={subscriptionProductPlan?.product}
+									plan={subscriptionProductPlan?.plan}
 								/>
 							);
 						}}
@@ -94,18 +101,16 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							return (
 								<CurrentLifetimeOrderCard
 									order={order}
-									config={billingConfig}
+									product={orderProductPlan?.product}
+									plan={orderProductPlan?.plan}
 								/>
 							);
 						}}
 					</If>
 
-					<BillingPortalSection
-						canManageBilling={canManageBilling}
-						customerId={customerId}
-						accountId={accountId}
-						account={account}
-					/>
+					{shouldShowBillingPortal ? (
+						<BillingPortalForm accountId={accountId} account={account} />
+					) : null}
 				</div>
 			</PageBody>
 		</>
@@ -113,49 +118,6 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 }
 
 export default withI18n(TeamAccountBillingPage);
-
-function CheckoutSection({
-	canManageBilling,
-	customerId,
-	accountId,
-}: {
-	canManageBilling: boolean;
-	customerId: string | undefined;
-	accountId: string;
-}) {
-	if (!canManageBilling) {
-		return <CannotManageBillingAlert />;
-	}
-
-	return (
-		<TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
-	);
-}
-
-function BillingPortalSection({
-	canManageBilling,
-	customerId,
-	accountId,
-	account,
-}: {
-	canManageBilling: boolean;
-	customerId: string | undefined;
-	accountId: string;
-	account: string;
-}) {
-	if (!canManageBilling || !customerId) {
-		return null;
-	}
-
-	return (
-		<form action={createBillingPortalSession}>
-			<input type="hidden" name={"accountId"} value={accountId} />
-			<input type="hidden" name={"slug"} value={account} />
-
-			<BillingPortalCard />
-		</form>
-	);
-}
 
 function CannotManageBillingAlert() {
 	return (
@@ -170,5 +132,22 @@ function CannotManageBillingAlert() {
 				<Trans i18nKey={"billing:cannotManageBillingAlertDescription"} />
 			</AlertDescription>
 		</Alert>
+	);
+}
+
+function BillingPortalForm({
+	accountId,
+	account,
+}: {
+	accountId: string;
+	account: string;
+}) {
+	return (
+		<form action={createBillingPortalSession}>
+			<input type="hidden" name={"accountId"} value={accountId} />
+			<input type="hidden" name={"slug"} value={account} />
+
+			<BillingPortalCard />
+		</form>
 	);
 }
