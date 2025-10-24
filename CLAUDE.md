@@ -14,9 +14,9 @@ SlideHeroes - AI-powered presentation platform built with Next.js 15, Supabase, 
 
 ## Core Technologies
 
-- **Next.js 15** with App Router
+- **Next.js 16** with App Router
 - **Supabase** for database, auth, and storage
-- **React 19**
+- **React 19.2**
 - **TypeScript**
 - **Tailwind CSS 4**, Shadcn UI, Lucide React
 - **Turborepo**
@@ -107,9 +107,11 @@ When adding new database features, ALWAYS follow this exact order:
 4. **Generate types**: `pnpm supabase:web:typegen`
 5. **Verify types exist** before using in code
 
-⚠️ **NEVER skip step 2** - schema files alone don't create tables! The migration step is required to apply changes to the database.
+⚠️ **NEVER skip step 2** - schema files alone don't create tables! The migration
+step is required to apply changes to the database.
 
 **Migration vs Reset**:
+
 - Use `migration up` for normal development (applies only new migrations)
 - Use `reset` when you need a clean database state or have schema conflicts
 
@@ -130,6 +132,7 @@ pnpm typecheck
 - **Use schemas at runtime boundaries** - Validate all external data
 - **Tests use real schemas** - Import from main project, never redefine
 - **Single source of truth** - All domain schemas exported from shared locations
+
 ## Typescript
 
 - Write clean, clear, well-designed, explicit TypeScript
@@ -163,8 +166,9 @@ pnpm typecheck
 - Export page components using the `withI18n` utility
 - Add well-written page metadata to pages
 - Redirect using `redirect` following a server action instead of using client-side router
-- Since `redirect` throws an error, handle `catch` block using `isRedirectError` from `next/dist/client/components/redirect-error` in client-side forms when calling the server action
-
+- Since `redirect` throws an error, handle `catch` block using `isRedirectError`
+  from `next/dist/client/components/redirect-error` in client-side forms when
+  calling the server action
 
 ## Data Fetching Architecture
 
@@ -250,7 +254,8 @@ export const createProject = enhanceAction(
 ## File Organization Patterns
 
 ### Route Structure
-```
+
+```text
 apps/web/app/home/[account]/
 ├── page.tsx                    # Team dashboard
 ├── members/
@@ -275,6 +280,7 @@ apps/web/app/home/[account]/
 ```
 
 ### Naming Conventions
+
 - **Pages**: `page.tsx` (Next.js convention)
 - **Loaders**: `{feature}-page.loader.ts`
 - **Actions**: `{feature}-server-actions.ts`
@@ -337,7 +343,7 @@ Please use the Task tool to delegate suitable tasks to specialized sub-agents fo
 - `export PROJECT_ROOT=$(git rev-parse --show-toplevel)` - Set project root
 - `cp apps/web/.env.example apps/web/.env.test` - Copy environment file
 
-## Development Workflow
+## Code Quality & Testing
 
 ### Code Standards
 
@@ -469,7 +475,8 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 | `/testwriters/e2e-test-writer` | Generate E2E tests | Playwright-specific with Page Object Models |
 | `/testwriters/test-discovery` | Analyze missing tests | Foundational analysis used by other commands |
 
-**Design Principle**: Each command does one thing well (Unix philosophy). Consolidation would create unmaintainable 3000+ line mega-commands.
+**Design Principle**: Each command does one thing well (Unix philosophy).
+Consolidation would create unmaintainable 3000+ line mega-commands.
 
 ### Performance Monitoring
 
@@ -512,6 +519,7 @@ Send all tool calls in single message for parallel execution (3-5x faster).
 ## Verification Steps
 
 After implementation:
+
 1. **Run `pnpm typecheck`** - Must pass without errors
 2. **Run `pnpm lint:fix`** - Auto-fix issues
 3. **Run `pnpm format:fix`** - Format code
@@ -526,8 +534,10 @@ After implementation:
 - Use TodoWrite for complex task tracking
 - The project uses ES modules by default
 
-# important-instruction-reminders
+## Important Instruction Reminders
+
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+NEVER proactively create documentation files (*.md) or README files. Only create
+documentation files if explicitly requested by the User.
