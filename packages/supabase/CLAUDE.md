@@ -12,14 +12,22 @@ This file contains instructions for working with Supabase, database security, an
 ### The Required Workflow
 
 1. **Edit schema file** (e.g., `supabase/schemas/18-projects.sql`)
-2. **Generate migration**: 
-  - Either copy content from schema to migration with `pnpm --filter web supabase migrations new my-feature` and `cp apps/web/supabase/schemas/18-my-new-feature.sql apps/web/supabase/migrations/$(ls -t apps/web/supabase/migrations/ | head -n1)`. Ideal for **new** tables, enums, etc.
-  - or use `pnpm --filter web supabase:db:diff -f migration_name` (ideal when modifying existing entities)
-    - This compares your schema against the current database and creates a migration
+2. **Generate migration**:
+   - Either copy content from schema to migration with
+     `pnpm --filter web supabase migrations new my-feature` and
+     `cp apps/web/supabase/schemas/18-my-new-feature.sql`
+     `apps/web/supabase/migrations/$(ls -t apps/web/supabase/migrations/ | head -n1)`.
+     Ideal for **new** tables, enums, etc.
+   - or use `pnpm --filter web supabase:db:diff -f migration_name`
+     (ideal when modifying existing entities)
+     - This compares your schema against the current database and creates
+       a migration
 3. **Apply migration**: `pnpm --filter web supabase migrations up`
    - This actually executes the SQL changes in the database
 
-**⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database. You MUST generate and apply a migration for changes to take effect. Schema files are templates - migrations are the actual database operations.
+**⚠️ CRITICAL**: Editing a schema file alone does NOTHING to your database.
+You MUST generate and apply a migration for changes to take effect. Schema
+files are templates - migrations are the actual database operations.
 
 ## Database Security Guidelines ⚠️
 
@@ -28,10 +36,16 @@ This file contains instructions for working with Supabase, database security, an
 ### Database Security Fundamentals
 
 - **Always enable RLS** on new tables unless explicitly instructed otherwise
-- **NEVER use SECURITY DEFINER functions** without explicit access controls - they bypass RLS entirely
-- **Always use security_invoker=true for views** to maintain proper access control
-- **Storage buckets MUST validate access** using account_id in the path structure. See `apps/web/supabase/schemas/16-storage.sql` for proper implementation.
-- **Use locks if required**: Database locks prevent race conditions and timing attacks in concurrent operations. Make sure to take these into account for all database operations.
+- **NEVER use SECURITY DEFINER functions** without explicit access controls -
+  they bypass RLS entirely
+- **Always use security_invoker=true for views** to maintain proper access
+  control
+- **Storage buckets MUST validate access** using account_id in the path
+  structure. See `apps/web/supabase/schemas/16-storage.sql` for proper
+  implementation.
+- **Use locks if required**: Database locks prevent race conditions and timing
+  attacks in concurrent operations. Make sure to take these into account for
+  all database operations.
 
 ### Security Definer Function - Dangerous Pattern ❌
 
@@ -117,7 +131,8 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
   );
 ```
 
-- **Never modify database.types.ts**: Instead, use the Supabase CLI using our package.json scripts to re-generate the types after resetting the DB
+- **Never modify database.types.ts**: Instead, use the Supabase CLI using our
+  package.json scripts to re-generate the types after resetting the DB
 
 ## Type Generation
 
