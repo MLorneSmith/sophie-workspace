@@ -19,6 +19,8 @@ export default defineProject({
 		alias: {
 			// Mock Next.js modules for testing
 			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+			// Mock server-only to allow imports in test environment
+			"server-only": path.resolve(__dirname, "src/__mocks__/server-only.ts"),
 		},
 	},
 	esbuild: {
@@ -48,13 +50,8 @@ export default defineProject({
 		testTimeout: 10000, // 10 seconds max per test
 		hookTimeout: 10000,
 
-		// Project-specific thread pool settings
-		poolOptions: {
-			threads: {
-				isolate: true,
-				singleThread: false,
-			},
-		},
+		// Use forks pool for better stability in Vitest 4
+		pool: "forks" as const,
 
 		// Server-side module handling for SSR components
 		server: {

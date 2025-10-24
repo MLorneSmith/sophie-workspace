@@ -193,8 +193,13 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 		page,
 		context,
 	}) => {
-		// Clear any existing session - use context methods to avoid security errors
+		// Clear any existing session - clear all browser storage
 		await context.clearCookies();
+		await context.clearPermissions();
+		await page.evaluate(() => {
+			localStorage.clear();
+			sessionStorage.clear();
+		});
 
 		// Try to access protected routes
 		const protectedRoutes = [
@@ -205,11 +210,15 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 		];
 
 		for (const route of protectedRoutes) {
-			await page.goto(route, { waitUntil: "domcontentloaded" });
+			// Navigate with waitUntil networkidle to ensure proxy has processed
+			await page.goto(route, { waitUntil: "networkidle" });
 
 			// Should be redirected to sign-in page
-			await page.waitForURL(/\/auth\/sign-in/, { timeout: 10000 });
-			await expect(page).toHaveURL(/\/auth\/sign-in/);
+			// Use toPass() for reliability with proxy redirects
+			await expect(async () => {
+				const url = page.url();
+				expect(url).toMatch(/\/auth\/sign-in/);
+			}).toPass({ timeout: 15000, intervals: [500, 1000, 2000, 3000] });
 		}
 	});
 

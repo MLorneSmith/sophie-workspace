@@ -27,7 +27,7 @@
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"next": "15.5.4",
-		"react": "19.1.1",
+		"react": "19.2.0",
 		"zod": "^3.25.74"
 	},
 	"typesVersions": {

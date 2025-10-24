@@ -51,9 +51,15 @@ const mockPptxGen = {
 	},
 };
 
-vi.mock("pptxgenjs", () => ({
-	default: vi.fn(() => mockPptxGen),
-}));
+vi.mock("pptxgenjs", () => {
+	// biome-ignore lint/complexity/useArrowFunction: Constructor function required for 'new' operator
+	const MockPptxGenJS = vi.fn(function () {
+		return mockPptxGen;
+	});
+	return {
+		default: MockPptxGenJS,
+	};
+});
 
 import type { StoryboardData } from "../../types";
 import { LAYOUT_POSITIONS, PptxGenerator } from "./pptx-generator";

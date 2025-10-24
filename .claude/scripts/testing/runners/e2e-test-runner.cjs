@@ -23,12 +23,12 @@ function logError(message) {
 }
 
 /**
- * Stringify JSON with tab indentation for Biome compatibility
+ * Stringify JSON with tab indentation and trailing newline for Biome compatibility
  * @param {*} data - Data to stringify
- * @returns {string} JSON string with tab indentation
+ * @returns {string} JSON string with tab indentation and trailing newline
  */
 function stringifyWithTabs(data) {
-	return JSON.stringify(data, null, "\t");
+	return `${JSON.stringify(data, null, "\t")}\n`;
 }
 
 class E2ETestRunner {
@@ -1131,10 +1131,11 @@ class E2ETestRunner {
 				}
 			}
 
-			// Move intentional failures from failed to intentionalFailures
+			// Track intentional failures separately (do NOT subtract from failed count)
+			// The actual failure calculation happens in getSummary() to avoid double-subtraction
 			if (intentionalCount > 0) {
 				results.intentionalFailures = intentionalCount;
-				results.failed = Math.max(0, results.failed - intentionalCount);
+				// Keep results.failed as-is (total failures including intentional)
 			}
 		}
 
@@ -1278,6 +1279,17 @@ class E2ETestRunner {
 			setImmediate(async () => {
 				try {
 					await fs.writeFile(filePath, stringifyWithTabs(report), "utf8");
+
+					// Format with Biome to ensure compliance
+					try {
+						await execAsync(`npx biome format --write "${filePath}"`);
+					} catch (formatError) {
+						// Non-critical - log but don't fail
+						logError(
+							`Biome formatting failed for ${filename}: ${formatError.message}`,
+						);
+					}
+
 					log(`📝 Report generated: ${filename}`);
 
 					// Also generate a summary file that gets updated with each shard
@@ -1407,6 +1419,16 @@ class E2ETestRunner {
 
 			// Write updated summary
 			await fs.writeFile(summaryPath, stringifyWithTabs(summary), "utf8");
+
+			// Format with Biome to ensure compliance
+			try {
+				await execAsync(`npx biome format --write "${summaryPath}"`);
+			} catch (formatError) {
+				// Non-critical - log but don't fail
+				logError(
+					`Biome formatting failed for execution summary: ${formatError.message}`,
+				);
+			}
 		} catch (error) {
 			logError(`Failed to update execution summary: ${error.message}`);
 		}

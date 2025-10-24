@@ -29,13 +29,8 @@ export default defineProject({
 		testTimeout: 15000, // Longer timeout for potential DB operations
 		hookTimeout: 10000,
 
-		// Project-specific thread pool settings (safer for database operations)
-		poolOptions: {
-			threads: {
-				singleThread: true,
-				isolate: true,
-			},
-		},
+		// Use forks pool for database operations (safer in Vitest 4)
+		pool: "forks" as const,
 
 		// Server-side dependencies that need to be externalized (ESM only)
 		server: {
