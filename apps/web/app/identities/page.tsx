@@ -97,13 +97,7 @@ function IdentitiesStep(props: {
 			}
 			data-test="join-step-two"
 		>
-			<LinkAccountsList
-				providers={props.oAuthProviders}
-				showPasswordOption={props.showPasswordOption}
-				showEmailOption={props.showEmailOption}
-				redirectTo={props.nextPath}
-				enabled={props.enableIdentityLinking}
-			/>
+			<LinkAccountsList providers={props.oAuthProviders} />
 
 			<Button asChild data-test="skip-identities-button">
 				<Link href={props.nextPath}>

@@ -36,7 +36,6 @@ async function PersonalAccountBillingPage() {
 		await loadPersonalAccountBillingPageData(user.id);
 
 	const subscriptionVariantId = subscription?.items[0]?.variant_id;
-	const orderVariantId = order?.items[0]?.variant_id;
 
 	const subscriptionProductPlan =
 		subscription && subscriptionVariantId
@@ -45,11 +44,6 @@ async function PersonalAccountBillingPage() {
 					subscriptionVariantId,
 					subscription.currency,
 				)
-			: undefined;
-
-	const orderProductPlan =
-		order && orderVariantId
-			? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
 			: undefined;
 
 	const hasBillingData = subscription || order;
@@ -68,13 +62,16 @@ async function PersonalAccountBillingPage() {
 						fallback=<PersonalAccountCheckoutForm customerId={customerId} />
 					>
 						<div className={"flex w-full flex-col space-y-6"}>
-							<If condition={subscription}>
-								{(subscription) => {
+							<If condition={subscriptionProductPlan}>
+								{() => {
 									return (
 										<CurrentSubscriptionCard
-											subscription={subscription}
-											product={subscriptionProductPlan?.product}
-											plan={subscriptionProductPlan?.plan}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											subscription={subscription!}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											product={subscriptionProductPlan!.product}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											plan={subscriptionProductPlan!.plan}
 										/>
 									);
 								}}
@@ -85,8 +82,7 @@ async function PersonalAccountBillingPage() {
 									return (
 										<CurrentLifetimeOrderCard
 											order={order}
-											product={orderProductPlan?.product}
-											plan={orderProductPlan?.plan}
+											config={billingConfig}
 										/>
 									);
 								}}

@@ -45,14 +45,9 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 		await loadTeamAccountBillingPage(accountId);
 
 	const variantId = subscription?.items[0]?.variant_id;
-	const orderVariantId = order?.items[0]?.variant_id;
 
 	const subscriptionProductPlan = variantId
 		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
-		: undefined;
-
-	const orderProductPlan = orderVariantId
-		? await resolveProductPlan(billingConfig, orderVariantId, order.currency)
 		: undefined;
 
 	const hasBillingData = subscription || order;
@@ -84,13 +79,16 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 						</If>
 					</If>
 
-					<If condition={subscription}>
-						{(subscription) => {
+					<If condition={subscriptionProductPlan}>
+						{() => {
 							return (
 								<CurrentSubscriptionCard
-									subscription={subscription}
-									product={subscriptionProductPlan?.product}
-									plan={subscriptionProductPlan?.plan}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									subscription={subscription!}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									product={subscriptionProductPlan!.product}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									plan={subscriptionProductPlan!.plan}
 								/>
 							);
 						}}
@@ -101,8 +99,7 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 							return (
 								<CurrentLifetimeOrderCard
 									order={order}
-									product={orderProductPlan?.product}
-									plan={orderProductPlan?.plan}
+									config={billingConfig}
 								/>
 							);
 						}}
