@@ -27,7 +27,7 @@ import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useEffectEvent } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -66,14 +66,16 @@ export function MultiFactorChallengeContainer({
 		control: verificationCodeForm.control,
 	});
 
+	const handleSelectFactor = useCallback(
+		(factorId: string) => {
+			verificationCodeForm.setValue("factorId", factorId);
+		},
+		[verificationCodeForm],
+	);
+
 	if (!factorId) {
 		return (
-			<FactorsListContainer
-				userId={userId}
-				onSelect={(factorId) => {
-					verificationCodeForm.setValue("factorId", factorId);
-				}}
-			/>
+			<FactorsListContainer userId={userId} onSelect={handleSelectFactor} />
 		);
 	}
 
@@ -224,16 +226,16 @@ function FactorsListContainer({
 
 	const isSuccess = factors && !isLoading && !error;
 
-	const signOutFn = useEffectEvent(() => {
-		void signOut.mutateAsync();
-	});
+	// Use ref pattern instead of useEffectEvent for better compatibility
+	const signOutRef = useRef(signOut);
+	signOutRef.current = signOut;
 
 	useEffect(() => {
 		// If there is an error, sign out
 		if (error) {
-			void signOutFn();
+			void signOutRef.current.mutateAsync();
 		}
-	}, [error, signOutFn]);
+	}, [error]);
 
 	useEffect(() => {
 		// If there is only one factor, select it automatically
@@ -244,7 +246,7 @@ function FactorsListContainer({
 				onSelect(factorId);
 			}
 		}
-	});
+	}, [isSuccess, factors, onSelect]);
 
 	if (isLoading) {
 		return (
