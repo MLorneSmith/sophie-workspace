@@ -5,6 +5,9 @@
 
 const fs = require("node:fs").promises;
 const path = require("node:path");
+const { promisify } = require("node:util");
+const { exec } = require("node:child_process");
+const execAsync = promisify(exec);
 const { TestFailureAnalyzer } = require("./test-failure-analyzer.cjs");
 
 // Simple logging utility
@@ -14,12 +17,12 @@ function log(message, type = "info") {
 }
 
 /**
- * Stringify JSON with tab indentation for Biome compatibility
+ * Stringify JSON with tab indentation and trailing newline for Biome compatibility
  * @param {*} data - Data to stringify
- * @returns {string} JSON string with tab indentation
+ * @returns {string} JSON string with tab indentation and trailing newline
  */
 function stringifyWithTabs(data) {
-	return JSON.stringify(data, null, "\t");
+	return `${JSON.stringify(data, null, "\t")}\n`;
 }
 
 function logError(message) {
@@ -212,10 +215,32 @@ class TestReporter {
 		await this.ensureDir(path.dirname(outputPath));
 		await fs.writeFile(outputPath, stringifyWithTabs(report));
 
+		// Format with Biome to ensure compliance
+		try {
+			await execAsync(`npx biome format --write "${outputPath}"`);
+		} catch (formatError) {
+			// Non-critical - log but don't fail
+			logError(
+				`Biome formatting failed for test report: ${formatError.message}`,
+			);
+		}
+
 		log(`📄 JSON report saved to: ${outputPath}`);
 
 		// Also save to the standard result file
 		await fs.writeFile(this.config.paths.resultFile, stringifyWithTabs(report));
+
+		// Format result file too
+		try {
+			await execAsync(
+				`npx biome format --write "${this.config.paths.resultFile}"`,
+			);
+		} catch (formatError) {
+			// Non-critical - log but don't fail
+			logError(
+				`Biome formatting failed for result file: ${formatError.message}`,
+			);
+		}
 	}
 
 	/**

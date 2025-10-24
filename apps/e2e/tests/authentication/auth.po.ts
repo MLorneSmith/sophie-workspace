@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import type { AUTH_STATES } from "../utils/auth-state";
 import { Mailbox } from "../utils/mailbox";
+import { testConfig } from "../utils/test-config";
 
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
@@ -105,7 +106,30 @@ export class AuthPageObject {
 			period,
 		});
 
-		await this.page.fill("[data-input-otp]", otp);
+		// Wait for the OTP input to be visible and focused
+		const otpInput = this.page.locator("[data-input-otp]");
+		await otpInput.waitFor({ state: "visible" });
+
+		// Use pressSequentially to simulate actual typing which triggers form validation
+		await otpInput.pressSequentially(otp, { delay: 50 });
+
+		console.log("OTP entered, waiting for form validation to complete...");
+
+		// Wait for form validation to complete by checking if button is enabled
+		// React Hook Form validates asynchronously, so we need to wait for formState.isValid
+		await this.page.waitForFunction(
+			() => {
+				const button = document.querySelector(
+					'[data-test="submit-mfa-button"]',
+				);
+				const isEnabled = button && !button.hasAttribute("disabled");
+				return isEnabled;
+			},
+			{ timeout: 10000 },
+		);
+
+		console.log("Form validation complete, button enabled. Clicking submit...");
+
 		await this.page.click('[data-test="submit-mfa-button"]');
 	}
 
@@ -166,6 +190,14 @@ export class AuthPageObject {
 			next: "/auth/verify",
 		});
 
+		// Use configurable timeouts for MFA verification
+		// Super-admin login with MFA requires extended timeouts due to:
+		// - MFA form rendering and initialization
+		// - TOTP token generation and validation
+		// - Multiple navigation steps (login → MFA → final destination)
+		const longTimeout = testConfig.getTimeout("long");
+		const mfaRetryIntervals = testConfig.getRetryIntervals("auth");
+
 		// Check if we're on MFA page and complete verification if needed
 		try {
 			// Wait for either MFA form or redirect to final destination
@@ -181,14 +213,14 @@ export class AuthPageObject {
 					}
 				}
 
-				// Wait for final navigation
+				// Wait for final navigation with increased timeout
 				await this.page.waitForURL(params.next ?? "/home", {
-					timeout: 20000,
+					timeout: longTimeout,
 					waitUntil: "domcontentloaded",
 				});
 			}).toPass({
-				intervals: [500, 1000, 2000, 3000, 5000],
-				timeout: 25000,
+				intervals: mfaRetryIntervals,
+				timeout: longTimeout + 5000, // Add buffer for retry logic
 			});
 		} catch (error) {
 			// If we're already on the expected page, that's fine
