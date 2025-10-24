@@ -6,7 +6,8 @@ This file contains instructions for working with Next.js utilities including ser
 
 - Don't use Server Actions for data-fetching, use for mutations only
 - Best Practice: Keep actions light, move business logic to ad-hoc services
-- Authorization logic must be defined in RLS and DB, not Server Actions or application code (unless using the admin client, use sparinlgy!)
+- Authorization logic must be defined in RLS and DB, not Server Actions or
+  application code (unless using the admin client, use sparingly!)
 - Do not expose sensitive data
 - Log async operations
 - Validate body with Zod
@@ -134,7 +135,7 @@ export const myAction = enhanceAction(
 
 Use `enhanceRouteHandler` from `@packages/next/src/routes/index.ts`.
 
-### Guidelines
+### Usage Guidelines
 
 - Use when data must be exposed to externally
 - Use for receiving requests from external clients (such as webhooks)
@@ -234,7 +235,8 @@ export const POST = enhanceRouteHandler(
 ## Revalidation
 
 - Use `revalidatePath` for revalidating data after a migration.
-- Avoid calling `router.refresh()` or `router.push()` following a Server Action. Use `revalidatePath` and `redirect` from the server action instead.
+- Avoid calling `router.refresh()` or `router.push()` following a Server
+  Action. Use `revalidatePath` and `redirect` from the server action instead.
 
 ## Error Handling Patterns
 
@@ -282,7 +284,6 @@ export const createNoteAction = enhanceAction(
   },
 );
 ```
-
 
 ### Server Action Redirects - Client Handling
 
@@ -398,7 +399,8 @@ function CreateNoteForm() {
 }
 ```
 
-NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
+NB: When using `redirect`, we must handle it using `isRedirectError`
+otherwise we display an error after the server action succeeds
 
 ### Using Route Handlers with Fetch
 
