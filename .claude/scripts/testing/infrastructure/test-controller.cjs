@@ -600,6 +600,8 @@ Examples:
 								passed: shardAnalysis.summary.overallResults.passed,
 								failed: shardAnalysis.summary.overallResults.failed,
 								skipped: shardAnalysis.summary.overallResults.skipped,
+								intentionalFailures:
+									shardAnalysis.summary.overallResults.intentionalFailures || 0,
 								reportAnalyzed: true,
 							});
 						}

@@ -1355,6 +1355,7 @@ class E2ETestRunner {
 					passed: 0,
 					failed: 0,
 					skipped: 0,
+					intentionalFailures: 0,
 				},
 				shards: [],
 			};
@@ -1376,9 +1377,14 @@ class E2ETestRunner {
 			summary.overallResults.passed += shardReport.results.passed;
 			summary.overallResults.failed += shardReport.results.failed;
 			summary.overallResults.skipped += shardReport.results.skipped;
+			summary.overallResults.intentionalFailures +=
+				shardReport.results.intentionalFailures || 0;
 
-			// Track failed/timed out shards
-			if (shardReport.results.failed > 0) {
+			// Track failed/timed out shards (excluding intentional failures)
+			const actualFailures =
+				shardReport.results.failed -
+				(shardReport.results.intentionalFailures || 0);
+			if (actualFailures > 0) {
 				summary.failedShards++;
 			}
 			if (shardReport.execution.timedOut) {
@@ -1393,6 +1399,7 @@ class E2ETestRunner {
 				duration: shardReport.execution.duration,
 				tests: shardReport.results.total,
 				failures: shardReport.results.failed,
+				intentionalFailures: shardReport.results.intentionalFailures || 0,
 			});
 
 			// Sort shards by ID
