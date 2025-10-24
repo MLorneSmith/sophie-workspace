@@ -6,8 +6,7 @@ This file contains instructions for working with Next.js utilities including ser
 
 - Don't use Server Actions for data-fetching, use for mutations only
 - Best Practice: Keep actions light, move business logic to ad-hoc services
-- Authorization logic must be defined in RLS and DB, not Server Actions or application code
-  (unless using the admin client, use sparingly!)
+- Authorization logic must be defined in RLS and DB, not Server Actions or application code (unless using the admin client, use sparinlgy!)
 - Do not expose sensitive data
 - Log async operations
 - Validate body with Zod
@@ -106,7 +105,7 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema, // Validate input with Zod
   },
 );
-```text
+```
 
 ### Server Action Examples
 
@@ -129,7 +128,7 @@ export const myAction = enhanceAction(
     // Additional options available
   },
 );
-```text
+```
 
 ## Route Handlers (API Routes)
 
@@ -214,7 +213,7 @@ export const GET = enhanceRouteHandler(
     // No schema needed for GET requests
   },
 );
-```text
+```
 
 ### Route Handler Options
 
@@ -230,7 +229,7 @@ export const POST = enhanceRouteHandler(
     // Additional options available
   },
 );
-```text
+```
 
 ## Revalidation
 
@@ -282,7 +281,7 @@ export const createNoteAction = enhanceAction(
     schema: CreateNoteSchema,
   },
 );
-```text
+```
 
 
 ### Server Action Redirects - Client Handling
@@ -342,7 +341,7 @@ export const POST = enhanceRouteHandler(
     schema: CreateItemSchema,
   },
 );
-```text
+```
 
 ## Client-Side Integration
 
@@ -397,7 +396,7 @@ function CreateNoteForm() {
     </form>
   );
 }
-```text
+```
 
 NB: When using `redirect`, we must handle it using `isRedirectError` otherwise we display an error after the server action succeeds
 
@@ -434,45 +433,7 @@ const handleCreateItem = async (data) => {
     throw error;
   }
 };
-```text
-
-## Security Best Practices
-
-### Input Validation
-
-Always use Zod schemas for input validation:
-
-```typescript
-// Define strict schemas
-const UpdateUserSchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email(),
-  age: z.number().int().min(18).max(120),
-});
-
-// Server action with validation
-export const updateUserAction = enhanceAction(
-  async function (data, user) {
-    // data is guaranteed to match the schema
-    // Additional business logic validation can go here
-
-    if (data.email !== user.email) {
-      // Check if email change is allowed
-      const canChangeEmail = await checkEmailChangePermission(user);
-      if (!canChangeEmail) {
-        throw new Error('Email change not allowed');
-      }
-    }
-
-    // Update user
-    return await updateUser(user.id, data);
-  },
-  {
-    auth: true,
-    schema: UpdateUserSchema,
-  },
-);
-```text
+```
 
 ### Authorization Checks
 
@@ -514,4 +475,4 @@ export const deleteAccountAction = enhanceAction(
     schema: DeleteAccountSchema,
   },
 );
-```text
+```

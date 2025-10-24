@@ -1,14 +1,26 @@
 import type { Enums } from "@kit/supabase/database";
 import { LoadingOverlay } from "@kit/ui/loading-overlay";
-import { forwardRef, lazy, memo, Suspense, useMemo } from "react";
+import { lazy, Suspense } from "react";
 
 type BillingProvider = Enums<"billing_provider">;
 
-const Fallback = <LoadingOverlay fullPage={false} />;
+// Create lazy components at module level (not during render)
+const StripeCheckoutLazy = lazy(async () => {
+	const { StripeCheckout } = await import("@kit/stripe/components");
+	return { default: StripeCheckout };
+});
 
-// Check if we're in test mode
-const isTestMode =
-	process.env.NODE_ENV === "test" || process.env.NEXT_PUBLIC_CI === "true";
+const LemonSqueezyCheckoutLazy = lazy(async () => {
+	const { LemonSqueezyEmbeddedCheckout } = await import(
+		"@kit/lemon-squeezy/components"
+	);
+	return { default: LemonSqueezyEmbeddedCheckout };
+});
+
+type CheckoutProps = {
+	onClose: (() => unknown) | undefined;
+	checkoutToken: string;
+};
 
 export function EmbeddedCheckout(
 	props: React.PropsWithChildren<{
@@ -17,109 +29,54 @@ export function EmbeddedCheckout(
 		onClose?: () => void;
 	}>,
 ) {
-	const CheckoutComponent = useMemo(() => {
-		// Use test checkout in test mode
-		if (isTestMode) {
-			return buildLazyComponent(() => {
-				return import("./test-checkout").then(({ TestCheckout }) => {
-					return {
-						default: TestCheckout,
-					};
-				});
-			});
-		}
-		return loadCheckoutComponent(props.provider);
-	}, [props.provider]);
-
 	return (
 		<>
-			<CheckoutComponent
-				onClose={props.onClose}
-				checkoutToken={props.checkoutToken}
-			/>
+			<Suspense fallback={<LoadingOverlay fullPage={false} />}>
+				<CheckoutSelector
+					provider={props.provider}
+					onClose={props.onClose}
+					checkoutToken={props.checkoutToken}
+				/>
+			</Suspense>
 
 			<BlurryBackdrop />
 		</>
 	);
 }
 
-function loadCheckoutComponent(provider: BillingProvider) {
-	switch (provider) {
-		case "stripe": {
-			return buildLazyComponent(() => {
-				return import("@kit/stripe/components").then(({ StripeCheckout }) => {
-					return {
-						default: StripeCheckout,
-					};
-				});
-			});
-		}
-
-		case "lemon-squeezy": {
-			return buildLazyComponent(() => {
-				return import("@kit/lemon-squeezy/components").then(
-					({ LemonSqueezyEmbeddedCheckout }) => {
-						return {
-							default: LemonSqueezyEmbeddedCheckout,
-						};
-					},
-				);
-			});
-		}
-
-		case "paddle": {
-			throw new Error("Paddle is not yet supported");
-		}
-
-		default:
-			throw new Error(`Unsupported provider: ${provider as string}`);
-	}
-}
-
-function buildLazyComponent<
-	Component extends React.ComponentType<{
-		onClose: (() => unknown) | undefined;
-		checkoutToken: string;
-	}>,
->(
-	load: () => Promise<{
-		default: Component;
-	}>,
-	fallback = Fallback,
+function CheckoutSelector(
+	props: CheckoutProps & { provider: BillingProvider },
 ) {
-	let LoadedComponent: ReturnType<typeof lazy<Component>> | null = null;
-
-	const LazyComponent = forwardRef<
-		React.ElementRef<"div">,
-		{
-			onClose: (() => unknown) | undefined;
-			checkoutToken: string;
-		}
-	>(function LazyDynamicComponent(props, ref) {
-		if (!LoadedComponent) {
-			LoadedComponent = lazy(load);
-		}
-
-		return (
-			<Suspense fallback={fallback}>
-				{/* @ts-expect-error: weird TS */}
-				<LoadedComponent
+	switch (props.provider) {
+		case "stripe":
+			return (
+				<StripeCheckoutLazy
 					onClose={props.onClose}
 					checkoutToken={props.checkoutToken}
-					ref={ref}
 				/>
-			</Suspense>
-		);
-	});
+			);
 
-	return memo(LazyComponent);
+		case "lemon-squeezy":
+			return (
+				<LemonSqueezyCheckoutLazy
+					onClose={props.onClose}
+					checkoutToken={props.checkoutToken}
+				/>
+			);
+
+		case "paddle":
+			throw new Error("Paddle is not yet supported");
+
+		default:
+			throw new Error(`Unsupported provider: ${props.provider as string}`);
+	}
 }
 
 function BlurryBackdrop() {
 	return (
 		<div
 			className={
-				"bg-background/30 fixed left-0 top-0 w-full backdrop-blur-sm" +
+				"bg-background/30 fixed top-0 left-0 w-full backdrop-blur-sm" +
 				" !m-0 h-full"
 			}
 		/>

@@ -1,0 +1,117 @@
+{
+	"executionDate": "2025-10-24",
+	"lastUpdated": "2025-10-24T16:10:23.275Z",
+	"totalShards": 0,
+	"completedShards": 12,
+	"failedShards": 2,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 204,
+		"passed": 163,
+		"failed": 2,
+		"skipped": 39,
+		"intentionalFailures": 3
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "11s",
+			"tests": 9,
+			"failures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "22s",
+			"tests": 21,
+			"failures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "18s",
+			"tests": 21,
+			"failures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "22s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "80s",
+			"tests": 25,
+			"failures": 1
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": true,
+			"duration": "79s",
+			"tests": 25,
+			"failures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "74s",
+			"tests": 25,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "28s",
+			"tests": 13,
+			"failures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "29s",
+			"tests": 13,
+			"failures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "39s",
+			"tests": 13,
+			"failures": 0,
+			"intentionalFailures": 3
+		}
+	]
+}

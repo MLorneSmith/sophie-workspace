@@ -1,0 +1,40 @@
+{
+	"shard": {
+		"id": 5,
+		"name": "Billing",
+		"files": [
+			"tests/user-billing/user-billing.spec.ts",
+			"tests/team-billing/team-billing.spec.ts"
+		],
+		"expectedTests": 2,
+		"shardCommand": "test:shard5"
+	},
+	"execution": {
+		"startTime": "2025-10-24T16:08:30.518Z",
+		"endTime": "2025-10-24T16:09:44.518Z",
+		"duration": "74s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 25,
+		"passed": 22,
+		"failed": 1,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/accessibility/accessibility-hybrid.spec.ts:444:6 › Accessibility Tests - Performance › Contrast check performance benchmark",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/"
+		}
+	],
+	"errors": [
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/"
+	],
+	"rawOutput": "...(truncated 7012 bytes)...\nns: 0\n\n📋 WCAG Compliance:\n   Level: AA\n   Status: ✅ Passed\n   Violations: 0\n   Warnings: 1\n\n📈 Summary:\n   Total Violations: 0\n   - Critical: 0 issues\n   - Serious: 0 issues\n   - Moderate: 0 issues\n   - Minor: 0 issues\n\n===================================\n·Storyboard:\n=== ACCESSIBILITY AUDIT REPORT ===\n\nOverall Status: ✅ PASS\n\n📊 Lighthouse Accessibility Score:\n   Score: 100%\n   Violations: 0 issues found\n\n🎨 Color Contrast Check:\n   Status: ✅ Passed\n   Violations: 0\n\n📋 WCAG Compliance:\n   Level: AA\n   Status: ✅ Passed\n   Violations: 0\n   Warnings: 1\n\n📈 Summary:\n   Total Violations: 0\n   - Critical: 0 issues\n   - Serious: 0 issues\n   - Moderate: 0 issues\n   - Minor: 0 issues\n\n===================================\n·°Account Settings:\n=== ACCESSIBILITY AUDIT REPORT ===\n\nOverall Status: ✅ PASS\n\n📊 Lighthouse Accessibility Score:\n   Score: 100%\n   Violations: 0 issues found\n\n🎨 Color Contrast Check:\n   Status: ✅ Passed\n   Violations: 0\n\n📋 WCAG Compliance:\n   Level: AA\n   Status: ✅ Passed\n   Violations: 0\n   Warnings: 1\n\n📈 Summary:\n   Total Violations: 0\n   - Critical: 0 issues\n   - Serious: 0 issues\n   - Moderate: 0 issues\n   - Minor: 0 issues\n\n===================================\n·Keyboard Navigation Test:\nKeyboard-related violations: 0\nScreen Reader Compatibility Test:\nARIA/Label violations: 0\n··\n============================================================\nCOMPREHENSIVE ACCESSIBILITY AUDIT\n============================================================\n\nForm Accessibility Test:\nForm-related violations: 0\n·\n📄 Homepage (/)\n----------------------------------------\nStatus: ✅ PASS\nLighthouse Score: 100%\nColor Contrast: ✅ (0 issues)\nWCAG AA: ✅\nViolations: 0 total\n\n📄 Sign In (/auth/sign-in)\n----------------------------------------\nStatus: ✅ PASS\nLighthouse Score: 100%\nColor Contrast: ✅ (0 issues)\nWCAG AA: ✅\nViolations: 0 total\n\n============================================================\nOVERALL SUMMARY\n============================================================\nTotal Pages Tested: 8\nPassed: 2 pages\nFailed: 6 pages\nTotal Violations: 0\n  - Critical: 0\n  - Serious: 0\n============================================================\n\n·×FLighthouse audit completed in 25208ms\nScore: 100%\n·\n\n  1) [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:444:6 › Accessibility Tests - Performance › Contrast check performance benchmark \n\n    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n      443 |\n      444 | \ttest(\"Contrast check performance benchmark\", async ({ page }) => {\n    > 445 | \t\tawait page.goto(\"/\");\n          | \t\t           ^\n      446 | \t\tawait page.waitForLoadState(\"networkidle\");\n      447 |\n      448 | \t\tconst startTime = Date.now();\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts:445:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-4d94e-check-performance-benchmark-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/\", waiting until \"load\"\u001b[22m\n\n\n      443 |\n      444 | \ttest(\"Contrast check performance benchmark\", async ({ page }) => {\n    > 445 | \t\tawait page.goto(\"/\");\n          | \t\t           ^\n      446 | \t\tawait page.waitForLoadState(\"networkidle\");\n      447 |\n      448 | \t\tconst startTime = Date.now();\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts:445:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-4d94e-check-performance-benchmark-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-4d94e-check-performance-benchmark-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/accessibility-accessibilit-4d94e-check-performance-benchmark-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:444:6 › Accessibility Tests - Performance › Contrast check performance benchmark \n  2 skipped\n  22 passed (1.2m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard5: `playwright test tests/accessibility/accessibility-hybrid.spec.ts tests/accessibility/accessibility-hybrid-simple.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

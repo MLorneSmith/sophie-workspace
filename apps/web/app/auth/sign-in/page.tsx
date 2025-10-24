@@ -11,7 +11,6 @@ import { withI18n } from "~/lib/i18n/with-i18n";
 
 interface SignInPageProps {
 	searchParams: Promise<{
-		invite_token?: string;
 		next?: string;
 	}>;
 }
@@ -36,7 +35,7 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 	return (
 		<>
 			<div className={"flex flex-col items-center gap-1"}>
-				<Heading level={2} className={"tracking-tight"}>
+				<Heading level={4} className={"tracking-tight"}>
 					<Trans i18nKey={"auth:signInHeading"} />
 				</Heading>
 
@@ -45,7 +44,11 @@ async function SignInPage({ searchParams }: SignInPageProps) {
 				</p>
 			</div>
 
-			<SignInMethodsContainer paths={paths} providers={authConfig.providers} />
+			<SignInMethodsContainer
+				paths={paths}
+				providers={authConfig.providers}
+				captchaSiteKey={authConfig.captchaTokenSiteKey}
+			/>
 
 			<div className={"flex justify-center"}>
 				<Button asChild variant={"link"} size={"sm"}>
