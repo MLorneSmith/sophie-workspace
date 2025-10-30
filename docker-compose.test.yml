@@ -8,7 +8,7 @@ name: 2025slideheroes-test
 
 services:
   app-test:
-    image: node:20-slim
+    image: node:22-slim
     container_name: slideheroes-app-test
     user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
     working_dir: /app
@@ -72,7 +72,7 @@ services:
       - test-network
 
   payload-test:
-    image: node:20-slim
+    image: node:22-slim
     container_name: slideheroes-payload-test
     user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
     working_dir: /app
@@ -111,9 +111,9 @@ services:
       sh -c "
         echo '🔧 Installing dependencies with npx pnpm...' &&
         npx pnpm@latest install --frozen-lockfile &&
-        echo '🚀 Starting Payload test server on port 3021...' &&
+        echo '🚀 Starting Payload test server on port 3021 (using webpack due to Payload CMS + Turbopack incompatibility)...' &&
         cd apps/payload &&
-        PORT=3021 NODE_OPTIONS=--no-deprecation npx pnpm@latest exec next dev
+        PORT=3021 NODE_OPTIONS=--no-deprecation npx pnpm@latest exec next dev --webpack
       "
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3021/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]

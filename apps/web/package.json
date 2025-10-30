@@ -98,6 +98,7 @@
 		"require-in-the-middle": "7.5.2",
 		"sonner": "^2.0.7",
 		"tailwind-merge": "^3.3.1",
+		"urlpattern-polyfill": "^10.1.0",
 		"zod": "^3.25.74"
 	},
 	"devDependencies": {
