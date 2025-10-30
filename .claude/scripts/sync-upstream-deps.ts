@@ -36,7 +36,7 @@ interface PackageUpdate {
 	updates: VersionUpdate[];
 }
 
-const UPSTREAM_COMMIT = "2e20d3e7"; // Upstream main commit
+const UPSTREAM_COMMIT = "c74beb27a"; // Upstream main commit (Next.js 16, React 19.2)
 const PROJECT_ROOT = execSync("git rev-parse --show-toplevel", {
 	encoding: "utf-8",
 }).trim();
