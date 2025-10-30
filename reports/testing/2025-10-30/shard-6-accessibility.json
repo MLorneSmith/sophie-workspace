@@ -1,0 +1,40 @@
+{
+	"shard": {
+		"id": 6,
+		"name": "Accessibility",
+		"files": [
+			"tests/accessibility/accessibility-hybrid.spec.ts",
+			"tests/accessibility/accessibility-hybrid-simple.spec.ts"
+		],
+		"expectedTests": 39,
+		"shardCommand": "test:shard6"
+	},
+	"execution": {
+		"startTime": "2025-10-30T15:45:44.459Z",
+		"endTime": "2025-10-30T15:47:16.459Z",
+		"duration": "92s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 4,
+		"passed": 3,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/auth.setup.ts:129:5 › authenticate as super-admin user ────────────────────────",
+			"file": "unknown",
+			"error": "Error: Timeout 45000ms exceeded while waiting on the predicate"
+		}
+	],
+	"errors": [
+		"Timeout 45000ms exceeded while waiting on the predicate",
+		"Timeout 45000ms exceeded while waiting on the predicate"
+	],
+	"rawOutput": "...(truncated 3136 bytes)...\nEmail field value after fill: michael@slideheroes.com\nPassword field has value: yes\nFilling email: test1@slideheroes.com\nFilling password: ***\nEmail field value after fill: test1@slideheroes.com\nPassword field has value: yes\nForm submitted, waiting for navigation...\nForm submitted, waiting for navigation...\n[Phase 1] Auth API response detected: 200\n[Phase 1] ✅ Auth API responded (1118ms)\n[Phase 2] Waiting for navigation to: /auth/verify (timeout: 20000ms)\n[Phase 2] Current: http://localhost:3001/auth/sign-in?next=/auth/verify, Target: /auth/verify\n[Phase 1] Auth API response detected: 200\n[Phase 1] ✅ Auth API responded (1132ms)\n[Phase 2] Waiting for navigation to: /home (timeout: 20000ms)\n[Phase 2] Current: http://localhost:3001/auth/sign-in?next=/home, Target: /home\n[Phase 2] Current: http://localhost:3001/auth/verify, Target: /auth/verify\n[Phase 2] ✅ Navigation complete (1204ms total). Final URL: http://localhost:3001/auth/verify\n[Phase 2] Current: http://localhost:3001/home, Target: /home\n[Phase 2] ✅ Navigation complete (1331ms total). Final URL: http://localhost:3001/home\nAuthentication complete. Current URL: http://localhost:3001/home\nAuthentication state saved to /home/msmith/projects/2025slideheroes/apps/e2e/.auth/billing-user.json\n·×🔧 Test Environment Configuration:\n   Environment: LOCAL\n   CI Mode: false\n   Skip Email Verification: false\n   Credential Validation: LENIENT\n   Max Retries: 2\n\n🌍 Test Environment Information:\n   Environment: LOCAL\n   Base URL: http://localhost:3001\n   CI Mode: false\n   Skip Email Verification: false\n   Verbose Logging: false\n   Credential Validation: LENIENT\n   Auth Timeout: 20000ms\n   Max Retries: 2\n\n🔐 Authenticating super-admin user: michael@slideheroes.com\n[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: 20000ms)...\nFilling email: michael@slideheroes.com\nFilling password: ***\nEmail field value after fill: michael@slideheroes.com\nPassword field has value: yes\nForm submitted, waiting for navigation...\n[Phase 1] Auth API response detected: 200\n[Phase 1] ✅ Auth API responded (1200ms)\n[Phase 2] Waiting for navigation to: /auth/verify (timeout: 20000ms)\n[Phase 2] Current: http://localhost:3001/auth/sign-in?next=/auth/verify, Target: /auth/verify\n[Phase 2] Current: http://localhost:3001/auth/verify, Target: /auth/verify\n[Phase 2] ✅ Navigation complete (1292ms total). Final URL: http://localhost:3001/auth/verify\nF\n\n  1) [setup] › tests/auth.setup.ts:129:5 › authenticate as super-admin user ────────────────────────\n\n    Error: Timeout 45000ms exceeded while waiting on the predicate\n\n      142 | \t\t\t\tpassword: credentials.password,\n      143 | \t\t\t});\n    > 144 | \t\t}).toPass({\n          | \t\t   ^\n      145 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      146 | \t\t\ttimeout: testConfig.getTimeout(\"long\"), // Super admin with MFA needs more time\n      147 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:144:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-super-admin-user-setup/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Timeout 45000ms exceeded while waiting on the predicate\n\n      142 | \t\t\t\tpassword: credentials.password,\n      143 | \t\t\t});\n    > 144 | \t\t}).toPass({\n          | \t\t   ^\n      145 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      146 | \t\t\ttimeout: testConfig.getTimeout(\"long\"), // Super admin with MFA needs more time\n      147 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:144:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    [setup] › tests/auth.setup.ts:129:5 › authenticate as super-admin user ─────────────────────────\n  12 did not run\n  3 passed (1.6m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard6: `playwright test tests/test-configuration-verification.spec.ts tests/healthcheck.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

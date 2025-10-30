@@ -1,0 +1,80 @@
+{
+	"executionDate": "2025-10-30",
+	"lastUpdated": "2025-10-30T15:48:48.759Z",
+	"totalShards": 0,
+	"completedShards": 7,
+	"failedShards": 6,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 49,
+		"passed": 32,
+		"failed": 6,
+		"skipped": 11,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": false,
+			"duration": "55s",
+			"tests": 20,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 3,
+			"name": "Accounts",
+			"success": false,
+			"duration": "92s",
+			"tests": 4,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": false,
+			"duration": "91s",
+			"tests": 4,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "92s",
+			"tests": 4,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "92s",
+			"tests": 4,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 7,
+			"name": "Config & Health",
+			"success": false,
+			"duration": "92s",
+			"tests": 4,
+			"failures": 1,
+			"intentionalFailures": 0
+		}
+	]
+}
