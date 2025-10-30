@@ -25,9 +25,9 @@
 		"@kit/monitoring-core": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.3.1",
+		"@types/node": "^24.6.2",
 		"@types/react": "19.1.16",
-		"react": "19.2.0"
+		"react": "19.1.1"
 	},
 	"typesVersions": {
 		"*": {
