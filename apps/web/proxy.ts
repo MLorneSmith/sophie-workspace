@@ -21,7 +21,7 @@ const getUser = (request: NextRequest, response: NextResponse) => {
 	return supabase.auth.getClaims();
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const secureHeaders = await createResponseWithSecureHeaders();
 	const response = NextResponse.next(secureHeaders);
 
