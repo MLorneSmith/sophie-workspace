@@ -8,7 +8,7 @@
 		"verify-config": "dotenv -e .env -- node scripts/verify-config.js",
 		"verify-config:dev": "dotenv -e .env.development -- node scripts/verify-config.js",
 		"verify-config:prod": "dotenv -e .env.production -- node scripts/verify-config.js",
-		"build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+		"build": "cross-env NODE_OPTIONS=--no-deprecation next build --webpack",
 		"dev": "cross-env PORT=3020 NODE_OPTIONS=--no-deprecation next dev",
 		"dev:test": "dotenv -e .env.test -- cross-env PORT=3021 NODE_OPTIONS=--no-deprecation next dev",
 		"devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",

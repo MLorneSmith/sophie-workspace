@@ -50,7 +50,9 @@ jwt_expiry = 3600
 enable_signup = true
 enable_manual_linking = true
 
-# Enable TOTP MFA
+# TOTP MFA Configuration
+# Note: MFA is enabled but not enforced - users with enrolled factors will be prompted
+# For production: verify_enabled=true enforces MFA for all users with enrolled factors
 [auth.mfa.totp]
 verify_enabled = true
 enroll_enabled = true
