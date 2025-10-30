@@ -107,7 +107,7 @@ export class AuthPageObject {
 		});
 
 		// Wait for the OTP input to be visible and focused
-		const otpInput = this.page.locator("[data-input-otp]");
+		const otpInput = this.page.locator('[name="verificationCode"]');
 		await otpInput.waitFor({ state: "visible" });
 
 		// Use pressSequentially to simulate actual typing which triggers form validation
@@ -207,7 +207,7 @@ export class AuthPageObject {
 				// If we're on the verify page, submit MFA
 				if (currentUrl.includes("/auth/verify")) {
 					// Check if MFA form is present
-					const mfaInput = await this.page.locator("[data-input-otp]").count();
+					const mfaInput = await this.page.locator('[name="verificationCode"]').count();
 					if (mfaInput > 0) {
 						await this.submitMFAVerification(MFA_KEY);
 					}

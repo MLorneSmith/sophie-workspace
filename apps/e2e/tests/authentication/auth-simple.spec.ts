@@ -193,13 +193,11 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 		page,
 		context,
 	}) => {
-		// Clear any existing session - clear all browser storage
+		// Clear any existing session
+		// Note: clearCookies() is sufficient - auth state is stored in cookies
+		// Attempting to clear localStorage before navigating causes SecurityError
 		await context.clearCookies();
 		await context.clearPermissions();
-		await page.evaluate(() => {
-			localStorage.clear();
-			sessionStorage.clear();
-		});
 
 		// Try to access protected routes
 		const protectedRoutes = [
