@@ -417,12 +417,14 @@ Examples:
 				summary.total,
 			);
 
-			// Determine exit code
-			const exitCode = result.success ? 0 : 1;
+			// Determine exit code based on actual test results, not just phase execution
+			const hasTestFailures = summary.actualFailures > 0;
+			const finalSuccess = result.success && !hasTestFailures;
+			const exitCode = finalSuccess ? 0 : 1;
 			const duration = Math.round((Date.now() - startTime) / 1000);
 
 			log(`\n✨ Test execution completed in ${duration}s`);
-			log(`📊 Final status: ${result.success ? "✅ SUCCESS" : "❌ FAILED"}`);
+			log(`📊 Final status: ${finalSuccess ? "✅ SUCCESS" : "❌ FAILED"}`);
 
 			// Cleanup and exit
 			await this.cleanup();
