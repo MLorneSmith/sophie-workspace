@@ -125,7 +125,10 @@ test("MFA page diagnostic", async ({ page }) => {
 				);
 				console.log("✅ Button became enabled!");
 			} catch (e) {
-				console.log("❌ Button did not become enabled:", e.message);
+				console.log(
+					"❌ Button did not become enabled:",
+					e instanceof Error ? e.message : String(e),
+				);
 			}
 		}
 	}
