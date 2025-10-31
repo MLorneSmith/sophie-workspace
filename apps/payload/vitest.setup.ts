@@ -10,6 +10,12 @@ import { config } from "dotenv";
 const envPath = resolve(__dirname, ".env.test");
 config({ path: envPath });
 
+// Force NODE_ENV to 'test' BEFORE any other setup
+// This must be set unconditionally to override any system/CI defaults
+// @ts-ignore - NODE_ENV is read-only in strict mode but writable at runtime
+// biome-ignore lint/suspicious/noExplicitAny: Required for test environment setup
+(process.env as any).NODE_ENV = "test";
+
 // Ensure critical variables are set (fallback if .env.test doesn't load)
 if (!process.env.DATABASE_URI) {
 	process.env.DATABASE_URI =
@@ -20,9 +26,4 @@ if (!process.env.PAYLOAD_SECRET) {
 }
 if (!process.env.PAYLOAD_PUBLIC_SERVER_URL) {
 	process.env.PAYLOAD_PUBLIC_SERVER_URL = "http://localhost:3020";
-}
-// @ts-ignore - NODE_ENV is read-only in strict mode but writable at runtime
-if (!process.env.NODE_ENV) {
-	// biome-ignore lint/suspicious/noExplicitAny: Required for test environment setup
-	(process.env as any).NODE_ENV = "test";
 }

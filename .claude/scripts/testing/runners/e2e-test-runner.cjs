@@ -248,9 +248,22 @@ class E2ETestRunner {
 				],
 				expectedTests: 12, // 11 + 1
 			},
+			{
+				id: 8,
+				name: "Payload CMS",
+				shardCommand: "test:shard8",
+				files: [
+					"tests/payload/payload-auth.spec.ts",
+					"tests/payload/payload-collections.spec.ts",
+					"tests/payload/payload-database.spec.ts",
+					"tests/payload/seeding.spec.ts",
+					"tests/payload/seeding-performance.spec.ts",
+				],
+				expectedTests: null, // To be determined after first run
+			},
 		];
 
-		log(`📋 Loaded ${shardGroups.length} test shards with ~94 expected tests`);
+		log(`📋 Loaded ${shardGroups.length} test shards with ~94+ expected tests`);
 		for (const group of shardGroups) {
 			log(
 				`  • Shard ${group.id} (${group.name}): ${group.expectedTests || "?"} tests`,
