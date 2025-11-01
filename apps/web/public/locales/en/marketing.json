@@ -1,6 +1,13 @@
 {
   "blog": "Blog",
   "blogSubtitle": "News and updates about the platform",
+  "changelog": "Changelog",
+  "changelogSubtitle": "Latest updates and improvements to the platform",
+  "noChangelogEntries": "No changelog entries found",
+  "changelogPaginationNext": "Next Page",
+  "changelogPaginationPrevious": "Previous Page",
+  "changelogNavigationPrevious": "Previous",
+  "changelogNavigationNext": "Next",
   "documentation": "Documentation",
   "documentationSubtitle": "Tutorials and guide to get started with the platform",
   "faq": "FAQ",

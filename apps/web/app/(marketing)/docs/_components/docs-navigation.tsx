@@ -139,12 +139,12 @@ export function DocsNavigation({
       <Sidebar
         variant={'ghost'}
         className={
-          'sticky z-1 mt-4 max-h-full overflow-y-auto border-r-transparent'
+          'border-border/50 sticky z-1 mt-4 max-h-full overflow-y-auto pr-4'
         }
       >
-        <SidebarGroup>
+        <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className={'pb-48'}>
               <Tree pages={pages} level={0} prefix={prefix} />
             </SidebarMenu>
           </SidebarGroupContent>

@@ -15,15 +15,15 @@
 @import './makerkit.css';
 
 /* plugins - update the below if you add a new plugin */
-@plugin "tailwindcss-animate";
+@plugin 'tailwindcss-animate';
 
 /* content sources - update the below if you add a new path */
-@source "../../../packages/*/src/**/*.{ts,tsx}";
-@source "../../../packages/features/*/src/**/*.{ts,tsx}";
-@source "../../../packages/billing/*/src/**/*.{ts,tsx}";
-@source "../../../packages/plugins/*/src/**/*.{ts,tsx}";
-@source "../../../packages/cms/*/src/**/*.{ts,tsx}";
-@source "../{app,components,config,lib}/**/*.{ts,tsx}";
+@source '../../../packages/*/src/**/*.{ts,tsx}';
+@source '../../../packages/features/*/src/**/*.{ts,tsx}';
+@source '../../../packages/billing/*/src/**/*.{ts,tsx}';
+@source '../../../packages/plugins/*/src/**/*.{ts,tsx}';
+@source '../../../packages/cms/*/src/**/*.{ts,tsx}';
+@source '../{app,components,config,lib}/**/*.{ts,tsx}';
 
 /* variants - update the below if you add a new variant */
 @variant dark (&:where(.dark, .dark *));
@@ -34,6 +34,15 @@
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  html,
+  body {
+    scroll-padding-top: 56px;
+  }
+
+  [id] {
+    scroll-margin-top: 56px;
   }
 
   *,

@@ -11,8 +11,6 @@ import { withI18n } from '~/lib/i18n/with-i18n';
 
 // local imports
 import { DocsCards } from '../_components/docs-cards';
-import { DocsTableOfContents } from '../_components/docs-table-of-contents';
-import { extractHeadingsFromJSX } from '../_lib/utils';
 
 const getPageBySlug = cache(pageLoader);
 
@@ -52,38 +50,36 @@ async function DocumentationPage({ params }: DocumentationPageProps) {
 
   const description = page?.description ?? '';
 
-  const headings = extractHeadingsFromJSX(
-    page.content as {
-      props: { children: React.ReactElement[] };
-    },
-  );
-
   return (
-    <div className={'flex flex-1 flex-col gap-y-4 overflow-y-hidden py-4'}>
-      <div className={'flex overflow-y-hidden'}>
-        <article className={cn('gap-y-12 overflow-y-auto px-4')}>
-          <section
-            className={'flex flex-col gap-y-1 border-b border-dashed pb-4'}
+    <div className={'flex flex-1 flex-col gap-y-4 overflow-y-hidden'}>
+      <div className={'flex size-full overflow-y-hidden'}>
+        <div className="relative size-full">
+          <article
+            className={cn(
+              'absolute size-full w-full gap-y-12 overflow-y-auto pt-4 pb-36',
+            )}
           >
-            <h1
-              className={
-                'text-foreground text-3xl font-semibold tracking-tighter'
-              }
+            <section
+              className={'flex flex-col gap-y-1 border-b border-dashed pb-4'}
             >
-              {page.title}
-            </h1>
+              <h1
+                className={
+                  'text-foreground text-3xl font-semibold tracking-tighter'
+                }
+              >
+                {page.title}
+              </h1>
 
-            <h2 className={'text-secondary-foreground/80 text-lg'}>
-              {description}
-            </h2>
-          </section>
+              <h2 className={'text-secondary-foreground/80 text-lg'}>
+                {description}
+              </h2>
+            </section>
 
-          <div className={'markdoc'}>
-            <ContentRenderer content={page.content} />
-          </div>
-        </article>
-
-        <DocsTableOfContents data={headings} />
+            <div className={'markdoc'}>
+              <ContentRenderer content={page.content} />
+            </div>
+          </article>
+        </div>
       </div>
 
       <If condition={page.children.length > 0}>

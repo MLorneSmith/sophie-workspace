@@ -18,6 +18,10 @@ const links = {
     label: 'marketing:blog',
     path: '/blog',
   },
+  Changelog: {
+    label: 'marketing:changelog',
+    path: '/changelog',
+  },
   Docs: {
     label: 'marketing:documentation',
     path: '/docs',
@@ -29,10 +33,6 @@ const links = {
   FAQ: {
     label: 'marketing:faq',
     path: '/faq',
-  },
-  Contact: {
-    label: 'marketing:contact',
-    path: '/contact',
   },
 };
 

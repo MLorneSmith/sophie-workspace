@@ -5,28 +5,24 @@
 * the blog post, documentation, etc.
  */
 
-.markdoc {
-  @apply text-foreground;
-}
-
 .markdoc h1 {
-  @apply font-heading text-foreground text-3xl font-medium tracking-tight lg:mt-14 dark:text-white;
+  @apply font-heading text-foreground mt-14 text-3xl font-semibold tracking-tight dark:text-white;
 }
 
 .markdoc h2 {
-  @apply font-heading text-foreground text-2xl font-medium tracking-tight lg:mt-6 lg:mb-3 dark:text-white;
+  @apply font-heading text-foreground mt-10 mb-2 text-xl font-semibold tracking-tight dark:text-white;
 }
 
 .markdoc h3 {
-  @apply font-heading text-foreground text-xl font-medium tracking-tight lg:mt-12 dark:text-white;
+  @apply font-heading text-foreground mt-8 mb-4 text-lg font-semibold tracking-tight dark:text-white;
 }
 
 .markdoc h4 {
-  @apply text-foreground mt-4 text-lg font-medium tracking-tight lg:mt-8 dark:text-white;
+  @apply text-foreground mt-6 text-base font-medium tracking-tight dark:text-white;
 }
 
 .markdoc h5 {
-  @apply text-foreground mt-3 text-base font-medium tracking-tight lg:mt-6 dark:text-white;
+  @apply text-foreground mt-5 text-sm font-medium tracking-tight dark:text-white;
 }
 
 .markdoc h6 {
@@ -34,11 +30,11 @@
 }
 
 .markdoc p {
-  @apply text-muted-foreground my-3 text-base leading-7;
+  @apply mt-7 text-base/7 text-gray-700 dark:text-gray-300;
 }
 
 .markdoc li {
-  @apply text-muted-foreground relative my-0.5 text-base leading-7;
+  @apply relative mt-2 text-base/7 text-gray-700 dark:text-gray-300;
 }
 
 .markdoc ul > li:before {
@@ -86,11 +82,15 @@
 }
 
 .markdoc pre {
-  @apply bg-muted/50 border-border text-foreground my-4 overflow-x-auto rounded-md border p-4 font-mono text-sm;
+  @apply bg-muted/50 border-border text-foreground my-4 overflow-x-auto rounded-md border px-4 py-2 font-mono text-sm;
 }
 
 .markdoc blockquote {
-  @apply border-primary text-muted-foreground my-4 border border-l-8 px-6 py-4 text-lg font-medium;
+  @apply my-4 rounded-md border px-4 py-2 text-base/7 text-gray-700 dark:text-gray-300;
+
+  p {
+    @apply mt-0;
+  }
 }
 
 .markdoc a {

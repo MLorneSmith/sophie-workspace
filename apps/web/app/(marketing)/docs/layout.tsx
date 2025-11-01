@@ -13,14 +13,32 @@ async function DocsLayout({ children }: React.PropsWithChildren) {
   const tree = buildDocumentationTree(docs);
 
   return (
-    <SidebarProvider
-      style={{ '--sidebar-width': '18em' } as React.CSSProperties}
-      className={'h-[calc(100vh-72px)] overflow-y-hidden lg:container'}
-    >
-      <DocsNavigation pages={tree} />
+    <div className={'container h-[calc(100vh-56px)] overflow-y-hidden'}>
+      <SidebarProvider
+        className="lg:gap-x-6"
+        style={{ '--sidebar-width': '17em' } as React.CSSProperties}
+      >
+        <HideFooterStyles />
 
-      {children}
-    </SidebarProvider>
+        <DocsNavigation pages={tree} />
+
+        {children}
+      </SidebarProvider>
+    </div>
+  );
+}
+
+function HideFooterStyles() {
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: `
+          .site-footer {
+            display: none;
+          }
+        `,
+      }}
+    />
   );
 }
 

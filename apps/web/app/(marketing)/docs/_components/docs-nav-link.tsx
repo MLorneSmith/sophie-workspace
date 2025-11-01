@@ -1,7 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -14,7 +12,6 @@ export function DocsNavLink({
   children,
 }: React.PropsWithChildren<{ label: string; url: string }>) {
   const currentPath = usePathname();
-  const ref = useRef<HTMLElement>(null);
   const isCurrent = isRouteActive(url, currentPath, true);
 
   return (
@@ -22,14 +19,10 @@ export function DocsNavLink({
       <SidebarMenuButton
         asChild
         isActive={isCurrent}
-        className={cn('transition-background font-normal!', {
-          'text-secondary-foreground font-bold': isCurrent,
-        })}
+        className={cn('text-secondary-foreground transition-all')}
       >
         <Link href={url}>
-          <span ref={ref} className="block max-w-full truncate">
-            {label}
-          </span>
+          <span className="block max-w-full truncate">{label}</span>
 
           {children}
         </Link>

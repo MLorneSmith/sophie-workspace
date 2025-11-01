@@ -13,7 +13,7 @@ export function DocsCard({
   return (
     <Link href={link.url} className="flex flex-col">
       <div
-        className={`bg-muted/50 hover:bg-muted/70 flex grow flex-col gap-y-2 rounded p-4`}
+        className={`hover:bg-muted/70 flex grow flex-col gap-y-0.5 rounded border p-4`}
       >
         <h3 className="mt-0 text-lg font-medium hover:underline dark:text-white">
           {title}

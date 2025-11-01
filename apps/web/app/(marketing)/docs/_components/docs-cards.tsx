@@ -6,7 +6,7 @@ export function DocsCards({ cards }: { cards: Cms.ContentItem[] }) {
   const cardsSortedByOrder = [...cards].sort((a, b) => a.order - b.order);
 
   return (
-    <div className={'grid grid-cols-1 gap-4 lg:grid-cols-2'}>
+    <div className={'absolute flex w-full flex-col gap-4 pb-48 lg:max-w-2xl'}>
       {cardsSortedByOrder.map((item) => {
         return (
           <DocsCard

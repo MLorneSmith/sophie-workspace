@@ -25,7 +25,7 @@ export default async function RootLayout({
   const nonce = await getCspNonce();
 
   return (
-    <html lang={language} className={className}>
+    <html lang={language} className={`${className} overscroll-y-none`}>
       <body>
         <RootProviders theme={theme} lang={language} nonce={nonce}>
           {children}

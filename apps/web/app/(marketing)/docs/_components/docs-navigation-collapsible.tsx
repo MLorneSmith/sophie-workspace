@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import { Cms } from '@kit/cms';
 import { Collapsible } from '@kit/ui/collapsible';
-import { isRouteActive } from '@kit/ui/utils';
+import { cn, isRouteActive } from '@kit/ui/utils';
 
 export function DocsNavigationCollapsible(
   props: React.PropsWithChildren<{
@@ -21,7 +21,9 @@ export function DocsNavigationCollapsible(
 
   return (
     <Collapsible
-      className={'group/collapsible'}
+      className={cn('group/collapsible', {
+        'group/active': isChildActive,
+      })}
       defaultOpen={isChildActive ? true : !props.node.collapsed}
     >
       {props.children}
