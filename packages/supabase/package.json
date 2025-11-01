@@ -26,11 +26,11 @@
     "@kit/prettier-config": "workspace:*",
     "@kit/tsconfig": "workspace:*",
     "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "2.76.1",
+    "@supabase/supabase-js": "2.78.0",
     "@tanstack/react-query": "5.90.5",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "next": "16.0.0",
+    "next": "catalog:",
     "react": "19.2.0",
     "zod": "^3.25.74"
   },

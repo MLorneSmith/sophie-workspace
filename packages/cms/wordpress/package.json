@@ -22,7 +22,7 @@
     "@kit/ui": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "wp-types": "^4.68.1"
+    "wp-types": "^4.68.3"
   },
   "typesVersions": {
     "*": {

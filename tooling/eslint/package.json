@@ -13,9 +13,9 @@
     "format": "prettier --check \"**/*.{js,json}\""
   },
   "dependencies": {
-    "@next/eslint-plugin-next": "16.0.0",
+    "@next/eslint-plugin-next": "catalog:",
     "@types/eslint": "9.6.1",
-    "eslint-config-next": "16.0.0",
+    "eslint-config-next": "catalog:",
     "eslint-config-turbo": "^2.5.8"
   },
   "devDependencies": {
