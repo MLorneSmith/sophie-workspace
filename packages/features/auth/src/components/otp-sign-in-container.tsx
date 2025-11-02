@@ -209,8 +209,6 @@ function OtpEmailForm({
       >
         <AuthErrorAlert error={signInMutation.error} />
 
-        {captcha.field}
-
         <FormField
           name="email"
           render={({ field }) => (
@@ -239,6 +237,8 @@ function OtpEmailForm({
           )}
         </Button>
       </form>
+
+      {captcha.field}
     </Form>
   );
 }

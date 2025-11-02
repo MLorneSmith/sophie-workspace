@@ -54,13 +54,15 @@ export function PasswordSignInContainer({
     <>
       <AuthErrorAlert error={signInMutation.error} />
 
-      {captcha.field}
+      <div>
+        <PasswordSignInForm
+          onSubmit={onSubmit}
+          loading={isLoading}
+          redirecting={isRedirecting}
+        />
 
-      <PasswordSignInForm
-        onSubmit={onSubmit}
-        loading={isLoading}
-        redirecting={isRedirecting}
-      />
+        {captcha.field}
+      </div>
     </>
   );
 }

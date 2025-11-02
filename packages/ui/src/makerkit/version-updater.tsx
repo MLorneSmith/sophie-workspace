@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { RocketIcon } from 'lucide-react';
@@ -38,11 +38,12 @@ export function VersionUpdater(props: { intervalTimeInSecond?: number }) {
   const [dismissed, setDismissed] = useState(false);
   const [showDialog, setShowDialog] = useState<boolean>(false);
 
-  if (!data?.didChange || dismissed) {
-    return null;
-  } else {
-    setShowDialog(data?.didChange ?? false);
-  }
+  useEffect(() => {
+    if (data?.didChange && !dismissed) {
+      // eslint-disable-next-line
+      setShowDialog(data?.didChange ?? false);
+    }
+  }, [data?.didChange, dismissed]);
 
   return (
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>

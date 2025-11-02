@@ -68,8 +68,6 @@ export function ResendAuthLinkForm(props: {
           return promise;
         })}
       >
-        {captcha.field}
-
         <FormField
           name={'email'}
           render={({ field }) => {
@@ -89,6 +87,8 @@ export function ResendAuthLinkForm(props: {
           <Trans i18nKey={'auth:resendLink'} defaults={'Resend Link'} />
         </Button>
       </form>
+
+      {captcha.field}
     </Form>
   );
 }

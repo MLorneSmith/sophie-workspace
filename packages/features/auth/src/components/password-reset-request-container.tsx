@@ -79,8 +79,6 @@ export function PasswordResetRequestContainer(params: {
             <div className={'flex flex-col gap-y-4'}>
               <AuthErrorAlert error={error} />
 
-              {captcha.field}
-
               <FormField
                 name={'email'}
                 render={({ field }) => (
@@ -107,6 +105,7 @@ export function PasswordResetRequestContainer(params: {
                 <Trans i18nKey={'auth:passwordResetLabel'} />
               </Button>
             </div>
+            {captcha.field}
           </form>
         </Form>
       </If>
