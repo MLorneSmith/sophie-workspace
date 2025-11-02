@@ -1,4 +1,5 @@
-import type { CmsType } from '@kit/cms-types';
+import { CmsType } from '@kit/cms-types';
+import { createRegistry } from '@kit/shared/registry';
 
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 
@@ -7,42 +8,34 @@ interface ContentRendererProps {
   type?: CmsType;
 }
 
+// Create a registry for CMS client implementations
+const cmsContentRendererRegistry = createRegistry<
+  React.ComponentType<ContentRendererProps>,
+  CmsType
+>();
+
 export async function ContentRenderer({
   content,
   type = CMS_CLIENT,
 }: ContentRendererProps) {
-  const Renderer = await getContentRenderer(type);
+  const Renderer = await cmsContentRendererRegistry.get(type);
 
-  return Renderer ? <Renderer content={content} /> : null;
-}
-
-/**
- * Gets the content renderer for the specified CMS client.
- *
- * @param {CmsType} type - The type of CMS client.
- */
-async function getContentRenderer(type: CmsType) {
-  switch (type) {
-    case 'keystatic': {
-      const { KeystaticContentRenderer } = await import(
-        '@kit/keystatic/renderer'
-      );
-
-      return KeystaticContentRenderer;
-    }
-
-    case 'wordpress': {
-      const { WordpressContentRenderer } = await import(
-        '@kit/wordpress/renderer'
-      );
-
-      return WordpressContentRenderer;
-    }
-
-    default: {
-      console.error(`Unknown CMS client: ${type as string}`);
-
-      return null;
-    }
+  if (Renderer) {
+    return <Renderer content={content} />;
   }
+
+  // fallback to the raw content if no renderer is found
+  return content as React.ReactNode;
 }
+
+cmsContentRendererRegistry.register('keystatic', async () => {
+  const { KeystaticContentRenderer } = await import('@kit/keystatic/renderer');
+
+  return KeystaticContentRenderer;
+});
+
+cmsContentRendererRegistry.register('wordpress', async () => {
+  const { WordpressContentRenderer } = await import('@kit/wordpress/renderer');
+
+  return WordpressContentRenderer;
+});

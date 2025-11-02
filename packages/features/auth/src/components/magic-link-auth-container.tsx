@@ -19,12 +19,12 @@ import {
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
 import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
+import { EmailInput } from './email-input';
 import { TermsAndConditionsFormField } from './terms-and-conditions-form-field';
 
 export function MagicLinkAuthContainer({
@@ -118,13 +118,7 @@ export function MagicLinkAuthContainer({
                 </FormLabel>
 
                 <FormControl>
-                  <Input
-                    data-test={'email-input'}
-                    required
-                    type="email"
-                    placeholder={t('auth:emailPlaceholder')}
-                    {...field}
-                  />
+                  <EmailInput data-test="email-input" {...field} />
                 </FormControl>
 
                 <FormMessage />

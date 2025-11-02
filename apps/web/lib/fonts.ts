@@ -42,7 +42,7 @@ export function getFontsClassName(theme?: string) {
     [],
   );
 
-  return cn('bg-background min-h-screen antialiased', ...font, {
+  return cn(...font, {
     dark,
     light,
   });

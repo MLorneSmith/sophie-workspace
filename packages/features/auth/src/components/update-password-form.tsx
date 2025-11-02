@@ -15,16 +15,16 @@ import { Button } from '@kit/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { Heading } from '@kit/ui/heading';
-import { Input } from '@kit/ui/input';
 import { Trans } from '@kit/ui/trans';
 
 import { PasswordResetSchema } from '../schemas/password-reset.schema';
+import { PasswordInput } from './password-input';
 
 export function UpdatePasswordForm(params: {
   redirectTo: string;
@@ -72,22 +72,13 @@ export function UpdatePasswordForm(params: {
             toast.success(t('account:updatePasswordSuccessMessage'));
           })}
         >
-          <div className={'flex-col space-y-4'}>
+          <div className={'flex-col space-y-2.5'}>
             <FormField
               name={'password'}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <Trans i18nKey={'common:password'} />
-                  </FormLabel>
-
                   <FormControl>
-                    <Input
-                      required
-                      type="password"
-                      autoComplete={'new-password'}
-                      {...field}
-                    />
+                    <PasswordInput autoComplete={'new-password'} {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -99,13 +90,13 @@ export function UpdatePasswordForm(params: {
               name={'repeatPassword'}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <Trans i18nKey={'common:repeatPassword'} />
-                  </FormLabel>
-
                   <FormControl>
-                    <Input required type="password" {...field} />
+                    <PasswordInput autoComplete={'new-password'} {...field} />
                   </FormControl>
+
+                  <FormDescription>
+                    <Trans i18nKey={'common:repeatPassword'} />
+                  </FormDescription>
 
                   <FormMessage />
                 </FormItem>

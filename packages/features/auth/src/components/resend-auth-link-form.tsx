@@ -13,12 +13,12 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
+  FormMessage,
 } from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
 import { Trans } from '@kit/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
+import { EmailInput } from './email-input';
 
 export function ResendAuthLinkForm(props: {
   redirectPath?: string;
@@ -71,20 +71,18 @@ export function ResendAuthLinkForm(props: {
         {captcha.field}
 
         <FormField
+          name={'email'}
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'common:emailAddress'} />
-                </FormLabel>
-
                 <FormControl>
-                  <Input type="email" required {...field} />
+                  <EmailInput data-test="email-input" {...field} />
                 </FormControl>
+
+                <FormMessage />
               </FormItem>
             );
           }}
-          name={'email'}
         />
 
         <Button disabled={resendLink.isPending}>

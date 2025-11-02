@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 
 import { Toaster } from '@kit/ui/sonner';
+import { cn } from '@kit/ui/utils';
 
 import { RootProviders } from '~/components/root-providers';
 import { getFontsClassName } from '~/lib/fonts';
@@ -19,13 +20,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { language } = await createI18nServerInstance();
-  const theme = await getRootTheme();
-  const className = getFontsClassName(theme);
-  const nonce = await getCspNonce();
+  const [theme, nonce, i18n] = await Promise.all([
+    getRootTheme(),
+    getCspNonce(),
+    createI18nServerInstance(),
+  ]);
+
+  const className = getRootClassName(theme);
+  const language = i18n.language;
 
   return (
-    <html lang={language} className={`${className} overscroll-y-none`}>
+    <html lang={language} className={className}>
       <body>
         <RootProviders theme={theme} lang={language} nonce={nonce}>
           {children}
@@ -34,6 +39,15 @@ export default async function RootLayout({
         <Toaster richColors={true} theme={theme} position="top-center" />
       </body>
     </html>
+  );
+}
+
+function getRootClassName(theme: string) {
+  const fontsClassName = getFontsClassName(theme);
+
+  return cn(
+    'bg-background min-h-screen overscroll-y-none antialiased',
+    fontsClassName,
   );
 }
 

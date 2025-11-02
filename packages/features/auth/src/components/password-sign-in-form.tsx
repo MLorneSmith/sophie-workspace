@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import type { z } from 'zod';
@@ -14,14 +14,18 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@kit/ui/form';
 import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@kit/ui/input-group';
 import { Trans } from '@kit/ui/trans';
 
 import { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
+import { PasswordInput } from './password-input';
 
 export function PasswordSignInForm({
   onSubmit,
@@ -48,67 +52,61 @@ export function PasswordSignInForm({
         className={'flex w-full flex-col gap-y-4'}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <FormField
-          control={form.control}
-          name={'email'}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <Trans i18nKey={'common:emailAddress'} />
-              </FormLabel>
+        <div className={'flex flex-col space-y-2.5'}>
+          <FormField
+            control={form.control}
+            name={'email'}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <InputGroup className="dark:bg-background">
+                    <InputGroupAddon>
+                      <Mail className="h-4 w-4" />
+                    </InputGroupAddon>
 
-              <FormControl>
-                <Input
-                  data-test={'email-input'}
-                  required
-                  type="email"
-                  placeholder={t('emailPlaceholder')}
-                  {...field}
-                />
-              </FormControl>
+                    <InputGroupInput
+                      data-test={'email-input'}
+                      required
+                      type="email"
+                      placeholder={t('emailPlaceholder')}
+                      {...field}
+                    />
+                  </InputGroup>
+                </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name={'password'}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <Trans i18nKey={'common:password'} />
-              </FormLabel>
+          <FormField
+            control={form.control}
+            name={'password'}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <PasswordInput {...field} />
+                </FormControl>
 
-              <FormControl>
-                <Input
-                  required
-                  data-test={'password-input'}
-                  type="password"
-                  placeholder={''}
-                  {...field}
-                />
-              </FormControl>
+                <FormMessage />
 
-              <FormMessage />
-
-              <div>
-                <Button
-                  asChild
-                  type={'button'}
-                  size={'sm'}
-                  variant={'link'}
-                  className={'text-xs'}
-                >
-                  <Link href={'/auth/password-reset'}>
-                    <Trans i18nKey={'auth:passwordForgottenQuestion'} />
-                  </Link>
-                </Button>
-              </div>
-            </FormItem>
-          )}
-        />
+                <div>
+                  <Button
+                    asChild
+                    type={'button'}
+                    size={'sm'}
+                    variant={'link'}
+                    className={'text-xs'}
+                  >
+                    <Link href={'/auth/password-reset'}>
+                      <Trans i18nKey={'auth:passwordForgottenQuestion'} />
+                    </Link>
+                  </Button>
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button
           data-test="auth-submit-button"
