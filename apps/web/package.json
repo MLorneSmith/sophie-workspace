@@ -70,6 +70,7 @@
     "react-i18next": "^16.2.3",
     "recharts": "2.15.3",
     "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "catalog:",
     "urlpattern-polyfill": "^10.1.0",
     "zod": "^3.25.74"
   },
@@ -88,7 +89,6 @@
     "prettier": "^3.6.2",
     "supabase": "catalog:",
     "tailwindcss": "catalog:",
-    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3"
   },
   "prettier": "@kit/prettier-config",
