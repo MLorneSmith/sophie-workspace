@@ -1,11 +1,9 @@
-import Link from "next/link";
-
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
 import type { Cms } from "@kit/cms";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 import { DateFormatter } from "../../blog/_components/date-formatter";
 
