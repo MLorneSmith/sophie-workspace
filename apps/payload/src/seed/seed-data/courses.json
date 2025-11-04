@@ -1,9 +1,10 @@
 [
   {
-    "_ref": "courses:ddm",
+    "id": "decks-for-decision-makers",
+    "_ref": "decks-for-decision-makers",
     "slug": "decks-for-decision-makers",
     "title": "Decks for Decision Makers",
-    "status": "published",
-    "publishedAt": "2024-01-15T10:00:00Z"
+    "description": "Master the art of business presentations. This comprehensive course teaches you how to create compelling, professional presentations that influence decision-makers. Learn audience analysis, storytelling, visual design, data presentation, and confident delivery.",
+    "status": "published"
   }
 ]

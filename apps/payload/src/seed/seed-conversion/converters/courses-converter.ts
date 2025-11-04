@@ -1,8 +1,8 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
+import { createServiceLogger } from "@kit/shared/logger";
 import type { Course } from "../../../../payload-types";
 import type { ReferenceManager } from "../utils/reference-manager";
-import { createServiceLogger } from "@kit/shared/logger";
 
 const { getLogger } = createServiceLogger("SEED-CONVERTER");
 
@@ -55,7 +55,7 @@ export async function convertCourses(
 				title: rawCourse.title,
 				description: rawCourse.description,
 				status: rawCourse.status,
-				content: rawCourse.content as Course['content'],
+				content: rawCourse.content as Course["content"],
 				downloads: rawCourse.downloads,
 				publishedAt: rawCourse.publishedAt,
 			};

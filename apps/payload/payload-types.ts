@@ -188,30 +188,12 @@ export interface Media {
     | null;
   updatedAt: string;
   createdAt: string;
-  /**
-   * Public URL to access the file (R2 CDN URL)
-   */
-  url: string;
+  url?: string | null;
   thumbnailURL?: string | null;
-  /**
-   * Original filename of the media file
-   */
-  filename: string;
-  /**
-   * MIME type of the file (e.g., image/png, video/mp4)
-   */
+  filename?: string | null;
   mimeType?: string | null;
-  /**
-   * File size in bytes
-   */
   filesize?: number | null;
-  /**
-   * Image/video width in pixels (if applicable)
-   */
   width?: number | null;
-  /**
-   * Image/video height in pixels (if applicable)
-   */
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
@@ -257,22 +239,10 @@ export interface Download {
   accessLevel?: ('public' | 'registered' | 'premium') | null;
   updatedAt: string;
   createdAt: string;
-  /**
-   * Public URL to access the file (R2 CDN URL)
-   */
-  url: string;
+  url?: string | null;
   thumbnailURL?: string | null;
-  /**
-   * Original filename of the uploaded file
-   */
-  filename: string;
-  /**
-   * MIME type of the file (e.g., application/pdf)
-   */
+  filename?: string | null;
   mimeType?: string | null;
-  /**
-   * File size in bytes
-   */
   filesize?: number | null;
   width?: number | null;
   height?: number | null;

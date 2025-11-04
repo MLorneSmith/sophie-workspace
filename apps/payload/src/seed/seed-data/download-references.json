@@ -1,8 +1,4 @@
-[
-  {
-    "_ref": "downloads:template1",
-    "slug": "template1",
-    "title": "Template 1",
-    "filename": "template1.pdf"
-  }
-]
+{
+  "total": 0,
+  "references": []
+}

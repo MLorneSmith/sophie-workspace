@@ -26,8 +26,26 @@ const { ResourceLock } = require("../resource-lock.cjs");
 const { TestCleanupGuard } = require("../utilities/test-cleanup-guard.cjs");
 const { TestHealthMonitor } = require("../utilities/test-health-monitor.cjs");
 
-// Simple logging utility
+// Global line counter for log functions (shared across all instances)
+let globalLogLineCount = 0;
+const MAX_LOG_LINES = 200; // Hard limit to prevent Claude Code crashes
+let logLimitWarningShown = false;
+
+// Simple logging utility with line limit protection
 function log(message, type = "info") {
+	// Enforce hard limit on log output
+	if (globalLogLineCount >= MAX_LOG_LINES) {
+		if (!logLimitWarningShown) {
+			logLimitWarningShown = true;
+			const timestamp = new Date().toISOString();
+			process.stdout.write(
+				`[${timestamp}] WARN: Log output limit reached (${MAX_LOG_LINES} lines) - suppressing further logs\n`,
+			);
+		}
+		return; // Silently suppress further logs
+	}
+
+	globalLogLineCount++;
 	const timestamp = new Date().toISOString();
 	process.stdout.write(`[${timestamp}] ${type.toUpperCase()}: ${message}\n`);
 }
@@ -119,6 +137,10 @@ class TestController {
 		this.resourceLock = new ResourceLock();
 		this.cleanupGuard = new TestCleanupGuard();
 
+		// Global log line counter to prevent Claude Code crashes
+		this._logLineCount = 0;
+		this._maxLogLines = 200; // Hard limit on log messages
+
 		// Initialize test runners
 		this.unitTestRunner = new UnitTestRunner(
 			CONFIG,
@@ -148,9 +170,13 @@ class TestController {
 			debug: false,
 			verbose: false,
 			unitOnly: false,
+			outputMode: null,
+			outputFile: null,
 		};
 
-		for (const arg of args) {
+		for (let i = 0; i < args.length; i++) {
+			const arg = args[i];
+
 			switch (arg) {
 				case "--skip-unit":
 					options.skipUnit = true;
@@ -172,6 +198,37 @@ class TestController {
 				case "--verbose":
 					options.verbose = true;
 					CONFIG.execution.verbose = true;
+					break;
+				case "--output":
+				case "-o":
+					// Output mode: full, summary, quiet, file
+					options.outputMode = args[++i];
+					if (options.outputMode) {
+						CONFIG.output.mode = options.outputMode;
+					}
+					break;
+				case "--output-file":
+				case "-f":
+					// Custom output file path
+					options.outputFile = args[++i];
+					if (options.outputFile) {
+						CONFIG.output.file.path = options.outputFile;
+						CONFIG.output.file.enabled = true;
+					}
+					break;
+				case "--quiet":
+				case "-q":
+					options.outputMode = "quiet";
+					CONFIG.output.mode = "quiet";
+					break;
+				case "--summary":
+				case "-s":
+					options.outputMode = "summary";
+					CONFIG.output.mode = "summary";
+					break;
+				case "--full":
+					options.outputMode = "full";
+					CONFIG.output.mode = "full";
 					break;
 				case "--help":
 					this.showHelp();
@@ -356,15 +413,27 @@ Usage: node test-controller.cjs [options]
 Options:
   --skip-unit     Skip unit tests
   --skip-e2e      Skip E2E tests
+  --unit          Run unit tests only (alias for --skip-e2e)
   --quick         Quick infrastructure check only
   --debug         Enable debug output
   --verbose       Enable verbose logging
+
+Output Control (prevents Claude Code crashes from buffer overflow):
+  -o, --output <mode>      Set output mode: full, summary, quiet, file
+  -f, --output-file <path> Write full output to file
+  -q, --quiet              Quiet mode - only errors and critical messages
+  -s, --summary            Summary mode - filtered output (default)
+  --full                   Full mode - show all output
+
   --help          Show this help message
 
 Examples:
-  node test-controller.cjs                    # Run all tests
-  node test-controller.cjs --skip-e2e         # Run unit tests only
-  node test-controller.cjs --quick            # Quick infrastructure check
+  node test-controller.cjs                              # Run all tests (summary mode)
+  node test-controller.cjs --skip-e2e                   # Run unit tests only
+  node test-controller.cjs --quick                      # Quick infrastructure check
+  node test-controller.cjs --quiet                      # Minimal output
+  node test-controller.cjs --output-file /tmp/test.log  # Log to file
+  node test-controller.cjs --full --debug               # Full output with debug
 		`.trim(),
 		);
 	}
@@ -380,6 +449,9 @@ Examples:
 			log(
 				`📋 Configuration: Unit=${!this.options.skipUnit}, E2E=${!this.options.skipE2E}`,
 			);
+
+			// Initialize resource lock (creates lock directory)
+			await this.resourceLock.init();
 
 			// Acquire resource lock
 			const lockAcquired = await this.resourceLock.acquire("main", 5000);

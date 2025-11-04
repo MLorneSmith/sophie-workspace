@@ -67,7 +67,7 @@
 		"*": [
 			"bash ./scripts/trufflehog-scan.sh"
 		],
-		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
+		"apps/payload/!(src/seed/seed-data)/**/*.{js,jsx,ts,tsx,json}": [
 			"bash -c 'cd apps/payload && pnpm lint'"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [

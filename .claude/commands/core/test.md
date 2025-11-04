@@ -9,11 +9,11 @@ argument-hint: [--quick | --unit | --e2e | --debug | --continue]
 Execute comprehensive test suites with real-time progress visibility and intelligent orchestration.
 
 ## Key Features
-- **Real-Time Execution**: Direct bash execution with live progress visibility
-- **Intelligent Orchestration**: Uses existing test-controller.cjs for organized execution
+- **Crash-Safe Execution**: Prevents Claude Code crashes from output overflow
+- **Minimal Output**: Shows only progress and summary (< 50 lines)
+- **Complete Logs**: Full output preserved at /tmp/test-output.log
 - **Multi-Suite Support**: Runs unit, integration, and E2E tests with flexible options
-- **No Agent Buffering**: Direct tool usage prevents output hiding and confusion
-- **Immediate Feedback**: See test results as they happen, with final summary
+- **Smart Filtering**: Intelligent output filtering with quick access to failures
 
 ## Essential Context
 <!-- Always read for this command -->
@@ -38,16 +38,16 @@ You are a Direct Test Executor specializing in running test suites with real-tim
 ## CRITICAL EXECUTION RULES
 
 **NEVER:**
-1. ❌ Wrap test-controller.cjs in custom bash logic or complex scripts
+1. ❌ Call test-controller.cjs directly (will crash Claude Code with output overflow)
 2. ❌ Run test-failure-analyzer.cjs separately (it's integrated into test-controller)
-3. ❌ Build custom argument parsing - just pass arguments directly
+3. ❌ Build custom argument parsing - just pass arguments to safe wrapper
 4. ❌ Try to "fix" infrastructure issues - report them and stop
 
 **ALWAYS:**
-1. ✅ Call test-controller.cjs directly with simple `node` command
+1. ✅ Use safe-test-runner.sh wrapper to prevent Claude Code crashes
 2. ✅ Read the environment context file FIRST
-3. ✅ Parse test-controller output for failure categories
-4. ✅ Suggest debugging steps based on the failure type shown
+3. ✅ Parse summary output for failure categories
+4. ✅ Point users to /tmp/test-output.log for detailed debugging
 
 ## OUTPUT ANALYSIS GUIDE
 
@@ -110,61 +110,64 @@ The test-controller provides structured output with clear failure indicators:
 
 ### Phase M - METHOD
 <method>
-**Execute tests using the test-controller directly:**
+**Execute tests using the safe wrapper script:**
 
 **Step 1: Read Environment Context**
 ```
 Always read first: .claude/context/testing/environment/e2e-local-environment.md
 ```
 
-**Step 2: Execute Test Controller Directly**
+**Step 2: Execute Safe Test Runner**
 ```bash
-# Simple execution - let test-controller handle ALL complexity
-node .claude/scripts/testing/infrastructure/test-controller.cjs [ARGS]
+# Use safe wrapper to prevent Claude Code crashes from output overflow
+# The wrapper filters output to <50 lines while preserving full logs
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh [ARGS]
 
 # Examples:
-node .claude/scripts/testing/infrastructure/test-controller.cjs           # Full suite
-node .claude/scripts/testing/infrastructure/test-controller.cjs --unit    # Unit only
-node .claude/scripts/testing/infrastructure/test-controller.cjs --e2e     # E2E only
-node .claude/scripts/testing/infrastructure/test-controller.cjs --debug   # Verbose
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh           # Full suite
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh --unit    # Unit only
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh --e2e     # E2E only
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh --debug   # Verbose output
+bash .claude/scripts/testing/infrastructure/safe-test-runner.sh --verbose # Very verbose
 
-# With debug environment variable if needed
-DEBUG_TEST=true node .claude/scripts/testing/infrastructure/test-controller.cjs --debug
+# NOTE: Full test output always saved to /tmp/test-output.log
 ```
 
-**Step 3: Let Controller Output Guide Next Steps**
-- The test-controller automatically categorizes failures
-- DO NOT run separate failure analyzers
-- Simply report what the controller shows
+**Step 3: Review Summary and Check Logs if Needed**
+- The safe wrapper shows minimal progress + summary
+- Full logs available at /tmp/test-output.log for detailed debugging
+- Quick access commands shown at end for viewing failures/errors
 </method>
 
 ### Phase E - EXPECTATIONS
 <expectations>
-**Deliver** real-time test execution with final summary:
+**Deliver** crash-safe test execution with concise summary:
 
 **Success Path:**
 1. Load environment context
-2. Call `node .claude/scripts/testing/infrastructure/test-controller.cjs [args]`
-3. Let it run with live output
-4. Report final status
+2. Call `bash .claude/scripts/testing/infrastructure/safe-test-runner.sh [args]`
+3. See minimal progress updates (< 50 lines)
+4. Review summary with pass/fail counts
+5. Point to /tmp/test-output.log for details
 
 **Failure Path:**
-1. Parse test-controller output for failure categories
+1. Parse summary output for failure categories
 2. Report the specific failure type (Infrastructure/Authentication/UI/Database/Application)
-3. Suggest debugging options based on failure category
+3. Show quick access commands for viewing detailed failures
 4. DO NOT attempt to fix - just report
 
 **Quality Standards:**
 - Immediate execution without pre-description
-- Direct output visibility
-- Clear failure categorization
+- Minimal output to prevent Claude Code crashes
+- Full logs preserved at /tmp/test-output.log
+- Clear failure categorization with debugging hints
 </expectations>
 </instructions>
 
 <help>
-🧪 **Test Command - Real-Time Test Execution**
+🧪 **Test Command - Crash-Safe Test Execution**
 
-Execute test suites with immediate progress visibility and organized orchestration.
+Execute test suites with minimal output to prevent Claude Code crashes while preserving full logs.
 
 **Usage:**
 - `/test` - Run comprehensive test suite
@@ -172,19 +175,26 @@ Execute test suites with immediate progress visibility and organized orchestrati
 - `/test --e2e` - E2E tests only
 - `/test --quick` - Quick smoke tests
 - `/test --debug` - Enable verbose debug output
+- `/test --verbose` - Very verbose (show more lines)
 - `/test --continue` - Continue execution despite failures
 
+**Output Management:**
+- Console: < 50 lines (progress + summary only)
+- Full logs: /tmp/test-output.log (all 14K+ lines preserved)
+- Quick access commands shown for viewing failures/errors
+
 **PRIME Process:**
-1. **Purpose**: Execute tests with live feedback
-2. **Role**: Direct test execution specialist
+1. **Purpose**: Execute tests safely without crashes
+2. **Role**: Crash-safe test execution specialist
 3. **Inputs**: Environment context and parsed arguments
-4. **Method**: Direct bash execution with controller integration
-5. **Expectations**: Real-time output with final summary
+4. **Method**: Safe wrapper with intelligent output filtering
+5. **Expectations**: Minimal console output with complete logs
 
-**Requirements:**
-- Uses existing .claude/scripts/testing/infrastructure/test-controller.cjs
-- Loads unified E2E environment configuration
-- No agent delegation (preserves output visibility)
+**Benefits:**
+- Zero risk of Claude Code crashes from output overflow
+- All test output preserved for debugging
+- Clear summary with pass/fail counts
+- Quick access to detailed failure information
 
-Experience immediate test feedback exactly like running pnpm commands directly!
+Safe test execution that prevents 14K+ line output from crashing Claude Code!
 </help>

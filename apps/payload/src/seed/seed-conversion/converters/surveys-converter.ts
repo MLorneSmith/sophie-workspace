@@ -114,7 +114,7 @@ export async function convertSurveys(
 				anonymous: surveyMeta.anonymous ?? true,
 				multipleSubmissions: surveyMeta.multipleSubmissions ?? false,
 				questions: questionRefs,
-				_status: 'published', // Payload v3 versioning system uses _status field
+				_status: "published", // Payload v3 versioning system uses _status field
 				published: true, // Keep for backwards compatibility
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
@@ -174,7 +174,9 @@ async function loadSurveyQuestionsMapping(): Promise<any> {
 		console.log(
 			"    ⚠️  Survey questions mapping not found, surveys will have empty question arrays",
 		);
-		console.log(`    📂 Looked for mapping at: ${path.join(__dirname, "../../seed-data/survey-questions-mapping.json")}`);
+		console.log(
+			`    📂 Looked for mapping at: ${path.join(__dirname, "../../seed-data/survey-questions-mapping.json")}`,
+		);
 		return {};
 	}
 }

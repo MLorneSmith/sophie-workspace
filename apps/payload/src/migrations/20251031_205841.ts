@@ -66,9 +66,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"type" "payload"."enum_media_type",
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"url" varchar NOT NULL,
+  	"url" varchar,
   	"thumbnail_u_r_l" varchar,
-  	"filename" varchar NOT NULL,
+  	"filename" varchar,
   	"mime_type" varchar,
   	"filesize" numeric,
   	"width" numeric,
@@ -94,9 +94,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"access_level" "payload"."enum_downloads_access_level" DEFAULT 'public',
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"url" varchar NOT NULL,
+  	"url" varchar,
   	"thumbnail_u_r_l" varchar,
-  	"filename" varchar NOT NULL,
+  	"filename" varchar,
   	"mime_type" varchar,
   	"filesize" numeric,
   	"width" numeric,
@@ -183,6 +183,15 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"downloads_id" uuid
   );
   
+  CREATE TABLE "payload"."documentation_breadcrumbs" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" uuid NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"doc_id" uuid,
+  	"url" varchar,
+  	"label" varchar
+  );
+  
   CREATE TABLE "payload"."documentation_categories" (
   	"_order" integer NOT NULL,
   	"_parent_id" uuid NOT NULL,
@@ -197,25 +206,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"tag" varchar
   );
   
-  CREATE TABLE "payload"."documentation_breadcrumbs" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" uuid NOT NULL,
-  	"id" varchar PRIMARY KEY NOT NULL,
-  	"doc_id" uuid,
-  	"url" varchar,
-  	"label" varchar
-  );
-  
   CREATE TABLE "payload"."documentation" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"title" varchar,
   	"slug" varchar,
+  	"parent_id" uuid,
   	"description" varchar,
   	"content" jsonb,
   	"published_at" timestamp(3) with time zone,
   	"status" "payload"."enum_documentation_status" DEFAULT 'draft',
   	"order" numeric DEFAULT 0,
-  	"parent_id" uuid,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"_status" "payload"."enum_documentation_status" DEFAULT 'draft'
@@ -227,6 +227,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"parent_id" uuid NOT NULL,
   	"path" varchar NOT NULL,
   	"downloads_id" uuid
+  );
+  
+  CREATE TABLE "payload"."_documentation_v_version_breadcrumbs" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" uuid NOT NULL,
+  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"doc_id" uuid,
+  	"url" varchar,
+  	"label" varchar,
+  	"_uuid" varchar
   );
   
   CREATE TABLE "payload"."_documentation_v_version_categories" (
@@ -245,27 +255,17 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "payload"."_documentation_v_version_breadcrumbs" (
-  	"_order" integer NOT NULL,
-  	"_parent_id" uuid NOT NULL,
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-  	"doc_id" uuid,
-  	"url" varchar,
-  	"label" varchar,
-  	"_uuid" varchar
-  );
-  
   CREATE TABLE "payload"."_documentation_v" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"parent_id" uuid,
   	"version_title" varchar,
   	"version_slug" varchar,
+  	"version_parent_id" uuid,
   	"version_description" varchar,
   	"version_content" jsonb,
   	"version_published_at" timestamp(3) with time zone,
   	"version_status" "payload"."enum__documentation_v_version_status" DEFAULT 'draft',
   	"version_order" numeric DEFAULT 0,
-  	"version_parent_id" uuid,
   	"version_updated_at" timestamp(3) with time zone,
   	"version_created_at" timestamp(3) with time zone,
   	"version__status" "payload"."enum__documentation_v_version_status" DEFAULT 'draft',
@@ -591,7 +591,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"title" varchar,
   	"slug" varchar,
   	"description" varchar,
-  	"status" "payload"."enum_surveys_status" DEFAULT 'draft',
   	"published_at" timestamp(3) with time zone,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -612,7 +611,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_title" varchar,
   	"version_slug" varchar,
   	"version_description" varchar,
-  	"version_status" "payload"."enum__surveys_v_version_status" DEFAULT 'draft',
   	"version_published_at" timestamp(3) with time zone,
   	"version_updated_at" timestamp(3) with time zone,
   	"version_created_at" timestamp(3) with time zone,
@@ -694,17 +692,17 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload"."_posts_v" ADD CONSTRAINT "_posts_v_version_image_id_id_media_id_fk" FOREIGN KEY ("version_image_id_id") REFERENCES "payload"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_posts_v_rels" ADD CONSTRAINT "_posts_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_posts_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_posts_v_rels" ADD CONSTRAINT "_posts_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."documentation_categories" ADD CONSTRAINT "documentation_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."documentation_tags" ADD CONSTRAINT "documentation_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."documentation_breadcrumbs" ADD CONSTRAINT "documentation_breadcrumbs_doc_id_documentation_id_fk" FOREIGN KEY ("doc_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."documentation_breadcrumbs" ADD CONSTRAINT "documentation_breadcrumbs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."documentation_categories" ADD CONSTRAINT "documentation_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."documentation_tags" ADD CONSTRAINT "documentation_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."documentation" ADD CONSTRAINT "documentation_parent_id_documentation_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."documentation_rels" ADD CONSTRAINT "documentation_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."documentation_rels" ADD CONSTRAINT "documentation_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_documentation_v_version_categories" ADD CONSTRAINT "_documentation_v_version_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_documentation_v_version_tags" ADD CONSTRAINT "_documentation_v_version_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v_version_breadcrumbs" ADD CONSTRAINT "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk" FOREIGN KEY ("doc_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v_version_breadcrumbs" ADD CONSTRAINT "_documentation_v_version_breadcrumbs_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_documentation_v_version_categories" ADD CONSTRAINT "_documentation_v_version_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_documentation_v_version_tags" ADD CONSTRAINT "_documentation_v_version_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v" ADD CONSTRAINT "_documentation_v_parent_id_documentation_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v" ADD CONSTRAINT "_documentation_v_version_parent_id_documentation_id_fk" FOREIGN KEY ("version_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v_rels" ADD CONSTRAINT "_documentation_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
@@ -814,13 +812,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_posts_v_rels_parent_idx" ON "payload"."_posts_v_rels" USING btree ("parent_id");
   CREATE INDEX "_posts_v_rels_path_idx" ON "payload"."_posts_v_rels" USING btree ("path");
   CREATE INDEX "_posts_v_rels_downloads_id_idx" ON "payload"."_posts_v_rels" USING btree ("downloads_id");
+  CREATE INDEX "documentation_breadcrumbs_order_idx" ON "payload"."documentation_breadcrumbs" USING btree ("_order");
+  CREATE INDEX "documentation_breadcrumbs_parent_id_idx" ON "payload"."documentation_breadcrumbs" USING btree ("_parent_id");
+  CREATE INDEX "documentation_breadcrumbs_doc_idx" ON "payload"."documentation_breadcrumbs" USING btree ("doc_id");
   CREATE INDEX "documentation_categories_order_idx" ON "payload"."documentation_categories" USING btree ("_order");
   CREATE INDEX "documentation_categories_parent_id_idx" ON "payload"."documentation_categories" USING btree ("_parent_id");
   CREATE INDEX "documentation_tags_order_idx" ON "payload"."documentation_tags" USING btree ("_order");
   CREATE INDEX "documentation_tags_parent_id_idx" ON "payload"."documentation_tags" USING btree ("_parent_id");
-  CREATE INDEX "documentation_breadcrumbs_order_idx" ON "payload"."documentation_breadcrumbs" USING btree ("_order");
-  CREATE INDEX "documentation_breadcrumbs_parent_id_idx" ON "payload"."documentation_breadcrumbs" USING btree ("_parent_id");
-  CREATE INDEX "documentation_breadcrumbs_doc_idx" ON "payload"."documentation_breadcrumbs" USING btree ("doc_id");
   CREATE INDEX "documentation_parent_idx" ON "payload"."documentation" USING btree ("parent_id");
   CREATE INDEX "documentation_updated_at_idx" ON "payload"."documentation" USING btree ("updated_at");
   CREATE INDEX "documentation_created_at_idx" ON "payload"."documentation" USING btree ("created_at");
@@ -829,13 +827,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "documentation_rels_parent_idx" ON "payload"."documentation_rels" USING btree ("parent_id");
   CREATE INDEX "documentation_rels_path_idx" ON "payload"."documentation_rels" USING btree ("path");
   CREATE INDEX "documentation_rels_downloads_id_idx" ON "payload"."documentation_rels" USING btree ("downloads_id");
+  CREATE INDEX "_documentation_v_version_breadcrumbs_order_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("_order");
+  CREATE INDEX "_documentation_v_version_breadcrumbs_parent_id_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("_parent_id");
+  CREATE INDEX "_documentation_v_version_breadcrumbs_doc_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("doc_id");
   CREATE INDEX "_documentation_v_version_categories_order_idx" ON "payload"."_documentation_v_version_categories" USING btree ("_order");
   CREATE INDEX "_documentation_v_version_categories_parent_id_idx" ON "payload"."_documentation_v_version_categories" USING btree ("_parent_id");
   CREATE INDEX "_documentation_v_version_tags_order_idx" ON "payload"."_documentation_v_version_tags" USING btree ("_order");
   CREATE INDEX "_documentation_v_version_tags_parent_id_idx" ON "payload"."_documentation_v_version_tags" USING btree ("_parent_id");
-  CREATE INDEX "_documentation_v_version_breadcrumbs_order_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("_order");
-  CREATE INDEX "_documentation_v_version_breadcrumbs_parent_id_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("_parent_id");
-  CREATE INDEX "_documentation_v_version_breadcrumbs_doc_idx" ON "payload"."_documentation_v_version_breadcrumbs" USING btree ("doc_id");
   CREATE INDEX "_documentation_v_parent_idx" ON "payload"."_documentation_v" USING btree ("parent_id");
   CREATE INDEX "_documentation_v_version_version_parent_idx" ON "payload"."_documentation_v" USING btree ("version_parent_id");
   CREATE INDEX "_documentation_v_version_version_updated_at_idx" ON "payload"."_documentation_v" USING btree ("version_updated_at");
@@ -1034,14 +1032,14 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload"."_posts_v_version_tags" CASCADE;
   DROP TABLE "payload"."_posts_v" CASCADE;
   DROP TABLE "payload"."_posts_v_rels" CASCADE;
+  DROP TABLE "payload"."documentation_breadcrumbs" CASCADE;
   DROP TABLE "payload"."documentation_categories" CASCADE;
   DROP TABLE "payload"."documentation_tags" CASCADE;
-  DROP TABLE "payload"."documentation_breadcrumbs" CASCADE;
   DROP TABLE "payload"."documentation" CASCADE;
   DROP TABLE "payload"."documentation_rels" CASCADE;
+  DROP TABLE "payload"."_documentation_v_version_breadcrumbs" CASCADE;
   DROP TABLE "payload"."_documentation_v_version_categories" CASCADE;
   DROP TABLE "payload"."_documentation_v_version_tags" CASCADE;
-  DROP TABLE "payload"."_documentation_v_version_breadcrumbs" CASCADE;
   DROP TABLE "payload"."_documentation_v" CASCADE;
   DROP TABLE "payload"."_documentation_v_rels" CASCADE;
   DROP TABLE "payload"."private_categories" CASCADE;

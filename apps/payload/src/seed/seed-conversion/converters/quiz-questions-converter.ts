@@ -1,11 +1,11 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
-import type { QuizQuestion } from "../../../../payload-types";
-import type { ReferenceManager } from "../utils/reference-manager";
 import { createServiceLogger } from "@kit/shared/logger";
-import { parseMarkdownWithFrontmatter } from "../parsers/mdoc-parser-simple";
-import { v4 as uuidv4 } from "uuid";
 import * as yaml from "js-yaml";
+import { v4 as uuidv4 } from "uuid";
+import type { QuizQuestion } from "../../../../payload-types";
+import { parseMarkdownWithFrontmatter } from "../parsers/mdoc-parser-simple";
+import type { ReferenceManager } from "../utils/reference-manager";
 
 const { getLogger } = createServiceLogger("SEED-CONVERTER");
 
@@ -106,7 +106,9 @@ export async function convertQuizQuestions(
 
 			for (const tsQuestion of tsQuestions) {
 				// Check if we already have this question from mdoc
-				const exists = allQuestions.some((q) => q.question === tsQuestion.question);
+				const exists = allQuestions.some(
+					(q) => q.question === tsQuestion.question,
+				);
 				if (!exists) {
 					allQuestions.push(tsQuestion);
 				}
@@ -167,7 +169,7 @@ function parseMdocQuiz(content: string): MdocQuizData {
 			status: String(frontmatter.status || "published"),
 			publishedAt: String(frontmatter.publishedAt || ""),
 			language: String(frontmatter.language || "en"),
-			order: typeof frontmatter.order === 'number' ? frontmatter.order : 0,
+			order: typeof frontmatter.order === "number" ? frontmatter.order : 0,
 		},
 		questions,
 	};

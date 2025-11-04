@@ -1,7 +1,79 @@
 [
   {
-    "_ref": "surveys:survey1",
-    "slug": "survey1",
-    "title": "Survey 1"
+    "id": "feedback",
+    "title": "Course Feedback",
+    "description": "Please share your thoughts on the course",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [
+      "{ref:survey-questions:e9bb4a77-0edc-4693-b0d0-9f6b4763e660}",
+      "{ref:survey-questions:512fef40-fec7-4c25-8edc-dfeb629b9c43}",
+      "{ref:survey-questions:03bca4ff-8f5d-4d84-88d1-1311a11d05a1}",
+      "{ref:survey-questions:d7ae86ee-b985-4d9c-b417-45d6dcdb9285}"
+    ],
+    "_status": "published",
+    "published": true,
+    "createdAt": "2025-10-31T20:45:10.707Z",
+    "updatedAt": "2025-10-31T20:45:10.707Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:before-you-go}"
+  },
+  {
+    "id": "self-assessment",
+    "title": "High-Stakes Presentations Self-Assessment",
+    "description": "",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [
+      "{ref:survey-questions:4af3eba3-e4f4-4aaa-ae17-674814808633}",
+      "{ref:survey-questions:dfe69f70-89fe-4b81-9f98-2c1cbfb348ce}",
+      "{ref:survey-questions:e19bbc76-9b7a-4ae2-a0c1-68cc492ad94b}",
+      "{ref:survey-questions:450e787f-571b-4a42-8917-2cc676ee23a6}",
+      "{ref:survey-questions:84d115be-4e3f-414c-81aa-2aefd466a6fd}",
+      "{ref:survey-questions:a3f1cb31-d279-4a5a-9f32-6fe59ee271f9}",
+      "{ref:survey-questions:f880be43-02bf-4702-a405-907204d4295a}",
+      "{ref:survey-questions:03cb45d6-e483-4712-b22d-b47f518cb90a}",
+      "{ref:survey-questions:8bb24880-323d-42ef-9a77-58de876ee617}",
+      "{ref:survey-questions:c52b5c39-7a87-433d-a392-7e113ea37e3d}",
+      "{ref:survey-questions:ef113cb4-9c39-4b3f-bc14-2fcec3d80511}",
+      "{ref:survey-questions:04b4a798-1950-4e2d-9665-4bd88c138869}",
+      "{ref:survey-questions:85f8199e-899f-449d-a9c3-94def737a171}",
+      "{ref:survey-questions:1b6dd6da-2b29-4e1c-af75-fba19b946d39}",
+      "{ref:survey-questions:23225bd1-f80b-4651-9806-28018b14bd27}",
+      "{ref:survey-questions:ab53060d-c5d2-4e60-b686-dfff715ed921}",
+      "{ref:survey-questions:289ab59c-f177-4010-a048-0fc41ab55378}",
+      "{ref:survey-questions:afc2d8ba-6de7-40c1-8bb9-f0f13fa4d143}",
+      "{ref:survey-questions:d50a4520-681c-4d45-88e1-1c740fd71e2b}",
+      "{ref:survey-questions:55c3ad3d-2437-4e3a-ab5b-6e29a93c894d}",
+      "{ref:survey-questions:e665bbad-73f1-4b26-89c0-71f57164f2f9}",
+      "{ref:survey-questions:765762a0-db24-4cd0-b37e-29701a0988b3}",
+      "{ref:survey-questions:a9e46539-5564-4519-af97-3457135612ce}",
+      "{ref:survey-questions:03823e04-0293-48bb-ae3a-f11594af3b33}",
+      "{ref:survey-questions:2ba42acc-2eaa-42e1-a2cd-6b4add8a3b82}"
+    ],
+    "_status": "published",
+    "published": true,
+    "createdAt": "2025-10-31T20:45:10.708Z",
+    "updatedAt": "2025-10-31T20:45:10.708Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:before-we-begin}"
+  },
+  {
+    "id": "three-quick-questions",
+    "title": "Three Quick Questions",
+    "description": "A quick survey to help understand your goals",
+    "anonymous": true,
+    "multipleSubmissions": false,
+    "questions": [
+      "{ref:survey-questions:ae7fbdb8-9720-487d-9f01-efe23db99989}",
+      "{ref:survey-questions:26656d2d-3e3f-48f4-9f9b-494111fc1a1a}",
+      "{ref:survey-questions:bfa0d7cc-2268-4f39-9b86-b2426440a249}"
+    ],
+    "_status": "published",
+    "published": true,
+    "createdAt": "2025-10-31T20:45:10.708Z",
+    "updatedAt": "2025-10-31T20:45:10.708Z",
+    "course": "{ref:courses:decks-for-decision-makers}",
+    "lesson": "{ref:course-lessons:lesson-0}"
   }
 ]

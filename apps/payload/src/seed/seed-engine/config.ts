@@ -52,6 +52,14 @@ export const SEED_ORDER: readonly string[] = [
   // Level 3: Depend on Level 0-2 (quizzes, courses)
   'course-lessons', // Course lessons (reference courses, course-quizzes, media, downloads)
   'surveys', // Surveys (reference courses, lessons, and survey-questions)
+
+  // Test fixtures: For integration testing error scenarios
+  'empty-test', // Tests empty array handling
+  'malformed-test', // Tests JSON parse errors
+  'object-test', // Tests non-array structure validation
+  'null-test', // Tests null value handling
+  'invalid-types', // Tests data type validation
+  'invalid-test', // Tests general validation failures
 ] as const;
 
 /**
@@ -166,6 +174,44 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
     dataFile: 'private.json',
     processor: 'content',
     dependencies: ['media', 'downloads'],
+  },
+
+  // Test fixtures for integration testing
+  'empty-test': {
+    name: 'empty-test',
+    dataFile: 'empty-test.json',
+    processor: 'content',
+    dependencies: [],
+  },
+  'malformed-test': {
+    name: 'malformed-test',
+    dataFile: 'malformed-test.json',
+    processor: 'content',
+    dependencies: [],
+  },
+  'object-test': {
+    name: 'object-test',
+    dataFile: 'object-test.json',
+    processor: 'content',
+    dependencies: [],
+  },
+  'null-test': {
+    name: 'null-test',
+    dataFile: 'null-test.json',
+    processor: 'content',
+    dependencies: [],
+  },
+  'invalid-types': {
+    name: 'invalid-types',
+    dataFile: 'invalid-types.json',
+    processor: 'content',
+    dependencies: [],
+  },
+  'invalid-test': {
+    name: 'invalid-test',
+    dataFile: 'invalid-test.json',
+    processor: 'content',
+    dependencies: [],
   },
 };
 

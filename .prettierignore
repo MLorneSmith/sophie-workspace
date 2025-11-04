@@ -6,3 +6,5 @@ dist
 build
 .next
 next-env.d.ts
+# Seed data files - preserve exact format for reference resolution
+apps/payload/src/seed/seed-data/*.json

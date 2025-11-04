@@ -1,6 +1,6 @@
-import type { DownloadReference } from "../types";
-import path from "node:path";
 import { promises as fs } from "node:fs";
+import path from "node:path";
+import type { DownloadReference } from "../types";
 
 export class DownloadExtractor {
 	private downloadReferences: Map<string, DownloadReference> = new Map();
