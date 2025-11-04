@@ -79,6 +79,7 @@ export interface Config {
     'quiz-questions': QuizQuestion;
     'survey-questions': SurveyQuestion;
     surveys: Survey;
+    'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -97,6 +98,7 @@ export interface Config {
     'quiz-questions': QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
     'survey-questions': SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
     surveys: SurveysSelect<false> | SurveysSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -188,30 +190,12 @@ export interface Media {
     | null;
   updatedAt: string;
   createdAt: string;
-  /**
-   * Public URL to access the file (R2 CDN URL)
-   */
-  url: string;
+  url?: string | null;
   thumbnailURL?: string | null;
-  /**
-   * Original filename of the media file
-   */
-  filename: string;
-  /**
-   * MIME type of the file (e.g., image/png, video/mp4)
-   */
+  filename?: string | null;
   mimeType?: string | null;
-  /**
-   * File size in bytes
-   */
   filesize?: number | null;
-  /**
-   * Image/video width in pixels (if applicable)
-   */
   width?: number | null;
-  /**
-   * Image/video height in pixels (if applicable)
-   */
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
@@ -257,22 +241,10 @@ export interface Download {
   accessLevel?: ('public' | 'registered' | 'premium') | null;
   updatedAt: string;
   createdAt: string;
-  /**
-   * Public URL to access the file (R2 CDN URL)
-   */
-  url: string;
+  url?: string | null;
   thumbnailURL?: string | null;
-  /**
-   * Original filename of the uploaded file
-   */
-  filename: string;
-  /**
-   * MIME type of the file (e.g., application/pdf)
-   */
+  filename?: string | null;
   mimeType?: string | null;
-  /**
-   * File size in bytes
-   */
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
@@ -766,6 +738,23 @@ export interface SurveyQuestion {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -1153,6 +1142,14 @@ export interface SurveysSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
@@ -1280,3 +1277,4 @@ export interface Auth {
 
 
 // Module augmentation removed for cross-app compatibility
+}
