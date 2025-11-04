@@ -1,9 +1,7 @@
-import Link from "next/link";
-
-import { ArrowLeft, ArrowRight } from "lucide-react";
-
 import { Button } from "@kit/ui/button";
 import { Trans } from "@kit/ui/trans";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface ChangelogPaginationProps {
 	currentPage: number;
