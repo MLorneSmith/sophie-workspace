@@ -1,8 +1,10 @@
 "use client";
 
-import { useSignInWithEmailPassword } from "@kit/supabase/hooks/use-sign-in-with-email-password";
 import { useCallback } from "react";
+
 import type { z } from "zod";
+
+import { useSignInWithEmailPassword } from "@kit/supabase/hooks/use-sign-in-with-email-password";
 
 import { useCaptcha } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
@@ -52,13 +54,15 @@ export function PasswordSignInContainer({
 		<>
 			<AuthErrorAlert error={signInMutation.error} />
 
-			{captcha.field}
+			<div>
+				<PasswordSignInForm
+					onSubmit={onSubmit}
+					loading={isLoading}
+					redirecting={isRedirecting}
+				/>
 
-			<PasswordSignInForm
-				onSubmit={onSubmit}
-				loading={isLoading}
-				redirecting={isRedirecting}
-			/>
+				{captcha.field}
+			</div>
 		</>
 	);
 }

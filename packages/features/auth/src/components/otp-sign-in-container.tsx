@@ -1,6 +1,11 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
+
 import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { useVerifyOtp } from "@kit/supabase/hooks/use-verify-otp";
 import { Button } from "@kit/ui/button";
@@ -12,7 +17,6 @@ import {
 	FormItem,
 	FormMessage,
 } from "@kit/ui/form";
-import { Input } from "@kit/ui/input";
 import {
 	InputOTP,
 	InputOTPGroup,
@@ -21,13 +25,11 @@ import {
 } from "@kit/ui/input-otp";
 import { Spinner } from "@kit/ui/spinner";
 import { Trans } from "@kit/ui/trans";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
 
 import { useCaptcha } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
+import { EmailInput } from "./email-input";
 
 const EmailSchema = z.object({ email: z.string().email() });
 const OtpSchema = z.object({ token: z.string().min(6).max(6) });
@@ -207,20 +209,12 @@ function OtpEmailForm({
 			>
 				<AuthErrorAlert error={signInMutation.error} />
 
-				{captcha.field}
-
 				<FormField
 					name="email"
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input
-									required
-									type="email"
-									placeholder="email@example.com"
-									data-test="otp-email-input"
-									{...field}
-								/>
+								<EmailInput data-test="otp-email-input" {...field} />
 							</FormControl>
 
 							<FormMessage />
@@ -243,6 +237,8 @@ function OtpEmailForm({
 					)}
 				</Button>
 			</form>
+
+			{captcha.field}
 		</Form>
 	);
 }

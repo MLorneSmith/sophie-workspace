@@ -1,6 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
+import { useForm } from "react-hook-form";
+
 import { Button } from "@kit/ui/button";
 import {
 	Form,
@@ -8,17 +11,14 @@ import {
 	FormDescription,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
-import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { ArrowRight } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 
 import { PasswordSignUpSchema } from "../schemas/password-sign-up.schema";
+import { EmailInput } from "./email-input";
+import { PasswordInput } from "./password-input";
 import { TermsAndConditionsFormField } from "./terms-and-conditions-form-field";
 
 interface PasswordSignUpFormProps {
@@ -42,8 +42,6 @@ export function PasswordSignUpForm({
 	onSubmit,
 	loading,
 }: PasswordSignUpFormProps) {
-	const { t } = useTranslation();
-
 	const form = useForm({
 		resolver: zodResolver(PasswordSignUpSchema),
 		defaultValues: {
@@ -58,87 +56,57 @@ export function PasswordSignUpForm({
 			<form
 				className={"flex w-full flex-col gap-y-4"}
 				onSubmit={form.handleSubmit(onSubmit)}
-				data-testid="auth-sign-up-form"
 			>
-				<FormField
-					control={form.control}
-					name={"email"}
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>
-								<Trans i18nKey={"common:emailAddress"} />
-							</FormLabel>
+				<div className={"flex flex-col space-y-2.5"}>
+					<FormField
+						control={form.control}
+						name={"email"}
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<EmailInput data-test={"email-input"} {...field} />
+								</FormControl>
 
-							<FormControl>
-								<Input
-									data-test={"email-input"}
-									data-testid="sign-up-email"
-									required
-									type="email"
-									placeholder={t("emailPlaceholder")}
-									{...field}
-								/>
-							</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+					<FormField
+						control={form.control}
+						name={"password"}
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<PasswordInput {...field} />
+								</FormControl>
 
-				<FormField
-					control={form.control}
-					name={"password"}
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>
-								<Trans i18nKey={"common:password"} />
-							</FormLabel>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-							<FormControl>
-								<Input
-									required
-									data-test={"password-input"}
-									data-testid="sign-up-password"
-									type="password"
-									autoComplete="new-password"
-									placeholder={""}
-									{...field}
-								/>
-							</FormControl>
+					<FormField
+						control={form.control}
+						name={"repeatPassword"}
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<PasswordInput
+										data-test={"repeat-password-input"}
+										{...field}
+									/>
+								</FormControl>
 
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+								<FormDescription>
+									<Trans i18nKey={"auth:repeatPasswordDescription"} />
+								</FormDescription>
 
-				<FormField
-					control={form.control}
-					name={"repeatPassword"}
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>
-								<Trans i18nKey={"auth:repeatPassword"} />
-							</FormLabel>
-
-							<FormControl>
-								<Input
-									required
-									data-test={"repeat-password-input"}
-									data-testid="sign-up-repeat-password"
-									type="password"
-									placeholder={""}
-									{...field}
-								/>
-							</FormControl>
-
-							<FormMessage />
-
-							<FormDescription className={"pb-2 text-xs"}>
-								<Trans i18nKey={"auth:repeatPasswordHint"} />
-							</FormDescription>
-						</FormItem>
-					)}
-				/>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
 				<If condition={displayTermsCheckbox}>
 					<TermsAndConditionsFormField />
@@ -146,7 +114,6 @@ export function PasswordSignUpForm({
 
 				<Button
 					data-test={"auth-submit-button"}
-					data-testid="sign-up-button"
 					className={"w-full"}
 					type="submit"
 					disabled={loading}
@@ -161,7 +128,6 @@ export function PasswordSignUpForm({
 									className={
 										"zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500"
 									}
-									aria-hidden="true"
 								/>
 							</>
 						}

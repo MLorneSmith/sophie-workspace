@@ -1,6 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { useSupabase } from "@kit/supabase/hooks/use-supabase";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
@@ -9,15 +13,12 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
-	FormLabel,
+	FormMessage,
 } from "@kit/ui/form";
-import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { useCaptcha } from "../captcha/client";
+import { EmailInput } from "./email-input";
 
 export function ResendAuthLinkForm(props: {
 	redirectPath?: string;
@@ -67,29 +68,27 @@ export function ResendAuthLinkForm(props: {
 					return promise;
 				})}
 			>
-				{captcha.field}
-
 				<FormField
+					name={"email"}
 					render={({ field }) => {
 						return (
 							<FormItem>
-								<FormLabel>
-									<Trans i18nKey={"common:emailAddress"} />
-								</FormLabel>
-
 								<FormControl>
-									<Input type="email" required {...field} />
+									<EmailInput data-test="email-input" {...field} />
 								</FormControl>
+
+								<FormMessage />
 							</FormItem>
 						);
 					}}
-					name={"email"}
 				/>
 
 				<Button disabled={resendLink.isPending}>
 					<Trans i18nKey={"auth:resendLink"} defaults={"Resend Link"} />
 				</Button>
 			</form>
+
+			{captcha.field}
 		</Form>
 	);
 }

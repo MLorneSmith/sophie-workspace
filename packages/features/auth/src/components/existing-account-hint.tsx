@@ -1,14 +1,17 @@
 "use client";
 
-import { Alert, AlertDescription } from "@kit/ui/alert";
-import { If } from "@kit/ui/if";
-import { Trans } from "@kit/ui/trans";
-import { UserCheck } from "lucide-react";
+import { useMemo } from "react";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+
+import { UserCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import { Alert, AlertDescription } from "@kit/ui/alert";
+import { If } from "@kit/ui/if";
+import { Trans } from "@kit/ui/trans";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 
@@ -67,11 +70,7 @@ export function ExistingAccountHintImpl({
 
 	return (
 		<If condition={Boolean(methodDescription)}>
-			<Alert
-				data-test={"existing-account-hint"}
-				variant="info"
-				className={className}
-			>
+			<Alert data-test={"existing-account-hint"} className={className}>
 				<UserCheck className="h-4 w-4" />
 
 				<AlertDescription>
@@ -81,10 +80,7 @@ export function ExistingAccountHintImpl({
 						components={{
 							method: <span className="font-medium" />,
 							signInLink: (
-								<Link
-									href={signInPath}
-									className="font-medium underline hover:no-underline"
-								/>
+								<Link href={signInPath} className="font-medium underline" />
 							),
 						}}
 					/>
