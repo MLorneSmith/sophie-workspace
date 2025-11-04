@@ -1,5 +1,5 @@
 {
-  "id": "08e95431-ff53-4ea1-9869-eb0647006b06",
+  "id": "7857f007-07da-4855-825d-8fc71e098b8a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -361,7 +361,7 @@
           "name": "url",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "thumbnail_u_r_l": {
           "name": "thumbnail_u_r_l",
@@ -373,7 +373,7 @@
           "name": "filename",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "mime_type": {
           "name": "mime_type",
@@ -619,7 +619,7 @@
           "name": "url",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "thumbnail_u_r_l": {
           "name": "thumbnail_u_r_l",
@@ -631,7 +631,7 @@
           "name": "filename",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "mime_type": {
           "name": "mime_type",
@@ -1758,6 +1758,130 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "payload.documentation_breadcrumbs": {
+      "name": "documentation_breadcrumbs",
+      "schema": "payload",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "doc_id": {
+          "name": "doc_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "documentation_breadcrumbs_order_idx": {
+          "name": "documentation_breadcrumbs_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documentation_breadcrumbs_parent_id_idx": {
+          "name": "documentation_breadcrumbs_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documentation_breadcrumbs_doc_idx": {
+          "name": "documentation_breadcrumbs_doc_idx",
+          "columns": [
+            {
+              "expression": "doc_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "documentation_breadcrumbs_doc_id_documentation_id_fk": {
+          "name": "documentation_breadcrumbs_doc_id_documentation_id_fk",
+          "tableFrom": "documentation_breadcrumbs",
+          "tableTo": "documentation",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "doc_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "documentation_breadcrumbs_parent_id_fk": {
+          "name": "documentation_breadcrumbs_parent_id_fk",
+          "tableFrom": "documentation_breadcrumbs",
+          "tableTo": "documentation",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "payload.documentation_categories": {
       "name": "documentation_categories",
       "schema": "payload",
@@ -1924,130 +2048,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload.documentation_breadcrumbs": {
-      "name": "documentation_breadcrumbs",
-      "schema": "payload",
-      "columns": {
-        "_order": {
-          "name": "_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "_parent_id": {
-          "name": "_parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "varchar",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "doc_id": {
-          "name": "doc_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "url": {
-          "name": "url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "label": {
-          "name": "label",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "documentation_breadcrumbs_order_idx": {
-          "name": "documentation_breadcrumbs_order_idx",
-          "columns": [
-            {
-              "expression": "_order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "documentation_breadcrumbs_parent_id_idx": {
-          "name": "documentation_breadcrumbs_parent_id_idx",
-          "columns": [
-            {
-              "expression": "_parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "documentation_breadcrumbs_doc_idx": {
-          "name": "documentation_breadcrumbs_doc_idx",
-          "columns": [
-            {
-              "expression": "doc_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "documentation_breadcrumbs_doc_id_documentation_id_fk": {
-          "name": "documentation_breadcrumbs_doc_id_documentation_id_fk",
-          "tableFrom": "documentation_breadcrumbs",
-          "tableTo": "documentation",
-          "schemaTo": "payload",
-          "columnsFrom": [
-            "doc_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "documentation_breadcrumbs_parent_id_fk": {
-          "name": "documentation_breadcrumbs_parent_id_fk",
-          "tableFrom": "documentation_breadcrumbs",
-          "tableTo": "documentation",
-          "schemaTo": "payload",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "payload.documentation": {
       "name": "documentation",
       "schema": "payload",
@@ -2068,6 +2068,12 @@
         "slug": {
           "name": "slug",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -2103,12 +2109,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": 0
-        },
-        "parent_id": {
-          "name": "parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -2350,6 +2350,137 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "payload._documentation_v_version_breadcrumbs": {
+      "name": "_documentation_v_version_breadcrumbs",
+      "schema": "payload",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "doc_id": {
+          "name": "doc_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "_uuid": {
+          "name": "_uuid",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "_documentation_v_version_breadcrumbs_order_idx": {
+          "name": "_documentation_v_version_breadcrumbs_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_documentation_v_version_breadcrumbs_parent_id_idx": {
+          "name": "_documentation_v_version_breadcrumbs_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "_documentation_v_version_breadcrumbs_doc_idx": {
+          "name": "_documentation_v_version_breadcrumbs_doc_idx",
+          "columns": [
+            {
+              "expression": "doc_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk": {
+          "name": "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk",
+          "tableFrom": "_documentation_v_version_breadcrumbs",
+          "tableTo": "documentation",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "doc_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "_documentation_v_version_breadcrumbs_parent_id_fk": {
+          "name": "_documentation_v_version_breadcrumbs_parent_id_fk",
+          "tableFrom": "_documentation_v_version_breadcrumbs",
+          "tableTo": "_documentation_v",
+          "schemaTo": "payload",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "payload._documentation_v_version_categories": {
       "name": "_documentation_v_version_categories",
       "schema": "payload",
@@ -2530,137 +2661,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload._documentation_v_version_breadcrumbs": {
-      "name": "_documentation_v_version_breadcrumbs",
-      "schema": "payload",
-      "columns": {
-        "_order": {
-          "name": "_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "_parent_id": {
-          "name": "_parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "doc_id": {
-          "name": "doc_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "url": {
-          "name": "url",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "label": {
-          "name": "label",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "_uuid": {
-          "name": "_uuid",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {
-        "_documentation_v_version_breadcrumbs_order_idx": {
-          "name": "_documentation_v_version_breadcrumbs_order_idx",
-          "columns": [
-            {
-              "expression": "_order",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "_documentation_v_version_breadcrumbs_parent_id_idx": {
-          "name": "_documentation_v_version_breadcrumbs_parent_id_idx",
-          "columns": [
-            {
-              "expression": "_parent_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "_documentation_v_version_breadcrumbs_doc_idx": {
-          "name": "_documentation_v_version_breadcrumbs_doc_idx",
-          "columns": [
-            {
-              "expression": "doc_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk": {
-          "name": "_documentation_v_version_breadcrumbs_doc_id_documentation_id_fk",
-          "tableFrom": "_documentation_v_version_breadcrumbs",
-          "tableTo": "documentation",
-          "schemaTo": "payload",
-          "columnsFrom": [
-            "doc_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "_documentation_v_version_breadcrumbs_parent_id_fk": {
-          "name": "_documentation_v_version_breadcrumbs_parent_id_fk",
-          "tableFrom": "_documentation_v_version_breadcrumbs",
-          "tableTo": "_documentation_v",
-          "schemaTo": "payload",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "payload._documentation_v": {
       "name": "_documentation_v",
       "schema": "payload",
@@ -2687,6 +2687,12 @@
         "version_slug": {
           "name": "version_slug",
           "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_parent_id": {
+          "name": "version_parent_id",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
@@ -2722,12 +2728,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": 0
-        },
-        "version_parent_id": {
-          "name": "version_parent_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         },
         "version_updated_at": {
           "name": "version_updated_at",
@@ -7326,14 +7326,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "status": {
-          "name": "status",
-          "type": "enum_surveys_status",
-          "typeSchema": "payload",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'draft'"
-        },
         "published_at": {
           "name": "published_at",
           "type": "timestamp(3) with time zone",
@@ -7599,14 +7591,6 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false
-        },
-        "version_status": {
-          "name": "version_status",
-          "type": "enum__surveys_v_version_status",
-          "typeSchema": "payload",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'draft'"
         },
         "version_published_at": {
           "name": "version_published_at",

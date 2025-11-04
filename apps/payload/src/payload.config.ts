@@ -191,8 +191,14 @@ const createS3DownloadsStorage = () => {
 
 /**
  * Gets storage plugins based on configuration
+ * Skips storage plugins during seeding to allow manual URL management
  */
 const getStoragePlugins = () => {
+	// Skip storage plugins during seeding (they conflict with manual filename field)
+	if (process.env.SKIP_STORAGE_PLUGIN === "true") {
+		return [];
+	}
+
 	const storageType = getStorageType();
 	const plugins: PayloadPlugin[] = [];
 

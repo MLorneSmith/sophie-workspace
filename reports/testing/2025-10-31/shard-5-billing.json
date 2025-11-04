@@ -1,0 +1,103 @@
+{
+	"shard": {
+		"id": 5,
+		"name": "Billing",
+		"files": [
+			"tests/user-billing/user-billing.spec.ts",
+			"tests/team-billing/team-billing.spec.ts"
+		],
+		"expectedTests": 2,
+		"shardCommand": "test:shard5"
+	},
+	"execution": {
+		"startTime": "2025-10-31T18:06:30.352Z",
+		"endTime": "2025-10-31T18:07:31.352Z",
+		"duration": "61s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 25,
+		"passed": 13,
+		"failed": 10,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:12:6 › Accessibility - Critical Issues Only › Homepage - No critical WCAG violations",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:28:6 › Accessibility - Critical Issues Only › Authentication pages - No critical WCAG violations",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:57:6 › Accessibility - Critical Issues Only › Dashboard - No critical WCAG violations",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/home"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:118:6 › Accessibility - Quick Validation › All pages have proper document structure",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:148:6 › Accessibility - Quick Validation › Forms have proper labels",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid-simple.spec.ts:171:6 › Accessibility - Quick Validation › Interactive elements are keyboard accessible",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid.spec.ts:13:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Homepage accessibility compliance",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid.spec.ts:42:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Authentication pages accessibility",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid.spec.ts:79:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Dashboard accessibility compliance",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home"
+		},
+		{
+			"name": "tests/accessibility/accessibility-hybrid.spec.ts:98:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Course pages accessibility",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home/course"
+		}
+	],
+	"errors": [
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/home",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home",
+		"page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3001/",
+		"page.goto: net::ERR_EMPTY_RESPONSE at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_SOCKET_NOT_CONNECTED at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home/course",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home/course"
+	],
+	"rawOutput": "...(truncated 30487 bytes)...\n─────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-668de-rd-accessibility-compliance-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-668de-rd-accessibility-compliance-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/accessibility-accessibilit-668de-rd-accessibility-compliance-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  10) [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:98:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Course pages accessibility \n\n    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home/course\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/home/course\", waiting until \"load\"\u001b[22m\n\n\n       97 |\n       98 | \ttest(\"Course pages accessibility\", async ({ page }) => {\n    >  99 | \t\tawait page.goto(\"/home/course\");\n          | \t\t           ^\n      100 | \t\tawait page.waitForLoadState(\"networkidle\");\n      101 |\n      102 | \t\tconst tester = new HybridAccessibilityTester(page);\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts:99:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-a908e--Course-pages-accessibility-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/home/course\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/home/course\", waiting until \"load\"\u001b[22m\n\n\n       97 |\n       98 | \ttest(\"Course pages accessibility\", async ({ page }) => {\n    >  99 | \t\tawait page.goto(\"/home/course\");\n          | \t\t           ^\n      100 | \t\tawait page.waitForLoadState(\"networkidle\");\n      101 |\n      102 | \t\tconst tester = new HybridAccessibilityTester(page);\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts:99:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-a908e--Course-pages-accessibility-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/accessibility-accessibilit-a908e--Course-pages-accessibility-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/accessibility-accessibilit-a908e--Course-pages-accessibility-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  10 failed\n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:12:6 › Accessibility - Critical Issues Only › Homepage - No critical WCAG violations \n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:28:6 › Accessibility - Critical Issues Only › Authentication pages - No critical WCAG violations \n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:57:6 › Accessibility - Critical Issues Only › Dashboard - No critical WCAG violations \n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:118:6 › Accessibility - Quick Validation › All pages have proper document structure \n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:148:6 › Accessibility - Quick Validation › Forms have proper labels \n    [chromium] › tests/accessibility/accessibility-hybrid-simple.spec.ts:171:6 › Accessibility - Quick Validation › Interactive elements are keyboard accessible \n    [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:13:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Homepage accessibility compliance \n    [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:42:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Authentication pages accessibility \n    [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:79:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Dashboard accessibility compliance \n    [chromium] › tests/accessibility/accessibility-hybrid.spec.ts:98:6 › Hybrid Accessibility Tests - WCAG 2.1 AA › Course pages accessibility \n  2 skipped\n  13 passed (1.1m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard5: `playwright test tests/accessibility/accessibility-hybrid.spec.ts tests/accessibility/accessibility-hybrid-simple.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

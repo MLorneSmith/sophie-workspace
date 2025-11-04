@@ -95,7 +95,13 @@ export default defineConfig({
 	},
 	/*Configure projects for major browsers */
 	projects: [
-		{ name: "setup", testMatch: /.*\.setup\.ts/ },
+		{
+			name: "setup",
+			testMatch: /.*\.setup\.ts/,
+			// Force sequential execution for setup tests to prevent race conditions
+			// when multiple tests try to authenticate simultaneously and fill the same form fields
+			fullyParallel: false,
+		},
 		{
 			name: "chromium",
 			use: { ...devices["Desktop Chrome"] },

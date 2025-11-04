@@ -42,3 +42,6 @@ next-env.d.ts
 .env
 
 /media
+
+# Test temporary directories
+__test-seed-data-temp__

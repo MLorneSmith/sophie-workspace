@@ -68,14 +68,20 @@ export async function convertDocumentation(
 			const docMeta: DocumentationMeta = {
 				title: String(frontmatter.title || fileInfo.name.replace(".mdoc", "")),
 				description: String(frontmatter.description || ""),
-				category: frontmatter.category ?
-					String(frontmatter.category) : inferCategoryFromPath(fileInfo.relativePath),
+				category: frontmatter.category
+					? String(frontmatter.category)
+					: inferCategoryFromPath(fileInfo.relativePath),
 				parent: frontmatter.parent ? String(frontmatter.parent) : undefined,
 				order: frontmatter.order
 					? parseInt(String(frontmatter.order))
 					: getOrderFromPath(fileInfo.relativePath),
-				featured: typeof frontmatter.featured === "boolean" ? frontmatter.featured : false,
-				tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.map(String) : [],
+				featured:
+					typeof frontmatter.featured === "boolean"
+						? frontmatter.featured
+						: false,
+				tags: Array.isArray(frontmatter.tags)
+					? frontmatter.tags.map(String)
+					: [],
 				sourceFile: fileInfo.name,
 				sourcePath: fileInfo.relativePath,
 			};

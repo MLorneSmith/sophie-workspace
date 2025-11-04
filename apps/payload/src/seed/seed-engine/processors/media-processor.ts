@@ -161,9 +161,17 @@ export class MediaProcessor extends BaseProcessor {
 
     try {
       // Create record with pre-existing R2 file metadata
+      // Use draft:true to bypass Payload's upload field validation
+      // The s3Storage plugin expects filename/url/mimeType/filesize to come from file uploads,
+      // but during seeding we're providing these values directly from pre-existing R2 files
       const created = await this.payload.create({
         collection: this.collectionName as any,
-        data: cleanedRecord,
+        data: {
+          ...cleanedRecord,
+          _status: 'published', // Set as published immediately
+        },
+        draft: true, // Bypass validation for upload-related fields
+        overrideAccess: true, // Skip access control during seeding
       });
 
       // Return created UUID

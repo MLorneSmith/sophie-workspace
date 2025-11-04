@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import matter from "gray-matter";
 import type { ParsedContent } from "../types";
 
@@ -97,9 +98,7 @@ export async function parseMdocFile(content: string): Promise<ParsedContent> {
 	};
 }
 
-export async function convertMdocToLexical(
-	content: string,
-): Promise<{
+export async function convertMdocToLexical(content: string): Promise<{
 	frontmatter: Record<string, unknown>;
 	lexicalContent: {
 		root: {
@@ -109,8 +108,8 @@ export async function convertMdocToLexical(
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
@@ -139,8 +138,8 @@ function createSimpleLexicalContent(markdown: string): {
 			version: number;
 			[k: string]: unknown;
 		}>;
-		direction: ('ltr' | 'rtl') | null;
-		format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 		indent: number;
 		version: number;
 	};
@@ -165,8 +164,8 @@ function createSimpleLexicalContent(markdown: string): {
 			const level = headerMatch[1].length;
 			// Strip shortcodes from header text
 			const cleanedHeaderText = headerMatch[2]
-				.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, '')
-				.replace(/{%\s*\/highlight\s*%}/g, '');
+				.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, "")
+				.replace(/{%\s*\/highlight\s*%}/g, "");
 
 			children.push({
 				type: "heading",
@@ -195,6 +194,9 @@ function createSimpleLexicalContent(markdown: string): {
 			children.push({
 				type: "block",
 				version: 1,
+				id: randomUUID(),
+			format: "",
+			indent: 0,
 				blockType: "youtube-video",
 				fields: {
 					videoId: youtubeMatch[1],
@@ -215,20 +217,29 @@ function createSimpleLexicalContent(markdown: string): {
 				if (nextLine.includes("/%}")) break;
 			}
 
-			// Parse CTA attributes
+			// Parse CTA attributes - support both old and new attribute names
 			const ctaText = ctaLines.join(" ");
-			const ctatextMatch = ctaText.match(/ctatext="([^"]+)"/);
-			const ctadescriptionMatch = ctaText.match(/ctadescription="([^"]+)"/);
-			const ctabuttontextMatch = ctaText.match(/ctabuttontext="([^"]+)"/);
+			const headlineMatch = ctaText.match(/(?:headline|ctatext)="([^"]+)"/);
+			const subheadlineMatch = ctaText.match(/(?:subheadline|ctadescription)="([^"]+)"/);
+			const leftButtonLabelMatch = ctaText.match(/(?:leftbuttonlabel|leftButtonLabel)="([^"]+)"/);
+			const leftButtonUrlMatch = ctaText.match(/(?:leftbuttonurl|leftButtonUrl)="([^"]+)"/);
+			const rightButtonLabelMatch = ctaText.match(/(?:rightbuttonlabel|rightButtonLabel)="([^"]+)"/);
+			const rightButtonUrlMatch = ctaText.match(/(?:rightbuttonurl|rightButtonUrl)="([^"]+)"/);
 
 			children.push({
 				type: "block",
 				version: 1,
+				id: randomUUID(),
+			format: "",
+			indent: 0,
 				blockType: "call-to-action",
 				fields: {
-					text: ctatextMatch?.[1] || "Call to Action",
-					description: ctadescriptionMatch?.[1] || "",
-					buttonText: ctabuttontextMatch?.[1] || "Learn More",
+					headline: headlineMatch?.[1] || "FREE Course Trial",
+					subheadline: subheadlineMatch?.[1] || "Start improving your presentations today!",
+					leftButtonLabel: leftButtonLabelMatch?.[1] || "Individuals",
+					leftButtonUrl: leftButtonUrlMatch?.[1] || "/free-trial/individual",
+					rightButtonLabel: rightButtonLabelMatch?.[1] || "Teams",
+					rightButtonUrl: rightButtonUrlMatch?.[1] || "/free-trial/teams",
 				},
 			});
 			continue;
@@ -280,6 +291,9 @@ function createSimpleLexicalContent(markdown: string): {
 			children.push({
 				type: "block",
 				version: 1,
+				id: randomUUID(),
+			format: "",
+			indent: 0,
 				blockType: "bunny-video",
 				fields: {
 					videoId: bunnyMatch[1],
@@ -291,8 +305,8 @@ function createSimpleLexicalContent(markdown: string): {
 		// Default to paragraph
 		// Strip any remaining shortcodes from the text (inline highlights, etc.)
 		const cleanedLine = line
-			.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, '')  // Remove opening {% highlight %}
-			.replace(/{%\s*\/highlight\s*%}/g, '')  // Remove closing {% /highlight %}
+			.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, "") // Remove opening {% highlight %}
+			.replace(/{%\s*\/highlight\s*%}/g, "") // Remove closing {% /highlight %}
 			.trim();
 
 		// Skip if line is empty after cleaning

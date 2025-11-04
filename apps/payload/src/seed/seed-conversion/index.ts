@@ -4,24 +4,24 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { program } from "commander";
 import configPromise from "../../payload.config";
-import {
-	MediaExtractor,
-	extractMediaFromDirectory,
-} from "./extractors/media-extractor";
+import { convertCourseLessons } from "./converters/course-lessons-converter";
+import { convertCourseQuizzes } from "./converters/course-quizzes-converter";
+import { convertCourses } from "./converters/courses-converter";
+import { convertDocumentation } from "./converters/documentation-converter";
+import { convertPosts } from "./converters/posts-converter";
+import { convertPrivate } from "./converters/private-converter";
+import { convertQuizQuestions } from "./converters/quiz-questions-converter";
+import { convertSurveyQuestions } from "./converters/survey-questions-converter";
+import { convertSurveys } from "./converters/surveys-converter";
 import {
 	DownloadExtractor,
 	extractDownloadsFromDirectory,
 } from "./extractors/download-extractor";
+import {
+	extractMediaFromDirectory,
+	MediaExtractor,
+} from "./extractors/media-extractor";
 import { ReferenceManager } from "./utils/reference-manager";
-import { convertPosts } from "./converters/posts-converter";
-import { convertCourses } from "./converters/courses-converter";
-import { convertQuizQuestions } from "./converters/quiz-questions-converter";
-import { convertSurveyQuestions } from "./converters/survey-questions-converter";
-import { convertCourseLessons } from "./converters/course-lessons-converter";
-import { convertCourseQuizzes } from "./converters/course-quizzes-converter";
-import { convertSurveys } from "./converters/surveys-converter";
-import { convertDocumentation } from "./converters/documentation-converter";
-import { convertPrivate } from "./converters/private-converter";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

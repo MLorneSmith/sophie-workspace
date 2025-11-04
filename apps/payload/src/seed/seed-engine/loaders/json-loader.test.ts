@@ -17,8 +17,8 @@ import {
   type LoadResult,
 } from './json-loader';
 
-// Test data directory
-const TEST_DATA_DIR = join(__dirname, '../../seed-data');
+// Test data directory - use temp directory to avoid corrupting real seed data
+const TEST_DATA_DIR = join(__dirname, '../../__test-seed-data-temp__');
 
 /**
  * Setup test environment
@@ -134,9 +134,8 @@ async function setupTestFiles(): Promise<void> {
  * Cleanup test environment
  */
 async function cleanupTestFiles(): Promise<void> {
-  // Note: In a real test environment, we might want to preserve the seed-data directory
-  // For now, we'll just document that cleanup should be handled carefully
-  // await rm(TEST_DATA_DIR, { recursive: true, force: true });
+  // Clean up temp test directory
+  await rm(TEST_DATA_DIR, { recursive: true, force: true });
 }
 
 describe('JSON Loader', () => {

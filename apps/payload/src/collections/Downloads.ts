@@ -7,8 +7,9 @@ const _dirname = path.dirname(filename);
 
 export const Downloads: CollectionConfig = {
 	slug: "downloads",
-	// Upload config removed - using pre-uploaded R2 files with manual URL management
-	// This allows seeding with existing R2 files without Payload's automatic upload handling
+	// Enable upload functionality - required for storage plugin integration
+	// Manual fields below will be managed by the s3Storage plugin or manually during seeding
+	upload: true,
 	access: {
 		read: () => true,
 		create: ({ req }) => {
@@ -27,37 +28,8 @@ export const Downloads: CollectionConfig = {
 		defaultColumns: ["title", "filename", "mimeType", "filesize", "updatedAt"],
 	},
 	fields: [
-		// File metadata fields (manually managed since upload config removed)
-		{
-			name: "filename",
-			type: "text",
-			required: true,
-			admin: {
-				description: "Original filename of the uploaded file",
-			},
-		},
-		{
-			name: "url",
-			type: "text",
-			required: true,
-			admin: {
-				description: "Public URL to access the file (R2 CDN URL)",
-			},
-		},
-		{
-			name: "mimeType",
-			type: "text",
-			admin: {
-				description: "MIME type of the file (e.g., application/pdf)",
-			},
-		},
-		{
-			name: "filesize",
-			type: "number",
-			admin: {
-				description: "File size in bytes",
-			},
-		},
+		// Upload will auto-generate: filename, url, mimeType, filesize
+		// We only add custom fields here
 		{
 			name: "title",
 			type: "text",

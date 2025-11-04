@@ -1,0 +1,46 @@
+{
+	"shard": {
+		"id": 7,
+		"name": "Config & Health",
+		"files": [
+			"tests/test-configuration-verification.spec.ts",
+			"tests/healthcheck.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard7"
+	},
+	"execution": {
+		"startTime": "2025-10-31T18:07:47.183Z",
+		"endTime": "2025-10-31T18:08:32.183Z",
+		"duration": "45s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 4,
+		"passed": 3,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/auth.setup.ts:27:5 › authenticate as test user ────────────────────────────────",
+			"file": "unknown",
+			"error": "Error: Timeout 20000ms exceeded while waiting on the predicate"
+		},
+		{
+			"name": "tests/billing.setup.ts:10:5 › authenticate as test user for billing ─────────────────",
+			"file": "unknown",
+			"error": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\""
+		}
+	],
+	"errors": [
+		"Timeout 20000ms exceeded while waiting on the predicate",
+		"Timeout 20000ms exceeded while waiting on the predicate",
+		"page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\""
+	],
+	"rawOutput": "...(truncated 4888 bytes)...\neld value after fill: michael@slideheroes.com\nPassword field has value: yes\nForm submitted, waiting for navigation...\n[Super-Admin Auth] Auth API response: 200\n[Super-Admin Auth] ✅ Auth API responded (1302ms)\n[Super-Admin Auth] Waiting for redirect to /auth/verify...\n[Super-Admin Auth] Current URL: http://localhost:3001/auth/sign-in?next=/home\n[Super-Admin Auth] At destination (/home)? false (pathname: /auth/sign-in)\n[Super-Admin Auth] Current URL: http://localhost:3001/auth/verify\n[Super-Admin Auth] On verify page, checking for MFA form...\n[Super-Admin Auth] MFA input count: 1\n[Super-Admin Auth] Submitting MFA verification...\nOTP 732777 code { period: \u001b[33m30\u001b[39m }\nOTP entered, waiting for form validation to complete...\nForm validation complete, button enabled. Clicking submit...\n[Super-Admin Auth] MFA submitted, waiting for post-MFA redirect...\n[Super-Admin Auth] At destination (/home)? false (pathname: /auth/verify)\n[Super-Admin Auth] Current URL: http://localhost:3001/home\n[Super-Admin Auth] At destination (/home)? true (pathname: /home)\n[Super-Admin Auth] ✅ Successfully authenticated and reached destination\n·\n\n  1) [setup] › tests/auth.setup.ts:27:5 › authenticate as test user ────────────────────────────────\n\n    Error: Timeout 20000ms exceeded while waiting on the predicate\n\n      40 | \t\t\t\tpassword: credentials.password,\n      41 | \t\t\t});\n    > 42 | \t\t}).toPass({\n         | \t\t   ^\n      43 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      44 | \t\t\ttimeout: testConfig.getTimeout(\"medium\"),\n      45 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:42:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-test-user-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-test-user-setup/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Timeout 20000ms exceeded while waiting on the predicate\n\n      40 | \t\t\t\tpassword: credentials.password,\n      41 | \t\t\t});\n    > 42 | \t\t}).toPass({\n         | \t\t   ^\n      43 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      44 | \t\t\ttimeout: testConfig.getTimeout(\"medium\"),\n      45 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:42:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-test-user-setup-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-test-user-setup-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-test-user-setup-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/auth.setup.ts-authenticate-as-test-user-setup-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2) [setup] › tests/billing.setup.ts:10:5 › authenticate as test user for billing ─────────────────\n\n    TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\"\n\n       at authentication/auth.po.ts:364\n\n      362 | \t\t\t`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,\n      363 | \t\t);\n    > 364 | \t\tconst authResponsePromise = this.page.waitForResponse(\n          | \t\t                                      ^\n      365 | \t\t\t(response) => {\n      366 | \t\t\t\tconst url = response.url();\n      367 | \t\t\t\tconst isAuthToken = url.includes(\"auth/v1/token\");\n        at AuthPageObject.loginAsUser (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:364:41)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/billing.setup.ts:21:2\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/billing.setup.ts-authenticate-as-test-user-for-billing-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/billing.setup.ts-authenticate-as-test-user-for-billing-setup/error-context.md\n\n  1 failed\n    [setup] › tests/auth.setup.ts:27:5 › authenticate as test user ─────────────────────────────────\n  1 flaky\n    [setup] › tests/billing.setup.ts:10:5 › authenticate as test user for billing ──────────────────\n  42 did not run\n  2 passed (48.6s)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard7: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

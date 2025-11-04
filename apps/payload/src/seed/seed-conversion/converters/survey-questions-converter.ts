@@ -1,10 +1,10 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
+import { createServiceLogger } from "@kit/shared/logger";
+import * as yaml from "js-yaml";
+import { v4 as uuidv4 } from "uuid";
 import type { SurveyQuestion } from "../../../../payload-types";
 import type { ReferenceManager } from "../utils/reference-manager";
-import { createServiceLogger } from "@kit/shared/logger";
-import { v4 as uuidv4 } from "uuid";
-import * as yaml from "js-yaml";
 
 const { getLogger } = createServiceLogger("SEED-CONVERTER");
 
@@ -63,12 +63,16 @@ export async function convertSurveyQuestions(
 				// Generate slug from survey slug and index
 				const questionSlug = `${surveySlug}-q${index + 1}`;
 
-				const surveyQuestion: Partial<SurveyQuestion> & { _ref?: string; scaleMin?: number; scaleMax?: number } = {
+				const surveyQuestion: Partial<SurveyQuestion> & {
+					_ref?: string;
+					scaleMin?: number;
+					scaleMax?: number;
+				} = {
 					id: questionId,
 					_ref: questionId,
 					questionSlug: questionSlug,
 					text: question.question,
-					type: mapQuestionType(question) as SurveyQuestion['type'],
+					type: mapQuestionType(question) as SurveyQuestion["type"],
 					options:
 						question.answers && question.answers.length > 0
 							? question.answers.map((a) => ({ option: a.answer }))

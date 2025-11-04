@@ -184,11 +184,54 @@ export class AuthPageObject {
 		password: string;
 		next?: string;
 	}) {
-		await this.loginAsUser({
+		// CRITICAL: Super-admin users with MFA enrolled will be automatically
+		// redirected to /auth/verify after sign-in by the auth middleware
+		// We don't pass a 'next' parameter to loginAsUser because:
+		// 1. The redirect to /auth/verify happens automatically
+		// 2. After MFA verification, the verify page redirects to the original intended destination
+		const finalDestination = params.next ?? "/home";
+
+		// Sign in without specifying 'next' - let the auth flow handle MFA redirect
+		await this.goToSignIn(finalDestination);
+
+		const startTime = Date.now();
+
+		// Wait for auth API response
+		const authTimeout = testConfig.getTimeout("medium");
+		console.log("[Super-Admin Auth] Waiting for Supabase auth API response...");
+
+		const authResponsePromise = this.page.waitForResponse(
+			(response) => {
+				const url = response.url();
+				const isAuthToken = url.includes("auth/v1/token");
+				if (isAuthToken) {
+					console.log(
+						`[Super-Admin Auth] Auth API response: ${response.status()}`,
+					);
+				}
+				return isAuthToken && response.status() === 200;
+			},
+			{ timeout: authTimeout },
+		);
+
+		// Submit sign-in form
+		await this.signIn({
 			email: params.email,
 			password: params.password,
-			next: "/auth/verify",
 		});
+
+		// Wait for auth API response
+		try {
+			await authResponsePromise;
+			console.log(
+				`[Super-Admin Auth] ✅ Auth API responded (${Date.now() - startTime}ms)`,
+			);
+		} catch (error) {
+			console.error(
+				`[Super-Admin Auth] ❌ Auth API timeout after ${authTimeout}ms`,
+			);
+			throw error;
+		}
 
 		// Use configurable timeouts for MFA verification
 		// Super-admin login with MFA requires extended timeouts due to:
@@ -198,38 +241,68 @@ export class AuthPageObject {
 		const longTimeout = testConfig.getTimeout("long");
 		const mfaRetryIntervals = testConfig.getRetryIntervals("auth");
 
+		// Wait for navigation to verify page and complete MFA
+		console.log("[Super-Admin Auth] Waiting for redirect to /auth/verify...");
+
 		// Check if we're on MFA page and complete verification if needed
 		try {
 			// Wait for either MFA form or redirect to final destination
 			await expect(async () => {
-				const currentUrl = this.page.url();
+				const pageUrl = this.page.url();
+				console.log(`[Super-Admin Auth] Current URL: ${pageUrl}`);
 
 				// If we're on the verify page, submit MFA
-				if (currentUrl.includes("/auth/verify")) {
+				if (pageUrl.includes("/auth/verify")) {
+					console.log(
+						"[Super-Admin Auth] On verify page, checking for MFA form...",
+					);
 					// Check if MFA form is present
 					const mfaInput = await this.page
 						.locator('[name="verificationCode"]')
 						.count();
+					console.log(`[Super-Admin Auth] MFA input count: ${mfaInput}`);
+
 					if (mfaInput > 0) {
+						console.log("[Super-Admin Auth] Submitting MFA verification...");
 						await this.submitMFAVerification(MFA_KEY);
+						console.log(
+							"[Super-Admin Auth] MFA submitted, waiting for post-MFA redirect...",
+						);
+						// Wait a moment for the redirect to process
+						await this.page.waitForTimeout(1000);
 					}
 				}
 
-				// Wait for final navigation with increased timeout
-				await this.page.waitForURL(params.next ?? "/home", {
-					timeout: longTimeout,
-					waitUntil: "domcontentloaded",
-				});
+				// Check if we've reached the final destination
+				// IMPORTANT: Use pathname check, not URL string includes, to avoid false positives
+				// from query parameters (e.g., "/auth/sign-in?next=/home" would match "/home")
+				const currentUrl = new URL(pageUrl);
+				const atDestination =
+					currentUrl.pathname === finalDestination ||
+					currentUrl.pathname.startsWith(`${finalDestination}/`);
+				console.log(
+					`[Super-Admin Auth] At destination (${finalDestination})? ${atDestination} (pathname: ${currentUrl.pathname})`,
+				);
+
+				if (!atDestination) {
+					throw new Error(
+						`Not yet at destination. Currently at: ${currentUrl.pathname}, expected: ${finalDestination}`,
+					);
+				}
 			}).toPass({
 				intervals: mfaRetryIntervals,
 				timeout: longTimeout + 5000, // Add buffer for retry logic
 			});
+
+			console.log(
+				"[Super-Admin Auth] ✅ Successfully authenticated and reached destination",
+			);
 		} catch (error) {
-			// If we're already on the expected page, that's fine
 			const currentUrl = this.page.url();
-			if (!currentUrl.includes(params.next ?? "/home")) {
-				throw error;
-			}
+			console.error(
+				`[Super-Admin Auth] ❌ Error: Current URL: ${currentUrl}, Expected: ${finalDestination}`,
+			);
+			throw error;
 		}
 	}
 

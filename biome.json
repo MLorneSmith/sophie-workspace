@@ -160,6 +160,20 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["apps/payload/src/seed/seed-data/**/*.json"],
+			"formatter": {
+				"enabled": false
+			},
+			"linter": {
+				"enabled": false
+			},
+			"json": {
+				"formatter": {
+					"enabled": false
+				}
+			}
 		}
 	]
 }

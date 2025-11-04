@@ -1,6 +1,6 @@
-import type { MediaReference } from "../types";
-import path from "node:path";
 import { promises as fs } from "node:fs";
+import path from "node:path";
+import type { MediaReference } from "../types";
 
 export class MediaExtractor {
 	private mediaReferences: Map<string, MediaReference> = new Map();

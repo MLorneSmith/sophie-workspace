@@ -11,9 +11,28 @@ const { promisify } = require("node:util");
 const os = require("node:os");
 const execAsync = promisify(exec);
 const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
+const { OutputFilter } = require("../utilities/output-filter.cjs");
 
-// Simple logging utility
+// Global line counter for log functions (prevents Claude Code crashes)
+let globalLogLineCount = 0;
+const MAX_LOG_LINES = 200; // Hard limit to prevent buffer overflow
+let logLimitWarningShown = false;
+
+// Simple logging utility with line limit protection
 function log(message, type = "info") {
+	// Enforce hard limit on log output
+	if (globalLogLineCount >= MAX_LOG_LINES) {
+		if (!logLimitWarningShown) {
+			logLimitWarningShown = true;
+			const timestamp = new Date().toISOString();
+			process.stdout.write(
+				`[${timestamp}] WARN: Log output limit reached (${MAX_LOG_LINES} lines) - suppressing further logs\n`,
+			);
+		}
+		return; // Silently suppress further logs
+	}
+
+	globalLogLineCount++;
 	const timestamp = new Date().toISOString();
 	process.stdout.write(`[${timestamp}] ${type.toUpperCase()}: ${message}\n`);
 }
@@ -38,6 +57,9 @@ class E2ETestRunner {
 		this.phaseCoordinator = phaseCoordinator;
 		this.resourceLock = resourceLock;
 		this.waiter = new ConditionWaiter();
+
+		// Initialize output filter
+		this.outputFilter = null;
 
 		// Report generation configuration
 		this.reportingEnabled = config.reporting?.generateShardReports !== false; // Default to true
@@ -422,6 +444,15 @@ class E2ETestRunner {
 			shards: {},
 		};
 
+		// Initialize output filter
+		this.outputFilter = new OutputFilter(this.config.output || {});
+		await this.outputFilter.initFileOutput();
+
+		log(`📊 Output mode: ${this.outputFilter.mode}`);
+		if (this.outputFilter.fileConfig.enabled) {
+			log(`📝 Logging to: ${this.outputFilter.fileConfig.path}`);
+		}
+
 		// Always run shards sequentially by default for better tracking
 		// Unless explicitly configured for parallel execution
 		const runParallel = process.env.E2E_PARALLEL === "true" || false;
@@ -698,8 +729,21 @@ class E2ETestRunner {
 		const shardPrefix = shardId ? `[Shard ${shardId}] ` : "";
 
 		return new Promise((resolve) => {
-			let output = "";
-			let errorOutput = "";
+			// Streaming parser: only keep bounded buffers
+			const MAX_BUFFER_SIZE = 50000; // 50KB for E2E (smaller than unit tests)
+			let outputBuffer = "";
+			let errorBuffer = "";
+			let stdoutLineBuffer = "";
+			let stderrLineBuffer = "";
+
+			// Structured results parsed incrementally
+			const results = {
+				total: 0,
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+			};
+
 			let proc = null;
 			let timeout = null;
 			let resolved = false;
@@ -784,63 +828,103 @@ class E2ETestRunner {
 					},
 				});
 
-				// Capture stdout
+				// Capture stdout with streaming line parser
 				proc.stdout.on("data", (data) => {
 					const str = data.toString();
-					output += str;
 					lastOutputTime = Date.now(); // Update last output time
-					process.stdout.write(`${shardPrefix}${data}`);
 
-					// Check for hanging patterns
-					if (str.includes("Waiting for") && str.includes("to be visible")) {
-						log(`${shardPrefix}⚠️ Test may be hanging on element visibility`);
+					// Add to bounded buffer
+					outputBuffer += str;
+					if (outputBuffer.length > MAX_BUFFER_SIZE) {
+						outputBuffer = outputBuffer.slice(-MAX_BUFFER_SIZE);
 					}
 
-					// Check for timeout patterns
-					if (
-						str.includes("Test timeout of") ||
-						str.includes("exceeded while") ||
-						str.includes("Timeout") ||
-						str.includes("TimeoutError")
-					) {
-						log(
-							`${shardPrefix}⚠️ Playwright timeout detected - aggressively killing test`,
-						);
-						if (proc && !proc.killed) {
-							try {
-								if (proc.detached && proc.pid) {
+					// Parse line-by-line for incremental results
+					stdoutLineBuffer += str;
+					const lines = stdoutLineBuffer.split("\n");
+					stdoutLineBuffer = lines.pop() || "";
+
+					for (const line of lines) {
+						// Parse test results incrementally
+						this.parseE2ETestLine(line, results);
+
+						// Filter and stream output (prevents Claude Code buffer overflow)
+						if (this.outputFilter?.processLine(line, "stdout")) {
+							const truncated = this.outputFilter.truncateLine(line);
+							process.stdout.write(`${shardPrefix}${truncated}\n`);
+						}
+
+						// Check for hanging patterns
+						if (
+							line.includes("Waiting for") &&
+							line.includes("to be visible")
+						) {
+							log(`${shardPrefix}⚠️ Test may be hanging on element visibility`);
+						}
+
+						// Check for timeout patterns
+						if (
+							line.includes("Test timeout of") ||
+							line.includes("exceeded while") ||
+							line.includes("Timeout") ||
+							line.includes("TimeoutError")
+						) {
+							log(
+								`${shardPrefix}⚠️ Playwright timeout detected - aggressively killing test`,
+							);
+							if (proc && !proc.killed) {
+								try {
+									if (proc.detached && proc.pid) {
+										log(
+											`${shardPrefix}💥 Killing timeout process group ${proc.pid}`,
+										);
+										process.kill(-proc.pid, "SIGKILL");
+									} else {
+										proc.kill("SIGKILL");
+									}
+									// Also kill related processes immediately
+									const { execSync } = require("node:child_process");
+									execSync(`pkill -9 -f "chromium" || true`, {
+										stdio: "ignore",
+										timeout: 1000,
+									});
+									execSync(`pkill -9 -f "playwright" || true`, {
+										stdio: "ignore",
+										timeout: 1000,
+									});
+								} catch (error) {
 									log(
-										`${shardPrefix}💥 Killing timeout process group ${proc.pid}`,
+										`${shardPrefix}⚠️ Failed to kill timeout process: ${error.message}`,
 									);
-									process.kill(-proc.pid, "SIGKILL");
-								} else {
-									proc.kill("SIGKILL");
 								}
-								// Also kill related processes immediately
-								const { execSync } = require("node:child_process");
-								execSync(`pkill -9 -f "chromium" || true`, {
-									stdio: "ignore",
-									timeout: 1000,
-								});
-								execSync(`pkill -9 -f "playwright" || true`, {
-									stdio: "ignore",
-									timeout: 1000,
-								});
-							} catch (error) {
-								log(
-									`${shardPrefix}⚠️ Failed to kill timeout process: ${error.message}`,
-								);
 							}
 						}
 					}
 				});
 
-				// Capture stderr
+				// Capture stderr with streaming line parser
 				proc.stderr.on("data", (data) => {
 					const str = data.toString();
-					errorOutput += str;
 					lastOutputTime = Date.now(); // Update last output time
-					process.stderr.write(`${shardPrefix}${data}`);
+
+					// Add to bounded buffer
+					errorBuffer += str;
+					if (errorBuffer.length > MAX_BUFFER_SIZE) {
+						errorBuffer = errorBuffer.slice(-MAX_BUFFER_SIZE);
+					}
+
+					// Parse error lines
+					stderrLineBuffer += str;
+					const lines = stderrLineBuffer.split("\n");
+					stderrLineBuffer = lines.pop() || "";
+
+					for (const line of lines) {
+						// Filter and stream errors (prevents Claude Code buffer overflow)
+						if (this.outputFilter?.processLine(line, "stderr")) {
+							const truncated = this.outputFilter.truncateLine(line);
+							process.stderr.write(`${shardPrefix}${truncated}\n`);
+						}
+					}
 				});
 
 				// Start stall detection - check every 20 seconds for output
@@ -1027,12 +1111,15 @@ class E2ETestRunner {
 
 					const duration = Math.round((Date.now() - startTime) / 1000);
 
-					// Parse results from output
-					const results = this.parseE2EResults(output);
+					// Calculate total from incremental results
+					results.total = results.passed + results.failed + results.skipped;
+
+					// Final pass: parse any remaining data from bounded buffer
+					this.finalizeE2EResults(outputBuffer, results);
 
 					// Add error information if exit code is non-zero
-					if (code !== 0 && errorOutput) {
-						results.errorOutput = errorOutput;
+					if (code !== 0 && errorBuffer) {
+						results.errorOutput = errorBuffer;
 					}
 
 					// Generate shard report asynchronously (non-blocking)
@@ -1041,8 +1128,8 @@ class E2ETestRunner {
 						group,
 						shardId,
 						duration,
-						output,
-						errorOutput,
+						outputBuffer,
+						errorBuffer,
 					);
 
 					log(
@@ -1161,6 +1248,75 @@ class E2ETestRunner {
 		results.total = results.passed + results.failed + results.skipped;
 
 		return results;
+	}
+
+	/**
+	 * Parse a single E2E test line for incremental results
+	 * IMPORTANT: Only parse summary lines to avoid over-counting
+	 */
+	parseE2ETestLine(line, results) {
+		// Only parse summary lines (e.g., "5 passed, 2 failed")
+		// Use max to avoid double-counting cumulative totals
+		const summaryMatch = line.match(/(\d+)\s+passed/);
+		if (summaryMatch) {
+			const passed = parseInt(summaryMatch[1]);
+			results.passed = Math.max(results.passed, passed);
+		}
+
+		const failedMatch = line.match(/(\d+)\s+failed/);
+		if (failedMatch) {
+			const failed = parseInt(failedMatch[1]);
+			results.failed = Math.max(results.failed, failed);
+		}
+
+		const skippedMatch = line.match(/(\d+)\s+skipped/);
+		if (skippedMatch) {
+			const skipped = parseInt(skippedMatch[1]);
+			results.skipped = Math.max(results.skipped, skipped);
+		}
+	}
+
+	/**
+	 * Finalize E2E results with any remaining buffer data
+	 */
+	finalizeE2EResults(buffer, results) {
+		// Do a final parse of the bounded buffer to catch any summary lines
+		// Parse final summary from Playwright output
+		const summaryMatch = buffer.match(/(\d+)\s+passed.*?(\d+)\s+failed/s);
+		if (summaryMatch) {
+			const passed = parseInt(summaryMatch[1]);
+			const failed = parseInt(summaryMatch[2]);
+
+			// Use final summary if more accurate
+			if (passed > results.passed) results.passed = passed;
+			if (failed > results.failed) results.failed = failed;
+		}
+
+		// Check for intentional failures in test-configuration-verification
+		if (buffer.includes("test-configuration-verification.spec.ts")) {
+			const intentionalPatterns = [
+				"Test 2: Intentional FAILURE",
+				"Test 4: Another intentional FAILURE",
+				"Test 7: Nested intentional FAILURE",
+			];
+
+			let intentionalCount = 0;
+			for (const pattern of intentionalPatterns) {
+				if (buffer.includes(pattern)) {
+					intentionalCount++;
+				}
+			}
+
+			if (intentionalCount > 0) {
+				results.intentionalFailures = intentionalCount;
+			}
+		}
+
+		// Count integration tests
+		const integrationMatches = buffer.match(/@integration/g);
+		if (integrationMatches) {
+			results.integrationTests = integrationMatches.length;
+		}
 	}
 
 	/**

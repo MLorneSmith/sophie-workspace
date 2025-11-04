@@ -99,6 +99,58 @@ const CONFIG = {
 		},
 	},
 
+	// Output control settings (prevents Claude Code crashes from buffer overflow)
+	output: {
+		// Output mode: 'full', 'summary', 'quiet', 'file'
+		mode: process.env.TEST_OUTPUT_MODE || "summary", // Default to summary to prevent crashes
+
+		// Stream control
+		streaming: {
+			enabled: true, // Enable real-time streaming
+			maxBufferSize: 50 * 1024, // 50KB buffer limit per stream
+			flushInterval: 100, // Flush every 100ms
+			lineBufferSize: 1000, // Keep last 1000 lines in memory
+		},
+
+		// Output filtering
+		filter: {
+			// Show only critical output in summary mode
+			showProgress: true, // Show test progress
+			showPassed: false, // Hide passed tests in summary mode
+			showFailed: true, // Always show failures
+			showSkipped: false, // Hide skipped tests
+			showErrors: true, // Always show errors
+			showWarnings: true, // Show warnings
+			showTimings: true, // Show timing information
+			showCoverage: true, // Show coverage summary
+		},
+
+		// File output (when mode is 'file' or for backups)
+		file: {
+			enabled: process.env.TEST_OUTPUT_FILE !== "false", // Always log to file by default
+			path: process.env.TEST_OUTPUT_FILE || "/tmp/test-output.log",
+			maxSize: 10 * 1024 * 1024, // 10MB max file size
+			rotation: true, // Rotate when max size reached
+			keepBackups: 3, // Keep last 3 backup files
+		},
+
+		// Performance metrics
+		metrics: {
+			trackMemory: true, // Track memory usage
+			trackCpu: false, // Don't track CPU by default (expensive)
+			warnThreshold: 100 * 1024 * 1024, // Warn if memory exceeds 100MB
+			errorThreshold: 200 * 1024 * 1024, // Error if memory exceeds 200MB
+		},
+
+		// Console output limits
+		console: {
+			maxLinesPerTest: 10, // Max lines per test in summary mode
+			maxTotalLines: 300, // HARD max total lines in summary mode (prevents Claude Code crash)
+			truncateAt: 200, // Truncate long lines at 200 chars
+			showEllipsis: true, // Show ... when truncating
+		},
+	},
+
 	// Environment variables for test execution
 	environment: {
 		NODE_ENV: "test",

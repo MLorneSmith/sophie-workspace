@@ -1,9 +1,9 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { convertMdocToLexical } from "../parsers/mdoc-parser-simple";
-import type { ReferenceManager } from "../utils/reference-manager";
-import type { ConversionResult } from "../types";
 import type { Config } from "payload";
+import { convertMdocToLexical } from "../parsers/mdoc-parser-simple";
+import type { ConversionResult } from "../types";
+import type { ReferenceManager } from "../utils/reference-manager";
 
 /**
  * Normalize timestamp to ISO 8601 format
@@ -21,7 +21,9 @@ function normalizeTimestamp(timestamp: unknown): string {
 
 	// Check if date is valid
 	if (Number.isNaN(date.getTime())) {
-		console.warn(`Invalid timestamp format: ${timestampStr}, using current time`);
+		console.warn(
+			`Invalid timestamp format: ${timestampStr}, using current time`,
+		);
 		return new Date().toISOString();
 	}
 
@@ -39,8 +41,8 @@ interface PostData {
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
@@ -90,9 +92,12 @@ export async function convertPosts(
 					content: lexicalContent,
 					excerpt: String(frontmatter.excerpt || frontmatter.description || ""),
 					meta: {
-						title: String(frontmatter.metaTitle || frontmatter.title || "Untitled Post"),
-						description:
-							String(frontmatter.metaDescription || frontmatter.description || ""),
+						title: String(
+							frontmatter.metaTitle || frontmatter.title || "Untitled Post",
+						),
+						description: String(
+							frontmatter.metaDescription || frontmatter.description || "",
+						),
 						image: frontmatter.metaImage
 							? referenceManager.formatReference(
 									"media",
@@ -102,8 +107,8 @@ export async function convertPosts(
 							: null,
 					},
 					publishedAt: normalizeTimestamp(
-						frontmatter.publishedAt ||
-						frontmatter.date),
+						frontmatter.publishedAt || frontmatter.date,
+					),
 					_status: frontmatter.status === "published" ? "published" : "draft",
 				};
 
@@ -128,7 +133,9 @@ export async function convertPosts(
 				// Handle categories (tags) - convert to array of objects with category property
 				if (frontmatter.categories || frontmatter.tags) {
 					const tags = frontmatter.categories || frontmatter.tags;
-					const tagArray = Array.isArray(tags) ? tags.map(String) : [String(tags)];
+					const tagArray = Array.isArray(tags)
+						? tags.map(String)
+						: [String(tags)];
 					post.categories = tagArray.map((category) => ({ category }));
 				}
 
@@ -139,7 +146,11 @@ export async function convertPosts(
 						: [frontmatter.relatedPosts];
 
 					post.relatedPosts = related.map((postId) =>
-						referenceManager.formatReference("collection", "posts", String(postId)),
+						referenceManager.formatReference(
+							"collection",
+							"posts",
+							String(postId),
+						),
 					);
 				}
 

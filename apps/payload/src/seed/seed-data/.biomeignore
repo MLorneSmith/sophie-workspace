@@ -1,0 +1,3 @@
+# Biome should not format or lint these seed data files
+# They contain intentionally structured _ref values
+*.json

@@ -1,11 +1,12 @@
-import matter from "gray-matter";
+import { randomUUID } from "node:crypto";
 import {
 	convertMarkdownToLexical,
 	defaultEditorConfig,
 	defaultEditorFeatures,
 } from "@payloadcms/richtext-lexical";
+import matter from "gray-matter";
 import type { Config } from "payload";
-import { type ParsedContent, MediaReference } from "../types";
+import { MediaReference, type ParsedContent } from "../types";
 
 export async function parseMdocFile(
 	content: string,
@@ -178,6 +179,7 @@ function postProcessLexicalNodes(nodes: any[]): any[] {
 					processedNodes.push({
 						type: "block",
 						version: 1,
+						id: randomUUID(),
 						blockType: "bunnyVideo",
 						fields: {
 							videoId: match[1],

@@ -8,6 +8,7 @@ const fs = require("node:fs").promises;
 const path = require("node:path");
 const { promisify } = require("node:util");
 const execAsync = promisify(exec);
+const { OutputFilter } = require("../utilities/output-filter.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -24,6 +25,9 @@ class UnitTestRunner {
 		this.config = config;
 		this.testStatus = testStatus;
 		this.phaseCoordinator = phaseCoordinator;
+
+		// Initialize output filter
+		this.outputFilter = null;
 	}
 
 	/**
@@ -56,11 +60,38 @@ class UnitTestRunner {
 	/**
 	 * Execute the unit tests
 	 */
-	executeTests(workspaceInfo) {
+	async executeTests(workspaceInfo) {
+		// Initialize output filter before Promise
+		this.outputFilter = new OutputFilter(this.config.output || {});
+		await this.outputFilter.initFileOutput();
+
+		log(`📊 Output mode: ${this.outputFilter.mode}`);
+		if (this.outputFilter.fileConfig.enabled) {
+			log(`📝 Logging to: ${this.outputFilter.fileConfig.path}`);
+		}
+
 		return new Promise((resolve, reject) => {
 			const startTime = Date.now();
-			let output = "";
-			let errorOutput = "";
+
+			// Streaming parser: only keep bounded buffers and structured data
+			const MAX_BUFFER_SIZE = 100000; // 100KB for final analysis
+			let outputBuffer = ""; // Bounded buffer for final parsing
+			let errorBuffer = ""; // Bounded buffer for errors
+			let stdoutLineBuffer = ""; // Incomplete line buffer
+			let stderrLineBuffer = ""; // Incomplete line buffer
+
+			// Structured results parsed incrementally
+			const results = {
+				total: 0,
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				failedTests: [],
+				workspaces: {
+					executed: [],
+					cached: [],
+				},
+			};
 
 			// Check if coverage is enabled
 			const collectCoverage =
@@ -97,21 +128,64 @@ class UnitTestRunner {
 				proc.kill("SIGKILL");
 			}, this.config.timeouts.unitTests);
 
-			// Handle stdout
+			// Handle stdout with streaming line parser and output filter
 			proc.stdout.on("data", (data) => {
-				const str = data.toString();
-				output += str;
-				process.stdout.write(data);
+				// Add to bounded buffer (for final parsing)
+				outputBuffer += data.toString();
+				if (outputBuffer.length > MAX_BUFFER_SIZE) {
+					outputBuffer = outputBuffer.slice(-MAX_BUFFER_SIZE);
+				}
 
-				// Real-time parsing for status updates
-				this.parseRealtimeProgress(str);
+				// Parse line-by-line for incremental results
+				stdoutLineBuffer += data.toString();
+				const lines = stdoutLineBuffer.split("\n");
+				stdoutLineBuffer = lines.pop() || ""; // Keep incomplete line
+
+				// Process each complete line
+				for (const line of lines) {
+					// Parse test results
+					this.parseTestLine(line, results);
+					this.parseWorkspaceLine(line, results.workspaces);
+
+					// Filter and stream output
+					if (this.outputFilter.processLine(line, "stdout")) {
+						const truncated = this.outputFilter.truncateLine(line);
+						process.stdout.write(truncated + "\n");
+					}
+				}
+
+				// Real-time progress updates
+				this.testStatus.updateStatusLine(
+					"unit_tests",
+					results.passed,
+					results.failed,
+					results.passed + results.failed,
+				);
 			});
 
-			// Handle stderr
+			// Handle stderr with streaming line parser and output filter
 			proc.stderr.on("data", (data) => {
-				const str = data.toString();
-				errorOutput += str;
-				process.stderr.write(data);
+				// Add to bounded buffer
+				errorBuffer += data.toString();
+				if (errorBuffer.length > MAX_BUFFER_SIZE) {
+					errorBuffer = errorBuffer.slice(-MAX_BUFFER_SIZE);
+				}
+
+				// Parse error lines
+				stderrLineBuffer += data.toString();
+				const lines = stderrLineBuffer.split("\n");
+				stderrLineBuffer = lines.pop() || "";
+
+				for (const line of lines) {
+					// Parse errors
+					this.parseErrorLine(line, results);
+
+					// Filter and stream errors (always show errors)
+					if (this.outputFilter.processLine(line, "stderr")) {
+						const truncated = this.outputFilter.truncateLine(line);
+						process.stderr.write(truncated + "\n");
+					}
+				}
 			});
 
 			// Handle process errors
@@ -125,8 +199,11 @@ class UnitTestRunner {
 				clearTimeout(timeout); // Clear the timeout
 				const duration = Math.round((Date.now() - startTime) / 1000);
 
-				// Parse test results from output
-				const results = this.parseResults(output);
+				// Calculate total from incremental results
+				results.total = results.passed + results.failed + results.skipped;
+
+				// Final pass: parse any remaining data from bounded buffer
+				this.finalizeResults(outputBuffer, results);
 
 				// Update test status
 				await this.testStatus.updateUnitTests({
@@ -138,8 +215,13 @@ class UnitTestRunner {
 				// Log summary
 				this.logSummary(results, duration, workspaceInfo);
 
-				// Analyze workspace execution
-				const workspaceAnalysis = this.analyzeWorkspaceResults(output);
+				// Analyze workspace execution from results
+				const workspaceAnalysis = {
+					total: results.workspaces.executed.length,
+					skipped: results.workspaces.cached.length,
+					executed: results.workspaces.executed,
+					cached: results.workspaces.cached,
+				};
 
 				// Check for expected test count
 				if (results.total < 100 && code === 0) {
@@ -156,7 +238,13 @@ class UnitTestRunner {
 				// Parse coverage information if enabled
 				let coverageData = null;
 				if (collectCoverage && code === 0) {
-					coverageData = this.parseCoverage(output);
+					coverageData = this.parseCoverage(outputBuffer);
+				}
+
+				// Print output filter summary and cleanup
+				if (this.outputFilter) {
+					this.outputFilter.printSummary();
+					this.outputFilter.cleanup();
 				}
 
 				resolve({
@@ -164,13 +252,121 @@ class UnitTestRunner {
 					...results,
 					duration,
 					coverage: coverageData,
-					output: this.config.execution.debug ? output : undefined,
-					errorOutput: errorOutput.length > 0 ? errorOutput : undefined,
+					output: this.config.execution.debug ? outputBuffer : undefined,
+					errorOutput: errorBuffer.length > 0 ? errorBuffer : undefined,
 					workspaceInfo,
 					workspaceAnalysis,
 				});
 			});
 		});
+	}
+
+	/**
+	 * Parse a single test line for incremental results
+	 * IMPORTANT: Test output shows cumulative totals, not increments
+	 * Use Math.max() to track the highest value seen
+	 */
+	parseTestLine(line, results) {
+		// Parse test result lines (e.g., "Tests  5 passed (5)")
+		const testMatch = line.match(/Tests\s+.*(\d+)\s+passed/);
+		if (testMatch) {
+			const passed = parseInt(testMatch[1]);
+			// Use max to avoid double-counting cumulative totals
+			results.passed = Math.max(results.passed, passed);
+		}
+
+		// Parse failed tests
+		const failedMatch = line.match(/(\d+)\s+failed/);
+		if (failedMatch) {
+			const failed = parseInt(failedMatch[1]);
+			results.failed = Math.max(results.failed, failed);
+		}
+
+		// Parse skipped/todo tests
+		const skippedMatch = line.match(/(\d+)\s+(skipped|todo)/i);
+		if (skippedMatch) {
+			const skipped = parseInt(skippedMatch[1]);
+			results.skipped = Math.max(results.skipped, skipped);
+		}
+
+		// Parse FAIL lines for failed test details
+		const failLine = line.match(/FAIL\s+(.+)/);
+		if (failLine) {
+			const filePath = failLine[1].trim();
+			if (!results.failedTests.some((t) => t.file === filePath)) {
+				results.failedTests.push({
+					file: filePath,
+					type: "test_failure",
+				});
+			}
+		}
+	}
+
+	/**
+	 * Parse workspace execution lines
+	 */
+	parseWorkspaceLine(line, workspaces) {
+		// Parse Turbo workspace execution (e.g., "@kit/auth: RUN")
+		const runMatch = line.match(/(@[\w-]+\/[\w-]+|[\w-]+):\s+RUN\s/);
+		if (runMatch) {
+			const workspace = runMatch[1];
+			if (!workspaces.executed.includes(workspace)) {
+				workspaces.executed.push(workspace);
+			}
+		}
+
+		// Parse cached workspaces (shouldn't happen with --force)
+		const cachedMatch = line.match(/(@[\w-]+\/[\w-]+|[\w-]+):\s+CACHED\s/);
+		if (cachedMatch) {
+			const workspace = cachedMatch[1];
+			if (!workspaces.cached.includes(workspace)) {
+				workspaces.cached.push(workspace);
+			}
+		}
+	}
+
+	/**
+	 * Parse error lines for error details
+	 */
+	parseErrorLine(line, results) {
+		// Parse AssertionError
+		if (line.includes("AssertionError:")) {
+			const error = line.trim();
+			if (!results.failedTests.some((t) => t.error === error)) {
+				results.failedTests.push({
+					error: error,
+					type: "assertion_error",
+				});
+			}
+		}
+
+		// Parse TypeScript errors
+		const tsError = line.match(/TS\d+:.+/);
+		if (tsError) {
+			const error = tsError[0].trim();
+			if (!results.failedTests.some((t) => t.error === error)) {
+				results.failedTests.push({
+					error: error,
+					type: "typescript_error",
+				});
+			}
+		}
+	}
+
+	/**
+	 * Finalize results with any remaining buffer data
+	 */
+	finalizeResults(buffer, results) {
+		// Do a final parse of the bounded buffer to catch any summary lines
+		// This is safe because we only keep the last 100KB
+		const summaryMatch = buffer.match(/Test Files.*Tests\s+(\d+)\s+passed/);
+		if (summaryMatch) {
+			// Use the final summary if available (it's more accurate)
+			const totalPassed = parseInt(summaryMatch[1]);
+			if (totalPassed > results.passed) {
+				results.passed = totalPassed;
+			}
+		}
 	}
 
 	/**

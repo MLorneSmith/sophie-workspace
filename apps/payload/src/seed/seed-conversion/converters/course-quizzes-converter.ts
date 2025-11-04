@@ -34,8 +34,8 @@ interface CourseQuizJson {
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
@@ -57,7 +57,6 @@ interface CourseQuizJson {
 export async function convertCourseQuizzes(
 	referenceManager: ReferenceManager,
 ): Promise<void> {
-
 	const sourceDir = path.join(__dirname, "../../../seed/seed-data-raw/quizzes");
 	const outputDir = path.join(__dirname, "../../../seed/seed-data");
 
@@ -84,7 +83,9 @@ export async function convertCourseQuizzes(
 				title:
 					String(frontmatter.title) ||
 					file.replace("-quiz.mdoc", "").replace(".mdoc", ""),
-				description: frontmatter.description ? String(frontmatter.description) : "",
+				description: frontmatter.description
+					? String(frontmatter.description)
+					: "",
 				timeLimit: frontmatter.timeLimit
 					? parseInt(String(frontmatter.timeLimit))
 					: undefined,
@@ -94,10 +95,22 @@ export async function convertCourseQuizzes(
 				maxAttempts: frontmatter.maxAttempts
 					? parseInt(String(frontmatter.maxAttempts))
 					: 3,
-				showCorrectAnswers: typeof frontmatter.showCorrectAnswers === "boolean" ? frontmatter.showCorrectAnswers : true,
-				randomizeQuestions: typeof frontmatter.randomizeQuestions === "boolean" ? frontmatter.randomizeQuestions : false,
-				course: frontmatter.course || frontmatter.courseId ? String(frontmatter.course || frontmatter.courseId) : undefined,
-				lesson: frontmatter.lesson || frontmatter.lessonId ? String(frontmatter.lesson || frontmatter.lessonId) : undefined,
+				showCorrectAnswers:
+					typeof frontmatter.showCorrectAnswers === "boolean"
+						? frontmatter.showCorrectAnswers
+						: true,
+				randomizeQuestions:
+					typeof frontmatter.randomizeQuestions === "boolean"
+						? frontmatter.randomizeQuestions
+						: false,
+				course:
+					frontmatter.course || frontmatter.courseId
+						? String(frontmatter.course || frontmatter.courseId)
+						: undefined,
+				lesson:
+					frontmatter.lesson || frontmatter.lessonId
+						? String(frontmatter.lesson || frontmatter.lessonId)
+						: undefined,
 				sourceFile: file,
 			};
 
@@ -105,21 +118,30 @@ export async function convertCourseQuizzes(
 			const quizId = file.replace(".mdoc", "");
 
 			// Convert instructions to Lexical format if present
-			let instructions: {
-				root: {
-					type: string;
-					children: Array<{
-						type: string;
-						version: number;
+			let instructions:
+				| {
+						root: {
+							type: string;
+							children: Array<{
+								type: string;
+								version: number;
+								[k: string]: unknown;
+							}>;
+							direction: ("ltr" | "rtl") | null;
+							format:
+								| "left"
+								| "start"
+								| "center"
+								| "right"
+								| "end"
+								| "justify"
+								| "";
+							indent: number;
+							version: number;
+						};
 						[k: string]: unknown;
-					}>;
-					direction: ('ltr' | 'rtl') | null;
-					format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-					indent: number;
-					version: number;
-				};
-				[k: string]: unknown;
-			} | undefined;
+				  }
+				| undefined;
 			if (markdownContent.trim()) {
 				instructions = convertToSimpleLexical(markdownContent);
 			}
@@ -208,7 +230,10 @@ async function loadQuizQuestionsMapping(): Promise<Record<string, unknown>> {
 	}
 }
 
-function getQuestionReferencesForQuiz(quizId: string, mapping: Record<string, unknown>): string[] {
+function getQuestionReferencesForQuiz(
+	quizId: string,
+	mapping: Record<string, unknown>,
+): string[] {
 	// Look for quiz in mapping
 	if (mapping[quizId]) {
 		return (mapping[quizId] as string[]).map(
@@ -297,8 +322,8 @@ function convertToSimpleLexical(markdown: string): {
 			version: number;
 			[k: string]: unknown;
 		}>;
-		direction: ('ltr' | 'rtl') | null;
-		format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 		indent: number;
 		version: number;
 	};
@@ -319,14 +344,16 @@ function convertToSimpleLexical(markdown: string): {
 			return {
 				type: "heading",
 				tag: `h${Math.min(level, 6)}`,
-				children: [{ type: "text", text }], version: 1,
+				children: [{ type: "text", text }],
+				version: 1,
 			};
 		}
 
 		// Regular paragraph
 		return {
 			type: "paragraph",
-			children: [{ type: "text", text: paragraph }], version: 1,
+			children: [{ type: "text", text: paragraph }],
+			version: 1,
 		};
 	});
 
