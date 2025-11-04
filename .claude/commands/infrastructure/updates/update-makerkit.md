@@ -10,10 +10,10 @@ category: maintenance
 Three-phase upstream synchronization with dependency separation, optimized merge drivers, and systematic conflict resolution.
 
 ## Key Features
+- **Early Exit Optimization**: Check for upstream updates FIRST - exits immediately if already synced (saves time)
 - **Three-Phase Process**: Dependencies → Code Merge → Cleanup (70-80% complexity reduction)
 - **Dependency Sync First**: Separate package.json updates eliminate most conflicts
 - **Optimized Merge Driver**: Biome configuration prevents timeouts and handles formatting
-- **Upstream Check**: Verify new updates exist before proceeding (saves time)
 - **Systematic Conflict Resolution**: Category-based patterns for predictable outcomes
 - **Upstream Linting Fixes**: Automatic ESLint→Biome conversion
 - **Safety Protocols**: Backup creation and rollback capability
@@ -39,7 +39,7 @@ You are the Makerkit Synchronization Engineer, expert in framework updates, git 
 
 **CORE REQUIREMENTS**:
 - **Follow** PRIME framework: Purpose → Role → Inputs → Method → Expectations
-- **Check** for upstream updates before proceeding (efficiency)
+- **Check** for upstream updates FIRST - exit early if already synced (efficiency)
 - **Never** update environment files or secrets
 - **Preserve** all custom business logic
 - **Create** backup before any modifications
@@ -54,10 +54,11 @@ You are the Makerkit Synchronization Engineer, expert in framework updates, git 
 
 1. **Primary Objective**: Safely incorporate Makerkit upstream updates using three-phase approach while preserving custom SlideHeroes code
 2. **Success Criteria**:
+   - Step 0: Upstream check completed - exit early if no updates needed
    - Phase 1: Dependencies synchronized separately (eliminates 70-80% of conflicts)
    - Phase 2: Code merged with optimized Biome driver (systematic conflict resolution)
    - Phase 3: Upstream linting fixed (ESLint→Biome conversion)
-   - New upstream changes detected and merged
+   - New upstream changes detected and merged (or early exit if none)
    - Zero breaking changes to custom business logic
    - All safe updates successfully applied
    - Type checks and linting pass (exit code 0)
@@ -149,9 +150,9 @@ done
 ```javascript
 TodoWrite({
   todos: [
+    { content: "Check for and fetch upstream updates", status: "pending", activeForm: "Checking upstream" },
     { content: "Sync dependency versions from upstream", status: "pending", activeForm: "Syncing dependencies" },
     { content: "Verify merge driver configuration", status: "pending", activeForm: "Verifying merge driver" },
-    { content: "Check for and fetch upstream updates", status: "pending", activeForm: "Checking upstream" },
     { content: "Create safety backup branch", status: "pending", activeForm: "Creating backup" },
     { content: "Merge upstream changes", status: "pending", activeForm: "Merging upstream" },
     { content: "Resolve merge conflicts", status: "pending", activeForm: "Resolving conflicts" },
@@ -162,73 +163,8 @@ TodoWrite({
 });
 ```
 
-### Step 0: Sync Dependencies (NEW - Critical for Clean Merge)
-**Mark** task as in_progress and **synchronize** package versions:
-```bash
-echo "📦 Syncing dependency versions from upstream..."
-
-# Run dependency sync script
-tsx .claude/scripts/sync-upstream-deps.ts --auto-approve
-
-if [ $? -eq 0 ]; then
-  echo "✅ Dependencies synchronized"
-
-  # Commit dependency updates separately
-  if [ ! -z "$(git status --porcelain)" ]; then
-    git add package.json pnpm-lock.yaml apps/*/package.json packages/*/package.json
-    git commit -m "chore: sync dependency versions from upstream
-
-Updated dependency versions while preserving custom scripts and configuration.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-    echo "✅ Dependency changes committed"
-  fi
-else
-  echo "❌ Dependency sync failed"
-  exit 1
-fi
-
-# Mark task as completed
-```
-
-**Why This Step is Critical**:
-- Eliminates 70-80% of merge conflicts by handling package.json separately
-- Preserves all custom scripts, configurations, and SlideHeroes-only packages
-- Provides clear separation between dependency updates and code changes
-- Reduces merge complexity dramatically
-
-### Step 0.5: Verify Merge Driver Configuration
-**Mark** task as in_progress and **verify** Biome merge driver is optimized:
-```bash
-echo "🔧 Verifying merge driver configuration..."
-
-# Check current merge driver
-CURRENT_DRIVER=$(git config merge.formatting.driver 2>/dev/null)
-
-# Optimized driver (prevents timeout on temporary files)
-OPTIMAL_DRIVER="biome format --write --files-ignore-unknown=true --no-errors-on-unmatched '%A' 2>/dev/null && exit 0 || exit 0"
-
-if [ "$CURRENT_DRIVER" != "$OPTIMAL_DRIVER" ]; then
-  echo "⚙️  Updating Biome merge driver for optimal performance..."
-  git config merge.formatting.driver "$OPTIMAL_DRIVER"
-  echo "✅ Merge driver optimized"
-else
-  echo "✅ Merge driver already optimized"
-fi
-
-# Mark task as completed
-```
-
-**Why This Configuration Matters**:
-- Prevents timeout issues during merge (2+ minute delays eliminated)
-- Handles ESLint→Biome formatting differences automatically
-- Ignores temporary merge files that don't need formatting
-- Essential for smooth upstream synchronization
-
-### Step 1: Check for Upstream Updates
-**Mark** task as in_progress and **verify** updates exist:
+### Step 0: Check for Upstream Updates (FIRST - Early Exit if None)
+**Mark** task as in_progress and **verify** updates exist before proceeding:
 ```bash
 echo "🔍 Checking for upstream updates..."
 
@@ -314,7 +250,79 @@ echo "🔄 Proceeding with upstream sync..."
 # Mark task as completed
 ```
 
-### Step 2: Pre-flight Validation
+**Why This Check is Critical**:
+- Saves time by detecting if updates are actually needed
+- Prevents unnecessary operations when already synchronized
+- Shows exactly what will change before proceeding
+- Allows user to confirm or cancel (unless --force)
+- Exits early if no updates, saving processing time
+
+### Step 1: Sync Dependencies (Critical for Clean Merge)
+**Mark** task as in_progress and **synchronize** package versions:
+```bash
+echo "📦 Syncing dependency versions from upstream..."
+
+# Run dependency sync script
+tsx .claude/scripts/sync-upstream-deps.ts --auto-approve
+
+if [ $? -eq 0 ]; then
+  echo "✅ Dependencies synchronized"
+
+  # Commit dependency updates separately
+  if [ ! -z "$(git status --porcelain)" ]; then
+    git add package.json pnpm-lock.yaml apps/*/package.json packages/*/package.json
+    git commit -m "chore: sync dependency versions from upstream
+
+Updated dependency versions while preserving custom scripts and configuration.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+    echo "✅ Dependency changes committed"
+  fi
+else
+  echo "❌ Dependency sync failed"
+  exit 1
+fi
+
+# Mark task as completed
+```
+
+**Why This Step is Critical**:
+- Eliminates 70-80% of merge conflicts by handling package.json separately
+- Preserves all custom scripts, configurations, and SlideHeroes-only packages
+- Provides clear separation between dependency updates and code changes
+- Reduces merge complexity dramatically
+
+### Step 2: Verify Merge Driver Configuration
+**Mark** task as in_progress and **verify** Biome merge driver is optimized:
+```bash
+echo "🔧 Verifying merge driver configuration..."
+
+# Check current merge driver
+CURRENT_DRIVER=$(git config merge.formatting.driver 2>/dev/null)
+
+# Optimized driver (prevents timeout on temporary files)
+OPTIMAL_DRIVER="biome format --write --files-ignore-unknown=true --no-errors-on-unmatched '%A' 2>/dev/null && exit 0 || exit 0"
+
+if [ "$CURRENT_DRIVER" != "$OPTIMAL_DRIVER" ]; then
+  echo "⚙️  Updating Biome merge driver for optimal performance..."
+  git config merge.formatting.driver "$OPTIMAL_DRIVER"
+  echo "✅ Merge driver optimized"
+else
+  echo "✅ Merge driver already optimized"
+fi
+
+# Mark task as completed
+```
+
+**Why This Configuration Matters**:
+- Prevents timeout issues during merge (2+ minute delays eliminated)
+- Handles ESLint→Biome formatting differences automatically
+- Ignores temporary merge files that don't need formatting
+- Essential for smooth upstream synchronization
+
+### Step 3: Pre-flight Validation
 **Mark** task as in_progress and **execute** comprehensive checks:
 ```bash
 # Verify clean working directory
@@ -351,7 +359,7 @@ ELSE:
   → **Proceed** with current branch
 ```
 
-### Step 3: Create Safety Backup
+### Step 4: Create Safety Backup
 **Mark** task as in_progress and **create** backup:
 ```bash
 if [ "$NO_BACKUP" != "true" ]; then
@@ -364,7 +372,7 @@ if [ "$NO_BACKUP" != "true" ]; then
 fi
 ```
 
-### Step 4: Analyze Incoming Changes
+### Step 5: Analyze Incoming Changes
 **Analyze** changes before pulling:
 ```bash
 # Initialize merge report
@@ -393,7 +401,7 @@ for file in $CHANGED_FILES; do
 done
 ```
 
-### Step 5: Merge Upstream Changes
+### Step 6: Merge Upstream Changes
 **Mark** task as in_progress and **execute** merge:
 
 ### Decision Tree: Dry Run Mode
@@ -442,7 +450,7 @@ fi
 - Clearer in documentation and git history
 - Separates fetch from merge for better transparency
 
-### Step 6: Systematic Conflict Resolution
+### Step 7: Systematic Conflict Resolution
 **Mark** task as in_progress and **resolve** conflicts:
 
 ### Understanding Merge Conflicts (Important!)
@@ -508,7 +516,7 @@ else
 fi
 ```
 
-### Step 7: Parallel Validation Suite
+### Step 8: Parallel Validation Suite
 **Mark** task as in_progress and **execute** validation in parallel:
 ```bash
 echo "🧪 Running validation suite..."
@@ -560,7 +568,7 @@ ELSE IF type or build errors:
   → THEN **Exit** with error status
 ```
 
-### Step 7.5: Fix Upstream Package Linting Issues (NEW)
+### Step 9: Fix Upstream Package Linting Issues
 **Mark** task as in_progress and **resolve** upstream linting:
 ```bash
 echo "🔧 Checking upstream packages for linting issues..."
@@ -626,7 +634,7 @@ fi
 - Upstream code may have patterns that violate Biome rules
 - Fixing these separately keeps merge history clean
 
-### Step 8: Generate Update Report
+### Step 10: Generate Update Report
 **Mark** task as in_progress and **create** comprehensive documentation:
 ```bash
 echo "📄 Generating update report..."
@@ -749,11 +757,11 @@ echo "════════════════════════�
 
 ### Quality Assurance
 **Ensure** high-quality update:
-- ✅ Upstream changes detected and incorporated
-- ✅ Dependencies synced before code merge (NEW - Phase 1)
+- ✅ Upstream check completed FIRST - early exit if no updates (Step 0)
+- ✅ Dependencies synced before code merge (Phase 1)
 - ✅ Custom code preserved without modification
-- ✅ Merge conflicts resolved systematically by category (NEW - Phase 2)
-- ✅ Upstream package linting issues fixed (NEW - Phase 3)
+- ✅ Merge conflicts resolved systematically by category (Phase 2)
+- ✅ Upstream package linting issues fixed (Phase 3)
 - ✅ Validation suite executed completely
 - ✅ Comprehensive documentation generated
 - ✅ Rollback capability maintained
@@ -810,12 +818,13 @@ echo "════════════════════════�
 <patterns>
 ### Implemented Patterns
 - **PRIME Framework**: Complete P→R→I→M→E workflow structure
-- **Early Exit Optimization**: Check for upstream updates before processing
+- **Early Exit Optimization**: Check for upstream updates FIRST (Step 0) - exits immediately if already synced
+- **Three-Phase Separation**: Dependencies → Code Merge → Cleanup (70-80% complexity reduction)
 - **Dynamic Context Loading**: context-discovery-expert integration
 - **Progress Tracking**: TodoWrite for multi-step visibility
 - **Parallel Validation**: Concurrent execution of checks
 - **Decision Trees**: Conditional logic for dry-run, force, validation
-- **Automated Conflict Resolution**: Integration with 95% automation system
+- **Automated Conflict Resolution**: Integration with systematic category-based resolution
 - **Comprehensive Reporting**: Detailed status with actionable steps
 </patterns>
 
@@ -830,7 +839,11 @@ Safely synchronize your project with the latest Makerkit framework updates using
 - `/update:makerkit --dry-run` - Preview changes without applying
 - `/update:makerkit --no-backup` - Skip backup creation (not recommended)
 
-**Three-Phase Process:**
+**Workflow Steps:**
+0. **Upstream Check (FIRST)** - Verify updates exist before any processing
+   - Exits immediately if already synchronized
+   - Shows exactly what would change
+   - Interactive confirmation (unless --force)
 1. **Phase 1: Dependencies** - Sync package.json versions separately using sync-upstream-deps.ts
    - Eliminates 70-80% of merge conflicts
    - Preserves all custom scripts and configuration
@@ -844,11 +857,12 @@ Safely synchronize your project with the latest Makerkit framework updates using
 **PRIME Process:**
 1. **Purpose**: Safely incorporate upstream updates
 2. **Role**: Expert synchronization engineer
-3. **Inputs**: Check updates, load context, parse arguments
-4. **Method**: Dependency sync, merge, resolve conflicts, fix linting, validate
+3. **Inputs**: Load context, parse arguments
+4. **Method**: Check upstream → Dependency sync → Merge → Resolve → Fix linting → Validate
 5. **Expectations**: Clean merge with full documentation
 
 **Key Features:**
+- **Early exit optimization** - Check upstream FIRST, exit if no updates (saves time)
 - Three-phase separation reduces complexity by 70-80%
 - Smart sync detection (handles diverged branches correctly)
 - Interactive confirmation of upstream changes
