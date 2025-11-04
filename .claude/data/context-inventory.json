@@ -1,6 +1,6 @@
 {
 	"version": "1.1",
-	"lastUpdated": "2025-09-30",
+	"lastUpdated": "2025-11-04",
 	"description": "Complete inventory of all context documentation files in .claude/context",
 	"basePath": ".claude/context",
 	"categories": {
@@ -2220,6 +2220,46 @@
 					"antiPatterns": [],
 					"pairings": ["docker-setup", "e2e-testing-fundamentals"],
 					"tokens": 1844
+				},
+				{
+					"path": "infrastructure/deployment/database-seeding-strategy.md",
+					"name": "Database Seeding Strategy: Dual-Mode Approach",
+					"description": "Comprehensive dual-strategy database seeding system for Supabase: local development with automatic seeding vs remote deployment with migration-based seeding",
+					"lastUpdated": "2025-11-04",
+					"topics": [
+						"Database",
+						"Seeding",
+						"Supabase",
+						"Migrations",
+						"Deployment",
+						"Local Development",
+						"CI/CD"
+					],
+					"tokens": 2549,
+					"priority": "essential",
+					"keywords": [
+						"database",
+						"seeding",
+						"supabase",
+						"migrations",
+						"deployment",
+						"local-development",
+						"remote-deployment",
+						"idempotent",
+						"config.toml",
+						"db-reset",
+						"db-push",
+						"production-guards",
+						"dual-strategy",
+						"e2e-testing"
+					],
+					"relatedCommands": [
+						"/database:supabase-reset",
+						"/database:supabase-seed-remote"
+					],
+					"dependencies": ["database/migrations", "supabase-cli"],
+					"antiPatterns": [],
+					"pairings": ["docker-setup", "migrations"]
 				}
 			]
 		}

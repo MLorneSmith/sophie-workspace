@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.onboarding (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) NOT NULL UNIQUE,
   completed BOOLEAN DEFAULT FALSE,
   completed_at TIMESTAMP WITH TIME ZONE,

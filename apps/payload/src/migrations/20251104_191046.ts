@@ -628,6 +628,12 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"survey_questions_id" uuid
   );
   
+  CREATE TABLE "payload"."payload_kv" (
+  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+  	"key" varchar NOT NULL,
+  	"data" jsonb NOT NULL
+  );
+  
   CREATE TABLE "payload"."payload_locked_documents" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"global_slug" varchar,
@@ -987,6 +993,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_surveys_v_rels_parent_idx" ON "payload"."_surveys_v_rels" USING btree ("parent_id");
   CREATE INDEX "_surveys_v_rels_path_idx" ON "payload"."_surveys_v_rels" USING btree ("path");
   CREATE INDEX "_surveys_v_rels_survey_questions_id_idx" ON "payload"."_surveys_v_rels" USING btree ("survey_questions_id");
+  CREATE UNIQUE INDEX "payload_kv_key_idx" ON "payload"."payload_kv" USING btree ("key");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload"."payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX "payload_locked_documents_updated_at_idx" ON "payload"."payload_locked_documents" USING btree ("updated_at");
   CREATE INDEX "payload_locked_documents_created_at_idx" ON "payload"."payload_locked_documents" USING btree ("created_at");
@@ -1072,6 +1079,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload"."surveys_rels" CASCADE;
   DROP TABLE "payload"."_surveys_v" CASCADE;
   DROP TABLE "payload"."_surveys_v_rels" CASCADE;
+  DROP TABLE "payload"."payload_kv" CASCADE;
   DROP TABLE "payload"."payload_locked_documents" CASCADE;
   DROP TABLE "payload"."payload_locked_documents_rels" CASCADE;
   DROP TABLE "payload"."payload_preferences" CASCADE;
