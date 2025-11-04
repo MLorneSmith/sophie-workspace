@@ -24,6 +24,7 @@
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
+		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"next": "catalog:",
 		"react": "19.2.0",
