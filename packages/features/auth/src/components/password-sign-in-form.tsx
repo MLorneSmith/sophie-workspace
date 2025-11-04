@@ -1,13 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Mail } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import type { z } from "zod";
-
 import { Button } from "@kit/ui/button";
 import {
 	Form,
@@ -23,6 +16,11 @@ import {
 	InputGroupInput,
 } from "@kit/ui/input-group";
 import { Trans } from "@kit/ui/trans";
+import { ArrowRight, Mail } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
 
 import { PasswordSignInSchema } from "../schemas/password-sign-in.schema";
 import { PasswordInput } from "./password-input";
