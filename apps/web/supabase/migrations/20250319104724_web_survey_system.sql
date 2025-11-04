@@ -1,6 +1,6 @@
 -- Create survey_responses table in public schema
 CREATE TABLE IF NOT EXISTS public.survey_responses (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   survey_id TEXT NOT NULL,
   responses JSONB DEFAULT '[]'::jsonb, -- Store actual responses here
@@ -57,7 +57,7 @@ CREATE POLICY "Admin users can access all responses"
 
 -- Create survey_progress table in public schema
 CREATE TABLE IF NOT EXISTS public.survey_progress (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   survey_id TEXT NOT NULL,
   current_question_index INTEGER DEFAULT 0,

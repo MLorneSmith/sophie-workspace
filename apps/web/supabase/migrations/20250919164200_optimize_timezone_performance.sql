@@ -9,6 +9,9 @@
 
 BEGIN;
 
+-- Enable pg_stat_statements extension for performance monitoring
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
 -- =============================================================================
 -- SECTION 1: Create Timezone Cache Materialized View
 -- =============================================================================
@@ -109,32 +112,20 @@ COMMENT ON FUNCTION public.refresh_timezone_cache() IS
 -- SECTION 3: Create Timezone Performance Monitoring View
 -- =============================================================================
 
--- View to monitor timezone query performance
+-- View to monitor timezone cache status (pg_stat_statements access may not be available)
 CREATE OR REPLACE VIEW public.timezone_performance_monitor AS
-SELECT 
+SELECT
     'pg_timezone_names' as query_type,
-    CASE 
-        WHEN EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
-            (SELECT calls FROM pg_stat_statements WHERE query ILIKE '%pg_timezone_names%' ORDER BY total_exec_time DESC LIMIT 1)
-        ELSE NULL
-    END as total_calls,
-    CASE
-        WHEN EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
-            (SELECT round(mean_exec_time::numeric, 2) FROM pg_stat_statements WHERE query ILIKE '%pg_timezone_names%' ORDER BY total_exec_time DESC LIMIT 1)
-        ELSE NULL
-    END as avg_duration_ms,
-    CASE
-        WHEN EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements') THEN
-            (SELECT round(total_exec_time::numeric, 2) FROM pg_stat_statements WHERE query ILIKE '%pg_timezone_names%' ORDER BY total_exec_time DESC LIMIT 1)
-        ELSE NULL
-    END as total_duration_ms,
+    NULL::bigint as total_calls,
+    NULL::numeric as avg_duration_ms,
+    NULL::numeric as total_duration_ms,
     (SELECT COUNT(*) FROM public.timezone_cache) as cached_timezones,
     (SELECT COUNT(*) FROM pg_timezone_names) as total_timezones,
     now() as last_checked;
 
 -- Add helpful comment
-COMMENT ON VIEW public.timezone_performance_monitor IS 
-'Monitor timezone query performance and cache status. Requires pg_stat_statements extension.';
+COMMENT ON VIEW public.timezone_performance_monitor IS
+'Monitor timezone cache status. Note: pg_stat_statements performance metrics not available in managed Supabase.';
 
 -- =============================================================================
 -- SECTION 4: Create Maintenance Log Table (if needed)

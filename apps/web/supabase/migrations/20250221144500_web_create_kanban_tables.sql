@@ -4,7 +4,7 @@ create type public.task_status as enum ('do', 'doing', 'done');
 
 -- Create tasks table
 create table if not exists public.tasks (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     title text not null,
     description text,
     status public.task_status not null default 'do',
@@ -17,7 +17,7 @@ create table if not exists public.tasks (
 
 -- Create subtasks table
 create table if not exists public.subtasks (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     task_id uuid not null references public.tasks(id) on delete cascade,
     title text not null,
     is_completed boolean default false,

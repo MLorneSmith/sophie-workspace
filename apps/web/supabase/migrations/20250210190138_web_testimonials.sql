@@ -1,7 +1,7 @@
 create type public.testimonial_status as enum ('pending', 'approved', 'rejected');
 
 create table if not exists public.testimonials (
-    id uuid default uuid_generate_v4() primary key,
+    id uuid default gen_random_uuid() primary key,
     customer_name varchar(255) not null,
     customer_company_name varchar(255),
     customer_avatar_url varchar(255),

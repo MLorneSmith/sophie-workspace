@@ -191,14 +191,17 @@ function createSimpleLexicalContent(markdown: string): {
 		// YouTube video shortcode: {% youtube src="videoId" /%}
 		const youtubeMatch = line.match(/^{%\s*youtube\s+src="([^"]+)"\s*\/%}$/);
 		if (youtubeMatch) {
+			const blockId = randomUUID();
 			children.push({
 				type: "block",
 				version: 1,
-				id: randomUUID(),
-			format: "",
-			indent: 0,
-				blockType: "youtube-video",
+				id: blockId,
+				format: "",
+				indent: 0,
 				fields: {
+					id: blockId,
+					blockName: "YouTube Video",
+					blockType: "youtube-video",
 					videoId: youtubeMatch[1],
 				},
 			});
@@ -226,14 +229,17 @@ function createSimpleLexicalContent(markdown: string): {
 			const rightButtonLabelMatch = ctaText.match(/(?:rightbuttonlabel|rightButtonLabel)="([^"]+)"/);
 			const rightButtonUrlMatch = ctaText.match(/(?:rightbuttonurl|rightButtonUrl)="([^"]+)"/);
 
+			const blockId = randomUUID();
 			children.push({
 				type: "block",
 				version: 1,
-				id: randomUUID(),
-			format: "",
-			indent: 0,
-				blockType: "call-to-action",
+				id: blockId,
+				format: "",
+				indent: 0,
 				fields: {
+					id: blockId,
+					blockName: "Call To Action",
+					blockType: "call-to-action",
 					headline: headlineMatch?.[1] || "FREE Course Trial",
 					subheadline: subheadlineMatch?.[1] || "Start improving your presentations today!",
 					leftButtonLabel: leftButtonLabelMatch?.[1] || "Individuals",
@@ -288,14 +294,17 @@ function createSimpleLexicalContent(markdown: string): {
 			/^{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}$/,
 		);
 		if (bunnyMatch) {
+			const blockId = randomUUID();
 			children.push({
 				type: "block",
 				version: 1,
-				id: randomUUID(),
-			format: "",
-			indent: 0,
-				blockType: "bunny-video",
+				id: blockId,
+				format: "",
+				indent: 0,
 				fields: {
+					id: blockId,
+					blockName: "Bunny Video",
+					blockType: "bunny-video",
 					videoId: bunnyMatch[1],
 				},
 			});
