@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",
-		"@react-email/components": "0.5.5"
+		"@react-email/components": "0.5.7"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",

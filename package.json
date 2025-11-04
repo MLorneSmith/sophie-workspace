@@ -101,7 +101,7 @@
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@manypkg/cli": "^0.25.1",
-		"@playwright/test": "^1.55.1",
+		"@playwright/test": "^1.56.1",
 		"@turbo/gen": "^2.5.8",
 		"@vitest/coverage-v8": "^4.0.3",
 		"codebase-map": "^0.6.0",

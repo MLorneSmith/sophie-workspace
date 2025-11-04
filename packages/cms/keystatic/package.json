@@ -27,8 +27,8 @@
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"@types/node": "^24.6.2",
-		"@types/react": "19.1.16",
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
 		"react": "19.2.0",
 		"zod": "^3.25.74"
 	},

@@ -24,7 +24,7 @@
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "^24.6.2",
-		"@types/react": "19.1.16"
+		"@types/react": "catalog:"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.1",
