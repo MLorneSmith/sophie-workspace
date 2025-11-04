@@ -1,9 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight } from "lucide-react";
-import { useForm } from "react-hook-form";
-
 import { Button } from "@kit/ui/button";
 import {
 	Form,
@@ -15,6 +12,8 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { ArrowRight } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import { PasswordSignUpSchema } from "../schemas/password-sign-up.schema";
 import { EmailInput } from "./email-input";

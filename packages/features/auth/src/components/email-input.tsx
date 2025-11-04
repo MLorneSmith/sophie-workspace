@@ -1,13 +1,12 @@
 "use client";
 
-import { Mail } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
 import {
 	InputGroup,
 	InputGroupAddon,
 	InputGroupInput,
 } from "@kit/ui/input-group";
+import { Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function EmailInput(props: React.ComponentProps<"input">) {
 	const { t } = useTranslation("auth");

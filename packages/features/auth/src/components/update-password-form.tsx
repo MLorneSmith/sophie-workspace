@@ -1,14 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import type { z } from "zod";
-
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
@@ -22,6 +14,12 @@ import {
 } from "@kit/ui/form";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import type { z } from "zod";
 
 import { PasswordResetSchema } from "../schemas/password-reset.schema";
 import { PasswordInput } from "./password-input";

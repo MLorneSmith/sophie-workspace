@@ -1,10 +1,9 @@
 "use client";
 
-import { CheckCircledIcon } from "@radix-ui/react-icons";
-
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
+import { CheckCircledIcon } from "@radix-ui/react-icons";
 
 import { useCaptcha } from "../captcha/client";
 import { usePasswordSignUpFlow } from "../hooks/use-sign-up-flow";
