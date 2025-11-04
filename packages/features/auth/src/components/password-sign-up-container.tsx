@@ -1,9 +1,10 @@
 "use client";
 
+import { CheckCircledIcon } from "@radix-ui/react-icons";
+
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Trans } from "@kit/ui/trans";
-import { CheckCircledIcon } from "@radix-ui/react-icons";
 
 import { useCaptcha } from "../captcha/client";
 import { usePasswordSignUpFlow } from "../hooks/use-sign-up-flow";
@@ -50,14 +51,16 @@ export function EmailPasswordSignUpContainer({
 			<If condition={!showVerifyEmailAlert}>
 				<AuthErrorAlert error={error} />
 
-				{captcha.field}
+				<div>
+					<PasswordSignUpForm
+						onSubmit={onSignupRequested}
+						loading={loading}
+						defaultValues={defaultValues}
+						displayTermsCheckbox={displayTermsCheckbox}
+					/>
 
-				<PasswordSignUpForm
-					onSubmit={onSignupRequested}
-					loading={loading}
-					defaultValues={defaultValues}
-					displayTermsCheckbox={displayTermsCheckbox}
-				/>
+					{captcha.field}
+				</div>
 			</If>
 		</>
 	);

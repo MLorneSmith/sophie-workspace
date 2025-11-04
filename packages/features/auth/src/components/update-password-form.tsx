@@ -1,28 +1,30 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import type { z } from "zod";
+
 import { useUpdateUser } from "@kit/supabase/hooks/use-update-user-mutation";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import {
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@kit/ui/form";
 import { Heading } from "@kit/ui/heading";
-import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import type { z } from "zod";
 
 import { PasswordResetSchema } from "../schemas/password-reset.schema";
+import { PasswordInput } from "./password-input";
 
 export function UpdatePasswordForm(params: {
 	redirectTo: string;
@@ -70,22 +72,13 @@ export function UpdatePasswordForm(params: {
 						toast.success(t("account:updatePasswordSuccessMessage"));
 					})}
 				>
-					<div className={"flex-col space-y-4"}>
+					<div className={"flex-col space-y-2.5"}>
 						<FormField
 							name={"password"}
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
-										<Trans i18nKey={"common:password"} />
-									</FormLabel>
-
 									<FormControl>
-										<Input
-											required
-											type="password"
-											autoComplete={"new-password"}
-											{...field}
-										/>
+										<PasswordInput autoComplete={"new-password"} {...field} />
 									</FormControl>
 
 									<FormMessage />
@@ -97,13 +90,13 @@ export function UpdatePasswordForm(params: {
 							name={"repeatPassword"}
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>
-										<Trans i18nKey={"common:repeatPassword"} />
-									</FormLabel>
-
 									<FormControl>
-										<Input required type="password" {...field} />
+										<PasswordInput autoComplete={"new-password"} {...field} />
 									</FormControl>
+
+									<FormDescription>
+										<Trans i18nKey={"common:repeatPassword"} />
+									</FormDescription>
 
 									<FormMessage />
 								</FormItem>

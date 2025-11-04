@@ -37,6 +37,11 @@ CREATE TABLE IF NOT EXISTS public.nonces (
 CREATE INDEX IF NOT EXISTS idx_nonces_status ON public.nonces (client_token, user_id, purpose, expires_at)
   WHERE used_at IS NULL AND revoked = FALSE;
 
+-- Optimized index for verify_nonce function query pattern
+-- Matches filter order: purpose → expires_at → user_id
+CREATE INDEX IF NOT EXISTS idx_nonces_verify_lookup ON public.nonces (purpose, expires_at DESC, user_id)
+  WHERE used_at IS NULL AND revoked = FALSE;
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.nonces ENABLE ROW LEVEL SECURITY;
 
@@ -147,41 +152,52 @@ create or replace function public.verify_nonce (
         SEARCH_PATH to '' as $$
 DECLARE
     v_nonce          RECORD;
-    v_matching_count INTEGER;
 BEGIN
-    -- Count how many matching tokens exist before verification attempt
-    SELECT COUNT(*)
-    INTO v_matching_count
-    FROM public.nonces
-    WHERE purpose = p_purpose;
-
-    -- Update verification attempt counter and tracking info for all matching tokens
-    UPDATE public.nonces
-    SET verification_attempts        = verification_attempts + 1,
-        last_verification_at         = NOW(),
-        last_verification_ip         = COALESCE(p_ip, last_verification_ip),
-        last_verification_user_agent = COALESCE(p_user_agent, last_verification_user_agent)
-    WHERE client_token = extensions.crypt(p_token, client_token)
-      AND purpose = p_purpose;
-
-    -- Find the nonce by token and purpose
-    -- Modified to handle user-specific tokens better
-    SELECT *
-    INTO v_nonce
-    FROM public.nonces
-    WHERE client_token = extensions.crypt(p_token, client_token)
-      AND purpose = p_purpose
-      -- Only apply user_id filter if the token was created for a specific user
-      AND (
-        -- Case 1: Anonymous token (user_id is NULL in DB)
-        (user_id IS NULL)
-            OR
-            -- Case 2: User-specific token (check if user_id matches)
-        (user_id = p_user_id)
-        )
-      AND used_at IS NULL
-      AND NOT revoked
-      AND expires_at > NOW();
+    -- Find and update the nonce in a single operation
+    -- First filter by indexed columns to reduce candidate rows, then do bcrypt comparison
+    WITH candidate_nonces AS (
+        -- Use index to filter candidates by purpose, user_id, expiry, status
+        SELECT id, client_token, user_id, purpose, metadata, scopes,
+               verification_attempts, expires_at, used_at, revoked
+        FROM public.nonces
+        WHERE purpose = p_purpose
+          AND used_at IS NULL
+          AND NOT revoked
+          AND expires_at > NOW()
+          -- Only apply user_id filter if the token was created for a specific user
+          AND (
+            -- Case 1: Anonymous token (user_id is NULL in DB)
+            (user_id IS NULL)
+                OR
+                -- Case 2: User-specific token (check if user_id matches)
+            (user_id = p_user_id)
+          )
+        ORDER BY created_at DESC
+        -- Safety net: Limit to 100 most recent candidates to cap worst-case performance
+        -- In production, auto-revocation keeps this low, but this protects against edge cases
+        LIMIT 100
+        -- CRITICAL: Lock rows to prevent race conditions in concurrent verifications
+        -- SKIP LOCKED ensures other requests fail fast instead of waiting
+        FOR UPDATE SKIP LOCKED
+    ),
+    matched_nonce AS (
+        -- Now do the expensive bcrypt comparison only on filtered candidates
+        SELECT *
+        FROM candidate_nonces
+        WHERE client_token = extensions.crypt(p_token, client_token)
+        LIMIT 1
+    ),
+    updated_nonce AS (
+        -- Update only the matched nonce
+        UPDATE public.nonces
+        SET verification_attempts        = verification_attempts + 1,
+            last_verification_at         = NOW(),
+            last_verification_ip         = COALESCE(p_ip, last_verification_ip),
+            last_verification_user_agent = COALESCE(p_user_agent, last_verification_user_agent)
+        WHERE id = (SELECT id FROM matched_nonce)
+        RETURNING *
+    )
+    SELECT * INTO v_nonce FROM updated_nonce;
 
     -- Check if nonce exists
     IF v_nonce.id IS NULL THEN
@@ -191,7 +207,7 @@ BEGIN
                );
     END IF;
 
-    -- Check if max verification attempts exceeded
+    -- Check if max verification attempts exceeded (using the incremented value)
     IF p_max_verification_attempts > 0 AND v_nonce.verification_attempts > p_max_verification_attempts THEN
         -- Automatically revoke the token
         UPDATE public.nonces

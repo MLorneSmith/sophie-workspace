@@ -1,8 +1,9 @@
+import Link from "next/link";
+
 import { SignUpMethodsContainer } from "@kit/auth/sign-up";
 import { Button } from "@kit/ui/button";
 import { Heading } from "@kit/ui/heading";
 import { Trans } from "@kit/ui/trans";
-import Link from "next/link";
 
 import authConfig from "~/config/auth.config";
 import pathsConfig from "~/config/paths.config";
@@ -39,6 +40,7 @@ async function SignUpPage() {
 				providers={authConfig.providers}
 				displayTermsCheckbox={authConfig.displayTermsCheckbox}
 				paths={paths}
+				captchaSiteKey={authConfig.captchaTokenSiteKey}
 			/>
 
 			<div className={"flex justify-center"}>

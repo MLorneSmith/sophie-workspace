@@ -1,6 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
 import { useAppEvents } from "@kit/shared/events";
 import { useSignInWithOtp } from "@kit/supabase/hooks/use-sign-in-with-otp";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
@@ -14,16 +19,12 @@ import {
 	FormMessage,
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
-import { Input } from "@kit/ui/input";
 import { toast } from "@kit/ui/sonner";
 import { Trans } from "@kit/ui/trans";
-import { CheckIcon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { z } from "zod";
 
 import { useCaptcha } from "../captcha/client";
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
+import { EmailInput } from "./email-input";
 import { TermsAndConditionsFormField } from "./terms-and-conditions-form-field";
 
 export function MagicLinkAuthContainer({
@@ -117,13 +118,7 @@ export function MagicLinkAuthContainer({
 								</FormLabel>
 
 								<FormControl>
-									<Input
-										data-test={"email-input"}
-										required
-										type="email"
-										placeholder={t("auth:emailPlaceholder")}
-										{...field}
-									/>
+									<EmailInput data-test="email-input" {...field} />
 								</FormControl>
 
 								<FormMessage />

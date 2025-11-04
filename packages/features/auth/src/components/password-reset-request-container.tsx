@@ -1,6 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
 import { useRequestResetPassword } from "@kit/supabase/hooks/use-request-reset-password";
 import { Alert, AlertDescription } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
@@ -15,9 +19,6 @@ import {
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
 import { Trans } from "@kit/ui/trans";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { z } from "zod";
 
 import { useCaptcha } from "../captcha/client";
 import { AuthErrorAlert } from "./auth-error-alert";
@@ -78,8 +79,6 @@ export function PasswordResetRequestContainer(params: {
 						<div className={"flex flex-col gap-y-4"}>
 							<AuthErrorAlert error={error} />
 
-							{captcha.field}
-
 							<FormField
 								name={"email"}
 								render={({ field }) => (
@@ -106,6 +105,7 @@ export function PasswordResetRequestContainer(params: {
 								<Trans i18nKey={"auth:passwordResetLabel"} />
 							</Button>
 						</div>
+						{captcha.field}
 					</form>
 				</Form>
 			</If>
