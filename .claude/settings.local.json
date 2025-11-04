@@ -23,7 +23,8 @@
       "Read(//tmp/**)",
       "Bash(find:*)",
       "Bash(vercel:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm run build)"
     ],
     "deny": [],
     "ask": [],
