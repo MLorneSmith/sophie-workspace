@@ -63,7 +63,11 @@ export function PasswordSignUpForm({
 						render={({ field }) => (
 							<FormItem>
 								<FormControl>
-									<EmailInput data-test={"email-input"} {...field} />
+									<EmailInput
+										data-test={"email-input"}
+										data-testid="sign-up-email"
+										{...field}
+									/>
 								</FormControl>
 
 								<FormMessage />
@@ -77,7 +81,7 @@ export function PasswordSignUpForm({
 						render={({ field }) => (
 							<FormItem>
 								<FormControl>
-									<PasswordInput {...field} />
+									<PasswordInput data-testid="sign-up-password" {...field} />
 								</FormControl>
 
 								<FormMessage />
@@ -113,6 +117,7 @@ export function PasswordSignUpForm({
 
 				<Button
 					data-test={"auth-submit-button"}
+					data-testid="sign-up-button"
 					className={"w-full"}
 					type="submit"
 					disabled={loading}

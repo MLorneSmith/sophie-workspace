@@ -9,8 +9,11 @@ import {
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { useState } from "react";
 
-export function PasswordInput(props: React.ComponentProps<"input">) {
+export function PasswordInput(
+	props: React.ComponentProps<"input"> & { "data-testid"?: string },
+) {
 	const [showPassword, setShowPassword] = useState(false);
+	const { "data-testid": dataTestId, ...inputProps } = props;
 
 	return (
 		<InputGroup className="dark:bg-background">
@@ -20,9 +23,10 @@ export function PasswordInput(props: React.ComponentProps<"input">) {
 
 			<InputGroupInput
 				data-test="password-input"
+				data-testid={dataTestId}
 				type={showPassword ? "text" : "password"}
 				placeholder={"************"}
-				{...props}
+				{...inputProps}
 			/>
 
 			<InputGroupAddon align="inline-end">
