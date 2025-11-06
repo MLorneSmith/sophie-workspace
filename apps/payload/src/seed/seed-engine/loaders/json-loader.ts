@@ -11,7 +11,12 @@ import { readFile } from 'fs/promises';
 import { join, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { SeedRecord } from '../types';
-import { COLLECTION_CONFIGS, SEED_DATA_DIR } from '../config';
+import {
+  COLLECTION_CONFIGS,
+  SEED_DATA_DIR,
+  PRODUCTION_COLLECTIONS,
+  TEST_FIXTURE_COLLECTIONS,
+} from '../config';
 
 // ESM equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -331,7 +336,12 @@ export async function loadCollection(collection: string): Promise<LoadResult> {
 /**
  * Load all collections defined in seed order
  *
- * Loads all configured collections in dependency order.
+ * Loads all configured collections in dependency order,
+ * **excluding test fixtures** (empty-test, malformed-test, etc.).
+ *
+ * Test fixtures are intentionally designed to fail validation and should
+ * ONLY be loaded when explicitly requested by name via `loadCollections()`.
+ *
  * Continues loading even if individual collections fail (collects errors).
  *
  * @returns Array of load results for successful collections
@@ -352,7 +362,10 @@ export async function loadCollection(collection: string): Promise<LoadResult> {
  * ```
  */
 export async function loadAllCollections(): Promise<LoadResult[]> {
-  const collections = Object.keys(COLLECTION_CONFIGS);
+  // Exclude test fixture collections from default loading
+  // Test fixtures (empty-test, malformed-test, etc.) are intentionally invalid
+  // and should ONLY be loaded when explicitly requested for error scenario testing
+  const collections = PRODUCTION_COLLECTIONS as readonly string[];
   const results: LoadResult[] = [];
   const errors: Error[] = [];
 

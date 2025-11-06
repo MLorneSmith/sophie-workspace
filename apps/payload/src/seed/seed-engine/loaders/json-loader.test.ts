@@ -165,7 +165,8 @@ describe('JSON Loader', () => {
       expect(result.recordCount).toBeGreaterThan(0);
       const firstLesson = result.records[0];
       expect(firstLesson).toHaveProperty('course_id');
-      expect(String(firstLesson.course_id)).toMatch(/\{ref:courses:\w+\}/);
+      // Reference pattern allows word characters, hyphens, and underscores
+      expect(String(firstLesson.course_id)).toMatch(/\{ref:courses:[\w-]+\}/);
     });
 
     it('should throw FileNotFoundError for non-existent collection', async () => {

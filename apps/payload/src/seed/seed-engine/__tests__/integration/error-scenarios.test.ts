@@ -24,8 +24,10 @@ describe('Integration: Error Scenarios', () => {
   beforeEach(() => {
     resetPayloadInstance();
 
-    process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
+    // sslmode=disable required for local Supabase with self-signed certificates
+    process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test?sslmode=disable';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    process.env.SEED_USER_PASSWORD = 'test-password';
     // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
 
@@ -203,11 +205,11 @@ describe('Integration: Error Scenarios', () => {
       expect(result.error).toContain('validation failed');
     });
 
-    it('should fail when quiz-questions are seeded without quizzes', async () => {
+    it('should fail when course-quizzes are seeded without dependencies', async () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['quiz-questions'], // Missing 'course-quizzes' dependency
+        collections: ['course-quizzes'], // Missing 'courses' and 'quiz-questions' dependencies
         maxRetries: 3,
         timeout: 120000,
       };
@@ -218,11 +220,11 @@ describe('Integration: Error Scenarios', () => {
       expect(result.error).toContain('validation failed');
     });
 
-    it('should fail when survey-questions are seeded without surveys', async () => {
+    it('should fail when surveys are seeded without dependencies', async () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['survey-questions'], // Missing 'surveys' dependency
+        collections: ['surveys'], // Missing 'courses', 'course-lessons', and 'survey-questions' dependencies
         maxRetries: 3,
         timeout: 120000,
       };
@@ -237,7 +239,7 @@ describe('Integration: Error Scenarios', () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['quiz-questions', 'survey-questions'], // Missing multiple levels
+        collections: ['course-lessons', 'surveys'], // Both missing their dependencies
         maxRetries: 3,
         timeout: 120000,
       };
@@ -266,7 +268,8 @@ describe('Integration: Error Scenarios', () => {
       expect(result1.success).toBe(false);
 
       // Second attempt with valid config
-      process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
+      // sslmode=disable required for local Supabase with self-signed certificates
+      process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test?sslmode=disable';
       resetPayloadInstance();
 
       const orchestrator2 = new SeedOrchestrator();

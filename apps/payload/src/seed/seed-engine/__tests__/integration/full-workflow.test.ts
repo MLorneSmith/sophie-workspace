@@ -25,8 +25,10 @@ describe('Integration: Full Seeding Workflow', () => {
     resetPayloadInstance();
 
     // Set up test environment
-    process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test';
+    // sslmode=disable required for local Supabase with self-signed certificates
+    process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test?sslmode=disable';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    process.env.SEED_USER_PASSWORD = 'test-password';
     // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
 
@@ -171,7 +173,14 @@ describe('Integration: Full Seeding Workflow', () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['courses', 'course-lessons'],
+        collections: [
+          'media', // Required by courses and course-lessons
+          'downloads', // Required by courses and course-lessons
+          'quiz-questions', // Required by course-quizzes (circular dep)
+          'courses',
+          'course-quizzes', // Required by course-lessons (circular dep)
+          'course-lessons',
+        ],
         maxRetries: 3,
         timeout: 120000,
       };
@@ -231,7 +240,7 @@ describe('Integration: Full Seeding Workflow', () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['courses', 'course-lessons'],
+        collections: ['media', 'downloads', 'quiz-questions', 'courses', 'course-quizzes', 'course-lessons'],
         maxRetries: 3,
         timeout: 120000,
       };
@@ -260,7 +269,7 @@ describe('Integration: Full Seeding Workflow', () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['courses', 'course-quizzes', 'quiz-questions'],
+        collections: ['media', 'downloads', 'quiz-questions', 'courses', 'course-quizzes', 'course-lessons'],
         maxRetries: 3,
         timeout: 120000,
       };
@@ -342,7 +351,7 @@ describe('Integration: Full Seeding Workflow', () => {
       const options: SeedOptions = {
         dryRun: true,
         verbose: false,
-        collections: ['courses', 'course-lessons', 'documentation'],
+        collections: ['media', 'downloads', 'quiz-questions', 'courses', 'course-quizzes', 'course-lessons', 'documentation'],
         maxRetries: 3,
         timeout: 120000,
       };

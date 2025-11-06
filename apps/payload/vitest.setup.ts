@@ -6,9 +6,9 @@
 import { resolve } from "node:path";
 import { config } from "dotenv";
 
-// Load .env.test file
+// Load .env.test file with override to ignore shell environment variables
 const envPath = resolve(__dirname, ".env.test");
-config({ path: envPath });
+config({ path: envPath, override: true });
 
 // Force NODE_ENV to 'test' BEFORE any other setup
 // This must be set unconditionally to override any system/CI defaults
@@ -17,9 +17,10 @@ config({ path: envPath });
 (process.env as any).NODE_ENV = "test";
 
 // Ensure critical variables are set (fallback if .env.test doesn't load)
+// Note: sslmode=disable required for local Supabase with self-signed certificates
 if (!process.env.DATABASE_URI) {
 	process.env.DATABASE_URI =
-		"postgresql://postgres:postgres@localhost:55322/postgres";
+		"postgresql://postgres:postgres@localhost:54322/postgres?sslmode=disable";
 }
 if (!process.env.PAYLOAD_SECRET) {
 	process.env.PAYLOAD_SECRET = "test_payload_secret_for_e2e_testing";
