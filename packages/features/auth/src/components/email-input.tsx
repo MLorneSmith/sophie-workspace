@@ -8,8 +8,11 @@ import {
 import { Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export function EmailInput(props: React.ComponentProps<"input">) {
+export function EmailInput(
+	props: React.ComponentProps<"input"> & { "data-testid"?: string },
+) {
 	const { t } = useTranslation("auth");
+	const { "data-testid": dataTestId, ...inputProps } = props;
 
 	return (
 		<InputGroup className="dark:bg-background">
@@ -19,10 +22,11 @@ export function EmailInput(props: React.ComponentProps<"input">) {
 
 			<InputGroupInput
 				data-test={"email-input"}
+				data-testid={dataTestId}
 				required
 				type="email"
 				placeholder={t("emailPlaceholder")}
-				{...props}
+				{...inputProps}
 			/>
 		</InputGroup>
 	);
