@@ -1,6 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { InvitationsPageObject } from "../invitations/invitations.po";
+import { AUTH_STATES } from "../utils/auth-state";
 import { TeamAccountsPageObject } from "./team-accounts.po";
 
 // Helper function to set up a team with a member
@@ -69,16 +70,13 @@ async function setupTeamWithMember(page: Page, memberRole = "member") {
 }
 
 test.describe("Team Accounts @team @integration", () => {
+	// Use pre-authenticated state from global setup
+	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
+
 	let teamAccounts: TeamAccountsPageObject;
 
 	test.beforeEach(async ({ page }) => {
 		teamAccounts = new TeamAccountsPageObject(page);
-		// Skip setup() which uses bootstrapUser - use pre-existing test user instead
-		const auth = new AuthPageObject(page);
-		await auth.loginAsUser({
-			email: process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com",
-			password: process.env.E2E_TEST_USER_PASSWORD || "",
-		});
 	});
 
 	test("user can update their team name (and slug)", async ({ page }) => {

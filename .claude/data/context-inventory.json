@@ -673,26 +673,48 @@
 					"path": "infrastructure/deployment/docker-architecture.md",
 					"name": "Docker Architecture Overview",
 					"description": "\"Hybrid Docker architecture combining containerized services with host-based development for optimal performance\"",
-					"lastUpdated": "2025-09-22",
-					"topics": ["Docker"],
+					"lastUpdated": "2025-11-06",
+					"topics": [
+						"Docker",
+						"Architecture",
+						"Containers",
+						"Supabase",
+						"Testing",
+						"Performance"
+					],
 					"priority": "important",
 					"keywords": [
 						"docker",
 						"architecture",
-						"overview",
 						"hybrid",
-						"combining",
 						"containerized",
-						"services",
-						"based",
-						"development",
-						"optimal"
+						"supabase-cli",
+						"docker-compose",
+						"networking",
+						"bridge-network",
+						"tmpfs",
+						"resource-limits",
+						"health-checks",
+						"performance-optimization",
+						"host-based-development",
+						"test-isolation",
+						"edge-functions",
+						"port-management",
+						"troubleshooting"
 					],
-					"relatedCommands": [],
-					"dependencies": [],
+					"relatedCommands": ["/docker-fix", "/test"],
+					"dependencies": [
+						"local-development-environment",
+						"docker-containers-management",
+						"test-architecture"
+					],
 					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 1135
+					"pairings": [
+						"docker-troubleshooting",
+						"docker-setup",
+						"test-architecture"
+					],
+					"tokens": 2268
 				},
 				{
 					"path": "team/roles/architecture-engineer.md",
@@ -1158,28 +1180,42 @@
 				},
 				{
 					"path": "infrastructure/deployment/docker-setup.md",
-					"name": "Identity",
+					"name": "Docker Setup and Container Architecture",
 					"description": "\"Documentation of SlideHeroes hybrid Docker architecture with Supabase CLI services, MCP servers, host-based development, and containerized testing with workflows and troubleshooting\"",
-					"lastUpdated": "2025-09-19",
-					"topics": ["Docker"],
+					"lastUpdated": "2025-11-06",
+					"topics": ["Docker", "Supabase", "Testing", "Development", "MCP"],
 					"priority": "supplementary",
 					"keywords": [
-						"identity",
-						"documentation",
-						"slideheroes",
-						"hybrid",
 						"docker",
-						"architecture",
-						"supabase",
-						"services",
-						"servers",
-						"based"
+						"setup",
+						"container-architecture",
+						"hybrid",
+						"supabase-cli",
+						"docker-compose",
+						"mcp-servers",
+						"host-based-development",
+						"test-containers",
+						"edge-functions",
+						"devcontainer",
+						"54321",
+						"54322",
+						"39006",
+						"2025slideheroes-db",
+						"slideheroes-app-test"
 					],
-					"relatedCommands": [],
-					"dependencies": [],
+					"relatedCommands": ["/test", "/docker-fix"],
+					"dependencies": [
+						"devcontainer-codespaces",
+						"mcp-servers",
+						"e2e-testing"
+					],
 					"antiPatterns": [],
-					"pairings": [],
-					"tokens": 3111
+					"pairings": [
+						"docker-architecture",
+						"docker-troubleshooting",
+						"test-architecture"
+					],
+					"tokens": 6008
 				},
 				{
 					"path": "infrastructure/deployment/docker-troubleshooting.md",

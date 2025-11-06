@@ -26,6 +26,7 @@ export function PasswordInput(
 				data-testid={dataTestId}
 				type={showPassword ? "text" : "password"}
 				placeholder={"************"}
+				aria-label="Password"
 				{...inputProps}
 			/>
 
@@ -35,6 +36,7 @@ export function PasswordInput(
 					variant="ghost"
 					size="sm"
 					onClick={() => setShowPassword(!showPassword)}
+					aria-label={showPassword ? "Hide password" : "Show password"}
 				>
 					{showPassword ? (
 						<EyeOff className="h-4 w-4" />

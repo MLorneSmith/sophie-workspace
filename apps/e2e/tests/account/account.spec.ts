@@ -1,27 +1,20 @@
 import { expect, test } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
+import { AUTH_STATES } from "../utils/auth-state";
 import { AccountPageObject } from "./account.po";
 
 test.describe("Account Settings", () => {
+	// Use pre-authenticated state from global setup
+	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
+
 	let account: AccountPageObject;
-	let email: string;
 
 	test.beforeEach(async ({ page }) => {
-		const auth = new AuthPageObject(page);
-
-		// Use pre-existing test user from seed data
-		email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "";
-		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
-
 		account = new AccountPageObject(page);
 
-		await auth.loginAsUser({
-			email,
-			password,
-			next: "/home/settings",
-		});
+		// Navigate to settings page
+		await page.goto("/home/settings");
 	});
 
 	test("user can update their profile name", async ({ page }) => {

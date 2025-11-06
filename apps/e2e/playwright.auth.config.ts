@@ -9,6 +9,7 @@ dotenvConfig({
 
 /**
  * Authentication test configuration - runs without pre-authentication setup
+ * These tests validate authentication flows themselves, so they start fresh
  */
 export default defineConfig({
 	testDir: "./tests",
@@ -16,6 +17,7 @@ export default defineConfig({
 	forbidOnly: !!process.env.CI,
 	retries: 3,
 	reporter: "html",
+	testIgnore: /.*\.setup\.ts/, // Skip setup files for consistency
 	use: {
 		baseURL:
 			process.env.PLAYWRIGHT_BASE_URL ||
@@ -40,7 +42,7 @@ export default defineConfig({
 		{
 			name: "chromium",
 			use: { ...devices["Desktop Chrome"] },
-			// NO dependencies - auth tests don't need pre-authentication
+			// NO storageState - auth tests validate authentication flows
 		},
 	],
 });

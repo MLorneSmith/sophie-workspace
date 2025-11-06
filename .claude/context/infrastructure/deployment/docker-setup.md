@@ -3,7 +3,7 @@
 # Identity
 id: "docker-setup"
 title: "Docker Setup and Container Architecture"
-version: "1.0.0"
+version: "1.1.0"
 category: "systems"
 
 # Discovery
@@ -25,9 +25,9 @@ cross_references:
 
 # Maintenance
 created: "2025-09-09"
-last_updated: "2025-09-25"
+last_updated: "2025-11-06"
 author: "create-context"
-revised: "2025-09-25 - Updated to reflect single Supabase stack architecture using ports 54321-54323, removed E2E stack references, simplified testing infrastructure"
+revised: "2025-11-06 - Corrected port ranges (54321-54326 + 39006), clarified Analytics service, updated container naming patterns"
 ---
 
 # Docker Setup and Container Architecture
@@ -37,7 +37,8 @@ revised: "2025-09-25 - Updated to reflect single Supabase stack architecture usi
 The SlideHeroes project uses a **hybrid Docker architecture** that combines containerized services with host-based application development for optimal performance and flexibility. The setup consists of:
 
 1. **Supabase CLI Stack** (Not docker-compose):
-   - **2025slideheroes-db** - Main Supabase services (database, auth, storage) on ports 54321-54323
+   - **2025slideheroes-db** - Main Supabase services on ports 54321-54326 + 39006
+   - Services: PostgreSQL, Kong API Gateway, GoTrue Auth, Storage, Realtime, Studio, Inbucket, Analytics
    - Used for both development and E2E testing
 
 2. **Docker Compose Stack** (`docker-compose.test.yml`):
@@ -60,14 +61,16 @@ This hybrid approach provides the best of both worlds: fast local development wi
 ## Recent Updates (2025-09-25)
 
 ### Simplified Architecture
-- **Single Supabase Stack**: Consolidated to one stack on ports 54321-54323
+- **Single Supabase Stack**: Consolidated to one stack on ports 54321-54326 + 39006
 - **Unified Testing**: E2E tests now use the same database as development
 - **Removed Complexity**: No longer maintaining separate E2E Supabase instance
 
 ### Current URLs:
-- Studio: http://localhost:54323
-- API: http://localhost:54321
+- API Gateway: http://localhost:54321
 - Database: postgresql://postgres:postgres@localhost:54322/postgres
+- Studio: http://localhost:54323
+- Inbucket Web: http://localhost:54324
+- Analytics: http://localhost:39006
 
 ### RLS Performance Optimizations
 - Consolidated 45+ duplicate RLS policies across 15 tables
@@ -85,15 +88,21 @@ This hybrid approach provides the best of both worlds: fast local development wi
 
 **Single Unified Stack (2025slideheroes-db)**:
 
-| Service | Port |
-|---------|------|
-| API Gateway | 54321 |
-| PostgreSQL | 54322 |
-| Studio | 54323 |
-| Inbucket | 54324-54326 |
-| **Edge Functions** | 54321/functions/v1/* |
+| Service | Port | Description |
+|---------|------|-------------|
+| API Gateway (Kong) | 54321 | Main API access point + Edge Functions |
+| PostgreSQL | 54322 | Database server |
+| Studio | 54323 | Supabase web UI |
+| Inbucket Web | 54324 | Email testing web interface |
+| Inbucket SMTP | 54325 | Email SMTP server |
+| Inbucket POP3 | 54326 | Email POP3 server |
+| Analytics (Logflare) | 39006 | Analytics and logging |
+| **Edge Functions** | 54321/functions/v1/* | Deno runtime functions |
 
-**Services Include**: PostgreSQL, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, Supabase Studio, and **Edge Functions Runtime**
+**Container Naming Pattern**: `supabase_<service>_2025slideheroes-db`
+- Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, `supabase_analytics_2025slideheroes-db`
+
+**Services Include**: PostgreSQL 17.x, Kong API Gateway, GoTrue Auth, S3-compatible Storage, Realtime subscriptions, Supabase Studio, Inbucket email testing, Logflare analytics, and **Edge Functions Runtime** (Deno)
 
 ### Test Server Containers (`2025slideheroes-test` stack)
 
@@ -269,7 +278,7 @@ pnpm install
 
 # 3. Start Supabase services from apps/web directory
 cd apps/web
-npx supabase start  # Main stack on ports 54321/54322/54323
+npx supabase start  # Main stack on ports 54321-54326 + 39006
 cd ../..
 
 # 4. Configure MCP servers (for AI features)
@@ -284,7 +293,7 @@ pnpm dev  # Runs on port 3000
 
 ```bash
 # Start backend services from apps/web directory
-cd apps/web && npx supabase start  # If not already running (ports 54321-54323)
+cd apps/web && npx supabase start  # If not already running (ports 54321-54326 + 39006)
 cd ../..
 
 # MCP servers start automatically with Claude Code (configured in .mcp.json)
@@ -650,7 +659,7 @@ Use these commands to verify your entire Docker infrastructure is working correc
 ```bash
 # === Supabase Stack ===
 echo "=== Supabase Stack ==="
-cd apps/web && npx supabase status            # Should show API on 54321, DB on 54322, Studio on 54323
+cd apps/web && npx supabase status            # Should show services on 54321-54326 + 39006
 cd ../..
 
 # === Docker Containers ===
@@ -677,10 +686,10 @@ node .claude/scripts/testing/infrastructure/test-controller.cjs --quick
 
 **✅ Healthy Setup Should Show**:
 ```
-Supabase:        API=54321, DB=54322, Studio=54323
+Supabase:        API=54321, DB=54322, Studio=54323, Analytics=39006
 Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021)
 MCP Server:      docs-mcp-server (6280)
-Infrastructure:  All infrastructure healthy
+Infrastructure:  All 12 Supabase containers + 2 test containers healthy
 ```
 
 **❌ Common Issues**:
@@ -693,7 +702,7 @@ Infrastructure:  All infrastructure healthy
 
 ```bash
 # Check what's using key ports
-lsof -i :3000 :3001 :3021 :54321 :54322 :54323
+lsof -i :3000 :3001 :3021 :54321 :54322 :54323 :39006
 
 # View all running containers
 docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
@@ -719,7 +728,7 @@ curl http://localhost:3021/api/health
 ```bash
 # ✅ CORRECT - From apps/web directory
 cd apps/web
-npx supabase start    # Creates 2025slideheroes-db on ports 54321-54323
+npx supabase start    # Creates 2025slideheroes-db on ports 54321-54326 + 39006
 npx supabase status   # Check status
 npx supabase stop     # Stop services
 

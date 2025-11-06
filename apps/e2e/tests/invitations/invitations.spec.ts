@@ -1,20 +1,17 @@
 import { expect, test } from "@playwright/test";
-
+import { AuthPageObject } from "../authentication/auth.po";
+import { AUTH_STATES } from "../utils/auth-state";
 import { InvitationsPageObject } from "./invitations.po";
 
 test.describe("Invitations", () => {
+	// Use pre-authenticated state from global setup
+	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
+
 	let invitations: InvitationsPageObject;
 	let slug: string;
 
 	test.beforeEach(async ({ page }) => {
 		invitations = new InvitationsPageObject(page);
-
-		// Use pre-existing test user instead of bootstrapUser
-		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "";
-		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
-
-		await invitations.auth.loginAsUser({ email, password });
 
 		// Create a team for the test
 		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;

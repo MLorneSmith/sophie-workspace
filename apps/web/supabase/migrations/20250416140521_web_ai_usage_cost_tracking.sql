@@ -1,8 +1,8 @@
 -- Migration: AI Usage Cost Tracking System
 -- Description: Creates tables and functions for tracking AI API usage and costs
 
--- Enable UUID extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Extension removed: uuid-ossp is deprecated in PostgreSQL 17
+-- Using built-in gen_random_uuid() instead (no extension required)
 
 -- AI Request Logs Table
 CREATE TABLE IF NOT EXISTS public.ai_request_logs (
