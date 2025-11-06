@@ -8,15 +8,18 @@ dotenvConfig({
 });
 
 /**
- * Billing tests configuration - runs with single worker to avoid auth conflicts
+ * Billing tests configuration - uses API-based global setup for authentication
+ * This eliminates race conditions and enables parallel execution
  */
 export default defineConfig({
 	testDir: "./tests",
-	fullyParallel: false,
+	fullyParallel: true, // Can now run in parallel with global setup
+	globalSetup: "./global-setup.ts", // Use API-based authentication
 	forbidOnly: !!process.env.CI,
 	retries: 2,
-	workers: 1,
+	workers: process.env.CI ? 2 : undefined, // Can use multiple workers safely
 	reporter: "list",
+	testIgnore: /.*\.setup\.ts/, // Skip setup files - handled by global setup
 	use: {
 		baseURL:
 			process.env.PLAYWRIGHT_BASE_URL ||
@@ -38,14 +41,13 @@ export default defineConfig({
 		timeout: 10 * 1000,
 	},
 	projects: [
-		{ name: "billing-setup", testMatch: /billing\.setup\.ts/ },
 		{
 			name: "chromium",
 			use: {
 				...devices["Desktop Chrome"],
-				storageState: ".auth/billing-user.json",
+				// Use pre-authenticated state from global setup
+				storageState: ".auth/test@slideheroes.com.json",
 			},
-			dependencies: ["billing-setup"],
 			testMatch: /billing\.spec\.ts/,
 		},
 	],

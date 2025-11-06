@@ -47,6 +47,8 @@ export default defineConfig({
 	testDir: "./tests",
 	/* Run tests in files in parallel */
 	fullyParallel: true,
+	/* Global setup runs once before all tests to create authenticated browser states */
+	globalSetup: "./global-setup.ts",
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	retries: 1,
@@ -96,16 +98,14 @@ export default defineConfig({
 	/*Configure projects for major browsers */
 	projects: [
 		{
-			name: "setup",
-			testMatch: /.*\.setup\.ts/,
-			// Force sequential execution for setup tests to prevent race conditions
-			// when multiple tests try to authenticate simultaneously and fill the same form fields
-			fullyParallel: false,
-		},
-		{
 			name: "chromium",
-			use: { ...devices["Desktop Chrome"] },
-			dependencies: ["setup"],
+			use: {
+				...devices["Desktop Chrome"],
+				// Use pre-authenticated state from global setup
+				// This eliminates per-test authentication and enables true parallel execution
+				storageState: ".auth/test@slideheroes.com.json",
+			},
+			testIgnore: /.*\.setup\.ts/, // Skip setup files - handled by global setup
 		},
 		/* Test against mobile viewports. */
 		// {

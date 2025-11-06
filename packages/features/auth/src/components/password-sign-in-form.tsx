@@ -7,6 +7,7 @@ import {
 	FormControl,
 	FormField,
 	FormItem,
+	FormLabel,
 	FormMessage,
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
@@ -56,6 +57,7 @@ export function PasswordSignInForm({
 						name={"email"}
 						render={({ field }) => (
 							<FormItem>
+								<FormLabel className="sr-only">{t("emailLabel")}</FormLabel>
 								<FormControl>
 									<InputGroup className="dark:bg-background">
 										<InputGroupAddon>
@@ -68,6 +70,7 @@ export function PasswordSignInForm({
 											required
 											type="email"
 											placeholder={t("emailPlaceholder")}
+											aria-label={t("emailLabel")}
 											{...field}
 										/>
 									</InputGroup>
@@ -83,6 +86,7 @@ export function PasswordSignInForm({
 						name={"password"}
 						render={({ field }) => (
 							<FormItem>
+								<FormLabel className="sr-only">{t("passwordLabel")}</FormLabel>
 								<FormControl>
 									<PasswordInput data-testid="sign-in-password" {...field} />
 								</FormControl>

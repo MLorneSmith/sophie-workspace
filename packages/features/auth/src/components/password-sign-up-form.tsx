@@ -8,6 +8,7 @@ import {
 	FormDescription,
 	FormField,
 	FormItem,
+	FormLabel,
 	FormMessage,
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
@@ -62,6 +63,7 @@ export function PasswordSignUpForm({
 						name={"email"}
 						render={({ field }) => (
 							<FormItem>
+								<FormLabel className="sr-only">Email</FormLabel>
 								<FormControl>
 									<EmailInput
 										data-test={"email-input"}
@@ -80,6 +82,7 @@ export function PasswordSignUpForm({
 						name={"password"}
 						render={({ field }) => (
 							<FormItem>
+								<FormLabel className="sr-only">Password</FormLabel>
 								<FormControl>
 									<PasswordInput data-testid="sign-up-password" {...field} />
 								</FormControl>
@@ -94,6 +97,7 @@ export function PasswordSignUpForm({
 						name={"repeatPassword"}
 						render={({ field }) => (
 							<FormItem>
+								<FormLabel className="sr-only">Repeat Password</FormLabel>
 								<FormControl>
 									<PasswordInput
 										data-test={"repeat-password-input"}

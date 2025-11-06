@@ -57,6 +57,7 @@ export function TopBar() {
 					className="w-[400px] text-lg font-semibold"
 					onChange={handleTitleChange}
 					disabled={isLoading}
+					aria-label="Document title"
 				/>
 			</div>
 			<div className="flex items-center gap-2">

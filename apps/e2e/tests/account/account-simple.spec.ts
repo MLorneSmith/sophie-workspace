@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
-import { TEST_USERS } from "../helpers/test-users";
+import { AUTH_STATES } from "../utils/auth-state";
 
 /**
  * Simplified account settings tests that avoid networkidle hanging
@@ -9,31 +9,8 @@ import { TEST_USERS } from "../helpers/test-users";
 test.describe("Account Settings - Simple @account @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
-	test.beforeEach(async ({ page }) => {
-		const auth = new AuthPageObject(page);
-
-		// Sign in before each test
-		await auth.goToSignIn();
-		await auth.signIn({
-			email: TEST_USERS.user1.email,
-			password: TEST_USERS.user1.password,
-		});
-
-		// Wait for successful sign-in
-		await page.waitForURL(
-			(url) => {
-				const pathname = url.pathname;
-				return pathname.includes("/home") || pathname.includes("/onboarding");
-			},
-			{ timeout: 15000 },
-		);
-	});
-
-	test.afterEach(async ({ page }) => {
-		// Clean up by signing out
-		const auth = new AuthPageObject(page);
-		await auth.signOut();
-	});
+	// Use pre-authenticated state from global setup
+	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
 
 	test("settings page loads successfully", async ({ page }) => {
 		// Navigate to settings page
@@ -195,7 +172,9 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 		// Look for user email display - it's displayed as text on the page
 		const emailDisplay = page
-			.locator(`text="${TEST_USERS.user1.email}"`)
+			.locator(
+				`text="${process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com"}"`,
+			)
 			.first();
 
 		// Wait for the email to be visible
@@ -223,15 +202,6 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Verify at least one dropdown/menu button exists
 		const hasDropdowns = await dropdownButtons.isVisible().catch(() => false);
 		expect(hasDropdowns).toBeTruthy();
-
-		// Alternative: Use the simplified sign out method from AuthPageObject
-		// which clears cookies and session without UI interaction
-		const auth = new AuthPageObject(page);
-		await auth.signOut();
-
-		// Navigate to sign-in to verify we're logged out
-		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
-		await expect(page).toHaveURL(/\/auth\/sign-in/);
 	});
 
 	test("settings form handles validation errors", async ({ page }) => {

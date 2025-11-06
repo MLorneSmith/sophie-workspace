@@ -1,0 +1,359 @@
+{
+	"executionDate": "2025-11-06",
+	"lastUpdated": "2025-11-06T20:08:11.106Z",
+	"totalShards": 0,
+	"completedShards": 38,
+	"failedShards": 7,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 342,
+		"passed": 213,
+		"failed": 53,
+		"skipped": 76,
+		"intentionalFailures": 12
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "13s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "9s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "16s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "17s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "37s",
+			"tests": 20,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": false,
+			"duration": "102s",
+			"tests": 19,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "23s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "16s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 3,
+			"name": "Accounts",
+			"success": false,
+			"duration": "66s",
+			"tests": 3,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 3,
+			"name": "Accounts",
+			"success": true,
+			"duration": "12s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "19s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "40s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "12s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "60s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "40s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "84s",
+			"tests": 23,
+			"failures": 12,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "88s",
+			"tests": 23,
+			"failures": 12,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "105s",
+			"tests": 20,
+			"failures": 13,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": true,
+			"duration": "12s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "62s",
+			"tests": 21,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": true,
+			"duration": "54s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "46s",
+			"tests": 3,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "25s",
+			"tests": 15,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "7s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "12s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "8s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "8s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 7,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "12s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "19s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "39s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "60s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "11s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "60s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "60s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		}
+	]
+}

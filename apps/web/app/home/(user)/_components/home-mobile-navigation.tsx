@@ -47,7 +47,7 @@ export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger>
+			<DropdownMenuTrigger aria-label="Open navigation menu">
 				<Menu className={"h-9"} />
 			</DropdownMenuTrigger>
 

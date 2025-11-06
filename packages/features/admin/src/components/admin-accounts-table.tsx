@@ -208,7 +208,11 @@ function getColumns(): ColumnDef<Account>[] {
 					<div className={"flex justify-end"}>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant={"outline"} size={"icon"}>
+								<Button
+									variant={"outline"}
+									size={"icon"}
+									aria-label="Account actions"
+								>
 									<EllipsisVertical className={"h-4"} />
 								</Button>
 							</DropdownMenuTrigger>

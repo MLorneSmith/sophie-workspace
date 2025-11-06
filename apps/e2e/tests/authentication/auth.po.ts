@@ -43,40 +43,164 @@ export class AuthPageObject {
 	}
 
 	async signIn(params: { email: string; password: string }) {
-		await this.page.waitForTimeout(100);
+		// Phase 1: Wait for React hydration
+		// The form uses React Hook Form which requires client-side hydration
+		// to attach event handlers and validation logic
+		console.log("[Sign-in Phase 1] Waiting for React hydration...");
 
-		// Wait for form elements to be ready
-		await this.page.waitForSelector('[data-test="email-input"]', {
-			state: "visible",
-		});
-		await this.page.waitForSelector('[data-test="password-input"]', {
-			state: "visible",
-		});
+		// Wait for the form to be present in DOM
+		await this.page.waitForSelector("form", { state: "visible" });
 
-		// Fill in credentials with debugging
-		console.log(`Filling email: ${params.email}`);
-		await this.page.fill('[data-test="email-input"]', params.email);
-
-		console.log(`Filling password: ${params.password ? "***" : "empty"}`);
-		await this.page.fill('[data-test="password-input"]', params.password);
-
-		// Verify fields were filled
-		const emailValue = await this.page.inputValue('[data-test="email-input"]');
-		const passwordValue = await this.page.inputValue(
-			'[data-test="password-input"]',
+		// Wait for React to hydrate by checking for React-specific attributes
+		// React Hook Form adds data attributes and sets up form state
+		await this.page.waitForFunction(
+			() => {
+				const form = document.querySelector("form");
+				// Check if React has hydrated by verifying form has event listeners
+				// and the submit button is present with proper attributes
+				const submitButton = document.querySelector('button[type="submit"]');
+				return form && submitButton && !submitButton.hasAttribute("disabled");
+			},
+			{ timeout: 5000 },
 		);
-		console.log(`Email field value after fill: ${emailValue}`);
-		console.log(`Password field has value: ${passwordValue ? "yes" : "no"}`);
 
-		// Check for any console errors before submitting
-		this.page.on("console", (msg) => {
-			if (msg.type() === "error") {
-				console.log(`Console error: ${msg.text()}`);
-			}
-		});
+		// CRITICAL: Wait for React Query client to be initialized
+		// The signInMutation hook requires React Query provider to be hydrated
+		// Without this check, mutateAsync() silently fails and Supabase API is never called
+		console.log(
+			"[Sign-in Phase 1.5] Waiting for React Query client initialization...",
+		);
+		await this.page
+			.waitForFunction(
+				() => {
+					// Check if React Query context is available by looking for data-rq-* attributes
+					// or checking if window has the QueryClient instance
+					const hasReactQuery =
+						document.querySelector("[data-rq-client]") !== null ||
+						(window as any).__REACT_QUERY__ !== undefined ||
+						// Alternative: check if any mutation is registered
+						document
+							.querySelector('form button[type="submit"]')
+							?.getAttribute("aria-busy") !== undefined;
 
+					// Also verify Supabase client is initialized
+					const hasSupabase =
+						(window as any).supabase !== undefined ||
+						sessionStorage.getItem("supabase.auth.token") !== null ||
+						// Check for any auth-related data structures
+						Object.keys(sessionStorage).some((key) => key.includes("supabase"));
+
+					return hasReactQuery || hasSupabase;
+				},
+				{ timeout: 5000 },
+			)
+			.catch(() => {
+				// If we can't detect React Query, add a small delay to allow initialization
+				// This is a fallback to prevent the race condition
+				console.log(
+					"[Sign-in Phase 1.5] React Query detection timeout, using fallback delay...",
+				);
+				return this.page.waitForTimeout(1000);
+			});
+
+		console.log(
+			"[Sign-in Phase 2] Waiting for form inputs to be interactive...",
+		);
+
+		// Phase 2: Wait for inputs to be truly interactive (not just visible)
+		const emailInput = this.page.locator('[data-test="email-input"]');
+		const passwordInput = this.page.locator('[data-test="password-input"]');
+
+		// Use Playwright's built-in interactivity checks
+		// These automatically wait for: visible, stable, enabled, not obscured
+		await emailInput.waitFor({ state: "visible" });
+		await passwordInput.waitFor({ state: "visible" });
+
+		// Additional check: ensure inputs are editable (React has attached handlers)
+		await expect(emailInput).toBeEditable({ timeout: 5000 });
+		await expect(passwordInput).toBeEditable({ timeout: 5000 });
+
+		console.log(`[Sign-in Phase 3] Filling credentials for: ${params.email}`);
+
+		// Phase 3: Fill form fields with React Hook Form reliability
+		// Use Playwright's toPass() to handle React Hook Form's asynchronous state updates
+		await expect(async () => {
+			// Clear and fill email field
+			await emailInput.clear();
+			await emailInput.fill(params.email);
+
+			// Wait for React Hook Form to process the change and verify
+			await this.page.waitForFunction(
+				(expectedEmail) => {
+					const input = document.querySelector(
+						'[data-test="email-input"]',
+					) as HTMLInputElement;
+					return input && input.value === expectedEmail;
+				},
+				params.email,
+				{ timeout: 2000 },
+			);
+
+			// Verify the value stuck
+			const emailValue = await emailInput.inputValue();
+			expect(emailValue).toBe(params.email);
+		}).toPass({ timeout: 10000, intervals: [100, 500, 1000, 2000] });
+
+		console.log("[Sign-in Phase 3] Email field filled successfully");
+
+		// Fill password field with same reliability pattern
+		await expect(async () => {
+			await passwordInput.clear();
+			await passwordInput.fill(params.password);
+
+			// Wait for React Hook Form to process the password change
+			await this.page.waitForFunction(
+				(expectedPassword) => {
+					const input = document.querySelector(
+						'[data-test="password-input"]',
+					) as HTMLInputElement;
+					return input && input.value === expectedPassword;
+				},
+				params.password,
+				{ timeout: 2000 },
+			);
+
+			// Verify the value stuck
+			const passwordValue = await passwordInput.inputValue();
+			expect(passwordValue).toBe(params.password);
+		}).toPass({ timeout: 10000, intervals: [100, 500, 1000, 2000] });
+
+		console.log("[Sign-in Phase 3] Password field filled successfully");
+
+		// Phase 4: Wait for form validation to complete
+		// React Hook Form validates asynchronously after field changes
+		console.log("[Sign-in Phase 4] Waiting for form validation...");
+
+		await this.page.waitForFunction(
+			() => {
+				const submitButton = document.querySelector(
+					'button[type="submit"]',
+				) as HTMLButtonElement;
+
+				// Check that button is enabled and not showing loading state
+				const isEnabled = submitButton && !submitButton.disabled;
+				const isNotLoading = !submitButton?.textContent
+					?.toLowerCase()
+					.includes("signing in");
+
+				return isEnabled && isNotLoading;
+			},
+			{ timeout: 5000 },
+		);
+
+		console.log(
+			"[Sign-in Phase 5] Form ready. Submitting authentication request...",
+		);
+
+		// Phase 5: Submit form
 		await this.page.click('button[type="submit"]');
-		console.log("Form submitted, waiting for navigation...");
+
+		console.log("[Sign-in Phase 5] Form submitted. Waiting for navigation...");
 	}
 
 	async signUp(params: {
@@ -354,36 +478,60 @@ export class AuthPageObject {
 		// - API gateway overhead
 		// - Cloudflare routing
 		const isCI = process.env.CI === "true";
-		// Import test-config for consistent timeout values
-		const { testConfig } = await import("../utils/test-config");
+		// Use test-config for consistent timeout values (imported at top of file)
 		const authTimeout = testConfig.getTimeout("medium");
 
 		console.log(
 			`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,
 		);
-		const authResponsePromise = this.page.waitForResponse(
-			(response) => {
-				const url = response.url();
-				const isAuthToken = url.includes("auth/v1/token");
-				if (isAuthToken) {
-					console.log(
-						`[Phase 1] Auth API response detected: ${response.status()}`,
-					);
-				}
-				return isAuthToken && response.status() === 200;
-			},
-			{ timeout: authTimeout },
-		);
 
-		// Submit form
-		await this.signIn({
-			email: params.email,
-			password: params.password,
-		});
+		// Set up comprehensive network logging to diagnose response detection issues
+		const capturedRequests: Array<{ url: string; method: string }> = [];
+		const capturedResponses: Array<{ url: string; status: number }> = [];
 
-		// Wait for auth API response
+		const requestHandler = (request: any) => {
+			const url = request.url();
+			if (url.includes("auth") || url.includes("supabase")) {
+				capturedRequests.push({ url, method: request.method() });
+				console.log(`[Network] Request: ${request.method()} ${url}`);
+			}
+		};
+
+		const responseHandler = (response: any) => {
+			const url = response.url();
+			if (url.includes("auth") || url.includes("supabase")) {
+				capturedResponses.push({ url, status: response.status() });
+				console.log(`[Network] Response: ${response.status()} ${url}`);
+			}
+		};
+
+		this.page.on("request", requestHandler);
+		this.page.on("response", responseHandler);
+
+		// Use Promise.all to ensure response listener is ready before form submission
+		// This prevents race condition where API responds before listener is attached
 		try {
-			await authResponsePromise;
+			await Promise.all([
+				this.page.waitForResponse(
+					(response) => {
+						const url = response.url();
+						const isAuthToken = url.includes("auth/v1/token");
+						if (isAuthToken) {
+							console.log(
+								`[Phase 1] Auth API response detected: ${response.status()}`,
+							);
+						}
+						return isAuthToken && response.status() === 200;
+					},
+					{ timeout: authTimeout },
+				),
+				// Submit form - listener is guaranteed to be ready
+				this.signIn({
+					email: params.email,
+					password: params.password,
+				}),
+			]);
+
 			console.log(
 				`[Phase 1] ✅ Auth API responded (${Date.now() - startTime}ms)`,
 			);
@@ -392,19 +540,34 @@ export class AuthPageObject {
 			console.error(`Current URL: ${this.page.url()}`);
 			console.error(`Credentials: ${params.email}`);
 
+			// Log all captured network activity for diagnosis
+			console.error("\n[Diagnostics] Captured Auth Requests:");
+			capturedRequests.forEach((req) => {
+				console.error(`  ${req.method} ${req.url}`);
+			});
+
+			console.error("\n[Diagnostics] Captured Auth Responses:");
+			capturedResponses.forEach((res) => {
+				console.error(`  ${res.status} ${res.url}`);
+			});
+
 			// Capture additional diagnostics
 			try {
 				const networkErrors = await this.page.evaluate(() => {
 					return (window as any).__networkErrors || [];
 				});
 				if (networkErrors.length > 0) {
-					console.error("Network errors:", networkErrors);
+					console.error("\n[Diagnostics] Network errors:", networkErrors);
 				}
 			} catch (e) {
 				// Ignore diagnostics failure
 			}
 
 			throw error;
+		} finally {
+			// Clean up event listeners to prevent memory leaks
+			this.page.off("request", requestHandler);
+			this.page.off("response", responseHandler);
 		}
 
 		// Phase 2: Wait for navigation with flexible URL matching

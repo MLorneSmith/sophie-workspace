@@ -10,6 +10,7 @@ dotenvConfig({
 
 /**
  * Smoke test configuration - runs without authentication setup
+ * Tests basic functionality that doesn't require login
  */
 export default defineConfig({
 	testDir: "./tests",
@@ -17,6 +18,7 @@ export default defineConfig({
 	forbidOnly: !!process.env.CI,
 	retries: 3,
 	reporter: "html",
+	testIgnore: /.*\.setup\.ts/, // Skip setup files for consistency
 	use: {
 		baseURL:
 			process.env.PLAYWRIGHT_BASE_URL ||
@@ -41,7 +43,7 @@ export default defineConfig({
 		{
 			name: "chromium",
 			use: { ...devices["Desktop Chrome"] },
-			// NO dependencies - smoke tests run without authentication
+			// NO storageState - smoke tests validate public pages
 		},
 	],
 });

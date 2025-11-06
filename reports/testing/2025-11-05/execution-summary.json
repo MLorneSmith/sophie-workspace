@@ -1,0 +1,152 @@
+{
+	"executionDate": "2025-11-05",
+	"lastUpdated": "2025-11-05T22:42:27.523Z",
+	"totalShards": 0,
+	"completedShards": 15,
+	"failedShards": 8,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 139,
+		"passed": 71,
+		"failed": 33,
+		"skipped": 35,
+		"intentionalFailures": 3
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": false,
+			"duration": "43s",
+			"tests": 9,
+			"failures": 2,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "4s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "13s",
+			"tests": 7,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": false,
+			"duration": "42s",
+			"tests": 12,
+			"failures": 1,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "14s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "15s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "18s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": false,
+			"duration": "80s",
+			"tests": 4,
+			"failures": 3,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "77s",
+			"tests": 25,
+			"failures": 12,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Billing",
+			"success": false,
+			"duration": "80s",
+			"tests": 4,
+			"failures": 3,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "27s",
+			"tests": 15,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "80s",
+			"tests": 4,
+			"failures": 3,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 7,
+			"name": "Config & Health",
+			"success": false,
+			"duration": "81s",
+			"tests": 4,
+			"failures": 3,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "37s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": false,
+			"duration": "81s",
+			"tests": 4,
+			"failures": 3,
+			"intentionalFailures": 0
+		}
+	]
+}
