@@ -91,6 +91,42 @@ export const CIRCULAR_REFERENCES: Record<string, {
 };
 
 /**
+ * Production collections (exclude test fixtures)
+ *
+ * Collections that should be loaded during normal seeding operations.
+ * Test fixtures are excluded from this list and only loaded when explicitly requested.
+ */
+export const PRODUCTION_COLLECTIONS = [
+  'users',
+  'media',
+  'downloads',
+  'posts',
+  'courses',
+  'course-quizzes',
+  'documentation',
+  'course-lessons',
+  'surveys',
+  'quiz-questions',
+  'survey-questions',
+  'private',
+] as const;
+
+/**
+ * Test fixture collections (for error scenario testing)
+ *
+ * These collections are ONLY loaded when explicitly requested by collection name.
+ * They should NEVER be included in default seeding operations.
+ */
+export const TEST_FIXTURE_COLLECTIONS = [
+  'empty-test',
+  'malformed-test',
+  'object-test',
+  'null-test',
+  'invalid-types',
+  'invalid-test',
+] as const;
+
+/**
  * Collection configurations with metadata
  *
  * Maps collection slugs to their configuration including processor type,

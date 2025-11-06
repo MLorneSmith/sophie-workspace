@@ -61,6 +61,10 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 - `--schema-only`: Skip seeding, only reset database and run migrations
 - `--verbose`: Enable detailed logging
 
+**Environment Requirements**:
+- `PAYLOAD_ENABLE_SSL=false` is automatically set for local Supabase (prevents SSL cert errors)
+- `DATABASE_URI` should include `?sslmode=disable` in .env.test
+
 **Validate**:
 - Docker daemon is running
 - Supabase CLI is available
@@ -175,14 +179,14 @@ echo "✅ Payload schema recreated"
 # 4.2 Option A: Regenerate Migrations (if flag provided)
 if [ "$REGENERATE_MIGRATIONS" = true ]; then
   echo "🔄 Regenerating Payload migrations..."
-  bash .claude/scripts/database/regenerate-payload-migrations.sh "$DATABASE_URL" || exit 1
+  PAYLOAD_ENABLE_SSL=false bash .claude/scripts/database/regenerate-payload-migrations.sh "$DATABASE_URL" || exit 1
   echo "✅ Payload migrations regenerated"
 
 # 4.3 Option B: Use Existing Migrations (default)
 else
-  # Run existing migrations
+  # Run existing migrations with SSL disabled for local Supabase
   echo "🔄 Running Payload migrations..."
-  pnpm run payload migrate --forceAcceptWarning || {
+  PAYLOAD_ENABLE_SSL=false pnpm run payload migrate --forceAcceptWarning || {
     echo "❌ ERROR: Migration failed"
     echo "Try: --regenerate-payload-migrations flag"
     exit 1
@@ -218,7 +222,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   # 5.3 Run seeding (files already pre-uploaded to R2)
   echo "📤 Seeding database with pre-uploaded R2 file URLs..."
-  pnpm run seed:run || {
+  PAYLOAD_ENABLE_SSL=false pnpm run seed:run || {
     echo "❌ ERROR: Seeding failed"
     echo "Check collection configuration and try --regenerate-payload-migrations"
     exit 1

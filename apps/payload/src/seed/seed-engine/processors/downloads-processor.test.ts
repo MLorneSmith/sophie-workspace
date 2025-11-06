@@ -164,6 +164,8 @@ describe('DownloadsProcessor', () => {
         data: expect.objectContaining({
           id: '123e4567-e89b-12d3-a456-426614174000',
         }),
+        draft: true,
+        overrideAccess: true,
       });
     });
 
@@ -217,7 +219,10 @@ describe('DownloadsProcessor', () => {
           url: 'https://example.com/template.pdf',
           mimeType: 'application/pdf',
           filesize: 0,
+          _status: 'published',
         },
+        draft: true,
+        overrideAccess: true,
       });
     });
 

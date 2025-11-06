@@ -975,7 +975,9 @@ class E2ETestRunner {
 					log(
 						`${shardPrefix}⚠️ Warning: Shard ${shardId} (${group.name}) has been running for ${warningMs / 1000}s`,
 					);
-					log(`${shardPrefix}📊 Current output length: ${output.length} chars`);
+					log(
+						`${shardPrefix}📊 Current output length: ${outputBuffer.length} chars`,
+					);
 				}, warningMs);
 
 				// Aggressive kill timeout - try SIGTERM first

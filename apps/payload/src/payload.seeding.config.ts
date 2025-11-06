@@ -19,11 +19,11 @@ import { Users } from "./collections/Users.js";
 const filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(filename);
 
-// Load .env.test file explicitly for seeding
+// Load .env.test file explicitly for seeding with override to ignore shell environment variables
 // This ensures environment variables are available at module evaluation time
 // From src/ go up 1 level to apps/payload/
 const envPath = path.resolve(_dirname, "../.env.test");
-loadEnv({ path: envPath });
+loadEnv({ path: envPath, override: true });
 
 // Note: Environment variables are read at config evaluation time
 // Tests must ensure env vars are set before this module is imported
@@ -60,19 +60,15 @@ export default buildConfig({
 	],
 	// Only include the database adapter, exclude other plugins/editor for seeding config
 	db: (() => {
-		// SSL configuration for production environments
-		const sslConfig =
-			process.env.NODE_ENV === "production"
-				? {
-						rejectUnauthorized: false, // For hosted Postgres providers like Supabase, PlanetScale, etc.
-						sslmode: "require",
-					}
-				: false;
+		// SSL is controlled via connection string (sslmode parameter)
+		// Production: postgresql://...?sslmode=require
+		// Test/Dev: postgresql://...?sslmode=disable
+		// This approach avoids module caching issues and follows node-postgres best practices
 
 		// Serverless-optimized connection pool settings
 		const poolConfig = {
-			connectionString: process.env.DATABASE_URI,
-			ssl: sslConfig,
+			connectionString: databaseURI,
+			// No ssl property - let connection string sslmode parameter control SSL
 			max: 2, // Reduced pool size for serverless environments like Vercel
 			min: 0, // Allow pool to scale down to 0 connections
 			connectionTimeoutMillis: 10000, // 10 second connection timeout
@@ -85,7 +81,7 @@ export default buildConfig({
 		};
 
 		return postgresAdapter({
-			pool: { ...poolConfig, connectionString: databaseURI },
+			pool: poolConfig,
 			schemaName: "payload",
 			idType: "uuid", // Explicitly set ID type to UUID
 			push: false, // Disable schema push - tables already exist from migrations
