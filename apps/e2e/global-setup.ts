@@ -94,8 +94,18 @@ async function globalSetup(config: FullConfig) {
 		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 		console.log(`✅ API authentication successful for ${authState.name}`);
 
-		// Create browser context and inject the session
-		const context = await browser.newContext({ baseURL });
+		// Create browser context with Vercel bypass headers and inject the session
+		const context = await browser.newContext({
+			baseURL,
+			extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+				? {
+						"x-vercel-protection-bypass":
+							process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+						"x-vercel-set-bypass-cookie":
+							process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					}
+				: {},
+		});
 		const page = await context.newPage();
 
 		// Navigate to the app first to set the domain
