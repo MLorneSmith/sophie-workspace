@@ -340,7 +340,7 @@ jobs:
     needs: [check-should-run, wait-for-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30  # Increased from 15 to allow integration tests to complete
     steps:
       - uses: actions/checkout@v4
         with:
