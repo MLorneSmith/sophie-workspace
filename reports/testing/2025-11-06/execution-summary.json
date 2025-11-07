@@ -1,16 +1,16 @@
 {
 	"executionDate": "2025-11-06",
-	"lastUpdated": "2025-11-06T20:08:11.106Z",
+	"lastUpdated": "2025-11-06T20:39:58.781Z",
 	"totalShards": 0,
-	"completedShards": 38,
+	"completedShards": 44,
 	"failedShards": 7,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 342,
-		"passed": 213,
-		"failed": 53,
-		"skipped": 76,
-		"intentionalFailures": 12
+		"total": 405,
+		"passed": 260,
+		"failed": 56,
+		"skipped": 89,
+		"intentionalFailures": 15
 	},
 	"shards": [
 		{
@@ -68,6 +68,15 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 2,
 			"name": "Authentication",
 			"success": true,
@@ -117,6 +126,15 @@
 			"name": "Authentication",
 			"success": true,
 			"duration": "16s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "14s",
 			"tests": 21,
 			"failures": 0,
 			"intentionalFailures": 0
@@ -185,6 +203,15 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "40s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 5,
 			"name": "Billing",
 			"success": false,
@@ -239,6 +266,15 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 5,
+			"name": "Billing",
+			"success": true,
+			"duration": "53s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 6,
 			"name": "Accessibility",
 			"success": false,
@@ -273,6 +309,15 @@
 			"tests": 0,
 			"failures": 0,
 			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Accessibility",
+			"success": false,
+			"duration": "8s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
 		},
 		{
 			"id": 6,
@@ -333,6 +378,15 @@
 			"name": "Payload CMS",
 			"success": true,
 			"duration": "11s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "60s",
 			"tests": 0,
 			"failures": 0,
 			"intentionalFailures": 0
