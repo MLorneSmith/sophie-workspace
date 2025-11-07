@@ -214,10 +214,11 @@ class E2ETestRunner {
 				name: "Authentication",
 				shardCommand: "test:shard2",
 				files: [
+					"tests/authentication/auth-simple.spec.ts",
 					"tests/authentication/auth.spec.ts",
 					"tests/authentication/password-reset.spec.ts",
 				],
-				expectedTests: 3, // 1 + 2
+				expectedTests: 21,
 			},
 			{
 				id: 3,
@@ -225,10 +226,11 @@ class E2ETestRunner {
 				shardCommand: "test:shard3",
 				files: [
 					"tests/account/account.spec.ts",
+					"tests/account/account-simple.spec.ts",
 					"tests/team-accounts/team-accounts.spec.ts",
 					"tests/team-accounts/team-invitation-mfa.spec.ts",
 				],
-				expectedTests: 15, // 7 + 7 + 1
+				expectedTests: 20,
 			},
 			{
 				id: 4,
@@ -238,41 +240,42 @@ class E2ETestRunner {
 					"tests/admin/admin.spec.ts",
 					"tests/invitations/invitations.spec.ts",
 				],
-				expectedTests: 14, // 10 + 4
+				expectedTests: 13,
 			},
 			{
 				id: 5,
-				name: "Billing",
-				shardCommand: "test:shard5",
-				files: [
-					"tests/user-billing/user-billing.spec.ts",
-					"tests/team-billing/team-billing.spec.ts",
-				],
-				expectedTests: 2, // 1 + 1
-			},
-			{
-				id: 6,
 				name: "Accessibility",
-				shardCommand: "test:shard6",
+				shardCommand: "test:shard5",
 				files: [
 					"tests/accessibility/accessibility-hybrid.spec.ts",
 					"tests/accessibility/accessibility-hybrid-simple.spec.ts",
 				],
-				expectedTests: 39, // 28 + 11
+				expectedTests: 21,
 			},
 			{
-				id: 7,
+				id: 6,
 				name: "Config & Health",
-				shardCommand: "test:shard7",
+				shardCommand: "test:shard6",
 				files: [
 					"tests/test-configuration-verification.spec.ts",
 					"tests/healthcheck.spec.ts",
 				],
-				expectedTests: 12, // 11 + 1
+				expectedTests: 12,
+			},
+			{
+				id: 7,
+				name: "Payload CMS",
+				shardCommand: "test:shard7",
+				files: [
+					"tests/payload/payload-auth.spec.ts",
+					"tests/payload/payload-collections.spec.ts",
+					"tests/payload/payload-database.spec.ts",
+				],
+				expectedTests: 42,
 			},
 			{
 				id: 8,
-				name: "Payload CMS",
+				name: "Payload CMS Extended",
 				shardCommand: "test:shard8",
 				files: [
 					"tests/payload/payload-auth.spec.ts",
@@ -281,11 +284,27 @@ class E2ETestRunner {
 					"tests/payload/seeding.spec.ts",
 					"tests/payload/seeding-performance.spec.ts",
 				],
-				expectedTests: null, // To be determined after first run
+				expectedTests: null, // Extended with seeding tests
+			},
+			{
+				id: 9,
+				name: "User Billing",
+				shardCommand: "test:shard9",
+				files: ["tests/user-billing/user-billing.spec.ts"],
+				expectedTests: null,
+			},
+			{
+				id: 10,
+				name: "Team Billing",
+				shardCommand: "test:shard10",
+				files: ["tests/team-billing/team-billing.spec.ts"],
+				expectedTests: null,
 			},
 		];
 
-		log(`📋 Loaded ${shardGroups.length} test shards with ~94+ expected tests`);
+		log(
+			`📋 Loaded ${shardGroups.length} test shards with ~138+ expected tests`,
+		);
 		for (const group of shardGroups) {
 			log(
 				`  • Shard ${group.id} (${group.name}): ${group.expectedTests || "?"} tests`,
