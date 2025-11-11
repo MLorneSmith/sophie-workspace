@@ -142,10 +142,17 @@ async function globalSetup(config: FullConfig) {
 		}
 
 		// Inject Supabase session into local storage
-		await page.evaluate((session) => {
-			const key = `sb-${window.location.host.split(".")[0]}-auth-token`;
-			localStorage.setItem(key, JSON.stringify(session));
-		}, data.session);
+		// CRITICAL: Use Supabase URL (not deployment URL) to match what Supabase client expects
+		// Supabase creates key as: sb-{project_ref}-auth-token where project_ref is from supabaseUrl
+		await page.evaluate(
+			({ session, supabaseUrl }) => {
+				// Extract project ref from Supabase URL (e.g., "abcdefgh" from "https://abcdefgh.supabase.co")
+				const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+				const key = `sb-${projectRef}-auth-token`;
+				localStorage.setItem(key, JSON.stringify(session));
+			},
+			{ session: data.session, supabaseUrl },
+		);
 
 		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 		console.log(
