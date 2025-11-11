@@ -121,6 +121,26 @@ async function globalSetup(config: FullConfig) {
 		// Navigate to the app first to set the domain
 		await page.goto("/");
 
+		// Explicitly set Vercel bypass cookie if secret is available
+		// This ensures the bypass persists in the saved storage state
+		if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+			const domain = new URL(baseURL).hostname;
+			await context.addCookies([
+				{
+					name: "_vercel_jwt",
+					value: process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					domain,
+					path: "/",
+					httpOnly: true,
+					secure: true,
+					sameSite: "Lax",
+				},
+			]);
+
+			// Reload page to ensure bypass cookie is active
+			await page.reload({ waitUntil: "load" });
+		}
+
 		// Inject Supabase session into local storage
 		await page.evaluate((session) => {
 			const key = `sb-${window.location.host.split(".")[0]}-auth-token`;
