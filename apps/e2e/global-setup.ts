@@ -31,6 +31,16 @@ async function globalSetup(config: FullConfig) {
 
 	const baseURL = config.projects[0]?.use?.baseURL || "http://localhost:3001";
 
+	// Validate baseURL in CI environment to prevent localhost URL usage
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(`🌐 Using BASE_URL: ${baseURL}`);
+
+	if (baseURL?.includes("localhost") && process.env.CI === "true") {
+		throw new Error(
+			"❌ CI environment detected but BASE_URL points to localhost! Check PLAYWRIGHT_BASE_URL environment variable.",
+		);
+	}
+
 	// Initialize Supabase client
 	const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54321";
 	const supabaseAnonKey =

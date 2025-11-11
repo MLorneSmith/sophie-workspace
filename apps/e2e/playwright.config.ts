@@ -2,10 +2,12 @@ import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
 // Load environment variables with quiet mode to suppress logging
+// override: true allows CI environment variables to take precedence over .env file
+// This is critical for integration tests running against deployed environments
 dotenvConfig({
 	path: [".env", ".env.local"],
 	quiet: true, // Suppress dotenv logging
-	override: false,
+	override: true, // Allow CI env vars to override .env
 });
 
 /**
