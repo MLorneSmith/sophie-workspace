@@ -6,8 +6,9 @@ const verifyEndpoint =
 /**
  * Determine which Turnstile secret to use based on environment
  *
- * For CI/CD and test environments, use Cloudflare's official test secret
- * that always passes validation when used with the test sitekey.
+ * For CI/CD, test environments, and non-production Vercel deployments,
+ * use Cloudflare's official test secret that always passes validation
+ * when used with the test sitekey.
  *
  * Test secret: 1x0000000000000000000000000000000AA (always accepts test tokens)
  */
@@ -15,7 +16,9 @@ function getCaptchaSecret(): string {
 	const isTestEnvironment =
 		process.env.NODE_ENV === "test" ||
 		process.env.CI === "true" ||
-		process.env.PLAYWRIGHT_TEST === "true";
+		process.env.PLAYWRIGHT_TEST === "true" ||
+		process.env.VERCEL_ENV === "development" ||
+		process.env.VERCEL_ENV === "preview";
 
 	if (isTestEnvironment) {
 		// Cloudflare's official test secret - always passes with test sitekey
@@ -28,9 +31,9 @@ function getCaptchaSecret(): string {
 		throw new Error("CAPTCHA_SECRET_TOKEN is not set");
 	}
 
-	// Security check: Prevent test secret from being used in production
+	// Security check: Prevent test secret from being used in production Vercel deployments
 	if (
-		process.env.NODE_ENV === "production" &&
+		process.env.VERCEL_ENV === "production" &&
 		secret === "1x0000000000000000000000000000000AA"
 	) {
 		throw new Error(
