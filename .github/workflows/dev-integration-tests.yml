@@ -121,9 +121,15 @@ jobs:
             if [ ! -z "$RESPONSE" ]; then
               READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
               DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
-              AUTH=$(echo "$RESPONSE" | jq -r '.authentication // false' 2>/dev/null)
+              ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
+              DETAILS=$(echo "$RESPONSE" | jq -r '.details // {}' 2>/dev/null)
 
-              echo "Health Status: Database=$DATABASE, Auth=$AUTH, Ready=$READY"
+              echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
+
+              # Show details if not ready
+              if [ "$READY" != "true" ] && [ "$DETAILS" != "{}" ]; then
+                echo "Details: $DETAILS"
+              fi
 
               # Check if all systems are ready
               if [ "$READY" = "true" ]; then
