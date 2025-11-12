@@ -248,6 +248,35 @@ jobs:
               description: 'Payload CMS deployed to dev environment'
             });
 
+  # Save deployment URLs for integration tests
+  save-deployment-urls:
+    name: Save Deployment URLs
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
+    needs: [check-skip, deploy-web, deploy-payload]
+    if: needs.check-skip.outputs.should_deploy == 'true'
+    steps:
+      - name: Create deployment URLs file
+        run: |
+          mkdir -p deployment-info
+          cat > deployment-info/urls.json << EOF
+          {
+            "web_url": "${{ needs.deploy-web.outputs.url }}",
+            "payload_url": "${{ needs.deploy-payload.outputs.url }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit_sha": "${{ github.sha }}"
+          }
+          EOF
+
+          echo "📦 Deployment URLs saved:"
+          cat deployment-info/urls.json
+
+      - name: Upload deployment URLs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-urls
+          path: deployment-info/urls.json
+          retention-days: 1
+
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
