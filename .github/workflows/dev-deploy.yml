@@ -155,7 +155,7 @@ jobs:
         
       - name: Install Vercel CLI
         run: |
-          pnpm add -g vercel@latest
+          pnpm add -g vercel@48.8.0
 
       - name: Deploy to Vercel
         id: deploy
@@ -211,7 +211,7 @@ jobs:
         
       - name: Install Vercel CLI
         run: |
-          pnpm add -g vercel@latest
+          pnpm add -g vercel@48.8.0
 
       - name: Deploy to Vercel
         id: deploy
