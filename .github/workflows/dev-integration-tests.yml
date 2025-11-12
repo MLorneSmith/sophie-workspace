@@ -17,6 +17,7 @@ on:
         default: 'https://dev.slideheroes.com'
 
 permissions:
+  actions: read  # Required for downloading artifacts from workflow_run
   contents: write  # Changed from read to write to allow commit comments
   issues: write
   pull-requests: write
@@ -34,24 +35,13 @@ jobs:
       web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
       payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
     steps:
-      - name: Download deployment URLs via GitHub API
+      - name: Download deployment URLs
         if: github.event_name == 'workflow_run'
-        run: |
-          # Fetch artifact download URL using GitHub API
-          ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts" \
-            | jq -r '.artifacts[] | select(.name=="deployment-urls") | .archive_download_url')
-
-          if [ -n "$ARTIFACT_URL" ] && [ "$ARTIFACT_URL" != "null" ]; then
-            echo "📦 Found deployment URLs artifact, downloading..."
-            curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "$ARTIFACT_URL" -o deployment-urls.zip
-
-            unzip -q deployment-urls.zip
-            echo "✅ Deployment URLs extracted"
-          else
-            echo "⚠️ Deployment URLs artifact not found"
-          fi
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-urls
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
         continue-on-error: true
 
       - name: Check conditions
