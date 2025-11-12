@@ -119,6 +119,11 @@ jobs:
 
             # Parse health check response
             if [ ! -z "$RESPONSE" ]; then
+              # Debug: Show response to diagnose issue
+              echo "📋 Response preview (first 200 chars):"
+              echo "$RESPONSE" | head -c 200
+              echo ""
+
               # Check if response is HTML (Vercel auth page) instead of JSON
               if echo "$RESPONSE" | grep -q "Authentication Required\|Vercel Authentication\|<!doctype"; then
                 echo "❌ CRITICAL: Vercel protection is blocking the health endpoint"
