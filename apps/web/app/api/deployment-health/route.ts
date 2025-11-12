@@ -1,4 +1,4 @@
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 /**
@@ -15,34 +15,53 @@ import { NextResponse } from "next/server";
 export async function GET() {
 	const checks = {
 		timestamp: new Date().toISOString(),
+		environment: false,
 		database: false,
-		authentication: false,
 		ready: false,
+		details: {} as Record<string, string>,
 	};
 
 	try {
-		// Database connectivity check
-		// Verifies Supabase client can connect and query
-		const client = getSupabaseServerClient();
+		// Check environment variables are set
+		const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+		const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+		if (!supabaseUrl || !supabaseAnonKey) {
+			checks.details.environment = "Missing Supabase configuration";
+			return NextResponse.json(checks, {
+				status: 503,
+				headers: {
+					"Cache-Control": "no-cache, no-store, must-revalidate",
+					"Content-Type": "application/json",
+				},
+			});
+		}
+
+		checks.environment = true;
+
+		// Create a fresh Supabase client without session context
+		const client = createClient(supabaseUrl, supabaseAnonKey, {
+			auth: {
+				persistSession: false,
+				autoRefreshToken: false,
+			},
+		});
+
+		// Simple database connectivity check
+		// Query accounts table with limit 0 (doesn't return data, just checks connection)
 		const { error: dbError } = await client
-			.from("config")
-			.select("billing_provider")
-			.limit(1)
-			.single();
+			.from("accounts")
+			.select("id")
+			.limit(0);
 
-		checks.database = !dbError;
-
-		// Authentication system check
-		// Verifies auth module is initialized and functional
-		try {
-			await client.auth.getSession();
-			checks.authentication = true;
-		} catch {
-			checks.authentication = false;
+		if (dbError) {
+			checks.details.database = dbError.message;
+		} else {
+			checks.database = true;
 		}
 
 		// Overall readiness
-		checks.ready = checks.database && checks.authentication;
+		checks.ready = checks.environment && checks.database;
 
 		return NextResponse.json(checks, {
 			status: checks.ready ? 200 : 503,
@@ -52,12 +71,14 @@ export async function GET() {
 			},
 		});
 	} catch (error) {
-		return NextResponse.json(
-			{
-				...checks,
-				error: error instanceof Error ? error.message : String(error),
+		checks.details.error =
+			error instanceof Error ? error.message : String(error);
+		return NextResponse.json(checks, {
+			status: 503,
+			headers: {
+				"Cache-Control": "no-cache, no-store, must-revalidate",
+				"Content-Type": "application/json",
 			},
-			{ status: 503 },
-		);
+		});
 	}
 }
