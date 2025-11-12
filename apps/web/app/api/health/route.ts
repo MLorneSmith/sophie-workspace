@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 /**
- * Quick check to see if the database is healthy by querying the config table
+ * Quick check to see if the database is healthy by querying the accounts table
  * @returns true if the database is healthy, false otherwise
  */
 async function getSupabaseHealthCheck() {
@@ -31,20 +31,18 @@ async function getSupabaseHealthCheck() {
 	try {
 		const client = getSupabaseServerAdminClient();
 
-		// Simple health check - query any table to verify database connectivity
-		const { data, error } = await client
-			.from("config")
-			.select("billing_provider")
-			.limit(1)
-			.single();
+		// Simple connectivity check - just verify we can query the database
+		// Using accounts table as it's guaranteed to exist (core table)
+		// No .single() constraint - works with 0, 1, or many rows
+		const { error } = await client.from("accounts").select("id").limit(1);
 
-		// Health check passes if query executes without error and returns data
+		// Health check passes if query executes without error
 		if (error) {
 			logger.error({ ...ctx, error: error.message }, "Database query failed");
 			return false;
 		}
 
-		return data !== null;
+		return true;
 	} catch (error) {
 		logger.error({ ...ctx, error }, "Database connection failed");
 		return false;
