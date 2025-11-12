@@ -102,80 +102,74 @@ jobs:
           elapsed=0
           
           while [ $elapsed -lt $MAX_WAIT_TIME ]; do
-            echo "Checking deployment status (${elapsed}s elapsed)..."
-            
-            # Try to get a response from the main page
-            # Include protection bypass header if available
+            echo "Checking deployment readiness (${elapsed}s elapsed)..."
+
+            # Use comprehensive health check endpoint instead of simple HTTP check
+            # This verifies database, auth, and application readiness
+            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/deployment-health"
+
+            # Fetch health check response
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-              CURL_HEADERS="-H \"x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}\""
-            else
-              CURL_HEADERS=""
-            fi
-            
-            # Use a more robust curl command with proper error handling
-            # Increase timeout to 90s and add retry logic
-            HTTP_CODE=""
-            CURL_EXIT_CODE=0
-            
-            # Try the curl command with better error handling
-            if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
-              HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
-                --max-time 90 \
-                --connect-timeout 45 \
-                --retry 5 \
-                --retry-delay 10 \
-                --retry-max-time 180 \
+              RESPONSE=$(curl -s --max-time 30 \
                 -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
-                "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || CURL_EXIT_CODE=$?
+                "$HEALTH_URL" 2>/dev/null) || RESPONSE=""
             else
-              # Try without bypass header - deployment might not be protected
-              HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
-                --max-time 90 \
-                --connect-timeout 45 \
-                --retry 5 \
-                --retry-delay 10 \
-                --retry-max-time 180 \
-                "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || CURL_EXIT_CODE=$?
+              RESPONSE=$(curl -s --max-time 30 "$HEALTH_URL" 2>/dev/null) || RESPONSE=""
             fi
-            
-            # Handle curl exit codes
-            if [ $CURL_EXIT_CODE -eq 28 ]; then
-              echo "⚠️ curl timed out (exit code 28). Incrementing retry count..."
+
+            # Parse health check response
+            if [ ! -z "$RESPONSE" ]; then
+              READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
+              DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
+              AUTH=$(echo "$RESPONSE" | jq -r '.authentication // false' 2>/dev/null)
+
+              echo "Health Status: Database=$DATABASE, Auth=$AUTH, Ready=$READY"
+
+              # Check if all systems are ready
+              if [ "$READY" = "true" ]; then
+                echo "✅ Deployment is fully ready - all systems operational"
+                echo "ready=true" >> $GITHUB_OUTPUT
+                exit 0
+              else
+                echo "⚠️ Systems still initializing. Waiting ${CHECK_INTERVAL}s..."
+              fi
+            else
+              # Fallback to basic HTTP check if health endpoint not available yet
+              echo "⚠️ Health endpoint not responding, trying basic check..."
+
+              if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
+                HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                  --max-time 30 \
+                  -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" \
+                  "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
+              else
+                HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+                  --max-time 30 \
+                  "${{ needs.check-should-run.outputs.web_deployment_url }}" 2>/dev/null) || HTTP_CODE="000"
+              fi
+
+              # Only log basic check results, don't mark as ready yet
+              if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
+                echo "ℹ️ Server responding (HTTP $HTTP_CODE) but health endpoint not ready"
+              elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
+                echo "ℹ️ Server protected (HTTP $HTTP_CODE) but health endpoint not ready"
+              else
+                echo "⚠️ Got HTTP $HTTP_CODE - deployment still initializing"
+              fi
+
+              # Increment retry count for fallback checks
               RETRY_COUNT=$((RETRY_COUNT + 1))
-              HTTP_CODE="TIMEOUT"
-            elif [ $CURL_EXIT_CODE -eq 7 ]; then
-              echo "⚠️ curl connection failed (exit code 7). This might be a DNS or network issue."
-              HTTP_CODE="CONNECTION_FAILED"
-            elif [ $CURL_EXIT_CODE -ne 0 ]; then
-              echo "⚠️ curl failed with exit code $CURL_EXIT_CODE"
-              HTTP_CODE="ERROR"
-            fi
-            
-            # Check the HTTP response code
-            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
-              echo "✅ Deployment is ready (HTTP $HTTP_CODE)"
-              echo "ready=true" >> $GITHUB_OUTPUT
-              exit 0
-            elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
-              echo "✅ Deployment is ready but protected (HTTP $HTTP_CODE) - this is expected for dev environment"
-              echo "ready=true" >> $GITHUB_OUTPUT
-              exit 0
-            elif [ "$HTTP_CODE" = "522" ] || [ "$HTTP_CODE" = "521" ] || [ "$HTTP_CODE" = "523" ]; then
-              echo "⚠️ Cloudflare error $HTTP_CODE. Waiting ${CHECK_INTERVAL}s before retry..."
-            elif [ "$HTTP_CODE" = "TIMEOUT" ] || [ "$HTTP_CODE" = "CONNECTION_FAILED" ] || [ "$HTTP_CODE" = "ERROR" ]; then
-              echo "⚠️ Connection failed. Deployment may still be initializing. Waiting ${CHECK_INTERVAL}s..."
-              # After multiple failures, assume deployment is ready but protected
-              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-                echo "⚠️ Multiple connection failures detected after $RETRY_COUNT attempts."
-                echo "This likely means the deployment is ready but protected by Vercel's security layer."
-                echo "Proceeding with tests - they will handle authentication appropriately."
+
+              # After max retries, if we're getting HTTP responses, proceed
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ] && [ "$HTTP_CODE" != "000" ]; then
+                echo "⚠️ Health endpoint not available after $RETRY_COUNT attempts"
+                echo "Server is responding but comprehensive checks unavailable"
+                echo "Proceeding with basic readiness assumption"
                 echo "ready=true" >> $GITHUB_OUTPUT
                 exit 0
               fi
-            else
-              echo "⚠️ Got HTTP $HTTP_CODE. Waiting ${CHECK_INTERVAL}s..."
             fi
-            
+
             sleep $CHECK_INTERVAL
             elapsed=$((elapsed + CHECK_INTERVAL))
           done
