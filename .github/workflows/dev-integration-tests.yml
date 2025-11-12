@@ -119,11 +119,6 @@ jobs:
 
             # Parse health check response
             if [ ! -z "$RESPONSE" ]; then
-              # Debug: Show first 500 chars of response to understand what we're getting
-              echo "📋 Response preview (first 500 chars):"
-              echo "$RESPONSE" | head -c 500
-              echo ""
-
               # Check if response is HTML (Vercel auth page) instead of JSON
               if echo "$RESPONSE" | grep -q "Authentication Required\|Vercel Authentication\|<!doctype"; then
                 echo "❌ CRITICAL: Vercel protection is blocking the health endpoint"
@@ -134,25 +129,33 @@ jobs:
                 exit 1
               fi
 
-              READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
-              DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
-              ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
-              DETAILS=$(echo "$RESPONSE" | jq -r '.details // {}' 2>/dev/null)
-
-              echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
-
-              # Show details if not ready
-              if [ "$READY" != "true" ] && [ "$DETAILS" != "{}" ]; then
-                echo "Details: $DETAILS"
-              fi
-
-              # Check if all systems are ready
-              if [ "$READY" = "true" ]; then
-                echo "✅ Deployment is fully ready - all systems operational"
-                echo "ready=true" >> $GITHUB_OUTPUT
-                exit 0
+              # Check if route doesn't exist yet (404 from Next.js)
+              if echo "$RESPONSE" | grep -q "Route not found"; then
+                echo "⏳ Health endpoint route not available yet (Vercel still initializing)"
+                echo "ℹ️ This is normal - API routes can take 45-60s to become available after deployment"
+                echo "⚠️ Waiting ${CHECK_INTERVAL}s before retrying..."
               else
-                echo "⚠️ Systems still initializing. Waiting ${CHECK_INTERVAL}s..."
+                # Route exists - parse the health check
+                READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
+                DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
+                ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
+                DETAILS=$(echo "$RESPONSE" | jq -r '.details // {}' 2>/dev/null)
+
+                echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
+
+                # Show details if not ready
+                if [ "$READY" != "true" ] && [ "$DETAILS" != "{}" ]; then
+                  echo "Details: $DETAILS"
+                fi
+
+                # Check if all systems are ready
+                if [ "$READY" = "true" ]; then
+                  echo "✅ Deployment is fully ready - all systems operational"
+                  echo "ready=true" >> $GITHUB_OUTPUT
+                  exit 0
+                else
+                  echo "⚠️ Systems still initializing. Waiting ${CHECK_INTERVAL}s..."
+                fi
               fi
             else
               # Fallback to basic HTTP check if health endpoint not available yet
