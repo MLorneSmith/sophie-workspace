@@ -34,6 +34,15 @@ jobs:
       web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
       payload_deployment_url: ${{ steps.check.outputs.payload_deployment_url }}
     steps:
+      - name: Download deployment URLs
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: deployment-urls
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+        continue-on-error: true
+
       - name: Check conditions
         id: check
         run: |
@@ -45,15 +54,30 @@ jobs:
             echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
-            # For triggered runs, ideally we'd get URLs from the deploy workflow artifacts
-            # For now, use known dev domain for web and assume payload API is accessible there
-            echo "web_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
-            echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
 
-            echo "ℹ️ Note: Currently using dev.slideheroes.com for both services"
-            echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
-            echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"
-            echo "ℹ️ This may need adjustment if services are on different domains"
+            # Try to read deployment URLs from artifact
+            if [ -f "urls.json" ]; then
+              echo "📦 Using deployment URLs from artifact:"
+              cat urls.json
+
+              WEB_URL=$(jq -r '.web_url' urls.json)
+              PAYLOAD_URL=$(jq -r '.payload_url' urls.json)
+
+              echo "web_deployment_url=$WEB_URL" >> $GITHUB_OUTPUT
+              echo "payload_deployment_url=$PAYLOAD_URL" >> $GITHUB_OUTPUT
+
+              echo "ℹ️ Using direct Vercel deployment URLs (bypasses protection):"
+              echo "ℹ️ Web app tests will use: $WEB_URL"
+              echo "ℹ️ Payload/GraphQL tests will use: $PAYLOAD_URL"
+            else
+              echo "⚠️ Deployment URLs artifact not found, falling back to dev.slideheroes.com"
+              echo "web_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
+              echo "payload_deployment_url=https://dev.slideheroes.com" >> $GITHUB_OUTPUT
+
+              echo "ℹ️ Note: Using dev.slideheroes.com for both services (fallback)"
+              echo "ℹ️ Web app tests will use: https://dev.slideheroes.com"
+              echo "ℹ️ Payload/GraphQL tests will use: https://dev.slideheroes.com"
+            fi
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
             echo "Skipping: Deploy to Dev workflow did not succeed"
