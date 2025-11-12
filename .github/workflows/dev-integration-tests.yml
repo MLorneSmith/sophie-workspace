@@ -106,9 +106,9 @@ jobs:
 
             # Use comprehensive health check endpoint instead of simple HTTP check
             # This verifies database, auth, and application readiness
-            # NOTE: Using /api/health instead of /api/deployment-health due to deployment issues
+            # Using /api/deployment-health (web app only) to avoid hitting payload app
             # See: https://github.com/MLorneSmith/2025slideheroes/issues/591
-            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/health"
+            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/deployment-health"
 
             # Fetch health check response
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
@@ -138,18 +138,12 @@ jobs:
                 echo "⚠️ Waiting ${CHECK_INTERVAL}s before retrying..."
               else
                 # Route exists - parse the health check
-                # /api/health returns: {status: "ready", timestamp: "...", services: {database: true/false}}
-                STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"' 2>/dev/null)
-                DATABASE=$(echo "$RESPONSE" | jq -r '.services.database // false' 2>/dev/null)
+                # /api/deployment-health returns: {ready: true/false, environment: true/false, database: true/false}
+                READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
+                ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
+                DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
 
-                # Consider deployment ready if status is "ready" and database is healthy
-                if [ "$STATUS" = "ready" ] && [ "$DATABASE" = "true" ]; then
-                  READY="true"
-                else
-                  READY="false"
-                fi
-
-                echo "Health Status: Status=$STATUS, Database=$DATABASE, Ready=$READY"
+                echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
 
                 # Check if all systems are ready
                 if [ "$READY" = "true" ]; then
