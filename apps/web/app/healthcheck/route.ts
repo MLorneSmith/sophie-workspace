@@ -18,19 +18,18 @@ export async function GET() {
 }
 
 /**
- * Quick check to see if the database is healthy by querying the config table
+ * Quick check to see if the database is healthy by querying the accounts table
  * @returns true if the database is healthy, false otherwise
  */
 async function getSupabaseHealthCheck() {
 	try {
 		const client = getSupabaseServerAdminClient();
 
-		const { data, error } = await client
-			.from("config")
-			.select("billing_provider")
-			.single();
+		// Simple connectivity check - just verify we can query the database
+		// Using accounts table as it's guaranteed to exist (core table)
+		const { error } = await client.from("accounts").select("id").limit(1);
 
-		return !error && Boolean(data?.billing_provider);
+		return !error;
 	} catch {
 		return false;
 	}
