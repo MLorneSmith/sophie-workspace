@@ -106,7 +106,9 @@ jobs:
 
             # Use comprehensive health check endpoint instead of simple HTTP check
             # This verifies database, auth, and application readiness
-            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/deployment-health"
+            # NOTE: Using /api/health instead of /api/deployment-health due to deployment issues
+            # See: https://github.com/MLorneSmith/2025slideheroes/issues/591
+            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/health"
 
             # Fetch health check response
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
@@ -119,11 +121,6 @@ jobs:
 
             # Parse health check response
             if [ ! -z "$RESPONSE" ]; then
-              # Debug: Show response to diagnose issue
-              echo "📋 Response preview (first 200 chars):"
-              echo "$RESPONSE" | head -c 200
-              echo ""
-
               # Check if response is HTML (Vercel auth page) instead of JSON
               if echo "$RESPONSE" | grep -q "Authentication Required\|Vercel Authentication\|<!doctype"; then
                 echo "❌ CRITICAL: Vercel protection is blocking the health endpoint"
@@ -141,17 +138,18 @@ jobs:
                 echo "⚠️ Waiting ${CHECK_INTERVAL}s before retrying..."
               else
                 # Route exists - parse the health check
-                READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
-                DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
-                ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
-                DETAILS=$(echo "$RESPONSE" | jq -r '.details // {}' 2>/dev/null)
+                # /api/health returns: {status: "ready", timestamp: "...", services: {database: true/false}}
+                STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"' 2>/dev/null)
+                DATABASE=$(echo "$RESPONSE" | jq -r '.services.database // false' 2>/dev/null)
 
-                echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
-
-                # Show details if not ready
-                if [ "$READY" != "true" ] && [ "$DETAILS" != "{}" ]; then
-                  echo "Details: $DETAILS"
+                # Consider deployment ready if status is "ready" and database is healthy
+                if [ "$STATUS" = "ready" ] && [ "$DATABASE" = "true" ]; then
+                  READY="true"
+                else
+                  READY="false"
                 fi
+
+                echo "Health Status: Status=$STATUS, Database=$DATABASE, Ready=$READY"
 
                 # Check if all systems are ready
                 if [ "$READY" = "true" ]; then
