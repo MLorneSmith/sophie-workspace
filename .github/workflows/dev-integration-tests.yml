@@ -119,6 +119,21 @@ jobs:
 
             # Parse health check response
             if [ ! -z "$RESPONSE" ]; then
+              # Debug: Show first 500 chars of response to understand what we're getting
+              echo "📋 Response preview (first 500 chars):"
+              echo "$RESPONSE" | head -c 500
+              echo ""
+
+              # Check if response is HTML (Vercel auth page) instead of JSON
+              if echo "$RESPONSE" | grep -q "Authentication Required\|Vercel Authentication\|<!doctype"; then
+                echo "❌ CRITICAL: Vercel protection is blocking the health endpoint"
+                echo "🔧 The bypass header is not working correctly"
+                echo "💡 Solution: Verify VERCEL_AUTOMATION_BYPASS_SECRET matches Vercel project settings"
+                echo "📖 See: https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation"
+                echo "ready=false" >> $GITHUB_OUTPUT
+                exit 1
+              fi
+
               READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
               DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
               ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
