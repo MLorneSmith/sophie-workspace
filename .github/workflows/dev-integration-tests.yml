@@ -106,9 +106,9 @@ jobs:
 
             # Use comprehensive health check endpoint instead of simple HTTP check
             # This verifies database, auth, and application readiness
-            # Using /api/deployment-health (web app only) to avoid hitting payload app
+            # Using /healthcheck which is guaranteed to exist in web app deployment
             # See: https://github.com/MLorneSmith/2025slideheroes/issues/591
-            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/api/deployment-health"
+            HEALTH_URL="${{ needs.check-should-run.outputs.web_deployment_url }}/healthcheck"
 
             # Fetch health check response
             if [ ! -z "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}" ]; then
@@ -138,20 +138,18 @@ jobs:
                 echo "⚠️ Waiting ${CHECK_INTERVAL}s before retrying..."
               else
                 # Route exists - parse the health check
-                # /api/deployment-health returns: {ready: true/false, environment: true/false, database: true/false}
-                READY=$(echo "$RESPONSE" | jq -r '.ready // false' 2>/dev/null)
-                ENVIRONMENT=$(echo "$RESPONSE" | jq -r '.environment // false' 2>/dev/null)
-                DATABASE=$(echo "$RESPONSE" | jq -r '.database // false' 2>/dev/null)
+                # /healthcheck returns: {services: {database: true/false}}
+                DATABASE=$(echo "$RESPONSE" | jq -r '.services.database // false' 2>/dev/null)
 
-                echo "Health Status: Environment=$ENVIRONMENT, Database=$DATABASE, Ready=$READY"
+                echo "Health Status: Database=$DATABASE"
 
-                # Check if all systems are ready
-                if [ "$READY" = "true" ]; then
-                  echo "✅ Deployment is fully ready - all systems operational"
+                # Check if database is healthy (deployment is ready when database is healthy)
+                if [ "$DATABASE" = "true" ]; then
+                  echo "✅ Deployment is fully ready - database operational"
                   echo "ready=true" >> $GITHUB_OUTPUT
                   exit 0
                 else
-                  echo "⚠️ Systems still initializing. Waiting ${CHECK_INTERVAL}s..."
+                  echo "⚠️ Database still initializing. Waiting ${CHECK_INTERVAL}s..."
                 fi
               fi
             else
