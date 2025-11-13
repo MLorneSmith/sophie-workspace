@@ -45,7 +45,7 @@
 		}
 	],
 	"preview": {
-		"commandForIgnoringBuildStep": "bash scripts/ignore-build-step.sh"
+		"commandForIgnoringBuildStep": "bash scripts/ci/ignore-build-step.sh"
 	},
 	"git": {
 		"deploymentEnabled": {

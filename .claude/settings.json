@@ -1,186 +1,90 @@
 {
-	"_comment": "ClaudeKit integration - Phase 1 & 2 hooks",
-	"_disabled_hooks_backup": {
+	"permissions": {
+		"allow": [
+			"Bash(mkdir:*)",
+			"Bash(uv:*)",
+			"Bash(find:*)",
+			"Bash(mv:*)",
+			"Bash(grep:*)",
+			"Bash(npm:*)",
+			"Bash(ls:*)",
+			"Bash(cp:*)",
+			"Write",
+			"Bash(./scripts/copy_dot_env.sh:*)",
+			"Bash(chmod:*)",
+			"Bash(touch:*)"
+		],
+		"deny": [
+			"Bash(git push --force:*)",
+			"Bash(git push -f:*)",
+			"Bash(rm -rf:*)"
+		]
+	},
+	"hooks": {
 		"PreToolUse": [
 			{
 				"matcher": "Bash",
 				"hooks": [
 					{
 						"type": "command",
-						"command": "node /home/msmith/projects/2025slideheroes/.claude/hooks/check-npm-usage.js"
-					}
-				]
-			}
-		]
-	},
-	"hooks": {
-		"SessionStart": [
-			{
-				"matcher": "*",
-				"hooks": [
+						"command": "bash .claude/hooks/validate-commit-message.sh",
+						"timeout": 5
+					},
 					{
 						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/codebase-map-compact.sh"
-					}
-				]
-			}
-		],
-		"UserPromptSubmit": [
-			{
-				"matcher": "*",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/codebase-map-compact.sh"
-					}
-				]
-			}
-		],
-		"PreToolUse": [
-			{
-				"matcher": "Read|Edit|MultiEdit|Write|Bash",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/file-guard.sh"
+						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/pre_tool_use.py",
+						"timeout": 5
 					}
 				]
 			}
 		],
 		"PostToolUse": [
 			{
-				"matcher": "Write|Edit|MultiEdit",
+				"matcher": "",
 				"hooks": [
 					{
 						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-lint-changed.sh"
-					},
+						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py || true",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"Notification": [
+			{
+				"matcher": "",
+				"hooks": [
 					{
 						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-format-changed.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/typecheck-changed.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/check-any-types.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/test-changed.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/markdown-lint-changed.sh"
+						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/notification.py --notify || true",
+						"timeout": 5
 					}
 				]
 			}
 		],
 		"Stop": [
 			{
-				"matcher": "*",
+				"matcher": "",
 				"hooks": [
 					{
 						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/create-checkpoint.sh"
-					},
+						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/stop.py --chat || true",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"SubagentStop": [
+			{
+				"matcher": "",
+				"hooks": [
 					{
 						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/biome-project-check.sh"
-					},
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/.claude/hooks/test-project.sh"
+						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_stop.py || true",
+						"timeout": 5
 					}
 				]
 			}
 		]
-	},
-	"codebase-map": {
-		"format": "auto",
-		"include": ["apps/**", "packages/**"],
-		"exclude": [
-			"**/*.test.ts",
-			"**/*.spec.ts",
-			"**/node_modules",
-			"**/.next",
-			"**/dist"
-		]
-	},
-	"create-checkpoint": {
-		"prefix": "claude",
-		"maxCheckpoints": 10
-	},
-	"thinking-level": {
-		"level": 1,
-		"command-levels": {
-			"/core:codecheck": 0,
-			"/codecheck": 0,
-			"/core/git:commit": 0,
-			"/commit": 0,
-			"/development:debug-issue": 2,
-			"/debug-issue": 2,
-			"/project:log-issue": 1,
-			"/log-issue": 1,
-			"/project:log-task": 1,
-			"/log-task": 1,
-			"/meta/commands:enhance": 2,
-			"/enhance": 2,
-			"/meta/commands:new": 2,
-			"/new": 2,
-			"/infrastructure/updates:payload": 0,
-			"/payload": 0,
-			"/infrastructure/updates:update-makerkit": 1,
-			"/update-makerkit": 1
-		}
-	},
-	"biome": {
-		"command": "npx biome",
-		"autoFix": false,
-		"formatOnSave": true,
-		"projectCheck": true,
-		"checkOnStop": true,
-		"timeout": 30,
-		"formatTimeout": 10,
-		"projectCheckTimeout": 60,
-		"checkPaths": "."
-	},
-	"typescript": {
-		"command": "npx tsc",
-		"checkOnChange": true,
-		"forbidAny": true,
-		"allowUnknown": true,
-		"skipTestFiles": true,
-		"strictMode": false,
-		"timeout": 30
-	},
-	"markdown": {
-		"command": "pnpm lint:md",
-		"autoFix": false,
-		"checkOnChange": true,
-		"timeout": 30
-	},
-	"test-changed": {
-		"_comment": "Runs tests related to changed files",
-		"enabled": true,
-		"timeout": 30
-	},
-	"test-project": {
-		"_comment": "Runs unit test suite at session end - excludes payload package to avoid context window overflow from 72 failing seed tests",
-		"command": "pnpm test:unit --filter=!payload --filter=!web-e2e",
-		"enabled": true,
-		"timeout": 55
-	},
-	"self-review": {
-		"_comment": "Prompts code review questions at session end",
-		"enabled": false,
-		"targetPatterns": ["**/*.ts", "**/*.tsx", "!**/*.test.ts", "!**/*.spec.ts"]
-	},
-	"hook_coordination": {
-		"_comment": "Coordinates hook execution to prevent race conditions",
-		"enabled": true,
-		"description": "Ensures hooks run in proper sequence: TypeScript > Lint > Format"
 	}
 }

@@ -71,7 +71,7 @@ jobs:
       - name: Prepare test configuration
         run: |
           # Create environment-specific configuration
-          cat > load-tests/env-config.js << EOF
+          cat > apps/load-tests/env-config.js << EOF
           export const envConfig = {
             apiBaseUrl: "${{ inputs.base_url }}",
             environment: "${{ inputs.environment }}",
@@ -113,13 +113,13 @@ jobs:
           TEST_FILE=""
           case "${{ inputs.test_scenario }}" in
             "user-journey")
-              TEST_FILE="load-tests/scenarios/user-journey.js"
+              TEST_FILE="apps/load-tests/scenarios/user-journey.js"
               ;;
             "dashboard-load")
-              TEST_FILE="load-tests/scenarios/dashboard-load.js"
+              TEST_FILE="apps/load-tests/scenarios/dashboard-load.js"
               ;;
             "login-flow")
-              TEST_FILE="load-tests/scenarios/login-flow.js"
+              TEST_FILE="apps/load-tests/scenarios/login-flow.js"
               ;;
             *)
               echo "Unknown test scenario: ${{ inputs.test_scenario }}"
@@ -251,7 +251,7 @@ jobs:
           name: k6-results-${{ inputs.environment }}-${{ github.run_id }}
           path: |
             k6-results/
-            load-tests/env-config.js
+            apps/load-tests/env-config.js
           retention-days: 30
       
       - name: Comment on PR

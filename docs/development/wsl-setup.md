@@ -2,7 +2,9 @@
 
 ## Overview
 
-This guide provides comprehensive instructions for setting up Windows Subsystem for Linux 2 (WSL2) for optimal SlideHeroes development. Proper WSL configuration is critical for stability, performance, and avoiding common development issues.
+This guide provides comprehensive instructions for setting up Windows Subsystem for
+Linux 2 (WSL2) for optimal SlideHeroes development. Proper WSL configuration is
+critical for stability, performance, and avoiding common development issues.
 
 ## Quick Start Checklist
 
@@ -29,12 +31,14 @@ wsl --version
 ```
 
 **Expected Output (Stable):**
-```
+
+```text
 WSL version: 2.2.4 (or 2.3.x - NOT 2.6.x pre-release)
 Kernel version: 5.15.x (stable - NOT 6.6.x)
 ```
 
-⚠️ **Important:** If you see version 2.6.x, you're on an unstable pre-release version. Follow the "Downgrade to Stable" section below.
+⚠️ **Important:** If you see version 2.6.x, you're on an unstable pre-release
+version. Follow the "Downgrade to Stable" section below.
 
 ## Installation
 
@@ -46,6 +50,7 @@ wsl --install
 ```
 
 This installs:
+
 - WSL2 with Ubuntu (default distribution)
 - Virtual Machine Platform
 - Windows Hypervisor Platform
@@ -66,7 +71,8 @@ wsl --install -d Ubuntu-22.04
 
 ### Step 1: Create .wslconfig File
 
-The `.wslconfig` file controls WSL2 resource allocation and performance. **This file must be in your Windows user home directory**, not the WSL filesystem.
+The `.wslconfig` file controls WSL2 resource allocation and performance.
+**This file must be in your Windows user home directory**, not the WSL filesystem.
 
 **Location:** `C:\Users\<YourUsername>\.wslconfig`
 
@@ -275,12 +281,14 @@ uname -r  # Should show 5.15.x, NOT 6.6.x
 #### Problem: Slow File Operations
 
 **Check filesystem location:**
+
 ```bash
 pwd
 # Should start with /home/username, NOT /mnt/c/
 ```
 
 **Solution:** Move project to WSL filesystem:
+
 ```bash
 # Copy from Windows to WSL
 cp -r /mnt/c/Users/YourName/Projects/2025slideheroes ~/
@@ -290,11 +298,13 @@ cd ~/2025slideheroes
 #### Problem: High Memory Usage
 
 **Check current usage:**
+
 ```bash
 free -h
 ```
 
 **Solutions:**
+
 1. Reduce `memory` setting in `.wslconfig`
 2. Enable `autoMemoryReclaim=dropcache`
 3. Manually clear caches (see Memory Management section)
@@ -302,10 +312,12 @@ free -h
 #### Problem: File Watching Not Working
 
 **Symptoms:**
+
 - Hot reload doesn't work
 - Tests don't re-run on file changes
 
 **Check inotify limits:**
+
 ```bash
 cat /proc/sys/fs/inotify/max_user_watches
 ```
@@ -317,12 +329,14 @@ cat /proc/sys/fs/inotify/max_user_watches
 #### Problem: Docker Containers Can't Access Host Services
 
 **Check `.wslconfig` network settings:**
+
 ```ini
 [wsl2]
 localhostForwarding=true
 ```
 
 **Restart WSL after changes:**
+
 ```powershell
 wsl --shutdown
 ```
@@ -330,6 +344,7 @@ wsl --shutdown
 #### Problem: Permission Errors in Docker Volumes
 
 **Solution:** Use proper UID/GID in containers:
+
 ```yaml
 services:
   app:
@@ -337,6 +352,7 @@ services:
 ```
 
 **Set environment variables:**
+
 ```bash
 echo "export UID=$(id -u)" >> ~/.bashrc
 echo "export GID=$(id -g)" >> ~/.bashrc
@@ -348,17 +364,20 @@ source ~/.bashrc
 #### Problem: DNS Resolution Fails
 
 **Check `/etc/resolv.conf`:**
+
 ```bash
 cat /etc/resolv.conf
 ```
 
 **Solution:** Enable automatic generation in `.wslconfig`:
+
 ```ini
 [network]
 generateResolvConf=true
 ```
 
 **Or manually set DNS:**
+
 ```bash
 sudo rm /etc/resolv.conf
 echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
@@ -371,6 +390,7 @@ echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 **Cause:** WSL not properly installed or enabled
 
 **Solution:**
+
 ```powershell
 # Enable WSL and Virtual Machine Platform
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
@@ -383,6 +403,7 @@ Restart-Computer
 #### "WSL 2 requires an update to its kernel component"
 
 **Solution:**
+
 ```powershell
 # Download and install kernel update
 # Visit: https://aka.ms/wsl2kernel
@@ -414,6 +435,7 @@ export NEXT_TELEMETRY_DISABLED=1
 ```
 
 **Apply changes:**
+
 ```bash
 source ~/.bashrc
 ```
@@ -423,6 +445,7 @@ source ~/.bashrc
 After configuring WSL, follow these steps for SlideHeroes development:
 
 1. **Clone the repository** (in WSL filesystem):
+
    ```bash
    cd ~
    git clone https://github.com/MLorneSmith/2025slideheroes.git
@@ -430,16 +453,19 @@ After configuring WSL, follow these steps for SlideHeroes development:
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 3. **Start Supabase** (uses Docker):
+
    ```bash
    pnpm supabase:web:start
    ```
 
 4. **Start development server**:
+
    ```bash
    pnpm dev
    ```
@@ -506,6 +532,7 @@ generateResolvConf=true
 ```
 
 Remember to restart WSL after creating or modifying `.wslconfig`:
+
 ```powershell
 wsl --shutdown
 ```
