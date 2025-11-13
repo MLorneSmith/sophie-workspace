@@ -126,6 +126,81 @@ pnpm typecheck
 - Run the typecheck command regularly to ensure your code is type-safe.
 - Run the linter and the formatter when your task is complete.
 
+## Git Commit Convention
+
+This project uses **Conventional Commits with Agent Traceability** for all commits.
+
+### Format
+
+```
+type(scope): description [agent: name]
+```
+
+**Example:**
+```bash
+feat(auth): add OAuth2 social login support [agent: sdlc_implementor]
+fix(cms): resolve quiz relationship bug [agent: debug_engineer]
+chore(deps): update Next.js to v16.2 [agent: sdlc_planner]
+```
+
+### Valid Types
+
+- `feat` - New features
+- `fix` - Bug fixes
+- `docs` - Documentation changes
+- `style` - Code style changes (formatting)
+- `refactor` - Code refactoring
+- `perf` - Performance improvements
+- `test` - Adding or updating tests
+- `build` - Build system changes
+- `ci` - CI configuration changes
+- `chore` - Maintenance tasks
+- `revert` - Revert previous commits
+
+### Valid Scopes
+
+- **Apps**: `web`, `payload`, `e2e`, `dev-tool`
+- **Features**: `auth`, `billing`, `canvas`, `course`, `quiz`, `admin`, `api`
+- **Technical**: `cms`, `ui`, `migration`, `config`, `deps`, `tooling`
+- **Infrastructure**: `ci`, `deploy`, `docker`, `security`
+
+### Message Guidelines
+
+- Use present tense: "add" not "added"
+- Start with lowercase after colon
+- 50-72 characters for description
+- No period at the end
+- Be descriptive of actual changes
+
+### Pre-commit Hooks
+
+The following hooks run automatically on every commit:
+- **TruffleHog**: Secret scanning (blocks if secrets detected)
+- **Biome**: Lints and formats code
+- **Markdown linter**: Validates markdown files
+- **Commitlint**: Validates commit message format
+
+### Claude Code Commit Validation Hook
+
+A pre-tool-use hook validates commit messages **before** they execute:
+- **Location**: `.claude/hooks/validate-commit-message.sh`
+- **Validates**: Format, type, scope, message quality
+- **Provides**: Immediate feedback with helpful error messages
+- **Blocks**: Invalid formats (wrong type, invalid scope, etc.)
+- **Warns**: Quality issues (past tense, capitalization, etc.)
+
+This ensures all commits from Claude Code follow the project convention.
+
+### Using the `/commit` Command
+
+```bash
+/commit sdlc_implementor feat auth
+/commit debug_engineer fix cms
+/commit test_writer test e2e
+```
+
+This automatically generates properly formatted commits with agent traceability that pass all validation hooks.
+
 ## Schema-First Development
 
 - **Define Zod schemas first** - Derive types from schemas, not the reverse

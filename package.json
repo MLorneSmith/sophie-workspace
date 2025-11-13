@@ -45,9 +45,7 @@
 		"test:unit": "turbo test --cache-dir=.turbo --filter=!web-e2e --continue",
 		"test:coverage": "turbo test:coverage --cache-dir=.turbo --filter=!web-e2e",
 		"test:e2e": "turbo test --filter=web-e2e",
-		"ci-metrics:collect": "node scripts/collect-ci-metrics.js",
-		"ci-metrics:deployment": "node scripts/send-deployment-metrics.js",
-		"ci-metrics:weekly": "node scripts/weekly-ci-report.js",
+		"ci-metrics:collect": "node scripts/ci/collect-ci-metrics.js",
 		"fetch-questions-temp": "tsx fetch-questions-temp.ts",
 		"manypkg:check": "manypkg check",
 		"manypkg:fix": "manypkg fix",
@@ -65,7 +63,7 @@
 	"prettier": "@kit/prettier-config",
 	"lint-staged": {
 		"*": [
-			"bash ./scripts/trufflehog-scan.sh"
+			"bash ./scripts/git/trufflehog-scan.sh"
 		],
 		"apps/payload/!(src/seed/seed-data)/**/*.{js,jsx,ts,tsx,json}": [
 			"bash -c 'cd apps/payload && pnpm lint'"
@@ -84,7 +82,7 @@
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"
 		],
 		"**/*.{ts,tsx}": [
-			"bash ./scripts/type-check-staged.sh"
+			"bash ./scripts/git/type-check-staged.sh"
 		]
 	},
 	"packageManager": "pnpm@10.14.0",

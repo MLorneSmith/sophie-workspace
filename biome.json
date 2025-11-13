@@ -99,7 +99,7 @@
 				"**/*.test.tsx",
 				"**/*.spec.ts",
 				"**/*.spec.tsx",
-				"**/load-tests/**/*.js",
+				"**/apps/load-tests/**/*.js",
 				"**/test-*.ts",
 				"**/test-*.tsx"
 			],
