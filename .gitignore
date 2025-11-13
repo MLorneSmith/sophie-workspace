@@ -32,6 +32,9 @@ dist/
 .DS_Store
 *.pem
 
+# AI tool caches
+.codebasemap
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -75,6 +78,13 @@ debug-*.js
 test-*.js
 *-test.js
 *-debug.js
+
+# Supabase temporary files
+supabase/.temp/
+supabase/.branches/
+
+# Test and command logs
+logs/
 
 # vercel
 .vercel
@@ -128,3 +138,6 @@ apps/payload/downloads/
 # Cloudflare Wrangler
 .wrangler/
 **/.wrangler/
+
+# Downloaded binaries
+.bin/

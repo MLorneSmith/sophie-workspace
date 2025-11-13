@@ -28,6 +28,64 @@ print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
+# Function to ensure k6 is available
+ensure_k6() {
+    if [ ! -f "$K6_BIN" ]; then
+        print_status "k6 not found, downloading..."
+        mkdir -p "$(dirname "$K6_BIN")"
+
+        # Detect OS and architecture
+        OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+        ARCH=$(uname -m)
+
+        # Map architecture names
+        case "$ARCH" in
+            x86_64|amd64)
+                ARCH="amd64"
+                ;;
+            aarch64|arm64)
+                ARCH="arm64"
+                ;;
+            *)
+                print_error "Unsupported architecture: $ARCH"
+                exit 1
+                ;;
+        esac
+
+        # Determine download URL
+        case "$OS-$ARCH" in
+            linux-amd64)
+                K6_URL="https://github.com/grafana/k6/releases/download/v0.52.0/k6-v0.52.0-linux-amd64.tar.gz"
+                ;;
+            darwin-amd64)
+                K6_URL="https://github.com/grafana/k6/releases/download/v0.52.0/k6-v0.52.0-macos-amd64.tar.gz"
+                ;;
+            darwin-arm64)
+                K6_URL="https://github.com/grafana/k6/releases/download/v0.52.0/k6-v0.52.0-macos-arm64.tar.gz"
+                ;;
+            *)
+                print_error "Unsupported platform: $OS-$ARCH"
+                print_status "Please install k6 manually: https://k6.io/docs/getting-started/installation/"
+                exit 1
+                ;;
+        esac
+
+        # Download and extract
+        print_status "Downloading k6 from $K6_URL..."
+        if curl -L "$K6_URL" | tar xz -C "$(dirname "$K6_BIN")" --strip-components=1; then
+            print_status "✓ k6 downloaded successfully to $K6_BIN"
+        else
+            print_error "Failed to download k6"
+            exit 1
+        fi
+    fi
+
+    # Verify k6 is executable
+    if [ ! -x "$K6_BIN" ]; then
+        chmod +x "$K6_BIN"
+    fi
+}
+
 # Function to run a test scenario
 run_test() {
     local test_name=$1
@@ -103,13 +161,9 @@ main() {
     
     # Create reports directory if it doesn't exist
     mkdir -p "$REPORTS_DIR"
-    
-    # Check if k6 is available
-    if [ ! -f "$K6_BIN" ]; then
-        print_error "k6 binary not found at $K6_BIN"
-        print_status "Please install k6 or set K6_BIN environment variable"
-        exit 1
-    fi
+
+    # Ensure k6 is available (download if needed)
+    ensure_k6
     
     # Parse command line arguments
     if [ $# -eq 0 ]; then
