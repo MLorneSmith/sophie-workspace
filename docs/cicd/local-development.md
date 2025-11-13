@@ -60,6 +60,24 @@ choco install docker-desktop
 choco install git
 ```
 
+**Windows with WSL2 (Recommended)**:
+
+If you're using Windows, we **strongly recommend** using WSL2 (Windows Subsystem for Linux) for development. WSL2 provides:
+
+- 10-100x faster file operations
+- Better Docker performance
+- Native Unix tooling
+- Improved compatibility with development tools
+
+📖 **See the comprehensive [WSL2 Setup Guide](../development/wsl-setup.md) for:**
+
+- Installation and configuration
+- Performance optimization (`.wslconfig` setup)
+- Common troubleshooting
+- SlideHeroes-specific setup steps
+
+After setting up WSL2, follow the Linux installation instructions above from within your WSL2 environment.
+
 **Linux (Ubuntu/Debian)**:
 
 ```bash
