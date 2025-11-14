@@ -34,6 +34,8 @@ dist/
 
 # AI tool caches
 .codebasemap
+.ai/tools/context7/.cache/
+.ai/tools/exa/.cache/
 
 # debug
 npm-debug.log*
