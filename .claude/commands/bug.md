@@ -11,31 +11,45 @@ Create a new plan in .ai/specs/*.md to resolve the `Bug` using the exact specifi
 
 ## Instructions
 
-1. **Fetch Bug Diagnosis from GitHub**: If $ARGUMENTS contains a GitHub issue number (e.g., `123` or `#123`), fetch the bug diagnosis:
-   ```typescript
-   // Extract issue number from arguments
-   const issueNumber = $ARGUMENTS.replace('#', '').trim();
+IMPORTANT: You're writing a plan to resolve a bug based on the `Bug` that will add value to the application.
+IMPORTANT: The `Bug` describes the bug that will be resolved but remember we're not resolving the bug, we're creating the plan that will be used to resolve the bug based on the `Plan Format` below.
+You're writing a plan to resolve a bug, it should be thorough and precise so we fix the root cause and prevent regressions.
 
-   // Fetch the bug diagnosis from GitHub
-   const issue = await mcp__github__get_issue({
-     owner: 'MLorneSmith',
-     repo: '2025slideheroes',
-     issue_number: parseInt(issueNumber)
-   });
-
-   // Extract relevant information from the diagnosis
-   const bugDiagnosis = issue.body; // Full diagnosis in markdown
-   const bugTitle = issue.title.replace('Bug Diagnosis: ', ''); // Remove prefix
-   const bugLabels = issue.labels; // severity, type, etc.
+1. **Fetch Bug Diagnosis from GitHub**: If $ARGUMENTS contains a GitHub issue number (e.g., `123` or `#123`), fetch the bug diagnosis using GitHub CLI:
+   ```bash
+   # Extract issue number and fetch the diagnosis issue
+   gh issue view <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --json body,title,labels \
+     --jq '{body: .body, title: .title, labels: [.labels[].name]}'
    ```
 
-2. **Create Bug Fix Plan**:
-   - IMPORTANT: You're writing a plan to resolve a bug based on the `Bug` that will add value to the application.
-   - IMPORTANT: The `Bug` describes the bug that will be resolved but remember we're not resolving the bug, we're creating the plan that will be used to resolve the bug based on the `Plan Format` below.
-   - You're writing a plan to resolve a bug, it should be thorough and precise so we fix the root cause and prevent regressions.
-   - Create the plan in the `.ai/specs/*.md` file. Name it appropriately based on the `Bug`.
-   - Use the plan format below to create the plan. 
+   If no issue number provided, interview the user for bug details (see step 2).
+
+2. **Interview user** (if no GitHub issue provided). Ask the user for:
+   1. **Bug Description**: Brief description of the bug
+   2. **Bug Type**:
+      - `logic`: Logic or business rule error
+      - `ui`: User interface bug
+      - `performance`: Performance issue
+      - `security`: Security vulnerability
+      - `data`: Data integrity issue
+   3. **Severity**: `critical`, `high`, `medium`, `low`
+
+3. **Parse bug data**. From the GitHub issue or user interview, extract and define the following variables:
+   ```typescript
+   const bugTitle = '[Brief description for GitHub title]'; // e.g., "Fix authentication timeout"
+   const bugType = '[logic|ui|performance|security|data]';
+   const severity = '[critical|high|medium|low]';
+   const diagnosisIssueNumber = '[issue-number]'; // If from GitHub, otherwise null
+   ```
+
+4. **Research the codebase** and put together a plan to fix the bug.
+   - Start your research by reading the `README.md` file.
    - Research the codebase to understand the bug, reproduce it, and put together a plan to fix it.
+
+5. **Create the plan** in the `.ai/specs/*.md` file.
+   - Use the `Plan Format` below to create the plan.
    - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to fix the bug.
    - Use your reasoning model: THINK HARD about the bug, its root cause, and the steps to fix it properly.
    - IMPORTANT: Be surgical with your bug fix, solve the bug at hand and don't fall off track.
@@ -43,11 +57,12 @@ Create a new plan in .ai/specs/*.md to resolve the `Bug` using the exact specifi
    - Don't use decorators. Keep it simple.
    - If you need a new library, use `pnpm add <package>` (or `pnpm add -D <package>` for dev dependencies) in the appropriate workspace. For workspace-specific packages, use `pnpm --filter <workspace> add <package>`. Be sure to report all new dependencies in the `Notes` section of the `Plan Format`.
    - Respect requested files in the `Relevant Files` section.
-   - Start your research by reading the `README.md` file.
-  
-3. **Report**
-   -  Summarize the work you've just done in a concise bullet point list.
-   - Include a path to the plan you created in the `.ai/specs/*.md` file.
+   - Name the plan using the following naming convention:
+     - 'Bug Fix: `bugTitle`'
+
+6. **Create the plan on GitHub** using the `GitHub Issue Creation` process
+
+7. **When you finish creating the plan** for the bug fix, follow the `Report` section to properly report the results of your work.
 
 ## Relevant Files
 
@@ -95,57 +110,52 @@ IMPORTANT: Execute every step in order, top to bottom.
 ## Validation Commands
 Execute every command to validate the bug is fixed with zero regressions.
 
-<list commands you'll use to validate with 100% confidence the bug is fixed with zero regressions. every command must execute without errors so be specific about what you want to run to validate the bug is fixed with zero regressions. Include commands to reproduce the bug before and after the fix.>
-- `cd app/server && uv run pytest` - Run server tests to validate the bug is fixed with zero regressions
+<list commands you'll use to validate with 100% confidence the bug is fixed with zero regressions. every command must execute without errors so be specific about what you want to run to validate the bug is fixed with zero regressions. Include commands to reproduce the bug before and after the fix. Don't validate with curl commands.>
 
 ## Notes
 <optionally list any additional notes or context that are relevant to the bug that will be helpful to the developer>
 ```
 
-## Create Bug Fix Issue on GitHub
+## GitHub Issue Creation
 
-After creating the plan, create a new GitHub issue with "Bug Fix:" prefix and link to the diagnosis issue:
+Use the GitHub CLI (`gh`) to create the bug fix issue:
 
-```typescript
-// Create new bug fix issue on GitHub
-const fixIssueTitle = bugTitle.startsWith('Bug Fix:')
-  ? bugTitle
-  : `Bug Fix: ${bugTitle}`;
+```bash
+# Create bug fix issue on GitHub with 'Bug Fix:' prefix and appropriate labels
+# If the issue title doesn't start with 'Bug Fix:', add the prefix
+# Convert severity and bugType to lowercase for label compatibility
+gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Bug Fix: <bugTitle>" \
+  --body "<issue-content>" \
+  --label "bug-fix" \
+  --label "ready-to-implement" \
+  --label "<severity>" \
+  --label "<bugType>"
 
-const fixIssue = await mcp__github__create_issue({
-  owner: 'MLorneSmith',
-  repo: '2025slideheroes',
-  title: fixIssueTitle,
-  body: planContent,
-  labels: ['bug-fix', 'ready-to-implement', severity, issueType],
-  assignees: [],
-});
+# Capture the issue URL and number from the output
+# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
 
-const fixIssueNumber = fixIssue.number;
-const fixIssueUrl = fixIssue.html_url;
+# If this bug fix was created from a diagnosis issue, add comment to link them
+# and close the diagnosis issue
+gh issue comment <diagnosisIssueNumber> \
+  --repo MLorneSmith/2025slideheroes \
+  --body "Fix plan created: #<fixIssueNumber>"
 
-// Add comment to diagnosis issue linking to the fix plan
-await mcp__github__create_issue_comment({
-  owner: 'MLorneSmith',
-  repo: '2025slideheroes',
-  issue_number: parseInt(issueNumber),
-  body: `Fix plan created: #${fixIssueNumber}`
-});
+gh issue edit <diagnosisIssueNumber> \
+  --repo MLorneSmith/2025slideheroes \
+  --add-label "diagnosed"
 
-// Update diagnosis issue to mark it as diagnosed
-await mcp__github__update_issue({
-  owner: 'MLorneSmith',
-  repo: '2025slideheroes',
-  issue_number: parseInt(issueNumber),
-  labels: [...bugLabels, 'diagnosed'],
-  state: 'closed'
-});
-
-// Also save to local .ai/specs/ for reference
-const slug = bugTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-const filename = `.ai/specs/bug-fix-${fixIssueNumber}-${slug}.md`;
-await writeFile(filename, planContent);
+gh issue close <diagnosisIssueNumber> \
+  --repo MLorneSmith/2025slideheroes \
+  --comment "Diagnosis complete. Fix plan: #<fixIssueNumber>"
 ```
 
 ## Bug
-$ARGUMENTS - Expected format: GitHub issue number (e.g., `123` or `#123`) from the diagnosis issue
+$ARGUMENTS
+
+## Report
+
+- Summarize the work you've just done in a concise bullet point list.
+- Include a path to the plan you created in the `.ai/specs/*.md` file.
+- Report the GitHub issue #
