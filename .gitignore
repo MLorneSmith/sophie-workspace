@@ -141,3 +141,5 @@ apps/payload/downloads/
 
 # Downloaded binaries
 .bin/
+__pycache__/
+*.pyc
