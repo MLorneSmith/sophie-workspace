@@ -70,6 +70,10 @@ def search_libraries(
     # Parse response
     response = SearchLibrariesResponse(**response_data)
 
+    # Set total if not provided
+    if response.total is None:
+        response.total = len(response.results)
+
     # Sort results by benchmark score (highest first)
     response.results.sort(key=lambda lib: lib.benchmark_score, reverse=True)
 

@@ -7,11 +7,17 @@ and other common operations.
 
 import os
 import re
+from pathlib import Path
 
 
 def get_api_key() -> str:
     """
     Retrieve Context7 API key from environment.
+
+    Attempts to load from .env files in the following order:
+    1. .ai/.env
+    2. Project root .env
+    3. Environment variable CONTEXT7_API_KEY
 
     Returns:
         API key string
@@ -19,6 +25,24 @@ def get_api_key() -> str:
     Raises:
         ValueError: If CONTEXT7_API_KEY environment variable is not set
     """
+    # Try to load from .env files
+    try:
+        from dotenv import load_dotenv
+
+        # Try .ai/.env first
+        ai_env = Path(__file__).parent.parent / ".env"
+        if ai_env.exists():
+            load_dotenv(ai_env)
+
+        # Try project root .env
+        project_root = Path(__file__).parent.parent.parent.parent
+        root_env = project_root / ".env"
+        if root_env.exists():
+            load_dotenv(root_env)
+    except ImportError:
+        # dotenv not available, just use environment variables
+        pass
+
     api_key = os.getenv("CONTEXT7_API_KEY")
     if not api_key:
         raise ValueError(
