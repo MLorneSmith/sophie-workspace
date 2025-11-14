@@ -3,8 +3,8 @@
 CLI script for searching libraries on Context7.
 
 Usage:
-    uv run tools/context7/cli_search_libraries.py "next.js"
-    uv run tools/context7/cli_search_libraries.py "react" --json
+    uv run -m tools.context7.cli_search_libraries "next.js"
+    uv run -m tools.context7.cli_search_libraries "react" --json
 """
 
 import argparse
@@ -12,7 +12,7 @@ import json
 import logging
 import sys
 
-from .search_libraries import search_libraries
+from tools.context7.search_libraries import search_libraries
 
 # Configure logging
 logging.basicConfig(
