@@ -3,8 +3,8 @@
 CLI script for fetching library documentation from Context7 API.
 
 Usage:
-    uv run tools/context7/cli_get_context.py vercel next.js --topic routing --tokens 2000
-    uv run tools/context7/cli_get_context.py vercel next.js --version v15.1.8 --format json
+    uv run -m tools.context7.cli_get_context vercel next.js --topic routing --tokens 2000
+    uv run -m tools.context7.cli_get_context vercel next.js --version v15.1.8 --format json
 """
 
 import argparse
@@ -12,8 +12,8 @@ import json
 import logging
 import sys
 
-from .get_context import get_documentation
-from .models import ResponseFormat
+from tools.context7.get_context import get_documentation
+from tools.context7.models import ResponseFormat
 
 # Configure logging
 logging.basicConfig(
