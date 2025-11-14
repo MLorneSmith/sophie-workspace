@@ -101,8 +101,8 @@ class Library(BaseModel):
     stars: int = Field(0, description="GitHub star count")
     trust_score: float = Field(0.0, description="Trust score (0-100)")
     benchmark_score: float = Field(0.0, description="Benchmark score (0-100)")
-    versions: list[LibraryVersion] = Field(
-        default_factory=list, description="Available versions"
+    versions: list[str | LibraryVersion] = Field(
+        default_factory=list, description="Available versions (strings or objects)"
     )
     tags: list[str] = Field(default_factory=list, description="Library tags")
     state: LibraryState = Field(..., description="Current processing state")
@@ -128,7 +128,7 @@ class SearchLibrariesResponse(BaseModel):
     """Response containing library search results."""
 
     results: list[Library] = Field(..., description="Matching libraries")
-    total: int = Field(..., description="Total number of results")
+    total: Optional[int] = Field(None, description="Total number of results")
     metadata: dict[str, str | int | float] = Field(
         default_factory=dict, description="Additional metadata"
     )

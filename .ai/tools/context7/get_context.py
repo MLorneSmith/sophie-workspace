@@ -108,8 +108,21 @@ def get_documentation(
         # Execute request
         response_data = client.get(endpoint, params=params)
 
-    # Parse response
-    response = GetContextResponse(**response_data)
+    # Parse response - handle both JSON and text formats
+    if isinstance(response_data, dict) and "content" in response_data and len(response_data) == 1:
+        # Plain text response - construct response object
+        response = GetContextResponse(
+            library=format_library_id(owner, repo),
+            version=request.version or "latest",
+            topic=request.topic,
+            tokens=len(response_data["content"].split()),  # Rough token estimate
+            content=response_data["content"],
+            chunks=None,
+            metadata={}
+        )
+    else:
+        # JSON response
+        response = GetContextResponse(**response_data)
 
     # Cache the result
     if use_cache:

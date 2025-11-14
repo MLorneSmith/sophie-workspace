@@ -145,7 +145,12 @@ class Context7Client:
 
             # Handle different HTTP status codes
             if response.status_code == 200:
-                return response.json()
+                # Try to parse as JSON, fallback to text response
+                try:
+                    return response.json()
+                except Exception:
+                    # Return text response wrapped in a dict
+                    return {"content": response.text}
 
             # Error responses
             error_data = self._parse_error_response(response)
