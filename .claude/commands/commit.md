@@ -102,7 +102,62 @@ If commit fails, read the error output and fix the reported issues.
    git log --oneline -5
    ```
 
-2. **Infer scope from changed files** (if not provided):
+2. **Analyze changes for logical groupings:**
+
+   Before creating a single commit, analyze if changes should be split:
+
+   ```bash
+   # Get list of changed files
+   git diff --name-only --cached
+   git diff --name-only  # unstaged changes
+   ```
+
+   **Multi-commit detection logic:**
+   - Categorize changes by area (auth, cms, ui, tests, docs, config, etc.)
+   - If changes span **2+ distinct areas**, recommend splitting into separate commits
+   - Group related changes together logically
+
+   **Example groupings:**
+   ```
+   Group 1 (feat): New feature implementation
+   - apps/web/app/home/[account]/projects/page.tsx
+   - apps/web/app/home/[account]/projects/_lib/server/projects-page.loader.ts
+
+   Group 2 (test): Tests for new feature
+   - apps/web/app/home/[account]/projects/__tests__/projects.test.ts
+
+   Group 3 (docs): Documentation updates
+   - README.md
+   - CLAUDE.md
+   ```
+
+   **When to split:**
+   - ✅ Feature code + tests + docs → 3 separate commits
+   - ✅ Multiple unrelated bug fixes → separate commits
+   - ✅ Refactoring + new feature → separate commits
+   - ✅ Config changes + code changes → separate commits (unless config needed for feature)
+
+   **When to keep together:**
+   - ❌ Single feature across multiple files
+   - ❌ Bug fix with its test
+   - ❌ Tightly coupled changes (config required for feature to work)
+
+   If multiple logical groups detected, **inform the user** with recommendations:
+   ```
+   📋 Multiple logical changes detected:
+     1. Feature implementation (3 files in apps/web/app/.../projects/)
+     2. Test coverage (1 file in __tests__)
+     3. Documentation (2 .md files)
+
+   Recommendation: Split into 3 commits:
+     1. feat(projects): add project listing page
+     2. test(projects): add project listing tests
+     3. docs(projects): update README with project features
+
+   Proceed with split commits? (y/n)
+   ```
+
+3. **Infer scope from changed files** (if not provided):
    - Changes in `apps/web/app/*/auth/*` → scope: `auth`
    - Changes in `apps/payload/*` → scope: `payload` or `cms`
    - Changes in `packages/ui/*` → scope: `ui`
@@ -111,7 +166,7 @@ If commit fails, read the error output and fix the reported issues.
    - Changes in `*.md` → type: `docs`
    - Multiple areas → use most significant or omit scope
 
-3. **Generate commit message:**
+4. **Generate commit message(s):**
    Format: `<type>(<scope>): <description> [agent: <agent_name>]`
 
    - Type: Must be from valid list above
@@ -119,28 +174,56 @@ If commit fails, read the error output and fix the reported issues.
    - Description: Clear, concise, present tense, lowercase start
    - Agent: Use provided agent_name or 'agent' as default
 
-4. **Stage and commit:**
+5. **Stage and commit:**
+
+   **For single commit:**
    ```bash
    git add -A
    git commit -m "<generated_commit_message>"
    ```
 
-   **Note:** Pre-commit hooks will run automatically. If they fail:
+   **For multiple commits (if user confirms split):**
+   ```bash
+   # Commit Group 1: Feature implementation
+   git add apps/web/app/home/[account]/projects/page.tsx \
+           apps/web/app/home/[account]/projects/_lib/server/projects-page.loader.ts
+   git commit -m "feat(projects): add project listing page [agent: <agent_name>]"
+
+   # Commit Group 2: Tests
+   git add apps/web/app/home/[account]/projects/__tests__/projects.test.ts
+   git commit -m "test(projects): add project listing tests [agent: <agent_name>]"
+
+   # Commit Group 3: Documentation
+   git add README.md CLAUDE.md
+   git commit -m "docs(projects): update README with project features [agent: <agent_name>]"
+   ```
+
+   **Note:** Pre-commit hooks will run automatically for each commit. If they fail:
    - TruffleHog: Remove secrets/credentials from code
    - Biome: Formatting auto-fixed, but lint errors need manual fixes
    - Markdown: Fix markdown syntax issues
    - Commitlint: Ensure format matches specification
 
-5. **Verify success:**
+6. **Verify success:**
    ```bash
-   git log --oneline -1
+   git log --oneline -5  # Show recent commits (may be multiple if split)
    ```
 
 ## Report
 
 Return a brief summary:
+
+**For single commit:**
 ```
 ✅ Committed as: <commit-hash> <commit-message>
+```
+
+**For multiple commits:**
+```
+✅ Created 3 commits:
+  1. abc1234 feat(projects): add project listing page [agent: sdlc_implementor]
+  2. def5678 test(projects): add project listing tests [agent: sdlc_implementor]
+  3. ghi9012 docs(projects): update README with project features [agent: sdlc_implementor]
 ```
 
 If commit failed, explain the error and suggest fixes:
