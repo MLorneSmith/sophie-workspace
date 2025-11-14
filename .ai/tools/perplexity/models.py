@@ -169,6 +169,11 @@ class Citation(BaseModel):
     title: Optional[str] = Field(default=None, description="Page title")
     snippet: Optional[str] = Field(default=None, description="Cited text snippet")
 
+    @classmethod
+    def from_url(cls, url: str) -> "Citation":
+        """Create a Citation from just a URL string."""
+        return cls(url=url)
+
 
 class ChatChoice(BaseModel):
     """A single choice in the chat completion response."""
@@ -195,8 +200,8 @@ class ChatResponse(BaseModel):
     model: str = Field(..., description="Model used for completion")
     choices: list[ChatChoice] = Field(..., description="Generated completions")
     usage: Optional[Usage] = Field(default=None, description="Token usage statistics")
-    citations: Optional[list[Citation]] = Field(
-        default=None, description="Citations for grounded responses"
+    citations: Optional[list[Citation | str]] = Field(
+        default=None, description="Citations for grounded responses (URLs or Citation objects)"
     )
     created: Optional[int] = Field(default=None, description="Unix timestamp of creation")
 
