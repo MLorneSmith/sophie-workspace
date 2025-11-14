@@ -230,13 +230,6 @@ Filter searches by category:
 5. **Use Answer** for direct questions with citations
 6. **Extract highlights** for quick scanning of relevant sections
 
-## Configuration
-
-Set your Exa API key in `.env`:
-
-```bash
-EXA_API_KEY=your-api-key-here
-```
 
 ## Examples
 

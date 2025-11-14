@@ -204,7 +204,9 @@ print(response.choices[0].message.content)
 if response.citations:
     print("\nSources:")
     for citation in response.citations:
-        print(f"- {citation.title}: {citation.url}")
+        # Citations are returned as URL strings
+        url = citation if isinstance(citation, str) else citation.url
+        print(f"- {url}")
 
 # With system message and parameters
 response = chat(
@@ -248,7 +250,9 @@ response = chat(
 print(response.choices[0].message.content)
 print("\nBased on sources:")
 for citation in response.citations:
-    print(f"- {citation.url}")
+    # Citations are returned as URL strings
+    url = citation if isinstance(citation, str) else citation.url
+    print(f"- {url}")
 ```
 
 ### Domain-Specific Research
