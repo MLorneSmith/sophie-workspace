@@ -2,7 +2,7 @@
 description: Execute implementation of a plan from GitHub issue. Fetches plan, follows step-by-step tasks, runs validation commands, and reports completion with git stats
 argument-hint: [issue-number]
 model: sonnet
-allowed-tools: [Read, Write, Edit, Grep, Glob, Bash(git *), Bash(gh *), Bash(pnpm *), Task, TodoWrite]
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite]
 ---
 
 # Implement the following plan
@@ -10,41 +10,103 @@ Follow the `Instructions` to implement the `Plan` then `Report` the completed wo
 
 ## Instructions
 
-1. **Fetch Implementation Plan from GitHub**: If $ARGUMENTS contains a GitHub issue number (e.g., `123` or `#123`), fetch the plan:
-   ```typescript
-   // Extract issue number from arguments
-   const issueNumber = $ARGUMENTS.replace('#', '').trim();
+IMPORTANT: You're executing an implementation plan from a GitHub issue.
+IMPORTANT: Follow the plan's Step by Step Tasks section exactly, in order, top to bottom.
+IMPORTANT: ALL Validation Commands MUST pass before marking the implementation complete.
+You're implementing a plan that has already been designed and reviewed. Execute it faithfully.
 
-   // Fetch the implementation plan from GitHub
-   const issue = await mcp__github__get_issue({
-     owner: 'MLorneSmith',
-     repo: '2025slideheroes',
-     issue_number: parseInt(issueNumber)
-   });
-
-   // Extract the plan content and metadata
-   const planContent = issue.body; // Full plan in markdown
-   const planTitle = issue.title; // e.g., "Bug Fix: Login fails with 500 error"
-   const planLabels = issue.labels; // severity, type, etc.
-   const issueUrl = issue.html_url;
+1. **Fetch implementation plan from GitHub**: If $ARGUMENTS contains a GitHub issue number (e.g., `123` or `#123`), fetch the plan:
+   ```bash
+   # Extract issue number and fetch the implementation plan
+   gh issue view <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --json body,title,labels,url \
+     --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url}'
    ```
 
-2. **Implement the Plan**:
-   - Read the plan carefully and think hard about the implementation
+   If $ARGUMENTS is not a GitHub issue number, treat it as the plan content directly (see `Plan` section below).
+
+2. **Parse plan data**. From the GitHub issue or direct plan content, extract and define the following variables:
+   ```typescript
+   const planTitle = '[Title from issue]'; // e.g., "Bug Fix: Login fails with 500 error"
+   const planType = '[bug-fix|feature|chore]'; // Detected from labels or title prefix
+   const issueNumber = '[GitHub issue number]'; // If from GitHub, otherwise null
+   const issueUrl = '[GitHub issue URL]'; // If from GitHub, otherwise null
+   ```
+
+3. **Mark issue as in-progress** (if from GitHub):
+   ```bash
+   # Update issue to show implementation has started
+   gh issue edit <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --add-label "in-progress" \
+     --remove-label "ready-to-implement"
+
+   # Add initial comment
+   gh issue comment <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --body "🔄 Implementation started..."
+   ```
+
+4. **Review the plan** and prepare for implementation:
+   - Read the entire plan carefully
+   - Understand all "Step by Step Tasks"
+   - Review all "Validation Commands" that will need to pass
+   - Identify if this is a complex implementation requiring TodoWrite
+   - Complete the `Pre-Implementation Checklist` below
+
+5. **Implement the plan**:
    - Follow the "Step by Step Tasks" section in order, top to bottom
-   - Execute the "Validation Commands" to ensure zero regressions
-   - Track progress using TodoWrite for complex implementations
+   - Use TodoWrite for tracking progress on implementations with 3+ steps:
+     - Create todos at the start for all major tasks
+     - Mark exactly ONE task as in_progress while working on it
+     - Mark tasks as completed immediately after finishing them
+     - Never batch complete multiple tasks
+   - For long implementations, add periodic progress comments to GitHub issue
+   - If you encounter issues or blockers, add a comment to the GitHub issue and ask the user for guidance
 
-3. **Update GitHub Issue**:
-   ```typescript
-   // Add progress comments as you work (optional but recommended for long implementations)
-   await mcp__github__create_issue_comment({
-     owner: 'MLorneSmith',
-     repo: '2025slideheroes',
-     issue_number: parseInt(issueNumber),
-     body: '🔄 Implementation in progress...\n\n' + progressUpdate
-   });
-   ```
+6. **Run validation commands**:
+   - Execute ALL "Validation Commands" from the plan
+   - EVERY command MUST execute without errors
+   - If any validation fails:
+     - Fix the issues immediately
+     - Re-run the validation
+     - Do NOT proceed until all validations pass
+   - Never skip validation commands
+
+7. **Commit the changes**:
+   - After implementation is complete and ALL validations pass
+   - Use the `/commit` command to create properly formatted commits
+   - Format: `<type>(<scope>): <description> [agent: <agent-name>]`
+   - Reference the GitHub issue number in the commit body if applicable
+   - Example: `fix(auth): resolve login timeout issue [agent: implementor]`
+
+8. **Update GitHub issue** (if from GitHub):
+   - Post completion report as comment
+   - Add `implemented` label
+   - Remove `in-progress` label
+   - Close the issue
+   - Save local implementation report (see `Report` section)
+
+## Pre-Implementation Checklist
+
+Before starting implementation:
+- [ ] Verify you're on the correct git branch (create feature/bug/chore branch if needed)
+- [ ] Read the entire plan carefully and understand all steps
+- [ ] Review all validation commands that will need to pass
+- [ ] Ensure local development environment is set up correctly (dependencies installed, servers running if needed)
+- [ ] Create TodoWrite tasks for implementations with 3+ steps
+- [ ] Understand what success looks like (acceptance criteria, expected behavior)
+
+## Reference to Planning Commands
+
+Implementation plans are created by these planning commands:
+- `/bug` - Creates bug fix plans from diagnosis issues
+- `/feature` - Creates feature implementation plans
+- `/chore` - Creates maintenance/refactoring plans
+- `/diagnose` - Creates diagnostic reports (which then lead to bug fix plans)
+
+If you need to create a new plan, use one of the above commands first.
 
 ## Plan
 If $ARGUMENTS is not a GitHub issue number, treat it as the plan content directly:
@@ -54,45 +116,80 @@ $ARGUMENTS
 
 After completing the implementation:
 
-1. **Create completion summary**:
-   - Summarize the work you've just done in a concise bullet point list
-   - Report the files and total lines changed with `git diff --stat`
+1. **Gather git statistics**:
+   ```bash
+   # Show files changed and line counts
+   git diff --stat
 
-2. **Post completion report to GitHub**:
-   ```typescript
-   // Create completion report
-   const completionReport = `
+   # Show recent commits made during implementation
+   git log --oneline -5
+
+   # Show current git status
+   git status
+   ```
+
+2. **Create completion summary**:
+   - Summarize the work you've just done in a concise bullet point list
+   - Include key implementation details
+   - List any deviations from the original plan (if any)
+   - Note any follow-up items or technical debt created
+
+3. **Post completion report to GitHub** (if from GitHub issue):
+   ```bash
+   # Create completion report content
+   cat > /tmp/completion-report.md <<'EOF'
    ## ✅ Implementation Complete
 
    ### Summary
-   [Bullet point list of what was implemented]
+   - [Bullet point list of what was implemented]
+   - [Key changes made]
+   - [Any deviations from plan]
 
    ### Files Changed
-   \`\`\`
+   ```
    [Output from git diff --stat]
-   \`\`\`
+   ```
 
-   ### Validation
-   [Results from running the Validation Commands]
+   ### Commits
+   ```
+   [Output from git log --oneline -5]
+   ```
+
+   ### Validation Results
+   ✅ All validation commands passed successfully:
+   - [List each validation command run]
+   - [Results summary]
+
+   ### Follow-up Items
+   - [Any follow-up work needed, if applicable]
+   - [Technical debt notes, if any]
 
    ---
    *Implementation completed by Claude*
-   `;
+   EOF
 
-   // Post report as comment
-   await mcp__github__create_issue_comment({
-     owner: 'MLorneSmith',
-     repo: '2025slideheroes',
-     issue_number: parseInt(issueNumber),
-     body: completionReport
-   });
+   # Post report as comment
+   gh issue comment <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --body-file /tmp/completion-report.md
 
-   // Update labels and close the issue
-   await mcp__github__update_issue({
-     owner: 'MLorneSmith',
-     repo: '2025slideheroes',
-     issue_number: parseInt(issueNumber),
-     labels: [...planLabels, 'implemented'],
-     state: 'closed'
-   });
+   # Save local copy for reference
+   mkdir -p .ai/specs/
+   cp /tmp/completion-report.md .ai/specs/implementation-<issue-number>-report.md
+
+   # Update labels and close the issue
+   gh issue edit <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --add-label "implemented" \
+     --remove-label "in-progress"
+
+   gh issue close <issue-number> \
+     --repo MLorneSmith/2025slideheroes \
+     --comment "Implementation complete. See completion report above."
    ```
+
+4. **Display summary to user**:
+   - Summarize the work completed in a concise bullet point list
+   - Report the GitHub issue # (if applicable)
+   - Include path to local implementation report: `.ai/specs/implementation-<issue-number>-report.md`
+   - Show key statistics (files changed, commits made)

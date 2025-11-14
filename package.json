@@ -76,7 +76,7 @@
 			"biome lint --write"
 		],
 		"**/*.{md,mdx}": [
-			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
+			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
 		],
 		"**/*.{yaml,yml}": [
 			"bash -c 'if [[ \"$0\" != *\"pnpm-lock.yaml\"* ]]; then npx yamllint \"$0\"; fi'"

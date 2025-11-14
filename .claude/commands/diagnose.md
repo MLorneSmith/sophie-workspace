@@ -10,7 +10,11 @@ Identify the root cause of a bug or problem with the code base. Create a new pla
 
 ## Instructions
 
-1. Interview user. Ask the user for:
+IMPORTANT: You're creating a diagnostic report to identify the root cause of a bug or issue.
+IMPORTANT: This is about diagnosis and investigation, not fixing. The diagnosis will inform a separate bug fix plan.
+You're creating a thorough diagnostic report that will help developers understand and fix the root cause.
+
+1. **Interview user**. Ask the user for:
    1. **Issue Description**: Brief description
    2. **Nature of Issue**: Is it a bug, performance, error, regression, or integration problem?
    3. **Issue Type**:
@@ -24,7 +28,7 @@ Identify the root cause of a bug or problem with the code base. Create a new pla
    6. **Environment**: Development/staging/production
    7. **First Noticed**: When the issue started
 
-2. Parse user provided data. From the data provided by the user, extract and define the following variables:
+2. **Parse user provided data**. From the data provided by the user, extract and define the following variables:
    ```typescript
    const issueTitle = '[Brief description for GitHub title]'; // e.g., "Login fails with 500 error"
    const issueType = '[bug|performance|error|regression|integration]';
@@ -33,43 +37,60 @@ Identify the root cause of a bug or problem with the code base. Create a new pla
    const reproductionSteps = ['Step 1', 'Step 2', 'Step 3']; // Steps to reproduce
    ```
 
-3.  Gather system information
-    1.  Get current git branch and last commit
-    2.  Check for recent changes to affected files
-    3.  Get package versions
-   
-4. Run relevant diagnostic tools
-   1. If Browser/UI issue
-      1. Use Cloudflare MCP tool to diagnose issue
-   2. If Database issue
-      1. Use postgres mcp server to diagnose issue
+3. **Gather system information**:
+   - Get current git branch and last commit
+   - Check for recent changes to affected files using git log
+   - Get package versions from package.json
+   - Capture environment details (Node version, database version, etc.)
 
-5. Research issue
-   1. Use the research-expert agent to research this issue
+4. **Run relevant diagnostic tools** (when applicable):
+   - **Browser/UI issues**: Use browser developer tools, check console errors, network tab
+   - **Database issues**: Check database logs, query performance, connection status
+   - **Performance issues**: Run performance profiling, check memory usage
+   - If specialized MCP tools are available (Cloudflare, PostgreSQL), use them for deeper analysis
+   - If tools are not available, gather diagnostic data through standard commands and logs
 
-6. Discover any related previous issue(s)
-   ```typescript
-    // Search for related issues using multiple strategies
-    const relatedIssues = await findRelatedIssues({
-    keywords: extractKeywords(issueTitle, issueDescription),
-    component: identifyComponent(issueDescription),
-    errorPattern: extractErrorPattern(errorMessage),
-    affectedFiles: extractAffectedFiles(issueDescription)
-    });
+5. **Research the issue**:
+   - Start by reading the `README.md` file to understand the project context
+   - Use the Task tool with `subagent_type=Explore` to investigate the codebase
+   - Search for error messages, stack traces, and related code patterns
+   - Identify affected components and their dependencies
 
-    // Categorize found issues
-    const categorized = {
-    directPredecessors: [], // Same problem, previously closed
-    infrastructureIssues: [], // Related setup/config problems
-    similarSymptoms: [], // Similar errors or behaviors
-    sameComponent: [], // Same files/components affected
-    possibleRegressions: [] // Previously fixed, might have returned
-    };
-    ```
+6. **Discover related previous issues**:
+   ```bash
+   # Search for related issues using GitHub CLI
+   # Search by error message or keywords
+   gh issue list \
+     --repo MLorneSmith/2025slideheroes \
+     --search "<error-keywords>" \
+     --state all \
+     --limit 20
 
-7. Create the bug diagnosis using the `Plan Format`
+   # Search by affected files or components
+   gh issue list \
+     --repo MLorneSmith/2025slideheroes \
+     --search "<component-name>" \
+     --state all \
+     --limit 20
 
-8. Create the issue on Github using the `Github Issue Creation` process
+   # Categorize found issues:
+   # - Direct predecessors: Same problem, previously closed
+   # - Infrastructure issues: Related setup/config problems
+   # - Similar symptoms: Similar errors or behaviors
+   # - Same component: Same files/components affected
+   # - Possible regressions: Previously fixed, might have returned
+   ```
+
+7. **Create the bug diagnosis** in the `.ai/specs/*.md` file:
+   - Use the `Plan Format` below to create the diagnosis
+   - IMPORTANT: Replace every <placeholder> with actual diagnostic data
+   - Include all relevant evidence, logs, and analysis
+   - Name the diagnosis using the following naming convention:
+     - 'Bug Diagnosis: `issueTitle`'
+
+8. **Create the issue on GitHub** using the `GitHub Issue Creation` process
+
+9. **When you finish creating the diagnosis**, follow the `Report` section to properly report the results of your work
 
 
 ## Plan Format
@@ -116,7 +137,7 @@ Identify the root cause of a bug or problem with the code base. Create a new pla
 ### Console Output
 ```
 
-[Console errors/logs from MCP tools]
+[Console errors/logs from diagnostic tools]
 
 ```
 
@@ -193,30 +214,41 @@ Identify the root cause of a bug or problem with the code base. Create a new pla
 
 ---
 *Generated by Claude Debug Assistant*
-*Tools Used: [List of MCP tools used]*
-*Playwright Session: [Include session info if Playwright MCP was used]*
+*Tools Used: [List of tools and commands used during diagnosis]*
 ```
+
+## Pre-Diagnosis Checklist
+
+Before starting diagnosis:
+- [ ] Gather initial user report and symptoms
+- [ ] Identify severity and environment
+- [ ] Collect reproduction steps from user
+- [ ] Check if similar issues were reported before
+- [ ] Verify the issue is reproducible
 
 ## GitHub Issue Creation
 
-```typescript
-// Create issue on GitHub with 'Bug Diagnosis:' prefix
-const githubTitle = issueTitle.startsWith('Bug Diagnosis:')
-  ? issueTitle
-  : `Bug Diagnosis: ${issueTitle}`;
+Use the GitHub CLI (`gh`) to create the diagnosis issue:
 
-const issue = await mcp__github__create_issue({
-  owner: 'MLorneSmith',
-  repo: '2025slideheroes',
-  title: githubTitle,
-  body: issueContent,
-  labels: ['issue', severity, issueType, 'needs-investigation'],
-  assignees: [],
-});
+```bash
+# Create diagnosis issue on GitHub with 'Bug Diagnosis:' prefix and appropriate labels
+# If the issue title doesn't start with 'Bug Diagnosis:', add the prefix
+# Convert severity and issueType to lowercase for label compatibility
+gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Bug Diagnosis: <issueTitle>" \
+  --body "<issue-content>" \
+  --label "issue" \
+  --label "needs-investigation" \
+  --label "<severity>" \
+  --label "<issueType>"
 
-const issueNumber = issue.number;
-const issueId = `ISSUE-${issueNumber}`;
-const githubUrl = issue.html_url;
-
-// GitHub is the authoritative source
+# Capture the issue URL and number from the output
+# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
 ```
+
+## Report
+
+- Summarize the work you've just done in a concise bullet point list.
+- Include a path to the diagnosis you created in the `.ai/specs/*.md` file.
+- Report the GitHub issue #

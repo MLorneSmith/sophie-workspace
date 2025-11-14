@@ -86,6 +86,7 @@ CRITICAL: This command uses a streamlined 2-round clarification process and para
 - Return prioritized Read commands ready for execution
 
    ```
+
 3. **Process Context Discovery Results**:
    Execute the Read commands returned by context-discovery-expert to load all relevant context files.
 4. **Prepare for Parallel Agent Execution**: Set up context packages with enriched metadata
@@ -112,6 +113,7 @@ Analyze the existing command systematically:
    - Gaps in documentation or functionality
 
 Display summary:
+
 ```
 
 📋 **Deconstruction Complete:**
@@ -122,6 +124,7 @@ Display summary:
 - Gaps: [number] potential improvements
 
 ```
+
 </deconstruct>
 
 ## 4. DIAGNOSE Phase
@@ -135,6 +138,7 @@ Audit for improvement opportunities:
 4. **Enhancement Opportunities**: Categorize by priority (Critical/Improvements/Optimizations)
 
 **Parallel Diagnostic Analysis**:
+
 - Run multiple diagnostic checks simultaneously
 - Combine results for comprehensive assessment
 </diagnose>
@@ -145,6 +149,7 @@ Audit for improvement opportunities:
 ### Step 1: Streamlined Clarification (Max 2 Rounds)
 
 Invoke clarification-loop-engine with constraints:
+
 ```bash
 # Use Task tool with clarification constraints
 task_prompt="

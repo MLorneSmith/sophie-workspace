@@ -11,18 +11,50 @@ Create a new plan in .ai/specs/*.md to implement the `Feature` using the exact s
 
 ## Instructions
 
-- IMPORTANT: You're writing a plan to implement a net new feature based on the `Feature` that will add value to the application.
-- IMPORTANT: The `Feature` describes the feature that will be implemented but remember we're not implementing a new feature, we're creating the plan that will be used to implement the feature based on the `Plan Format` below.
-- Create the plan in the `.ai/specs/*.md` file. Name it appropriately based on the `Feature`.
-- Use the `Plan Format` below to create the plan. 
-- Research the codebase to understand existing patterns, architecture, and conventions before planning the feature.
-- IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to implement the feature successfully.
-- Use your reasoning model: THINK HARD about the feature requirements, design, and implementation approach.
-- Follow existing patterns and conventions in the codebase. Don't reinvent the wheel.
-- Design for extensibility and maintainability.
-- f you need a new library, use `pnpm add <package>` (or `pnpm add -D <package>` for dev dependencies) in the appropriate workspace. For workspace-specific packages, use `pnpm --filter <workspace> add <package>`. Be sure to report all new dependencies in the `Notes` section of the `Plan Format`.
-- Respect requested files in the `Relevant Files` section.
-- Start your research by reading the `README.md` file.
+IMPORTANT: You're writing a plan to implement a net new feature based on the `Feature` that will add value to the application.
+IMPORTANT: The `Feature` describes the feature that will be implemented but remember we're not implementing a new feature, we're creating the plan that will be used to implement the feature based on the `Plan Format` below.
+You're writing a plan to implement a feature, it should be comprehensive and well-designed so we build something valuable and maintainable.
+
+1. **Interview user**. Ask the user for:
+   1. **Feature Description**: Brief description of what the feature should do
+   2. **Feature Type**:
+      - `user-facing`: End-user interface or interaction
+      - `api`: Backend API or service
+      - `admin`: Administrative functionality
+      - `integration`: Third-party service integration
+      - `infrastructure`: System or tooling improvement
+   3. **Priority**: `critical`, `high`, `medium`, `low`
+   4. **Target Users**: Who will use this feature? (e.g., end users, admins, developers)
+   5. **Success Metrics**: How will we measure if this feature is successful?
+
+2. **Parse user provided data**. From the data provided by the user, extract and define the following variables:
+   ```typescript
+   const featureTitle = '[Brief description for GitHub title]'; // e.g., "Add OAuth2 social login"
+   const featureType = '[user-facing|api|admin|integration|infrastructure]';
+   const priority = '[critical|high|medium|low]';
+   const targetUsers = '[description of who will use this]';
+   const successMetrics = '[how success will be measured]';
+   ```
+
+3. **Research the codebase** and put together a plan to implement the feature.
+   - Start your research by reading the `README.md` file.
+   - Research the codebase to understand existing patterns, architecture, and conventions before planning the feature.
+   - Use the Task tool with `subagent_type=Explore` for open-ended codebase exploration.
+   - Follow existing patterns and conventions in the codebase. Don't reinvent the wheel.
+
+4. **Create the plan** in the `.ai/specs/*.md` file.
+   - Use the `Plan Format` below to create the plan.
+   - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to implement the feature successfully.
+   - Use your reasoning model: THINK HARD about the feature requirements, design, and implementation approach.
+   - Design for extensibility and maintainability.
+   - If you need a new library, use `pnpm add <package>` (or `pnpm add -D <package>` for dev dependencies) in the appropriate workspace. For workspace-specific packages, use `pnpm --filter <workspace> add <package>`. Be sure to report all new dependencies in the `Notes` section of the `Plan Format`.
+   - Respect requested files in the `Relevant Files` section.
+   - Name the plan using the following naming convention:
+     - 'Feature: `featureTitle`'
+
+5. **Create the plan on GitHub** using the `GitHub Issue Creation` process
+
+6. **When you finish creating the plan** for the feature, follow the `Report` section to properly report the results of your work.
 
 ## Relevant Files
 
@@ -31,7 +63,7 @@ Focus on the following files:
 - `apps/web` - Contains the Next.js SaaS application
 - `apps/payload` - Contains the Payload CMS for content management
 - `apps/e2e` - Contains Playwright E2E tests
-- `adws/**` - Contains the AI Developer Workflow (ADW) scripts.
+- `.ai/adws/**` - Contains the AI Developer Workflow (ADW) scripts.
 
 Ignore all other files in the codebase.
 
@@ -59,6 +91,66 @@ Use these files to implement the feature:
 
 <find and list the files that are relevant to the feature describe why they are relevant in bullet points. If there are new files that need to be created to implement the feature, list them in an h3 'New Files' section.>
 
+## Impact Analysis
+<analyze the scope and potential impact of this feature>
+
+### Dependencies Affected
+<list all packages/modules that will be affected by this feature>
+- Note any new dependencies required
+- Identify packages that will consume this feature
+- Document version requirements or compatibility concerns
+
+### Risk Assessment
+<assess the risk level and explain why>
+- **Low Risk**: Well-understood patterns, isolated changes, minimal integration
+- **Medium Risk**: Touches multiple areas, requires new dependencies, moderate complexity
+- **High Risk**: Core functionality changes, complex integrations, significant architectural impact
+
+### Backward Compatibility
+<analyze backward compatibility concerns>
+- Will existing features continue to work?
+- Are there any breaking changes?
+- Do we need feature flags for gradual rollout?
+
+### Performance Impact
+<analyze potential performance implications>
+- Database query impact
+- Client bundle size changes
+- Server resource requirements
+- Caching considerations
+
+### Security Considerations
+<analyze security implications>
+- Authentication/authorization requirements
+- Data validation needs
+- Potential vulnerabilities to address
+- Privacy/compliance considerations
+
+## Pre-Feature Checklist
+Before starting implementation:
+- [ ] Create feature branch: `feature/<short-description>`
+- [ ] Review existing similar features for patterns
+- [ ] Identify all integration points
+- [ ] Define success metrics
+- [ ] Confirm feature doesn't duplicate existing functionality
+- [ ] Verify all required dependencies are available
+- [ ] Plan feature flag strategy (if needed)
+
+## Documentation Updates Required
+<list all documentation that needs updating>
+- Technical docs (API references, architecture docs, CLAUDE.md)
+- User-facing docs (guides, tutorials, READMEs)
+- Code comments and inline documentation
+- API documentation (if adding new endpoints)
+- Component documentation (if using Storybook or similar)
+
+## Rollback Plan
+<define how to disable/rollback this feature if issues arise>
+- How to disable the feature (feature flags, environment variables)
+- Database migration rollback procedures (if applicable)
+- What monitoring should be in place to detect issues?
+- Graceful degradation strategy
+
 ## Implementation Plan
 ### Phase 1: Foundation
 <describe the foundational work needed before implementing the main feature>
@@ -81,6 +173,12 @@ IMPORTANT: Execute every step in order, top to bottom.
 ### Integration Tests
 <describe integration tests needed for the feature>
 
+### E2E Tests
+<describe end-to-end tests needed for the feature>
+- User flows to test
+- Critical paths to validate
+- Browser compatibility testing (if applicable)
+
 ### Edge Cases
 <list edge cases that need to be tested>
 
@@ -90,16 +188,38 @@ IMPORTANT: Execute every step in order, top to bottom.
 ## Validation Commands
 Execute every command to validate the feature works correctly with zero regressions.
 
-<list commands you'll use to validate with 100% confidence the feature is implemented correctly with zero regressions. every command must execute without errors so be specific about what you want to run to validate the feature works as expected. Include commands to test the feature end-to-end.>
-- `cd app/server && uv run pytest` - Run server tests to validate the feature works with zero regressions
+<list commands you'll use to validate with 100% confidence the feature is implemented correctly with zero regressions. every command must execute without errors so be specific about what you want to run to validate the feature works as expected. Include commands to test the feature end-to-end. Don't validate with curl commands.>
 
 ## Notes
 <optionally list any additional notes, future considerations, or context that are relevant to the feature that will be helpful to the developer>
+```
+
+## GitHub Issue Creation
+
+Use the GitHub CLI (`gh`) to create the feature issue:
+
+```bash
+# Create feature issue on GitHub with 'Feature:' prefix and appropriate labels
+# If the issue title doesn't start with 'Feature:', add the prefix
+# Convert priority and featureType to lowercase for label compatibility
+gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Feature: <featureTitle>" \
+  --body "<issue-content>" \
+  --label "feature" \
+  --label "ready-to-implement" \
+  --label "<priority>" \
+  --label "<featureType>"
+
+# Capture the issue URL and number from the output
+# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
 ```
 
 ## Feature
 $ARGUMENTS
 
 ## Report
+
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the plan you created in the `specs/*.md` file.
+- Include a path to the plan you created in the `.ai/specs/*.md` file.
+- Report the GitHub issue #
