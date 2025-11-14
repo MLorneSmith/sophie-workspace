@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:code.claude.com)"
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:docs.perplexity.ai)"
     ]
   },
   "disabledMcpjsonServers": [
