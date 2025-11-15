@@ -101,7 +101,7 @@ Before starting implementation:
 ## Reference to Planning Commands
 
 Implementation plans are created by these planning commands:
-- `/bug` - Creates bug fix plans from diagnosis issues
+- `/bug-plan` - Creates bug fix plans from diagnosis issues
 - `/feature` - Creates feature implementation plans
 - `/chore` - Creates maintenance/refactoring plans
 - `/diagnose` - Creates diagnostic reports (which then lead to bug fix plans)

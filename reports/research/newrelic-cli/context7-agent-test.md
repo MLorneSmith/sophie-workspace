@@ -267,7 +267,7 @@ export async function createPresentation(data: FormData) {
 ## References
 
 - New Relic Node.js Agent: https://github.com/newrelic/node-newrelic
-- Context7 Integration Guide: `.ai/ai_docs/context-docs/tools/context7-integration.md`
+- Context7 Integration Guide: `.ai/ai_docs/tool-docs/context7-integration.md`
 - Documentation source: Multiple files from `newrelic/node-newrelic` repository
 
 ---

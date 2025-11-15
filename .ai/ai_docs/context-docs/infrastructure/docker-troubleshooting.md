@@ -192,17 +192,20 @@ docker run -it --entrypoint /bin/bash node:20-slim
 ### Container-Specific Health Checks
 
 **Supabase Containers**:
+
 - All have built-in health checks managed by Supabase CLI
 - PostgreSQL: `pg_isready`
 - HTTP services: HTTP endpoint checks
 
 **PostgREST** (`supabase_rest_*`):
+
 ```bash
 # Process check (postgrest process)
 docker top "$container_name" | grep -q "postgrest"
 ```
 
 **Edge Runtime** (`supabase_edge_runtime_*`):
+
 ```bash
 # Process check (deno process)
 docker top "$container_name" | grep -q "deno"
@@ -211,6 +214,7 @@ docker top "$container_name" | grep -q "deno"
 ### Common Health Check Issues
 
 **Container Shows "starting" Indefinitely**:
+
 ```bash
 # 1. Check container logs
 docker logs <container-name>
@@ -226,18 +230,21 @@ docker exec <container-name> curl -f http://localhost:8080/health
 ```
 
 **Common Causes**:
+
 - Service taking longer than `start_period` to initialize
 - Health check endpoint not responding
 - Port mismatch in health check configuration
 - Dependencies not ready
 
 **Solutions**:
+
 - Increase `start_period` in docker-compose.yml
 - Verify port numbers match service configuration
 - Check service logs for initialization errors
 - Ensure dependent services are healthy first
 
 **Container Shows "unhealthy"**:
+
 ```bash
 # 1. Check what health check is failing
 docker inspect <container-name> | jq '.[0].State.Health'
@@ -253,6 +260,7 @@ curl -I http://localhost:<port>/health
 ```
 
 **Health Check Command Not Found**:
+
 ```bash
 # Check what's available in container
 docker exec <container-name> ls /bin /usr/bin
@@ -313,6 +321,7 @@ NODE_OPTIONS="--max-old-space-size=4096" pnpm dev
 Location: `.claude/hooks/supabase-directory-guard.sh`
 
 Blocks execution with warning:
+
 ```
 🚨 SUPABASE DIRECTORY WARNING
 ❌ You're running from project root

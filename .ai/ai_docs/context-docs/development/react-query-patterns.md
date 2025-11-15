@@ -383,7 +383,6 @@ export async function prefetchDashboardData() {
 }
 ```
 
-
 ## TypeScript Integration
 
 ### Database Types

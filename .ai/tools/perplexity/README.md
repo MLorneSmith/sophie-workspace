@@ -50,11 +50,12 @@ Set your API key in `.ai/.env`:
 PERPLEXITY_API_KEY=your-api-key-here
 ```
 
-Get your API key from: https://www.perplexity.ai/settings/api
+Get your API key from: <https://www.perplexity.ai/settings/api>
 
 ### CLI Usage
 
 **Search API**:
+
 ```bash
 # Basic search
 uv run .ai/tools/perplexity/cli_search.py "AI breakthroughs 2025"
@@ -69,6 +70,7 @@ uv run .ai/tools/perplexity/cli_search.py "quantum computing" \
 ```
 
 **Chat Completions API**:
+
 ```bash
 # Basic chat
 uv run .ai/tools/perplexity/cli_chat.py "Explain transformer architecture"
@@ -117,6 +119,7 @@ for citation in response.citations:
 **Endpoint**: `POST https://api.perplexity.ai/search`
 
 **Parameters**:
+
 - `query` (required): Search query string
 - `num_results`: Number of results (1-100, default: 10)
 - `recency_filter`: Time filter (day, week, month, year)
@@ -126,6 +129,7 @@ for citation in response.citations:
 - `search_before_date`: Date in MM/DD/YYYY format
 
 **Response**:
+
 ```python
 SearchResponse(
     results=[
@@ -145,6 +149,7 @@ SearchResponse(
 **Endpoint**: `POST https://api.perplexity.ai/chat/completions`
 
 **Parameters**:
+
 - `query` (required): User question
 - `model`: sonar, sonar-pro, or sonar-reasoning (default: sonar)
 - `stream`: Enable streaming (default: false)
@@ -154,6 +159,7 @@ SearchResponse(
 - `return_citations`: Include citations (default: true)
 
 **Response**:
+
 ```python
 ChatResponse(
     id="chatcmpl-123",
@@ -224,12 +230,14 @@ except PerplexityAPIError as e:
 ## Best Practices
 
 1. **Use context managers** to ensure sessions are closed:
+
    ```python
    with PerplexityClient() as client:
        response = client.search(data)
    ```
 
 2. **Validate inputs** using Pydantic models:
+
    ```python
    from perplexity.models import SearchRequest
 
@@ -305,20 +313,22 @@ client = PerplexityClient(timeout=120)  # 2 minute timeout
 | **Streaming** | Yes | Yes |
 
 **Use Perplexity for**:
+
 - Grounded AI responses with automatic citations
 - Time-based filtering (recency/dates)
 - Language-specific searches
 - Conversational research
 
 **Use Exa for**:
+
 - Semantic/neural search
 - Finding similar pages
 - Structured content extraction
 
 ## Documentation
 
-- **Quick Reference**: `.ai/ai_docs/context-docs/tools/perplexity-api-integration.md`
-- **API Docs**: https://docs.perplexity.ai
+- **Quick Reference**: `.ai/ai_docs/tool-docs/perplexity-api-integration.md`
+- **API Docs**: <https://docs.perplexity.ai>
 - **Examples**: `.ai/tools/perplexity/examples/`
 
 ## License
@@ -328,6 +338,7 @@ Part of the SlideHeroes project. For internal use only.
 ## Support
 
 For issues or questions:
+
 1. Check the quick reference guide
 2. Review test files for usage examples
 3. Consult Perplexity API documentation

@@ -410,6 +410,7 @@ psql -c "SELECT * FROM users" --csv -t > users.csv
 ```
 
 **Advantages of CSV format:**
+
 - Properly escapes quotes and delimiters
 - Handles newlines in data
 - Standard CSV quoting rules
@@ -1119,6 +1120,7 @@ SELECT name, statement FROM pg_prepared_statements;
 ### Development Workflow
 
 1. **Use transactions for exploration**:
+
    ```sql
    BEGIN;
    -- Try queries, inspect data
@@ -1126,23 +1128,27 @@ SELECT name, statement FROM pg_prepared_statements;
    ```
 
 2. **Enable timing for performance insights**:
+
    ```sql
    \timing on
    SELECT * FROM large_table;
    ```
 
 3. **Use expanded output for wide tables**:
+
    ```sql
    \x auto
    SELECT * FROM table_with_many_columns;
    ```
 
 4. **Set NULL display for clarity**:
+
    ```sql
    \pset null '(null)'
    ```
 
 5. **Separate history per database**:
+
    ```sql
    \set HISTFILE ~/.psql/history- :DBNAME
    ```
@@ -1154,6 +1160,7 @@ SELECT name, statement FROM pg_prepared_statements;
    - Format: `hostname:port:database:username:password`
 
 2. **Use SSL for remote connections**:
+
    ```bash
    psql "postgresql://user@host/db?sslmode=require"
    ```
@@ -1164,11 +1171,13 @@ SELECT name, statement FROM pg_prepared_statements;
    - Check performance impact
 
 4. **Disable autocommit in production psql sessions**:
+
    ```sql
    \set AUTOCOMMIT off
    ```
 
 5. **Use `--no-psqlrc` for scripts**:
+
    ```bash
    psql -X -f migration.sql
    ```
@@ -1176,22 +1185,26 @@ SELECT name, statement FROM pg_prepared_statements;
 ### Performance Best Practices
 
 1. **Use EXPLAIN ANALYZE for slow queries**:
+
    ```sql
    EXPLAIN ANALYZE SELECT * FROM large_table WHERE condition;
    ```
 
 2. **Index RLS filter columns**:
+
    ```sql
    CREATE INDEX idx_user_id ON public.projects(user_id);
    ```
 
 3. **Monitor execution time with \timing**:
+
    ```sql
    \timing on
    -- Queries will show execution time
    ```
 
 4. **Batch operations in transactions**:
+
    ```sql
    BEGIN;
    INSERT INTO table VALUES (1), (2), (3);
@@ -1199,6 +1212,7 @@ SELECT name, statement FROM pg_prepared_statements;
    ```
 
 5. **Use COPY for bulk data**:
+
    ```sql
    \copy table FROM 'data.csv' CSV HEADER
    ```
@@ -1206,11 +1220,13 @@ SELECT name, statement FROM pg_prepared_statements;
 ### Scripting Best Practices
 
 1. **Always set ON_ERROR_STOP**:
+
    ```sql
    \set ON_ERROR_STOP on
    ```
 
 2. **Use transactions for migration scripts**:
+
    ```sql
    BEGIN;
    -- migrations
@@ -1218,17 +1234,20 @@ SELECT name, statement FROM pg_prepared_statements;
    ```
 
 3. **Add verification queries**:
+
    ```sql
    -- After migration
    SELECT COUNT(*) FROM new_table;
    ```
 
 4. **Skip .psqlrc in automation**:
+
    ```bash
    psql -X -f script.sql
    ```
 
 5. **Pass variables for flexibility**:
+
    ```bash
    psql -v env=production -f deploy.sql
    ```
@@ -1471,12 +1490,14 @@ psql -X -f script.sql
 ## Quick Reference Cheat Sheet
 
 ### Connection
+
 ```bash
 psql -h HOST -p PORT -U USER -d DATABASE
 psql postgresql://USER:PASS@HOST:PORT/DATABASE
 ```
 
 ### Most Used Meta-Commands
+
 ```sql
 \l          -- List databases
 \c dbname   -- Connect to database
@@ -1492,6 +1513,7 @@ psql postgresql://USER:PASS@HOST:PORT/DATABASE
 ```
 
 ### Output Formatting
+
 ```sql
 \pset format [aligned|csv|html]
 \pset null '(null)'
@@ -1501,6 +1523,7 @@ psql postgresql://USER:PASS@HOST:PORT/DATABASE
 ```
 
 ### File Operations
+
 ```sql
 \i file.sql              -- Execute SQL file
 \o file.txt              -- Redirect output
@@ -1508,6 +1531,7 @@ psql postgresql://USER:PASS@HOST:PORT/DATABASE
 ```
 
 ### Variables
+
 ```sql
 \set var value           -- Set variable
 \echo :var               -- Display variable
@@ -1515,6 +1539,7 @@ SELECT :'var';           -- Use in SQL
 ```
 
 ### RLS Testing (Supabase)
+
 ```sql
 SET ROLE authenticated;
 SET request.jwt.claim.sub = 'user-uuid';
@@ -1523,6 +1548,7 @@ RESET ROLE;
 ```
 
 ### Performance
+
 ```sql
 \timing on
 EXPLAIN ANALYZE SELECT * FROM table;
@@ -1530,8 +1556,8 @@ EXPLAIN ANALYZE SELECT * FROM table;
 
 ## Additional Resources
 
-- Official PostgreSQL psql Documentation: https://www.postgresql.org/docs/current/app-psql.html
-- Supabase Local Development: https://supabase.com/docs/guides/local-development
-- Supabase RLS Documentation: https://supabase.com/docs/guides/database/postgres/row-level-security
-- pgTAP Testing: https://supabase.com/docs/guides/local-development/testing/pgtap-extended
-- PostgreSQL Wiki psqlrc: https://wiki.postgresql.org/wiki/Psqlrc
+- Official PostgreSQL psql Documentation: <https://www.postgresql.org/docs/current/app-psql.html>
+- Supabase Local Development: <https://supabase.com/docs/guides/local-development>
+- Supabase RLS Documentation: <https://supabase.com/docs/guides/database/postgres/row-level-security>
+- pgTAP Testing: <https://supabase.com/docs/guides/local-development/testing/pgtap-extended>
+- PostgreSQL Wiki psqlrc: <https://wiki.postgresql.org/wiki/Psqlrc>

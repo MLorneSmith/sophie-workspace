@@ -25,6 +25,7 @@ feature/* → dev → staging → main
 ### Pipeline Phases
 
 **Phase 0: Pre-commit (Local)**
+
 - TruffleHog secret scanning
 - Biome format & lint (staged files only)
 - TypeScript quick check
@@ -32,6 +33,7 @@ feature/* → dev → staging → main
 - Time: < 30 seconds
 
 **Phase 1: Pull Request Validation**
+
 - Trigger: PR opened/updated to protected branch
 - Time Target: 3-5 minutes (parallel execution)
 - Jobs run in parallel:
@@ -43,6 +45,7 @@ feature/* → dev → staging → main
   - Bundle size validation
 
 **Phase 2: Development Integration**
+
 - Trigger: Push to `dev` branch
 - Time Target: 8-10 minutes
 - Sequential flow:
@@ -54,6 +57,7 @@ feature/* → dev → staging → main
   6. Promotion readiness check
 
 **Phase 3: Staging Validation**
+
 - Trigger: Push to `staging` branch
 - Time Target: 15-20 minutes
 - Comprehensive testing:
@@ -66,20 +70,20 @@ feature/* → dev → staging → main
   7. Post-deployment smoke tests
 
 **Phase 4: Production Deployment**
-- Trigger: Push to `main` OR manual workflow dispatch
-- Time Target: 10-12 minutes
-- Solo Developer Workflow:
-  1. Confirmation required ("DEPLOY TO PRODUCTION")
-  2. Safety checks (staging health, recent commits)
-  3. 30-second cancellation window
-  4. Security gate validation
-  5. Production build optimization
-  6. Deploy to Vercel production
-  7. Health checks & monitoring
-  8. Auto-rollback on failure
-  9. New Relic deployment marker
 
-Note: GitHub Pro accounts don't support environment protection rules for private repos. Custom workflow with safety checks for solo developers.
+- Trigger: Push to `main` branch (automatic)
+- Time Target: 10-12 minutes
+- Deployment Flow:
+  1. Check if validation needed (skip if merged from staging)
+  2. Conditional security scanning (only if not from staging)
+  3. Build application using reusable workflow
+  4. Deploy to Vercel production environment
+  5. Health checks & monitoring
+  6. Auto-rollback workflow execution
+  7. New Relic deployment marker
+  8. Security scan (informational, non-blocking)
+
+Note: GitHub environment protection rules can be configured via Settings for manual approvals, required reviewers, and deployment delays. The workflow supports automatic deployment on push to main, with conditional validation based on source branch.
 
 ## Workflow Structure
 
@@ -183,12 +187,14 @@ export default defineConfig({
 ### Security Tools Configuration
 
 **Aikido Security Platform** (Primary):
+
 - Complete SAST/SCA/Secrets scanning
 - Privacy-first local scanning
 - Real-time vulnerability alerts
 - SAST configured as non-blocking (free tier limitation)
 
 **Additional Security Layers**:
+
 - CodeQL: Semantic code analysis
 - Semgrep: Custom rule enforcement
 - TruffleHog: Git history scanning
@@ -240,6 +246,104 @@ Runner Sizing:
 ```
 
 ## Deployment Strategies
+
+### Production Deployment Workflow Details
+
+**Trigger Configuration**:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+```
+
+**Validation Strategy**:
+
+The production workflow implements smart validation that checks if the code was already validated in a previous environment:
+
+```yaml
+check-validation:
+  steps:
+    - name: Check if already validated
+      run: |
+        # Skip validation if this is a merge from staging
+        if git log --format=%B -n 1 | grep -q "Merge.*staging"; then
+          echo "should-validate=false"
+        else
+          echo "should-validate=true"
+        fi
+```
+
+**Conditional Security Scanning**:
+
+Security checks only run if the code wasn't validated via staging merge:
+
+```yaml
+security-check:
+  needs: check-validation
+  if: needs.check-validation.outputs.should-validate == 'true'
+  steps:
+    - TruffleHog Secret Scan
+    - Aikido Security Scan
+    - Weekly Security Scan
+```
+
+**Build and Deploy Jobs**:
+
+```yaml
+build:
+  needs: [check-validation, security-check]
+  if: always() && !failure() && !cancelled()
+  uses: ./.github/workflows/reusable-build.yml
+  with:
+    environment: production
+
+deploy-web:
+  needs: build
+  environment:
+    name: production
+    url: https://slideheroes.com
+    # GitHub environment protection can be configured via Settings:
+    # - Required reviewers: 2
+    # - Restrict deployments to specific users/teams
+    # - Add deployment delay for manual review
+```
+
+**Post-Deployment Health Checks**:
+
+```yaml
+health-check:
+  needs: [deploy-web, deploy-payload]
+  steps:
+    - Wait for deployment propagation (30 seconds)
+    - Check production web health (/healthcheck)
+    - Check production payload health (/api/health)
+    - Run critical path tests (TODO: to be implemented)
+```
+
+**Production Security Monitoring**:
+
+```yaml
+production-security-scan:
+  needs: [deploy-web, deploy-payload, health-check]
+  continue-on-error: true  # Never block production
+  steps:
+    - Run Nuclei quick scan (critical/high severity)
+    - Log security metrics (informational only)
+```
+
+**Protection Configuration**:
+
+GitHub environment protection rules are configured via repository Settings (not in workflow YAML):
+
+- Environment name: `production`
+- Required reviewers: Can be configured (2 recommended)
+- Wait timer: Can add deployment delay for manual review window
+- Deployment branches: Restricted to `main`
+- Environment secrets: Production credentials isolated
+
+The workflow relies on GitHub's environment protection feature rather than custom approval steps in the workflow file. This provides native GitHub UI for approvals and deployment history.
 
 ### Blue-Green Deployment (Production)
 
@@ -341,12 +445,14 @@ SLACK_WEBHOOK_URL
 ### Environment Promotion
 
 **Dev → Staging**:
+
 - All integration tests passing
 - No critical bugs in dev for 24 hours
 - Performance metrics acceptable
 - Automated PR creation
 
 **Staging → Production**:
+
 - Full E2E suite passing
 - Manual QA sign-off
 - No P0/P1 incidents in staging
@@ -386,6 +492,7 @@ SLACK_WEBHOOK_URL
 **Cause**: Cache misses, sequential execution, oversized runners
 
 **Solution**:
+
 ```yaml
 # Enable caching
 - uses: actions/cache@v4
@@ -407,6 +514,7 @@ jobs:
 **Cause**: Race conditions, timing issues, external dependencies
 
 **Solution**:
+
 ```typescript
 // Add proper waits and retries
 await page.waitForLoadState('networkidle');
@@ -425,6 +533,7 @@ test.beforeEach(async ({ page }) => {
 **Cause**: Outdated dependencies, new vulnerability disclosures
 
 **Solution**:
+
 ```bash
 # Update dependencies
 pnpm update --latest --interactive
@@ -442,6 +551,7 @@ echo "vulnerability-id" >> .aikido-ignore
 **Cause**: Untested edge cases, configuration issues
 
 **Solution**:
+
 ```yaml
 # Automated rollback workflow
 - name: Monitor Deployment

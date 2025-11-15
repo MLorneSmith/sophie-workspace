@@ -39,16 +39,18 @@ python3 -c "import sys; sys.path.insert(0, '.ai/tools'); from perplexity import 
 ## Configuration
 
 1. Copy the sample environment file:
+
    ```bash
    cp .ai/.env.sample .ai/.env
    ```
 
 2. Add your Perplexity API key to `.ai/.env`:
+
    ```
    PERPLEXITY_API_KEY=your-api-key-here
    ```
 
-3. Get your API key from: https://www.perplexity.ai/settings/api
+3. Get your API key from: <https://www.perplexity.ai/settings/api>
 
 ## Testing Installation
 
@@ -73,6 +75,7 @@ pytest .ai/tools/perplexity/tests/ -v
 ### ModuleNotFoundError: No module named 'pydantic'
 
 Install pydantic:
+
 ```bash
 pip install pydantic
 ```
@@ -80,6 +83,7 @@ pip install pydantic
 ### ModuleNotFoundError: No module named 'requests'
 
 Install requests:
+
 ```bash
 pip install requests
 ```
@@ -87,6 +91,7 @@ pip install requests
 ### ImportError: cannot import name 'BaseModel' from 'pydantic'
 
 You may have pydantic v1 installed. Upgrade to v2:
+
 ```bash
 pip install --upgrade pydantic>=2.0.0
 ```
@@ -94,6 +99,7 @@ pip install --upgrade pydantic>=2.0.0
 ### API Key Not Found
 
 Ensure `PERPLEXITY_API_KEY` is set in `.ai/.env`:
+
 ```bash
 echo "PERPLEXITY_API_KEY=your-key" >> .ai/.env
 ```

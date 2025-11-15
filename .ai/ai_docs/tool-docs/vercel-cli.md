@@ -3,6 +3,7 @@
 **Purpose**: Comprehensive reference for Vercel CLI commands, deployment workflows, and monorepo configuration for the SlideHeroes project.
 
 **Related Files**:
+
 - `.claude/docs/tools/cli-references.md` - CLI tools overview
 - `.claude/docs/tools/supabase-cli.md` - Supabase CLI reference
 - `/vercel.json` - Vercel deployment configuration

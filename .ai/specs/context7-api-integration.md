@@ -86,6 +86,7 @@ This follows the existing Exa integration pattern where scripts are both executa
 ### Dependencies Affected
 
 **New Dependencies Required:**
+
 - `requests>=2.31.0` - HTTP client for API calls (already available)
 - `pydantic>=2.0` - Data validation and serialization (already available)
 - `python-dotenv` - Environment variable management (already available)
@@ -93,12 +94,14 @@ This follows the existing Exa integration pattern where scripts are both executa
 - `pytest-cov` - Coverage reporting (already available)
 
 **Packages That Will Consume This Feature:**
+
 - `.ai/adws/*` - ADW workflow scripts can use for documentation lookup
 - `.ai/tools/*` - Other tools can reference documentation
 - Future AI agent implementations
 - Automated code generation workflows
 
 **Version Requirements:**
+
 - Python 3.11+ (already used in project)
 - No breaking changes to existing dependencies
 
@@ -107,6 +110,7 @@ This follows the existing Exa integration pattern where scripts are both executa
 **Low Risk**
 
 Reasoning:
+
 - Isolated new functionality with no modifications to existing code
 - Well-understood HTTP API integration pattern
 - Following proven Exa integration architecture
@@ -136,6 +140,7 @@ Reasoning:
 - **Minimal memory footprint**: Small Python scripts with minimal dependencies
 
 **Network Considerations:**
+
 - HTTP requests to Context7 API (typically <1s response time)
 - Rate limiting handled with exponential backoff (no negative impact on system)
 - Caching reduces API calls for repeated lookups
@@ -143,24 +148,28 @@ Reasoning:
 ### Security Considerations
 
 **Authentication/Authorization:**
+
 - API key stored in environment variable (CONTEXT7_API_KEY)
 - API key validation before making requests
 - API key redaction in all logging output
 - No API keys committed to repository
 
 **Data Validation:**
+
 - All inputs validated with Pydantic schemas
 - URL validation for owner/repo parameters
 - Token limit validation (100-100,000 range)
 - Query string sanitization
 
 **Potential Vulnerabilities:**
+
 - No code execution or injection risks (read-only API)
 - No user input directly passed to system commands
 - API responses parsed safely with Pydantic validation
 - No secrets exposed in error messages or logs
 
 **Privacy/Compliance:**
+
 - No PII or sensitive data transmitted (only library names/documentation)
 - API usage logged for debugging (with redacted keys)
 - Cached data stored locally in `.ai/tools/context7/.cache/` directory
@@ -168,6 +177,7 @@ Reasoning:
 ## Pre-Feature Checklist
 
 Before starting implementation:
+
 - [x] Create feature branch: `feature/context7-api-integration`
 - [x] Review existing Exa integration for patterns
 - [x] Identify all integration points (ADW scripts, future AI agents)
@@ -179,21 +189,25 @@ Before starting implementation:
 ## Documentation Updates Required
 
 **Technical Documentation:**
+
 - `.ai/tools/context7/README.md` - Comprehensive usage guide with examples
 - `.ai/tools/README.md` - Update to include Context7 tools overview
 - `CLAUDE.md` - Add Context7 API integration to available tools section
 
 **Code Documentation:**
+
 - Docstrings on all public functions and classes
 - Type hints on all function signatures
 - Inline comments for complex logic (caching, retry logic)
 
 **API Documentation:**
+
 - Document all endpoint functions (get_documentation, search_libraries)
 - Document all Pydantic models and their fields
 - Document exception hierarchy and error handling
 
 **Examples:**
+
 - Example scripts in `.ai/tools/context7/examples/`
 - Integration examples with ADW workflows
 - Caching configuration examples
@@ -201,16 +215,19 @@ Before starting implementation:
 ## Rollback Plan
 
 **How to Disable:**
+
 - Remove or rename `.ai/tools/context7/` directory
 - Scripts are standalone and self-contained
 - No database migrations or schema changes to rollback
 
 **Graceful Degradation:**
+
 - Fall back to MCP server if Context7 scripts fail
 - Error messages provide clear guidance on failures
 - API key validation prevents silent failures
 
 **Monitoring:**
+
 - Log all API requests and responses (with redacted keys)
 - Track API errors and retry attempts
 - Monitor cache hit rates for performance tuning
@@ -482,6 +499,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 ### Unit Tests
 
 **Models Testing** (`test_models.py`):
+
 - Validate all Pydantic models accept correct data
 - Ensure validation fails appropriately for invalid data
 - Test serialization to/from JSON
@@ -491,6 +509,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 - Test nested models (DocumentationChunk within GetContextResponse)
 
 **Client Testing** (`test_client.py`):
+
 - Mock HTTP requests to test client logic
 - Verify Bearer token authentication header is set correctly
 - Test retry logic with failed requests (network errors)
@@ -500,6 +519,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 - Test session creation with retry configuration
 
 **Utils Testing** (`test_utils.py`):
+
 - Test API key retrieval from environment
 - Validate API key format checking
 - Test API key redaction (show first/last 4 chars)
@@ -507,6 +527,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 - Test library ID parsing (extract owner, repo)
 
 **Cache Testing** (`test_cache.py`):
+
 - Test cache key generation from parameters
 - Verify cache hit/miss behavior
 - Test cache expiration (TTL)
@@ -516,6 +537,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 - Verify cache directory creation
 
 **Endpoint Testing** (`test_get_context.py`, `test_search_libraries.py`):
+
 - Mock API responses for each endpoint
 - Test parameter validation and constraints
 - Verify response parsing into models
@@ -527,6 +549,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 ### Integration Tests
 
 **Live API Tests** (`test_integration.py`):
+
 - Require CONTEXT7_API_KEY environment variable
 - Test get_documentation with various parameters:
   - Different libraries (vercel/next.js, upstash/docs)
@@ -546,6 +569,7 @@ Execute all validation commands in sequence to ensure feature works correctly wi
 - Verify response structure matches Pydantic models
 
 **CLI Tests** (`test_cli.py`):
+
 - Test each CLI script with subprocess
 - Verify output formatting (human-readable)
 - Test argument parsing (required vs optional)
@@ -870,12 +894,14 @@ No new dependencies need to be added to the project.
 ### API Key Management
 
 **Obtaining API Key:**
-1. Visit https://context7.com/dashboard
+
+1. Visit <https://context7.com/dashboard>
 2. Create account or sign in
 3. Generate API key from dashboard
 4. Store in environment variable: `export CONTEXT7_API_KEY="your-key-here"`
 
 **Security Best Practices:**
+
 - Never commit API keys to the repository
 - Store `CONTEXT7_API_KEY` in `.env` file (already gitignored)
 - Validate API key format before making requests (Bearer token)
@@ -891,6 +917,7 @@ Context7 API implements rate limiting:
 - **Rate limit response**: HTTP 429 with `retryAfterSeconds` field
 
 **Implementation Strategy:**
+
 - Automatic retry with exponential backoff
 - Respect `retryAfterSeconds` from 429 responses
 - Log rate limit hits for monitoring
@@ -899,12 +926,14 @@ Context7 API implements rate limiting:
 ### Caching Strategy
 
 **Why Caching Matters:**
+
 - Context7 API documentation: "Documentation updates are relatively infrequent, so caching for several hours or days is usually appropriate"
 - Reduces API calls and associated costs
 - Improves response time for repeated lookups
 - Reduces risk of hitting rate limits
 
 **Caching Implementation:**
+
 - File-based cache in `.ai/tools/context7/.cache/`
 - Default TTL: 24 hours (configurable)
 - Cache key: Hash of (library_id, version, topic, tokens, format)
@@ -912,6 +941,7 @@ Context7 API implements rate limiting:
 - Automatic cache cleanup of expired entries
 
 **Cache Management:**
+
 - Use `clear_cache()` to invalidate all cached data
 - Use `get_cache_stats()` to monitor cache effectiveness
 - Cache directory is gitignored (not committed)
@@ -920,18 +950,21 @@ Context7 API implements rate limiting:
 ### Performance Optimization
 
 **Network Optimization:**
+
 - Connection pooling via requests.Session
 - Configurable timeouts (default 30s)
 - Retry logic for transient failures
 - Parallel requests possible (multiple libraries)
 
 **Response Optimization:**
+
 - Request only needed token count (don't over-request)
 - Use topic filtering to reduce response size
 - Use TXT format for LLM consumption (smaller than JSON)
 - Cache frequently accessed documentation
 
 **Token Management:**
+
 - Start with lower token limits (e.g., 2000) and increase if needed
 - Topic filtering can significantly reduce token count
 - Monitor actual tokens returned vs requested
@@ -1040,6 +1073,7 @@ Potential improvements for future iterations:
 ### Comparison with MCP Server
 
 **When to Use Context7 Scripts:**
+
 - Automated workflows and background jobs
 - Batch documentation fetching
 - Pre-planning research (doesn't consume context)
@@ -1047,6 +1081,7 @@ Potential improvements for future iterations:
 - Cost-sensitive operations (token budget)
 
 **When to Use MCP Server:**
+
 - Interactive Claude conversations
 - Real-time documentation lookup during chat
 - Integrated with Claude Desktop
@@ -1055,6 +1090,7 @@ Potential improvements for future iterations:
 
 **Coexistence:**
 Both can coexist in the project:
+
 - Scripts for automation and workflows
 - MCP server for interactive development
 - Choose based on use case and constraints
@@ -1062,26 +1098,31 @@ Both can coexist in the project:
 ### Error Handling Best Practices
 
 **Network Errors:**
+
 - Automatic retry with exponential backoff
 - Clear error messages indicating network issues
 - Suggest checking internet connection
 
 **Authentication Errors (401):**
+
 - Validate API key format before requests
 - Provide instructions for obtaining API key
 - Link to Context7 dashboard
 
 **Not Found Errors (404):**
+
 - Suggest similar library names (future enhancement)
 - Validate library ID format
 - Provide search functionality
 
 **Rate Limit Errors (429):**
+
 - Respect `retryAfterSeconds` from response
 - Log rate limit hits
 - Suggest enabling caching to reduce API calls
 
 **Server Errors (500):**
+
 - Retry with backoff
 - Log error details for debugging
 - Suggest trying again later
@@ -1091,11 +1132,13 @@ Both can coexist in the project:
 **Example Token Savings:**
 
 MCP Server Approach:
+
 - Documentation in context: ~10,000 tokens
 - Multiple lookups: ~30,000 tokens
 - Context window consumed: 30,000+ tokens
 
 Script Approach:
+
 - Documentation fetched externally: 0 context tokens
 - Reference saved locally: 0 context tokens
 - Context window consumed: 0 tokens

@@ -4,18 +4,19 @@
 
 ## Overview
 
-SlideHeroes uses Vitest as the primary testing framework, orchestrated through Turbo for parallel execution across packages. Vitest provides a fast, native ESM test runner with Jest-compatible API and first-class TypeScript support.
+SlideHeroes uses Vitest 3.2.4 as the primary testing framework, orchestrated through Turbo for parallel execution across packages. Vitest provides a fast, native ESM test runner with Jest-compatible API and first-class TypeScript support.
 
 ## Architecture
 
 ### Root Configuration
 
-The root vitest config uses the projects feature to handle multiple packages:
+The root vitest config uses the projects feature to handle multiple packages. **CRITICAL**: Coverage configuration MUST only be defined at the root level:
 
 ```typescript
 // /vitest.config.ts
 export default defineConfig({
   test: {
+    // Projects configuration for monorepo support
     projects: [
       "apps/web",
       "apps/payload",
@@ -24,9 +25,26 @@ export default defineConfig({
       "packages/features/admin",
       // Add new packages here
     ],
+
+    // Coverage configuration (MUST be at root level only)
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
+      exclude: [
+        "coverage/**",
+        "dist/**",
+        "**/[.]**",
+        "packages/*/test{,s}/**",
+        "**/*.d.ts",
+        "**/types/**",
+        "**/schema/**", // Zod schemas typically don't need testing
+        "**/index.ts", // Re-export files
+        // Next.js specific exclusions
+        "**/next.config.*",
+        "**/middleware.*",
+        "**/app/**/layout.*",
+        "**/app/**/loading.*",
+      ],
       thresholds: {
         global: {
           branches: 70,
@@ -36,13 +54,22 @@ export default defineConfig({
         },
       },
     },
+
+    // Global thread pool configuration
+    pool: "threads",
+    poolOptions: {
+      threads: {
+        maxThreads: 4,
+        singleThread: false,
+      },
+    },
   },
 });
 ```
 
 ### Base Configuration
 
-Provides shared configuration for Node.js packages:
+Provides shared configuration for Node.js packages. **NOTE**: The base configuration does NOT include coverage settings - coverage is only configured at the root level.
 
 ```typescript
 // /packages/vitest.config.base.ts
@@ -51,11 +78,31 @@ export const createPackageConfig = (packageDir: string) => {
     test: {
       environment: "node",
       globals: true,
+
+      // Test discovery
       include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"],
-      exclude: ["**/node_modules/**", "**/dist/**", "**/coverage/**"],
+      exclude: [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/coverage/**",
+        "**/build/**",
+      ],
+
+      // Performance settings
       testTimeout: 10000,
       hookTimeout: 10000,
-      reporters: ["verbose"]
+
+      // Better error reporting
+      reporters: ["verbose"],
+    },
+
+    // Path resolution
+    resolve: {
+      alias: {
+        "@": resolve(packageDir, "./src"),
+        "@kit/shared": resolve(packageDir, "../shared/src"),
+        "@kit/ui": resolve(packageDir, "../ui/src"),
+      },
     },
   });
 };
@@ -90,7 +137,7 @@ export default defineProject({
 });
 ```
 
-**IMPORTANT**: Coverage configuration is NOT allowed at the package level when using `defineProject`. Coverage must be configured only at the root level in the main `vitest.config.ts`.
+**IMPORTANT**: When using the Vitest projects feature (with `defineProject`), coverage configuration is NOT allowed at the package level. Coverage must be configured only at the root level in `/vitest.config.ts`. Attempting to add coverage to a package-level config will cause errors.
 
 ### Node.js/Service Packages
 
@@ -108,19 +155,46 @@ export default createPackageConfig(__dirname);
 export default defineProject({
   plugins: [
     react({ jsxImportSource: "react" }),
-    tsconfigPaths()
+    tsconfigPaths() // Resolves TypeScript path aliases
   ],
+  resolve: {
+    alias: {
+      // Mock Next.js modules for testing
+      "next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+      "server-only": path.resolve(__dirname, "src/__mocks__/server-only.ts"),
+    },
+  },
   test: {
     name: "web",
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+
+    // Test discovery
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    exclude: ["**/node_modules/**", "**/.next/**", "**/e2e/**"],
-    poolOptions: {
-      threads: { isolate: true, singleThread: false }
-    }
-  }
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/coverage/**",
+      "**/supabase/tests/**", // Database tests, not unit tests
+      "**/e2e/**",
+    ],
+
+    // Performance settings
+    testTimeout: 10000,
+    hookTimeout: 10000,
+
+    // Use forks pool for better stability (Vitest 3.x+)
+    pool: "forks",
+
+    // Server-side module handling for SSR components
+    server: {
+      deps: {
+        inline: ["server-only"],
+      },
+    },
+  },
 });
 ```
 
@@ -409,7 +483,20 @@ it("should handle time-based operations", async () => {
 
 ## Coverage Requirements
 
+### Coverage Configuration Rules
+
+**CRITICAL**: In monorepo setups using Vitest's projects feature:
+
+- Coverage configuration MUST be defined at the root level in `/vitest.config.ts`
+- Coverage configuration is NOT allowed in package-level configs using `defineProject`
+- Coverage configuration is NOT in the base configuration (`/packages/vitest.config.base.ts`)
+- All packages share the same coverage thresholds and exclusions
+
+This is a Vitest limitation when using the projects feature for workspace management.
+
 ### Global Thresholds
+
+All packages must meet these coverage thresholds (defined at root level):
 
 - Branches: 70%
 - Functions: 70%

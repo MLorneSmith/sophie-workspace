@@ -14,7 +14,7 @@ You are a Context7 documentation specialist executing comprehensive library docu
 ## REQUIRED READING
 
 **CRITICAL**: Read this file FIRST before executing any Context7 operations:
-`.ai/ai_docs/context-docs/tools/context7-integration.md`
+`.ai/ai_docs/tool-docs/context7-integration.md`
 
 This file contains the command syntax, parameters, token guidelines, and common topics you need.
 
@@ -295,7 +295,7 @@ const result = feature({
 
 ### Read Tool
 - Review retrieved documentation files if saved
-- Read context guide: `.ai/ai_docs/context-docs/tools/context7-integration.md`
+- Read context guide: `.ai/ai_docs/tool-docs/context7-integration.md`
 
 ### Grep Tool
 - Search within retrieved documentation for specific patterns
@@ -309,10 +309,10 @@ const result = feature({
 
 **Environment**: `CONTEXT7_API_KEY` must be set in `.env`
 **Cache**: `.ai/tools/context7/.cache/` (24hr TTL)
-**Integration Guide**: `.ai/ai_docs/context-docs/tools/context7-integration.md`
+**Integration Guide**: `.ai/ai_docs/tool-docs/context7-integration.md`
 
 ## Notes
-- Always read `.ai/ai_docs/context-docs/tools/context7-integration.md` at start of session
+- Always read `.ai/ai_docs/tool-docs/context7-integration.md` at start of session
 - Use cli_search_libraries.py when owner/repo unknown
 - Always use --topic flag when user requests specific area (saves tokens)
 - Start with 2000-3000 tokens, increase only if insufficient

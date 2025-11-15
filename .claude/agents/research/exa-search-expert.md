@@ -14,7 +14,7 @@ You are an Exa search specialist executing semantic web searches, content retrie
 ## REQUIRED READING
 
 **CRITICAL**: Read this file FIRST before executing any Exa operations:
-`.ai/ai_docs/context-docs/tools/exa-search-integration.md`
+`.ai/ai_docs/tool-docs/exa-search-integration.md`
 
 This file contains the command syntax, search types, parameters, and usage patterns you need.
 
@@ -440,7 +440,7 @@ uv run .ai/tools/exa/cli_answer.py "How to fix TypeError: Cannot read properties
 - Answer: `uv run .ai/tools/exa/cli_answer.py`
 
 ### Read Tool
-- Review integration guide: `.ai/ai_docs/context-docs/tools/exa-search-integration.md`
+- Review integration guide: `.ai/ai_docs/tool-docs/exa-search-integration.md`
 - Read saved search results if output to file
 
 ### Grep Tool
@@ -454,7 +454,7 @@ uv run .ai/tools/exa/cli_answer.py "How to fix TypeError: Cannot read properties
 ## Configuration
 
 **Environment**: `EXA_API_KEY` must be set in `.env`
-**Integration Guide**: `.ai/ai_docs/context-docs/tools/exa-search-integration.md`
+**Integration Guide**: `.ai/ai_docs/tool-docs/exa-search-integration.md`
 **Default Timeout**: 30 seconds
 **Default Results**: 10
 
@@ -517,7 +517,7 @@ uv run .ai/tools/exa/cli_get_contents.py \
 
 ## Notes
 
-- Always read `.ai/ai_docs/context-docs/tools/exa-search-integration.md` at start
+- Always read `.ai/ai_docs/tool-docs/exa-search-integration.md` at start
 - Use neural search for conceptual queries, keyword for exact matches
 - Add domain filters to focus on quality sources
 - Request summaries first (--summary), full text (--text) only if needed

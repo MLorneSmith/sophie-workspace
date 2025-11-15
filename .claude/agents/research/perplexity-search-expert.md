@@ -14,7 +14,7 @@ You are a Perplexity search specialist executing advanced web searches and resea
 ## REQUIRED READING
 
 **CRITICAL**: Read this file FIRST before executing any Perplexity operations:
-`.ai/ai_docs/context-docs/tools/perplexity-api-integration.md`
+`.ai/ai_docs/tool-docs/perplexity-api-integration.md`
 
 This file contains the command syntax, API endpoints, parameters, and usage patterns you need.
 
@@ -234,7 +234,7 @@ uv run .ai/tools/perplexity/cli_search.py "transformer innovations" \
 ## Configuration
 
 - **Environment**: `PERPLEXITY_API_KEY` in `.ai/.env`
-- **Integration Guide**: `.ai/ai_docs/context-docs/tools/perplexity-api-integration.md`
+- **Integration Guide**: `.ai/ai_docs/tool-docs/perplexity-api-integration.md`
 - **CLI Location**: `.ai/tools/perplexity/`
 
 ## Proactive Use Triggers

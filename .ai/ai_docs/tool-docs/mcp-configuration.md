@@ -5,6 +5,7 @@
 This guide documents the correct configuration format for MCP (Model Context Protocol) servers in Claude Code. Following these guidelines prevents integration issues and ensures servers are properly detected.
 
 **Related Issues:**
+
 - #439 - Initial docs-mcp integration
 - #598, #599 - First docs-mcp configuration fix (2025-11-14)
 - #602 - Second regression fix (2025-11-15)
@@ -32,6 +33,7 @@ For local MCP servers that communicate via standard input/output streams.
 ```
 
 **Examples:**
+
 - `exa-mcp` - Exa search integration
 - `server-perplexity-ask` - Perplexity AI integration
 - `@upstash/context7-mcp` - Context7 documentation
@@ -55,6 +57,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
 ```
 
 **Example: docs-mcp**
+
 ```json
 {
   "mcpServers": {
@@ -85,6 +88,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
 ```
 
 **Why this fails:**
+
 - Claude Code MCP client does not support `"type": "http"` format
 - Direct HTTP endpoints are not compatible with Claude Code's MCP implementation
 - Must use `npx mcp-remote` wrapper for SSE-based servers
@@ -94,6 +98,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
 ### 1. Never Hardcode API Keys
 
 ❌ **Bad:**
+
 ```json
 {
   "mcpServers": {
@@ -109,6 +114,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
 ```
 
 ✅ **Good:**
+
 ```json
 {
   "mcpServers": {
@@ -124,6 +130,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
 ```
 
 Then add to `.env.local`:
+
 ```bash
 EXA_API_KEY=9c7c0675-4d56-4aae-a039-f93cf72a6cbb
 ```
@@ -131,6 +138,7 @@ EXA_API_KEY=9c7c0675-4d56-4aae-a039-f93cf72a6cbb
 ### 2. Ensure .env.local is in .gitignore
 
 The `.gitignore` file already includes:
+
 ```
 .env*.local
 ```
@@ -140,6 +148,7 @@ This prevents accidentally committing sensitive keys.
 ### 3. Document Required Keys in .env.example
 
 Add template entries to `.env.example`:
+
 ```bash
 # MCP Server API Keys
 EXA_API_KEY=your_exa_api_key_here
@@ -200,16 +209,19 @@ Simply delete the server entry from `.mcp.json`:
 ### "No MCP servers configured" Error
 
 **Symptoms:**
+
 - `/mcp` command shows no servers
 - No MCP tools available
 
 **Common Causes:**
+
 1. Using unsupported `"type": "http"` format
 2. Wrong endpoint path (e.g., `/mcp` instead of `/sse`)
 3. Server not running or not accessible
 4. Invalid JSON syntax in `.mcp.json`
 
 **Solutions:**
+
 1. Use `npx mcp-remote` for SSE servers
 2. Verify endpoint is correct (usually `/sse`)
 3. Check server is running: `docker ps` or test endpoint with `curl`
@@ -218,18 +230,21 @@ Simply delete the server entry from `.mcp.json`:
 ### docs-mcp Specific Issues
 
 **Verify container is running:**
+
 ```bash
 docker ps | grep docs-mcp
 # Expected: Container shows "Up" status with "(healthy)"
 ```
 
 **Verify SSE endpoint:**
+
 ```bash
 timeout 3 curl -N http://localhost:6280/sse | head -3
 # Expected: Shows "event: endpoint" and "data: /messages?sessionId=..."
 ```
 
 **Correct configuration:**
+
 ```json
 {
   "mcpServers": {
@@ -249,6 +264,7 @@ timeout 3 curl -N http://localhost:6280/sse | head -3
 The `.mcp.example.json` file contains working examples for both stdio and SSE server types. Refer to it when adding new servers.
 
 **SSE Example (lines 34-40):**
+
 ```json
 {
   "mcpServers": {
@@ -285,6 +301,7 @@ This project has experienced **three separate instances** of docs-mcp integratio
 3. **Issue #602** (2025-11-15) - Second regression (current fix)
 
 The root cause has consistently been:
+
 - Using unsupported `"type": "http"` format
 - Pointing to wrong endpoint (`/mcp` instead of `/sse`)
 

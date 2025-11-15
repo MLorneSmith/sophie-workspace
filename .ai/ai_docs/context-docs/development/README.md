@@ -11,16 +11,19 @@ This directory contains essential documentation for building features in the Sli
 ### Architecture & Core Patterns
 
 #### [architecture-overview.md](./architecture-overview.md)
+
 System architecture, monorepo structure, technology stack, and core design patterns.
 
 **When to use**: Understanding overall system design, technology choices, or project structure.
 
 #### [database-patterns.md](./database-patterns.md)
+
 Database patterns including RLS (Row Level Security), migrations, junction tables, and type safety.
 
 **When to use**: Creating tables, writing migrations, implementing RLS policies, managing relationships.
 
 #### [server-actions.md](./server-actions.md)
+
 Server action patterns with `enhanceAction`, service architecture, and error handling.
 
 **When to use**: Creating API endpoints, implementing mutations, handling server-side logic.
@@ -28,26 +31,31 @@ Server action patterns with `enhanceAction`, service architecture, and error han
 ### Frameworks & Integration
 
 #### [react-query-patterns.md](./react-query-patterns.md)
+
 TanStack Query v5 patterns for data fetching, mutations, SSR hydration, and caching.
 
 **When to use**: Fetching data in client components, implementing optimistic updates, SSR integration.
 
 #### [react-query-advanced.md](./react-query-advanced.md)
+
 Advanced React Query patterns: infinite queries, dependent queries, real-time subscriptions.
 
 **When to use**: Complex data fetching scenarios, pagination, Supabase real-time integration.
 
 #### [makerkit-integration.md](./makerkit-integration.md)
+
 MakerKit template usage, upstream syncing, and merge automation (95% conflict reduction).
 
 **When to use**: Syncing with MakerKit upstream, resolving template conflicts, understanding template patterns.
 
 #### [prime-framework.md](./prime-framework.md)
+
 PRIME methodology for creating slash commands with action-first design.
 
 **When to use**: Building new slash commands, creating command workflows.
 
 #### [ccpm-system.md](./ccpm-system.md)
+
 CCPM (Concurrent Claude Project Management) for parallel agent execution and 3x faster delivery.
 
 **When to use**: Large features requiring parallel implementation, multi-agent workflows.
@@ -55,6 +63,7 @@ CCPM (Concurrent Claude Project Management) for parallel agent execution and 3x 
 ### UI & Components
 
 #### [shadcn-ui-components.md](./shadcn-ui-components.md)
+
 Component inventory (40 components), usage patterns, and dark mode support.
 
 **When to use**: Selecting UI components, understanding component APIs, implementing dark mode.
