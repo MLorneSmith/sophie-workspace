@@ -7,8 +7,9 @@
 The docs-mcp MCP server running in Docker is not loading in Claude Code despite being correctly configured in `.mcp.json`. The server is healthy and responding to SSE requests, but Claude Code does not establish a connection or make the MCP tools available. This is part of a broader issue where NO MCP servers are loading in Claude Code, suggesting a systemic problem with MCP client initialization or SSE protocol support.
 
 **Key Symptoms:**
+
 - docs-mcp container is healthy and serving SSE endpoint correctly
-- SSE endpoint at http://localhost:6280/sse returns proper event-stream responses
+- SSE endpoint at <http://localhost:6280/sse> returns proper event-stream responses
 - `.mcp.json` contains valid configuration for SSE-type server
 - Claude Code does not show docs-mcp as connected
 - No MCP tools from docs-mcp are available in Claude Code
@@ -48,14 +49,16 @@ Investigate and resolve the Claude Code MCP client initialization and SSE protoc
 From the diagnosis issue #598, the investigation identified:
 
 **What's Working:**
+
 - ✅ Docker container is healthy and running
 - ✅ HTTP server responding on port 6280
 - ✅ SSE endpoint returns proper `text/event-stream` responses with correct headers
 - ✅ Database migrations completed successfully
-- ✅ Web UI accessible at http://localhost:6280/
+- ✅ Web UI accessible at <http://localhost:6280/>
 - ✅ MCP endpoints exposed at /sse and /mcp
 
 **What's Not Working:**
+
 - ❌ No MCP servers loading in Claude Code (systemic issue)
 - ❌ SSE connection not being established by Claude Code
 - ❌ No MCP tools available from any configured server
@@ -86,8 +89,9 @@ From the diagnosis issue #598, the investigation identified:
 ## Relevant Files
 
 ### Configuration Files
+
 - **`.mcp.json`** - MCP server configuration
-  - Contains docs-mcp configuration with type "sse" and url "http://localhost:6280/sse"
+  - Contains docs-mcp configuration with type "sse" and url "<http://localhost:6280/sse>"
   - Needs verification of correct schema and format for SSE-type servers
   - May need to be relocated or reformatted based on Claude Code requirements
 
@@ -139,7 +143,7 @@ From the diagnosis issue #598, the investigation identified:
 
 - Create test script to manually validate SSE protocol handshake
   - Script location: `temp/test-mcp-sse-connection.sh`
-  - Connect to http://localhost:6280/sse
+  - Connect to <http://localhost:6280/sse>
   - Capture SSE events and messages
   - Send MCP protocol initialization messages
   - Verify server responds with proper MCP protocol messages
@@ -158,7 +162,7 @@ From the diagnosis issue #598, the investigation identified:
   - Compare with examples from Claude Code documentation
 - Validate current `.mcp.json` configuration
   - Schema validation for SSE-type servers
-  - Check if URL format is correct (http://localhost:6280/sse)
+  - Check if URL format is correct (<http://localhost:6280/sse>)
   - Verify autoApprove configuration is valid
 - Test alternative configuration formats if needed
   - Try with/without autoApprove

@@ -11,16 +11,19 @@ This directory contains documentation for infrastructure, deployment pipelines, 
 ### CI/CD & Deployment
 
 #### [ci-cd-complete.md](./ci-cd-complete.md)
+
 Comprehensive CI/CD guide covering pipeline design, workflow patterns, testing strategies, security scanning, and deployment automation.
 
 **When to use**: Understanding CI/CD workflows, adding new pipelines, troubleshooting build failures, optimizing deployment speed.
 
 #### [production-security.md](./production-security.md)
+
 Solo developer deployment safety workflow for private repositories with branch protection and validation.
 
 **When to use**: Setting up production protection, configuring branch rules, preventing accidental deployments.
 
 #### [vercel-deployment.md](./vercel-deployment.md)
+
 Comprehensive Vercel deployment guide for monorepo with configuration, environment variables, and troubleshooting.
 
 **When to use**: Deploying to Vercel, configuring projects, managing environments, troubleshooting deployments.
@@ -28,11 +31,13 @@ Comprehensive Vercel deployment guide for monorepo with configuration, environme
 ### Docker
 
 #### [docker-setup.md](./docker-setup.md)
+
 Docker architecture covering hybrid setup, container orchestration, Supabase services, test containers, and development workflows.
 
 **When to use**: Setting up local development, configuring Supabase, understanding container architecture, managing services.
 
 #### [docker-troubleshooting.md](./docker-troubleshooting.md)
+
 Docker debugging guide for WSL2 issues, permissions, networking, health checks, and emergency recovery.
 
 **When to use**: Debugging Docker issues, fixing container problems, resolving networking conflicts, emergency recovery.
@@ -40,6 +45,7 @@ Docker debugging guide for WSL2 issues, permissions, networking, health checks, 
 ### Database
 
 #### [database-seeding.md](./database-seeding.md)
+
 Dual-mode database seeding strategy for development and testing with factory patterns and RLS-compliant data.
 
 **When to use**: Seeding databases, creating test data, populating development environments, ensuring RLS compliance.
@@ -47,26 +53,31 @@ Dual-mode database seeding strategy for development and testing with factory pat
 ### Authentication
 
 #### [auth-overview.md](./auth-overview.md)
+
 Supabase Auth overview with RBAC, multi-tenant architecture, and permission model.
 
 **When to use**: Understanding auth architecture, implementing RBAC, designing permission systems.
 
 #### [auth-implementation.md](./auth-implementation.md)
+
 Auth implementation with code examples including middleware, RLS policies, and role checks.
 
 **When to use**: Implementing auth flows, writing RLS policies, protecting routes, checking permissions.
 
 #### [auth-configuration.md](./auth-configuration.md)
+
 Auth configuration guide for environment variables, Supabase setup, and provider configuration.
 
 **When to use**: Configuring auth, setting up providers, managing environment variables.
 
 #### [auth-security.md](./auth-security.md)
+
 Comprehensive security model covering RLS, session management, CSRF protection, and security best practices.
 
 **When to use**: Implementing security patterns, hardening auth, protecting against attacks, auditing security.
 
 #### [auth-troubleshooting.md](./auth-troubleshooting.md)
+
 Auth debugging guide for common issues, session problems, RLS failures, and permission errors.
 
 **When to use**: Debugging auth issues, fixing login problems, troubleshooting permissions, resolving session errors.
@@ -74,11 +85,13 @@ Auth debugging guide for common issues, session problems, RLS failures, and perm
 ### Monitoring & Logging
 
 #### [enhanced-logger.md](./enhanced-logger.md)
+
 Async logging system with Pino, structured logging, and monitoring integration.
 
 **When to use**: Implementing logging, debugging production issues, integrating monitoring tools.
 
 #### [newrelic-monitoring.md](./newrelic-monitoring.md)
+
 New Relic MCP server setup for application monitoring and performance tracking.
 
 **When to use**: Setting up New Relic, monitoring production, analyzing performance.

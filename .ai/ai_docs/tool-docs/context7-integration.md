@@ -47,6 +47,7 @@ uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
 ```
 
 **Parameters:**
+
 - `OWNER` - Repository owner (e.g., `vercel`, `facebook`, `shadcn`)
 - `REPO` - Repository name (e.g., `next.js`, `react`, `ui`)
 - `--version` - Specific version (e.g., `v15.1.8`) or omit for latest

@@ -3,6 +3,7 @@
 **Purpose**: Comprehensive reference for Supabase CLI commands, workflows, and best practices for local development, migrations, and database management in the SlideHeroes project.
 
 **Related Files**:
+
 - `.claude/docs/tools/cli-references.md` - CLI tools overview
 - `.claude/docs/tools/vercel-cli.md` - Vercel CLI reference
 - `.claude/docs/database/` - Database patterns and RLS
@@ -204,6 +205,7 @@ When adding new database features, ALWAYS follow this exact order:
 **NEVER skip step 2** - schema files alone don't create tables! The migration step is required to apply changes to the database.
 
 **Migration vs Reset**:
+
 - Use `migration up` for normal development (applies only new migrations)
 - Use `reset` when you need a clean database state or have schema conflicts
 

@@ -157,18 +157,21 @@ pnpm install && pnpm build && pnpm typecheck
 ### File Categories & Resolution Strategy
 
 **Auto-Accept Upstream:**
+
 - Security updates in @kit packages
 - Dependency vulnerability fixes
 - Framework configuration updates
 - Build tool configurations
 
 **Preserve Local:**
+
 - `.env` and `.env.local` files
 - Custom business logic in `/app`
 - Project-specific API routes
 - Custom database schemas
 
 **Manual Merge Required:**
+
 - `package.json` dependencies
 - Tailwind/TypeScript configs
 - Component modifications
@@ -221,16 +224,19 @@ pnpm-lock.yaml merge=ours
 ### Major Version Migrations
 
 **v2.7.0 - Declarative Schemas:**
+
 - Migrate from `/migrations` to `/schemas` approach
 - Use `supabase db diff` for change generation
 - Apply with `supabase db push`
 
 **v2.13.0 - React 19 + Next.js 15:**
+
 - Remove `forwardRef` wrappers
 - Update dynamic params to use `Promise`
 - Apply provided codemods
 
 **Tailwind v4:**
+
 - Update `global.css` with CSS variables
 - Migrate color system to OKLCH
 - Update component class names

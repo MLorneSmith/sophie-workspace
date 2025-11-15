@@ -14,6 +14,24 @@ IMPORTANT: You're creating a diagnostic report to identify the root cause of a b
 IMPORTANT: This is about diagnosis and investigation, not fixing. The diagnosis will inform a separate bug fix plan.
 You're creating a thorough diagnostic report that will help developers understand and fix the root cause.
 
+**YOUR JOB**: Find and document the ROOT CAUSE, not just symptoms or "areas to investigate"
+**SUCCESS METRIC**: Someone reading your diagnosis knows exactly what code is broken and why
+**FAILURE MODE**: Listing "next steps" or "areas to investigate" instead of identifying the cause
+
+## Completion Criteria
+
+A diagnosis is **COMPLETE** only when ALL of these are met:
+
+- [ ] **Root cause identified** - The exact reason for the failure is known (not "needs investigation")
+- [ ] **Reproduction steps documented** - Bug can be reliably reproduced
+- [ ] **Affected code located** - Specific files/functions causing the issue are identified
+- [ ] **Evidence collected** - Logs, stack traces, or other proof supporting the root cause
+- [ ] **Fix approach clear** - It's obvious what needs to change to fix this (even if you don't implement it)
+
+**IMPORTANT**: Do NOT create the diagnosis document until ALL criteria above are met.
+**If you cannot identify the root cause**, continue investigating using different approaches.
+**If root cause is truly unknowable**, document WHY it cannot be determined and what information is missing.
+
 1. **Interview user**. Ask the user for:
    1. **Issue Description**: Brief description
    2. **Nature of Issue**: Is it a bug, performance, error, regression, or integration problem?
@@ -50,11 +68,19 @@ You're creating a thorough diagnostic report that will help developers understan
    - If specialized MCP tools are available (Cloudflare, PostgreSQL), use them for deeper analysis
    - If tools are not available, gather diagnostic data through standard commands and logs
 
-5. **Research the issue**:
+5. **Research the issue UNTIL root cause is found**:
    - Start by reading the `README.md` file to understand the project context
    - Use the Task tool with `subagent_type=Explore` to investigate the codebase
    - Search for error messages, stack traces, and related code patterns
    - Identify affected components and their dependencies
+   - **CRITICAL**: If initial investigation doesn't reveal root cause:
+     - Expand search to related files and dependencies
+     - Check git history for recent changes to affected code
+     - Search for similar patterns in other parts of codebase
+     - Review integration points and data flow
+     - Check configuration files and environment variables
+   - **DO NOT STOP** until you can answer: "What exact code is causing this and why?"
+   - If truly stuck after exhaustive search, that is your diagnosis (document what's blocking determination)
 
 6. **Discover related previous issues**:
    ```bash
@@ -81,7 +107,14 @@ You're creating a thorough diagnostic report that will help developers understan
    # - Possible regressions: Previously fixed, might have returned
    ```
 
-7. **Create the bug diagnosis** in the `.ai/specs/*.md` file:
+7. **Validate root cause identification**:
+   - Ask yourself: "Can I explain exactly WHY this bug occurs?"
+   - Ask yourself: "Do I know which specific code needs to change?"
+   - Ask yourself: "Could I describe the fix approach in 2-3 sentences?"
+   - If the answer to ANY of these is "NO", continue investigation (return to step 5)
+   - Only proceed to create the diagnosis if you have clear answers
+
+8. **Create the bug diagnosis** in the `.ai/specs/*.md` file:
    - Use the `Plan Format` below to create the diagnosis
    - IMPORTANT: Replace every <placeholder> with actual diagnostic data
    - Include all relevant evidence, logs, and analysis
@@ -201,13 +234,41 @@ You're creating a thorough diagnostic report that will help developers understan
 [Summary of pattern if multiple related issues found]
 [Note if this appears to be a regression of a previously fixed issue]
 
-## Initial Analysis
-[Automated analysis based on diagnostic data]
+## Root Cause Analysis
 
-## Suggested Investigation Areas
-1. [Area 1 based on diagnostics]
-2. [Area 2 based on patterns]
-3. [Area 3 based on logs]
+### Identified Root Cause
+
+**Summary**: [One-sentence statement of the exact root cause]
+
+**Detailed Explanation**:
+[Explain WHY this bug occurs, referencing specific code, configuration, or data that causes the issue]
+
+**Supporting Evidence**:
+- [Stack trace / log / error message that proves this is the root cause]
+- [Code reference: file:line showing the problematic code]
+- [Any other concrete evidence]
+
+### How This Causes the Observed Behavior
+
+[Explain the causal chain from the root cause to the symptoms the user reported]
+
+### Confidence Level
+
+**Confidence**: [High|Medium|Low]
+
+**Reasoning**: [Why you're confident this is the root cause vs. just a symptom]
+
+## Fix Approach (High-Level)
+
+[1-3 sentences describing what would need to change to fix this - DON'T implement, just describe the approach]
+
+Example: "Need to add null check in handleSubmit() before accessing user.email, or ensure user object is always populated before form submission"
+
+## Diagnosis Determination
+
+[Your conclusive analysis based on all diagnostic data collected]
+
+[If root cause could not be determined, explain what's blocking determination and what additional information is needed]
 
 ## Additional Context
 [Any other relevant information]
@@ -225,6 +286,41 @@ Before starting diagnosis:
 - [ ] Collect reproduction steps from user
 - [ ] Check if similar issues were reported before
 - [ ] Verify the issue is reproducible
+
+## Investigation Workflow
+
+Follow this iterative process until root cause is identified:
+
+1. **Level 1 - Surface Investigation** (5-10 minutes)
+   - Read error messages and stack traces
+   - Check affected files mentioned in error
+   - Search for obvious issues (typos, missing imports, etc.)
+
+2. **Level 2 - Context Expansion** (if Level 1 didn't find root cause)
+   - Review git history of affected files
+   - Check related files and dependencies
+   - Look for recent changes that might have caused regression
+   - Review integration points and API boundaries
+
+3. **Level 3 - Deep Dive** (if Level 2 didn't find root cause)
+   - Trace data flow from input to failure point
+   - Check environment configuration and variables
+   - Review database queries and data state
+   - Test hypotheses by examining code paths
+
+4. **Level 4 - Systematic Elimination** (if Level 3 didn't find root cause)
+   - Create hypotheses for possible causes
+   - Systematically test each hypothesis
+   - Document what you've ruled out
+   - Identify what information you're missing
+
+5. **Level 5 - Diagnosis of Unknowability** (only if exhaustive search fails)
+   - Document everything you've tried
+   - Identify what information would be needed to diagnose
+   - Recommend what the user needs to provide
+   - This itself becomes the diagnosis
+
+**CRITICAL**: Progress through these levels until you identify the root cause. Do not stop at Level 1 or 2 unless you've actually found it.
 
 ## GitHub Issue Creation
 

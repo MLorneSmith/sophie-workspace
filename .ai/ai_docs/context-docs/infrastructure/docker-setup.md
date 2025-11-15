@@ -56,6 +56,7 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 ### Edge Functions (Hybrid Architecture)
 
 **Supabase Edge Functions** (Deno Runtime):
+
 - Location: `apps/web/supabase/functions/`
 - Runtime: Integrated within Supabase Docker stack
 - Access URL: `http://localhost:54321/functions/v1/{function-name}`
@@ -63,12 +64,14 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 - Functions: powerpoint-generator, certificate-generator
 
 **Vercel Edge Functions** (V8 Isolates):
+
 - Location: `apps/web/app/api/` (with `export const runtime = 'edge'`)
 - Runtime: Host-based development, edge-optimized for deployment
 - Use Case: AI content generation and lightweight processing
 - Functions: /api/ai/generate-ideas, /api/ai/simplify-text
 
 **Integration Strategy**:
+
 - Supabase Edge Functions: Automatically served by Supabase CLI stack
 - Vercel Edge Functions: Served by Next.js development server
 - Both use shared Supabase authentication and RLS policies
@@ -235,6 +238,7 @@ networks:
 ```
 
 **Benefits**:
+
 - Isolated test environment
 - Inter-container communication
 - Predictable DNS resolution
@@ -353,6 +357,7 @@ npm install -g pnpm
 ```
 
 If issues persist:
+
 1. Check container logs: `docker logs slideheroes-app-test`
 2. Restart containers: `docker-compose -f docker-compose.test.yml down && docker-compose -f docker-compose.test.yml up -d`
 3. Clear volumes: `docker-compose -f docker-compose.test.yml down -v`

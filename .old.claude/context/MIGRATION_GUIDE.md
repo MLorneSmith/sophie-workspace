@@ -148,14 +148,17 @@ This guide helps you find consolidated documentation in the new structure after 
 These files were moved to `.old.claude/context/_archived/` and are no longer in active documentation:
 
 ### Duplicates
+
 - `development/workflows/feature-implementation-workflow.md` → Duplicates CCPM documentation
 - `foundation/project-overview.md` → Superseded by project-architecture.md
 
 ### Incomplete/Trivial
+
 - `data/schema.md` → Only 1 line, incomplete
 - `operations/maintenance/bash-working-directory.md` → Trivial content
 
 ### Deprecated Technology (Payload CMS)
+
 - `development/tooling/payload/update-payload-version.md`
 - `development/tooling/payload/create-payload-custom-component.md`
 - `tools/payload/seeding-guide.md`
@@ -163,9 +166,11 @@ These files were moved to `.old.claude/context/_archived/` and are no longer in 
 - `tools/payload/seeding-troubleshooting.md`
 
 ### Project-Specific UI
+
 - `development/standards/typography-system.md` → Not AI guidance
 
 ### Legacy Agent Roles (17 files)
+
 - All files from `team/roles/*.md` → Streamlined agent system now
 
 See [_archived/README.md](./_archived/README.md) for complete archive details.
@@ -268,6 +273,7 @@ cp .old.claude/context/_archived/[filename] [new-location]
 ### Something missing?
 
 If content is missing from the new documentation, it may have been:
+
 1. Consolidated into a related file (check cross-references)
 2. Archived as duplicate/deprecated (check archive README)
 3. Removed as incomplete/trivial

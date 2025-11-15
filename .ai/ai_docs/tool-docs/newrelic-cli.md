@@ -15,6 +15,7 @@ Use New Relic CLI to monitor applications, track deployments, query performance 
 The New Relic CLI is installed and available in the project environment.
 
 **Required Environment Variables** (set in `.env`):
+
 ```bash
 NEW_RELIC_API_KEY=your-personal-api-key
 NEW_RELIC_ACCOUNT_ID=your-account-id
@@ -355,6 +356,7 @@ Common data sources for NRQL queries:
 - Custom event types from `events post`
 
 Discover available events:
+
 ```bash
 newrelic nrql query \
   --accountId 12345 \

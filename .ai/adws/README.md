@@ -106,7 +106,7 @@ uv run adw_plan_build.py 456
 # What it does:
 # 1. Fetches issue #456 from GitHub
 # 2. Creates feature branch
-# 3. Classifies issue type (/chore, /bug, /feature)
+# 3. Classifies issue type (/chore, /bug-plan, /feature)
 # 4. Generates implementation plan
 # 5. Implements the solution
 # 6. Creates commits and pull request
@@ -173,7 +173,7 @@ PORT=3000 uv run trigger_webhook.py
 
 1. **Issue Classification**: Analyzes GitHub issue and determines type:
    - `/chore` - Maintenance, documentation, refactoring
-   - `/bug` - Bug fixes and corrections
+   - `/bug-plan` - Bug fixes and corrections
    - `/feature` - New features and enhancements
 
 2. **Planning**: `sdlc_planner` agent creates implementation plan with:

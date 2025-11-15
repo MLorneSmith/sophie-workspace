@@ -84,6 +84,7 @@ uv run .ai/tools/exa/cli_search.py QUERY \
 ```
 
 **Parameters:**
+
 - `QUERY` - Search query
 - `--type` - Search mode: `neural` (semantic), `keyword` (exact), `auto` (default)
 - `--num-results` - Number of results (default: 10)
@@ -107,6 +108,7 @@ uv run .ai/tools/exa/cli_get_contents.py URL [URL2 ...] \
 ```
 
 **Parameters:**
+
 - `URL` - One or more URLs to fetch
 - `--text` - Extract full text content
 - `--summary` - Generate AI summary
@@ -127,6 +129,7 @@ uv run .ai/tools/exa/cli_find_similar.py URL \
 ```
 
 **Parameters:**
+
 - `URL` - Reference URL to find similar pages
 - `--num-results` - Number of similar pages (default: 10)
 - `--category` - Filter by category
@@ -142,6 +145,7 @@ uv run .ai/tools/exa/cli_answer.py QUERY \
 ```
 
 **Parameters:**
+
 - `QUERY` - Question to answer
 - `--text` - Include full text in citations
 - `--interactive` - Enter interactive Q&A mode
@@ -214,6 +218,7 @@ uv run .ai/tools/exa/cli_get_contents.py \
 ## Categories
 
 Filter searches by category:
+
 - `research` - Academic papers, technical docs
 - `news` - News articles
 - `company` - Company websites
@@ -229,7 +234,6 @@ Filter searches by category:
 4. **Filter domains** to focus on quality sources (github.com, official docs)
 5. **Use Answer** for direct questions with citations
 6. **Extract highlights** for quick scanning of relevant sections
-
 
 ## Examples
 

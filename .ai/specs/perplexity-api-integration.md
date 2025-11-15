@@ -44,6 +44,7 @@ Implement a production-grade Perplexity API integration following the establishe
 ## Relevant Files
 
 ### Existing Reference Implementation (Exa)
+
 - `.ai/tools/exa/client.py` - Base client architecture, retry logic, session management
 - `.ai/tools/exa/models.py` - Pydantic models for type-safe validation
 - `.ai/tools/exa/exceptions.py` - Custom exception hierarchy
@@ -52,11 +53,12 @@ Implement a production-grade Perplexity API integration following the establishe
 - `.ai/tools/exa/cli_search.py` - CLI interface for search
 - `.ai/tools/exa/answer.py` - Answer functionality (similar to Chat Completions)
 - `.ai/tools/exa/cli_answer.py` - CLI interface for answers
-- `.ai/ai_docs/context-docs/tools/exa-search-integration.md` - User-facing documentation
+- `.ai/ai_docs/tool-docs/exa-search-integration.md` - User-facing documentation
 
 ### New Files
 
 #### Core Implementation
+
 - `.ai/tools/perplexity/__init__.py` - Package initialization with version and exports
 - `.ai/tools/perplexity/client.py` - Base PerplexityClient class
 - `.ai/tools/perplexity/models.py` - Pydantic models for requests/responses
@@ -66,10 +68,12 @@ Implement a production-grade Perplexity API integration following the establishe
 - `.ai/tools/perplexity/chat.py` - Chat Completions API implementation
 
 #### CLI Scripts
+
 - `.ai/tools/perplexity/cli_search.py` - CLI for Search API
 - `.ai/tools/perplexity/cli_chat.py` - CLI for Chat Completions API
 
 #### Tests
+
 - `.ai/tools/perplexity/test_client.py` - Client unit tests
 - `.ai/tools/perplexity/test_models.py` - Model validation tests
 - `.ai/tools/perplexity/test_search.py` - Search functionality tests
@@ -77,10 +81,12 @@ Implement a production-grade Perplexity API integration following the establishe
 - `.ai/tools/perplexity/test_e2e.py` - End-to-end integration tests
 
 #### Documentation
-- `.ai/ai_docs/context-docs/tools/perplexity-api-integration.md` - Quick reference guide
+
+- `.ai/ai_docs/tool-docs/perplexity-api-integration.md` - Quick reference guide
 - `.ai/tools/perplexity/examples/research_workflow.py` - Example usage patterns
 
 #### Configuration
+
 - `.ai/.env.sample` - Update with PERPLEXITY_API_KEY placeholder
 
 ## Impact Analysis
@@ -90,12 +96,14 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 ### Dependencies Affected
 
 **New Dependencies Required:**
+
 - `perplexityai` (Python SDK) - Official Perplexity Python client library
 - `pydantic` (already in project) - Runtime type validation
 - `requests` (already in project) - HTTP client with retry support
 - `python-dotenv` (already in project) - Environment variable management
 
 **Packages That Will Consume This Feature:**
+
 - Claude agents (via CLI scripts in `.claude/agents/research/`)
 - AI Developer Workflow scripts in `.ai/adws/`
 - Custom slash commands that require web research
@@ -106,6 +114,7 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 **Medium Risk** - Well-understood patterns with some complexity
 
 **Rationale:**
+
 - **Positive**: Nearly identical to proven Exa integration pattern, reducing implementation risk
 - **Positive**: Comprehensive API documentation from Perplexity provides clear guidance
 - **Positive**: Type safety via Pydantic reduces runtime errors
@@ -114,6 +123,7 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 - **Low**: Isolated to `.ai/tools/` directory with no impact on production application code
 
 **Mitigation Strategies:**
+
 - Implement exponential backoff retry logic for rate limits and transient failures
 - Comprehensive error handling with graceful degradation
 - Thorough testing including mock API responses
@@ -134,17 +144,20 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 **Minimal Performance Impact**
 
 **Positive Impacts:**
+
 - Direct API calls may be faster than MCP server abstraction layer
 - Connection pooling (10-20 concurrent connections) optimizes throughput
 - Async support enables parallel research queries
 
 **Considerations:**
+
 - API rate limits (varies by plan) - implement backoff and monitoring
 - Network latency for external API calls (typical 500ms-2s per request)
 - Memory efficient - processes responses immediately, no large data accumulation
 - Bundle size: N/A (development tooling only, not bundled with web app)
 
 **Monitoring:**
+
 - Track average response times via structured logging
 - Monitor rate limit headers (`X-RateLimit-Remaining`, `X-RateLimit-Reset`)
 - Log success/failure rates for reliability metrics
@@ -152,6 +165,7 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 ### Security Considerations
 
 **API Key Management:**
+
 - Store `PERPLEXITY_API_KEY` in `.env` file (never committed to git)
 - Validate `.env` is in `.gitignore`
 - Use `python-dotenv` to load environment variables securely
@@ -159,23 +173,27 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 - Validate API key format at client initialization
 
 **Data Validation:**
+
 - Use Pydantic schemas to validate all inputs/outputs at runtime boundaries
 - Sanitize user-provided queries to prevent injection attacks
 - Validate domain filters to prevent SSRF-like issues
 - Limit query length to prevent abuse
 
 **Authentication/Authorization:**
+
 - Client authenticates using Bearer token in Authorization header
 - No user authentication required (server-side tool only)
 - API key rotation supported (primary + fallback pattern)
 
 **Potential Vulnerabilities:**
+
 - **API Key Exposure**: Mitigated by environment variables and redaction in logs
 - **Injection Attacks**: Mitigated by Pydantic validation and schema enforcement
 - **Rate Limit Abuse**: Mitigated by exponential backoff and circuit breaker pattern
 - **Network Security**: Uses HTTPS for all API communication (TLS 1.2+)
 
 **Privacy/Compliance:**
+
 - API queries may contain sensitive information - log only metadata, not full query content
 - Perplexity's privacy policy applies to all API usage
 - No PII storage in local scripts
@@ -184,6 +202,7 @@ This feature adds a new API integration tool to the `.ai/tools/` directory, expa
 ## Pre-Feature Checklist
 
 Before starting implementation:
+
 - [x] Create feature branch: `feature/perplexity-api-integration`
 - [x] Review existing Exa implementation for patterns
 - [x] Identify all integration points (CLI, agents, workflows)
@@ -196,7 +215,8 @@ Before starting implementation:
 ## Documentation Updates Required
 
 **New Documentation:**
-- `.ai/ai_docs/context-docs/tools/perplexity-api-integration.md` - Quick reference guide
+
+- `.ai/ai_docs/tool-docs/perplexity-api-integration.md` - Quick reference guide
   - When to use Search vs Chat Completions
   - Basic command syntax and examples
   - Common use cases and patterns
@@ -204,16 +224,19 @@ Before starting implementation:
   - Error handling and troubleshooting
 
 **Technical Documentation:**
+
 - Inline docstrings for all modules, classes, and functions (Google style)
 - README in `.ai/tools/perplexity/` explaining architecture
 - Example scripts in `.ai/tools/perplexity/examples/`
 - Test documentation explaining mock patterns
 
 **Environment Setup:**
+
 - Update `.ai/.env.sample` with `PERPLEXITY_API_KEY=your-api-key-here`
 - Add setup instructions to quick reference guide
 
 **Integration Documentation:**
+
 - Document how Claude agents can invoke Perplexity scripts
 - Add examples to `.claude/agents/research/` agent documentation
 - Update CLAUDE.md if this becomes a primary research tool
@@ -225,6 +248,7 @@ Before starting implementation:
 Since this is an optional development tool with no production dependencies, rollback is straightforward:
 
 1. **Remove from Git:**
+
    ```bash
    git revert <commit-sha>
    # or
@@ -232,6 +256,7 @@ Since this is an optional development tool with no production dependencies, roll
    ```
 
 2. **Uninstall Dependencies:**
+
    ```bash
    pip uninstall perplexityai
    ```
@@ -245,12 +270,14 @@ Since this is an optional development tool with no production dependencies, roll
 **No Feature Flags Needed** - Optional CLI tool, agents choose whether to use it
 
 **Monitoring for Issues:**
+
 - Watch for authentication errors (invalid API key)
 - Monitor rate limit errors (quota exceeded)
 - Check for timeout errors (network/API issues)
 - Track test failures in CI/CD pipeline
 
 **Graceful Degradation:**
+
 - If Perplexity API is unavailable, agents can fall back to:
   - Exa search for web research
   - MCP server (if configured)
@@ -264,6 +291,7 @@ Since this is an optional development tool with no production dependencies, roll
 Establish the foundational architecture, authentication, and error handling before implementing specific APIs.
 
 **Goals:**
+
 - Set up project structure mirroring Exa pattern
 - Implement base client with authentication and retry logic
 - Define comprehensive error handling
@@ -271,10 +299,12 @@ Establish the foundational architecture, authentication, and error handling befo
 - Add utility functions for common operations
 
 **Dependencies:**
+
 - Install `perplexityai` SDK
 - Verify `pydantic`, `requests`, `python-dotenv` are available
 
 **Validation:**
+
 - Unit tests for client initialization and authentication
 - Error handling tests for all exception types
 - Utility function tests
@@ -284,6 +314,7 @@ Establish the foundational architecture, authentication, and error handling befo
 Implement the two primary Perplexity APIs: Search and Chat Completions.
 
 **Goals:**
+
 - Implement Search API with all filter options
 - Implement Chat Completions API with streaming support
 - Add advanced filtering (domain, language, date/time)
@@ -291,10 +322,12 @@ Implement the two primary Perplexity APIs: Search and Chat Completions.
 - Ensure type-safe request/response handling
 
 **Dependencies:**
+
 - Phase 1 must be complete (client, models, error handling)
 - Pydantic models must be validated
 
 **Validation:**
+
 - Unit tests for each API method
 - Integration tests with mock responses
 - CLI tests with various argument combinations
@@ -304,6 +337,7 @@ Implement the two primary Perplexity APIs: Search and Chat Completions.
 Complete testing, documentation, and integrate with existing AI agent workflows.
 
 **Goals:**
+
 - Write comprehensive test suite
 - Create quick reference documentation
 - Add example workflows
@@ -311,10 +345,12 @@ Complete testing, documentation, and integrate with existing AI agent workflows.
 - Final validation and polish
 
 **Dependencies:**
+
 - Phase 2 must be complete (both APIs working)
 - All CLI scripts functional
 
 **Validation:**
+
 - E2E tests using real API calls (with test API key)
 - Documentation reviewed and validated
 - Example scripts execute successfully
@@ -374,17 +410,20 @@ Create utility functions for common operations:
 Create type-safe models for all API requests and responses:
 
 **Enums and Options:**
+
 - Define `RecencyFilter` enum (day, week, month, year)
 - Define `SearchDomainFilter` model with validation
 - Define `LanguageCode` pattern validator (ISO 639-1 lowercase)
 
 **Search API Models:**
+
 - Define `SearchRequest` with query, num_results (1-100), recency_filter, domain_filter (max 20), language_filter (max 10), search_after_date, search_before_date
 - Define `SearchResult` with url, title, snippet, published_date
 - Define `SearchResponse` with results array and request_id
 - Add field validators for date format (MM/DD/YYYY), language codes (ISO 639-1), domain limits
 
 **Chat Completions API Models:**
+
 - Define `ChatMessage` with role (system, user, assistant) and content
 - Define `ChatRequest` with model (sonar, sonar-pro), messages array, stream boolean, max_tokens, temperature
 - Define `ChatChoice` with message and finish_reason
@@ -393,9 +432,11 @@ Create type-safe models for all API requests and responses:
 - Add validators for message structure and model selection
 
 **Error Models:**
+
 - Define `ErrorResponse` with error message, status, request_id
 
 **Testing:**
+
 - Write unit tests for all model validations
 - Test edge cases (empty strings, invalid dates, too many domains)
 - Test serialization/deserialization round-trips
@@ -508,6 +549,7 @@ Create user-friendly command-line interface for Chat Completions API:
 Create comprehensive unit tests for all modules:
 
 **Test Client Module:**
+
 - Test client initialization with valid/invalid API keys
 - Test session creation and retry configuration
 - Test header generation
@@ -518,6 +560,7 @@ Create comprehensive unit tests for all modules:
 - Test context manager protocol
 
 **Test Models Module:**
+
 - Test all model instantiations with valid data
 - Test field validators (date format, language codes, domain limits)
 - Test serialization to API format
@@ -526,6 +569,7 @@ Create comprehensive unit tests for all modules:
 - Test validation errors with invalid inputs
 
 **Test Search Module:**
+
 - Test search with basic query
 - Test domain filtering (single, multiple, max 20)
 - Test language filtering (single, multiple, max 10)
@@ -535,6 +579,7 @@ Create comprehensive unit tests for all modules:
 - Test response parsing
 
 **Test Chat Module:**
+
 - Test single-message chat
 - Test multi-message conversation
 - Test model selection
@@ -543,6 +588,7 @@ Create comprehensive unit tests for all modules:
 - Test error handling
 
 **Test Utils Module:**
+
 - Test API key retrieval from environment
 - Test API key validation
 - Test API key redaction
@@ -586,7 +632,8 @@ Create end-to-end tests using real API calls (requires test API key):
 
 Write comprehensive documentation for end users:
 
-**Quick Reference Guide (`.ai/ai_docs/context-docs/tools/perplexity-api-integration.md`):**
+**Quick Reference Guide (`.ai/ai_docs/tool-docs/perplexity-api-integration.md`):**
+
 - Overview of Perplexity integration
 - When to use Search vs Chat Completions
 - Installation and setup instructions
@@ -599,12 +646,14 @@ Write comprehensive documentation for end users:
 - Comparison with Exa search integration
 
 **Code Documentation:**
+
 - Add comprehensive docstrings to all modules (Google style)
 - Document all classes, methods, and functions
 - Include parameter types, return types, and exceptions
 - Add inline comments for complex logic
 
 **Example Scripts:**
+
 - Create `.ai/tools/perplexity/examples/research_workflow.py`
 - Show how to chain search and chat for research
 - Demonstrate error handling patterns
@@ -646,6 +695,7 @@ Run all validation commands to ensure feature works correctly:
 ### Unit Tests
 
 **Client Tests (`test_client.py`):**
+
 - Client initialization with valid/invalid API keys
 - Session creation and configuration
 - Header generation with Bearer token
@@ -658,6 +708,7 @@ Run all validation commands to ensure feature works correctly:
 - Rate limit header tracking
 
 **Model Tests (`test_models.py`):**
+
 - SearchRequest validation (query, num_results, filters)
 - SearchResponse deserialization from API JSON
 - ChatRequest validation (model, messages, parameters)
@@ -668,6 +719,7 @@ Run all validation commands to ensure feature works correctly:
 - Serialization round-trips (model → dict → model)
 
 **Search Tests (`test_search.py`):**
+
 - Basic search with query only
 - Search with num_results parameter
 - Domain filtering (single, multiple, max 20 limit)
@@ -680,6 +732,7 @@ Run all validation commands to ensure feature works correctly:
 - Error handling for invalid filters
 
 **Chat Tests (`test_chat.py`):**
+
 - Single-message chat
 - Multi-message conversation context
 - Model selection (sonar, sonar-pro)
@@ -692,6 +745,7 @@ Run all validation commands to ensure feature works correctly:
 - Response parsing and model validation
 
 **Utils Tests (`test_utils.py`):**
+
 - API key retrieval from environment
 - API key validation (format, length)
 - API key redaction for logging
@@ -706,6 +760,7 @@ Run all validation commands to ensure feature works correctly:
 ### Integration Tests
 
 **Mocked API Tests:**
+
 - Complete search workflow with mocked successful response
 - Complete chat workflow with mocked successful response
 - Rate limit error (429) with retry behavior
@@ -718,6 +773,7 @@ Run all validation commands to ensure feature works correctly:
 - Logging output structure and content
 
 **Mock Patterns:**
+
 - Use `responses` library to mock HTTP responses
 - Mock `requests.Session.request()` for client tests
 - Mock `os.getenv()` for environment variable tests
@@ -727,6 +783,7 @@ Run all validation commands to ensure feature works correctly:
 ### E2E Tests
 
 **Real API Tests (requires PERPLEXITY_API_KEY):**
+
 - Search with simple query (e.g., "artificial intelligence")
 - Search with domain filter (e.g., arxiv.org, github.com)
 - Search with language filter (e.g., en, fr)
@@ -741,6 +798,7 @@ Run all validation commands to ensure feature works correctly:
 - Verify streaming yields chunks correctly
 
 **E2E Test Configuration:**
+
 - Separate test file: `test_e2e.py`
 - Mark with `@pytest.mark.e2e` decorator
 - Skip if `PERPLEXITY_API_KEY` not set
@@ -749,6 +807,7 @@ Run all validation commands to ensure feature works correctly:
 - Document setup instructions in test file
 
 **Rate Limit Handling in E2E:**
+
 - Add delays between requests (1-2 seconds)
 - Implement retry with exponential backoff
 - Respect `Retry-After` header
@@ -757,6 +816,7 @@ Run all validation commands to ensure feature works correctly:
 ### Edge Cases
 
 **Input Validation Edge Cases:**
+
 - Empty query string → validation error
 - Query with only whitespace → validation error
 - Negative num_results → validation error
@@ -770,6 +830,7 @@ Run all validation commands to ensure feature works correctly:
 - Invalid model name → validation error
 
 **API Response Edge Cases:**
+
 - Empty results array → return empty SearchResponse
 - Missing optional fields (title, snippet, published_date) → None values
 - Malformed JSON response → raise parsing error
@@ -778,6 +839,7 @@ Run all validation commands to ensure feature works correctly:
 - Timeout during streaming → raise timeout error mid-stream
 
 **Network Edge Cases:**
+
 - Connection timeout → retry with backoff
 - Read timeout → retry with backoff
 - DNS resolution failure → connection error
@@ -786,6 +848,7 @@ Run all validation commands to ensure feature works correctly:
 - HTTP 502/503 gateway error → retry with backoff
 
 **Environment Edge Cases:**
+
 - Missing PERPLEXITY_API_KEY → clear error message
 - Empty PERPLEXITY_API_KEY → validation error
 - Invalid API key format → validation error
@@ -795,6 +858,7 @@ Run all validation commands to ensure feature works correctly:
 ## Acceptance Criteria
 
 **Functional Requirements:**
+
 - [ ] Search API successfully executes queries and returns results
 - [ ] Chat Completions API successfully generates grounded responses with citations
 - [ ] Domain filtering correctly limits results to specified domains (max 20)
@@ -807,6 +871,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Citations are extracted and displayed correctly
 
 **CLI Requirements:**
+
 - [ ] `cli_search.py` accepts all documented arguments and flags
 - [ ] `cli_chat.py` accepts all documented arguments and flags
 - [ ] CLI scripts provide helpful error messages for invalid inputs
@@ -816,6 +881,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Help text (`--help`) is clear and includes examples
 
 **Error Handling Requirements:**
+
 - [ ] Authentication errors (401) display clear message about API key
 - [ ] Rate limit errors (429) retry with exponential backoff
 - [ ] Validation errors (400/422) show specific field errors
@@ -824,6 +890,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] All errors include request_id when available for debugging
 
 **Testing Requirements:**
+
 - [ ] Unit test coverage ≥ 90% for all modules
 - [ ] All integration tests pass with mocked responses
 - [ ] E2E tests pass with real API key (manual verification)
@@ -831,6 +898,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Edge case tests cover all validation scenarios
 
 **Code Quality Requirements:**
+
 - [ ] All code passes type checking with `mypy --strict`
 - [ ] All code passes linting with `ruff check`
 - [ ] All code is formatted with `ruff format`
@@ -839,6 +907,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Complex logic has inline comments
 
 **Documentation Requirements:**
+
 - [ ] Quick reference guide is complete and accurate
 - [ ] All CLI arguments are documented with examples
 - [ ] Common use cases are documented with code samples
@@ -847,6 +916,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Setup instructions are clear and complete
 
 **Integration Requirements:**
+
 - [ ] Claude agents can successfully invoke CLI scripts
 - [ ] Scripts work with `uv run` command
 - [ ] Environment variable (`PERPLEXITY_API_KEY`) is properly configured
@@ -854,6 +924,7 @@ Run all validation commands to ensure feature works correctly:
 - [ ] Documentation integrated with existing AI tools docs
 
 **Performance Requirements:**
+
 - [ ] Average search request completes in < 3 seconds
 - [ ] Average chat request completes in < 5 seconds
 - [ ] Streaming chat starts yielding within 1 second
@@ -929,7 +1000,7 @@ export PERPLEXITY_API_KEY=your-test-key-here
 pytest .ai/tools/perplexity/test_e2e.py -v -m e2e
 
 # Verify documentation
-cat .ai/ai_docs/context-docs/tools/perplexity-api-integration.md
+cat .ai/ai_docs/tool-docs/perplexity-api-integration.md
 
 # Test example scripts
 uv run .ai/tools/perplexity/examples/research_workflow.py
@@ -945,33 +1016,39 @@ cat .ai/.env.sample | grep PERPLEXITY_API_KEY
 ## Notes
 
 **API Key Acquisition:**
-- Perplexity API keys can be obtained at: https://www.perplexity.ai/account/api
+
+- Perplexity API keys can be obtained at: <https://www.perplexity.ai/account/api>
 - Free tier available for testing
 - Pro tier required for production usage (higher rate limits, sonar-pro model)
 
 **Rate Limits:**
+
 - Free tier: 5 requests/minute, 200 requests/day
 - Standard tier: 20 requests/minute, 5000 requests/day
 - Pro tier: 50 requests/minute, 10000 requests/day
 - Monitor rate limit headers to avoid quota exhaustion
 
 **Model Selection:**
+
 - `sonar`: Standard model, balanced performance and cost
 - `sonar-pro`: Advanced model, better quality, higher cost
 - Use `sonar` for most queries, `sonar-pro` for complex research
 
 **Citation Quality:**
+
 - Perplexity automatically grounds responses in web sources
 - Citations include URL, title, and relevant snippet
 - Verify citation URLs before relying on them for critical decisions
 
 **Comparison with Exa:**
+
 - **Exa**: Semantic search, find similar pages, content extraction
 - **Perplexity**: AI-grounded answers, real-time web search, conversational context
 - **Use Exa for**: Finding specific resources, discovering related content
 - **Use Perplexity for**: Answering questions, synthesizing information, recent news
 
 **Security Best Practices:**
+
 - Never commit `.env` files to git
 - Rotate API keys periodically (every 90 days recommended)
 - Use separate API keys for dev/staging/prod environments
@@ -979,6 +1056,7 @@ cat .ai/.env.sample | grep PERPLEXITY_API_KEY
 - Redact API keys in all logs
 
 **Performance Optimization:**
+
 - Use connection pooling for concurrent requests
 - Implement caching for repeated queries (optional)
 - Batch similar queries when possible
@@ -986,6 +1064,7 @@ cat .ai/.env.sample | grep PERPLEXITY_API_KEY
 - Monitor and respect rate limits to avoid backoff delays
 
 **Future Enhancements:**
+
 - Add response caching with TTL (time-to-live)
 - Implement query history and analytics
 - Add support for image search (when available)
@@ -994,9 +1073,11 @@ cat .ai/.env.sample | grep PERPLEXITY_API_KEY
 - Implement A/B testing between Perplexity and Exa for research tasks
 
 **Dependencies Added:**
+
 - `perplexityai` - Official Python SDK for Perplexity API
 
 **Known Limitations:**
+
 - Date filtering format is MM/DD/YYYY (US format) per API specification
 - Maximum 20 domains per search request
 - Maximum 10 languages per search request

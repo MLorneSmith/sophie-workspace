@@ -16,7 +16,7 @@ This document provides a comprehensive overview of the SlideHeroes platform arch
 
 ## System Overview
 
-SlideHeroes is a modern SaaS platform for AI-powered PowerPoint generation built on Next.js 15, Supabase, and Payload CMS.
+SlideHeroes is a modern SaaS platform for AI-powered PowerPoint generation built on Next.js 16, Supabase, and Payload CMS.
 
 **Key Priorities:**
 
@@ -41,7 +41,7 @@ Client (Browser) → CDN/Edge (Vercel/Cloudflare) → Application Layer
 
 ```
 apps/
-├── web/          # Next.js 15.0.4 main application
+├── web/          # Next.js 16.0.0 main application
 ├── payload/      # Payload CMS 3.x content management
 ├── dev-tool/     # Component development
 └── e2e/          # Playwright tests
@@ -56,7 +56,7 @@ packages/
 
 ## Technology Stack
 
-**Frontend**: Next.js 15.0.4, TypeScript 5.7, Tailwind CSS, Shadcn/UI
+**Frontend**: Next.js 16.0.0, TypeScript 5.9.3, Tailwind CSS, Shadcn/UI
 **Backend**: Supabase (PostgreSQL + Auth + RLS), Server Actions, Zod
 **Infrastructure**: Vercel, Cloudflare R2, GitHub Actions, Turborepo
 **External**: Stripe, AI Services, New Relic monitoring

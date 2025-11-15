@@ -45,7 +45,7 @@ import { Card } from '@kit/ui/card';
 import { cn } from '@kit/ui/cn';
 ```
 
-## Available Components (40 Components)
+## Available Components (44 Components)
 
 ### Forms & Inputs
 

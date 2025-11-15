@@ -11,6 +11,7 @@ This directory contains documentation for all testing approaches used in the Sli
 ### Core Testing Principles
 
 #### [fundamentals.md](./fundamentals.md)
+
 Core testing principles, TypeScript patterns, type-safe mocking, and test organization.
 
 **When to use**: Starting with testing, understanding AAA pattern, writing type-safe tests, creating test factories.
@@ -18,21 +19,25 @@ Core testing principles, TypeScript patterns, type-safe mocking, and test organi
 ### Test Types
 
 #### [integration-testing.md](./integration-testing.md)
+
 Integration test strategies for authentication, AI services, payments, database transactions, and file uploads.
 
 **When to use**: Testing workflows that span multiple components, testing API integrations, database operations.
 
 #### [e2e-testing.md](./e2e-testing.md)
+
 Playwright E2E patterns including Page Object Model, test data management, and parallel execution.
 
 **When to use**: Testing complete user workflows, cross-browser testing, visual regression testing.
 
 #### [accessibility-testing.md](./accessibility-testing.md)
+
 Accessibility testing with WCAG 2.1 compliance, keyboard navigation, screen reader support.
 
 **When to use**: Ensuring WCAG compliance, testing keyboard accessibility, validating ARIA attributes.
 
 #### [performance-testing.md](./performance-testing.md)
+
 Performance testing patterns including Core Web Vitals, load testing, memory monitoring.
 
 **When to use**: Optimizing performance, testing under load, monitoring memory usage, measuring Core Web Vitals.
@@ -40,6 +45,7 @@ Performance testing patterns including Core Web Vitals, load testing, memory mon
 ### Configuration & Infrastructure
 
 #### [vitest-configuration.md](./vitest-configuration.md)
+
 Vitest setup, workspace configuration, mocking patterns, coverage requirements.
 
 **When to use**: Setting up new test suites, configuring test environments, troubleshooting Vitest issues.
@@ -130,6 +136,7 @@ Before writing tests:
 ## Running Tests
 
 ### Unit Tests
+
 ```bash
 pnpm test:unit              # Run all unit tests
 pnpm test:unit --watch      # Watch mode
@@ -137,11 +144,13 @@ pnpm test:coverage          # With coverage report
 ```
 
 ### Integration Tests
+
 ```bash
 pnpm test:integration       # Run integration tests
 ```
 
 ### E2E Tests
+
 ```bash
 pnpm test:e2e              # Run all E2E tests
 pnpm test:e2e --ui         # Interactive UI mode
@@ -149,6 +158,7 @@ pnpm test:e2e --headed     # See browser
 ```
 
 ### All Tests
+
 ```bash
 pnpm test                  # Run all test suites
 ```

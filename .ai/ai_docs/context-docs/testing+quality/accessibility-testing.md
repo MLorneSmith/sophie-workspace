@@ -228,9 +228,7 @@ test('semantic landmarks', async ({ page }) => {
 ## Related Files
 
 - `/apps/e2e/tests/accessibility/hybrid-a11y.ts` - HybridAccessibilityTester implementation
-- `/tests/accessibility/accessibility.spec.ts` - Main accessibility test suite
 - `/apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts` - E2E accessibility tests
-- `/apps/e2e/.axerc.json` - Legacy axe configuration (deprecated)
 
 ## Common Patterns
 

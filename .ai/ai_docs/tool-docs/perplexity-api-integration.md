@@ -10,11 +10,13 @@ The Perplexity API integration provides AI agents with powerful web research cap
 ## When to Use
 
 **Search API**: When you need to find specific web content with ranking and filtering
+
 - Finding recent research papers on a topic
 - Searching specific domains for information
 - Getting time-filtered results (last day/week/month/year)
 
 **Chat Completions API**: When you need AI-generated answers grounded in current web data
+
 - Answering complex questions with citations
 - Getting comprehensive explanations with sources
 - Streaming responses for real-time interactions
@@ -22,16 +24,19 @@ The Perplexity API integration provides AI agents with powerful web research cap
 ## Installation & Setup
 
 1. **Install dependencies** (if not already installed):
+
    ```bash
    pip install requests pydantic python-dotenv
    ```
 
 2. **Set API key** in `.ai/.env`:
+
    ```bash
    PERPLEXITY_API_KEY=your-api-key-here
    ```
 
 3. **Verify setup**:
+
    ```bash
    python -c "from perplexity import PerplexityClient; print('✓ Setup complete')"
    ```
@@ -74,6 +79,7 @@ uv run .ai/tools/perplexity/cli_search.py "actualités" --languages fr,en,es
 ### Time-Based Filtering
 
 **Recency filters** (mutually exclusive with date filters):
+
 ```bash
 # Last day
 uv run .ai/tools/perplexity/cli_search.py "breaking news AI" --recency day
@@ -89,6 +95,7 @@ uv run .ai/tools/perplexity/cli_search.py "2024 AI trends" --recency year
 ```
 
 **Date range filtering** (MM/DD/YYYY format):
+
 ```bash
 # After specific date
 uv run .ai/tools/perplexity/cli_search.py "AI news" --after-date 01/01/2025
@@ -280,27 +287,35 @@ uv run .ai/tools/perplexity/cli_search.py "AI regulation updates" \
 ### Common Errors
 
 1. **Authentication Error (401)**
+
    ```
    Error: Authentication failed. Check your PERPLEXITY_API_KEY.
    ```
+
    Solution: Verify `PERPLEXITY_API_KEY` is set in `.ai/.env`
 
 2. **Rate Limit Error (429)**
+
    ```
    Error: Rate limit exceeded. Please retry after 60s
    ```
+
    Solution: Wait and retry. Consider upgrading API plan for higher limits.
 
 3. **Validation Error (400)**
+
    ```
    Error: Request validation failed.
    ```
+
    Solution: Check parameter formats (dates as MM/DD/YYYY, language codes as lowercase ISO 639-1)
 
 4. **Timeout Error (408/504)**
+
    ```
    Error: Request timed out after 60 seconds
    ```
+
    Solution: Increase timeout or simplify query
 
 ### Python Error Handling
@@ -337,12 +352,14 @@ except PerplexityAPIError as e:
 | **Citations** | Built-in with responses | Extracted from results |
 
 **When to use Perplexity**:
+
 - Need grounded AI responses with automatic citations
 - Want time-based filtering (recency: day/week/month/year)
 - Require language-specific results
 - Building conversational research tools
 
 **When to use Exa**:
+
 - Need semantic/neural search
 - Finding similar/related pages
 - Want neural understanding of complex queries
@@ -376,6 +393,7 @@ except PerplexityAPIError as e:
 ## Troubleshooting
 
 **Import errors**:
+
 ```bash
 # Ensure you're in the project root
 cd /home/msmith/projects/2025slideheroes
@@ -385,6 +403,7 @@ uv run .ai/tools/perplexity/cli_search.py "test"
 ```
 
 **Module not found**:
+
 ```python
 # Add parent directory to Python path
 import sys
@@ -393,6 +412,7 @@ from perplexity import search, chat
 ```
 
 **API key not found**:
+
 ```bash
 # Check environment variable
 echo $PERPLEXITY_API_KEY
@@ -413,7 +433,7 @@ export $(cat .ai/.env | grep PERPLEXITY_API_KEY)
 
 ## Additional Resources
 
-- **Perplexity API Docs**: https://docs.perplexity.ai
+- **Perplexity API Docs**: <https://docs.perplexity.ai>
 - **Code Location**: `.ai/tools/perplexity/`
 - **Example Scripts**: `.ai/tools/perplexity/examples/`
 - **Tests**: `.ai/tools/perplexity/tests/`
