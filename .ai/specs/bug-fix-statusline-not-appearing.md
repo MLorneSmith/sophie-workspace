@@ -28,6 +28,7 @@ For full details, see diagnosis issue #604.
 **Description**: Add execute permissions (755) to all statusline-related scripts and add the `statusLine` configuration block to `.claude/settings.json` as specified in Claude Code documentation.
 
 **Pros**:
+
 - Simple, surgical fix addressing both root causes
 - Zero code changes required - only permissions and configuration
 - Follows official Claude Code documentation exactly
@@ -36,6 +37,7 @@ For full details, see diagnosis issue #604.
 - Matches the standard pattern for Claude Code statusline setup
 
 **Cons**:
+
 - None identified - this is the standard, documented approach
 
 **Risk Assessment**: low - This is a pure configuration/permissions fix with no code changes. The statusline scripts are already implemented and just need to be enabled. Worst case: statusline still doesn't appear (no regression possible).
@@ -47,10 +49,12 @@ For full details, see diagnosis issue #604.
 **Description**: Delete existing statusline scripts and recreate them with proper permissions from the start.
 
 **Pros**:
+
 - Ensures clean slate with correct permissions
 - Opportunity to review/improve script logic
 
 **Cons**:
+
 - Unnecessary work - scripts are already implemented and functional
 - Higher risk of introducing bugs during recreation
 - Time-consuming compared to simple permission fix
@@ -69,16 +73,19 @@ For full details, see diagnosis issue #604.
 **Justification**: This approach directly addresses both identified root causes with minimal changes and zero risk. The statusline scripts are already implemented and functional - they just need proper permissions and configuration to be enabled. This is the standard, documented approach for Claude Code statusline setup.
 
 **Technical Approach**:
+
 - Add execute permissions (755) to all `.sh` files in `.claude/statusline/` directory
 - Add the `statusLine` configuration block to `.claude/settings.json`
 - Configuration follows exact format specified in Claude Code documentation
 - No code modifications needed - pure configuration/permissions fix
 
 **Architecture Changes** (if any):
+
 - No architectural changes required
 - Only configuration and file permission changes
 
 **Migration Strategy** (if needed):
+
 - No migration needed - this is enabling an existing feature
 
 ## Implementation Plan
@@ -86,6 +93,7 @@ For full details, see diagnosis issue #604.
 ### Affected Files
 
 List files that need modification:
+
 - `.claude/statusline/statusline.sh` - Add execute permissions (chmod +x)
 - `.claude/statusline/build-wrapper.sh` - Add execute permissions (chmod +x)
 - `.claude/statusline/test-wrapper.sh` - Add execute permissions (chmod +x)
@@ -121,6 +129,7 @@ Add the `statusLine` configuration block to `.claude/settings.json` to tell Clau
 - Read current `.claude/settings.json` content
 - Add `statusLine` configuration block at the root level (same level as `permissions` and `hooks`)
 - Use exact configuration format from Claude Code documentation:
+
   ```json
   {
     "statusLine": {
@@ -130,6 +139,7 @@ Add the `statusLine` configuration block to `.claude/settings.json` to tell Clau
     }
   }
   ```
+
 - Preserve all existing configuration (permissions, hooks)
 - Ensure valid JSON formatting
 - Write updated configuration back to file
@@ -228,6 +238,7 @@ Execute these manual tests before considering the fix complete:
 **Rollback Plan**:
 
 If this fix causes issues in Claude Code:
+
 1. Remove `statusLine` configuration block from `.claude/settings.json`
 2. Restart Claude Code to revert to default statusline
 3. Investigate specific error from statusline script logs
@@ -238,11 +249,13 @@ If this fix causes issues in Claude Code:
 **Expected Impact**: minimal
 
 The statusline scripts are designed to be lightweight and include caching mechanisms to avoid repeated expensive operations. Each script execution:
+
 - Caches status results with timestamps
 - Only re-runs expensive checks (build, test) when cache expires
 - Uses fast operations for real-time data (git branch, model name)
 
 **Performance Testing**:
+
 - Monitor Claude Code responsiveness after enabling statusline
 - Check for any lag when statusline updates
 - Verify statusline updates don't block user interaction
@@ -253,6 +266,7 @@ The statusline scripts are designed to be lightweight and include caching mechan
 **Security Impact**: none
 
 This change only affects Claude Code UI display and local development environment. The statusline scripts:
+
 - Run locally in user's development environment
 - Don't access external services or APIs
 - Don't transmit data outside the local system
@@ -277,6 +291,7 @@ cat .claude/settings.json | grep -A 5 "statusLine"
 ```
 
 **Expected Result**:
+
 - Permissions show `644` (`-rw-r--r--`)
 - Execution fails with "permission denied" error (exit code 126)
 - No `statusLine` configuration found in settings.json
@@ -299,6 +314,7 @@ cat .claude/settings.json | jq . > /dev/null && echo "Valid JSON"
 ```
 
 **Expected Result**:
+
 - All scripts show `755` permissions (`-rwxr-xr-x`)
 - Statusline script executes successfully and outputs statusline text
 - `statusLine` configuration block present in settings.json with correct format
@@ -327,6 +343,7 @@ echo "Testing permissions..."
 **No new dependencies required**
 
 All statusline scripts use standard bash/shell tools that are already available in the development environment:
+
 - bash (shell interpreter)
 - git (for branch/status information)
 - jq (for JSON parsing - already used in project)
@@ -343,6 +360,7 @@ This fix only affects Claude Code configuration and file permissions - no databa
 **Deployment Risk**: low
 
 This is a local development environment configuration change that:
+
 - Only affects developers' local Claude Code instances
 - Does not affect production application
 - Does not affect CI/CD pipelines
@@ -357,6 +375,7 @@ This is a local development environment configuration change that:
 ## Success Criteria
 
 The fix is complete when:
+
 - [x] All statusline scripts have execute permissions (755)
 - [x] `.claude/settings.json` contains valid `statusLine` configuration block
 - [x] Test execution of statusline script succeeds (exit code 0)
@@ -389,6 +408,7 @@ The fix is complete when:
 ### Historical Context
 
 The statusline implementation was previously working (evidenced by issue #440 about Docker health not refreshing). Recent repository reorganization (commits 8d7f23303 and 752dcccd2) appear to have resulted in:
+
 1. Loss of execute permissions during file moves/reorganization
 2. Missing configuration in the new `.claude/settings.json` structure
 

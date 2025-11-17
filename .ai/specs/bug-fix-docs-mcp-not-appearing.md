@@ -28,6 +28,7 @@ For full details, see diagnosis issue #603.
 **Description**: Force Claude Code to reload configuration by restarting the application and clearing any cached state. This addresses the most likely root cause: stale cached configuration from before the #602 fix was applied.
 
 **Pros**:
+
 - Simplest solution with no code changes required
 - Directly addresses the most likely root cause (stale cache/state)
 - Zero risk of breaking other functionality
@@ -36,6 +37,7 @@ For full details, see diagnosis issue #603.
 - Diagnosis evidence points to this: "the manual testing steps were never completed"
 
 **Cons**:
+
 - Requires manual intervention (not automated)
 - If unsuccessful, requires deeper investigation
 - Doesn't provide permanent solution if Claude Code lacks hot-reload capability
@@ -49,12 +51,14 @@ For full details, see diagnosis issue #603.
 **Description**: Add the `-y` flag to the `npx` command arguments to automatically accept package installation without prompting. This matches the pattern used in `.mcp.example.json` for the Exa server configuration.
 
 **Pros**:
+
 - Eliminates potential prompt-blocking issues if npx tries to interactively install mcp-remote
 - Matches one documented pattern in example configuration
 - Simple one-line configuration change
 - Ensures non-interactive execution in automated contexts
 
 **Cons**:
+
 - Cloudflare example servers don't use `-y` flag, so pattern is inconsistent
 - Manual `npx mcp-remote` test already succeeded without `-y` flag
 - Doesn't address the primary issue (cache/restart)
@@ -67,11 +71,13 @@ For full details, see diagnosis issue #603.
 **Description**: Replace `localhost` with `127.0.0.1` in the SSE endpoint URL to eliminate potential hostname resolution issues in WSL2 environment.
 
 **Pros**:
+
 - Eliminates DNS resolution as a variable
 - May work better in WSL2 networking context
 - Simple configuration change
 
 **Cons**:
+
 - Docker container is confirmed accessible via `localhost` (curl test succeeded)
 - Manual testing with `localhost` URL already worked
 - Less likely to be the root cause given successful endpoint tests
@@ -86,6 +92,7 @@ For full details, see diagnosis issue #603.
 The secondary enhancement (adding `-y` flag) provides defensive benefits by ensuring non-interactive execution, eliminating one potential failure mode even though manual testing suggests it's not currently blocking.
 
 **Technical Approach**:
+
 1. Document and execute proper Claude Code restart procedure
 2. Clear any cached configuration or state
 3. Verify configuration is reloaded
@@ -102,6 +109,7 @@ The secondary enhancement (adding `-y` flag) provides defensive benefits by ensu
 ### Affected Files
 
 List files that need modification:
+
 - `.mcp.json` - Add `-y` flag to npx args for defensive non-interactive execution
 - `.ai/ai_docs/tool-docs/mcp-configuration.md` - Document Claude Code restart requirement for configuration changes
 
@@ -225,12 +233,14 @@ Execute these manual tests before considering the fix complete:
 **Rollback Plan**:
 
 If this fix causes issues:
+
 1. Revert `.mcp.json` to previous working state (remove `-y` flag if needed)
 2. Validate JSON syntax: `jq empty .mcp.json`
 3. Restart Claude Code to reload reverted configuration
 4. Escalate to Claude Code support with diagnosis details
 
 **Monitoring**:
+
 - Monitor Claude Code startup for errors related to MCP server initialization
 - Watch Docker container health: `docker ps | grep docs-mcp` should remain healthy
 - Monitor SSE endpoint responsiveness after changes
@@ -326,6 +336,7 @@ jq 'has("mcpServers")' .mcp.json
 **No new dependencies required**
 
 All required tools are already present:
+
 - `npx` (v10.9.2) - Node package runner
 - `mcp-remote` - Installed on-demand by npx
 - `jq` - JSON processor (for validation)
@@ -353,6 +364,7 @@ This is a local development configuration fix affecting individual developer mac
 ## Success Criteria
 
 The fix is complete when:
+
 - [ ] Claude Code restart procedure documented and executed
 - [ ] `/mcp` command lists docs-mcp in configured servers
 - [ ] docs-mcp tools appear in available tools list (mcp__docs-mcp__search_docs, mcp__docs-mcp__scrape_docs, etc.)
@@ -376,12 +388,14 @@ The fix is complete when:
 ### Historical Context
 
 This is the **4th occurrence** of docs-mcp integration issues (#439, #598/#599, #601/#602, #603). The pattern shows:
+
 - Issues #598, #599, #601, #602: Configuration format problems (fixed)
 - Issue #603 (current): Configuration reload/cache problem (being fixed)
 
 ### Prevention Strategy
 
 To prevent future occurrences:
+
 1. Always restart Claude Code after modifying `.mcp.json`
 2. Complete all manual validation steps before closing issues
 3. Document operational procedures alongside technical fixes
