@@ -8,6 +8,7 @@ variable management, logging, and data transformation.
 import os
 import re
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 
@@ -15,12 +16,35 @@ def get_api_key() -> str:
     """
     Get the Perplexity API key from environment variables.
 
+    Attempts to load from .env files in the following order:
+    1. .ai/.env
+    2. Project root .env
+    3. Environment variable PERPLEXITY_API_KEY
+
     Returns:
         The API key string
 
     Raises:
         ValueError: If PERPLEXITY_API_KEY is not set
     """
+    # Try to load from .env files
+    try:
+        from dotenv import load_dotenv
+
+        # Try .ai/.env first (override existing env vars to allow key updates)
+        ai_env = Path(__file__).parent.parent / ".env"
+        if ai_env.exists():
+            load_dotenv(ai_env, override=True)
+
+        # Try project root .env
+        project_root = Path(__file__).parent.parent.parent.parent
+        root_env = project_root / ".env"
+        if root_env.exists():
+            load_dotenv(root_env, override=False)  # Don't override .ai/.env
+    except ImportError:
+        # dotenv not available, just use environment variables
+        pass
+
     api_key = os.getenv("PERPLEXITY_API_KEY")
     if not api_key:
         raise ValueError(
