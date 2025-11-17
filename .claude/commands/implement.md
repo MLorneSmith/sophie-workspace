@@ -17,11 +17,11 @@ You're implementing a plan that has already been designed and reviewed. Execute 
 
 1. **Fetch implementation plan from GitHub**: If $ARGUMENTS contains a GitHub issue number (e.g., `123` or `#123`), fetch the plan:
    ```bash
-   # Extract issue number and fetch the implementation plan
+   # Extract issue number and fetch the implementation plan with comments
    gh issue view <issue-number> \
      --repo MLorneSmith/2025slideheroes \
-     --json body,title,labels,url \
-     --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url}'
+     --json body,title,labels,url,comments \
+     --jq '{body: .body, title: .title, labels: [.labels[].name], url: .url, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
    ```
 
    If $ARGUMENTS is not a GitHub issue number, treat it as the plan content directly (see `Plan` section below).

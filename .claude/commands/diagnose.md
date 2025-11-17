@@ -62,19 +62,81 @@ A diagnosis is **COMPLETE** only when ALL of these are met:
    - Capture environment details (Node version, database version, etc.)
 
 4. **Run relevant diagnostic tools** (when applicable):
-   - **Browser/UI issues**: Use browser developer tools, check console errors, network tab
-   - **Database issues**: Check database logs, query performance, connection status
-   - **Performance issues**: Run performance profiling, check memory usage
-   - If specialized MCP tools are available (Cloudflare, PostgreSQL), use them for deeper analysis
-   - If tools are not available, gather diagnostic data through standard commands and logs
+
+   **Identify the issue category first**, then read the appropriate tool documentation:
+
+   **Database Issues** (slow queries, RLS failures, connection issues, migration problems):
+   - Read `.ai/ai_docs/tool-docs/psql-integration.md` for:
+     - Direct database inspection with psql
+     - RLS policy testing patterns
+     - Performance analysis with EXPLAIN ANALYZE
+     - Debugging queries and functions
+   - Read `.ai/ai_docs/tool-docs/supabase-cli.md` for:
+     - Database health metrics (cache-hit, bloat, locks)
+     - Long-running query detection
+     - Table size analysis
+     - Migration troubleshooting
+
+   **Performance Issues** (slow responses, high error rates, transaction problems):
+   - Read `.ai/ai_docs/tool-docs/newrelic-cli.md` for:
+     - NRQL queries for error rates and response times
+     - Transaction analysis and APM data
+     - Performance trend investigation
+     - Error tracking and monitoring
+
+   **Deployment/Build Issues** (build failures, environment config, runtime errors):
+   - Read `.ai/ai_docs/tool-docs/vercel-cli.md` for:
+     - Deployment log inspection
+     - Environment variable debugging
+     - Build troubleshooting commands
+     - Production vs preview environment issues
+
+   **Frontend/Browser Issues**:
+   - Use browser developer tools (Console, Network, Elements tabs)
+   - Check console errors and warnings
+   - Inspect network requests and responses
+   - Check React component tree and state
+   - Verify hydration mismatches (Next.js specific)
+   - Monitor client-side performance
+
+   **IMPORTANT**: When you identify an issue category, **read the relevant tool documentation file(s)** to get comprehensive diagnostic commands and patterns for that specific problem. The tool docs contain detailed examples and troubleshooting workflows.
 
 5. **Research the issue UNTIL root cause is found**:
    - Start by reading the `README.md` file to understand the project context
    - Use the Task tool with `subagent_type=Explore` to investigate the codebase
    - Search for error messages, stack traces, and related code patterns
    - Identify affected components and their dependencies
+
+   **When to conduct external research** (use research agents proactively):
+   - Error involves external libraries, frameworks, or third-party APIs
+   - Stack trace points to code in node_modules or external dependencies
+   - Error messages suggest known issues or breaking changes
+   - Need to verify expected behavior of external APIs/libraries
+   - Investigating compatibility issues or version conflicts
+
+   **Research Agent Usage**:
+   - **For comprehensive research** (recommended): Use `research-agent` agent
+     - Orchestrates all research agents in parallel (fastest, most thorough)
+     - Searches documentation, web resources, and semantic content simultaneously
+     - Example: "Research Next.js hydration error patterns and known issues"
+
+   - **For specific needs** (when you know the source):
+     - `context7-expert`: Official library documentation lookup
+       - Example: "Get Supabase RLS documentation and examples"
+     - `perplexity-search-expert`: Current web research, recent discussions
+       - Example: "Find recent solutions for React 19 hydration bugs"
+     - `exa-search-expert`: Semantic search for tutorials and technical content
+       - Example: "Find technical articles about JWT token validation errors"
+
+   **Example research scenarios**:
+   - Error: "TypeError in @supabase/auth-helpers" → Use research-agent to find docs + known issues
+   - Error: "CORS policy blocked" in external API → Use perplexity-search-expert for solutions
+   - Need: Understanding Next.js middleware behavior → Use context7-expert for official docs
+   - Need: Finding similar bug reports → Use exa-search-expert for GitHub issues/discussions
+
    - **CRITICAL**: If initial investigation doesn't reveal root cause:
      - Expand search to related files and dependencies
+     - **Use research agents to investigate external dependencies** (see Research Agent Usage above)
      - Check git history for recent changes to affected code
      - Search for similar patterns in other parts of codebase
      - Review integration points and data flow

@@ -27,11 +27,11 @@ IMPORTANT: The diagnosis has already identified the root cause - your job is to 
 
 **Fetch the diagnosis issue from GitHub**:
 ```bash
-# Extract issue number from $ARGUMENTS and fetch diagnosis
+# Extract issue number from $ARGUMENTS and fetch diagnosis with comments
 gh issue view <issue-number> \
   --repo MLorneSmith/2025slideheroes \
-  --json body,title,labels,number \
-  --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number}'
+  --json body,title,labels,number,comments \
+  --jq '{body: .body, title: .title, labels: [.labels[].name], number: .number, comments: [.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]}'
 ```
 
 **Validate it's a diagnosis issue**:
