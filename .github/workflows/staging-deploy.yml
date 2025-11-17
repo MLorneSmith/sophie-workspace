@@ -151,6 +151,21 @@ jobs:
       - name: Start Supabase services
         run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
+      - name: Export Supabase environment variables
+        run: |
+          # Get Supabase status and extract URLs and keys
+          cd apps/web
+          SUPABASE_URL=$(npx supabase status | grep "API URL" | awk '{print $3}')
+          SUPABASE_ANON_KEY=$(npx supabase status | grep "anon key" | awk '{print $3}')
+
+          # Export to GITHUB_ENV for subsequent steps
+          echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> $GITHUB_ENV
+
+          # Verify variables were set
+          echo "✅ Exported NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL"
+          echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
+
       - name: Start Stripe CLI
         run: |
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
