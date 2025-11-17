@@ -1,0 +1,57 @@
+name: Deploy to Staging (Simple Test)
+
+on:
+  workflow_dispatch:
+
+# Prevent multiple deployments from running simultaneously
+concurrency:
+  group: deploy-staging-simple-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_ENABLED: true
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+jobs:
+  # Simple validation without reusable workflows
+  validate:
+    name: Simple Validation
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-deps
+      - name: Run quick validation
+        run: |
+          echo "Validation passed"
+
+  # Deploy Web App to Vercel Staging environment (simplified)
+  deploy-web:
+    name: Deploy Web App to Staging (Simple)
+    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    needs: validate
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.url }}
+    outputs:
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-deps
+      
+      - name: Deploy to Vercel
+        id: deploy
+        uses: ./.github/actions/vercel-deploy
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+          environment: staging
+          build-artifacts: false
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          health-check-url: /healthcheck

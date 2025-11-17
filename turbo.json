@@ -145,6 +145,10 @@
 			"env": ["NODE_ENV"],
 			"cache": true
 		},
+		"build:test": {
+			"dependsOn": ["^build"],
+			"outputs": [".next/**", "!.next/cache/**", "next-env.d.ts", "dist/**"]
+		},
 		"dev": {
 			"persistent": true,
 			"cache": false
