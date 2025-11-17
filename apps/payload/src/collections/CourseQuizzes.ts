@@ -1,7 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 export const CourseQuizzes: CollectionConfig = {
-	slug: "course_quizzes",
+	slug: "course-quizzes",
 	labels: {
 		singular: "Course Quiz",
 		plural: "Course Quizzes",
@@ -57,7 +57,7 @@ export const CourseQuizzes: CollectionConfig = {
 		{
 			name: "questions",
 			type: "relationship",
-			relationTo: "quiz_questions",
+			relationTo: "quiz-questions",
 			hasMany: true,
 			required: false, // Temporarily set to false for Stage 2 seeding, will be populated in Stage 3
 			admin: {

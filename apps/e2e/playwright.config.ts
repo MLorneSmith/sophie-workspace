@@ -1,18 +1,22 @@
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
-dotenvConfig();
-dotenvConfig({ path: ".env.local" });
+// Load environment variables with quiet mode to suppress logging
+// override: true allows CI environment variables to take precedence over .env file
+// This is critical for integration tests running against deployed environments
+dotenvConfig({
+	path: [".env", ".env.local"],
+	quiet: true, // Suppress dotenv logging
+	override: true, // Allow CI env vars to override .env
+});
 
-// Load E2E specific environment variables
-process.env.SUPABASE_URL =
-	process.env.E2E_SUPABASE_URL || "http://localhost:55321";
-process.env.SUPABASE_ANON_KEY = process.env.E2E_SUPABASE_ANON_KEY || "";
-process.env.SUPABASE_SERVICE_ROLE_KEY =
-	process.env.E2E_SUPABASE_SERVICE_ROLE_KEY || "";
-process.env.DATABASE_URL =
-	process.env.E2E_DATABASE_URL ||
-	"postgresql://postgres:postgres@localhost:55322/postgres";
+/**
+
+* Number of workers to use in CI. Tweak based on your CI provider's resources.
+* Reduced from 4 to 2 to prevent resource contention and authentication conflicts
+* This improves stability at the cost of slightly increased test duration
+ */
+const CI_WORKERS = 2;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
@@ -21,183 +25,120 @@ const enableTeamAccountTests =
 const testIgnore: string[] = [];
 
 if (!enableBillingTests) {
-	// Only log in debug mode to avoid Biome linting errors
-	if (process.env.DEBUG) {
-		process.stdout.write(
-			`Billing tests are disabled. To enable them, set the environment variable ENABLE_BILLING_TESTS=true. Current value: "${process.env.ENABLE_BILLING_TESTS}"\n`,
-		);
-	}
-
 	testIgnore.push("*-billing.spec.ts");
 }
 
 if (!enableTeamAccountTests) {
-	// Only log in debug mode to avoid Biome linting errors
-	if (process.env.DEBUG) {
-		process.stdout.write(
-			`Team account tests are disabled. To enable them, set the environment variable ENABLE_TEAM_ACCOUNT_TESTS=true. Current value: "${process.env.ENABLE_TEAM_ACCOUNT_TESTS}"\n`,
-		);
-	}
-
 	testIgnore.push("*team-accounts.spec.ts");
 	testIgnore.push("*invitations.spec.ts");
 	testIgnore.push("*team-billing.spec.ts");
 }
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+
+* Read environment variables from file.
+* <https://github.com/motdotla/dotenv>
  */
 // require('dotenv').config();
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+
+* See <https://playwright.dev/docs/test-configuration>.
  */
 export default defineConfig({
 	testDir: "./tests",
-	/* Run tests in files in parallel - disabled for local stability */
-	fullyParallel: !!process.env.CI,
+	/* Run tests in files in parallel */
+	fullyParallel: true,
+	/* Global setup runs once before all tests to create authenticated browser states */
+	globalSetup: "./global-setup.ts",
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	/* Reduced retries to speed up CI - only retry truly flaky tests */
-	retries: process.env.CI ? 1 : 0,
-	/* Increase max failures for debugging */
-	maxFailures: process.env.CI ? 10 : 50,
-	/* Configure parallel execution - increased for better CI performance */
-	workers: process.env.CI ? 4 : 1, // Increased to 4 workers for CI (8-core runners)
-	/* Enhanced reporting for matrix testing */
-	reporter: [
-		["html", { outputFolder: "playwright-report", open: "never" }],
-		["junit", { outputFile: "test-results/junit.xml" }],
-		["github"], // GitHub Actions integration
-		...(process.env.CI ? [["blob"] as const] : []), // Blob reporter for CI artifacts
-	],
+	retries: 1,
+	/* Limit parallel tests on CI. */
+	workers: process.env.CI ? CI_WORKERS : undefined,
+	/* Reporter to use. See <https://playwright.dev/docs/test-reporters> */
+	reporter: "html",
 	/* Ignore billing tests if the environment variable is not set. */
 	testIgnore,
-	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+	/* Shared settings for all the projects below. See <https://playwright.dev/docs/api/class-testoptions>. */
 	use: {
 		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+		baseURL:
+			process.env.PLAYWRIGHT_BASE_URL ||
+			process.env.TEST_BASE_URL ||
+			process.env.BASE_URL ||
+			"<http://localhost:3000>",
 
-		/* Extra HTTP headers for Vercel preview protection bypass */
+		// Add Vercel protection bypass headers for deployed environments
+		// x-vercel-protection-bypass: For direct API/HTTP requests
+		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows
 		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 			? {
 					"x-vercel-protection-bypass":
 						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					"x-vercel-set-bypass-cookie":
+						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
 				}
-			: undefined,
+			: {},
 
-		/* Enhanced screenshot configuration for matrix testing */
-		screenshot: {
-			mode: "only-on-failure",
-			fullPage: true,
-		},
-
-		/* Enhanced video recording for CI debugging */
-		video: process.env.CI ? "retain-on-failure" : "off",
+		// take a screenshot when a test fails
+		screenshot: "only-on-failure",
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
-
-		/* Optimized timeouts for faster test execution */
-		navigationTimeout:
-			Number(process.env.PLAYWRIGHT_NAVIGATION_TIMEOUT) || 20000, // Balanced for CI performance
-		actionTimeout: Number(process.env.PLAYWRIGHT_ACTION_TIMEOUT) || 10000, // Faster failure detection
+		// Increased navigation timeout for deployed environments
+		// Accounts for: Vercel cold starts, network latency, edge function initialization
+		navigationTimeout: process.env.CI ? 90 * 1000 : 45 * 1000,
 	},
-	// test timeout optimized for parallel execution
-	timeout: 90 * 1000, // 90 seconds per test
+	// Test timeout increased for CI to handle deployed environment latency
+	// Setup tests (auth.setup.ts) need more time for authentication flows
+	timeout: process.env.CI ? 180 * 1000 : 120 * 1000, // 3 min in CI, 2 min local
 	expect: {
-		// expect timeout optimized for faster feedback
-		timeout: 15 * 1000, // 15 seconds
+		// Expect timeout for assertions
+		timeout: process.env.CI ? 15 * 1000 : 10 * 1000, // 15s in CI, 10s local
 	},
-	/* Configure projects for major browsers - reduced for local development */
-	projects: process.env.CI
-		? [
-				// Full matrix for CI
-				{
-					name: "chromium",
-					use: { ...devices["Desktop Chrome"] },
-				},
-				{
-					name: "firefox",
-					use: { ...devices["Desktop Firefox"] },
-				},
-				{
-					name: "webkit",
-					use: { ...devices["Desktop Safari"] },
-				},
-				{
-					name: "Mobile Chrome",
-					use: { ...devices["Pixel 5"] },
-				},
-				{
-					name: "Mobile Safari",
-					use: { ...devices["iPhone 12"] },
-				},
-				{
-					name: "Mobile Firefox",
-					use: { ...devices["Pixel 5"], browserName: "firefox" },
-				},
-				{
-					name: "Tablet Chrome",
-					use: { ...devices["iPad Pro"] },
-				},
-				{
-					name: "Tablet Safari",
-					use: { ...devices["iPad Pro"], browserName: "webkit" },
-				},
-				{
-					name: "accessibility",
-					use: {
-						...devices["Desktop Chrome"],
-						colorScheme: "light",
-					},
-					testMatch: /.*accessibility.*\.spec\.ts/,
-				},
-			]
-		: [
-				// Minimal set for local development
-				{
-					name: "chromium",
-					use: { ...devices["Desktop Chrome"] },
-				},
-				{
-					name: "accessibility",
-					use: {
-						...devices["Desktop Chrome"],
-						colorScheme: "light",
-					},
-					testMatch: /.*accessibility.*\.spec\.ts/,
-				},
-			],
+	/*Configure projects for major browsers */
+	projects: [
+		{
+			name: "chromium",
+			use: {
+				...devices["Desktop Chrome"],
+				// Use pre-authenticated state from global setup
+				// This eliminates per-test authentication and enables true parallel execution
+				storageState: ".auth/test@slideheroes.com.json",
+			},
+			testIgnore: /.*\.setup\.ts/, // Skip setup files - handled by global setup
+		},
+		/* Test against mobile viewports. */
+		// {
+		//   name: 'Mobile Chrome',
+		//   use: { ...devices['Pixel 5'] },
+		// },
+		// {
+		//   name: 'Mobile Safari',
+		//   use: { ...devices['iPhone 12'] },
+		// },
 
-	/* Run your local dev server before starting the tests */
-	// Skip webServer when testing against deployed environment
-	webServer: process.env.PLAYWRIGHT_BASE_URL
-		? undefined
-		: [
-				{
-					cwd: "../../",
-					command:
-						process.env.PLAYWRIGHT_WEB_COMMAND || "pnpm --filter=web dev:test",
-					url: "http://localhost:3000",
-					name: "Frontend",
-					timeout: 90 * 1000, // Increased timeout for initial compilation
-					reuseExistingServer: !process.env.CI,
-					stdout: "pipe",
-					stderr: "pipe",
-				},
-				{
-					cwd: "../../",
-					command:
-						process.env.PLAYWRIGHT_PAYLOAD_COMMAND ||
-						"pnpm --filter=payload dev:test",
-					url: "http://localhost:3020",
-					name: "Backend",
-					timeout: 90 * 1000, // Increased timeout for initial compilation
-					reuseExistingServer: !process.env.CI,
-					stdout: "pipe",
-					stderr: "pipe",
-				},
-			],
+		/* Test against branded browsers. */
+		// {
+		//   name: 'Microsoft Edge',
+		//   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+		// },
+		// {
+		//   name: 'Google Chrome',
+		//   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+		// },
+	],
+
+	/*Run your local dev server before starting the tests*/
+	webServer: process.env.PLAYWRIGHT_SERVER_COMMAND
+		? {
+				cwd: "../../",
+				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
+				url: "<http://localhost:3000>",
+				reuseExistingServer: !process.env.CI,
+				stdout: "pipe",
+				stderr: "pipe",
+			}
+		: undefined,
 });

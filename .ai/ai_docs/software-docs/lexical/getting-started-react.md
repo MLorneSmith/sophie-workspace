@@ -1,0 +1,230 @@
+[Skip to main content](https://lexical.dev/docs/getting-started/react#__docusaurus_skipToContent_fallback)
+
+On this page
+
+## Video Tutorials [​](https://lexical.dev/docs/getting-started/react#video-tutorials 'Direct link to heading')
+
+For a detailed walkthrough of setting up a basic editor with Lexical in React, check out these videos:
+
+- [Getting Started with Lexical & React](https://www.youtube.com/watch?v=qIqxvk2qcmo)
+- [Themes, Nodes, and Rich Text](https://www.youtube.com/watch?v=pIBUFYd9zJY)
+- [Headings, Lists, Toolbar](https://www.youtube.com/watch?v=5sRh_WXw0WI)
+- [Creating Nodes and Plugins](https://www.youtube.com/watch?v=abZNazybzvs)
+
+Keep in mind that some of these videos may be partially outdated as we do not update them as often as textual documentation.
+
+## Creating Basic Rich Text Editor [​](https://lexical.dev/docs/getting-started/react#creating-basic-rich-text-editor 'Direct link to heading')
+
+To simplify Lexical integration with React we provide the `@lexical/react` package that wraps Lexical APIs with React components so the editor itself as well as all the plugins now can be easily composed using JSX.
+Furthermore, you can lazy load plugins if desired, so you don't pay the cost for plugins until you actually use them.
+
+To start, install `lexical` and `@lexical/react`:
+
+```codeBlockLines_AdAo
+npm install --save lexical @lexical/react
+
+```
+
+Below is an example of a basic rich text editor using `lexical` and `@lexical/react`.
+
+```codeBlockLines_AdAo
+import {$getRoot, $getSelection} from 'lexical';
+import {useEffect} from 'react';
+
+import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
+import {LexicalComposer} from '@lexical/react/LexicalComposer';
+import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
+import {ContentEditable} from '@lexical/react/LexicalContentEditable';
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
+
+const theme = {
+  // Theme styling goes here
+  //...
+}
+
+// Catch any errors that occur during Lexical updates and log them
+// or throw them as needed. If you don't throw them, Lexical will
+// try to recover gracefully without losing user data.
+function onError(error) {
+  console.error(error);
+}
+
+function Editor() {
+  const initialConfig = {
+    namespace: 'MyEditor',
+    theme,
+    onError,
+  };
+
+  return (
+    <LexicalComposer initialConfig={initialConfig}>
+      <RichTextPlugin
+        contentEditable={
+          <ContentEditable
+            aria-placeholder={'Enter some text...'}
+            placeholder={<div>Enter some text...</div>}
+          />
+        }
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+      <HistoryPlugin />
+      <AutoFocusPlugin />
+    </LexicalComposer>
+  );
+}
+
+```
+
+## Adding UI to control text formatting [​](https://lexical.dev/docs/getting-started/react#adding-ui-to-control-text-formatting 'Direct link to heading')
+
+Out of the box Lexical doesn't provide any type of UI as it's not a ready to use editor but rather a framework for creation of your own editor.
+Below you can find an example of the integration from the previous chapter that now features 2 new plugins:
+
+- `ToolbarPlugin` \- renders UI to control text formatting
+- `TreeViewPlugin` \- renders debug view below the editor so we can see its state in real time
+
+However no UI can be created w/o CSS and Lexical is not an exception here. Pay attention to `ExampleTheme.ts` and how it's used in this example, with corresponding styles defined in `styles.css`.
+
+Lexical React Rich Example - StackBlitz
+
+Lexical React Rich Example
+
+By Anonymous
+
+Run project
+
+[Astro Basics\\
+\\
+Node.js](https://stackblitz.com/fork/github/withastro/astro/tree/latest/examples/basics?file=README.md&title=Astro%20Starter%20Kit:%20Basics) [Next.js\\
+\\
+Node.js](https://stackblitz.com/fork/github/stackblitz/starters/tree/main/nextjs?title=Next.js%20Starter&description=The%20React%20framework%20for%20production) [Nuxt\\
+\\
+Node.js](https://stackblitz.com/fork/github/nuxt/starter/tree/v3-stackblitz) [React\\
+\\
+TypeScript](https://stackblitz.com/fork/github/vitejs/vite/tree/main/packages/create-vite/template-react-ts?file=index.html&terminal=dev) [Vanilla\\
+\\
+JavaScript](https://stackblitz.com/fork/github/vitejs/vite/tree/main/packages/create-vite/template-vanilla?file=index.html&terminal=dev) [Vanilla\\
+\\
+TypeScript](https://stackblitz.com/fork/github/vitejs/vite/tree/main/packages/create-vite/template-vanilla-ts?file=index.html&terminal=dev) [Static\\
+\\
+HTML/JS/CSS](https://stackblitz.com/fork/github/stackblitz/starters/tree/main/static?title=Static%20Starter&description=HTML/CSS/JS%20Starter&file=script.js,styles.css,index.html&terminalHeight=10) [Node.js\\
+\\
+Blank project](https://stackblitz.com/fork/github/stackblitz/starters/tree/main/node?title=node.new%20Starter&description=Starter%20project%20for%20Node.js%2C%20a%20JavaScript%20runtime%20built%20on%20Chrome%27s%20V8%20JavaScript%20engine) [Angular\\
+\\
+TypeScript](https://stackblitz.com/fork/github/stackblitz/starters/tree/main/angular?template=node&title=Angular%20Starter&description=An%20angular-cli%20project%20based%20on%20%40angular%2Fanimations%2C%20%40angular%2Fcommon%2C%20%40angular%2Fcompiler%2C%20%40angular%2Fcore%2C%20%40angular%2Fforms%2C%20%40angular%2Fplatform-browser%2C%20%40angular%2Fplatform-browser-dynamic%2C%20%40angular%2Frouter%2C%20core-js%2C%20rxjs%2C%20tslib%20and%20zone.js) [Vue\\
+\\
+JavaScript](https://stackblitz.com/fork/github/vitejs/vite/tree/main/packages/create-vite/template-vue?file=index.html&terminal=dev) [WebContainer API\\
+\\
+Node.js](https://stackblitz.com/fork/github/stackblitz/webcontainer-api-starter)
+
+## Saving Lexical State [​](https://lexical.dev/docs/getting-started/react#saving-lexical-state 'Direct link to heading')
+
+tip
+
+While we attempt to write our own plugin here for demonstration purposes, in real life projects it's better to opt for [LexicalOnChangePlugin](https://lexical.dev/docs/react/plugins#lexicalonchangeplugin).
+
+Now that we have a simple editor in React, the next thing we might want to do is access the content of the editor to, for instance,
+save it in a database. We can do this via the an [update listener](https://lexical.dev/docs/concepts/listeners#registerupdatelistener), which will execute every time the editor state changes and provide us with the latest state. In React, we typically use the plugin system to set up listeners like this, since it provides us easy access to the LexicalEditor instance via a React Context. So, let's write our own plugin that notifies us when the editor updates.
+
+```codeBlockLines_AdAo
+// When the editor changes, you can get notified via the
+// OnChangePlugin!
+function MyOnChangePlugin({ onChange }) {
+  // Access the editor through the LexicalComposerContext
+  const [editor] = useLexicalComposerContext();
+  // Wrap our listener in useEffect to handle the teardown and avoid stale references.
+  useEffect(() => {
+    // most listeners return a teardown function that can be called to clean them up.
+    return editor.registerUpdateListener(({editorState}) => {
+      // call onChange here to pass the latest state up to the parent.
+      onChange(editorState);
+    });
+  }, [editor, onChange]);
+  return null;
+}
+
+```
+
+Now, we can implement this in our editor and save the EditorState in a React state variable:
+
+```codeBlockLines_AdAo
+function MyOnChangePlugin({ onChange }) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    return editor.registerUpdateListener(({editorState}) => {
+      onChange(editorState);
+    });
+  }, [editor, onChange]);
+  return null;
+}
+
+function Editor() {
+  // ...
+
+  const [editorState, setEditorState] = useState();
+  function onChange(editorState) {
+    setEditorState(editorState);
+  }
+
+  return (
+    <LexicalComposer initialConfig={initialConfig}>
+      <RichTextPlugin
+        contentEditable={
+          <ContentEditable
+            aria-placeholder={'Enter some text...'}
+            placeholder={<div>Enter some text...</div>}
+          />
+        }
+        ErrorBoundary={LexicalErrorBoundary}
+      />
+      <HistoryPlugin />
+      <MyCustomAutoFocusPlugin />
+      <MyOnChangePlugin onChange={onChange}/>
+    </LexicalComposer>
+  );
+}
+
+```
+
+Ok, so now we're saving the EditorState object in a React state variable, but we can't save a JavaScript object to our database - so how do we persist the state so we can load it later? We need to serialize it to a storage format. For this purpose (among others) Lexical provides several serialization APIs that convert EditorState to a string that can be sent over the network and saved to a database. Building on our previous example, we can do that this way:
+
+```codeBlockLines_AdAo
+function MyOnChangePlugin({ onChange }) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    return editor.registerUpdateListener(({editorState}) => {
+      onChange(editorState);
+    });
+  }, [editor, onChange]);
+  return null;
+}
+
+function Editor() {
+  // ...
+
+  const [editorState, setEditorState] = useState();
+  function onChange(editorState) {
+    // Call toJSON on the EditorState object, which produces a serialization safe string
+    const editorStateJSON = editorState.toJSON();
+    // However, we still have a JavaScript object, so we need to convert it to an actual string with JSON.stringify
+    setEditorState(JSON.stringify(editorStateJSON));
+  }
+
+  return (
+    <LexicalComposer initialConfig={initialConfig}>
+      {/*...*/}
+      <MyOnChangePlugin onChange={onChange}/>
+    </LexicalComposer>
+  );
+
+```
+
+From there, it's straightforward to wire up a submit button or some other UI trigger that will take the state from the React state variable and send it to a server for storage in a database.
+
+One important thing to note: Lexical is generally meant to be uncontrolled, so avoid trying to pass the EditorState back into Editor.setEditorState or something along those lines.
+
+- [Video Tutorials](https://lexical.dev/docs/getting-started/react#video-tutorials)
+- [Creating Basic Rich Text Editor](https://lexical.dev/docs/getting-started/react#creating-basic-rich-text-editor)
+- [Adding UI to control text formatting](https://lexical.dev/docs/getting-started/react#adding-ui-to-control-text-formatting)
+- [Saving Lexical State](https://lexical.dev/docs/getting-started/react#saving-lexical-state)

@@ -67,11 +67,7 @@ export function ExistingAccountHintImpl({
 
 	return (
 		<If condition={Boolean(methodDescription)}>
-			<Alert
-				data-test={"existing-account-hint"}
-				variant="info"
-				className={className}
-			>
+			<Alert data-test={"existing-account-hint"} className={className}>
 				<UserCheck className="h-4 w-4" />
 
 				<AlertDescription>
@@ -81,10 +77,7 @@ export function ExistingAccountHintImpl({
 						components={{
 							method: <span className="font-medium" />,
 							signInLink: (
-								<Link
-									href={signInPath}
-									className="font-medium underline hover:no-underline"
-								/>
+								<Link href={signInPath} className="font-medium underline" />
 							),
 						}}
 					/>

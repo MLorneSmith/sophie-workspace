@@ -2,6 +2,9 @@ import type { CollectionConfig } from "payload";
 
 export const Media: CollectionConfig = {
 	slug: "media",
+	// Enable upload functionality - required for storage plugin integration
+	// Manual fields below will be managed by the s3Storage plugin or manually during seeding
+	upload: true,
 	access: {
 		read: () => true,
 		create: ({ req }) => Boolean(req.user),
@@ -12,22 +15,9 @@ export const Media: CollectionConfig = {
 		useAsTitle: "filename",
 		defaultColumns: ["filename", "mimeType", "filesize", "updatedAt"],
 	},
-	upload: {
-		mimeTypes: [
-			"image/jpeg",
-			"image/jpg",
-			"image/png",
-			"image/gif",
-			"image/webp",
-			"image/svg+xml",
-			"video/mp4",
-			"video/quicktime",
-			"video/webm",
-		],
-		filesRequiredOnCreate: true,
-		disableLocalStorage: true,
-	},
 	fields: [
+		// Upload will auto-generate: filename, url, mimeType, filesize, width, height
+		// We only add custom fields here
 		{
 			name: "alt",
 			type: "text",

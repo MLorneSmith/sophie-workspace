@@ -1,0 +1,536 @@
+#!/bin/bash
+
+# Read JSON input from stdin
+input=$(cat)
+
+# Extract model display name and convert to lowercase
+model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
+
+# Status indicators using symbols
+# 🟢 = Success, fresh (< 4 hours)
+# 🟡 = Success, but old (4+ hours) OR CI/CD running
+# 🔴 = Error/failure (regardless of time) OR CI/CD failed  
+# ⚪ = Not run/cancelled/unknown
+# ⟳ = Currently running
+
+# Get git repository root (used for consistent status file paths)
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+
+# Get current git branch (skip locks for performance)
+branch=$(git -c core.preloadindex=false -c gc.auto=0 branch --show-current 2>/dev/null || echo "no-git")
+
+# Get current working directory (basename only for brevity) - REMOVED from statusline display
+# working_dir=$(basename "$PWD")
+
+# Check build status
+build_status=""
+build_log_file="/tmp/.claude_build_status_${GIT_ROOT//\//_}"
+
+# Check if build is currently running
+if pgrep -f "pnpm (run )?build|npm run build|yarn build|next build|vite build|webpack" > /dev/null 2>&1; then
+    build_status="⟳ building"
+elif [ -f "$build_log_file" ]; then
+    # Read last build status from temp file
+    last_build_info=$(cat "$build_log_file" 2>/dev/null)
+    if [ -n "$last_build_info" ]; then
+        build_result=$(echo "$last_build_info" | cut -d'|' -f1)
+        build_time=$(echo "$last_build_info" | cut -d'|' -f2)
+        errors=$(echo "$last_build_info" | cut -d'|' -f3)
+        
+        # Calculate time since build
+        current_time=$(date +%s)
+        time_diff=$((current_time - build_time))
+        
+        # Format time ago
+        if [ $time_diff -lt 60 ]; then
+            time_ago="${time_diff}s"
+        elif [ $time_diff -lt 3600 ]; then
+            time_ago="$((time_diff / 60))m"
+        elif [ $time_diff -lt 86400 ]; then
+            time_ago="$((time_diff / 3600))h"
+        else
+            time_ago="$((time_diff / 86400))d"
+        fi
+        
+        if [ "$build_result" = "success" ]; then
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                build_status="🟢 build (${time_ago})"
+            else  # 4+ hours old
+                build_status="🟡 build (${time_ago})"
+            fi
+        elif [ "$build_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
+            if [ -n "$errors" ] && [ "$errors" != "0" ]; then
+                build_status="🔴 build:$errors (${time_ago})"
+            else
+                build_status="🔴 build (${time_ago})"
+            fi
+        fi
+    fi
+fi
+
+# Default if no build info
+if [ -z "$build_status" ]; then
+    # Check if common build directories exist to infer status
+    if [ -d "dist" ] || [ -d ".next" ] || [ -d "build" ]; then
+        build_status="⚪ build"
+    else
+        build_status="⚪ no build"
+    fi
+fi
+
+# Check test status
+test_status=""
+test_log_file="/tmp/.claude_test_status_${GIT_ROOT//\//_}"
+
+# Check if tests are currently running (exclude LSP/watch modes, look for actual test execution)
+if pgrep -f "pnpm test|npm test|yarn test|vitest run|jest --run|mocha|pytest" | grep -v "watch" | grep -v "lsp" > /dev/null 2>&1; then
+    test_status="⟳ test"
+elif [ -f "$test_log_file" ]; then
+    # Read last test status from temp file
+    last_test_info=$(cat "$test_log_file" 2>/dev/null)
+    if [ -n "$last_test_info" ]; then
+        test_result=$(echo "$last_test_info" | cut -d'|' -f1)
+        test_time=$(echo "$last_test_info" | cut -d'|' -f2)
+        passed=$(echo "$last_test_info" | cut -d'|' -f3)
+        failed=$(echo "$last_test_info" | cut -d'|' -f4)
+        
+        # Calculate time since test
+        current_time=$(date +%s)
+        time_diff=$((current_time - test_time))
+        
+        # Format time ago
+        if [ $time_diff -lt 60 ]; then
+            time_ago="${time_diff}s"
+        elif [ $time_diff -lt 3600 ]; then
+            time_ago="$((time_diff / 60))m"
+        elif [ $time_diff -lt 86400 ]; then
+            time_ago="$((time_diff / 3600))h"
+        else
+            time_ago="$((time_diff / 86400))d"
+        fi
+        
+        if [ "$test_result" = "success" ]; then
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                test_status="🟢 test (${time_ago})"
+            else  # 4+ hours old
+                test_status="🟡 test (${time_ago})"
+            fi
+        elif [ "$test_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
+            if [ -n "$failed" ] && [ "$failed" != "0" ]; then
+                test_status="🔴 test:$failed (${time_ago})"
+            else
+                test_status="🔴 test (${time_ago})"
+            fi
+        elif [ "$test_result" = "running" ]; then
+            test_status="⟳ test"
+        fi
+    fi
+fi
+
+# Default if no test info
+if [ -z "$test_status" ]; then
+    # Check if test directories/files exist to infer if tests are available
+    if [ -d "test" ] || [ -d "tests" ] || [ -d "__tests__" ] || [ -f "vitest.config.ts" ] || [ -f "jest.config.js" ] || [ -d "src/__tests__" ] || find . -maxdepth 3 -name "vitest.config*" 2>/dev/null | grep -q . ; then
+        test_status="⚪ test"
+    else
+        test_status="⚪ no test"
+    fi
+fi
+
+# Check codecheck status (combines lint + typecheck)
+codecheck_status=""
+codecheck_log_file="/tmp/.claude_codecheck_status_${GIT_ROOT//\//_}"
+# Also check old lint status file for backwards compatibility
+lint_log_file="/tmp/.claude_lint_status_${GIT_ROOT//\//_}"
+
+# Check if codecheck/lint/typecheck is currently running (exclude LSP servers and background processes)
+# Use ps aux to get full command lines for proper filtering
+if ps aux | grep -E "(code-check|codecheck|pnpm (run )?(lint|typecheck|format)|npm run (lint|typecheck)|yarn (lint|typecheck)|tsc --noEmit|eslint.*\.(js|ts|jsx|tsx)|biome check)" | grep -v grep | grep -v "lsp" | grep -v "__run_server" > /dev/null 2>&1; then
+    codecheck_status="⟳ codecheck"
+elif [ -f "$codecheck_log_file" ]; then
+    # Read last codecheck status from temp file
+    last_check_info=$(cat "$codecheck_log_file" 2>/dev/null)
+    if [ -n "$last_check_info" ]; then
+        check_result=$(echo "$last_check_info" | cut -d'|' -f1)
+        check_time=$(echo "$last_check_info" | cut -d'|' -f2)
+        errors=$(echo "$last_check_info" | cut -d'|' -f3)
+        warnings=$(echo "$last_check_info" | cut -d'|' -f4)
+        type_errors=$(echo "$last_check_info" | cut -d'|' -f5)
+        
+        # Calculate time since check
+        current_time=$(date +%s)
+        time_diff=$((current_time - check_time))
+        
+        # Format time ago
+        if [ $time_diff -lt 60 ]; then
+            time_ago="${time_diff}s"
+        elif [ $time_diff -lt 3600 ]; then
+            time_ago="$((time_diff / 60))m"
+        elif [ $time_diff -lt 86400 ]; then
+            time_ago="$((time_diff / 3600))h"
+        else
+            time_ago="$((time_diff / 86400))d"
+        fi
+        
+        if [ "$check_result" = "success" ]; then
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                codecheck_status="🟢 codecheck (${time_ago})"
+            else  # 4+ hours old
+                codecheck_status="🟡 codecheck (${time_ago})"
+            fi
+        elif [ "$check_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
+            if [ -n "$errors" ] && [ "$errors" != "0" ]; then
+                if [ -n "$warnings" ] && [ "$warnings" != "0" ]; then
+                    codecheck_status="🔴 codecheck:$errors/$warnings (${time_ago})"
+                else
+                    codecheck_status="🔴 codecheck:$errors (${time_ago})"
+                fi
+            else
+                codecheck_status="🔴 codecheck (${time_ago})"
+            fi
+        elif [ "$check_result" = "running" ]; then
+            codecheck_status="⟳ codecheck"
+        fi
+    fi
+elif [ -f "$lint_log_file" ]; then
+    # Fall back to old lint status for backwards compatibility
+    last_lint_info=$(cat "$lint_log_file" 2>/dev/null)
+    if [ -n "$last_lint_info" ]; then
+        lint_result=$(echo "$last_lint_info" | cut -d'|' -f1)
+        errors=$(echo "$last_lint_info" | cut -d'|' -f3)
+        warnings=$(echo "$last_lint_info" | cut -d'|' -f4)
+        
+        # Calculate time since lint (for age indicator)
+        lint_time=$(echo "$last_lint_info" | cut -d'|' -f2)
+        current_time=$(date +%s)
+        time_diff=$((current_time - lint_time))
+        
+        # Format time ago
+        if [ $time_diff -lt 60 ]; then
+            time_ago="${time_diff}s"
+        elif [ $time_diff -lt 3600 ]; then
+            time_ago="$((time_diff / 60))m"
+        elif [ $time_diff -lt 86400 ]; then
+            time_ago="$((time_diff / 3600))h"
+        else
+            time_ago="$((time_diff / 86400))d"
+        fi
+        
+        if [ "$lint_result" = "success" ]; then
+            # Success: Green < 4h, Yellow after 4h
+            if [ $time_diff -lt 14400 ]; then  # Less than 4 hours
+                codecheck_status="🟢 codecheck (${time_ago})"
+            else  # 4+ hours old
+                codecheck_status="🟡 codecheck (${time_ago})"
+            fi
+        elif [ "$lint_result" = "failed" ]; then
+            # Failed: Always Red regardless of time
+            if [ -n "$errors" ] && [ "$errors" != "0" ]; then
+                if [ -n "$warnings" ] && [ "$warnings" != "0" ]; then
+                    codecheck_status="🔴 codecheck:$errors/$warnings (${time_ago})"
+                else
+                    codecheck_status="🔴 codecheck:$errors (${time_ago})"
+                fi
+            else
+                codecheck_status="🔴 codecheck (${time_ago})"
+            fi
+        elif [ "$lint_result" = "running" ]; then
+            codecheck_status="⟳ codecheck"
+        fi
+    fi
+fi
+
+# Default if no codecheck info
+if [ -z "$codecheck_status" ]; then
+    # Check if lint/typecheck config files exist to infer if code checking is available
+    if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ] || [ -f "biome.json" ] || [ -f ".prettierrc" ] || [ -f "tsconfig.json" ] || [ -f "ruff.toml" ] || [ -f ".pylintrc" ]; then
+        codecheck_status="⚪ codecheck"
+    else
+        codecheck_status="⚪ no codecheck"
+    fi
+fi
+
+# Check CI/CD status (GitHub Actions)
+ci_status=""
+if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.github/workflows" ]; then
+    # Cache CI status for 5 minutes to avoid too many API calls
+    ci_cache_file="/tmp/.claude_ci_status_${GIT_ROOT//\//_}"
+    current_time=$(date +%s)
+    
+    # Check if cache exists and is fresh
+    if [ -f "$ci_cache_file" ]; then
+        cache_time=$(stat -c %Y "$ci_cache_file" 2>/dev/null || stat -f %m "$ci_cache_file" 2>/dev/null || echo 0)
+        cache_age=$((current_time - cache_time))
+        ci_status=$(cat "$ci_cache_file" 2>/dev/null)
+        
+        # Use shorter cache times to detect new workflows quickly:
+        # - 30 seconds for in-progress status
+        # - 60 seconds for completed statuses (to detect new runs)
+        if [[ "$ci_status" == *"⟳"* ]]; then
+            if [ $cache_age -ge 30 ]; then  # Refresh in-progress after 30 seconds
+                ci_status=""
+            fi
+        elif [ $cache_age -ge 60 ]; then  # Refresh completed statuses after 60 seconds
+            ci_status=""
+        fi
+    fi
+    
+    # If no cached status or cache is stale, fetch new status
+    if [ -z "$ci_status" ]; then
+        # Get the latest workflow run status
+        latest_run=$(gh run list --limit 1 --json status,conclusion,createdAt 2>/dev/null)
+        
+        if [ -n "$latest_run" ] && [ "$latest_run" != "[]" ]; then
+            run_status=$(echo "$latest_run" | jq -r '.[0].status' 2>/dev/null)
+            run_conclusion=$(echo "$latest_run" | jq -r '.[0].conclusion' 2>/dev/null)
+            run_time=$(echo "$latest_run" | jq -r '.[0].createdAt' 2>/dev/null)
+            
+            # Calculate time since run
+            if [ -n "$run_time" ] && [ "$run_time" != "null" ]; then
+                # Convert ISO date to epoch
+                run_epoch=$(date -d "$run_time" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$run_time" +%s 2>/dev/null || echo 0)
+                if [ $run_epoch -gt 0 ]; then
+                    time_diff=$((current_time - run_epoch))
+                    
+                    # Format time ago
+                    if [ $time_diff -lt 60 ]; then
+                        time_ago="${time_diff}s"
+                    elif [ $time_diff -lt 3600 ]; then
+                        time_ago="$((time_diff / 60))m"
+                    elif [ $time_diff -lt 86400 ]; then
+                        time_ago="$((time_diff / 3600))h"
+                    else
+                        time_ago="$((time_diff / 86400))d"
+                    fi
+                    
+                    # Note: CI/CD status is based on workflow result, not time
+                    # CI/CD follows the pattern: Red=failure, Yellow=running, Green=success
+                fi
+            fi
+            
+            # Determine status indicator (status-based, not time-based)
+            if [ "$run_status" = "in_progress" ] || [ "$run_status" = "queued" ] || [ "$run_status" = "pending" ]; then
+                ci_status="🟡 cicd:running"
+                [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
+            elif [ "$run_status" = "completed" ]; then
+                if [ "$run_conclusion" = "success" ]; then
+                    ci_status="🟢 cicd"
+                    [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
+                elif [ "$run_conclusion" = "failure" ]; then
+                    ci_status="🔴 cicd:fail"
+                    [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
+                elif [ "$run_conclusion" = "cancelled" ]; then
+                    ci_status="⚪ cicd:cancel"
+                    [ -n "$time_ago" ] && ci_status="$ci_status ($time_ago)"
+                fi
+            fi
+            
+            # Cache the status
+            [ -n "$ci_status" ] && echo "$ci_status" > "$ci_cache_file"
+        fi
+    fi
+fi
+
+# Check PR status (open PRs that need review)
+pr_status=""
+if command -v gh &> /dev/null && [ -d "${GIT_ROOT}/.git" ]; then
+    current_branch=$(git branch --show-current 2>/dev/null)
+    # Include branch in cache file name to invalidate on branch switch
+    pr_cache_file="/tmp/.claude_pr_status_${GIT_ROOT//\//_}_${current_branch//\//_}"
+    current_time=$(date +%s)
+    
+    # Check if cache exists and is fresh (reduced to 2 minutes for better responsiveness)
+    if [ -f "$pr_cache_file" ]; then
+        cache_time=$(stat -c %Y "$pr_cache_file" 2>/dev/null || stat -f %m "$pr_cache_file" 2>/dev/null || echo 0)
+        cache_age=$((current_time - cache_time))
+        
+        if [ $cache_age -lt 120 ]; then  # Less than 2 minutes
+            pr_status=$(cat "$pr_cache_file" 2>/dev/null)
+        fi
+    fi
+    
+    # If no cached status or cache is stale, fetch new status
+    if [ -z "$pr_status" ]; then
+        # Get open PRs for current branch or PRs awaiting review
+        
+        # Check if current branch has an open PR
+        branch_pr=$(gh pr list --head "$current_branch" --json number,state,reviewDecision,isDraft --limit 1 2>/dev/null)
+        
+        if [ -n "$branch_pr" ] && [ "$branch_pr" != "[]" ]; then
+            pr_number=$(echo "$branch_pr" | jq -r '.[0].number' 2>/dev/null)
+            pr_state=$(echo "$branch_pr" | jq -r '.[0].state' 2>/dev/null)
+            pr_review=$(echo "$branch_pr" | jq -r '.[0].reviewDecision' 2>/dev/null)
+            pr_draft=$(echo "$branch_pr" | jq -r '.[0].isDraft' 2>/dev/null)
+            
+            if [ "$pr_state" = "OPEN" ]; then
+                if [ "$pr_draft" = "true" ]; then
+                    pr_status="📝 pr:draft"
+                elif [ "$pr_review" = "APPROVED" ]; then
+                    pr_status="✅ pr:approved"
+                elif [ "$pr_review" = "CHANGES_REQUESTED" ]; then
+                    pr_status="🔄 pr:changes"
+                elif [ "$pr_review" = "REVIEW_REQUIRED" ] || [ "$pr_review" = "null" ] || [ -z "$pr_review" ]; then
+                    pr_status="👀 pr:review"
+                fi
+                
+                # Add PR number if available
+                [ -n "$pr_number" ] && [ "$pr_number" != "null" ] && pr_status="$pr_status #$pr_number"
+            fi
+        else
+            # Check if there are PRs awaiting your review
+            review_prs=$(gh pr list --json number --search "review-requested:@me" 2>/dev/null | jq 'length' 2>/dev/null)
+            
+            if [ -n "$review_prs" ] && [ "$review_prs" -gt 0 ]; then
+                if [ "$review_prs" -eq 1 ]; then
+                    pr_status="🔍 pr:1 needs review"
+                else
+                    pr_status="🔍 pr:$review_prs need review"
+                fi
+            fi
+        fi
+        
+        # Cache the status (or empty string if no PR)
+        echo "$pr_status" > "$pr_cache_file"
+    fi
+fi
+
+# Build the output with conditional sections
+output="$model | ⎇ $branch"
+
+# Add build status
+[ -n "$build_status" ] && output="$output | $build_status"
+
+# Add codecheck status
+[ -n "$codecheck_status" ] && output="$output | $codecheck_status"
+
+# Check Docker status - optimized for performance
+docker_status=""
+# Use the same hash-based path as the docker-health-wrapper.sh
+GIT_ROOT_HASH="$(echo "${GIT_ROOT}" | sha256sum | cut -d' ' -f1 | head -c16)"
+docker_status_file="/tmp/.claude_docker_status_${GIT_ROOT_HASH}"
+
+# Quick file existence and age check (avoids unnecessary processing)
+if [ -f "$docker_status_file" ]; then
+    # Check if cache is stale and trigger background refresh if needed
+    cache_mtime=$(stat -c %Y "$docker_status_file" 2>/dev/null || echo "0")
+    current_time=$(date +%s)
+    cache_age=$((current_time - cache_mtime))
+    if [ $cache_age -gt 300 ] && [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
+        # Trigger background refresh to avoid blocking statusline (5 minute threshold)
+        "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" health-check >/dev/null 2>&1 &
+    fi
+    # Fast read with minimal processing
+    if docker_status_content=$(cat "$docker_status_file" 2>/dev/null); then
+        # Use optimized jq extraction in single call to minimize overhead
+        if command -v jq >/dev/null 2>&1; then
+            # Single jq call to extract all needed values
+            docker_data=$(echo "$docker_status_content" | jq -r '
+                (.docker_running // false) as $running |
+                (.containers.total // 0) as $total |
+                (.containers.healthy // 0) as $healthy |
+                (.containers.unhealthy // 0) as $unhealthy |
+                (.containers.unknown // 0) as $unknown |
+                (.last_check // "") as $last_check |
+                "\($running)|\($total)|\($healthy)|\($unhealthy)|\($unknown)|\($last_check)"
+            ' 2>/dev/null)
+
+            if [ -n "$docker_data" ] && [ "$docker_data" != "null" ]; then
+                # Parse the pipe-separated values
+                docker_running="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_total="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_healthy="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_unhealthy="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                container_unknown="${docker_data%%|*}"; docker_data="${docker_data#*|}"
+                last_check="$docker_data"
+
+                # Quick age calculation (only if needed for freshness check)
+                check_age=0
+                if [ -n "$last_check" ] && [ "$last_check" != "null" ] && [ "$last_check" != "" ]; then
+                    check_epoch=$(date -d "$last_check" +%s 2>/dev/null || echo "0")
+                    if [ "$check_epoch" -gt 0 ]; then
+                        check_age=$(( $(date +%s) - check_epoch ))
+                    fi
+                fi
+
+                # Determine status with minimal logic
+                if [ "$docker_running" = "false" ]; then
+                    docker_status="🔴 docker:off"
+                elif [ "$container_total" = "0" ]; then
+                    docker_status="🟡 docker (0/0)"
+                elif [ "$container_unhealthy" -gt 0 ]; then
+                    docker_status="🔴 docker (${container_healthy}/${container_total})"
+                elif [ "$container_unknown" = "0" ] && [ "$container_healthy" = "$container_total" ]; then
+                    # All healthy - check freshness only if needed
+                    if [ $check_age -lt 300 ]; then
+                        docker_status="🟢 docker (${container_healthy}/${container_total})"
+                    else
+                        docker_status="🟡 docker (${container_healthy}/${container_total})"
+                        # Add time indicator only for stale data
+                        if [ $check_age -ge 60 ]; then
+                            if [ $check_age -lt 3600 ]; then
+                                time_ago="$((check_age / 60))m"
+                            elif [ $check_age -lt 86400 ]; then
+                                time_ago="$((check_age / 3600))h"
+                            else
+                                time_ago="$((check_age / 86400))d"
+                            fi
+                            docker_status="$docker_status ($time_ago)"
+                        fi
+                    fi
+                else
+                    docker_status="🟡 docker (${container_healthy}/${container_total})"
+                fi
+            else
+                docker_status="⚪ docker:parse-error"
+            fi
+        else
+            # Fast fallback without jq - just check if docker is running
+            if grep -q '"docker_running": *true' "$docker_status_file" 2>/dev/null; then
+                # Extract basic numbers with simple grep
+                container_total=$(grep -o '"total": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+                container_healthy=$(grep -o '"healthy": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+                container_unhealthy=$(grep -o '"unhealthy": *[0-9]\+' "$docker_status_file" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+
+                # Apply same logic as jq path
+                if [ "${container_unhealthy:-0}" -gt 0 ]; then
+                    docker_status="🔴 docker (${container_healthy:-0}/${container_total:-0})"
+                elif [ "${container_healthy:-0}" = "${container_total:-0}" ] && [ "${container_total:-0}" -gt 0 ]; then
+                    docker_status="🟢 docker (${container_healthy:-0}/${container_total:-0})"
+                else
+                    docker_status="🟡 docker (${container_healthy:-0}/${container_total:-0})"
+                fi
+            else
+                docker_status="🔴 docker:off"
+            fi
+        fi
+    else
+        docker_status="⚪ docker:read-error"
+    fi
+elif [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
+    # No cache file exists, trigger initial health check
+    "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" health-check >/dev/null 2>&1 &
+    docker_status="⟳ docker"
+else
+    docker_status="⚪ docker:none"
+fi
+
+# Add Docker status
+[ -n "$docker_status" ] && output="$output | $docker_status"
+
+# Add test status
+[ -n "$test_status" ] && output="$output | $test_status"
+
+# Add CI status
+[ -n "$ci_status" ] && output="$output | $ci_status"
+
+# Add PR status
+[ -n "$pr_status" ] && output="$output | $pr_status"
+
+# Output the status line
+printf "%s" "$output"

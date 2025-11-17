@@ -1,12 +1,12 @@
 -- Migration: AI Usage Cost Tracking System
 -- Description: Creates tables and functions for tracking AI API usage and costs
 
--- Enable UUID extension if not already enabled
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Extension removed: uuid-ossp is deprecated in PostgreSQL 17
+-- Using built-in gen_random_uuid() instead (no extension required)
 
 -- AI Request Logs Table
 CREATE TABLE IF NOT EXISTS public.ai_request_logs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   team_id UUID REFERENCES public.accounts(id) ON DELETE CASCADE,
   request_id TEXT,
@@ -34,7 +34,7 @@ CREATE INDEX idx_request_logs_timestamp ON public.ai_request_logs(request_timest
 
 -- AI Usage Allocations Table
 CREATE TABLE IF NOT EXISTS public.ai_usage_allocations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id),
   team_id UUID REFERENCES public.accounts(id),
   credits_allocated DECIMAL(10, 4) NOT NULL DEFAULT 0,
@@ -57,7 +57,7 @@ CREATE INDEX idx_allocations_active ON public.ai_usage_allocations(is_active);
 
 -- AI Credit Transactions Table
 CREATE TABLE IF NOT EXISTS public.ai_credit_transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id),
   team_id UUID REFERENCES public.accounts(id),
   allocation_id UUID REFERENCES public.ai_usage_allocations(id),
@@ -78,7 +78,7 @@ CREATE INDEX idx_transactions_created_at ON public.ai_credit_transactions(create
 
 -- AI Cost Configuration Table
 CREATE TABLE IF NOT EXISTS public.ai_cost_configuration (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   provider TEXT NOT NULL,
   model TEXT NOT NULL,
   input_cost_per_1k_tokens DECIMAL(10, 6) NOT NULL,
@@ -104,7 +104,7 @@ VALUES
 
 -- Usage Limits Table
 CREATE TABLE IF NOT EXISTS public.ai_usage_limits (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id),
   team_id UUID REFERENCES public.accounts(id),
   limit_type TEXT NOT NULL, -- 'cost' or 'tokens'

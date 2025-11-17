@@ -1,34 +1,10 @@
 "use client";
 
+import { createClientLogger } from "@kit/shared/logger";
 import { PlaceholdersAndVanishInput } from "@kit/ui/placeholders-and-vanish-input";
 
-// Client-safe logger wrapper for development logging
-const logger = {
-	info: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.info(...args);
-		}
-	},
-	error: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.error(...args);
-		}
-	},
-	warn: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.warn(...args);
-		}
-	},
-	debug: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.debug(...args);
-		}
-	},
-};
+// Client-side logger for this component
+const { getLogger } = createClientLogger("HOME-CTA-PRESENTATION-NAME");
 
 export function CtaPresentationName() {
 	return (
@@ -43,7 +19,7 @@ export function CtaPresentationName() {
 				]}
 				onChange={(e) => {
 					// Handle search input changes
-					logger.debug("Presentation name search input changed", {
+					getLogger().debug("Presentation name search input changed", {
 						value: e.target.value,
 						length: e.target.value.length,
 					});
@@ -53,7 +29,7 @@ export function CtaPresentationName() {
 					// Handle search submission
 					const input = e.currentTarget.querySelector("input");
 					if (input) {
-						logger.info("Presentation name search submitted", {
+						getLogger().info("Presentation name search submitted", {
 							value: input.value,
 							length: input.value.length,
 							timestamp: new Date().toISOString(),

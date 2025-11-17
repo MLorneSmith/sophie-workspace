@@ -73,16 +73,13 @@ export function AppEventsProvider<
 		{} as Record<K, EventCallback<T, K>[]>,
 	);
 
-	const emit = useCallback(
-		(event: AppEvent<T, K>) => {
-			const eventListeners = listeners.current[event.type] ?? [];
+	const emit = useCallback((event: AppEvent<T, K>) => {
+		const eventListeners = listeners.current[event.type] ?? [];
 
-			for (const callback of eventListeners) {
-				callback(event);
-			}
-		},
-		[listeners],
-	);
+		for (const callback of eventListeners) {
+			callback(event);
+		}
+	}, []);
 
 	const on = useCallback((eventType: K, callback: EventCallback<T, K>) => {
 		listeners.current = {

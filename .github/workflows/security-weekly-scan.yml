@@ -13,13 +13,13 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9.12.0'
+  PNPM_VERSION: '10.14.0'
 
 jobs:
   # Scan container images for vulnerabilities
   container-security-scan:
     name: Container Security Scan
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       container_critical: ${{ steps.container_summary.outputs.container_critical }}
       container_high: ${{ steps.container_summary.outputs.container_high }}
@@ -89,7 +89,7 @@ jobs:
 
   aikido-comprehensive-scan:
     name: Aikido Comprehensive Security Scan
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       container_critical: ${{ needs.container-security-scan.outputs.container_critical }}
       container_high: ${{ needs.container-security-scan.outputs.container_high }}

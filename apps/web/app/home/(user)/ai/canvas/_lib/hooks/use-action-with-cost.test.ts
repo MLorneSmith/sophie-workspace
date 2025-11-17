@@ -577,11 +577,13 @@ describe("useActionWithCost", () => {
 
 		it("handles addCost function errors gracefully", async () => {
 			// Arrange
-			const mockAction = createMockAction();
-			mockAction.mockResolvedValue({
+			const expectedResponse = {
 				success: true,
 				metadata: { cost: 1.25 },
-			});
+			};
+
+			const mockAction = createMockAction();
+			mockAction.mockResolvedValue(expectedResponse);
 
 			// Mock addCost to throw an error
 			mockAddCost.mockImplementation(() => {
@@ -591,12 +593,14 @@ describe("useActionWithCost", () => {
 			const requestData: TestRequestData = { message: "test" };
 			const { result } = renderHook(() => useActionWithCost(mockAction));
 
-			// Act & Assert - should not throw despite addCost error
-			await expect(async () => {
-				await act(async () => {
-					await result.current(requestData);
-				});
-			}).rejects.toThrow("Cost tracking error");
+			// Act - should not throw despite addCost error
+			const response = await act(async () => {
+				return await result.current(requestData);
+			});
+
+			// Assert - action completes successfully despite cost tracking error
+			expect(response).toEqual(expectedResponse);
+			expect(mockAddCost).toHaveBeenCalledWith(1.25);
 		});
 	});
 

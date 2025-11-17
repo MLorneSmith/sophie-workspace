@@ -1,6 +1,6 @@
 -- Create course progress table
 CREATE TABLE IF NOT EXISTS public.course_progress (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL,
   started_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.course_progress (
 
 -- Create lesson progress table
 CREATE TABLE IF NOT EXISTS public.lesson_progress (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL,
   lesson_id TEXT NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS public.lesson_progress (
 
 -- Create quiz attempts table
 CREATE TABLE IF NOT EXISTS public.quiz_attempts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL,
   lesson_id TEXT NOT NULL,

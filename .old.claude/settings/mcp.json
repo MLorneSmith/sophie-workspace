@@ -1,0 +1,16 @@
+{
+	"_comment": "MCP server configurations",
+	"enableAllProjectMcpServers": true,
+	"enabledMcpjsonServers": [
+		"exa",
+		"perplexity-ask",
+		"context7",
+		"cloudflare-observability",
+		"cloudflare-bindings",
+		"postgres",
+		"browser-tools",
+		"code-reasoning",
+		"github",
+		"newrelic"
+	]
+}

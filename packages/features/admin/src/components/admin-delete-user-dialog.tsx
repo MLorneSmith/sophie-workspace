@@ -24,6 +24,7 @@ import {
 } from "@kit/ui/form";
 import { If } from "@kit/ui/if";
 import { Input } from "@kit/ui/input";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
@@ -69,9 +70,14 @@ export function AdminDeleteUserDialog(
 							startTransition(async () => {
 								try {
 									await deleteUserAction(data);
+
 									setError(false);
-								} catch {
-									setError(true);
+								} catch (error) {
+									if (isRedirectError(error)) {
+										// Do nothing
+									} else {
+										setError(true);
+									}
 								}
 							});
 						})}

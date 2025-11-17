@@ -21,7 +21,7 @@ following to the `WEBHOOK_SENDER_PROVIDER` environment variable.
 WEBHOOK_SENDER_PROVIDER=svix
 ```
 
-For example, you can add [https://docs.svix.com/quickstart]](Swix) as a webhook sender
-provider that receives webhooks from the database changes and forwards them to your application.
+For example, you can add [Svix](https://docs.svix.com/quickstart) as a webhook sender provider that
+receives webhooks from the database changes and forwards them to your application.
 
 Svix is not implemented yet.

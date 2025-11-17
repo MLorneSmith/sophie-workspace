@@ -3,7 +3,7 @@
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
-		"useIgnoreFile": true
+		"useIgnoreFile": false
 	},
 	"files": {
 		"ignoreUnknown": false,
@@ -11,24 +11,30 @@
 		"includes": [
 			"**",
 			"!**/.next/**",
+			"!**/.next.old/**",
+			"!**/.pnpm-store/**",
+			"!**/logs/**",
 			"!**/dist/**",
 			"!**/build/**",
 			"!**/node_modules/**",
+			"!**/.venv/**",
+			"!**/__pycache__/**",
 			"!**/*.min.js",
 			"!**/*.bundle.js",
 			"!**/.vscode/PrimeSelections.json",
 			"!**/coverage/**",
 			"!**/test-results/**",
 			"!**/playwright-report/**",
-			"!**/packages/playwright-mcp/temp-playwright-mcp/**",
 			"!**/apps/payload/payload-types.ts",
 			"!**/packages/cms/types/src/payload-types.ts",
 			"!**/apps/payload/src/app/(payload)/admin/importMap.js",
+			"!**/apps/payload/src/migrations/**",
 			"!**/apps/payload/src/seed/**",
 			"!**/z.docs/**",
 			"!**/z.old/**",
 			"!**/z.test/**",
-			"!**/turbo/generators/**"
+			"!**/turbo/generators/**",
+			"!**/.turbo/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -82,6 +88,16 @@
 			}
 		},
 		{
+			"includes": ["apps/dev-tool/app/components/components/*-story.tsx"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"useUniqueElementIds": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": [
 				"**/tests/**/*.ts",
 				"**/tests/**/*.tsx",
@@ -89,12 +105,15 @@
 				"**/*.test.tsx",
 				"**/*.spec.ts",
 				"**/*.spec.tsx",
-				"**/load-tests/**/*.js"
+				"**/apps/load-tests/**/*.js",
+				"**/test-*.ts",
+				"**/test-*.tsx"
 			],
 			"linter": {
 				"rules": {
 					"suspicious": {
-						"noConsole": "off"
+						"noConsole": "off",
+						"noExplicitAny": "off"
 					},
 					"complexity": {
 						"useDateNow": "off"
@@ -107,8 +126,12 @@
 		},
 		{
 			"includes": [
+				"**/.ai/ai_scripts/**/*.js",
+				"**/.ai/ai_scripts/**/*.cjs",
 				"**/.claude/scripts/**/*.js",
+				"**/.claude/scripts/**/*.cjs",
 				"**/scripts/**/*.js",
+				"**/scripts/**/*.cjs",
 				"**/scripts/**/*.ts"
 			],
 			"linter": {
@@ -142,6 +165,30 @@
 				"rules": {
 					"performance": {
 						"noImgElement": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/payload/src/seed/seed-data/**/*.json"],
+			"formatter": {
+				"enabled": false
+			},
+			"linter": {
+				"enabled": false
+			},
+			"json": {
+				"formatter": {
+					"enabled": false
+				}
+			}
+		},
+		{
+			"includes": ["packages/ui/src/**/*.tsx", "packages/ui/src/**/*.ts"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"noNestedComponentDefinitions": "off"
 					}
 				}
 			}

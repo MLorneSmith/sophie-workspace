@@ -14,15 +14,16 @@
 		"./server": "./src/server.ts"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
 		"@kit/shared": "workspace:*",
 		"posthog-js": "1.249.4",
-		"posthog-node": "4.18.0"
+		"posthog-node": "5.9.2"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.0.4"
+		"@types/node": "^24.6.2"
 	},
 	"eslintConfig": {
 		"root": true,

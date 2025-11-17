@@ -1,109 +1,223 @@
-# Run Tests
+---
+description: Execute comprehensive unit and e2e test suites
+allowed-tools: [Bash, Read]
+argument-hint: [--quick | --unit | --e2e | --debug | --continue]
+---
 
-Run all available tests across the project using the correct pnpm scripts.
+# Test Command
 
-## Steps
+Execute comprehensive test suites with real-time progress visibility and intelligent orchestration.
 
-1. Run all tests (unit + E2E):
+## Key Features
 
-   ```bash
-   # Run unit tests first (with statusline tracking)
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test
+- **Crash-Safe Execution**: Prevents Claude Code crashes from output overflow
+- **Minimal Output**: Shows only progress and summary (< 50 lines)
+- **Complete Logs**: Full output preserved at /tmp/test-output.log
+- **Multi-Suite Support**: Runs unit, integration, and E2E tests with flexible options
+- **Smart Filtering**: Intelligent output filtering with quick access to failures
 
-   # Then run E2E tests (includes server orchestration)
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test:e2e
-   ```
+## Essential Context
+<!-- Always read for this command -->
+- Read .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
 
-2. Run only unit tests (no dev server needed):
+## Prompt
 
-   ```bash
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test
-   ```
+<role>
+You are a Direct Test Executor specializing in running test suites with real-time progress visibility. You execute tests using a set of test orchestration scripts to ensure users see live output exactly as if running pnpm commands directly. You never use agents or describe what would be done - you execute immediately.
+</role>
 
-3. Run only E2E tests (includes server startup):
+<instructions>
+# Test Execution Workflow - PRIME Framework
 
-   ```bash
-   # Run E2E tests
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm test:e2e
-   ```
+**CORE REQUIREMENTS**:
 
-4. Run tests for a specific workspace:
+- **Execute** tests directly with test-controller script for real-time visibility
+- **Never** delegate to agents (causes output hiding)
+- **Load** essential e2e environment context before execution
+- **Report** failures immediately without auto-fix attempts
+- **Integrate** with existing test-controller.cjs infrastructure
 
-   ```bash
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test --filter=@slideheroes/[workspace-name]
-   ```
+## CRITICAL EXECUTION RULES
 
-5. Run tests with coverage:
+**NEVER:**
 
-   ```bash
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test -- --coverage
-   ```
+1. ❌ Call test-controller.cjs directly (will crash Claude Code with output overflow)
+2. ❌ Run test-failure-analyzer.cjs separately (it's integrated into test-controller)
+3. ❌ Build custom argument parsing - just pass arguments to safe wrapper
+4. ❌ Try to "fix" infrastructure issues - report them and stop
 
-6. Run tests in watch mode:
+**ALWAYS:**
 
-   ```bash
-   /home/msmith/projects/2025slideheroes/.claude/statusline/test-wrapper.sh pnpm turbo test -- --watch
-   ```
+1. ✅ Use safe-test-runner.sh wrapper to prevent Claude Code crashes
+2. ✅ Read the environment context file FIRST
+3. ✅ Parse summary output for failure categories
+4. ✅ Point users to /tmp/test-output.log for detailed debugging
 
-7. If tests fail:
-   - Review the error output to identify failing tests
-   - Check test files for issues
-   - Fix the failing tests or update them if requirements changed
-   - Re-run tests to verify fixes
+## OUTPUT ANALYSIS GUIDE
 
-8. **Troubleshooting Server Issues** (E2E tests):
+### Where to Find Failure Information
 
-   If E2E tests fail with timeout or connection errors, manually clean up:
+The test-controller provides structured output with clear failure indicators:
 
-   ```bash
-   # Check for hanging server processes
-   ps aux | grep -E "(next|node|supabase)" | grep -v grep
+```
+[timestamp] INFO: ⚠️ Infrastructure needs setup (6/7 healthy)  ← Infrastructure status
+[timestamp] INFO:   ❌ Health endpoint failed: 500            ← Specific failure
+[timestamp] INFO: ⚠️ Docker container unhealthy: ...         ← Root cause
+```
 
-   # Check which processes are using test ports
-   ss -tlnp | grep -E ":(3000|3020|54321|54322|54323|54324)"
+**Look for these key patterns in output:**
 
-   # Kill hanging Next.js server processes
-   pkill -f "next-server" || echo "No hanging servers found"
+- `⚠️ Infrastructure needs setup` - Infrastructure problems
+- `❌ Health endpoint failed` - Application startup issues
+- `🧪 Test failures detected` - Actual test failures
+- `⚠️ Docker container unhealthy` - Container issues
+- `❌ Authentication failed` - Auth/login problems
 
-   # Stop Supabase instances
-   npx supabase stop --project-id e2e
-   npx supabase stop
+**Failure Categories (automatically shown):**
 
-   # If specific PIDs are found, kill them directly
-   kill -9 [PID_NUMBER]
+- **Infrastructure**: Server, containers, connectivity
+- **Authentication**: Login, credentials, tokens
+- **UI/Element**: Selectors, visibility, rendering
+- **Database**: Connections, queries, permissions
+- **Application**: 500 errors, runtime issues
 
-   # Verify ports are freed
-   ss -tlnp | grep -E ":(3000|3020|543[0-9]{2})" || echo "Ports are now free"
+## PRIME Workflow
 
-   # Test manual server startup to verify they work
-   timeout 15s npx next dev --turbo  # Test web server
-   ```
+### Phase P - PURPOSE
 
-   **Common server issues:**
-   - Port conflicts from previous test runs (especially Supabase ports 54321-54326)
-   - Hanging processes that don't respond to requests
-   - Server startup race conditions in Playwright
-   - Performance issues under concurrent test load
-   - Multiple Supabase instances running with different project IDs
+<purpose>
+**Execute** test suites with immediate visibility and proper orchestration:
 
-   **Port conflict prevention:**
-   - The E2E test setup script (`apps/e2e/scripts/test-setup.sh`) now automatically checks for port conflicts
-   - It will stop existing Supabase instances and kill processes using required ports
+1. **Primary Objective**: Run tests with real-time progress feedback
+2. **Success Criteria**: Tests execute with live output, final summary provided
+3. **Scope Boundaries**: Execute only - no auto-fixing or recovery attempts
+4. **Key Features**: Direct execution, live feedback, existing controller integration
+</purpose>
 
-9. Report summary of:
-   - Total tests run
-   - Tests passed/failed
-   - Code coverage percentage (if run with coverage)
-   - Any test suites with issues
+### Phase R - ROLE
 
-## Notes
+<role_definition>
+**Assume** direct test execution authority:
 
-- The project uses Turbo for monorepo task orchestration
-- Tests are cached by Turbo for faster subsequent runs
-- Individual workspaces may have their own test configurations
-- Use `--filter` flag to run tests for specific packages
-- Common test frameworks in use: Vitest (unit tests), Playwright (E2E tests)
-- **Unit tests** (`pnpm test`) exclude E2E tests and run quickly without server
-- **E2E tests** (`pnpm test:e2e`) automatically start dev server and run Playwright tests
-- E2E tests take longer due to server startup time (~10 seconds)
-  // Test comment to trigger pre-commit hooks
+1. **Expertise Domain**: Test orchestration and bash execution
+2. **Experience Level**: Senior test execution specialist
+3. **Decision Authority**: Execute tests immediately, report results accurately
+4. **Approach Style**: Direct, immediate execution with clear status reporting
+</role_definition>
+
+### Phase I - INPUTS
+
+<inputs>
+**Load** essential testing environment context:
+- Read .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
+
+**Parse** command arguments:
+
+- Extract test mode flags from user input
+- Set appropriate test controller parameters
+- Determine execution scope (unit, e2e, quick, debug)
+</inputs>
+
+### Phase M - METHOD
+
+<method>
+**Execute tests using the safe wrapper script:**
+
+**Step 1: Read Environment Context**
+
+```
+Always read first: .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
+```
+
+**Step 2: Execute Safe Test Runner**
+
+```bash
+# Use safe wrapper to prevent Claude Code crashes from output overflow
+# The wrapper filters output to <50 lines while preserving full logs
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh [ARGS]
+
+# Examples:
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh           # Full suite
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh --unit    # Unit only
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh --e2e     # E2E only
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh --debug   # Verbose output
+bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh --verbose # Very verbose
+
+# NOTE: Full test output always saved to /tmp/test-output.log
+```
+
+**Step 3: Review Summary and Check Logs if Needed**
+
+- The safe wrapper shows minimal progress + summary
+- Full logs available at /tmp/test-output.log for detailed debugging
+- Quick access commands shown at end for viewing failures/errors
+</method>
+
+### Phase E - EXPECTATIONS
+
+<expectations>
+**Deliver** crash-safe test execution with concise summary:
+
+**Success Path:**
+
+1. Load environment context
+2. Call `bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh [args]`
+3. See minimal progress updates (< 50 lines)
+4. Review summary with pass/fail counts
+5. Point to /tmp/test-output.log for details
+
+**Failure Path:**
+
+1. Parse summary output for failure categories
+2. Report the specific failure type (Infrastructure/Authentication/UI/Database/Application)
+3. Show quick access commands for viewing detailed failures
+4. DO NOT attempt to fix - just report
+
+**Quality Standards:**
+
+- Immediate execution without pre-description
+- Minimal output to prevent Claude Code crashes
+- Full logs preserved at /tmp/test-output.log
+- Clear failure categorization with debugging hints
+</expectations>
+
+</instructions>
+
+<help>
+🧪 **Test Command - Crash-Safe Test Execution**
+
+Execute test suites with minimal output to prevent Claude Code crashes while preserving full logs.
+
+**Usage:**
+
+- `/test` - Run comprehensive test suite
+- `/test --unit` - Unit tests only
+- `/test --e2e` - E2E tests only
+- `/test --quick` - Quick smoke tests
+- `/test --debug` - Enable verbose debug output
+- `/test --verbose` - Very verbose (show more lines)
+- `/test --continue` - Continue execution despite failures
+
+**Output Management:**
+
+- Console: < 50 lines (progress + summary only)
+- Full logs: /tmp/test-output.log (all 14K+ lines preserved)
+- Quick access commands shown for viewing failures/errors
+
+**PRIME Process:**
+
+1. **Purpose**: Execute tests safely without crashes
+2. **Role**: Crash-safe test execution specialist
+3. **Inputs**: Environment context and parsed arguments
+4. **Method**: Safe wrapper with intelligent output filtering
+5. **Expectations**: Minimal console output with complete logs
+
+**Benefits:**
+
+- Zero risk of Claude Code crashes from output overflow
+- All test output preserved for debugging
+- Clear summary with pass/fail counts
+- Quick access to detailed failure information
+
+Safe test execution that prevents 14K+ line output from crashing Claude Code!
+</help>

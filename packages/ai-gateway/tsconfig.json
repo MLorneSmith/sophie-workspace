@@ -4,8 +4,12 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"]
-		}
+		},
+		"noEmit": false,
+		"outDir": "./dist",
+		"declaration": true,
+		"declarationMap": true
 	},
 	"include": ["src"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules", "dist"]
 }

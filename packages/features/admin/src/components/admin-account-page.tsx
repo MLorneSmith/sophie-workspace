@@ -45,18 +45,18 @@ export function AdminAccountPage(props: {
 async function PersonalAccountPage(props: { account: Account }) {
 	const adminClient = getSupabaseServerAdminClient();
 
-	const { data, error } = await adminClient.auth.admin.getUserById(
-		props.account.id,
-	);
+	const [memberships, userResult] = await Promise.all([
+		getMemberships(props.account.id),
+		adminClient.auth.admin.getUserById(props.account.id),
+	]);
 
-	if (!data || error) {
-		throw new Error("User not found");
+	if (userResult.error) {
+		throw userResult.error;
 	}
 
-	const memberships = await getMemberships(props.account.id);
-
 	const isBanned =
-		"banned_until" in data.user && data.user.banned_until !== "none";
+		"banned_until" in userResult.data.user &&
+		userResult.data.user.banned_until !== "none";
 
 	return (
 		<>
@@ -150,7 +150,7 @@ async function PersonalAccountPage(props: { account: Account }) {
 					<div className={"divider-divider-x flex flex-col gap-y-2.5"}>
 						<Heading level={6}>Teams</Heading>
 
-						<div>
+						<div className={"rounded-lg border p-2"}>
 							<AdminMembershipsTable memberships={memberships} />
 						</div>
 					</div>
@@ -215,7 +215,9 @@ async function TeamAccountPage(props: {
 						<div className={"flex flex-col gap-y-2.5"}>
 							<Heading level={6}>Team Members</Heading>
 
-							<AdminMembersTable members={members ?? []} />
+							<div className={"rounded-lg border p-2"}>
+								<AdminMembersTable members={members} />
+							</div>
 						</div>
 					</div>
 				</div>

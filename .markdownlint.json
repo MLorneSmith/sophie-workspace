@@ -1,12 +1,15 @@
 {
+	"default": true,
 	"MD013": {
 		"line_length": 120,
 		"tables": false,
-		"code_blocks": false
+		"code_blocks": false,
+		"ignore_code_blocks": true,
+		"ignore_tables": true,
+		"ignore_urls": true
 	},
 	"MD033": {
 		"allowed_elements": ["br", "details", "summary", "img", "kbd"]
 	},
-	"MD041": false,
-	"default": true
+	"MD041": false
 }

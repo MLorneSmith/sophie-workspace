@@ -1,0 +1,387 @@
+name: K6 Load Testing
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: 'Environment to test (staging or production)'
+      base_url:
+        required: true
+        type: string
+        description: 'Base URL of the application to test'
+      test_scenario:
+        required: false
+        type: string
+        default: 'user-journey'
+        description: 'Test scenario to run (user-journey, dashboard-load, login-flow)'
+      duration:
+        required: false
+        type: string
+        default: '10m'
+        description: 'Total duration of the test'
+      vus:
+        required: false
+        type: number
+        default: 50
+        description: 'Maximum virtual users'
+      fail_on_threshold:
+        required: false
+        type: boolean
+        default: false
+        description: 'Whether to fail the workflow if performance thresholds are not met'
+    secrets:
+      K6_CLOUD_TOKEN:
+        required: false
+        description: 'K6 Cloud token for uploading results'
+      NEW_RELIC_API_KEY:
+        required: false
+        description: 'New Relic API key for correlating results'
+      NEW_RELIC_ACCOUNT_ID:
+        required: false
+        description: 'New Relic account ID'
+    outputs:
+      report_url:
+        description: 'URL to the K6 Cloud test report'
+        value: ${{ jobs.load-test.outputs.report_url }}
+      passed:
+        description: 'Whether all performance thresholds were met'
+        value: ${{ jobs.load-test.outputs.passed }}
+
+jobs:
+  load-test:
+    name: K6 Load Test - ${{ inputs.environment }}
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      report_url: ${{ steps.cloud.outputs.report_url }}
+      passed: ${{ steps.run-test.outputs.passed }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup K6
+        run: |
+          # Install K6 if not already available
+          if ! command -v k6 &> /dev/null; then
+            curl https://github.com/grafana/k6/releases/download/v0.52.0/k6-v0.52.0-linux-amd64.tar.gz -L | tar xvz
+            sudo mv k6-v0.52.0-linux-amd64/k6 /usr/local/bin/
+          fi
+          k6 version
+      
+      - name: Prepare test configuration
+        run: |
+          # Create environment-specific configuration
+          cat > apps/load-tests/env-config.js << EOF
+          export const envConfig = {
+            apiBaseUrl: "${{ inputs.base_url }}",
+            environment: "${{ inputs.environment }}",
+            testScenario: "${{ inputs.test_scenario }}",
+            duration: "${{ inputs.duration }}",
+            maxVUs: ${{ inputs.vus }},
+            timestamp: "${GITHUB_RUN_ID}_${GITHUB_RUN_NUMBER}",
+            commitSha: "${GITHUB_SHA}",
+            branch: "${GITHUB_REF_NAME}",
+            triggeredBy: "${GITHUB_ACTOR}"
+          };
+          EOF
+      
+      - name: Wait for application to stabilize
+        run: |
+          echo "Waiting 30 seconds for application to stabilize after deployment..."
+          sleep 30
+          
+          # Health check
+          for i in {1..5}; do
+            if curl -f -s "${{ inputs.base_url }}/healthcheck" > /dev/null; then
+              echo "✅ Application is healthy"
+              break
+            fi
+            echo "Waiting for application to be ready... (attempt $i/5)"
+            sleep 10
+          done
+      
+      - name: Run K6 load test
+        id: run-test
+        env:
+          K6_API_URL: ${{ inputs.base_url }}
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+          K6_CLOUD_PROJECT_ID: ${{ vars.K6_CLOUD_PROJECT_ID }}
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+        run: |
+          # Determine which test to run
+          TEST_FILE=""
+          case "${{ inputs.test_scenario }}" in
+            "user-journey")
+              TEST_FILE="apps/load-tests/scenarios/user-journey.js"
+              ;;
+            "dashboard-load")
+              TEST_FILE="apps/load-tests/scenarios/dashboard-load.js"
+              ;;
+            "login-flow")
+              TEST_FILE="apps/load-tests/scenarios/login-flow.js"
+              ;;
+            *)
+              echo "Unknown test scenario: ${{ inputs.test_scenario }}"
+              exit 1
+              ;;
+          esac
+          
+          # Run the test
+          echo "Running K6 test: $TEST_FILE"
+          
+          # Create output directory
+          mkdir -p k6-results
+          
+          # Run with JSON output for processing
+          if [ -n "$K6_CLOUD_TOKEN" ]; then
+            # Run with K6 Cloud integration
+            k6 run \
+              --out cloud \
+              --out json=k6-results/results.json \
+              --summary-export=k6-results/summary.json \
+              --tag testid=${GITHUB_RUN_ID} \
+              --tag environment=${{ inputs.environment }} \
+              --tag scenario=${{ inputs.test_scenario }} \
+              --tag commit=${GITHUB_SHA} \
+              "$TEST_FILE" || TEST_FAILED=true
+          else
+            # Run locally only
+            k6 run \
+              --out json=k6-results/results.json \
+              --summary-export=k6-results/summary.json \
+              --summary-trend-stats="min,avg,med,max,p(90),p(95),p(99)" \
+              --tag testid=${GITHUB_RUN_ID} \
+              --tag environment=${{ inputs.environment }} \
+              "$TEST_FILE" || TEST_FAILED=true
+          fi
+          
+          # Check if test passed
+          if [ "$TEST_FAILED" = "true" ]; then
+            echo "passed=false" >> $GITHUB_OUTPUT
+            if [ "${{ inputs.fail_on_threshold }}" = "true" ]; then
+              echo "❌ Performance thresholds not met"
+              exit 1
+            else
+              echo "⚠️ Performance thresholds not met (non-blocking)"
+            fi
+          else
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ All performance thresholds met"
+          fi
+      
+      - name: Parse test results
+        if: always()
+        run: |
+          # Parse the summary JSON to create a markdown report
+          if [ -f k6-results/summary.json ]; then
+            cat > k6-results/report.md << 'EOF'
+          # K6 Load Test Report
+          
+          **Environment:** ${{ inputs.environment }}
+          **URL:** ${{ inputs.base_url }}
+          **Scenario:** ${{ inputs.test_scenario }}
+          **Duration:** ${{ inputs.duration }}
+          **Max VUs:** ${{ inputs.vus }}
+          
+          ## Summary
+          EOF
+            
+            # Extract key metrics using jq
+            if command -v jq &> /dev/null; then
+              echo '```json' >> k6-results/report.md
+              jq '.metrics.http_req_duration' k6-results/summary.json >> k6-results/report.md || true
+              echo '```' >> k6-results/report.md
+              
+              # Extract threshold results
+              echo -e "\n## Threshold Results\n" >> k6-results/report.md
+              jq -r '.thresholds | to_entries[] | "- \(.key): \(if .value then "✅ Passed" else "❌ Failed" end)"' k6-results/summary.json >> k6-results/report.md || true
+            fi
+          fi
+      
+      - name: Upload to K6 Cloud
+        id: cloud
+        if: env.K6_CLOUD_TOKEN != ''
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: |
+          # Get the test run ID from K6 output
+          if [ -f k6-results/cloud-run-id.txt ]; then
+            RUN_ID=$(cat k6-results/cloud-run-id.txt)
+            REPORT_URL="https://app.k6.io/runs/${RUN_ID}"
+            echo "report_url=${REPORT_URL}" >> $GITHUB_OUTPUT
+            echo "📊 K6 Cloud Report: ${REPORT_URL}"
+          fi
+      
+      - name: Send metrics to New Relic
+        if: env.NEW_RELIC_API_KEY != ''
+        env:
+          NEW_RELIC_API_KEY: ${{ secrets.NEW_RELIC_API_KEY }}
+          NEW_RELIC_ACCOUNT_ID: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
+        run: |
+          # Parse and send key metrics to New Relic
+          if [ -f k6-results/summary.json ]; then
+            # Create custom event in New Relic
+            TIMESTAMP=$(date +%s)
+            cat > newrelic-event.json << EOF
+          {
+            "eventType": "K6LoadTest",
+            "environment": "${{ inputs.environment }}",
+            "scenario": "${{ inputs.test_scenario }}",
+            "duration": "${{ inputs.duration }}",
+            "maxVUs": ${{ inputs.vus }},
+            "commitSha": "${GITHUB_SHA}",
+            "runId": "${GITHUB_RUN_ID}",
+            "timestamp": ${TIMESTAMP},
+            "passed": ${{ steps.run-test.outputs.passed }}
+          }
+          EOF
+            
+            # Send to New Relic
+            curl -X POST "https://insights-collector.newrelic.com/v1/accounts/${NEW_RELIC_ACCOUNT_ID}/events" \
+              -H "Content-Type: application/json" \
+              -H "X-Insert-Key: ${NEW_RELIC_API_KEY}" \
+              -d @newrelic-event.json || true
+          fi
+      
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-results-${{ inputs.environment }}-${{ github.run_id }}
+          path: |
+            k6-results/
+            apps/load-tests/env-config.js
+          retention-days: 30
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = `## 📊 K6 Load Test Results\n\n`;
+            comment += `**Environment:** ${{ inputs.environment }}\n`;
+            comment += `**Scenario:** ${{ inputs.test_scenario }}\n`;
+            comment += `**Status:** ${{ steps.run-test.outputs.passed == 'true' && '✅ Passed' || '⚠️ Failed' }}\n\n`;
+            
+            // Add report content if available
+            try {
+              const report = fs.readFileSync('k6-results/report.md', 'utf8');
+              comment += report;
+            } catch (e) {
+              comment += '_Detailed report not available_\n';
+            }
+            
+            // Add K6 Cloud link if available
+            const cloudUrl = '${{ steps.cloud.outputs.report_url }}';
+            if (cloudUrl) {
+              comment += `\n\n[View Full Report in K6 Cloud](${cloudUrl})`;
+            }
+            
+            // Post comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+      
+      - name: Create GitHub Check
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conclusion = '${{ steps.run-test.outputs.passed }}' === 'true' ? 'success' : 'failure';
+            const cloudUrl = '${{ steps.cloud.outputs.report_url }}';
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'K6 Load Test / ${{ inputs.environment }}',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: `K6 Load Test - ${{ inputs.test_scenario }}`,
+                summary: `Load test ${conclusion === 'success' ? 'passed' : 'failed'} for ${{ inputs.environment }} environment`,
+                text: cloudUrl ? `[View detailed report](${cloudUrl})` : 'Test completed'
+              }
+            });
+
+  # Generate performance report
+  performance-report:
+    name: Generate Performance Report
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    needs: load-test
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: k6-results-${{ inputs.environment }}-${{ github.run_id }}
+          path: k6-results
+      
+      - name: Generate performance insights
+        run: |
+          cat > performance-insights.md << 'EOF'
+          # Performance Insights Report
+          
+          ## Test Configuration
+          - **Environment:** ${{ inputs.environment }}
+          - **Base URL:** ${{ inputs.base_url }}
+          - **Test Scenario:** ${{ inputs.test_scenario }}
+          - **Duration:** ${{ inputs.duration }}
+          - **Max Virtual Users:** ${{ inputs.vus }}
+          
+          ## Results
+          - **Overall Status:** ${{ needs.load-test.outputs.passed == 'true' && '✅ PASSED' || '❌ FAILED' }}
+          - **Report URL:** ${{ needs.load-test.outputs.report_url || 'Not available' }}
+          
+          ## Recommendations
+          EOF
+          
+          if [ "${{ needs.load-test.outputs.passed }}" != "true" ]; then
+            cat >> performance-insights.md << 'EOF'
+          
+          ### ⚠️ Performance Issues Detected
+          
+          Based on the test results, consider the following optimizations:
+          
+          1. **Response Time Optimization**
+             - Review database queries for N+1 problems
+             - Implement caching for frequently accessed data
+             - Consider using CDN for static assets
+          
+          2. **Scalability Improvements**
+             - Review auto-scaling policies
+             - Optimize container resource limits
+             - Consider horizontal scaling for high-traffic endpoints
+          
+          3. **Error Rate Reduction**
+             - Investigate timeout errors under load
+             - Review rate limiting configuration
+             - Check for memory leaks or resource exhaustion
+          EOF
+          else
+            cat >> performance-insights.md << 'EOF'
+          
+          ### ✅ Performance Targets Met
+          
+          All performance thresholds were successfully met. The application is performing well under the tested load conditions.
+          
+          **Next Steps:**
+          - Consider increasing load for stress testing
+          - Test additional user scenarios
+          - Monitor production metrics for correlation
+          EOF
+          fi
+      
+      - name: Upload performance insights
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-insights-${{ inputs.environment }}
+          path: performance-insights.md
+          retention-days: 30

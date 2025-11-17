@@ -1,0 +1,27 @@
+# WARNING: DO NOT USE SUPABASE COMMANDS FROM PROJECT ROOT
+# ========================================================
+#
+# This config exists to prevent accidental creation of the wrong Supabase stack.
+#
+# ❌ WRONG: Running 'npx supabase start' from this directory creates:
+#    - Stack name: "2025slideheroes" (incorrect)
+#    - Ports: 54321/54322 (conflicts with documentation)
+#
+# ✅ CORRECT: Use the proper configurations:
+#    - Main development: cd apps/web && npx supabase start
+#    - E2E testing: cd apps/e2e && npx supabase start
+#
+# The correct configurations are in:
+#   - apps/web/supabase/config.toml (2025slideheroes-db, ports 39000-39006)
+#   - apps/e2e/supabase/config.toml (2025slideheroes-e2e, ports 55321-55322)
+
+project_id = "INCORRECT-DO-NOT-USE"
+
+[api]
+port = 99999  # Invalid port to prevent accidental usage
+
+[db]
+port = 99998  # Invalid port to prevent accidental usage
+
+[studio]
+port = 99997  # Invalid port to prevent accidental usage

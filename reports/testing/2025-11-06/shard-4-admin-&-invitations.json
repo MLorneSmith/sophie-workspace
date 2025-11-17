@@ -1,0 +1,31 @@
+{
+	"shard": {
+		"id": 4,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 14,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-11-06T20:36:17.255Z",
+		"endTime": "2025-11-06T20:36:57.255Z",
+		"duration": "40s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "...(truncated 2213 bytes)...\n\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_layout_tsx_f4f0a9e2._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_loading_tsx_53b5549e._.js\n[Sign-in Phase 1.5] Waiting for React Query client initialization...\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_sign-in_page_tsx_53b5549e._.js\n[Sign-in Phase 2] Waiting for form inputs to be interactive...\n[Sign-in Phase 3] Filling credentials for: test2@slideheroes.com\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_a0bdee40._.js\n[Sign-in Phase 3] Email field filled successfully\n[Sign-in Phase 3] Password field filled successfully\n[Sign-in Phase 4] Waiting for form validation...\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_a0bdee40._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[Sign-in Phase 5] Form ready. Submitting authentication request...\n[Sign-in Phase 5] Form submitted. Waiting for navigation...\n×°°°°°🔧 Test Environment Configuration:\n   Environment: LOCAL\n   CI Mode: false\n   Skip Email Verification: false\n   Credential Validation: LENIENT\n   Max Retries: 2\n×🔧 Test Environment Configuration:\n   Environment: LOCAL\n   CI Mode: false\n   Skip Email Verification: false\n   Credential Validation: LENIENT\n   Max Retries: 2\n[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: 20000ms)...\n[Sign-in Phase 1] Waiting for React hydration...\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_a0bdee40._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_a0bdee40._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[Sign-in Phase 1.5] Waiting for React Query client initialization...\n[Sign-in Phase 2] Waiting for form inputs to be interactive...\n[Sign-in Phase 3] Filling credentials for: test2@slideheroes.com\n[Sign-in Phase 3] Email field filled successfully\n[Sign-in Phase 3] Password field filled successfully\n[Sign-in Phase 4] Waiting for form validation...\n[Sign-in Phase 5] Form ready. Submitting authentication request...\n[Network] Request: POST http://host.docker.internal:54321/auth/v1/token?grant_type=password\n[Sign-in Phase 5] Form submitted. Waiting for navigation...\n[Network] Response: 200 http://host.docker.internal:54321/auth/v1/token?grant_type=password\n[Phase 1] Auth API response detected: 200\n[Phase 1] ✅ Auth API responded (405ms)\n[Phase 2] Waiting for navigation to: /home (timeout: 20000ms)\n[Phase 2] Current: http://localhost:3001/auth/sign-in, Target: /home\n[Phase 2] Current: http://localhost:3001/home, Target: /home\n[Phase 2] ✅ Navigation complete (588ms total). Final URL: http://localhost:3001/home\n[Super-Admin Auth] Waiting for Supabase auth API response...\n[Sign-in Phase 1] Waiting for React hydration...\n[Sign-in Phase 1.5] Waiting for React Query client initialization...\n[Sign-in Phase 2] Waiting for form inputs to be interactive...\n[Sign-in Phase 3] Filling credentials for: michael@slideheroes.com\n[Sign-in Phase 3] Email field filled successfully\n[Sign-in Phase 3] Password field filled successfully\n[Sign-in Phase 4] Waiting for form validation...\n[Sign-in Phase 5] Form ready. Submitting authentication request...\n[Sign-in Phase 5] Form submitted. Waiting for navigation...\n[Super-Admin Auth] Auth API response: 200\n[Super-Admin Auth] ✅ Auth API responded (385ms)\n[Super-Admin Auth] Waiting for redirect to /auth/verify...\n[Super-Admin Auth] Current URL: http://localhost:3001/auth/sign-in?next=/home\n[Super-Admin Auth] At destination (/home)? false (pathname: /auth/sign-in)\n[Super-Admin Auth] Current URL: http://localhost:3001/auth/verify\n[Super-Admin Auth] On verify page, checking for MFA form...\n[Super-Admin Auth] MFA input count: 0\n[Super-Admin Auth] At destination (/home)? false (pathname: /auth/verify)\n[Super-Admin Auth] Current URL: http://localhost:3001/auth/verify\n[Super-Admin Auth] On verify page, checking for MFA form...\n[Super-Admin Auth] MFA input count: 1\n[Super-Admin Auth] Submitting MFA verification...\nOTP 549706 code { period: \u001b[33m30\u001b[39m }\nOTP entered, waiting for form validation to complete...\nForm validation complete, button enabled. Clicking submit...\n[Super-Admin Auth] MFA submitted, waiting for post-MFA redirect...\n[Super-Admin Auth] At destination (/home)? false (pathname: /auth/verify)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n"
+}

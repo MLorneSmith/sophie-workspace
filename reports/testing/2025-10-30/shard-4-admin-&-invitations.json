@@ -1,0 +1,52 @@
+{
+	"shard": {
+		"id": 4,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 14,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-10-30T18:50:41.868Z",
+		"endTime": "2025-10-30T18:52:15.868Z",
+		"duration": "94s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 4,
+		"passed": 3,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/auth.setup.ts:129:5 › authenticate as super-admin user ────────────────────────",
+			"file": "unknown",
+			"error": "Error: Timeout 45000ms exceeded while waiting on the predicate"
+		},
+		{
+			"name": "tests/auth.setup.ts:27:5 › authenticate as test user ────────────────────────────────",
+			"file": "unknown",
+			"error": "Error: Timeout 20000ms exceeded while waiting on the predicate"
+		},
+		{
+			"name": "tests/billing.setup.ts:10:5 › authenticate as test user for billing ─────────────────",
+			"file": "unknown",
+			"error": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\""
+		}
+	],
+	"errors": [
+		"Timeout 45000ms exceeded while waiting on the predicate",
+		"Timeout 45000ms exceeded while waiting on the predicate",
+		"Timeout 20000ms exceeded while waiting on the predicate",
+		"page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\""
+	],
+	"rawOutput": "...(truncated 6663 bytes)...\n complete (1416ms total). Final URL: http://localhost:3001/auth/verify\nF\n\n  1) [setup] › tests/auth.setup.ts:129:5 › authenticate as super-admin user ────────────────────────\n\n    Error: Timeout 45000ms exceeded while waiting on the predicate\n\n      142 | \t\t\t\tpassword: credentials.password,\n      143 | \t\t\t});\n    > 144 | \t\t}).toPass({\n          | \t\t   ^\n      145 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      146 | \t\t\ttimeout: testConfig.getTimeout(\"long\"), // Super admin with MFA needs more time\n      147 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:144:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-super-admin-user-setup/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Timeout 45000ms exceeded while waiting on the predicate\n\n      142 | \t\t\t\tpassword: credentials.password,\n      143 | \t\t\t});\n    > 144 | \t\t}).toPass({\n          | \t\t   ^\n      145 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      146 | \t\t\ttimeout: testConfig.getTimeout(\"long\"), // Super admin with MFA needs more time\n      147 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:144:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/auth.setup.ts-authenticate-as-super-admin-user-setup-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2) [setup] › tests/auth.setup.ts:27:5 › authenticate as test user ────────────────────────────────\n\n    Error: Timeout 20000ms exceeded while waiting on the predicate\n\n      40 | \t\t\t\tpassword: credentials.password,\n      41 | \t\t\t});\n    > 42 | \t\t}).toPass({\n         | \t\t   ^\n      43 | \t\t\tintervals: testConfig.getRetryIntervals(\"auth\"),\n      44 | \t\t\ttimeout: testConfig.getTimeout(\"medium\"),\n      45 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/auth.setup.ts:42:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/auth.setup.ts-authenticate-as-test-user-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/auth.setup.ts-authenticate-as-test-user-setup/error-context.md\n\n  3) [setup] › tests/billing.setup.ts:10:5 › authenticate as test user for billing ─────────────────\n\n    TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \"response\"\n\n       at authentication/auth.po.ts:289\n\n      287 | \t\t\t`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,\n      288 | \t\t);\n    > 289 | \t\tconst authResponsePromise = this.page.waitForResponse(\n          | \t\t                                      ^\n      290 | \t\t\t(response) => {\n      291 | \t\t\t\tconst url = response.url();\n      292 | \t\t\t\tconst isAuthToken = url.includes(\"auth/v1/token\");\n        at AuthPageObject.loginAsUser (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:289:41)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/billing.setup.ts:21:2\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/billing.setup.ts-authenticate-as-test-user-for-billing-setup/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/billing.setup.ts-authenticate-as-test-user-for-billing-setup/error-context.md\n\n  1 failed\n    [setup] › tests/auth.setup.ts:129:5 › authenticate as super-admin user ─────────────────────────\n  2 flaky\n    [setup] › tests/auth.setup.ts:27:5 › authenticate as test user ─────────────────────────────────\n    [setup] › tests/billing.setup.ts:10:5 › authenticate as test user for billing ──────────────────\n  13 did not run\n  1 passed (1.6m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

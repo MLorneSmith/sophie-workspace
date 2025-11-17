@@ -140,7 +140,7 @@ For authenticated page testing, configure test user credentials:
 
 ```bash
 # Set in environment or .env.local
-TEST_USER_EMAIL=test@example.com
+TEST_USER_EMAIL=test@slideheroes.com
 TEST_USER_PASSWORD=testpassword
 ```
 

@@ -1,12 +1,14 @@
-import { getCourseLessons } from "@kit/cms/payload";
 import { enhanceRouteHandler } from "@kit/next/routes";
+import { getCourseLessons } from "@kit/payload";
 import { createServiceLogger } from "@kit/shared/logger";
 import { NextResponse } from "next/server";
 
 const { getLogger } = createServiceLogger("COURSE-LESSONS-API");
 
 export const GET = enhanceRouteHandler(
-	async ({ params, user: _user }) => {
+	async ({ params: asyncParams, user: _user }) => {
+		const params = await asyncParams;
+
 		if (!params?.courseId) {
 			return NextResponse.json(
 				{ error: "Course ID is required" },

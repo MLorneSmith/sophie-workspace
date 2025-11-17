@@ -7,68 +7,9 @@ const _dirname = path.dirname(filename);
 
 export const Downloads: CollectionConfig = {
 	slug: "downloads",
-	upload: {
-		// Comprehensive MIME types for downloads collection
-		mimeTypes: [
-			// Images
-			"image/jpeg",
-			"image/jpg",
-			"image/png",
-			"image/gif",
-			"image/webp",
-			"image/svg+xml",
-
-			// Documents
-			"application/pdf",
-			"application/msword",
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			"application/vnd.ms-excel",
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			"application/vnd.ms-powerpoint",
-			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
-			"text/plain",
-			"text/csv",
-			"application/rtf",
-
-			// Archives
-			"application/zip",
-			"application/x-rar-compressed",
-			"application/x-7z-compressed",
-			"application/gzip",
-			"application/x-tar",
-
-			// Audio
-			"audio/mpeg",
-			"audio/mp4",
-			"audio/wav",
-			"audio/ogg",
-			"audio/webm",
-
-			// Video
-			"video/mp4",
-			"video/quicktime",
-			"video/webm",
-			"video/avi",
-			"video/mov",
-
-			// Code and data files
-			"application/json",
-			"application/xml",
-			"text/xml",
-			"application/javascript",
-			"text/css",
-			"text/html",
-
-			// Other common formats
-			"application/octet-stream",
-		],
-
-		// File size limits - more generous for downloads
-		filesRequiredOnCreate: false,
-
-		// No image processing for downloads collection
-		disableLocalStorage: false, // Will be handled by storage plugin
-	},
+	// Enable upload functionality - required for storage plugin integration
+	// Manual fields below will be managed by the s3Storage plugin or manually during seeding
+	upload: true,
 	access: {
 		read: () => true,
 		create: ({ req }) => {
@@ -87,6 +28,8 @@ export const Downloads: CollectionConfig = {
 		defaultColumns: ["title", "filename", "mimeType", "filesize", "updatedAt"],
 	},
 	fields: [
+		// Upload will auto-generate: filename, url, mimeType, filesize
+		// We only add custom fields here
 		{
 			name: "title",
 			type: "text",

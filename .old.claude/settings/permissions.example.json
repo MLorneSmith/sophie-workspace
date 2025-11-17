@@ -1,0 +1,16 @@
+{
+	"_comment": "Example permissions configuration - customize for your security needs",
+	"permissions": {
+		"allow": [
+			"WebSearch",
+			"Bash(pnpm build:*)",
+			"Bash(pnpm lint:*)",
+			"Bash(git log:*)",
+			"mcp__github__search_issues",
+			"mcp__github__list_issues"
+		],
+		"deny": ["Bash(rm -rf *)", "Bash(*ssh*)", "Bash(*eval*)"],
+		"ask": ["Bash(npm publish)", "Bash(git push*)"],
+		"additionalDirectories": []
+	}
+}

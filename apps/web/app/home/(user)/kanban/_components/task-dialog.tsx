@@ -125,7 +125,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	);
 
 	const handleRemoveImage = useCallback(() => {
-		form.setValue("image", undefined);
+		form.setValue("image", undefined as File | undefined);
 		form.setValue("image_url", undefined);
 		setImagePreview(null);
 	}, [form]);

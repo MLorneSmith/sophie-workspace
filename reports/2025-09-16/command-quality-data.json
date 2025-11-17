@@ -1,0 +1,4737 @@
+{
+	"metadata": {
+		"generatedDate": "2025-09-16",
+		"evaluatorVersion": "1.0.0",
+		"totalCommands": 57,
+		"averageScore": 73.74561403508773
+	},
+	"summary": {
+		"totalCommands": 57,
+		"averageScore": 73.74561403508773,
+		"gradeDistribution": {
+			"A": 1,
+			"B": 15,
+			"C": 18,
+			"D": 23,
+			"F": 0
+		},
+		"categoryAnalysis": {
+			"frontmatter": {
+				"name": "Frontmatter & Metadata",
+				"average": 12.596491228070175,
+				"maxPossible": 15,
+				"percentageOfMax": 84
+			},
+			"primeCompliance": {
+				"name": "PRIME Framework Compliance",
+				"average": 24.789473684210527,
+				"maxPossible": 30,
+				"percentageOfMax": 83
+			},
+			"actionFirstDesign": {
+				"name": "Action-First Design",
+				"average": 10.052631578947368,
+				"maxPossible": 15,
+				"percentageOfMax": 67
+			},
+			"integration": {
+				"name": "Agent & MCP Integration",
+				"average": 9.631578947368421,
+				"maxPossible": 15,
+				"percentageOfMax": 64
+			},
+			"patterns": {
+				"name": "Pattern Implementation",
+				"average": 7.06140350877193,
+				"maxPossible": 15,
+				"percentageOfMax": 47
+			},
+			"documentation": {
+				"name": "Documentation Quality",
+				"average": 9.614035087719298,
+				"maxPossible": 10,
+				"percentageOfMax": 96
+			}
+		},
+		"bottomQuartile": [
+			{
+				"name": "/testwriters/e2e-test-writer",
+				"path": "./.claude/commands/testwriters/e2e-test-writer.md",
+				"relativePath": "testwriters/e2e-test-writer.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Missing description in frontmatter"]
+					},
+					"primeCompliance": {
+						"score": 21,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak ROLE phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: typescript-expert, testing-expert, nodejs-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 67,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Weak PURPOSE phase implementation",
+					"Weak ROLE phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: typescript-expert, testing-expert, nodejs-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+					"Consider MCP servers: context7, exa",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/spec/validate",
+				"path": "./.claude/commands/spec/validate.md",
+				"relativePath": "spec/validate.md",
+				"frontmatter": {
+					"allowed-tools": "Task, Read, Grep",
+					"description": "Analyzes a specification document to determine if it has enough detail for autonomous implementation",
+					"category": "validation",
+					"argument-hint": "<path-to-spec-file>"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"PRIME phases not in correct P→R→I→M→E sequence"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: typescript-expert, refactoring-expert, testing-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 9,
+						"issues": ["Examples should include code blocks"]
+					}
+				},
+				"totalScore": 66.5,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"PRIME phases not in correct P→R→I→M→E sequence",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: typescript-expert, refactoring-expert, testing-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Examples should include code blocks"
+				],
+				"recommendations": [
+					"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+					"Consider MCP servers: context7, perplexity",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/log-issue",
+				"path": "./.claude/commands/log-issue.md",
+				"relativePath": "log-issue.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 11,
+						"issues": [
+							"Missing description in frontmatter",
+							"Tools used but not specified in frontmatter"
+						]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: typescript-expert, testing-expert, nodejs-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 65.5,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Tools used but not specified in frontmatter",
+					"Weak ROLE phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: typescript-expert, testing-expert, nodejs-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+					"Consider MCP servers: context7, exa",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/agents-md/migration",
+				"path": "./.claude/commands/agents-md/migration.md",
+				"relativePath": "agents-md/migration.md",
+				"frontmatter": {
+					"description": "Migrate AI assistant configuration to AGENTS.md standard with universal compatibility",
+					"category": "claude-setup",
+					"allowed-tools": "Bash(mv:*), Bash(ln:*), Bash(ls:*), Bash(test:*), Bash(grep:*), Bash(echo:*), Read, Write, Edit, Bash(diff:*), Bash(cp:*)",
+					"argument-hint": "[merge-strategy: auto|backup|selective|manual]",
+					"delegation-targets": "git-expert"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 14,
+						"issues": ["Description should be action-oriented"]
+					},
+					"primeCompliance": {
+						"score": 18,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 10,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: refactoring-expert, testing-expert, code-search-expert"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 64.5,
+				"grade": "D",
+				"issues": [
+					"Description should be action-oriented",
+					"Weak PURPOSE phase implementation",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: refactoring-expert, testing-expert, code-search-expert",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/dev/cleanup",
+				"path": "./.claude/commands/dev/cleanup.md",
+				"relativePath": "dev/cleanup.md",
+				"frontmatter": {
+					"description": "Clean up debug files, test artifacts, and status reports created during development",
+					"category": "workflow",
+					"allowed-tools": "Bash(rm:*), Bash(git:*), Bash(echo:*), Bash(grep:*), Bash(ls:*), Bash(find:*), Bash(test:*), Edit, Glob",
+					"argument-hint": "[auto|preview|aggressive]",
+					"delegation-targets": "git-expert"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 21,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 64.5,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Consider delegating to: refactoring-expert, testing-expert, nodejs-expert",
+					"Consider MCP servers: exa, perplexity",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/feature/plan",
+				"path": "./.claude/commands/feature/plan.md",
+				"relativePath": "feature/plan.md",
+				"frontmatter": {
+					"allowed-tools": "Bash, Read, Write, LS"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 9,
+						"issues": [
+							"Missing description in frontmatter",
+							"Should include MCP tools for this domain",
+							"Uses arguments but missing argument-hint"
+						]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"PRIME phases not in correct P→R→I→M→E sequence"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: refactoring-expert, testing-expert, react-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 63.5,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Should include MCP tools for this domain",
+					"Uses arguments but missing argument-hint",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"PRIME phases not in correct P→R→I→M→E sequence",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: refactoring-expert, testing-expert, react-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Add argument-hint to frontmatter",
+					"Consider delegating to: refactoring-expert, testing-expert, react-expert",
+					"Consider MCP servers: context7, perplexity",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/promote-to-production",
+				"path": "./.claude/commands/promote-to-production.md",
+				"relativePath": "promote-to-production.md",
+				"frontmatter": {
+					"description": "Promote changes from staging to production environment following GitOps CI/CD pipeline",
+					"category": "deployment",
+					"allowed-tools": "Bash(gh:*), Bash(git:*), WebFetch, WebSearch",
+					"argument-hint": "[deployment notes or ticket number]",
+					"delegation-targets": "devops-expert, github-actions-expert"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 12,
+						"issues": [
+							"Should include MCP tools for this domain",
+							"Description should be action-oriented"
+						]
+					},
+					"primeCompliance": {
+						"score": 21,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: refactoring-expert, testing-expert, react-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 63.5,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Description should be action-oriented",
+					"Weak PURPOSE phase implementation",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: refactoring-expert, testing-expert, react-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Consider delegating to: refactoring-expert, testing-expert, react-expert",
+					"Consider MCP servers: context7, exa",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/testwriters/test-discovery",
+				"path": "./.claude/commands/testwriters/test-discovery.md",
+				"relativePath": "testwriters/test-discovery.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 9,
+						"issues": [
+							"Missing description in frontmatter",
+							"Tools used but not specified in frontmatter",
+							"Uses arguments but missing argument-hint"
+						]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should integrate MCP servers for this domain",
+							"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 63.5,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Tools used but not specified in frontmatter",
+					"Uses arguments but missing argument-hint",
+					"Weak PURPOSE phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should integrate MCP servers for this domain",
+					"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Add allowed-tools to frontmatter",
+					"Consider delegating to: testing-expert, nodejs-expert, database-expert",
+					"Consider MCP servers: context7, exa",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/validate-and-fix",
+				"path": "./.claude/commands/validate-and-fix.md",
+				"relativePath": "validate-and-fix.md",
+				"frontmatter": {
+					"description": "Run quality checks and automatically fix issues using concurrent agents",
+					"category": "workflow",
+					"allowed-tools": "Bash, Task, TodoWrite, Read, Edit, MultiEdit"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 10,
+						"issues": [
+							"References agents but doesn't specify valid agent names",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 4,
+						"issues": ["Missing examples", "Missing usage instructions"]
+					}
+				},
+				"totalScore": 63.5,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Most instructions don't start with action verbs",
+					"References agents but doesn't specify valid agent names",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Missing examples",
+					"Missing usage instructions"
+				],
+				"recommendations": [
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase",
+					"Add concrete examples with code blocks",
+					"Add clear usage instructions with command syntax"
+				]
+			},
+			{
+				"name": "/feature/update",
+				"path": "./.claude/commands/feature/update.md",
+				"relativePath": "feature/update.md",
+				"frontmatter": {
+					"allowed-tools": "Bash, Read, Write, LS"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 11,
+						"issues": [
+							"Missing description in frontmatter",
+							"Uses arguments but missing argument-hint"
+						]
+					},
+					"primeCompliance": {
+						"score": 12,
+						"issues": [
+							"Missing PRIME PURPOSE phase",
+							"Missing PRIME ROLE phase",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 15,
+						"issues": []
+					},
+					"patterns": {
+						"score": 5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 63,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Uses arguments but missing argument-hint",
+					"Missing PRIME PURPOSE phase",
+					"Missing PRIME ROLE phase",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Missing Dynamic context loading pattern",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+					"Add PURPOSE phase with clear objectives and success criteria",
+					"Add ROLE phase defining expertise and authority",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/dev/new-worktree",
+				"path": "./.claude/commands/dev/new-worktree.md",
+				"relativePath": "dev/new-worktree.md",
+				"frontmatter": {
+					"description": "Creates a new git worktree with feature branch from dev and copies local config files",
+					"allowed-tools": ["Bash", "Read"],
+					"argument-hint": [],
+					"model": "claude-sonnet-4-20250514"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 15,
+						"issues": []
+					},
+					"primeCompliance": {
+						"score": 15,
+						"issues": [
+							"Missing PRIME PURPOSE phase",
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 10,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: testing-expert, nodejs-expert"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 62.5,
+				"grade": "D",
+				"issues": [
+					"Missing PRIME PURPOSE phase",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: testing-expert, nodejs-expert",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+					"Add PURPOSE phase with clear objectives and success criteria",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/feature/discover",
+				"path": "./.claude/commands/feature/discover.md",
+				"relativePath": "feature/discover.md",
+				"frontmatter": {
+					"allowed-tools": "Bash, Read, Write, Task, WebSearch, gh"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 9,
+						"issues": [
+							"Missing description in frontmatter",
+							"Should include MCP tools for this domain",
+							"Uses arguments but missing argument-hint"
+						]
+					},
+					"primeCompliance": {
+						"score": 18,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation",
+							"PRIME phases not in correct P→R→I→M→E sequence"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 62.5,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Should include MCP tools for this domain",
+					"Uses arguments but missing argument-hint",
+					"Weak PURPOSE phase implementation",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"PRIME phases not in correct P→R→I→M→E sequence",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Add argument-hint to frontmatter",
+					"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+					"Add PURPOSE phase with clear objectives and success criteria",
+					"Add ROLE phase defining expertise and authority",
+					"Implement dynamic context loading pattern for adaptability"
+				]
+			},
+			{
+				"name": "/promote-to-staging",
+				"path": "./.claude/commands/promote-to-staging.md",
+				"relativePath": "promote-to-staging.md",
+				"frontmatter": {
+					"description": "Deploy changes from dev to staging environment using GitOps CI/CD pipeline with validation",
+					"allowed-tools": ["Bash", "Read"],
+					"category": "deployment"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 24,
+						"issues": [
+							"Weak PURPOSE phase implementation",
+							"Weak ROLE phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 3,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: typescript-expert, refactoring-expert, testing-expert",
+							"Should integrate MCP servers for this domain",
+							"Consider: context7, newrelic, code-reasoning, docs-mcp",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 2.5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Weak Error handling implementation",
+							"Missing Validation checks pattern",
+							"Consider adding optional patterns for complex commands"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 62.5,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Weak PURPOSE phase implementation",
+					"Weak ROLE phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: typescript-expert, refactoring-expert, testing-expert",
+					"Should integrate MCP servers for this domain",
+					"Consider: context7, newrelic, code-reasoning, docs-mcp",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Weak Error handling implementation",
+					"Missing Validation checks pattern",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": [
+					"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+					"Consider MCP servers: context7, newrelic",
+					"Implement dynamic context loading pattern for adaptability",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/code-review",
+				"path": "./.claude/commands/code-review.md",
+				"relativePath": "code-review.md",
+				"frontmatter": {
+					"description": "Multi-aspect code review using parallel code-review-expert agents",
+					"allowed-tools": "Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*)",
+					"argument-hint": "[what to review] - e.g., \"recent changes\", \"src/components\", \"*.ts files\", \"PR #123\""
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 12,
+						"issues": [
+							"Should include MCP tools for this domain",
+							"Description should be action-oriented"
+						]
+					},
+					"primeCompliance": {
+						"score": 21,
+						"issues": [
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 0,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Missing Error handling pattern",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 6,
+						"issues": ["Missing success/completion criteria"]
+					}
+				},
+				"totalScore": 62,
+				"grade": "D",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Description should be action-oriented",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Missing Error handling pattern",
+					"Missing Validation checks pattern",
+					"Missing success/completion criteria"
+				],
+				"recommendations": [
+					"Implement dynamic context loading pattern for adaptability",
+					"Add comprehensive error handling for each phase",
+					"Add validation checks in expectations phase"
+				]
+			},
+			{
+				"name": "/testwriters/integration-test-writer",
+				"path": "./.claude/commands/testwriters/integration-test-writer.md",
+				"relativePath": "testwriters/integration-test-writer.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Missing description in frontmatter"]
+					},
+					"primeCompliance": {
+						"score": 15,
+						"issues": [
+							"Missing PRIME PURPOSE phase",
+							"Weak ROLE phase implementation",
+							"Weak INPUTS phase implementation",
+							"Weak EXPECTATIONS phase implementation"
+						]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 8,
+						"issues": [
+							"Should delegate to specialized agents",
+							"Consider using: typescript-expert, refactoring-expert, testing-expert",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 5,
+						"issues": [
+							"Missing Dynamic context loading pattern",
+							"Missing Validation checks pattern"
+						]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 61,
+				"grade": "D",
+				"issues": [
+					"Missing description in frontmatter",
+					"Missing PRIME PURPOSE phase",
+					"Weak ROLE phase implementation",
+					"Weak INPUTS phase implementation",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Should delegate to specialized agents",
+					"Consider using: typescript-expert, refactoring-expert, testing-expert",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Dynamic context loading pattern",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": [
+					"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+					"Add PURPOSE phase with clear objectives and success criteria",
+					"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+					"Consider MCP servers: context7, exa",
+					"Implement dynamic context loading pattern for adaptability"
+				]
+			}
+		],
+		"topPerformers": [
+			{
+				"name": "/command/enhance",
+				"path": "./.claude/commands/command/enhance.md",
+				"relativePath": "command/enhance.md",
+				"frontmatter": {
+					"description": "Enhance existing Claude Code commands using the 4-D Methodology with parallel agent execution and simplified clarification",
+					"allowed-tools": ["Read", "Write", "Bash", "Task"],
+					"argument-hint": "<file-path>"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 12,
+						"issues": [
+							"Should include MCP tools for this domain",
+							"Description should be action-oriented"
+						]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": []
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 90,
+				"grade": "A",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Description should be action-oriented",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/do-task",
+				"path": "./.claude/commands/do-task.md",
+				"relativePath": "do-task.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 11,
+						"issues": [
+							"Missing description in frontmatter",
+							"Tools used but not specified in frontmatter"
+						]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": []
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 89,
+				"grade": "B",
+				"issues": [
+					"Missing description in frontmatter",
+					"Tools used but not specified in frontmatter",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/research",
+				"path": "./.claude/commands/research.md",
+				"relativePath": "research.md",
+				"frontmatter": {
+					"description": "Conduct comprehensive research using parallel search strategies and multiple sources",
+					"argument-hint": "<question or topic> - e.g., \"WebRTC security\", \"React vs Vue comparison\"",
+					"allowed-tools": [
+						"Task",
+						"mcp__exa__*",
+						"mcp__perplexity-ask__*",
+						"mcp__context7__*",
+						"WebSearch",
+						"WebFetch"
+					],
+					"category": "workflow"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 14,
+						"issues": ["Description should be action-oriented"]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 15,
+						"issues": []
+					},
+					"patterns": {
+						"score": 10,
+						"issues": ["Missing Validation checks pattern"]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 89,
+				"grade": "B",
+				"issues": [
+					"Description should be action-oriented",
+					"Most instructions don't start with action verbs",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/feature/spec",
+				"path": "./.claude/commands/feature/spec.md",
+				"relativePath": "feature/spec.md",
+				"frontmatter": {
+					"description": "Create comprehensive feature specifications using PRIME framework with interactive discovery and validation",
+					"allowed-tools": "Bash, Read, Write, Task",
+					"argument-hint": "<feature-name> (kebab-case, e.g., user-authentication, payment-flow)"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 10,
+						"issues": [
+							"References agents but doesn't specify valid agent names",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": []
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 88,
+				"grade": "B",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Most instructions don't start with action verbs",
+					"References agents but doesn't specify valid agent names",
+					"Missing MCP tool permissions in frontmatter"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/feature/sync",
+				"path": "./.claude/commands/feature/sync.md",
+				"relativePath": "feature/sync.md",
+				"frontmatter": {
+					"description": "Push feature implementation plan and tasks to GitHub as issues with parallel processing and comprehensive validation",
+					"allowed-tools": "Bash, Read, Write, LS, Task, Grep, Glob",
+					"argument-hint": "<feature_name>"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 10,
+						"issues": [
+							"References agents but doesn't specify valid agent names",
+							"Missing MCP tool permissions in frontmatter"
+						]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": []
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 88,
+				"grade": "B",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Most instructions don't start with action verbs",
+					"References agents but doesn't specify valid agent names",
+					"Missing MCP tool permissions in frontmatter"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/git/checkout",
+				"path": "./.claude/commands/git/checkout.md",
+				"relativePath": "git/checkout.md",
+				"frontmatter": {
+					"description": "Create or switch git branches with intelligent naming conventions and validation",
+					"allowed-tools": ["Bash", "Read", "Task"],
+					"category": "git",
+					"argument-hint": "<branch-type/branch-name | branch-name>"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 27,
+						"issues": ["Weak EXPECTATIONS phase implementation"]
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": ["Consider adding optional patterns for complex commands"]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 88,
+				"grade": "B",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Weak EXPECTATIONS phase implementation",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter",
+					"Consider adding optional patterns for complex commands"
+				],
+				"recommendations": []
+			},
+			{
+				"name": "/command/new",
+				"path": "./.claude/commands/command/new.md",
+				"relativePath": "command/new.md",
+				"frontmatter": {},
+				"scores": {
+					"frontmatter": {
+						"score": 9,
+						"issues": [
+							"Missing description in frontmatter",
+							"Tools used but not specified in frontmatter",
+							"Uses arguments but missing argument-hint"
+						]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 15,
+						"issues": []
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 87,
+				"grade": "B",
+				"issues": [
+					"Missing description in frontmatter",
+					"Tools used but not specified in frontmatter",
+					"Uses arguments but missing argument-hint",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter"
+				],
+				"recommendations": ["Add allowed-tools to frontmatter"]
+			},
+			{
+				"name": "/debug-issue",
+				"path": "./.claude/commands/debug-issue.md",
+				"relativePath": "debug-issue.md",
+				"frontmatter": {
+					"description": "Analyze GitHub issues and launch systematic debugging sessions with parallel expert consultation and intelligent context loading",
+					"allowed-tools": [
+						"Read",
+						"Grep",
+						"Glob",
+						"Bash",
+						"Task",
+						"TodoWrite"
+					],
+					"argument-hint": "<issue_reference> (e.g., 123, ISSUE-123,"
+				},
+				"scores": {
+					"frontmatter": {
+						"score": 13,
+						"issues": ["Should include MCP tools for this domain"]
+					},
+					"primeCompliance": {
+						"score": 30,
+						"issues": []
+					},
+					"actionFirstDesign": {
+						"score": 10,
+						"issues": ["Most instructions don't start with action verbs"]
+					},
+					"integration": {
+						"score": 13,
+						"issues": ["Missing MCP tool permissions in frontmatter"]
+					},
+					"patterns": {
+						"score": 10,
+						"issues": ["Missing Validation checks pattern"]
+					},
+					"documentation": {
+						"score": 10,
+						"issues": []
+					}
+				},
+				"totalScore": 86,
+				"grade": "B",
+				"issues": [
+					"Should include MCP tools for this domain",
+					"Most instructions don't start with action verbs",
+					"Missing MCP tool permissions in frontmatter",
+					"Missing Validation checks pattern"
+				],
+				"recommendations": []
+			}
+		],
+		"commonIssues": [
+			{
+				"issue": "Most instructions don't start with action verbs",
+				"count": 56,
+				"percentage": 98
+			},
+			{
+				"issue": "Missing MCP tool permissions in frontmatter",
+				"count": 43,
+				"percentage": 75
+			},
+			{
+				"issue": "Missing Dynamic context loading pattern",
+				"count": 41,
+				"percentage": 72
+			},
+			{
+				"issue": "Should delegate to specialized agents",
+				"count": 35,
+				"percentage": 61
+			},
+			{
+				"issue": "Should include MCP tools for this domain",
+				"count": 34,
+				"percentage": 60
+			},
+			{
+				"issue": "Missing Validation checks pattern",
+				"count": 34,
+				"percentage": 60
+			},
+			{
+				"issue": "Weak EXPECTATIONS phase implementation",
+				"count": 29,
+				"percentage": 51
+			},
+			{
+				"issue": "Weak Error handling implementation",
+				"count": 24,
+				"percentage": 42
+			},
+			{
+				"issue": "Weak ROLE phase implementation",
+				"count": 24,
+				"percentage": 42
+			},
+			{
+				"issue": "Consider adding optional patterns for complex commands",
+				"count": 23,
+				"percentage": 40
+			}
+		]
+	},
+	"results": [
+		{
+			"name": "/command/enhance",
+			"path": "./.claude/commands/command/enhance.md",
+			"score": 90,
+			"grade": "A",
+			"scores": {
+				"frontmatter": {
+					"score": 12,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Description should be action-oriented"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Description should be action-oriented",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/do-task",
+			"path": "./.claude/commands/do-task.md",
+			"score": 89,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/research",
+			"path": "./.claude/commands/research.md",
+			"score": 89,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 15,
+					"issues": []
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Validation checks pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Most instructions don't start with action verbs",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/feature/spec",
+			"path": "./.claude/commands/feature/spec.md",
+			"score": 88,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"References agents but doesn't specify valid agent names",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"References agents but doesn't specify valid agent names",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/feature/sync",
+			"path": "./.claude/commands/feature/sync.md",
+			"score": 88,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"References agents but doesn't specify valid agent names",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"References agents but doesn't specify valid agent names",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/git/checkout",
+			"path": "./.claude/commands/git/checkout.md",
+			"score": 88,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": ["Consider adding optional patterns for complex commands"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/command/new",
+			"path": "./.claude/commands/command/new.md",
+			"score": 87,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 9,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"Uses arguments but missing argument-hint",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": ["Add allowed-tools to frontmatter"]
+		},
+		{
+			"name": "/debug-issue",
+			"path": "./.claude/commands/debug-issue.md",
+			"score": 86,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Validation checks pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/agents-md/cli",
+			"path": "./.claude/commands/agents-md/cli.md",
+			"score": 84,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, nodejs-expert"
+					]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Dynamic context loading pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+				"Missing Dynamic context loading pattern"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/feature/analyze",
+			"path": "./.claude/commands/feature/analyze.md",
+			"score": 83.5,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 12.5,
+					"issues": ["Weak Error handling implementation"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Weak Error handling implementation"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa"
+			]
+		},
+		{
+			"name": "/git/status",
+			"path": "./.claude/commands/git/status.md",
+			"score": 83.5,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should integrate MCP servers for this domain",
+						"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 12.5,
+					"issues": [
+						"Weak Error handling implementation",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Should integrate MCP servers for this domain",
+				"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+				"Missing MCP tool permissions in frontmatter",
+				"Weak Error handling implementation",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: refactoring-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: context7, exa"
+			]
+		},
+		{
+			"name": "/git/commit",
+			"path": "./.claude/commands/git/commit.md",
+			"score": 82,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 9,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": ["Consider adding optional patterns for complex commands"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"Uses arguments but missing argument-hint",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Add allowed-tools to frontmatter",
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa"
+			]
+		},
+		{
+			"name": "/agent-mgmt/modify-subagent",
+			"path": "./.claude/commands/agent-mgmt/modify-subagent.md",
+			"score": 81,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": ["PRIME phases not in correct P→R→I→M→E sequence"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Dynamic context loading pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: exa, perplexity"
+			]
+		},
+		{
+			"name": "/create-context",
+			"path": "./.claude/commands/create-context.md",
+			"score": 81,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/test",
+			"path": "./.claude/commands/test.md",
+			"score": 81,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 3,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+						"Should integrate MCP servers for this domain",
+						"Consider: postgres, newrelic, code-reasoning",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 15,
+					"issues": []
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+				"Should integrate MCP servers for this domain",
+				"Consider: postgres, newrelic, code-reasoning",
+				"Missing MCP tool permissions in frontmatter"
+			],
+			"recommendations": [
+				"Consider delegating to: refactoring-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: postgres, newrelic"
+			]
+		},
+		{
+			"name": "/feature/start",
+			"path": "./.claude/commands/feature/start.md",
+			"score": 80.5,
+			"grade": "B",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should integrate MCP servers for this domain",
+						"Consider: context7, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 12.5,
+					"issues": ["Weak Error handling implementation"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should integrate MCP servers for this domain",
+				"Consider: context7, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+				"Missing MCP tool permissions in frontmatter",
+				"Weak Error handling implementation"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, perplexity"
+			]
+		},
+		{
+			"name": "/feature/status",
+			"path": "./.claude/commands/feature/status.md",
+			"score": 79.5,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: testing-expert, nodejs-expert, react-expert"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: testing-expert, nodejs-expert, react-expert",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": ["Add validation checks in expectations phase"]
+		},
+		{
+			"name": "/log-task",
+			"path": "./.claude/commands/log-task.md",
+			"score": 79,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": ["PRIME phases not in correct P→R→I→M→E sequence"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should integrate MCP servers for this domain",
+						"Consider: context7, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Validation checks pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should integrate MCP servers for this domain",
+				"Consider: context7, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, perplexity"
+			]
+		},
+		{
+			"name": "/codecheck",
+			"path": "./.claude/commands/codecheck.md",
+			"score": 78.5,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": ["PRIME phases not in correct P→R→I→M→E sequence"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: newrelic, code-reasoning",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/feature/decompose",
+			"path": "./.claude/commands/feature/decompose.md",
+			"score": 76.5,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak METHOD phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"References agents but doesn't specify valid agent names",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 12.5,
+					"issues": ["Weak Error handling implementation"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak METHOD phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"References agents but doesn't specify valid agent names",
+				"Missing MCP tool permissions in frontmatter",
+				"Weak Error handling implementation"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/update/payload",
+			"path": "./.claude/commands/update/payload.md",
+			"score": 76,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/dev/remove-worktree",
+			"path": "./.claude/commands/dev/remove-worktree.md",
+			"score": 75.5,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, newrelic",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/update/update-makerkit",
+			"path": "./.claude/commands/update/update-makerkit.md",
+			"score": 75,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, nodejs-expert"
+					]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+				"Missing Dynamic context loading pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": []
+		},
+		{
+			"name": "/agents-md/init",
+			"path": "./.claude/commands/agents-md/init.md",
+			"score": 74.5,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"References agents but doesn't specify valid agent names",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"References agents but doesn't specify valid agent names",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/agent-mgmt/create-subagent",
+			"path": "./.claude/commands/agent-mgmt/create-subagent.md",
+			"score": 74,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": ["PRIME phases not in correct P→R→I→M→E sequence"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/pr",
+			"path": "./.claude/commands/pr.md",
+			"score": 74,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 30,
+					"issues": []
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: newrelic, code-reasoning",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/git/push",
+			"path": "./.claude/commands/git/push.md",
+			"score": 73,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, testing-expert, nodejs-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, testing-expert, nodejs-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: context7, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/testwriters/unit-test-writer",
+			"path": "./.claude/commands/testwriters/unit-test-writer.md",
+			"score": 73,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: exa, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/context/sync-context-inventory",
+			"path": "./.claude/commands/context/sync-context-inventory.md",
+			"score": 72,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 12,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Description should be action-oriented"
+					]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": [
+						"Weak EXPECTATIONS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Description should be action-oriented",
+				"Weak EXPECTATIONS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/spec/decompose",
+			"path": "./.claude/commands/spec/decompose.md",
+			"score": 72,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Missing PRIME ROLE phase",
+						"Weak INPUTS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, testing-expert, nodejs-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 10,
+					"issues": ["Missing Dynamic context loading pattern"]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Missing PRIME ROLE phase",
+				"Weak INPUTS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, testing-expert, nodejs-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: context7, exa"
+			]
+		},
+		{
+			"name": "/config/bash-timeout",
+			"path": "./.claude/commands/config/bash-timeout.md",
+			"score": 71,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak METHOD phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, code-search-expert"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Weak ROLE phase implementation",
+				"Weak METHOD phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, code-search-expert",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/db-healthcheck",
+			"path": "./.claude/commands/db-healthcheck.md",
+			"score": 71,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: postgres, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/spec/create",
+			"path": "./.claude/commands/spec/create.md",
+			"score": 71,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Error handling pattern"
+					]
+				},
+				"documentation": {
+					"score": 7,
+					"issues": ["Missing usage instructions"]
+				}
+			},
+			"issues": [
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing Dynamic context loading pattern",
+				"Missing Error handling pattern",
+				"Missing usage instructions"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add comprehensive error handling for each phase"
+			]
+		},
+		{
+			"name": "/write-tests",
+			"path": "./.claude/commands/write-tests.md",
+			"score": 71,
+			"grade": "C",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: exa, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/checkpoint/list",
+			"path": "./.claude/commands/checkpoint/list.md",
+			"score": 69.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 12,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Description should be action-oriented"
+					]
+				},
+				"primeCompliance": {
+					"score": 27,
+					"issues": ["Weak EXPECTATIONS phase implementation"]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Description should be action-oriented",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/cicd-debug",
+			"path": "./.claude/commands/cicd-debug.md",
+			"score": 69.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Missing description in frontmatter"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Missing PRIME ROLE phase",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, react-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Validation checks implementation"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Missing PRIME ROLE phase",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, react-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Validation checks implementation"
+			],
+			"recommendations": [
+				"Consider delegating to: refactoring-expert, testing-expert, react-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/claude-md-optimizer",
+			"path": "./.claude/commands/claude-md-optimizer.md",
+			"score": 69.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 7.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation"
+					]
+				},
+				"documentation": {
+					"score": 7,
+					"issues": ["Missing usage instructions"]
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing usage instructions"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/workflow",
+			"path": "./.claude/commands/workflow.md",
+			"score": 69.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Missing description in frontmatter"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 15,
+					"issues": []
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 8,
+					"issues": ["Success criteria should be measurable"]
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Success criteria should be measurable"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/dev/change-worktree",
+			"path": "./.claude/commands/dev/change-worktree.md",
+			"score": 69,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 15,
+					"issues": [
+						"Missing PRIME PURPOSE phase",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 15,
+					"issues": []
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Error handling pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Missing PRIME PURPOSE phase",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing Dynamic context loading pattern",
+				"Missing Error handling pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add comprehensive error handling for each phase"
+			]
+		},
+		{
+			"name": "/checkpoint/create",
+			"path": "./.claude/commands/checkpoint/create.md",
+			"score": 68.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 18,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 13,
+					"issues": ["Some instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, react-expert"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Some instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, react-expert",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/spec/execute",
+			"path": "./.claude/commands/spec/execute.md",
+			"score": 67.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 18,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak METHOD phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 15,
+					"issues": []
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 7,
+					"issues": ["Missing usage instructions"]
+				}
+			},
+			"issues": [
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak METHOD phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Missing usage instructions"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Add ROLE phase defining expertise and authority",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/checkpoint/restore",
+			"path": "./.claude/commands/checkpoint/restore.md",
+			"score": 67,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 18,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak METHOD phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, react-expert"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak METHOD phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, react-expert",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/testwriters/e2e-test-writer",
+			"path": "./.claude/commands/testwriters/e2e-test-writer.md",
+			"score": 67,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Missing description in frontmatter"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, testing-expert, nodejs-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, testing-expert, nodejs-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/spec/validate",
+			"path": "./.claude/commands/spec/validate.md",
+			"score": 66.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 9,
+					"issues": ["Examples should include code blocks"]
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Examples should include code blocks"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, perplexity",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/log-issue",
+			"path": "./.claude/commands/log-issue.md",
+			"score": 65.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter"
+					]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, testing-expert, nodejs-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"Weak ROLE phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, testing-expert, nodejs-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/agents-md/migration",
+			"path": "./.claude/commands/agents-md/migration.md",
+			"score": 64.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 14,
+					"issues": ["Description should be action-oriented"]
+				},
+				"primeCompliance": {
+					"score": 18,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, code-search-expert"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Description should be action-oriented",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, code-search-expert",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/dev/cleanup",
+			"path": "./.claude/commands/dev/cleanup.md",
+			"score": 64.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, nodejs-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: refactoring-expert, testing-expert, nodejs-expert",
+				"Consider MCP servers: exa, perplexity",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/feature/plan",
+			"path": "./.claude/commands/feature/plan.md",
+			"score": 63.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 9,
+					"issues": [
+						"Missing description in frontmatter",
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, react-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, react-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Add argument-hint to frontmatter",
+				"Consider delegating to: refactoring-expert, testing-expert, react-expert",
+				"Consider MCP servers: context7, perplexity",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/promote-to-production",
+			"path": "./.claude/commands/promote-to-production.md",
+			"score": 63.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 12,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Description should be action-oriented"
+					]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: refactoring-expert, testing-expert, react-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Description should be action-oriented",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: refactoring-expert, testing-expert, react-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: refactoring-expert, testing-expert, react-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/testwriters/test-discovery",
+			"path": "./.claude/commands/testwriters/test-discovery.md",
+			"score": 63.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 9,
+					"issues": [
+						"Missing description in frontmatter",
+						"Tools used but not specified in frontmatter",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should integrate MCP servers for this domain",
+						"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Tools used but not specified in frontmatter",
+				"Uses arguments but missing argument-hint",
+				"Weak PURPOSE phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should integrate MCP servers for this domain",
+				"Consider: context7, exa, perplexity, postgres, newrelic, code-reasoning, docs-mcp",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Add allowed-tools to frontmatter",
+				"Consider delegating to: testing-expert, nodejs-expert, database-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/validate-and-fix",
+			"path": "./.claude/commands/validate-and-fix.md",
+			"score": 63.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"References agents but doesn't specify valid agent names",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 4,
+					"issues": ["Missing examples", "Missing usage instructions"]
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Most instructions don't start with action verbs",
+				"References agents but doesn't specify valid agent names",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Missing examples",
+				"Missing usage instructions"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase",
+				"Add concrete examples with code blocks",
+				"Add clear usage instructions with command syntax"
+			]
+		},
+		{
+			"name": "/feature/update",
+			"path": "./.claude/commands/feature/update.md",
+			"score": 63,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 11,
+					"issues": [
+						"Missing description in frontmatter",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 12,
+					"issues": [
+						"Missing PRIME PURPOSE phase",
+						"Missing PRIME ROLE phase",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 15,
+					"issues": []
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Uses arguments but missing argument-hint",
+				"Missing PRIME PURPOSE phase",
+				"Missing PRIME ROLE phase",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Add ROLE phase defining expertise and authority",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/dev/new-worktree",
+			"path": "./.claude/commands/dev/new-worktree.md",
+			"score": 62.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 15,
+					"issues": []
+				},
+				"primeCompliance": {
+					"score": 15,
+					"issues": [
+						"Missing PRIME PURPOSE phase",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 10,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: testing-expert, nodejs-expert"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing PRIME PURPOSE phase",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: testing-expert, nodejs-expert",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/feature/discover",
+			"path": "./.claude/commands/feature/discover.md",
+			"score": 62.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 9,
+					"issues": [
+						"Missing description in frontmatter",
+						"Should include MCP tools for this domain",
+						"Uses arguments but missing argument-hint"
+					]
+				},
+				"primeCompliance": {
+					"score": 18,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation",
+						"PRIME phases not in correct P→R→I→M→E sequence"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Should include MCP tools for this domain",
+				"Uses arguments but missing argument-hint",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"PRIME phases not in correct P→R→I→M→E sequence",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Add argument-hint to frontmatter",
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Add ROLE phase defining expertise and authority",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		},
+		{
+			"name": "/promote-to-staging",
+			"path": "./.claude/commands/promote-to-staging.md",
+			"score": 62.5,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Should include MCP tools for this domain"]
+				},
+				"primeCompliance": {
+					"score": 24,
+					"issues": [
+						"Weak PURPOSE phase implementation",
+						"Weak ROLE phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 3,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Should integrate MCP servers for this domain",
+						"Consider: context7, newrelic, code-reasoning, docs-mcp",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 2.5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Weak Error handling implementation",
+						"Missing Validation checks pattern",
+						"Consider adding optional patterns for complex commands"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Weak PURPOSE phase implementation",
+				"Weak ROLE phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Should integrate MCP servers for this domain",
+				"Consider: context7, newrelic, code-reasoning, docs-mcp",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Weak Error handling implementation",
+				"Missing Validation checks pattern",
+				"Consider adding optional patterns for complex commands"
+			],
+			"recommendations": [
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, newrelic",
+				"Implement dynamic context loading pattern for adaptability",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/code-review",
+			"path": "./.claude/commands/code-review.md",
+			"score": 62,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 12,
+					"issues": [
+						"Should include MCP tools for this domain",
+						"Description should be action-oriented"
+					]
+				},
+				"primeCompliance": {
+					"score": 21,
+					"issues": [
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 13,
+					"issues": ["Missing MCP tool permissions in frontmatter"]
+				},
+				"patterns": {
+					"score": 0,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Error handling pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 6,
+					"issues": ["Missing success/completion criteria"]
+				}
+			},
+			"issues": [
+				"Should include MCP tools for this domain",
+				"Description should be action-oriented",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Error handling pattern",
+				"Missing Validation checks pattern",
+				"Missing success/completion criteria"
+			],
+			"recommendations": [
+				"Implement dynamic context loading pattern for adaptability",
+				"Add comprehensive error handling for each phase",
+				"Add validation checks in expectations phase"
+			]
+		},
+		{
+			"name": "/testwriters/integration-test-writer",
+			"path": "./.claude/commands/testwriters/integration-test-writer.md",
+			"score": 61,
+			"grade": "D",
+			"scores": {
+				"frontmatter": {
+					"score": 13,
+					"issues": ["Missing description in frontmatter"]
+				},
+				"primeCompliance": {
+					"score": 15,
+					"issues": [
+						"Missing PRIME PURPOSE phase",
+						"Weak ROLE phase implementation",
+						"Weak INPUTS phase implementation",
+						"Weak EXPECTATIONS phase implementation"
+					]
+				},
+				"actionFirstDesign": {
+					"score": 10,
+					"issues": ["Most instructions don't start with action verbs"]
+				},
+				"integration": {
+					"score": 8,
+					"issues": [
+						"Should delegate to specialized agents",
+						"Consider using: typescript-expert, refactoring-expert, testing-expert",
+						"Missing MCP tool permissions in frontmatter"
+					]
+				},
+				"patterns": {
+					"score": 5,
+					"issues": [
+						"Missing Dynamic context loading pattern",
+						"Missing Validation checks pattern"
+					]
+				},
+				"documentation": {
+					"score": 10,
+					"issues": []
+				}
+			},
+			"issues": [
+				"Missing description in frontmatter",
+				"Missing PRIME PURPOSE phase",
+				"Weak ROLE phase implementation",
+				"Weak INPUTS phase implementation",
+				"Weak EXPECTATIONS phase implementation",
+				"Most instructions don't start with action verbs",
+				"Should delegate to specialized agents",
+				"Consider using: typescript-expert, refactoring-expert, testing-expert",
+				"Missing MCP tool permissions in frontmatter",
+				"Missing Dynamic context loading pattern",
+				"Missing Validation checks pattern"
+			],
+			"recommendations": [
+				"Restructure command following PRIME sequence: Purpose → Role → Inputs → Method → Expectations",
+				"Add PURPOSE phase with clear objectives and success criteria",
+				"Consider delegating to: typescript-expert, refactoring-expert, testing-expert",
+				"Consider MCP servers: context7, exa",
+				"Implement dynamic context loading pattern for adaptability"
+			]
+		}
+	]
+}

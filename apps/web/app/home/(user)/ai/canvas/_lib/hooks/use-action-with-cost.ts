@@ -25,8 +25,17 @@ export function useActionWithCost<
 			const result = await action(dataWithSession as T);
 
 			// If successful and cost is available, update the cost
+			// Wrap in try-catch to prevent cost tracking errors from breaking the action
 			if (result.success && result.metadata?.cost) {
-				addCost(result.metadata.cost);
+				try {
+					addCost(result.metadata.cost);
+				} catch (error) {
+					// Silently fail - cost tracking should not break the action
+					if (process.env.NODE_ENV === "development") {
+						// biome-ignore lint/suspicious/noConsole: Development logging
+						console.warn("Failed to track cost:", error);
+					}
+				}
 			}
 
 			return result;

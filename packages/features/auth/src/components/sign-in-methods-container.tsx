@@ -6,15 +6,15 @@ import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
 import type { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
+import { LastAuthMethodHint } from "./last-auth-method-hint";
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
 import { OtpSignInContainer } from "./otp-sign-in-container";
 import { PasswordSignInContainer } from "./password-sign-in-container";
 
 export function SignInMethodsContainer(props: {
-	inviteToken?: string;
-
 	paths: {
 		callback: string;
 		joinTeam: string;
@@ -24,9 +24,11 @@ export function SignInMethodsContainer(props: {
 	providers: {
 		password: boolean;
 		magicLink: boolean;
+		otp: boolean;
 		oAuth: Provider[];
-		otp?: boolean;
 	};
+
+	captchaSiteKey?: string;
 }) {
 	const router = useRouter();
 
@@ -34,42 +36,35 @@ export function SignInMethodsContainer(props: {
 		? new URL(props.paths.callback, window?.location.origin).toString()
 		: "";
 
-	const onSignIn = () => {
-		// if the user has an invite token, we should join the team
-		if (props.inviteToken) {
-			const searchParams = new URLSearchParams({
-				invite_token: props.inviteToken,
-			});
+	const onSignIn = useCallback(() => {
+		const returnPath = props.paths.returnPath || "/home";
 
-			const joinTeamPath = `${props.paths.joinTeam}?${searchParams.toString()}`;
-
-			router.replace(joinTeamPath);
-		} else {
-			const returnPath = props.paths.returnPath || "/home";
-
-			// otherwise, we should redirect to the return path
-			router.replace(returnPath);
-		}
-	};
+		router.replace(returnPath);
+	}, [props.paths.returnPath, router]);
 
 	return (
 		<>
+			<LastAuthMethodHint />
+
 			<If condition={props.providers.password}>
-				<PasswordSignInContainer onSignIn={onSignIn} />
+				<PasswordSignInContainer
+					onSignIn={onSignIn}
+					captchaSiteKey={props.captchaSiteKey}
+				/>
 			</If>
 
 			<If condition={props.providers.magicLink}>
 				<MagicLinkAuthContainer
-					inviteToken={props.inviteToken}
 					redirectUrl={redirectUrl}
 					shouldCreateUser={false}
+					captchaSiteKey={props.captchaSiteKey}
 				/>
 			</If>
 
 			<If condition={props.providers.otp}>
 				<OtpSignInContainer
-					inviteToken={props.inviteToken}
 					shouldCreateUser={false}
+					captchaSiteKey={props.captchaSiteKey}
 				/>
 			</If>
 
@@ -80,7 +75,7 @@ export function SignInMethodsContainer(props: {
 					</div>
 
 					<div className="relative flex justify-center text-xs uppercase">
-						<span className="bg-background text-foreground px-2">
+						<span className="bg-background text-muted-foreground px-2">
 							<Trans i18nKey="auth:orContinueWith" />
 						</span>
 					</div>
@@ -88,7 +83,6 @@ export function SignInMethodsContainer(props: {
 
 				<OauthProviders
 					enabledProviders={props.providers.oAuth}
-					inviteToken={props.inviteToken}
 					shouldCreateUser={false}
 					paths={{
 						callback: props.paths.callback,

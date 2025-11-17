@@ -21,21 +21,19 @@
 		"./auth": "./src/auth.ts",
 		"./types": "./src/types.ts"
 	},
-	"dependencies": {
-		"@kit/shared": "workspace:*"
-	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@supabase/ssr": "^0.6.1",
-		"@supabase/supabase-js": "2.50.2",
-		"@tanstack/react-query": "5.81.2",
-		"@types/react": "19.1.8",
-		"next": "15.3.4",
-		"react": "19.1.1",
+		"@supabase/ssr": "^0.7.0",
+		"@supabase/supabase-js": "2.76.1",
+		"@tanstack/react-query": "5.90.5",
+		"@types/node": "catalog:",
+		"@types/react": "catalog:",
+		"next": "16.0.0",
+		"react": "19.2.0",
 		"server-only": "^0.0.1",
-		"zod": "^3.25.67"
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {
@@ -43,5 +41,8 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1"
 	}
 }

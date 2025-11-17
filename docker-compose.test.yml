@@ -1,0 +1,139 @@
+# Test Environment Docker Compose
+# This runs both the Next.js web app and Payload CMS in containers for isolated testing
+# Connects to the Web Supabase services (ports 54321/54322) - Single source of truth
+# Web app: port 3001 (dev uses 3000)
+# Payload app: port 3021 (dev uses 3020)
+
+name: 2025slideheroes-test
+
+services:
+  app-test:
+    image: node:22-slim
+    container_name: slideheroes-app-test
+    user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
+    working_dir: /app
+    volumes:
+      - .:/app:cached
+    tmpfs:
+      - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
+      - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    environment:
+      # npm configuration for non-root user
+      - npm_config_cache=/tmp/.npm
+      - NEXT_TELEMETRY_DISABLED=1
+      # Web Supabase configuration (single source of truth)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      # Test environment settings
+      - NODE_ENV=test
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3001
+      - PORT=3001
+      # Auth configuration
+      - NEXT_PUBLIC_AUTH_PASSWORD=true
+      - NEXT_PUBLIC_AUTH_MAGIC_LINK=false
+      - NEXT_PUBLIC_AUTH_OTP=false
+      - NEXT_PUBLIC_PRODUCT_NAME=SlideHeroes
+      - NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION=true
+      - NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION=true
+      # Performance
+      - FORCE_COLOR=1
+      - CI=false
+    command: >
+      sh -c "
+        echo '🔧 Installing dependencies with pnpm...' &&
+        npx pnpm install &&
+        echo '🚀 Starting test server on port 3001...' &&
+        cd apps/web &&
+        NODE_ENV=test npx next dev --turbo --port 3001
+      "
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - test-network
+
+  payload-test:
+    image: node:22-slim
+    container_name: slideheroes-payload-test
+    user: "${UID:-1000}:${GID:-1000}"  # Run as host user to prevent permission issues
+    working_dir: /app
+    volumes:
+      - .:/app:cached
+    tmpfs:
+      - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
+      - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
+    ports:
+      - "3021:3021"
+    restart: unless-stopped
+    environment:
+      # npm configuration for non-root user
+      - npm_config_cache=/tmp/.npm
+      - NEXT_TELEMETRY_DISABLED=1
+      # Web Supabase configuration (single source of truth)
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      - SUPABASE_JWT_SECRET=super-secret-jwt-token-with-at-least-32-characters-long
+      - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      # Payload specific settings - using DATABASE_URI (not DATABASE_URL)
+      - DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      - PAYLOAD_PUBLIC_DATABASE_URI=postgresql://postgres:postgres@host.docker.internal:54322/postgres
+      - PAYLOAD_SECRET=your-payload-secret-here
+      - PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021
+      # Test environment settings
+      - NODE_ENV=test
+      - PORT=3021
+      # Performance
+      - FORCE_COLOR=1
+      - CI=false
+      - NODE_OPTIONS=--no-deprecation
+    command: >
+      sh -c "
+        echo '🔧 Installing dependencies with npx pnpm...' &&
+        npx pnpm@latest install --frozen-lockfile &&
+        echo '🚀 Starting Payload test server on port 3021 (using webpack due to Payload CMS + Turbopack incompatibility)...' &&
+        cd apps/payload &&
+        PORT=3021 NODE_OPTIONS=--no-deprecation npx pnpm@latest exec next dev --webpack
+      "
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3021/api/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    name: slideheroes-test
+    driver: bridge

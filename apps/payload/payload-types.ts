@@ -74,11 +74,12 @@ export interface Config {
     documentation: Documentation;
     private: Private;
     courses: Course;
-    course_lessons: CourseLesson;
-    course_quizzes: CourseQuizz;
-    quiz_questions: QuizQuestion;
-    survey_questions: SurveyQuestion;
+    'course-lessons': CourseLesson;
+    'course-quizzes': CourseQuizz;
+    'quiz-questions': QuizQuestion;
+    'survey-questions': SurveyQuestion;
     surveys: Survey;
+    'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -92,11 +93,12 @@ export interface Config {
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
     private: PrivateSelect<false> | PrivateSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
-    course_lessons: CourseLessonsSelect<false> | CourseLessonsSelect<true>;
-    course_quizzes: CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
-    quiz_questions: QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
-    survey_questions: SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
+    'course-lessons': CourseLessonsSelect<false> | CourseLessonsSelect<true>;
+    'course-quizzes': CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
+    'quiz-questions': QuizQuestionsSelect<false> | QuizQuestionsSelect<true>;
+    'survey-questions': SurveyQuestionsSelect<false> | SurveyQuestionsSelect<true>;
     surveys: SurveysSelect<false> | SurveysSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -273,7 +275,7 @@ export interface Post {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -335,6 +337,21 @@ export interface Documentation {
    * The URL-friendly identifier for this document
    */
   slug: string;
+  /**
+   * Parent documentation page
+   */
+  parent?: (string | null) | Documentation;
+  /**
+   * Auto-generated path from root to this document
+   */
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Documentation;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   description?: string | null;
   /**
    * The main content of the documentation
@@ -343,7 +360,7 @@ export interface Documentation {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -370,15 +387,6 @@ export interface Documentation {
   tags?:
     | {
         tag?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  parent?: (string | null) | Documentation;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | Documentation;
-        url?: string | null;
-        label?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -410,7 +418,7 @@ export interface Private {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -481,7 +489,7 @@ export interface Course {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -506,7 +514,7 @@ export interface Course {
  * Lessons for courses in the learning management system
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons".
+ * via the `definition` "course-lessons".
  */
 export interface CourseLesson {
   id: string;
@@ -533,11 +541,15 @@ export interface CourseLesson {
    */
   slug: string;
   description?: string | null;
+  /**
+   * Thumbnail image for this lesson
+   */
+  thumbnail?: (string | null) | Media;
   content?: {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -575,7 +587,7 @@ export interface CourseLesson {
  * Quizzes for courses in the learning management system
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes".
+ * via the `definition` "course-quizzes".
  */
 export interface CourseQuizz {
   id: string;
@@ -602,7 +614,7 @@ export interface CourseQuizz {
  * Questions for course quizzes
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions".
+ * via the `definition` "quiz-questions".
  */
 export interface QuizQuestion {
   id: string;
@@ -624,7 +636,7 @@ export interface QuizQuestion {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -660,17 +672,13 @@ export interface Survey {
    */
   description?: string | null;
   /**
-   * Only published surveys will be visible to users
+   * Questions included in this survey
    */
-  status: 'draft' | 'published';
+  questions?: (string | SurveyQuestion)[] | null;
   /**
    * The date and time this survey was published
    */
   publishedAt?: string | null;
-  /**
-   * Files for download in this survey
-   */
-  downloads?: (string | Download)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -679,7 +687,7 @@ export interface Survey {
  * Questions for surveys
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "survey_questions".
+ * via the `definition` "survey-questions".
  */
 export interface SurveyQuestion {
   id: string;
@@ -694,7 +702,7 @@ export interface SurveyQuestion {
   /**
    * The type of question
    */
-  type: 'multiple_choice' | 'text_field' | 'scale';
+  type: 'multiple_choice' | 'text_field' | 'textarea' | 'scale';
   /**
    * Additional context or instructions for the question
    */
@@ -727,6 +735,23 @@ export interface SurveyQuestion {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -764,19 +789,19 @@ export interface PayloadLockedDocument {
         value: string | Course;
       } | null)
     | ({
-        relationTo: 'course_lessons';
+        relationTo: 'course-lessons';
         value: string | CourseLesson;
       } | null)
     | ({
-        relationTo: 'course_quizzes';
+        relationTo: 'course-quizzes';
         value: string | CourseQuizz;
       } | null)
     | ({
-        relationTo: 'quiz_questions';
+        relationTo: 'quiz-questions';
         value: string | QuizQuestion;
       } | null)
     | ({
-        relationTo: 'survey_questions';
+        relationTo: 'survey-questions';
         value: string | SurveyQuestion;
       } | null)
     | ({
@@ -940,6 +965,15 @@ export interface PostsSelect<T extends boolean = true> {
 export interface DocumentationSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
   description?: T;
   content?: T;
   downloads?: T;
@@ -956,15 +990,6 @@ export interface DocumentationSelect<T extends boolean = true> {
     | T
     | {
         tag?: T;
-        id?: T;
-      };
-  parent?: T;
-  breadcrumbs?:
-    | T
-    | {
-        doc?: T;
-        url?: T;
-        label?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -1019,7 +1044,7 @@ export interface CoursesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_lessons_select".
+ * via the `definition` "course-lessons_select".
  */
 export interface CourseLessonsSelect<T extends boolean = true> {
   title?: T;
@@ -1030,6 +1055,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   todo_complete_quiz?: T;
   slug?: T;
   description?: T;
+  thumbnail?: T;
   content?: T;
   lesson_number?: T;
   estimated_duration?: T;
@@ -1044,7 +1070,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "course_quizzes_select".
+ * via the `definition` "course-quizzes_select".
  */
 export interface CourseQuizzesSelect<T extends boolean = true> {
   title?: T;
@@ -1059,7 +1085,7 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "quiz_questions_select".
+ * via the `definition` "quiz-questions_select".
  */
 export interface QuizQuestionsSelect<T extends boolean = true> {
   question?: T;
@@ -1079,7 +1105,7 @@ export interface QuizQuestionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "survey_questions_select".
+ * via the `definition` "survey-questions_select".
  */
 export interface SurveyQuestionsSelect<T extends boolean = true> {
   questionSlug?: T;
@@ -1108,12 +1134,19 @@ export interface SurveysSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
-  status?: T;
+  questions?: T;
   publishedAt?: T;
-  downloads?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1146,6 +1179,93 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BunnyVideoBlock".
+ */
+export interface BunnyVideoBlock {
+  /**
+   * Enter the Bunny.net Video ID (alternative to Direct Play URL)
+   */
+  videoId?: string | null;
+  /**
+   * Enter the Bunny.net Library ID
+   */
+  libraryId?: string | null;
+  /**
+   * Custom preview image URL (optional)
+   */
+  previewUrl?: string | null;
+  /**
+   * Show preview image before playing the video
+   */
+  showPreview?: boolean | null;
+  /**
+   * Enter a title for the video (optional)
+   */
+  title?: string | null;
+  /**
+   * Select the aspect ratio for the video player
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'bunny-video';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  headline: string;
+  subheadline: string;
+  leftButtonLabel: string;
+  leftButtonUrl: string;
+  rightButtonLabel: string;
+  rightButtonUrl: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'call-to-action';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestBlock".
+ */
+export interface TestBlock {
+  text?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'test-block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "YouTubeVideoBlock".
+ */
+export interface YouTubeVideoBlock {
+  /**
+   * Enter a YouTube video ID (e.g., dQw4w9WgXcQ) or full URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   */
+  videoId?: string | null;
+  /**
+   * Custom preview image URL (optional)
+   */
+  previewUrl?: string | null;
+  /**
+   * Show preview image before playing the video
+   */
+  showPreview?: boolean | null;
+  /**
+   * Enter a title for the video (optional)
+   */
+  title?: string | null;
+  /**
+   * Select the aspect ratio for the video player
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'youtube-video';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

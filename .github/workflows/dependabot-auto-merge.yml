@@ -7,9 +7,34 @@ permissions:
 
 jobs:
   dependabot-auto-merge:
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     if: github.actor == 'dependabot[bot]'
     steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: pnpm/action-setup@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Fix lockfile if needed
+        run: |
+          pnpm install --no-frozen-lockfile
+          if git diff --quiet pnpm-lock.yaml; then
+            echo "Lockfile is up to date"
+          else
+            git config user.name "dependabot[bot]"
+            git config user.email "49699333+dependabot[bot]@users.noreply.github.com"
+            git add pnpm-lock.yaml
+            git commit -m "fix: update lockfile for dependency updates"
+            git push
+          fi
+
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2

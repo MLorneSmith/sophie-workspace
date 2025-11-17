@@ -29,7 +29,8 @@ interface SurveyJson {
 	course?: string; // Reference to course
 	lesson?: string; // Reference to lesson
 	completionMessage?: any; // Lexical JSON
-	published: boolean;
+	_status: string; // Payload v3 versioning system status
+	published: boolean; // Keep for backwards compatibility
 	createdAt: string;
 	updatedAt: string;
 }
@@ -113,7 +114,8 @@ export async function convertSurveys(
 				anonymous: surveyMeta.anonymous ?? true,
 				multipleSubmissions: surveyMeta.multipleSubmissions ?? false,
 				questions: questionRefs,
-				published: true,
+				_status: "published", // Payload v3 versioning system uses _status field
+				published: true, // Keep for backwards compatibility
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
@@ -164,13 +166,16 @@ async function loadSurveyQuestionsMapping(): Promise<any> {
 	try {
 		const mappingPath = path.join(
 			__dirname,
-			"../../../seed-data/survey-questions-mapping.json",
+			"../../seed-data/survey-questions-mapping.json",
 		);
 		const content = await fs.readFile(mappingPath, "utf-8");
 		return JSON.parse(content);
 	} catch (error) {
 		console.log(
 			"    ⚠️  Survey questions mapping not found, surveys will have empty question arrays",
+		);
+		console.log(
+			`    📂 Looked for mapping at: ${path.join(__dirname, "../../seed-data/survey-questions-mapping.json")}`,
 		);
 		return {};
 	}
@@ -220,9 +225,9 @@ function determineCourseFromSurvey(
 
 	// Map survey names to courses based on content
 	const surveyToCourseMapping: Record<string, string> = {
-		"self-assessment": "course-1", // General assessment
-		feedback: "course-8", // End-of-course feedback
-		"three-quick-questions": "course-1", // Quick intro survey
+		"self-assessment": "decks-for-decision-makers", // General assessment
+		feedback: "decks-for-decision-makers", // End-of-course feedback
+		"three-quick-questions": "decks-for-decision-makers", // Quick intro survey
 	};
 
 	return surveyToCourseMapping[surveyId];

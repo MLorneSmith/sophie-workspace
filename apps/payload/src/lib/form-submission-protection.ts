@@ -89,10 +89,20 @@ export class FormSubmissionProtectionManager {
 			this.log("Already initialized", "debug");
 			return;
 		}
+
 		this.log(
 			"Initializing ultra-conservative form submission protection",
 			"info",
 		);
+
+		// Set initialized immediately to prevent double initialization
+		this.isInitialized = true;
+
+		// Clear any existing hydration timeout
+		if (this.hydrationTimeoutId) {
+			clearTimeout(this.hydrationTimeoutId);
+			this.hydrationTimeoutId = null;
+		}
 
 		// ONLY setup memory-only protection - NO DOM modifications
 		this.setupMemoryOnlyProtection();
@@ -100,7 +110,6 @@ export class FormSubmissionProtectionManager {
 		// Use ultra-conservative hydration detection
 		this.waitForUltraConservativeHydration(() => {
 			this.setupPostHydrationMonitoring();
-			this.isInitialized = true;
 		});
 	}
 

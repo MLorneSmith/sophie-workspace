@@ -34,7 +34,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9.12.0'
+  PNPM_VERSION: '10.14.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
   TURBO_REMOTE_CACHE_ENABLED: true
@@ -43,7 +43,7 @@ jobs:
   # Check if we should skip validation for promotion PRs
   check-skip:
     name: Check Skip Conditions
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       should-skip: ${{ steps.check.outputs.skip }}
       skip-reason: ${{ steps.check.outputs.reason }}
@@ -123,7 +123,7 @@ jobs:
   # Check what files changed to optimize CI runs
   changes:
     name: Detect Changes
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: check-skip
     if: needs.check-skip.outputs.should-skip != 'true'
     outputs:
@@ -163,7 +163,7 @@ jobs:
   # Lint and format check
   lint:
     name: Lint & Format
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true'
     steps:
@@ -185,7 +185,7 @@ jobs:
   # TypeScript type checking
   typecheck:
     name: TypeScript Check
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
@@ -215,7 +215,7 @@ jobs:
   # Unit tests 
   test-unit:
     name: Unit Tests
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     env:
@@ -256,7 +256,7 @@ jobs:
   # YAML linting
   yaml-lint:
     name: YAML Lint
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.yaml == 'true'
     steps:
@@ -270,7 +270,7 @@ jobs:
   # Markdown linting
   markdown-lint:
     name: Markdown Lint
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.markdown == 'true'
     steps:
@@ -287,7 +287,7 @@ jobs:
   # Aikido Security scan
   aikido-security:
     name: Aikido Security Scan
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     # Only run on pull requests with relevant changes
     if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
@@ -312,7 +312,7 @@ jobs:
   # Bundle size check
   bundle-size:
     name: Bundle Size Check
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     if: needs.changes.outputs.typescript == 'true'
     continue-on-error: true # Non-blocking for now
@@ -361,7 +361,7 @@ jobs:
   # Accessibility testing
   accessibility-test:
     name: Accessibility Tests
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
     continue-on-error: true  # Non-blocking for now - E2E database setup issues
@@ -371,6 +371,9 @@ jobs:
       E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
       E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      
+      # Chrome flags for Lighthouse in CI environment
+      CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
       
       # Legacy environment variables (for backward compatibility)
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
@@ -413,7 +416,7 @@ jobs:
           supabase db seed
 
       - name: Run accessibility tests
-        run: pnpm --filter e2e a11y:test
+        run: pnpm --filter e2e a11y:test:ci  # Use CI-specific script with JUnit reporter
         continue-on-error: true
 
       - name: Upload accessibility report
@@ -465,7 +468,7 @@ jobs:
   # Docker container security scanning
   docker-scan:
     name: Docker Security Scan
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: changes
     if: needs.changes.outputs.docker == 'true'
     permissions:
@@ -524,7 +527,7 @@ jobs:
   # Final status check
   pr-status:
     name: PR Status Check
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, lint, typecheck, test-unit, yaml-lint, markdown-lint, aikido-security, accessibility-test, docker-scan]
     if: always()
     steps:

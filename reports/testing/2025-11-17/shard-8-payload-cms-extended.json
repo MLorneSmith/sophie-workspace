@@ -1,0 +1,34 @@
+{
+	"shard": {
+		"id": 8,
+		"name": "Payload CMS Extended",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts",
+			"tests/payload/seeding.spec.ts",
+			"tests/payload/seeding-performance.spec.ts"
+		],
+		"expectedTests": null,
+		"shardCommand": "test:shard8"
+	},
+	"execution": {
+		"startTime": "2025-11-17T16:48:25.263Z",
+		"endTime": "2025-11-17T16:48:30.263Z",
+		"duration": "5s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard8 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into browser storage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into browser storage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n\nError: page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"http://localhost:3001/\", waiting until \"load\"\n\n\n   at ../global-setup.ts:122\n\n  120 |\n  121 | \t\t// Navigate to the app first to set the domain\n> 122 | \t\tawait page.goto(\"/\");\n      | \t\t           ^\n  123 |\n  124 | \t\t// Explicitly set Vercel bypass cookie if secret is available\n  125 | \t\t// This ensures the bypass persists in the saved storage state\n    at globalSetup (/home/msmith/projects/2025slideheroes/apps/e2e/global-setup.ts:122:14)\n\n\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard8: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n"
+}

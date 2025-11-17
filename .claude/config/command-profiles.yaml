@@ -1,0 +1,445 @@
+# Command Profiles Configuration
+#
+# This file defines documentation routing rules for slash commands.
+# Each command profile specifies which context documentation files should
+# be loaded based on task keywords and patterns.
+#
+# Schema Version: 1.0.0
+# Last Updated: 2025-11-17
+
+profiles:
+  # ============================================================================
+  # /implement - Execute implementation plans from GitHub issues
+  # ============================================================================
+  implement:
+    description: "Execute implementation plans from GitHub issues"
+
+    # Always load these files regardless of task keywords
+    defaults:
+      - "development/architecture-overview.md"
+
+    # Conditional rules: load these files when keywords match
+    rules:
+      # Database & Migration Work
+      - keywords: ["database", "migration", "schema", "RLS", "postgres", "table", "query", "supabase"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Authentication & Authorization
+      - keywords: ["auth", "login", "signup", "permission", "role", "session", "oauth", "mfa"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+          - "infrastructure/auth-security.md"
+        priority: high
+
+      # Server Actions & API
+      - keywords: ["server action", "mutation", "form", "validation", "api", "endpoint"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # UI Components & Frontend
+      - keywords: ["component", "ui", "form", "button", "shadcn", "radix", "tailwind", "design"]
+        files:
+          - "development/shadcn-ui-components.md"
+        priority: medium
+
+      # Data Fetching & State
+      - keywords: ["react query", "tanstack", "data fetching", "cache", "mutation", "query"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Testing
+      - keywords: ["test", "spec", "e2e", "unit", "integration", "playwright", "vitest"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+      # Docker & Containers
+      - keywords: ["docker", "container", "compose", "image"]
+        files:
+          - "infrastructure/docker-setup.md"
+          - "infrastructure/docker-troubleshooting.md"
+        priority: medium
+
+      # Deployment & CI/CD
+      - keywords: ["deploy", "deployment", "vercel", "ci", "cd", "pipeline"]
+        files:
+          - "infrastructure/vercel-deployment.md"
+          - "infrastructure/ci-cd-complete.md"
+        priority: low
+
+      # Logging & Monitoring
+      - keywords: ["log", "logger", "logging", "monitoring", "pino"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: low
+
+      # MakerKit Updates
+      - keywords: ["makerkit", "upstream", "merge", "kit package"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: medium
+
+    # Category-based mappings for broader context
+    categories:
+      frontend:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      backend:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
+      infrastructure:
+        - "infrastructure/docker-setup.md"
+        - "infrastructure/vercel-deployment.md"
+
+  # ============================================================================
+  # /diagnose - Investigate and document root causes of bugs
+  # ============================================================================
+  diagnose:
+    description: "Investigate and document root causes of bugs"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Database Issues
+      - keywords: ["RLS", "query", "timeout", "database error", "postgres", "migration", "constraint"]
+        files:
+          - "development/database-patterns.md"
+        priority: high
+
+      # Authentication Issues
+      - keywords: ["unauthorized", "401", "403", "auth error", "login failed", "session", "jwt"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-troubleshooting.md"
+          - "infrastructure/auth-security.md"
+        priority: high
+
+      # Server Errors
+      - keywords: ["500", "internal server error", "api error", "server action", "crash"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # Container Issues
+      - keywords: ["docker", "container", "unhealthy", "container error"]
+        files:
+          - "infrastructure/docker-troubleshooting.md"
+          - "infrastructure/docker-setup.md"
+        priority: high
+
+      # Build Failures
+      - keywords: ["build failed", "compilation error", "type error", "typescript"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Deployment Issues
+      - keywords: ["deploy", "vercel", "production error", "deployment failed"]
+        files:
+          - "infrastructure/vercel-deployment.md"
+        priority: high
+
+      # Query/Data Fetching Issues
+      - keywords: ["react query", "tanstack", "cache", "stale", "refetch"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Test Failures
+      - keywords: ["test failed", "spec failed", "e2e", "playwright", "vitest"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+      # Performance Issues
+      - keywords: ["slow", "performance", "timeout", "latency", "memory"]
+        files:
+          - "testing+quality/performance-testing.md"
+        priority: medium
+
+      # Logging Issues
+      - keywords: ["log", "logger", "logging", "pino"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: low
+
+    categories:
+      errors:
+        - "infrastructure/auth-troubleshooting.md"
+        - "infrastructure/docker-troubleshooting.md"
+      debugging:
+        - "development/architecture-overview.md"
+        - "infrastructure/enhanced-logger.md"
+
+  # ============================================================================
+  # /feature - Create feature implementation plans
+  # ============================================================================
+  feature:
+    description: "Create feature implementation plans"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Authentication Features
+      - keywords: ["auth", "login", "signup", "oauth", "mfa", "permission", "role"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+          - "infrastructure/auth-security.md"
+          - "infrastructure/auth-configuration.md"
+        priority: high
+
+      # Database Features
+      - keywords: ["database", "table", "schema", "migration", "RLS", "query"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # API/Server Features
+      - keywords: ["api", "endpoint", "server action", "mutation", "validation"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # UI Features
+      - keywords: ["ui", "component", "form", "button", "modal", "dialog", "shadcn"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Data Features
+      - keywords: ["data fetching", "react query", "cache", "realtime", "subscription"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Infrastructure Features
+      - keywords: ["docker", "deployment", "ci/cd", "vercel", "monitoring"]
+        files:
+          - "infrastructure/docker-setup.md"
+          - "infrastructure/vercel-deployment.md"
+          - "infrastructure/ci-cd-complete.md"
+        priority: medium
+
+      # Logging Features
+      - keywords: ["logging", "logger", "monitoring", "audit"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: medium
+
+      # Testing Requirements
+      - keywords: ["test", "testing", "e2e", "integration", "accessibility"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: low
+
+    categories:
+      full_stack:
+        - "development/server-actions.md"
+        - "development/shadcn-ui-components.md"
+        - "development/database-patterns.md"
+      frontend_focused:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      backend_focused:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
+
+  # ============================================================================
+  # /chore - Create maintenance/refactoring plans
+  # ============================================================================
+  chore:
+    description: "Create maintenance and refactoring plans"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Dependency Updates
+      - keywords: ["dependency", "dependencies", "update", "upgrade", "npm", "pnpm", "package"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: medium
+
+      # Infrastructure Maintenance
+      - keywords: ["docker", "container", "infrastructure", "deployment", "ci/cd"]
+        files:
+          - "infrastructure/docker-setup.md"
+          - "infrastructure/vercel-deployment.md"
+          - "infrastructure/ci-cd-complete.md"
+        priority: high
+
+      # Database Maintenance
+      - keywords: ["database", "migration", "schema", "cleanup", "optimization"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Code Quality
+      - keywords: ["refactor", "cleanup", "lint", "format", "typescript", "eslint"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Testing Improvements
+      - keywords: ["test", "testing", "coverage", "e2e", "unit"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+      # Documentation
+      - keywords: ["documentation", "docs", "readme", "comments"]
+        files:
+          - none
+        priority: low
+
+      # MakerKit Updates
+      - keywords: ["makerkit", "upstream", "merge", "template"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: high
+
+      # Logging/Monitoring
+      - keywords: ["logging", "logger", "monitoring", "observability"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: medium
+
+      # Security Updates
+      - keywords: ["security", "vulnerability", "patch", "cve"]
+        files:
+          - "infrastructure/auth-security.md"
+          - "infrastructure/production-security.md"
+        priority: high
+
+    categories:
+      infrastructure:
+        - "infrastructure/docker-setup.md"
+        - "infrastructure/vercel-deployment.md"
+        - "infrastructure/ci-cd-complete.md"
+      tooling:
+        - "development/makerkit-integration.md"
+      quality:
+        - "testing+quality/fundamentals.md"
+
+  # ============================================================================
+  # /bug-plan - Create bug fix plans from diagnosis
+  # ============================================================================
+  bug-plan:
+    description: "Create bug fix plans from diagnosis issues"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Database Bugs
+      - keywords: ["database", "RLS", "query", "migration", "constraint", "postgres"]
+        files:
+          - "development/database-patterns.md"
+        priority: high
+
+      # Authentication Bugs
+      - keywords: ["auth", "login", "session", "unauthorized", "permission"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-troubleshooting.md"
+          - "infrastructure/auth-implementation.md"
+          - "infrastructure/auth-security.md"
+        priority: high
+
+      # Server Action Bugs
+      - keywords: ["server action", "mutation", "validation", "api", "endpoint"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # UI Bugs
+      - keywords: ["ui", "component", "rendering", "display", "style"]
+        files:
+          - "development/shadcn-ui-components.md"
+        priority: medium
+
+      # Data Fetching Bugs
+      - keywords: ["react query", "cache", "stale", "refetch", "query"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Docker Bugs
+      - keywords: ["docker", "container", "unhealthy"]
+        files:
+          - "infrastructure/docker-troubleshooting.md"
+          - "infrastructure/docker-setup.md"
+        priority: high
+
+      # Deployment Bugs
+      - keywords: ["deployment", "vercel", "production", "build"]
+        files:
+          - "infrastructure/vercel-deployment.md"
+        priority: high
+
+      # Performance Bugs
+      - keywords: ["slow", "performance", "timeout", "memory", "latency"]
+        files:
+          - "testing+quality/performance-testing.md"
+        priority: medium
+
+      # Test Bugs
+      - keywords: ["test", "spec", "e2e", "failing"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: low
+
+    categories:
+      critical:
+        - "infrastructure/auth-troubleshooting.md"
+        - "infrastructure/docker-troubleshooting.md"
+        - "development/database-patterns.md"
+      standard:
+        - "development/server-actions.md"
+        - "development/react-query-patterns.md"
+
+# ============================================================================
+# Routing Configuration
+# ============================================================================
+routing:
+  # Maximum number of files to return (keeps token usage reasonable)
+  max_files: 7
+
+  # Minimum number of files to return (ensures sufficient context)
+  min_files: 3
+
+  # Priority weights for scoring matches
+  priority_weights:
+    high: 3
+    medium: 2
+    low: 1
+
+  # Whether to auto-load dependencies from YAML frontmatter
+  auto_resolve_dependencies: true
+
+  # Whether to follow cross-references
+  follow_cross_references: true
+
+  # Maximum depth for dependency resolution (prevents infinite loops)
+  max_dependency_depth: 2

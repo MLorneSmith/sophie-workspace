@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import matter from "gray-matter";
 import type { ParsedContent } from "../types";
 
@@ -97,9 +98,7 @@ export async function parseMdocFile(content: string): Promise<ParsedContent> {
 	};
 }
 
-export async function convertMdocToLexical(
-	content: string,
-): Promise<{
+export async function convertMdocToLexical(content: string): Promise<{
 	frontmatter: Record<string, unknown>;
 	lexicalContent: {
 		root: {
@@ -109,8 +108,8 @@ export async function convertMdocToLexical(
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
@@ -139,8 +138,8 @@ function createSimpleLexicalContent(markdown: string): {
 			version: number;
 			[k: string]: unknown;
 		}>;
-		direction: ('ltr' | 'rtl') | null;
-		format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 		indent: number;
 		version: number;
 	};
@@ -163,6 +162,11 @@ function createSimpleLexicalContent(markdown: string): {
 		const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
 		if (headerMatch) {
 			const level = headerMatch[1].length;
+			// Strip shortcodes from header text
+			const cleanedHeaderText = headerMatch[2]
+				.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, "")
+				.replace(/{%\s*\/highlight\s*%}/g, "");
+
 			children.push({
 				type: "heading",
 				version: 1,
@@ -173,8 +177,109 @@ function createSimpleLexicalContent(markdown: string): {
 					{
 						type: "text",
 						version: 1,
-						text: headerMatch[2],
+						text: cleanedHeaderText,
 						format: 0,
+						detail: 0,
+						style: "",
+						mode: "normal",
+					},
+				],
+			});
+			continue;
+		}
+
+		// YouTube video shortcode: {% youtube src="videoId" /%}
+		const youtubeMatch = line.match(/^{%\s*youtube\s+src="([^"]+)"\s*\/%}$/);
+		if (youtubeMatch) {
+			const blockId = randomUUID();
+			children.push({
+				type: "block",
+				version: 1,
+				id: blockId,
+				format: "",
+				indent: 0,
+				fields: {
+					id: blockId,
+					blockName: "YouTube Video",
+					blockType: "youtube-video",
+					videoId: youtubeMatch[1],
+				},
+			});
+			continue;
+		}
+
+		// CTA shortcode (multi-line): {% cta ... /%}
+		if (line.startsWith("{% cta")) {
+			const ctaLines: string[] = [line];
+
+			// Collect all lines until we find the closing /%}
+			while (i < lines.length - 1 && !line.includes("/%}")) {
+				i++;
+				const nextLine = lines[i].trim();
+				ctaLines.push(nextLine);
+				if (nextLine.includes("/%}")) break;
+			}
+
+			// Parse CTA attributes - support both old and new attribute names
+			const ctaText = ctaLines.join(" ");
+			const headlineMatch = ctaText.match(/(?:headline|ctatext)="([^"]+)"/);
+			const subheadlineMatch = ctaText.match(/(?:subheadline|ctadescription)="([^"]+)"/);
+			const leftButtonLabelMatch = ctaText.match(/(?:leftbuttonlabel|leftButtonLabel)="([^"]+)"/);
+			const leftButtonUrlMatch = ctaText.match(/(?:leftbuttonurl|leftButtonUrl)="([^"]+)"/);
+			const rightButtonLabelMatch = ctaText.match(/(?:rightbuttonlabel|rightButtonLabel)="([^"]+)"/);
+			const rightButtonUrlMatch = ctaText.match(/(?:rightbuttonurl|rightButtonUrl)="([^"]+)"/);
+
+			const blockId = randomUUID();
+			children.push({
+				type: "block",
+				version: 1,
+				id: blockId,
+				format: "",
+				indent: 0,
+				fields: {
+					id: blockId,
+					blockName: "Call To Action",
+					blockType: "call-to-action",
+					headline: headlineMatch?.[1] || "FREE Course Trial",
+					subheadline: subheadlineMatch?.[1] || "Start improving your presentations today!",
+					leftButtonLabel: leftButtonLabelMatch?.[1] || "Individuals",
+					leftButtonUrl: leftButtonUrlMatch?.[1] || "/free-trial/individual",
+					rightButtonLabel: rightButtonLabelMatch?.[1] || "Teams",
+					rightButtonUrl: rightButtonUrlMatch?.[1] || "/free-trial/teams",
+				},
+			});
+			continue;
+		}
+
+		// Quote shortcode (multi-line): {% quote ... /%}
+		if (line.startsWith("{% quote")) {
+			const quoteLines: string[] = [line];
+
+			// Collect all lines until we find the closing /%}
+			while (i < lines.length - 1 && !line.includes("/%}")) {
+				i++;
+				const nextLine = lines[i].trim();
+				quoteLines.push(nextLine);
+				if (nextLine.includes("/%}")) break;
+			}
+
+			// Parse quote attributes
+			const quoteText = quoteLines.join(" ");
+			const quoteMatch = quoteText.match(/quote="([^"]+)"/);
+			const citationMatch = quoteText.match(/citation="([^"]+)"/);
+
+			// Convert to a styled paragraph (quote block)
+			children.push({
+				type: "paragraph",
+				version: 1,
+				format: "",
+				indent: 1,
+				children: [
+					{
+						type: "text",
+						version: 1,
+						text: `"${quoteMatch?.[1] || ""}" — ${citationMatch?.[1] || ""}`,
+						format: 2, // italic
 						detail: 0,
 						style: "",
 						mode: "normal",
@@ -189,19 +294,33 @@ function createSimpleLexicalContent(markdown: string): {
 			/^{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}$/,
 		);
 		if (bunnyMatch) {
+			const blockId = randomUUID();
 			children.push({
 				type: "block",
 				version: 1,
-				blockType: "video",
+				id: blockId,
+				format: "",
+				indent: 0,
 				fields: {
+					id: blockId,
+					blockName: "Bunny Video",
+					blockType: "bunny-video",
 					videoId: bunnyMatch[1],
-					provider: "bunny",
 				},
 			});
 			continue;
 		}
 
 		// Default to paragraph
+		// Strip any remaining shortcodes from the text (inline highlights, etc.)
+		const cleanedLine = line
+			.replace(/{%\s*highlight\s+variant="[^"]*"\s*%}/g, "") // Remove opening {% highlight %}
+			.replace(/{%\s*\/highlight\s*%}/g, "") // Remove closing {% /highlight %}
+			.trim();
+
+		// Skip if line is empty after cleaning
+		if (!cleanedLine) continue;
+
 		children.push({
 			type: "paragraph",
 			version: 1,
@@ -211,7 +330,7 @@ function createSimpleLexicalContent(markdown: string): {
 				{
 					type: "text",
 					version: 1,
-					text: line,
+					text: cleanedLine,
 					format: 0,
 					detail: 0,
 					style: "",

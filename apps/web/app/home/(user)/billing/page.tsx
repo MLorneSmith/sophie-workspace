@@ -1,3 +1,4 @@
+import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -34,6 +35,17 @@ async function PersonalAccountBillingPage() {
 	const [subscription, order, customerId] =
 		await loadPersonalAccountBillingPageData(user.id);
 
+	const subscriptionVariantId = subscription?.items[0]?.variant_id;
+
+	const subscriptionProductPlan =
+		subscription && subscriptionVariantId
+			? await resolveProductPlan(
+					billingConfig,
+					subscriptionVariantId,
+					subscription.currency,
+				)
+			: undefined;
+
 	const hasBillingData = subscription || order;
 
 	return (
@@ -44,23 +56,22 @@ async function PersonalAccountBillingPage() {
 			/>
 
 			<PageBody>
-				<div className={"flex flex-col space-y-4"}>
-					<If condition={!hasBillingData}>
-						<PersonalAccountCheckoutForm customerId={customerId} />
-
-						<If condition={customerId}>
-							<CustomerBillingPortalForm />
-						</If>
-					</If>
-
-					<If condition={hasBillingData}>
-						<div className={"flex w-full max-w-2xl flex-col space-y-6"}>
-							<If condition={subscription}>
-								{(subscription) => {
+				<div className={"flex max-w-2xl flex-col space-y-4"}>
+					<If
+						condition={hasBillingData}
+						fallback=<PersonalAccountCheckoutForm customerId={customerId} />
+					>
+						<div className={"flex w-full flex-col space-y-6"}>
+							<If condition={subscriptionProductPlan}>
+								{() => {
 									return (
 										<CurrentSubscriptionCard
-											subscription={subscription}
-											config={billingConfig}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											subscription={subscription!}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											product={subscriptionProductPlan!.product}
+											// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+											plan={subscriptionProductPlan!.plan}
 										/>
 									);
 								}}
@@ -79,9 +90,7 @@ async function PersonalAccountBillingPage() {
 						</div>
 					</If>
 
-					<If condition={customerId}>
-						<CustomerBillingPortalForm />
-					</If>
+					<If condition={customerId}>{() => <CustomerBillingPortalForm />}</If>
 				</div>
 			</PageBody>
 		</>

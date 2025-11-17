@@ -66,16 +66,22 @@ export async function convertDocumentation(
 
 			// Extract documentation metadata
 			const docMeta: DocumentationMeta = {
-				title: frontmatter.title || fileInfo.name.replace(".mdoc", ""),
-				description: frontmatter.description || "",
-				category:
-					frontmatter.category || inferCategoryFromPath(fileInfo.relativePath),
-				parent: frontmatter.parent,
+				title: String(frontmatter.title || fileInfo.name.replace(".mdoc", "")),
+				description: String(frontmatter.description || ""),
+				category: frontmatter.category
+					? String(frontmatter.category)
+					: inferCategoryFromPath(fileInfo.relativePath),
+				parent: frontmatter.parent ? String(frontmatter.parent) : undefined,
 				order: frontmatter.order
-					? parseInt(frontmatter.order)
+					? parseInt(String(frontmatter.order))
 					: getOrderFromPath(fileInfo.relativePath),
-				featured: frontmatter.featured ?? false,
-				tags: frontmatter.tags || [],
+				featured:
+					typeof frontmatter.featured === "boolean"
+						? frontmatter.featured
+						: false,
+				tags: Array.isArray(frontmatter.tags)
+					? frontmatter.tags.map(String)
+					: [],
 				sourceFile: fileInfo.name,
 				sourcePath: fileInfo.relativePath,
 			};
@@ -385,6 +391,15 @@ function convertToSimpleLexical(markdown: string): any {
 			children: [{ type: "text", text: paragraph }],
 		};
 	});
+
+	// Ensure at least one child node for valid Lexical content
+	// Empty children arrays fail Payload/Lexical validation
+	if (children.length === 0) {
+		children.push({
+			type: "paragraph",
+			children: [{ type: "text", text: " " }],
+		});
+	}
 
 	return {
 		root: {

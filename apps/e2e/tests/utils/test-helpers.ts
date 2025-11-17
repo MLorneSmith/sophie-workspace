@@ -3,7 +3,8 @@
  * This is useful for tests that need to bypass the onboarding flow
  */
 import type { Page } from "@playwright/test";
-import { createBrowserClient } from "@supabase/ssr";
+// TODO: Install @supabase/ssr if needed
+// import { createBrowserClient } from "@supabase/ssr";
 
 export async function markUserAsOnboarded(page: Page, userId: string) {
 	// Execute in browser context to update user metadata
@@ -15,7 +16,8 @@ export async function markUserAsOnboarded(page: Page, userId: string) {
 			throw new Error("Supabase environment variables are not set");
 		}
 
-		const supabase = createBrowserClient(url, anonKey);
+		// TODO: Implement with proper Supabase client when @supabase/ssr is installed
+		const supabase: any = null; // createBrowserClient(url, anonKey);
 
 		// Update user metadata to mark as onboarded
 		const { error } = await supabase.auth.updateUser({

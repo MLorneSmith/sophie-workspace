@@ -1,12 +1,15 @@
 {
 	"$schema": "https://turborepo.org/schema.json",
-	"globalDependencies": ["**/.env"],
+	"globalDependencies": ["**/.env", ".nvmrc", "tsconfig.json"],
 	"ui": "stream",
 	"remoteCache": {
 		"enabled": true,
 		"signature": true
 	},
 	"globalEnv": [
+		"GIT_HASH",
+		"CF_PAGES_COMMIT_SHA",
+		"VERCEL_GIT_COMMIT_SHA",
 		"STRIPE_SECRET_KEY",
 		"STRIPE_WEBHOOK_SECRET",
 		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
@@ -65,13 +68,66 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.js",
+				"*.jsx",
+				"*.json",
+				"!*.test.*",
+				"!*.spec.*",
+				"!**/__tests__/**",
+				"!**/test/**",
+				"!coverage/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
 			"outputs": [
 				".next/**",
 				"!.next/cache/**",
 				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
 				"next-env.d.ts",
 				"dist/**",
 				"build/**"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
+		},
+		"@kit/ai-gateway#build": {
+			"dependsOn": ["^build"],
+			"outputs": [],
+			"cache": true
+		},
+		"@kit/shared#build": {
+			"dependsOn": [],
+			"outputs": ["dist/**"],
+			"cache": true
+		},
+		"web#build": {
+			"dependsOn": ["^build", "@kit/shared#build"],
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
+				"next-env.d.ts"
+			],
+			"env": ["NODE_ENV"],
+			"cache": true
+		},
+		"payload#build": {
+			"dependsOn": ["^build", "@kit/shared#build"],
+			"outputs": [
+				".next/**",
+				"!.next/cache/**",
+				"!.next/server/webpack-runtime.js",
+				"!.next/trace",
+				"next-env.d.ts"
 			],
 			"env": ["NODE_ENV"],
 			"cache": true
@@ -105,12 +161,45 @@
 		},
 		"lint": {
 			"dependsOn": ["^topo"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.js",
+				"*.jsx",
+				".eslintrc.*",
+				"eslint.config.*",
+				"!node_modules/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
 			"outputs": ["node_modules/.cache/.eslintcache"],
 			"cache": true
 		},
 		"typecheck": {
 			"dependsOn": ["^build"],
-			"outputs": ["node_modules/.cache/tsbuildinfo.json", "*.tsbuildinfo"],
+			"inputs": [
+				"src/**",
+				"app/**",
+				"components/**",
+				"*.ts",
+				"*.tsx",
+				"*.d.ts",
+				"tsconfig.json",
+				"tsconfig.*.json",
+				"!node_modules/**",
+				"!.next/**",
+				"!dist/**",
+				"!build/**"
+			],
+			"outputs": [
+				"node_modules/.cache/tsbuildinfo.json",
+				"*.tsbuildinfo",
+				"**/*.tsbuildinfo"
+			],
 			"cache": true
 		},
 		"test": {
@@ -132,6 +221,12 @@
 		},
 		"license#dev": {
 			"outputLogs": "errors-only"
+		},
+		"@kit/monitoring-newrelic#test": {
+			"dependsOn": ["^topo"],
+			"outputs": [],
+			"cache": true,
+			"env": ["NODE_ENV"]
 		}
 	}
 }
