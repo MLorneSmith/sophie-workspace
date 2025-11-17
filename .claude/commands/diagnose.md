@@ -123,9 +123,7 @@ Before starting diagnosis:
    | **context7-expert** | Official docs | Known libraries (React, Next.js, Supabase, etc.) |
    | **perplexity-search-expert** | Recent solutions | Recent issues, breaking changes, discussions |
    | **exa-search-expert** | Tutorials/guides | Learning resources, similar bugs, best practices |
-   | **docs-mcp-expert** | Indexed docs | Libraries already indexed in MCP server |
-
-   **⚠️ DO NOT USE**: `research-expert` agent (cannot delegate from slash commands)
+   | **docs-mcp-expert** | Indexed docs | Makerkit documentation already indexed in MCP server |
 
    **Agent Selection**:
    - **1 agent**: Known library issue or recent change

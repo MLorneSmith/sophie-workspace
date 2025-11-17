@@ -444,5 +444,4 @@ Potential improvements:
 
 - **Command Profiles:** `.claude/config/README.md`
 - **Context Documentation:** `.ai/ai_docs/context-docs/README.md`
-- **PRIME Framework:** `.ai/ai_docs/context-docs/development/prime-framework.md`
 - **Project Guide:** `CLAUDE.md` (Conditional Documentation System section)

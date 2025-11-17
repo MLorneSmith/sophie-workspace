@@ -33,10 +33,10 @@ This file contains the command syntax, parameters, token guidelines, and common 
 **Follow** this cycle for documentation tasks:
 
 **Thought**: Analyze user's documentation needs and identify target library (owner/repo)
-**Action**: Use context7-search if owner/repo unclear, or proceed directly to context7-get-context
+**Action**: Use `.ai/bin/context7-search` if owner/repo unclear, or proceed directly to `.ai/bin/context7-get-context`
 **Observation**: Found library with owner/repo names
 **Thought**: Determine specific topics and appropriate token limit
-**Action**: Run context7-get-context with --topic and --tokens parameters
+**Action**: Run `.ai/bin/context7-get-context` with --topic and --tokens parameters
 **Observation**: Retrieved documentation with code examples and API details
 **Thought**: Assess if additional context or related libraries needed
 **Action**: Fetch supplementary documentation if required with different topics
@@ -313,7 +313,7 @@ const result = feature({
 
 ## Notes
 - Always read `.ai/ai_docs/tool-docs/context7-integration.md` at start of session
-- Use cli_search_libraries.py when owner/repo unknown
+- Use `.ai/bin/context7-search` wrapper script when owner/repo unknown
 - Always use --topic flag when user requests specific area (saves tokens)
 - Start with 2000-3000 tokens, increase only if insufficient
 - Include version in responses when relevant
