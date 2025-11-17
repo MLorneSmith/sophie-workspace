@@ -118,7 +118,7 @@ jobs:
   # Run full test suite for staging
   test-full:
     name: Full Test Suite
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, validate]
     if: always() && !failure() && !cancelled()
     timeout-minutes: 30
