@@ -1,0 +1,22 @@
+# Markdown linting exclusions
+
+# AI-generated specs and documentation
+.ai/specs/
+.ai/ai_docs/
+.old.claude/
+
+# Build artifacts and dependencies
+node_modules/
+.next/
+.next.old/
+dist/
+build/
+
+# Generated files
+apps/payload/payload-types.ts
+packages/cms/types/src/payload-types.ts
+
+# Test results and reports
+coverage/
+test-results/
+playwright-report/
