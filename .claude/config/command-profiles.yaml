@@ -190,7 +190,6 @@ profiles:
 
     defaults:
       - "development/architecture-overview.md"
-      - "development/prime-framework.md"
 
     rules:
       # Authentication Features
@@ -309,7 +308,7 @@ profiles:
       # Documentation
       - keywords: ["documentation", "docs", "readme", "comments"]
         files:
-          - "development/prime-framework.md"
+          - none
         priority: low
 
       # MakerKit Updates
