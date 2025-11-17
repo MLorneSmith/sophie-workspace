@@ -7,9 +7,9 @@
 		"shardCommand": "test:shard10"
 	},
 	"execution": {
-		"startTime": "2025-11-17T15:59:32.549Z",
-		"endTime": "2025-11-17T15:59:52.549Z",
-		"duration": "20s",
+		"startTime": "2025-11-17T16:49:37.256Z",
+		"endTime": "2025-11-17T16:50:00.256Z",
+		"duration": "23s",
 		"exitCode": 0,
 		"timedOut": false
 	},
