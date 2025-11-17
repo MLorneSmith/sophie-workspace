@@ -4,7 +4,7 @@ Utility scripts for the SlideHeroes application, organized by purpose.
 
 ## Directory Structure
 
-```
+```text
 scripts/
 ├── ci/               # CI/CD and deployment scripts
 ├── dev/              # Development utilities
@@ -21,13 +21,13 @@ scripts/
 
 ### CI/CD (`ci/`)
 
-**collect-ci-metrics.js**
+#### collect-ci-metrics.js
 
 - Collects and sends CI/CD metrics to New Relic
 - Used in: `pnpm ci-metrics:collect`
 - Environment: Requires `NEW_RELIC_ACCOUNT_ID` and `NEW_RELIC_INSERT_KEY`
 
-**ignore-build-step.sh**
+#### ignore-build-step.sh
 
 - Determines whether to skip Vercel builds based on file changes
 - Used in: Vercel build configuration
@@ -35,7 +35,7 @@ scripts/
 
 ### Development (`dev/`)
 
-**find-console-logs.sh**
+#### find-console-logs.sh
 
 - Finds all TypeScript/JavaScript files containing console statements
 - Usage: `./scripts/dev/find-console-logs.sh`
@@ -43,14 +43,14 @@ scripts/
 
 ### Git (`git/`)
 
-**trufflehog-scan.sh**
+#### trufflehog-scan.sh
 
 - Pre-commit security scanner that detects secrets
 - Used in: `lint-staged` (automatic on commit)
 - Auto-installs TruffleHog if not present
 - Scans staged files for API keys, tokens, passwords
 
-**type-check-staged.sh**
+#### type-check-staged.sh
 
 - Type-checks staged TypeScript files using project context
 - Used in: `lint-staged` (automatic on commit)
@@ -58,68 +58,68 @@ scripts/
 
 ### Monitoring (`monitoring/`)
 
-**monitor-resources.sh**
+#### monitor-resources.sh
 
 - WSL2 resource monitoring script for Issue #563
 - Interactive monitoring of memory, CPU, processes, disk usage
 - Usage: `./scripts/monitoring/monitor-resources.sh`
 - Press Ctrl+C to stop, logs to `/tmp/wsl-resource-monitor.log`
 
-**newrelic-dashboard-config.json**
+#### newrelic-dashboard-config.json
 
 - New Relic dashboard configuration
 - Used by: CI metrics collection
 
 ### Setup (`setup/`)
 
-**quick-wsl-setup.sh**
+#### quick-wsl-setup.sh
 
 - Fast WSL development environment setup
 - One-command setup for new WSL environments
 
-**setup-dev-env.sh**
+#### setup-dev-env.sh
 
 - Complete WSL development environment setup
 - Sets up git, installs dependencies, configures Supabase
 
-**setup-git-env.sh**
+#### setup-git-env.sh
 
 - Git configuration for WSL
 - Called by `setup-dev-env.sh`
 
-**setup-turbo-cache.sh**
+#### setup-turbo-cache.sh
 
 - Interactive Turbo Remote Cache setup for Vercel
 - Guides through authentication and token creation
 - One-time setup per developer
 
-**setup-vercel-environments.sh**
+#### setup-vercel-environments.sh
 
 - Sets up Vercel environment variables for all environments
 - Usage: `./scripts/setup/setup-vercel-environments.sh`
 - One-time setup per project
 
-**create-vercel-environments.sh**
+#### create-vercel-environments.sh
 
 - Creates Vercel deployment environments
 - One-time setup per project
 
 ### Testing (`testing/`)
 
-**load-test-env.ts**
+#### load-test-env.ts
 
 - Loads test environment variables from `.env.test`
 - Imported by: Test scripts
 - Validates required test environment variables
 
-**test-certificate-generation.ts**
+#### test-certificate-generation.ts
 
 - Tests certificate generation functionality
 - Sets up test user with completed lessons
 - Verifies certificate creation
 - Usage: `tsx scripts/testing/test-certificate-generation.ts`
 
-**update-test-user-progress.ts**
+#### update-test-user-progress.ts
 
 - Updates course progress for <test2@slideheroes.com>
 - Marks all lessons as complete except 801, 802

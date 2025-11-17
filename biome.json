@@ -33,7 +33,8 @@
 			"!**/z.docs/**",
 			"!**/z.old/**",
 			"!**/z.test/**",
-			"!**/turbo/generators/**"
+			"!**/turbo/generators/**",
+			"!**/.turbo/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },

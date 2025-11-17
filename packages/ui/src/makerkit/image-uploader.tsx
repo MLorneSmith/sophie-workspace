@@ -74,7 +74,6 @@ export function ImageUploader(
 				}
 			>
 				{/* eslint-disable-next-line @next/next/no-img-element */}
-				{/* biome-ignore lint/performance/noImgElement: Image upload preview needs img tag */}
 				<img
 					decoding="async"
 					className={

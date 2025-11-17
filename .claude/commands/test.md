@@ -18,7 +18,7 @@ Execute comprehensive test suites with real-time progress visibility and intelli
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/testing/environment/e2e-local-environment.md
+- Read .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
 
 ## Prompt
 
