@@ -1,0 +1,34 @@
+{
+	"shard": {
+		"id": 8,
+		"name": "Payload CMS",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts",
+			"tests/payload/seeding.spec.ts",
+			"tests/payload/seeding-performance.spec.ts"
+		],
+		"expectedTests": null,
+		"shardCommand": "test:shard8"
+	},
+	"execution": {
+		"startTime": "2025-11-07T15:57:38.967Z",
+		"endTime": "2025-11-07T15:57:41.967Z",
+		"duration": "3s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard8 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into browser storage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard8: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n✅ API authentication successful for owner user\n\nError: browser.newContext: Target page, context or browser has been closed\n\n   at ../global-setup.ts:98\n\n   96 |\n   97 | \t\t// Create browser context and inject the session\n>  98 | \t\tconst context = await browser.newContext({ baseURL });\n      | \t\t                ^\n   99 | \t\tconst page = await context.newPage();\n  100 |\n  101 | \t\t// Navigate to the app first to set the domain\n    at globalSetup (/home/msmith/projects/2025slideheroes/apps/e2e/global-setup.ts:98:19)\n\n\n"
+}

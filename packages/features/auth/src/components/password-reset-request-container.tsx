@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import { useCaptchaToken } from "../captcha/client";
+import { useCaptcha } from "../captcha/client";
 import { AuthErrorAlert } from "./auth-error-alert";
 
 const PasswordResetSchema = z.object({
@@ -28,10 +28,11 @@ const PasswordResetSchema = z.object({
 
 export function PasswordResetRequestContainer(params: {
 	redirectPath: string;
+	captchaSiteKey?: string;
 }) {
 	const { t } = useTranslation("auth");
 	const resetPasswordMutation = useRequestResetPassword();
-	const { captchaToken, resetCaptchaToken } = useCaptchaToken();
+	const captcha = useCaptcha({ siteKey: params.captchaSiteKey });
 
 	const error = resetPasswordMutation.error;
 	const success = resetPasswordMutation.data;
@@ -66,10 +67,10 @@ export function PasswordResetRequestContainer(params: {
 								.mutateAsync({
 									email,
 									redirectTo,
-									captchaToken,
+									captchaToken: captcha.token,
 								})
 								.catch(() => {
-									resetCaptchaToken();
+									captcha.reset();
 								});
 						})}
 						className={"w-full"}
@@ -103,6 +104,7 @@ export function PasswordResetRequestContainer(params: {
 								<Trans i18nKey={"auth:passwordResetLabel"} />
 							</Button>
 						</div>
+						{captcha.field}
 					</form>
 				</Form>
 			</If>

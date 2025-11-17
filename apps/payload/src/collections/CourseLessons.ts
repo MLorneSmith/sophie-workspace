@@ -1,10 +1,9 @@
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
-// Assuming blocks like BunnyVideo and YouTubeVideo will be defined elsewhere
-// import { BunnyVideo, YouTubeVideo } from '../blocks'
+import { BunnyVideo, YouTubeVideo } from "../blocks";
 
 export const CourseLessons: CollectionConfig = {
-	slug: "course_lessons",
+	slug: "course-lessons",
 	labels: {
 		singular: "Course Lesson",
 		plural: "Course Lessons",
@@ -133,12 +132,22 @@ export const CourseLessons: CollectionConfig = {
 			type: "textarea",
 		},
 		{
+			name: "thumbnail",
+			type: "upload",
+			relationTo: "media",
+			admin: {
+				description: "Thumbnail image for this lesson",
+			},
+		},
+		{
 			name: "content",
 			type: "richText",
 			editor: lexicalEditor({
 				features: ({ defaultFeatures }) => [
 					...defaultFeatures,
-					// BlocksFeature will be added when blocks are properly configured
+					BlocksFeature({
+						blocks: [BunnyVideo, YouTubeVideo],
+					}),
 				],
 			}),
 		},
@@ -168,7 +177,7 @@ export const CourseLessons: CollectionConfig = {
 		{
 			name: "quiz_id",
 			type: "relationship",
-			relationTo: "course_quizzes",
+			relationTo: "course-quizzes",
 			hasMany: false,
 			admin: {
 				description: "The quiz associated with this lesson (if any)",

@@ -1,0 +1,26 @@
+{
+	"name": "@claude/scripts",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Claude development scripts and utilities",
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint .",
+		"format": "biome format .",
+		"format:fix": "biome format --write .",
+		"test": "bash ../bin/docker-health-unit-tests.sh",
+		"test:run": "bash ../bin/docker-health-unit-tests.sh",
+		"test:coverage": "bash ../bin/docker-health-unit-tests.sh"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.6.2",
+		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1"
+	}
+}

@@ -90,15 +90,15 @@ export const Surveys: CollectionConfig = {
 		//     description: 'Show a progress bar during the survey',
 		//   },
 		// },
-		// {
-		//   name: 'questions',
-		//   type: 'relationship',
-		//   relationTo: 'survey_questions',
-		//   hasMany: true,
-		//   admin: {
-		//     description: 'Questions included in this survey',
-		//   },
-		// },
+		{
+			name: "questions",
+			type: "relationship",
+			relationTo: "survey-questions",
+			hasMany: true,
+			admin: {
+				description: "Questions included in this survey",
+			},
+		},
 		// {
 		//   name: 'summaryContent',
 		//   type: 'richText',
@@ -113,20 +113,6 @@ export const Surveys: CollectionConfig = {
 		//   },
 		// },
 		{
-			name: "status",
-			type: "select",
-			options: [
-				{ label: "Draft", value: "draft" },
-				{ label: "Published", value: "published" },
-			],
-			defaultValue: "draft",
-			required: true,
-			admin: {
-				position: "sidebar",
-				description: "Only published surveys will be visible to users",
-			},
-		},
-		{
 			name: "publishedAt",
 			type: "date",
 			admin: {
@@ -135,15 +121,6 @@ export const Surveys: CollectionConfig = {
 					pickerAppearance: "dayAndTime",
 				},
 				description: "The date and time this survey was published",
-			},
-		},
-		{
-			name: "downloads",
-			type: "relationship",
-			relationTo: "downloads",
-			hasMany: true,
-			admin: {
-				description: "Files for download in this survey",
 			},
 		},
 	],

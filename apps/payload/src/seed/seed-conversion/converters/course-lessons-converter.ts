@@ -1,6 +1,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+	DOWNLOAD_ID_MAP,
+	LESSON_DOWNLOADS_MAPPING,
+} from "../../seed-data-raw/mappings/download-mappings.js";
+import { lessonQuizMapping } from "../../seed-data-raw/mappings/lesson-quiz-mappings";
 import { parseMarkdownWithFrontmatter } from "../parsers/mdoc-parser-simple";
 import type { ReferenceManager } from "../utils/reference-manager";
 
@@ -16,10 +21,15 @@ interface LessonMeta {
 	duration?: number;
 	order?: number;
 	sourceFile: string;
+	thumbnail?: string;
+	lessonLength?: number;
+	publishedAt?: string;
 }
 
 interface CourseLessonJson {
+	_ref: string;
 	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	content: {
@@ -30,24 +40,24 @@ interface CourseLessonJson {
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
 		[k: string]: unknown;
 	};
-	video?: {
-		platform: string;
-		videoId: string;
-	};
-	quiz?: string; // Reference to quiz
-	surveys?: string[]; // References to surveys
+	bunny_video_id?: string; // Bunny video ID extracted from shortcode
+	quiz_id?: string; // Reference to quiz (renamed from quiz)
+	survey_id?: string; // Reference to survey (renamed from surveys, now singular)
 	downloads?: string[]; // References to downloads
-	order: number;
-	duration?: number;
-	course: string; // Reference to course
-	published: boolean;
+	lesson_number: number;
+	estimated_duration?: number; // Renamed from duration
+	course_id: string; // Reference to course (renamed from course)
+	thumbnail?: string; // Reference to media
+	publishedAt?: string; // Published date from frontmatter
+	todo_complete_quiz?: boolean; // Parse from To-Do section
+	_status: "draft" | "published"; // Payload draft status
 	createdAt: string;
 	updatedAt: string;
 }
@@ -55,7 +65,6 @@ interface CourseLessonJson {
 export async function convertCourseLessons(
 	referenceManager: ReferenceManager,
 ): Promise<void> {
-
 	const sourceDir = path.join(__dirname, "../../../seed/seed-data-raw/lessons");
 	const outputDir = path.join(__dirname, "../../../seed/seed-data");
 
@@ -78,21 +87,42 @@ export async function convertCourseLessons(
 			const lessonMeta: LessonMeta = {
 				title: String(frontmatter.title || file.replace(".mdoc", "")),
 				description: String(frontmatter.description || ""),
-				videoID: frontmatter.videoID ? String(frontmatter.videoID) : 
-					frontmatter.video_id ? String(frontmatter.video_id) : undefined,
-				videoPlatform: frontmatter.videoPlatform ? String(frontmatter.videoPlatform) :
-					frontmatter.video_platform ? String(frontmatter.video_platform) : "bunny",
-				quizID: frontmatter.quizID ? String(frontmatter.quizID) :
-					frontmatter.quiz_id ? String(frontmatter.quiz_id) : undefined,
+				videoID: frontmatter.videoID
+					? String(frontmatter.videoID)
+					: frontmatter.video_id
+						? String(frontmatter.video_id)
+						: undefined,
+				videoPlatform: frontmatter.videoPlatform
+					? String(frontmatter.videoPlatform)
+					: frontmatter.video_platform
+						? String(frontmatter.video_platform)
+						: "bunny",
+				quizID: frontmatter.quizID
+					? String(frontmatter.quizID)
+					: frontmatter.quiz_id
+						? String(frontmatter.quiz_id)
+						: undefined,
 				duration: frontmatter.duration
 					? parseInt(String(frontmatter.duration))
 					: undefined,
-				order: frontmatter.order ? parseInt(String(frontmatter.order)) : undefined,
+				order: frontmatter.order
+					? parseInt(String(frontmatter.order))
+					: undefined,
 				sourceFile: file,
+				thumbnail: frontmatter.image ? String(frontmatter.image) : undefined,
+				lessonLength: frontmatter.lessonLength
+					? parseInt(String(frontmatter.lessonLength))
+					: undefined,
+				publishedAt: frontmatter.publishedAt
+					? String(frontmatter.publishedAt)
+					: undefined,
 			};
 
 			// Determine course based on lesson numbering or directory structure
 			const courseId = determineCourseFromLesson(file, frontmatter);
+
+			// Extract bunny video ID from shortcode in content
+			const bunnyVideoId = extractBunnyVideoId(markdownContent);
 
 			// Convert content to simple Lexical format
 			const lexicalContent = convertToSimpleLexical(markdownContent);
@@ -101,42 +131,105 @@ export async function convertCourseLessons(
 			const lessonId = file.replace(".mdoc", "");
 
 			// Build lesson object
+			const lessonNumber = lessonMeta.order || getOrderFromFilename(file);
 			const lesson: CourseLessonJson = {
+				_ref: lessonId,
 				id: lessonId,
+				slug: lessonId, // Use lessonId as slug (URL-friendly identifier)
 				title: lessonMeta.title,
 				description: lessonMeta.description,
 				content: lexicalContent,
-				order: lessonMeta.order || getOrderFromFilename(file),
-				duration: lessonMeta.duration,
-				course: `{ref:courses:${courseId}}`,
-				published: true,
+				lesson_number: lessonNumber,
+				estimated_duration: lessonMeta.lessonLength || lessonMeta.duration,
+				course_id: `{ref:courses:${courseId}}`,
+				_status: "published" as const, // Use _status instead of published for Payload drafts
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
 
-			// Add video if present
-			if (lessonMeta.videoID) {
-				lesson.video = {
-					platform: lessonMeta.videoPlatform || "bunny",
-					videoId: lessonMeta.videoID,
-				};
+			// Add bunny video ID if present (extracted from shortcode)
+			if (bunnyVideoId) {
+				lesson.bunny_video_id = bunnyVideoId;
 			}
 
-			// Add quiz reference if present
-			if (lessonMeta.quizID) {
-				lesson.quiz = `{ref:course-quizzes:${lessonMeta.quizID}}`;
+			// Add quiz reference using lesson-quiz mapping
+			const quizSlug = lessonQuizMapping[lessonId];
+			if (quizSlug) {
+				lesson.quiz_id = `{ref:course-quizzes:${quizSlug}}`;
 			}
 
-			// Extract and add download references
-			const downloadRefs = extractDownloadReferences(markdownContent);
-			if (downloadRefs.length > 0) {
-				lesson.downloads = downloadRefs.map((ref) => `{ref:downloads:${ref}}`);
+			// Add download references using lesson-downloads mapping
+			const downloadKeys =
+				LESSON_DOWNLOADS_MAPPING[
+					lessonId as keyof typeof LESSON_DOWNLOADS_MAPPING
+				];
+			if (downloadKeys && downloadKeys.length > 0) {
+				// Use download keys directly as references (not UUIDs)
+				lesson.downloads = downloadKeys.map(
+					(key: string) => `{ref:downloads:${key}}`,
+				);
 			}
 
-			// Extract and add survey references
-			const surveyRefs = extractSurveyReferences(markdownContent, frontmatter);
-			if (surveyRefs.length > 0) {
-				lesson.surveys = surveyRefs.map((ref) => `{ref:surveys:${ref}}`);
+			// Extract and add survey reference (singular)
+			const surveyRef = extractSurveyReference(markdownContent, frontmatter);
+			if (surveyRef) {
+				lesson.survey_id = `{ref:surveys:${surveyRef}}`;
+			}
+
+			// Map thumbnail from frontmatter image field
+			if (lessonMeta.thumbnail) {
+				// Extract directory name from path (e.g., "our-process" from "/cms/images/our-process/image.png")
+				const pathParts = lessonMeta.thumbnail.split("/").filter((p) => p);
+				const lessonDir = pathParts[pathParts.length - 2]; // Get directory name before filename
+				if (lessonDir && lessonDir !== "images") {
+					// Map lesson directory names to media _ref values (using underscores)
+					// Some media files have different naming conventions than lesson directories
+					const mediaRefMap: Record<string, string> = {
+						"lesson-0": "lesson_zero",
+						"before-we-begin": "before_we_begin",
+						"tools-and-resources": "tools_resources",
+						"our-process": "1-our_process",
+						"the-who": "2-the_who",
+						"the-why-introductions": "3-the_why_introductions",
+						"the-why-next-steps": "4-the_why_next_steps",
+						"idea-generation": "5-idea_generation",
+						"what-is-structure": "6-what_structure",
+						"what-structure": "6-what_structure",
+						"using-stories": "7-using_stories",
+						"storyboards-film": "8-storyboards_in_film",
+						"storyboards-in-film": "8-storyboards_in_film",
+						"storyboards-presentations": "9-storyboards_in_presentations",
+						"storyboards-in-presentations": "9-storyboards_in_presentations",
+						"visual-perception": "10-visual_perception",
+						"fundamental-design-overview": "11-overview_elements_design",
+						"overview-elements-design": "11-overview_elements_design",
+						"fundamental-design-detail": "12-detail_elements_of_design",
+						"detail-elements-of-design": "12-detail_elements_of_design",
+						"gestalt-principles": "13-gestalt_principles_of_perception",
+						"slide-composition": "14-slide_composition",
+						"fact-based-persuasion": "15-fact_based_persuasion_overview",
+						"tables-vs-graphs": "16-tables_vs_graphs",
+						"basic-graphs": "17-standard_graphs",
+						"standard-graphs": "17-standard_graphs",
+						"specialist-graphs": "18-specialist_graphs",
+						"preparation-practice": "19-preparation_practice",
+						performance: "20-performance",
+					};
+
+					const mediaRef = mediaRefMap[lessonDir] || lessonDir;
+					lesson.thumbnail = `{ref:media:${mediaRef}}`;
+				}
+			}
+
+			// Map publishedAt from frontmatter and convert to ISO format
+			if (lessonMeta.publishedAt) {
+				lesson.publishedAt = new Date(lessonMeta.publishedAt).toISOString();
+			}
+
+			// Parse To-Do section to determine todo_complete_quiz
+			const todoCompleteQuiz = parseTodoSection(markdownContent);
+			if (todoCompleteQuiz !== null) {
+				lesson.todo_complete_quiz = todoCompleteQuiz;
 			}
 
 			lessons.push(lesson);
@@ -153,8 +246,8 @@ export async function convertCourseLessons(
 		}
 	}
 
-	// Sort lessons by order
-	lessons.sort((a, b) => a.order - b.order);
+	// Sort lessons by lesson_number
+	lessons.sort((a, b) => a.lesson_number - b.lesson_number);
 
 	// Successfully converted lessons
 	if (warnings.length > 0) {
@@ -166,57 +259,19 @@ export async function convertCourseLessons(
 	await fs.writeFile(outputPath, JSON.stringify(lessons, null, 2));
 }
 
-function determineCourseFromLesson(filename: string, frontmatter: Record<string, unknown>): string {
+function determineCourseFromLesson(
+	filename: string,
+	frontmatter: Record<string, unknown>,
+): string {
 	// Check if course is explicitly set in frontmatter
 	if (frontmatter.course || frontmatter.courseId) {
 		const courseValue = frontmatter.course || frontmatter.courseId;
 		// Ensure it's a string before returning
-		return typeof courseValue === 'string' ? courseValue : String(courseValue);
+		return typeof courseValue === "string" ? courseValue : String(courseValue);
 	}
 
-	// Try to determine from lesson numbering pattern
-	// Lessons are numbered like: 101, 102, 201, 202, etc.
-	// Where first digit = course, remaining digits = lesson order
-	const orderMatch = filename.match(/(\d+)/);
-	if (orderMatch) {
-		const orderNum = parseInt(orderMatch[1]);
-		if (orderNum >= 100) {
-			const courseNum = Math.floor(orderNum / 100);
-			return `course-${courseNum}`;
-		}
-	}
-
-	// Fallback mapping based on content or filename patterns
-	const contentMappings: Record<string, string> = {
-		"lesson-0": "course-1",
-		"before-we-begin": "course-1",
-		congratulations: "course-1",
-		"before-you-go": "course-1",
-		"our-process": "course-1",
-		"what-is-structure": "course-2",
-		"the-who": "course-2",
-		"the-why-introductions": "course-2",
-		"the-why-next-steps": "course-2",
-		"idea-generation": "course-3",
-		"using-stories": "course-3",
-		"storyboards-film": "course-3",
-		"storyboards-presentations": "course-3",
-		"fact-based-persuasion": "course-4",
-		"preparation-practice": "course-4",
-		performance: "course-4",
-		"fundamental-design-overview": "course-5",
-		"fundamental-design-detail": "course-5",
-		"visual-perception": "course-5",
-		"gestalt-principles": "course-5",
-		"slide-composition": "course-6",
-		"tables-vs-graphs": "course-7",
-		"basic-graphs": "course-7",
-		"specialist-graphs": "course-7",
-		"tools-and-resources": "course-8",
-	};
-
-	const baseName = filename.replace(".mdoc", "");
-	return contentMappings[baseName] || "course-1";
+	// All lessons belong to the single "Decks for Decision Makers" course
+	return "decks-for-decision-makers";
 }
 
 function getOrderFromFilename(filename: string): number {
@@ -243,8 +298,8 @@ function convertToSimpleLexical(markdown: string): {
 			version: number;
 			[k: string]: unknown;
 		}>;
-		direction: ('ltr' | 'rtl') | null;
-		format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 		indent: number;
 		version: number;
 	};
@@ -315,7 +370,27 @@ function convertToSimpleLexical(markdown: string): {
 function extractDownloadReferences(content: string): string[] {
 	const downloadRefs: string[] = [];
 
-	// Look for download links or references
+	// Parse {% r2file %} shortcodes
+	const r2filePattern =
+		/{%\s*r2file\s+awsurl="([^"]+)"\s+filedescription="([^"]+)"\s*\/%}/gi;
+	const r2fileMatches = content.matchAll(r2filePattern);
+
+	for (const match of r2fileMatches) {
+		const awsUrl = match[1];
+		if (awsUrl) {
+			// Extract filename from URL to create download reference
+			const urlPath = decodeURIComponent(awsUrl.split("/").pop() || "");
+			const downloadId = urlPath
+				.replace(/\.[^.]+$/, "")
+				.toLowerCase()
+				.replace(/\s+/g, "-");
+			if (downloadId && !downloadRefs.includes(downloadId)) {
+				downloadRefs.push(downloadId);
+			}
+		}
+	}
+
+	// Also look for standard download links
 	const downloadPatterns = [
 		/download[^\s]*['"]\s*:\s*['"](.*?)['"]/gi,
 		/href=['"](.*?\.(?:pdf|docx?|xlsx?|pptx?|zip|rar))['"]/gi,
@@ -326,8 +401,15 @@ function extractDownloadReferences(content: string): string[] {
 		const matches = content.matchAll(pattern);
 		for (const match of matches) {
 			const url = match[1];
-			if (url && !downloadRefs.includes(url)) {
-				downloadRefs.push(url);
+			if (url) {
+				const urlPath = decodeURIComponent(url.split("/").pop() || "");
+				const downloadId = urlPath
+					.replace(/\.[^.]+$/, "")
+					.toLowerCase()
+					.replace(/\s+/g, "-");
+				if (downloadId && !downloadRefs.includes(downloadId)) {
+					downloadRefs.push(downloadId);
+				}
 			}
 		}
 	});
@@ -335,19 +417,24 @@ function extractDownloadReferences(content: string): string[] {
 	return downloadRefs;
 }
 
-function extractSurveyReferences(content: string, frontmatter: Record<string, unknown>): string[] {
-	const surveyRefs: string[] = [];
-
-	// Check frontmatter for survey references
+function extractSurveyReference(
+	content: string,
+	frontmatter: Record<string, unknown>,
+): string | null {
+	// Check frontmatter for survey reference (singular)
 	if (frontmatter.survey || frontmatter.surveyId) {
-		surveyRefs.push(frontmatter.survey || frontmatter.surveyId);
+		const surveyValue = frontmatter.survey || frontmatter.surveyId;
+		return String(surveyValue);
 	}
 
+	// Also check for surveys array (backwards compatibility, return first)
 	if (frontmatter.surveys) {
 		const surveys = Array.isArray(frontmatter.surveys)
 			? frontmatter.surveys
 			: [frontmatter.surveys];
-		surveyRefs.push(...surveys);
+		if (surveys.length > 0) {
+			return String(surveys[0]);
+		}
 	}
 
 	// Look for survey references in content
@@ -356,15 +443,39 @@ function extractSurveyReferences(content: string, frontmatter: Record<string, un
 		/\{%\s*survey\s+([^%]+)\s*%\}/gi,
 	];
 
-	surveyPatterns.forEach((pattern) => {
+	for (const pattern of surveyPatterns) {
 		const matches = content.matchAll(pattern);
 		for (const match of matches) {
 			const surveyId = match[1].trim();
-			if (surveyId && !surveyRefs.includes(surveyId)) {
-				surveyRefs.push(surveyId);
+			if (surveyId) {
+				return surveyId;
 			}
 		}
-	});
+	}
 
-	return surveyRefs;
+	return null;
+}
+
+function extractBunnyVideoId(content: string): string | null {
+	// Extract bunny video ID from {% bunny bunnyvideoid="..." /%} shortcode
+	const bunnyPattern = /{%\s*bunny\s+bunnyvideoid="([^"]+)"\s*\/%}/i;
+	const match = content.match(bunnyPattern);
+	return match ? match[1] : null;
+}
+
+function parseTodoSection(content: string): boolean | null {
+	// Look for "To-Do" section and check if it contains "Complete the lesson quiz"
+	const todoSectionPattern =
+		/To-Do\s*\n([\s\S]*?)(?=\n#{1,3}\s|\n[A-Z][a-z]+\s*\n|$)/i;
+	const todoMatch = content.match(todoSectionPattern);
+
+	if (todoMatch) {
+		const todoContent = todoMatch[1];
+		// Check if it contains references to completing quiz
+		const hasCompleteQuiz = /complete\s+the\s+lesson\s+quiz/i.test(todoContent);
+		return hasCompleteQuiz;
+	}
+
+	// If no To-Do section found, return null (no information)
+	return null;
 }

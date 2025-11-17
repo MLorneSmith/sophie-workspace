@@ -1,7 +1,7 @@
 # Survey System Implementation
 
-This directory contains the implementation of the survey system for SlideHeroes. The system allows users to take
-surveys, track their progress, and view their results.
+This directory contains the implementation of the survey system for SlideHeroes.
+The system allows users to take surveys, track their progress, and view their results.
 
 ## Architecture
 
@@ -78,8 +78,8 @@ To seed the database with a sample assessment survey:
 
 ## Authentication
 
-The survey system uses Supabase authentication to identify users. Users must be logged in to take surveys and view
-their results.
+The survey system uses Supabase authentication to identify users.
+Users must be logged in to take surveys and view their results.
 
 ## Implementation Details
 

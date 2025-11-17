@@ -426,10 +426,11 @@ describe("CostTrackingContext", () => {
 				),
 			);
 
-			mockFetch.mockResolvedValueOnce({
+			// Use mockResolvedValue (not Once) so it applies to all tests in this describe block
+			mockFetch.mockResolvedValue({
 				ok: true,
 				json: async () => ({ success: true, cost: 10 }),
-			});
+			} as Response);
 		});
 
 		it("increases session cost correctly", async () => {
@@ -454,12 +455,12 @@ describe("CostTrackingContext", () => {
 		});
 
 		it("handles decimal values", async () => {
-			// Arrange
+			// Arrange - Override the beforeEach mock for this test
 			mockFetch.mockClear();
-			mockFetch.mockResolvedValueOnce({
+			mockFetch.mockResolvedValue({
 				ok: true,
 				json: async () => ({ success: true, cost: 0 }),
-			});
+			} as Response);
 
 			function TestComponentDecimal() {
 				const { sessionCost, addCost } = useCostTracking();

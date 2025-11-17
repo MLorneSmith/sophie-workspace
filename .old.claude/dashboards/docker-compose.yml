@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../tracking:/app/tracking:ro  # Mount tracking data as read-only
+      - ./output:/app/output         # Mount output for live updates
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    container_name: ccmp-dashboard
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

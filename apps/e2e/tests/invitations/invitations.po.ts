@@ -33,12 +33,7 @@ export class InvitationsPageObject {
 				continue;
 			}
 
-			// Only log in debug mode to avoid Biome linting errors
-			if (process.env.DEBUG) {
-				process.stdout.write(
-					`Inviting ${invite.email} with role ${invite.role}...\n`,
-				);
-			}
+			console.log(`Inviting ${invite.email} with role ${invite.role}...`);
 
 			const nth = index + 1;
 
@@ -118,10 +113,7 @@ export class InvitationsPageObject {
 	}
 
 	async acceptInvitation() {
-		// Only log in debug mode to avoid Biome linting errors
-		if (process.env.DEBUG) {
-			process.stdout.write("Accepting invitation...\n");
-		}
+		console.log("Accepting invitation...");
 
 		const click = this.page
 			.locator('[data-test="join-team-form"] button[type="submit"]')
@@ -135,6 +127,8 @@ export class InvitationsPageObject {
 		});
 
 		await Promise.all([click, response]);
+
+		console.log("Invitation accepted");
 	}
 
 	private getInviteForm() {

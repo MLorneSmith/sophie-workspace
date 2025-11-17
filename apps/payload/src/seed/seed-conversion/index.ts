@@ -4,23 +4,24 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { program } from "commander";
 import configPromise from "../../payload.config";
-import {
-	MediaExtractor,
-	extractMediaFromDirectory,
-} from "./extractors/media-extractor";
+import { convertCourseLessons } from "./converters/course-lessons-converter";
+import { convertCourseQuizzes } from "./converters/course-quizzes-converter";
+import { convertCourses } from "./converters/courses-converter";
+import { convertDocumentation } from "./converters/documentation-converter";
+import { convertPosts } from "./converters/posts-converter";
+import { convertPrivate } from "./converters/private-converter";
+import { convertQuizQuestions } from "./converters/quiz-questions-converter";
+import { convertSurveyQuestions } from "./converters/survey-questions-converter";
+import { convertSurveys } from "./converters/surveys-converter";
 import {
 	DownloadExtractor,
 	extractDownloadsFromDirectory,
 } from "./extractors/download-extractor";
+import {
+	extractMediaFromDirectory,
+	MediaExtractor,
+} from "./extractors/media-extractor";
 import { ReferenceManager } from "./utils/reference-manager";
-import { convertPosts } from "./converters/posts-converter";
-import { convertCourses } from "./converters/courses-converter";
-import { convertQuizQuestions } from "./converters/quiz-questions-converter";
-import { convertSurveyQuestions } from "./converters/survey-questions-converter";
-import { convertCourseLessons } from "./converters/course-lessons-converter";
-import { convertCourseQuizzes } from "./converters/course-quizzes-converter";
-import { convertSurveys } from "./converters/surveys-converter";
-import { convertDocumentation } from "./converters/documentation-converter";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -120,8 +121,8 @@ async function main() {
 			"courses", // Depends on: downloads
 			"course-quizzes", // Depends on: courses
 			"quiz-questions", // No dependencies
-			"surveys", // Depends on: downloads
-			"survey-questions", // No dependencies
+			"survey-questions", // No dependencies (must be before surveys)
+			"surveys", // Depends on: downloads, survey-questions (mapping file)
 			"course-lessons", // Depends on: courses, quizzes, surveys, downloads
 			"documentation", // Depends on: media
 			"private", // Depends on: users, media
@@ -189,8 +190,9 @@ async function main() {
 					break;
 
 				case "private":
-					console.log("    ⏭️  Private converter not yet implemented");
-					continue;
+					await convertPrivate(referenceManager);
+					result = { success: true, data: [] };
+					break;
 
 				case "users":
 				case "media":

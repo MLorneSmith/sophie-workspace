@@ -4,13 +4,17 @@
  */
 
 import { resolve } from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineProject } from "vitest/config";
 
-export default defineConfig({
+export default defineProject({
 	test: {
-		// Node.js environment for server-side testing
+		// Project-specific configuration only
+		name: "payload",
 		environment: "node",
 		globals: true,
+
+		// Setup file to load environment variables before tests
+		setupFiles: ["./vitest.setup.ts"],
 
 		// Test discovery
 		include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"],
@@ -21,46 +25,19 @@ export default defineConfig({
 			"**/coverage/**",
 		],
 
-		// Performance settings
+		// Project-specific performance settings
 		testTimeout: 15000, // Longer timeout for potential DB operations
 		hookTimeout: 10000,
-		teardownTimeout: 5000,
 
-		// Coverage configuration
-		coverage: {
-			provider: "v8",
-			reporter: ["text", "json"],
-			exclude: [
-				"coverage/**",
-				"dist/**",
-				"**/[.]**",
-				"**/*.d.ts",
-				"**/next.config.*",
-				// Payload-specific exclusions
-				"**/payload-types.ts",
-				"**/payload.config.ts", // Configuration files
-				"**/src/init-scripts/**", // Initialization scripts
-			],
-			thresholds: {
-				global: {
-					branches: 60, // Lower thresholds for CMS logic
-					functions: 60,
-					lines: 60,
-					statements: 60,
-				},
+		// Use forks pool for database operations (safer in Vitest 4)
+		pool: "forks" as const,
+
+		// Server-side dependencies that need to be externalized (ESM only)
+		server: {
+			deps: {
+				inline: ["chalk"],
 			},
 		},
-
-		// Sequential execution for potential DB tests
-		pool: "threads",
-		poolOptions: {
-			threads: {
-				singleThread: true, // Safer for database operations
-			},
-		},
-
-		// Reporting
-		reporters: ["verbose"],
 	},
 
 	// Path resolution for Payload

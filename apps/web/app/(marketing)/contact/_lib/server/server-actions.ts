@@ -1,6 +1,7 @@
 "use server";
 
 import { getMailer } from "@kit/mailers";
+import { getSenderEmail, validateEmailForSending } from "@kit/mailers-shared";
 import { enhanceAction } from "@kit/next/actions";
 import { z } from "zod";
 
@@ -15,16 +16,21 @@ const contactEmail = z
 	})
 	.parse(process.env.CONTACT_EMAIL);
 
-const emailFrom = z
-	.string({
-		description: "The email sending address.",
-		required_error:
-			"Sender email is required. Please use the environment variable EMAIL_SENDER.",
-	})
-	.parse(process.env.EMAIL_SENDER);
+const emailFrom = getSenderEmail();
 
 export const sendContactEmail = enhanceAction(
 	async (data) => {
+		// Validate sender email before attempting to send
+		const emailValidation = validateEmailForSending(data.email);
+		if (!emailValidation.isValid) {
+			throw new Error(`Invalid email address: ${emailValidation.error}`);
+		}
+
+		// Skip sending in test environment
+		if (!emailValidation.shouldSend) {
+			return {};
+		}
+
 		const mailer = await getMailer();
 
 		await mailer.sendEmail({

@@ -36,6 +36,11 @@ comment on column public.invitations.email is 'The email of the user being invit
 -- Indexes on the invitations table
 create index ix_invitations_account_id on public.invitations (account_id);
 
+-- Triggers for invitations table
+create trigger invitations_set_timestamps
+before insert or update on public.invitations
+for each row execute function public.trigger_set_timestamps();
+
 -- Revoke all on invitations table from authenticated and service_role
 revoke all on public.invitations
 from

@@ -1,0 +1,69 @@
+import { allow, createPolicyRegistry, definePolicy, deny } from "@kit/policies";
+
+import type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
+
+/**
+ * Feature-specific registry for invitation policies
+ */
+export const invitationPolicyRegistry = createPolicyRegistry();
+
+/**
+ * Subscription required policy
+ * Checks if the account has an active subscription
+ */
+export const subscriptionRequiredInvitationsPolicy =
+	definePolicy<FeaturePolicyInvitationContext>({
+		id: "subscription-required",
+		stages: ["preliminary", "submission"],
+		evaluate: async (context) => {
+			if (!context.subscription || !context.subscription.active) {
+				return deny({
+					code: "SUBSCRIPTION_REQUIRED",
+					message: "teams:policyErrors.subscriptionRequired",
+					remediation: "teams:policyRemediation.subscriptionRequired",
+				});
+			}
+
+			return allow();
+		},
+	});
+
+/**
+ * Paddle billing policy
+ * Checks if the account has a paddle subscription and is in a trial period
+ */
+export const paddleBillingInvitationsPolicy =
+	definePolicy<FeaturePolicyInvitationContext>({
+		id: "paddle-billing",
+		stages: ["preliminary", "submission"],
+		evaluate: async (context) => {
+			// combine with subscriptionRequiredPolicy if subscription must be required
+			if (!context.subscription) {
+				return allow();
+			}
+
+			// Paddle specific constraint: cannot update subscription items during trial
+			if (
+				context.subscription.provider === "paddle" &&
+				context.subscription.status === "trialing"
+			) {
+				const hasPerSeatItems = context.subscription.items.some(
+					(item) => item.type === "per_seat",
+				);
+
+				if (hasPerSeatItems) {
+					return deny({
+						code: "PADDLE_TRIAL_RESTRICTION",
+						message: "teams:policyErrors.paddleTrialRestriction",
+						remediation: "teams:policyRemediation.paddleTrialRestriction",
+					});
+				}
+			}
+
+			return allow();
+		},
+	});
+
+// register policies below to apply them
+//
+//

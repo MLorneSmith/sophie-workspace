@@ -19,7 +19,7 @@ max_rows = 1000
 port = 54322
 # The database major version to use. This has to be the same as your remote database's. Run `SHOW
 # server_version;` on the remote database to check.
-major_version = 15
+major_version = 17
 
 [studio]
 # Port to use for Supabase Studio.
@@ -50,7 +50,9 @@ jwt_expiry = 3600
 enable_signup = true
 enable_manual_linking = true
 
-# Enable TOTP MFA
+# TOTP MFA Configuration
+# Note: MFA is enabled but not enforced - users with enrolled factors will be prompted
+# For production: verify_enabled=true enforces MFA for all users with enrolled factors
 [auth.mfa.totp]
 verify_enabled = true
 enroll_enabled = true
@@ -62,7 +64,8 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = true
+# DISABLED for testing to prevent email bounce issues
+enable_confirmations = false
 
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
@@ -103,7 +106,7 @@ content_path = "./supabase/templates/magic-link.html"
 
 [analytics]
 enabled = true
-port = 54327
+port = 39006
 backend = "postgres"
 
 # Added from Makerkit update

@@ -198,7 +198,7 @@ export async function generateCertificate({
 			buckets: buckets.map((b) => b.name),
 		});
 		for (const _bucket of buckets) {
-			// console.log("Found bucket:", _bucket.name);
+			// Bucket processing would go here if needed
 		}
 	}
 

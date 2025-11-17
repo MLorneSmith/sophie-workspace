@@ -20,8 +20,8 @@
 		"@kit/resend": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.0.4",
-		"zod": "^3.25.67"
+		"@types/node": "catalog:",
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {
@@ -29,5 +29,8 @@
 				"src/*"
 			]
 		}
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1"
 	}
 }

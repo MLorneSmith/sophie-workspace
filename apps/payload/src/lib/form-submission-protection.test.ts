@@ -23,11 +23,15 @@ vi.mock("@kit/shared/logger", () => ({
 }));
 
 // Mock MutationObserver since jsdom doesn't include it
-const mockMutationObserver = vi.fn(() => ({
-	observe: vi.fn(),
-	disconnect: vi.fn(),
-	takeRecords: vi.fn(),
-}));
+// Must be a constructor function, not arrow function
+const mockMutationObserver = vi.fn(function (
+	this: MutationObserver,
+): MutationObserver {
+	this.observe = vi.fn();
+	this.disconnect = vi.fn();
+	this.takeRecords = vi.fn();
+	return this;
+});
 
 // Helper function to create real form elements with jsdom
 function createTestForm(
@@ -65,7 +69,8 @@ describe("FormSubmissionProtectionManager", () => {
 		originalMutationObserver = global.MutationObserver;
 
 		// Setup mocks for APIs not provided by jsdom
-		global.MutationObserver = mockMutationObserver;
+		global.MutationObserver =
+			mockMutationObserver as unknown as typeof MutationObserver;
 
 		// Clear global state
 		globalThis.__formSubmissionProtectionManager = undefined;
@@ -415,7 +420,7 @@ describe("FormSubmissionProtectionManager", () => {
 
 			// Verify MutationObserver was created and configured
 			expect(mockMutationObserver).toHaveBeenCalled();
-			const observerInstance = mockMutationObserver.mock.results[0]?.value;
+			const observerInstance = mockMutationObserver.mock.instances[0];
 			if (observerInstance) {
 				expect(observerInstance.observe).toHaveBeenCalledWith(document.body, {
 					childList: true,
@@ -450,7 +455,7 @@ describe("FormSubmissionProtectionManager", () => {
 			// Wait for hydration to complete and mutation observer to be set up
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
-			const observerInstance = mockMutationObserver.mock.results[0]?.value;
+			const observerInstance = mockMutationObserver.mock.instances[0];
 			expect(observerInstance).toBeDefined();
 
 			manager.cleanup();
@@ -549,7 +554,8 @@ describe("Global Singleton Management", () => {
 		originalMutationObserver = global.MutationObserver;
 
 		// Setup mocks for this describe block too
-		global.MutationObserver = mockMutationObserver;
+		global.MutationObserver =
+			mockMutationObserver as unknown as typeof MutationObserver;
 
 		// Clear global state
 		globalThis.__formSubmissionProtectionManager = undefined;

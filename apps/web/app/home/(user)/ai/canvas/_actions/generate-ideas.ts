@@ -1,18 +1,16 @@
 "use server";
 
 import {
+	baseInstructions,
 	type ChatCompletionOptions,
 	type ChatMessage,
 	ConfigManager,
-	getChatCompletion,
-} from "@kit/ai-gateway";
-import {
 	createOpenAIOnlyConfig,
+	getChatCompletion,
 	ideasCreatorSystem,
-	baseInstructions,
 	improvementFormat,
-	presentationContext,
 	parseImprovements,
+	presentationContext,
 } from "@kit/ai-gateway";
 import { enhanceAction } from "@kit/next/actions";
 import { getLogger } from "@kit/shared/logger";

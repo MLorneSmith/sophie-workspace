@@ -1,0 +1,31 @@
+{
+	"name": "@kit/policies",
+	"private": true,
+	"version": "0.1.0",
+	"exports": {
+		".": "./index.ts"
+	},
+	"typesVersions": {
+		"*": {
+			"*": [
+				"src/*"
+			]
+		}
+	},
+	"scripts": {
+		"clean": "rm -rf .turbo node_modules",
+		"lint": "eslint .",
+		"format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@kit/shared": "workspace:*",
+		"zod": "^3.25.74"
+	},
+	"devDependencies": {
+		"@kit/eslint-config": "workspace:*",
+		"@kit/prettier-config": "workspace:*",
+		"@kit/tsconfig": "workspace:*"
+	},
+	"prettier": "@kit/prettier-config"
+}

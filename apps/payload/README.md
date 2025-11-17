@@ -1,203 +1,145 @@
-# Supabase CLI
+# Payload CMS
 
-[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main)
-[![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines)
-[![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
+Payload CMS application for SlideHeroes - manages courses, lessons, quizzes, and documentation.
 
-[Supabase](https://supabase.io) is an open source Firebase alternative.
-We're building the features of Firebase using enterprise-grade open source tools.
-
-This repository contains all the functionality for Supabase CLI.
-
-- [x] Running Supabase locally
-- [x] Managing database migrations
-- [x] Creating and deploying Supabase Functions
-- [x] Generating types directly from your database schema
-- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
-
-## Getting started
-
-### Install the CLI
-
-Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+## Quick Start
 
 ```bash
-npm i supabase --save-dev
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Access admin UI
+open http://localhost:3020/admin
 ```
 
-To install the beta release channel:
+## Database Seeding
+
+Payload uses an automated seeding system to populate the database with test and development data.
+
+### Quick Commands
 
 ```bash
-npm i supabase@beta --save-dev
+# Seed all collections (most common)
+pnpm seed:run
+
+# Validate data without creating records
+pnpm seed:dry
+
+# Verbose validation with detailed output
+pnpm seed:validate
+
+# Seed specific collections only
+pnpm seed:courses
 ```
 
-When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
+### Integration with Supabase Reset
 
 ```bash
-NODE_OPTIONS=--no-experimental-fetch yarn add supabase
+# Reset database and seed in one command
+tsx .claude/scripts/database/supabase-reset.ts local --seed
 ```
 
-> **Note**
-> For Bun versions below v1.0.17, you must add `supabase` as a
-> [trusted dependency](https://bun.sh/guides/install/trusted) before running
-> `bun add -D supabase`.
+### Documentation
 
-<details>
-  <summary>**macOS**</summary>
+For complete documentation on the seeding system, see:
 
-Available via [Homebrew](https://brew.sh). To install:
+- [Seeding Guide](../../.claude/context/tools/payload/seeding-guide.md) - Complete usage guide
+- [Troubleshooting](../../.claude/context/tools/payload/seeding-troubleshooting.md) - Common issues and solutions
+- [Architecture](../../.claude/context/tools/payload/seeding-architecture.md) - Technical deep dive
 
-```sh
-brew install supabase/tap/supabase
-```
+### Quick Reference
 
-To install the beta release channel:
+**When to use each command**:
 
-```sh
-brew install supabase/tap/supabase-beta
-brew link --overwrite supabase-beta
-```
+| Command | Use Case |
+|---------|----------|
+| `pnpm seed:run` | Fresh database setup, E2E test prep |
+| `pnpm seed:dry` | Pre-commit validation, debugging |
+| `pnpm seed:validate` | Detailed debugging with verbose output |
+| `pnpm seed:courses` | Quick iteration on course-related collections |
 
-To upgrade:
+**Performance**: ~82 seconds for full seed (316+ records across 10 collections)
 
-```sh
-brew upgrade supabase
-```
+**Safety**: Seeding is blocked in production (`NODE_ENV=production`)
 
-</details>
+## Development
 
-<details>
-  <summary>**Windows**</summary>
+### Environment Variables
 
-Available via [Scoop](https://scoop.sh). To install:
-
-```powershell
-scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-scoop install supabase
-```
-
-To upgrade:
-
-```powershell
-scoop update supabase
-```
-
-</details>
-
-<details>
-  <summary>**Linux**</summary>
-
-Available via [Homebrew](https://brew.sh) and Linux packages.
-
-#### via Homebrew
-
-To install:
-
-```sh
-brew install supabase/tap/supabase
-```
-
-To upgrade:
-
-```sh
-brew upgrade supabase
-```
-
-#### via Linux packages
-
-Linux packages are provided in [Releases](https://github.com/supabase/cli/releases).
-To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your
-package manager and run the respective commands.
-
-```sh
-sudo apk add --allow-untrusted <...>.apk
-```
-
-```sh
-sudo dpkg -i <...>.deb
-```
-
-```sh
-sudo rpm -i <...>.rpm
-```
-
-```sh
-sudo pacman -U <...>.pkg.tar.zst
-```
-
-</details>
-
-<details>
-  <summary>**Other Platforms**</summary>
-
-You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
-
-```sh
-go install github.com/supabase/cli@latest
-```
-
-Add a symlink to the binary in `$PATH` for easier access:
-
-```sh
-ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
-```
-
-This works on other non-standard Linux distros.
-
-</details>
-
-<details>
-  <summary>**Community Maintained Packages**</summary>
-
-Available via [pkgx](https://pkgx.sh/). Package script
-[available in pkgx pantry repository](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
-To install in your working directory:
+Required environment variables (`.env` file):
 
 ```bash
-pkgx install supabase
+DATABASE_URI=postgresql://postgres:postgres@localhost:54322/postgres
+PAYLOAD_SECRET=your-secret-key
+NODE_ENV=development
 ```
 
-Available via [Nixpkgs](https://nixos.org/). Package script
-[available in Nixpkgs repository](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
-
-</details>
-
-### Run the CLI
+### Available Scripts
 
 ```bash
-supabase bootstrap
+# Development
+pnpm dev                # Start dev server (port 3020)
+pnpm build              # Build for production
+
+# Database
+pnpm generate:types     # Generate TypeScript types from database
+
+# Data Management
+pnpm seed:run           # Seed all collections
+pnpm seed:dry           # Dry-run validation
+pnpm seed:validate      # Verbose validation
+pnpm seed:courses       # Seed course collections only
+
+# Code Quality
+pnpm lint               # Run linter
+pnpm format             # Format code
+pnpm check              # Run all checks
+
+# Testing
+pnpm test               # Run tests
+pnpm test:run           # Run tests once
+pnpm test:coverage      # Test coverage report
 ```
 
-Or using npx:
+## Collections
 
-```bash
-npx supabase bootstrap
-```
+Payload manages the following collections:
 
-The bootstrap command will guide you through the process of setting up a
-Supabase project using one of the
-[starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json)
-templates.
+- **Courses**: Course definitions and metadata
+- **Course Lessons**: Individual lessons with Lexical content
+- **Course Quizzes**: Quiz definitions per course
+- **Quiz Questions**: Individual quiz questions with options
+- **Surveys**: Survey definitions
+- **Survey Questions**: Individual survey questions
+- **Posts**: Blog posts and articles
+- **Documentation**: Help documentation
+- **Media**: Uploaded media files (images, videos)
+- **Downloads**: Downloadable resources (PDFs, templates)
+- **Users**: User accounts and authentication
 
-## Docs
+## Architecture
 
-Command & config reference can be found in the
-[Supabase CLI documentation](https://supabase.com/docs/reference/cli/about).
+Payload CMS is integrated with:
 
-## Breaking changes
+- **Database**: PostgreSQL via Supabase
+- **Storage**: S3-compatible storage for media
+- **Auth**: Payload's built-in authentication
+- **API**: REST and GraphQL APIs
+- **Admin UI**: React-based admin interface
 
-We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+## Additional Documentation
 
-However, due to dependencies on other service images, we cannot guarantee that
-schema migrations, seed.sql, and generated types will always work for the same
-CLI major version. If you need such guarantees, we encourage you to pin a
-specific version of CLI in package.json.
+- [Payload CMS Documentation](https://payloadcms.com/docs)
+- [Project CLAUDE.md](../../CLAUDE.md) - Project-wide conventions
+- [Seeding Implementation Plan](../../.claude/tracking/implementations/payload-seed/plan.md)
 
-## Developing
+## Support
 
-To run from source:
+For issues or questions:
 
-```sh
-# Go >= 1.22
-go run . help
-```
+- Check [seeding troubleshooting guide](../../.claude/context/tools/payload/seeding-troubleshooting.md)
+- Review implementation plan
+- Open GitHub issue with `[payload]` tag

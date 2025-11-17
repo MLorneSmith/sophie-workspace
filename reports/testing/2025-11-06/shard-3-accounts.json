@@ -1,0 +1,37 @@
+{
+	"shard": {
+		"id": 3,
+		"name": "Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/team-accounts/team-accounts.spec.ts",
+			"tests/team-accounts/team-invitation-mfa.spec.ts"
+		],
+		"expectedTests": 15,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-11-06T19:17:01.934Z",
+		"endTime": "2025-11-06T19:17:13.935Z",
+		"duration": "12s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"TypeError: fetch failed",
+		"  [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: 127.0.0.1:54321, timeout: 10000ms)",
+		"      at onConnectTimeout (node:internal/deps/undici/undici:2602:28)",
+		"❌ Failed to authenticate test user: fetch failed"
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard3 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🔐 Authenticating test user via Supabase API...\n\nAuthRetryableFetchError: fetch failed\n\n   at ../global-setup.ts:81\n\n  79 |\n  80 | \t\t// Sign in via API\n> 81 | \t\tconst { data, error } = await supabase.auth.signInWithPassword({\n     | \t\t                        ^\n  82 | \t\t\temail: credentials.email,\n  83 | \t\t\tpassword: credentials.password,\n  84 | \t\t});\n    at _handleRequest (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.76.1/node_modules/@supabase/auth-js/src/lib/fetch.ts:191:11)\n    at _request (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.76.1/node_modules/@supabase/auth-js/src/lib/fetch.ts:157:16)\n    at SupabaseAuthClient.signInWithPassword (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.76.1/node_modules/@supabase/auth-js/src/GoTrueClient.ts:611:15)\n    at globalSetup (/home/msmith/projects/2025slideheroes/apps/e2e/global-setup.ts:81:27)\n\n\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

@@ -301,7 +301,7 @@ class KeystaticClient implements CmsClient {
 			publishedAt: publishedAt.toISOString(),
 			content: html as string,
 			image: item.entry.image ?? undefined,
-			status: item.entry.status,
+			status: item.entry.status as Cms.ContentItemStatus,
 			collapsible: item.entry.collapsible,
 			collapsed: item.entry.collapsed,
 			categories:
@@ -355,7 +355,7 @@ class KeystaticClient implements CmsClient {
 			publishedAt: publishedAt.toISOString(),
 			content: html as string,
 			image: item.entry.image ?? undefined,
-			status: item.entry.status,
+			status: item.entry.status as Cms.ContentItemStatus,
 			categories:
 				(item.entry.categories ?? []).map((item) => {
 					return {

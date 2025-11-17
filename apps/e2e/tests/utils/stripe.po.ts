@@ -41,7 +41,7 @@ export class StripePageObject {
 
 	submitForm() {
 		return this.getStripeCheckoutIframe()
-			.getByTestId("hosted-payment-submit-button")
+			.locator('[data-testid="hosted-payment-submit-button"]')
 			.click();
 	}
 

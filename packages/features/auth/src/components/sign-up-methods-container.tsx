@@ -1,12 +1,12 @@
 "use client";
 
 import { isBrowser } from "@kit/shared/utils";
-import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { If } from "@kit/ui/if";
 import { Separator } from "@kit/ui/separator";
 import { Trans } from "@kit/ui/trans";
 import type { Provider } from "@supabase/supabase-js";
 
+import { ExistingAccountHint } from "./existing-account-hint";
 import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
 import { OtpSignInContainer } from "./otp-sign-in-container";
@@ -21,44 +21,44 @@ export function SignUpMethodsContainer(props: {
 	providers: {
 		password: boolean;
 		magicLink: boolean;
+		otp: boolean;
 		oAuth: Provider[];
-		otp?: boolean;
 	};
 
 	displayTermsCheckbox?: boolean;
-	inviteToken?: string;
+	captchaSiteKey?: string;
 }) {
 	const redirectUrl = getCallbackUrl(props);
 	const defaultValues = getDefaultValues();
 
 	return (
 		<>
-			<If condition={props.inviteToken}>
-				<InviteAlert />
-			</If>
+			{/* Show hint if user might already have an account */}
+			<ExistingAccountHint />
 
 			<If condition={props.providers.password}>
 				<EmailPasswordSignUpContainer
 					emailRedirectTo={redirectUrl}
 					defaultValues={defaultValues}
 					displayTermsCheckbox={props.displayTermsCheckbox}
-				/>
-			</If>
-
-			<If condition={props.providers.magicLink}>
-				<MagicLinkAuthContainer
-					inviteToken={props.inviteToken}
-					redirectUrl={redirectUrl}
-					shouldCreateUser={true}
-					defaultValues={defaultValues}
-					displayTermsCheckbox={props.displayTermsCheckbox}
+					captchaSiteKey={props.captchaSiteKey}
 				/>
 			</If>
 
 			<If condition={props.providers.otp}>
 				<OtpSignInContainer
-					inviteToken={props.inviteToken}
 					shouldCreateUser={true}
+					captchaSiteKey={props.captchaSiteKey}
+				/>
+			</If>
+
+			<If condition={props.providers.magicLink}>
+				<MagicLinkAuthContainer
+					redirectUrl={redirectUrl}
+					shouldCreateUser={true}
+					defaultValues={defaultValues}
+					displayTermsCheckbox={props.displayTermsCheckbox}
+					captchaSiteKey={props.captchaSiteKey}
 				/>
 			</If>
 
@@ -69,7 +69,7 @@ export function SignUpMethodsContainer(props: {
 					</div>
 
 					<div className="relative flex justify-center text-xs uppercase">
-						<span className="bg-background text-foreground px-2">
+						<span className="bg-background text-muted-foreground px-2">
 							<Trans i18nKey="auth:orContinueWith" />
 						</span>
 					</div>
@@ -77,7 +77,6 @@ export function SignUpMethodsContainer(props: {
 
 				<OauthProviders
 					enabledProviders={props.providers.oAuth}
-					inviteToken={props.inviteToken}
 					shouldCreateUser={true}
 					paths={{
 						callback: props.paths.callback,
@@ -94,8 +93,6 @@ function getCallbackUrl(props: {
 		callback: string;
 		appHome: string;
 	};
-
-	inviteToken?: string;
 }) {
 	if (!isBrowser()) {
 		return "";
@@ -104,10 +101,6 @@ function getCallbackUrl(props: {
 	const redirectPath = props.paths.callback;
 	const origin = window.location.origin;
 	const url = new URL(redirectPath, origin);
-
-	if (props.inviteToken) {
-		url.searchParams.set("invite_token", props.inviteToken);
-	}
 
 	const searchParams = new URLSearchParams(window.location.search);
 	const next = searchParams.get("next");
@@ -125,27 +118,8 @@ function getDefaultValues() {
 	}
 
 	const searchParams = new URLSearchParams(window.location.search);
-	const inviteToken = searchParams.get("invite_token");
-
-	if (!inviteToken) {
-		return { email: "" };
-	}
 
 	return {
 		email: searchParams.get("email") ?? "",
 	};
-}
-
-function InviteAlert() {
-	return (
-		<Alert variant={"info"}>
-			<AlertTitle>
-				<Trans i18nKey={"auth:inviteAlertHeading"} />
-			</AlertTitle>
-
-			<AlertDescription>
-				<Trans i18nKey={"auth:inviteAlertBody"} />
-			</AlertDescription>
-		</Alert>
-	);
 }

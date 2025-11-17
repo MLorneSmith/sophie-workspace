@@ -70,7 +70,7 @@ export const TeamAccountLayoutMobileNavigation = (
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger>
+			<DropdownMenuTrigger aria-label="Open navigation menu">
 				<Menu className={"h-9"} />
 			</DropdownMenuTrigger>
 

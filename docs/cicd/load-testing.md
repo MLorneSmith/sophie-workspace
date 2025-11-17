@@ -8,7 +8,7 @@ and identify performance bottlenecks before they impact users.
 ## Architecture
 
 ```text
-load-tests/
+apps/load-tests/
 ├── k6.config.js          # Shared configuration
 ├── scenarios/            # Test scenarios
 │   ├── login-flow.js     # Login and authentication flow
@@ -212,7 +212,7 @@ Test results are saved in multiple formats:
 2. **Summary JSON**: Aggregated results
 3. **HTML Report**: Visual representation
 
-Reports are stored in `load-tests/reports/` with timestamps.
+Reports are stored in `apps/load-tests/reports/` with timestamps.
 
 ## Best Practices
 

@@ -3,8 +3,8 @@
 import {
 	type ChatCompletionOptions,
 	type ChatMessage,
-	getChatCompletion,
 	createReasoningOptimizedConfig,
+	getChatCompletion,
 	PromptManager,
 	textSimplificationTemplate,
 } from "@kit/ai-gateway";

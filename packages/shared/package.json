@@ -2,32 +2,35 @@
 	"name": "@kit/shared",
 	"private": true,
 	"version": "0.1.0",
-	"type": "module",
 	"scripts": {
-		"build": "tsc",
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "prettier --check \"**/*.{ts,tsx}\"",
 		"lint": "eslint .",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"build": "tsc -p tsconfig.build.json",
+		"test": "vitest",
+		"test:unit": "vitest run"
 	},
 	"prettier": "@kit/prettier-config",
 	"exports": {
-		"./logger": "./src/logger/index.ts",
-		"./utils": "./src/utils.ts",
-		"./hooks": "./src/hooks/index.ts",
-		"./events": "./src/events/index.tsx",
-		"./registry": "./src/registry/index.ts"
+		"./logger": "./dist/logger/index.js",
+		"./utils": "./dist/utils.js",
+		"./hooks": "./dist/hooks/index.js",
+		"./events": "./dist/events/index.jsx",
+		"./registry": "./dist/registry/index.js"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/react": "19.1.8"
+		"@types/node": "^24.6.2",
+		"@types/react": "catalog:"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
 		"@kit/monitoring-core": "workspace:*",
 		"pino": "^9.8.0",
-		"zod": "^3.25.67"
+		"zod": "^3.25.74"
 	},
 	"typesVersions": {
 		"*": {

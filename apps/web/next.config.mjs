@@ -4,15 +4,6 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
-// New Relic configuration for local development
-let nrExternals;
-try {
-	nrExternals = require("newrelic/load-externals");
-} catch (_err) {
-	// New Relic not available (e.g., in build without agent)
-	nrExternals = () => {};
-}
-
 const INTERNAL_PACKAGES = [
 	"@kit/ui",
 	"@kit/auth",
@@ -37,34 +28,13 @@ const config = {
 	reactStrictMode: true,
 	/** Enables hot reloading for local packages without a build step */
 	transpilePackages: INTERNAL_PACKAGES,
-	images: {
-		remotePatterns: [
-			...getRemotePatterns(),
-			{
-				protocol: "https",
-				hostname: "*.supabase.co",
-			},
-			{
-				protocol: "https",
-				hostname: "*.r2.cloudflarestorage.com",
-			},
-			{
-				protocol: "https",
-				hostname: "images.slideheroes.com",
-			},
-		],
-	},
+	images: getImagesConfig(),
 	logging: {
 		fetches: {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: ["newrelic"],
-	webpack: (config) => {
-		// Configure New Relic externals for proper agent loading
-		nrExternals(config);
-		return config;
-	},
+	serverExternalPackages: [],
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],
@@ -74,12 +44,16 @@ const config = {
 		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
 		resolveAlias: getModulesAliases(),
 	},
-	devIndicators: {
-		position: "bottom-right",
-	},
+	devIndicators:
+		process.env.NEXT_PUBLIC_CI === "true"
+			? false
+			: {
+					position: "bottom-right",
+				},
+	reactCompiler: ENABLE_REACT_COMPILER,
 	experimental: {
 		mdxRs: true,
-		reactCompiler: ENABLE_REACT_COMPILER,
+		turbopackFileSystemCacheForDev: true,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",
@@ -96,52 +70,15 @@ const config = {
 		},
 	},
 	/** We already do linting and typechecking as separate tasks in CI */
-	eslint: { ignoreDuringBuilds: true },
 	typescript: { ignoreBuildErrors: true },
-	skipTrailingSlashRedirect: true,
-	async rewrites() {
-		// NOTE: change `eu` to `us` if applicable
-		return [
-			{
-				source: "/ingest/static/:path*",
-				destination: "https://eu-assets.i.posthog.com/static/:path*",
-			},
-			{
-				source: "/ingest/:path*",
-				destination: "https://eu.i.posthog.com/:path*",
-			},
-		];
-	},
-	async headers() {
-		return [
-			{
-				// Apply security headers to all routes
-				source: "/:path*",
-				headers: [
-					{
-						key: "X-Frame-Options",
-						value: "DENY",
-					},
-					{
-						key: "X-Content-Type-Options",
-						value: "nosniff",
-					},
-					{
-						key: "Referrer-Policy",
-						value: "strict-origin-when-cross-origin",
-					},
-				],
-			},
-		];
-	},
 };
 
 export default withBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
 })(config);
 
-function getRemotePatterns() {
-	/** @type {import('next').NextConfig['remotePatterns']} */
+/** @returns {import('next').NextConfig['images']} */
+function getImagesConfig() {
 	const remotePatterns = [];
 
 	if (SUPABASE_URL) {
@@ -153,18 +90,28 @@ function getRemotePatterns() {
 		});
 	}
 
-	return IS_PRODUCTION
-		? remotePatterns
-		: [
-				{
-					protocol: "http",
-					hostname: "127.0.0.1",
-				},
-				{
-					protocol: "http",
-					hostname: "localhost",
-				},
-			];
+	if (IS_PRODUCTION) {
+		return {
+			remotePatterns,
+		};
+	}
+
+	remotePatterns.push(
+		...[
+			{
+				protocol: "http",
+				hostname: "127.0.0.1",
+			},
+			{
+				protocol: "http",
+				hostname: "localhost",
+			},
+		],
+	);
+
+	return {
+		remotePatterns,
+	};
 }
 
 async function getRedirects() {
@@ -194,7 +141,6 @@ function getModulesAliases() {
 
 	// exclude the modules that are not needed
 	const excludeSentry = monitoringProvider !== "sentry";
-	const excludeBaselime = monitoringProvider !== "baselime";
 	const excludeStripe = billingProvider !== "stripe";
 	const excludeNodemailer = mailerProvider !== "nodemailer";
 	const excludeTurnstile = !captchaProvider;
@@ -207,10 +153,6 @@ function getModulesAliases() {
 
 	if (excludeSentry) {
 		aliases["@sentry/nextjs"] = noopPath;
-	}
-
-	if (excludeBaselime) {
-		aliases["@baselime/react-rum"] = noopPath;
 	}
 
 	if (excludeStripe) {

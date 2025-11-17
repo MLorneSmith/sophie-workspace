@@ -72,18 +72,15 @@ export function getI18nSettings(
 					// Silent fail for logging
 				});
 		} else {
-			// Client-side: use development console (silent for production)
-			if (process.env.NODE_ENV === "development") {
-				// biome-ignore lint/suspicious/noConsole: Development logging for unsupported language fallback
-				console.warn(
-					"Unsupported language requested, falling back to default",
-					{
-						requestedLanguage: lng,
-						defaultLanguage,
-						supportedLanguages: languages,
-					},
-				);
-			}
+			// Log unsupported language fallback
+			getLogger().warn(
+				"Unsupported language requested, falling back to default",
+				{
+					requestedLanguage: lng,
+					defaultLanguage,
+					supportedLanguages: languages,
+				},
+			);
 		}
 
 		lng = defaultLanguage;

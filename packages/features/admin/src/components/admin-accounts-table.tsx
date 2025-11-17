@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Database } from "@kit/supabase/database";
+import type { Tables } from "@kit/supabase/database";
 import { Button } from "@kit/ui/button";
 import {
 	DropdownMenu,
@@ -36,7 +36,7 @@ import { AdminDeleteUserDialog } from "./admin-delete-user-dialog";
 import { AdminImpersonateUserDialog } from "./admin-impersonate-user-dialog";
 import { AdminResetPasswordDialog } from "./admin-reset-password-dialog";
 
-type Account = Database["public"]["Tables"]["accounts"]["Row"];
+type Account = Tables<"accounts">;
 
 const FiltersSchema = z.object({
 	type: z.enum(["all", "team", "personal"]),
@@ -61,13 +61,15 @@ export function AdminAccountsTable(
 				<AccountsTableFilters filters={props.filters} />
 			</div>
 
-			<DataTable
-				pageSize={props.pageSize}
-				pageIndex={props.page - 1}
-				pageCount={props.pageCount}
-				data={props.data}
-				columns={getColumns()}
-			/>
+			<div className={"rounded-lg border p-2"}>
+				<DataTable
+					pageSize={props.pageSize}
+					pageIndex={props.page - 1}
+					pageCount={props.pageCount}
+					data={props.data}
+					columns={getColumns()}
+				/>
+			</div>
 		</div>
 	);
 }
@@ -164,6 +166,7 @@ function getColumns(): ColumnDef<Account>[] {
 			cell: ({ row }) => {
 				return (
 					<Link
+						prefetch={false}
 						className={"hover:underline"}
 						href={`/admin/accounts/${row.original.id}`}
 					>
@@ -205,7 +208,11 @@ function getColumns(): ColumnDef<Account>[] {
 					<div className={"flex justify-end"}>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant={"outline"} size={"icon"}>
+								<Button
+									variant={"outline"}
+									size={"icon"}
+									aria-label="Account actions"
+								>
 									<EllipsisVertical className={"h-4"} />
 								</Button>
 							</DropdownMenuTrigger>

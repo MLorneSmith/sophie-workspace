@@ -21,7 +21,9 @@ interface QuizMeta {
 }
 
 interface CourseQuizJson {
+	_ref: string;
 	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	instructions?: {
@@ -32,8 +34,8 @@ interface CourseQuizJson {
 				version: number;
 				[k: string]: unknown;
 			}>;
-			direction: ('ltr' | 'rtl') | null;
-			format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 			indent: number;
 			version: number;
 		};
@@ -45,7 +47,7 @@ interface CourseQuizJson {
 	showCorrectAnswers: boolean;
 	randomizeQuestions: boolean;
 	questions: string[]; // References to quiz questions
-	course?: string; // Reference to course
+	course_id?: string; // Reference to course (renamed from 'course' to match schema)
 	lesson?: string; // Reference to lesson
 	published: boolean;
 	createdAt: string;
@@ -55,7 +57,6 @@ interface CourseQuizJson {
 export async function convertCourseQuizzes(
 	referenceManager: ReferenceManager,
 ): Promise<void> {
-
 	const sourceDir = path.join(__dirname, "../../../seed/seed-data-raw/quizzes");
 	const outputDir = path.join(__dirname, "../../../seed/seed-data");
 
@@ -80,44 +81,67 @@ export async function convertCourseQuizzes(
 			// Extract quiz metadata
 			const quizMeta: QuizMeta = {
 				title:
-					frontmatter.title ||
+					String(frontmatter.title) ||
 					file.replace("-quiz.mdoc", "").replace(".mdoc", ""),
-				description: frontmatter.description || "",
+				description: frontmatter.description
+					? String(frontmatter.description)
+					: "",
 				timeLimit: frontmatter.timeLimit
-					? parseInt(frontmatter.timeLimit)
+					? parseInt(String(frontmatter.timeLimit))
 					: undefined,
 				passingScore: frontmatter.passingScore
-					? parseInt(frontmatter.passingScore)
+					? parseInt(String(frontmatter.passingScore))
 					: 70,
 				maxAttempts: frontmatter.maxAttempts
-					? parseInt(frontmatter.maxAttempts)
+					? parseInt(String(frontmatter.maxAttempts))
 					: 3,
-				showCorrectAnswers: frontmatter.showCorrectAnswers ?? true,
-				randomizeQuestions: frontmatter.randomizeQuestions ?? false,
-				course: frontmatter.course || frontmatter.courseId,
-				lesson: frontmatter.lesson || frontmatter.lessonId,
+				showCorrectAnswers:
+					typeof frontmatter.showCorrectAnswers === "boolean"
+						? frontmatter.showCorrectAnswers
+						: true,
+				randomizeQuestions:
+					typeof frontmatter.randomizeQuestions === "boolean"
+						? frontmatter.randomizeQuestions
+						: false,
+				course:
+					frontmatter.course || frontmatter.courseId
+						? String(frontmatter.course || frontmatter.courseId)
+						: undefined,
+				lesson:
+					frontmatter.lesson || frontmatter.lessonId
+						? String(frontmatter.lesson || frontmatter.lessonId)
+						: undefined,
 				sourceFile: file,
 			};
 
-			// Generate quiz ID from filename
-			const quizId = file.replace("-quiz.mdoc", "").replace(".mdoc", "");
+			// Generate quiz ID from filename (keep -quiz suffix to match lesson-quiz-mappings)
+			const quizId = file.replace(".mdoc", "");
 
 			// Convert instructions to Lexical format if present
-			let instructions: {
-				root: {
-					type: string;
-					children: Array<{
-						type: string;
-						version: number;
+			let instructions:
+				| {
+						root: {
+							type: string;
+							children: Array<{
+								type: string;
+								version: number;
+								[k: string]: unknown;
+							}>;
+							direction: ("ltr" | "rtl") | null;
+							format:
+								| "left"
+								| "start"
+								| "center"
+								| "right"
+								| "end"
+								| "justify"
+								| "";
+							indent: number;
+							version: number;
+						};
 						[k: string]: unknown;
-					}>;
-					direction: ('ltr' | 'rtl') | null;
-					format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-					indent: number;
-					version: number;
-				};
-				[k: string]: unknown;
-			} | undefined;
+				  }
+				| undefined;
 			if (markdownContent.trim()) {
 				instructions = convertToSimpleLexical(markdownContent);
 			}
@@ -136,7 +160,9 @@ export async function convertCourseQuizzes(
 
 			// Build quiz object
 			const quiz: CourseQuizJson = {
+				_ref: quizId,
 				id: quizId,
+				slug: quizId, // Add slug field for Payload CMS validation
 				title: quizMeta.title,
 				description: quizMeta.description,
 				passingScore: quizMeta.passingScore || 70,
@@ -159,7 +185,7 @@ export async function convertCourseQuizzes(
 			}
 
 			if (courseRef) {
-				quiz.course = `{ref:courses:${courseRef}}`;
+				quiz.course_id = `{ref:courses:${courseRef}}`;
 			}
 
 			if (lessonRef) {
@@ -194,7 +220,7 @@ async function loadQuizQuestionsMapping(): Promise<Record<string, unknown>> {
 	try {
 		const mappingPath = path.join(
 			__dirname,
-			"../../../seed-data/quiz-questions-mapping.json",
+			"../../seed-data/quiz-questions-mapping.json",
 		);
 		const content = await fs.readFile(mappingPath, "utf-8");
 		return JSON.parse(content);
@@ -204,10 +230,13 @@ async function loadQuizQuestionsMapping(): Promise<Record<string, unknown>> {
 	}
 }
 
-function getQuestionReferencesForQuiz(quizId: string, mapping: Record<string, unknown>): string[] {
+function getQuestionReferencesForQuiz(
+	quizId: string,
+	mapping: Record<string, unknown>,
+): string[] {
 	// Look for quiz in mapping
 	if (mapping[quizId]) {
-		return mapping[quizId].map(
+		return (mapping[quizId] as string[]).map(
 			(questionId: string) => `{ref:quiz-questions:${questionId}}`,
 		);
 	}
@@ -225,7 +254,7 @@ function getQuestionReferencesForQuiz(quizId: string, mapping: Record<string, un
 
 	for (const variation of variations) {
 		if (mapping[variation]) {
-			return mapping[variation].map(
+			return (mapping[variation] as string[]).map(
 				(questionId: string) => `{ref:quiz-questions:${questionId}}`,
 			);
 		}
@@ -243,31 +272,8 @@ function determineCourseFromQuiz(
 		return meta.course;
 	}
 
-	// Map quiz names to courses based on content
-	const quizToCourseMapping: Record<string, string> = {
-		"our-process-quiz": "course-1",
-		"structure-quiz": "course-2",
-		"the-who-quiz": "course-2",
-		"introductions-quiz": "course-2",
-		"why-next-steps-quiz": "course-2",
-		"idea-generation-quiz": "course-3",
-		"using-stories-quiz": "course-3",
-		"storyboards-in-film-quiz": "course-3",
-		"storyboards-in-presentations-quiz": "course-3",
-		"fact-persuasion-quiz": "course-4",
-		"preparation-practice-quiz": "course-4",
-		"performance-quiz": "course-4",
-		"overview-elements-of-design-quiz": "course-5",
-		"elements-of-design-detail-quiz": "course-5",
-		"visual-perception-quiz": "course-5",
-		"gestalt-principles-quiz": "course-5",
-		"slide-composition-quiz": "course-6",
-		"tables-vs-graphs-quiz": "course-7",
-		"basic-graphs-quiz": "course-7",
-		"specialist-graphs-quiz": "course-7",
-	};
-
-	return quizToCourseMapping[quizId];
+	// All quizzes belong to the single "Decks for Decision Makers" course
+	return "decks-for-decision-makers";
 }
 
 function determineLessonFromQuiz(
@@ -279,10 +285,7 @@ function determineLessonFromQuiz(
 		return meta.lesson;
 	}
 
-	// Map quiz names to lessons (remove -quiz suffix)
-	const lessonId = quizId.replace("-quiz", "");
-
-	// Common lesson mappings
+	// Map quiz names to lessons (keys include -quiz suffix now)
 	const quizToLessonMapping: Record<string, string> = {
 		"our-process-quiz": "our-process",
 		"structure-quiz": "what-is-structure",
@@ -306,6 +309,8 @@ function determineLessonFromQuiz(
 		"specialist-graphs-quiz": "specialist-graphs",
 	};
 
+	// Default: remove -quiz suffix and return
+	const lessonId = quizId.replace("-quiz", "");
 	return quizToLessonMapping[quizId] || lessonId;
 }
 
@@ -317,8 +322,8 @@ function convertToSimpleLexical(markdown: string): {
 			version: number;
 			[k: string]: unknown;
 		}>;
-		direction: ('ltr' | 'rtl') | null;
-		format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
 		indent: number;
 		version: number;
 	};
@@ -340,6 +345,7 @@ function convertToSimpleLexical(markdown: string): {
 				type: "heading",
 				tag: `h${Math.min(level, 6)}`,
 				children: [{ type: "text", text }],
+				version: 1,
 			};
 		}
 
@@ -347,6 +353,7 @@ function convertToSimpleLexical(markdown: string): {
 		return {
 			type: "paragraph",
 			children: [{ type: "text", text: paragraph }],
+			version: 1,
 		};
 	});
 
@@ -357,6 +364,7 @@ function convertToSimpleLexical(markdown: string): {
 			indent: 0,
 			version: 1,
 			children,
+			direction: null,
 		},
 	};
 }

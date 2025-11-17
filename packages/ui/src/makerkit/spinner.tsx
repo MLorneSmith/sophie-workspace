@@ -6,7 +6,7 @@ export function Spinner(
 	}>,
 ) {
 	return (
-		<output>
+		<output data-testid="loading-spinner">
 			<svg
 				aria-hidden="true"
 				className={cn(

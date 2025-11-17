@@ -1,10 +1,6 @@
-import { createServiceLogger } from "@kit/shared/logger";
 import type { SignInWithPasswordlessCredentials } from "@supabase/supabase-js";
 import { useMutation } from "@tanstack/react-query";
 import { useSupabase } from "./use-supabase";
-
-// Initialize service logger
-const { getLogger } = createServiceLogger("USE_SIGN_IN_WITH_OTP");
 
 export function useSignInWithOtp() {
 	const client = useSupabase();
@@ -15,9 +11,12 @@ export function useSignInWithOtp() {
 
 		if (result.error) {
 			if (shouldIgnoreError(result.error.message)) {
-				(await getLogger()).warn(
-					`Ignoring error during development: ${result.error.message}`,
-				);
+				if (process.env.NODE_ENV === "development") {
+					// biome-ignore lint/suspicious/noConsole: Development warning for SMS provider setup
+					console.warn(
+						`Ignoring error during development: ${result.error.message}`,
+					);
+				}
 
 				return {} as never;
 			}

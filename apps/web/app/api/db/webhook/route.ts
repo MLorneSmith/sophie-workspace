@@ -31,7 +31,7 @@ export const POST = enhanceRouteHandler(
 			const service = await getServerMonitoringService();
 
 			await service.ready();
-			await service.captureException(error as Error);
+			await service.captureException(error as Error & { digest?: string });
 
 			// return an error response
 			return new Response(null, { status: 500 });

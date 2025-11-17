@@ -7,7 +7,18 @@ import type { JWTUserData } from "@kit/supabase/types";
 import { redirect } from "next/navigation";
 import type { ZodType, z } from "zod";
 
-import { zodParseFactory } from "../utils";
+/**
+ * Factory for creating a Zod parser with error handling
+ */
+const zodParseFactory =
+	<T extends ZodType>(schema: T) =>
+	(data: unknown): z.infer<T> => {
+		try {
+			return schema.parse(data);
+		} catch (err) {
+			throw new Error(`Invalid data: ${err as string}`);
+		}
+	};
 
 /**
  * @name enhanceAction

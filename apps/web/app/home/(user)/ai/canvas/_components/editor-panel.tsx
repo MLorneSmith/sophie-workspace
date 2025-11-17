@@ -12,7 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useRef, useState } from "react";
 import type { Database } from "~/lib/database.types";
-import { generateIdeasAction } from "../_actions/generate-ideas";
+import { generateIdeasActionEdge } from "../_actions/generate-ideas-edge";
 import { generateOutlineAction } from "../_actions/generate-outline";
 import { useActionWithCost } from "../_lib/hooks/use-action-with-cost";
 import { ActionToolbar } from "./action-toolbar";
@@ -78,7 +78,7 @@ export function EditorPanel({ sectionType }: EditorPanelProps) {
 
 	// Use cost tracking hooks
 	// const { sessionId } = useCostTracking(); // Commented out as it's unused
-	const generateIdeasWithCost = useActionWithCost(generateIdeasAction);
+	const generateIdeasWithCost = useActionWithCost(generateIdeasActionEdge);
 
 	const editorRef = useRef<TiptapEditorRef>(null);
 	const [suggestions, setSuggestions] = useState<BaseImprovement[]>([]);

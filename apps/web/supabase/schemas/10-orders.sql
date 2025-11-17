@@ -55,6 +55,11 @@ delete on table public.orders to service_role;
 -- Indexes on the orders table
 create index ix_orders_account_id on public.orders (account_id);
 
+-- Triggers for orders table
+create trigger orders_set_timestamps
+before insert or update on public.orders
+for each row execute function public.trigger_set_timestamps();
+
 -- RLS
 alter table public.orders enable row level security;
 
@@ -129,6 +134,11 @@ grant insert, update, delete on table public.order_items to service_role;
 
 -- Indexes on the order_items table
 create index ix_order_items_order_id on public.order_items (order_id);
+
+-- Triggers for order_items table
+create trigger order_items_set_timestamps
+before insert or update on public.order_items
+for each row execute function public.trigger_set_timestamps();
 
 -- RLS
 alter table public.order_items enable row level security;

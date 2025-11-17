@@ -1,5 +1,5 @@
 create table if not exists public.building_blocks_submissions (
-    id uuid primary key default uuid_generate_v4(),
+    id uuid primary key default gen_random_uuid(),
     user_id uuid references auth.users(id),
     title varchar not null,
     audience text,

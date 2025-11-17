@@ -30,6 +30,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.test
 
 # vercel
 .vercel
@@ -41,3 +42,6 @@ next-env.d.ts
 .env
 
 /media
+
+# Test temporary directories
+__test-seed-data-temp__

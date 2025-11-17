@@ -9,12 +9,15 @@ on:
   workflow_run:
     workflows: ["Dev Integration Tests"]
     types: [completed]
+    branches:
+      - dev
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
   checks: write
+  actions: read  # Add read permission for actions API
 
 jobs:
   assess-readiness:
@@ -29,6 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: dev  # Checkout dev branch to assess current state
           fetch-depth: 0  # Need full history for changelog
 
       - name: Gather quality metrics
@@ -173,7 +177,9 @@ jobs:
               if (!criteria.notTooManyChanges) summary += `- Too many changes (consider smaller PRs)\n`;
             }
             
-            await core.summary.addRaw(summary).write();
+            // Write summary using proper GitHub Actions API
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
             
             return report;
 
@@ -345,4 +351,3 @@ jobs:
               console.log(`Created issue #${issue.data.number} for stale deployment`);
             } else {
               console.log(`Dev deployment is ${hoursOld.toFixed(1)} hours old (within 24h limit)`);
-            }

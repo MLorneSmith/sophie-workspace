@@ -1,3 +1,4 @@
+import { resolveProductPlan } from "@kit/billing-gateway";
 import {
 	BillingPortalCard,
 	CurrentLifetimeOrderCard,
@@ -35,50 +36,6 @@ export const generateMetadata = async () => {
 	};
 };
 
-// Extract components outside of the page component
-const CheckoutSection = ({
-	canManageBilling,
-	customerId,
-	accountId,
-}: {
-	canManageBilling: boolean;
-	customerId: string | undefined;
-	accountId: string;
-}) => {
-	if (!canManageBilling) {
-		return <CannotManageBillingAlert />;
-	}
-
-	return (
-		<TeamAccountCheckoutForm customerId={customerId} accountId={accountId} />
-	);
-};
-
-const BillingPortalSection = ({
-	canManageBilling,
-	customerId,
-	accountId,
-	account,
-}: {
-	canManageBilling: boolean;
-	customerId: string | undefined;
-	accountId: string;
-	account: string;
-}) => {
-	if (!canManageBilling || !customerId) {
-		return null;
-	}
-
-	return (
-		<form action={createBillingPortalSession}>
-			<input type="hidden" name={"accountId"} value={accountId} />
-			<input type="hidden" name={"slug"} value={account} />
-
-			<BillingPortalCard />
-		</form>
-	);
-};
-
 async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 	const account = (await params).account;
 	const workspace = await loadTeamWorkspace(account);
@@ -87,10 +44,18 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 	const [subscription, order, customerId] =
 		await loadTeamAccountBillingPage(accountId);
 
+	const variantId = subscription?.items[0]?.variant_id;
+
+	const subscriptionProductPlan = variantId
+		? await resolveProductPlan(billingConfig, variantId, subscription.currency)
+		: undefined;
+
 	const hasBillingData = subscription || order;
 
 	const canManageBilling =
 		workspace.account.permissions.includes("billing.manage");
+
+	const shouldShowBillingPortal = canManageBilling && customerId;
 
 	return (
 		<>
@@ -101,25 +66,29 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 			/>
 
 			<PageBody>
-				<div
-					className={cn("flex w-full flex-col space-y-4", {
-						"max-w-2xl": hasBillingData,
-					})}
-				>
+				<div className={cn("flex max-w-2xl flex-col space-y-4")}>
 					<If condition={!hasBillingData}>
-						<CheckoutSection
-							canManageBilling={canManageBilling}
-							customerId={customerId}
-							accountId={accountId}
-						/>
+						<If
+							condition={canManageBilling}
+							fallback={<CannotManageBillingAlert />}
+						>
+							<TeamAccountCheckoutForm
+								customerId={customerId}
+								accountId={accountId}
+							/>
+						</If>
 					</If>
 
-					<If condition={subscription}>
-						{(subscription) => {
+					<If condition={subscriptionProductPlan}>
+						{() => {
 							return (
 								<CurrentSubscriptionCard
-									subscription={subscription}
-									config={billingConfig}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									subscription={subscription!}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									product={subscriptionProductPlan!.product}
+									// biome-ignore lint/style/noNonNullAssertion: checked by If condition above
+									plan={subscriptionProductPlan!.plan}
 								/>
 							);
 						}}
@@ -136,12 +105,9 @@ async function TeamAccountBillingPage({ params }: TeamAccountBillingPageProps) {
 						}}
 					</If>
 
-					<BillingPortalSection
-						canManageBilling={canManageBilling}
-						customerId={customerId}
-						accountId={accountId}
-						account={account}
-					/>
+					{shouldShowBillingPortal ? (
+						<BillingPortalForm accountId={accountId} account={account} />
+					) : null}
 				</div>
 			</PageBody>
 		</>
@@ -163,5 +129,22 @@ function CannotManageBillingAlert() {
 				<Trans i18nKey={"billing:cannotManageBillingAlertDescription"} />
 			</AlertDescription>
 		</Alert>
+	);
+}
+
+function BillingPortalForm({
+	accountId,
+	account,
+}: {
+	accountId: string;
+	account: string;
+}) {
+	return (
+		<form action={createBillingPortalSession}>
+			<input type="hidden" name={"accountId"} value={accountId} />
+			<input type="hidden" name={"slug"} value={account} />
+
+			<BillingPortalCard />
+		</form>
 	);
 }

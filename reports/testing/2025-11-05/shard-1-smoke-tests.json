@@ -1,0 +1,28 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Smoke Tests",
+		"files": ["tests/smoke/smoke.spec.ts"],
+		"expectedTests": 9,
+		"shardCommand": "test:shard1"
+	},
+	"execution": {
+		"startTime": "2025-11-05T22:33:26.778Z",
+		"endTime": "2025-11-05T22:33:39.778Z",
+		"duration": "13s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 7,
+		"passed": 7,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard1 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/smoke/smoke.spec.ts --config=playwright.smoke.config.ts -- --reporter=dot --retries=0\n\n\nRunning 9 tests using 3 workers\n······Available security headers in dev: \u001b[33m5\u001b[39m [\n  \u001b[32m'SAMEORIGIN'\u001b[39m,\n  \u001b[32m'nosniff'\u001b[39m,\n  \u001b[32m'no-referrer'\u001b[39m,\n  \u001b[32m'0'\u001b[39m,\n  \u001b[32m'max-age=31536000; includeSubDomains'\u001b[39m\n]\n·××±±\n\n  1) [chromium] › tests/smoke/smoke.spec.ts:36:6 › Smoke Tests @smoke › sign in page loads @smoke ──\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('[data-testid=\"sign-in-email\"]')\n    Expected: visible\n    Timeout: 10000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"sign-in-email\"]')\u001b[22m\n\n\n      37 | \t\tawait page.goto(\"/auth/sign-in\");\n      38 | \t\t// Use the actual selectors that exist in the auth components\n    > 39 | \t\tawait expect(page.locator('[data-testid=\"sign-in-email\"]')).toBeVisible();\n         | \t\t                                                            ^\n      40 | \t\tawait expect(\n      41 | \t\t\tpage.locator('[data-testid=\"sign-in-password\"]'),\n      42 | \t\t).toBeVisible();\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/smoke/smoke.spec.ts:39:63\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/smoke-smoke-Smoke-Tests-smoke-sign-in-page-loads-smoke-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/smoke-smoke-Smoke-Tests-smoke-sign-in-page-loads-smoke-chromium/error-context.md\n\n  2) [chromium] › tests/smoke/smoke.spec.ts:46:6 › Smoke Tests @smoke › sign up page loads @smoke ──\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('[data-testid=\"sign-up-email\"]')\n    Expected: visible\n    Timeout: 10000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"sign-up-email\"]')\u001b[22m\n\n\n      47 | \t\tawait page.goto(\"/auth/sign-up\");\n      48 | \t\t// Use the actual selectors that exist in the auth components\n    > 49 | \t\tawait expect(page.locator('[data-testid=\"sign-up-email\"]')).toBeVisible();\n         | \t\t                                                            ^\n      50 | \t\tawait expect(\n      51 | \t\t\tpage.locator('[data-testid=\"sign-up-password\"]'),\n      52 | \t\t).toBeVisible();\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/smoke/smoke.spec.ts:49:63\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/smoke-smoke-Smoke-Tests-smoke-sign-up-page-loads-smoke-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/smoke-smoke-Smoke-Tests-smoke-sign-up-page-loads-smoke-chromium/error-context.md\n\n  2 flaky\n    [chromium] › tests/smoke/smoke.spec.ts:36:6 › Smoke Tests @smoke › sign in page loads @smoke ───\n    [chromium] › tests/smoke/smoke.spec.ts:46:6 › Smoke Tests @smoke › sign up page loads @smoke ───\n  7 passed (14.3s)\n"
+}

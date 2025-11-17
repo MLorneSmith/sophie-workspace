@@ -1,0 +1,338 @@
+name: Container Security Scanning
+
+on:
+  workflow_call:
+    inputs:
+      image_ref:
+        required: false
+        type: string
+        description: 'Container image reference to scan (e.g., myapp:latest)'
+      dockerfile_path:
+        required: false
+        type: string
+        default: './Dockerfile'
+        description: 'Path to Dockerfile for scanning'
+      scan_type:
+        required: false
+        type: string
+        default: 'all'
+        description: 'Type of scan (vuln, config, secret, license, all)'
+      severity:
+        required: false
+        type: string
+        default: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+        description: 'Comma-separated list of severities to include'
+      fail_on_severity:
+        required: false
+        type: string
+        default: 'CRITICAL'
+        description: 'Fail the workflow if this severity or higher is found'
+      ignore_unfixed:
+        required: false
+        type: boolean
+        default: false
+        description: 'Ignore vulnerabilities without fixes'
+    outputs:
+      critical_count:
+        description: 'Number of critical vulnerabilities found'
+        value: ${{ jobs.scan.outputs.critical_count }}
+      high_count:
+        description: 'Number of high vulnerabilities found'
+        value: ${{ jobs.scan.outputs.high_count }}
+      scan_report_url:
+        description: 'URL to the scan report artifact'
+        value: ${{ jobs.scan.outputs.report_url }}
+
+jobs:
+  scan:
+    name: Container Security Scan
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    outputs:
+      critical_count: ${{ steps.parse.outputs.critical }}
+      high_count: ${{ steps.parse.outputs.high }}
+      report_url: ${{ steps.upload.outputs.artifact_url }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Trivy
+        run: |
+          # Install Trivy
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+          
+          # Verify installation
+          trivy --version
+      
+      - name: Run Trivy scan on Dockerfile
+        if: inputs.dockerfile_path != ''
+        id: dockerfile-scan
+        run: |
+          echo "🔍 Scanning Dockerfile for misconfigurations..."
+          
+          # Scan Dockerfile for misconfigurations
+          trivy config \
+            --format json \
+            --output dockerfile-scan.json \
+            --severity ${{ inputs.severity }} \
+            ${{ inputs.dockerfile_path }} || true
+          
+          # Also generate human-readable report
+          trivy config \
+            --format table \
+            --severity ${{ inputs.severity }} \
+            ${{ inputs.dockerfile_path }} > dockerfile-scan.txt || true
+          
+          echo "📋 Dockerfile scan complete"
+      
+      - name: Build container image if needed
+        id: build
+        if: inputs.image_ref == ''
+        run: |
+          # Determine which Dockerfiles exist
+          if [ -f "apps/payload/Dockerfile" ]; then
+            echo "Building Payload container..."
+            docker build -t payload:scan -f apps/payload/Dockerfile apps/payload
+            echo "image=payload:scan" >> $GITHUB_OUTPUT
+          elif [ -f "${{ inputs.dockerfile_path }}" ]; then
+            echo "Building container from ${{ inputs.dockerfile_path }}..."
+            docker build -t app:scan -f ${{ inputs.dockerfile_path }} .
+            echo "image=app:scan" >> $GITHUB_OUTPUT
+          else
+            echo "No Dockerfile found to build"
+            echo "image=" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Run Trivy vulnerability scan
+        id: vuln-scan
+        run: |
+          IMAGE="${{ inputs.image_ref || steps.build.outputs.image }}"
+          
+          if [ -z "$IMAGE" ]; then
+            echo "No image to scan, scanning filesystem instead..."
+            
+            # Scan filesystem for vulnerabilities
+            trivy fs \
+              --scanners vuln,secret,misconfig \
+              --format json \
+              --output vuln-scan.json \
+              --severity ${{ inputs.severity }} \
+              ${{ inputs.ignore_unfixed && '--ignore-unfixed' || '' }} \
+              . || true
+            
+            # Generate table format for readability
+            trivy fs \
+              --scanners vuln,secret,misconfig \
+              --format table \
+              --severity ${{ inputs.severity }} \
+              ${{ inputs.ignore_unfixed && '--ignore-unfixed' || '' }} \
+              . > vuln-scan.txt || true
+          else
+            echo "🔍 Scanning container image: $IMAGE"
+            
+            # Scan container image
+            trivy image \
+              --format json \
+              --output vuln-scan.json \
+              --severity ${{ inputs.severity }} \
+              ${{ inputs.ignore_unfixed && '--ignore-unfixed' || '' }} \
+              --scanners ${{ inputs.scan_type == 'all' && 'vuln,secret,misconfig' || inputs.scan_type }} \
+              "$IMAGE" || true
+            
+            # Generate table format for readability
+            trivy image \
+              --format table \
+              --severity ${{ inputs.severity }} \
+              ${{ inputs.ignore_unfixed && '--ignore-unfixed' || '' }} \
+              --scanners ${{ inputs.scan_type == 'all' && 'vuln,secret,misconfig' || inputs.scan_type }} \
+              "$IMAGE" > vuln-scan.txt || true
+            
+            # Generate SARIF for GitHub Security tab
+            trivy image \
+              --format sarif \
+              --output trivy-results.sarif \
+              --severity ${{ inputs.severity }} \
+              ${{ inputs.ignore_unfixed && '--ignore-unfixed' || '' }} \
+              "$IMAGE" || true
+          fi
+      
+      - name: Parse scan results
+        id: parse
+        run: |
+          # Parse JSON results to count vulnerabilities by severity
+          if [ -f vuln-scan.json ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' vuln-scan.json || echo "0")
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' vuln-scan.json || echo "0")
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length' vuln-scan.json || echo "0")
+            LOW=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="LOW")] | length' vuln-scan.json || echo "0")
+            
+            echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+            echo "high=$HIGH" >> $GITHUB_OUTPUT
+            echo "medium=$MEDIUM" >> $GITHUB_OUTPUT
+            echo "low=$LOW" >> $GITHUB_OUTPUT
+            
+            echo "📊 Vulnerability Summary:"
+            echo "  CRITICAL: $CRITICAL"
+            echo "  HIGH: $HIGH"
+            echo "  MEDIUM: $MEDIUM"
+            echo "  LOW: $LOW"
+            
+            # Check if we should fail based on severity
+            if [ "${{ inputs.fail_on_severity }}" = "CRITICAL" ] && [ "$CRITICAL" -gt 0 ]; then
+              echo "❌ Found $CRITICAL critical vulnerabilities"
+              echo "should_fail=true" >> $GITHUB_OUTPUT
+            elif [ "${{ inputs.fail_on_severity }}" = "HIGH" ] && [ "$((CRITICAL + HIGH))" -gt 0 ]; then
+              echo "❌ Found $((CRITICAL + HIGH)) high/critical vulnerabilities"
+              echo "should_fail=true" >> $GITHUB_OUTPUT
+            else
+              echo "✅ No blocking vulnerabilities found"
+              echo "should_fail=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No scan results to parse"
+            echo "critical=0" >> $GITHUB_OUTPUT
+            echo "high=0" >> $GITHUB_OUTPUT
+            echo "medium=0" >> $GITHUB_OUTPUT
+            echo "low=0" >> $GITHUB_OUTPUT
+            echo "should_fail=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Upload to GitHub Security
+        if: always() && steps.vuln-scan.outcome == 'success'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'container-security'
+        continue-on-error: true
+      
+      - name: Generate comprehensive report
+        if: always()
+        run: |
+          cat > security-report.md << 'EOF'
+          # Container Security Scan Report
+          
+          **Scan Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+          
+          ## Summary
+          
+          | Severity | Count |
+          |----------|-------|
+          | CRITICAL | ${{ steps.parse.outputs.critical || 0 }} |
+          | HIGH     | ${{ steps.parse.outputs.high || 0 }} |
+          | MEDIUM   | ${{ steps.parse.outputs.medium || 0 }} |
+          | LOW      | ${{ steps.parse.outputs.low || 0 }} |
+          
+          ## Scan Configuration
+          
+          - **Image/Path:** ${{ inputs.image_ref || inputs.dockerfile_path || 'Filesystem scan' }}
+          - **Scan Type:** ${{ inputs.scan_type }}
+          - **Severity Filter:** ${{ inputs.severity }}
+          - **Ignore Unfixed:** ${{ inputs.ignore_unfixed }}
+          - **Fail on Severity:** ${{ inputs.fail_on_severity }}
+          
+          ## Detailed Results
+          
+          EOF
+          
+          if [ -f vuln-scan.txt ]; then
+            echo '```' >> security-report.md
+            cat vuln-scan.txt >> security-report.md
+            echo '```' >> security-report.md
+          fi
+          
+          if [ -f dockerfile-scan.txt ]; then
+            echo -e "\n## Dockerfile Configuration Issues\n" >> security-report.md
+            echo '```' >> security-report.md
+            cat dockerfile-scan.txt >> security-report.md
+            echo '```' >> security-report.md
+          fi
+          
+          # Add remediation suggestions
+          if [ "${{ steps.parse.outputs.critical }}" -gt 0 ] || [ "${{ steps.parse.outputs.high }}" -gt 0 ]; then
+            cat >> security-report.md << 'EOF'
+          
+          ## Remediation Recommendations
+          
+          ### For Critical/High Vulnerabilities:
+          
+          1. **Update base images**: Use the latest stable versions of base images
+          2. **Update dependencies**: Run `pnpm update` to get the latest package versions
+          3. **Apply security patches**: Check for available patches for vulnerable packages
+          4. **Use multi-stage builds**: Minimize the attack surface by using distroless or minimal base images
+          5. **Scan regularly**: Integrate scanning into your CI/CD pipeline
+          
+          ### Quick Fixes:
+          
+          - Update Node.js base image: `FROM node:22-alpine` (latest LTS)
+          - Remove unnecessary packages from the final image
+          - Use `--no-cache` flag with apk to avoid cached vulnerable packages
+          - Consider using distroless images for production
+          
+          EOF
+          fi
+      
+      - name: Upload scan reports
+        if: always()
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-security-scan-${{ github.run_id }}
+          path: |
+            security-report.md
+            vuln-scan.json
+            vuln-scan.txt
+            dockerfile-scan.json
+            dockerfile-scan.txt
+            trivy-results.sarif
+          retention-days: 30
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const critical = parseInt('${{ steps.parse.outputs.critical }}' || '0');
+            const high = parseInt('${{ steps.parse.outputs.high }}' || '0');
+            const medium = parseInt('${{ steps.parse.outputs.medium }}' || '0');
+            const low = parseInt('${{ steps.parse.outputs.low }}' || '0');
+            
+            let comment = `## 🛡️ Container Security Scan Results\n\n`;
+            
+            if (critical > 0 || high > 0) {
+              comment += `### ⚠️ Security vulnerabilities detected!\n\n`;
+            } else if (medium > 0 || low > 0) {
+              comment += `### ℹ️ Minor security issues found\n\n`;
+            } else {
+              comment += `### ✅ No security vulnerabilities detected\n\n`;
+            }
+            
+            comment += `| Severity | Count | Action Required |\n`;
+            comment += `|----------|-------|----------------|\n`;
+            comment += `| 🔴 CRITICAL | ${critical} | ${critical > 0 ? '**Immediate fix required**' : '✓'} |\n`;
+            comment += `| 🟠 HIGH | ${high} | ${high > 0 ? '**Fix before production**' : '✓'} |\n`;
+            comment += `| 🟡 MEDIUM | ${medium} | ${medium > 0 ? 'Review and plan fix' : '✓'} |\n`;
+            comment += `| 🟢 LOW | ${low} | ${low > 0 ? 'Monitor' : '✓'} |\n`;
+            
+            if (critical > 0 || high > 0) {
+              comment += `\n**⚠️ Action Required**: Please review the security report and fix critical/high vulnerabilities before merging.\n`;
+              comment += `\n[Download Full Security Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            }
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+      
+      - name: Fail if vulnerabilities found
+        if: steps.parse.outputs.should_fail == 'true'
+        run: |
+          echo "❌ Failing workflow due to ${{ inputs.fail_on_severity }} or higher vulnerabilities"
+          exit 1

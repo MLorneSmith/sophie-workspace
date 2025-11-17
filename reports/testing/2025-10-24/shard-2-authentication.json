@@ -1,0 +1,61 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Authentication",
+		"files": [
+			"tests/authentication/auth.spec.ts",
+			"tests/authentication/password-reset.spec.ts"
+		],
+		"expectedTests": 3,
+		"shardCommand": "test:shard2"
+	},
+	"execution": {
+		"startTime": "2025-10-24T22:14:46.361Z",
+		"endTime": "2025-10-24T22:15:40.361Z",
+		"duration": "54s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 20,
+		"passed": 8,
+		"failed": 1,
+		"skipped": 11,
+		"intentionalFailures": 0,
+		"integrationTests": 6,
+		"success": false
+	},
+	"failures": [
+		{
+			"name": "tests/authentication/auth-simple.spec.ts:192:6 › Authentication - Simple Tests @auth @integration › protected routes redirect to sign-in when not authenticated",
+			"file": "unknown",
+			"error": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\nat UtilityScript.evaluate (<anonymous>:292:16)\nat UtilityScript.<anonymous> (<anonymous>:1:44)\nat UtilityScript.evaluate (<anonymous>:292:16)\nat UtilityScript.<anonymous> (<anonymous>:1:44)"
+		},
+		{
+			"name": "tests/authentication/auth-simple.spec.ts:13:6 › Authentication - Simple Tests @auth @integration › sign in page loads with correct elements",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in"
+		},
+		{
+			"name": "tests/authentication/auth-simple.spec.ts:179:6 › Authentication - Simple Tests @auth @integration › sign in link navigates from sign up page",
+			"file": "unknown",
+			"error": "Error: page.goto: net::ERR_EMPTY_RESPONSE at http://localhost:3001/auth/sign-up"
+		}
+	],
+	"errors": [
+		"Invalid login credentials",
+		"false, stack: undefined}",
+		"false, stack: undefined}",
+		"Invalid login credentials",
+		"false, stack: undefined}",
+		"false, stack: undefined}",
+		"Invalid login credentials",
+		"false, stack: undefined}",
+		"false, stack: undefined}",
+		"page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+		"page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.",
+		"page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in",
+		"page.goto: net::ERR_EMPTY_RESPONSE at http://localhost:3001/auth/sign-up"
+	],
+	"rawOutput": "...(truncated 5135 bytes)...\nScript.<anonymous> (<anonymous>:1:44)\n        at UtilityScript.evaluate (<anonymous>:292:16)\n        at UtilityScript.<anonymous> (<anonymous>:1:44)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:199:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-1fb26-n-in-when-not-authenticated-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n        at UtilityScript.evaluate (<anonymous>:292:16)\n        at UtilityScript.<anonymous> (<anonymous>:1:44)\n        at UtilityScript.evaluate (<anonymous>:292:16)\n        at UtilityScript.<anonymous> (<anonymous>:1:44)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:199:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-1fb26-n-in-when-not-authenticated-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-1fb26-n-in-when-not-authenticated-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/authentication-auth-simple-1fb26-n-in-when-not-authenticated-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2) [chromium] › tests/authentication/auth-simple.spec.ts:13:6 › Authentication - Simple Tests @auth @integration › sign in page loads with correct elements \n\n    Retry #3 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3001/auth/sign-in\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/auth/sign-in\", waiting until \"load\"\u001b[22m\n\n\n      12 |\n      13 | \ttest(\"sign in page loads with correct elements\", async ({ page }) => {\n    > 14 | \t\tawait page.goto(\"/auth/sign-in\");\n         | \t\t           ^\n      15 |\n      16 | \t\t// Wait for the page to be ready\n      17 | \t\tawait page.waitForLoadState(\"domcontentloaded\");\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:14:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-f6b91-loads-with-correct-elements-chromium-retry3/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3) [chromium] › tests/authentication/auth-simple.spec.ts:179:6 › Authentication - Simple Tests @auth @integration › sign in link navigates from sign up page \n\n    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.goto: net::ERR_EMPTY_RESPONSE at http://localhost:3001/auth/sign-up\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/auth/sign-up\", waiting until \"load\"\u001b[22m\n\n\n      178 |\n      179 | \ttest(\"sign in link navigates from sign up page\", async ({ page }) => {\n    > 180 | \t\tawait page.goto(\"/auth/sign-up\");\n          | \t\t           ^\n      181 |\n      182 | \t\t// Click sign in link\n      183 | \t\tconst signInLink = page.locator('a[href*=\"sign-in\"]');\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:180:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-a825b-navigates-from-sign-up-page-chromium-retry2/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    [chromium] › tests/authentication/auth-simple.spec.ts:192:6 › Authentication - Simple Tests @auth @integration › protected routes redirect to sign-in when not authenticated \n  2 flaky\n    [chromium] › tests/authentication/auth-simple.spec.ts:13:6 › Authentication - Simple Tests @auth @integration › sign in page loads with correct elements \n    [chromium] › tests/authentication/auth-simple.spec.ts:179:6 › Authentication - Simple Tests @auth @integration › sign in link navigates from sign up page \n  11 skipped\n  1 did not run\n  6 passed (52.8s)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard2: `playwright test tests/authentication/auth-simple.spec.ts tests/authentication/auth.spec.ts tests/authentication/password-reset.spec.ts --config=playwright.auth.config.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

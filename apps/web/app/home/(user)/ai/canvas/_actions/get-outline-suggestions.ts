@@ -1,10 +1,10 @@
 "use server";
 
 import {
-	type ChatMessage,
-	getChatCompletion,
-	createQualityOptimizedConfig,
 	baseInstructions,
+	type ChatMessage,
+	createQualityOptimizedConfig,
+	getChatCompletion,
 	improvementFormat,
 	outlineRewriteInstructions,
 } from "@kit/ai-gateway";

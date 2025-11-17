@@ -1,5 +1,6 @@
 "use client";
 
+import { createClientLogger } from "@kit/shared/logger";
 import { Alert, AlertDescription, AlertTitle } from "@kit/ui/alert";
 import { Button } from "@kit/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
@@ -10,15 +11,8 @@ import * as React from "react";
 import { useError } from "../error/ErrorContext";
 import { isAuthError, isConnectionError } from "../lib/error-utils";
 
-// Client-safe logger wrapper
-const logger = {
-	error: (...args: unknown[]) => {
-		if (process.env.NODE_ENV === "development") {
-			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
-			console.error(...args);
-		}
-	},
-};
+// Client-side logger for this component
+const { getLogger } = createClientLogger("BLOCKS-FORM-ERROR-BOUNDARY");
 
 const ERROR_MESSAGES = {
 	AUTH_ERROR: "Your session has expired. Please refresh and try again.",
@@ -99,7 +93,10 @@ export class SetupFormErrorBoundary extends React.Component<Props, State> {
 
 	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		// Log error
-		logger.error("SetupFormErrorBoundary caught an error:", error, errorInfo);
+		getLogger().error("SetupFormErrorBoundary caught an error", {
+			error,
+			errorInfo,
+		});
 
 		// Call onError prop if provided
 		this.props.onError?.(error, errorInfo);

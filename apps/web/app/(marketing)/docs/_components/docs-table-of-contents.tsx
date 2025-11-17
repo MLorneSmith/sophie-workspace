@@ -1,52 +1,60 @@
 "use client";
 
+import { cn } from "@kit/ui/utils";
 import Link from "next/link";
 
-interface NavItem {
+interface TocItem {
 	text: string;
 	level: number;
 	href: string;
-	children: NavItem[];
+	children?: TocItem[];
 }
 
-export function DocsTableOfContents(props: { data: NavItem[] }) {
-	const navData = props.data;
+interface DocsTableOfContentsProps {
+	data: TocItem[];
+}
 
-	if (!navData || navData.length === 0) {
+export function DocsTableOfContents({ data }: DocsTableOfContentsProps) {
+	if (!data || data.length === 0) {
 		return null;
 	}
 
 	return (
-		<div className="bg-background sticky inset-y-0 h-svh max-h-full min-w-[14em] p-4">
-			<ol className="relative text-sm text-gray-600 dark:text-gray-400">
-				{navData.map((item) => (
-					<li key={item.href} className="group/item relative mt-3 first:mt-0">
-						<a
-							href={item.href}
-							className="block transition-colors **:[font:inherit] hover:text-gray-950 dark:hover:text-white"
-						>
-							{item.text}
-						</a>
-						{item.children && (
-							<ol className="relative mt-3 pl-4">
-								{item.children.map((child) => (
-									<li
-										key={child.href}
-										className="group/subitem relative mt-3 first:mt-0"
-									>
-										<Link
-											href={child.href}
-											className="block transition-colors **:[font:inherit] hover:text-gray-950 dark:hover:text-white"
-										>
-											{child.text}
-										</Link>
-									</li>
-								))}
-							</ol>
-						)}
-					</li>
-				))}
-			</ol>
+		<div className="hidden xl:block sticky top-20 w-64 shrink-0 self-start">
+			<div className="space-y-2">
+				<p className="font-semibold text-sm mb-4">On This Page</p>
+				<nav className="space-y-1.5">
+					{data.map((item) => (
+						<TocItemComponent key={item.href} item={item} />
+					))}
+				</nav>
+			</div>
+		</div>
+	);
+}
+
+function TocItemComponent({ item }: { item: TocItem }) {
+	const hasChildren = item.children && item.children.length > 0;
+
+	return (
+		<div>
+			<Link
+				href={item.href}
+				className={cn(
+					"block text-sm text-muted-foreground hover:text-foreground transition-colors py-1",
+					item.level === 2 && "pl-4",
+					item.level === 3 && "pl-8",
+				)}
+			>
+				{item.text}
+			</Link>
+			{hasChildren && (
+				<div className="space-y-1.5 mt-1">
+					{item.children?.map((child) => (
+						<TocItemComponent key={child.href} item={child} />
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

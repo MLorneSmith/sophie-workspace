@@ -1,0 +1,631 @@
+{
+	"version": "1.0.0",
+	"name": "Scripts Inventory",
+	"description": "Complete inventory of all Claude Code utility scripts organized by functional category",
+	"lastUpdated": "2025-09-19T15:19:50.607Z",
+	"totalScripts": 50,
+	"categories": {
+		"testing": {
+			"name": "Testing Infrastructure",
+			"description": "Scripts for test execution, infrastructure management, and quality assurance",
+			"scriptCount": 18,
+			"scripts": [
+				{
+					"name": "condition-waiter",
+					"path": "testing/utilities/condition-waiter.cjs",
+					"category": "testing",
+					"description": "Condition-waiter script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:child_process", "node:util", "node:fs"]
+				},
+				{
+					"name": "coverage-helper",
+					"path": "testing/utilities/coverage-helper.sh",
+					"category": "testing",
+					"description": "Coverage Helper Script",
+					"type": "sh",
+					"subcategory": "utilities"
+				},
+				{
+					"name": "e2e-test-runner",
+					"path": "testing/runners/e2e-test-runner.cjs",
+					"category": "testing",
+					"description": "E2e-test-runner script",
+					"type": "cjs",
+					"subcategory": "runners",
+					"dependencies": [
+						"node:child_process",
+						"node:fs",
+						"node:path",
+						"node:util",
+						"node:os"
+					],
+					"security": true
+				},
+				{
+					"name": "infrastructure-manager",
+					"path": "testing/infrastructure/infrastructure-manager.cjs",
+					"category": "testing",
+					"description": "Infrastructure-manager script",
+					"type": "cjs",
+					"subcategory": "infrastructure",
+					"dependencies": [
+						"node:child_process",
+						"node:fs",
+						"node:path",
+						"node:util"
+					]
+				},
+				{
+					"name": "phase-coordinator",
+					"path": "testing/infrastructure/phase-coordinator.cjs",
+					"category": "testing",
+					"description": "Phase-coordinator script",
+					"type": "cjs",
+					"subcategory": "infrastructure",
+					"dependencies": ["node:events", "node:child_process", "node:util"]
+				},
+				{
+					"name": "process-manager",
+					"path": "testing/utilities/process-manager.cjs",
+					"category": "testing",
+					"description": "Process-manager script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:child_process", "node:util"]
+				},
+				{
+					"name": "resource-lock",
+					"path": "testing/resource-lock.cjs",
+					"category": "testing",
+					"description": "Resource-lock script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path", "node:os"]
+				},
+				{
+					"name": "test-cache-manager",
+					"path": "testing/utilities/test-cache-manager.cjs",
+					"category": "testing",
+					"description": "Test-cache-manager script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": [
+						"node:crypto",
+						"node:fs",
+						"node:path",
+						"node:child_process"
+					],
+					"security": true
+				},
+				{
+					"name": "test-cleanup-guard",
+					"path": "testing/utilities/test-cleanup-guard.cjs",
+					"category": "testing",
+					"description": "Test-cleanup-guard script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:child_process", "node:util"]
+				},
+				{
+					"name": "test-config",
+					"path": "testing/config/test-config.cjs",
+					"category": "testing",
+					"description": "Test-config script",
+					"type": "cjs",
+					"subcategory": "config",
+					"dependencies": ["node:path", "node:os", "node:fs"],
+					"security": true
+				},
+				{
+					"name": "test-container",
+					"path": "testing/utilities/test-container.cjs",
+					"category": "testing",
+					"description": "Test-container script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:child_process", "node:path", "node:fs"]
+				},
+				{
+					"name": "test-controller",
+					"path": "testing/infrastructure/test-controller.cjs",
+					"category": "testing",
+					"description": "Test-controller script",
+					"type": "cjs",
+					"subcategory": "infrastructure",
+					"dependencies": ["node:child_process", "node:util"],
+					"security": true
+				},
+				{
+					"name": "test-controller-monolith",
+					"path": "testing/infrastructure/test-controller-monolith.cjs",
+					"category": "testing",
+					"description": "Test-controller-monolith script",
+					"type": "cjs",
+					"subcategory": "infrastructure",
+					"dependencies": [
+						"node:child_process",
+						"node:fs",
+						"node:path",
+						"node:util",
+						"node:os"
+					],
+					"security": true
+				},
+				{
+					"name": "test-db-manager",
+					"path": "testing/utilities/test-db-manager.sh",
+					"category": "testing",
+					"description": "Test Database Manager Script",
+					"type": "sh",
+					"subcategory": "utilities"
+				},
+				{
+					"name": "test-reporter",
+					"path": "testing/utilities/test-reporter.cjs",
+					"category": "testing",
+					"description": "Test-reporter script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:fs", "node:path"]
+				},
+				{
+					"name": "test-status",
+					"path": "testing/utilities/test-status.cjs",
+					"category": "testing",
+					"description": "Test-status script",
+					"type": "cjs",
+					"subcategory": "utilities",
+					"dependencies": ["node:fs"]
+				},
+				{
+					"name": "unit-test-runner",
+					"path": "testing/runners/unit-test-runner.cjs",
+					"category": "testing",
+					"description": "Unit-test-runner script",
+					"type": "cjs",
+					"subcategory": "runners",
+					"dependencies": [
+						"node:child_process",
+						"node:fs",
+						"node:path",
+						"node:util"
+					],
+					"security": true
+				},
+				{
+					"name": "verify-e2e-shards",
+					"path": "testing/runners/verify-e2e-shards.cjs",
+					"category": "testing",
+					"description": "Verify-e2e-shards script",
+					"type": "cjs",
+					"subcategory": "runners",
+					"dependencies": ["node:child_process", "node:fs"]
+				}
+			]
+		},
+		"analysis": {
+			"name": "Code Analysis & Quality",
+			"description": "Scripts for analyzing code quality, agents, commands, and generating reports",
+			"scriptCount": 9,
+			"scripts": [
+				{
+					"name": "agent-quality-evaluator",
+					"path": "analysis/agents/agent-quality-evaluator.cjs",
+					"category": "analysis",
+					"description": "Agent-quality-evaluator script",
+					"type": "cjs",
+					"subcategory": "agents",
+					"dependencies": ["node:fs", "node:path", "js-yaml"],
+					"security": true
+				},
+				{
+					"name": "agent-quality-report",
+					"path": "analysis/agents/agent-quality-report.cjs",
+					"category": "analysis",
+					"description": "Agent-quality-report script",
+					"type": "cjs",
+					"subcategory": "agents",
+					"dependencies": ["node:fs", "node:path"]
+				},
+				{
+					"name": "command-analyzer",
+					"path": "analysis/command-analyzer.cjs",
+					"category": "analysis",
+					"description": "Command-analyzer script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path", "@ast-grep/napi"],
+					"features": [
+						"* - Tool usage pattern extraction (Task, Read, Write, etc.)"
+					]
+				},
+				{
+					"name": "command-quality-evaluator",
+					"path": "analysis/commands/command-quality-evaluator.cjs",
+					"category": "analysis",
+					"description": "Command-quality-evaluator script",
+					"type": "cjs",
+					"subcategory": "commands",
+					"dependencies": ["node:fs", "node:path", "js-yaml"],
+					"security": true
+				},
+				{
+					"name": "command-quality-report",
+					"path": "analysis/commands/command-quality-report.cjs",
+					"category": "analysis",
+					"description": "Command-quality-report script",
+					"type": "cjs",
+					"subcategory": "commands",
+					"dependencies": ["node:fs", "node:path"]
+				},
+				{
+					"name": "context-graph",
+					"path": "analysis/context-graph.cjs",
+					"category": "analysis",
+					"description": "Context-graph script",
+					"type": "cjs",
+					"dependencies": ["graph-data-structure", "node:fs", "node:path"]
+				},
+				{
+					"name": "context-loader",
+					"path": "analysis/context-loader.cjs",
+					"category": "analysis",
+					"description": "Context-loader script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"features": ["{", "{"],
+					"security": true
+				},
+				{
+					"name": "selector-validator",
+					"path": "analysis/selector-validator.cjs",
+					"category": "analysis",
+					"description": "Selector-validator script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"security": true
+				},
+				{
+					"name": "token-counter",
+					"path": "analysis/token-counter.cjs",
+					"category": "analysis",
+					"description": "Token-counter script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"]
+				}
+			]
+		},
+		"development": {
+			"name": "Development Workflow",
+			"description": "Core development workflow and debugging scripts",
+			"scriptCount": 3,
+			"scripts": [
+				{
+					"name": "cleanup-ports",
+					"path": "development/cleanup-ports.sh",
+					"category": "development",
+					"description": "Script to clean up ports used by E2E tests",
+					"type": "sh"
+				},
+				{
+					"name": "codecheck-direct",
+					"path": "development/codecheck-direct.sh",
+					"category": "development",
+					"description": "Direct execution script for codecheck - ensures actual commands are run",
+					"type": "sh"
+				},
+				{
+					"name": "hook-profile",
+					"path": "development/hook-profile.sh",
+					"category": "development",
+					"description": "Hook Profile Script",
+					"type": "sh"
+				}
+			]
+		},
+		"build": {
+			"name": "Build & Configuration",
+			"description": "Build system and configuration management scripts",
+			"scriptCount": 2,
+			"scripts": [
+				{
+					"name": "build-settings",
+					"path": "build/build-settings.cjs",
+					"category": "build",
+					"description": "Build-settings script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"security": true
+				},
+				{
+					"name": "validate-settings-security",
+					"path": "build/validate-settings-security.cjs",
+					"category": "build",
+					"description": "Validate-settings-security script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"security": true
+				}
+			]
+		},
+		"git": {
+			"name": "Git Operations",
+			"description": "Git workflow and version control management scripts",
+			"scriptCount": 4,
+			"scripts": [
+				{
+					"name": "change-worktree",
+					"path": "git/worktree/change-worktree.sh",
+					"category": "git",
+					"description": "Git Worktree Change Script",
+					"type": "sh",
+					"subcategory": "worktree"
+				},
+				{
+					"name": "compare-package-versions",
+					"path": "git/conflict-resolution/compare-package-versions.sh",
+					"category": "git",
+					"description": "Script to compare and safely merge package updates after conflict resolution",
+					"type": "sh",
+					"subcategory": "conflict-resolution",
+					"security": true
+				},
+				{
+					"name": "create-worktree-enhanced",
+					"path": "git/worktree/create-worktree-enhanced.sh",
+					"category": "git",
+					"description": "Enhanced Git Worktree Creation Script with Local Config Copying",
+					"type": "sh",
+					"subcategory": "worktree",
+					"security": true
+				},
+				{
+					"name": "remove-worktree",
+					"path": "git/worktree/remove-worktree.sh",
+					"category": "git",
+					"description": "Git Worktree Removal Script",
+					"type": "sh",
+					"subcategory": "worktree",
+					"security": true
+				}
+			]
+		},
+		"integration": {
+			"name": "External Integration",
+			"description": "Scripts for integrating with external tools and services",
+			"scriptCount": 3,
+			"scripts": [
+				{
+					"name": "enhance-github-issue",
+					"path": "integration/github/enhance-github-issue.js",
+					"category": "integration",
+					"description": "Enhance-github-issue script",
+					"type": "js",
+					"subcategory": "github",
+					"dependencies": ["node:child_process", "node:fs", "node:path"],
+					"features": ["${featureName}`);"],
+					"security": true
+				},
+				{
+					"name": "import-claudekit-agents",
+					"path": "integration/import-claudekit-agents.sh",
+					"category": "integration",
+					"description": "Import ClaudeKit agents preserving their directory structure",
+					"type": "sh"
+				},
+				{
+					"name": "import-claudekit-commands",
+					"path": "integration/import-claudekit-commands.sh",
+					"category": "integration",
+					"description": "Import ClaudeKit commands preserving their directory structure",
+					"type": "sh"
+				}
+			]
+		},
+		"database": {
+			"name": "Database Management",
+			"description": "Database setup, reset, and management scripts",
+			"scriptCount": 1,
+			"scripts": [
+				{
+					"name": "supabase-reset",
+					"path": "database/supabase-reset.ts",
+					"category": "database",
+					"description": "Supabase-reset script",
+					"type": "ts",
+					"dependencies": [
+						"node:child_process",
+						"node:timers/promises",
+						"node:util"
+					],
+					"security": true
+				}
+			]
+		},
+		"maintenance": {
+			"name": "System Maintenance",
+			"description": "System maintenance, inventory management, and enhancement scripts",
+			"scriptCount": 10,
+			"scripts": [
+				{
+					"name": "add-concrete-examples",
+					"path": "maintenance/add-concrete-examples.cjs",
+					"category": "maintenance",
+					"description": "Add-concrete-examples script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"security": true
+				},
+				{
+					"name": "add-delegation-patterns",
+					"path": "maintenance/add-delegation-patterns.cjs",
+					"category": "maintenance",
+					"description": "Add-delegation-patterns script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"],
+					"security": true
+				},
+				{
+					"name": "add-parallel-patterns",
+					"path": "maintenance/add-parallel-patterns.cjs",
+					"category": "maintenance",
+					"description": "Add-parallel-patterns script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"]
+				},
+				{
+					"name": "adjust-inventory-category",
+					"path": "maintenance/adjust-inventory-category.cjs",
+					"category": "maintenance",
+					"description": "Adjust-inventory-category script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path"]
+				},
+				{
+					"name": "fix-tool-specifications",
+					"path": "maintenance/fix-tool-specifications.cjs",
+					"category": "maintenance",
+					"description": "Fix-tool-specifications script",
+					"type": "cjs",
+					"dependencies": ["node:fs", "node:path", "js-yaml"]
+				},
+				{
+					"name": "rebuild-context-graph",
+					"path": "maintenance/inventories/rebuild-context-graph.cjs",
+					"category": "maintenance",
+					"description": "Rebuild-context-graph script",
+					"type": "cjs",
+					"subcategory": "inventories",
+					"dependencies": ["node:path", "node:fs"]
+				},
+				{
+					"name": "sync-agent-inventory",
+					"path": "maintenance/inventories/sync-agent-inventory.cjs",
+					"category": "maintenance",
+					"description": "Sync-agent-inventory script",
+					"type": "cjs",
+					"subcategory": "inventories",
+					"dependencies": [
+						"node:fs",
+						"node:path",
+						"node:child_process",
+						"node:util"
+					]
+				},
+				{
+					"name": "sync-command-inventory",
+					"path": "maintenance/inventories/sync-command-inventory.cjs",
+					"category": "maintenance",
+					"description": "Sync-command-inventory script",
+					"type": "cjs",
+					"subcategory": "inventories",
+					"dependencies": ["node:fs", "node:path", "node:child_process"],
+					"security": true
+				},
+				{
+					"name": "sync-context-inventory",
+					"path": "maintenance/inventories/sync-context-inventory.cjs",
+					"category": "maintenance",
+					"description": "Sync-context-inventory script",
+					"type": "cjs",
+					"subcategory": "inventories",
+					"dependencies": ["node:fs", "node:path", "node:child_process"],
+					"features": [
+						"[\"token-counts\", \"priority-levels\", \"keyword-extraction\"],"
+					],
+					"security": true
+				},
+				{
+					"name": "sync-scripts-inventory",
+					"path": "maintenance/inventories/sync-scripts-inventory.cjs",
+					"category": "maintenance",
+					"description": "Sync-scripts-inventory script",
+					"type": "cjs",
+					"subcategory": "inventories",
+					"dependencies": ["node:fs", "node:path", "node:child_process"],
+					"features": ["features.length > 0 ? features : undefined,"],
+					"security": true
+				}
+			]
+		}
+	},
+	"organization": {
+		"restructured": "2025-09-19",
+		"previousStructure": "Flat and disorganized root structure",
+		"currentStructure": "Hierarchical organization by functional domain",
+		"benefits": [
+			"Logical grouping by function",
+			"Clear hierarchy for related scripts",
+			"Intuitive navigation for developers",
+			"Scalability for new scripts"
+		]
+	},
+	"scriptTypes": {
+		"cjs": {
+			"count": 37,
+			"description": "CommonJS modules for Node.js execution"
+		},
+		"ts": {
+			"count": 1,
+			"description": "TypeScript files"
+		},
+		"sh": {
+			"count": 11,
+			"description": "Shell scripts for system operations"
+		},
+		"js": {
+			"count": 1,
+			"description": "JavaScript ES modules"
+		}
+	},
+	"usagePatterns": {
+		"testingWorkflow": {
+			"name": "Testing Workflow",
+			"pattern": [
+				"test-controller.cjs → orchestrates execution",
+				"infrastructure-manager.cjs → setup",
+				"[unit|e2e]-test-runner.cjs → execution",
+				"test-reporter.cjs → results"
+			]
+		},
+		"qualityAnalysis": {
+			"name": "Quality Analysis",
+			"pattern": [
+				"command-analyzer.cjs → extract metadata",
+				"[agent|command]-quality-evaluator.cjs → analyze",
+				"[agent|command]-quality-report.cjs → report"
+			]
+		},
+		"gitWorkflow": {
+			"name": "Git Workflow",
+			"pattern": [
+				"create-worktree-enhanced.sh → new feature branch",
+				"change-worktree.sh → switch context",
+				"compare-package-versions.sh → resolve conflicts",
+				"remove-worktree.sh → cleanup"
+			]
+		}
+	},
+	"metadata": {
+		"infrastructure": {
+			"totalFiles": 50,
+			"configFiles": 2,
+			"deprecated": 1,
+			"securityFocused": 22
+		},
+		"notes": [
+			"Scripts organized by functional domain after 2025-09-19 restructuring",
+			"Modular design emphasized to replace monolithic scripts",
+			"Security validation integrated throughout",
+			"Multi-environment support (local, remote, test) is standard",
+			"Integration with external tools (GitHub, Supabase, ClaudeKit) is pervasive"
+		],
+		"qualityIndicators": [
+			"Comprehensive error handling and recovery",
+			"Condition-based waiting instead of hardcoded delays",
+			"Parallel execution support where applicable",
+			"Security validation and safe execution patterns",
+			"Modular architecture with clear separation of concerns"
+		]
+	}
+}

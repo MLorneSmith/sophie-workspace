@@ -39,7 +39,7 @@ jobs:
   # Check if we should skip deployment (e.g., if recently deployed)
   check-skip:
     name: Check Skip Deployment
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       should_deploy: ${{ steps.check.outputs.should_deploy }}
     steps:
@@ -85,7 +85,7 @@ jobs:
   # Pre-deployment validation (quick checks before deploying)
   validate:
     name: Pre-deployment Validation
-    runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64  # Reduced CPUs - sufficient for lint/typecheck
     needs: check-skip
     if: needs.check-skip.outputs.should_deploy == 'true'
     steps:
@@ -139,7 +139,7 @@ jobs:
   # Deploy Web App to Vercel Dev environment (let Vercel handle the build)
   deploy-web:
     name: Deploy Web App to Dev
-    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -155,7 +155,7 @@ jobs:
         
       - name: Install Vercel CLI
         run: |
-          pnpm add -g vercel@latest
+          pnpm add -g vercel@48.8.0
 
       - name: Deploy to Vercel
         id: deploy
@@ -195,7 +195,7 @@ jobs:
   # Deploy Payload CMS to Vercel Dev environment (let Vercel handle the build)
   deploy-payload:
     name: Deploy Payload CMS to Dev
-    runs-on: runs-on=${{ github.run_id }},runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64  # Increased CPUs for faster Vercel operations
     needs: [check-skip, validate]
     if: needs.check-skip.outputs.should_deploy == 'true'
     environment:
@@ -211,7 +211,7 @@ jobs:
         
       - name: Install Vercel CLI
         run: |
-          pnpm add -g vercel@latest
+          pnpm add -g vercel@48.8.0
 
       - name: Deploy to Vercel
         id: deploy
@@ -222,7 +222,7 @@ jobs:
           project-id: ${{ secrets.VERCEL_PROJECT_ID_PAYLOAD }}
           environment: preview
           build-artifacts: false  # Let Vercel handle the build
-          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          protection-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
           health-check-url: /api/health
 
       - name: Create deployment status
@@ -248,10 +248,39 @@ jobs:
               description: 'Payload CMS deployed to dev environment'
             });
 
+  # Save deployment URLs for integration tests
+  save-deployment-urls:
+    name: Save Deployment URLs
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64
+    needs: [check-skip, deploy-web, deploy-payload]
+    if: needs.check-skip.outputs.should_deploy == 'true'
+    steps:
+      - name: Create deployment URLs file
+        run: |
+          mkdir -p deployment-info
+          cat > deployment-info/urls.json << EOF
+          {
+            "web_url": "${{ needs.deploy-web.outputs.url }}",
+            "payload_url": "${{ needs.deploy-payload.outputs.url }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit_sha": "${{ github.sha }}"
+          }
+          EOF
+
+          echo "📦 Deployment URLs saved:"
+          cat deployment-info/urls.json
+
+      - name: Upload deployment URLs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-urls
+          path: deployment-info/urls.json
+          retention-days: 1
+
   # Notify New Relic of deployment
   notify-monitoring:
     name: Notify Monitoring
-    runs-on: runs-on=${{ github.run_id }},runner=1cpu-linux-x64  # Minimal runner for notification
+    runs-on: runs-on=${{ github.run_id }}/runner=1cpu-linux-x64  # Minimal runner for notification
     needs: [check-skip, deploy-web, deploy-payload]
     if: needs.check-skip.outputs.should_deploy == 'true'
     continue-on-error: true

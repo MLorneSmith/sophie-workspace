@@ -1,5 +1,5 @@
-import type { ParsedContent } from "../types";
 import * as ts from "typescript";
+import type { ParsedContent } from "../types";
 
 export interface QuizDefinition {
 	id: string;

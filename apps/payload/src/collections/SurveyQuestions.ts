@@ -2,7 +2,7 @@ import type { CollectionConfig } from "payload";
 import type { SurveyQuestion } from "../../payload-types.js"; // Import the SurveyQuestion type
 
 export const SurveyQuestions: CollectionConfig = {
-	slug: "survey_questions",
+	slug: "survey-questions",
 	labels: {
 		singular: "Survey Question",
 		plural: "Survey Questions",
@@ -43,6 +43,7 @@ export const SurveyQuestions: CollectionConfig = {
 			options: [
 				{ label: "Multiple Choice", value: "multiple_choice" },
 				{ label: "Text Field", value: "text_field" },
+				{ label: "Textarea", value: "textarea" },
 				{ label: "Scale", value: "scale" },
 				// Future extensibility for other question types
 			],

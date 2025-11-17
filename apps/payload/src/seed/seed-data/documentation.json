@@ -1,1029 +1,1040 @@
 [
-	{
-		"id": "affiliates-apply-for-affiliate-program",
-		"title": "How do I apply for your affiliate program?",
-		"description": "How do I apply?",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": []
-			}
-		},
-		"slug": "affiliates/apply-for-affiliate-program",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Affiliates",
-				"slug": "affiliates"
-			},
-			{
-				"title": "How do I apply for your affiliate program?",
-				"slug": "affiliates/apply-for-affiliate-program"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.928Z",
-		"updatedAt": "2025-06-30T17:27:17.928Z",
-		"category": "Affiliates",
-		"_ref": "documentation:affiliates/apply-for-affiliate-program"
-	},
-	{
-		"id": "affiliates-affiliates",
-		"title": "Affiliates",
-		"description": "Information on our affiliate program",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": []
-			}
-		},
-		"slug": "affiliates/affiliates",
-		"order": 297,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Affiliates",
-				"slug": "affiliates"
-			},
-			{
-				"title": "Affiliates",
-				"slug": "affiliates/affiliates"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.928Z",
-		"updatedAt": "2025-06-30T17:27:17.928Z",
-		"category": "Affiliates",
-		"_ref": "documentation:affiliates/affiliates"
-	},
-	{
-		"id": "data-security-and-privacy-data-security-and-privacy",
-		"title": "Data Security & Privacy",
-		"description": "How we secure your data and unsure data privacy",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": []
-			}
-		},
-		"slug": "data-security-and-privacy/data-security-and-privacy",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Data Security And Privacy",
-				"slug": "data-security-and-privacy"
-			},
-			{
-				"title": "Data Security & Privacy",
-				"slug": "data-security-and-privacy/data-security-and-privacy"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.929Z",
-		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy",
-		"_ref": "documentation:data-security-and-privacy/data-security-and-privacy"
-	},
-	{
-		"id": "data-security-and-privacy-where-is-data-stored",
-		"title": "Where is SlideHeroes data stored",
-		"description": "We store your data here",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Fill this out"
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "data-security-and-privacy/where-is-data-stored",
-		"order": 319,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Data Security And Privacy",
-				"slug": "data-security-and-privacy"
-			},
-			{
-				"title": "Where is SlideHeroes data stored",
-				"slug": "data-security-and-privacy/where-is-data-stored"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.929Z",
-		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy",
-		"_ref": "documentation:data-security-and-privacy/where-is-data-stored"
-	},
-	{
-		"id": "data-security-and-privacy-will-you-train",
-		"title": "Will you train on the data that I send SlideHeroes?",
-		"description": "We will not use your data to train our models",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We will not train on your data, and you own all rights to your data. See SlideHeroes' Terms of Service for more information."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "data-security-and-privacy/will-you-train",
-		"order": 319,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Data Security And Privacy",
-				"slug": "data-security-and-privacy"
-			},
-			{
-				"title": "Will you train on the data that I send SlideHeroes?",
-				"slug": "data-security-and-privacy/will-you-train"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.929Z",
-		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "Data Security And Privacy",
-		"_ref": "documentation:data-security-and-privacy/will-you-train"
-	},
-	{
-		"id": "difference-between-pro-and-teams",
-		"title": "What is the difference between the Pro and Teams Packages?",
-		"description": "Pro vs Teams",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "The Pro packages is designed for individuals."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "The Teams packages is designed for groups of employees."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "difference-between-pro-and-teams",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "What is the difference between the Pro and Teams Packages?",
-				"slug": "difference-between-pro-and-teams"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.929Z",
-		"updatedAt": "2025-06-30T17:27:17.929Z",
-		"category": "General",
-		"_ref": "documentation:difference-between-pro-and-teams"
-	},
-	{
-		"id": "how-much-does-slideheroes-cost",
-		"title": "How much does SlideHeroes cost?",
-		"description": "What are your prices?",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "See our pricing page for more information, and find a plan that works for you."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "how-much-does-slideheroes-cost",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "How much does SlideHeroes cost?",
-				"slug": "how-much-does-slideheroes-cost"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.930Z",
-		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "General",
-		"_ref": "documentation:how-much-does-slideheroes-cost"
-	},
-	{
-		"id": "just-promote-informally",
-		"title": "What if I just promote your courses informally and get a few friends to sign up? Can you pay me a commission?",
-		"description": "",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "No."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Paying commissions like this requires extra paperwork and tax filings in the U.S., and it is not economically viable unless you sell a significant volume of courses on an ongoing basis each month."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We are not currently hiring for dedicated sales rep roles, but we will post a notice here if anything changes."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "just-promote-informally",
-		"order": 206,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "What if I just promote your courses informally and get a few friends to sign up? Can you pay me a commission?",
-				"slug": "just-promote-informally"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.930Z",
-		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "General",
-		"_ref": "documentation:just-promote-informally"
-	},
-	{
-		"id": "our-product-course-without-ai-tools",
-		"title": "Can I buy the course without the AI Tools (and vice versa)?",
-		"description": "Can I buy components of the toolkit separately?",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "No. We provide our solutions as a bundle. Our solutions are designed to complement each other and work together to help you create high quality presentations, fast."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "our-product/course-without-ai-tools",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Our Product",
-				"slug": "our-product"
-			},
-			{
-				"title": "Can I buy the course without the AI Tools (and vice versa)?",
-				"slug": "our-product/course-without-ai-tools"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.930Z",
-		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "Our Product",
-		"_ref": "documentation:our-product/course-without-ai-tools"
-	},
-	{
-		"id": "our-product-our-product",
-		"title": "Our Product",
-		"description": "Answers to questions about our Toolkit",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Answers to questions about our Toolkit"
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "our-product/our-product",
-		"order": 311,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Our Product",
-				"slug": "our-product"
-			},
-			{
-				"title": "Our Product",
-				"slug": "our-product/our-product"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.930Z",
-		"updatedAt": "2025-06-30T17:27:17.930Z",
-		"category": "Our Product",
-		"_ref": "documentation:our-product/our-product"
-	},
-	{
-		"id": "purchases-invoicing-purchases-invoicing",
-		"title": "Purchases & Invoicing",
-		"description": "Answers to questions on how to purchase SlideHeroes",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "???"
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "purchases-invoicing/purchases-invoicing",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Purchases Invoicing",
-				"slug": "purchases-invoicing"
-			},
-			{
-				"title": "Purchases & Invoicing",
-				"slug": "purchases-invoicing/purchases-invoicing"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.931Z",
-		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing",
-		"_ref": "documentation:purchases-invoicing/purchases-invoicing"
-	},
-	{
-		"id": "purchases-invoicing-currencies",
-		"title": "What currency do you price in?",
-		"description": "Is this US Dollars, Canadian Dollars, Australian Dollars, New Zealand Dollars, Guyanese Dollars?",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We charge all of our courses in US Dollars. While we are a Canadian company, we\nuse USD as a base currency because of the global nature of our customer base."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "purchases-invoicing/currencies",
-		"order": 299,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Purchases Invoicing",
-				"slug": "purchases-invoicing"
-			},
-			{
-				"title": "What currency do you price in?",
-				"slug": "purchases-invoicing/currencies"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.931Z",
-		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing",
-		"_ref": "documentation:purchases-invoicing/currencies"
-	},
-	{
-		"id": "purchases-invoicing-payment-methods",
-		"title": "What payment methods do you accept?",
-		"description": "What payment methods does SlideHeroes support??",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Currently, SlideHeroes supports several different payment methods, depending on\nyour account country and location."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "This article outlines how you can confirm\nwhich payment methods are available to you, when you go to purchase a course."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "The following are the payment methods we support today:"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**International Credit and Debit Cards:**"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We accept most major international credit and debit cards like Visa, MasterCard, American Express, JCB and Discover."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "PayPal is a supported method of payment for SlideHeroes courses in most countries."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "For Teams we support ACH Bank Transfers globally. If there is a payment method that we do not support that you require, please reach out to SlideHeroes Support."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "purchases-invoicing/payment-methods",
-		"order": 312,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Purchases Invoicing",
-				"slug": "purchases-invoicing"
-			},
-			{
-				"title": "What payment methods do you accept?",
-				"slug": "purchases-invoicing/payment-methods"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.931Z",
-		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Purchases Invoicing",
-		"_ref": "documentation:purchases-invoicing/payment-methods"
-	},
-	{
-		"id": "refunds-refunds",
-		"title": "Refunds",
-		"description": "Our Refund Policy and how to request a refund",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "???"
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "refunds/refunds",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Refunds",
-				"slug": "refunds"
-			},
-			{
-				"title": "Refunds",
-				"slug": "refunds/refunds"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.932Z",
-		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Refunds",
-		"_ref": "documentation:refunds/refunds"
-	},
-	{
-		"id": "refunds-refund-policy",
-		"title": "Our Refund Policy",
-		"description": "Our Refund Policy",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We want you to be satisfied, so all eligible courses purchased on Udemy can be\nrefunded within 30 days, provided the request meets the guidelines in our refund\npolicy. ## How to submit a refund request Learn how to submit a refund request…\n[Read more](/docs/overview). ## Our 30-day policy While our 30-day refund policy\nis to allow students to learn risk free, we also must protect against fraud. We\nwill not process refund requests received after the refund window. ## Additional\nreasons for denied refunds We reserve the right, in our sole discretion, to\nlimit or deny refund requests in cases where we believe there is refund abuse,\nincluding but not limited to the following: - A significant portion of the\ncourse has been consumed or downloaded by a student before the refund was\nrequested. - Multiple refunds have been requested by a student for the same\ncourse. - Excessive refunds have been requested by a student. - We do not grant\nrefunds for any subscription services unless otherwise required by applicable\nlaw (please see below for more information). These refund restrictions will be\nenforced to the extent permitted by applicable law. ## Refund requests for\ncourses purchased with an academic discount We do not provide refunds on\nSlideHeroes courses purchased with an academic discount that are part of a\nuniversity or college course."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "refunds/refund-policy",
-		"order": 314,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Refunds",
-				"slug": "refunds"
-			},
-			{
-				"title": "Our Refund Policy",
-				"slug": "refunds/refund-policy"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.931Z",
-		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Refunds",
-		"_ref": "documentation:refunds/refund-policy"
-	},
-	{
-		"id": "refunds-refund-process",
-		"title": "Refund Process",
-		"description": "How to request a refund",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "We want you to be satisfied, so all eligible courses purchased from SlideHeroes can be refunded within 30 days."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "For whatever reason, if you are unhappy with a course, you can request a refund, provided the request meets the guidelines in our [refund policy](/refund-policy)"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Most refunds are returned via the original payment method. Please note that certain restrictions may apply and some purchases may only be eligible for credit refunds."
-							}
-						]
-					},
-					{
-						"type": "heading",
-						"tag": "h2",
-						"children": [
-							{
-								"type": "text",
-								"text": "How to request a refund:"
-							}
-						]
-					},
-					{
-						"type": "list",
-						"listType": "bullet",
-						"children": [
-							{
-								"type": "listitem",
-								"children": [
-									{
-										"type": "text",
-										"text": "Review our [Refund Policy](/refund-policy)"
-									}
-								]
-							},
-							{
-								"type": "listitem",
-								"children": [
-									{
-										"type": "text",
-										"text": "If your purchase data is within 30 days, forward your purchase receipt to support@slideheroes.com"
-									}
-								]
-							},
-							{
-								"type": "listitem",
-								"children": [
-									{
-										"type": "text",
-										"text": "We will respond with confirmation of a refund within 24 hours."
-									}
-								]
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "refunds/refund-process",
-		"order": 314,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Refunds",
-				"slug": "refunds"
-			},
-			{
-				"title": "Refund Process",
-				"slug": "refunds/refund-process"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.931Z",
-		"updatedAt": "2025-06-30T17:27:17.931Z",
-		"category": "Refunds",
-		"_ref": "documentation:refunds/refund-process"
-	},
-	{
-		"id": "technical-support-custom-invoices",
-		"title": "Custom Invoices",
-		"description": "Creating custom invoices that meet your government / company requirements.",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Not a problem."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Contact us at [SlideHeroes Support](mailto:support@slideheroes.com) and we will sort it out."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "technical-support/custom-invoices",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Technical Support",
-				"slug": "technical-support"
-			},
-			{
-				"title": "Custom Invoices",
-				"slug": "technical-support/custom-invoices"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.932Z",
-		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support",
-		"_ref": "documentation:technical-support/custom-invoices"
-	},
-	{
-		"id": "technical-support-technical-support",
-		"title": "Technical Support",
-		"description": "Answers to common technical support questions.",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "MakerKit uses Supabase to manage authentication within your application. By\ndefault, every kit comes with the following built-in authentication methods: -\n**Email/Password** - we added, by default, the traditional way of signing in -\n**Third Party Providers** - we also added by default Google Auth sign-in -\n**Email Links** - **Phone Number** You're free to add (or remove) any of the\nmethods supported by Supabase's Authentication: we will see how."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "technical-support/technical-support",
-		"order": 1,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Technical Support",
-				"slug": "technical-support"
-			},
-			{
-				"title": "Technical Support",
-				"slug": "technical-support/technical-support"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.932Z",
-		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support",
-		"_ref": "documentation:technical-support/technical-support"
-	},
-	{
-		"id": "technical-support-troubleshooting-payments",
-		"title": "Troubleshooting Failed Payments",
-		"description": "Help for resolving failed payments.",
-		"content": {
-			"root": {
-				"type": "root",
-				"format": "",
-				"indent": 0,
-				"version": 1,
-				"children": [
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "If you've incurred an error while attempting to make a payment, and can’t complete your purchase, this article explains common reasons for failed payment attempts and how to prevent them."
-							}
-						]
-					},
-					{
-						"type": "heading",
-						"tag": "h2",
-						"children": [
-							{
-								"type": "text",
-								"text": "Common reasons for failed payments and how to prevent them"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Incorrectly entered information:** please ensure you enter the first and last name of the card account holder, exactly as it appears on the card, and that you enter it in the Name on Card field. For example, if the card account holder’s name reads John R. Doe, then John R. Doe must be entered, as shown below"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Incorrect CVC code:** please ensure you’re only entering numbers and that the code is correct, as listed on the back of the card."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Using a debit card not authorized for international purchases:** SlideHeroes is based in Canada, and debit cards in many countries do not allow foreign transactions. If you do not see a local payment option when checking out on SlideHeroes, call your bank to ensure your card is authorized for international purchases. Please note that SlideHeroes is not able to remove these restrictions."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Issuing country for the card is different from country of residence:** if the issuing country for your card is different from your country of residence, your card might not be approved. Try another payment method or contact your bank."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Attempting payments while using a VPN**: multiple IP addresses can result in authorization problems and failed transactions. We advise that you refrain from using a virtual private network (VPN) while making a purchase on SlideHeroes."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Too many payment attempts have been made in the last 24 hours:** some cards have usage limitations, and will automatically block payment attempts after a certain threshold has been reached. Try contacting your bank or using a different payment method."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "**Browser isn’t working correctly due to caching issues:** if you’re seeing a notification your card number looks invalid or icons aren’t showing up, there may be a caching issue. Please [clear your browser’s cache](https://app.intercom.com/Browser isn’t working correctly due to caching issues: if you’re seeing a notification your card number looks invalid or icons aren’t showing up, there may be a caching issue. Please clear your browser’s cache and try again.) and try again."
-							}
-						]
-					},
-					{
-						"type": "heading",
-						"tag": "h2",
-						"children": [
-							{
-								"type": "text",
-								"text": "Still encountering issues? Your bank should have more information"
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "Some of the most common reasons banks decline payments include insufficient funds, card purchase limitations, and card security policies, among other issues. Since SlideHeroes does not have details regarding why a payment is declined, we recommend contacting your financial institution directly."
-							}
-						]
-					},
-					{
-						"type": "paragraph",
-						"children": [
-							{
-								"type": "text",
-								"text": "It’s important to let your bank know that you would like to make a payment on SlideHeroes.com and that Udemy is a company based in Canada."
-							}
-						]
-					}
-				]
-			}
-		},
-		"slug": "technical-support/troubleshooting-payments",
-		"order": 316,
-		"featured": false,
-		"tags": [],
-		"breadcrumbs": [
-			{
-				"title": "Technical Support",
-				"slug": "technical-support"
-			},
-			{
-				"title": "Troubleshooting Failed Payments",
-				"slug": "technical-support/troubleshooting-payments"
-			}
-		],
-		"published": true,
-		"createdAt": "2025-06-30T17:27:17.932Z",
-		"updatedAt": "2025-06-30T17:27:17.932Z",
-		"category": "Technical Support",
-		"_ref": "documentation:technical-support/troubleshooting-payments"
-	}
+  {
+    "id": "affiliates-apply-for-affiliate-program",
+    "title": "How do I apply for your affiliate program?",
+    "description": "How do I apply?",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": " "
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "affiliates/apply-for-affiliate-program",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Affiliates",
+        "slug": "affiliates"
+      },
+      {
+        "title": "How do I apply for your affiliate program?",
+        "slug": "affiliates/apply-for-affiliate-program"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.686Z",
+    "updatedAt": "2025-11-04T19:04:38.686Z",
+    "category": "Affiliates"
+  },
+  {
+    "id": "affiliates-affiliates",
+    "title": "Affiliates",
+    "description": "Information on our affiliate program",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": " "
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "affiliates/affiliates",
+    "order": 297,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Affiliates",
+        "slug": "affiliates"
+      },
+      {
+        "title": "Affiliates",
+        "slug": "affiliates/affiliates"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.685Z",
+    "updatedAt": "2025-11-04T19:04:38.685Z",
+    "category": "Affiliates"
+  },
+  {
+    "id": "data-security-and-privacy-data-security-and-privacy",
+    "title": "Data Security & Privacy",
+    "description": "How we secure your data and unsure data privacy",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": " "
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "data-security-and-privacy/data-security-and-privacy",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Data Security And Privacy",
+        "slug": "data-security-and-privacy"
+      },
+      {
+        "title": "Data Security & Privacy",
+        "slug": "data-security-and-privacy/data-security-and-privacy"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.686Z",
+    "updatedAt": "2025-11-04T19:04:38.686Z",
+    "category": "Data Security And Privacy"
+  },
+  {
+    "id": "data-security-and-privacy-where-is-data-stored",
+    "title": "Where is SlideHeroes data stored",
+    "description": "We store your data here",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Fill this out"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "data-security-and-privacy/where-is-data-stored",
+    "order": 319,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Data Security And Privacy",
+        "slug": "data-security-and-privacy"
+      },
+      {
+        "title": "Where is SlideHeroes data stored",
+        "slug": "data-security-and-privacy/where-is-data-stored"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.687Z",
+    "updatedAt": "2025-11-04T19:04:38.687Z",
+    "category": "Data Security And Privacy"
+  },
+  {
+    "id": "data-security-and-privacy-will-you-train",
+    "title": "Will you train on the data that I send SlideHeroes?",
+    "description": "We will not use your data to train our models",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We will not train on your data, and you own all rights to your data. See SlideHeroes' Terms of Service for more information."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "data-security-and-privacy/will-you-train",
+    "order": 319,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Data Security And Privacy",
+        "slug": "data-security-and-privacy"
+      },
+      {
+        "title": "Will you train on the data that I send SlideHeroes?",
+        "slug": "data-security-and-privacy/will-you-train"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.687Z",
+    "updatedAt": "2025-11-04T19:04:38.687Z",
+    "category": "Data Security And Privacy"
+  },
+  {
+    "id": "difference-between-pro-and-teams",
+    "title": "What is the difference between the Pro and Teams Packages?",
+    "description": "Pro vs Teams",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "The Pro packages is designed for individuals."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "The Teams packages is designed for groups of employees."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "difference-between-pro-and-teams",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "What is the difference between the Pro and Teams Packages?",
+        "slug": "difference-between-pro-and-teams"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.687Z",
+    "updatedAt": "2025-11-04T19:04:38.687Z",
+    "category": "General"
+  },
+  {
+    "id": "how-much-does-slideheroes-cost",
+    "title": "How much does SlideHeroes cost?",
+    "description": "What are your prices?",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "See our pricing page for more information, and find a plan that works for you."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "how-much-does-slideheroes-cost",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "How much does SlideHeroes cost?",
+        "slug": "how-much-does-slideheroes-cost"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.687Z",
+    "updatedAt": "2025-11-04T19:04:38.687Z",
+    "category": "General"
+  },
+  {
+    "id": "just-promote-informally",
+    "title": "What if I just promote your courses informally and get a few friends to sign up? Can you pay me a commission?",
+    "description": "",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "No."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Paying commissions like this requires extra paperwork and tax filings in the U.S., and it is not economically viable unless you sell a significant volume of courses on an ongoing basis each month."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We are not currently hiring for dedicated sales rep roles, but we will post a notice here if anything changes."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "just-promote-informally",
+    "order": 206,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "What if I just promote your courses informally and get a few friends to sign up? Can you pay me a commission?",
+        "slug": "just-promote-informally"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.688Z",
+    "updatedAt": "2025-11-04T19:04:38.688Z",
+    "category": "General"
+  },
+  {
+    "id": "our-product-course-without-ai-tools",
+    "title": "Can I buy the course without the AI Tools (and vice versa)?",
+    "description": "Can I buy components of the toolkit separately?",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "No. We provide our solutions as a bundle. Our solutions are designed to complement each other and work together to help you create high quality presentations, fast."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "our-product/course-without-ai-tools",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Our Product",
+        "slug": "our-product"
+      },
+      {
+        "title": "Can I buy the course without the AI Tools (and vice versa)?",
+        "slug": "our-product/course-without-ai-tools"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.688Z",
+    "updatedAt": "2025-11-04T19:04:38.688Z",
+    "category": "Our Product"
+  },
+  {
+    "id": "our-product-our-product",
+    "title": "Our Product",
+    "description": "Answers to questions about our Toolkit",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Answers to questions about our Toolkit"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "our-product/our-product",
+    "order": 311,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Our Product",
+        "slug": "our-product"
+      },
+      {
+        "title": "Our Product",
+        "slug": "our-product/our-product"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.688Z",
+    "updatedAt": "2025-11-04T19:04:38.688Z",
+    "category": "Our Product"
+  },
+  {
+    "id": "purchases-invoicing-purchases-invoicing",
+    "title": "Purchases & Invoicing",
+    "description": "Answers to questions on how to purchase SlideHeroes",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "???"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "purchases-invoicing/purchases-invoicing",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Purchases Invoicing",
+        "slug": "purchases-invoicing"
+      },
+      {
+        "title": "Purchases & Invoicing",
+        "slug": "purchases-invoicing/purchases-invoicing"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.689Z",
+    "updatedAt": "2025-11-04T19:04:38.689Z",
+    "category": "Purchases Invoicing"
+  },
+  {
+    "id": "purchases-invoicing-currencies",
+    "title": "What currency do you price in?",
+    "description": "Is this US Dollars, Canadian Dollars, Australian Dollars, New Zealand Dollars, Guyanese Dollars?",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We charge all of our courses in US Dollars. While we are a Canadian company, we\nuse USD as a base currency because of the global nature of our customer base."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "purchases-invoicing/currencies",
+    "order": 299,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Purchases Invoicing",
+        "slug": "purchases-invoicing"
+      },
+      {
+        "title": "What currency do you price in?",
+        "slug": "purchases-invoicing/currencies"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.688Z",
+    "updatedAt": "2025-11-04T19:04:38.688Z",
+    "category": "Purchases Invoicing"
+  },
+  {
+    "id": "purchases-invoicing-payment-methods",
+    "title": "What payment methods do you accept?",
+    "description": "What payment methods does SlideHeroes support??",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Currently, SlideHeroes supports several different payment methods, depending on\nyour account country and location."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "This article outlines how you can confirm\nwhich payment methods are available to you, when you go to purchase a course."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "The following are the payment methods we support today:"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**International Credit and Debit Cards:**"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We accept most major international credit and debit cards like Visa, MasterCard, American Express, JCB and Discover."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "PayPal is a supported method of payment for SlideHeroes courses in most countries."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "For Teams we support ACH Bank Transfers globally. If there is a payment method that we do not support that you require, please reach out to SlideHeroes Support."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "purchases-invoicing/payment-methods",
+    "order": 312,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Purchases Invoicing",
+        "slug": "purchases-invoicing"
+      },
+      {
+        "title": "What payment methods do you accept?",
+        "slug": "purchases-invoicing/payment-methods"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.689Z",
+    "updatedAt": "2025-11-04T19:04:38.689Z",
+    "category": "Purchases Invoicing"
+  },
+  {
+    "id": "refunds-refunds",
+    "title": "Refunds",
+    "description": "Our Refund Policy and how to request a refund",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "???"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "refunds/refunds",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Refunds",
+        "slug": "refunds"
+      },
+      {
+        "title": "Refunds",
+        "slug": "refunds/refunds"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.690Z",
+    "updatedAt": "2025-11-04T19:04:38.690Z",
+    "category": "Refunds"
+  },
+  {
+    "id": "refunds-refund-policy",
+    "title": "Our Refund Policy",
+    "description": "Our Refund Policy",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We want you to be satisfied, so all eligible courses purchased on Udemy can be\nrefunded within 30 days, provided the request meets the guidelines in our refund\npolicy. ## How to submit a refund request Learn how to submit a refund request…\n[Read more](/docs/overview). ## Our 30-day policy While our 30-day refund policy\nis to allow students to learn risk free, we also must protect against fraud. We\nwill not process refund requests received after the refund window. ## Additional\nreasons for denied refunds We reserve the right, in our sole discretion, to\nlimit or deny refund requests in cases where we believe there is refund abuse,\nincluding but not limited to the following: - A significant portion of the\ncourse has been consumed or downloaded by a student before the refund was\nrequested. - Multiple refunds have been requested by a student for the same\ncourse. - Excessive refunds have been requested by a student. - We do not grant\nrefunds for any subscription services unless otherwise required by applicable\nlaw (please see below for more information). These refund restrictions will be\nenforced to the extent permitted by applicable law. ## Refund requests for\ncourses purchased with an academic discount We do not provide refunds on\nSlideHeroes courses purchased with an academic discount that are part of a\nuniversity or college course."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "refunds/refund-policy",
+    "order": 314,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Refunds",
+        "slug": "refunds"
+      },
+      {
+        "title": "Our Refund Policy",
+        "slug": "refunds/refund-policy"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.689Z",
+    "updatedAt": "2025-11-04T19:04:38.689Z",
+    "category": "Refunds"
+  },
+  {
+    "id": "refunds-refund-process",
+    "title": "Refund Process",
+    "description": "How to request a refund",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "We want you to be satisfied, so all eligible courses purchased from SlideHeroes can be refunded within 30 days."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "For whatever reason, if you are unhappy with a course, you can request a refund, provided the request meets the guidelines in our [refund policy](/refund-policy)"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Most refunds are returned via the original payment method. Please note that certain restrictions may apply and some purchases may only be eligible for credit refunds."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "tag": "h2",
+            "children": [
+              {
+                "type": "text",
+                "text": "How to request a refund:"
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "listType": "bullet",
+            "children": [
+              {
+                "type": "listitem",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "Review our [Refund Policy](/refund-policy)"
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "If your purchase data is within 30 days, forward your purchase receipt to support@slideheroes.com"
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "We will respond with confirmation of a refund within 24 hours."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "refunds/refund-process",
+    "order": 314,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Refunds",
+        "slug": "refunds"
+      },
+      {
+        "title": "Refund Process",
+        "slug": "refunds/refund-process"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.689Z",
+    "updatedAt": "2025-11-04T19:04:38.689Z",
+    "category": "Refunds"
+  },
+  {
+    "id": "technical-support-custom-invoices",
+    "title": "Custom Invoices",
+    "description": "Creating custom invoices that meet your government / company requirements.",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Not a problem."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Contact us at [SlideHeroes Support](mailto:support@slideheroes.com) and we will sort it out."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "technical-support/custom-invoices",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Technical Support",
+        "slug": "technical-support"
+      },
+      {
+        "title": "Custom Invoices",
+        "slug": "technical-support/custom-invoices"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.690Z",
+    "updatedAt": "2025-11-04T19:04:38.690Z",
+    "category": "Technical Support"
+  },
+  {
+    "id": "technical-support-technical-support",
+    "title": "Technical Support",
+    "description": "Answers to common technical support questions.",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "MakerKit uses Supabase to manage authentication within your application. By\ndefault, every kit comes with the following built-in authentication methods: -\n**Email/Password** - we added, by default, the traditional way of signing in -\n**Third Party Providers** - we also added by default Google Auth sign-in -\n**Email Links** - **Phone Number** You're free to add (or remove) any of the\nmethods supported by Supabase's Authentication: we will see how."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "technical-support/technical-support",
+    "order": 1,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Technical Support",
+        "slug": "technical-support"
+      },
+      {
+        "title": "Technical Support",
+        "slug": "technical-support/technical-support"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.690Z",
+    "updatedAt": "2025-11-04T19:04:38.690Z",
+    "category": "Technical Support"
+  },
+  {
+    "id": "technical-support-troubleshooting-payments",
+    "title": "Troubleshooting Failed Payments",
+    "description": "Help for resolving failed payments.",
+    "content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "children": [
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "If you've incurred an error while attempting to make a payment, and can’t complete your purchase, this article explains common reasons for failed payment attempts and how to prevent them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "tag": "h2",
+            "children": [
+              {
+                "type": "text",
+                "text": "Common reasons for failed payments and how to prevent them"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Incorrectly entered information:** please ensure you enter the first and last name of the card account holder, exactly as it appears on the card, and that you enter it in the Name on Card field. For example, if the card account holder’s name reads John R. Doe, then John R. Doe must be entered, as shown below"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Incorrect CVC code:** please ensure you’re only entering numbers and that the code is correct, as listed on the back of the card."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Using a debit card not authorized for international purchases:** SlideHeroes is based in Canada, and debit cards in many countries do not allow foreign transactions. If you do not see a local payment option when checking out on SlideHeroes, call your bank to ensure your card is authorized for international purchases. Please note that SlideHeroes is not able to remove these restrictions."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Issuing country for the card is different from country of residence:** if the issuing country for your card is different from your country of residence, your card might not be approved. Try another payment method or contact your bank."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Attempting payments while using a VPN**: multiple IP addresses can result in authorization problems and failed transactions. We advise that you refrain from using a virtual private network (VPN) while making a purchase on SlideHeroes."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Too many payment attempts have been made in the last 24 hours:** some cards have usage limitations, and will automatically block payment attempts after a certain threshold has been reached. Try contacting your bank or using a different payment method."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "**Browser isn’t working correctly due to caching issues:** if you’re seeing a notification your card number looks invalid or icons aren’t showing up, there may be a caching issue. Please [clear your browser’s cache](https://app.intercom.com/Browser isn’t working correctly due to caching issues: if you’re seeing a notification your card number looks invalid or icons aren’t showing up, there may be a caching issue. Please clear your browser’s cache and try again.) and try again."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "tag": "h2",
+            "children": [
+              {
+                "type": "text",
+                "text": "Still encountering issues? Your bank should have more information"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "Some of the most common reasons banks decline payments include insufficient funds, card purchase limitations, and card security policies, among other issues. Since SlideHeroes does not have details regarding why a payment is declined, we recommend contacting your financial institution directly."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "children": [
+              {
+                "type": "text",
+                "text": "It’s important to let your bank know that you would like to make a payment on SlideHeroes.com and that Udemy is a company based in Canada."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "slug": "technical-support/troubleshooting-payments",
+    "order": 316,
+    "featured": false,
+    "tags": [],
+    "breadcrumbs": [
+      {
+        "title": "Technical Support",
+        "slug": "technical-support"
+      },
+      {
+        "title": "Troubleshooting Failed Payments",
+        "slug": "technical-support/troubleshooting-payments"
+      }
+    ],
+    "published": true,
+    "createdAt": "2025-11-04T19:04:38.690Z",
+    "updatedAt": "2025-11-04T19:04:38.690Z",
+    "category": "Technical Support"
+  }
 ]

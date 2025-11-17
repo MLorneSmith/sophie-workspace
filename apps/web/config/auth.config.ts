@@ -35,10 +35,50 @@ const AuthConfigSchema = z.object({
 	}),
 });
 
+/**
+ * Determine which Turnstile sitekey to use based on environment
+ *
+ * For CI/CD, test environments, and non-production Vercel deployments,
+ * use Cloudflare's official test key that always passes validation.
+ * This allows Playwright tests to run without being blocked by CAPTCHA challenges.
+ *
+ * Test sitekey: 1x00000000000000000000AA (works on any domain, always passes)
+ */
+function getCaptchaSiteKey(): string | undefined {
+	const isTestEnvironment =
+		process.env.NODE_ENV === "test" ||
+		process.env.CI === "true" ||
+		process.env.PLAYWRIGHT_TEST === "true" ||
+		process.env.VERCEL_ENV === "development" ||
+		process.env.VERCEL_ENV === "preview";
+
+	if (isTestEnvironment) {
+		// Cloudflare's official test sitekey - always passes
+		return "1x00000000000000000000AA";
+	}
+
+	// Production sitekey from environment variable
+	return process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
+}
+
+const captchaSiteKey = getCaptchaSiteKey();
+
+// Security check: Prevent test keys from being used in production Vercel deployments
+if (
+	process.env.VERCEL_ENV === "production" &&
+	captchaSiteKey === "1x00000000000000000000AA"
+) {
+	throw new Error(
+		"❌ SECURITY: Cloudflare Turnstile test keys detected in production deployment! " +
+			"Set NEXT_PUBLIC_CAPTCHA_SITE_KEY environment variable with your production sitekey.",
+	);
+}
+
 const authConfig = AuthConfigSchema.parse({
 	// NB: This is a public key, so it's safe to expose.
-	// Copy the value from the Supabase Dashboard.
-	captchaTokenSiteKey: process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY,
+	// In test/CI environments, uses Cloudflare's official test key.
+	// Copy the production value from the Supabase Dashboard.
+	captchaTokenSiteKey: captchaSiteKey,
 
 	// whether to display the terms checkbox during sign-up
 	displayTermsCheckbox:

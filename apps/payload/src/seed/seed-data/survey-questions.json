@@ -1,594 +1,830 @@
 [
-	{
-		"id": "2cc7d966-503b-4117-af7b-1dc79933faa9",
-		"text": "Did 'Decks for Decision Makers' meet your expectations?",
-		"type": "scale",
-		"options": [
-			"Very dissatisfied",
-			"Somewhat dissatisfied",
-			"Neither satisfied nor dissatisfied",
-			"Somewhat Satisfied",
-			"Very satisfied"
-		],
-		"required": true,
-		"order": 1,
-		"category": "satisfaction",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:2cc7d966-503b-4117-af7b-1dc79933faa9"
-	},
-	{
-		"id": "06b8bcd4-4aab-4b0f-a6ad-8781ac85c526",
-		"text": "How would you rate the quality of the training?",
-		"type": "scale",
-		"options": [
-			"Unacceptable",
-			"Poor",
-			"Satisfactory",
-			"Good",
-			"Outstanding"
-		],
-		"required": true,
-		"order": 2,
-		"category": "quality",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:06b8bcd4-4aab-4b0f-a6ad-8781ac85c526"
-	},
-	{
-		"id": "73bb9eed-24bc-4fda-97af-2455f8933a22",
-		"text": "How likely are you to recommend this course to a friend, partner, or colleague?",
-		"type": "scale",
-		"options": [
-			"1 - Unlikely",
-			"2",
-			"3",
-			"4",
-			"5",
-			"6",
-			"7",
-			"8",
-			"9",
-			"10 - Extremely likely"
-		],
-		"required": true,
-		"order": 3,
-		"category": "recommendation",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:73bb9eed-24bc-4fda-97af-2455f8933a22"
-	},
-	{
-		"id": "e772e7be-1fa9-48b7-b5bb-921bfc2ebc1d",
-		"text": "Do you have any suggestions to improve this course?",
-		"type": "textarea",
-		"required": true,
-		"order": 4,
-		"category": "improvement",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:e772e7be-1fa9-48b7-b5bb-921bfc2ebc1d"
-	},
-	{
-		"id": "53329e5d-e383-442b-b469-d76728731b6c",
-		"text": "While presenting, no one has trouble following my thought process",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 1,
-		"category": "structure",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:53329e5d-e383-442b-b469-d76728731b6c"
-	},
-	{
-		"id": "16934f2f-b04c-412f-ac6c-1f8f932501cb",
-		"text": "I regularly use metaphors, analogies, and anecdote in my presentations",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 2,
-		"category": "story",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:16934f2f-b04c-412f-ac6c-1f8f932501cb"
-	},
-	{
-		"id": "0dad2b43-7b6f-455d-8da0-9362bcf0a5ed",
-		"text": "I support my arguments with trustworthy evidence from authentic sources",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 3,
-		"category": "substance",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:0dad2b43-7b6f-455d-8da0-9362bcf0a5ed"
-	},
-	{
-		"id": "6f913fb9-219d-42a6-90bd-0a250eea4aac",
-		"text": "I am good at designing simple, clear slides that convey my point",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 4,
-		"category": "style",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:6f913fb9-219d-42a6-90bd-0a250eea4aac"
-	},
-	{
-		"id": "f29e2f0e-7e5c-4d1e-8caa-7d2974b4036b",
-		"text": "I always feel anxious and nervous before giving a presentation",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 5,
-		"category": "self-confidence",
-		"scoring": "reverse",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:f29e2f0e-7e5c-4d1e-8caa-7d2974b4036b"
-	},
-	{
-		"id": "175877c9-84fd-4b81-88c0-a384cdd31963",
-		"text": "I always tailor my presentation strategy, content, and approach to different audiences and different levels of knowledge",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 6,
-		"category": "structure",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:175877c9-84fd-4b81-88c0-a384cdd31963"
-	},
-	{
-		"id": "8e1a59af-709c-49b1-9eed-066368067689",
-		"text": "I tend to read the slides back to my audience, rather than adding additional verbal context or color",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 7,
-		"category": "story",
-		"scoring": "reverse",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:8e1a59af-709c-49b1-9eed-066368067689"
-	},
-	{
-		"id": "82d87178-9f19-47c9-8e95-5cd1fbf75cb3",
-		"text": "I regularly present data to support my conclusions and effectively leverage all types of charts and tables",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 8,
-		"category": "substance",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:82d87178-9f19-47c9-8e95-5cd1fbf75cb3"
-	},
-	{
-		"id": "066b371e-e4d4-442b-af40-50b78b32c22a",
-		"text": "The content I develop for my presentations has the appropriate level of detail for the audience and situation",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 9,
-		"category": "style",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:066b371e-e4d4-442b-af40-50b78b32c22a"
-	},
-	{
-		"id": "d4d39618-26c5-456f-a490-4c71ea6634bf",
-		"text": "When presenting I have command over the room. I look and sound confident and assertive. I exude charisma.",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 10,
-		"category": "self-confidence",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:d4d39618-26c5-456f-a490-4c71ea6634bf"
-	},
-	{
-		"id": "a84da191-db2f-4f71-8cb2-5384407264d6",
-		"text": "I create presentations designed to meet the needs of my audience",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 11,
-		"category": "structure",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:a84da191-db2f-4f71-8cb2-5384407264d6"
-	},
-	{
-		"id": "54a241e5-135e-49cc-a1e7-481df5b79e42",
-		"text": "I use storyboards to map out my presentations in advance",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 12,
-		"category": "story",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:54a241e5-135e-49cc-a1e7-481df5b79e42"
-	},
-	{
-		"id": "36d22e8e-77e0-436b-a8b6-6581a88b8fe9",
-		"text": "I create my ideas first, before creating slides",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 13,
-		"category": "substance",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:36d22e8e-77e0-436b-a8b6-6581a88b8fe9"
-	},
-	{
-		"id": "b31cdc99-3f50-491d-b7cd-af518b4e4619",
-		"text": "The visuals of my presentation match well with the information I am communicating",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 14,
-		"category": "style",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:b31cdc99-3f50-491d-b7cd-af518b4e4619"
-	},
-	{
-		"id": "02683c33-3c7c-488a-9801-3325a1b3393d",
-		"text": "I rehearse so there is a minimum use of notes and maximum attention paid to the audience",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 15,
-		"category": "self-confidence",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:02683c33-3c7c-488a-9801-3325a1b3393d"
-	},
-	{
-		"id": "166c9860-666b-4976-9979-ea95081938d6",
-		"text": "I spend significant time and effort optimizing the structure of my presentation",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 16,
-		"category": "structure",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:166c9860-666b-4976-9979-ea95081938d6"
-	},
-	{
-		"id": "a9b06668-856e-48ad-a1aa-f694daa13435",
-		"text": "I am good at turning examples into colorful stories",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 17,
-		"category": "story",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:a9b06668-856e-48ad-a1aa-f694daa13435"
-	},
-	{
-		"id": "8de55581-c7bb-41be-9e8b-b282e79d19f8",
-		"text": "I have a good sense as to when it is better to use a graph over a table (and vice versa)",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 18,
-		"category": "substance",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:8de55581-c7bb-41be-9e8b-b282e79d19f8"
-	},
-	{
-		"id": "2b780a4f-ea1b-4551-a41e-77a3f8c95b2e",
-		"text": "I apply a basic understanding of the principles of visual perception to create more effective slides",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 19,
-		"category": "style",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:2b780a4f-ea1b-4551-a41e-77a3f8c95b2e"
-	},
-	{
-		"id": "aadb515e-84c5-43e0-8d3f-dd60a704bb7a",
-		"text": "I develop a script in advance of my most important meetings",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 20,
-		"category": "self-confidence",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:aadb515e-84c5-43e0-8d3f-dd60a704bb7a"
-	},
-	{
-		"id": "b30463ce-a1a5-449e-a4af-49af11afa992",
-		"text": "I understand concepts like MECE, inductive versus deductive reasoning, and the principle of abstration",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 21,
-		"category": "structure",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:b30463ce-a1a5-449e-a4af-49af11afa992"
-	},
-	{
-		"id": "5e189afb-d88d-4565-9ba3-b67e021b69b7",
-		"text": "I emulate scriptwriters and start with a bang to hook my audience from the very first moment",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 22,
-		"category": "story",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:5e189afb-d88d-4565-9ba3-b67e021b69b7"
-	},
-	{
-		"id": "275d1966-c1d9-4500-ab44-7505bd6bbd23",
-		"text": "I am familiar with tornado diagrams and waterfall & marimekko charts",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 23,
-		"category": "substance",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:275d1966-c1d9-4500-ab44-7505bd6bbd23"
-	},
-	{
-		"id": "19a6844a-6006-4c82-b682-65830500125b",
-		"text": "I create slides that leverage graphics and images (in addition to text) to communicate my ideas",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 24,
-		"category": "style",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:19a6844a-6006-4c82-b682-65830500125b"
-	},
-	{
-		"id": "4a4632de-f080-45e4-87e3-3f1ddacfe5e0",
-		"text": "I usually go well over my allotted time to speak",
-		"type": "scale",
-		"options": [
-			"Strongly disagree",
-			"Disagree",
-			"Neither agree nor disagree",
-			"Agree",
-			"Strongly agree"
-		],
-		"required": true,
-		"order": 25,
-		"category": "self-confidence",
-		"scoring": "reverse",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:4a4632de-f080-45e4-87e3-3f1ddacfe5e0"
-	},
-	{
-		"id": "8d94c918-253d-434d-b9c2-2c9430beece2",
-		"text": "Fill in the blank: After taking this course, I will be able to ________________________.",
-		"type": "textarea",
-		"required": true,
-		"order": 1,
-		"category": "goals",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:8d94c918-253d-434d-b9c2-2c9430beece2"
-	},
-	{
-		"id": "cdff1864-bbd3-4705-b89f-9860429227c4",
-		"text": "How experienced do you feel in this course's subject matter?",
-		"type": "scale",
-		"options": [
-			"1 - Very inexperienced",
-			"2",
-			"3",
-			"4",
-			"5 - Very experienced"
-		],
-		"required": true,
-		"order": 2,
-		"category": "experience",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:cdff1864-bbd3-4705-b89f-9860429227c4"
-	},
-	{
-		"id": "8a0e0f93-a3b7-43e1-897a-31dc749bfd60",
-		"text": "What's the biggest roadblock you have with this course's subject matter right now?",
-		"type": "textarea",
-		"required": true,
-		"order": 3,
-		"category": "roadblocks",
-		"scoring": "normal",
-		"tags": [],
-		"_status": "published",
-		"_ref": "survey-questions:8a0e0f93-a3b7-43e1-897a-31dc749bfd60"
-	}
+  {
+    "id": "920c9125-d4e8-4be5-8c61-5b2e2bf5027b",
+    "_ref": "920c9125-d4e8-4be5-8c61-5b2e2bf5027b",
+    "questionSlug": "feedback-q1",
+    "text": "Did 'Decks for Decision Makers' meet your expectations?",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Very dissatisfied"
+      },
+      {
+        "option": "Somewhat dissatisfied"
+      },
+      {
+        "option": "Neither satisfied nor dissatisfied"
+      },
+      {
+        "option": "Somewhat Satisfied"
+      },
+      {
+        "option": "Very satisfied"
+      }
+    ],
+    "required": true,
+    "category": "satisfaction",
+    "_status": "published"
+  },
+  {
+    "id": "76ed3d48-34c2-412a-93f4-6e1cac7631e7",
+    "_ref": "76ed3d48-34c2-412a-93f4-6e1cac7631e7",
+    "questionSlug": "feedback-q2",
+    "text": "How would you rate the quality of the training?",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Unacceptable"
+      },
+      {
+        "option": "Poor"
+      },
+      {
+        "option": "Satisfactory"
+      },
+      {
+        "option": "Good"
+      },
+      {
+        "option": "Outstanding"
+      }
+    ],
+    "required": true,
+    "category": "quality",
+    "_status": "published"
+  },
+  {
+    "id": "528df2c8-3212-458e-a065-fc403c00370b",
+    "_ref": "528df2c8-3212-458e-a065-fc403c00370b",
+    "questionSlug": "feedback-q3",
+    "text": "How likely are you to recommend this course to a friend, partner, or colleague?",
+    "type": "scale",
+    "options": [
+      {
+        "option": "1 - Unlikely"
+      },
+      {
+        "option": "2"
+      },
+      {
+        "option": "3"
+      },
+      {
+        "option": "4"
+      },
+      {
+        "option": "5"
+      },
+      {
+        "option": "6"
+      },
+      {
+        "option": "7"
+      },
+      {
+        "option": "8"
+      },
+      {
+        "option": "9"
+      },
+      {
+        "option": "10 - Extremely likely"
+      }
+    ],
+    "required": true,
+    "category": "recommendation",
+    "_status": "published"
+  },
+  {
+    "id": "ebd796da-956f-4e4d-bf02-ef75ef66dbeb",
+    "_ref": "ebd796da-956f-4e4d-bf02-ef75ef66dbeb",
+    "questionSlug": "feedback-q4",
+    "text": "Do you have any suggestions to improve this course?",
+    "type": "textarea",
+    "required": true,
+    "category": "improvement",
+    "_status": "published"
+  },
+  {
+    "id": "264307e9-6839-4546-ab8b-e450f2b828fb",
+    "_ref": "264307e9-6839-4546-ab8b-e450f2b828fb",
+    "questionSlug": "self-assessment-q1",
+    "text": "While presenting, no one has trouble following my thought process",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "structure",
+    "_status": "published"
+  },
+  {
+    "id": "0c8adf1e-76f6-4f18-9453-4856673a4118",
+    "_ref": "0c8adf1e-76f6-4f18-9453-4856673a4118",
+    "questionSlug": "self-assessment-q2",
+    "text": "I regularly use metaphors, analogies, and anecdote in my presentations",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "story",
+    "_status": "published"
+  },
+  {
+    "id": "1a99a4cc-8061-46b1-aa73-dc314fe8407f",
+    "_ref": "1a99a4cc-8061-46b1-aa73-dc314fe8407f",
+    "questionSlug": "self-assessment-q3",
+    "text": "I support my arguments with trustworthy evidence from authentic sources",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "substance",
+    "_status": "published"
+  },
+  {
+    "id": "4cef08f6-1d4c-442e-a6c5-774362111ad7",
+    "_ref": "4cef08f6-1d4c-442e-a6c5-774362111ad7",
+    "questionSlug": "self-assessment-q4",
+    "text": "I am good at designing simple, clear slides that convey my point",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "style",
+    "_status": "published"
+  },
+  {
+    "id": "13c5922b-d97e-4e33-9a15-c19cc1da6c80",
+    "_ref": "13c5922b-d97e-4e33-9a15-c19cc1da6c80",
+    "questionSlug": "self-assessment-q5",
+    "text": "I always feel anxious and nervous before giving a presentation",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "self-confidence",
+    "_status": "published"
+  },
+  {
+    "id": "32a631b0-1c8a-4e97-bb00-6c1c04fad100",
+    "_ref": "32a631b0-1c8a-4e97-bb00-6c1c04fad100",
+    "questionSlug": "self-assessment-q6",
+    "text": "I always tailor my presentation strategy, content, and approach to different audiences and different levels of knowledge",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "structure",
+    "_status": "published"
+  },
+  {
+    "id": "1ef61623-9617-4fea-97ea-25d6469f5eea",
+    "_ref": "1ef61623-9617-4fea-97ea-25d6469f5eea",
+    "questionSlug": "self-assessment-q7",
+    "text": "I tend to read the slides back to my audience, rather than adding additional verbal context or color",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "story",
+    "_status": "published"
+  },
+  {
+    "id": "df75f06a-ca05-41bc-bcd8-2b9c961ac875",
+    "_ref": "df75f06a-ca05-41bc-bcd8-2b9c961ac875",
+    "questionSlug": "self-assessment-q8",
+    "text": "I regularly present data to support my conclusions and effectively leverage all types of charts and tables",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "substance",
+    "_status": "published"
+  },
+  {
+    "id": "9eef0384-67f3-40a4-9b31-386733c78aa9",
+    "_ref": "9eef0384-67f3-40a4-9b31-386733c78aa9",
+    "questionSlug": "self-assessment-q9",
+    "text": "The content I develop for my presentations has the appropriate level of detail for the audience and situation",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "style",
+    "_status": "published"
+  },
+  {
+    "id": "1e5852b9-cf1e-47b2-bf2e-dfa8c316d50e",
+    "_ref": "1e5852b9-cf1e-47b2-bf2e-dfa8c316d50e",
+    "questionSlug": "self-assessment-q10",
+    "text": "When presenting I have command over the room. I look and sound confident and assertive. I exude charisma.",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "self-confidence",
+    "_status": "published"
+  },
+  {
+    "id": "f1d27d7e-5b37-4766-a720-79416029a305",
+    "_ref": "f1d27d7e-5b37-4766-a720-79416029a305",
+    "questionSlug": "self-assessment-q11",
+    "text": "I create presentations designed to meet the needs of my audience",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "structure",
+    "_status": "published"
+  },
+  {
+    "id": "c116d64a-59d7-41ce-85f5-2d47eac469f1",
+    "_ref": "c116d64a-59d7-41ce-85f5-2d47eac469f1",
+    "questionSlug": "self-assessment-q12",
+    "text": "I use storyboards to map out my presentations in advance",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "story",
+    "_status": "published"
+  },
+  {
+    "id": "23375c27-3f57-4b78-9644-c042eb19c567",
+    "_ref": "23375c27-3f57-4b78-9644-c042eb19c567",
+    "questionSlug": "self-assessment-q13",
+    "text": "I create my ideas first, before creating slides",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "substance",
+    "_status": "published"
+  },
+  {
+    "id": "ec85ab81-938a-481a-868d-07d0431380a1",
+    "_ref": "ec85ab81-938a-481a-868d-07d0431380a1",
+    "questionSlug": "self-assessment-q14",
+    "text": "The visuals of my presentation match well with the information I am communicating",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "style",
+    "_status": "published"
+  },
+  {
+    "id": "a84a11bc-683c-477e-8daf-c3abde01de25",
+    "_ref": "a84a11bc-683c-477e-8daf-c3abde01de25",
+    "questionSlug": "self-assessment-q15",
+    "text": "I rehearse so there is a minimum use of notes and maximum attention paid to the audience",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "self-confidence",
+    "_status": "published"
+  },
+  {
+    "id": "512b1795-5818-4d39-9a8f-f1eafb8a403c",
+    "_ref": "512b1795-5818-4d39-9a8f-f1eafb8a403c",
+    "questionSlug": "self-assessment-q16",
+    "text": "I spend significant time and effort optimizing the structure of my presentation",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "structure",
+    "_status": "published"
+  },
+  {
+    "id": "8293c245-da1e-405b-b75e-3c033975218b",
+    "_ref": "8293c245-da1e-405b-b75e-3c033975218b",
+    "questionSlug": "self-assessment-q17",
+    "text": "I am good at turning examples into colorful stories",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "story",
+    "_status": "published"
+  },
+  {
+    "id": "6e436881-4f8c-46be-909e-b6aae2adbc7a",
+    "_ref": "6e436881-4f8c-46be-909e-b6aae2adbc7a",
+    "questionSlug": "self-assessment-q18",
+    "text": "I have a good sense as to when it is better to use a graph over a table (and vice versa)",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "substance",
+    "_status": "published"
+  },
+  {
+    "id": "cb911905-5344-4faa-897b-198a85b6d1bb",
+    "_ref": "cb911905-5344-4faa-897b-198a85b6d1bb",
+    "questionSlug": "self-assessment-q19",
+    "text": "I apply a basic understanding of the principles of visual perception to create more effective slides",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "style",
+    "_status": "published"
+  },
+  {
+    "id": "0f58660a-1929-47a1-beaf-ad6200c04b00",
+    "_ref": "0f58660a-1929-47a1-beaf-ad6200c04b00",
+    "questionSlug": "self-assessment-q20",
+    "text": "I develop a script in advance of my most important meetings",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "self-confidence",
+    "_status": "published"
+  },
+  {
+    "id": "e31f229c-649d-4d17-b67d-b5a647eac29a",
+    "_ref": "e31f229c-649d-4d17-b67d-b5a647eac29a",
+    "questionSlug": "self-assessment-q21",
+    "text": "I understand concepts like MECE, inductive versus deductive reasoning, and the principle of abstration",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "structure",
+    "_status": "published"
+  },
+  {
+    "id": "f7110ad7-29ee-4667-b53b-949eaf96ac41",
+    "_ref": "f7110ad7-29ee-4667-b53b-949eaf96ac41",
+    "questionSlug": "self-assessment-q22",
+    "text": "I emulate scriptwriters and start with a bang to hook my audience from the very first moment",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "story",
+    "_status": "published"
+  },
+  {
+    "id": "14ffa83d-b4ce-4e20-9656-7d223befaa16",
+    "_ref": "14ffa83d-b4ce-4e20-9656-7d223befaa16",
+    "questionSlug": "self-assessment-q23",
+    "text": "I am familiar with tornado diagrams and waterfall & marimekko charts",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "substance",
+    "_status": "published"
+  },
+  {
+    "id": "86cdd4bd-b82e-4073-97f2-bdf8da90927e",
+    "_ref": "86cdd4bd-b82e-4073-97f2-bdf8da90927e",
+    "questionSlug": "self-assessment-q24",
+    "text": "I create slides that leverage graphics and images (in addition to text) to communicate my ideas",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "style",
+    "_status": "published"
+  },
+  {
+    "id": "fb162eaa-c33d-4881-ae57-20b5ccef470f",
+    "_ref": "fb162eaa-c33d-4881-ae57-20b5ccef470f",
+    "questionSlug": "self-assessment-q25",
+    "text": "I usually go well over my allotted time to speak",
+    "type": "scale",
+    "options": [
+      {
+        "option": "Strongly disagree"
+      },
+      {
+        "option": "Disagree"
+      },
+      {
+        "option": "Neither agree nor disagree"
+      },
+      {
+        "option": "Agree"
+      },
+      {
+        "option": "Strongly agree"
+      }
+    ],
+    "required": true,
+    "category": "self-confidence",
+    "_status": "published"
+  },
+  {
+    "id": "36cf92ef-8674-4689-b879-5289c392bf43",
+    "_ref": "36cf92ef-8674-4689-b879-5289c392bf43",
+    "questionSlug": "three-quick-questions-q1",
+    "text": "Fill in the blank: After taking this course, I will be able to ________________________.",
+    "type": "textarea",
+    "required": true,
+    "category": "goals",
+    "_status": "published"
+  },
+  {
+    "id": "a0811feb-dfc8-448e-8932-1df214fa5b6f",
+    "_ref": "a0811feb-dfc8-448e-8932-1df214fa5b6f",
+    "questionSlug": "three-quick-questions-q2",
+    "text": "How experienced do you feel in this course's subject matter?",
+    "type": "scale",
+    "options": [
+      {
+        "option": "1 - Very inexperienced"
+      },
+      {
+        "option": "2"
+      },
+      {
+        "option": "3"
+      },
+      {
+        "option": "4"
+      },
+      {
+        "option": "5 - Very experienced"
+      }
+    ],
+    "required": true,
+    "category": "experience",
+    "_status": "published"
+  },
+  {
+    "id": "221b29c1-189a-4ad8-8136-39af3bfcc1bf",
+    "_ref": "221b29c1-189a-4ad8-8136-39af3bfcc1bf",
+    "questionSlug": "three-quick-questions-q3",
+    "text": "What's the biggest roadblock you have with this course's subject matter right now?",
+    "type": "textarea",
+    "required": true,
+    "category": "roadblocks",
+    "_status": "published"
+  }
 ]
