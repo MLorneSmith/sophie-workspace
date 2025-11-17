@@ -3,9 +3,11 @@
 		"allow": [
 			"WebSearch",
 			"WebFetch(domain:code.claude.com)",
-			"WebFetch(domain:docs.perplexity.ai)"
+			"WebFetch(domain:docs.perplexity.ai)",
+			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*)"
 		]
 	},
+	"enabledMcpjsonServers": ["playwright"],
 	"disabledMcpjsonServers": [
 		"exa",
 		"perplexity-ask",
