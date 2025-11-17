@@ -109,7 +109,7 @@ The test-controller provides structured output with clear failure indicators:
 
 <inputs>
 **Load** essential testing environment context:
-- Read .claude/context/testing/environment/e2e-local-environment.md
+- Read .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
 
 **Parse** command arguments:
 
@@ -126,7 +126,7 @@ The test-controller provides structured output with clear failure indicators:
 **Step 1: Read Environment Context**
 
 ```
-Always read first: .claude/context/testing/environment/e2e-local-environment.md
+Always read first: .ai/ai_docs/context-docs/testing+quality/e2e-testing.md
 ```
 
 **Step 2: Execute Safe Test Runner**

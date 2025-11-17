@@ -169,7 +169,7 @@ Based on task: "[Task Description]"
 
 **Matched Keywords:** keyword1, keyword2, keyword3
 
-**Files to Load (ordered by relevance):**
+**Files to Read (ordered by relevance):**
 
 1. `.ai/ai_docs/context-docs/development/architecture-overview.md` (default)
 2. `.ai/ai_docs/context-docs/infrastructure/auth-overview.md` (high priority: auth, login)
