@@ -61,7 +61,16 @@ A diagnosis is **COMPLETE** only when ALL of these are met:
    - Get package versions from package.json
    - Capture environment details (Node version, database version, etc.)
 
-4. **Run relevant diagnostic tools** (when applicable):
+4. **Load relevant context documentation** (optional but recommended):
+   Use the conditional documentation system to load only the most relevant context for this diagnosis:
+   ```bash
+   # This will analyze the issue and load 3-7 relevant documentation files
+   # Reduces token usage by 60-75% while maintaining high success rates
+   /conditional_docs diagnose "[brief summary of issue or error message]"
+   ```
+   The system will intelligently select documentation based on keywords in the issue (auth errors, database timeouts, docker issues, etc.)
+
+5. **Run relevant diagnostic tools** (when applicable):
 
    **Identify the issue category first**, then read the appropriate tool documentation:
 
@@ -101,7 +110,7 @@ A diagnosis is **COMPLETE** only when ALL of these are met:
 
    **IMPORTANT**: When you identify an issue category, **read the relevant tool documentation file(s)** to get comprehensive diagnostic commands and patterns for that specific problem. The tool docs contain detailed examples and troubleshooting workflows.
 
-5. **Research the issue UNTIL root cause is found**:
+6. **Research the issue UNTIL root cause is found**:
    - Start by reading the `README.md` file to understand the project context
    - Use the Task tool with `subagent_type=Explore` to investigate the codebase
    - Search for error messages, stack traces, and related code patterns

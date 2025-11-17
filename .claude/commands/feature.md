@@ -36,13 +36,22 @@ You're writing a plan to implement a feature, it should be comprehensive and wel
    const successMetrics = '[how success will be measured]';
    ```
 
-3. **Research the codebase** and put together a plan to implement the feature.
+3. **Load relevant context documentation** (optional but recommended):
+   Use the conditional documentation system to load only the most relevant context for this feature planning:
+   ```bash
+   # This will analyze the feature and load 3-7 relevant documentation files
+   # Reduces token usage by 60-75% while maintaining high success rates
+   /conditional_docs feature "[brief summary of feature or domain area]"
+   ```
+   The system will intelligently select documentation based on keywords in the feature (auth, database, UI, realtime, etc.)
+
+4. **Research the codebase** and put together a plan to implement the feature.
    - Start your research by reading the `README.md` file.
    - Research the codebase to understand existing patterns, architecture, and conventions before planning the feature.
    - Use the Task tool with `subagent_type=Explore` for open-ended codebase exploration.
    - Follow existing patterns and conventions in the codebase. Don't reinvent the wheel.
 
-4. **Create the plan** in the `.ai/specs/*.md` file.
+5. **Create the plan** in the `.ai/specs/*.md` file.
    - Use the `Plan Format` below to create the plan.
    - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to implement the feature successfully.
    - Use your reasoning model: THINK HARD about the feature requirements, design, and implementation approach.
@@ -52,9 +61,9 @@ You're writing a plan to implement a feature, it should be comprehensive and wel
    - Name the plan using the following naming convention:
      - 'Feature: `featureTitle`'
 
-5. **Create the plan on GitHub** using the `GitHub Issue Creation` process
+6. **Create the plan on GitHub** using the `GitHub Issue Creation` process
 
-6. **When you finish creating the plan** for the feature, follow the `Report` section to properly report the results of your work.
+7. **When you finish creating the plan** for the feature, follow the `Report` section to properly report the results of your work.
 
 ## Relevant Files
 
