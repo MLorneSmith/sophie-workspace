@@ -364,7 +364,26 @@ apps/web/app/home/[account]/
 
 ## UI Components
 
-UI Components are placed at `packages/ui`. Call MCP tool to list components to verify they exist.
+UI Components are placed at `packages/ui`. The library contains 45+ shadcn/ui components plus custom MakerKit and Aceternity components.
+
+### Adding New Components
+
+Use the shadcn CLI to add components:
+
+```bash
+# Add component from UI package
+pnpm --filter @kit/ui ui:add button
+
+# Search for components
+pnpm --filter @kit/ui ui:search -q "form"
+
+# Access community registries (@magicui, @aceternity, @shadcnblocks)
+cd packages/ui && npx shadcn@latest add @magicui/animated-button
+```
+
+**Important**: After adding a component via CLI, update the exports in `packages/ui/package.json`.
+
+For complete CLI documentation, see: `.ai/ai_docs/tool-docs/shadcn-cli.md`
 
 ## Conditional Documentation System
 

@@ -17,6 +17,78 @@ import { toast } from '@kit/ui/sonner';
 import { Trans } from '@kit/ui/trans';
 ```text
 
+## Using Shadcn CLI
+
+The shadcn/ui CLI enables quick addition of new components to the library. Components are source code (not npm packages), giving you full control over customization.
+
+### Quick Start
+
+**Add a component**:
+```bash
+# From project root
+pnpm --filter @kit/ui ui:add button
+
+# Or from packages/ui directory
+cd packages/ui && npx shadcn@latest add button
+```
+
+**Search available components**:
+```bash
+pnpm --filter @kit/ui ui:search -q "form"
+```
+
+**List installed components**:
+```bash
+pnpm --filter @kit/ui ui:list
+```
+
+### Complete Workflow
+
+1. **Search** for component: `pnpm --filter @kit/ui ui:search -q "toggle"`
+2. **Preview** code: `npx shadcn@latest view toggle` (optional)
+3. **Add** component: `cd packages/ui && npx shadcn@latest add toggle -y`
+4. **Update exports** in `packages/ui/package.json`:
+   ```json
+   {
+     "exports": {
+       "./toggle": "./src/shadcn/toggle.tsx"
+     }
+   }
+   ```
+5. **Test import**: Verify `import { Toggle } from '@kit/ui/toggle'` works
+6. **Commit**: `git add packages/ui && git commit -m "feat(ui): add toggle component"`
+
+### Registry Components
+
+Access 500+ community components from specialized registries:
+
+```bash
+# Search registry
+npx shadcn@latest search @magicui
+
+# View component code
+npx shadcn@latest view @magicui/animated-button
+
+# Install from registry
+cd packages/ui && npx shadcn@latest add @magicui/animated-button
+```
+
+**Featured Registries**:
+- **@magicui** - Animated components with Framer Motion
+- **@aceternity** - Modern UI with 3D effects
+- **@shadcnblocks** - Pre-built page sections and blocks
+
+### Documentation
+
+For complete CLI reference, see: `.ai/ai_docs/tool-docs/shadcn-cli.md`
+
+Topics covered:
+- All CLI commands (`init`, `add`, `search`, `view`, `build`)
+- Registry directory system
+- Monorepo workflows
+- Configuration reference
+- Troubleshooting guide
+
 ## Styling Guidelines
 
 - Use **Tailwind CSS v4** with semantic classes
