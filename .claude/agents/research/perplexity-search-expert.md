@@ -57,13 +57,13 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Search API** - Ranked Web Search with Filtering
 - **Best for**: Finding specific web content with ranking and filtering
-- **Command**: `uv run .ai/tools/perplexity/cli_search.py QUERY [options]`
+- **Command**: `.ai/bin/perplexity-search QUERY [options]`
 - **Filters**: Domains, languages, recency (day/week/month/year), date ranges
 - **Use case**: Recent research papers, time-filtered results, domain-specific searches
 
 #### **Chat Completions API** - AI-Powered Answers with Citations
 - **Best for**: AI-generated answers grounded in current web data
-- **Command**: `uv run .ai/tools/perplexity/cli_chat.py QUERY [options]`
+- **Command**: `.ai/bin/perplexity-chat QUERY [options]`
 - **Models**: sonar (fast), sonar-pro (comprehensive), sonar-reasoning (advanced)
 - **Use case**: Complex questions, comprehensive explanations, streaming responses
 
@@ -80,11 +80,11 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Chat API Pattern (Direct Answers)
 ```bash
 # Simple question with citations
-uv run .ai/tools/perplexity/cli_chat.py "What are the latest AI breakthroughs in 2025?" \
+.ai/bin/perplexity-chat "What are the latest AI breakthroughs in 2025?" \
   --show-citations
 
 # With specific model
-uv run .ai/tools/perplexity/cli_chat.py "Explain quantum computing" \
+.ai/bin/perplexity-chat "Explain quantum computing" \
   --model sonar-pro \
   --show-citations
 ```
@@ -92,13 +92,13 @@ uv run .ai/tools/perplexity/cli_chat.py "Explain quantum computing" \
 #### Search API Pattern (Filtered Results)
 ```bash
 # Domain-filtered search
-uv run .ai/tools/perplexity/cli_search.py "AI research papers" \
+.ai/bin/perplexity-search "AI research papers" \
   --domains arxiv.org,nature.com \
   --recency week \
   --num-results 10
 
 # Time-filtered search
-uv run .ai/tools/perplexity/cli_search.py "breaking news AI" \
+.ai/bin/perplexity-search "breaking news AI" \
   --recency day \
   --num-results 20
 ```
@@ -106,11 +106,11 @@ uv run .ai/tools/perplexity/cli_search.py "breaking news AI" \
 #### Multi-Query Research Pattern
 ```bash
 # Step 1: Get AI answer with overview
-uv run .ai/tools/perplexity/cli_chat.py "Latest developments in transformer models" \
+.ai/bin/perplexity-chat "Latest developments in transformer models" \
   --model sonar-pro
 
 # Step 2: Search for specific papers
-uv run .ai/tools/perplexity/cli_search.py "transformer attention mechanisms" \
+.ai/bin/perplexity-search "transformer attention mechanisms" \
   --domains arxiv.org,paperswithcode.com \
   --after-date 01/01/2025 \
   --num-results 15
@@ -120,7 +120,7 @@ uv run .ai/tools/perplexity/cli_search.py "transformer attention mechanisms" \
 
 ### Chat Completions Command
 ```bash
-uv run .ai/tools/perplexity/cli_chat.py QUERY \
+.ai/bin/perplexity-chat QUERY \
   [--model {sonar,sonar-pro,sonar-reasoning}] \
   [--system "SYSTEM_MESSAGE"] \
   [--temperature TEMP] \
@@ -132,7 +132,7 @@ uv run .ai/tools/perplexity/cli_chat.py QUERY \
 
 ### Search Command
 ```bash
-uv run .ai/tools/perplexity/cli_search.py QUERY \
+.ai/bin/perplexity-search QUERY \
   [--num-results N] \
   [--domains domain1,domain2] \
   [--languages lang1,lang2] \
@@ -188,21 +188,21 @@ uv run .ai/tools/perplexity/cli_search.py QUERY \
 ### Chat API (Direct Answers)
 ```bash
 # Simple question with citations
-uv run .ai/tools/perplexity/cli_chat.py "Latest React 19 features" --show-citations
+.ai/bin/perplexity-chat "Latest React 19 features" --show-citations
 
 # Complex question with specific model
-uv run .ai/tools/perplexity/cli_chat.py "Best practices for Next.js App Router" \
+.ai/bin/perplexity-chat "Best practices for Next.js App Router" \
   --model sonar-pro --show-citations
 ```
 
 ### Search API (Filtered Results)
 ```bash
 # Domain-filtered search
-uv run .ai/tools/perplexity/cli_search.py "React hydration errors" \
+.ai/bin/perplexity-search "React hydration errors" \
   --domains stackoverflow.com,github.com --recency month
 
 # Time-filtered academic search
-uv run .ai/tools/perplexity/cli_search.py "transformer innovations" \
+.ai/bin/perplexity-search "transformer innovations" \
   --domains arxiv.org,paperswithcode.com --after-date 01/01/2025
 ```
 

@@ -57,7 +57,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Search** - Neural/Keyword Web Search
 - **Best for**: Finding articles, tutorials, GitHub repos, research papers
-- **Command**: `uv run .ai/tools/exa/cli_search.py QUERY [options]`
+- **Command**: `.ai/bin/exa-search QUERY [options]`
 - **Search Types**:
   - `neural`: Semantic/conceptual search (best for "best practices", "how to")
   - `keyword`: Exact match search (best for error messages, specific terms)
@@ -65,17 +65,17 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Get Contents** - Extract from URLs
 - **Best for**: Getting full text, summaries, or highlights from specific pages
-- **Command**: `uv run .ai/tools/exa/cli_get_contents.py URL [URL2...] [options]`
+- **Command**: `.ai/bin/exa-get-contents URL [URL2...] [options]`
 - **Extract**: Full text, AI summaries, key highlights
 
 #### **Find Similar** - Discover Related Pages
 - **Best for**: Finding resources similar to a known good page
-- **Command**: `uv run .ai/tools/exa/cli_find_similar.py URL [options]`
+- **Command**: `.ai/bin/exa-find-similar URL [options]`
 - **Use case**: "Find pages like this GitHub repo"
 
 #### **Answer** - AI-Powered Q&A with Citations
 - **Best for**: Direct questions requiring synthesized answers with sources
-- **Command**: `uv run .ai/tools/exa/cli_answer.py QUERY [options]`
+- **Command**: `.ai/bin/exa-answer QUERY [options]`
 - **Output**: AI-generated answer with citation URLs
 
 ### 2. Problem Categories (7 Areas)
@@ -127,7 +127,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Neural Search Pattern (Conceptual)
 ```bash
 # Best for: concept-based queries, "best practices", "how to"
-uv run .ai/tools/exa/cli_search.py "best practices for React state management" \
+.ai/bin/exa-search "best practices for React state management" \
   --type neural \
   --summary \
   --num-results 10
@@ -136,7 +136,7 @@ uv run .ai/tools/exa/cli_search.py "best practices for React state management" \
 #### Keyword Search Pattern (Exact Match)
 ```bash
 # Best for: error messages, specific technical terms
-uv run .ai/tools/exa/cli_search.py "TypeError: undefined is not a function" \
+.ai/bin/exa-search "TypeError: undefined is not a function" \
   --type keyword \
   --text \
   --num-results 5
@@ -145,7 +145,7 @@ uv run .ai/tools/exa/cli_search.py "TypeError: undefined is not a function" \
 #### Domain-Filtered Search
 ```bash
 # Search only specific domains
-uv run .ai/tools/exa/cli_search.py "Next.js authentication" \
+.ai/bin/exa-search "Next.js authentication" \
   --include-domains nextjs.org,github.com \
   --summary \
   --num-results 8
@@ -154,19 +154,19 @@ uv run .ai/tools/exa/cli_search.py "Next.js authentication" \
 #### Get Answer with Citations
 ```bash
 # Direct question with sources
-uv run .ai/tools/exa/cli_answer.py "How does JWT authentication work?" \
+.ai/bin/exa-answer "How does JWT authentication work?" \
   --text
 ```
 
 #### Extract Content from Search Results
 ```bash
 # Step 1: Search
-uv run .ai/tools/exa/cli_search.py "React hooks tutorial" \
+.ai/bin/exa-search "React hooks tutorial" \
   --type neural \
   --num-results 5
 
 # Step 2: Get full content from top results
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://url1.com" \
   "https://url2.com" \
   --summary \
@@ -176,7 +176,7 @@ uv run .ai/tools/exa/cli_get_contents.py \
 #### Find Similar Resources
 ```bash
 # Find pages similar to a reference
-uv run .ai/tools/exa/cli_find_similar.py "https://github.com/vercel/next.js" \
+.ai/bin/exa-find-similar "https://github.com/vercel/next.js" \
   --num-results 10 \
   --summary
 ```
@@ -185,7 +185,7 @@ uv run .ai/tools/exa/cli_find_similar.py "https://github.com/vercel/next.js" \
 
 ### Search Command
 ```bash
-uv run .ai/tools/exa/cli_search.py QUERY \
+.ai/bin/exa-search QUERY \
   [--type {neural,keyword,auto}] \
   [--num-results N] \
   [--category CATEGORY] \
@@ -199,7 +199,7 @@ uv run .ai/tools/exa/cli_search.py QUERY \
 
 ### Get Contents Command
 ```bash
-uv run .ai/tools/exa/cli_get_contents.py URL [URL2 ...] \
+.ai/bin/exa-get-contents URL [URL2 ...] \
   [--text] \
   [--summary] \
   [--highlights] \
@@ -208,7 +208,7 @@ uv run .ai/tools/exa/cli_get_contents.py URL [URL2 ...] \
 
 ### Find Similar Command
 ```bash
-uv run .ai/tools/exa/cli_find_similar.py URL \
+.ai/bin/exa-find-similar URL \
   [--num-results N] \
   [--category CATEGORY] \
   [--exclude-source-domain] \
@@ -219,7 +219,7 @@ uv run .ai/tools/exa/cli_find_similar.py URL \
 
 ### Answer Command
 ```bash
-uv run .ai/tools/exa/cli_answer.py QUERY \
+.ai/bin/exa-answer QUERY \
   [--text] \
   [--interactive]
 ```
@@ -322,13 +322,13 @@ Use `--category` to filter by content type:
 ### Finding Technical Tutorials
 ```bash
 # Step 1: Search for tutorials
-uv run .ai/tools/exa/cli_search.py "Next.js 15 app router tutorial" \
+.ai/bin/exa-search "Next.js 15 app router tutorial" \
   --type neural \
   --summary \
   --num-results 10
 
 # Step 2: Review results and extract top 3
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://best-tutorial-url.com" \
   --text \
   --highlights
@@ -337,13 +337,13 @@ uv run .ai/tools/exa/cli_get_contents.py \
 ### Discovering GitHub Repositories
 ```bash
 # Find repos with domain filter
-uv run .ai/tools/exa/cli_search.py "React component library" \
+.ai/bin/exa-search "React component library" \
   --include-domains github.com \
   --summary \
   --num-results 15
 
 # Find similar to a known good repo
-uv run .ai/tools/exa/cli_find_similar.py "https://github.com/shadcn/ui" \
+.ai/bin/exa-find-similar "https://github.com/shadcn/ui" \
   --num-results 10 \
   --summary
 ```
@@ -351,26 +351,26 @@ uv run .ai/tools/exa/cli_find_similar.py "https://github.com/shadcn/ui" \
 ### Getting Direct Answers
 ```bash
 # Ask direct question with citations
-uv run .ai/tools/exa/cli_answer.py "What are the differences between SSR and SSG in Next.js?"
+.ai/bin/exa-answer "What are the differences between SSR and SSG in Next.js?"
 
 # Get answer with full citation text
-uv run .ai/tools/exa/cli_answer.py "How to implement OAuth2 in Node.js?" \
+.ai/bin/exa-answer "How to implement OAuth2 in Node.js?" \
   --text
 ```
 
 ### Research Synthesis
 ```bash
 # Step 1: Get answer with overview
-uv run .ai/tools/exa/cli_answer.py "Best state management libraries for React"
+.ai/bin/exa-answer "Best state management libraries for React"
 
 # Step 2: Search for detailed comparisons
-uv run .ai/tools/exa/cli_search.py "Redux vs Zustand vs Jotai comparison" \
+.ai/bin/exa-search "Redux vs Zustand vs Jotai comparison" \
   --type neural \
   --summary \
   --num-results 5
 
 # Step 3: Get full content from best sources
-uv run .ai/tools/exa/cli_get_contents.py "https://comparison-url.com" \
+.ai/bin/exa-get-contents "https://comparison-url.com" \
   --summary \
   --highlights
 ```
@@ -378,13 +378,13 @@ uv run .ai/tools/exa/cli_get_contents.py "https://comparison-url.com" \
 ### Error Resolution
 ```bash
 # Search with keyword for exact error
-uv run .ai/tools/exa/cli_search.py "TypeError: Cannot read properties of undefined reading 'map'" \
+.ai/bin/exa-search "TypeError: Cannot read properties of undefined reading 'map'" \
   --type keyword \
   --include-domains stackoverflow.com,github.com \
   --num-results 10
 
 # Get answer for the error
-uv run .ai/tools/exa/cli_answer.py "How to fix TypeError: Cannot read properties of undefined reading 'map'"
+.ai/bin/exa-answer "How to fix TypeError: Cannot read properties of undefined reading 'map'"
 ```
 
 ## Quality Assurance
@@ -434,10 +434,10 @@ uv run .ai/tools/exa/cli_answer.py "How to fix TypeError: Cannot read properties
 
 ### Bash Tool
 **Primary use**: Execute all Exa CLI commands
-- Search: `uv run .ai/tools/exa/cli_search.py`
-- Get Contents: `uv run .ai/tools/exa/cli_get_contents.py`
-- Find Similar: `uv run .ai/tools/exa/cli_find_similar.py`
-- Answer: `uv run .ai/tools/exa/cli_answer.py`
+- Search: `.ai/bin/exa-search`
+- Get Contents: `.ai/bin/exa-get-contents`
+- Find Similar: `.ai/bin/exa-find-similar`
+- Answer: `.ai/bin/exa-answer`
 
 ### Read Tool
 - Review integration guide: `.ai/ai_docs/tool-docs/exa-search-integration.md`
@@ -463,10 +463,10 @@ uv run .ai/tools/exa/cli_answer.py "How to fix TypeError: Cannot read properties
 ### Parallel Multi-Query Research
 ```bash
 # Execute searches for different aspects
-uv run .ai/tools/exa/cli_search.py "React performance optimization" \
+.ai/bin/exa-search "React performance optimization" \
   --type neural --summary --num-results 5 &
 
-uv run .ai/tools/exa/cli_search.py "React profiling tools" \
+.ai/bin/exa-search "React profiling tools" \
   --type neural --summary --num-results 5 &
 
 wait
@@ -475,24 +475,24 @@ wait
 ### Iterative Refinement
 ```bash
 # 1. Broad search
-uv run .ai/tools/exa/cli_search.py "authentication" \
+.ai/bin/exa-search "authentication" \
   --summary --num-results 20
 
 # 2. Refined search based on results
-uv run .ai/tools/exa/cli_search.py "JWT authentication Node.js" \
+.ai/bin/exa-search "JWT authentication Node.js" \
   --type neural \
   --include-domains github.com,auth0.com \
   --summary --num-results 10
 
 # 3. Deep dive on specific result
-uv run .ai/tools/exa/cli_get_contents.py "https://best-result-url" \
+.ai/bin/exa-get-contents "https://best-result-url" \
   --text --highlights
 ```
 
 ### Multi-URL Content Extraction
 ```bash
 # Extract content from multiple pages in one call
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://url1.com" \
   "https://url2.com" \
   "https://url3.com" \

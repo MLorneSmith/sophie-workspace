@@ -15,17 +15,17 @@ Use Exa for semantic web search, content retrieval, finding similar pages, and A
 
 ```bash
 # Basic search (neural semantic search)
-uv run .ai/tools/exa/cli_search.py "AI agents"
+.ai/bin/exa-search "AI agents"
 
 # Search with content extraction
-uv run .ai/tools/exa/cli_search.py "Next.js routing" \
+.ai/bin/exa-search "Next.js routing" \
   --type neural \
   --text \
   --summary \
   --num-results 10
 
 # Filter by domains
-uv run .ai/tools/exa/cli_search.py "React hooks" \
+.ai/bin/exa-search "React hooks" \
   --include-domains github.com,react.dev \
   --num-results 5
 ```
@@ -34,10 +34,10 @@ uv run .ai/tools/exa/cli_search.py "React hooks" \
 
 ```bash
 # Get full text content
-uv run .ai/tools/exa/cli_get_contents.py "https://example.com" --text
+.ai/bin/exa-get-contents "https://example.com" --text
 
 # Get summary and highlights
-uv run .ai/tools/exa/cli_get_contents.py "https://example.com" \
+.ai/bin/exa-get-contents "https://example.com" \
   --summary \
   --highlights
 ```
@@ -46,11 +46,11 @@ uv run .ai/tools/exa/cli_get_contents.py "https://example.com" \
 
 ```bash
 # Find similar pages
-uv run .ai/tools/exa/cli_find_similar.py "https://example.com" \
+.ai/bin/exa-find-similar "https://example.com" \
   --num-results 10
 
 # With content extraction
-uv run .ai/tools/exa/cli_find_similar.py "https://example.com" \
+.ai/bin/exa-find-similar "https://example.com" \
   --text \
   --summary \
   --num-results 5
@@ -60,10 +60,10 @@ uv run .ai/tools/exa/cli_find_similar.py "https://example.com" \
 
 ```bash
 # Get answer with citations
-uv run .ai/tools/exa/cli_answer.py "What is the latest in AI research?"
+.ai/bin/exa-answer "What is the latest in AI research?"
 
 # Include full citation text
-uv run .ai/tools/exa/cli_answer.py "How does semantic search work?" --text
+.ai/bin/exa-answer "How does semantic search work?" --text
 ```
 
 ## Command Syntax
@@ -71,7 +71,7 @@ uv run .ai/tools/exa/cli_answer.py "How does semantic search work?" --text
 ### Search
 
 ```bash
-uv run .ai/tools/exa/cli_search.py QUERY \
+.ai/bin/exa-search QUERY \
   [--type {neural,keyword,auto}] \
   [--num-results N] \
   [--category CATEGORY] \
@@ -99,7 +99,7 @@ uv run .ai/tools/exa/cli_search.py QUERY \
 ### Get Contents
 
 ```bash
-uv run .ai/tools/exa/cli_get_contents.py URL [URL2 ...] \
+.ai/bin/exa-get-contents URL [URL2 ...] \
   [--text] \
   [--summary] \
   [--highlights] \
@@ -119,7 +119,7 @@ uv run .ai/tools/exa/cli_get_contents.py URL [URL2 ...] \
 ### Find Similar
 
 ```bash
-uv run .ai/tools/exa/cli_find_similar.py URL \
+.ai/bin/exa-find-similar URL \
   [--num-results N] \
   [--category CATEGORY] \
   [--exclude-source-domain] \
@@ -139,7 +139,7 @@ uv run .ai/tools/exa/cli_find_similar.py URL \
 ### Answer
 
 ```bash
-uv run .ai/tools/exa/cli_answer.py QUERY \
+.ai/bin/exa-answer QUERY \
   [--text] \
   [--interactive]
 ```
@@ -156,25 +156,25 @@ uv run .ai/tools/exa/cli_answer.py QUERY \
 
 ```bash
 # Find recent articles about a technology
-uv run .ai/tools/exa/cli_search.py "Next.js 15 app router" \
+.ai/bin/exa-search "Next.js 15 app router" \
   --type neural \
   --summary \
   --num-results 5
 
 # Get detailed answer with sources
-uv run .ai/tools/exa/cli_answer.py "What are the new features in Next.js 15?"
+.ai/bin/exa-answer "What are the new features in Next.js 15?"
 ```
 
 ### Analyze a Page
 
 ```bash
 # Get summary of a webpage
-uv run .ai/tools/exa/cli_get_contents.py "https://nextjs.org/docs" \
+.ai/bin/exa-get-contents "https://nextjs.org/docs" \
   --summary \
   --highlights
 
 # Find similar documentation
-uv run .ai/tools/exa/cli_find_similar.py "https://nextjs.org/docs" \
+.ai/bin/exa-find-similar "https://nextjs.org/docs" \
   --num-results 10
 ```
 
@@ -182,13 +182,13 @@ uv run .ai/tools/exa/cli_find_similar.py "https://nextjs.org/docs" \
 
 ```bash
 # Search only GitHub
-uv run .ai/tools/exa/cli_search.py "react component library" \
+.ai/bin/exa-search "react component library" \
   --include-domains github.com \
   --text \
   --num-results 10
 
 # Exclude marketing sites
-uv run .ai/tools/exa/cli_search.py "AI tools" \
+.ai/bin/exa-search "AI tools" \
   --exclude-domains medium.com,dev.to \
   --num-results 15
 ```
@@ -197,13 +197,13 @@ uv run .ai/tools/exa/cli_search.py "AI tools" \
 
 ```bash
 # Get full text from multiple URLs
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://example.com/page1" \
   "https://example.com/page2" \
   --text
 
 # Get summaries for research
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://arxiv.org/paper1" \
   "https://arxiv.org/paper2" \
   --summary
@@ -239,27 +239,27 @@ Filter searches by category:
 
 ```bash
 # Research Next.js server actions
-uv run .ai/tools/exa/cli_search.py "Next.js server actions tutorial" \
+.ai/bin/exa-search "Next.js server actions tutorial" \
   --type neural \
   --summary \
   --num-results 5
 
 # Get answer about authentication
-uv run .ai/tools/exa/cli_answer.py "How to implement JWT authentication in Node.js?"
+.ai/bin/exa-answer "How to implement JWT authentication in Node.js?"
 
 # Find similar GitHub repos
-uv run .ai/tools/exa/cli_find_similar.py "https://github.com/vercel/next.js" \
+.ai/bin/exa-find-similar "https://github.com/vercel/next.js" \
   --include-domains github.com \
   --num-results 10
 
 # Extract docs from multiple pages
-uv run .ai/tools/exa/cli_get_contents.py \
+.ai/bin/exa-get-contents \
   "https://nextjs.org/docs/app/building-your-application/routing" \
   "https://nextjs.org/docs/app/building-your-application/data-fetching" \
   --summary
 
 # Research with domain filtering
-uv run .ai/tools/exa/cli_search.py "React testing best practices" \
+.ai/bin/exa-search "React testing best practices" \
   --include-domains testing-library.com,jestjs.io,react.dev \
   --summary \
   --num-results 8

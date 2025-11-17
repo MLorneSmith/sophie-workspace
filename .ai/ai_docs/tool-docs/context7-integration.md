@@ -13,7 +13,7 @@ Use Context7 to fetch library documentation without consuming context window tok
 ### Search for Libraries
 
 ```bash
-uv run .ai/tools/context7/cli_search_libraries.py "next.js"
+.ai/bin/context7-search "next.js"
 ```
 
 Returns library IDs (e.g., `/vercel/next.js`), stars, and descriptions.
@@ -22,24 +22,24 @@ Returns library IDs (e.g., `/vercel/next.js`), stars, and descriptions.
 
 ```bash
 # Targeted topic (recommended, ~2000 tokens)
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic routing \
   --tokens 2000
 
 # Specific version
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --version v15.1.8 \
   --topic authentication \
   --tokens 3000
 
 # Full documentation (default 10000 tokens)
-uv run .ai/tools/context7/cli_get_context.py vercel next.js
+.ai/bin/context7-get-context vercel next.js
 ```
 
 ## Command Syntax
 
 ```bash
-uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
+.ai/bin/context7-get-context OWNER REPO \
   [--version VERSION] \
   [--topic TOPIC] \
   [--tokens TOKENS] \
@@ -75,19 +75,19 @@ uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
 
 ```bash
 # Implementing auth in Next.js
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic authentication --tokens 3000
 
 # Debugging server actions
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic "server actions" --tokens 2500
 
 # React hooks reference
-uv run .ai/tools/context7/cli_get_context.py facebook react \
+.ai/bin/context7-get-context facebook react \
   --topic hooks --tokens 2000
 
 # Supabase RLS policies
-uv run .ai/tools/context7/cli_get_context.py supabase supabase \
+.ai/bin/context7-get-context supabase supabase \
   --topic rls --tokens 2500
 ```
 
