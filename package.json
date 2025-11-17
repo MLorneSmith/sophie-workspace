@@ -112,7 +112,7 @@
 		"fuse.js": "^7.1.0",
 		"graph-data-structure": "^4.5.0",
 		"husky": "^9.1.7",
-		"js-yaml": "^4.1.0",
+		"js-yaml": "^4.1.1",
 		"knip": "^5.61.0",
 		"lint-staged": "^16.1.0",
 		"markdownlint-cli2": "^0.18.1",
