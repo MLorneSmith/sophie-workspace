@@ -123,7 +123,8 @@ jobs:
     if: always() && !failure() && !cancelled()
     timeout-minutes: 30
     env:
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # NOTE: SUPABASE_SERVICE_ROLE_KEY is exported from local Supabase in "Export Supabase environment variables" step
+      # Do NOT set it here from secrets as it will be empty and override the exported value
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
