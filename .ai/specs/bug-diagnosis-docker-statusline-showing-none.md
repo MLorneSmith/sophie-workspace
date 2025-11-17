@@ -34,6 +34,7 @@ The Claude Code statusline docker component is displaying 'none' instead of show
 ## Expected Behavior
 
 The docker component should display:
+
 - "🟢 docker (16/16)" - when all containers are healthy
 - "🟡 docker (X/Y)" - when some containers have unknown status
 - "🔴 docker (X/Y)" - when some containers are unhealthy
@@ -47,6 +48,7 @@ The status should update automatically every 5 minutes or when triggered manuall
 The docker component shows "⚪ docker:none" which indicates the docker-health-wrapper.sh script is not found at the expected location (`.claude/bin/docker-health-wrapper.sh`).
 
 From the statusline.sh code (line 440):
+
 ```bash
 else
     docker_status="⚪ docker:none"
@@ -58,30 +60,32 @@ This fallback is triggered when the docker-health-wrapper.sh script is not execu
 ## Diagnostic Data
 
 ### Docker Container Status
+
 ```
 $ docker ps --format "{{.Names}}\t{{.Status}}"
 
-docs-mcp-server	Up 52 minutes (healthy)
-supabase_studio_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_pg_meta_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_edge_runtime_2025slideheroes-db	Up 49 minutes
-supabase_storage_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_rest_2025slideheroes-db	Up 52 minutes
-supabase_realtime_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_inbucket_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_auth_2025slideheroes-db	Up 51 minutes (healthy)
-supabase_kong_2025slideheroes-db	Up 49 minutes (healthy)
-supabase_vector_2025slideheroes-db	Up 49 minutes (healthy)
-supabase_analytics_2025slideheroes-db	Up 52 minutes (healthy)
-supabase_db_2025slideheroes-db	Up 52 minutes (healthy)
-slideheroes-payload-test	Up 50 minutes (healthy)
-slideheroes-app-test	Up 50 minutes (healthy)
-ccmp-dashboard	Up 52 minutes (healthy)
+docs-mcp-server Up 52 minutes (healthy)
+supabase_studio_2025slideheroes-db Up 52 minutes (healthy)
+supabase_pg_meta_2025slideheroes-db Up 52 minutes (healthy)
+supabase_edge_runtime_2025slideheroes-db Up 49 minutes
+supabase_storage_2025slideheroes-db Up 52 minutes (healthy)
+supabase_rest_2025slideheroes-db Up 52 minutes
+supabase_realtime_2025slideheroes-db Up 52 minutes (healthy)
+supabase_inbucket_2025slideheroes-db Up 52 minutes (healthy)
+supabase_auth_2025slideheroes-db Up 51 minutes (healthy)
+supabase_kong_2025slideheroes-db Up 49 minutes (healthy)
+supabase_vector_2025slideheroes-db Up 49 minutes (healthy)
+supabase_analytics_2025slideheroes-db Up 52 minutes (healthy)
+supabase_db_2025slideheroes-db Up 52 minutes (healthy)
+slideheroes-payload-test Up 50 minutes (healthy)
+slideheroes-app-test Up 50 minutes (healthy)
+ccmp-dashboard Up 52 minutes (healthy)
 ```
 
 **Result**: Docker is running with 16 containers, all healthy. Docker daemon is operational.
 
 ### Missing Docker Health Wrapper Script
+
 ```
 $ ls -la .claude/bin/docker-health-wrapper.sh
 ".claude/bin/docker-health-wrapper.sh": No such file or directory (os error 2)
@@ -90,16 +94,18 @@ $ ls -la .claude/bin/docker-health-wrapper.sh
 **Result**: Script is missing from expected location.
 
 ### Git History Analysis
+
 ```
 $ git log --all --full-history --oneline --name-status -- "*docker-health-wrapper.sh"
 
 752dcccd2 chore(tooling): archive legacy .claude directory files
-R100	.claude/bin/docker-health-wrapper.sh	.old.claude/bin/docker-health-wrapper.sh
+R100 .claude/bin/docker-health-wrapper.sh .old.claude/bin/docker-health-wrapper.sh
 ```
 
 **Result**: The script was **moved (renamed)** from `.claude/bin/` to `.old.claude/bin/` in commit 752dcccd2 with a 100% rename detection confidence (R100).
 
 ### Verification of Script in Archive Location
+
 ```
 $ ls -la .old.claude/bin/docker-health-wrapper.sh
 .rwxr-xr-x 18k msmith 15 Nov 11:39 .old.claude/bin/docker-health-wrapper.sh
@@ -108,6 +114,7 @@ $ ls -la .old.claude/bin/docker-health-wrapper.sh
 **Result**: Script exists in archive location with correct execute permissions (755).
 
 ### Docker Status File Check
+
 ```
 $ GIT_ROOT=$(git rev-parse --show-toplevel)
 $ GIT_ROOT_HASH="$(echo "${GIT_ROOT}" | sha256sum | cut -d' ' -f1 | head -c16)"
@@ -119,6 +126,7 @@ $ ls -la "/tmp/.claude_docker_status_${GIT_ROOT_HASH}"
 **Result**: No status file exists because the wrapper script has never run (it's missing).
 
 ### Statusline Script Logic (lines 435-441)
+
 ```bash
 elif [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
     # Trigger initial health check
@@ -172,6 +180,7 @@ The docker-health monitoring system was fully implemented and working (evidenced
 4. **Statusline integration** - Real-time status display
 
 On 2025-11-15, commit `752dcccd2` ("chore(tooling): archive legacy .claude directory files") moved the entire `.claude/bin/docker-health-wrapper.sh` script to `.old.claude/bin/`. This was part of a larger reorganization that archived:
+
 - Docker health monitoring scripts
 - Docker health documentation
 - Docker health implementation plans
@@ -180,6 +189,7 @@ On 2025-11-15, commit `752dcccd2` ("chore(tooling): archive legacy .claude direc
 The statusline.sh script was NOT updated to reflect the new location, causing the docker component to fail silently with "docker:none".
 
 Issues #604 and #611 fixed the statusline appearing issue by adding execute permissions and configuration, but did NOT notice the docker-health-wrapper.sh was missing because:
+
 1. The statusline still appeared (other components worked)
 2. The docker component silently showed "none" (not an obvious error)
 3. The fix focused on permissions/configuration, not missing files
@@ -193,21 +203,25 @@ Issues #604 and #611 fixed the statusline appearing issue by adding execute perm
 **Detailed Explanation**:
 
 The statusline.sh script expects the docker-health-wrapper.sh to be located at:
+
 ```
 ${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh
 ```
 
 In commit `752dcccd2`, this file was moved (100% rename) to:
+
 ```
 ${GIT_ROOT}/.old.claude/bin/docker-health-wrapper.sh
 ```
 
 The statusline.sh code (line 435) checks:
+
 ```bash
 elif [ -x "${GIT_ROOT}/.claude/bin/docker-health-wrapper.sh" ]; then
 ```
 
 When this test fails (file not found or not executable), it falls through to line 440:
+
 ```bash
 else
     docker_status="⚪ docker:none"
@@ -224,12 +238,14 @@ fi
 **Supporting Evidence**:
 
 1. Git history shows explicit rename operation:
+
    ```
    752dcccd2 chore(tooling): archive legacy .claude directory files
-   R100	.claude/bin/docker-health-wrapper.sh	.old.claude/bin/docker-health-wrapper.sh
+   R100 .claude/bin/docker-health-wrapper.sh .old.claude/bin/docker-health-wrapper.sh
    ```
 
 2. Script exists at archive location with correct permissions:
+
    ```
    .rwxr-xr-x 18k msmith 15 Nov 11:39 .old.claude/bin/docker-health-wrapper.sh
    ```
@@ -286,6 +302,7 @@ This is definitively the root cause - the docker-health-wrapper.sh script is mis
    - Less intuitive (active script in "old" directory)
 
 **Recommended: Approach 1** - Restore the script to `.claude/bin/` because:
+
 - The `.claude/bin/` directory is the standard location for active Claude Code scripts
 - Other active scripts are in `.claude/` (statusline, commands, hooks)
 - The `.old.claude/` directory should only contain archived/legacy files
@@ -293,6 +310,7 @@ This is definitively the root cause - the docker-health-wrapper.sh script is mis
 - No code changes required (less risk)
 
 **Implementation**:
+
 ```bash
 # Copy script from archive back to active location
 cp .old.claude/bin/docker-health-wrapper.sh .claude/bin/docker-health-wrapper.sh
@@ -319,6 +337,7 @@ After fix, the statusline should display "🟢 docker (16/16)" or similar based 
 **Root cause definitively identified**: The docker component displays 'none' because the `docker-health-wrapper.sh` script was moved to the archive directory (`.old.claude/bin/`) during commit 752dcccd2, and the statusline.sh script still expects it at the original location (`.claude/bin/`).
 
 **Evidence summary**:
+
 - Git history shows file was explicitly moved (R100 rename)
 - File missing at expected location (`.claude/bin/docker-health-wrapper.sh`)
 - File exists at archive location (`.old.claude/bin/docker-health-wrapper.sh`)
@@ -335,9 +354,11 @@ After fix, the statusline should display "🟢 docker (16/16)" or similar based 
 The archiving commit moved several docker-health related files. Consider whether to restore:
 
 **Essential (required for basic functionality)**:
+
 - `.claude/bin/docker-health-wrapper.sh` - Main wrapper script (REQUIRED)
 
 **Optional (for advanced features)**:
+
 - `.claude/bin/docker-health-background.sh` - Background monitoring daemon
 - `.claude/bin/docker-health-integration.sh` - Integration with other systems
 - `.claude/bin/docker-health-unit-tests.sh` - Unit tests for docker-health

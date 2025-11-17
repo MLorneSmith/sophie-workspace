@@ -32,6 +32,7 @@ The custom Claude Code statusline implemented in `.claude/statusline/statusline.
 ## Expected Behavior
 
 The custom statusline should display:
+
 - Model name (e.g., "claude sonnet 4.5")
 - Current git branch (e.g., "⎇ dev")
 - Build status (🟢/🟡/🔴 indicators)
@@ -42,6 +43,7 @@ The custom statusline should display:
 - PR status
 
 Example expected output:
+
 ```
 claude sonnet 4.5 | ⎇ dev | 🟢 build (5m) | 🟢 codecheck (5m) | 🟢 docker (3/3) | 🟢 test (10m)
 ```
@@ -53,6 +55,7 @@ No custom statusline appears in Claude Code. The default statusline (if any) is 
 ## Diagnostic Data
 
 ### File Permissions Check
+
 ```bash
 $ ls -la .claude/statusline/statusline.sh
 .rw-r--r-- 19k msmith 15 Nov 11:39 .claude/statusline/statusline.sh
@@ -61,6 +64,7 @@ $ ls -la .claude/statusline/statusline.sh
 **Key Finding**: File has permissions `-rw-r--r--` (644), which does NOT include execute permission.
 
 ### Script Execution Test
+
 ```bash
 $ echo '{"model":{"display_name":"Claude Sonnet 4.5"}}' | .claude/statusline/statusline.sh
 Exit code 126
@@ -74,12 +78,14 @@ Exit code 126
 **`.claude/settings.json` status**: File exists but does NOT contain statusline configuration.
 
 Current configuration only includes:
+
 - permissions (allow/deny lists)
 - hooks (PreToolUse, PostToolUse, Notification, Stop, SubagentStop)
 
 **Missing configuration**: No `statusLine` configuration block.
 
 According to Claude Code documentation, the required configuration should be:
+
 ```json
 {
   "statusLine": {
@@ -91,6 +97,7 @@ According to Claude Code documentation, the required configuration should be:
 ```
 
 ## Error Stack Traces
+
 ```
 Permission denied when attempting to execute .claude/statusline/statusline.sh
 Exit code: 126
@@ -131,6 +138,7 @@ Exit code: 126
 ### Historical Context
 
 The project has had a working statusline implementation previously (evidenced by issues #440, #423, #416). Recent reorganization of tool documentation (commit 8d7f23303) and archiving of legacy .claude files (commit 752dcccd2) may have resulted in:
+
 1. Loss of execute permissions during file reorganization
 2. Missing statusLine configuration in `.claude/settings.json`
 
@@ -147,6 +155,7 @@ There are TWO separate issues preventing the statusline from appearing:
 1. **Missing Execute Permissions**: The `.claude/statusline/statusline.sh` file has permissions `644` (`-rw-r--r--`) instead of `755` (`-rwxr-xr-x`). According to Claude Code documentation: "If your status line doesn't appear, check that your script is executable (`chmod +x`)". When attempting to execute the script, it returns error code 126 (permission denied).
 
 2. **Missing Configuration**: The `.claude/settings.json` file does not contain a `statusLine` configuration block. According to Claude Code documentation, the statusline must be configured in `.claude/settings.json`:
+
    ```json
    {
      "statusLine": {
@@ -156,16 +165,19 @@ There are TWO separate issues preventing the statusline from appearing:
      }
    }
    ```
+
    Without this configuration, Claude Code doesn't know to use the custom statusline script.
 
 **Supporting Evidence**:
 
 1. File permissions output shows `644` instead of `755`:
+
    ```
    .rw-r--r-- 19k msmith 15 Nov 11:39 .claude/statusline/statusline.sh
    ```
 
 2. Direct execution fails with permission error:
+
    ```
    Exit code 126
    permission denied: .claude/statusline/statusline.sh
@@ -209,6 +221,7 @@ Two changes are required to fix this issue:
 1. **Add execute permissions**: Run `chmod +x .claude/statusline/statusline.sh` to make the script executable (change from 644 to 755 permissions)
 
 2. **Add statusline configuration**: Add the following configuration block to `.claude/settings.json`:
+
    ```json
    {
      "statusLine": {
@@ -229,6 +242,7 @@ After both changes, restart Claude Code to load the new configuration and displa
 2. The `.claude/settings.json` file is missing the required `statusLine` configuration block
 
 Both issues were confirmed through:
+
 - Direct file permission inspection (`ls -la`)
 - Execution test showing permission denied error (exit code 126)
 - Configuration file inspection showing missing `statusLine` block
@@ -241,6 +255,7 @@ The fix is straightforward: add execute permissions and add the configuration bl
 ### Related Files to Update
 
 When fixing this issue, also ensure execute permissions on related scripts:
+
 - `.claude/statusline/lib/status-common.sh`
 - `.claude/statusline/build-wrapper.sh`
 - `.claude/statusline/test-wrapper.sh`
@@ -251,6 +266,7 @@ These scripts are referenced in the statusline ecosystem and should also be exec
 ### Verification Steps
 
 After applying the fix:
+
 1. Verify permissions: `ls -la .claude/statusline/*.sh` should show `-rwxr-xr-x`
 2. Test script execution: `echo '{"model":{"display_name":"Claude Sonnet 4.5"}}' | .claude/statusline/statusline.sh` should output statusline text
 3. Verify configuration: `.claude/settings.json` contains `statusLine` block

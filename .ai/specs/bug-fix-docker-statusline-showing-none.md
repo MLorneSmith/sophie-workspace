@@ -28,6 +28,7 @@ For full details, see diagnosis issue #613.
 **Description**: Copy `.old.claude/bin/docker-health-wrapper.sh` back to its expected location at `.claude/bin/docker-health-wrapper.sh`, maintaining all existing statusline code.
 
 **Pros**:
+
 - No code changes required - zero risk of introducing bugs
 - Maintains architectural consistency (active scripts in `.claude/bin/`, archived in `.old.claude/`)
 - Immediately fixes the issue with a simple file copy
@@ -36,6 +37,7 @@ For full details, see diagnosis issue #613.
 - Execute permissions already correct on archived file
 
 **Cons**:
+
 - Restores a file that was intentionally archived (may need to document why it's being unarchived)
 - Could conflict with future cleanup efforts if not documented properly
 
@@ -48,11 +50,13 @@ For full details, see diagnosis issue #613.
 **Description**: Modify `.claude/statusline/statusline.sh` to reference the archived location `.old.claude/bin/docker-health-wrapper.sh` instead of expecting it in `.claude/bin/`.
 
 **Pros**:
+
 - Keeps archived files in archive location
 - Explicit about using an archived/legacy script
 - No file restoration needed
 
 **Cons**:
+
 - Requires code change to statusline.sh (line 435) - introduces modification risk
 - Creates confusing architecture (active script referencing "old" directory)
 - Violates separation of active vs archived files
@@ -67,6 +71,7 @@ For full details, see diagnosis issue #613.
 **Description**: Write new docker health monitoring functionality directly in statusline.sh, eliminating the dependency on docker-health-wrapper.sh.
 
 **Why Not Chosen**: This is massive over-engineering for a simple missing file issue. The existing docker-health-wrapper.sh is fully functional, well-tested (evidenced by historical issues #440, #416, #418), and includes sophisticated features like multi-level caching, background monitoring, and comprehensive health checks. Reimplementing would:
+
 - Take significantly more time (hours vs minutes)
 - Introduce risk of bugs in new implementation
 - Lose existing tested functionality
@@ -75,6 +80,7 @@ For full details, see diagnosis issue #613.
 ### Selected Solution: Restore Script from Archive
 
 **Justification**: Restoring the script from archive is the optimal solution because it:
+
 1. Requires zero code changes (minimal risk)
 2. Follows architectural best practices (active scripts in `.claude/bin/`)
 3. Preserves existing tested functionality
@@ -84,6 +90,7 @@ For full details, see diagnosis issue #613.
 The script was likely archived by mistake during cleanup, as it's still actively referenced by statusline.sh. The proper fix is to restore it to active use.
 
 **Technical Approach**:
+
 - Copy `.old.claude/bin/docker-health-wrapper.sh` to `.claude/bin/docker-health-wrapper.sh`
 - Verify execute permissions (should already be 755 from archive)
 - Test script execution to confirm functionality
@@ -99,6 +106,7 @@ The script was likely archived by mistake during cleanup, as it's still actively
 ### Affected Files
 
 No files require modification. This fix only involves restoring a missing file:
+
 - `.claude/bin/docker-health-wrapper.sh` - **RESTORE FROM ARCHIVE** - Main docker health monitoring script expected by statusline.sh
 
 ### New Files
@@ -167,9 +175,11 @@ Commit the restored file with appropriate documentation.
 No new unit tests required - the docker-health-wrapper.sh script already has existing unit tests that were archived with it (`.old.claude/bin/docker-health-unit-tests.sh`). These tests previously validated the wrapper's functionality.
 
 **If comprehensive testing is desired**, optionally restore and run:
+
 - `.old.claude/bin/docker-health-unit-tests.sh` - Existing unit tests for docker-health-wrapper.sh
 
 **Current validation is sufficient** because:
+
 - The script is unchanged from its working state
 - Manual functional testing (Step 3) validates core functionality
 - Statusline integration test (Step 4) validates end-to-end functionality
@@ -177,6 +187,7 @@ No new unit tests required - the docker-health-wrapper.sh script already has exi
 ### Integration Tests
 
 Integration testing is performed manually in Step 4 (Verify statusline integration):
+
 - ✅ Statusline detects docker-health-wrapper.sh
 - ✅ Wrapper script executes successfully
 - ✅ Status file is created and contains valid data
@@ -230,6 +241,7 @@ Execute these manual tests before considering the fix complete:
 **Rollback Plan**:
 
 If this fix causes issues:
+
 1. Remove the restored file: `rm .claude/bin/docker-health-wrapper.sh`
 2. Revert commit: `git revert HEAD` (if committed)
 3. Statusline will return to showing "⚪ docker:none" (original state)
@@ -244,6 +256,7 @@ If this fix causes issues:
 The docker-health-wrapper.sh script runs in the background every 5 minutes and uses caching to minimize performance impact (multi-level L1/L2/L3 cache system described in diagnosis). This is the same performance profile that existed before the script was archived.
 
 **Performance characteristics**:
+
 - Background execution (non-blocking)
 - Cached results (minimal Docker API calls)
 - Async status file updates
@@ -256,6 +269,7 @@ The docker-health-wrapper.sh script runs in the background every 5 minutes and u
 **Security Impact**: none
 
 This fix restores an existing script without modification. The script:
+
 - Only reads Docker container status (read-only operations)
 - Writes to `/tmp/` directory (user-scoped, no privilege escalation)
 - Does not expose sensitive information
@@ -370,6 +384,7 @@ This is a developer tooling fix that does not involve database schema, migration
 **Deployment Risk**: low
 
 This is a local development tooling fix for Claude Code statusline. It does not affect:
+
 - Production application
 - User-facing functionality
 - Server deployments
@@ -384,6 +399,7 @@ This is a local development tooling fix for Claude Code statusline. It does not 
 ## Success Criteria
 
 The fix is complete when:
+
 - [ ] docker-health-wrapper.sh exists at `.claude/bin/docker-health-wrapper.sh`
 - [ ] Restored file has execute permissions (-rwxr-xr-x)
 - [ ] Restored file checksum matches archived file checksum
@@ -403,6 +419,7 @@ The fix is complete when:
 The diagnosis shows commit 752dcccd2 ("chore(tooling): archive legacy .claude directory files") moved docker-health-wrapper.sh to `.old.claude/bin/`. This appears to have been part of a broader repository cleanup/reorganization effort.
 
 However, the script is **not legacy** - it's actively used by statusline.sh and is essential for docker health monitoring functionality. The archiving was likely an oversight during cleanup, as the script:
+
 - Is referenced by active code (statusline.sh line 435)
 - Provides actively-used functionality (docker status display)
 - Was fully functional before archiving (evidenced by issues #440, #416, #418)
@@ -410,6 +427,7 @@ However, the script is **not legacy** - it's actively used by statusline.sh and 
 ### Related Archived Files (Optional Restoration)
 
 The diagnosis mentions other docker-health related files were also archived:
+
 - `.old.claude/bin/docker-health-background.sh` - Background monitoring daemon
 - `.old.claude/bin/docker-health-integration.sh` - Integration with other systems
 - `.old.claude/bin/docker-health-unit-tests.sh` - Unit tests for docker-health
@@ -419,6 +437,7 @@ The diagnosis mentions other docker-health related files were also archived:
 ### Future Archiving Best Practices
 
 To prevent similar issues:
+
 1. Before archiving any file, search for references: `git grep "filename"`
 2. Check if file is actively used by other scripts or systems
 3. Update dependent code before archiving active files
@@ -429,11 +448,13 @@ To prevent similar issues:
 ### Additional Context
 
 The docker-health monitoring system was fully implemented and working before archiving:
+
 - Issue #416: Feature implementation
 - Issue #440: Refresh issue (shows system was working)
 - Issues #418, #419, #420, #424, #436: Related improvements
 
 The system includes sophisticated features:
+
 - Multi-level caching (L1, L2, L3)
 - Background monitoring with 5-minute refresh
 - Comprehensive health checks

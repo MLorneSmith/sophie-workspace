@@ -314,6 +314,7 @@ extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 ```
 
 **Key optimizations**:
+
 - **2 CI workers**: Balance between speed and stability
 - **Vercel bypass headers**: Prevent authentication challenges in deployed environments
 - **Extended timeouts**: Handle cold starts and network latency
@@ -342,6 +343,7 @@ extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 Playwright's global setup runs **once** before all tests (not per-worker) to create authenticated browser states using API-based authentication. This pattern provides significant performance and reliability benefits over UI-based authentication in individual tests.
 
 **Benefits**:
+
 - 3-5x faster than UI-based per-test authentication
 - No race conditions from multiple workers authenticating simultaneously
 - Bypasses UI timing issues entirely
@@ -466,6 +468,7 @@ Pre-authenticated storage states eliminate the need for per-test authentication,
 **Key Implementation Details**:
 
 1. **Project Reference Extraction**: The Supabase storage key must match the format Supabase expects:
+
    ```typescript
    // Extract project ref from Supabase URL
    const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
@@ -473,6 +476,7 @@ Pre-authenticated storage states eliminate the need for per-test authentication,
    ```
 
 2. **Storage State Reuse**: Tests automatically load the pre-authenticated state:
+
    ```typescript
    // playwright.config.ts
    projects: [
@@ -491,6 +495,7 @@ Pre-authenticated storage states eliminate the need for per-test authentication,
    - `.auth/super-admin@slideheroes.com.json` - Admin user
 
 **Performance Impact**:
+
 - Without storage states: ~5-10 seconds per test for authentication
 - With storage states: ~0 seconds (authentication already complete)
 - On a 100-test suite: Saves 8-16 minutes of execution time
@@ -566,6 +571,7 @@ PLAYWRIGHT_BASE_URL=https://your-preview-deployment.vercel.app
 ```
 
 **Why Both Headers Are Needed**:
+
 - `x-vercel-protection-bypass`: Works for direct HTTP requests and API calls
 - `x-vercel-set-bypass-cookie`: Sets the `_vercel_jwt` cookie for browser navigation and authentication flows
 - Both are required because some requests go through different paths (client-side navigation vs. server-side redirects)
