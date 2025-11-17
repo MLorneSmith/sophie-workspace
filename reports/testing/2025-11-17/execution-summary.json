@@ -1,16 +1,16 @@
 {
 	"executionDate": "2025-11-17",
-	"lastUpdated": "2025-11-17T15:59:52.750Z",
+	"lastUpdated": "2025-11-17T16:50:00.458Z",
 	"totalShards": 0,
-	"completedShards": 6,
+	"completedShards": 12,
 	"failedShards": 0,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 62,
-		"passed": 46,
-		"failed": 3,
-		"skipped": 13,
-		"intentionalFailures": 3
+		"total": 125,
+		"passed": 93,
+		"failed": 6,
+		"skipped": 26,
+		"intentionalFailures": 6
 	},
 	"shards": [
 		{
@@ -23,11 +23,38 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 2,
 			"name": "Authentication",
 			"success": true,
 			"duration": "44s",
 			"tests": 20,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "15s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "52s",
+			"tests": 21,
 			"failures": 0,
 			"intentionalFailures": 0
 		},
@@ -50,6 +77,15 @@
 			"intentionalFailures": 3
 		},
 		{
+			"id": 6,
+			"name": "Config & Health",
+			"success": false,
+			"duration": "10s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
 			"id": 8,
 			"name": "Payload CMS Extended",
 			"success": true,
@@ -59,10 +95,28 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 8,
+			"name": "Payload CMS Extended",
+			"success": true,
+			"duration": "5s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 10,
 			"name": "Team Billing",
 			"success": true,
 			"duration": "20s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 10,
+			"name": "Team Billing",
+			"success": true,
+			"duration": "23s",
 			"tests": 0,
 			"failures": 0,
 			"intentionalFailures": 0
