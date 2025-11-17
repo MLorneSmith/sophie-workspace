@@ -29,7 +29,7 @@ env:
 jobs:
   # URLs will be dynamically set from the Deploy to Dev workflow outputs
   check-should-run:
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
       web_deployment_url: ${{ steps.check.outputs.web_deployment_url }}
@@ -89,7 +89,7 @@ jobs:
     name: Wait for Deployment Ready
     needs: check-should-run
     if: needs.check-should-run.outputs.should_run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 15
     outputs:
       deployment_ready: ${{ steps.wait.outputs.ready }}
@@ -227,7 +227,7 @@ jobs:
     name: API Contract Tests
     needs: [check-should-run, wait-for-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -377,7 +377,7 @@ jobs:
     name: Integration Tests
     needs: [check-should-run, wait-for-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 30  # Increased from 15 to allow integration tests to complete
     steps:
       - uses: actions/checkout@v4
@@ -456,7 +456,7 @@ jobs:
     name: Security Quick Scan
     needs: [check-should-run, wait-for-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 10
     continue-on-error: true  # Don't block on security issues initially
     steps:
@@ -565,7 +565,7 @@ jobs:
     name: Capture Performance Baseline
     needs: [check-should-run, wait-for-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 10
     continue-on-error: true
     steps:
@@ -602,7 +602,7 @@ jobs:
     name: Integration Test Summary
     needs: [wait-for-deployment, api-contract-tests, integration-tests, security-scan, performance-baseline]
     if: always() && needs.check-should-run.outputs.should_run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - name: Generate test summary
         uses: actions/github-script@v7

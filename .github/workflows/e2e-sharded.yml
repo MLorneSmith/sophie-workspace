@@ -39,7 +39,7 @@ jobs:
   # Single server setup job that runs once
   setup-server:
     name: Setup Test Server
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
     steps:
@@ -94,7 +94,7 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
@@ -196,7 +196,7 @@ jobs:
     name: E2E Test Report
     needs: e2e-shards
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v4
 
