@@ -9,6 +9,7 @@ This guide documents the correct configuration format for MCP (Model Context Pro
 - #439 - Initial docs-mcp integration
 - #598, #599 - First docs-mcp configuration fix (2025-11-14)
 - #602 - Second regression fix (2025-11-15)
+- #603, #610 - Configuration reload issue fix (2025-11-17)
 
 ## Supported MCP Server Types
 
@@ -48,6 +49,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
     "server-name": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-remote",
         "http://localhost:PORT/sse"
       ]
@@ -55,6 +57,8 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
   }
 }
 ```
+
+**Important:** The `-y` flag ensures non-interactive npx execution.
 
 **Example: docs-mcp**
 
@@ -64,6 +68,7 @@ For remote MCP servers that communicate via SSE endpoints. **Must use `npx mcp-r
     "docs-mcp": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-remote",
         "http://localhost:6280/sse"
       ]
@@ -165,13 +170,15 @@ PERPLEXITY_API_KEY=your_perplexity_api_key_here
 
 ### Step 2: Add to .mcp.json
 
+**Important:** Use `-y` flag for npx to ensure non-interactive execution:
+
 ```json
 {
   "mcpServers": {
     "existing-server": { ... },
     "new-server": {
       "command": "npx",
-      "args": ["package-name-or-mcp-remote"]
+      "args": ["-y", "package-name-or-mcp-remote"]
     }
   }
 }
@@ -183,17 +190,25 @@ PERPLEXITY_API_KEY=your_perplexity_api_key_here
 NEW_SERVER_API_KEY=your_key_here
 ```
 
-### Step 4: Test the Configuration
+### Step 4: Restart Claude Code
+
+**CRITICAL:** You must restart Claude Code to reload the configuration.
+
+1. Exit Claude Code completely
+2. Restart Claude Code in your project directory
+
+### Step 5: Test the Configuration
 
 ```bash
-# Restart Claude Code
-# Run: /mcp
+# In Claude Code, run:
+/mcp
+
 # Expected: new-server appears in configured servers list
 ```
 
 ## Removing MCP Servers
 
-Simply delete the server entry from `.mcp.json`:
+1. Delete the server entry from `.mcp.json`:
 
 ```json
 {
@@ -203,6 +218,62 @@ Simply delete the server entry from `.mcp.json`:
   }
 }
 ```
+
+2. **Restart Claude Code** to reload the configuration (see "Configuration Reload" section)
+
+## Configuration Reload
+
+### ⚠️ IMPORTANT: Restart Required After Configuration Changes
+
+Claude Code **does not** automatically reload `.mcp.json` changes. After modifying the configuration file, you **must restart Claude Code** for changes to take effect.
+
+**When restart is required:**
+
+- Adding new MCP servers to `.mcp.json`
+- Removing MCP servers from `.mcp.json`
+- Modifying server configuration (args, env, etc.)
+- Changing server endpoints or commands
+
+**How to restart Claude Code:**
+
+1. **Exit Claude Code completely** (not just close the conversation)
+2. **Restart Claude Code** in your project directory
+3. **Verify configuration loaded**: Run `/mcp` command
+4. **Expected result**: Your MCP servers should appear in the list
+
+**Common mistake:**
+
+Modifying `.mcp.json` and immediately running `/mcp` without restarting. This will show stale configuration because Claude Code caches server configuration on startup.
+
+**Troubleshooting reload issues:**
+
+If servers still don't appear after restart:
+
+1. **Validate JSON syntax**: `jq empty .mcp.json && echo "✓ Valid JSON"`
+2. **Check configuration**: `jq '.mcpServers | keys' .mcp.json`
+3. **Verify server accessibility**: Test with curl or docker ps
+4. **Clear cache**: Look for Claude Code cache directories:
+   - `~/.config/claude-code/`
+   - `~/.claude-code/`
+   - `~/.cache/claude-code/`
+5. **Check for errors**: Watch for startup errors or warnings in Claude Code
+
+**Best practice for the `-y` flag:**
+
+Add the `-y` flag to `npx` commands to ensure non-interactive execution:
+
+```json
+{
+  "mcpServers": {
+    "server-name": {
+      "command": "npx",
+      "args": ["-y", "package-name"]
+    }
+  }
+}
+```
+
+This prevents npx from prompting for package installation confirmation, which could block server initialization in automated contexts.
 
 ## Troubleshooting
 
@@ -215,17 +286,19 @@ Simply delete the server entry from `.mcp.json`:
 
 **Common Causes:**
 
-1. Using unsupported `"type": "http"` format
-2. Wrong endpoint path (e.g., `/mcp` instead of `/sse`)
-3. Server not running or not accessible
-4. Invalid JSON syntax in `.mcp.json`
+1. **Claude Code not restarted after configuration changes** (most common)
+2. Using unsupported `"type": "http"` format
+3. Wrong endpoint path (e.g., `/mcp` instead of `/sse`)
+4. Server not running or not accessible
+5. Invalid JSON syntax in `.mcp.json`
 
 **Solutions:**
 
-1. Use `npx mcp-remote` for SSE servers
-2. Verify endpoint is correct (usually `/sse`)
-3. Check server is running: `docker ps` or test endpoint with `curl`
-4. Validate JSON: `jq empty .mcp.json`
+1. **Restart Claude Code** to reload configuration (see "Configuration Reload" section above)
+2. Use `npx mcp-remote` for SSE servers
+3. Verify endpoint is correct (usually `/sse`)
+4. Check server is running: `docker ps` or test endpoint with `curl`
+5. Validate JSON: `jq empty .mcp.json`
 
 ### docs-mcp Specific Issues
 
@@ -251,6 +324,7 @@ timeout 3 curl -N http://localhost:6280/sse | head -3
     "docs-mcp": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-remote",
         "http://localhost:6280/sse"
       ]
@@ -258,6 +332,8 @@ timeout 3 curl -N http://localhost:6280/sse | head -3
   }
 }
 ```
+
+**Note:** The `-y` flag ensures non-interactive npx execution.
 
 ## Reference: .mcp.example.json
 
@@ -294,18 +370,24 @@ Before committing changes to `.mcp.json`:
 
 ## Historical Context
 
-This project has experienced **three separate instances** of docs-mcp integration issues:
+This project has experienced **four separate instances** of docs-mcp integration issues:
 
 1. **Issue #439** - Initial integration
-2. **Issues #598, #599** (2025-11-14) - First regression (fixed)
-3. **Issue #602** (2025-11-15) - Second regression (current fix)
+2. **Issues #598, #599** (2025-11-14) - First regression: Wrong configuration format
+3. **Issue #602** (2025-11-15) - Second regression: Same configuration format issue
+4. **Issues #603, #610** (2025-11-17) - Configuration reload issue: Correct config not detected
 
-The root cause has consistently been:
+The root causes have been:
 
-- Using unsupported `"type": "http"` format
-- Pointing to wrong endpoint (`/mcp` instead of `/sse`)
+- **Issues #598, #599, #602**: Using unsupported `"type": "http"` format and pointing to wrong endpoint (`/mcp` instead of `/sse`)
+- **Issues #603, #610**: Configuration was correct but Claude Code was not restarted to reload changes
 
-**Lesson learned:** Always use `npx mcp-remote` for SSE-based servers, regardless of whether they're remote or local Docker containers.
+**Lessons learned:**
+
+1. Always use `npx mcp-remote` for SSE-based servers, regardless of whether they're remote or local Docker containers
+2. **Always restart Claude Code after modifying `.mcp.json`** - configuration is not hot-reloaded
+3. Add `-y` flag to npx commands for defensive non-interactive execution
+4. Complete all manual validation steps before closing issues
 
 ## Additional Resources
 
