@@ -31,7 +31,7 @@ async function glob(pattern) {
 		}
 		// For other patterns, just return empty for now
 		return [];
-	} catch (error) {
+	} catch (_error) {
 		return [];
 	}
 }
@@ -59,8 +59,6 @@ class TestCacheManager {
 		await this.loadCache();
 		await this.loadHashes();
 		await this.loadDependencies();
-
-		console.log("✅ Cache system initialized");
 		return true;
 	}
 
@@ -71,7 +69,7 @@ class TestCacheManager {
 		try {
 			const data = await fs.readFile(this.resultCache, "utf8");
 			this.cache = JSON.parse(data);
-		} catch (error) {
+		} catch (_error) {
 			// Initialize empty cache
 			this.cache = {
 				results: {},
@@ -91,7 +89,7 @@ class TestCacheManager {
 		try {
 			const data = await fs.readFile(this.hashFile, "utf8");
 			this.hashes = JSON.parse(data);
-		} catch (error) {
+		} catch (_error) {
 			this.hashes = {};
 		}
 	}
@@ -103,7 +101,7 @@ class TestCacheManager {
 		try {
 			const data = await fs.readFile(this.dependencyMap, "utf8");
 			this.dependencies = JSON.parse(data);
-		} catch (error) {
+		} catch (_error) {
 			this.dependencies = {};
 		}
 	}
@@ -128,7 +126,7 @@ class TestCacheManager {
 		try {
 			const content = await fs.readFile(filePath, "utf8");
 			return crypto.createHash("sha256").update(content).digest("hex");
-		} catch (error) {
+		} catch (_error) {
 			return null;
 		}
 	}
@@ -225,7 +223,7 @@ class TestCacheManager {
 							await fs.access(fullPath);
 							dependencies.add(fullPath);
 							break;
-						} catch (error) {
+						} catch (_error) {
 							// Try next extension
 						}
 					}
@@ -238,11 +236,7 @@ class TestCacheManager {
 				// In a real implementation, this would track actual route files
 				dependencies.add("apps/web/app/layout.tsx");
 			}
-		} catch (error) {
-			console.warn(
-				`Failed to analyze dependencies for ${testFile}: ${error.message}`,
-			);
-		}
+		} catch (_error) {}
 
 		this.dependencies[testFile] = Array.from(dependencies);
 		return dependencies;
@@ -286,11 +280,7 @@ class TestCacheManager {
 	async determineTestsToRun(requestedTests) {
 		const testsToRun = [];
 		const cachedTests = [];
-		const skippedTests = [];
-
-		console.log(
-			`\n🔍 Analyzing ${requestedTests.length} test files for changes...`,
-		);
+		const _skippedTests = [];
 
 		for (const testFile of requestedTests) {
 			// Check if test file itself has changed
@@ -351,23 +341,12 @@ class TestCacheManager {
 			cachedTests,
 		};
 
-		console.log("📊 Cache Analysis Complete:");
-		console.log(`   Total tests: ${summary.total}`);
-		console.log(
-			`   Using cache: ${summary.cached} (${((summary.cached / summary.total) * 100).toFixed(1)}%)`,
-		);
-		console.log(
-			`   Need to run: ${summary.toRun} (${((summary.toRun / summary.total) * 100).toFixed(1)}%)`,
-		);
-
 		if (testsToRun.length > 0) {
-			console.log("\n📝 Tests to run:");
 			const reasons = {};
 			for (const test of testsToRun) {
 				reasons[test.reason] = (reasons[test.reason] || 0) + 1;
 			}
-			for (const [reason, count] of Object.entries(reasons)) {
-				console.log(`   ${reason}: ${count} tests`);
+			for (const [_reason, _count] of Object.entries(reasons)) {
 			}
 		}
 
@@ -382,21 +361,19 @@ class TestCacheManager {
 			// Clear entire cache
 			this.cache.results = {};
 			this.hashes = {};
-			console.log("✅ Entire cache cleared");
 		} else {
 			// Clear specific patterns
-			let cleared = 0;
+			let _cleared = 0;
 			for (const pattern of patterns) {
 				const files = await glob(pattern);
 				for (const file of files) {
 					if (this.cache.results[file]) {
 						delete this.cache.results[file];
 						delete this.hashes[file];
-						cleared++;
+						_cleared++;
 					}
 				}
 			}
-			console.log(`✅ Cleared cache for ${cleared} files`);
 		}
 
 		await this.saveCache();
@@ -424,7 +401,7 @@ class TestCacheManager {
 				const stat = await fs.stat(filePath);
 				stats.cacheSize += stat.size;
 			}
-		} catch (error) {
+		} catch (_error) {
 			// Ignore
 		}
 
@@ -456,12 +433,11 @@ class TestCacheManager {
 		// Format cache size
 		const cacheSizeBytes = stats.cacheSize;
 		if (cacheSizeBytes > 1024 * 1024) {
-			stats.cacheSizeFormatted =
-				(cacheSizeBytes / (1024 * 1024)).toFixed(2) + " MB";
+			stats.cacheSizeFormatted = `${(cacheSizeBytes / (1024 * 1024)).toFixed(2)} MB`;
 		} else if (cacheSizeBytes > 1024) {
-			stats.cacheSizeFormatted = (cacheSizeBytes / 1024).toFixed(2) + " KB";
+			stats.cacheSizeFormatted = `${(cacheSizeBytes / 1024).toFixed(2)} KB`;
 		} else {
-			stats.cacheSizeFormatted = cacheSizeBytes + " bytes";
+			stats.cacheSizeFormatted = `${cacheSizeBytes} bytes`;
 		}
 
 		return stats;
@@ -484,7 +460,6 @@ class TestCacheManager {
 		}
 
 		if (pruned > 0) {
-			console.log(`🧹 Pruned ${pruned} old cache entries`);
 			await this.saveCache();
 		}
 
@@ -504,7 +479,6 @@ class TestCacheManager {
 		};
 
 		await fs.writeFile(outputPath, stringifyWithTabs(exportData));
-		console.log(`📦 Cache exported to ${outputPath}`);
 		return exportData;
 	}
 }
@@ -515,29 +489,15 @@ async function main() {
 	const args = process.argv.slice(2);
 	const command = args[0] || "status";
 
-	console.log("🗄️ Test Cache Manager");
-	console.log("─".repeat(40));
-
 	await manager.init();
 
 	switch (command) {
 		case "status": {
 			// Show cache status
 			const stats = await manager.getCacheStats();
-			console.log("\n📊 Cache Statistics:");
-			console.log(`  Total cached results: ${stats.totalCached}`);
-			console.log(`  Total file hashes: ${stats.totalHashes}`);
-			console.log(`  Cache size: ${stats.cacheSize}`);
-			console.log(`  Success rate: ${stats.successRate}`);
 			if (stats.oldestEntry) {
-				console.log(
-					`  Oldest entry: ${new Date(stats.oldestEntry).toLocaleString()}`,
-				);
 			}
 			if (stats.newestEntry) {
-				console.log(
-					`  Newest entry: ${new Date(stats.newestEntry).toLocaleString()}`,
-				);
 			}
 			break;
 		}
@@ -549,22 +509,16 @@ async function main() {
 			const summary = await manager.determineTestsToRun(testFiles);
 
 			if (summary.toRun > 0) {
-				console.log("\n📋 Tests that need to run:");
-				for (const test of summary.testsToRun.slice(0, 10)) {
-					console.log(`  - ${path.basename(test.file)} (${test.reason})`);
+				for (const _test of summary.testsToRun.slice(0, 10)) {
 				}
 				if (summary.testsToRun.length > 10) {
-					console.log(`  ... and ${summary.testsToRun.length - 10} more`);
 				}
 			}
 
 			if (summary.cached > 0) {
-				console.log("\n✅ Tests using cached results:");
-				for (const test of summary.cachedTests.slice(0, 5)) {
-					console.log(`  - ${path.basename(test.file)}`);
+				for (const _test of summary.cachedTests.slice(0, 5)) {
 				}
 				if (summary.cachedTests.length > 5) {
-					console.log(`  ... and ${summary.cachedTests.length - 5} more`);
 				}
 			}
 			break;
@@ -580,8 +534,7 @@ async function main() {
 		case "prune": {
 			// Prune old entries
 			const days = parseInt(args[1]) || 7;
-			const pruned = await manager.pruneCache(days);
-			console.log(`Pruned ${pruned} entries older than ${days} days`);
+			const _pruned = await manager.pruneCache(days);
 			break;
 		}
 
@@ -596,20 +549,11 @@ async function main() {
 			// Set cache validity period
 			const minutes = parseInt(args[1]) || 5;
 			manager.cacheValidityMinutes = minutes;
-			console.log(`✅ Cache validity set to ${minutes} minutes`);
 			await manager.saveCache();
 			break;
 		}
 
 		default:
-			console.log("\nUsage: node test-cache-manager.cjs [command] [options]");
-			console.log("\nCommands:");
-			console.log("  status              - Show cache statistics");
-			console.log("  check [pattern]     - Check which tests need to run");
-			console.log("  invalidate [paths]  - Clear cache for specific files");
-			console.log("  prune [days]        - Remove old cache entries");
-			console.log("  export [path]       - Export cache for analysis");
-			console.log("  set-validity [min]  - Set cache validity in minutes");
 	}
 }
 

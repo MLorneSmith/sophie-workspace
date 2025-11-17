@@ -150,7 +150,7 @@ class UnitTestRunner {
 					// Filter and stream output
 					if (this.outputFilter.processLine(line, "stdout")) {
 						const truncated = this.outputFilter.truncateLine(line);
-						process.stdout.write(truncated + "\n");
+						process.stdout.write(`${truncated}\n`);
 					}
 				}
 
@@ -183,7 +183,7 @@ class UnitTestRunner {
 					// Filter and stream errors (always show errors)
 					if (this.outputFilter.processLine(line, "stderr")) {
 						const truncated = this.outputFilter.truncateLine(line);
-						process.stderr.write(truncated + "\n");
+						process.stderr.write(`${truncated}\n`);
 					}
 				}
 			});

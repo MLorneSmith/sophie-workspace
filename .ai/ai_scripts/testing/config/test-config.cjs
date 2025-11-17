@@ -4,7 +4,7 @@
  */
 
 const path = require("node:path");
-const os = require("node:os");
+const _os = require("node:os");
 
 // Get project root
 const PROJECT_ROOT = process.cwd();

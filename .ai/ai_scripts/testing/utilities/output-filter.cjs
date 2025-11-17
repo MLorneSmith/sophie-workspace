@@ -86,9 +86,7 @@ class OutputFilter {
 			// Write header
 			const header = `\n${"=".repeat(80)}\nTest Run: ${new Date().toISOString()}\nMode: ${this.mode}\n${"=".repeat(80)}\n`;
 			this.fileStream.write(header);
-		} catch (error) {
-			console.error(`Failed to initialize file output: ${error.message}`);
-		}
+		} catch (_error) {}
 	}
 
 	/**
@@ -364,19 +362,10 @@ class OutputFilter {
 		const heapUsed = used.heapUsed;
 
 		if (this.metrics.errorThreshold && heapUsed > this.metrics.errorThreshold) {
-			console.error(
-				`\n⚠️  CRITICAL: Memory usage (${Math.round(heapUsed / 1024 / 1024)}MB) exceeds error threshold!`,
-			);
-			console.error(
-				`   Suppressed ${this.suppressedLines} lines to prevent crash`,
-			);
 		} else if (
 			this.metrics.warnThreshold &&
 			heapUsed > this.metrics.warnThreshold
 		) {
-			console.warn(
-				`\n⚠️  Memory usage high: ${Math.round(heapUsed / 1024 / 1024)}MB`,
-			);
 		}
 	}
 
@@ -407,27 +396,11 @@ class OutputFilter {
 		const stats = this.getStats();
 
 		if (stats.suppressedLines > 0 || this.mode !== "full") {
-			console.log("\n" + "─".repeat(80));
-			console.log("📊 Output Filtering Summary");
-			console.log("─".repeat(80));
-			console.log(`Mode: ${this.mode}`);
-			console.log(`Total Lines: ${stats.totalLines}`);
-			console.log(`Shown: ${stats.shownLines}`);
-			console.log(
-				`Suppressed: ${stats.suppressedLines} (${stats.suppressionRate}%)`,
-			);
-
 			if (stats.memory) {
-				console.log(`Memory Used: ${stats.memory}MB`);
 			}
 
 			if (this.fileStream) {
-				console.log(
-					`Full Output: ${this.fileConfig.path} (${Math.round(stats.fileSize / 1024)}KB)`,
-				);
 			}
-
-			console.log("─".repeat(80) + "\n");
 		}
 	}
 
@@ -472,7 +445,7 @@ function createFilteredStream(filter, streamType = "stdout") {
 				const truncated = filter.truncateLine(line);
 				const target =
 					streamType === "stderr" ? process.stderr : process.stdout;
-				target.write(truncated + "\n");
+				target.write(`${truncated}\n`);
 			}
 		}
 	});
@@ -482,7 +455,7 @@ function createFilteredStream(filter, streamType = "stdout") {
 		if (lineBuffer && filter.processLine(lineBuffer, streamType)) {
 			const truncated = filter.truncateLine(lineBuffer);
 			const target = streamType === "stderr" ? process.stderr : process.stdout;
-			target.write(truncated + "\n");
+			target.write(`${truncated}\n`);
 		}
 	});
 

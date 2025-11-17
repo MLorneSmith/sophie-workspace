@@ -279,7 +279,7 @@ class InfrastructureManager {
 			}
 
 			return "connection_failed";
-		} catch (error) {
+		} catch (_error) {
 			return "not_accessible";
 		}
 	}
@@ -472,7 +472,7 @@ class InfrastructureManager {
 					healthStatus.checks.apiResponse = true;
 					log("  ✅ API responding with valid JSON");
 				}
-			} catch (apiError) {
+			} catch (_apiError) {
 				log("  ⚠️ API check failed but continuing");
 			}
 
@@ -518,7 +518,7 @@ class InfrastructureManager {
 						process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3001";
 						return "healthy";
 					}
-				} catch (error) {
+				} catch (_error) {
 					return "docker_unhealthy";
 				}
 			}
@@ -539,7 +539,7 @@ class InfrastructureManager {
 					if (response.ok) {
 						return "healthy";
 					}
-				} catch (error) {
+				} catch (_error) {
 					return "external_unhealthy";
 				}
 			}
@@ -615,7 +615,7 @@ class InfrastructureManager {
 
 			if (status === "not_running") {
 				log("Starting Web Supabase...");
-				const proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
+				const _proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
 
 				// Wait for Supabase to be ready using ConditionWaiter
 				await this.waiter.waitForSupabase({
@@ -629,7 +629,7 @@ class InfrastructureManager {
 				await execAsync("cd apps/web && npx supabase stop"); // Use Web Supabase
 				await this.waiter.delay(3000, "Supabase shutdown");
 
-				const proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
+				const _proc = exec("cd apps/web && npx supabase start"); // Use Web Supabase
 				await this.waiter.waitForSupabase({
 					timeout: 120000,
 					name: "Web Supabase restart",
@@ -808,7 +808,7 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 						process.env.NEXT_PUBLIC_APP_URL = testUrl;
 						return "docker_container";
 					}
-				} catch (error) {
+				} catch (_error) {
 					log("⚠️ Docker test server not responding, will try to restart");
 				}
 			}
@@ -913,11 +913,11 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 			}
 
 			// Handle stdout/stderr to detect startup issues
-			let serverReady = false;
+			let _serverReady = false;
 			devServer.stdout.on("data", (data) => {
 				const output = data.toString();
 				if (output.includes("ready") || output.includes("started on")) {
-					serverReady = true;
+					_serverReady = true;
 				}
 				if (this.config.execution?.debug) {
 					log(`[dev-server]: ${output.trim()}`);

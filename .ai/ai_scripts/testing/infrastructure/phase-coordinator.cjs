@@ -345,7 +345,7 @@ class PhaseCoordinator extends EventEmitter {
 			}
 
 			return { recovered: true, result: "Forced cleanup completed" };
-		} catch (recoveryError) {
+		} catch (_recoveryError) {
 			// Cleanup errors are not critical
 			return { recovered: true, result: "Cleanup attempted" };
 		}

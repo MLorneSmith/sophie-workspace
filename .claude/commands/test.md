@@ -161,7 +161,7 @@ bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh --verbose # Very 
 **Success Path:**
 
 1. Load environment context
-2. Call `bash .claude/scripts/testing/infrastructure/safe-test-runner.sh [args]`
+2. Call `bash .ai/ai_scripts/testing/infrastructure/safe-test-runner.sh [args]`
 3. See minimal progress updates (< 50 lines)
 4. Review summary with pass/fail counts
 5. Point to /tmp/test-output.log for details

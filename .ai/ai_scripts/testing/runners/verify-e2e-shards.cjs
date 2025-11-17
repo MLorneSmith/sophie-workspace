@@ -7,9 +7,7 @@
 const { execSync } = require("node:child_process");
 const fs = require("node:fs");
 
-function log(message) {
-	console.log(`[${new Date().toISOString()}] ${message}`);
-}
+function log(_message) {}
 
 function verifyShards() {
 	log("🔍 Verifying E2E test shard configuration...\n");

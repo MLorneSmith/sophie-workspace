@@ -1460,7 +1460,7 @@ class E2ETestRunner {
 			}
 
 			// Generate filename
-			const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+			const _timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 			const safeShardName = group.name.toLowerCase().replace(/\s+/g, "-");
 			const filename = `shard-${shardId}-${safeShardName}.json`;
 			const filePath = path.join(reportPath, filename);

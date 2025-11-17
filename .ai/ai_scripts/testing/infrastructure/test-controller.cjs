@@ -367,7 +367,7 @@ class TestController {
 						log("  ✅ Authentication endpoints accessible");
 					}
 				}
-			} catch (authError) {
+			} catch (_authError) {
 				log("  ⚠️ Auth endpoint check failed but continuing");
 			}
 
@@ -403,40 +403,7 @@ class TestController {
 	/**
 	 * Show help message
 	 */
-	showHelp() {
-		console.log(
-			`
-Modular Test Controller
-
-Usage: node test-controller.cjs [options]
-
-Options:
-  --skip-unit     Skip unit tests
-  --skip-e2e      Skip E2E tests
-  --unit          Run unit tests only (alias for --skip-e2e)
-  --quick         Quick infrastructure check only
-  --debug         Enable debug output
-  --verbose       Enable verbose logging
-
-Output Control (prevents Claude Code crashes from buffer overflow):
-  -o, --output <mode>      Set output mode: full, summary, quiet, file
-  -f, --output-file <path> Write full output to file
-  -q, --quiet              Quiet mode - only errors and critical messages
-  -s, --summary            Summary mode - filtered output (default)
-  --full                   Full mode - show all output
-
-  --help          Show this help message
-
-Examples:
-  node test-controller.cjs                              # Run all tests (summary mode)
-  node test-controller.cjs --skip-e2e                   # Run unit tests only
-  node test-controller.cjs --quick                      # Quick infrastructure check
-  node test-controller.cjs --quiet                      # Minimal output
-  node test-controller.cjs --output-file /tmp/test.log  # Log to file
-  node test-controller.cjs --full --debug               # Full output with debug
-		`.trim(),
-		);
-	}
+	showHelp() {}
 
 	/**
 	 * Main execution entry point
@@ -477,7 +444,7 @@ Examples:
 			const result = await this.phaseCoordinator.executePhases(phases);
 
 			// Generate report
-			const report = await this.testReporter.generateReport();
+			const _report = await this.testReporter.generateReport();
 
 			// Update statusline with final results
 			const summary = this.testStatus.getSummary();
@@ -937,12 +904,11 @@ Examples:
 		// Handle uncaught exceptions
 		process.on("uncaughtException", async (error) => {
 			logError(`Uncaught exception: ${error.message}`);
-			console.error(error.stack);
 
 			// Update statusline to indicate failure
 			try {
 				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
-			} catch (statusError) {
+			} catch (_statusError) {
 				// Don't let status update errors prevent cleanup
 			}
 
@@ -951,14 +917,13 @@ Examples:
 		});
 
 		// Handle unhandled rejections
-		process.on("unhandledRejection", async (reason, promise) => {
+		process.on("unhandledRejection", async (_reason, promise) => {
 			logError(`Unhandled rejection at: ${promise}`);
-			console.error(reason);
 
 			// Update statusline to indicate failure
 			try {
 				await this.testStatus.updateStatusLine("failed", 0, 1, 1);
-			} catch (statusError) {
+			} catch (_statusError) {
 				// Don't let status update errors prevent cleanup
 			}
 
