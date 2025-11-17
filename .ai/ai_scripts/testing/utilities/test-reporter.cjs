@@ -52,6 +52,8 @@ class TestReporter {
 				total: summary.total,
 				passed: summary.passed,
 				failed: summary.failed,
+				actualFailures: summary.actualFailures,
+				intentionalFailures: summary.intentionalFailures,
 				skipped: summary.skipped,
 				success: summary.success,
 			},
