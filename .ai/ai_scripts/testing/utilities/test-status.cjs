@@ -117,6 +117,16 @@ class TestStatus {
 		const intentionalFailures = e2e.intentionalFailures || 0;
 		const actualFailures = totalFailed - intentionalFailures;
 
+		// Update status line with actual failures (for statusline display)
+		this.updateStatusLine(
+			actualFailures === 0 ? "success" : "failed",
+			totalPassed,
+			actualFailures,
+			total,
+		).catch(() => {
+			// Silently ignore statusline update failures
+		});
+
 		return {
 			total,
 			passed: totalPassed,

@@ -91,6 +91,22 @@ E2E_FAILED=$(grep "E2E.*failed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-
 # Calculate totals
 TOTAL_PASSED=$((UNIT_PASSED + E2E_PASSED))
 TOTAL_FAILED=$((UNIT_FAILED + E2E_FAILED))
+
+# Adjust for intentional test failures (test-configuration-verification.spec.ts)
+# This test file contains 3 intentional failures to verify Playwright configuration
+if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; then
+    INTENTIONAL_FAILURES=3
+
+    # Count how many intentional failures were actually reported
+    INTENTIONAL_COUNT=$(grep -c "Intentional FAILURE" "$LOG_FILE" 2>/dev/null || echo "0")
+
+    # Only subtract if we found the expected intentional failures
+    if [[ $INTENTIONAL_COUNT -ge $INTENTIONAL_FAILURES ]]; then
+        TOTAL_FAILED=$((TOTAL_FAILED - INTENTIONAL_FAILURES))
+        echo -e "${BLUE}ℹ️  Excluded $INTENTIONAL_FAILURES intentional test failures (config verification)${NC}"
+    fi
+fi
+
 TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
 
 # Display results
