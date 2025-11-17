@@ -16,6 +16,7 @@ set -euo pipefail
 LOG_FILE="${TEST_OUTPUT_FILE:-/tmp/test-output.log}"
 CONTROLLER_SCRIPT="$(dirname "$0")/test-controller.cjs"
 PROJECT_ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
+LOCKFILE="/tmp/.test-suite-running.lock"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -33,6 +34,58 @@ for arg in "$@"; do
         SHOW_VERBOSE=true
     fi
 done
+
+# Duplicate-run protection
+check_and_acquire_lock() {
+    # Check if lockfile exists
+    if [[ -f "$LOCKFILE" ]]; then
+        LOCK_PID=$(cat "$LOCKFILE" 2>/dev/null || echo "")
+
+        if [[ -n "$LOCK_PID" ]]; then
+            # Check if process is still running
+            if ps -p "$LOCK_PID" > /dev/null 2>&1; then
+                # Check if it's actually a safe-test-runner process
+                if ps -p "$LOCK_PID" -o command= 2>/dev/null | grep -q "safe-test-runner.sh"; then
+                    echo -e "${RED}❌ Test suite is already running (PID: $LOCK_PID)${NC}"
+                    echo ""
+                    echo "Options:"
+                    echo "  1. Wait for it to complete"
+                    echo "  2. Kill it: kill $LOCK_PID"
+                    echo "  3. View progress: tail -f $LOG_FILE"
+                    echo ""
+                    exit 1
+                else
+                    # Stale lockfile from a different process
+                    echo -e "${YELLOW}⚠️  Removing stale lockfile (PID $LOCK_PID is not safe-test-runner)${NC}"
+                    rm -f "$LOCKFILE"
+                fi
+            else
+                # Process no longer exists, remove stale lockfile
+                echo -e "${YELLOW}⚠️  Removing stale lockfile (process $LOCK_PID no longer exists)${NC}"
+                rm -f "$LOCKFILE"
+            fi
+        fi
+    fi
+
+    # Create lockfile with current PID
+    echo $$ > "$LOCKFILE"
+}
+
+# Cleanup function to remove lockfile on exit
+cleanup_lock() {
+    if [[ -f "$LOCKFILE" ]]; then
+        LOCK_PID=$(cat "$LOCKFILE" 2>/dev/null || echo "")
+        if [[ "$LOCK_PID" == "$$" ]]; then
+            rm -f "$LOCKFILE"
+        fi
+    fi
+}
+
+# Set trap to clean up lockfile on exit (success or failure)
+trap cleanup_lock EXIT INT TERM
+
+# Acquire lock before proceeding
+check_and_acquire_lock
 
 # Clear old log
 > "$LOG_FILE"
