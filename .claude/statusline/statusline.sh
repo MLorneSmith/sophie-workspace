@@ -9,7 +9,7 @@ input=$(cat)
 model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
 # Status indicators using symbols
-# 🟢 = Success, fresh (< 30min for dev, < 4h for CI)
+# 🟢 = Success, fresh (< 4h for dev tools, varies for CI)
 # 🟡 = Success, but old OR running/pending
 # 🔴 = Error/failure (regardless of time)
 # ⚪ = Not run/cancelled/unknown
@@ -80,8 +80,8 @@ elif validate_status_file "$build_status_file" 3; then
     time_ago=$(format_time_ago "$timestamp")
 
     if [ "$result" = "success" ]; then
-        # Success: Green < 30m, Yellow after 30m
-        if is_fresh "$timestamp" 1800; then  # 30 minutes
+        # Success: Green < 4h, Yellow after 4h
+        if is_fresh "$timestamp" 14400; then  # 4 hours
             build_status="🟢 build ($time_ago)"
         else
             build_status="🟡 build ($time_ago)"
@@ -120,8 +120,8 @@ elif validate_status_file "$test_status_file" 5; then
     time_ago=$(format_time_ago "$timestamp")
 
     if [ "$result" = "success" ]; then
-        # Success: Green < 30m, Yellow after 30m
-        if is_fresh "$timestamp" 1800; then  # 30 minutes
+        # Success: Green < 4h, Yellow after 4h
+        if is_fresh "$timestamp" 14400; then  # 4 hours
             test_status="🟢 test ($time_ago)"
         else
             test_status="🟡 test ($time_ago)"
@@ -163,8 +163,8 @@ elif validate_status_file "$codecheck_status_file" 5; then
     time_ago=$(format_time_ago "$timestamp")
 
     if [ "$result" = "success" ]; then
-        # Success: Green < 30m, Yellow after 30m
-        if is_fresh "$timestamp" 1800; then  # 30 minutes
+        # Success: Green < 4h, Yellow after 4h
+        if is_fresh "$timestamp" 14400; then  # 4 hours
             codecheck_status="🟢 codecheck ($time_ago)"
         else
             codecheck_status="🟡 codecheck ($time_ago)"
