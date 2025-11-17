@@ -1,0 +1,28 @@
+{
+	"shard": {
+		"id": 10,
+		"name": "Team Billing",
+		"files": ["tests/team-billing/team-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard10"
+	},
+	"execution": {
+		"startTime": "2025-11-17T15:59:32.549Z",
+		"endTime": "2025-11-17T15:59:52.549Z",
+		"duration": "20s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard10 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into browser storage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into browser storage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ Session injected into browser storage for super-admin user\n✅ super-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n🔧 Test Environment Configuration:\n   Environment: LOCAL\n   CI Mode: false\n   Skip Email Verification: false\n   Credential Validation: LENIENT\n   Max Retries: 2\n\nRunning 1 test using 1 worker\n\n🔧 Test Environment Configuration:\n   Environment: LOCAL\n   CI Mode: false\n   Skip Email Verification: false\n   Credential Validation: LENIENT\n   Max Retries: 2\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard10: `playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n"
+}
