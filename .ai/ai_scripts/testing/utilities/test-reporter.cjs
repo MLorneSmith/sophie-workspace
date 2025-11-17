@@ -94,79 +94,31 @@ class TestReporter {
 	generateConsoleReport(report) {
 		const { summary, unit, e2e } = report;
 
-		console.log("\n" + "=".repeat(60));
-		console.log("                TEST EXECUTION REPORT");
-		console.log("=".repeat(60));
-
-		console.log("\n📊 OVERALL SUMMARY");
-		console.log("─".repeat(40));
-		console.log(`Total Tests:    ${summary.total}`);
-		console.log(`✅ Passed:      ${summary.passed}`);
-		console.log(`❌ Failed:      ${summary.failed}`);
-		console.log(`⏭️  Skipped:     ${summary.skipped}`);
-		console.log(`Duration:       ${report.duration}s`);
-		console.log(
-			`Status:         ${summary.success ? "✅ SUCCESS" : "❌ FAILED"}`,
-		);
-
 		// Unit test details
 		if (unit.total > 0) {
-			console.log("\n📦 UNIT TESTS");
-			console.log("─".repeat(40));
-			console.log(`Total Tests:    ${unit.total}`);
-			console.log(`✅ Passed:      ${unit.passed}`);
-			console.log(`❌ Failed:      ${unit.failed}`);
-			console.log(`⏭️  Skipped:     ${unit.skipped}`);
-			console.log(`Duration:       ${unit.duration || "N/A"}`);
-
 			if (unit.failedTests && unit.failedTests.length > 0) {
-				console.log("\n❌ Failed Unit Tests:");
-				unit.failedTests.forEach((test, index) => {
-					console.log(`  ${index + 1}. ${test.file || test.error}`);
-				});
+				unit.failedTests.forEach((_test, _index) => {});
 			}
 		}
 
 		// E2E test details
 		if (e2e.total > 0) {
-			console.log("\n🌐 E2E TESTS");
-			console.log("─".repeat(40));
-			console.log(`Total Tests:    ${e2e.total}`);
-			console.log(`✅ Passed:      ${e2e.passed}`);
-			console.log(`❌ Failed:      ${e2e.failed}`);
 			if (e2e.intentionalFailures > 0) {
-				console.log(
-					`🎯 Deliberate:   ${e2e.intentionalFailures} (intentional failures)`,
-				);
 			}
-			console.log(`⏭️  Skipped:     ${e2e.skipped}`);
 			if (e2e.integrationTests > 0) {
-				console.log(`🔗 Integration:  ${e2e.integrationTests} tests`);
 			}
-			console.log(`Duration:       ${e2e.duration || "N/A"}`);
 
 			// Show actual vs expected failures
 			const actualFailures = e2e.failed;
 			const expectedFailures = e2e.intentionalFailures || 0;
 			if (actualFailures > 0 || expectedFailures > 0) {
-				console.log("\n📊 Failure Analysis:");
-				console.log(`  Expected failures: ${expectedFailures}`);
-				console.log(`  Actual failures:   ${actualFailures}`);
-				console.log(
-					`  Unexpected failures: ${Math.max(0, actualFailures - expectedFailures)}`,
-				);
 			}
 
 			// Shard details
 			if (Object.keys(e2e.shards).length > 0) {
-				console.log("\n📈 Test Group Results:");
 				for (const [shardId, shard] of Object.entries(e2e.shards)) {
-					const groupName = shard.groupName || `Group ${shardId}`;
-					console.log(`  ${groupName}: ${shard.passed}/${shard.total} passed`);
+					const _groupName = shard.groupName || `Group ${shardId}`;
 					if (shard.intentionalFailures > 0) {
-						console.log(
-							`    └─ ${shard.intentionalFailures} deliberate failures`,
-						);
 					}
 				}
 			}
@@ -175,32 +127,10 @@ class TestReporter {
 		// Enhanced failure analysis for all tests
 		this.generateAndDisplayFailureAnalysis(report);
 
-		// Infrastructure status
-		console.log("\n🔧 INFRASTRUCTURE");
-		console.log("─".repeat(40));
-		console.log(
-			`Supabase:       ${this.formatStatus(report.infrastructure.supabase)}`,
-		);
-		console.log(
-			`Database:       ${this.formatStatus(report.infrastructure.database)}`,
-		);
-		console.log(
-			`Ports:          ${this.formatStatus(report.infrastructure.ports)}`,
-		);
-		console.log(
-			`Environment:    ${this.formatStatus(report.infrastructure.environment)}`,
-		);
-
 		// Errors
 		if (report.errors && report.errors.length > 0) {
-			console.log("\n⚠️ ERRORS");
-			console.log("─".repeat(40));
-			report.errors.forEach((error, index) => {
-				console.log(`${index + 1}. [${error.phase}] ${error.message}`);
-			});
+			report.errors.forEach((_error, _index) => {});
 		}
-
-		console.log("\n" + "=".repeat(60));
 	}
 
 	/**
@@ -588,7 +518,6 @@ ${report.errors
 		const analysis = this.failureAnalyzer.analyzeFailures(testResults);
 
 		if (analysis.totalFailures > 0 || analysis.suggestions.length > 0) {
-			console.log("\n" + this.failureAnalyzer.formatAnalysis(analysis));
 		}
 	}
 

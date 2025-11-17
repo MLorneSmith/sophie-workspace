@@ -20,7 +20,7 @@ Docker container health validation and aggressive restoration for all 16 contain
 ## Essential Context
 <!-- Always read for this command -->
 - Read .claude/context/infrastructure/docker-health-debugging.md
-- Read .ai/ai_scripts/supabase-external-health.sh
+- Read .claude/bin/supabase-external-health.sh
 
 ## Prompt
 
@@ -96,7 +96,7 @@ Authority Matrix:
 **Load** Docker health infrastructure and debugging knowledge:
 
 - Read .claude/context/infrastructure/docker-health-debugging.md
-- Read .ai/ai_scripts/supabase-external-health.sh
+- Read .claude/bin/supabase-external-health.sh
 
 #### Parameters & Constraints
 

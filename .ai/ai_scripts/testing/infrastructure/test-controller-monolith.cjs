@@ -34,7 +34,7 @@ function stringifyWithTabs(data) {
 let TestCacheManager;
 try {
 	({ TestCacheManager } = require("./test-cache-manager.cjs"));
-} catch (e) {
+} catch (_e) {
 	// Cache manager not available
 }
 
@@ -485,7 +485,7 @@ class InfrastructureChecker {
 				// Check if Docker is running (required for Supabase)
 				try {
 					await execAsync("docker info", { timeout: 5000 });
-				} catch (dockerError) {
+				} catch (_dockerError) {
 					logError("❌ Docker is not running or not accessible");
 					log("   Please ensure Docker is installed and running");
 					return "failed";
@@ -810,7 +810,7 @@ class InfrastructureChecker {
 			await fs.access(buildDir);
 			log("✅ Next.js build artifacts found");
 			return "valid";
-		} catch (error) {
+		} catch (_error) {
 			log("⚠️ No build artifacts found (will use dev server)");
 			return "missing";
 		}
@@ -1101,7 +1101,7 @@ class UnitTestRunner {
 
 			let total = 0;
 			let withTests = 0;
-			const cached = 0;
+			const _cached = 0;
 
 			// Count workspaces that could have tests (excluding e2e)
 			for (const workspace of workspaces) {
@@ -1122,7 +1122,7 @@ class UnitTestRunner {
 					) {
 						withTests++;
 					}
-				} catch (error) {
+				} catch (_error) {
 					// Ignore workspace if can't read package.json
 				}
 			}
@@ -1411,7 +1411,7 @@ class E2ETestRunner {
 			// FIXED: Don't kill our own dev:test processes - only kill orphaned ones
 			// await execAsync(`pkill -9 -f "pnpm.*dev:test" 2>/dev/null || true`);
 			await new Promise((resolve) => setTimeout(resolve, 2000));
-		} catch (e) {
+		} catch (_e) {
 			// Ignore cleanup errors
 		}
 
@@ -1610,7 +1610,7 @@ class E2ETestRunner {
 						await new Promise((resolve) => setTimeout(resolve, 3000)); // Give more time for processes to die
 						log("✅ Processes killed");
 					} catch (e) {
-						log("⚠️ Process cleanup warning: " + e.message);
+						log(`⚠️ Process cleanup warning: ${e.message}`);
 					}
 
 					// Step 2: Check and restart Supabase if needed
@@ -1631,7 +1631,7 @@ class E2ETestRunner {
 							await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait for Supabase to initialize
 						}
 					} catch (e) {
-						log("⚠️ Supabase check warning: " + e.message);
+						log(`⚠️ Supabase check warning: ${e.message}`);
 					}
 
 					// Step 3: Try to start servers again with different approaches
@@ -1642,7 +1642,7 @@ class E2ETestRunner {
 						try {
 							// Kill process group for detached processes
 							process.kill(-this.serverProcess.pid, "SIGKILL");
-						} catch (e) {
+						} catch (_e) {
 							// Process might already be dead
 						}
 						this.serverProcess = null;
@@ -1651,7 +1651,7 @@ class E2ETestRunner {
 						try {
 							// Kill process group for detached processes
 							process.kill(-this.backendProcess.pid, "SIGKILL");
-						} catch (e) {
+						} catch (_e) {
 							// Process might already be dead
 						}
 						this.backendProcess = null;
@@ -1721,7 +1721,7 @@ class E2ETestRunner {
 								);
 								log("🌐 Frontend server started with exec");
 							} catch (e) {
-								log("⚠️ Frontend exec start warning: " + e.message);
+								log(`⚠️ Frontend exec start warning: ${e.message}`);
 							}
 						}
 
@@ -1735,7 +1735,7 @@ class E2ETestRunner {
 								);
 								log("🔧 Backend server started with exec");
 							} catch (e) {
-								log("⚠️ Backend exec start warning: " + e.message);
+								log(`⚠️ Backend exec start warning: ${e.message}`);
 							}
 						}
 
@@ -1961,7 +1961,7 @@ class E2ETestRunner {
 						if (data.status === "ready") {
 							log("    → Health status: ready");
 						}
-					} catch (e) {
+					} catch (_e) {
 						// JSON parsing failed, but endpoint responded
 					}
 				}
@@ -2014,7 +2014,7 @@ class E2ETestRunner {
 						await new Promise((resolve) => setTimeout(resolve, 500));
 					}
 				}
-			} catch (e) {
+			} catch (_e) {
 				// Ignore errors - port might already be free
 			}
 		}
@@ -2031,7 +2031,7 @@ class E2ETestRunner {
 					`netstat -tulpn 2>/dev/null | grep :${port} | awk '{print $7}' | cut -d/ -f1 | xargs -r kill -9 2>/dev/null || true`,
 				);
 			}
-		} catch (e) {
+		} catch (_e) {
 			// Ignore cleanup errors
 		}
 
@@ -2064,7 +2064,7 @@ class E2ETestRunner {
 				`lsof -i:${port} | grep LISTEN | wc -l`,
 			);
 			return parseInt(stdout.trim()) === 0;
-		} catch (e) {
+		} catch (_e) {
 			return true; // Assume free if command fails
 		}
 	}
@@ -2075,7 +2075,7 @@ class E2ETestRunner {
 				signal: AbortSignal.timeout(2000),
 			}).catch(() => null);
 			return response?.ok;
-		} catch (e) {
+		} catch (_e) {
 			return false;
 		}
 	}
@@ -2096,7 +2096,7 @@ class E2ETestRunner {
 				// Send SIGTERM to the process group since it's detached
 				process.kill(-this.serverProcess.pid, "SIGTERM");
 				log("  📡 Frontend server SIGTERM sent");
-			} catch (e) {
+			} catch (_e) {
 				// Process might already be dead
 				log("  ⚠️ Frontend server already terminated");
 			}
@@ -2108,7 +2108,7 @@ class E2ETestRunner {
 				// Send SIGTERM to the process group since it's detached
 				process.kill(-this.backendProcess.pid, "SIGTERM");
 				log("  🔧 Backend server SIGTERM sent");
-			} catch (e) {
+			} catch (_e) {
 				// Process might already be dead
 				log("  ⚠️ Backend server already terminated");
 			}
@@ -2453,7 +2453,7 @@ class E2ETestRunner {
 		};
 
 		// No interval timer - we'll update on shard completion events only
-		const progressInterval = null;
+		const _progressInterval = null;
 
 		// Helper to wait for next shard to complete
 		const waitForNextCompletion = async () => {
@@ -2812,7 +2812,7 @@ class E2ETestRunner {
 		if (result.passed > 0 && result.failed < result.total / 2) return null;
 
 		// Check output against retry patterns
-		for (const [key, strategy] of Object.entries(this.retryPatterns)) {
+		for (const [_key, strategy] of Object.entries(this.retryPatterns)) {
 			const matchesAllPatterns = strategy.patterns.every((pattern) =>
 				result.output?.includes(pattern),
 			);
@@ -2941,7 +2941,7 @@ class E2ETestRunner {
 				try {
 					// Kill the process group
 					process.kill(-proc.pid, "SIGKILL");
-				} catch (e) {
+				} catch (_e) {
 					// Fallback to killing just the process
 					proc.kill("SIGKILL");
 				}
@@ -2951,7 +2951,7 @@ class E2ETestRunner {
 					await execAsync(
 						`pkill -9 -f "playwright.*${shard.currentFile || shard.id}" 2>/dev/null || true`,
 					);
-				} catch (e) {
+				} catch (_e) {
 					// Ignore errors
 				}
 

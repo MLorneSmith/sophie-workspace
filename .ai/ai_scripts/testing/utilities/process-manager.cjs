@@ -193,7 +193,7 @@ class ProcessManager {
 			);
 
 			return true;
-		} catch (error) {
+		} catch (_error) {
 			// Force kill if graceful shutdown failed
 			try {
 				processInfo.proc.kill("SIGKILL");
@@ -227,7 +227,7 @@ class ProcessManager {
 	 * Synchronous kill all (for exit handler)
 	 */
 	killAllSync() {
-		for (const [name, processInfo] of this.processes) {
+		for (const [_name, processInfo] of this.processes) {
 			if (!processInfo.killed) {
 				try {
 					processInfo.proc.kill("SIGKILL");

@@ -32,11 +32,7 @@ class ResourceLock {
 			await fs.mkdir(this.lockDir, { recursive: true });
 			// Clean up stale locks on initialization
 			await this.cleanStaleLocks();
-		} catch (error) {
-			console.error(
-				`Failed to initialize lock directory: ${error instanceof Error ? error.message : String(error)}`,
-			);
-		}
+		} catch (_error) {}
 	}
 
 	/**
@@ -66,7 +62,6 @@ class ResourceLock {
 				await fs.writeFile(lockFile, JSON.stringify(lockData), { flag: "wx" });
 
 				this.locks.set(resource, lockFile);
-				console.log(`✅ Lock acquired for ${resource} by PID ${this.pid}`);
 				return true;
 			} catch (error) {
 				if (
@@ -87,15 +82,10 @@ class ResourceLock {
 						setTimeout(resolve, 1000),
 					);
 				} else {
-					console.error(
-						`Failed to acquire lock for ${resource}: ${error.message}`,
-					);
 					return false;
 				}
 			}
 		}
-
-		console.warn(`⚠️ Timeout acquiring lock for ${resource}`);
 		return false;
 	}
 
@@ -112,12 +102,8 @@ class ResourceLock {
 		try {
 			await fs.unlink(lockFile);
 			this.locks.delete(resource);
-			console.log(`✅ Lock released for ${resource}`);
 		} catch (error) {
 			if (error.code !== "ENOENT") {
-				console.error(
-					`Failed to release lock for ${resource}: ${error.message}`,
-				);
 			}
 		}
 	}
@@ -151,13 +137,13 @@ class ResourceLock {
 				try {
 					process.kill(lockData.pid, 0);
 					return false; // Process exists
-				} catch (error) {
+				} catch (_error) {
 					return true; // Process doesn't exist
 				}
 			}
 
 			return false;
-		} catch (error) {
+		} catch (_error) {
 			return true; // Assume stale if can't read/parse
 		}
 	}
@@ -169,10 +155,8 @@ class ResourceLock {
 	async removeLock(lockFile) {
 		try {
 			await fs.unlink(lockFile);
-			console.log(`🧹 Removed stale lock: ${path.basename(lockFile)}`);
 		} catch (error) {
 			if (error.code !== "ENOENT") {
-				console.error(`Failed to remove lock: ${error.message}`);
 			}
 		}
 	}
@@ -192,9 +176,7 @@ class ResourceLock {
 					await this.removeLock(lockFile);
 				}
 			}
-		} catch (error) {
-			console.error(`Failed to clean stale locks: ${error.message}`);
-		}
+		} catch (_error) {}
 	}
 
 	/**
@@ -215,7 +197,7 @@ class ResourceLock {
 				await fs.access(lockFile);
 				// Lock exists, wait
 				await new Promise((resolve) => setTimeout(resolve, 1000));
-			} catch (error) {
+			} catch (_error) {
 				// Lock doesn't exist, resource is available
 				return true;
 			}
@@ -239,13 +221,11 @@ class ResourceLock {
 				try {
 					const data = await fs.readFile(lockFile, "utf8");
 					locks.push(JSON.parse(data));
-				} catch (error) {
+				} catch (_error) {
 					// Skip if can't read
 				}
 			}
-		} catch (error) {
-			console.error(`Failed to get current locks: ${error.message}`);
-		}
+		} catch (_error) {}
 		return locks;
 	}
 }
@@ -266,7 +246,6 @@ if (require.main === module) {
 		switch (command) {
 			case "acquire": {
 				if (!resource) {
-					console.error("Usage: resource-lock.cjs acquire <resource>");
 					process.exit(1);
 				}
 				const acquired = await lockManager.acquire(resource);
@@ -276,7 +255,6 @@ if (require.main === module) {
 
 			case "release":
 				if (!resource) {
-					console.error("Usage: resource-lock.cjs release <resource>");
 					process.exit(1);
 				}
 				await lockManager.release(resource);
@@ -284,26 +262,17 @@ if (require.main === module) {
 
 			case "clean":
 				await lockManager.cleanStaleLocks();
-				console.log("✅ Cleaned stale locks");
 				break;
 
 			case "list": {
 				const locks = await lockManager.getCurrentLocks();
-				console.log("Current locks:");
 				locks.forEach((lock) => {
-					const age = Math.round((Date.now() - lock.timestamp) / 1000);
-					console.log(`  - ${lock.resource} (PID: ${lock.pid}, Age: ${age}s)`);
+					const _age = Math.round((Date.now() - lock.timestamp) / 1000);
 				});
 				break;
 			}
 
 			default:
-				console.log("Usage: resource-lock.cjs <command> [resource]");
-				console.log("Commands:");
-				console.log("  acquire <resource>  - Acquire a lock");
-				console.log("  release <resource>  - Release a lock");
-				console.log("  clean              - Clean stale locks");
-				console.log("  list               - List current locks");
 		}
 	})();
 }

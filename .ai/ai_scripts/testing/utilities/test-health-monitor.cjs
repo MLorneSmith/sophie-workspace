@@ -163,7 +163,7 @@ class TestHealthMonitor {
 				virtualMemory: parseInt(parts[4]) * 1024 || 0, // VSZ in bytes
 				state: parts[5] || "unknown",
 			};
-		} catch (error) {
+		} catch (_error) {
 			return { cpu: 0, memory: 0, state: "error" };
 		}
 	}
@@ -185,26 +185,14 @@ class TestHealthMonitor {
 	/**
 	 * Report health issues
 	 */
-	reportHealthIssues(monitor, healthCheck) {
-		console.log(
-			`\n⚠️ Health Issues Detected for ${monitor.name} (PID: ${monitor.pid})`,
-		);
-		console.log("─".repeat(60));
-
-		for (const issue of healthCheck.issues) {
-			console.log(`   • ${issue}`);
+	reportHealthIssues(_monitor, healthCheck) {
+		for (const _issue of healthCheck.issues) {
 		}
 
 		if (healthCheck.metrics.cpu !== undefined) {
-			console.log(`   CPU: ${healthCheck.metrics.cpu.toFixed(1)}%`);
 		}
 		if (healthCheck.metrics.memory) {
-			console.log(
-				`   Memory: ${Math.round(healthCheck.metrics.memory / 1024 / 1024)}MB`,
-			);
 		}
-
-		console.log("─".repeat(60));
 	}
 
 	/**
@@ -277,9 +265,6 @@ class TestHealthMonitor {
 			// Kill old Playwright processes
 			const hanging = await this.checkForHangingPlaywright();
 			for (const proc of hanging) {
-				console.log(
-					`Killing hanging process: PID ${proc.pid} - ${proc.command.substring(0, 50)}...`,
-				);
 				try {
 					await execAsync(`kill -9 ${proc.pid} 2>/dev/null`);
 					killed.push({ pid: proc.pid, command: proc.command });
@@ -292,10 +277,6 @@ class TestHealthMonitor {
 			for (const [pid, monitor] of this.activeMonitors) {
 				const inactivityDuration = Date.now() - monitor.lastActivity;
 				if (inactivityDuration > (options.killThreshold || 300000)) {
-					// 5 minutes
-					console.log(
-						`Killing unresponsive process: ${monitor.name} (PID ${pid})`,
-					);
 					try {
 						await execAsync(`kill -9 ${pid} 2>/dev/null`);
 						killed.push({ pid, name: monitor.name });
@@ -305,9 +286,7 @@ class TestHealthMonitor {
 					}
 				}
 			}
-		} catch (error) {
-			console.error(`Error killing hanging processes: ${error.message}`);
-		}
+		} catch (_error) {}
 
 		return killed;
 	}
@@ -316,7 +295,7 @@ class TestHealthMonitor {
 	 * Clean up all monitors
 	 */
 	cleanup() {
-		for (const [pid, monitor] of this.activeMonitors) {
+		for (const [_pid, monitor] of this.activeMonitors) {
 			clearInterval(monitor.intervalId);
 		}
 		this.activeMonitors.clear();

@@ -184,7 +184,7 @@ class TestFailureAnalyzer {
 					line.includes("Expected:") ||
 					line.includes("Received:")
 				) {
-					currentFailure.error += line.trim() + "\n";
+					currentFailure.error += `${line.trim()}\n`;
 				}
 				if (line.includes("at ") && line.includes(".spec.ts")) {
 					currentFailure.details.push(line.trim());
