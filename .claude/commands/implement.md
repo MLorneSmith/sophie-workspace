@@ -48,14 +48,23 @@ You're implementing a plan that has already been designed and reviewed. Execute 
      --body "🔄 Implementation started..."
    ```
 
-4. **Review the plan** and prepare for implementation:
+4. **Load relevant context documentation** (optional but recommended):
+   Use the conditional documentation system to load only the most relevant context for this implementation:
+   ```bash
+   # This will analyze the plan and load 3-7 relevant documentation files
+   # Reduces token usage by 60-75% while maintaining high success rates
+   /conditional_docs implement "[brief summary of plan or key features]"
+   ```
+   The system will intelligently select documentation based on keywords in the plan (auth, database, UI, docker, etc.)
+
+5. **Review the plan** and prepare for implementation:
    - Read the entire plan carefully
    - Understand all "Step by Step Tasks"
    - Review all "Validation Commands" that will need to pass
    - Identify if this is a complex implementation requiring TodoWrite
    - Complete the `Pre-Implementation Checklist` below
 
-5. **Implement the plan**:
+6. **Implement the plan**:
    - Follow the "Step by Step Tasks" section in order, top to bottom
    - Use TodoWrite for tracking progress on implementations with 3+ steps:
      - Create todos at the start for all major tasks
@@ -65,7 +74,7 @@ You're implementing a plan that has already been designed and reviewed. Execute 
    - For long implementations, add periodic progress comments to GitHub issue
    - If you encounter issues or blockers, add a comment to the GitHub issue and ask the user for guidance
 
-6. **Run validation commands**:
+7. **Run validation commands**:
    - Execute ALL "Validation Commands" from the plan
    - EVERY command MUST execute without errors
    - If any validation fails:
@@ -74,14 +83,14 @@ You're implementing a plan that has already been designed and reviewed. Execute 
      - Do NOT proceed until all validations pass
    - Never skip validation commands
 
-7. **Commit the changes**:
+8. **Commit the changes**:
    - After implementation is complete and ALL validations pass
    - Use the `/commit` command to create properly formatted commits
    - Format: `<type>(<scope>): <description> [agent: <agent-name>]`
    - Reference the GitHub issue number in the commit body if applicable
    - Example: `fix(auth): resolve login timeout issue [agent: implementor]`
 
-8. **Update GitHub issue** (if from GitHub):
+9. **Update GitHub issue** (if from GitHub):
    - Post completion report as comment
    - Add `implemented` label
    - Remove `in-progress` label

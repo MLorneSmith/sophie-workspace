@@ -62,7 +62,17 @@ const rootCause = '[One-sentence summary of root cause from diagnosis]';
 const affectedFiles = ['file1.ts', 'file2.tsx']; // From diagnosis
 ```
 
-### 4. Solution Design Process
+### 4. Load Relevant Context Documentation
+
+**Use the conditional documentation system** to load only the most relevant context for this bug fix:
+```bash
+# This will analyze the bug and load 3-7 relevant documentation files
+# Reduces token usage by 60-75% while maintaining high success rates
+/conditional_docs bug-plan "[brief summary of bug or domain area]"
+```
+The system will intelligently select documentation based on keywords in the bug (auth, database, performance, docker, etc.)
+
+### 5. Solution Design Process
 
 THINK HARD about the best approach to fix this bug:
 
@@ -85,7 +95,7 @@ THINK HARD about the best approach to fix this bug:
 6. **Assess risks and create mitigation plan**
 7. **Plan rollback strategy** if needed
 
-### 5. Create the Fix Plan
+### 6. Create the Fix Plan
 
 Create the plan in `.ai/specs/bug-fix-<slug>.md` using the **Plan Format** below:
 - IMPORTANT: Replace every <placeholder> with actual solution design
@@ -95,7 +105,7 @@ Create the plan in `.ai/specs/bug-fix-<slug>.md` using the **Plan Format** below
 - Add risk assessment and rollback plan
 - Name the plan: `Bug Fix: <bugTitle>`
 
-### 6. Create GitHub Issue
+### 7. Create GitHub Issue
 
 Use the **GitHub Issue Creation** process to:
 - Create fix plan issue with appropriate labels

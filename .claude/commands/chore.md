@@ -30,10 +30,20 @@ You're writing a plan to resolve a chore, it should be simple but we need to be 
    const choreType = '[maintenance|code-update|documentation|tooling]';
    const severity = '[critical|high|medium|low]';
    ```
-3. Research the codebase and put together a plan to accomplish the chore.
+
+3. **Load relevant context documentation** (optional but recommended):
+   Use the conditional documentation system to load only the most relevant context for this chore:
+   ```bash
+   # This will analyze the chore and load 3-7 relevant documentation files
+   # Reduces token usage by 60-75% while maintaining high success rates
+   /conditional_docs chore "[brief summary of chore or domain area]"
+   ```
+   The system will intelligently select documentation based on keywords in the chore (dependencies, docker, database, tooling, etc.)
+
+4. Research the codebase and put together a plan to accomplish the chore.
 - Start your research by reading the `README.md` file.
 
-4. Create the plan in the `.ai/specs/*.md` file. 
+5. Create the plan in the `.ai/specs/*.md` file. 
 - Use the `Plan Format` below to create the plan. 
 - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to accomplish the chore.
 - Use your reasoning model: THINK HARD about the plan and the steps to accomplish the chore.
@@ -42,9 +52,9 @@ You're writing a plan to resolve a chore, it should be simple but we need to be 
 - Name the plan using the following naming convention
   - 'Chore: `choreTitle`'
 
-5. Create the plan on Github using the `Github Issue Creation` process
+6. Create the plan on Github using the `Github Issue Creation` process
 
-6. When you finish creating the plan for the chore, follow the `Report` section to properly report the results of your work.
+7. When you finish creating the plan for the chore, follow the `Report` section to properly report the results of your work.
 
 
 ## Relevant Files
