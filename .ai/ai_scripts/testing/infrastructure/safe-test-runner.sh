@@ -149,6 +149,17 @@ fi
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
+# Batch Scheduler Information
+echo ""
+echo -e "${BLUE}📋 Batch Scheduler Configuration${NC}"
+echo "  Batch scheduling enabled by default for E2E tests"
+echo "  To run with batch scheduler:"
+echo "    ${YELLOW}cd apps/e2e && npm run test:e2e:shards:batch${NC}"
+echo "  Environment variables:"
+echo "    ${YELLOW}E2E_SHARD_BATCH_SIZE${NC}=N (default: 4, number of shards per batch)"
+echo "    ${YELLOW}E2E_ENABLE_BATCH_SCHEDULING${NC}=true/false (default: true)"
+echo "    ${YELLOW}E2E_RESOURCE_CHECK_ENABLED${NC}=true/false (default: true)"
+
 # Quick access commands
 echo ""
 echo "Quick access:"
