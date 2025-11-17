@@ -33,10 +33,10 @@ This file contains the command syntax, parameters, token guidelines, and common 
 **Follow** this cycle for documentation tasks:
 
 **Thought**: Analyze user's documentation needs and identify target library (owner/repo)
-**Action**: Use cli_search_libraries.py if owner/repo unclear, or proceed directly to get_context.py
+**Action**: Use context7-search if owner/repo unclear, or proceed directly to context7-get-context
 **Observation**: Found library with owner/repo names
 **Thought**: Determine specific topics and appropriate token limit
-**Action**: Run cli_get_context.py with --topic and --tokens parameters
+**Action**: Run context7-get-context with --topic and --tokens parameters
 **Observation**: Retrieved documentation with code examples and API details
 **Thought**: Assess if additional context or related libraries needed
 **Action**: Fetch supplementary documentation if required with different topics
@@ -54,7 +54,7 @@ This file contains the command syntax, parameters, token guidelines, and common 
 ## Core Capabilities
 
 1. **Library Resolution**:
-   - **Search Command**: `uv run .ai/tools/context7/cli_search_libraries.py "library-name"`
+   - **Search Command**: `.ai/bin/context7-search "library-name"`
    - **Intelligent Matching**: Parse search results to find correct owner/repo
    - **Version Selection**: Use --version flag when specific version needed
    - **Validation**: Verify library exists in search results before fetching
@@ -82,7 +82,7 @@ This file contains the command syntax, parameters, token guidelines, and common 
 
 ### Standard Documentation Fetch
 ```bash
-uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
+.ai/bin/context7-get-context OWNER REPO \
   [--version VERSION] \
   [--topic "TOPIC"] \
   [--tokens TOKENS]
@@ -90,27 +90,27 @@ uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
 
 ### Library Search
 ```bash
-uv run .ai/tools/context7/cli_search_libraries.py "search query"
+.ai/bin/context7-search "search query"
 ```
 
 ### Common Patterns
 ```bash
 # Targeted topic (RECOMMENDED)
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic "routing" --tokens 2500
 
 # Specific version
-uv run .ai/tools/context7/cli_get_context.py facebook react \
+.ai/bin/context7-get-context facebook react \
   --version "18.0.0" --topic "hooks" --tokens 3000
 
 # Comprehensive docs
-uv run .ai/tools/context7/cli_get_context.py supabase supabase \
+.ai/bin/context7-get-context supabase supabase \
   --tokens 8000
 
 # Multiple topics (sequential calls)
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic "authentication" --tokens 2500
-uv run .ai/tools/context7/cli_get_context.py vercel next.js \
+.ai/bin/context7-get-context vercel next.js \
   --topic "middleware" --tokens 2000
 ```
 
@@ -120,11 +120,11 @@ uv run .ai/tools/context7/cli_get_context.py vercel next.js \
 ```
 1. Parse user query for library name, owner, and topics
 2. If owner/repo unknown:
-   - Call cli_search_libraries.py with library name
+   - Call .ai/bin/context7-search with library name
    - Parse output to extract owner/repo
 3. If owner/repo known:
-   - Proceed directly to cli_get_context.py
-4. Call cli_get_context.py with:
+   - Proceed directly to .ai/bin/context7-get-context
+4. Call .ai/bin/context7-get-context with:
    - OWNER REPO (from search or user query)
    - --topic "specific-topic" (if user requested specific area)
    - --tokens LIMIT (2000-3000 for focused, 8000-10000 for comprehensive)
@@ -137,18 +137,18 @@ uv run .ai/tools/context7/cli_get_context.py vercel next.js \
 1. Identify all libraries mentioned
 2. For each library:
    a. Search if owner/repo unknown
-   b. Fetch docs with cli_get_context.py
+   b. Fetch docs with .ai/bin/context7-get-context
 3. Cross-reference and synthesize
 ```
 
 ### Version Comparison
 ```
 1. Fetch docs for version 1:
-   uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
+   .ai/bin/context7-get-context OWNER REPO \
      --version "v1.x.x" --topic "migration" --tokens 3000
 
 2. Fetch docs for version 2:
-   uv run .ai/tools/context7/cli_get_context.py OWNER REPO \
+   .ai/bin/context7-get-context OWNER REPO \
      --version "v2.x.x" --topic "migration" --tokens 3000
 
 3. Compare and highlight differences
@@ -204,36 +204,36 @@ Extract keywords from user query and map to topics:
 **User**: "I need Next.js documentation"
 **Steps**:
 1. Known library: vercel/next.js
-2. Command: `uv run .ai/tools/context7/cli_get_context.py vercel next.js --tokens 5000`
+2. Command: `.ai/bin/context7-get-context vercel next.js --tokens 5000`
 3. Present: Key sections with examples
 
 ### Specific Topic Research
 **User**: "Show me React hooks documentation"
 **Steps**:
 1. Known library: facebook/react
-2. Command: `uv run .ai/tools/context7/cli_get_context.py facebook react --topic "hooks" --tokens 3000`
+2. Command: `.ai/bin/context7-get-context facebook react --topic "hooks" --tokens 3000`
 3. Present: Hook APIs with usage patterns
 
 ### Version Migration
 **User**: "What changed in Next.js 15 vs 14?"
 **Steps**:
-1. Fetch v15: `uv run .ai/tools/context7/cli_get_context.py vercel next.js --version "v15.0.0" --topic "migration" --tokens 3000`
-2. Fetch v14: `uv run .ai/tools/context7/cli_get_context.py vercel next.js --version "v14.0.0" --topic "migration" --tokens 3000`
+1. Fetch v15: `.ai/bin/context7-get-context vercel next.js --version "v15.0.0" --topic "migration" --tokens 3000`
+2. Fetch v14: `.ai/bin/context7-get-context vercel next.js --version "v14.0.0" --topic "migration" --tokens 3000`
 3. Compare and synthesize differences
 
 ### Unknown Library
 **User**: "Get me docs for shadcn UI"
 **Steps**:
-1. Search: `uv run .ai/tools/context7/cli_search_libraries.py "shadcn ui"`
+1. Search: `.ai/bin/context7-search "shadcn ui"`
 2. Parse results: Found shadcn/ui
-3. Fetch: `uv run .ai/tools/context7/cli_get_context.py shadcn ui --tokens 5000`
+3. Fetch: `.ai/bin/context7-get-context shadcn ui --tokens 5000`
 4. Present: Documentation
 
 ### Framework Integration
 **User**: "How do I use Tailwind with Next.js?"
 **Steps**:
-1. Fetch Next.js: `uv run .ai/tools/context7/cli_get_context.py vercel next.js --topic "tailwind" --tokens 2500`
-2. Fetch Tailwind: `uv run .ai/tools/context7/cli_get_context.py tailwindlabs tailwindcss --topic "next.js" --tokens 2500`
+1. Fetch Next.js: `.ai/bin/context7-get-context vercel next.js --topic "tailwind" --tokens 2500`
+2. Fetch Tailwind: `.ai/bin/context7-get-context tailwindlabs tailwindcss --topic "next.js" --tokens 2500`
 3. Synthesize: Combined setup guide
 
 ## Response Format
@@ -290,8 +290,8 @@ const result = feature({
 
 ### Bash Tool
 - **Primary use**: Execute Context7 CLI commands
-- **Search**: `uv run .ai/tools/context7/cli_search_libraries.py "query"`
-- **Fetch**: `uv run .ai/tools/context7/cli_get_context.py OWNER REPO [options]`
+- **Search**: `.ai/bin/context7-search "query"`
+- **Fetch**: `.ai/bin/context7-get-context OWNER REPO [options]`
 
 ### Read Tool
 - Review retrieved documentation files if saved

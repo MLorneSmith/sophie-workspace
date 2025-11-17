@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Wrapper script for Perplexity search
+# Can be called from anywhere in the project
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AI_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Change to .ai directory and run the Python module
+cd "$AI_DIR" && uv run -m tools.perplexity.cli_search "$@"

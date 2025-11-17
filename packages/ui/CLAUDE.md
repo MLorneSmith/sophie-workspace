@@ -33,11 +33,13 @@ cd packages/ui && npx shadcn@latest add button
 ```
 
 **Search available components**:
+
 ```bash
 pnpm --filter @kit/ui ui:search -q "form"
 ```
 
 **List installed components**:
+
 ```bash
 pnpm --filter @kit/ui ui:list
 ```
@@ -48,6 +50,7 @@ pnpm --filter @kit/ui ui:list
 2. **Preview** code: `npx shadcn@latest view toggle` (optional)
 3. **Add** component: `cd packages/ui && npx shadcn@latest add toggle -y`
 4. **Update exports** in `packages/ui/package.json`:
+
    ```json
    {
      "exports": {
@@ -55,6 +58,7 @@ pnpm --filter @kit/ui ui:list
      }
    }
    ```
+
 5. **Test import**: Verify `import { Toggle } from '@kit/ui/toggle'` works
 6. **Commit**: `git add packages/ui && git commit -m "feat(ui): add toggle component"`
 
@@ -74,6 +78,7 @@ cd packages/ui && npx shadcn@latest add @magicui/animated-button
 ```
 
 **Featured Registries**:
+
 - **@magicui** - Animated components with Framer Motion
 - **@aceternity** - Modern UI with 3D effects
 - **@shadcnblocks** - Pre-built page sections and blocks
@@ -83,6 +88,7 @@ cd packages/ui && npx shadcn@latest add @magicui/animated-button
 For complete CLI reference, see: `.ai/ai_docs/tool-docs/shadcn-cli.md`
 
 Topics covered:
+
 - All CLI commands (`init`, `add`, `search`, `view`, `build`)
 - Registry directory system
 - Monorepo workflows

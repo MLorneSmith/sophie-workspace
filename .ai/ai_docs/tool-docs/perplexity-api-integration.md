@@ -47,33 +47,33 @@ The Perplexity API integration provides AI agents with powerful web research cap
 
 ```bash
 # Simple search
-uv run .ai/tools/perplexity/cli_search.py "AI breakthroughs 2025"
+.ai/bin/perplexity-search "AI breakthroughs 2025"
 
 # With result limit
-uv run .ai/tools/perplexity/cli_search.py "quantum computing" --num-results 5
+.ai/bin/perplexity-search "quantum computing" --num-results 5
 
 # JSON output
-uv run .ai/tools/perplexity/cli_search.py "machine learning" --json
+.ai/bin/perplexity-search "machine learning" --json
 ```
 
 ### Domain Filtering
 
 ```bash
 # Single domain
-uv run .ai/tools/perplexity/cli_search.py "Python tutorials" --domains python.org
+.ai/bin/perplexity-search "Python tutorials" --domains python.org
 
 # Multiple domains (max 20)
-uv run .ai/tools/perplexity/cli_search.py "AI research" --domains arxiv.org,github.com,paperswithcode.com
+.ai/bin/perplexity-search "AI research" --domains arxiv.org,github.com,paperswithcode.com
 ```
 
 ### Language Filtering
 
 ```bash
 # Single language
-uv run .ai/tools/perplexity/cli_search.py "climate change" --languages en
+.ai/bin/perplexity-search "climate change" --languages en
 
 # Multiple languages (max 10, ISO 639-1 codes)
-uv run .ai/tools/perplexity/cli_search.py "actualités" --languages fr,en,es
+.ai/bin/perplexity-search "actualités" --languages fr,en,es
 ```
 
 ### Time-Based Filtering
@@ -82,29 +82,29 @@ uv run .ai/tools/perplexity/cli_search.py "actualités" --languages fr,en,es
 
 ```bash
 # Last day
-uv run .ai/tools/perplexity/cli_search.py "breaking news AI" --recency day
+.ai/bin/perplexity-search "breaking news AI" --recency day
 
 # Last week
-uv run .ai/tools/perplexity/cli_search.py "tech updates" --recency week
+.ai/bin/perplexity-search "tech updates" --recency week
 
 # Last month
-uv run .ai/tools/perplexity/cli_search.py "research papers" --recency month
+.ai/bin/perplexity-search "research papers" --recency month
 
 # Last year
-uv run .ai/tools/perplexity/cli_search.py "2024 AI trends" --recency year
+.ai/bin/perplexity-search "2024 AI trends" --recency year
 ```
 
 **Date range filtering** (MM/DD/YYYY format):
 
 ```bash
 # After specific date
-uv run .ai/tools/perplexity/cli_search.py "AI news" --after-date 01/01/2025
+.ai/bin/perplexity-search "AI news" --after-date 01/01/2025
 
 # Before specific date
-uv run .ai/tools/perplexity/cli_search.py "historical data" --before-date 12/31/2024
+.ai/bin/perplexity-search "historical data" --before-date 12/31/2024
 
 # Date range
-uv run .ai/tools/perplexity/cli_search.py "Q1 2025 analysis" \
+.ai/bin/perplexity-search "Q1 2025 analysis" \
   --after-date 01/01/2025 \
   --before-date 03/31/2025
 ```
@@ -148,41 +148,41 @@ response = search(
 
 ```bash
 # Simple question
-uv run .ai/tools/perplexity/cli_chat.py "What are the latest AI breakthroughs in 2025?"
+.ai/bin/perplexity-chat "What are the latest AI breakthroughs in 2025?"
 
 # With citations
-uv run .ai/tools/perplexity/cli_chat.py "Explain quantum entanglement" --show-citations
+.ai/bin/perplexity-chat "Explain quantum entanglement" --show-citations
 
 # JSON output
-uv run .ai/tools/perplexity/cli_chat.py "Latest Python features" --json
+.ai/bin/perplexity-chat "Latest Python features" --json
 ```
 
 ### Model Selection
 
 ```bash
 # Sonar (default, fast, cost-effective)
-uv run .ai/tools/perplexity/cli_chat.py "Quick question" --model sonar
+.ai/bin/perplexity-chat "Quick question" --model sonar
 
 # Sonar Pro (higher quality, more comprehensive)
-uv run .ai/tools/perplexity/cli_chat.py "Complex analysis needed" --model sonar-pro
+.ai/bin/perplexity-chat "Complex analysis needed" --model sonar-pro
 
 # Sonar Reasoning (advanced reasoning capabilities)
-uv run .ai/tools/perplexity/cli_chat.py "Solve this problem step by step" --model sonar-reasoning
+.ai/bin/perplexity-chat "Solve this problem step by step" --model sonar-reasoning
 ```
 
 ### System Messages & Context
 
 ```bash
 # With system message
-uv run .ai/tools/perplexity/cli_chat.py "Explain REST APIs" \
+.ai/bin/perplexity-chat "Explain REST APIs" \
   --system "You are a software engineering expert. Be concise and technical."
 
 # Control creativity with temperature
-uv run .ai/tools/perplexity/cli_chat.py "Write a creative story" \
+.ai/bin/perplexity-chat "Write a creative story" \
   --temperature 1.5
 
 # Control response length
-uv run .ai/tools/perplexity/cli_chat.py "Summarize AI history" \
+.ai/bin/perplexity-chat "Summarize AI history" \
   --max-tokens 200
 ```
 
@@ -190,7 +190,7 @@ uv run .ai/tools/perplexity/cli_chat.py "Summarize AI history" \
 
 ```bash
 # Stream response in real-time
-uv run .ai/tools/perplexity/cli_chat.py "Explain neural networks" --stream
+.ai/bin/perplexity-chat "Explain neural networks" --stream
 ```
 
 ### Python API
@@ -266,18 +266,18 @@ for citation in response.citations:
 
 ```bash
 # Academic research
-uv run .ai/tools/perplexity/cli_search.py "deep learning architectures" \
+.ai/bin/perplexity-search "deep learning architectures" \
   --domains arxiv.org,scholar.google.com \
   --after-date 01/01/2025 \
   --num-results 20
 
 # Technical documentation
-uv run .ai/tools/perplexity/cli_search.py "Next.js 16 features" \
+.ai/bin/perplexity-search "Next.js 16 features" \
   --domains nextjs.org,github.com,vercel.com \
   --languages en
 
 # News aggregation
-uv run .ai/tools/perplexity/cli_search.py "AI regulation updates" \
+.ai/bin/perplexity-search "AI regulation updates" \
   --recency week \
   --num-results 30
 ```
@@ -399,7 +399,7 @@ except PerplexityAPIError as e:
 cd /home/msmith/projects/2025slideheroes
 
 # Run with uv
-uv run .ai/tools/perplexity/cli_search.py "test"
+.ai/bin/perplexity-search "test"
 ```
 
 **Module not found**:

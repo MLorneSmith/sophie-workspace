@@ -1,16 +1,16 @@
 {
 	"executionDate": "2025-11-17",
-	"lastUpdated": "2025-11-17T16:50:00.458Z",
+	"lastUpdated": "2025-11-17T18:10:25.319Z",
 	"totalShards": 0,
-	"completedShards": 12,
+	"completedShards": 18,
 	"failedShards": 0,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 125,
-		"passed": 93,
-		"failed": 6,
-		"skipped": 26,
-		"intentionalFailures": 6
+		"total": 188,
+		"passed": 140,
+		"failed": 9,
+		"skipped": 39,
+		"intentionalFailures": 9
 	},
 	"shards": [
 		{
@@ -27,6 +27,15 @@
 			"name": "Smoke Tests",
 			"success": true,
 			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
 			"tests": 9,
 			"failures": 0,
 			"intentionalFailures": 0
@@ -50,6 +59,15 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "16s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 5,
 			"name": "Accessibility",
 			"success": true,
@@ -63,6 +81,15 @@
 			"name": "Accessibility",
 			"success": true,
 			"duration": "52s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "57s",
 			"tests": 21,
 			"failures": 0,
 			"intentionalFailures": 0
@@ -84,6 +111,24 @@
 			"tests": 12,
 			"failures": 3,
 			"intentionalFailures": 3
+		},
+		{
+			"id": 6,
+			"name": "Config & Health",
+			"success": false,
+			"duration": "11s",
+			"tests": 12,
+			"failures": 3,
+			"intentionalFailures": 3
+		},
+		{
+			"id": 7,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "66s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
 		},
 		{
 			"id": 8,
@@ -99,6 +144,15 @@
 			"name": "Payload CMS Extended",
 			"success": true,
 			"duration": "5s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 9,
+			"name": "User Billing",
+			"success": true,
+			"duration": "20s",
 			"tests": 0,
 			"failures": 0,
 			"intentionalFailures": 0
