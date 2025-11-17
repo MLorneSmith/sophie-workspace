@@ -15,6 +15,7 @@
 		"test:integration:auth": "playwright test --grep '@integration.*@auth|@auth.*@integration' --project=chromium --retries=1 --max-failures=0",
 		"test:integration:billing": "playwright test --grep '@integration.*@billing|@billing.*@integration' --project=chromium --retries=1 --max-failures=0",
 		"test:integration:team": "playwright test --grep '@integration.*@team|@team.*@integration' --project=chromium --retries=1 --max-failures=0",
+		"test:e2e:shards:batch": "node ../../.ai/ai_scripts/testing/infrastructure/shard-batch-scheduler.js",
 		"a11y:test": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=html,list",
 		"a11y:test:ci": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=junit,html",
 		"a11y:test:quick": "playwright test tests/accessibility/accessibility-hybrid-simple.spec.ts --project=chromium --reporter=list",
