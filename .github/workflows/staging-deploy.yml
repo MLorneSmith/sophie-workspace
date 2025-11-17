@@ -1,5 +1,6 @@
 name: Deploy to Staging
 
+# Test RunsOn syntax fix - deployment trigger
 on:
   push:
     branches:
