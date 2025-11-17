@@ -11,6 +11,9 @@
 		"includes": [
 			"**",
 			"!**/.next/**",
+			"!**/.next.old/**",
+			"!**/.pnpm-store/**",
+			"!**/logs/**",
 			"!**/dist/**",
 			"!**/build/**",
 			"!**/node_modules/**",
@@ -122,6 +125,8 @@
 		},
 		{
 			"includes": [
+				"**/.ai/ai_scripts/**/*.js",
+				"**/.ai/ai_scripts/**/*.cjs",
 				"**/.claude/scripts/**/*.js",
 				"**/.claude/scripts/**/*.cjs",
 				"**/scripts/**/*.js",
@@ -174,6 +179,16 @@
 			"json": {
 				"formatter": {
 					"enabled": false
+				}
+			}
+		},
+		{
+			"includes": ["packages/ui/src/**/*.tsx", "packages/ui/src/**/*.ts"],
+			"linter": {
+				"rules": {
+					"nursery": {
+						"noNestedComponentDefinitions": "off"
+					}
 				}
 			}
 		}
