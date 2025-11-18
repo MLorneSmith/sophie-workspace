@@ -409,6 +409,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter web-e2e exec playwright install --with-deps chromium
 
+      - name: Configure E2E Supabase environment
+        id: e2e-config
+        run: |
+          echo "📋 Configuring E2E tests to use deployed Supabase instance..."
+
+          # Use the same Supabase credentials as the deployed environment
+          # This ensures session keys match between test injection and app consumption
+          SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          SUPABASE_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+            echo "⚠️ NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
+            echo "ℹ️ Falling back to E2E_SUPABASE_URL and E2E_SUPABASE_ANON_KEY if available"
+            echo "configured=false" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Using deployed Supabase instance for E2E tests"
+            echo "✅ URL: ${SUPABASE_URL:0:30}..."
+            echo "configured=true" >> $GITHUB_OUTPUT
+
+            # Export for use in subsequent steps
+            echo "SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
+            echo "SUPABASE_KEY=$SUPABASE_KEY" >> $GITHUB_ENV
+          fi
+
       - name: Run integration test suite
         env:
           BASE_URL: ${{ needs.check-should-run.outputs.web_deployment_url }}
@@ -429,8 +453,10 @@ jobs:
           E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
           E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
           # Supabase configuration for E2E tests
-          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          # Use deployed environment's Supabase instance to match session key derivation
+          # This resolves authentication state persistence issues in dev integration tests
+          E2E_SUPABASE_URL: ${{ env.SUPABASE_URL || secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ env.SUPABASE_KEY || secrets.E2E_SUPABASE_ANON_KEY }}
           # Add debug logging for Playwright
           DEBUG: pw:api
         run: |
