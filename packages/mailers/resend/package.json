@@ -18,7 +18,7 @@
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
-		"zod": "^3.25.74"
+		"zod": "^4.1.12"
 	},
 	"typesVersions": {
 		"*": {
@@ -28,6 +28,6 @@
 		}
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1"
+		"@hookform/resolvers": "5.2.2"
 	}
 }

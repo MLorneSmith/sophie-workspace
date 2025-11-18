@@ -31,8 +31,7 @@ export function enhanceAction<
 		auth?: boolean;
 		captcha?: boolean;
 		schema?: z.ZodType<
-			Config["captcha"] extends true ? Args & { captchaToken: string } : Args,
-			z.ZodTypeDef
+			Config["captcha"] extends true ? Args & { captchaToken: string } : Args
 		>;
 	},
 >(
@@ -79,6 +78,6 @@ export function enhanceAction<
 			user = auth.data as UserParam;
 		}
 
-		return fn(data, user);
+		return fn(data as unknown as Parameters<typeof fn>[0], user);
 	};
 }

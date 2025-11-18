@@ -282,7 +282,7 @@ export async function getChatCompletion(
 		};
 
 		// Log and analyze all response headers to debug cost extraction
-		// @ts-ignore - Access the headers property
+		// @ts-expect-error - Access the headers property
 		const headers = response.headers || {};
 
 		// Log all headers to see what Portkey is actually sending

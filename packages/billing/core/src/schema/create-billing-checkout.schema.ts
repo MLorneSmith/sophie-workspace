@@ -15,5 +15,5 @@ export const CreateBillingCheckoutSchema = z.object({
 			quantity: z.number(),
 		}),
 	),
-	metadata: z.record(z.string()).optional(),
+	metadata: z.record(z.string(), z.string()).optional(),
 });

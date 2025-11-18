@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+// Function validation simplified for Zod v4 compatibility
+// Accepts boolean or function (url: string) => boolean
 const RouteMatchingEnd = z
-	.union([z.boolean(), z.function().args(z.string()).returns(z.boolean())])
+	.union([z.boolean(), z.function()])
 	.default(false)
 	.optional();
 

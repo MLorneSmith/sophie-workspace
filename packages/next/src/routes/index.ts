@@ -59,7 +59,7 @@ interface HandlerParams<
  */
 export const enhanceRouteHandler = <
 	Body,
-	Params extends Config<z.ZodType<Body, z.ZodTypeDef>>,
+	Params extends Config<z.ZodType<Body>>,
 >(
 	// Route handler function
 	handler:

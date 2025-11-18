@@ -49,10 +49,11 @@ function getKeystaticGithubConfiguration() {
 
 	return z
 		.object({
-			token: z.string({
-				description:
+			token: z
+				.string()
+				.describe(
 					'The GitHub token to use for authentication. Please provide the value through the "KEYSTATIC_GITHUB_TOKEN" environment variable.',
-			}),
+				),
 			repo: z.custom<`${string}/${string}`>(),
 			pathPrefix: z.string().optional(),
 		})
