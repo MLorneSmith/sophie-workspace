@@ -395,83 +395,70 @@ export function registerDatabaseTools(server: McpServer) {
 }
 
 function createGetSchemaFilesTool(server: McpServer) {
-	return server.tool(
-		"get_schema_files",
-		"🔥 DATABASE SCHEMA FILES (SOURCE OF TRUTH - ALWAYS CURRENT) - Use these over migrations!",
-		async () => {
-			const schemaFiles = await getSchemaFiles();
+	return server.tool("get_schema_files", {}, async () => {
+		const schemaFiles = await getSchemaFiles();
 
-			const filesList = schemaFiles
-				.map((file) => {
-					const tablesInfo =
-						file.tables.length > 0
-							? ` | Tables: ${file.tables.join(", ")}`
-							: "";
-					const functionsInfo =
-						file.functions.length > 0
-							? ` | Functions: ${file.functions.join(", ")}`
-							: "";
-					return `${file.name} (${file.topic}): ${file.section} - ${file.description}${tablesInfo}${functionsInfo}`;
-				})
-				.join("\n");
+		const filesList = schemaFiles
+			.map((file) => {
+				const tablesInfo =
+					file.tables.length > 0 ? ` | Tables: ${file.tables.join(", ")}` : "";
+				const functionsInfo =
+					file.functions.length > 0
+						? ` | Functions: ${file.functions.join(", ")}`
+						: "";
+				return `${file.name} (${file.topic}): ${file.section} - ${file.description}${tablesInfo}${functionsInfo}`;
+			})
+			.join("\n");
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `🔥 DATABASE SCHEMA FILES (ALWAYS UP TO DATE)\n\nThese files represent the current database state. Use these instead of migrations for current schema understanding.\n\n${filesList}`,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: `🔥 DATABASE SCHEMA FILES (ALWAYS UP TO DATE)\n\nThese files represent the current database state. Use these instead of migrations for current schema understanding.\n\n${filesList}`,
+				},
+			],
+		};
+	});
 }
 
 function createGetFunctionsTool(server: McpServer) {
-	return server.tool(
-		"get_database_functions",
-		"Get all database functions with descriptions and usage guidance",
-		async () => {
-			const functions = await getFunctions();
+	return server.tool("get_database_functions", {}, async () => {
+		const functions = await getFunctions();
 
-			const functionsList = functions
-				.map((func) => {
-					const security =
-						func.securityLevel === "definer" ? " [SECURITY DEFINER]" : "";
-					const params = func.parameters
-						.map((p) => {
-							const defaultVal = p.defaultValue ? ` = ${p.defaultValue}` : "";
-							return `${p.name}: ${p.type}${defaultVal}`;
-						})
-						.join(", ");
+		const functionsList = functions
+			.map((func) => {
+				const security =
+					func.securityLevel === "definer" ? " [SECURITY DEFINER]" : "";
+				const params = func.parameters
+					.map((p) => {
+						const defaultVal = p.defaultValue ? ` = ${p.defaultValue}` : "";
+						return `${p.name}: ${p.type}${defaultVal}`;
+					})
+					.join(", ");
 
-					return `${func.name}(${params}) � ${func.returnType}${security}\n  Purpose: ${func.purpose}\n  Source: ${func.sourceFile}`;
-				})
-				.join("\n\n");
+				return `${func.name}(${params}) � ${func.returnType}${security}\n  Purpose: ${func.purpose}\n  Source: ${func.sourceFile}`;
+			})
+			.join("\n\n");
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Database Functions:\n\n${functionsList}`,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: `Database Functions:\n\n${functionsList}`,
+				},
+			],
+		};
+	});
 }
 
 function createGetFunctionDetailsTool(server: McpServer) {
 	return server.tool(
 		"get_function_details",
-		"Get detailed information about a specific database function",
 		{
-			state: z.object({
-				functionName: z.string(),
-			}),
+			functionName: z.string(),
 		},
-		async ({ state }) => {
-			const func = await getFunctionDetails(state.functionName);
+		async ({ functionName }) => {
+			const func = await getFunctionDetails(functionName);
 
 			const params =
 				func.parameters.length > 0
@@ -515,21 +502,18 @@ Source File: ${func.sourceFile}`,
 function createSearchFunctionsTool(server: McpServer) {
 	return server.tool(
 		"search_database_functions",
-		"Search database functions by name, description, or purpose",
 		{
-			state: z.object({
-				query: z.string(),
-			}),
+			query: z.string(),
 		},
-		async ({ state }) => {
-			const functions = await searchFunctions(state.query);
+		async ({ query }) => {
+			const functions = await searchFunctions(query);
 
 			if (functions.length === 0) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `No database functions found matching "${state.query}"`,
+							text: `No database functions found matching "${query}"`,
 						},
 					],
 				};
@@ -546,7 +530,7 @@ function createSearchFunctionsTool(server: McpServer) {
 				content: [
 					{
 						type: "text",
-						text: `Found ${functions.length} functions matching "${state.query}":\n\n${functionsList}`,
+						text: `Found ${functions.length} functions matching "${query}":\n\n${functionsList}`,
 					},
 				],
 			};
@@ -557,20 +541,17 @@ function createSearchFunctionsTool(server: McpServer) {
 function createGetSchemaContentTool(server: McpServer) {
 	return server.tool(
 		"get_schema_content",
-		"📋 Get raw schema file content (CURRENT DATABASE STATE) - Source of truth for database structure",
 		{
-			state: z.object({
-				fileName: z.string(),
-			}),
+			fileName: z.string(),
 		},
-		async ({ state }) => {
-			const content = await getSchemaContent(state.fileName);
+		async ({ fileName }) => {
+			const content = await getSchemaContent(fileName);
 
 			return {
 				content: [
 					{
 						type: "text",
-						text: `📋 SCHEMA FILE: ${state.fileName} (CURRENT STATE)\n\n${content}`,
+						text: `📋 SCHEMA FILE: ${fileName} (CURRENT STATE)\n\n${content}`,
 					},
 				],
 			};
@@ -581,21 +562,18 @@ function createGetSchemaContentTool(server: McpServer) {
 function createGetSchemasByTopicTool(server: McpServer) {
 	return server.tool(
 		"get_schemas_by_topic",
-		"🎯 Find schema files by topic (accounts, auth, billing, permissions, etc.) - Fastest way to find relevant schemas",
 		{
-			state: z.object({
-				topic: z.string(),
-			}),
+			topic: z.string(),
 		},
-		async ({ state }) => {
-			const schemas = await getSchemasByTopic(state.topic);
+		async ({ topic }) => {
+			const schemas = await getSchemasByTopic(topic);
 
 			if (schemas.length === 0) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `No schema files found for topic "${state.topic}". Available topics: accounts, auth, billing, permissions, teams, notifications, storage, admin, security, types, configuration.`,
+							text: `No schema files found for topic "${topic}". Available topics: accounts, auth, billing, permissions, teams, notifications, storage, admin, security, types, configuration.`,
 						},
 					],
 				};
@@ -619,7 +597,7 @@ function createGetSchemasByTopicTool(server: McpServer) {
 				content: [
 					{
 						type: "text",
-						text: `🎯 SCHEMAS FOR TOPIC: "${state.topic}"\n\n${schemasList}`,
+						text: `🎯 SCHEMAS FOR TOPIC: "${topic}"\n\n${schemasList}`,
 					},
 				],
 			};
@@ -630,21 +608,18 @@ function createGetSchemasByTopicTool(server: McpServer) {
 function createGetSchemaBySectionTool(server: McpServer) {
 	return server.tool(
 		"get_schema_by_section",
-		"📂 Get specific schema by section name (Accounts, Permissions, etc.) - Direct access to schema sections",
 		{
-			state: z.object({
-				section: z.string(),
-			}),
+			section: z.string(),
 		},
-		async ({ state }) => {
-			const schema = await getSchemaBySection(state.section);
+		async ({ section }) => {
+			const schema = await getSchemaBySection(section);
 
 			if (!schema) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `No schema found for section "${state.section}". Use get_schema_files to see available sections.`,
+							text: `No schema found for section "${section}". Use get_schema_files to see available sections.`,
 						},
 					],
 				};

@@ -27,16 +27,14 @@ export function createTitleSuggestionsConfig(
 	);
 
 	// Override specific parameters for title generation
-	baseConfig.targets = baseConfig.targets.map(
-		(target: Config["targets"][number]) => ({
-			...target,
-			override_params: {
-				...target.override_params,
-				temperature: 0.8, // Increase creativity
-				max_tokens: 200, // Allow for multiple suggestions
-			},
-		}),
-	);
+	baseConfig.targets = baseConfig.targets?.map((target) => ({
+		...target,
+		override_params: {
+			...target.override_params,
+			temperature: 0.8, // Increase creativity
+			max_tokens: 200, // Allow for multiple suggestions
+		},
+	}));
 
 	return baseConfig;
 }

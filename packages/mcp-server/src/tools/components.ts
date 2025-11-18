@@ -316,42 +316,35 @@ export function registerComponentsTools(server: McpServer) {
 }
 
 function createGetComponentsTool(server: McpServer) {
-	return server.tool(
-		"get_components",
-		"Get all available UI components from the @kit/ui package with descriptions",
-		async () => {
-			const components = await getComponents();
+	return server.tool("get_components", {}, async () => {
+		const components = await getComponents();
 
-			const componentsList = components
-				.map(
-					(component) =>
-						`${component.name} (${component.category}): ${component.description}`,
-				)
-				.join("\n");
+		const componentsList = components
+			.map(
+				(component) =>
+					`${component.name} (${component.category}): ${component.description}`,
+			)
+			.join("\n");
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: componentsList,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: componentsList,
+				},
+			],
+		};
+	});
 }
 
 function createGetComponentContentTool(server: McpServer) {
 	return server.tool(
 		"get_component_content",
-		"Get the source code content of a specific UI component",
 		{
-			state: z.object({
-				componentName: z.string(),
-			}),
+			componentName: z.string(),
 		},
-		async ({ state }) => {
-			const content = await getComponentContent(state.componentName);
+		async ({ componentName }) => {
+			const content = await getComponentContent(componentName);
 
 			return {
 				content: [
@@ -368,21 +361,18 @@ function createGetComponentContentTool(server: McpServer) {
 function createComponentsSearchTool(server: McpServer) {
 	return server.tool(
 		"components_search",
-		"Search UI components by keyword in name, description, or category",
 		{
-			state: z.object({
-				query: z.string(),
-			}),
+			query: z.string(),
 		},
-		async ({ state }) => {
-			const components = await searchComponents(state.query);
+		async ({ query }) => {
+			const components = await searchComponents(query);
 
 			if (components.length === 0) {
 				return {
 					content: [
 						{
 							type: "text",
-							text: `No components found matching "${state.query}"`,
+							text: `No components found matching "${query}"`,
 						},
 					],
 				};
@@ -399,7 +389,7 @@ function createComponentsSearchTool(server: McpServer) {
 				content: [
 					{
 						type: "text",
-						text: `Found ${components.length} components matching "${state.query}":\n\n${componentsList}`,
+						text: `Found ${components.length} components matching "${query}":\n\n${componentsList}`,
 					},
 				],
 			};
@@ -410,14 +400,11 @@ function createComponentsSearchTool(server: McpServer) {
 function createGetComponentPropsTool(server: McpServer) {
 	return server.tool(
 		"get_component_props",
-		"Extract component props, interfaces, and variants from a UI component",
 		{
-			state: z.object({
-				componentName: z.string(),
-			}),
+			componentName: z.string(),
 		},
-		async ({ state }) => {
-			const propsInfo = await getComponentProps(state.componentName);
+		async ({ componentName }) => {
+			const propsInfo = await getComponentProps(componentName);
 
 			let result = `Component: ${propsInfo.componentName}\n\n`;
 

@@ -238,42 +238,35 @@ export function registerScriptsTools(server: McpServer) {
 }
 
 function createGetScriptsTool(server: McpServer) {
-	return server.tool(
-		"get_scripts",
-		"Get all available npm/pnpm scripts with descriptions and usage guidance",
-		async () => {
-			const scripts = await getScripts();
+	return server.tool("get_scripts", {}, async () => {
+		const scripts = await getScripts();
 
-			const scriptsList = scripts
-				.map((script) => {
-					const healthcheck = script.healthcheck ? " [HEALTHCHECK]" : "";
-					return `${script.name} (${script.category})${healthcheck}: ${script.description}\n  Usage: ${script.usage}`;
-				})
-				.join("\n\n");
+		const scriptsList = scripts
+			.map((script) => {
+				const healthcheck = script.healthcheck ? " [HEALTHCHECK]" : "";
+				return `${script.name} (${script.category})${healthcheck}: ${script.description}\n  Usage: ${script.usage}`;
+			})
+			.join("\n\n");
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `Available Scripts (sorted by importance):\n\n${scriptsList}`,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: `Available Scripts (sorted by importance):\n\n${scriptsList}`,
+				},
+			],
+		};
+	});
 }
 
 function createGetScriptDetailsTool(server: McpServer) {
 	return server.tool(
 		"get_script_details",
-		"Get detailed information about a specific script",
 		{
-			state: z.object({
-				scriptName: z.string(),
-			}),
+			scriptName: z.string(),
 		},
-		async ({ state }) => {
-			const script = await getScriptDetails(state.scriptName);
+		async ({ scriptName }) => {
+			const script = await getScriptDetails(scriptName);
 
 			const healthcheck = script.healthcheck
 				? "\n�  HEALTHCHECK SCRIPT: This script should be run after writing code to ensure quality."
@@ -297,31 +290,27 @@ Usage: ${script.usage}${healthcheck}`,
 }
 
 function createGetHealthcheckScriptsTool(server: McpServer) {
-	return server.tool(
-		"get_healthcheck_scripts",
-		"Get critical scripts that should be run after writing code (typecheck, lint, format, test)",
-		async () => {
-			const scripts = await getScripts();
-			const healthcheckScripts = scripts.filter((script) => script.healthcheck);
+	return server.tool("get_healthcheck_scripts", {}, async () => {
+		const scripts = await getScripts();
+		const healthcheckScripts = scripts.filter((script) => script.healthcheck);
 
-			const scriptsList = healthcheckScripts
-				.map((script) => `pnpm ${script.name}: ${script.usage}`)
-				.join("\n");
+		const scriptsList = healthcheckScripts
+			.map((script) => `pnpm ${script.name}: ${script.usage}`)
+			.join("\n");
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `<� CODE HEALTHCHECK SCRIPTS
+		return {
+			content: [
+				{
+					type: "text",
+					text: `<� CODE HEALTHCHECK SCRIPTS
 
 These scripts MUST be run after writing code to ensure quality:
 
 ${scriptsList}
 
 �  IMPORTANT: Always run these scripts before considering your work complete. They catch type errors, code quality issues, and ensure consistent formatting.`,
-					},
-				],
-			};
-		},
-	);
+				},
+			],
+		};
+	});
 }

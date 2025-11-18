@@ -26,6 +26,7 @@ export const ProviderEnum = z.enum([
 	"anyscale",
 	"cohere",
 	"palm",
+	"groq",
 ]);
 
 // Base config properties
@@ -40,11 +41,28 @@ const BaseConfigProperties = {
 	request_timeout: z.number().optional(),
 	custom_host: z.string().optional(),
 	forward_headers: z.array(z.string()).optional(),
-	override_params: z.record(z.any()).optional(),
+	override_params: z.record(z.string(), z.any()).optional(),
+};
+
+// Define Config type first
+export type Config = {
+	provider?: z.infer<typeof ProviderEnum>;
+	api_key?: string;
+	virtual_key?: string;
+	cache?: z.infer<typeof CacheSchema>;
+	retry?: z.infer<typeof RetrySchema>;
+	weight?: number;
+	on_status_codes?: number[];
+	request_timeout?: number;
+	custom_host?: string;
+	forward_headers?: string[];
+	override_params?: Record<string, unknown>;
+	strategy?: z.infer<typeof StrategySchema>;
+	targets?: Config[];
 };
 
 // Config object schema
-export const ConfigSchema: z.ZodSchema = z.lazy(() =>
+export const ConfigSchema: z.ZodType<Config> = z.lazy(() =>
 	z.object({
 		...BaseConfigProperties,
 		strategy: StrategySchema.optional(),
@@ -57,7 +75,6 @@ export type Strategy = z.infer<typeof StrategySchema>;
 export type Cache = z.infer<typeof CacheSchema>;
 export type Retry = z.infer<typeof RetrySchema>;
 export type Provider = z.infer<typeof ProviderEnum>;
-export type Config = z.infer<typeof ConfigSchema>;
 
 // Config options for chat completion
 export interface ChatCompletionConfigOptions {
