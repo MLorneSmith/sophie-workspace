@@ -43,6 +43,8 @@ export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
 		if ("divider" in item) {
 			return <DropdownMenuSeparator key={`nav-divider-${++dividerCount}`} />;
 		}
+
+		return null;
 	});
 
 	return (

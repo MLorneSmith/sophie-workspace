@@ -335,7 +335,7 @@ class ProcessManager {
 				const { stdout: timeWait } = await execAsync(
 					`netstat -an 2>/dev/null | grep :${port}.*TIME_WAIT | wc -l || echo "0"`,
 				);
-				const timeWaitCount = parseInt(timeWait.trim()) || 0;
+				const timeWaitCount = parseInt(timeWait.trim(), 10) || 0;
 				if (timeWaitCount > 0) {
 					log(`   ⚠️ ${timeWaitCount} sockets in TIME_WAIT on port ${port}`);
 				}

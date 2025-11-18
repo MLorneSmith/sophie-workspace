@@ -26,7 +26,7 @@ export const generateMetadata = async (
 	const searchParams = await props.searchParams;
 	const limit = BLOG_POSTS_PER_PAGE;
 
-	const page = searchParams.page ? Number.parseInt(searchParams.page) : 0;
+	const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 0;
 	const offset = page * limit;
 
 	const { total } = await getContentItems(resolvedLanguage, limit, offset);
@@ -69,7 +69,7 @@ async function BlogPage(props: BlogPageProps) {
 	const searchParams = await props.searchParams;
 
 	const limit = BLOG_POSTS_PER_PAGE;
-	const page = searchParams.page ? Number.parseInt(searchParams.page) : 0;
+	const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 0;
 	const offset = page * limit;
 
 	const { total, items: posts } = await getContentItems(

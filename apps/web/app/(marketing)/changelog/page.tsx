@@ -25,7 +25,7 @@ export const generateMetadata = async (
 	const searchParams = await props.searchParams;
 	const limit = CHANGELOG_ENTRIES_PER_PAGE;
 
-	const page = searchParams.page ? parseInt(searchParams.page) : 0;
+	const page = searchParams.page ? parseInt(searchParams.page, 10) : 0;
 	const offset = page * limit;
 
 	const { total } = await getContentItems(resolvedLanguage, limit, offset);
@@ -68,7 +68,7 @@ async function ChangelogPage(props: ChangelogPageProps) {
 	const searchParams = await props.searchParams;
 
 	const limit = CHANGELOG_ENTRIES_PER_PAGE;
-	const page = searchParams.page ? parseInt(searchParams.page) : 0;
+	const page = searchParams.page ? parseInt(searchParams.page, 10) : 0;
 	const offset = page * limit;
 
 	const { total, items: entries } = await getContentItems(

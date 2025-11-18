@@ -1,6 +1,5 @@
 "use client";
 
-// @ts-expect-error - Module resolution issue
 import { createEnvironmentLogger } from "@kit/shared/logger";
 
 type SubmissionState = "idle" | "submitting" | "success" | "error";

@@ -21,40 +21,28 @@ const getEnvVar = (name: string, fallback = "") => {
 const AppConfigSchema = z
 	.object({
 		name: z
-			.string({
-				description: `This is the name of your SaaS. Ex. "Makerkit"`,
-				required_error: "Please provide the variable NEXT_PUBLIC_PRODUCT_NAME",
-			})
+			.string()
+			.describe(`This is the name of your SaaS. Ex. "Makerkit"`)
 			.min(1)
 			.default("SlideHeroes"), // Default for build time
 		title: z
-			.string({
-				description: "This is the default title tag of your SaaS.",
-				required_error: "Please provide the variable NEXT_PUBLIC_SITE_TITLE",
-			})
+			.string()
+			.describe("This is the default title tag of your SaaS.")
 			.min(1)
 			.default("SlideHeroes - AI Tools & Video Training"), // Default for build time
 		description: z
-			.string({
-				description: "This is the default description of your SaaS.",
-				required_error:
-					"Please provide the variable NEXT_PUBLIC_SITE_DESCRIPTION",
-			})
+			.string()
+			.describe("This is the default description of your SaaS.")
 			.default("Rapidly Create Smart + Impactful Business Presentations"),
 		url: z
-			.string({
-				required_error: "Please provide the variable NEXT_PUBLIC_SITE_URL",
-			})
+			.string()
 			.url({
 				message: `You are deploying a production build but have entered a NEXT_PUBLIC_SITE_URL variable using http instead of https. It is very likely that you have set the incorrect URL. The build will now fail to prevent you from from deploying a faulty configuration. Please provide the variable NEXT_PUBLIC_SITE_URL with a valid URL, such as: 'https://example.com'`,
 			})
 			.default("https://2025slideheroes-web.vercel.app"),
 		locale: z
-			.string({
-				description: "This is the default locale of your SaaS.",
-				required_error:
-					"Please provide the variable NEXT_PUBLIC_DEFAULT_LOCALE",
-			})
+			.string()
+			.describe("This is the default locale of your SaaS.")
 			.default("en"),
 		theme: z.enum(["light", "dark", "system"]).default("light"),
 		production: z.boolean(),

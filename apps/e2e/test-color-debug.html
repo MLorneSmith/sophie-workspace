@@ -57,22 +57,15 @@
             primary: document.querySelector('.text-primary'),
             mutedForeground: document.querySelector('.text-muted-foreground')
         };
-        
-        console.log('Computed colors:');
-        for (const [name, el] of Object.entries(elements)) {
+        for (const [_name, el] of Object.entries(elements)) {
             const color = getComputedStyle(el).color;
-            console.log(`${name}: ${color}`);
             
             // Add computed color info to the page
             el.innerHTML += ` (computed: ${color})`;
         }
         
         // Check CSS variables
-        const root = getComputedStyle(document.documentElement);
-        console.log('\nCSS Variables:');
-        console.log('--foreground:', root.getPropertyValue('--foreground'));
-        console.log('--primary:', root.getPropertyValue('--primary'));
-        console.log('--muted-foreground:', root.getPropertyValue('--muted-foreground'));
+        const _root = getComputedStyle(document.documentElement);
     </script>
 </body>
 </html>

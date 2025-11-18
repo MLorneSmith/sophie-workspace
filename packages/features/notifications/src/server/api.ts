@@ -38,7 +38,7 @@ export function createNotificationsApi(client: SupabaseClient<Database>) {
 class NotificationsApi {
 	private readonly service: ReturnType<typeof createNotificationsService>;
 
-	constructor(private readonly client: SupabaseClient<Database>) {
+	constructor(readonly client: SupabaseClient<Database>) {
 		this.service = createNotificationsService(client);
 	}
 

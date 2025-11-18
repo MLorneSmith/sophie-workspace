@@ -58,8 +58,11 @@ describe("getOutlineSuggestionsAction", () => {
 
 		// Setup mock implementations
 		vi.mocked(createQualityOptimizedConfig).mockReturnValue({
-			model: "gpt-4",
-			temperature: 0.7,
+			provider: "openai",
+			override_params: {
+				model: "gpt-4",
+				temperature: 0.7,
+			},
 		});
 
 		vi.mocked(getChatCompletion).mockResolvedValue({

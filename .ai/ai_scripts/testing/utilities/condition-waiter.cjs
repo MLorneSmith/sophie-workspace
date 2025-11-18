@@ -123,7 +123,7 @@ class ConditionWaiter {
 					);
 
 					// Port is free if no listening connections
-					return parseInt(netstatResult.trim()) === 0;
+					return parseInt(netstatResult.trim(), 10) === 0;
 				} catch {
 					// If commands fail, assume port is free
 					return true;
@@ -199,7 +199,7 @@ class ConditionWaiter {
 					const { stdout } = await execAsync(
 						`curl -s -o /dev/null -w "%{http_code}" "${url}" 2>/dev/null`,
 					);
-					const statusCode = parseInt(stdout.trim());
+					const statusCode = parseInt(stdout.trim(), 10);
 					return statusCode >= 200 && statusCode < 500;
 				} catch {
 					return false;

@@ -34,7 +34,7 @@ export class LemonSqueezyBillingStrategyService
 	implements BillingStrategyProviderService
 {
 	private readonly namespace = "billing.lemon-squeezy";
-
+	private readonly provider = "lemon-squeezy" as const;
 	/**
 	 * @name createCheckoutSession
 	 * @description Creates a checkout session for a customer

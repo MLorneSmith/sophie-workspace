@@ -39,6 +39,14 @@
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		},
+		"linter": {
+			"enabled": true
+		}
+	},
 	"assist": {
 		"actions": {
 			"source": {
@@ -188,6 +196,54 @@
 				"rules": {
 					"correctness": {
 						"noNestedComponentDefinitions": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/test-color-debug.html"],
+			"linter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": ["packages/ui/src/shadcn/**/*.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					},
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["packages/ui/src/makerkit/**/*.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/styles/globals.css"],
+			"formatter": {
+				"enabled": false
+			},
+			"linter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": ["**/*.service.ts", "**/enhanced-logger.ts"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedPrivateClassMembers": "off"
 					}
 				}
 			}

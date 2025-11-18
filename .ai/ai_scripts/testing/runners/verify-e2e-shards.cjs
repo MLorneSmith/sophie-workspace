@@ -113,7 +113,7 @@ function verifyShards() {
 		).trim();
 		log(`🧪 Total tests found by grep: ${allTestCount}`);
 
-		if (parseInt(allTestCount) > totalTests) {
+		if (parseInt(allTestCount, 10) > totalTests) {
 			log(
 				`\n⚠️ Warning: Found ${allTestCount} tests by grep but only ${totalTests} in configured shards`,
 			);

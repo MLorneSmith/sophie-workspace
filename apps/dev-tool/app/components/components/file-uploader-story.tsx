@@ -201,7 +201,9 @@ ${formattedProps}
 				<Label htmlFor="maxFiles">Max Files</Label>
 				<SimpleStorySelect
 					value={controls.maxFiles.toString()}
-					onValueChange={(value) => updateControl("maxFiles", parseInt(value))}
+					onValueChange={(value) =>
+						updateControl("maxFiles", parseInt(value, 10))
+					}
 					options={maxFilesOptions}
 				/>
 			</div>
@@ -211,7 +213,7 @@ ${formattedProps}
 				<SimpleStorySelect
 					value={controls.maxFileSize.toString()}
 					onValueChange={(value) =>
-						updateControl("maxFileSize", parseInt(value))
+						updateControl("maxFileSize", parseInt(value, 10))
 					}
 					options={maxFileSizeOptions}
 				/>

@@ -307,7 +307,7 @@ export function InputStory() {
 					onChange={(e) =>
 						updateControl(
 							"maxLength",
-							e.target.value ? parseInt(e.target.value) : undefined,
+							e.target.value ? parseInt(e.target.value, 10) : undefined,
 						)
 					}
 					placeholder="No limit"

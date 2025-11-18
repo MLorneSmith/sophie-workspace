@@ -35,6 +35,22 @@ const config = {
 		},
 	},
 	serverExternalPackages: ["pino", "pino-pretty", "thread-stream"],
+	// Bundle OpenTelemetry instrumentation packages instead of externalizing
+	webpack: (config, { isServer }) => {
+		if (isServer) {
+			config.externals = config.externals || [];
+			// Ensure these packages are bundled, not externalized
+			if (Array.isArray(config.externals)) {
+				config.externals = config.externals.filter(
+					(external) =>
+						typeof external !== "string" ||
+						(!external.includes("import-in-the-middle") &&
+							!external.includes("require-in-the-middle")),
+				);
+			}
+		}
+		return config;
+	},
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],
@@ -54,6 +70,7 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		turbopackFileSystemCacheForDev: true,
+		serverComponentsExternalPackages: ["pino", "pino-pretty", "thread-stream"],
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",

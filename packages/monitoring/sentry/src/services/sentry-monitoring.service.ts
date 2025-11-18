@@ -24,6 +24,11 @@ export class SentryMonitoringService implements MonitoringService {
 		void this.initialize();
 	}
 
+	private async initialize() {
+		// Resolve the ready promise immediately as Sentry is initialized via environment variables
+		this.readyResolver?.();
+	}
+
 	async ready() {
 		return this.readyPromise;
 	}
@@ -41,30 +46,5 @@ export class SentryMonitoringService implements MonitoringService {
 
 	identifyUser(user: SentryUser) {
 		setUser(user);
-	}
-
-	private async initialize() {
-		const environment =
-			process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.VERCEL_ENV;
-
-		if (typeof document !== "undefined") {
-			const { initializeSentryBrowserClient } = await import(
-				"../sentry.client.config"
-			);
-
-			initializeSentryBrowserClient({
-				environment,
-			});
-		} else {
-			const { initializeSentryServerClient } = await import(
-				"../sentry.server.config"
-			);
-
-			initializeSentryServerClient({
-				environment,
-			});
-		}
-
-		this.readyResolver?.();
 	}
 }

@@ -123,7 +123,7 @@ export default function BreadcrumbStory() {
 					onValueChange={(value: string) =>
 						setControls((prev) => ({
 							...prev,
-							maxItems: parseInt(value),
+							maxItems: parseInt(value, 10),
 						}))
 					}
 				>

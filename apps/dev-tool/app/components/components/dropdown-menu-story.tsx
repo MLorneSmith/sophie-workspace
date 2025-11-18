@@ -899,7 +899,7 @@ export default function DropdownMenuStory() {
 					onChange={(e) =>
 						setControls((prev) => ({
 							...prev,
-							sideOffset: parseInt(e.target.value) || 0,
+							sideOffset: parseInt(e.target.value, 10) || 0,
 						}))
 					}
 					min="0"
@@ -916,7 +916,7 @@ export default function DropdownMenuStory() {
 					onChange={(e) =>
 						setControls((prev) => ({
 							...prev,
-							alignOffset: parseInt(e.target.value) || 0,
+							alignOffset: parseInt(e.target.value, 10) || 0,
 						}))
 					}
 					min="-20"

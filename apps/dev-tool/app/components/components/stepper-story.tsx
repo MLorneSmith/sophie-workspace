@@ -111,7 +111,7 @@ export function StepperStory() {
 				<SimpleStorySelect
 					value={controls.stepCount.toString()}
 					onValueChange={(value) => {
-						const count = parseInt(value);
+						const count = parseInt(value, 10);
 						updateControl("stepCount", count);
 						// Reset current step if it's beyond the new count
 						if (controls.currentStep >= count) {

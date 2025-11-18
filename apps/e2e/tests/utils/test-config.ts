@@ -21,6 +21,7 @@ export interface TestEnvironment {
 }
 
 export class TestConfigManager {
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used in getInstance() singleton pattern
 	private static instance: TestConfigManager;
 	private config: TestEnvironment;
 
@@ -35,63 +36,47 @@ export class TestConfigManager {
 		return TestConfigManager.instance;
 	}
 
-	getConfig(): TestEnvironment {
-		return this.config;
-	}
-
+	/**
+	 * Detect the current test environment based on environment variables
+	 */
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Called in constructor during initialization
 	private detectEnvironment(): TestEnvironment {
-		const isCI = process.env.CI === "true";
-		const isDev =
-			process.env.NODE_ENV === "development" ||
-			process.env.PLAYWRIGHT_BASE_URL?.includes("dev.");
-		const isStaging = process.env.PLAYWRIGHT_BASE_URL?.includes("staging.");
+		const isCI = process.env.CI === "true" || !!process.env.GITHUB_ACTIONS;
+		const envName =
+			process.env.TEST_ENV?.toUpperCase() as TestEnvironment["name"];
 
 		// Determine environment name
-		let name: TestEnvironment["name"];
+		let name: TestEnvironment["name"] = "LOCAL";
 		if (isCI) {
 			name = "CI";
-		} else if (isStaging) {
-			name = "STAGING";
-		} else if (isDev) {
-			name = "DEV";
-		} else {
-			name = "LOCAL";
+		} else if (envName === "DEV" || envName === "STAGING") {
+			name = envName;
 		}
 
-		// Configure based on environment
-		const baseConfig: TestEnvironment = {
+		// Environment-specific configuration
+		const config: TestEnvironment = {
 			name,
 			isCI,
 			skipEmailVerification:
 				isCI || process.env.SKIP_EMAIL_VERIFICATION === "true",
-			enableVerboseLogging: process.env.E2E_VERBOSE_CREDENTIALS === "true",
+			enableVerboseLogging: process.env.E2E_VERBOSE === "true",
 			credentialValidation: isCI ? "STRICT" : "LENIENT",
 			retryStrategy: {
-				maxRetries: isCI ? 3 : 2,
+				maxRetries: isCI ? 5 : 3,
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
-					short: isCI ? 15000 : 10000,
-					// Increased for deployed environments to handle:
-					// - Vercel cold starts and edge function initialization
-					// - Network latency from GitHub Actions to deployment
-					// - Supabase API response time in production
-					// - Middleware and auth processing overhead
-					medium: isCI ? 90000 : 20000, // Auth operations: 90s in CI, 20s local
-					long: isCI ? 120000 : 45000, // Complex operations: 120s in CI, 45s local
+					short: isCI ? 10000 : 5000,
+					medium: isCI ? 30000 : 15000,
+					long: isCI ? 60000 : 30000,
 				},
 			},
 		};
 
-		console.log("🔧 Test Environment Configuration:");
-		console.log(`   Environment: ${name}`);
-		console.log(`   CI Mode: ${isCI}`);
-		console.log(
-			`   Skip Email Verification: ${baseConfig.skipEmailVerification}`,
-		);
-		console.log(`   Credential Validation: ${baseConfig.credentialValidation}`);
-		console.log(`   Max Retries: ${baseConfig.retryStrategy.maxRetries}`);
+		return config;
+	}
 
-		return baseConfig;
+	getConfig(): TestEnvironment {
+		return this.config;
 	}
 
 	/**

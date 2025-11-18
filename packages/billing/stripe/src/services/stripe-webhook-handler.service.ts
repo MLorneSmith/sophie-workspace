@@ -1,6 +1,6 @@
 import type { BillingWebhookHandlerService, PlanTypeMap } from "@kit/billing";
 import { getLogger } from "@kit/shared/logger";
-import type { Database, Enums } from "@kit/supabase/database";
+import type { Database } from "@kit/supabase/database";
 import type Stripe from "stripe";
 
 import { StripeServerEnvSchema } from "../schema/stripe-server-env.schema";
@@ -28,8 +28,6 @@ interface LineItem {
 type UpsertOrderParams =
 	Database["public"]["Functions"]["upsert_order"]["Args"];
 
-type BillingProvider = Enums<"billing_provider">;
-
 export class StripeWebhookHandlerService
 	implements BillingWebhookHandlerService
 {
@@ -37,9 +35,8 @@ export class StripeWebhookHandlerService
 
 	constructor(private readonly planTypesMap: PlanTypeMap) {}
 
-	private readonly provider: BillingProvider = "stripe";
-
 	private readonly namespace = "billing.stripe";
+	private readonly provider = "stripe" as const;
 
 	/**
 	 * @name verifyWebhookSignature

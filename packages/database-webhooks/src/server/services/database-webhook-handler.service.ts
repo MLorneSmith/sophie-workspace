@@ -23,7 +23,7 @@ export function getDatabaseWebhookHandlerService() {
  * @description Get the database webhook handler service
  */
 class DatabaseWebhookHandlerService {
-	private readonly namespace = "database-webhook-handler";
+	private readonly namespace = "database.webhooks";
 
 	/**
 	 * @name handleWebhook

@@ -21,13 +21,11 @@ const { getLogger } = createServiceLogger("AI-SUGGESTIONS");
 const SuggestionsSchema = z
 	.object({
 		title: z.string().optional(),
-		field: z.enum(
-			["title", "audience", "situation", "complication", "answer"],
-			{
-				description:
-					"Must be one of: title, audience, situation, complication, answer",
-			},
-		),
+		field: z
+			.enum(["title", "audience", "situation", "complication", "answer"])
+			.describe(
+				"Must be one of: title, audience, situation, complication, answer",
+			),
 		presentationType: z.string().optional(),
 	})
 	.refine(

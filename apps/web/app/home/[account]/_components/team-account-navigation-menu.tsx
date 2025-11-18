@@ -26,7 +26,8 @@ export function TeamAccountNavigationMenu(props: {
 		}>
 	>((acc, item) => {
 		if ("children" in item) {
-			acc.push(...item.children);
+			// Type assertion: Zod function type is compatible with our function type
+			acc.push(...(item.children as typeof acc));
 			return acc;
 		}
 
@@ -34,7 +35,7 @@ export function TeamAccountNavigationMenu(props: {
 			return acc;
 		}
 
-		acc.push(item);
+		acc.push(item as (typeof acc)[number]);
 		return acc;
 	}, []);
 

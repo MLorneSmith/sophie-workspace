@@ -470,28 +470,10 @@ export function QuizComponent({
 								(option: QuizOption, optionIndex: number) => {
 									if (!option) return null;
 									return (
-										<div
+										<label
 											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start rounded-md p-3 transition-colors"
-											// biome-ignore lint/a11y/useSemanticElements: Container with checkbox input inside requires role="button" for proper interaction
-											role="button"
-											tabIndex={0}
-											onClick={() =>
-												handleMultiAnswerSelect(
-													optionIndex,
-													!isOptionSelected(optionIndex),
-												)
-											}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													handleMultiAnswerSelect(
-														optionIndex,
-														!isOptionSelected(optionIndex),
-													);
-												}
-											}}
-											aria-label={`Select option: ${option.text}`}
+											htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}
 										>
 											<div className="flex w-full items-center space-x-3">
 												<Checkbox
@@ -520,7 +502,7 @@ export function QuizComponent({
 													{option.text}
 												</Label>
 											</div>
-										</div>
+										</label>
 									);
 								},
 							)}
@@ -535,7 +517,7 @@ export function QuizComponent({
 									: undefined
 							}
 							onValueChange={(value) =>
-								handleSingleAnswerSelect(Number.parseInt(value))
+								handleSingleAnswerSelect(Number.parseInt(value, 10))
 							}
 							className="space-y-4"
 						>
@@ -543,20 +525,10 @@ export function QuizComponent({
 								(option: QuizOption, optionIndex: number) => {
 									if (!option) return null;
 									return (
-										<div
+										<label
 											key={option.text || `option-${optionIndex}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
-											// biome-ignore lint/a11y/useSemanticElements: Container with radio input inside requires role="button" for proper interaction
-											role="button"
-											tabIndex={0}
-											onClick={() => handleSingleAnswerSelect(optionIndex)}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													handleSingleAnswerSelect(optionIndex);
-												}
-											}}
-											aria-label={`Select option: ${option.text}`}
+											htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}
 										>
 											<RadioGroupItem
 												value={optionIndex.toString()}
@@ -569,7 +541,7 @@ export function QuizComponent({
 											>
 												{option.text}
 											</Label>
-										</div>
+										</label>
 									);
 								},
 							)}

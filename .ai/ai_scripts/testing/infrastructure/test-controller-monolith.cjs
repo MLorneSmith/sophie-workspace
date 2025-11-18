@@ -63,7 +63,7 @@ const CONFIG = {
 	},
 	// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
 	maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS
-		? parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS)
+		? parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS, 10)
 		: null,
 };
 
@@ -665,6 +665,7 @@ class InfrastructureChecker {
 						log("📊 Seed output indicates success:");
 						successIndicators
 							.slice(0, 3)
+							// biome-ignore lint/suspicious/useIterableCallbackReturn: log() doesn't return value
 							.forEach((line) => log(`   ${line.trim()}`));
 					}
 				}
@@ -1026,13 +1027,13 @@ class UnitTestRunner {
 			// Parse passed tests (e.g., "60 passed")
 			const passedInLine = line.match(/(\d+)\s+passed/);
 			if (passedInLine) {
-				results.passed += parseInt(passedInLine[1]);
+				results.passed += parseInt(passedInLine[1], 10);
 			}
 
 			// Parse failed tests (e.g., "30 failed")
 			const failedInLine = line.match(/(\d+)\s+failed/);
 			if (failedInLine) {
-				results.failed += parseInt(failedInLine[1]);
+				results.failed += parseInt(failedInLine[1], 10);
 			}
 
 			// Parse skipped/todo tests (e.g., "4 todo", "2 skipped")
@@ -1040,7 +1041,7 @@ class UnitTestRunner {
 			skippedInLine.forEach((skip) => {
 				const num = skip.match(/(\d+)/);
 				if (num) {
-					results.skipped += parseInt(num[1]);
+					results.skipped += parseInt(num[1], 10);
 				}
 			});
 		});
@@ -1877,6 +1878,7 @@ class E2ETestRunner {
 
 			log("\n❌ Server startup failed after all recovery attempts");
 			log("   Issues:");
+			// biome-ignore lint/suspicious/useIterableCallbackReturn: log() doesn't return a value, false positive
 			errorDetails.forEach((detail) => log(`   - ${detail}`));
 			log("\n   Troubleshooting steps:");
 			log("   1. Check if ports 3000 and 3020 are in use: lsof -ti:3000,3020");
@@ -2063,7 +2065,7 @@ class E2ETestRunner {
 			const { stdout } = await execAsync(
 				`lsof -i:${port} | grep LISTEN | wc -l`,
 			);
-			return parseInt(stdout.trim()) === 0;
+			return parseInt(stdout.trim(), 10) === 0;
 		} catch (_e) {
 			return true; // Assume free if command fails
 		}
@@ -3170,7 +3172,7 @@ class E2ETestRunner {
 				if (reportProgress) {
 					const passedMatch = text.match(/(\d+) passed/);
 					if (passedMatch) {
-						reportProgress("admin", parseInt(passedMatch[1]), 6);
+						reportProgress("admin", parseInt(passedMatch[1], 10), 6);
 					}
 				}
 			});
@@ -3195,17 +3197,17 @@ class E2ETestRunner {
 
 				const passedMatch = output.match(/(\d+) passed/);
 				if (passedMatch) {
-					result.passed = parseInt(passedMatch[1]);
+					result.passed = parseInt(passedMatch[1], 10);
 				}
 
 				const failedMatch = output.match(/(\d+) failed/);
 				if (failedMatch) {
-					result.failed = parseInt(failedMatch[1]);
+					result.failed = parseInt(failedMatch[1], 10);
 				}
 
 				const skippedMatch = output.match(/(\d+) skipped/);
 				if (skippedMatch) {
-					result.skipped = parseInt(skippedMatch[1]);
+					result.skipped = parseInt(skippedMatch[1], 10);
 				}
 
 				const statusIcon = result.failed > 0 ? "❌" : "✅";
@@ -3252,17 +3254,17 @@ class E2ETestRunner {
 		// Parse Playwright output patterns
 		const passedMatch = output.match(/(\d+) passed/);
 		if (passedMatch) {
-			result.passed = parseInt(passedMatch[1]);
+			result.passed = parseInt(passedMatch[1], 10);
 		}
 
 		const failedMatch = output.match(/(\d+) failed/);
 		if (failedMatch) {
-			result.failed = parseInt(failedMatch[1]);
+			result.failed = parseInt(failedMatch[1], 10);
 		}
 
 		const skippedMatch = output.match(/(\d+) skipped/);
 		if (skippedMatch) {
-			result.skipped = parseInt(skippedMatch[1]);
+			result.skipped = parseInt(skippedMatch[1], 10);
 		}
 
 		// Check if this is the configuration verification test with intentional failures

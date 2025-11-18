@@ -113,11 +113,6 @@ class FailureReporter implements Reporter {
 		}
 	}
 
-	private getPercentage(value: number): string {
-		if (this.stats.total === 0) return "0";
-		return ((value / this.stats.total) * 100).toFixed(1);
-	}
-
 	private detectFailurePatterns() {
 		const patterns = new Map<string, number>();
 

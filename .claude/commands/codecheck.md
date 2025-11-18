@@ -8,7 +8,7 @@ mcp-tools: mcp__code-reasoning__code-reasoning
 
 # CodeCheck Command
 
-Execute comprehensive code quality validation across TypeScript, linting, formatting, and testing with intelligent auto-fix capabilities using the PRIME framework.
+Execute comprehensive code quality validation across TypeScript, linting, formatting, and testing with intelligent auto-fix capabilities.
 
 ## Key Features
 

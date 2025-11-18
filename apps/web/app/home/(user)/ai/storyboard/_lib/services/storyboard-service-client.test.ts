@@ -50,12 +50,12 @@ vi.mock("../types/index", () => {
 
 // Define mock interface for test purposes
 interface MockSupabaseClient {
-	from: ReturnType<typeof vi.fn>;
-	select: ReturnType<typeof vi.fn>;
-	eq: ReturnType<typeof vi.fn>;
-	single: ReturnType<typeof vi.fn>;
-	update: ReturnType<typeof vi.fn>;
-	order: ReturnType<typeof vi.fn>;
+	from: any;
+	select: any;
+	eq: any;
+	single: any;
+	update: any;
+	order: any;
 }
 
 describe("StoryboardService", () => {
