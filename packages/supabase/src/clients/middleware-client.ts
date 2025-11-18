@@ -24,13 +24,13 @@ export function createMiddlewareClient<GenericSchema = Database>(
 				return request.cookies.getAll();
 			},
 			setAll(cookiesToSet) {
-				cookiesToSet.forEach(({ name, value }) =>
-					request.cookies.set(name, value),
-				);
+				for (const { name, value } of cookiesToSet) {
+					request.cookies.set(name, value);
+				}
 
-				cookiesToSet.forEach(({ name, value, options }) =>
-					response.cookies.set(name, value, options),
-				);
+				for (const { name, value, options } of cookiesToSet) {
+					response.cookies.set(name, value, options);
+				}
 			},
 		},
 	});
