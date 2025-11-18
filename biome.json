@@ -34,7 +34,8 @@
 			"!**/z.old/**",
 			"!**/z.test/**",
 			"!**/turbo/generators/**",
-			"!**/.turbo/**"
+			"!**/.turbo/**",
+			"!**/.old.claude/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
