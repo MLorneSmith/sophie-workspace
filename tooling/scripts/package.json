@@ -9,6 +9,6 @@
 		"license": "node ./src/license.mjs"
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1"
+		"@hookform/resolvers": "5.2.2"
 	}
 }

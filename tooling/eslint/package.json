@@ -13,17 +13,17 @@
 		"format": "prettier --check \"**/*.{js,json}\""
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1",
-		"@next/eslint-plugin-next": "16.0.0",
+		"@hookform/resolvers": "5.2.2",
+		"@next/eslint-plugin-next": "16.0.3",
 		"@types/eslint": "9.6.1",
-		"eslint-config-next": "16.0.0",
-		"eslint-config-turbo": "^2.5.8",
-		"typescript-eslint": "8.45.0"
+		"eslint-config-next": "16.0.3",
+		"eslint-config-turbo": "^2.6.1",
+		"typescript-eslint": "8.47.0"
 	},
 	"devDependencies": {
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"eslint": "^9.38.0",
+		"eslint": "^9.39.1",
 		"typescript": "^5.9.3"
 	},
 	"prettier": "@kit/prettier-config"
