@@ -35,7 +35,9 @@
 			"!**/z.test",
 			"!**/turbo/generators",
 			"!**/.turbo",
-			"!**/.old.claude"
+			"!**/.old.claude",
+			"!**/styles/globals.css",
+			"!**/supabase/templates/**/*.html"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -246,6 +248,12 @@
 						"noUnusedPrivateClassMembers": "off"
 					}
 				}
+			}
+		},
+		{
+			"includes": ["**/supabase/templates/**/*.html"],
+			"linter": {
+				"enabled": false
 			}
 		}
 	]
