@@ -513,7 +513,11 @@ export function registerPromptsSystem(server: McpServer) {
 
 	for (const promptTemplate of allPrompts) {
 		// Convert arguments to proper Zod schema format
-		const argsSchema = promptTemplate.arguments.reduce(
+		const argsSchema: Record<
+			string,
+			| z.ZodType<string, z.ZodTypeDef, string>
+			| z.ZodOptional<z.ZodType<string, z.ZodTypeDef, string>>
+		> = promptTemplate.arguments.reduce(
 			(acc, arg) => {
 				if (arg.required) {
 					acc[arg.name] = z.string().describe(arg.description);
@@ -522,7 +526,11 @@ export function registerPromptsSystem(server: McpServer) {
 				}
 				return acc;
 			},
-			{} as Record<string, z.ZodString | z.ZodOptional<z.ZodString>>,
+			{} as Record<
+				string,
+				| z.ZodType<string, z.ZodTypeDef, string>
+				| z.ZodOptional<z.ZodType<string, z.ZodTypeDef, string>>
+			>,
 		);
 
 		server.prompt(

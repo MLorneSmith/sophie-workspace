@@ -34,7 +34,7 @@ const config = {
 			fullUrl: true,
 		},
 	},
-	serverExternalPackages: [],
+	serverExternalPackages: ["pino", "pino-pretty", "thread-stream"],
 	// needed for supporting dynamic imports for local content
 	outputFileTracingIncludes: {
 		"/*": ["./content/**/*"],

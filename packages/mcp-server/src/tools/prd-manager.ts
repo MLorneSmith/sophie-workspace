@@ -92,8 +92,10 @@ interface StructuredPRD {
 
 // biome-ignore lint/complexity/noStaticOnlyClass: PRDManager uses static methods as a namespace pattern for utility functions
 export class PRDManager {
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used by PRDS_DIR getter and setRootPath
 	private static ROOT_PATH = process.cwd();
 
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used throughout class for file operations
 	private static get PRDS_DIR() {
 		return join(PRDManager.ROOT_PATH, ".prds");
 	}
@@ -523,6 +525,7 @@ export class PRDManager {
 	}
 
 	// Private methods
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Core method used by all PRD operations
 	private static async loadPRD(filename: string): Promise<StructuredPRD> {
 		const filePath = join(PRDManager.PRDS_DIR, filename);
 		try {
@@ -533,6 +536,7 @@ export class PRDManager {
 		}
 	}
 
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Core method used by all PRD write operations
 	private static async savePRD(
 		filename: string,
 		prd: StructuredPRD,
@@ -671,48 +675,41 @@ export function registerPRDTools(server: McpServer) {
 }
 
 function createListPRDsTool(server: McpServer) {
-	return server.tool(
-		"list_prds",
-		"List all Product Requirements Documents",
-		async () => {
-			const prds = await PRDManager.listPRDs();
+	return server.tool("list_prds", {}, async () => {
+		const prds = await PRDManager.listPRDs();
 
-			if (prds.length === 0) {
-				return {
-					content: [
-						{
-							type: "text",
-							text: "No PRD files found in .prds folder",
-						},
-					],
-				};
-			}
-
-			const prdList = prds.map((prd) => `- ${prd}`).join("\n");
-
+		if (prds.length === 0) {
 			return {
 				content: [
 					{
 						type: "text",
-						text: `Found ${prds.length} PRD files:\n\n${prdList}`,
+						text: "No PRD files found in .prds folder",
 					},
 				],
 			};
-		},
-	);
+		}
+
+		const prdList = prds.map((prd) => `- ${prd}`).join("\n");
+
+		return {
+			content: [
+				{
+					type: "text",
+					text: `Found ${prds.length} PRD files:\n\n${prdList}`,
+				},
+			],
+		};
+	});
 }
 
 function createGetPRDTool(server: McpServer) {
 	return server.tool(
 		"get_prd",
-		"Get the contents of a specific PRD file",
 		{
-			state: z.object({
-				filename: z.string(),
-			}),
+			filename: z.string(),
 		},
-		async ({ state }) => {
-			const content = await PRDManager.getPRDContent(state.filename);
+		async ({ filename }) => {
+			const content = await PRDManager.getPRDContent(filename);
 
 			return {
 				content: [
@@ -729,29 +726,35 @@ function createGetPRDTool(server: McpServer) {
 function createCreatePRDTool(server: McpServer) {
 	return server.tool(
 		"create_prd",
-		"Create a new structured PRD following ChatPRD best practices",
 		{
-			state: z.object({
-				title: z.string(),
-				overview: z.string(),
-				problemStatement: z.string(),
-				marketOpportunity: z.string(),
-				targetUsers: z.array(z.string()),
-				solutionDescription: z.string(),
-				keyFeatures: z.array(z.string()),
-				successMetrics: z.array(z.string()),
-			}),
+			title: z.string(),
+			overview: z.string(),
+			problemStatement: z.string(),
+			marketOpportunity: z.string(),
+			targetUsers: z.array(z.string()),
+			solutionDescription: z.string(),
+			keyFeatures: z.array(z.string()),
+			successMetrics: z.array(z.string()),
 		},
-		async ({ state }) => {
+		async ({
+			title,
+			overview,
+			problemStatement,
+			marketOpportunity,
+			targetUsers,
+			solutionDescription,
+			keyFeatures,
+			successMetrics,
+		}) => {
 			const filename = await PRDManager.createStructuredPRD(
-				state.title,
-				state.overview,
-				state.problemStatement,
-				state.marketOpportunity,
-				state.targetUsers,
-				state.solutionDescription,
-				state.keyFeatures,
-				state.successMetrics,
+				title,
+				overview,
+				problemStatement,
+				marketOpportunity,
+				targetUsers,
+				solutionDescription,
+				keyFeatures,
+				successMetrics,
 			);
 
 			return {
@@ -769,25 +772,29 @@ function createCreatePRDTool(server: McpServer) {
 function createAddUserStoryTool(server: McpServer) {
 	return server.tool(
 		"add_user_story",
-		"Add a new user story to an existing PRD",
 		{
-			state: z.object({
-				filename: z.string(),
-				userType: z.string(),
-				action: z.string(),
-				benefit: z.string(),
-				acceptanceCriteria: z.array(z.string()),
-				priority: z.enum(["P0", "P1", "P2", "P3"]).default("P2"),
-			}),
+			filename: z.string(),
+			userType: z.string(),
+			action: z.string(),
+			benefit: z.string(),
+			acceptanceCriteria: z.array(z.string()),
+			priority: z.enum(["P0", "P1", "P2", "P3"]).default("P2"),
 		},
-		async ({ state }) => {
+		async ({
+			filename,
+			userType,
+			action,
+			benefit,
+			acceptanceCriteria,
+			priority,
+		}) => {
 			const result = await PRDManager.addUserStory(
-				state.filename,
-				state.userType,
-				state.action,
-				state.benefit,
-				state.acceptanceCriteria,
-				state.priority,
+				filename,
+				userType,
+				action,
+				benefit,
+				acceptanceCriteria,
+				priority,
 			);
 
 			return {
@@ -805,28 +812,25 @@ function createAddUserStoryTool(server: McpServer) {
 function createUpdateStoryStatusTool(server: McpServer) {
 	return server.tool(
 		"update_story_status",
-		"Update the status of a specific user story",
 		{
-			state: z.object({
-				filename: z.string(),
-				storyId: z.string(),
-				status: z.enum([
-					"not_started",
-					"research",
-					"in_progress",
-					"review",
-					"completed",
-					"blocked",
-				]),
-				notes: z.string().optional(),
-			}),
+			filename: z.string(),
+			storyId: z.string(),
+			status: z.enum([
+				"not_started",
+				"research",
+				"in_progress",
+				"review",
+				"completed",
+				"blocked",
+			]),
+			notes: z.string().optional(),
 		},
-		async ({ state }) => {
+		async ({ filename, storyId, status, notes }) => {
 			const result = await PRDManager.updateStoryStatus(
-				state.filename,
-				state.storyId,
-				state.status,
-				state.notes,
+				filename,
+				storyId,
+				status,
+				notes,
 			);
 
 			return {
@@ -844,14 +848,11 @@ function createUpdateStoryStatusTool(server: McpServer) {
 function createExportMarkdownTool(server: McpServer) {
 	return server.tool(
 		"export_prd_markdown",
-		"Export PRD as markdown for visualization and sharing",
 		{
-			state: z.object({
-				filename: z.string(),
-			}),
+			filename: z.string(),
 		},
-		async ({ state }) => {
-			const markdownFile = await PRDManager.exportAsMarkdown(state.filename);
+		async ({ filename }) => {
+			const markdownFile = await PRDManager.exportAsMarkdown(filename);
 
 			return {
 				content: [
@@ -868,16 +869,11 @@ function createExportMarkdownTool(server: McpServer) {
 function createGetImplementationPromptsTool(server: McpServer) {
 	return server.tool(
 		"get_implementation_prompts",
-		"Generate Claude Code implementation prompts from PRD",
 		{
-			state: z.object({
-				filename: z.string(),
-			}),
+			filename: z.string(),
 		},
-		async ({ state }) => {
-			const prompts = await PRDManager.generateImplementationPrompts(
-				state.filename,
-			);
+		async ({ filename }) => {
+			const prompts = await PRDManager.generateImplementationPrompts(filename);
 
 			if (prompts.length === 0) {
 				return {
@@ -907,16 +903,11 @@ function createGetImplementationPromptsTool(server: McpServer) {
 function createGetImprovementSuggestionsTool(server: McpServer) {
 	return server.tool(
 		"get_improvement_suggestions",
-		"Get AI-powered suggestions to improve the PRD",
 		{
-			state: z.object({
-				filename: z.string(),
-			}),
+			filename: z.string(),
 		},
-		async ({ state }) => {
-			const suggestions = await PRDManager.getImprovementSuggestions(
-				state.filename,
-			);
+		async ({ filename }) => {
+			const suggestions = await PRDManager.getImprovementSuggestions(filename);
 
 			if (suggestions.length === 0) {
 				return {
@@ -946,14 +937,11 @@ function createGetImprovementSuggestionsTool(server: McpServer) {
 function createGetProjectStatusTool(server: McpServer) {
 	return server.tool(
 		"get_project_status",
-		"Get comprehensive status overview of the PRD project",
 		{
-			state: z.object({
-				filename: z.string(),
-			}),
+			filename: z.string(),
 		},
-		async ({ state }) => {
-			const status = await PRDManager.getProjectStatus(state.filename);
+		async ({ filename }) => {
+			const status = await PRDManager.getProjectStatus(filename);
 
 			let result = "**Project Status**\n\n";
 			result += `${status.summary}\n\n`;

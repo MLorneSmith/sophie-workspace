@@ -32,35 +32,28 @@ export function registerGetMigrationsTools(server: McpServer) {
 }
 
 function createDiffMigrationTool(server: McpServer) {
-	return server.tool(
-		"diff_migrations",
-		"Compare differences between the declarative schemas and the applied migrations in Supabase",
-		async () => {
-			const { stdout } = await Diff();
+	return server.tool("diff_migrations", {}, async () => {
+		const { stdout } = await Diff();
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: stdout,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: stdout,
+				},
+			],
+		};
+	});
 }
 
 function createCreateMigrationTool(server: McpServer) {
 	return server.tool(
 		"create_migration",
-		"Create a new Supabase Postgres migration file",
 		{
-			state: z.object({
-				name: z.string(),
-			}),
+			name: z.string(),
 		},
-		async ({ state }) => {
-			const { stdout } = await CreateMigration(state.name);
+		async ({ name }) => {
+			const { stdout } = await CreateMigration(name);
 
 			return {
 				content: [
@@ -77,20 +70,17 @@ function createCreateMigrationTool(server: McpServer) {
 function createGetMigrationContentTool(server: McpServer) {
 	return server.tool(
 		"get_migration_content",
-		"📜 Get migration file content (HISTORICAL) - For current state use get_schema_content instead",
 		{
-			state: z.object({
-				path: z.string(),
-			}),
+			path: z.string(),
 		},
-		async ({ state }) => {
-			const content = await getMigrationContent(state.path);
+		async ({ path }) => {
+			const content = await getMigrationContent(path);
 
 			return {
 				content: [
 					{
 						type: "text",
-						text: `📜 MIGRATION FILE: ${state.path} (HISTORICAL)\n\nNote: This shows historical changes. For current database state, use get_schema_content instead.\n\n${content}`,
+						text: `📜 MIGRATION FILE: ${path} (HISTORICAL)\n\nNote: This shows historical changes. For current database state, use get_schema_content instead.\n\n${content}`,
 					},
 				],
 			};
@@ -99,20 +89,16 @@ function createGetMigrationContentTool(server: McpServer) {
 }
 
 function createGetMigrationsTool(server: McpServer) {
-	return server.tool(
-		"get_migrations",
-		"📜 Get migration files (HISTORICAL CHANGES) - Use schema files for current state instead",
-		async () => {
-			const migrations = await GetMigrations();
+	return server.tool("get_migrations", {}, async () => {
+		const migrations = await GetMigrations();
 
-			return {
-				content: [
-					{
-						type: "text",
-						text: `📜 MIGRATION FILES (HISTORICAL CHANGES)\n\nNote: For current database state, use get_schema_files instead. Migrations show historical changes.\n\n${migrations.join("\n")}`,
-					},
-				],
-			};
-		},
-	);
+		return {
+			content: [
+				{
+					type: "text",
+					text: `📜 MIGRATION FILES (HISTORICAL CHANGES)\n\nNote: For current database state, use get_schema_files instead. Migrations show historical changes.\n\n${migrations.join("\n")}`,
+				},
+			],
+		};
+	});
 }

@@ -11,7 +11,6 @@ import { registerScriptsTools } from "./tools/scripts";
 const server = new McpServer({
 	name: "makerkit",
 	version: "1.0.0",
-	capabilities: {},
 });
 
 registerGetMigrationsTools(server);

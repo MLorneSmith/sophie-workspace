@@ -27,17 +27,15 @@ export function createAudienceSuggestionsConfig(
 	);
 
 	// Override specific parameters for audience suggestions
-	baseConfig.targets = baseConfig.targets.map(
-		(target: Config["targets"][number]) => ({
-			...target,
-			override_params: {
-				...target.override_params,
-				temperature: 0.7, // Balanced between creativity and focus
-				max_tokens: 150, // Shorter responses for audience suggestions
-				format: "text", // Use plain text format for numbered lists
-			},
-		}),
-	);
+	baseConfig.targets = baseConfig.targets?.map((target) => ({
+		...target,
+		override_params: {
+			...target.override_params,
+			temperature: 0.7, // Balanced between creativity and focus
+			max_tokens: 150, // Shorter responses for audience suggestions
+			format: "text", // Use plain text format for numbered lists
+		},
+	}));
 
 	return baseConfig;
 }
