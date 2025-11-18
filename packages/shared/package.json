@@ -23,14 +23,14 @@
 		"@kit/eslint-config": "workspace:*",
 		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
-		"@types/node": "^24.6.2",
+		"@types/node": "^24.10.1",
 		"@types/react": "catalog:"
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1",
+		"@hookform/resolvers": "5.2.2",
 		"@kit/monitoring-core": "workspace:*",
-		"pino": "^9.8.0",
-		"zod": "^3.25.74"
+		"pino": "^10.1.0",
+		"zod": "^4.1.12"
 	},
 	"typesVersions": {
 		"*": {
