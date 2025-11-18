@@ -285,6 +285,9 @@ export function LineItemDetails(
 							/>
 						);
 					}
+
+					default:
+						return null;
 				}
 			})}
 		</div>
