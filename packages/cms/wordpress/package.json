@@ -22,7 +22,7 @@
 		"@kit/ui": "workspace:*",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
-		"wp-types": "^4.68.1"
+		"wp-types": "^4.68.3"
 	},
 	"typesVersions": {
 		"*": {
@@ -32,7 +32,7 @@
 		}
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1",
+		"@hookform/resolvers": "5.2.2",
 		"@kit/shared": "workspace:*"
 	}
 }

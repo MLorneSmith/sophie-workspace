@@ -15,25 +15,13 @@ const emailSender = process.env.EMAIL_SENDER;
 const env = z
 	.object({
 		invitePath: z
-			.string({
-				required_error: "The property invitePath is required",
-			})
-			.min(1),
-		siteURL: z
-			.string({
-				required_error: "NEXT_PUBLIC_SITE_URL is required",
-			})
-			.min(1),
+			.string()
+			.min(1, { message: "The property invitePath is required" }),
+		siteURL: z.string().min(1, { message: "NEXT_PUBLIC_SITE_URL is required" }),
 		productName: z
-			.string({
-				required_error: "NEXT_PUBLIC_PRODUCT_NAME is required",
-			})
-			.min(1),
-		emailSender: z
-			.string({
-				required_error: "EMAIL_SENDER is required",
-			})
-			.min(1),
+			.string()
+			.min(1, { message: "NEXT_PUBLIC_PRODUCT_NAME is required" }),
+		emailSender: z.string().min(1, { message: "EMAIL_SENDER is required" }),
 	})
 	.parse({
 		invitePath,

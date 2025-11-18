@@ -3,12 +3,12 @@ import { z } from "zod";
 import type { DatabaseWebhookVerifierService } from "./database-webhook-verifier.service";
 
 const webhooksSecret = z
-	.string({
-		description: "The secret used to verify the webhook signature",
-		required_error:
+	.string()
+	.describe("The secret used to verify the webhook signature")
+	.min(1, {
+		message:
 			"Provide the variable SUPABASE_DB_WEBHOOK_SECRET. This is used to authenticate the webhook event from Supabase.",
 	})
-	.min(1)
 	.parse(process.env.SUPABASE_DB_WEBHOOK_SECRET);
 
 export function createDatabaseWebhookVerifierService() {

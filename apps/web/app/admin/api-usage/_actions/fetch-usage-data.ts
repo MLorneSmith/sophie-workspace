@@ -164,9 +164,9 @@ function processLogsToStats(logs: AiRequestLog[]): UsageStats {
 	const usageByDay = groupByDay(logs);
 
 	const usageByModel = groupByField(logs, "model");
-	// @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
+	// @ts-expect-error - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
 	const usageByFeature = groupByField(logs, "feature");
-	// @ts-ignore - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
+	// @ts-expect-error - Ignoring this specific error as the type definition seems correct but the compiler is reporting an issue in this environment
 	const userUsageMap = groupByField(logs, "user_id");
 
 	// Convert user usage to sorted array

@@ -20,41 +20,39 @@ export const PaymentTypeSchema = z.enum(["one-time", "recurring"]);
 export const LineItemSchema = z
 	.object({
 		id: z
-			.string({
-				description:
-					"Unique identifier for the line item. Defined by the Provider.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe(
+				"Unique identifier for the line item. Defined by the Provider.",
+			),
 		name: z
-			.string({
-				description: "Name of the line item. Displayed to the user.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Name of the line item. Displayed to the user."),
 		description: z
-			.string({
-				description:
-					"Description of the line item. Displayed to the user and will replace the auto-generated description inferred" +
+			.string()
+			.describe(
+				"Description of the line item. Displayed to the user and will replace the auto-generated description inferred" +
 					" from the line item. This is useful if you want to provide a more detailed description to the user.",
-			})
+			)
 			.optional(),
 		cost: z
-			.number({
-				description: "Cost of the line item. Displayed to the user.",
-			})
-			.min(0),
+			.number()
+			.min(0)
+			.describe("Cost of the line item. Displayed to the user."),
 		type: LineItemTypeSchema,
 		unit: z
-			.string({
-				description:
-					'Unit of the line item. Displayed to the user. Example "seat" or "GB"',
-			})
+			.string()
+			.describe(
+				'Unit of the line item. Displayed to the user. Example "seat" or "GB"',
+			)
 			.optional(),
 		setupFee: z
-			.number({
-				description:
-					"Lemon Squeezy only: If true, in addition to the cost, a setup fee will be charged.",
-			})
+			.number()
 			.positive()
+			.describe(
+				"Lemon Squeezy only: If true, in addition to the cost, a setup fee will be charged.",
+			)
 			.optional(),
 		tiers: z
 			.array(
@@ -92,15 +90,13 @@ export const LineItemSchema = z
 export const PlanSchema = z
 	.object({
 		id: z
-			.string({
-				description: "Unique identifier for the plan. Defined by yourself.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Unique identifier for the plan. Defined by yourself."),
 		name: z
-			.string({
-				description: "Name of the plan. Displayed to the user.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Name of the plan. Displayed to the user."),
 		interval: _BillingIntervalSchema.optional(),
 		custom: z.boolean().default(false).optional(),
 		label: z.string().min(1).optional(),
@@ -124,11 +120,11 @@ export const PlanSchema = z
 			},
 		),
 		trialDays: z
-			.number({
-				description:
-					"Number of days for the trial period. Leave empty for no trial.",
-			})
+			.number()
 			.positive()
+			.describe(
+				"Number of days for the trial period. Leave empty for no trial.",
+			)
 			.optional(),
 		paymentType: PaymentTypeSchema,
 	})
@@ -209,54 +205,44 @@ export const PlanSchema = z
 const ProductSchema = z
 	.object({
 		id: z
-			.string({
-				description:
-					"Unique identifier for the product. Defined by th Provider.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Unique identifier for the product. Defined by th Provider."),
 		name: z
-			.string({
-				description: "Name of the product. Displayed to the user.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Name of the product. Displayed to the user."),
 		description: z
-			.string({
-				description: "Description of the product. Displayed to the user.",
-			})
-			.min(1),
+			.string()
+			.min(1)
+			.describe("Description of the product. Displayed to the user."),
 		currency: z
-			.string({
-				description: "Currency code for the product. Displayed to the user.",
-			})
+			.string()
 			.min(3)
-			.max(3),
+			.max(3)
+			.describe("Currency code for the product. Displayed to the user."),
 		badge: z
-			.string({
-				description:
-					'Badge for the product. Displayed to the user. Example: "Popular"',
-			})
+			.string()
+			.describe(
+				'Badge for the product. Displayed to the user. Example: "Popular"',
+			)
 			.optional(),
 		features: z
 			.array(
-				z.string({
-					description: "Features of the product. Displayed to the user.",
-				}),
+				z.string().describe("Features of the product. Displayed to the user."),
 			)
 			.nonempty(),
 		enableDiscountField: z
-			.boolean({
-				description: "Enable discount field for the product in the checkout.",
-			})
+			.boolean()
+			.describe("Enable discount field for the product in the checkout.")
 			.optional(),
 		highlighted: z
-			.boolean({
-				description: "Highlight this product. Displayed to the user.",
-			})
+			.boolean()
+			.describe("Highlight this product. Displayed to the user.")
 			.optional(),
 		hidden: z
-			.boolean({
-				description: "Hide this product from being displayed to users.",
-			})
+			.boolean()
+			.describe("Hide this product from being displayed to users.")
 			.optional(),
 		plans: z.array(PlanSchema),
 	})

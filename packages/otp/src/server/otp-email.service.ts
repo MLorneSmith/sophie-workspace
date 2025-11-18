@@ -4,17 +4,13 @@ import { getLogger } from "@kit/shared/logger";
 import { z } from "zod";
 
 const EMAIL_SENDER = z
-	.string({
-		required_error: "EMAIL_SENDER is required",
-	})
-	.min(1)
+	.string()
+	.min(1, { message: "EMAIL_SENDER is required" })
 	.parse(process.env.EMAIL_SENDER);
 
 const PRODUCT_NAME = z
-	.string({
-		required_error: "PRODUCT_NAME is required",
-	})
-	.min(1)
+	.string()
+	.min(1, { message: "PRODUCT_NAME is required" })
 	.parse(process.env.NEXT_PUBLIC_PRODUCT_NAME);
 
 /**

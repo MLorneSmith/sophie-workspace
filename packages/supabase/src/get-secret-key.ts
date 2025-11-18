@@ -12,9 +12,7 @@ const message =
  */
 export function getSupabaseSecretKey() {
 	return z
-		.string({
-			required_error: message,
-		})
+		.string()
 		.min(1, {
 			message: message,
 		})

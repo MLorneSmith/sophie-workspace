@@ -6,10 +6,8 @@ import { z } from "zod";
 type Config = z.infer<typeof MailerSchema>;
 
 const RESEND_API_KEY = z
-	.string({
-		description: "The API key for the Resend API",
-		required_error: "Please provide the API key for the Resend API",
-	})
+	.string()
+	.describe("The API key for the Resend API")
 	.parse(process.env.RESEND_API_KEY);
 
 export function createResendMailer() {

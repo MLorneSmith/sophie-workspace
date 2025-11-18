@@ -38,7 +38,15 @@ export class AuthPageObject {
 	}
 
 	async signOut() {
-		await this.page.click('[data-test="account-dropdown-trigger"]');
+		// Wait for user session to load and dropdown to be visible
+		// This handles the race condition where navigation completes before
+		// the useUser() hook validates the session from localStorage
+		const dropdownTrigger = this.page.locator(
+			'[data-test="account-dropdown-trigger"]',
+		);
+		await expect(dropdownTrigger).toBeVisible({ timeout: 15000 });
+
+		await dropdownTrigger.click();
 		await this.page.click('[data-test="account-dropdown-sign-out"]');
 	}
 

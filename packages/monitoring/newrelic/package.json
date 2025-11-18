@@ -15,15 +15,15 @@
 		"format": "prettier --write \"src/**/*.{ts,tsx,md}\""
 	},
 	"dependencies": {
-		"@hookform/resolvers": "5.2.1",
+		"@hookform/resolvers": "5.2.2",
 		"@kit/monitoring-core": "workspace:*",
 		"@kit/shared": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/node": "^24.6.2",
-		"newrelic": "^13.4.0",
+		"@types/node": "^24.10.1",
+		"newrelic": "^13.6.5",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.3"
+		"vitest": "^4.0.10"
 	},
 	"peerDependencies": {
 		"newrelic": "^13.0.0"
