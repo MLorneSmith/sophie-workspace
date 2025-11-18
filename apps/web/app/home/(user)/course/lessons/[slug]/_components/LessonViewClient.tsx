@@ -412,483 +412,469 @@ export function LessonViewClient({
 	const isCongratulationsLesson = lesson.lesson_number === "801";
 
 	return (
-		<>
-			<div className="container mx-auto max-w-4xl p-4">
-				{/* Lesson content */}
-				<Card className="mb-6">
-					<CardHeader>
-						<CardTitle>{lesson.title}</CardTitle>
-						<div className="text-muted-foreground text-sm">
-							{lesson.estimated_duration || 0} minutes
-						</div>
-					</CardHeader>
-					<CardContent>
-						{showSurvey && survey ? (
-							<SurveyComponent
-								survey={survey}
-								surveyResponses={surveyResponses}
-								userId={userId}
-								onComplete={() => {
-									setSurveyCompleted(true);
-									setShowSurvey(false);
-									// Mark lesson as completed when survey is completed
-									markLessonAsCompleted();
-								}}
+		<div className="container mx-auto max-w-4xl p-4">
+			{/* Lesson content */}
+			<Card className="mb-6">
+				<CardHeader>
+					<CardTitle>{lesson.title}</CardTitle>
+					<div className="text-muted-foreground text-sm">
+						{lesson.estimated_duration || 0} minutes
+					</div>
+				</CardHeader>
+				<CardContent>
+					{showSurvey && survey ? (
+						<SurveyComponent
+							survey={survey}
+							surveyResponses={surveyResponses}
+							userId={userId}
+							onComplete={() => {
+								setSurveyCompleted(true);
+								setShowSurvey(false);
+								// Mark lesson as completed when survey is completed
+								markLessonAsCompleted();
+							}}
+						/>
+					) : showQuiz ? (
+						quiz && (
+							<QuizComponent
+								quiz={quiz}
+								onSubmit={(answers, score, passed) =>
+									handleQuizSubmit(
+										answers as Record<string, string | string[] | boolean>,
+										score,
+										passed,
+									)
+								}
+								previousAttempts={quizAttempts.map((attempt) => ({
+									id: attempt.id,
+									score: attempt.score || 0,
+									passed: attempt.passed || false,
+									answers: attempt.answers as Record<string, unknown>,
+									created_at: attempt.started_at || "",
+								}))}
+								courseId={courseId}
+								currentLessonId={lesson.id}
+								currentLessonNumber={
+									typeof lesson.lesson_number === "number"
+										? lesson.lesson_number
+										: Number(lesson.lesson_number) || 0
+								}
 							/>
-						) : showQuiz ? (
-							quiz && (
-								<QuizComponent
-									quiz={quiz}
-									onSubmit={(answers, score, passed) =>
-										handleQuizSubmit(
-											answers as Record<string, string | string[] | boolean>,
-											score,
-											passed,
-										)
-									}
-									previousAttempts={quizAttempts.map((attempt) => ({
-										id: attempt.id,
-										score: attempt.score || 0,
-										passed: attempt.passed || false,
-										answers: attempt.answers as Record<string, unknown>,
-										created_at: attempt.started_at || "",
-									}))}
-									courseId={courseId}
-									currentLessonId={lesson.id}
-									currentLessonNumber={
-										typeof lesson.lesson_number === "number"
-											? lesson.lesson_number
-											: Number(lesson.lesson_number) || 0
-									}
-								/>
-							)
-						) : (
-							<>
-								{/* Render Bunny.net Video if available */}
-								{lesson.bunny_video_id && (
-									<div className="my-8">
-										<div
-											className="relative"
-											style={{ paddingBottom: "56.25%" }}
-										>
-											<iframe
-												src={`https://iframe.mediadelivery.net/embed/${lesson.bunny_library_id || "264486"}/${lesson.bunny_video_id}`}
-												loading="lazy"
-												style={{
-													border: "none",
-													position: "absolute",
-													top: 0,
-													left: 0,
-													height: "100%",
-													width: "100%",
-												}}
-												allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
-												allowFullScreen={true}
-												title={lesson.title}
-											/>
-										</div>
+						)
+					) : (
+						<>
+							{/* Render Bunny.net Video if available */}
+							{lesson.bunny_video_id && (
+								<div className="my-8">
+									<div className="relative" style={{ paddingBottom: "56.25%" }}>
+										<iframe
+											src={`https://iframe.mediadelivery.net/embed/${lesson.bunny_library_id || "264486"}/${lesson.bunny_video_id}`}
+											loading="lazy"
+											style={{
+												border: "none",
+												position: "absolute",
+												top: 0,
+												left: 0,
+												height: "100%",
+												width: "100%",
+											}}
+											allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
+											allowFullScreen={true}
+											title={lesson.title}
+										/>
 									</div>
-								)}
-
-								{/* Render External Video if available */}
-								{lesson.youtube_video_id && lesson.video_source_type && (
-									<div className="my-8">
-										<div
-											className="relative"
-											style={{ paddingBottom: "56.25%" }}
-										>
-											<iframe
-												src={
-													lesson.video_source_type === "youtube"
-														? `https://www.youtube.com/embed/${lesson.youtube_video_id}`
-														: `https://player.vimeo.com/video/${lesson.youtube_video_id}`
-												}
-												loading="lazy"
-												style={{
-													border: "none",
-													position: "absolute",
-													top: 0,
-													left: 0,
-													height: "100%",
-													width: "100%",
-												}}
-												allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
-												allowFullScreen={true}
-												title="External Video"
-											/>
-										</div>
-									</div>
-								)}
-
-								{/* Render To-Do Items if any exist */}
-								{(lesson.todo ||
-									lesson.todo_complete_quiz ||
-									lesson.todo_watch_content ||
-									lesson.todo_read_content ||
-									lesson.todo_course_project) && (
-									<div className="my-6">
-										{/* General To-Do (first position) */}
-										{lesson.todo && (
-											<div className="mb-4 flex items-start">
-												<CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
-												<div>
-													<span className="font-medium">To-Do: </span>
-													<span className="prose prose-sm dark:prose-invert inline">
-														<PayloadContentRenderer content={lesson.todo} />
-													</span>
-												</div>
-											</div>
-										)}
-
-										{/* Watch Content (second position) */}
-										{lesson.todo_watch_content && (
-											<div className="mb-4 flex items-start">
-												<Play className="text-primary mt-0.5 mr-2 h-5 w-5" />
-												<div>
-													<span className="font-medium">Watch: </span>
-													<span className="prose prose-sm dark:prose-invert inline">
-														<PayloadContentRenderer
-															content={lesson.todo_watch_content}
-														/>
-													</span>
-												</div>
-											</div>
-										)}
-
-										{/* Read Content (third position) */}
-										{lesson.todo_read_content && (
-											<div className="mb-4 flex items-start">
-												<BookOpen className="text-primary mt-0.5 mr-2 h-5 w-5" />
-												<div>
-													<span className="font-medium">Read: </span>
-													<span className="prose prose-sm dark:prose-invert inline">
-														<PayloadContentRenderer
-															content={lesson.todo_read_content}
-														/>
-													</span>
-												</div>
-											</div>
-										)}
-
-										{/* Course Project (fourth position) */}
-										{lesson.todo_course_project && (
-											<div className="mb-4 flex items-start">
-												<Briefcase className="text-primary mt-0.5 mr-2 h-5 w-5" />
-												<div>
-													<span className="font-medium">Course Project: </span>
-													<span className="prose prose-sm dark:prose-invert inline">
-														<PayloadContentRenderer
-															content={lesson.todo_course_project}
-														/>
-													</span>
-												</div>
-											</div>
-										)}
-
-										{/* Test Yourself: Complete Quiz (fifth position, renamed from To-Do: Complete Quiz) */}
-										{lesson.todo_complete_quiz && (
-											<div className="mb-4 flex items-start">
-												<CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
-												<div>
-													<span className="font-medium">Test Yourself: </span>
-													<span>Complete the lesson quiz</span>
-												</div>
-											</div>
-										)}
-									</div>
-								)}
-
-								{/* Main content */}
-								<div className="prose prose-sm dark:prose-invert max-w-none">
-									<PayloadContentRenderer content={lesson.content as unknown} />
 								</div>
+							)}
 
-								{/* Render Downloads with better error handling and diagnostics */}
-								{(() => {
-									// Debug logging in development
-									if (process.env.NODE_ENV === "development") {
-										logger.info("Lesson downloads:", {
-											data: lesson.downloads
-												? `${lesson.downloads.length} items`
-												: "undefined",
+							{/* Render External Video if available */}
+							{lesson.youtube_video_id && lesson.video_source_type && (
+								<div className="my-8">
+									<div className="relative" style={{ paddingBottom: "56.25%" }}>
+										<iframe
+											src={
+												lesson.video_source_type === "youtube"
+													? `https://www.youtube.com/embed/${lesson.youtube_video_id}`
+													: `https://player.vimeo.com/video/${lesson.youtube_video_id}`
+											}
+											loading="lazy"
+											style={{
+												border: "none",
+												position: "absolute",
+												top: 0,
+												left: 0,
+												height: "100%",
+												width: "100%",
+											}}
+											allow="accelerometer; gyroscope; encrypted-media; picture-in-picture;"
+											allowFullScreen={true}
+											title="External Video"
+										/>
+									</div>
+								</div>
+							)}
+
+							{/* Render To-Do Items if any exist */}
+							{(lesson.todo ||
+								lesson.todo_complete_quiz ||
+								lesson.todo_watch_content ||
+								lesson.todo_read_content ||
+								lesson.todo_course_project) && (
+								<div className="my-6">
+									{/* General To-Do (first position) */}
+									{lesson.todo && (
+										<div className="mb-4 flex items-start">
+											<CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
+											<div>
+												<span className="font-medium">To-Do: </span>
+												<span className="prose prose-sm dark:prose-invert inline">
+													<PayloadContentRenderer content={lesson.todo} />
+												</span>
+											</div>
+										</div>
+									)}
+
+									{/* Watch Content (second position) */}
+									{lesson.todo_watch_content && (
+										<div className="mb-4 flex items-start">
+											<Play className="text-primary mt-0.5 mr-2 h-5 w-5" />
+											<div>
+												<span className="font-medium">Watch: </span>
+												<span className="prose prose-sm dark:prose-invert inline">
+													<PayloadContentRenderer
+														content={lesson.todo_watch_content}
+													/>
+												</span>
+											</div>
+										</div>
+									)}
+
+									{/* Read Content (third position) */}
+									{lesson.todo_read_content && (
+										<div className="mb-4 flex items-start">
+											<BookOpen className="text-primary mt-0.5 mr-2 h-5 w-5" />
+											<div>
+												<span className="font-medium">Read: </span>
+												<span className="prose prose-sm dark:prose-invert inline">
+													<PayloadContentRenderer
+														content={lesson.todo_read_content}
+													/>
+												</span>
+											</div>
+										</div>
+									)}
+
+									{/* Course Project (fourth position) */}
+									{lesson.todo_course_project && (
+										<div className="mb-4 flex items-start">
+											<Briefcase className="text-primary mt-0.5 mr-2 h-5 w-5" />
+											<div>
+												<span className="font-medium">Course Project: </span>
+												<span className="prose prose-sm dark:prose-invert inline">
+													<PayloadContentRenderer
+														content={lesson.todo_course_project}
+													/>
+												</span>
+											</div>
+										</div>
+									)}
+
+									{/* Test Yourself: Complete Quiz (fifth position, renamed from To-Do: Complete Quiz) */}
+									{lesson.todo_complete_quiz && (
+										<div className="mb-4 flex items-start">
+											<CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
+											<div>
+												<span className="font-medium">Test Yourself: </span>
+												<span>Complete the lesson quiz</span>
+											</div>
+										</div>
+									)}
+								</div>
+							)}
+
+							{/* Main content */}
+							<div className="prose prose-sm dark:prose-invert max-w-none">
+								<PayloadContentRenderer content={lesson.content as unknown} />
+							</div>
+
+							{/* Render Downloads with better error handling and diagnostics */}
+							{(() => {
+								// Debug logging in development
+								if (process.env.NODE_ENV === "development") {
+									logger.info("Lesson downloads:", {
+										data: lesson.downloads
+											? `${lesson.downloads.length} items`
+											: "undefined",
+									});
+
+									if (lesson.downloads && lesson.downloads.length > 0) {
+										logger.info("Downloads found for lesson", {
+											lessonId: lesson.id,
+											downloadCount: lesson.downloads.length,
 										});
-
-										if (lesson.downloads && lesson.downloads.length > 0) {
-											logger.info("Downloads found for lesson", {
-												lessonId: lesson.id,
-												downloadCount: lesson.downloads.length,
-											});
-										}
 									}
+								}
 
-									// If downloads exist and are in the expected format
-									if (
-										lesson.downloads &&
-										Array.isArray(lesson.downloads) &&
-										lesson.downloads.length > 0
-									) {
-										return (
-											<div className="my-6">
-												<div className="space-y-2">
-													{lesson.downloads.map(
-														(download: Download, index: number) => {
-															// Additional validation
-															if (!download) {
-																logger.warn("Empty download object found", {
-																	lessonId: lesson.id,
-																	downloadIndex: index,
-																});
-																return null;
-															}
+								// If downloads exist and are in the expected format
+								if (
+									lesson.downloads &&
+									Array.isArray(lesson.downloads) &&
+									lesson.downloads.length > 0
+								) {
+									return (
+										<div className="my-6">
+											<div className="space-y-2">
+												{lesson.downloads.map(
+													(download: Download, index: number) => {
+														// Additional validation
+														if (!download) {
+															logger.warn("Empty download object found", {
+																lessonId: lesson.id,
+																downloadIndex: index,
+															});
+															return null;
+														}
 
-															if (!download.url) {
-																logger.warn("Download missing URL", {
-																	lessonId: lesson.id,
-																	downloadIndex: index,
-																	downloadTitle: download.title,
-																	downloadFilename: download.filename,
-																});
+														if (!download.url) {
+															logger.warn("Download missing URL", {
+																lessonId: lesson.id,
+																downloadIndex: index,
+																downloadTitle: download.title,
+																downloadFilename: download.filename,
+															});
 
-																// Fallback rendering for downloads without URL
-																if (download.filename || download.description) {
-																	return (
-																		<div
-																			key={`download-${lesson.id}-${index}-${download.filename || index}`}
-																			className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
-																		>
-																			<div className="flex-grow">
-																				<p className="font-medium">
-																					{download.description ||
-																						download.filename}
-																				</p>
-																			</div>
-																			<span className="text-sm text-gray-500 italic">
-																				(Download URL not available)
-																			</span>
-																		</div>
-																	);
-																}
-
-																return null;
-															}
-
-															// Special handling for ZIP files
-															const isZipFile =
-																download.mimeType === "application/zip" ||
-																download.filename
-																	?.toLowerCase()
-																	.endsWith(".zip");
-
-															const isPdfFile =
-																download.mimeType === "application/pdf" ||
-																download.filename
-																	?.toLowerCase()
-																	.endsWith(".pdf");
-
-															// Get file size in human-readable format
-															const getFileSize = (bytes?: number) => {
-																if (!bytes) return "";
-																const sizes = ["Bytes", "KB", "MB", "GB"];
-																if (bytes === 0) return "0 Byte";
-																const i = Math.floor(
-																	Math.log(bytes) / Math.log(1024),
-																);
-																return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
-															};
-
-															const fileSize = getFileSize(download.filesize);
-
-															return (
-																<div
-																	key={`download-${lesson.id}-${index}-${download.url || download.filename || index}`}
-																	className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
-																>
-																	<div className="flex items-center justify-between">
+															// Fallback rendering for downloads without URL
+															if (download.filename || download.description) {
+																return (
+																	<div
+																		key={`download-${lesson.id}-${index}-${download.filename || index}`}
+																		className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+																	>
 																		<div className="flex-grow">
 																			<p className="font-medium">
-																				{/* Enhanced display logic for download title/filename */}
-																				{download.description &&
-																				download.description !== "null"
-																					? download.description
-																					: download.title &&
-																							download.title !== "null"
-																						? download.title
-																						: download.filename
-																							? download.filename.replace(
-																									/\.(pdf|zip)$/i,
-																									"",
-																								)
-																							: "Download"}
-																			</p>
-																			{/* Show file type and size info */}
-																			<p className="text-muted-foreground mt-0.5 text-xs">
-																				{isZipFile && "ZIP Archive"}
-																				{isPdfFile && "PDF Document"}
-																				{fileSize && ` • ${fileSize}`}
+																				{download.description ||
+																					download.filename}
 																			</p>
 																		</div>
-																		<Button
-																			asChild
-																			variant="default"
-																			size="default"
-																			className="bg-primary text-primary-foreground"
-																		>
-																			<a
-																				href={download.url}
-																				download
-																				target="_blank"
-																				rel="noopener noreferrer"
-																				data-source="lesson-downloads"
-																			>
-																				Download
-																			</a>
-																		</Button>
+																		<span className="text-sm text-gray-500 italic">
+																			(Download URL not available)
+																		</span>
 																	</div>
-																</div>
+																);
+															}
+
+															return null;
+														}
+
+														// Special handling for ZIP files
+														const isZipFile =
+															download.mimeType === "application/zip" ||
+															download.filename?.toLowerCase().endsWith(".zip");
+
+														const isPdfFile =
+															download.mimeType === "application/pdf" ||
+															download.filename?.toLowerCase().endsWith(".pdf");
+
+														// Get file size in human-readable format
+														const getFileSize = (bytes?: number) => {
+															if (!bytes) return "";
+															const sizes = ["Bytes", "KB", "MB", "GB"];
+															if (bytes === 0) return "0 Byte";
+															const i = Math.floor(
+																Math.log(bytes) / Math.log(1024),
 															);
-														},
-													)}
-												</div>
+															return `${Math.round(bytes / 1024 ** i)} ${sizes[i]}`;
+														};
+
+														const fileSize = getFileSize(download.filesize);
+
+														return (
+															<div
+																key={`download-${lesson.id}-${index}-${download.url || download.filename || index}`}
+																className="flex flex-col rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+															>
+																<div className="flex items-center justify-between">
+																	<div className="flex-grow">
+																		<p className="font-medium">
+																			{/* Enhanced display logic for download title/filename */}
+																			{download.description &&
+																			download.description !== "null"
+																				? download.description
+																				: download.title &&
+																						download.title !== "null"
+																					? download.title
+																					: download.filename
+																						? download.filename.replace(
+																								/\.(pdf|zip)$/i,
+																								"",
+																							)
+																						: "Download"}
+																		</p>
+																		{/* Show file type and size info */}
+																		<p className="text-muted-foreground mt-0.5 text-xs">
+																			{isZipFile && "ZIP Archive"}
+																			{isPdfFile && "PDF Document"}
+																			{fileSize && ` • ${fileSize}`}
+																		</p>
+																	</div>
+																	<Button
+																		asChild
+																		variant="default"
+																		size="default"
+																		className="bg-primary text-primary-foreground"
+																	>
+																		<a
+																			href={download.url}
+																			download
+																			target="_blank"
+																			rel="noopener noreferrer"
+																			data-source="lesson-downloads"
+																		>
+																			Download
+																		</a>
+																	</Button>
+																</div>
+															</div>
+														);
+													},
+												)}
+											</div>
+										</div>
+									);
+								}
+
+								// Fallback for template tags if no downloads relationship but content has r2file tags
+								if (
+									lesson.content &&
+									typeof lesson.content === "string" &&
+									lesson.content.includes("{%") &&
+									lesson.content.includes("r2file")
+								) {
+									logger.info("Processing template tag downloads", {
+										lessonId: lesson.id,
+										contentLength: lesson.content.length,
+									});
+
+									// Extract download section from content
+									const downloadSection = lesson.content.match(
+										/### Lesson Downloads[\s\S]*?(?=###|$)/,
+									);
+
+									if (downloadSection?.[0]) {
+										// If we found a download section, use our custom processor to render it
+										return (
+											<div className="my-6">
+												<div
+													className="template-downloads"
+													// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags
+													dangerouslySetInnerHTML={{
+														__html: processR2FileTags(downloadSection[0]),
+													}}
+												/>
 											</div>
 										);
 									}
+								}
 
-									// Fallback for template tags if no downloads relationship but content has r2file tags
-									if (
-										lesson.content &&
-										typeof lesson.content === "string" &&
-										lesson.content.includes("{%") &&
-										lesson.content.includes("r2file")
-									) {
-										logger.info("Processing template tag downloads", {
-											lessonId: lesson.id,
-											contentLength: lesson.content.length,
-										});
+								return null;
+							})()}
 
-										// Extract download section from content
-										const downloadSection = lesson.content.match(
-											/### Lesson Downloads[\s\S]*?(?=###|$)/,
-										);
-
-										if (downloadSection?.[0]) {
-											// If we found a download section, use our custom processor to render it
-											return (
-												<div className="my-6">
-													<div
-														className="template-downloads"
-														// biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering trusted course content with processed template tags
-														dangerouslySetInnerHTML={{
-															__html: processR2FileTags(downloadSection[0]),
-														}}
-													/>
-												</div>
-											);
-										}
-									}
-
-									return null;
-								})()}
-
-								{/* Certificate link for congratulations lesson */}
-								{isCongratulationsLesson && (
-									<div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
-										<h2 className="text-xl font-bold text-green-800 dark:text-green-300">
-											Congratulations on completing the course! 🎉
-										</h2>
-										<p className="mt-2 text-green-700 dark:text-green-400">
-											You've successfully completed all lessons in the course.
-											Your certificate of completion is ready.
-										</p>
-										<div className="mt-4 flex justify-end">
-											<Link href="/home/course/certificate">
-												<Button className="bg-green-600 hover:bg-green-700">
-													View Certificate
-												</Button>
-											</Link>
-										</div>
+							{/* Certificate link for congratulations lesson */}
+							{isCongratulationsLesson && (
+								<div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 shadow-sm dark:border-green-800 dark:bg-green-900/50">
+									<h2 className="text-xl font-bold text-green-800 dark:text-green-300">
+										Congratulations on completing the course! 🎉
+									</h2>
+									<p className="mt-2 text-green-700 dark:text-green-400">
+										You've successfully completed all lessons in the course.
+										Your certificate of completion is ready.
+									</p>
+									<div className="mt-4 flex justify-end">
+										<Link href="/home/course/certificate">
+											<Button className="bg-green-600 hover:bg-green-700">
+												View Certificate
+											</Button>
+										</Link>
 									</div>
-								)}
-							</>
-						)}
-					</CardContent>
-					<CardFooter className="flex justify-between">
-						<Link href="/home/course">
-							<Button variant="outline">
-								<ChevronLeft className="mr-2 h-4 w-4" />
-								Back to Course
+								</div>
+							)}
+						</>
+					)}
+				</CardContent>
+				<CardFooter className="flex justify-between">
+					<Link href="/home/course">
+						<Button variant="outline">
+							<ChevronLeft className="mr-2 h-4 w-4" />
+							Back to Course
+						</Button>
+					</Link>
+
+					<div className="flex gap-2">
+						{/* Survey Button */}
+						{!showSurvey && !showQuiz && hasSurvey && !surveyCompleted && (
+							<Button
+								onClick={() => {
+									markLessonAsViewed();
+									setShowSurvey(true);
+								}}
+								disabled={isPending}
+								className="bg-blue-600 hover:bg-blue-700"
+							>
+								Take Survey
+								<ChevronRight className="ml-2 h-4 w-4" />
 							</Button>
-						</Link>
+						)}
 
-						<div className="flex gap-2">
-							{/* Survey Button */}
-							{!showSurvey && !showQuiz && hasSurvey && !surveyCompleted && (
-								<Button
-									onClick={() => {
-										markLessonAsViewed();
-										setShowSurvey(true);
-									}}
-									disabled={isPending}
-									className="bg-blue-600 hover:bg-blue-700"
-								>
-									Take Survey
-									<ChevronRight className="ml-2 h-4 w-4" />
-								</Button>
-							)}
+						{/* Quiz Button */}
+						{!showSurvey && !showQuiz && hasQuiz && !quizCompleted && (
+							<Button
+								onClick={() => {
+									markLessonAsViewed();
+									setShowQuiz(true);
+								}}
+								disabled={isPending}
+							>
+								Take Quiz
+								<ChevronRight className="ml-2 h-4 w-4" />
+							</Button>
+						)}
 
-							{/* Quiz Button */}
-							{!showSurvey && !showQuiz && hasQuiz && !quizCompleted && (
-								<Button
-									onClick={() => {
-										markLessonAsViewed();
-										setShowQuiz(true);
-									}}
-									disabled={isPending}
-								>
-									Take Quiz
-									<ChevronRight className="ml-2 h-4 w-4" />
-								</Button>
-							)}
-
-							{/* Mark as Completed Button */}
-							{!showSurvey &&
-								!showQuiz &&
-								(!hasQuiz || quizCompleted) &&
-								(!hasSurvey || surveyCompleted) &&
-								(isCompleted ? (
-									<>
-										<Button
-											disabled={true}
-											className="mr-2 bg-green-600 hover:bg-green-700"
-										>
-											Completed
-											<CheckCircle className="ml-2 h-4 w-4 text-green-200" />
-										</Button>
-										{/* Next Lesson Button - only show if lesson is completed */}
-										<Button onClick={navigateToNextLesson}>
-											Next Lesson
-											<ChevronRight className="ml-2 h-4 w-4" />
-										</Button>
-									</>
-								) : (
+						{/* Mark as Completed Button */}
+						{!showSurvey &&
+							!showQuiz &&
+							(!hasQuiz || quizCompleted) &&
+							(!hasSurvey || surveyCompleted) &&
+							(isCompleted ? (
+								<>
 									<Button
-										onClick={markLessonAsCompleted}
-										disabled={isPending || isMarkingCompleted}
-										className={
-											isMarkingCompleted
-												? "bg-green-600 hover:bg-green-700"
-												: ""
-										}
+										disabled={true}
+										className="mr-2 bg-green-600 hover:bg-green-700"
 									>
-										{isMarkingCompleted ? "Marking..." : "Mark as Completed"}
-										<CheckCircle
-											className={`ml-2 h-4 w-4 ${isMarkingCompleted ? "text-green-200" : ""}`}
-										/>
+										Completed
+										<CheckCircle className="ml-2 h-4 w-4 text-green-200" />
 									</Button>
-								))}
-						</div>
-					</CardFooter>
-				</Card>
-			</div>
-		</>
+									{/* Next Lesson Button - only show if lesson is completed */}
+									<Button onClick={navigateToNextLesson}>
+										Next Lesson
+										<ChevronRight className="ml-2 h-4 w-4" />
+									</Button>
+								</>
+							) : (
+								<Button
+									onClick={markLessonAsCompleted}
+									disabled={isPending || isMarkingCompleted}
+									className={
+										isMarkingCompleted ? "bg-green-600 hover:bg-green-700" : ""
+									}
+								>
+									{isMarkingCompleted ? "Marking..." : "Mark as Completed"}
+									<CheckCircle
+										className={`ml-2 h-4 w-4 ${isMarkingCompleted ? "text-green-200" : ""}`}
+									/>
+								</Button>
+							))}
+					</div>
+				</CardFooter>
+			</Card>
+		</div>
 	);
 }

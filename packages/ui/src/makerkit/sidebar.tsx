@@ -370,7 +370,12 @@ export function _SidebarNavigation({
 									return (
 										<SidebarItem
 											key={child.path}
-											end={child.end}
+											end={
+												child.end as
+													| boolean
+													| ((path: string) => boolean)
+													| undefined
+											}
 											path={child.path}
 											Icon={child.Icon}
 										>
@@ -378,10 +383,14 @@ export function _SidebarNavigation({
 										</SidebarItem>
 									);
 								}
+
+								return null;
 							})}
 						</SidebarGroup>
 					);
 				}
+
+				return null;
 			})}
 		</>
 	);

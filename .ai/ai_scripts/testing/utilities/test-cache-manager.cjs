@@ -533,7 +533,7 @@ async function main() {
 
 		case "prune": {
 			// Prune old entries
-			const days = parseInt(args[1]) || 7;
+			const days = parseInt(args[1], 10) || 7;
 			const _pruned = await manager.pruneCache(days);
 			break;
 		}
@@ -547,7 +547,7 @@ async function main() {
 
 		case "set-validity": {
 			// Set cache validity period
-			const minutes = parseInt(args[1]) || 5;
+			const minutes = parseInt(args[1], 10) || 5;
 			manager.cacheValidityMinutes = minutes;
 			await manager.saveCache();
 			break;

@@ -226,11 +226,9 @@ function TextTestimonial({
 	);
 
 	return (
-		<>
-			<If condition={externalLink} fallback={Text}>
-				{(link) => <ExternalLink link={link}>{Text}</ExternalLink>}
-			</If>
-		</>
+		<If condition={externalLink} fallback={Text}>
+			{(link) => <ExternalLink link={link}>{Text}</ExternalLink>}
+		</If>
 	);
 }
 

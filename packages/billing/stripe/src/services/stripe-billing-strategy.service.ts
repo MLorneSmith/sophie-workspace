@@ -29,6 +29,7 @@ export class StripeBillingStrategyService
 	implements BillingStrategyProviderService
 {
 	private readonly namespace = "billing.stripe";
+	private readonly provider = "stripe" as const;
 
 	/**
 	 * @name createCheckoutSession

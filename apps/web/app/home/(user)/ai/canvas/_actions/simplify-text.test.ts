@@ -76,8 +76,11 @@ describe("simplifyTextAction", () => {
 
 		// Setup default mock returns
 		vi.mocked(createReasoningOptimizedConfig).mockReturnValue({
-			model: "gpt-4",
-			temperature: 0.7,
+			provider: "openai",
+			override_params: {
+				model: "gpt-4",
+				temperature: 0.7,
+			},
 		});
 
 		vi.mocked(PromptManager.compileTemplate).mockImplementation(

@@ -43,6 +43,7 @@ export function loadTestEnv(): void {
 
 	if (missingVars.length > 0) {
 		console.error("❌ Missing required environment variables in .env.test:");
+		// biome-ignore lint/suspicious/useIterableCallbackReturn: console.error() doesn't return a value, false positive
 		missingVars.forEach((varName) => console.error(`  - ${varName}`));
 		process.exit(1);
 	}

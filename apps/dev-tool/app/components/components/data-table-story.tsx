@@ -469,7 +469,9 @@ export function DataTableStory() {
 				<Label htmlFor="dataCount">Data Count</Label>
 				<SimpleStorySelect
 					value={controls.dataCount.toString()}
-					onValueChange={(value) => updateControl("dataCount", parseInt(value))}
+					onValueChange={(value) =>
+						updateControl("dataCount", parseInt(value, 10))
+					}
 					options={[
 						{ value: "10", label: "10 records", description: "Small dataset" },
 						{ value: "25", label: "25 records", description: "Medium dataset" },
@@ -491,7 +493,9 @@ export function DataTableStory() {
 				<Label htmlFor="pageSize">Page Size</Label>
 				<SimpleStorySelect
 					value={controls.pageSize.toString()}
-					onValueChange={(value) => updateControl("pageSize", parseInt(value))}
+					onValueChange={(value) =>
+						updateControl("pageSize", parseInt(value, 10))
+					}
 					options={[
 						{ value: "5", label: "5 per page", description: "Compact view" },
 						{ value: "10", label: "10 per page", description: "Standard view" },

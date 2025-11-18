@@ -443,7 +443,7 @@ export class HybridAccessibilityTester {
 			let lastLevel = 0;
 
 			for (const heading of Array.from(headings)) {
-				const level = Number.parseInt(heading.tagName.charAt(1));
+				const level = Number.parseInt(heading.tagName.charAt(1), 10);
 				if (level - lastLevel > 1) {
 					issues.push({
 						html: heading.outerHTML.substring(0, 100),
@@ -511,9 +511,9 @@ export class HybridAccessibilityTester {
 		const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
 		if (rgbMatch) {
 			return {
-				r: Number.parseInt(rgbMatch[1]),
-				g: Number.parseInt(rgbMatch[2]),
-				b: Number.parseInt(rgbMatch[3]),
+				r: Number.parseInt(rgbMatch[1], 10),
+				g: Number.parseInt(rgbMatch[2], 10),
+				b: Number.parseInt(rgbMatch[3], 10),
 			};
 		}
 
@@ -521,9 +521,9 @@ export class HybridAccessibilityTester {
 		const rgbaMatch = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/);
 		if (rgbaMatch) {
 			return {
-				r: Number.parseInt(rgbaMatch[1]),
-				g: Number.parseInt(rgbaMatch[2]),
-				b: Number.parseInt(rgbaMatch[3]),
+				r: Number.parseInt(rgbaMatch[1], 10),
+				g: Number.parseInt(rgbaMatch[2], 10),
+				b: Number.parseInt(rgbaMatch[3], 10),
 			};
 		}
 

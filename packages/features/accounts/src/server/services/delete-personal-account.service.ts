@@ -17,7 +17,7 @@ export function createDeletePersonalAccountService() {
  * const accountsService = new DeletePersonalAccountService();
  */
 class DeletePersonalAccountService {
-	private namespace = "accounts.delete";
+	private readonly namespace = "accounts.delete-personal-account";
 
 	/**
 	 * @name deletePersonalAccount

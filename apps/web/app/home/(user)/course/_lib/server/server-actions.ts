@@ -18,7 +18,8 @@ const _UpdateCourseProgressSchema = z.object({
 	courseId: z.union([z.string(), z.number()]).transform((val) => String(val)),
 	currentLessonId: z
 		.union([z.string(), z.number(), z.undefined()])
-		.transform((val) => (val !== undefined ? String(val) : undefined)),
+		.transform((val) => (val !== undefined ? String(val) : undefined))
+		.optional(),
 	completionPercentage: z.number().min(0).max(100).optional(),
 	completed: z.boolean().optional(),
 });

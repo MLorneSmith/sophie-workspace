@@ -12,7 +12,6 @@ config({ path: envPath, override: true });
 
 // Force NODE_ENV to 'test' BEFORE any other setup
 // This must be set unconditionally to override any system/CI defaults
-// @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
 // biome-ignore lint/suspicious/noExplicitAny: Required for test environment setup
 (process.env as any).NODE_ENV = "test";
 

@@ -65,6 +65,9 @@ export const TeamAccountLayoutMobileNavigation = (
 					<DropdownMenuSeparator key={`nav-divider-${item.divider || index}`} />
 				);
 			}
+
+			// Fallback - should never be reached based on schema
+			return null;
 		},
 	);
 

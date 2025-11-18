@@ -37,31 +37,6 @@ export class NewRelicMonitoringService extends MonitoringService {
 		this.initializeNewRelic();
 	}
 
-	private initializeNewRelic(): void {
-		try {
-			// Check if New Relic is available (it's loaded via -r flag)
-			if (typeof global !== "undefined" && global.newrelic) {
-				this.newrelic = global.newrelic;
-				this.isReady = true;
-			} else if (typeof window === "undefined") {
-				// Server-side: Try to check for New Relic without dynamic imports
-				// New Relic should be loaded via NODE_OPTIONS='-r newrelic' in production
-				// For Edge Runtime compatibility, we cannot use dynamic imports or eval
-				if ("newrelic" in globalThis) {
-					// biome-ignore lint/suspicious/noExplicitAny: globalThis type doesn't include newrelic
-					this.newrelic = (globalThis as any).newrelic as NewRelicAgent;
-					this.isReady = true;
-				} else {
-					this.logger.warn(
-						"New Relic agent not found. Ensure it's loaded via NODE_OPTIONS='-r newrelic'",
-					);
-				}
-			}
-		} catch (error) {
-			this.logger.warn("Failed to initialize New Relic monitoring", { error });
-		}
-	}
-
 	captureException<Extra extends object>(
 		error: Error & { digest?: string },
 		extra?: Extra,
@@ -118,6 +93,27 @@ export class NewRelicMonitoringService extends MonitoringService {
 	async ready(): Promise<boolean> {
 		// New Relic is synchronously loaded, so we can return immediately
 		return Promise.resolve(this.isReady);
+	}
+
+	/**
+	 * Initialize the New Relic agent
+	 * Checks if New Relic is available in the global scope
+	 */
+	private initializeNewRelic(): void {
+		try {
+			// Check if New Relic agent is available
+			if (typeof global !== "undefined" && global.newrelic) {
+				this.newrelic = global.newrelic;
+				this.isReady = true;
+				this.logger.info("New Relic monitoring initialized successfully");
+			} else {
+				this.logger.warn(
+					"New Relic agent not found - monitoring will be disabled",
+				);
+			}
+		} catch (error) {
+			this.logger.error("Failed to initialize New Relic", { error });
+		}
 	}
 
 	/**

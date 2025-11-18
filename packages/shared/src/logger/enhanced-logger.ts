@@ -300,11 +300,11 @@ export class EnhancedLogger {
 
 // Child logger that inherits parent context
 class ChildLogger extends EnhancedLogger {
-	constructor(
-		private parent: EnhancedLogger,
-		private childContext: LogContext,
-	) {
+	private childContext: LogContext;
+
+	constructor(parent: EnhancedLogger, childContext: LogContext) {
 		super(parent.config, parent.monitoring);
+		this.childContext = childContext;
 	}
 
 	protected log(message: string, level: LogLevel, context?: LogContext): void {

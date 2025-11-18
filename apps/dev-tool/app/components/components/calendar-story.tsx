@@ -147,7 +147,7 @@ export default function CalendarStory() {
 					onValueChange={(value: string) =>
 						setControls((prev) => ({
 							...prev,
-							numberOfMonths: parseInt(value),
+							numberOfMonths: parseInt(value, 10),
 						}))
 					}
 				>

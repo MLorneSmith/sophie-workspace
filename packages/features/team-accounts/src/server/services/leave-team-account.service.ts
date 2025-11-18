@@ -21,7 +21,7 @@ export function createLeaveTeamAccountService(
  * @description Service for leaving a team account.
  */
 class LeaveTeamAccountService {
-	private readonly namespace = "leave-team-account";
+	private readonly namespace = "accounts.leave-team-account";
 
 	constructor(private readonly adminClient: SupabaseClient<Database>) {}
 

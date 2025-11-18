@@ -318,6 +318,7 @@ class DatabaseAdapterManager {
 
 		const interval = Number.parseInt(
 			process.env.DB_HEALTH_CHECK_INTERVAL || "30000",
+			10,
 		); // Default 30 seconds
 
 		this.healthCheckInterval = setInterval(async () => {

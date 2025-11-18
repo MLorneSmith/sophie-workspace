@@ -434,27 +434,10 @@ export function QuizComponent({
 							{(currentQuestion?.options || []).map(
 								(option: QuizOption, optionIndex: number) => {
 									return (
-										<div
+										<label
 											key={`${currentQuestionIndex}-multi-${option.text}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
-											// biome-ignore lint/a11y/useSemanticElements: Container with checkbox input inside requires role="button" for proper interaction
-											role="button"
-											tabIndex={0}
-											onClick={() =>
-												handleMultiAnswerSelect(
-													optionIndex,
-													!isOptionSelected(optionIndex),
-												)
-											}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													handleMultiAnswerSelect(
-														optionIndex,
-														!isOptionSelected(optionIndex),
-													);
-												}
-											}}
+											htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}
 										>
 											<Checkbox
 												id={`q${currentQuestionIndex}-o${optionIndex}`}
@@ -470,7 +453,7 @@ export function QuizComponent({
 											>
 												{option.text}
 											</Label>
-										</div>
+										</label>
 									);
 								},
 							)}
@@ -486,26 +469,17 @@ export function QuizComponent({
 									: undefined
 							}
 							onValueChange={(value) =>
-								handleSingleAnswerSelect(Number.parseInt(value))
+								handleSingleAnswerSelect(Number.parseInt(value, 10))
 							}
 							className="space-y-4"
 						>
 							{(currentQuestion?.options || []).map(
 								(option: QuizOption, optionIndex: number) => {
 									return (
-										<div
+										<label
 											key={`${currentQuestionIndex}-single-${option.text}`}
 											className="hover:bg-accent flex cursor-pointer items-start space-x-3 rounded-md p-3"
-											// biome-ignore lint/a11y/useSemanticElements: Container with radio input inside requires role="button" for proper interaction
-											role="button"
-											tabIndex={0}
-											onClick={() => handleSingleAnswerSelect(optionIndex)}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													handleSingleAnswerSelect(optionIndex);
-												}
-											}}
+											htmlFor={`q${currentQuestionIndex}-o${optionIndex}`}
 										>
 											<RadioGroupItem
 												value={optionIndex.toString()}
@@ -518,7 +492,7 @@ export function QuizComponent({
 											>
 												{option.text}
 											</Label>
-										</div>
+										</label>
 									);
 								},
 							)}

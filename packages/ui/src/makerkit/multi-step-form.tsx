@@ -19,8 +19,8 @@ import { cn } from "../lib/utils";
 
 interface MultiStepFormProps<T extends z.ZodType> {
 	schema: T;
-	form: UseFormReturn<z.infer<T>>;
-	onSubmit: (data: z.infer<T>) => void;
+	form: UseFormReturn<any>;
+	onSubmit: (data: z.output<T>) => void;
 	useStepTransition?: boolean;
 	className?: string;
 }
@@ -168,9 +168,9 @@ export function useMultiStepFormContext<Schema extends z.ZodType>() {
  */
 export function useMultiStepForm<Schema extends z.ZodType>(
 	schema: Schema,
-	form: UseFormReturn<z.infer<Schema>>,
+	form: UseFormReturn<any>,
 	stepNames: string[],
-	onSubmit: (data: z.infer<Schema>) => void,
+	onSubmit: (data: z.output<Schema>) => void,
 ) {
 	const [state, setState] = useState({
 		currentStepIndex: 0,

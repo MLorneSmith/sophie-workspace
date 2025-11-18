@@ -21,7 +21,7 @@ export function createAccountInvitationsService(
  * @description Service for managing account invitations.
  */
 class AccountInvitationsService {
-	private readonly namespace = "invitations";
+	private readonly namespace = "accounts.invitations";
 
 	constructor(private readonly client: SupabaseClient<Database>) {}
 

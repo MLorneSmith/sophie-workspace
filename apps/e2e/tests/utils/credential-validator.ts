@@ -18,9 +18,24 @@ export interface E2ECredentials {
 
 // biome-ignore lint/complexity/noStaticOnlyClass: Utility class provides namespace and better organization for credential validation
 export class CredentialValidator {
-	private static readonly isCI = process.env.CI === "true";
-	private static readonly verboseMode =
-		process.env.E2E_VERBOSE_CREDENTIALS === "true";
+	/**
+	 * Check if running in CI environment
+	 */
+	static readonly isCI =
+		process.env.CI === "true" || !!process.env.GITHUB_ACTIONS;
+
+	/**
+	 * Enable verbose logging for credential validation
+	 */
+	static readonly verboseMode = process.env.E2E_VERBOSE === "true";
+
+	/**
+	 * Validate email format using a simple regex
+	 */
+	static isValidEmail(email: string): boolean {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	}
 
 	/**
 	 * Validate E2E test credentials with environment-aware handling
@@ -136,14 +151,6 @@ export class CredentialValidator {
 					? "Check GitHub Secrets configuration."
 					: "Check your .env.local file."),
 		);
-	}
-
-	/**
-	 * Validate email format using a simple regex
-	 */
-	private static isValidEmail(email: string): boolean {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return emailRegex.test(email);
 	}
 
 	/**

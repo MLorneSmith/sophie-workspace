@@ -1,6 +1,6 @@
 import type { BillingWebhookHandlerService, PlanTypeMap } from "@kit/billing";
 import { getLogger } from "@kit/shared/logger";
-import type { Database, Enums } from "@kit/supabase/database";
+import type { Database } from "@kit/supabase/database";
 import {
 	getOrder,
 	getSubscription,
@@ -23,8 +23,6 @@ type UpsertSubscriptionParams =
 type UpsertOrderParams =
 	Database["public"]["Functions"]["upsert_order"]["Args"];
 
-type BillingProvider = Enums<"billing_provider">;
-
 interface LineItem {
 	id: string;
 	quantity: number;
@@ -43,9 +41,8 @@ type OrderStatus = "pending" | "failed" | "paid" | "refunded";
 export class LemonSqueezyWebhookHandlerService
 	implements BillingWebhookHandlerService
 {
-	private readonly provider: BillingProvider = "lemon-squeezy";
-
 	private readonly namespace = "billing.lemon-squeezy";
+	private readonly provider = "lemon-squeezy" as const;
 
 	constructor(private readonly planTypesMap: PlanTypeMap) {}
 

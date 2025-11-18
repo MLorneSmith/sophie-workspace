@@ -24,7 +24,7 @@ export const metadata = {
 async function AccountsPage(props: AdminAccountsPageProps) {
 	const client = getSupabaseServerClient();
 	const searchParams = await props.searchParams;
-	const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
+	const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 1;
 
 	return (
 		<>

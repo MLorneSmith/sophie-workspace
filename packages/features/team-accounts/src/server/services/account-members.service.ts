@@ -15,7 +15,7 @@ export function createAccountMembersService(client: SupabaseClient<Database>) {
 }
 
 class AccountMembersService {
-	private readonly namespace = "account-members";
+	private readonly namespace = "accounts.members";
 
 	constructor(private readonly client: SupabaseClient<Database>) {}
 

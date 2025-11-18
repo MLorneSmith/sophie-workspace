@@ -159,8 +159,8 @@ class TestHealthMonitor {
 			return {
 				cpu: parseFloat(parts[1]) || 0,
 				memoryPercent: parseFloat(parts[2]) || 0,
-				memory: parseInt(parts[3]) * 1024 || 0, // RSS in bytes
-				virtualMemory: parseInt(parts[4]) * 1024 || 0, // VSZ in bytes
+				memory: parseInt(parts[3], 10) * 1024 || 0, // RSS in bytes
+				virtualMemory: parseInt(parts[4], 10) * 1024 || 0, // VSZ in bytes
 				state: parts[5] || "unknown",
 			};
 		} catch (_error) {
@@ -176,7 +176,7 @@ class TestHealthMonitor {
 			const { stdout } = await execAsync(
 				`ps --ppid ${parentPid} -o state --no-headers 2>/dev/null | grep -c "Z" || echo "0"`,
 			);
-			return parseInt(stdout.trim()) || 0;
+			return parseInt(stdout.trim(), 10) || 0;
 		} catch {
 			return 0;
 		}
@@ -223,7 +223,8 @@ class TestHealthMonitor {
 			const hanging = processes.filter((p) => {
 				// Check if process has been running for more than 10 minutes
 				const timeParts = p.time.split(":");
-				const minutes = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+				const minutes =
+					parseInt(timeParts[0], 10) * 60 + parseInt(timeParts[1], 10);
 				return minutes > 10;
 			});
 

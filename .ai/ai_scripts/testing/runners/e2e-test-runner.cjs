@@ -1208,10 +1208,10 @@ class E2ETestRunner {
 		const skippedMatch = output.match(/(\d+)\s+skipped/);
 		const flakyMatch = output.match(/(\d+)\s+flaky/);
 
-		if (passedMatch) results.passed = parseInt(passedMatch[1]);
-		if (failedMatch) results.failed = parseInt(failedMatch[1]);
-		if (skippedMatch) results.skipped = parseInt(skippedMatch[1]);
-		if (flakyMatch) results.passed += parseInt(flakyMatch[1]); // Count flaky as passed
+		if (passedMatch) results.passed = parseInt(passedMatch[1], 10);
+		if (failedMatch) results.failed = parseInt(failedMatch[1], 10);
+		if (skippedMatch) results.skipped = parseInt(skippedMatch[1], 10);
+		if (flakyMatch) results.passed += parseInt(flakyMatch[1], 10); // Count flaky as passed
 
 		// Extract specific failed test names
 		const failurePattern = /\s*\d+\)\s+\[.*?\]\s+›\s+(.*?)$/gm;
@@ -1280,19 +1280,19 @@ class E2ETestRunner {
 		// Use max to avoid double-counting cumulative totals
 		const summaryMatch = line.match(/(\d+)\s+passed/);
 		if (summaryMatch) {
-			const passed = parseInt(summaryMatch[1]);
+			const passed = parseInt(summaryMatch[1], 10);
 			results.passed = Math.max(results.passed, passed);
 		}
 
 		const failedMatch = line.match(/(\d+)\s+failed/);
 		if (failedMatch) {
-			const failed = parseInt(failedMatch[1]);
+			const failed = parseInt(failedMatch[1], 10);
 			results.failed = Math.max(results.failed, failed);
 		}
 
 		const skippedMatch = line.match(/(\d+)\s+skipped/);
 		if (skippedMatch) {
-			const skipped = parseInt(skippedMatch[1]);
+			const skipped = parseInt(skippedMatch[1], 10);
 			results.skipped = Math.max(results.skipped, skipped);
 		}
 	}
@@ -1305,8 +1305,8 @@ class E2ETestRunner {
 		// Parse final summary from Playwright output
 		const summaryMatch = buffer.match(/(\d+)\s+passed.*?(\d+)\s+failed/s);
 		if (summaryMatch) {
-			const passed = parseInt(summaryMatch[1]);
-			const failed = parseInt(summaryMatch[2]);
+			const passed = parseInt(summaryMatch[1], 10);
+			const failed = parseInt(summaryMatch[2], 10);
 
 			// Use final summary if more accurate
 			if (passed > results.passed) results.passed = passed;

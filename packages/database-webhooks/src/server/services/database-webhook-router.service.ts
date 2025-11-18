@@ -14,7 +14,7 @@ export function createDatabaseWebhookRouterService(
  * @description Service that routes the webhook event to the appropriate service
  */
 class DatabaseWebhookRouterService {
-	constructor(private readonly adminClient: SupabaseClient<Database>) {}
+	constructor(readonly _adminClient: SupabaseClient<Database>) {}
 
 	/**
 	 * @name handleWebhook

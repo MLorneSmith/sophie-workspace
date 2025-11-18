@@ -292,7 +292,7 @@ function TooltipStory() {
 						max="50"
 						value={controls.sideOffset}
 						onChange={(e) =>
-							updateControl("sideOffset", parseInt(e.target.value) || 0)
+							updateControl("sideOffset", parseInt(e.target.value, 10) || 0)
 						}
 					/>
 				</div>
@@ -306,7 +306,7 @@ function TooltipStory() {
 						max="50"
 						value={controls.alignOffset}
 						onChange={(e) =>
-							updateControl("alignOffset", parseInt(e.target.value) || 0)
+							updateControl("alignOffset", parseInt(e.target.value, 10) || 0)
 						}
 					/>
 				</div>
@@ -325,7 +325,7 @@ function TooltipStory() {
 						step="100"
 						value={controls.delayDuration}
 						onChange={(e) =>
-							updateControl("delayDuration", parseInt(e.target.value) || 0)
+							updateControl("delayDuration", parseInt(e.target.value, 10) || 0)
 						}
 					/>
 				</div>
@@ -340,7 +340,10 @@ function TooltipStory() {
 						step="100"
 						value={controls.skipDelayDuration}
 						onChange={(e) =>
-							updateControl("skipDelayDuration", parseInt(e.target.value) || 0)
+							updateControl(
+								"skipDelayDuration",
+								parseInt(e.target.value, 10) || 0,
+							)
 						}
 					/>
 				</div>

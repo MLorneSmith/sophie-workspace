@@ -113,77 +113,14 @@ export class PptxGenerator {
 	private logger: import("@kit/shared/logger").EnhancedLogger;
 
 	/**
-	 * Initializes a new PptxGenerator instance and defines slide templates
+	 * Initializes a new PptxGenerator instance
 	 */
 	constructor() {
 		this.pptx = new pptxgen();
-		this.defineSlideTemplates();
 
 		// Initialize logger using createServiceLogger for synchronous access
 		const serviceLogger = createServiceLogger("PPTX-GENERATOR");
 		this.logger = serviceLogger.getLogger();
-	}
-
-	/**
-	 * Define slide master templates for consistent styling
-	 * Using a simplified approach to avoid TypeScript errors
-	 */
-	private defineSlideTemplates(): void {
-		// Basic title slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_TITLE",
-			background: { color: "FFFFFF" },
-		});
-
-		// Section header master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_SECTION",
-			background: { color: "FFFFFF" },
-		});
-
-		// One column slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_ONE_COLUMN",
-			background: { color: "FFFFFF" },
-		});
-
-		// Two column slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_TWO_COLUMN",
-			background: { color: "FFFFFF" },
-		});
-
-		// Bullet list slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_BULLET_LIST",
-			background: { color: "FFFFFF" },
-		});
-
-		// Chart slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_CHART",
-			background: { color: "FFFFFF" },
-		});
-
-		// Image and Text slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_IMAGE_TEXT",
-			background: { color: "FFFFFF" },
-		});
-
-		// Text and Image slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_TEXT_IMAGE",
-			background: { color: "FFFFFF" },
-		});
-
-		// Comparison slide master
-		this.pptx.defineSlideMaster({
-			title: "MASTER_COMPARISON",
-			background: { color: "FFFFFF" },
-		});
-
-		// Add header to all slides in the addSlide method instead
 	}
 
 	/**
@@ -246,7 +183,7 @@ export class PptxGenerator {
 							pptxSlide as unknown as PptxSlide,
 							contentItem,
 							slide.layoutId,
-							Number.parseInt(columnIndex),
+							Number.parseInt(columnIndex, 10),
 						);
 					}
 				}

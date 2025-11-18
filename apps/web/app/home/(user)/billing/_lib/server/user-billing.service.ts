@@ -24,7 +24,7 @@ export function createUserBillingService(client: SupabaseClient<Database>) {
  * @description Service for managing billing for personal accounts.
  */
 class UserBillingService {
-	private readonly namespace = "billing.personal-account";
+	private readonly namespace = "UserBillingService";
 
 	constructor(private readonly client: SupabaseClient<Database>) {}
 

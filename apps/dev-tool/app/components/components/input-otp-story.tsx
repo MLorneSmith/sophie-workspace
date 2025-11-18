@@ -167,7 +167,10 @@ export default function InputOTPStory() {
 						<Select
 							value={controls.maxLength.toString()}
 							onValueChange={(value) =>
-								setControls((prev) => ({ ...prev, maxLength: parseInt(value) }))
+								setControls((prev) => ({
+									...prev,
+									maxLength: parseInt(value, 10),
+								}))
 							}
 						>
 							<SelectTrigger>
@@ -206,7 +209,10 @@ export default function InputOTPStory() {
 						<Select
 							value={controls.groupSize.toString()}
 							onValueChange={(value) =>
-								setControls((prev) => ({ ...prev, groupSize: parseInt(value) }))
+								setControls((prev) => ({
+									...prev,
+									groupSize: parseInt(value, 10),
+								}))
 							}
 						>
 							<SelectTrigger>

@@ -32,20 +32,14 @@ export async function getAIGatewayContext(): Promise<AIGatewayContext> {
 	return {
 		userId: auth.data.id,
 		config: {
-			// Base configuration that can be extended by feature-specific configs
-			baseURL: "https://api.portkey.ai/v1",
-			headers: {
-				"x-portkey-api-key": process.env.PORTKEY_API_KEY,
-				"x-portkey-virtual-key": process.env.PORTKEY_VIRTUAL_KEY,
-			},
 			// Default settings that can be overridden by feature-specific configs
 			cache: {
-				enabled: true,
-				ttl: 3600, // 1 hour
+				mode: "simple",
+				max_age: 3600, // 1 hour
 			},
 			retry: {
 				attempts: 3,
-				statusCodes: [429, 500, 502, 503, 504],
+				on_status_codes: [429, 500, 502, 503, 504],
 			},
 		},
 	};

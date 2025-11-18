@@ -214,7 +214,9 @@ interface User {
 				<Label htmlFor="dataCount">Data Count</Label>
 				<SimpleStorySelect
 					value={controls.dataCount.toString()}
-					onValueChange={(value) => updateControl("dataCount", parseInt(value))}
+					onValueChange={(value) =>
+						updateControl("dataCount", parseInt(value, 10))
+					}
 					options={dataCountOptions}
 				/>
 			</div>

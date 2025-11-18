@@ -270,7 +270,7 @@ class UnitTestRunner {
 		// Parse test result lines (e.g., "Tests  5 passed (5)")
 		const testMatch = line.match(/Tests\s+.*(\d+)\s+passed/);
 		if (testMatch) {
-			const passed = parseInt(testMatch[1]);
+			const passed = parseInt(testMatch[1], 10);
 			// Use max to avoid double-counting cumulative totals
 			results.passed = Math.max(results.passed, passed);
 		}
@@ -278,14 +278,14 @@ class UnitTestRunner {
 		// Parse failed tests
 		const failedMatch = line.match(/(\d+)\s+failed/);
 		if (failedMatch) {
-			const failed = parseInt(failedMatch[1]);
+			const failed = parseInt(failedMatch[1], 10);
 			results.failed = Math.max(results.failed, failed);
 		}
 
 		// Parse skipped/todo tests
 		const skippedMatch = line.match(/(\d+)\s+(skipped|todo)/i);
 		if (skippedMatch) {
-			const skipped = parseInt(skippedMatch[1]);
+			const skipped = parseInt(skippedMatch[1], 10);
 			results.skipped = Math.max(results.skipped, skipped);
 		}
 
@@ -362,7 +362,7 @@ class UnitTestRunner {
 		const summaryMatch = buffer.match(/Test Files.*Tests\s+(\d+)\s+passed/);
 		if (summaryMatch) {
 			// Use the final summary if available (it's more accurate)
-			const totalPassed = parseInt(summaryMatch[1]);
+			const totalPassed = parseInt(summaryMatch[1], 10);
 			if (totalPassed > results.passed) {
 				results.passed = totalPassed;
 			}
@@ -388,13 +388,13 @@ class UnitTestRunner {
 			// Parse passed tests
 			const passedInLine = line.match(/(\d+)\s+passed/);
 			if (passedInLine) {
-				results.passed += parseInt(passedInLine[1]);
+				results.passed += parseInt(passedInLine[1], 10);
 			}
 
 			// Parse failed tests
 			const failedInLine = line.match(/(\d+)\s+failed/);
 			if (failedInLine) {
-				results.failed += parseInt(failedInLine[1]);
+				results.failed += parseInt(failedInLine[1], 10);
 			}
 
 			// Parse skipped/todo tests
@@ -402,7 +402,7 @@ class UnitTestRunner {
 			skippedInLine.forEach((skip) => {
 				const num = skip.match(/(\d+)/);
 				if (num) {
-					results.skipped += parseInt(num[1]);
+					results.skipped += parseInt(num[1], 10);
 				}
 			});
 		});
@@ -476,8 +476,8 @@ class UnitTestRunner {
 		const failedMatch = output.match(/(\d+)\s+failed/);
 
 		if (passedMatch || failedMatch) {
-			const passed = passedMatch ? parseInt(passedMatch[1]) : 0;
-			const failed = failedMatch ? parseInt(failedMatch[1]) : 0;
+			const passed = passedMatch ? parseInt(passedMatch[1], 10) : 0;
+			const failed = failedMatch ? parseInt(failedMatch[1], 10) : 0;
 			const total = passed + failed;
 
 			this.testStatus.updateStatusLine("unit_tests", passed, failed, total);
