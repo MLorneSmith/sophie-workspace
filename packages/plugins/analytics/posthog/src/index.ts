@@ -31,6 +31,7 @@ export function createPostHogAnalyticsService() {
  */
 class PostHogAnalyticsService {
 	private client: ClientPostHogImpl | ServerPostHogImpl;
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: userId is used in reset method
 	private userId?: string;
 
 	constructor(
@@ -169,6 +170,7 @@ class ServerPostHogImpl {
  */
 class ClientPostHogImpl {
 	private ph: ClientPostHog | undefined;
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: userId is used in identify method
 	private userId?: string;
 
 	constructor(
