@@ -7,8 +7,8 @@
 		"shardCommand": "test:shard1"
 	},
 	"execution": {
-		"startTime": "2025-11-18T15:26:30.588Z",
-		"endTime": "2025-11-18T15:26:38.588Z",
+		"startTime": "2025-11-18T20:16:11.676Z",
+		"endTime": "2025-11-18T20:16:19.676Z",
 		"duration": "8s",
 		"exitCode": 0,
 		"timedOut": false
@@ -24,5 +24,5 @@
 	},
 	"failures": [],
 	"errors": [],
-	"rawOutput": "\n> web-e2e@1.0.0 test:shard1 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/smoke/smoke.spec.ts --config=playwright.smoke.config.ts -- --reporter=dot --retries=0\n\n\nRunning 9 tests using 3 workers\n········Available security headers in dev: \u001b[33m0\u001b[39m []\n·\n  9 passed (7.5s)\n"
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard1 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/smoke/smoke.spec.ts --config=playwright.smoke.config.ts -- --reporter=dot --retries=0\n\n\nRunning 9 tests using 3 workers\n········Available security headers in dev: \u001b[33m0\u001b[39m []\n·\n  9 passed (6.7s)\n"
 }
