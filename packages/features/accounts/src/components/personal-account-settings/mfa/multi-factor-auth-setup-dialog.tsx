@@ -13,6 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@kit/ui/dialog";
+import Image from "next/image";
 import {
 	Form,
 	FormControl,
@@ -411,13 +412,13 @@ function FactorNameForm(
 
 function QrImage({ src }: { src: string }) {
 	return (
-		// eslint-disable-next-line @next/next/no-img-element
-		<img
-			alt={"QR Code"}
+		<Image
+			alt="QR Code"
 			src={src}
 			width={160}
 			height={160}
-			className={"bg-white p-2"}
+			className="bg-white p-2"
+			unoptimized
 		/>
 	);
 }

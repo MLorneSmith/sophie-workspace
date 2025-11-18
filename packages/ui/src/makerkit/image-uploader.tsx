@@ -1,6 +1,7 @@
 "use client";
 
 import { Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -73,14 +74,15 @@ export function ImageUploader(
 					"animate-in fade-in zoom-in-50 group/label relative h-20 w-20 cursor-pointer"
 				}
 			>
-				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img
-					decoding="async"
+				<Image
 					className={
 						"h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80"
 					}
 					src={image}
-					alt={""}
+					alt=""
+					width={80}
+					height={80}
+					unoptimized
 				/>
 
 				<Input />
