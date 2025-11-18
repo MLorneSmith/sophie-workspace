@@ -46,7 +46,6 @@ interface DeduplicationConfig {
 
 class RequestDeduplicationManager {
 	private cache = new Map<string, RequestFingerprint>();
-	private cleanupInterval: NodeJS.Timeout | null = null;
 	private readonly config: DeduplicationConfig;
 	private readonly logger = createServiceLogger("REQUEST-DEDUP").getLogger();
 
@@ -67,7 +66,6 @@ class RequestDeduplicationManager {
 			...config,
 		};
 
-		this.startCleanupInterval();
 		this.log("Request deduplication manager initialized", "info");
 	}
 
@@ -285,67 +283,6 @@ class RequestDeduplicationManager {
 	}
 
 	/**
-	 * Start the cleanup interval to remove expired entries
-	 */
-	private startCleanupInterval(): void {
-		const intervalMs = Math.min(this.config.cacheDuration / 2, 30000); // Clean up every 30 seconds max
-
-		this.cleanupInterval = setInterval(() => {
-			this.cleanup();
-		}, intervalMs);
-
-		this.log(`Cleanup interval started: ${intervalMs}ms`, "debug");
-	}
-
-	/**
-	 * Clean up expired cache entries
-	 */
-	private cleanup(): void {
-		const now = Date.now();
-		const initialSize = this.cache.size;
-		let removed = 0;
-
-		for (const [fingerprint, entry] of Array.from(this.cache.entries())) {
-			const age = now - entry.timestamp;
-			const maxAge = entry.isProcessing
-				? this.config.processingTimeout
-				: this.config.cacheDuration;
-
-			if (age > maxAge) {
-				this.cache.delete(fingerprint);
-				removed++;
-			}
-		}
-
-		if (removed > 0) {
-			this.log(
-				`Cleanup completed: removed ${removed}/${initialSize} entries`,
-				"debug",
-			);
-		}
-
-		// If cache is getting too large, remove oldest entries
-		if (this.cache.size > this.config.maxDuplicates * 2) {
-			const entries = Array.from(this.cache.entries()).sort(
-				(a, b) => a[1].timestamp - b[1].timestamp,
-			);
-
-			const toRemove = entries.slice(
-				0,
-				entries.length - this.config.maxDuplicates,
-			);
-			for (const [fingerprint] of toRemove) {
-				this.cache.delete(fingerprint);
-			}
-
-			this.log(
-				`Cache size limit reached, removed ${toRemove.length} oldest entries`,
-				"info",
-			);
-		}
-	}
-
-	/**
 	 * Get current cache statistics
 	 */
 	getStats() {
@@ -372,11 +309,6 @@ class RequestDeduplicationManager {
 	 * Shutdown the deduplication manager
 	 */
 	shutdown(): void {
-		if (this.cleanupInterval) {
-			clearInterval(this.cleanupInterval);
-			this.cleanupInterval = null;
-		}
-
 		this.cache.clear();
 		this.log("Request deduplication manager shutdown", "info");
 	}

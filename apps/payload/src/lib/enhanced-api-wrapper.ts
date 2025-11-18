@@ -9,15 +9,6 @@
 import { createEnvironmentLogger } from "@kit/shared/logger";
 import { type NextRequest, NextResponse } from "next/server";
 
-// Type for log data - consistent with database adapter
-type LogData =
-	| Record<string, unknown>
-	| string
-	| number
-	| boolean
-	| null
-	| undefined;
-
 interface APIMetrics {
 	totalRequests: number;
 	successfulRequests: number;
@@ -312,17 +303,6 @@ class EnhancedAPIManager {
 	clearErrorLog(): void {
 		this.errorLog = [];
 		this.logger.info("Error log cleared");
-	}
-
-	/**
-	 * Centralized logging
-	 */
-	private log(
-		message: string,
-		level: "debug" | "info" | "warn" | "error" = "info",
-		data?: LogData,
-	): void {
-		this.logger[level](message, data);
 	}
 }
 
