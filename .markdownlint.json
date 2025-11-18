@@ -11,5 +11,6 @@
 	"MD033": {
 		"allowed_elements": ["br", "details", "summary", "img", "kbd"]
 	},
-	"MD041": false
+	"MD041": false,
+	"MD060": false
 }
