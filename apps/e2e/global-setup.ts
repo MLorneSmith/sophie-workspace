@@ -146,22 +146,47 @@ async function globalSetup(config: FullConfig) {
 			await page.reload({ waitUntil: "domcontentloaded" });
 		}
 
-		// Inject Supabase session into local storage
-		// CRITICAL: Use Supabase URL (not deployment URL) to match what Supabase client expects
-		// Supabase creates key as: sb-{project_ref}-auth-token where project_ref is from supabaseUrl
+		// Inject Supabase session into cookies (required for @supabase/ssr)
+		// CRITICAL: @supabase/ssr uses cookies, not localStorage
+		// The cookie name follows the pattern: sb-{project_ref}-auth-token
+		// Large sessions are chunked into multiple cookies (.0, .1, etc.)
+		const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+		const cookieName = `sb-${projectRef}-auth-token`;
+		const sessionStr = JSON.stringify(data.session);
+		const domain = new URL(baseURL).hostname;
+
+		// Supabase SSR chunks cookies at ~3180 chars to stay under 4KB limit
+		const CHUNK_SIZE = 3180;
+		const chunks: string[] = [];
+
+		for (let i = 0; i < sessionStr.length; i += CHUNK_SIZE) {
+			chunks.push(sessionStr.slice(i, i + CHUNK_SIZE));
+		}
+
+		// Set chunked cookies
+		const cookiesToSet = chunks.map((chunk, index) => ({
+			name: chunks.length === 1 ? cookieName : `${cookieName}.${index}`,
+			value: chunk,
+			domain,
+			path: "/",
+			httpOnly: false, // Supabase client needs to read these
+			secure: baseURL.startsWith("https"),
+			sameSite: "Lax" as const,
+		}));
+
+		await context.addCookies(cookiesToSet);
+
+		// Also set in localStorage for any client-side code that might read from there
 		await page.evaluate(
-			({ session, supabaseUrl }) => {
-				// Extract project ref from Supabase URL (e.g., "abcdefgh" from "https://abcdefgh.supabase.co")
-				const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
-				const key = `sb-${projectRef}-auth-token`;
+			({ session, key }) => {
 				localStorage.setItem(key, JSON.stringify(session));
 			},
-			{ session: data.session, supabaseUrl },
+			{ session: data.session, key: cookieName },
 		);
 
 		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 		console.log(
-			`✅ Session injected into browser storage for ${authState.name}`,
+			`✅ Session injected into cookies and localStorage for ${authState.name}`,
 		);
 
 		// Reload page to activate the injected session
