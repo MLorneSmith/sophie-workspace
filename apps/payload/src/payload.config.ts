@@ -6,7 +6,7 @@ import path from "node:path";
  */
 import { fileURLToPath } from "node:url";
 import { nestedDocsPlugin } from "@payloadcms/plugin-nested-docs";
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { BlocksFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
 import { s3Storage } from "@payloadcms/storage-s3";
 import { en } from "@payloadcms/translations/languages/en";
 import type { Plugin } from "payload";
@@ -30,6 +30,7 @@ import { QuizQuestions } from "./collections/QuizQuestions";
 import { SurveyQuestions } from "./collections/SurveyQuestions";
 import { Surveys } from "./collections/Surveys";
 import { Users } from "./collections/Users";
+import { allBlocks } from "./blocks/index";
 import { getDatabaseAdapter } from "./lib/database-adapter-singleton";
 import {
 	getR2Config,
@@ -304,7 +305,14 @@ export default buildConfig({
 	typescript: {
 		outputFile: path.resolve(dirname, "../payload-types.ts"),
 	},
-	editor: lexicalEditor({}),
+	editor: lexicalEditor({
+		features: ({ defaultFeatures }) => [
+			...defaultFeatures,
+			BlocksFeature({
+				blocks: allBlocks,
+			}),
+		],
+	}),
 	// Use the enhanced database adapter with singleton pattern
 	db: getDatabaseAdapter(),
 	plugins: getPlugins(),
