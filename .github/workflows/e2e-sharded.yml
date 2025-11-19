@@ -91,6 +91,11 @@ jobs:
           key: e2e-build-${{ github.sha }}-${{ github.run_id }}
 
   # Sharded E2E test execution with matrix
+  # NOTE: Shard organization:
+  # - Shards 1-10: Real business logic tests (run in CI)
+  # - Shard 11: Configuration verification tests (skipped in CI, marked with @skip-in-ci tag)
+  # Configuration tests have intentional failures to validate test infrastructure,
+  # so they're isolated to prevent false CI negatives.
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
@@ -100,7 +105,7 @@ jobs:
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
       max-parallel: ${{ github.event.inputs.max_parallel || 3 }}
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     env:
       # E2E Database Configuration - Local Supabase instance
       SUPABASE_URL: 'http://127.0.0.1:54321'
@@ -174,9 +179,10 @@ jobs:
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |
-          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 9"
-          
+          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 10 (real tests - configuration tests run locally only)"
+
           # Run the specific shard
+          # Note: @skip-in-ci tagged tests (configuration verification) are automatically excluded
           pnpm --filter web-e2e test:shard${{ matrix.shard }}
         timeout-minutes: 15
         continue-on-error: false
@@ -213,25 +219,28 @@ jobs:
           echo "## 🎭 E2E Test Results (Sharded)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Shards**: 9" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Real Shards**: 10 (Shard 11 for configuration verification runs locally only)" >> $GITHUB_STEP_SUMMARY
           echo "- **Max Parallel**: ${{ github.event.inputs.max_parallel || 6 }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
-          echo "### Shard Results" >> $GITHUB_STEP_SUMMARY
-          echo "| Shard | Tests | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 1 | Accessibility Large (13) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 2 | Authentication (10) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 3 | Admin (9) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 4 | Smoke (9) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 5 | Accessibility Simple (6) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 6 | Team Accounts (6) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 7 | Account + Invitations (8) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 8 | Quick Tests (3) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
-          echo "| 9 | Billing (2) | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Shard Results (Real Tests - Shards 1-10)" >> $GITHUB_STEP_SUMMARY
+          echo "| Shard | Description | Tests | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | Smoke Tests | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2 | Authentication | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3 | Account & Team Accounts | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4 | Admin & Invitations | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5 | Accessibility | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 6 | Healthcheck | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 7 | Payload Auth, Collections, Database | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 8 | Payload Seeding & Performance | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 9 | User Billing | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 10 | Team Billing | - | Check artifacts |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+          echo "**Note**: Shard 11 (Configuration Verification) runs locally only with @skip-in-ci tags" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
           # Check overall status
           if [[ "${{ needs.e2e-shards.result }}" == "success" ]]; then
             echo "### ✅ All shards completed successfully!" >> $GITHUB_STEP_SUMMARY
@@ -248,27 +257,32 @@ jobs:
             const icon = status === 'success' ? '✅' : '❌';
             
             const comment = `## ${icon} E2E Test Results (Sharded)
-            
-            **Execution Strategy**: 9 shards with max ${{ github.event.inputs.max_parallel || 6 }} parallel
+
+            **Execution Strategy**: 10 real test shards with max ${{ github.event.inputs.max_parallel || 6 }} parallel
             **Overall Status**: ${status}
-            
-            ### Test Coverage by Shard:
-            1. **Accessibility Large** - 13 tests
-            2. **Authentication** - 10 tests  
-            3. **Admin** - 9 tests
-            4. **Smoke** - 9 tests
-            5. **Accessibility Simple** - 6 tests
-            6. **Team Accounts** - 6 tests
-            7. **Account + Invitations** - 8 tests
-            8. **Quick Tests** - 3 tests
-            9. **Billing** - 2 tests
-            
-            **Total**: 66 tests across 9 shards
-            
+            **Configuration Verification**: Runs locally only (Shard 11, @skip-in-ci tags)
+
+            ### Real Test Shards (1-10):
+            1. **Smoke Tests** - Health checks and critical paths
+            2. **Authentication** - Sign in, password reset, auth flows
+            3. **Account & Team Accounts** - Account management and team workspaces
+            4. **Admin & Invitations** - Admin controls and team invitations
+            5. **Accessibility** - A11y compliance testing
+            6. **Healthcheck** - Application health validation
+            7. **Payload Auth, Collections, Database** - CMS operations
+            8. **Payload Seeding & Performance** - Data seeding and performance
+            9. **User Billing** - Individual user payment flows
+            10. **Team Billing** - Team billing and subscriptions
+
+            ### Configuration Tests (Shard 11 - Local Only):
+            - Configuration verification with intentional failures
+            - Validates test infrastructure setup
+            - Run with: \`pnpm --filter web-e2e test:shard11\`
+
             ${status !== 'success' ? '⚠️ Please review the failing shards before merging.' : '🎉 All tests passed! Ready for merge.'}
-            
+
             [View detailed results in workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
