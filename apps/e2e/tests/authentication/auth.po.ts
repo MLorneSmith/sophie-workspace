@@ -25,17 +25,17 @@ export class AuthPageObject {
 	goToSignIn(next?: string) {
 		// Use configured navigation timeout instead of hardcoded value
 		// Defaults to 45s in CI environments to handle network latency
-		// Use networkidle to ensure all assets load on deployed environments
+		// Use domcontentloaded for reliable testing with analytics scripts
 		return this.page.goto(`/auth/sign-in${next ? `?next=${next}` : ""}`, {
-			waitUntil: "networkidle",
+			waitUntil: "domcontentloaded",
 		});
 	}
 
 	goToSignUp(next?: string) {
 		// Use configured navigation timeout instead of hardcoded value
-		// Use networkidle to ensure all assets load on deployed environments
+		// Use domcontentloaded for reliable testing with analytics scripts
 		return this.page.goto(`/auth/sign-up${next ? `?next=${next}` : ""}`, {
-			waitUntil: "networkidle",
+			waitUntil: "domcontentloaded",
 		});
 	}
 
@@ -293,7 +293,13 @@ export class AuthPageObject {
 		const email = this.createRandomEmail();
 
 		await this.page.goto(`/auth/sign-up?next=${path}`, {
-			waitUntil: "networkidle",
+			waitUntil: "domcontentloaded",
+		});
+
+		// Wait for form to be loaded
+		await this.page.waitForSelector('input[name="email"]', {
+			state: "visible",
+			timeout: 10000,
 		});
 
 		await this.signUp({

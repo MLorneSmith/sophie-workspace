@@ -14,7 +14,10 @@ test.describe("Account Settings", () => {
 		account = new AccountPageObject(page);
 
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector("form", { timeout: 10000 });
 	});
 
 	test("user can update their profile name", async ({ page }) => {
@@ -80,7 +83,13 @@ test.describe("Account Deletion", () => {
 
 		await page.waitForURL("/");
 
-		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
+		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector('[data-testid="sign-in-email"]', {
+			state: "visible",
+			timeout: 10000,
+		});
 
 		// sign in will now fail
 		await auth.signIn({
