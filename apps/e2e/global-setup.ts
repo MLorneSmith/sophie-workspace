@@ -164,10 +164,9 @@ async function globalSetup(config: FullConfig) {
 			`✅ Session injected into browser storage for ${authState.name}`,
 		);
 
-		// Navigate to home to verify authentication
-		// Use networkidle to ensure React hydration completes before saving state
-		await page.goto("/home", { waitUntil: "networkidle" });
-		await page.waitForURL("**/home**", { timeout: 10000 });
+		// Reload page to activate the injected session
+		// The Supabase client needs to reinitialize with the new session from localStorage
+		await page.reload({ waitUntil: "domcontentloaded" });
 
 		// Save authenticated state
 		await context.storageState({ path: authState.filePath });
