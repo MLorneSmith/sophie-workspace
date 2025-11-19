@@ -32,7 +32,7 @@ def get_api_key() -> str:
         from dotenv import load_dotenv
 
         # Try .ai/.env first (override existing env vars to allow key updates)
-        ai_env = Path(__file__).parent.parent / ".env"
+        ai_env = Path(__file__).parent.parent.parent / ".env"
         if ai_env.exists():
             load_dotenv(ai_env, override=True)
 
