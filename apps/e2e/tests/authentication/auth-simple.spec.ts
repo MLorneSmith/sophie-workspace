@@ -11,10 +11,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
 	test("sign in page loads with correct elements", async ({ page }) => {
-		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
-
-		// Wait for the page to be ready
-		await page.waitForLoadState("domcontentloaded");
+		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
 
 		// Wait for the email input to be visible first (indicates form is loaded)
 		await page.waitForSelector('[data-testid="sign-in-email"]', {
@@ -37,7 +34,13 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign up page loads with correct elements", async ({ page }) => {
-		await page.goto("/auth/sign-up", { waitUntil: "networkidle" });
+		await page.goto("/auth/sign-up", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector('[data-testid="sign-up-email"]', {
+			state: "visible",
+			timeout: 10000,
+		});
 
 		// Verify all sign-up form elements are present
 		await expect(page.locator('[data-testid="sign-up-email"]')).toBeVisible();
@@ -142,7 +145,13 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("password reset link navigates correctly", async ({ page }) => {
-		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
+		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector('[data-testid="sign-in-email"]', {
+			state: "visible",
+			timeout: 10000,
+		});
 
 		// Click forgot password link (actual href is /auth/password-reset)
 		const forgotPasswordLink = page.locator('a[href*="password-reset"]');
@@ -163,7 +172,13 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign up link navigates from sign in page", async ({ page }) => {
-		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
+		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector('[data-testid="sign-in-email"]', {
+			state: "visible",
+			timeout: 10000,
+		});
 
 		// Click sign up link
 		const signUpLink = page.locator('a[href*="sign-up"]');
@@ -176,7 +191,13 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign in link navigates from sign up page", async ({ page }) => {
-		await page.goto("/auth/sign-up", { waitUntil: "networkidle" });
+		await page.goto("/auth/sign-up", { waitUntil: "domcontentloaded" });
+
+		// Wait for form to be loaded
+		await page.waitForSelector('[data-testid="sign-up-email"]', {
+			state: "visible",
+			timeout: 10000,
+		});
 
 		// Click sign in link
 		const signInLink = page.locator('a[href*="sign-in"]');
@@ -207,8 +228,8 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 		];
 
 		for (const route of protectedRoutes) {
-			// Navigate with waitUntil networkidle to ensure proxy has processed
-			await page.goto(route, { waitUntil: "networkidle" });
+			// Navigate with waitUntil domcontentloaded for reliable testing
+			await page.goto(route, { waitUntil: "domcontentloaded" });
 
 			// Should be redirected to sign-in page
 			// Use toPass() for reliability with proxy redirects
@@ -239,11 +260,11 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 		);
 
 		// Navigate to different protected pages
-		await page.goto("/home", { waitUntil: "networkidle" });
+		await page.goto("/home", { waitUntil: "domcontentloaded" });
 		await expect(page).toHaveURL(/\/home/);
 
 		// Session should persist - no redirect to sign-in
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 		await expect(page).toHaveURL(/\/home\/settings/);
 	});
 });

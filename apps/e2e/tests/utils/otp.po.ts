@@ -159,7 +159,7 @@ export class OtpPo {
 			}
 
 			// Try refreshing the page to ensure session is loaded
-			await this.page.reload({ waitUntil: "networkidle" });
+			await this.page.reload({ waitUntil: "domcontentloaded" });
 			await this.page.waitForTimeout(1000);
 		}
 

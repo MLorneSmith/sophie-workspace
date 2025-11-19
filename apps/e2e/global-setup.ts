@@ -119,12 +119,12 @@ async function globalSetup(config: FullConfig) {
 
 		// Navigate to the app with Vercel bypass query parameters to avoid redirect
 		// The query parameters set the bypass cookie, allowing subsequent navigations to work
-		// Use networkidle to ensure all assets load before injecting authentication
+		// Use domcontentloaded for reliable setup with analytics scripts
 		const initialUrl = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 			? `/?x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone`
 			: "/";
 
-		await page.goto(initialUrl, { waitUntil: "networkidle" });
+		await page.goto(initialUrl, { waitUntil: "domcontentloaded" });
 
 		// Explicitly set Vercel bypass cookie if secret is available
 		// This ensures the bypass persists in the saved storage state
@@ -142,8 +142,8 @@ async function globalSetup(config: FullConfig) {
 				},
 			]);
 
-			// Reload page to ensure bypass cookie is active and wait for all assets to load
-			await page.reload({ waitUntil: "networkidle" });
+			// Reload page to ensure bypass cookie is active
+			await page.reload({ waitUntil: "domcontentloaded" });
 		}
 
 		// Inject Supabase session into local storage

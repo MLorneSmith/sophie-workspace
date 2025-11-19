@@ -4,7 +4,7 @@ import { AUTH_STATES } from "../utils/auth-state";
 
 /**
  * Account settings tests with proper wait strategy for deployed environments
- * Uses networkidle to ensure all assets load before interacting with elements
+ * Uses domcontentloaded + explicit waits for reliable testing with analytics scripts
  */
 test.describe("Account Settings - Simple @account @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
@@ -14,7 +14,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("settings page loads successfully", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Verify we're on the settings page
 		await expect(page).toHaveURL(/\/home\/settings/);
@@ -32,7 +32,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("user profile form is visible", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Wait for form to be visible
 		await page.waitForSelector("form", { timeout: 10000 });
@@ -48,7 +48,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("user can update display name", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Wait for form to be visible
 		await page.waitForSelector("form", { timeout: 10000 });
@@ -107,7 +107,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("team settings link is accessible", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Look for team settings link
 		const teamLink = page
@@ -124,7 +124,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("billing settings link is accessible", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Look for billing settings link
 		const billingLink = page
@@ -141,7 +141,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("user can navigate between settings sections", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Try to find navigation tabs or links
 		const navLinks = page.locator(
@@ -165,7 +165,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("settings page shows user email", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Wait for page to load completely
 		await page.waitForTimeout(1000);
@@ -186,7 +186,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("sign out is accessible from settings", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Wait for page to load
 		await page.waitForTimeout(1000);
@@ -206,7 +206,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("settings form handles validation errors", async ({ page }) => {
 		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "networkidle" });
+		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
 
 		// Wait for form to be visible
 		await page.waitForSelector("form", { timeout: 10000 });
