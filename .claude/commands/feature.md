@@ -201,7 +201,12 @@ IMPORTANT: Execute every step in order, top to bottom.
 ## Validation Commands
 Execute every command to validate the feature works correctly with zero regressions.
 
-<list commands you'll use to validate with 100% confidence the feature is implemented correctly with zero regressions. every command must execute without errors so be specific about what you want to run to validate the feature works as expected. Include commands to test the feature end-to-end. Don't validate with curl commands.>
+<list commands you will use to validate with 100% confidence the feature is implemented correctly with zero regressions. every command must execute without errors so be specific about what you want to run to validate the feature works as expected. Include commands to test the feature end-to-end. Do not validate with curl commands.>
+
+- `pnpm typecheck` - Run type checking to validate the feature works with zero type errors
+- `pnpm test:unit` - Run unit tests to validate the feature works with zero regressions
+- `pnpm test:e2e` - Run E2E tests to validate the feature works end-to-end
+- `pnpm build` - Run production build to validate the feature builds successfully
 
 ## Notes
 <optionally list any additional notes, future considerations, or context that are relevant to the feature that will be helpful to the developer>
