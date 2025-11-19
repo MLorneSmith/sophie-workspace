@@ -70,7 +70,6 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		turbopackFileSystemCacheForDev: true,
-		serverComponentsExternalPackages: ["pino", "pino-pretty", "thread-stream"],
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",
@@ -110,6 +109,7 @@ function getImagesConfig() {
 	if (IS_PRODUCTION) {
 		return {
 			remotePatterns,
+			qualities: [75, 85],
 		};
 	}
 
@@ -128,6 +128,7 @@ function getImagesConfig() {
 
 	return {
 		remotePatterns,
+		qualities: [75, 85],
 	};
 }
 
