@@ -1,31 +1,36 @@
 # AI Developer Workflow (ADW) System
 
-ADW automates software development by integrating GitHub issues with Claude Code CLI to classify issues,
-generate plans, implement solutions, and create pull requests.
+ADW automates software development by integrating GitHub issues with Claude Code CLI to classify issues, generate plans, implement solutions, and create pull requests.
 
-## Authentication Options
+## Key Concepts
 
-- **Claude Max Plan**: Use your Claude subscription (recommended for high-volume usage)
-- **API Key**: Traditional pay-as-you-go (better for sporadic usage)
-- **Auto-detection**: ADWS automatically uses whichever authentication is available
+### ADW ID
+Each workflow run is assigned a unique 8-character identifier (e.g., `a1b2c3d4`). This ID:
+- Tracks all phases of a workflow (plan → build → test → review → document)
+- Appears in GitHub comments, commits, and PR titles
+- Creates an isolated workspace at `agents/{adw_id}/`
+- Enables resuming workflows and debugging
+
+### State Management
+ADW uses persistent state files (`agents/{adw_id}/adw_state.json`) to:
+- Share data between workflow phases
+- Enable workflow composition and chaining
+- Track essential workflow data:
+  - `adw_id`: Unique workflow identifier
+  - `issue_number`: GitHub issue being processed
+  - `branch_name`: Git branch for changes
+  - `plan_file`: Path to implementation plan
+  - `issue_class`: Issue type (`/chore`, `/bug`, `/feature`)
+
+### Workflow Composition
+Workflows can be:
+- Run individually (e.g., just planning or just testing)
+- Chained via pipes: `adw_plan.py 123 | adw_build.py`
+- Combined in orchestrator scripts (e.g., `adw_sdlc.py` runs all phases)
 
 ## Quick Start
 
-### 1. Choose Authentication Method
-
-#### Option A: Claude Max Plan (Recommended)
-
-```bash
-# Authenticate Claude Code with your Max subscription
-claude  # Follow prompts to log in with Max plan credentials
-
-# Set required environment variables
-export GITHUB_REPO_URL="https://github.com/owner/repository"
-export CLAUDE_CODE_PATH="/path/to/claude"  # Optional, defaults to "claude"
-export GITHUB_PAT="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Optional, only if using different account than 'gh auth login'
-```
-
-#### Option B: API Key (Fallback)
+### 1. Set Environment Variables
 
 ```bash
 export GITHUB_REPO_URL="https://github.com/owner/repository"
@@ -58,122 +63,307 @@ gh auth login
 ```bash
 cd adws/
 
-# Process a single issue manually
+# Process a single issue manually (plan + build)
 uv run adw_plan_build.py 123
 
+# Process a single issue with testing (plan + build + test)
+uv run adw_plan_build_test.py 123
+
+# Process with review (plan + build + test + review)
+uv run adw_plan_build_test_review.py 123
+
+# Process with review but skip tests (plan + build + review)
+uv run adw_plan_build_review.py 123
+
+# Process with documentation but skip tests and review (plan + build + document)
+uv run adw_plan_build_document.py 123
+
+# Complete SDLC workflow (plan + build + test + review + document)
+uv run adw_sdlc.py 123
+
+# Run individual phases
+uv run adw_plan.py 123     # Planning phase only
+uv run adw_build.py 123 <adw-id>   # Build phase only (requires existing plan)
+uv run adw_test.py 123 <adw-id>    # Test phase only
+uv run adw_review.py 123 <adw-id>  # Review phase only
+uv run adw_document.py 123 <adw-id>  # Documentation phase only
+
 # Run continuous monitoring (polls every 20 seconds)
-uv run trigger_cron.py
+uv run adw_triggers/trigger_cron.py
 
 # Start webhook server (for instant GitHub events)
-uv run trigger_webhook.py
+uv run adw_triggers/trigger_webhook.py
 ```
 
-## Script Usage Guide
+## ADW Workflow Scripts
 
-### test_auth.py - Verify Authentication
+### Individual Phase Scripts
 
-Tests and displays your authentication configuration.
+#### adw_plan.py - Planning Phase
+Creates implementation plans for GitHub issues.
 
+**Requirements:**
+- GitHub issue number
+- Issue must be open and accessible
+
+**Usage:**
 ```bash
-# Run authentication test
-uv run test_auth.py
-
-# Example output:
-# ✅ Authentication found: session
-#    Using Claude Max plan session authentication
-#
-# Environment Configuration
-#   HOME: /home/user
-#   CLAUDE_CODE_PATH: claude
-#   ...
+uv run adw_plan.py <issue-number> [adw-id]
 ```
 
-**What it checks:**
+**What it does:**
+1. Fetches issue details from GitHub
+2. Classifies issue type (`/chore`, `/bug`, `/feature`)
+3. Creates feature branch with semantic naming
+4. Generates detailed implementation plan
+5. Commits plan as `{adw_id}_plan_spec.md`
+6. Creates/updates pull request
+7. Outputs state JSON for chaining
 
-- Claude Code session authentication (Max plan)
-- API key authentication (fallback)
-- Environment variables configuration
-- Next steps and recommendations
+#### adw_build.py - Implementation Phase
+Implements solutions based on existing plans.
 
-### adw_plan_build.py - Process Single Issue
+**Requirements:**
+- Existing plan file (from `adw_plan.py` or manual)
+- Can receive state via stdin or find plan automatically
 
-Executes the complete ADW workflow for a specific GitHub issue.
-
+**Usage:**
 ```bash
-# Basic usage
-uv run adw_plan_build.py 456
+# Standalone (finds plan automatically)
+uv run adw_build.py
 
-# What it does:
-# 1. Fetches issue #456 from GitHub
-# 2. Creates feature branch
-# 3. Classifies issue type (/chore, /bug-plan, /feature)
-# 4. Generates implementation plan
-# 5. Implements the solution
-# 6. Creates commits and pull request
+# With piped state
+uv run adw_plan.py 456 | uv run adw_build.py
+
+# With explicit arguments
+uv run adw_build.py <issue-number> <adw-id>
 ```
 
-**Example output:**
+**What it does:**
+1. Locates existing plan file
+2. Implements solution per plan specifications
+3. Commits implementation changes
+4. Updates pull request
 
-```text
-ADW ID: e5f6g7h8
-issue_command: /feature
-Working on branch: feat-456-e5f6g7h8-add-user-authentication
-plan_file_path: specs/add-user-authentication-system-plan.md
-Pull request created: https://github.com/owner/repo/pull/789
-```
+#### adw_test.py - Testing Phase
+Runs test suites and handles test failures.
 
-### trigger_cron.py - Automated Monitoring
+**Requirements:**
+- Working directory with test suite
+- Optional: E2E test setup
 
-Continuously monitors GitHub for new issues or "adw" comments.
-
+**Usage:**
 ```bash
-# Start monitoring
-uv run trigger_cron.py
-
-# Processes issues when:
-# - New issue has no comments
-# - Latest comment on any issue is exactly "adw"
-
-# Example log output:
-# 2024-01-15 10:30:45 - Starting ADW cron trigger
-# 2024-01-15 10:30:46 - Issue #123 has no comments - processing
-# 2024-01-15 10:30:47 - Issue #456 - latest comment is 'adw' - processing
+uv run adw_test.py <issue-number> [adw-id] [--skip-e2e]
 ```
 
-**Production deployment with systemd:**
+**What it does:**
+1. Runs application test suite
+2. Optionally runs E2E tests (browser automation)
+3. Auto-resolves test failures (up to 3 attempts)
+4. Reports results to GitHub issue
+5. Commits test results
 
+#### adw_review.py - Review Phase
+Reviews implementation against specifications.
+
+**Requirements:**
+- Existing specification file
+- Completed implementation
+- ADW ID is required
+
+**Usage:**
 ```bash
-# Create service file: /etc/systemd/system/adw-cron.service
-sudo systemctl enable adw-cron
-sudo systemctl start adw-cron
+uv run adw_review.py <issue-number> <adw-id> [--skip-resolution]
 ```
 
-### trigger_webhook.py - GitHub Webhook Server
+**What it does:**
+1. Locates specification file
+2. Reviews implementation for spec compliance
+3. Captures screenshots of functionality
+4. Identifies issues (blockers, tech debt, skippable)
+5. Auto-resolves blockers (unless `--skip-resolution`)
+6. Uploads screenshots to cloud storage
+7. Posts detailed review report
 
-Receives real-time GitHub events for instant processing.
+#### adw_document.py - Documentation Phase
+Generates comprehensive documentation.
 
+**Requirements:**
+- Completed review phase (needs review artifacts)
+- ADW ID is mandatory
+
+**Usage:**
 ```bash
-# Start webhook server (default port 8001)
-uv run trigger_webhook.py
-
-# Custom port
-PORT=3000 uv run trigger_webhook.py
-
-# Configure GitHub webhook:
-# URL: https://your-server.com/gh-webhook
-# Events: Issues, Issue comments
+uv run adw_document.py <issue-number> <adw-id>
 ```
 
-**Endpoints:**
+**What it does:**
+1. Analyzes implementation and review results
+2. Generates technical documentation
+3. Creates user-facing guides
+4. Includes screenshots from review
+5. Commits to `app_docs/` directory
 
-- `/gh-webhook` - Receives GitHub events
-- `/health` - Health check endpoint
+#### adw_patch.py - Direct Patch Workflow
+Quick patches triggered by 'adw_patch' keyword.
+
+**Requirements:**
+- Issue or comment containing 'adw_patch' keyword
+- Clear change request in the content
+
+**Usage:**
+```bash
+uv run adw_patch.py <issue-number> [adw-id]
+```
+
+**What it does:**
+1. Searches for 'adw_patch' in issue/comments
+2. Creates targeted patch plan
+3. Implements specific changes
+4. Commits and creates PR
+5. Skips full planning phase
+
+### Orchestrator Scripts
+
+#### adw_plan_build.py - Plan + Build
+Combines planning and implementation phases.
+
+**Usage:**
+```bash
+uv run adw_plan_build.py <issue-number> [adw-id]
+```
+
+**Equivalent to:**
+```bash
+uv run adw_plan.py 456 | uv run adw_build.py
+```
+
+#### adw_plan_build_test.py - Plan + Build + Test
+Full pipeline with automated testing.
+
+**Usage:**
+```bash
+uv run adw_plan_build_test.py <issue-number> [adw-id]
+```
+
+**Phases:**
+1. Planning (creates implementation spec)
+2. Building (implements solution)
+3. Testing (runs test suite, auto-fixes failures)
+
+
+#### adw_plan_build_test_review.py - Plan + Build + Test + Review
+Complete pipeline with quality review.
+
+**Usage:**
+```bash
+uv run adw_plan_build_test_review.py <issue-number> [adw-id]
+```
+
+**Phases:**
+1. Planning (creates implementation spec)
+2. Building (implements solution)
+3. Testing (ensures functionality)
+4. Review (validates against spec, auto-fixes issues)
+
+#### adw_plan_build_review.py - Plan + Build + Review
+Pipeline with review but skipping tests.
+
+**Usage:**
+```bash
+uv run adw_plan_build_review.py <issue-number> [adw-id]
+```
+
+**Phases:**
+1. Planning (creates implementation spec)
+2. Building (implements solution)
+3. Review (validates against spec without test results)
+
+**Note:** Review phase evaluates implementation against specification but without test verification. Best for non-critical changes or when testing is handled separately.
+
+#### adw_plan_build_document.py - Plan + Build + Document
+Fast documentation pipeline skipping tests and review.
+
+**Usage:**
+```bash
+uv run adw_plan_build_document.py <issue-number> [adw-id]
+```
+
+**Phases:**
+1. Planning (creates implementation spec)
+2. Building (implements solution)
+3. Document (generates documentation without screenshots)
+
+**Warning:** Documentation quality may be limited without review artifacts (no screenshots). Consider using `adw_sdlc.py` for comprehensive documentation with visuals.
+
+#### adw_sdlc.py - Complete SDLC
+Full Software Development Life Cycle automation.
+
+**Usage:**
+```bash
+uv run adw_sdlc.py <issue-number> [adw-id]
+```
+
+**Phases:**
+1. **Plan**: Creates detailed implementation spec
+2. **Build**: Implements the solution
+3. **Test**: Runs comprehensive test suite
+4. **Review**: Validates implementation vs spec
+5. **Document**: Generates technical and user docs
+
+**Output:**
+- Feature implementation
+- Passing tests
+- Review report with screenshots
+- Complete documentation in `app_docs/`
+
+### Automation Triggers
+
+#### trigger_cron.py - Polling Monitor
+Continuously monitors GitHub for triggers.
+
+**Usage:**
+```bash
+uv run adw_triggers/trigger_cron.py
+```
+
+**Triggers on:**
+- New issues with no comments
+- Any issue where latest comment is exactly "adw"
+- Polls every 20 seconds
+
+**Workflow selection:**
+- Uses `adw_plan_build.py` by default
+- Excludes `adw_build` (implementation-only) workflows
+
+#### trigger_webhook.py - Real-time Events
+Webhook server for instant GitHub event processing.
+
+**Usage:**
+```bash
+uv run adw_triggers/trigger_webhook.py
+```
+
+**Configuration:**
+- Default port: 8001
+- Endpoints:
+  - `/gh-webhook` - GitHub event receiver
+  - `/health` - Health check
+- GitHub webhook settings:
+  - Payload URL: `https://your-domain.com/gh-webhook`
+  - Content type: `application/json`
+  - Events: Issues, Issue comments
+
+**Security:**
+- Validates GitHub webhook signatures
+- Requires `GITHUB_WEBHOOK_SECRET` environment variable
 
 ## How ADW Works
 
 1. **Issue Classification**: Analyzes GitHub issue and determines type:
    - `/chore` - Maintenance, documentation, refactoring
-   - `/bug-plan` - Bug fixes and corrections
+   - `/bug` - Bug fixes and corrections
    - `/feature` - New features and enhancements
 
 2. **Planning**: `sdlc_planner` agent creates implementation plan with:
@@ -196,27 +386,51 @@ PORT=3000 uv run trigger_webhook.py
 ## Common Usage Scenarios
 
 ### Process a bug report
-
 ```bash
 # User reports bug in issue #789
 uv run adw_plan_build.py 789
 # ADW analyzes, creates fix, and opens PR
 ```
 
-### Enable automatic processing
+### Run full pipeline
+```bash
+# Complete pipeline with testing
+uv run adw_plan_build_test.py 789
+# ADW plans, builds, and tests the solution
+```
 
+### Run complete SDLC
+```bash
+# Full SDLC with review and documentation
+uv run adw_sdlc.py 789
+# ADW plans, builds, tests, reviews, and documents the solution
+# Creates comprehensive documentation in app_docs/
+```
+
+### Run individual phases
+```bash
+# Plan only
+uv run adw_plan.py 789
+
+# Build based on existing plan
+uv run adw_build.py
+
+# Test the implementation
+uv run adw_test.py 789
+```
+
+### Enable automatic processing
 ```bash
 # Start cron monitoring
-uv run trigger_cron.py
+uv run adw_triggers/trigger_cron.py
 # New issues are processed automatically
 # Users can comment "adw" to trigger processing
 ```
 
 ### Deploy webhook for instant response
-
 ```bash
 # Start webhook server
-uv run trigger_webhook.py
+uv run adw_triggers/trigger_webhook.py
 # Configure in GitHub settings
 # Issues processed immediately on creation
 ```
@@ -224,7 +438,6 @@ uv run trigger_webhook.py
 ## Troubleshooting
 
 ### Environment Issues
-
 ```bash
 # Check required variables
 env | grep -E "(GITHUB|ANTHROPIC|CLAUDE)"
@@ -238,134 +451,93 @@ claude --version
 
 ### Common Errors
 
-#### "Claude Code CLI is not installed"
-
+**"Claude Code CLI is not installed"**
 ```bash
 which claude  # Check if installed
 # Reinstall from https://docs.anthropic.com/en/docs/claude-code
 ```
 
 **"Missing GITHUB_PAT"** (Optional - only needed if using different account than 'gh auth login')
-
 ```bash
 export GITHUB_PAT=$(gh auth token)
 ```
 
-#### "Agent execution failed"
-
+**"Agent execution failed"**
 ```bash
 # Check agent output
 cat agents/*/sdlc_planner/raw_output.jsonl | tail -1 | jq .
 ```
 
 ### Debug Mode
-
 ```bash
 export ADW_DEBUG=true
 uv run adw_plan_build.py 123  # Verbose output
 ```
 
-## Authentication
-
-ADWS supports two authentication methods for Claude Code:
-
-### Claude Max Plan (Recommended)
-
-**Benefits:**
-
-- Shared usage limits across Claude web/mobile and CLI
-- Max 5x: $100/month (~50-200 prompts per 5-hour window)
-- Max 10x: $200/month (20x higher limits)
-- More cost-effective for high-volume usage
-
-**Setup:**
-
-```bash
-# One-time authentication
-claude  # Follow prompts to log in
-
-# Verify authentication
-claude --version
-
-# ADWS will automatically detect and use your session
-uv run adw_plan_build.py 123
-```
-
-### API Key (Fallback)
-
-**Benefits:**
-
-- Pay-as-you-go pricing
-- No subscription required
-- Better for sporadic usage
-
-**Setup:**
-
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-uv run adw_plan_build.py 123
-```
-
-### Authentication Status
-
-ADWS automatically detects which authentication method is available:
-
-- Checks for Claude Code session first (Max plan)
-- Falls back to API key if no session found
-- Displays authentication type when running
-
-**Testing Authentication:**
-
-```bash
-# Run authentication test
-uv run test_auth.py
-
-# Shows:
-# - Which authentication method is active
-# - Environment configuration
-# - Next steps
-```
-
-**Troubleshooting:**
-
-```bash
-# Check if Claude is authenticated
-claude --version  # Should succeed without errors
-
-# Re-authenticate if needed
-rm -rf ~/.claude/session.json
-claude  # Log in again
-
-# Verify API key (if using)
-echo $ANTHROPIC_API_KEY
-```
-
 ## Configuration
 
 ### ADW Tracking
-
 Each workflow run gets a unique 8-character ID (e.g., `a1b2c3d4`) that appears in:
-
 - Issue comments: `a1b2c3d4_ops: ✅ Starting ADW workflow`
 - Output files: `agents/a1b2c3d4/sdlc_planner/raw_output.jsonl`
 - Git commits and PRs
 
 ### Model Selection
-
-Edit `agent.py` line 129 to change model:
-
+Edit `adw_modules/agent.py` line 129 to change model:
 - `model="sonnet"` - Faster, lower cost (default)
 - `model="opus"` - Better for complex tasks
 
-### Output Structure
+### Modular Architecture
+The system uses a modular architecture with composable scripts:
 
-```text
+- **State Management**: `ADWState` class enables chaining workflows via JSON piping
+- **Git Operations**: Centralized git operations in `git_ops.py`  
+- **Workflow Operations**: Core business logic in `workflow_ops.py`
+- **Agent Integration**: Standardized Claude Code CLI interface in `agent.py`
+
+### Script Chaining
+Scripts can be chained using pipes to pass state:
+```bash
+# Chain planning and building
+uv run adw_plan.py 123 | uv run adw_build.py
+
+# Chain full pipeline
+uv run adw_plan.py 123 | uv run adw_build.py | uv run adw_test.py
+
+# Or use the convenience script
+uv run adw_plan_build_test.py 123
+
+# State is automatically passed between scripts
+```
+
+### Workflow Output Structure
+
+Each ADW workflow creates an isolated workspace:
+
+```
 agents/
-├── a1b2c3d4/
-│   ├── sdlc_planner/
-│   │   └── raw_output.jsonl
-│   └── sdlc_implementor/
-│       └── raw_output.jsonl
+└── {adw_id}/                     # Unique workflow directory
+    ├── adw_state.json            # Persistent state file
+    ├── {adw_id}_plan_spec.md     # Implementation plan
+    ├── planner/                  # Planning agent output
+    │   └── raw_output.jsonl      # Claude Code session
+    ├── implementor/              # Implementation agent output
+    │   └── raw_output.jsonl
+    ├── tester/                   # Test agent output
+    │   └── raw_output.jsonl
+    ├── reviewer/                 # Review agent output
+    │   ├── raw_output.jsonl
+    │   └── review_img/           # Screenshots directory
+    ├── documenter/               # Documentation agent output
+    │   └── raw_output.jsonl
+    └── patch_*/                  # Patch resolution attempts
+
+app_docs/                         # Generated documentation
+└── features/
+    └── {feature_name}/
+        ├── overview.md
+        ├── technical-guide.md
+        └── images/
 ```
 
 ## Security Best Practices
@@ -379,31 +551,27 @@ agents/
 ## Technical Details
 
 ### Core Components
-
-- `agent.py` - Claude Code CLI integration
-- `data_types.py` - Pydantic models for type safety
-- `github.py` - GitHub API operations
+- `adw_modules/agent.py` - Claude Code CLI integration
+- `adw_modules/data_types.py` - Pydantic models for type safety
+- `adw_modules/github.py` - GitHub API operations
+- `adw_modules/git_ops.py` - Git operations (branching, commits, PRs)
+- `adw_modules/state.py` - State management for workflow chaining
+- `adw_modules/workflow_ops.py` - Core workflow operations (planning, building)
+- `adw_modules/utils.py` - Utility functions
+- `adw_plan.py` - Planning phase workflow
+- `adw_build.py` - Implementation phase workflow
+- `adw_test.py` - Testing phase workflow
+- `adw_review.py` - Review phase workflow
+- `adw_document.py` - Documentation phase workflow
 - `adw_plan_build.py` - Main workflow orchestration (plan & build)
+- `adw_plan_build_test.py` - Full pipeline orchestration (plan & build & test)
+- `adw_plan_build_test_review.py` - Complete pipeline with review (plan & build & test & review)
+- `adw_plan_build_review.py` - Pipeline with review, skipping tests (plan & build & review)
+- `adw_plan_build_document.py` - Documentation pipeline, skipping tests and review (plan & build & document)
+- `adw_sdlc.py` - Complete SDLC workflow (plan & build & test & review & document)
 
 ### Branch Naming
-
-```text
+```
 {type}-{issue_number}-{adw_id}-{slug}
 ```
-
 Example: `feat-456-e5f6g7h8-add-user-authentication`
-
-### Commit Format
-
-```text
-{type}: {description} for #{issue_number}
-
-Generated with ADW ID: {adw_id}
-🤖 Generated with [Claude Code](https://claude.ai/code)
-```
-
-### API Rate Limits
-
-- GitHub: 5000 requests/hour (authenticated)
-- Anthropic: Based on your plan tier
-- Automatic retry with exponential backoff
