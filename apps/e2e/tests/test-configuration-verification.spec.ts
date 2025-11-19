@@ -9,7 +9,7 @@ import { expect, test } from "@playwright/test";
  * - 3 tests should FAIL (intentionally - Tests 2, 4, and 7)
  */
 
-test.describe("Configuration Verification - Continue on Failure", () => {
+test.describe("@skip-in-ci Configuration Verification - Continue on Failure", () => {
 	test("Test 1: Should PASS", async () => {
 		expect(true).toBe(true);
 	});
@@ -54,7 +54,7 @@ test.describe("Configuration Verification - Continue on Failure", () => {
 	});
 });
 
-test.describe("Summary Verification", () => {
+test.describe("@skip-in-ci Summary Verification", () => {
 	test.afterAll(async () => {
 		console.log(`
     =====================================================
