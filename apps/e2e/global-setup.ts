@@ -117,8 +117,13 @@ async function globalSetup(config: FullConfig) {
 		});
 		const page = await context.newPage();
 
-		// Navigate to the app first to set the domain
-		await page.goto("/");
+		// Navigate to the app with Vercel bypass query parameters to avoid redirect
+		// The query parameters set the bypass cookie, allowing subsequent navigations to work
+		const initialUrl = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+			? `/?x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone`
+			: "/";
+
+		await page.goto(initialUrl);
 
 		// Explicitly set Vercel bypass cookie if secret is available
 		// This ensures the bypass persists in the saved storage state
