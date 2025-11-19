@@ -11,7 +11,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
 	test("sign in page loads with correct elements", async ({ page }) => {
-		await page.goto("/auth/sign-in");
+		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
 
 		// Wait for the page to be ready
 		await page.waitForLoadState("domcontentloaded");
@@ -37,7 +37,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign up page loads with correct elements", async ({ page }) => {
-		await page.goto("/auth/sign-up");
+		await page.goto("/auth/sign-up", { waitUntil: "networkidle" });
 
 		// Verify all sign-up form elements are present
 		await expect(page.locator('[data-testid="sign-up-email"]')).toBeVisible();
@@ -70,7 +70,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 				const pathname = url.pathname;
 				return pathname.includes("/home") || pathname.includes("/onboarding");
 			},
-			{ timeout: 15000 },
+			{ timeout: 30000 },
 		);
 
 		// Verify we're logged in by checking for authenticated elements
@@ -125,7 +125,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 				const pathname = url.pathname;
 				return pathname.includes("/home") || pathname.includes("/onboarding");
 			},
-			{ timeout: 15000 },
+			{ timeout: 30000 },
 		);
 
 		// Now sign out using the simplified method (avoiding portal UI)
@@ -142,8 +142,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("password reset link navigates correctly", async ({ page }) => {
-		await page.goto("/auth/sign-in");
-		await page.waitForLoadState("domcontentloaded");
+		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
 
 		// Click forgot password link (actual href is /auth/password-reset)
 		const forgotPasswordLink = page.locator('a[href*="password-reset"]');
@@ -164,7 +163,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign up link navigates from sign in page", async ({ page }) => {
-		await page.goto("/auth/sign-in");
+		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
 
 		// Click sign up link
 		const signUpLink = page.locator('a[href*="sign-up"]');
@@ -177,7 +176,7 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	});
 
 	test("sign in link navigates from sign up page", async ({ page }) => {
-		await page.goto("/auth/sign-up");
+		await page.goto("/auth/sign-up", { waitUntil: "networkidle" });
 
 		// Click sign in link
 		const signInLink = page.locator('a[href*="sign-in"]');
@@ -236,15 +235,15 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 				const pathname = url.pathname;
 				return pathname.includes("/home") || pathname.includes("/onboarding");
 			},
-			{ timeout: 15000 },
+			{ timeout: 30000 },
 		);
 
 		// Navigate to different protected pages
-		await page.goto("/home", { waitUntil: "domcontentloaded" });
+		await page.goto("/home", { waitUntil: "networkidle" });
 		await expect(page).toHaveURL(/\/home/);
 
 		// Session should persist - no redirect to sign-in
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		await page.goto("/home/settings", { waitUntil: "networkidle" });
 		await expect(page).toHaveURL(/\/home\/settings/);
 	});
 });

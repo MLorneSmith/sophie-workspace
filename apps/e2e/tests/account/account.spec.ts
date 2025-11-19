@@ -14,7 +14,7 @@ test.describe("Account Settings", () => {
 		account = new AccountPageObject(page);
 
 		// Navigate to settings page
-		await page.goto("/home/settings");
+		await page.goto("/home/settings", { waitUntil: "networkidle" });
 	});
 
 	test("user can update their profile name", async ({ page }) => {
@@ -80,7 +80,7 @@ test.describe("Account Deletion", () => {
 
 		await page.waitForURL("/");
 
-		await page.goto("/auth/sign-in");
+		await page.goto("/auth/sign-in", { waitUntil: "networkidle" });
 
 		// sign in will now fail
 		await auth.signIn({
