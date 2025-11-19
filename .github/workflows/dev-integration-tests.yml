@@ -445,6 +445,8 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD }}
           ENABLE_BILLING_TESTS: true  # Enable billing integration tests
           ENABLE_TEAM_ACCOUNT_TESTS: true  # Enable team account integration tests
+          # Stripe test key for billing E2E tests
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
           # E2E test user credentials
           E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
           E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
