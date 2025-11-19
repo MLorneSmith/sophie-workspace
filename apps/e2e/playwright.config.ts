@@ -13,10 +13,10 @@ dotenvConfig({
 /**
 
 * Number of workers to use in CI. Tweak based on your CI provider's resources.
-* Reduced from 4 to 2 to prevent resource contention and authentication conflicts
-* This improves stability at the cost of slightly increased test duration
+* Set to 3 for 4-core runners to optimize CPU utilization (1 core reserved for OS/overhead)
+* Updated from 2 as part of performance optimization for 4cpu-linux-x64 runners
  */
-const CI_WORKERS = 2;
+const CI_WORKERS = 3;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
