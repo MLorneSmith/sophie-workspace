@@ -146,7 +146,11 @@ TOTAL_PASSED=$((UNIT_PASSED + E2E_PASSED))
 TOTAL_FAILED=$((UNIT_FAILED + E2E_FAILED))
 
 # Adjust for intentional test failures (test-configuration-verification.spec.ts)
-# This test file contains 3 intentional failures to verify Playwright configuration
+# Shard 11 contains configuration verification tests with 3 intentional failures
+# These tests are tagged with @skip-in-ci and only run:
+# - When explicitly running Shard 11: pnpm --filter web-e2e test:shard11
+# - When running all tests without filtering: pnpm --filter web-e2e test
+# They are skipped by default in CI and when using test:shard command
 if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; then
     INTENTIONAL_FAILURES=3
 
@@ -156,7 +160,7 @@ if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; th
     # Only subtract if we found the expected intentional failures
     if [[ $INTENTIONAL_COUNT -ge $INTENTIONAL_FAILURES ]]; then
         TOTAL_FAILED=$((TOTAL_FAILED - INTENTIONAL_FAILURES))
-        echo -e "${BLUE}ℹ️  Excluded $INTENTIONAL_FAILURES intentional test failures (config verification)${NC}"
+        echo -e "${BLUE}ℹ️  Excluded $INTENTIONAL_FAILURES intentional test failures (Shard 11 config verification)${NC}"
     fi
 fi
 
@@ -203,6 +207,10 @@ fi
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 # Batch Scheduler Information
+echo ""
+echo -e "${BLUE}📋 E2E Shard Organization${NC}"
+echo "  Shards 1-10: Real business logic tests (run in CI)"
+echo "  Shard 11: Configuration verification tests (local only, @skip-in-ci)"
 echo ""
 echo -e "${BLUE}📋 Batch Scheduler Configuration${NC}"
 echo "  Batch scheduling enabled by default for E2E tests"
