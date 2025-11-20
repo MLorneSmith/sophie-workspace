@@ -678,7 +678,7 @@ class TestController {
 
 		try {
 			// Get report directory for today
-			const today = new Date().toISOString().split["T"](0);
+			const today = new Date().toISOString().split("T")[0];
 			const reportDir = path.join(
 				CONFIG.reporting.shardReportDir ||
 					path.join(process.cwd(), "reports", "testing"),

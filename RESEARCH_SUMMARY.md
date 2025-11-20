@@ -9,11 +9,13 @@
 
 ## What This Error Is
 
-```
+```text
 parseEditorState: type "block" not found
 ```
 
-A **server-side rendering configuration error** that occurs when Payload CMS tries to parse rich text content containing block nodes, but the global Lexical editor configuration doesn't have `BlocksFeature` registered.
+A **server-side rendering configuration error** that occurs when Payload CMS tries to parse rich text
+content containing block nodes, but the global Lexical editor configuration doesn't have
+`BlocksFeature` registered.
 
 ---
 
@@ -37,6 +39,7 @@ editor: lexicalEditor({
 ```
 
 **Files Changed:**
+
 1. `apps/payload/src/payload.config.ts` - Global editor configuration (fixed)
 2. All other files remain unchanged and working correctly
 
@@ -61,6 +64,7 @@ Payload CMS has **two separate editor configurations:**
 ### The Architectural Issue
 
 When Payload renders the admin panel:
+
 1. **Server** builds form state using **global editor**
 2. Server SSR component calls `RscEntryLexicalField`
 3. This component parses rich text using **global editor config**
@@ -68,6 +72,7 @@ When Payload renders the admin panel:
 5. Collection-level editor config is irrelevant at this stage
 
 **The original bug:**
+
 - Global editor was minimal: `lexicalEditor({})`
 - Collection editor had BlocksFeature configured correctly
 - This worked fine for browser UI but broke SSR parsing
@@ -78,12 +83,14 @@ When Payload renders the admin panel:
 ## Critical Distinction: BlockType vs BlockNode Type
 
 ### Lexical Node Type (`"type": "block"`)
+
 - Internal Lexical parsing concept
 - Registered globally via BlocksFeature
 - Generic "block" wrapper for all block types
 - **This is what the error refers to**
 
 ### blockType (e.g., `"youtube-video"`)
+
 - User-facing block identifier
 - Stored in database content
 - Specific block implementation
@@ -105,6 +112,7 @@ The error wasn't about invalid blockType values—it was about Lexical being una
 ## Server-Side Rendering vs Client-Side Editing
 
 ### The Problem: SSR
+
 - Payload admin panel uses Next.js Server Components
 - When form loads, SSR must parse rich text field content
 - Parsing uses **global editor** config (not collection config)
@@ -112,12 +120,14 @@ The error wasn't about invalid blockType values—it was about Lexical being una
 - Error appears before user ever sees editing UI
 
 ### The Solution: Global Configuration
+
 - Global editor must have BlocksFeature with all blocks
 - SSR can now parse block content
 - Form renders successfully to browser
 - Collection editor then provides interactive UI
 
 ### Why Collection Editor Wasn't Enough
+
 - Collection editor only runs in browser after SSR succeeds
 - If SSR fails, collection editor never loads
 - Global config is the foundation, collection config is enhancement
@@ -127,9 +137,11 @@ The error wasn't about invalid blockType values—it was about Lexical being una
 ## Files Involved
 
 ### Modified ✅
+
 - **`apps/payload/src/payload.config.ts`** - Added BlocksFeature to global editor
 
 ### Verified Correct (No Changes Needed)
+
 - **`apps/payload/src/blocks/index.ts`** - Exports allBlocks correctly
 - **`apps/payload/src/blocks/*/config.ts`** - Individual blocks defined properly
 - **`apps/payload/src/collections/Posts.ts`** - Collection editor configured correctly
@@ -140,6 +152,7 @@ The error wasn't about invalid blockType values—it was about Lexical being una
 ## Blocks Currently Configured
 
 The `allBlocks` array includes:
+
 - **BunnyVideo** - Bunny.net video player blocks (`bunny-video`)
 - **CallToAction** - CTA blocks with headline (`call-to-action`)
 - **DebugBlock** - Testing block (`debug-block`)
@@ -147,6 +160,7 @@ The `allBlocks` array includes:
 - **YouTubeVideo** - YouTube embeds (`youtube-video`)
 
 When you add new blocks:
+
 1. Create block config in `apps/payload/src/blocks/[BlockName]/config.ts`
 2. Export from `blocks/index.ts`
 3. Add to `allBlocks` array
@@ -180,7 +194,8 @@ When you add new blocks:
 ## Key Insights
 
 ### 1. Configuration Hierarchy
-```
+
+```text
 Global Editor (base)
     ↓ (inheritance/override)
 Collection Editor (enhancement)
@@ -189,12 +204,17 @@ Collection Editor (enhancement)
 You must have the **base** correct even if the **enhancement** is perfect.
 
 ### 2. SSR Dependency
-Server-side rendering components depend on global configuration, not collection-specific settings. This is why the error appeared before any client-side code ran.
+
+Server-side rendering components depend on global configuration, not collection-specific settings.
+This is why the error appeared before any client-side code ran.
 
 ### 3. Data Validation
-The error is NOT about database corruption or invalid data. The rich text content is correctly structured and stored. It's purely a **parsing capability issue**.
+
+The error is NOT about database corruption or invalid data. The rich text content is correctly
+structured and stored. It's purely a **parsing capability issue**.
 
 ### 4. Simple Fix
+
 3-5 lines of code resolves a critical issue that makes the entire admin panel unusable for affected collections.
 
 ---
