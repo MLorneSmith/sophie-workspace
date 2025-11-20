@@ -122,10 +122,9 @@ todos = [
 
 **Verify** environment and tools availability:
 
-```bash
-# Clear previous check artifacts
-rm -f /tmp/.claude_codecheck_status_*
-```
+- Confirm script exists at `.ai/ai_scripts/codecheck-direct.sh`
+- Check pnpm is available
+- Validate TypeScript and lint configurations present
 
 **Update** progress: Mark "Pre-check validation" as completed
 
@@ -153,7 +152,13 @@ bash .ai/ai_scripts/codecheck-direct.sh
 
 ```
 IF checks_failed:
-  → **Extract** error details from logs
+  → **Read** log files from the WORK_DIR shown in script output
+  → Log location format: /tmp/codecheck_${TIMESTAMP}/
+  → Key files to check:
+     - typecheck_output.log (TypeScript errors)
+     - lint_output.log (Linting errors)
+     - format_output.log (Formatting issues)
+     - *_result.yaml files (structured error counts)
   → **Categorize** issues by severity and type
   → **Determine** which issues are auto-fixable
   → THEN **Proceed** to fix attempts
@@ -249,9 +254,11 @@ Project: [project_path]
 ✅ TypeScript   : [PASSED/FAILED] ([N] errors)
 ⚠️  Linting      : [PASSED/FIXED/FAILED] ([N] auto-fixed, [M] warnings remain)
 ✅ Formatting   : [PASSED/FIXED] ([N] files reformatted)
-✅ Security     : [PASSED/FAILED] ([N] vulnerabilities)
 
-📁 Logs: [log_directory]
+📁 Logs: /tmp/codecheck_[TIMESTAMP]/
+   - typecheck_output.log (full TypeScript output)
+   - lint_output.log (linting details)
+   - format_output.log (formatting details)
 
 ⏱️  Total Time: [seconds]
 
@@ -289,9 +296,9 @@ Project: [project_path]
 const errorHandlers = {
   "script not found": "Restore from .ai/ai_scripts/ or check path",
   "pnpm not found": "Install pnpm: npm install -g pnpm",
-  "typecheck failed": "Review type errors in log, consider typescript-expert",
-  "lint errors": "Run pnpm lint:fix for auto-fixable issues",
-  "format issues": "Run pnpm biome format --write to auto-format",
+  "typecheck failed": "Read /tmp/codecheck_[TIMESTAMP]/typecheck_output.log for details",
+  "lint errors": "Read /tmp/codecheck_[TIMESTAMP]/lint_output.log, then run pnpm lint:fix",
+  "format issues": "Read /tmp/codecheck_[TIMESTAMP]/format_output.log, then run pnpm biome format --write",
   "permission denied": "Check file permissions and retry",
   "out of memory": "Increase heap: NODE_OPTIONS='--max-old-space-size=4096'"
 }
