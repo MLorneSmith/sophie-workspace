@@ -1,0 +1,28 @@
+{
+	"shard": {
+		"id": 9,
+		"name": "User Billing",
+		"files": ["tests/user-billing/user-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard9"
+	},
+	"execution": {
+		"startTime": "2025-11-20T18:32:16.080Z",
+		"endTime": "2025-11-20T18:33:17.080Z",
+		"duration": "61s",
+		"exitCode": -1,
+		"timedOut": true
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard9 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 1 test using 1 worker\n\nStarting billing test, current URL: about:blank\nNavigating to /home first...\nAt /home, URL: http://localhost:3001/auth/sign-in?next=/home\nNavigating to /home/billing...\nAt /home/billing, URL: http://localhost:3001/auth/sign-in?next=/home/billing\n"
+}

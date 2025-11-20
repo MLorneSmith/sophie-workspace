@@ -1,18 +1,36 @@
 {
 	"executionDate": "2025-11-20",
-	"lastUpdated": "2025-11-20T17:57:52.924Z",
+	"lastUpdated": "2025-11-20T18:46:03.046Z",
 	"totalShards": 0,
-	"completedShards": 4,
+	"completedShards": 15,
 	"failedShards": 0,
-	"timedOutShards": 0,
+	"timedOutShards": 6,
 	"overallResults": {
-		"total": 52,
-		"passed": 39,
+		"total": 113,
+		"passed": 87,
 		"failed": 0,
-		"skipped": 13,
+		"skipped": 26,
 		"intentionalFailures": 0
 	},
 	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
 		{
 			"id": 1,
 			"name": "Smoke Tests",
@@ -32,10 +50,46 @@
 			"intentionalFailures": 0
 		},
 		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "11s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 3,
+			"name": "Accounts",
+			"success": false,
+			"duration": "81s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 4,
+			"name": "Admin & Invitations",
+			"success": false,
+			"duration": "103s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
 			"id": 5,
 			"name": "Accessibility",
 			"success": true,
 			"duration": "51s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "52s",
 			"tests": 21,
 			"failures": 0,
 			"intentionalFailures": 0
@@ -46,6 +100,51 @@
 			"success": true,
 			"duration": "9s",
 			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "10s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 7,
+			"name": "Payload CMS",
+			"success": false,
+			"duration": "61s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 8,
+			"name": "Payload CMS Extended",
+			"success": false,
+			"duration": "61s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 9,
+			"name": "User Billing",
+			"success": false,
+			"duration": "61s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 10,
+			"name": "Team Billing",
+			"success": false,
+			"duration": "61s",
+			"tests": 0,
 			"failures": 0,
 			"intentionalFailures": 0
 		}
