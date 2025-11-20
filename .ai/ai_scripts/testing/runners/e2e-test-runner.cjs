@@ -770,7 +770,7 @@ class E2ETestRunner {
 			let stallCheckInterval = null;
 
 			// Resolve with error result
-			const resolveWithError = (reason) => {
+			const resolveWithError = async (reason) => {
 				if (resolved) return;
 				resolved = true;
 
@@ -779,7 +779,8 @@ class E2ETestRunner {
 					reason.toLowerCase().includes("timed out") ||
 					reason.toLowerCase().includes("stalled") ||
 					reason.toLowerCase().includes("timeout");
-				resolve({
+
+				const errorResult = {
 					total: 0,
 					passed: 0,
 					failed: isTimeout ? 0 : 1, // Don't count timeouts as failures
@@ -789,7 +790,19 @@ class E2ETestRunner {
 					duration,
 					exitCode: -1,
 					timedOut: isTimeout,
-				});
+				};
+
+				// Generate report for timeouts/errors so they appear in summary
+				await this.generateShardReport(
+					errorResult,
+					group,
+					shardId,
+					duration,
+					outputBuffer,
+					errorBuffer + `\n${reason}`,
+				);
+
+				resolve(errorResult);
 			};
 
 			try {
@@ -1465,29 +1478,29 @@ class E2ETestRunner {
 			const filename = `shard-${shardId}-${safeShardName}.json`;
 			const filePath = path.join(reportPath, filename);
 
-			// Write report asynchronously using setImmediate to not block test execution
-			setImmediate(async () => {
+			// Write report synchronously to ensure it completes before moving to next shard
+			try {
+				await fs.writeFile(filePath, stringifyWithTabs(report), "utf8");
+
+				// Format with Biome to ensure compliance (with timeout to prevent hangs)
 				try {
-					await fs.writeFile(filePath, stringifyWithTabs(report), "utf8");
-
-					// Format with Biome to ensure compliance
-					try {
-						await execAsync(`npx biome format --write "${filePath}"`);
-					} catch (formatError) {
-						// Non-critical - log but don't fail
-						logError(
-							`Biome formatting failed for ${filename}: ${formatError.message}`,
-						);
-					}
-
-					log(`📝 Report generated: ${filename}`);
-
-					// Also generate a summary file that gets updated with each shard
-					await this.updateExecutionSummary(reportPath, report);
-				} catch (error) {
-					logError(`Failed to write shard report: ${error.message}`);
+					await execAsync(`npx biome format --write "${filePath}"`, {
+						timeout: 5000,
+					});
+				} catch (formatError) {
+					// Non-critical - log but don't fail
+					logError(
+						`Biome formatting failed for ${filename}: ${formatError.message}`,
+					);
 				}
-			});
+
+				log(`📝 Report generated: ${filename}`);
+
+				// Also generate a summary file that gets updated with each shard
+				await this.updateExecutionSummary(reportPath, report);
+			} catch (error) {
+				logError(`Failed to write shard report: ${error.message}`);
+			}
 		} catch (error) {
 			// Log error but don't fail test execution
 			logError(`Report generation error (non-blocking): ${error.message}`);

@@ -1,0 +1,31 @@
+{
+	"shard": {
+		"id": 6,
+		"name": "Config & Health",
+		"files": [
+			"tests/test-configuration-verification.spec.ts",
+			"tests/healthcheck.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard6"
+	},
+	"execution": {
+		"startTime": "2025-11-20T17:57:43.730Z",
+		"endTime": "2025-11-20T17:57:52.730Z",
+		"duration": "9s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 1,
+		"passed": 1,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard6 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/healthcheck.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 1 test using 1 worker\n·\n  1 passed (8.4s)\n"
+}

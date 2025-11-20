@@ -1,0 +1,53 @@
+{
+	"executionDate": "2025-11-20",
+	"lastUpdated": "2025-11-20T17:57:52.924Z",
+	"totalShards": 0,
+	"completedShards": 4,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 52,
+		"passed": 39,
+		"failed": 0,
+		"skipped": 13,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 2,
+			"name": "Authentication",
+			"success": true,
+			"duration": "11s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 5,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "51s",
+			"tests": 21,
+			"failures": 0,
+			"intentionalFailures": 0
+		},
+		{
+			"id": 6,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "9s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0
+		}
+	]
+}

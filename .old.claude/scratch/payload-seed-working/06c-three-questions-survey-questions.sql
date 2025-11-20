@@ -1,2 +1,0 @@
--- 06c-three-questions-survey-questions
--- Placeholder for survey questions
