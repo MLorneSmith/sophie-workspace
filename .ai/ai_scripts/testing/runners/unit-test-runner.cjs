@@ -30,8 +30,9 @@ function stripAnsi(str) {
 	// - OSC sequences: ESC ] ... BEL/ST
 	// - Simple escapes: ESC letter
 	return str.replace(
+		// biome-ignore lint/suspicious/noControlCharactersInRegex: Intentional ANSI escape sequence matching
 		/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-		""
+		"",
 	);
 }
 

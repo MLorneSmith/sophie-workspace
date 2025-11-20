@@ -339,7 +339,8 @@ export class AuthPageObject {
 		const startTime = Date.now();
 
 		// Wait for auth API response
-		const authTimeout = testConfig.getTimeout("medium");
+		// Use "long" timeout for super-admin login as it involves MFA flow
+		const authTimeout = testConfig.getTimeout("long");
 		console.log("[Super-Admin Auth] Waiting for Supabase auth API response...");
 
 		const authResponsePromise = this.page.waitForResponse(

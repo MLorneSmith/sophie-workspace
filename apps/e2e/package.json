@@ -42,7 +42,10 @@
 		"test:group:config": "playwright test tests/test-configuration-verification.spec.ts tests/healthcheck.spec.ts",
 		"test:group:payload": "playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts",
 		"test:debug": "playwright test tests/debug/ --project=chromium",
-		"test:debug:ui": "playwright test tests/debug/ --ui"
+		"test:debug:ui": "playwright test tests/debug/ --ui",
+		"test:quick": "playwright test tests/smoke/smoke.spec.ts tests/authentication/auth-simple.spec.ts tests/healthcheck.spec.ts --workers=2 --retries=0",
+		"test:critical": "playwright test tests/smoke tests/authentication tests/account --workers=4 --retries=0",
+		"test:fast": "playwright test tests/smoke/smoke.spec.ts tests/healthcheck.spec.ts --workers=1 --retries=0"
 	},
 	"keywords": [],
 	"author": "",
