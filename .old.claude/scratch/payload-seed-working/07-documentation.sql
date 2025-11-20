@@ -1,2 +1,0 @@
--- Documentation data
--- Placeholder for documentation

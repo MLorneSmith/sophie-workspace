@@ -412,6 +412,7 @@ class TestController {
 	 */
 	async run() {
 		const startTime = Date.now();
+		this._startTime = startTime; // Store for duration calculation in reporting phase
 
 		try {
 			log("🚀 Starting Modular Test Controller");
@@ -505,6 +506,9 @@ class TestController {
 			name: "initialization",
 			critical: true,
 			executor: async () => {
+				log(`\n${"═".repeat(60)}`);
+				log("🔧 PHASE: INITIALIZATION");
+				log(`${"═".repeat(60)}\n`);
 				log("📋 Initializing test environment...");
 				await this.testStatus.reset();
 				await this.testStatus.save();
@@ -520,6 +524,10 @@ class TestController {
 			name: "infrastructure_check",
 			critical: true,
 			executor: async () => {
+				log(`\n${"═".repeat(60)}`);
+				log("🏗️  PHASE: INFRASTRUCTURE CHECK");
+				log(`${"═".repeat(60)}\n`);
+
 				const results = await this.infrastructureManager.checkAll(
 					this.options.unitOnly,
 				);
@@ -572,6 +580,10 @@ class TestController {
 				name: "unit_tests",
 				critical: false, // Continue even if unit tests fail
 				executor: async () => {
+					log(`\n${"═".repeat(60)}`);
+					log("🧪 PHASE: UNIT TESTS");
+					log(`${"═".repeat(60)}\n`);
+
 					const result = await this.unitTestRunner.run();
 					return result;
 				},
@@ -588,6 +600,10 @@ class TestController {
 				name: "e2e_tests",
 				critical: false,
 				executor: async () => {
+					log(`\n${"═".repeat(60)}`);
+					log("🌐 PHASE: E2E TESTS");
+					log(`${"═".repeat(60)}\n`);
+
 					// Pre-flight check for E2E infrastructure
 					const e2eReadiness = await this.validateE2EReadiness();
 
@@ -624,6 +640,10 @@ class TestController {
 			name: "cleanup",
 			critical: false,
 			executor: async () => {
+				log(`\n${"═".repeat(60)}`);
+				log("🧹 PHASE: CLEANUP");
+				log(`${"═".repeat(60)}\n`);
+
 				await this.cleanup();
 				return { success: true };
 			},
@@ -638,9 +658,15 @@ class TestController {
 			name: "reporting",
 			critical: false,
 			executor: async () => {
+				log(`\n${"═".repeat(60)}`);
+				log("📝 PHASE: REPORTING");
+				log(`${"═".repeat(60)}\n`);
+
+				let shardAnalysis = null;
+
 				// Analyze shard reports if E2E tests were run
 				if (!this.options.skipE2E && !this.options.unitOnly) {
-					const shardAnalysis = await this.analyzeShardReports();
+					shardAnalysis = await this.analyzeShardReports();
 					if (shardAnalysis) {
 						log("✅ Shard reports analyzed successfully");
 						// Update test status with accurate information from reports
@@ -658,6 +684,19 @@ class TestController {
 					}
 				}
 
+				// Get unit test results from test status
+				const unitResults = this.testStatus.getUnitTestResults?.() || {
+					total: 0,
+					passed: 0,
+					failed: 0,
+				};
+
+				// Calculate duration
+				const duration = Math.round((Date.now() - this._startTime) / 1000);
+
+				// Write machine-readable summary files
+				await this.writeSummaryFiles(shardAnalysis, unitResults, duration);
+
 				await this.testReporter.generateReport();
 				return { success: true };
 			},
@@ -667,6 +706,147 @@ class TestController {
 		});
 
 		return phases;
+	}
+
+	/**
+	 * Write machine-readable test summary to /tmp/test-summary.json
+	 * and failures to /tmp/test-failures.log for easy parsing
+	 */
+	async writeSummaryFiles(shardAnalysis, unitResults, duration) {
+		const fs = require("node:fs").promises;
+
+		try {
+			const summary = this.testStatus.getSummary();
+			const allFailures = [];
+
+			// Collect all failures from shard reports
+			if (shardAnalysis?.shardReports) {
+				for (const report of shardAnalysis.shardReports) {
+					if (report.failures && report.failures.length > 0) {
+						for (const failure of report.failures) {
+							allFailures.push({
+								name: failure.name,
+								file: failure.file || report.shard.testFiles?.[0] || "unknown",
+								shard: report.shard.name,
+								error: failure.error?.substring(0, 500) || "No error message",
+								type: this.categorizeError(failure.error),
+							});
+						}
+					}
+				}
+			}
+
+			// Build summary JSON
+			const summaryJson = {
+				timestamp: new Date().toISOString(),
+				status: summary.actualFailures === 0 ? "passed" : "failed",
+				duration: duration,
+				unit: {
+					total: unitResults?.total || 0,
+					passed: unitResults?.passed || 0,
+					failed: unitResults?.failed || 0,
+				},
+				e2e: {
+					total: shardAnalysis?.summary?.overallResults?.total || 0,
+					passed: shardAnalysis?.summary?.overallResults?.passed || 0,
+					failed: shardAnalysis?.summary?.overallResults?.failed || 0,
+					skipped: shardAnalysis?.summary?.overallResults?.skipped || 0,
+					shards:
+						shardAnalysis?.shardReports?.map((r) => ({
+							name: r.shard.name,
+							passed: r.results?.passed || 0,
+							failed: r.results?.failed || 0,
+							skipped: r.results?.skipped || 0,
+							timedOut: r.execution?.timedOut || false,
+							duration: r.execution?.duration || "unknown",
+						})) || [],
+				},
+				totals: {
+					total: summary.total,
+					passed: summary.passed,
+					failed: summary.actualFailures,
+					intentionalFailures: summary.intentionalFailures || 0,
+				},
+				failures: allFailures,
+			};
+
+			// Write summary JSON
+			await fs.writeFile(
+				"/tmp/test-summary.json",
+				JSON.stringify(summaryJson, null, 2),
+			);
+			log("✅ Test summary written to /tmp/test-summary.json");
+
+			// Write failures log if there are any
+			if (allFailures.length > 0) {
+				const failureLog = allFailures
+					.map(
+						(f) =>
+							`${"=".repeat(60)}\n` +
+							`[ERROR] Test: "${f.name}"\n` +
+							`        File: ${f.file}\n` +
+							`        Shard: ${f.shard}\n` +
+							`        Type: ${f.type}\n` +
+							`        Message: ${f.error.split("\n")[0]}\n` +
+							`${"─".repeat(60)}\n` +
+							`${f.error}\n`,
+					)
+					.join("\n");
+
+				await fs.writeFile("/tmp/test-failures.log", failureLog);
+				log(
+					`✅ ${allFailures.length} failure(s) written to /tmp/test-failures.log`,
+				);
+			} else {
+				// Clear old failure log if no failures
+				try {
+					await fs.unlink("/tmp/test-failures.log");
+				} catch {
+					// File doesn't exist, that's fine
+				}
+			}
+
+			return summaryJson;
+		} catch (error) {
+			logError(`Failed to write summary files: ${error.message}`);
+			return null;
+		}
+	}
+
+	/**
+	 * Categorize error type for better reporting
+	 */
+	categorizeError(errorMessage) {
+		if (!errorMessage) return "Unknown";
+		const msg = errorMessage.toLowerCase();
+
+		if (msg.includes("timeout")) return "Timeout";
+		if (msg.includes("econnrefused") || msg.includes("connection"))
+			return "Connection";
+		if (
+			msg.includes("auth") ||
+			msg.includes("login") ||
+			msg.includes("credential")
+		)
+			return "Authentication";
+		if (
+			msg.includes("selector") ||
+			msg.includes("locator") ||
+			msg.includes("element")
+		)
+			return "UI/Element";
+		if (
+			msg.includes("database") ||
+			msg.includes("query") ||
+			msg.includes("sql")
+		)
+			return "Database";
+		if (msg.includes("500") || msg.includes("server error"))
+			return "Server Error";
+		if (msg.includes("404") || msg.includes("not found")) return "Not Found";
+		if (msg.includes("assert") || msg.includes("expect")) return "Assertion";
+
+		return "Application";
 	}
 
 	/**
@@ -699,14 +879,20 @@ class TestController {
 				const summaryContent = await fs.readFile(summaryPath, "utf8");
 				const summary = JSON.parse(summaryContent);
 
-				log("\n📈 Shard Report Analysis:");
-				log(`   Total Shards: ${summary.completedShards}`);
-				log(`   Failed Shards: ${summary.failedShards}`);
-				log(`   Timed Out Shards: ${summary.timedOutShards}`);
+				// Output clear section header
+				log(`\n${"═".repeat(60)}`);
+				log("📊 E2E TEST RESULTS SUMMARY");
+				log(`${"═".repeat(60)}`);
+
+				log("\n📈 Overall Results:");
 				log(`   Total Tests: ${summary.overallResults.total}`);
-				log(`   Passed: ${summary.overallResults.passed}`);
-				log(`   Failed: ${summary.overallResults.failed}`);
-				log(`   Skipped: ${summary.overallResults.skipped}`);
+				log(`   ✅ Passed: ${summary.overallResults.passed}`);
+				if (summary.overallResults.failed > 0) {
+					log(`   ❌ Failed: ${summary.overallResults.failed}`);
+				}
+				if (summary.overallResults.skipped > 0) {
+					log(`   ⏭️  Skipped: ${summary.overallResults.skipped}`);
+				}
 
 				// Read individual shard reports for detailed failure information
 				const shardFiles = await fs.readdir(reportDir);
@@ -718,29 +904,76 @@ class TestController {
 						const content = await fs.readFile(filePath, "utf8");
 						const report = JSON.parse(content);
 						shardReports.push(report);
+					}
+				}
 
-						// Log failed tests from this shard
-						if (report.failures && report.failures.length > 0) {
-							log(`\n❌ Failed tests in ${report.shard.name}:`);
-							for (const failure of report.failures) {
-								log(`   • ${failure.name}`);
-								if (failure.error && CONFIG.execution.verbose) {
-									const errorPreview = failure.error
-										.split("\n")[0]
-										.substring(0, 100);
-									log(`     Error: ${errorPreview}...`);
-								}
-							}
+				// Sort shards by number for consistent display
+				shardReports.sort((a, b) => {
+					const numA = parseInt(a.shard.name.match(/\d+/)?.[0] || "0", 10);
+					const numB = parseInt(b.shard.name.match(/\d+/)?.[0] || "0", 10);
+					return numA - numB;
+				});
+
+				// Output per-shard summary table
+				log("\n📋 Per-Shard Results:");
+				log(`   ${"─".repeat(56)}`);
+
+				for (const report of shardReports) {
+					const passed = report.results?.passed || 0;
+					const failed = report.results?.failed || 0;
+					const skipped = report.results?.skipped || 0;
+					const status =
+						failed > 0 ? "❌" : report.execution?.timedOut ? "⏱️" : "✅";
+					const shardName = report.shard.name.padEnd(30);
+
+					log(
+						`   ${status} ${shardName} ${passed} passed, ${failed} failed, ${skipped} skipped`,
+					);
+				}
+
+				log(`   ${"─".repeat(56)}`);
+
+				// Output failures with standardized format
+				const allFailures = [];
+				for (const report of shardReports) {
+					if (report.failures && report.failures.length > 0) {
+						for (const failure of report.failures) {
+							allFailures.push({
+								...failure,
+								shard: report.shard.name,
+							});
 						}
+					}
 
-						// Log timeout information
-						if (report.execution.timedOut) {
-							log(
-								`\n⏱️ Shard ${report.shard.name} timed out after ${report.execution.duration}`,
-							);
+					// Log timeout information
+					if (report.execution?.timedOut) {
+						log(
+							`\n⏱️  TIMEOUT: Shard ${report.shard.name} timed out after ${report.execution.duration}`,
+						);
+					}
+				}
+
+				// Output failures with standardized format
+				if (allFailures.length > 0) {
+					log(`\n${"─".repeat(60)}`);
+					log(`❌ FAILED TESTS (${allFailures.length})`);
+					log(`${"─".repeat(60)}`);
+
+					for (const failure of allFailures) {
+						const errorType = this.categorizeError(failure.error);
+						log(`\n[ERROR] Test: "${failure.name}"`);
+						log(`        Shard: ${failure.shard}`);
+						log(`        Type: ${errorType}`);
+						if (failure.error) {
+							const errorPreview = failure.error
+								.split("\n")[0]
+								.substring(0, 100);
+							log(`        Message: ${errorPreview}`);
 						}
 					}
 				}
+
+				log(`\n${"═".repeat(60)}\n`);
 
 				return {
 					summary,

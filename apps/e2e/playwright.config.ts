@@ -104,7 +104,7 @@ export default defineConfig({
 				...devices["Desktop Chrome"],
 				// Use pre-authenticated state from global setup
 				// This eliminates per-test authentication and enables true parallel execution
-				storageState: ".auth/test@slideheroes.com.json",
+				storageState: ".auth/test1@slideheroes.com.json",
 			},
 			testIgnore: /.*\.setup\.ts/, // Skip setup files - handled by global setup
 		},

@@ -61,17 +61,17 @@ async function globalSetup(config: FullConfig) {
 		{
 			name: "test user",
 			role: "test" as const,
-			filePath: join(authDir, "test@slideheroes.com.json"),
+			filePath: join(authDir, "test1@slideheroes.com.json"),
 		},
 		{
 			name: "owner user",
 			role: "owner" as const,
-			filePath: join(authDir, "owner@slideheroes.com.json"),
+			filePath: join(authDir, "test2@slideheroes.com.json"),
 		},
 		{
 			name: "super-admin user",
 			role: "admin" as const,
-			filePath: join(authDir, "super-admin@slideheroes.com.json"),
+			filePath: join(authDir, "michael@slideheroes.com.json"),
 		},
 	];
 

@@ -46,7 +46,7 @@ export default defineConfig({
 			use: {
 				...devices["Desktop Chrome"],
 				// Use pre-authenticated state from global setup
-				storageState: ".auth/test@slideheroes.com.json",
+				storageState: ".auth/test1@slideheroes.com.json",
 			},
 			testMatch: /billing\.spec\.ts/,
 		},

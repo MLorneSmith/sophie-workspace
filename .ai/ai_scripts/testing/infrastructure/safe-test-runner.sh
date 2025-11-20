@@ -116,13 +116,13 @@ if [[ "$SHOW_VERBOSE" == "true" ]]; then
     # Verbose mode: show more output (but still filtered and limited)
     # CRITICAL: head -n 100 enforces hard limit to prevent Claude Code crash
     node "$CONTROLLER_SCRIPT" "${ARGS[@]}" 2>&1 | tee -a "$LOG_FILE" | \
-        grep -E "(🧪|🚀|✓|✗|⚠️|📊|Phase|Starting|Summary|Duration|passed|failed|INFO|ERROR|WARN)" | \
+        grep -E "(🧪|🚀|✓|✗|⚠️|📊|📋|📈|📝|🔧|🏗️|🌐|🧹|═|─|PHASE|Phase|Starting|Summary|Duration|passed|failed|skipped|INFO|ERROR|WARN|Total|Shard|Results)" | \
         head -n 100 || true
 else
     # Normal mode: minimal output (progress + summary only)
     # CRITICAL: head -n 50 enforces hard limit to prevent Claude Code crash
     node "$CONTROLLER_SCRIPT" "${ARGS[@]}" 2>&1 | tee -a "$LOG_FILE" | \
-        grep -E "(🧪|🚀|✓|✗|📊|Phase|Summary|Duration)" | \
+        grep -E "(🧪|🚀|✓|✗|📊|📋|📈|═|PHASE|Phase|Summary|Duration|passed|failed|skipped|Total|Results)" | \
         head -n 50 || true
 fi
 
@@ -135,36 +135,55 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo -e "${BLUE}📊 Test Results Summary${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-# Parse results from log
-UNIT_PASSED=$(grep -o "Test Files.*[0-9]* passed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]* passed" | grep -o "[0-9]*" || echo "0")
-UNIT_FAILED=$(grep -o "Test Files.*[0-9]* failed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]* failed" | grep -o "[0-9]*" || echo "0")
-E2E_PASSED=$(grep "E2E.*passed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]*" || echo "0")
-E2E_FAILED=$(grep "E2E.*failed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]*" || echo "0")
+# Parse results from JSON summary file (preferred) or fall back to log parsing
+SUMMARY_JSON="/tmp/test-summary.json"
 
-# Calculate totals
-TOTAL_PASSED=$((UNIT_PASSED + E2E_PASSED))
-TOTAL_FAILED=$((UNIT_FAILED + E2E_FAILED))
+if [[ -f "$SUMMARY_JSON" ]] && command -v jq &> /dev/null; then
+    # Use structured JSON summary for accurate results
+    UNIT_PASSED=$(jq -r '.unit.passed // 0' "$SUMMARY_JSON")
+    UNIT_FAILED=$(jq -r '.unit.failed // 0' "$SUMMARY_JSON")
+    E2E_PASSED=$(jq -r '.e2e.passed // 0' "$SUMMARY_JSON")
+    E2E_FAILED=$(jq -r '.e2e.failed // 0' "$SUMMARY_JSON")
+    E2E_SKIPPED=$(jq -r '.e2e.skipped // 0' "$SUMMARY_JSON")
+    TOTAL_PASSED=$(jq -r '.totals.passed // 0' "$SUMMARY_JSON")
+    TOTAL_FAILED=$(jq -r '.totals.failed // 0' "$SUMMARY_JSON")
+    INTENTIONAL_FAILURES=$(jq -r '.totals.intentionalFailures // 0' "$SUMMARY_JSON")
+    DURATION=$(jq -r '.duration // 0' "$SUMMARY_JSON")
+    STATUS=$(jq -r '.status // "unknown"' "$SUMMARY_JSON")
 
-# Adjust for intentional test failures (test-configuration-verification.spec.ts)
-# Shard 11 contains configuration verification tests with 3 intentional failures
-# These tests are tagged with @skip-in-ci and only run:
-# - When explicitly running Shard 11: pnpm --filter web-e2e test:shard11
-# - When running all tests without filtering: pnpm --filter web-e2e test
-# They are skipped by default in CI and when using test:shard command
-if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; then
-    INTENTIONAL_FAILURES=3
+    # Calculate total tests
+    TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
 
-    # Count how many intentional failures were actually reported
-    INTENTIONAL_COUNT=$(grep -c "Intentional FAILURE" "$LOG_FILE" 2>/dev/null || echo "0")
+    echo -e "${BLUE}(parsed from /tmp/test-summary.json)${NC}"
+    echo ""
+else
+    # Fallback: Parse results from log (less accurate)
+    echo -e "${YELLOW}(parsed from log - install jq for better results)${NC}"
+    echo ""
 
-    # Only subtract if we found the expected intentional failures
-    if [[ $INTENTIONAL_COUNT -ge $INTENTIONAL_FAILURES ]]; then
-        TOTAL_FAILED=$((TOTAL_FAILED - INTENTIONAL_FAILURES))
-        echo -e "${BLUE}ℹ️  Excluded $INTENTIONAL_FAILURES intentional test failures (Shard 11 config verification)${NC}"
+    UNIT_PASSED=$(grep -o "Test Files.*[0-9]* passed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]* passed" | grep -o "[0-9]*" || echo "0")
+    UNIT_FAILED=$(grep -o "Test Files.*[0-9]* failed" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]* failed" | grep -o "[0-9]*" || echo "0")
+    E2E_PASSED=$(grep -E "✅ Passed:" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]*" || echo "0")
+    E2E_FAILED=$(grep -E "❌ Failed:" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]*" || echo "0")
+    E2E_SKIPPED=$(grep -E "⏭️  Skipped:" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o "[0-9]*" || echo "0")
+
+    TOTAL_PASSED=$((UNIT_PASSED + E2E_PASSED))
+    TOTAL_FAILED=$((UNIT_FAILED + E2E_FAILED))
+    INTENTIONAL_FAILURES=0
+    DURATION="unknown"
+    STATUS="unknown"
+
+    # Adjust for intentional test failures
+    if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; then
+        INTENTIONAL_COUNT=$(grep -c "Intentional FAILURE" "$LOG_FILE" 2>/dev/null || echo "0")
+        if [[ $INTENTIONAL_COUNT -ge 3 ]]; then
+            TOTAL_FAILED=$((TOTAL_FAILED - 3))
+            INTENTIONAL_FAILURES=3
+        fi
     fi
-fi
 
-TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
+    TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
+fi
 
 # Display results
 if [[ $TOTAL_TESTS -gt 0 ]]; then
@@ -174,10 +193,39 @@ if [[ $TOTAL_TESTS -gt 0 ]]; then
         echo -e "${RED}✗ Some tests failed${NC}"
     fi
     echo ""
+
+    # Unit test results
+    if [[ $UNIT_PASSED -gt 0 ]] || [[ $UNIT_FAILED -gt 0 ]]; then
+        echo "Unit Tests:"
+        echo -e "  ${GREEN}Passed: $UNIT_PASSED${NC}"
+        if [[ $UNIT_FAILED -gt 0 ]]; then
+            echo -e "  ${RED}Failed: $UNIT_FAILED${NC}"
+        fi
+        echo ""
+    fi
+
+    # E2E test results
+    if [[ $E2E_PASSED -gt 0 ]] || [[ $E2E_FAILED -gt 0 ]]; then
+        echo "E2E Tests:"
+        echo -e "  ${GREEN}Passed: $E2E_PASSED${NC}"
+        if [[ $E2E_FAILED -gt 0 ]]; then
+            echo -e "  ${RED}Failed: $E2E_FAILED${NC}"
+        fi
+        if [[ ${E2E_SKIPPED:-0} -gt 0 ]]; then
+            echo -e "  ${YELLOW}Skipped: $E2E_SKIPPED${NC}"
+        fi
+        echo ""
+    fi
+
+    # Totals
+    echo "─────────────────────────"
     echo "Total Tests: $TOTAL_TESTS"
-    echo -e "${GREEN}Passed: $TOTAL_PASSED${NC}"
+    echo -e "${GREEN}Total Passed: $TOTAL_PASSED${NC}"
     if [[ $TOTAL_FAILED -gt 0 ]]; then
-        echo -e "${RED}Failed: $TOTAL_FAILED${NC}"
+        echo -e "${RED}Total Failed: $TOTAL_FAILED${NC}"
+    fi
+    if [[ ${INTENTIONAL_FAILURES:-0} -gt 0 ]]; then
+        echo -e "${BLUE}(Intentional failures excluded: $INTENTIONAL_FAILURES)${NC}"
     fi
 else
     echo "No test results found (check log for details)"
@@ -185,23 +233,43 @@ fi
 
 echo ""
 
-# Extract duration
-DURATION=$(grep -o "Time:.*" "$LOG_FILE" 2>/dev/null | tail -1 || echo "Unknown")
-if [[ "$DURATION" != "Unknown" ]]; then
-    echo "Duration: $DURATION"
-    echo ""
+# Extract duration from JSON or log
+if [[ -f "$SUMMARY_JSON" ]] && command -v jq &> /dev/null; then
+    JSON_DURATION=$(jq -r '.duration // 0' "$SUMMARY_JSON")
+    if [[ "$JSON_DURATION" != "0" ]] && [[ "$JSON_DURATION" != "null" ]]; then
+        echo "Duration: ${JSON_DURATION}s"
+        echo ""
+    fi
+else
+    DURATION=$(grep -o "Time:.*" "$LOG_FILE" 2>/dev/null | tail -1 || echo "Unknown")
+    if [[ "$DURATION" != "Unknown" ]]; then
+        echo "Duration: $DURATION"
+        echo ""
+    fi
 fi
 
 # Show log location and size
 LOG_SIZE=$(du -h "$LOG_FILE" 2>/dev/null | cut -f1 || echo "Unknown")
 echo -e "💾 Full log: ${YELLOW}${LOG_FILE}${NC} (${LOG_SIZE})"
 
-# Show failure details if any (REMOVED to prevent Claude Code crash)
-# The full failure details are available in the log file
-# This was causing crashes by grepping large log files and outputting unbounded text
+# Show failure details if any
 if [[ $TOTAL_FAILED -gt 0 ]]; then
     echo ""
-    echo -e "${RED}⚠️  Tests failed - see full details below${NC}"
+    echo -e "${RED}⚠️  Tests failed${NC}"
+
+    # Show failures from dedicated failure log (limited to prevent crash)
+    if [[ -f /tmp/test-failures.log ]]; then
+        echo ""
+        echo -e "${RED}Failed Tests:${NC}"
+        # Show first 20 lines of failures (enough to see test names and errors)
+        head -40 /tmp/test-failures.log
+
+        FAILURE_LINES=$(wc -l < /tmp/test-failures.log)
+        if [[ $FAILURE_LINES -gt 40 ]]; then
+            echo ""
+            echo -e "${YELLOW}... ($((FAILURE_LINES - 40)) more lines in /tmp/test-failures.log)${NC}"
+        fi
+    fi
 fi
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -224,9 +292,11 @@ echo "    ${YELLOW}E2E_RESOURCE_CHECK_ENABLED${NC}=true/false (default: true)"
 # Quick access commands
 echo ""
 echo "Quick access:"
-echo "  View full log:    cat $LOG_FILE"
-echo "  View failures:    grep -E 'FAIL|✗' $LOG_FILE"
-echo "  View errors:      grep -i error $LOG_FILE"
-echo "  View warnings:    grep -i warn $LOG_FILE"
+echo "  View full log:       cat $LOG_FILE"
+echo "  View test summary:   cat /tmp/test-summary.json | jq ."
+echo "  View failures:       cat /tmp/test-failures.log 2>/dev/null || echo 'No failures'"
+echo "  View shard results:  cat /tmp/test-summary.json | jq '.e2e.shards'"
+echo "  View errors in log:  grep -E '\\[ERROR\\]|❌|Timeout|TIMEOUT' $LOG_FILE"
+echo "  View phase output:   grep -E 'PHASE:|═' $LOG_FILE"
 
 exit $TEST_EXIT_CODE
