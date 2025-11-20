@@ -25,7 +25,7 @@ export default defineConfig({
 			process.env.PLAYWRIGHT_BASE_URL ||
 			process.env.TEST_BASE_URL ||
 			process.env.BASE_URL ||
-			"http://localhost:3000",
+			"http://localhost:3001",
 		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 			? {
 					"x-vercel-protection-bypass":

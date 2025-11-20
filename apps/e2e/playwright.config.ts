@@ -67,7 +67,7 @@ export default defineConfig({
 			process.env.PLAYWRIGHT_BASE_URL ||
 			process.env.TEST_BASE_URL ||
 			process.env.BASE_URL ||
-			"<http://localhost:3000>",
+			"http://localhost:3001",
 
 		// Add Vercel protection bypass headers for deployed environments
 		// x-vercel-protection-bypass: For direct API/HTTP requests
@@ -134,7 +134,7 @@ export default defineConfig({
 		? {
 				cwd: "../../",
 				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
-				url: "<http://localhost:3000>",
+				url: "http://localhost:3001",
 				reuseExistingServer: !process.env.CI,
 				stdout: "pipe",
 				stderr: "pipe",
