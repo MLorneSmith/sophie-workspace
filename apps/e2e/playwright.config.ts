@@ -11,12 +11,13 @@ dotenvConfig({
 });
 
 /**
-
-* Number of workers to use in CI. Tweak based on your CI provider's resources.
-* Set to 3 for 4-core runners to optimize CPU utilization (1 core reserved for OS/overhead)
-* Updated from 2 as part of performance optimization for 4cpu-linux-x64 runners
+ * Number of workers to use for test execution.
+ * CI: 3 workers for 4-core runners (1 core reserved for OS/overhead)
+ * Local: 4 workers with updated .wslconfig (24GB RAM, 16 processors)
+ * Each worker spawns a browser instance (~300-500MB RAM each)
  */
 const CI_WORKERS = 3;
+const LOCAL_WORKERS = 4;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
 const enableTeamAccountTests =
@@ -54,8 +55,8 @@ export default defineConfig({
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	retries: 1,
-	/* Limit parallel tests on CI. */
-	workers: process.env.CI ? CI_WORKERS : undefined,
+	/* Configure workers for parallel test execution */
+	workers: process.env.CI ? CI_WORKERS : LOCAL_WORKERS,
 	/* Reporter to use. See <https://playwright.dev/docs/test-reporters> */
 	reporter: "html",
 	/* Ignore billing tests if the environment variable is not set. */

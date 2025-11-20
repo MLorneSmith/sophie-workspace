@@ -70,17 +70,27 @@ class E2ETestRunner {
 		this.servers = {};
 		this.testDependencies = null;
 
-		// Determine max concurrent shards
+		// Determine max concurrent shards based on available resources
 		const cpuCount = os.cpus().length;
+		const totalMemGB = os.totalmem() / (1024 * 1024 * 1024);
+
+		// Calculate optimal shards: need ~4GB per shard for browser + test server overhead
+		// With 24GB RAM: 24/4 = 6 max, but cap at cpuCount/4 for CPU balance
+		const memoryBasedMax = Math.floor(totalMemGB / 4);
+		const cpuBasedMax = Math.floor(cpuCount / 4);
+		const calculatedMax = Math.min(memoryBasedMax, cpuBasedMax, 4); // Cap at 4 for stability
+
 		this.maxConcurrentShards =
-			this.config.execution.maxConcurrentShards || (cpuCount > 4 ? 4 : 2);
+			this.config.execution.maxConcurrentShards || Math.max(calculatedMax, 2);
 
 		// Load test groups configuration
 		this.testGroups = this.loadTestGroups();
 		this.loadTestDependencies();
 
-		log(`🖥️  System has ${cpuCount} CPU cores`);
-		log(`⚙️  Max concurrent shards: ${this.maxConcurrentShards}`);
+		log(`🖥️  System has ${cpuCount} CPU cores, ${totalMemGB.toFixed(1)}GB RAM`);
+		log(
+			`⚙️  Max concurrent shards: ${this.maxConcurrentShards} (calculated: ${calculatedMax})`,
+		);
 	}
 
 	/**
@@ -379,9 +389,9 @@ class E2ETestRunner {
 		log("🚀 Starting E2E test servers...");
 
 		// Check if we're using an external server (Docker or other)
-		const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+		const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
 
-		if (testUrl !== "http://localhost:3000") {
+		if (testUrl !== "http://localhost:3001") {
 			log(`🐳 Using external test server at ${testUrl}`);
 
 			// Verify the external server is ready
@@ -405,28 +415,28 @@ class E2ETestRunner {
 			return { success: true };
 		}
 
-		// Start web server on port 3000 (matching Playwright's expectation)
-		log("🌐 Starting web server on port 3000...");
+		// Start web server on port 3001 (matching Playwright's expectation)
+		log("🌐 Starting web server on port 3001...");
 		this.servers.web = spawn("pnpm", ["--filter", "web", "dev:test"], {
 			cwd: process.cwd(),
 			stdio: ["ignore", "pipe", "pipe"], // Use "ignore" for stdin to prevent hanging
 			shell: true,
 			env: {
 				...process.env,
-				PORT: "3000",
+				PORT: "3001",
 				NODE_ENV: "test",
 				ENABLE_STRICT_CSP: "true", // Enable security headers for E2E tests
-				NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+				NEXT_PUBLIC_APP_URL: "http://localhost:3001",
 			},
 		});
 
 		// Wait for web server to be ready
-		await this.waiter.waitForHttp("http://localhost:3000", {
+		await this.waiter.waitForHttp("http://localhost:3001", {
 			timeout: 60000,
 			name: "web server startup",
 		});
 
-		log("✅ Web server ready on port 3000");
+		log("✅ Web server ready on port 3001");
 		return { success: true };
 	}
 
@@ -435,8 +445,8 @@ class E2ETestRunner {
 	 */
 	async checkServersReady() {
 		try {
-			// Use TEST_BASE_URL if set, otherwise check default port 3000
-			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+			// Use TEST_BASE_URL if set, otherwise check default port 3001
+			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
 
 			const { stdout: webCheck } = await execAsync(
 				`curl -s -o /dev/null -w "%{http_code}" ${testUrl} 2>/dev/null || echo "000"`,
@@ -472,11 +482,12 @@ class E2ETestRunner {
 			log(`📝 Logging to: ${this.outputFilter.fileConfig.path}`);
 		}
 
-		// Always run shards sequentially by default for better tracking
-		// Unless explicitly configured for parallel execution
-		const runParallel = process.env.E2E_PARALLEL === "true" || false;
+		// Run shards in parallel by default when resources allow
+		// Set E2E_PARALLEL=false to force sequential execution
+		const runParallel =
+			process.env.E2E_PARALLEL !== "false" && this.maxConcurrentShards > 1;
 
-		if (runParallel && this.maxConcurrentShards > 1) {
+		if (runParallel) {
 			log(
 				`🔀 Running E2E tests with ${this.maxConcurrentShards} parallel shards`,
 			);
@@ -838,7 +849,7 @@ class E2ETestRunner {
 				}
 
 				// Use the TEST_BASE_URL if set
-				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3000";
+				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
 
 				proc = spawn(command, args, {
 					cwd: cwd,
@@ -960,7 +971,10 @@ class E2ETestRunner {
 				});
 
 				// Start stall detection - check every 20 seconds for output
-				const stallTimeout = 45000; // Kill if no output for 45 seconds (more aggressive)
+				// Increased from 45s to 240s to accommodate longer-running tests
+				// (MFA auth flows, Payload CMS operations, billing tests)
+				// Super-admin login with MFA can take significant time without output
+				const stallTimeout = 240000; // Kill if no output for 240 seconds (4 minutes)
 				stallCheckInterval = setInterval(() => {
 					const timeSinceLastOutput = Date.now() - lastOutputTime;
 					if (timeSinceLastOutput > stallTimeout) {

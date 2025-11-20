@@ -156,7 +156,7 @@ export class TestConfigManager {
 			process.env.PLAYWRIGHT_BASE_URL ||
 			process.env.BASE_URL ||
 			process.env.TEST_BASE_URL ||
-			"http://localhost:3000"
+			"http://localhost:3001"
 		);
 	}
 

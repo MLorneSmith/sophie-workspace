@@ -27,7 +27,7 @@ const CONFIG = {
 	timeouts: {
 		// Phase timeouts
 		initialization: 30000, // 30 seconds
-		infrastructureCheck: 60000, // 1 minute
+		infrastructureCheck: 180000, // 3 minutes (must exceed supabaseSetup + other setup operations)
 		supabaseSetup: 120000, // 2 minutes
 		unitTests: 15 * 60 * 1000, // 15 minutes
 		e2eSetup: 60000, // 1 minute
@@ -66,11 +66,12 @@ const CONFIG = {
 	// Test execution settings
 	execution: {
 		// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
-		// IMPORTANT: Set to 1 to disable parallel E2E test execution
-		// The local infrastructure cannot handle parallel E2E tests
+		// With 24GB RAM and 16 processors (via .wslconfig), parallel execution is now viable
+		// Default to 2 concurrent shards for balanced performance vs stability
+		// Set to 3-4 for faster execution if system is stable
 		maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS
 			? parseInt(process.env.TEST_MAX_CONCURRENT_SHARDS, 10)
-			: 1, // Force sequential execution - parallel E2E tests cause system instability
+			: 2, // Enable parallel execution with adequate resources
 
 		// Test retry settings
 		maxTestRetries: 1,

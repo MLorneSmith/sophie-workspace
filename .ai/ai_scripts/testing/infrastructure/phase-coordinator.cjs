@@ -25,7 +25,7 @@ class PhaseCoordinator extends EventEmitter {
 		// Default phase timeouts (can be overridden)
 		this.phaseTimeouts = {
 			initializing: 30000, // 30 seconds
-			infrastructure_check: 60000, // 60 seconds
+			infrastructure_check: 180000, // 3 minutes (must exceed supabase_setup + other setup operations)
 			supabase_setup: 120000, // 2 minutes
 			unit_tests: 15 * 60 * 1000, // 15 minutes
 			e2e_setup: 60000, // 60 seconds
