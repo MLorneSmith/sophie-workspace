@@ -25,6 +25,7 @@ AGENT_IMPLEMENTOR = "sdlc_implementor"
 AGENT_CLASSIFIER = "issue_classifier"
 AGENT_BRANCH_GENERATOR = "branch_generator"
 AGENT_PR_CREATOR = "pr_creator"
+AGENT_DIAGNOSTICIAN = "bug_diagnostician"
 
 # Available ADW workflows for runtime validation
 AVAILABLE_ADW_WORKFLOWS = [
@@ -144,6 +145,64 @@ def classify_issue(
         return None, f"Invalid command selected: {response.output}"
 
     return issue_command, None  # type: ignore
+
+
+def run_diagnosis(
+    issue: GitHubIssue, adw_id: str, logger: logging.Logger
+) -> AgentPromptResponse:
+    """Run bug diagnosis for an issue. Returns diagnosis file path."""
+    # Use minimal payload
+    minimal_issue_json = issue.model_dump_json(
+        by_alias=True, include={"number", "title", "body"}
+    )
+
+    diagnosis_request = AgentTemplateRequest(
+        agent_name=AGENT_DIAGNOSTICIAN,
+        slash_command="/diagnose-adw",
+        args=[str(issue.number), adw_id, minimal_issue_json],
+        adw_id=adw_id,
+    )
+
+    logger.debug(
+        f"diagnosis_request: {diagnosis_request.model_dump_json(indent=2, by_alias=True)}"
+    )
+
+    diagnosis_response = execute_template(diagnosis_request)
+
+    logger.debug(
+        f"diagnosis_response: {diagnosis_response.model_dump_json(indent=2, by_alias=True)}"
+    )
+
+    return diagnosis_response
+
+
+def build_bug_plan(
+    issue: GitHubIssue, diagnosis_file: str, adw_id: str, logger: logging.Logger
+) -> AgentPromptResponse:
+    """Build bug fix plan from a diagnosis file."""
+    # Use minimal payload
+    minimal_issue_json = issue.model_dump_json(
+        by_alias=True, include={"number", "title", "body"}
+    )
+
+    bug_plan_request = AgentTemplateRequest(
+        agent_name=AGENT_PLANNER,
+        slash_command="/bug-plan",
+        args=[str(issue.number), adw_id, diagnosis_file, minimal_issue_json],
+        adw_id=adw_id,
+    )
+
+    logger.debug(
+        f"bug_plan_request: {bug_plan_request.model_dump_json(indent=2, by_alias=True)}"
+    )
+
+    bug_plan_response = execute_template(bug_plan_request)
+
+    logger.debug(
+        f"bug_plan_response: {bug_plan_response.model_dump_json(indent=2, by_alias=True)}"
+    )
+
+    return bug_plan_response
 
 
 def build_plan(

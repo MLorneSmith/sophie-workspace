@@ -1,0 +1,186 @@
+---
+description: Diagnose a bug from a GitHub issue for ADW workflow. Extracts bug info from issue, investigates root cause, creates diagnosis file. Returns diagnosis file path.
+argument-hint: <issue-number> <adw-id> <issue-json>
+model: sonnet
+allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, Bash(gh *)]
+---
+
+# ADW Bug Diagnosis
+
+Diagnose a bug from a GitHub issue for the AI Developer Workflow (ADW). This command extracts bug information from the issue body, investigates the root cause, and creates a structured diagnosis file.
+
+**Input**: Issue number, ADW ID, and issue JSON data (passed as $ARGUMENTS)
+
+## Instructions
+
+IMPORTANT: You're creating a diagnostic report to identify the root cause of a bug reported in a GitHub issue.
+IMPORTANT: This is about diagnosis and investigation, not fixing. The diagnosis will inform /bug-plan.
+IMPORTANT: You MUST return ONLY the path to the diagnosis file when complete (e.g., `.ai/specs/diagnosis-issue-123-adw-xyz.md`)
+
+**YOUR JOB**: Find and document the ROOT CAUSE, not just symptoms or "areas to investigate"
+**SUCCESS METRIC**: Someone reading your diagnosis knows exactly what code is broken and why
+**OUTPUT**: Return ONLY the file path to the diagnosis (nothing else)
+
+## Parse Input
+
+Extract from $ARGUMENTS:
+```typescript
+const [issueNumber, adwId, issueJson] = $ARGUMENTS;
+const issue = JSON.parse(issueJson);
+const issueTitle = issue.title;
+const issueBody = issue.body;
+```
+
+## Extract Bug Information from Issue
+
+Parse the issue body to extract:
+- **Issue Description**: Summary from title/body
+- **Expected Behavior**: What should happen
+- **Actual Behavior**: What actually happens
+- **Reproduction Steps**: How to reproduce (if provided)
+- **Environment**: Any environment details mentioned
+- **Error Messages**: Any error messages or stack traces
+
+## Completion Criteria
+
+A diagnosis is **COMPLETE** only when ALL of these are met:
+
+- [ ] **Root cause identified** - The exact reason for the failure is known
+- [ ] **Reproduction steps documented** - Bug can be reliably reproduced
+- [ ] **Affected code located** - Specific files/functions causing the issue
+- [ ] **Evidence collected** - Logs, stack traces, or other proof
+- [ ] **Fix approach clear** - It's obvious what needs to change
+
+**IMPORTANT**: Do NOT create the diagnosis document until ALL criteria above are met.
+
+## Diagnostic Process
+
+1. **Parse issue data** from $ARGUMENTS to get bug description
+
+2. **Gather system information**:
+   - Get current git branch and last commit
+   - Check for recent changes to affected files
+   - Get package versions
+
+3. **Load relevant context documentation**:
+   ```bash
+   slashCommand /conditional_docs diagnose "[brief summary from issue title]"
+   ```
+
+4. **Research the issue UNTIL root cause is found**:
+   - Use the Task tool with `subagent_type=Explore` to investigate
+   - Search for error messages, stack traces, related code
+   - Identify affected components and dependencies
+   - **DO NOT STOP** until you can answer: "What exact code is causing this and why?"
+
+5. **Validate root cause identification**:
+   - "Can I explain exactly WHY this bug occurs?"
+   - "Do I know which specific code needs to change?"
+   - If NO to either, continue investigation
+
+6. **Create the diagnosis file** in `.ai/specs/diagnosis-issue-{issueNumber}-adw-{adwId}.md`
+
+## Diagnosis File Format
+
+```md
+# Bug Diagnosis: [Title from Issue]
+
+**Issue**: #[issue_number]
+**ADW ID**: [adw_id]
+**Created**: [ISO timestamp]
+**Severity**: [critical|high|medium|low] (infer from issue)
+**Status**: diagnosed
+**Type**: bug
+
+## Summary
+
+[One paragraph description of the issue from GitHub]
+
+## Environment
+
+- **Application Version**: [version]
+- **Environment**: [development|staging|production]
+- **Node Version**: [version]
+
+## Reproduction Steps
+
+[Extract from issue body or document how to reproduce]
+
+## Expected Behavior
+
+[From issue body]
+
+## Actual Behavior
+
+[From issue body]
+
+## Diagnostic Data
+
+### Console Output
+```
+[Any errors found during investigation]
+```
+
+### Error Stack Traces
+```
+[Any stack traces]
+```
+
+## Related Code
+
+- **Affected Files**:
+  - [file1.ts]
+  - [file2.tsx]
+- **Recent Changes**: [git commits]
+- **Suspected Functions**: [specific functions]
+
+## Root Cause Analysis
+
+### Identified Root Cause
+
+**Summary**: [One-sentence statement of the exact root cause]
+
+**Detailed Explanation**:
+[Explain WHY this bug occurs, referencing specific code]
+
+**Supporting Evidence**:
+- [Stack trace / log showing root cause]
+- [Code reference: file:line]
+
+### How This Causes the Observed Behavior
+
+[Explain causal chain from root cause to symptoms]
+
+### Confidence Level
+
+**Confidence**: [High|Medium|Low]
+
+**Reasoning**: [Why you're confident]
+
+## Fix Approach (High-Level)
+
+[1-3 sentences describing what would need to change to fix this]
+
+## Additional Context
+
+[Any other relevant information]
+
+---
+*Generated by ADW Diagnosis Agent*
+```
+
+## Output
+
+When complete, output ONLY the path to the diagnosis file:
+
+```
+.ai/specs/diagnosis-issue-{issueNumber}-adw-{adwId}.md
+```
+
+**IMPORTANT**: Return ONLY the file path, nothing else. No explanation, no summary, just the path.
+
+## Issue Data
+
+Issue Number: First element of $ARGUMENTS
+ADW ID: Second element of $ARGUMENTS
+Issue JSON: Third element of $ARGUMENTS

@@ -36,14 +36,22 @@ from adw_modules.github import (
 from adw_modules.workflow_ops import (
     classify_issue,
     build_plan,
+    build_bug_plan,
+    run_diagnosis,
     generate_branch_name,
     create_commit,
     format_issue_message,
     ensure_adw_id,
     AGENT_PLANNER,
+    AGENT_DIAGNOSTICIAN,
 )
 from adw_modules.utils import setup_logger
 from adw_modules.data_types import GitHubIssue, IssueClassSlashCommand
+
+
+def validate_adw_prefix(issue: GitHubIssue) -> bool:
+    """Check if issue title starts with 'ADW:' prefix (case-insensitive)."""
+    return issue.title.strip().upper().startswith("ADW:")
 
 
 def check_env_vars(logger: Optional[logging.Logger] = None) -> None:
@@ -110,6 +118,17 @@ def main():
     issue: GitHubIssue = fetch_issue(issue_number, repo_path)
 
     logger.debug(f"Fetched issue: {issue.model_dump_json(indent=2, by_alias=True)}")
+
+    # Validate ADW: prefix in issue title
+    if not validate_adw_prefix(issue):
+        error_msg = "not an ADW workflow request"
+        logger.error(f"Issue #{issue_number}: {error_msg}")
+        make_issue_comment(
+            issue_number,
+            format_issue_message(adw_id, "ops", f"❌ {error_msg}. Issue title must start with 'ADW:' prefix."),
+        )
+        sys.exit(1)
+
     make_issue_comment(
         issue_number, format_issue_message(adw_id, "ops", "✅ Starting planning phase")
     )
@@ -171,13 +190,55 @@ def main():
     )
 
     # Build the implementation plan
-    logger.info("Building implementation plan")
-    make_issue_comment(
-        issue_number,
-        format_issue_message(adw_id, AGENT_PLANNER, "✅ Building implementation plan"),
-    )
+    # For bugs, run diagnosis first, then bug-plan
+    if issue_command == "/bug":
+        # Step 1: Run diagnosis
+        logger.info("Running bug diagnosis")
+        make_issue_comment(
+            issue_number,
+            format_issue_message(adw_id, AGENT_DIAGNOSTICIAN, "🔍 Running bug diagnosis"),
+        )
 
-    plan_response = build_plan(issue, issue_command, adw_id, logger)
+        diagnosis_response = run_diagnosis(issue, adw_id, logger)
+
+        if not diagnosis_response.success:
+            logger.error(f"Error running diagnosis: {diagnosis_response.output}")
+            make_issue_comment(
+                issue_number,
+                format_issue_message(
+                    adw_id, AGENT_DIAGNOSTICIAN, f"❌ Error running diagnosis: {diagnosis_response.output}"
+                ),
+            )
+            sys.exit(1)
+
+        diagnosis_file = diagnosis_response.output.strip()
+        logger.info(f"Diagnosis file created: {diagnosis_file}")
+        make_issue_comment(
+            issue_number,
+            format_issue_message(adw_id, AGENT_DIAGNOSTICIAN, f"✅ Diagnosis complete: {diagnosis_file}"),
+        )
+
+        # Update state with diagnosis file
+        state.update(diagnosis_file=diagnosis_file)
+        state.save("adw_plan")
+
+        # Step 2: Build bug fix plan from diagnosis
+        logger.info("Building bug fix plan from diagnosis")
+        make_issue_comment(
+            issue_number,
+            format_issue_message(adw_id, AGENT_PLANNER, "✅ Building bug fix plan from diagnosis"),
+        )
+
+        plan_response = build_bug_plan(issue, diagnosis_file, adw_id, logger)
+    else:
+        # For features and chores, use standard build_plan
+        logger.info("Building implementation plan")
+        make_issue_comment(
+            issue_number,
+            format_issue_message(adw_id, AGENT_PLANNER, "✅ Building implementation plan"),
+        )
+
+        plan_response = build_plan(issue, issue_command, adw_id, logger)
 
     if not plan_response.success:
         logger.error(f"Error building plan: {plan_response.output}")
