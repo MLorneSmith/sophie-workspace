@@ -20,6 +20,21 @@ function logError(message) {
 	log(message, "error");
 }
 
+/**
+ * Strip ANSI escape codes from a string
+ * These codes break regex parsing of test output
+ */
+function stripAnsi(str) {
+	// Match all ANSI escape sequences including:
+	// - CSI sequences: ESC [ ... letter
+	// - OSC sequences: ESC ] ... BEL/ST
+	// - Simple escapes: ESC letter
+	return str.replace(
+		/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+		""
+	);
+}
+
 class UnitTestRunner {
 	constructor(config, testStatus, phaseCoordinator) {
 		this.config = config;
@@ -267,8 +282,12 @@ class UnitTestRunner {
 	 * Use Math.max() to track the highest value seen
 	 */
 	parseTestLine(line, results) {
+		// Strip ANSI codes before parsing - vitest output contains color codes
+		// that break regex matching (e.g., "[32m3 passed[39m")
+		const cleanLine = stripAnsi(line);
+
 		// Parse test result lines (e.g., "Tests  5 passed (5)")
-		const testMatch = line.match(/Tests\s+.*(\d+)\s+passed/);
+		const testMatch = cleanLine.match(/Tests\s+(\d+)\s+passed/);
 		if (testMatch) {
 			const passed = parseInt(testMatch[1], 10);
 			// Use max to avoid double-counting cumulative totals
@@ -276,21 +295,21 @@ class UnitTestRunner {
 		}
 
 		// Parse failed tests
-		const failedMatch = line.match(/(\d+)\s+failed/);
+		const failedMatch = cleanLine.match(/(\d+)\s+failed/);
 		if (failedMatch) {
 			const failed = parseInt(failedMatch[1], 10);
 			results.failed = Math.max(results.failed, failed);
 		}
 
 		// Parse skipped/todo tests
-		const skippedMatch = line.match(/(\d+)\s+(skipped|todo)/i);
+		const skippedMatch = cleanLine.match(/(\d+)\s+(skipped|todo)/i);
 		if (skippedMatch) {
 			const skipped = parseInt(skippedMatch[1], 10);
 			results.skipped = Math.max(results.skipped, skipped);
 		}
 
 		// Parse FAIL lines for failed test details
-		const failLine = line.match(/FAIL\s+(.+)/);
+		const failLine = cleanLine.match(/FAIL\s+(.+)/);
 		if (failLine) {
 			const filePath = failLine[1].trim();
 			if (!results.failedTests.some((t) => t.file === filePath)) {
@@ -357,9 +376,13 @@ class UnitTestRunner {
 	 * Finalize results with any remaining buffer data
 	 */
 	finalizeResults(buffer, results) {
+		// Strip ANSI codes from buffer before parsing
+		const cleanBuffer = stripAnsi(buffer);
+
 		// Do a final parse of the bounded buffer to catch any summary lines
 		// This is safe because we only keep the last 100KB
-		const summaryMatch = buffer.match(/Test Files.*Tests\s+(\d+)\s+passed/);
+		// Look for Tests summary line (may be on separate line from Test Files)
+		const summaryMatch = cleanBuffer.match(/Tests\s+(\d+)\s+passed/);
 		if (summaryMatch) {
 			// Use the final summary if available (it's more accurate)
 			const totalPassed = parseInt(summaryMatch[1], 10);
@@ -381,8 +404,11 @@ class UnitTestRunner {
 			failedTests: [],
 		};
 
+		// Strip ANSI codes before parsing
+		const cleanOutput = stripAnsi(output);
+
 		// Parse test results from each workspace
-		const testLines = output.match(/Tests\s+.*\d+.*/gi) || [];
+		const testLines = cleanOutput.match(/Tests\s+.*\d+.*/gi) || [];
 
 		testLines.forEach((line) => {
 			// Parse passed tests
@@ -409,7 +435,7 @@ class UnitTestRunner {
 
 		// Parse failed test details if any
 		if (results.failed > 0) {
-			results.failedTests = this.parseFailedTests(output);
+			results.failedTests = this.parseFailedTests(cleanOutput);
 		}
 
 		results.total = results.passed + results.failed + results.skipped;
