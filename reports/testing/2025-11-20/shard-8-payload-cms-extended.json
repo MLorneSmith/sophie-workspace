@@ -13,11 +13,11 @@
 		"shardCommand": "test:shard8"
 	},
 	"execution": {
-		"startTime": "2025-11-20T18:31:14.338Z",
-		"endTime": "2025-11-20T18:32:15.338Z",
-		"duration": "61s",
-		"exitCode": -1,
-		"timedOut": true
+		"startTime": "2025-11-20T19:51:32.937Z",
+		"endTime": "2025-11-20T19:54:17.937Z",
+		"duration": "165s",
+		"exitCode": 0,
+		"timedOut": false
 	},
 	"results": {
 		"total": 0,
@@ -26,9 +26,9 @@
 		"skipped": 0,
 		"intentionalFailures": 0,
 		"integrationTests": 0,
-		"success": false
+		"success": true
 	},
 	"failures": [],
 	"errors": [],
-	"rawOutput": "\n> web-e2e@1.0.0 test:shard8 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 68 tests using 3 workers\n"
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard8 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n🌐 Using BASE_URL: http://localhost:3001\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 68 tests using 3 workers\n×××/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard8: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0`\nCommand failed with signal \"SIGTERM\"\n"
 }

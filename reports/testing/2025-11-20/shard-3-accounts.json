@@ -12,9 +12,9 @@
 		"shardCommand": "test:shard3"
 	},
 	"execution": {
-		"startTime": "2025-11-20T18:26:06.212Z",
-		"endTime": "2025-11-20T18:27:27.212Z",
-		"duration": "81s",
+		"startTime": "2025-11-20T19:39:09.364Z",
+		"endTime": "2025-11-20T19:41:54.364Z",
+		"duration": "165s",
 		"exitCode": -1,
 		"timedOut": true
 	},
