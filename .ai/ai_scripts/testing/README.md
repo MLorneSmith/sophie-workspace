@@ -36,8 +36,8 @@ The scripts prioritize environment files in this order:
 
 All test scripts use the **unified Web Supabase instance** as the single source of truth:
 
-- **API Port**: 54321 (not 55321)
-- **Database Port**: 54322 (not 55322)
+- **API Port**: 54521 (changed from 54321 to avoid Hyper-V port reservation conflicts)
+- **Database Port**: 54522 (changed from 54322 to avoid Hyper-V port reservation conflicts)
 - **Directory**: All Supabase commands run from `apps/web/` (not `apps/e2e/`)
 
 ## Key Scripts
@@ -46,7 +46,7 @@ All test scripts use the **unified Web Supabase instance** as the single source 
 
 Central configuration file that loads environment variables and defines:
 
-- Port configurations (54321/54322 for unified Web Supabase)
+- Port configurations (54521/54522 for unified Web Supabase)
 - Test user credentials from environment variables
 - Database connection strings
 - Timeouts and execution settings

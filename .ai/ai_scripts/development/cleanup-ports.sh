@@ -8,19 +8,19 @@ echo "===================="
 
 # Accept port range as arguments (defaults to all test ports)
 START_PORT=${1:-3000}
-END_PORT=${2:-54326}
+END_PORT=${2:-54526}
 
 # Define all ports used by the test environment
 declare -A PORTS=(
     ["3000"]="Next.js Dev Server"
     ["3001"]="Alternative Next.js Port"
     ["3020"]="Payload CMS"
-    ["54321"]="Supabase API"
-    ["54322"]="Supabase Database"
-    ["54323"]="Supabase Studio"
-    ["54324"]="Inbucket Web"
-    ["54325"]="Inbucket SMTP"
-    ["54326"]="Inbucket POP3"
+    ["54521"]="Supabase API"
+    ["54522"]="Supabase Database"
+    ["54523"]="Supabase Studio"
+    ["54524"]="Inbucket Web"
+    ["54525"]="Inbucket SMTP"
+    ["54526"]="Inbucket POP3"
     ["54327"]="Supabase Vector"
 )
 

@@ -51,10 +51,10 @@ const CONFIG = {
 	// Port configuration
 	ports: {
 		supabase: {
-			api: 54321, // Updated to unified Web Supabase port
-			db: 54322, // Updated to unified Web Supabase DB port
-			studio: 54323,
-			inbucket: 54324,
+			api: 54521, // Updated to avoid Hyper-V port reservation conflicts
+			db: 54522, // Updated to avoid Hyper-V port reservation conflicts
+			studio: 54523,
+			inbucket: 54524,
 		},
 		web: 3000,
 		webTest: 3001,
@@ -156,7 +156,7 @@ const CONFIG = {
 	environment: {
 		NODE_ENV: "test",
 		NEXT_PUBLIC_APP_URL: process.env.TEST_BASE_URL || "http://localhost:3001",
-		SUPABASE_URL: "http://localhost:54321", // Updated to unified Web Supabase port
+		SUPABASE_URL: "http://localhost:54521", // Updated to avoid Hyper-V port reservation conflicts
 		SUPABASE_SERVICE_ROLE_KEY:
 			process.env.SUPABASE_SERVICE_ROLE_KEY ||
 			"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU", // Standard local dev key
@@ -170,7 +170,7 @@ const CONFIG = {
 	database: {
 		connectionString:
 			process.env.DATABASE_URL ||
-			"postgresql://postgres:postgres@localhost:54322/postgres", // Updated to unified Web Supabase DB port
+			"postgresql://postgres:postgres@localhost:54522/postgres", // Updated to avoid Hyper-V port reservation conflicts
 		maxConnections: 20,
 		testUserEmail: process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com", // Use environment variable
 		testUserPassword: process.env.E2E_TEST_USER_PASSWORD, // Use environment variable, no fallback for security

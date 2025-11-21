@@ -6,7 +6,7 @@
 
 SlideHeroes uses a **hybrid Docker architecture** providing optimal performance and flexibility through:
 
-1. **Supabase CLI Stack** (Not docker-compose): Main services on ports 54321-54326 + 39006
+1. **Supabase CLI Stack** (Not docker-compose): Main services on ports 54521-54526 + 39006
 2. **Docker Compose Stack**: Test environment with Next.js and Payload CMS containers
 3. **Host-Based Development**: Next.js runs directly on WSL2/macOS/Linux for fastest hot-reload
 4. **MCP Servers**: Run natively through Claude Code via `.mcp.json`
@@ -21,14 +21,14 @@ This hybrid approach provides the best of both worlds: fast local development wi
 
 | Service | Port | Description |
 |---------|------|-------------|
-| API Gateway (Kong) | 54321 | Main API access point + Edge Functions |
-| PostgreSQL | 54322 | Database server |
-| Studio | 54323 | Supabase web UI |
-| Inbucket Web | 54324 | Email testing web interface |
-| Inbucket SMTP | 54325 | Email SMTP server |
-| Inbucket POP3 | 54326 | Email POP3 server |
+| API Gateway (Kong) | 54521 | Main API access point + Edge Functions |
+| PostgreSQL | 54522 | Database server |
+| Studio | 54523 | Supabase web UI |
+| Inbucket Web | 54524 | Email testing web interface |
+| Inbucket SMTP | 54525 | Email SMTP server |
+| Inbucket POP3 | 54526 | Email POP3 server |
 | Analytics (Logflare) | 39006 | Analytics and logging |
-| Edge Functions | 54321/functions/v1/* | Deno runtime functions |
+| Edge Functions | 54521/functions/v1/* | Deno runtime functions |
 
 **Container Naming Pattern**: `supabase_<service>_2025slideheroes-db`
 
@@ -47,7 +47,7 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 - **Containers**:
   - `slideheroes-app-test`: Next.js on port 3001 (dev uses 3000)
   - `slideheroes-payload-test`: Payload CMS on port 3021 (dev uses 3020)
-- **Environment**: Connects to main Supabase stack (54321/54322)
+- **Environment**: Connects to main Supabase stack (54521/54522)
 - **Package Management**: Uses `npx pnpm@latest` to avoid permission issues
 - **Volume Strategy**: Simplified mounting without isolated node_modules
 - **Health Endpoints**: `/api/health` for container health verification
@@ -59,7 +59,7 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 
 - Location: `apps/web/supabase/functions/`
 - Runtime: Integrated within Supabase Docker stack
-- Access URL: `http://localhost:54321/functions/v1/{function-name}`
+- Access URL: `http://localhost:54521/functions/v1/{function-name}`
 - Use Case: Heavy file processing and external API integrations
 - Functions: powerpoint-generator, certificate-generator
 
@@ -85,8 +85,8 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 │                                                             │
 │  ┌──────────────────┐  ┌─────────────────────────────────┐│
 │  │ Next.js Dev      │  │ Supabase CLI (Manages Containers)││
-│  │ (Host Process)   │  │ ├─ PostgreSQL (54322)            ││
-│  │ Port 3000        │──┼─┤ Kong API Gateway (54321)        ││
+│  │ (Host Process)   │  │ ├─ PostgreSQL (54522)            ││
+│  │ Port 3000        │──┼─┤ Kong API Gateway (54521)        ││
 │  │                  │  │ ├─ GoTrue Auth                    ││
 │  │ Fast HMR         │  │ ├─ Storage API                    ││
 │  │ Native FS access │  │ └─ Analytics (39006)             ││
@@ -97,7 +97,7 @@ Examples: `supabase_kong_2025slideheroes-db`, `supabase_db_2025slideheroes-db`, 
 │  │ ├─ Web Test Container (3001) ─────────────┐         │ │
 │  │ ├─ Payload Test Container (3021)          │         │ │
 │  │ │  Connects to Supabase via ───────────────┘        │ │
-│  │ │  host.docker.internal:54321                       │ │
+│  │ │  host.docker.internal:54521                       │ │
 │  │ └─ Bridge Network (slideheroes-test)                │ │
 │  └──────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
@@ -117,7 +117,7 @@ pnpm install
 
 # 3. Start Supabase services from apps/web directory
 cd apps/web
-npx supabase start  # Main stack on ports 54321-54326 + 39006
+npx supabase start  # Main stack on ports 54521-54526 + 39006
 cd ../..
 
 # 4. MCP servers start automatically with Claude Code (via .mcp.json)
@@ -155,7 +155,7 @@ curl http://localhost:3021/api/health    # Should return {"status":"ready"}
 
 ```bash
 # Terminal 1: Development (on host)
-pnpm dev  # Port 3000, uses main Supabase (54321/54322)
+pnpm dev  # Port 3000, uses main Supabase (54521/54522)
 
 # Terminal 2: Test servers (in containers)
 docker-compose -f docker-compose.test.yml up  # Ports 3001 & 3021
@@ -213,7 +213,7 @@ docker-compose -f docker-compose.test.yml down
 
 ```bash
 # Test Supabase Edge Functions (within Docker stack)
-curl -X POST http://localhost:54321/functions/v1/powerpoint-generator \
+curl -X POST http://localhost:54521/functions/v1/powerpoint-generator \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer [auth-token]" \
   -d '{"storyboard": {...}, "userId": "test-user"}'
@@ -249,7 +249,7 @@ networks:
 // Test containers connecting to Supabase on host
 const SUPABASE_URL = process.env.CI
   ? 'http://supabase-kong:8000'
-  : 'http://host.docker.internal:54321';
+  : 'http://host.docker.internal:54521';
 ```
 
 ## Performance Optimization
@@ -324,7 +324,7 @@ healthcheck:
 
 ### Container Won't Start
 
-1. Check port conflicts: `lsof -i :3001` or `lsof -i :54321`
+1. Check port conflicts: `lsof -i :3001` or `lsof -i :54521`
 2. Verify network exists: `docker network ls | grep slideheroes`
 3. Check resource limits: `docker stats`
 4. Review health check logs: `docker inspect --format='{{json .State.Health}}' <container>`
@@ -365,7 +365,7 @@ If issues persist:
 ## Expected Healthy Setup
 
 ```
-Main Supabase:   API=54321, DB=54322, Studio=54323, Analytics=39006
+Main Supabase:   API=54521, DB=54522, Studio=54523, Analytics=39006
 Test Containers: slideheroes-app-test (3001), slideheroes-payload-test (3021)
 Infrastructure:  All components healthy (12/12 Supabase + 2/2 test containers)
 ```

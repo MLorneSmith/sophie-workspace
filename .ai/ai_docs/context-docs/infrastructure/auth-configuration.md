@@ -119,7 +119,7 @@ Customize in Dashboard > Authentication > Email Templates:
 
 ```env
 # Development Supabase
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54521
 NEXT_PUBLIC_SUPABASE_ANON_KEY=local-anon-key
 SUPABASE_SERVICE_ROLE_KEY=local-service-key
 
@@ -204,7 +204,7 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 ```env
 # E2E Test Environment
-E2E_SUPABASE_URL=http://localhost:54322
+E2E_SUPABASE_URL=http://localhost:54521
 E2E_SUPABASE_ANON_KEY=test-anon-key
 E2E_TEST_USER_EMAIL=test@example.com
 E2E_TEST_USER_PASSWORD=TestPass123!
