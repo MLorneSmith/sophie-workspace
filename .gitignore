@@ -36,6 +36,7 @@ dist/
 .codebasemap
 .ai/tools/context7/.cache/
 .ai/tools/exa/.cache/
+.ai/.ai/
 
 # debug
 npm-debug.log*
@@ -59,6 +60,7 @@ apps/*/.env
 # MCP configuration (contains tokens)
 .mcp.json
 .mcp.local.json
+.env.mcp
 
 # Claude Code sensitive/local files
 CLAUDE.local.md
