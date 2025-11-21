@@ -2,6 +2,7 @@
 name: context7-expert
 description: Execute documentation retrieval and analysis using Context7 CLI integration for comprehensive library research. Use PROACTIVELY for documentation lookup, API reference queries, version comparisons, or best practices extraction.
 tools: Bash, Read, Grep, Glob
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
 category: research
 displayName: Context7 Documentation Expert
 color: green
