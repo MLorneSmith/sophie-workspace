@@ -1,6 +1,6 @@
 ---
 description: Fix unhealthy Docker containers with diagnostic-driven approach and aggressive recovery strategies
-allowed-tools: [Bash, Read, Grep, Task, TodoWrite]
+allowed-tools: [Bash, Read, Grep, Task, TodoWrite, Bash(docker:*), Bash(docker-compose:*)]
 argument-hint: "[container-name|stack-name] [--auto] [--manual-approval]"
 ---
 
@@ -19,8 +19,8 @@ Docker container health validation and aggressive restoration for all 16 contain
 
 ## Essential Context
 <!-- Always read for this command -->
-- Read .claude/context/infrastructure/docker-health-debugging.md
-- Read .ai/ai_scripts/supabase-external-health.sh
+- Read ..ai/ai_docs/context-docs/infrastructure/docker-setup.md
+- Read .ai/ai_docs/context-docs/infrastructure/docker-troubleshooting.md
 
 ## Prompt
 
@@ -95,7 +95,8 @@ Authority Matrix:
 
 **Load** Docker health infrastructure and debugging knowledge:
 
-- Read .claude/context/infrastructure/docker-health-debugging.md
+- Read ..ai/ai_docs/context-docs/infrastructure/docker-setup.md
+- Read .ai/ai_docs/context-docs/infrastructure/docker-troubleshooting.md
 - Read .ai/ai_scripts/supabase-external-health.sh
 
 #### Parameters & Constraints
