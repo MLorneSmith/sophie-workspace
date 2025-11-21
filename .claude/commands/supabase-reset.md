@@ -151,8 +151,8 @@ echo "✅ Environment validation complete"
 **Execute** database reset with port cleanup:
 
 ```bash
-# 3.1 Cleanup conflicting ports (54321-54327 for web instance)
-bash .ai/ai_scripts/development/cleanup-ports.sh 54321 54327 || {
+# 3.1 Cleanup conflicting ports (54521-54527 for web instance)
+bash .ai/ai_scripts/development/cleanup-ports.sh 54521 54527 || {
   echo "⚠️  Port cleanup failed, attempting to continue..."
 }
 
@@ -312,7 +312,7 @@ echo ""
 echo "✅ Supabase Reset Complete!"
 echo ""
 echo "Database URL: $DATABASE_URL"
-echo "Studio URL: http://localhost:54323"
+echo "Studio URL: http://localhost:54523"
 echo ""
 
 if [ "$SCHEMA_ONLY" = false ]; then
@@ -382,7 +382,7 @@ fi
 **Success Validation**:
 
 - R2 storage configured with production credentials
-- Supabase running on localhost:54321-54323
+- Supabase running on localhost:54521-54523
 - Payload schema with 40+ tables
 - 252 records seeded across 12 collections (if not --schema-only)
 - Media files (24) and downloads (20) with R2 URLs
@@ -402,8 +402,8 @@ fi
 ✅ Phase 6: Database verified
 
 **Connection Details:**
-- Database: localhost:54322
-- Studio: http://localhost:54323
+- Database: localhost:54522
+- Studio: http://localhost:54523
 - R2 Storage: Cloudflare (production buckets)
 - 
 - Status: All services running
@@ -411,7 +411,7 @@ fi
 **Next Steps:**
 - Start development: pnpm dev
 - Run tests: pnpm test
-- Verify data: Open Studio at http://localhost:54323
+- Verify data: Open Studio at http://localhost:54523
 - Files are pre-uploaded to R2, accessed via CDN URLs
 ```
 
@@ -466,9 +466,9 @@ Fix:
 **Port Conflicts**
 
 ```
-ERROR: Port 54321 already in use
+ERROR: Port 54521 already in use
 Fix: Script will attempt automatic cleanup
-Manual: lsof -ti:54321 | xargs kill -9
+Manual: lsof -ti:54521 | xargs kill -9
 ```
 
 ### Recovery Procedures

@@ -121,8 +121,8 @@ Before starting diagnosis:
    | Agent | Best For | When to Use |
    |-------|----------|-------------|
    | **context7-expert** | Official docs | Known libraries (React, Next.js, Supabase, etc.) |
-   | **perplexity-search-expert** | Recent solutions | Recent issues, breaking changes, discussions |
-   | **exa-search-expert** | Tutorials/guides | Learning resources, similar bugs, best practices |
+   | **perplexity-expert** | Recent solutions | Recent issues, breaking changes, discussions |
+   | **exa-expert** | Tutorials/guides | Learning resources, similar bugs, best practices |
    | **docs-mcp-expert** | Indexed docs | Makerkit documentation already indexed in MCP server |
 
    **Agent Selection**:
@@ -140,12 +140,12 @@ Before starting diagnosis:
      prompt="Get Supabase Auth Helpers docs for Next.js. Focus on session management, initialization, common TypeError issues. Include API examples."
    )
    Task(
-     subagent_type="perplexity-search-expert",
+     subagent_type="perplexity-expert",
      description="Find recent solutions",
      prompt="Search Supabase Auth Helpers session undefined errors in Next.js (last month). Include GitHub issues and Stack Overflow."
    )
    Task(
-     subagent_type="exa-search-expert",
+     subagent_type="exa-expert",
      description="Find integration guides",
      prompt="Find Supabase authentication tutorials for Next.js covering session handling and common pitfalls."
    )
