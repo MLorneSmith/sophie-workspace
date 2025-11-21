@@ -242,7 +242,32 @@ class TestController {
 	}
 
 	/**
-	 * Validate E2E test readiness with comprehensive checks
+	 * Calculate exponential backoff with jitter
+	 * Pattern: 1s, 2s, 4s, 8s, 15s, 15s, 15s... (caps at 15s)
+	 */
+	calculateBackoffDelay(attemptNumber) {
+		// Exponential backoff: 2^attempt seconds, capped at 15 seconds
+		const maxDelay = 15000; // 15 seconds in milliseconds
+		const exponentialDelay = Math.pow(2, attemptNumber - 1) * 1000;
+		return Math.min(exponentialDelay, maxDelay);
+	}
+
+	/**
+	 * Sleep for specified milliseconds
+	 */
+	sleep(ms) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	/**
+	 * Validate E2E test readiness with exponential backoff retry logic
+	 *
+	 * Retries with exponential backoff to handle container restarts during test execution.
+	 * Configuration:
+	 * - 10 total attempts (0-9)
+	 * - 15-second intervals between retries (matching container healthcheck)
+	 * - 180-second maximum total wait (matching container start_period)
+	 * - Detailed logging of each attempt for debugging
 	 */
 	async validateE2EReadiness() {
 		const readinessResult = {
@@ -255,139 +280,224 @@ class TestController {
 				applicationResponse: false,
 				authEndpoints: false,
 			},
+			retryInfo: {
+				attempts: [],
+				totalAttempts: 0,
+				totalWaitTime: 0,
+			},
 		};
 
+		// Configuration for retry logic
+		const MAX_ATTEMPTS = 10;
+		const MAX_TOTAL_WAIT_MS = 180000; // 180 seconds matching container start_period
+		const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
+
 		try {
-			log("🔍 Validating E2E test readiness...");
+			log(
+				"🔍 Validating E2E test readiness with exponential backoff retry logic...",
+			);
 
-			// Check 1: Test server availability
-			const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
-			log(`  🔍 Checking server at ${testUrl}...`);
-
-			try {
-				const response = await fetch(`${testUrl}/api/health`, {
-					signal: AbortSignal.timeout(5000),
-				});
-
-				if (response.status === 200) {
-					readinessResult.checks.serverHealth = true;
-					log("  ✅ Server health check passed");
-				} else if (response.status === 503) {
-					readinessResult.reason =
-						"Server is starting up (503 Service Unavailable)";
-					readinessResult.suggestions.push(
-						"Wait a few minutes for the server to fully start up",
-						"Check container logs: docker logs slideheroes-app-test",
-					);
-					return readinessResult;
-				} else {
-					readinessResult.reason = `Server health check failed (${response.status})`;
-					readinessResult.suggestions.push(
-						"Check server logs for errors",
-						"Verify the application is running correctly",
-						"Try restarting the container: docker restart slideheroes-app-test",
-					);
-					return readinessResult;
-				}
-			} catch (fetchError) {
-				readinessResult.reason = `Cannot reach test server: ${fetchError.message}`;
-				readinessResult.suggestions.push(
-					"Ensure the test server is running",
-					"Check if port 3001 is accessible",
-					"Verify Docker container is running: docker ps | grep slideheroes",
+			for (
+				let attemptNumber = 1;
+				attemptNumber <= MAX_ATTEMPTS;
+				attemptNumber++
+			) {
+				const attemptStartTime = Date.now();
+				log(
+					`\n  📍 Attempt ${attemptNumber}/${MAX_ATTEMPTS} at ${new Date().toISOString()}`,
 				);
-				return readinessResult;
-			}
+				log(`  🔍 Checking server at ${testUrl}...`);
 
-			// Check 2: Container-specific health (if using Docker)
-			const dockerAvailable =
-				await this.infrastructureManager.checkDockerContainer();
-			if (dockerAvailable) {
-				readinessResult.checks.containerHealth = true;
-				log("  ✅ Docker container is healthy");
-			}
+				try {
+					const response = await fetch(`${testUrl}/api/health`, {
+						signal: AbortSignal.timeout(15000), // 15 second timeout per attempt
+					});
 
-			// Check 3: Application response with content
-			log("  🔍 Checking application content...");
-			try {
-				const homeResponse = await fetch(testUrl, {
-					signal: AbortSignal.timeout(10000),
-					headers: { Accept: "text/html" },
-				});
+					if (response.status === 200) {
+						readinessResult.checks.serverHealth = true;
+						log("  ✅ Server health check passed");
 
-				if (homeResponse.status === 200) {
-					const htmlContent = await homeResponse.text();
-					if (
-						htmlContent.includes("SlideHeroes") &&
-						htmlContent.length > 1000
-					) {
-						readinessResult.checks.applicationResponse = true;
-						log("  ✅ Application serving content correctly");
-					} else {
-						readinessResult.reason =
-							"Application loads but content is missing or incomplete";
-						readinessResult.suggestions.push(
-							"Check application build and deployment",
-							"Verify environment variables are set correctly",
-							"Check browser console for JavaScript errors",
+						// Continue with other checks if health check passed
+						try {
+							// Check 2: Container-specific health (if using Docker)
+							const dockerAvailable =
+								await this.infrastructureManager.checkDockerContainer();
+							if (dockerAvailable) {
+								readinessResult.checks.containerHealth = true;
+								log("  ✅ Docker container is healthy");
+							}
+
+							// Check 3: Application response with content
+							log("  🔍 Checking application content...");
+							try {
+								const homeResponse = await fetch(testUrl, {
+									signal: AbortSignal.timeout(10000),
+									headers: { Accept: "text/html" },
+								});
+
+								if (homeResponse.status === 200) {
+									const htmlContent = await homeResponse.text();
+									if (
+										htmlContent.includes("SlideHeroes") &&
+										htmlContent.length > 1000
+									) {
+										readinessResult.checks.applicationResponse = true;
+										log("  ✅ Application serving content correctly");
+									} else {
+										readinessResult.reason =
+											"Application loads but content is missing or incomplete";
+										readinessResult.suggestions.push(
+											"Check application build and deployment",
+											"Verify environment variables are set correctly",
+											"Check browser console for JavaScript errors",
+										);
+										throw new Error(readinessResult.reason);
+									}
+								} else {
+									readinessResult.reason = `Home page returned ${homeResponse.status}`;
+									readinessResult.suggestions.push(
+										"Check application routing configuration",
+										"Verify the Next.js application is built correctly",
+									);
+									throw new Error(readinessResult.reason);
+								}
+							} catch (contentError) {
+								readinessResult.reason = `Application content check failed: ${contentError.message}`;
+								readinessResult.suggestions.push(
+									"Application may be slow to respond - increase timeout",
+									"Check for application startup issues",
+								);
+								throw new Error(readinessResult.reason);
+							}
+
+							// Check 4: Authentication endpoints (critical for most E2E tests)
+							log("  🔍 Checking authentication endpoints...");
+							try {
+								const signInResponse = await fetch(`${testUrl}/auth/sign-in`, {
+									signal: AbortSignal.timeout(5000),
+									headers: { Accept: "text/html" },
+								});
+
+								if (signInResponse.status === 200) {
+									const signInContent = await signInResponse.text();
+									if (
+										signInContent.includes("sign-in") ||
+										signInContent.includes("email") ||
+										signInContent.includes("password")
+									) {
+										readinessResult.checks.authEndpoints = true;
+										log("  ✅ Authentication endpoints accessible");
+									}
+								}
+							} catch (_authError) {
+								log("  ⚠️ Auth endpoint check failed but continuing");
+							}
+
+							// Final assessment
+							const criticalChecks = [
+								readinessResult.checks.serverHealth,
+								readinessResult.checks.applicationResponse,
+							];
+
+							if (criticalChecks.every((check) => check)) {
+								readinessResult.ready = true;
+								readinessResult.reason = "All critical checks passed";
+								readinessResult.retryInfo.attempts.push({
+									attempt: attemptNumber,
+									status: "success",
+									timestamp: new Date().toISOString(),
+									duration: Date.now() - attemptStartTime,
+								});
+								log(
+									`  ✅ E2E infrastructure is ready for testing (success on attempt ${attemptNumber})`,
+								);
+								return readinessResult;
+							}
+						} catch (checkError) {
+							log(
+								`  ❌ Secondary checks failed: ${checkError.message}. Will retry...`,
+							);
+						}
+					} else if (response.status === 503) {
+						log(
+							"  ⚠️ Server is starting up (503 Service Unavailable) - will retry",
 						);
-						return readinessResult;
+					} else {
+						log(
+							`  ❌ Server health check failed (${response.status}) - will retry`,
+						);
 					}
-				} else {
-					readinessResult.reason = `Home page returned ${homeResponse.status}`;
-					readinessResult.suggestions.push(
-						"Check application routing configuration",
-						"Verify the Next.js application is built correctly",
-					);
-					return readinessResult;
+
+					readinessResult.retryInfo.attempts.push({
+						attempt: attemptNumber,
+						status: "failed",
+						timestamp: new Date().toISOString(),
+						reason: `Health check returned status ${response.status}`,
+						duration: Date.now() - attemptStartTime,
+					});
+				} catch (fetchError) {
+					log(`  ❌ Server unreachable: ${fetchError.message} - will retry`);
+					readinessResult.retryInfo.attempts.push({
+						attempt: attemptNumber,
+						status: "failed",
+						timestamp: new Date().toISOString(),
+						reason: `Fetch error: ${fetchError.message}`,
+						duration: Date.now() - attemptStartTime,
+					});
 				}
-			} catch (contentError) {
-				readinessResult.reason = `Application content check failed: ${contentError.message}`;
-				readinessResult.suggestions.push(
-					"Application may be slow to respond - increase timeout",
-					"Check for application startup issues",
+
+				// Check if we've exceeded max wait time
+				const totalElapsedTime = readinessResult.retryInfo.attempts.reduce(
+					(sum, a) => sum + a.duration,
+					0,
 				);
-				return readinessResult;
-			}
 
-			// Check 4: Authentication endpoints (critical for most E2E tests)
-			log("  🔍 Checking authentication endpoints...");
-			try {
-				const signInResponse = await fetch(`${testUrl}/auth/sign-in`, {
-					signal: AbortSignal.timeout(5000),
-					headers: { Accept: "text/html" },
-				});
+				// Add backoff delay between retries
+				if (attemptNumber < MAX_ATTEMPTS) {
+					const backoffMs = this.calculateBackoffDelay(attemptNumber);
+					const remainingMaxTime =
+						MAX_TOTAL_WAIT_MS - totalElapsedTime - backoffMs;
 
-				if (signInResponse.status === 200) {
-					const signInContent = await signInResponse.text();
-					if (
-						signInContent.includes("sign-in") ||
-						signInContent.includes("email") ||
-						signInContent.includes("password")
-					) {
-						readinessResult.checks.authEndpoints = true;
-						log("  ✅ Authentication endpoints accessible");
+					if (remainingMaxTime < 0) {
+						log(
+							`  ⏱️ Maximum total wait time (${MAX_TOTAL_WAIT_MS / 1000}s) would be exceeded`,
+						);
+						break; // Exit retry loop
 					}
+
+					const backoffSeconds = Math.round(backoffMs / 1000);
+					log(
+						`  ⏳ Waiting ${backoffSeconds}s before retry ${attemptNumber + 1}...`,
+					);
+					await this.sleep(backoffMs);
 				}
-			} catch (_authError) {
-				log("  ⚠️ Auth endpoint check failed but continuing");
 			}
 
-			// Final assessment
-			const criticalChecks = [
-				readinessResult.checks.serverHealth,
-				readinessResult.checks.applicationResponse,
-			];
+			// If we get here, all retries have been exhausted
+			const totalElapsedTime = readinessResult.retryInfo.attempts.reduce(
+				(sum, a) => sum + a.duration,
+				0,
+			);
+			readinessResult.retryInfo.totalAttempts =
+				readinessResult.retryInfo.attempts.length;
+			readinessResult.retryInfo.totalWaitTime = totalElapsedTime;
 
-			if (criticalChecks.every((check) => check)) {
-				readinessResult.ready = true;
-				readinessResult.reason = "All critical checks passed";
-				log("  ✅ E2E infrastructure is ready for testing");
-			} else {
-				readinessResult.reason = "Critical infrastructure checks failed";
-				readinessResult.suggestions.push(
-					"Fix the server and application issues above",
-					"Consider running with --skip-e2e to run only unit tests",
+			readinessResult.reason = `Cannot reach test server: The operation was aborted due to timeout after ${readinessResult.retryInfo.totalAttempts} attempts (${Math.round(totalElapsedTime / 1000)}s elapsed)`;
+			readinessResult.suggestions.push(
+				"Ensure the test server is running",
+				"Check if port 3001 is accessible",
+				"Verify Docker container is running: docker ps | grep slideheroes",
+				"Check container logs: docker logs slideheroes-app-test",
+				"Container restart may have failed. Check with: docker inspect slideheroes-app-test",
+			);
+
+			log(
+				`\n❌ E2E readiness check failed after ${readinessResult.retryInfo.totalAttempts} attempts`,
+			);
+			log(`📊 Total elapsed time: ${Math.round(totalElapsedTime / 1000)}s`);
+			for (const attempt of readinessResult.retryInfo.attempts) {
+				log(
+					`  • Attempt ${attempt.attempt}: ${attempt.status} (${attempt.duration}ms) - ${attempt.reason}`,
 				);
 			}
 
