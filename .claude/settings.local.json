@@ -5,7 +5,8 @@
 			"WebFetch(domain:code.claude.com)",
 			"WebFetch(domain:docs.perplexity.ai)",
 			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*)",
-			"SlashCommand(/conditional_docs bug-plan \"E2E tests configuration verification intentional failures CI shard test infrastructure\")"
+			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*)",
+			"SlashCommand(/conditional_docs:*)"
 		]
 	},
 	"enabledMcpjsonServers": ["playwright"],

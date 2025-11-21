@@ -360,7 +360,7 @@ async function globalSetup(config: FullConfig) {
   console.log("\n🔧 Global Setup: Creating authenticated browser states via API...\n");
 
   const baseURL = config.projects[0]?.use?.baseURL || "http://localhost:3001";
-  const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54321";
+  const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
   const supabaseAnonKey = process.env.E2E_SUPABASE_ANON_KEY || "...";
 
   // Define auth states to create

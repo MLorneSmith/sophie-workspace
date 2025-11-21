@@ -16,7 +16,7 @@ Windows with WSL2 and Docker Desktop experience port binding conflicts due to Hy
 
 #### 1. Port Range Change (Implemented)
 
-Main stack uses ports 54321-54326 + 39006 to avoid problematic 50000-60000 range.
+Main stack uses ports 54521-54526 + 39006 to avoid problematic Hyper-V reserved ranges (54265-54464).
 
 #### 2. Update WSL to 2.6.1+
 
@@ -44,7 +44,7 @@ wsl --shutdown
 netsh int ipv4 show excludedportrange protocol=tcp
 
 # Reserve specific ports
-netsh int ipv4 add excludedportrange protocol=tcp startport=54321 numberofports=10
+netsh int ipv4 add excludedportrange protocol=tcp startport=54521 numberofports=10
 ```
 
 ## Container Permission Issues
@@ -353,7 +353,7 @@ docker volume rm supabase_db_2025slideheroes supabase_config_2025slideheroes
 
 ```bash
 # Check what's using ports
-lsof -i :3000 :3001 :54321 :54322
+lsof -i :3000 :3001 :54521 :54522
 
 # Windows: Check port usage
 netstat -ano | findstr :3000
@@ -419,10 +419,10 @@ pnpm dev
 
 ```bash
 # Backup database before reset
-pg_dump postgresql://postgres:postgres@localhost:54322/postgres > backup.sql
+pg_dump postgresql://postgres:postgres@localhost:54522/postgres > backup.sql
 
 # Restore after reset
-psql postgresql://postgres:postgres@localhost:54322/postgres < backup.sql
+psql postgresql://postgres:postgres@localhost:54522/postgres < backup.sql
 ```
 
 ## Best Practices
@@ -513,9 +513,9 @@ When port binding fails, you'll see:
 ==================================================
 
 📊 Port Status:
-  ✅ Port 54321: OK
-  ⚠️  Port 54322: Port configured but not connectable (port binding proxy failure)
-  ❌ Port 54323: Port not bound to host
+  ✅ Port 54521: OK
+  ⚠️  Port 54522: Port configured but not connectable (port binding proxy failure)
+  ❌ Port 54523: Port not bound to host
 
 🔍 Diagnostic Data:
   Timestamp: 2025-11-21T12:00:00.000Z
