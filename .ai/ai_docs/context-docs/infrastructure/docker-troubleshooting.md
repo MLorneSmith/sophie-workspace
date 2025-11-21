@@ -10,6 +10,8 @@ Windows with WSL2 and Docker Desktop experience port binding conflicts due to Hy
 
 **Error:** `bind: An attempt was made to access a socket in a way forbidden by its access permissions`
 
+**New Detection**: Port binding verification now detects this issue within 10 seconds instead of waiting for 180-second timeout. See "Port Binding Verification" section below.
+
 ### Solutions
 
 #### 1. Port Range Change (Implemented)
@@ -445,6 +447,83 @@ psql postgresql://postgres:postgres@localhost:54322/postgres < backup.sql
 - Update base images monthly
 - Review security patches
 - Document custom configurations
+
+## Port Binding Verification (WSL2 Detection)
+
+### Automatic Detection
+
+The test infrastructure now includes automatic port binding verification that detects Docker port binding failures within 10 seconds (instead of 180-second timeout).
+
+**What it checks:**
+- Docker container port configuration (HostConfig.PortBindings)
+- Actual network port accessibility (NetworkSettings.Ports)
+- TCP connectivity to each port (actual port availability)
+
+**When it detects port binding proxy failures:**
+- Distinguishes between "port not configured" vs "configured but not connectable"
+- Provides specific recovery instructions based on failure type
+- Displays diagnostic data including docker inspect output
+- Prevents false positives through TCP connectivity verification
+
+### Recovery Instructions
+
+If port binding verification fails, you'll see clear recovery steps:
+
+#### For VPNKit Proxy Failure (most common):
+```
+1. Restart WSL2 and Docker Desktop (fixes vpnkit proxy synchronization):
+   wsl --shutdown
+   # Then restart Docker Desktop via Windows UI
+
+2. Check for port conflicts (Windows Hyper-V dynamic port reservation):
+   netsh int ipv4 show excludedportrange protocol=tcp
+
+3. Verify .wslconfig networking mode (use NAT, avoid mirrored):
+   Edit: %USERPROFILE%\.wslconfig
+   [wsl2]
+   networkingMode=NAT
+
+4. Update WSL2 to latest version (requires WSL 2.6.1+):
+   wsl --update
+```
+
+#### For Unbound Ports (container startup issue):
+```
+1. Check container logs:
+   docker logs supabase_kong_2025slideheroes-db
+
+2. Restart containers:
+   docker-compose -f docker-compose.test.yml down
+   docker-compose -f docker-compose.test.yml up -d
+```
+
+### Skipping Verification
+
+For advanced users who want to bypass port binding verification:
+```bash
+# Use --skip-port-verify flag in test controller
+# (Implementation dependent on test framework)
+```
+
+### Diagnostic Output
+
+When port binding fails, you'll see:
+```
+❌ Docker Port Binding Verification Failed
+==================================================
+
+📊 Port Status:
+  ✅ Port 54321: OK
+  ⚠️  Port 54322: Port configured but not connectable (port binding proxy failure)
+  ❌ Port 54323: Port not bound to host
+
+🔍 Diagnostic Data:
+  Timestamp: 2025-11-21T12:00:00.000Z
+  Failed ports: 2
+
+🛠️ Recovery Instructions:
+  1. Restart WSL2 and Docker Desktop...
+```
 
 ## Related Documentation
 
