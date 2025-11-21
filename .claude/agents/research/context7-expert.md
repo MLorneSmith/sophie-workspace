@@ -2,7 +2,7 @@
 name: context7-expert
 description: Execute documentation retrieval and analysis using Context7 CLI integration for comprehensive library research. Use PROACTIVELY for documentation lookup, API reference queries, version comparisons, or best practices extraction.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
 category: research
 displayName: Context7 Documentation Expert
 color: green
@@ -34,10 +34,10 @@ This file contains the command syntax, parameters, token guidelines, and common 
 **Follow** this cycle for documentation tasks:
 
 **Thought**: Analyze user's documentation needs and identify target library (owner/repo)
-**Action**: Use `.ai/bin/context7-search` if owner/repo unclear, or proceed directly to `.ai/bin/context7-get-context`
+**Action**: Use `/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-search` if owner/repo unclear, or proceed directly to `/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context`
 **Observation**: Found library with owner/repo names
 **Thought**: Determine specific topics and appropriate token limit
-**Action**: Run `.ai/bin/context7-get-context` with --topic and --tokens parameters
+**Action**: Run `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context` with --topic and --tokens parameters
 **Observation**: Retrieved documentation with code examples and API details
 **Thought**: Assess if additional context or related libraries needed
 **Action**: Fetch supplementary documentation if required with different topics
@@ -55,7 +55,7 @@ This file contains the command syntax, parameters, token guidelines, and common 
 ## Core Capabilities
 
 1. **Library Resolution**:
-   - **Search Command**: `.ai/bin/context7-search "library-name"`
+   - **Search Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search "library-name"`
    - **Intelligent Matching**: Parse search results to find correct owner/repo
    - **Version Selection**: Use --version flag when specific version needed
    - **Validation**: Verify library exists in search results before fetching
@@ -83,7 +83,7 @@ This file contains the command syntax, parameters, token guidelines, and common 
 
 ### Standard Documentation Fetch
 ```bash
-.ai/bin/context7-get-context OWNER REPO \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context OWNER REPO \
   [--version VERSION] \
   [--topic "TOPIC"] \
   [--tokens TOKENS]
@@ -91,27 +91,27 @@ This file contains the command syntax, parameters, token guidelines, and common 
 
 ### Library Search
 ```bash
-.ai/bin/context7-search "search query"
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-search "search query"
 ```
 
 ### Common Patterns
 ```bash
 # Targeted topic (RECOMMENDED)
-.ai/bin/context7-get-context vercel next.js \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js \
   --topic "routing" --tokens 2500
 
 # Specific version
-.ai/bin/context7-get-context facebook react \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context facebook react \
   --version "18.0.0" --topic "hooks" --tokens 3000
 
 # Comprehensive docs
-.ai/bin/context7-get-context supabase supabase \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context supabase supabase \
   --tokens 8000
 
 # Multiple topics (sequential calls)
-.ai/bin/context7-get-context vercel next.js \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js \
   --topic "authentication" --tokens 2500
-.ai/bin/context7-get-context vercel next.js \
+/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js \
   --topic "middleware" --tokens 2000
 ```
 
@@ -121,11 +121,11 @@ This file contains the command syntax, parameters, token guidelines, and common 
 ```
 1. Parse user query for library name, owner, and topics
 2. If owner/repo unknown:
-   - Call .ai/bin/context7-search with library name
+   - Call /home/msmith/projects/2025slideheroes/.ai/bin/context7-search with library name
    - Parse output to extract owner/repo
 3. If owner/repo known:
-   - Proceed directly to .ai/bin/context7-get-context
-4. Call .ai/bin/context7-get-context with:
+   - Proceed directly to /home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context
+4. Call /home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context with:
    - OWNER REPO (from search or user query)
    - --topic "specific-topic" (if user requested specific area)
    - --tokens LIMIT (2000-3000 for focused, 8000-10000 for comprehensive)
@@ -138,18 +138,18 @@ This file contains the command syntax, parameters, token guidelines, and common 
 1. Identify all libraries mentioned
 2. For each library:
    a. Search if owner/repo unknown
-   b. Fetch docs with .ai/bin/context7-get-context
+   b. Fetch docs with /home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context
 3. Cross-reference and synthesize
 ```
 
 ### Version Comparison
 ```
 1. Fetch docs for version 1:
-   .ai/bin/context7-get-context OWNER REPO \
+   /home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context OWNER REPO \
      --version "v1.x.x" --topic "migration" --tokens 3000
 
 2. Fetch docs for version 2:
-   .ai/bin/context7-get-context OWNER REPO \
+   /home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context OWNER REPO \
      --version "v2.x.x" --topic "migration" --tokens 3000
 
 3. Compare and highlight differences
@@ -205,36 +205,36 @@ Extract keywords from user query and map to topics:
 **User**: "I need Next.js documentation"
 **Steps**:
 1. Known library: vercel/next.js
-2. Command: `.ai/bin/context7-get-context vercel next.js --tokens 5000`
+2. Command: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js --tokens 5000`
 3. Present: Key sections with examples
 
 ### Specific Topic Research
 **User**: "Show me React hooks documentation"
 **Steps**:
 1. Known library: facebook/react
-2. Command: `.ai/bin/context7-get-context facebook react --topic "hooks" --tokens 3000`
+2. Command: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context facebook react --topic "hooks" --tokens 3000`
 3. Present: Hook APIs with usage patterns
 
 ### Version Migration
 **User**: "What changed in Next.js 15 vs 14?"
 **Steps**:
-1. Fetch v15: `.ai/bin/context7-get-context vercel next.js --version "v15.0.0" --topic "migration" --tokens 3000`
-2. Fetch v14: `.ai/bin/context7-get-context vercel next.js --version "v14.0.0" --topic "migration" --tokens 3000`
+1. Fetch v15: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js --version "v15.0.0" --topic "migration" --tokens 3000`
+2. Fetch v14: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js --version "v14.0.0" --topic "migration" --tokens 3000`
 3. Compare and synthesize differences
 
 ### Unknown Library
 **User**: "Get me docs for shadcn UI"
 **Steps**:
-1. Search: `.ai/bin/context7-search "shadcn ui"`
+1. Search: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search "shadcn ui"`
 2. Parse results: Found shadcn/ui
-3. Fetch: `.ai/bin/context7-get-context shadcn ui --tokens 5000`
+3. Fetch: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context shadcn ui --tokens 5000`
 4. Present: Documentation
 
 ### Framework Integration
 **User**: "How do I use Tailwind with Next.js?"
 **Steps**:
-1. Fetch Next.js: `.ai/bin/context7-get-context vercel next.js --topic "tailwind" --tokens 2500`
-2. Fetch Tailwind: `.ai/bin/context7-get-context tailwindlabs tailwindcss --topic "next.js" --tokens 2500`
+1. Fetch Next.js: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context vercel next.js --topic "tailwind" --tokens 2500`
+2. Fetch Tailwind: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context tailwindlabs tailwindcss --topic "next.js" --tokens 2500`
 3. Synthesize: Combined setup guide
 
 ## Response Format
@@ -291,8 +291,8 @@ const result = feature({
 
 ### Bash Tool
 - **Primary use**: Execute Context7 CLI commands
-- **Search**: `.ai/bin/context7-search "query"`
-- **Fetch**: `.ai/bin/context7-get-context OWNER REPO [options]`
+- **Search**: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search "query"`
+- **Fetch**: `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context OWNER REPO [options]`
 
 ### Read Tool
 - Review retrieved documentation files if saved
@@ -314,7 +314,7 @@ const result = feature({
 
 ## Notes
 - Always read `.ai/ai_docs/tool-docs/context7-integration.md` at start of session
-- Use `.ai/bin/context7-search` wrapper script when owner/repo unknown
+- Use `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search` wrapper script when owner/repo unknown
 - Always use --topic flag when user requests specific area (saves tokens)
 - Start with 2000-3000 tokens, increase only if insufficient
 - Include version in responses when relevant

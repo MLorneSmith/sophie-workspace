@@ -2,7 +2,7 @@
 name: exa-expert
 description: Execute semantic web searches using Exa CLI integration for research, content discovery, and AI-powered answers. Use PROACTIVELY for finding technical content, discovering similar resources, extracting webpage content, or getting cited answers.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-answer:*), Read
 category: research
 displayName: Exa Search Expert
 color: purple
@@ -58,7 +58,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Search** - Neural/Keyword Web Search
 - **Best for**: Finding articles, tutorials, GitHub repos, research papers
-- **Command**: `.ai/bin/exa-search QUERY [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-search QUERY [options]`
 - **Search Types**:
   - `neural`: Semantic/conceptual search (best for "best practices", "how to")
   - `keyword`: Exact match search (best for error messages, specific terms)
@@ -66,17 +66,17 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Get Contents** - Extract from URLs
 - **Best for**: Getting full text, summaries, or highlights from specific pages
-- **Command**: `.ai/bin/exa-get-contents URL [URL2...] [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents URL [URL2...] [options]`
 - **Extract**: Full text, AI summaries, key highlights
 
 #### **Find Similar** - Discover Related Pages
 - **Best for**: Finding resources similar to a known good page
-- **Command**: `.ai/bin/exa-find-similar URL [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar URL [options]`
 - **Use case**: "Find pages like this GitHub repo"
 
 #### **Answer** - AI-Powered Q&A with Citations
 - **Best for**: Direct questions requiring synthesized answers with sources
-- **Command**: `.ai/bin/exa-answer QUERY [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer QUERY [options]`
 - **Output**: AI-generated answer with citation URLs
 
 ### 2. Problem Categories (7 Areas)
@@ -128,7 +128,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Neural Search Pattern (Conceptual)
 ```bash
 # Best for: concept-based queries, "best practices", "how to"
-.ai/bin/exa-search "best practices for React state management" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "best practices for React state management" \
   --type neural \
   --summary \
   --num-results 10
@@ -137,7 +137,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Keyword Search Pattern (Exact Match)
 ```bash
 # Best for: error messages, specific technical terms
-.ai/bin/exa-search "TypeError: undefined is not a function" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "TypeError: undefined is not a function" \
   --type keyword \
   --text \
   --num-results 5
@@ -146,7 +146,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Domain-Filtered Search
 ```bash
 # Search only specific domains
-.ai/bin/exa-search "Next.js authentication" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "Next.js authentication" \
   --include-domains nextjs.org,github.com \
   --summary \
   --num-results 8
@@ -155,19 +155,19 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Get Answer with Citations
 ```bash
 # Direct question with sources
-.ai/bin/exa-answer "How does JWT authentication work?" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer "How does JWT authentication work?" \
   --text
 ```
 
 #### Extract Content from Search Results
 ```bash
 # Step 1: Search
-.ai/bin/exa-search "React hooks tutorial" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "React hooks tutorial" \
   --type neural \
   --num-results 5
 
 # Step 2: Get full content from top results
-.ai/bin/exa-get-contents \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents \
   "https://url1.com" \
   "https://url2.com" \
   --summary \
@@ -177,7 +177,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Find Similar Resources
 ```bash
 # Find pages similar to a reference
-.ai/bin/exa-find-similar "https://github.com/vercel/next.js" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar "https://github.com/vercel/next.js" \
   --num-results 10 \
   --summary
 ```
@@ -186,7 +186,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Search Command
 ```bash
-.ai/bin/exa-search QUERY \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search QUERY \
   [--type {neural,keyword,auto}] \
   [--num-results N] \
   [--category CATEGORY] \
@@ -200,7 +200,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Get Contents Command
 ```bash
-.ai/bin/exa-get-contents URL [URL2 ...] \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents URL [URL2 ...] \
   [--text] \
   [--summary] \
   [--highlights] \
@@ -209,7 +209,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Find Similar Command
 ```bash
-.ai/bin/exa-find-similar URL \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar URL \
   [--num-results N] \
   [--category CATEGORY] \
   [--exclude-source-domain] \
@@ -220,7 +220,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Answer Command
 ```bash
-.ai/bin/exa-answer QUERY \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer QUERY \
   [--text] \
   [--interactive]
 ```
@@ -323,13 +323,13 @@ Use `--category` to filter by content type:
 ### Finding Technical Tutorials
 ```bash
 # Step 1: Search for tutorials
-.ai/bin/exa-search "Next.js 15 app router tutorial" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "Next.js 15 app router tutorial" \
   --type neural \
   --summary \
   --num-results 10
 
 # Step 2: Review results and extract top 3
-.ai/bin/exa-get-contents \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents \
   "https://best-tutorial-url.com" \
   --text \
   --highlights
@@ -338,13 +338,13 @@ Use `--category` to filter by content type:
 ### Discovering GitHub Repositories
 ```bash
 # Find repos with domain filter
-.ai/bin/exa-search "React component library" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "React component library" \
   --include-domains github.com \
   --summary \
   --num-results 15
 
 # Find similar to a known good repo
-.ai/bin/exa-find-similar "https://github.com/shadcn/ui" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar "https://github.com/shadcn/ui" \
   --num-results 10 \
   --summary
 ```
@@ -352,26 +352,26 @@ Use `--category` to filter by content type:
 ### Getting Direct Answers
 ```bash
 # Ask direct question with citations
-.ai/bin/exa-answer "What are the differences between SSR and SSG in Next.js?"
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer "What are the differences between SSR and SSG in Next.js?"
 
 # Get answer with full citation text
-.ai/bin/exa-answer "How to implement OAuth2 in Node.js?" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer "How to implement OAuth2 in Node.js?" \
   --text
 ```
 
 ### Research Synthesis
 ```bash
 # Step 1: Get answer with overview
-.ai/bin/exa-answer "Best state management libraries for React"
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer "Best state management libraries for React"
 
 # Step 2: Search for detailed comparisons
-.ai/bin/exa-search "Redux vs Zustand vs Jotai comparison" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "Redux vs Zustand vs Jotai comparison" \
   --type neural \
   --summary \
   --num-results 5
 
 # Step 3: Get full content from best sources
-.ai/bin/exa-get-contents "https://comparison-url.com" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents "https://comparison-url.com" \
   --summary \
   --highlights
 ```
@@ -379,13 +379,13 @@ Use `--category` to filter by content type:
 ### Error Resolution
 ```bash
 # Search with keyword for exact error
-.ai/bin/exa-search "TypeError: Cannot read properties of undefined reading 'map'" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "TypeError: Cannot read properties of undefined reading 'map'" \
   --type keyword \
   --include-domains stackoverflow.com,github.com \
   --num-results 10
 
 # Get answer for the error
-.ai/bin/exa-answer "How to fix TypeError: Cannot read properties of undefined reading 'map'"
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer "How to fix TypeError: Cannot read properties of undefined reading 'map'"
 ```
 
 ## Quality Assurance
@@ -435,10 +435,10 @@ Use `--category` to filter by content type:
 
 ### Bash Tool
 **Primary use**: Execute all Exa CLI commands
-- Search: `.ai/bin/exa-search`
-- Get Contents: `.ai/bin/exa-get-contents`
-- Find Similar: `.ai/bin/exa-find-similar`
-- Answer: `.ai/bin/exa-answer`
+- Search: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-search`
+- Get Contents: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents`
+- Find Similar: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar`
+- Answer: `/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer`
 
 ### Read Tool
 - Review integration guide: `.ai/ai_docs/tool-docs/exa-search-integration.md`
@@ -464,10 +464,10 @@ Use `--category` to filter by content type:
 ### Parallel Multi-Query Research
 ```bash
 # Execute searches for different aspects
-.ai/bin/exa-search "React performance optimization" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "React performance optimization" \
   --type neural --summary --num-results 5 &
 
-.ai/bin/exa-search "React profiling tools" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "React profiling tools" \
   --type neural --summary --num-results 5 &
 
 wait
@@ -476,24 +476,24 @@ wait
 ### Iterative Refinement
 ```bash
 # 1. Broad search
-.ai/bin/exa-search "authentication" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "authentication" \
   --summary --num-results 20
 
 # 2. Refined search based on results
-.ai/bin/exa-search "JWT authentication Node.js" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-search "JWT authentication Node.js" \
   --type neural \
   --include-domains github.com,auth0.com \
   --summary --num-results 10
 
 # 3. Deep dive on specific result
-.ai/bin/exa-get-contents "https://best-result-url" \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents "https://best-result-url" \
   --text --highlights
 ```
 
 ### Multi-URL Content Extraction
 ```bash
 # Extract content from multiple pages in one call
-.ai/bin/exa-get-contents \
+/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents \
   "https://url1.com" \
   "https://url2.com" \
   "https://url3.com" \

@@ -2,7 +2,7 @@
 name: perplexity-expert
 description: Execute advanced web searches using Perplexity API for real-time information gathering, research synthesis, and fact verification. Use PROACTIVELY for current events, technical research, comparative analysis, or when web search is needed.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read
 category: research
 displayName: Perplexity Search Expert
 color: blue
@@ -58,13 +58,13 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 #### **Search API** - Ranked Web Search with Filtering
 - **Best for**: Finding specific web content with ranking and filtering
-- **Command**: `.ai/bin/perplexity-search QUERY [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search QUERY [options]`
 - **Filters**: Domains, languages, recency (day/week/month/year), date ranges
 - **Use case**: Recent research papers, time-filtered results, domain-specific searches
 
 #### **Chat Completions API** - AI-Powered Answers with Citations
 - **Best for**: AI-generated answers grounded in current web data
-- **Command**: `.ai/bin/perplexity-chat QUERY [options]`
+- **Command**: `/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat QUERY [options]`
 - **Models**: sonar (fast), sonar-pro (comprehensive), sonar-reasoning (advanced)
 - **Use case**: Complex questions, comprehensive explanations, streaming responses
 
@@ -81,11 +81,11 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Chat API Pattern (Direct Answers)
 ```bash
 # Simple question with citations
-.ai/bin/perplexity-chat "What are the latest AI breakthroughs in 2025?" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat "What are the latest AI breakthroughs in 2025?" \
   --show-citations
 
 # With specific model
-.ai/bin/perplexity-chat "Explain quantum computing" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat "Explain quantum computing" \
   --model sonar-pro \
   --show-citations
 ```
@@ -93,13 +93,13 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Search API Pattern (Filtered Results)
 ```bash
 # Domain-filtered search
-.ai/bin/perplexity-search "AI research papers" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search "AI research papers" \
   --domains arxiv.org,nature.com \
   --recency week \
   --num-results 10
 
 # Time-filtered search
-.ai/bin/perplexity-search "breaking news AI" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search "breaking news AI" \
   --recency day \
   --num-results 20
 ```
@@ -107,11 +107,11 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 #### Multi-Query Research Pattern
 ```bash
 # Step 1: Get AI answer with overview
-.ai/bin/perplexity-chat "Latest developments in transformer models" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat "Latest developments in transformer models" \
   --model sonar-pro
 
 # Step 2: Search for specific papers
-.ai/bin/perplexity-search "transformer attention mechanisms" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search "transformer attention mechanisms" \
   --domains arxiv.org,paperswithcode.com \
   --after-date 01/01/2025 \
   --num-results 15
@@ -121,7 +121,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Chat Completions Command
 ```bash
-.ai/bin/perplexity-chat QUERY \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat QUERY \
   [--model {sonar,sonar-pro,sonar-reasoning}] \
   [--system "SYSTEM_MESSAGE"] \
   [--temperature TEMP] \
@@ -133,7 +133,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ### Search Command
 ```bash
-.ai/bin/perplexity-search QUERY \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search QUERY \
   [--num-results N] \
   [--domains domain1,domain2] \
   [--languages lang1,lang2] \
@@ -189,21 +189,21 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 ### Chat API (Direct Answers)
 ```bash
 # Simple question with citations
-.ai/bin/perplexity-chat "Latest React 19 features" --show-citations
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat "Latest React 19 features" --show-citations
 
 # Complex question with specific model
-.ai/bin/perplexity-chat "Best practices for Next.js App Router" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat "Best practices for Next.js App Router" \
   --model sonar-pro --show-citations
 ```
 
 ### Search API (Filtered Results)
 ```bash
 # Domain-filtered search
-.ai/bin/perplexity-search "React hydration errors" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search "React hydration errors" \
   --domains stackoverflow.com,github.com --recency month
 
 # Time-filtered academic search
-.ai/bin/perplexity-search "transformer innovations" \
+/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search "transformer innovations" \
   --domains arxiv.org,paperswithcode.com --after-date 01/01/2025
 ```
 
