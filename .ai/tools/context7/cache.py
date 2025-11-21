@@ -23,15 +23,16 @@ class Context7Cache:
     Caches responses in JSON files with TTL-based expiration.
     """
 
-    DEFAULT_CACHE_DIR = ".ai/tools/context7/.cache"
+    # Cache directory relative to this module (resolves to .ai/tools/context7/.cache)
+    DEFAULT_CACHE_DIR = Path(__file__).parent / ".cache"
     DEFAULT_TTL = 86400  # 24 hours in seconds
 
-    def __init__(self, cache_dir: str | None = None, ttl: int | None = None):
+    def __init__(self, cache_dir: str | Path | None = None, ttl: int | None = None):
         """
         Initialize cache.
 
         Args:
-            cache_dir: Directory for cache files (default: .ai/tools/context7/.cache)
+            cache_dir: Directory for cache files (default: module_dir/.cache)
             ttl: Time-to-live in seconds (default: 86400 = 24 hours)
         """
         self.cache_dir = Path(cache_dir or self.DEFAULT_CACHE_DIR)
