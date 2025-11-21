@@ -10,6 +10,10 @@ const { promisify } = require("node:util");
 const execAsync = promisify(exec);
 const { ConditionWaiter } = require("../utilities/condition-waiter.cjs");
 const { ProcessManager } = require("../utilities/process-manager.cjs");
+const {
+	verifyPortBindings,
+	formatDiagnosticMessage,
+} = require("./port-binding-verifier.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -57,6 +61,7 @@ class InfrastructureManager {
 		log("⚡ Running fast health checks...");
 		const results = {
 			supabase: await this.healthCheckSupabase(),
+			portBindings: await this.healthCheckPortBindings(),
 			environment: await this.healthCheckEnvironment(),
 			database: await this.healthCheckDatabase(),
 			testUsers: await this.healthCheckTestUsers(),
@@ -209,6 +214,48 @@ class InfrastructureManager {
 			return "not_running";
 		} catch {
 			return "not_running";
+		}
+	}
+
+	/**
+	 * Health check for Docker port bindings (WSL2 specific)
+	 * Detects port binding proxy failures before they cause long timeouts
+	 */
+	async healthCheckPortBindings() {
+		try {
+			// Only check if Supabase is running
+			const supabaseStatus = await execAsync(
+				"cd apps/web && npx supabase status 2>&1 | head -1",
+				{ timeout: 2000 },
+			).catch(() => ({ stdout: "" }));
+
+			if (!supabaseStatus.stdout.includes("running")) {
+				return "not_running"; // Skip if Supabase not running yet
+			}
+
+			// Verify port bindings for critical Supabase containers
+			const containerName = "supabase_kong_2025slideheroes-db";
+			const report = await verifyPortBindings(
+				containerName,
+				[54321, 54322, 54323],
+				{
+					retries: 1,
+					throwOnFailure: false,
+				},
+			);
+
+			if (report.isHealthy) {
+				return "healthy";
+			}
+
+			// Port binding failure detected - log diagnostic info
+			const message = formatDiagnosticMessage(report);
+			logError(message);
+
+			return "port_binding_failed";
+		} catch (error) {
+			// If verification itself fails, don't block - could be transient
+			return "cannot_verify";
 		}
 	}
 
