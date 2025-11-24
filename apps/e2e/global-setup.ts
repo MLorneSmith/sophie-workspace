@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { config as dotenvConfig } from "dotenv";
 
 import { CredentialValidator } from "./tests/utils/credential-validator";
+import { runPreflightValidations } from "./tests/utils/e2e-validation";
 
 // Ensure environment variables are loaded
 dotenvConfig({
@@ -28,6 +29,15 @@ async function globalSetup(config: FullConfig) {
 	console.log(
 		"\n🔧 Global Setup: Creating authenticated browser states via API...\n",
 	);
+
+	// Run pre-flight validations before proceeding
+	const { allValid } = await runPreflightValidations();
+
+	if (!allValid) {
+		throw new Error(
+			"❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.",
+		);
+	}
 
 	const baseURL = config.projects[0]?.use?.baseURL || "http://localhost:3001";
 

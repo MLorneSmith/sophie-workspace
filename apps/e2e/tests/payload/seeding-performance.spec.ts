@@ -33,7 +33,9 @@ const PERFORMANCE_TARGETS = {
 	fullSeedMinSpeed: 3, // records/second
 };
 
-const CLI_PATH = "apps/payload/dist/seed/cli/index.js";
+// Use pnpm tsx to execute TypeScript directly (same as npm scripts do)
+const CLI_PATH = "apps/payload/src/seed/seed-engine/index.ts";
+const CLI_EXECUTOR = "pnpm tsx";
 const PERF_TIMEOUT = 180000; // 3 minutes
 
 test.describe("Seeding Performance Benchmarks", () => {
@@ -42,10 +44,13 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		const startTime = Date.now();
 
-		const { stdout } = await execAsync(`node ${CLI_PATH} seed --dry-run`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		const { stdout } = await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 
 		const duration = Date.now() - startTime;
 
@@ -65,10 +70,13 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		const startTime = Date.now();
 
-		await execAsync(`node ${CLI_PATH} seed --dry-run --collections courses`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 
 		const duration = Date.now() - startTime;
 
@@ -83,19 +91,22 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		// Test with 1 collection
 		const start1 = Date.now();
-		await execAsync(`node ${CLI_PATH} seed --dry-run --collections courses`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 		const duration1 = Date.now() - start1;
 
 		// Test with 3 collections
 		const start3 = Date.now();
 		await execAsync(
-			`node ${CLI_PATH} seed --dry-run --collections courses,course-lessons,course-quizzes`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses,course-lessons,course-quizzes`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 		const duration3 = Date.now() - start3;
@@ -112,10 +123,13 @@ test.describe("Seeding Performance Benchmarks", () => {
 		// Run 3 times
 		for (let i = 0; i < 3; i++) {
 			const start = Date.now();
-			await execAsync(`node ${CLI_PATH} seed --dry-run --collections courses`, {
-				cwd: process.cwd(),
-				env: { ...process.env },
-			});
+			await execAsync(
+				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
+				{
+					cwd: process.cwd(),
+					env: { ...process.env, NODE_ENV: "test" },
+				},
+			);
 			durations.push(Date.now() - start);
 		}
 
@@ -137,10 +151,10 @@ test.describe("Seeding Performance Benchmarks", () => {
 		test.setTimeout(PERF_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -159,10 +173,10 @@ test.describe("Seeding Performance Benchmarks", () => {
 		const startTime = Date.now();
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --collections courses,course-lessons --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses,course-lessons --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -180,10 +194,13 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		const startTime = Date.now();
 
-		const { stdout } = await execAsync(`node ${CLI_PATH} seed --dry-run`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		const { stdout } = await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 
 		const duration = Date.now() - startTime;
 
@@ -204,10 +221,10 @@ test.describe("Performance Regression Detection", () => {
 		test.setTimeout(PERF_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -223,10 +240,10 @@ test.describe("Performance Regression Detection", () => {
 		// Run multiple times to establish baseline
 		for (let i = 0; i < 3; i++) {
 			const { stdout } = await execAsync(
-				`node ${CLI_PATH} seed --dry-run --collections courses`,
+				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
 				{
 					cwd: process.cwd(),
-					env: { ...process.env },
+					env: { ...process.env, NODE_ENV: "test" },
 				},
 			);
 
@@ -252,10 +269,10 @@ test.describe("Resource Usage", () => {
 		// Run multiple times sequentially
 		for (let i = 0; i < 5; i++) {
 			const { stdout } = await execAsync(
-				`node ${CLI_PATH} seed --dry-run --collections courses`,
+				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
 				{
 					cwd: process.cwd(),
-					env: { ...process.env },
+					env: { ...process.env, NODE_ENV: "test" },
 				},
 			);
 
@@ -271,10 +288,10 @@ test.describe("Resource Usage", () => {
 		test.setTimeout(PERF_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -288,10 +305,13 @@ test.describe("Throughput Benchmarks", () => {
 	test("should achieve minimum throughput target", async () => {
 		test.setTimeout(PERF_TIMEOUT);
 
-		const { stdout } = await execAsync(`node ${CLI_PATH} seed --dry-run`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		const { stdout } = await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 
 		// Extract speed from output
 		const speedMatch = stdout.match(/Speed:\s+([\d.]+)\s+records\/sec/);
@@ -308,10 +328,13 @@ test.describe("Throughput Benchmarks", () => {
 
 		// Test with minimal collection (courses - 1 record)
 		const start = Date.now();
-		await execAsync(`node ${CLI_PATH} seed --dry-run --collections courses`, {
-			cwd: process.cwd(),
-			env: { ...process.env },
-		});
+		await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 		const duration = Date.now() - start;
 
 		// Even 1 record should complete very fast (< 1 second)
@@ -323,10 +346,10 @@ test.describe("Throughput Benchmarks", () => {
 
 		// Test with collections that have complex relationships
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --collections courses,course-lessons,course-quizzes,quiz-questions`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses,course-lessons,course-quizzes,quiz-questions`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 

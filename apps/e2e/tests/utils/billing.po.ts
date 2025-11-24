@@ -18,12 +18,16 @@ export class BillingPageObject {
 			const plans = this.plans();
 			const plan = plans.nth(index);
 
-			await expect(plan).toBeVisible();
+			// Wait for the plan element to be visible with proper timeout
+			await expect(plan).toBeVisible({ timeout: 15000 });
 
 			await this.page.waitForTimeout(500);
 
 			await plan.click();
-		}).toPass();
+		}).toPass({
+			intervals: [500, 1000, 2000, 5000],
+			timeout: 20000,
+		});
 	}
 
 	manageBillingButton() {

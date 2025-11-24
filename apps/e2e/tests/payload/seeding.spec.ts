@@ -22,7 +22,9 @@ const execAsync = promisify(exec);
 
 // Test configuration
 const SEED_TIMEOUT = 180000; // 3 minutes for seeding operations
-const CLI_PATH = "apps/payload/dist/seed/cli/index.js";
+// Use pnpm tsx to execute TypeScript directly (same as npm scripts do)
+const CLI_PATH = "apps/payload/src/seed/seed-engine/index.ts";
+const CLI_EXECUTOR = "pnpm tsx";
 
 test.describe("Payload Seeding E2E", () => {
 	test.describe.configure({ mode: "serial" });
@@ -30,25 +32,36 @@ test.describe("Payload Seeding E2E", () => {
 	test("should execute seed command successfully", async () => {
 		test.setTimeout(SEED_TIMEOUT);
 
-		// Run seed command in dry-run mode first
-		const { stdout, stderr } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run`,
-			{
-				cwd: process.cwd(),
-				env: { ...process.env },
-			},
-		);
+		// Run seed command in dry-run mode first using tsx
+		try {
+			const { stdout, stderr } = await execAsync(
+				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run`,
+				{
+					cwd: process.cwd(),
+					env: { ...process.env, NODE_ENV: "test" },
+				},
+			);
 
-		// Verify output
-		expect(stderr).toBe("");
-		expect(stdout).toContain("Seeding engine initialized");
-		expect(stdout).toContain("validation passed");
+			// Verify output
+			expect(stderr).toBe("");
+			expect(stdout).toContain("Seeding engine initialized");
+			expect(stdout).toContain("validation passed");
+		} catch (error) {
+			const err = error as { stderr: string; stdout: string };
+			throw new Error(
+				`Seed command failed:\nCommand: ${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run\nStdout: ${err.stdout}\nStderr: ${err.stderr}`,
+			);
+		}
 	});
 
 	test("should display help information", async () => {
-		const { stdout } = await execAsync(`node ${CLI_PATH} seed --help`, {
-			cwd: process.cwd(),
-		});
+		const { stdout } = await execAsync(
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --help`,
+			{
+				cwd: process.cwd(),
+				env: { ...process.env, NODE_ENV: "test" },
+			},
+		);
 
 		expect(stdout).toContain("Usage:");
 		expect(stdout).toContain("--dry-run");
@@ -60,10 +73,10 @@ test.describe("Payload Seeding E2E", () => {
 		test.setTimeout(SEED_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -77,10 +90,10 @@ test.describe("Payload Seeding E2E", () => {
 		test.setTimeout(SEED_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --collections courses,course-lessons`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses,course-lessons`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
@@ -95,10 +108,10 @@ test.describe("Payload Seeding E2E", () => {
 
 		try {
 			await execAsync(
-				`node ${CLI_PATH} seed --dry-run --collections invalid-collection`,
+				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections invalid-collection`,
 				{
 					cwd: process.cwd(),
-					env: { ...process.env },
+					env: { ...process.env, NODE_ENV: "test" },
 				},
 			);
 			// Should not reach here
@@ -114,10 +127,10 @@ test.describe("Payload Seeding E2E", () => {
 		test.setTimeout(SEED_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`node ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
-				env: { ...process.env },
+				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 

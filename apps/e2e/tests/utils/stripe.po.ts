@@ -12,9 +12,20 @@ export class StripePageObject {
 	}
 
 	async waitForForm() {
+		// First wait for the Stripe iframe to be present in the DOM
+		await this.page.waitForSelector('[name="embedded-checkout"]', {
+			timeout: 15000,
+		});
+
+		// Then wait for the form to be visible with extended timeout
 		return expect(async () => {
-			await expect(this.billingCountry()).toBeVisible();
-		}).toPass();
+			await expect(this.billingCountry()).toBeVisible({
+				timeout: 20000,
+			});
+		}).toPass({
+			intervals: [500, 1000, 2000, 5000, 10000],
+			timeout: 30000,
+		});
 	}
 
 	async fillForm(
