@@ -562,6 +562,9 @@ class E2ETestRunner {
 		const totalShards = this.testGroups.length;
 		const timedOutShards = new Set(); // Track shards that timed out to avoid retrying
 		log(`\n🎯 Running ${totalShards} test shards sequentially`);
+		log(
+			`⚙️  Config: continueOnTimeout=${this.config.execution.continueOnTimeout}, continueOnFailure=${this.config.execution.continueOnFailure}`,
+		);
 		log("─".repeat(60));
 
 		for (let i = 0; i < this.testGroups.length; i++) {
@@ -629,19 +632,32 @@ class E2ETestRunner {
 				totalShards,
 			});
 
-			// Check if we should continue
-			if (shardResult.timedOut && this.config.execution.continueOnTimeout) {
+			// Add shard decision logging
+			log(
+				`   Shard result: timedOut=${shardResult.timedOut}, failed=${shardResult.failed}`,
+			);
+			log(
+				`   Decision: continueOnTimeout=${this.config.execution.continueOnTimeout}, continueOnFailure=${this.config.execution.continueOnFailure}`,
+			);
+
+			// Determine if we should continue to next shard
+			const shouldContinue =
+				(shardResult.timedOut && this.config.execution.continueOnTimeout) ||
+				(shardResult.failed > 0 &&
+					this.config.execution.continueOnFailure !== false) ||
+				(!shardResult.timedOut && shardResult.failed === 0);
+
+			if (!shouldContinue) {
+				log(`❌ Stopping test execution - Shard ${shardNum} (${shard.name})`);
 				log(
-					`⏱️ Shard ${shardNum} (${shard.name}) timed out, but continuing with other shards`,
+					`   timedOut=${shardResult.timedOut}, continueOnTimeout=${this.config.execution.continueOnTimeout}`,
 				);
-			} else if (
-				shardResult.failed > 0 &&
-				!this.config.execution.continueOnFailure
-			) {
 				log(
-					`❌ Stopping test execution due to failures in Shard ${shardNum} (${shard.name})`,
+					`   failed=${shardResult.failed}, continueOnFailure=${this.config.execution.continueOnFailure}`,
 				);
 				break;
+			} else if (shardResult.timedOut) {
+				log(`⏱️ Shard ${shardNum} (${shard.name}) timed out, but continuing...`);
 			}
 
 			// Show cumulative progress
