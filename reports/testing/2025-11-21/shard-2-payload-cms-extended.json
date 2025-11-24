@@ -1,0 +1,34 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Payload CMS Extended",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts",
+			"tests/payload/seeding.spec.ts",
+			"tests/payload/seeding-performance.spec.ts"
+		],
+		"expectedTests": null,
+		"shardCommand": "test:shard8"
+	},
+	"execution": {
+		"startTime": "2025-11-21T19:10:37.214Z",
+		"endTime": "2025-11-21T19:11:02.214Z",
+		"duration": "25s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 52,
+		"passed": 0,
+		"failed": 46,
+		"skipped": 6,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "...(truncated 44880 bytes)...\nhandle validation errors \n    [chromium] › tests/payload/payload-collections.spec.ts:255:6 › Payload CMS - CRUD Operations › should delete item with confirmation \n    [chromium] › tests/payload/payload-collections.spec.ts:287:6 › Payload CMS - Database & Error Handling › should handle database connectivity check \n    [chromium] › tests/payload/payload-collections.spec.ts:291:6 › Payload CMS - Database & Error Handling › should display appropriate error when database is unavailable \n    [chromium] › tests/payload/payload-collections.spec.ts:316:6 › Payload CMS - Database & Error Handling › should recover from temporary network issues \n    [chromium] › tests/payload/payload-collections.spec.ts:343:6 › Payload CMS - Database & Error Handling › should handle session expiry gracefully \n    [chromium] › tests/payload/payload-database.spec.ts:14:6 › Payload CMS - Supabase Database Integration › should verify database connection on startup \n    [chromium] › tests/payload/payload-database.spec.ts:33:6 › Payload CMS - Supabase Database Integration › should handle database schema initialization \n    [chromium] › tests/payload/payload-database.spec.ts:60:6 › Payload CMS - Supabase Database Integration › should verify Payload tables exist in database \n    [chromium] › tests/payload/payload-database.spec.ts:85:6 › Payload CMS - Supabase Database Integration › should handle Supabase connection pool \n    [chromium] › tests/payload/payload-database.spec.ts:117:6 › Payload CMS - Supabase Database Integration › should verify UUID support for Supabase \n    [chromium] › tests/payload/payload-database.spec.ts:149:6 › Payload CMS - Supabase Database Integration › should handle transaction rollback on error \n    [chromium] › tests/payload/payload-database.spec.ts:185:6 › Payload CMS - Supabase Database Integration › should respect Supabase RLS policies if configured \n    [chromium] › tests/payload/payload-database.spec.ts:237:6 › Payload CMS - Error Recovery & Resilience › should show meaningful error when database is down \n    [chromium] › tests/payload/payload-database.spec.ts:269:6 › Payload CMS - Error Recovery & Resilience › should handle large payload data correctly \n    [chromium] › tests/payload/payload-database.spec.ts:294:6 › Payload CMS - Error Recovery & Resilience › should recover from connection timeout \n    [chromium] › tests/payload/payload-database.spec.ts:314:6 › Payload CMS - Error Recovery & Resilience › should maintain data integrity on concurrent updates \n    [chromium] › tests/payload/payload-database.spec.ts:365:6 › Payload CMS - Error Recovery & Resilience › should validate environment variables for database connection \n    [chromium] › tests/payload/seeding-performance.spec.ts:40:6 › Seeding Performance Benchmarks › should complete dry-run within time limit \n    [chromium] › tests/payload/seeding-performance.spec.ts:63:6 › Seeding Performance Benchmarks › should process single collection efficiently \n    [chromium] › tests/payload/seeding-performance.spec.ts:81:6 › Seeding Performance Benchmarks › should scale linearly with collection count \n    [chromium] › tests/payload/seeding-performance.spec.ts:107:6 › Seeding Performance Benchmarks › should maintain consistent speed across runs \n    [chromium] › tests/payload/seeding-performance.spec.ts:136:6 › Seeding Performance Benchmarks › should report accurate timing metrics \n    [chromium] › tests/payload/seeding-performance.spec.ts:155:6 › Seeding Performance Benchmarks › should handle large collections efficiently \n    [chromium] › tests/payload/seeding-performance.spec.ts:178:6 › Seeding Performance Benchmarks › should process all collections within benchmark \n    [chromium] › tests/payload/seeding-performance.spec.ts:203:6 › Performance Regression Detection › should identify slowest collections \n    [chromium] › tests/payload/seeding-performance.spec.ts:218:6 › Performance Regression Detection › should detect performance anomalies \n    [chromium] › tests/payload/seeding-performance.spec.ts:249:6 › Resource Usage › should not leak memory across runs \n    [chromium] › tests/payload/seeding-performance.spec.ts:270:6 › Resource Usage › should cleanup resources properly \n    [chromium] › tests/payload/seeding-performance.spec.ts:288:6 › Throughput Benchmarks › should achieve minimum throughput target \n    [chromium] › tests/payload/seeding-performance.spec.ts:306:6 › Throughput Benchmarks › should process records without significant overhead \n    [chromium] › tests/payload/seeding-performance.spec.ts:321:6 › Throughput Benchmarks › should maintain speed with complex collections \n    [chromium] › tests/payload/seeding.spec.ts:30:6 › Payload Seeding E2E › should execute seed command successfully \n  6 skipped\n  16 did not run\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard8: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
