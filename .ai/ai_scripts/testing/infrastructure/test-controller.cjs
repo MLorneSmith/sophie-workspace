@@ -248,7 +248,7 @@ class TestController {
 	calculateBackoffDelay(attemptNumber) {
 		// Exponential backoff: 2^attempt seconds, capped at 15 seconds
 		const maxDelay = 15000; // 15 seconds in milliseconds
-		const exponentialDelay = Math.pow(2, attemptNumber - 1) * 1000;
+		const exponentialDelay = 2 ** (attemptNumber - 1) * 1000;
 		return Math.min(exponentialDelay, maxDelay);
 	}
 
@@ -620,6 +620,15 @@ class TestController {
 				log("🔧 PHASE: INITIALIZATION");
 				log(`${"═".repeat(60)}\n`);
 				log("📋 Initializing test environment...");
+
+				// Ensure E2E test continuation flags are set
+				// This allows all shards to run even if earlier shards fail/timeout
+				CONFIG.execution.continueOnFailure = true;
+				CONFIG.execution.continueOnTimeout = true;
+				log(
+					"✅ E2E execution flags: continueOnFailure=true, continueOnTimeout=true",
+				);
+
 				await this.testStatus.reset();
 				await this.testStatus.save();
 				return { success: true };
