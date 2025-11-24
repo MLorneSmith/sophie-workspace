@@ -52,7 +52,8 @@ async function globalSetup(config: FullConfig) {
 	}
 
 	// Initialize Supabase client
-	const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54321";
+	// NOTE: Port 54521 is used for WSL2 compatibility (avoiding Windows port conflicts)
+	const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
 	const supabaseAnonKey =
 		process.env.E2E_SUPABASE_ANON_KEY ||
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
