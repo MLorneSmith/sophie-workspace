@@ -65,11 +65,11 @@ if ! check_server "http://localhost:3000" "Frontend"; then
     exit 1
 fi
 
-# Verify backend server
-if ! check_server "http://localhost:3020" "Backend"; then
-    echo "❌ Backend server is not ready"  
+# Verify Payload CMS server (runs on port 3021 via dev:test script)
+if ! check_server "http://localhost:3021" "Payload CMS"; then
+    echo "❌ Payload CMS server is not ready"
     if [ "$START_SERVERS" = "true" ]; then
-        echo "   Check backend logs: tail -f /tmp/backend.log"
+        echo "   Check Payload logs: tail -f /tmp/backend.log"
     else
         echo "   Try starting it manually: cd apps/payload && pnpm dev:test"
     fi
