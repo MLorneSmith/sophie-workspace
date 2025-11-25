@@ -1,7 +1,7 @@
 ---
 description: Generate technical documentation for implemented features from GitHub issue. Creates discoverable docs with YAML frontmatter, screenshots, and GitHub integration
 argument-hint: <issue-number>
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, Bash(gh *)]
 ---
 

@@ -1,7 +1,7 @@
 ---
 description: Decompose complex initiatives into multiple coherent features with dependency mapping, GitHub integration, and coordinated execution planning
 argument-hint: [initiative-description]
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite]
 ---
 

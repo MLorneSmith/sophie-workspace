@@ -2,6 +2,7 @@
 description: Execute comprehensive code quality validation with auto-fix and parallel analysis
 category: development
 allowed-tools: Bash(pnpm:*), Bash(npx:*), Bash(node:*), Read, Glob, Task, TodoWrite
+model: sonnet
 argument-hint: [--fix|--quick|--verbose]
 mcp-tools: mcp__code-reasoning__code-reasoning
 ---

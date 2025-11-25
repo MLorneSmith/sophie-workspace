@@ -1,7 +1,7 @@
 ---
 description: Create a chore plan for maintenance tasks like dependency updates, refactoring, documentation, or tooling improvements. Use for non-feature, non-bug work
 argument-hint: [chore-description]
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite]
 ---
 

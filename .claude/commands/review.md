@@ -1,7 +1,7 @@
 ---
 description: Review implemented work against specification from GitHub issue. Validates implementation matches requirements with visual evidence and issue tracking
 argument-hint: <issue-number>
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, Bash(gh *)]
 ---
 

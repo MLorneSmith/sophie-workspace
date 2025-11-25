@@ -1,7 +1,7 @@
 ---
 description: Create a new feature implementation plan in .ai/specs/ when user requests a new capability or functionality. Researches codebase patterns and creates structured plan with tasks, testing strategy, and validation commands
 argument-hint: [feature-description]
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite]
 ---
 

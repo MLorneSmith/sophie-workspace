@@ -1,6 +1,7 @@
 ---
 description: Execute comprehensive unit and e2e test suites
-allowed-tools: [Bash, Read]
+allowed-tools: [Bash(.ai/ai_scripts/testing/*), Bash, Read]
+model: opus
 argument-hint: [--quick | --unit | --e2e | --debug | --continue]
 ---
 
