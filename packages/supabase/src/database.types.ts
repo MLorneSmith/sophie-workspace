@@ -56,6 +56,7 @@ export type Database = {
 					version_quiz_id_id: string | null;
 					version_slug: string | null;
 					version_survey_id_id: string | null;
+					version_thumbnail_id: string | null;
 					version_title: string | null;
 					version_todo_complete_quiz: boolean | null;
 					version_updated_at: string | null;
@@ -85,6 +86,7 @@ export type Database = {
 					version_quiz_id_id?: string | null;
 					version_slug?: string | null;
 					version_survey_id_id?: string | null;
+					version_thumbnail_id?: string | null;
 					version_title?: string | null;
 					version_todo_complete_quiz?: boolean | null;
 					version_updated_at?: string | null;
@@ -114,6 +116,7 @@ export type Database = {
 					version_quiz_id_id?: string | null;
 					version_slug?: string | null;
 					version_survey_id_id?: string | null;
+					version_thumbnail_id?: string | null;
 					version_title?: string | null;
 					version_todo_complete_quiz?: boolean | null;
 					version_updated_at?: string | null;
@@ -149,6 +152,13 @@ export type Database = {
 						columns: ["version_survey_id_id"];
 						isOneToOne: false;
 						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_thumbnail_id_media_id_fk";
+						columns: ["version_thumbnail_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
 						referencedColumns: ["id"];
 					},
 				];
@@ -1149,9 +1159,6 @@ export type Database = {
 					version_description: string | null;
 					version_published_at: string | null;
 					version_slug: string | null;
-					version_status:
-						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
-						| null;
 					version_title: string | null;
 					version_updated_at: string | null;
 				};
@@ -1168,9 +1175,6 @@ export type Database = {
 					version_description?: string | null;
 					version_published_at?: string | null;
 					version_slug?: string | null;
-					version_status?:
-						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
-						| null;
 					version_title?: string | null;
 					version_updated_at?: string | null;
 				};
@@ -1187,9 +1191,6 @@ export type Database = {
 					version_description?: string | null;
 					version_published_at?: string | null;
 					version_slug?: string | null;
-					version_status?:
-						| Database["payload"]["Enums"]["enum__surveys_v_version_status"]
-						| null;
 					version_title?: string | null;
 					version_updated_at?: string | null;
 				};
@@ -1205,39 +1206,39 @@ export type Database = {
 			};
 			_surveys_v_rels: {
 				Row: {
-					downloads_id: string | null;
 					id: number;
 					order: number | null;
 					parent_id: string;
 					path: string;
+					survey_questions_id: string | null;
 				};
 				Insert: {
-					downloads_id?: string | null;
 					id?: number;
 					order?: number | null;
 					parent_id: string;
 					path: string;
+					survey_questions_id?: string | null;
 				};
 				Update: {
-					downloads_id?: string | null;
 					id?: number;
 					order?: number | null;
 					parent_id?: string;
 					path?: string;
+					survey_questions_id?: string | null;
 				};
 				Relationships: [
-					{
-						foreignKeyName: "_surveys_v_rels_downloads_fk";
-						columns: ["downloads_id"];
-						isOneToOne: false;
-						referencedRelation: "downloads";
-						referencedColumns: ["id"];
-					},
 					{
 						foreignKeyName: "_surveys_v_rels_parent_fk";
 						columns: ["parent_id"];
 						isOneToOne: false;
 						referencedRelation: "_surveys_v";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_surveys_v_rels_survey_questions_fk";
+						columns: ["survey_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
 						referencedColumns: ["id"];
 					},
 				];
@@ -1260,6 +1261,7 @@ export type Database = {
 					quiz_id_id: string | null;
 					slug: string | null;
 					survey_id_id: string | null;
+					thumbnail_id: string | null;
 					title: string | null;
 					todo_complete_quiz: boolean | null;
 					updated_at: string;
@@ -1285,6 +1287,7 @@ export type Database = {
 					quiz_id_id?: string | null;
 					slug?: string | null;
 					survey_id_id?: string | null;
+					thumbnail_id?: string | null;
 					title?: string | null;
 					todo_complete_quiz?: boolean | null;
 					updated_at?: string;
@@ -1310,6 +1313,7 @@ export type Database = {
 					quiz_id_id?: string | null;
 					slug?: string | null;
 					survey_id_id?: string | null;
+					thumbnail_id?: string | null;
 					title?: string | null;
 					todo_complete_quiz?: boolean | null;
 					updated_at?: string;
@@ -1338,6 +1342,13 @@ export type Database = {
 						columns: ["survey_id_id"];
 						isOneToOne: false;
 						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_thumbnail_id_media_id_fk";
+						columns: ["thumbnail_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
 						referencedColumns: ["id"];
 					},
 				];
@@ -1938,6 +1949,24 @@ export type Database = {
 						referencedColumns: ["id"];
 					},
 				];
+			};
+			payload_kv: {
+				Row: {
+					data: Json;
+					id: string;
+					key: string;
+				};
+				Insert: {
+					data: Json;
+					id?: string;
+					key: string;
+				};
+				Update: {
+					data?: Json;
+					id?: string;
+					key?: string;
+				};
+				Relationships: [];
 			};
 			payload_locked_documents: {
 				Row: {
@@ -2665,7 +2694,6 @@ export type Database = {
 					id: string;
 					published_at: string | null;
 					slug: string | null;
-					status: Database["payload"]["Enums"]["enum_surveys_status"] | null;
 					title: string | null;
 					updated_at: string;
 				};
@@ -2676,7 +2704,6 @@ export type Database = {
 					id?: string;
 					published_at?: string | null;
 					slug?: string | null;
-					status?: Database["payload"]["Enums"]["enum_surveys_status"] | null;
 					title?: string | null;
 					updated_at?: string;
 				};
@@ -2687,7 +2714,6 @@ export type Database = {
 					id?: string;
 					published_at?: string | null;
 					slug?: string | null;
-					status?: Database["payload"]["Enums"]["enum_surveys_status"] | null;
 					title?: string | null;
 					updated_at?: string;
 				};
@@ -2695,39 +2721,39 @@ export type Database = {
 			};
 			surveys_rels: {
 				Row: {
-					downloads_id: string | null;
 					id: number;
 					order: number | null;
 					parent_id: string;
 					path: string;
+					survey_questions_id: string | null;
 				};
 				Insert: {
-					downloads_id?: string | null;
 					id?: number;
 					order?: number | null;
 					parent_id: string;
 					path: string;
+					survey_questions_id?: string | null;
 				};
 				Update: {
-					downloads_id?: string | null;
 					id?: number;
 					order?: number | null;
 					parent_id?: string;
 					path?: string;
+					survey_questions_id?: string | null;
 				};
 				Relationships: [
-					{
-						foreignKeyName: "surveys_rels_downloads_fk";
-						columns: ["downloads_id"];
-						isOneToOne: false;
-						referencedRelation: "downloads";
-						referencedColumns: ["id"];
-					},
 					{
 						foreignKeyName: "surveys_rels_parent_fk";
 						columns: ["parent_id"];
 						isOneToOne: false;
 						referencedRelation: "surveys";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "surveys_rels_survey_questions_fk";
+						columns: ["survey_questions_id"];
+						isOneToOne: false;
+						referencedRelation: "survey_questions";
 						referencedColumns: ["id"];
 					},
 				];
@@ -2829,6 +2855,7 @@ export type Database = {
 			enum__survey_questions_v_version_type:
 				| "multiple_choice"
 				| "text_field"
+				| "textarea"
 				| "scale";
 			enum__surveys_v_version_status: "draft" | "published";
 			enum_course_lessons_status: "draft" | "published";
@@ -2851,7 +2878,11 @@ export type Database = {
 			enum_quiz_questions_type: "multiple_choice";
 			enum_survey_questions_questionspin: "Positive" | "Negative";
 			enum_survey_questions_status: "draft" | "published";
-			enum_survey_questions_type: "multiple_choice" | "text_field" | "scale";
+			enum_survey_questions_type:
+				| "multiple_choice"
+				| "text_field"
+				| "textarea"
+				| "scale";
 			enum_surveys_status: "draft" | "published";
 			enum_users_role: "admin" | "user";
 		};
@@ -3580,7 +3611,7 @@ export type Database = {
 					expires_at: string;
 					id: string;
 					last_verification_at: string | null;
-					last_verification_ip: unknown | null;
+					last_verification_ip: unknown;
 					last_verification_user_agent: string | null;
 					metadata: Json | null;
 					nonce: string;
@@ -3598,7 +3629,7 @@ export type Database = {
 					expires_at: string;
 					id?: string;
 					last_verification_at?: string | null;
-					last_verification_ip?: unknown | null;
+					last_verification_ip?: unknown;
 					last_verification_user_agent?: string | null;
 					metadata?: Json | null;
 					nonce: string;
@@ -3616,7 +3647,7 @@ export type Database = {
 					expires_at?: string;
 					id?: string;
 					last_verification_at?: string | null;
-					last_verification_ip?: unknown | null;
+					last_verification_ip?: unknown;
 					last_verification_user_agent?: string | null;
 					metadata?: Json | null;
 					nonce?: string;
@@ -4262,7 +4293,7 @@ export type Database = {
 					abbrev: string | null;
 					is_dst: boolean | null;
 					name: string | null;
-					utc_offset: unknown | null;
+					utc_offset: unknown;
 				};
 				Relationships: [];
 			};
@@ -4314,7 +4345,7 @@ export type Database = {
 				Returns: string;
 			};
 			add_default_ai_allocations_for_existing_users: {
-				Args: Record<PropertyKey, never>;
+				Args: never;
 				Returns: number;
 			};
 			add_invitations_to_account: {
@@ -4352,10 +4383,7 @@ export type Database = {
 					time_period: string;
 				}[];
 			};
-			check_is_aal2: {
-				Args: Record<PropertyKey, never>;
-				Returns: boolean;
-			};
+			check_is_aal2: { Args: never; Returns: boolean };
 			create_invitation: {
 				Args: { account_id: string; email: string; role: string };
 				Returns: {
@@ -4368,6 +4396,12 @@ export type Database = {
 					invited_by: string;
 					role: string;
 					updated_at: string;
+				};
+				SetofOptions: {
+					from: "*";
+					to: "invitations";
+					isOneToOne: true;
+					isSetofReturn: false;
 				};
 			};
 			create_nonce: {
@@ -4396,6 +4430,12 @@ export type Database = {
 					slug: string | null;
 					updated_at: string | null;
 					updated_by: string | null;
+				};
+				SetofOptions: {
+					from: "*";
+					to: "accounts";
+					isOneToOne: true;
+					isSetofReturn: false;
 				};
 			};
 			deduct_ai_credits: {
@@ -4439,22 +4479,10 @@ export type Database = {
 					user_id: string;
 				}[];
 			};
-			get_config: {
-				Args: Record<PropertyKey, never>;
-				Returns: Json;
-			};
-			get_is_super_admin: {
-				Args: Record<PropertyKey, never>;
-				Returns: boolean;
-			};
-			get_nonce_status: {
-				Args: { p_id: string };
-				Returns: Json;
-			};
-			get_upper_system_role: {
-				Args: Record<PropertyKey, never>;
-				Returns: string;
-			};
+			get_config: { Args: never; Returns: Json };
+			get_is_super_admin: { Args: never; Returns: boolean };
+			get_nonce_status: { Args: { p_id: string }; Returns: Json };
+			get_upper_system_role: { Args: never; Returns: string };
 			has_active_subscription: {
 				Args: { target_account_id: string };
 				Returns: boolean;
@@ -4493,42 +4521,21 @@ export type Database = {
 					id: string;
 				}[];
 			};
-			is_aal2: {
-				Args: Record<PropertyKey, never>;
-				Returns: boolean;
-			};
-			is_account_owner: {
-				Args: { account_id: string };
-				Returns: boolean;
-			};
+			is_aal2: { Args: never; Returns: boolean };
+			is_account_owner: { Args: { account_id: string }; Returns: boolean };
 			is_account_team_member: {
 				Args: { target_account_id: string };
 				Returns: boolean;
 			};
-			is_mfa_compliant: {
-				Args: Record<PropertyKey, never>;
-				Returns: boolean;
-			};
-			is_set: {
-				Args: { field_name: string };
-				Returns: boolean;
-			};
-			is_super_admin: {
-				Args: Record<PropertyKey, never>;
-				Returns: boolean;
-			};
+			is_mfa_compliant: { Args: never; Returns: boolean };
+			is_set: { Args: { field_name: string }; Returns: boolean };
+			is_super_admin: { Args: never; Returns: boolean };
 			is_team_member: {
 				Args: { account_id: string; user_id: string };
 				Returns: boolean;
 			};
-			refresh_timezone_cache: {
-				Args: Record<PropertyKey, never>;
-				Returns: string;
-			};
-			reset_ai_allocations: {
-				Args: Record<PropertyKey, never>;
-				Returns: number;
-			};
+			refresh_timezone_cache: { Args: never; Returns: string };
+			reset_ai_allocations: { Args: never; Returns: number };
 			revoke_nonce: {
 				Args: { p_id: string; p_reason?: string };
 				Returns: boolean;
@@ -4573,6 +4580,12 @@ export type Database = {
 					total_amount: number;
 					updated_at: string;
 				};
+				SetofOptions: {
+					from: "*";
+					to: "orders";
+					isOneToOne: true;
+					isSetofReturn: false;
+				};
 			};
 			upsert_subscription: {
 				Args: {
@@ -4605,6 +4618,12 @@ export type Database = {
 					trial_ends_at: string | null;
 					trial_starts_at: string | null;
 					updated_at: string;
+				};
+				SetofOptions: {
+					from: "*";
+					to: "subscriptions";
+					isOneToOne: true;
+					isSetofReturn: false;
 				};
 			};
 			verify_nonce: {
@@ -5017,36 +5036,22 @@ export type Database = {
 				Args: { bucketid: string; metadata: Json; name: string; owner: string };
 				Returns: undefined;
 			};
+			delete_leaf_prefixes: {
+				Args: { bucket_ids: string[]; names: string[] };
+				Returns: undefined;
+			};
 			delete_prefix: {
 				Args: { _bucket_id: string; _name: string };
 				Returns: boolean;
 			};
-			extension: {
-				Args: { name: string };
-				Returns: string;
-			};
-			filename: {
-				Args: { name: string };
-				Returns: string;
-			};
-			foldername: {
-				Args: { name: string };
-				Returns: string[];
-			};
-			get_level: {
-				Args: { name: string };
-				Returns: number;
-			};
-			get_prefix: {
-				Args: { name: string };
-				Returns: string;
-			};
-			get_prefixes: {
-				Args: { name: string };
-				Returns: string[];
-			};
+			extension: { Args: { name: string }; Returns: string };
+			filename: { Args: { name: string }; Returns: string };
+			foldername: { Args: { name: string }; Returns: string[] };
+			get_level: { Args: { name: string }; Returns: number };
+			get_prefix: { Args: { name: string }; Returns: string };
+			get_prefixes: { Args: { name: string }; Returns: string[] };
 			get_size_by_bucket: {
-				Args: Record<PropertyKey, never>;
+				Args: never;
 				Returns: {
 					bucket_id: string;
 					size: number;
@@ -5083,10 +5088,11 @@ export type Database = {
 					updated_at: string;
 				}[];
 			};
-			operation: {
-				Args: Record<PropertyKey, never>;
-				Returns: string;
+			lock_top_prefixes: {
+				Args: { bucket_ids: string[]; names: string[] };
+				Returns: undefined;
 			};
+			operation: { Args: never; Returns: string };
 			search: {
 				Args: {
 					bucketname: string;
@@ -5153,12 +5159,16 @@ export type Database = {
 					levels?: number;
 					limits?: number;
 					prefix: string;
+					sort_column?: string;
+					sort_column_after?: string;
+					sort_order?: string;
 					start_after?: string;
 				};
 				Returns: {
 					created_at: string;
 					id: string;
 					key: string;
+					last_accessed_at: string;
 					metadata: Json;
 					name: string;
 					updated_at: string;
@@ -5312,6 +5322,7 @@ export const Constants = {
 			enum__survey_questions_v_version_type: [
 				"multiple_choice",
 				"text_field",
+				"textarea",
 				"scale",
 			],
 			enum__surveys_v_version_status: ["draft", "published"],
@@ -5336,7 +5347,12 @@ export const Constants = {
 			enum_quiz_questions_type: ["multiple_choice"],
 			enum_survey_questions_questionspin: ["Positive", "Negative"],
 			enum_survey_questions_status: ["draft", "published"],
-			enum_survey_questions_type: ["multiple_choice", "text_field", "scale"],
+			enum_survey_questions_type: [
+				"multiple_choice",
+				"text_field",
+				"textarea",
+				"scale",
+			],
 			enum_surveys_status: ["draft", "published"],
 			enum_users_role: ["admin", "user"],
 		},
