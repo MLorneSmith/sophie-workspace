@@ -1,6 +1,7 @@
 ---
 description: Fix unhealthy Docker containers with diagnostic-driven approach and aggressive recovery strategies
 allowed-tools: [Bash, Read, Grep, Task, TodoWrite, Bash(docker:*), Bash(docker-compose:*)]
+model: sonnet
 argument-hint: "[container-name|stack-name] [--auto] [--manual-approval]"
 ---
 

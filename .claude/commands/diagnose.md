@@ -1,6 +1,6 @@
 ---
 description: Diagnose the root cause of a bug or issue when user reports unexpected behavior, errors, or performance problems. Creates structured diagnosis in .ai/specs/ and GitHub issue
-model: sonnet
+model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, Bash(gh *)]
 ---
 

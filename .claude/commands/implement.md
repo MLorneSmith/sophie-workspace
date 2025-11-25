@@ -1,7 +1,7 @@
 ---
 description: Execute implementation of a plan from GitHub issue. Fetches plan, follows step-by-step tasks, runs validation commands, and reports completion with git stats
 argument-hint: [issue-number]
-model: sonnet
+model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite]
 ---
 

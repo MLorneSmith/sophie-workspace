@@ -1,6 +1,7 @@
 ---
 description: Reset local Supabase database and seed Payload CMS
 allowed-tools: [Read, Write, Bash, Task, TodoWrite]
+model: opus
 argument-hint: [--regenerate-payload-migrations] [--schema-only] [--verbose]
 ---
 

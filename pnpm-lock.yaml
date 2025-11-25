@@ -664,8 +664,8 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2
       supabase:
-        specifier: 2.58.5
-        version: 2.58.5
+        specifier: ^2.62.5
+        version: 2.62.5
       tailwindcss:
         specifier: 'catalog:'
         version: 4.1.17
@@ -12256,8 +12256,8 @@ packages:
   stylis@4.2.0:
     resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
 
-  supabase@2.58.5:
-    resolution: {integrity: sha512-mYZSkUIePTdmwlHd26Pff8wpmjfre8gcuWzrc5QqhZgZvCXugVzAQQhcjaQisw5kusbPQWNIjUwcHYEKmejhPw==}
+  supabase@2.62.5:
+    resolution: {integrity: sha512-KjR57sEwNpTLOMHo+Nt9bHtq9RGWV0GGp6MWALp7RQtOcZdUopUOH+hoOojAuVyk4ChOipB7POu0y3vssW272A==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -12351,8 +12351,8 @@ packages:
   third-party-web@0.27.0:
     resolution: {integrity: sha512-h0JYX+dO2Zr3abCQpS6/uFjujaOjA1DyDzGQ41+oFn9VW/ARiq9g5ln7qEP9+BTzDpOMyIfsfj4OvfgXAsMUSA==}
 
-  third-party-web@0.28.0:
-    resolution: {integrity: sha512-4P798O67JmIKRJfJ1HSOkIsZrx2+FuaN2jTQX+imHXFPbGp17KSMDabYxrRT011B3gBzaoHFhUkBlEkNZN8vuQ==}
+  third-party-web@0.29.0:
+    resolution: {integrity: sha512-nBDSJw5B7Sl1YfsATG2XkW5qgUPODbJhXw++BKygi9w6O/NKS98/uY/nR/DxDq2axEjL6halHW1v+jhm/j1DBQ==}
 
   thread-stream@3.1.0:
     resolution: {integrity: sha512-OqyPZ9u96VohAyMfJykzmivOrY2wfMSf3C5TtFJVgN+Hm6aj+voFhlK+kZEIv2FBh1X6Xp3DlnCOfEQ3B2J86A==}
@@ -16013,7 +16013,7 @@ snapshots:
   '@paulirish/trace_engine@0.0.61':
     dependencies:
       legacy-javascript: 0.0.1
-      third-party-web: 0.28.0
+      third-party-web: 0.29.0
 
   '@payloadcms/db-postgres@3.64.0(@opentelemetry/api@1.9.0)(payload@3.64.0(graphql@16.12.0)(typescript@5.9.3))':
     dependencies:
@@ -25565,7 +25565,7 @@ snapshots:
 
   stylis@4.2.0: {}
 
-  supabase@2.58.5:
+  supabase@2.62.5:
     dependencies:
       bin-links: 6.0.0
       https-proxy-agent: 7.0.6
@@ -25674,7 +25674,7 @@ snapshots:
 
   third-party-web@0.27.0: {}
 
-  third-party-web@0.28.0: {}
+  third-party-web@0.29.0: {}
 
   thread-stream@3.1.0:
     dependencies:
