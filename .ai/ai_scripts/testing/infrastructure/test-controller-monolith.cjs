@@ -59,7 +59,7 @@ const CONFIG = {
 	ports: {
 		supabase: 54321, // Updated to unified Web Supabase port
 		web: 3000,
-		payload: 3020,
+		payload: 3021, // Payload dev:test uses PORT=3021 (see apps/payload/package.json)
 	},
 	// Override with env var TEST_MAX_CONCURRENT_SHARDS if set
 	maxConcurrentShards: process.env.TEST_MAX_CONCURRENT_SHARDS
@@ -1374,10 +1374,13 @@ class E2ETestRunner {
 				signal: AbortSignal.timeout(2000),
 			}).catch(() => null);
 
-			// Check backend server (use /api/health endpoint)
-			const backendResponse = await fetch("http://localhost:3020/api/health", {
-				signal: AbortSignal.timeout(2000),
-			}).catch(() => null);
+			// Check Payload CMS server (use /api/health endpoint)
+			const backendResponse = await fetch(
+				`http://localhost:${CONFIG.ports.payload}/api/health`,
+				{
+					signal: AbortSignal.timeout(2000),
+				},
+			).catch(() => null);
 
 			const frontendReady = frontendResponse?.ok;
 			const backendReady = backendResponse?.ok;
@@ -1418,7 +1421,7 @@ class E2ETestRunner {
 
 		// Check if servers are already running after cleanup
 		const frontendRunning = await this.isServerRunning(3000);
-		const backendRunning = await this.isServerRunning(3020);
+		const backendRunning = await this.isServerRunning(CONFIG.ports.payload); // Payload uses port 3021
 
 		if (frontendRunning && backendRunning) {
 			log("✅ Servers already running, reusing existing instances");
@@ -1487,9 +1490,9 @@ class E2ETestRunner {
 			});
 		}
 
-		// Start backend server too
+		// Start backend (Payload CMS) server
 		if (!backendRunning) {
-			log("🔧 Starting backend server on port 3020...");
+			log(`🔧 Starting Payload CMS server on port ${CONFIG.ports.payload}...`);
 			this.backendProcess = spawn("pnpm", ["--filter", "payload", "dev:test"], {
 				cwd: process.cwd(),
 				stdio: ["ignore", "pipe", "pipe"],
@@ -1498,7 +1501,7 @@ class E2ETestRunner {
 				env: {
 					...process.env,
 					NODE_ENV: "test",
-					PORT: "3020",
+					// PORT=3021 is set in apps/payload/package.json dev:test script
 					FORCE_COLOR: "0",
 				},
 			});
@@ -1600,12 +1603,12 @@ class E2ETestRunner {
 								pidsToExclude.push(this.backendProcess.pid);
 							const excludePattern = pidsToExclude.join("\\|");
 							await execAsync(
-								`lsof -ti:3000,3010,3020 | grep -v "${excludePattern}" | xargs -r kill -9 2>/dev/null || true`,
+								`lsof -ti:3000,3010,3020,3021 | grep -v "${excludePattern}" | xargs -r kill -9 2>/dev/null || true`,
 							);
 						} else {
 							// No managed servers, safe to kill all processes on ports
 							await execAsync(
-								"lsof -ti:3000,3010,3020 | xargs -r kill -9 2>/dev/null || true",
+								"lsof -ti:3000,3010,3020,3021 | xargs -r kill -9 2>/dev/null || true",
 							);
 						}
 						await new Promise((resolve) => setTimeout(resolve, 3000)); // Give more time for processes to die
@@ -1690,7 +1693,9 @@ class E2ETestRunner {
 						}
 
 						if (!backendReady) {
-							log("🔧 Starting backend with spawn (recovery mode)...");
+							log(
+								`🔧 Starting Payload CMS with spawn (recovery mode) on port ${CONFIG.ports.payload}...`,
+							);
 							this.backendProcess = spawn(
 								"pnpm",
 								["--filter", "payload", "dev:test"],
@@ -1702,7 +1707,7 @@ class E2ETestRunner {
 									env: {
 										...process.env,
 										NODE_ENV: "test",
-										PORT: "3020",
+										// PORT=3021 is set in apps/payload/package.json dev:test script
 										FORCE_COLOR: "0",
 									},
 								},
@@ -1727,16 +1732,19 @@ class E2ETestRunner {
 						}
 
 						if (!backendReady) {
-							log("🔧 Starting backend with exec (fallback mode)...");
+							log(
+								`🔧 Starting Payload CMS with exec (fallback mode) on port ${CONFIG.ports.payload}...`,
+							);
 							try {
 								// Start in background with nohup
+								// Note: PORT is set in apps/payload/package.json dev:test script (3021)
 								await execAsync(
-									`cd ${process.cwd()} && PORT=3020 NODE_ENV=test nohup pnpm --filter payload dev:test > /tmp/backend.log 2>&1 &`,
+									`cd ${process.cwd()} && NODE_ENV=test nohup pnpm --filter payload dev:test > /tmp/backend.log 2>&1 &`,
 									{ timeout: 5000 },
 								);
-								log("🔧 Backend server started with exec");
+								log("🔧 Payload CMS server started with exec");
 							} catch (e) {
-								log(`⚠️ Backend exec start warning: ${e.message}`);
+								log(`⚠️ Payload CMS exec start warning: ${e.message}`);
 							}
 						}
 
@@ -1790,11 +1798,12 @@ class E2ETestRunner {
 				}
 			}
 
-			// Check backend health with detailed error tracking
+			// Check Payload CMS health with detailed error tracking
 			if (!backendReady) {
+				const payloadPort = CONFIG.ports.payload;
 				try {
 					const backendResponse = await fetch(
-						"http://127.0.0.1:3020/api/health",
+						`http://127.0.0.1:${payloadPort}/api/health`,
 						{ signal: AbortSignal.timeout(3000) },
 					).catch((err) => {
 						lastBackendError = err.message;
@@ -1804,14 +1813,14 @@ class E2ETestRunner {
 						const data = await backendResponse.json().catch(() => null);
 						if (data && data.status === "ready") {
 							backendReady = true;
-							log("✅ Backend server is ready!");
+							log("✅ Payload CMS server is ready!");
 						}
 					}
 				} catch (error) {
 					lastBackendError = error.message;
 					// Fallback to basic check
 					try {
-						const basicCheck = await fetch("http://127.0.0.1:3020", {
+						const basicCheck = await fetch(`http://127.0.0.1:${payloadPort}`, {
 							signal: AbortSignal.timeout(3000),
 						}).catch((err) => {
 							lastBackendError = err.message;
@@ -1819,7 +1828,7 @@ class E2ETestRunner {
 						});
 						if (basicCheck) {
 							backendReady = true;
-							log("✅ Backend server is responding!");
+							log("✅ Payload CMS server is responding!");
 						}
 					} catch (err2) {
 						lastBackendError = err2.message;
@@ -1870,18 +1879,21 @@ class E2ETestRunner {
 
 		// If we've exhausted all attempts (including recovery), throw an error
 		if (!frontendReady || !backendReady) {
+			const payloadPort = CONFIG.ports.payload;
 			const errorDetails = [];
 			if (!frontendReady)
 				errorDetails.push("Frontend (port 3000) not responding");
 			if (!backendReady)
-				errorDetails.push("Backend (port 3020) not responding");
+				errorDetails.push(`Payload CMS (port ${payloadPort}) not responding`);
 
 			log("\n❌ Server startup failed after all recovery attempts");
 			log("   Issues:");
 			// biome-ignore lint/suspicious/useIterableCallbackReturn: log() doesn't return a value, false positive
 			errorDetails.forEach((detail) => log(`   - ${detail}`));
 			log("\n   Troubleshooting steps:");
-			log("   1. Check if ports 3000 and 3020 are in use: lsof -ti:3000,3020");
+			log(
+				`   1. Check if ports 3000 and ${payloadPort} are in use: lsof -ti:3000,${payloadPort}`,
+			);
 			log("   2. Ensure Supabase is running: npx supabase status");
 			log("   3. Check for Node/npm issues: node --version && npm --version");
 			log("   4. Try manual server start: pnpm --filter web dev:test");
@@ -1894,11 +1906,12 @@ class E2ETestRunner {
 
 	async preWarmServers() {
 		// Make a few requests to warm up the servers
+		const payloadPort = CONFIG.ports.payload;
 		const warmupRequests = [
 			fetch("http://127.0.0.1:3000").catch(() => null),
-			fetch("http://127.0.0.1:3020").catch(() => null),
+			fetch(`http://127.0.0.1:${payloadPort}`).catch(() => null),
 			fetch("http://127.0.0.1:3000/api/health").catch(() => null),
-			fetch("http://127.0.0.1:3020/api/health").catch(() => null),
+			fetch(`http://127.0.0.1:${payloadPort}/api/health`).catch(() => null),
 		];
 
 		await Promise.all(warmupRequests);
@@ -1920,12 +1933,13 @@ class E2ETestRunner {
 			),
 		]);
 
-		// Check backend health
+		// Check Payload CMS health (backend runs on CONFIG.ports.payload = 3021)
+		const payloadPort = CONFIG.ports.payload;
 		const backendChecks = await Promise.all([
-			this.checkEndpoint("http://127.0.0.1:3020", "Backend root"),
+			this.checkEndpoint(`http://127.0.0.1:${payloadPort}`, "Payload root"),
 			this.checkEndpoint(
-				"http://127.0.0.1:3020/api/health",
-				"Backend health API",
+				`http://127.0.0.1:${payloadPort}/api/health`,
+				"Payload health API",
 			),
 		]);
 
@@ -1983,9 +1997,10 @@ class E2ETestRunner {
 	 * This prevents "Port already in use" errors that cause tests to fail
 	 */
 	async cleanupPorts() {
-		log("🔧 Cleaning up test ports (3000, 3001, 3010, 3020)...");
+		const payloadPort = CONFIG.ports.payload; // 3021
+		log(`🔧 Cleaning up test ports (3000, 3001, 3010, ${payloadPort})...`);
 
-		const testPorts = [3000, 3001, 3010, 3020];
+		const testPorts = [3000, 3001, 3010, payloadPort];
 
 		for (const port of testPorts) {
 			try {
@@ -2143,32 +2158,38 @@ class E2ETestRunner {
 
 		// Also clean up by port to be thorough, but exclude our managed servers
 		// This handles cases where processes might be on ports but not matching dev:test pattern
+		const payloadPort = CONFIG.ports.payload;
 		if (excludePids.length > 0) {
 			const excludePattern = excludePids.join("\\|");
 			await execAsync(
-				`lsof -ti:3000,3020 | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`,
+				`lsof -ti:3000,${payloadPort} | grep -v "${excludePattern}" | xargs -r kill -TERM 2>/dev/null || true`,
 			).catch(() => {});
 		} else {
 			// No managed servers, safe to kill all processes on ports
 			await execAsync(
-				"lsof -ti:3000,3020 | xargs -r kill -TERM 2>/dev/null || true",
+				`lsof -ti:3000,${payloadPort} | xargs -r kill -TERM 2>/dev/null || true`,
 			).catch(() => {});
 		}
 	}
 
 	async acquirePortLocks() {
+		const payloadPort = CONFIG.ports.payload;
 		try {
 			log("🔒 Acquiring port locks...");
 			const frontendLocked = await this.resourceLock.acquire(
 				"port:3000",
 				15000,
 			);
-			const backendLocked = await this.resourceLock.acquire("port:3020", 15000);
+			const backendLocked = await this.resourceLock.acquire(
+				`port:${payloadPort}`,
+				15000,
+			);
 
 			if (!frontendLocked || !backendLocked) {
 				log("⚠️ Could not acquire all port locks");
 				if (frontendLocked) await this.resourceLock.release("port:3000");
-				if (backendLocked) await this.resourceLock.release("port:3020");
+				if (backendLocked)
+					await this.resourceLock.release(`port:${payloadPort}`);
 				return false;
 			}
 
@@ -2181,10 +2202,11 @@ class E2ETestRunner {
 	}
 
 	async releasePortLocks() {
+		const payloadPort = CONFIG.ports.payload;
 		try {
 			log("🔓 Releasing port locks...");
 			await this.resourceLock.release("port:3000");
-			await this.resourceLock.release("port:3020");
+			await this.resourceLock.release(`port:${payloadPort}`);
 			log("✅ Port locks released");
 		} catch (error) {
 			logError(`Failed to release port locks: ${error.message}`);
