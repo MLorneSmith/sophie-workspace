@@ -29,8 +29,9 @@ export async function validateSupabaseConnection(): Promise<ValidationResult> {
 		const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 		// Test basic connectivity with a simple health check query
+		// Use 'accounts' table which is in public schema and always available
 		const { data, error } = await supabase
-			.from("auth.users")
+			.from("accounts")
 			.select("id")
 			.limit(1);
 
