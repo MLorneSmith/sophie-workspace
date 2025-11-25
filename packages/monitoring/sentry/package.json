@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.2",
-		"@sentry/nextjs": "^10.25.0"
+		"@sentry/nextjs": "^10.27.0"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
