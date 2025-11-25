@@ -14,6 +14,7 @@ const {
 	verifyPortBindings,
 	formatDiagnosticMessage,
 } = require("./port-binding-verifier.cjs");
+const { getSupabaseConfig } = require("./supabase-config-loader.cjs");
 
 // Simple logging utility
 function log(message, type = "info") {
@@ -179,20 +180,20 @@ class InfrastructureManager {
 	 */
 	async healthCheckSupabase() {
 		try {
-			// Check if database is responding on unified Web Supabase port
+			// Get dynamic Supabase configuration
+			const supabaseConfig = getSupabaseConfig();
+			const apiUrl =
+				supabaseConfig.API_URL ||
+				`http://127.0.0.1:${this.config.ports.supabase.api}`;
 			const anonKey =
-				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseConfig.ANON_KEY;
 
-			const response = await fetch(
-				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/`,
-				{
-					signal: AbortSignal.timeout(2000),
-					headers: {
-						apikey: anonKey,
-					},
+			const response = await fetch(`${apiUrl}/rest/v1/`, {
+				signal: AbortSignal.timeout(2000),
+				headers: {
+					apikey: anonKey,
 				},
-			);
+			});
 
 			// 200 means API is running, 401 means auth is required but API is responsive
 			if (response.status === 200 || response.status === 401) {
@@ -305,20 +306,20 @@ class InfrastructureManager {
 	 */
 	async healthCheckDatabase() {
 		try {
-			// Quick connectivity test to unified Web Supabase instance
+			// Get dynamic Supabase configuration
+			const supabaseConfig = getSupabaseConfig();
+			const apiUrl =
+				supabaseConfig.API_URL ||
+				`http://127.0.0.1:${this.config.ports.supabase.api}`;
 			const anonKey =
-				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+				process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || supabaseConfig.ANON_KEY;
 
-			const response = await fetch(
-				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/`,
-				{
-					signal: AbortSignal.timeout(2000),
-					headers: {
-						apikey: anonKey,
-					},
+			const response = await fetch(`${apiUrl}/rest/v1/`, {
+				signal: AbortSignal.timeout(2000),
+				headers: {
+					apikey: anonKey,
 				},
-			);
+			});
 
 			if (response.status === 401 || response.status === 200) {
 				// 401 is expected without proper auth, means DB is responding
@@ -336,14 +337,18 @@ class InfrastructureManager {
 	 */
 	async healthCheckTestUsers() {
 		try {
-			// Use service role key for admin access
+			// Get dynamic Supabase configuration
+			const supabaseConfig = getSupabaseConfig();
+			const apiUrl =
+				supabaseConfig.API_URL ||
+				`http://127.0.0.1:${this.config.ports.supabase.api}`;
 			const serviceRoleKey =
 				process.env.SUPABASE_SERVICE_ROLE_KEY ||
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+				supabaseConfig.SERVICE_ROLE_KEY;
 
 			// Query the onboarding table in unified Web database for our test users
 			const response = await fetch(
-				`http://127.0.0.1:${this.config.ports.supabase.api}/rest/v1/onboarding?select=user_id`,
+				`${apiUrl}/rest/v1/onboarding?select=user_id`,
 				{
 					signal: AbortSignal.timeout(3000),
 					headers: {
@@ -737,13 +742,24 @@ class InfrastructureManager {
 				// Create default .env.test file with unified architecture settings
 				log("Creating default test environment file...");
 				// Note: Passwords should be configured in .env.test.locked for security
+				// Get dynamic Supabase configuration for default env
+				const supabaseConfig = getSupabaseConfig();
+				const supabaseUrl = supabaseConfig.API_URL || "http://localhost:54321";
+				const anonKey = supabaseConfig.ANON_KEY;
+				const serviceRoleKey = supabaseConfig.SERVICE_ROLE_KEY;
+				const dbUrl =
+					supabaseConfig.DB_URL ||
+					"postgresql://postgres:postgres@localhost:54322/postgres";
+
+				log(`Using dynamic Supabase config - URL: ${supabaseUrl}`);
+
 				const defaultEnv = `
-# Unified Web Supabase Configuration
+# Unified Web Supabase Configuration (dynamically detected)
 NEXT_PUBLIC_APP_URL=http://localhost:3001
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+NEXT_PUBLIC_SUPABASE_URL=${supabaseUrl}
+NEXT_PUBLIC_SUPABASE_ANON_KEY=${anonKey}
+SUPABASE_SERVICE_ROLE_KEY=${serviceRoleKey}
+DATABASE_URL=${dbUrl}
 
 # Test User Configuration - IMPORTANT: Configure passwords in .env.test.locked
 E2E_TEST_USER_EMAIL=test1@slideheroes.com

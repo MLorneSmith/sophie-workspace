@@ -5,12 +5,33 @@
 
 const { execSync } = require("node:child_process");
 const { createConnection } = require("node:net");
+const { getSupabaseConfig } = require("./supabase-config-loader.cjs");
 
-const DEFAULT_SUPABASE_PORTS = {
-	kong: 54321,
-	postgres: 54322,
-	studio: 54323,
-};
+/**
+ * Gets the actual Supabase ports from dynamic configuration.
+ * Falls back to standard ports if config detection fails.
+ */
+function getSupabasePorts() {
+	try {
+		const config = getSupabaseConfig();
+		if (config.ports) {
+			return {
+				kong: config.ports.api,
+				postgres: config.ports.db,
+				studio: config.ports.studio,
+			};
+		}
+	} catch {
+		// Fall back to defaults
+	}
+	return {
+		kong: 54321,
+		postgres: 54322,
+		studio: 54323,
+	};
+}
+
+const DEFAULT_SUPABASE_PORTS = getSupabasePorts();
 
 /**
  * Inspects Docker container port bindings
