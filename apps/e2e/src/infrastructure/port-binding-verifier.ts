@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import { createConnection } from "node:net";
 import { setTimeout as sleep } from "node:timers/promises";
+import { getSupabaseConfig } from "../../tests/utils/supabase-config-loader";
 
 /**
  * Port Binding Verifier
@@ -30,11 +31,35 @@ export interface DiagnosticReport {
 	recoverySteps: string[];
 }
 
-const DEFAULT_SUPABASE_PORTS = {
-	kong: 54321,
-	postgres: 54322,
-	studio: 54323,
-};
+/**
+ * Gets the actual Supabase ports from dynamic configuration.
+ * Falls back to standard ports if config detection fails.
+ */
+function getSupabasePorts(): {
+	kong: number;
+	postgres: number;
+	studio: number;
+} {
+	try {
+		const config = getSupabaseConfig();
+		if (config.ports) {
+			return {
+				kong: config.ports.api,
+				postgres: config.ports.db,
+				studio: config.ports.studio,
+			};
+		}
+	} catch {
+		// Fall back to defaults
+	}
+	return {
+		kong: 54321,
+		postgres: 54322,
+		studio: 54323,
+	};
+}
+
+const DEFAULT_SUPABASE_PORTS = getSupabasePorts();
 
 /**
  * Inspects Docker container port bindings
