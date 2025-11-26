@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Personal Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/account/account-simple.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-11-26T17:01:30.619Z",
+		"endTime": "2025-11-26T17:05:53.619Z",
+		"duration": "263s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 6,
+		"passed": 1,
+		"failed": 3,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 2,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 5095 bytes)...\nat /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:28:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      26 | \t\tconst request = account.updateName(name);\n      27 |\n    > 28 | \t\tconst response = page.waitForResponse((resp) => {\n         | \t\t                      ^\n      29 | \t\t\treturn resp.url().includes(\"accounts\");\n      30 | \t\t});\n      31 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:28:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3) [chromium] › tests/account/account.spec.ts:44:6 › Account Settings › user can update their password \n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      47 | \t\tconst request = account.updatePassword(password);\n      48 |\n    > 49 | \t\tconst response = page.waitForResponse((resp) => {\n         | \t\t                      ^\n      50 | \t\t\treturn resp.url().includes(\"auth/v1/user\");\n      51 | \t\t});\n      52 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:49:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      47 | \t\tconst request = account.updatePassword(password);\n      48 |\n    > 49 | \t\tconst response = page.waitForResponse((resp) => {\n         | \t\t                      ^\n      50 | \t\t\treturn resp.url().includes(\"auth/v1/user\");\n      51 | \t\t});\n      52 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:49:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3 failed\n    [chromium] › tests/account/account-simple.spec.ts:33:6 › Account Settings - Simple @account @integration › user profile form is visible \n    [chromium] › tests/account/account.spec.ts:23:6 › Account Settings › user can update their profile name \n    [chromium] › tests/account/account.spec.ts:44:6 › Account Settings › user can update their password \n  2 skipped\n  7 did not run\n  1 passed (4.1m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
