@@ -98,6 +98,9 @@ test.describe("Invitations", () => {
 });
 
 test.describe("Full Invitation Flow", () => {
+	// Start with clean session - this test performs full auth flow
+	test.use({ storageState: { cookies: [], origins: [] } });
+
 	test("should invite users and let users accept an invite", async ({
 		page,
 	}) => {
