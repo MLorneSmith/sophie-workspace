@@ -3,7 +3,7 @@
 ## Problem
 
 The CI/CD pipeline was failing because tests were attempting to fetch confirmation emails from a local
-email service (Inbucket at 127.0.0.1:54324) when testing against the deployed dev environment
+email service (Inbucket at 127.0.0.1:54524) when testing against the deployed dev environment
 (dev.slideheroes.com). This is a fundamental incompatibility - the deployed environment doesn't have
 access to a local email service.
 

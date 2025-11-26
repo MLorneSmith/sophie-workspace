@@ -28,13 +28,13 @@ export interface SupabaseConfig {
  * Used when Supabase CLI is unavailable or returns invalid output
  */
 export const FALLBACK_CONFIG: SupabaseConfig = {
-	API_URL: "http://127.0.0.1:54321",
+	API_URL: "http://127.0.0.1:54521",
 	ANON_KEY:
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0",
 	SERVICE_ROLE_KEY:
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
-	DB_URL: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
-	STUDIO_URL: "http://127.0.0.1:54323",
+	DB_URL: "postgresql://postgres:postgres@127.0.0.1:54522/postgres",
+	STUDIO_URL: "http://127.0.0.1:54523",
 };
 
 /**
@@ -132,7 +132,7 @@ export function getSupabaseConfig(
 		const dbPort = extractPort(config.DB_URL as string);
 		const studioPort = config.STUDIO_URL
 			? extractPort(config.STUDIO_URL as string)
-			: 54323;
+			: 54523;
 
 		const enrichedConfig: SupabaseConfig = {
 			API_URL: config.API_URL as string,

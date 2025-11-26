@@ -472,7 +472,7 @@ After configuring WSL, follow these steps for SlideHeroes development:
 
 5. **Access from Windows browser**:
    - Web app: `http://localhost:3000`
-   - Supabase Studio: `http://localhost:54323`
+   - Supabase Studio: `http://localhost:54523`
 
 ## Recommended WSL Tools
 

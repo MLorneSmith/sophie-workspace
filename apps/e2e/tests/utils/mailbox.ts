@@ -47,7 +47,7 @@ type MessagesResponse = {
  * Mailbox class for interacting with the Mailpit mailbox API.
  */
 export class Mailbox {
-	static URL = "http://127.0.0.1:54324";
+	static URL = "http://127.0.0.1:54524";
 
 	constructor(private readonly page: Page) {}
 

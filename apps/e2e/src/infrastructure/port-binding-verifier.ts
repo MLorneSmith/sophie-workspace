@@ -53,9 +53,9 @@ function getSupabasePorts(): {
 		// Fall back to defaults
 	}
 	return {
-		kong: 54321,
-		postgres: 54322,
-		studio: 54323,
+		kong: 54521,
+		postgres: 54522,
+		studio: 54523,
 	};
 }
 

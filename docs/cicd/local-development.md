@@ -126,8 +126,8 @@ nano .env.local  # or use your preferred editor
 
 ```bash
 # Database
-DATABASE_URL="postgresql://postgres:password@localhost:54322/postgres"
-SUPABASE_URL="http://localhost:54321"
+DATABASE_URL="postgresql://postgres:password@localhost:54522/postgres"
+SUPABASE_URL="http://localhost:54521"
 SUPABASE_ANON_KEY="your-anon-key"
 SUPABASE_SERVICE_ROLE_KEY="your-service-key"
 
@@ -160,20 +160,20 @@ supabase init
 pnpm run supabase:web:start
 
 # Services will be available at:
-# - API: http://localhost:54321
-# - DB: postgresql://postgres:postgres@localhost:54322/postgres
-# - Studio: http://localhost:54323
-# - Inbucket: http://localhost:54324
+# - API: http://localhost:54521
+# - DB: postgresql://postgres:postgres@localhost:54522/postgres
+# - Studio: http://localhost:54523
+# - Inbucket: http://localhost:54524
 ```
 
-**Supabase Service Ports**:
+**Supabase Service Ports** (WSL2-compatible range):
 
-- **API Gateway**: 54321
-- **PostgreSQL**: 54322
-- **Studio (Admin UI)**: 54323
-- **Inbucket (Email testing)**: 54324
-- **Realtime**: 54325
-- **Storage**: 54326
+- **API Gateway**: 54521
+- **PostgreSQL**: 54522
+- **Studio (Admin UI)**: 54523
+- **Inbucket (Email testing)**: 54524
+- **Inbucket SMTP**: 54525
+- **Inbucket POP3**: 54526
 
 ### Database Management
 
@@ -188,7 +188,7 @@ supabase gen types typescript --local > lib/database.types.ts
 supabase db seed
 
 # View database in browser
-open http://localhost:54323
+open http://localhost:54523
 ```
 
 ### Stripe Local Development
@@ -363,7 +363,7 @@ curl -X POST http://localhost:3000/api/auth/signin \
   -d '{"email": "test@example.com", "password": "password"}'
 
 # Test database operations
-psql "postgresql://postgres:postgres@localhost:54322/postgres" \
+psql "postgresql://postgres:postgres@localhost:54522/postgres" \
   -c "SELECT * FROM auth.users LIMIT 5;"
 
 # Test Stripe integration
@@ -606,7 +606,7 @@ supabase db pull --linked
 
 # Download latest database backup
 supabase db dump --linked > backup.sql
-psql "postgresql://postgres:postgres@localhost:54322/postgres" < backup.sql
+psql "postgresql://postgres:postgres@localhost:54522/postgres" < backup.sql
 ```
 
 ### Data Management
@@ -619,7 +619,7 @@ supabase db reset
 pnpm run db:seed
 
 # Import specific dataset
-psql "postgresql://postgres:postgres@localhost:54322/postgres" \
+psql "postgresql://postgres:postgres@localhost:54522/postgres" \
   -c "\copy courses FROM 'data/courses.csv' CSV HEADER"
 ```
 
@@ -652,7 +652,7 @@ supabase stop
 supabase start
 
 # Check database connectivity
-psql "postgresql://postgres:postgres@localhost:54322/postgres" -c "SELECT 1;"
+psql "postgresql://postgres:postgres@localhost:54522/postgres" -c "SELECT 1;"
 ```
 
 #### Build Issues
@@ -779,7 +779,7 @@ NODE_ENV=development NEXT_TELEMETRY_DEBUG=1 pnpm dev
 
 # Database performance
 echo "SELECT * FROM pg_stat_activity;" | \
-  psql "postgresql://postgres:postgres@localhost:54322/postgres"
+  psql "postgresql://postgres:postgres@localhost:54522/postgres"
 ```
 
 ---
