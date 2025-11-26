@@ -31,6 +31,10 @@ dist/
 # misc
 .DS_Store
 *.pem
+
+# E2B sandbox templates (contain build config, may have tokens)
+e2b.Dockerfile
+e2b.toml
 e2b-sandbox.zip
 
 # AI tool caches
