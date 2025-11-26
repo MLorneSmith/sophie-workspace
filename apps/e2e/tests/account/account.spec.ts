@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { restoreOriginalPassword } from "../utils/database-utilities";
 import { AccountPageObject } from "./account.po";
 
 test.describe("Account Settings", () => {
@@ -18,6 +19,25 @@ test.describe("Account Settings", () => {
 
 		// Wait for form to be loaded
 		await page.waitForSelector("form", { timeout: 10000 });
+	});
+
+	// Restore test user password after each test to ensure idempotent test runs
+	// This is critical for the password update test which changes the password
+	test.afterEach(async () => {
+		try {
+			const restored = await restoreOriginalPassword("test1@slideheroes.com");
+			if (restored) {
+				console.log(
+					"[account.spec.ts] Password restored for test1@slideheroes.com",
+				);
+			}
+		} catch (error) {
+			// Log warning but don't fail the test - the restoration is best-effort
+			console.warn(
+				"[account.spec.ts] Failed to restore password:",
+				error instanceof Error ? error.message : error,
+			);
+		}
 	});
 
 	test("user can update their profile name", async ({ page }) => {
