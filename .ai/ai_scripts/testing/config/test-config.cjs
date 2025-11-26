@@ -32,7 +32,7 @@ const CONFIG = {
 		unitTests: 15 * 60 * 1000, // 15 minutes
 		e2eSetup: 60000, // 1 minute
 		e2eTests: 45 * 60 * 1000, // 45 minutes
-		shardTimeout: 12 * 60 * 1000, // 12 minutes per shard
+		shardTimeout: 20 * 60 * 1000, // 20 minutes per shard (increased from 12 to accommodate retries)
 		fileTimeout: 2 * 60 * 1000, // 2 minutes per test file
 		cleanup: 30000, // 30 seconds
 		reporting: 30000, // 30 seconds

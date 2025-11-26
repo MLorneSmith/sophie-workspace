@@ -14,23 +14,18 @@ function verifyShards() {
 
 	// Expected shard configuration based on package.json
 	const shards = [
-		{ id: 1, name: "Smoke", command: "test:shard1", expectedFiles: 1 },
-		{ id: 2, name: "Authentication", command: "test:shard2", expectedFiles: 2 },
-		{ id: 3, name: "Accounts", command: "test:shard3", expectedFiles: 3 },
-		{
-			id: 4,
-			name: "Admin & Invitations",
-			command: "test:shard4",
-			expectedFiles: 2,
-		},
-		{ id: 5, name: "Billing", command: "test:shard5", expectedFiles: 2 },
-		{ id: 6, name: "Accessibility", command: "test:shard6", expectedFiles: 2 },
-		{
-			id: 7,
-			name: "Config & Health",
-			command: "test:shard7",
-			expectedFiles: 2,
-		},
+		{ id: 1, name: "Smoke Tests", command: "test:shard1", expectedFiles: 1 },
+		{ id: 2, name: "Authentication", command: "test:shard2", expectedFiles: 3 },
+		{ id: 3, name: "Personal Accounts", command: "test:shard3", expectedFiles: 2 },
+		{ id: 4, name: "Admin & Invitations", command: "test:shard4", expectedFiles: 2 },
+		{ id: 5, name: "Accessibility", command: "test:shard5", expectedFiles: 2 },
+		{ id: 6, name: "Config & Health", command: "test:shard6", expectedFiles: 1 },
+		{ id: 7, name: "Payload CMS", command: "test:shard7", expectedFiles: 3 },
+		{ id: 8, name: "Payload Extended", command: "test:shard8", expectedFiles: 5 },
+		{ id: 9, name: "User Billing", command: "test:shard9", expectedFiles: 1 },
+		{ id: 10, name: "Team Billing", command: "test:shard10", expectedFiles: 1 },
+		{ id: 11, name: "Config Verification", command: "test:shard11", expectedFiles: 1 },
+		{ id: 12, name: "Team Accounts", command: "test:shard12", expectedFiles: 2 },
 	];
 
 	let totalTests = 0;

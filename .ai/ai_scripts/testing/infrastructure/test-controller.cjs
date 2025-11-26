@@ -199,7 +199,7 @@ class TestController {
 			}
 
 			switch (arg) {
-				case "--shard":
+				case "--shard": {
 					// --shard N or --shard 1,2,3
 					const shardArg = args[++i];
 					if (shardArg) {
@@ -215,6 +215,7 @@ class TestController {
 						options.skipUnit = true; // Shard implies E2E only
 					}
 					break;
+				}
 				case "--skip-unit":
 					options.skipUnit = true;
 					break;
