@@ -1,0 +1,46 @@
+{
+	"name": "@kit/e2b",
+	"version": "0.0.1",
+	"private": true,
+	"description": "E2B sandbox integration for secure cloud code execution",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"clean": "git clean -xdf .turbo node_modules dist",
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit",
+		"build": "tsc",
+		"test": "vitest",
+		"test:unit": "vitest run"
+	},
+	"exports": {
+		".": "./dist/index.js",
+		"./sandbox": "./dist/sandbox.js",
+		"./code-execution": "./dist/code-execution.js",
+		"./files": "./dist/files.js",
+		"./commands": "./dist/commands.js",
+		"./types": "./dist/types.js",
+		"./errors": "./dist/errors.js"
+	},
+	"typesVersions": {
+		"*": {
+			"*": [
+				"src/*"
+			]
+		}
+	},
+	"dependencies": {
+		"@e2b/code-interpreter": "^1.0.4",
+		"@kit/shared": "workspace:*",
+		"zod": "^4.1.12"
+	},
+	"devDependencies": {
+		"@kit/eslint-config": "workspace:*",
+		"@kit/prettier-config": "workspace:*",
+		"@kit/tsconfig": "workspace:*",
+		"@types/node": "^24.10.1",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.10"
+	},
+	"prettier": "@kit/prettier-config"
+}
