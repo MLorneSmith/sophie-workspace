@@ -14,6 +14,21 @@ This skill enables Claude to manage E2B secure cloud sandboxes optimized for AI 
 - Pre-installed dependencies (no network latency)
 - Deterministic, reproducible environments
 
+## SlideHeroes Integration
+
+This project includes a TypeScript package for E2B integration:
+
+**Package:** `@kit/e2b` (located at `packages/e2b/`)
+
+**Key Exports:**
+- Sandbox: `createSandbox`, `connectToSandbox`, `listSandboxes`, `killSandbox`
+- Code Execution: `executeCode`, `executePython`, `executeJavaScript`, `executeR`
+- Commands: `runCommand`, `installPythonPackage`, `installNodePackage`, `cloneRepository`
+- Files: `readFile`, `writeFile`, `listDirectory`, `fileExists`, `makeDirectory`
+- Errors: `E2BError`, `AuthenticationError`, `ExecutionError`, `CommandError`
+
+**Test Endpoint:** `GET /api/e2b-test` - Verifies E2B is working correctly
+
 ## When to Use This Skill
 
 **Primary Use Cases:**
@@ -199,38 +214,84 @@ print(result.stdout)
 sandbox.kill()
 ```
 
-### TypeScript Integration
+### TypeScript Integration (using @kit/e2b)
+
+**Recommended:** Use the project's `@kit/e2b` package for typed, logged operations:
 
 ```typescript
-import { Sandbox } from '@e2b/code-interpreter'
+import {
+  createSandbox,
+  executePython,
+  runCommand,
+  killSandbox,
+} from '@kit/e2b';
 
 async function runClaudeAgent() {
-  const sandbox = await Sandbox.create('slideheroes-claude-agent', {
+  const sandbox = await createSandbox({
+    template: 'slideheroes-claude-agent',
     timeoutMs: 300000,
     envs: {
       ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
     },
-  })
+  });
 
   try {
     // Run tests
-    const testResult = await sandbox.commands.run('run-tests', {
+    const testResult = await runCommand(sandbox, 'run-tests', {
       cwd: '/home/user/project',
       timeoutMs: 120000,
-    })
-    console.log('Tests:', testResult.stdout)
+    });
+    console.log('Tests:', testResult.stdout);
+
+    // Execute Python code
+    const pythonResult = await executePython(sandbox, `
+      import os
+      print(f"Working in: {os.getcwd()}")
+    `);
+    console.log('Python:', pythonResult.stdout);
 
     // Execute Claude Code task
-    const claudeResult = await sandbox.commands.run(
+    const claudeResult = await runCommand(
+      sandbox,
       `echo "Implement the feature described in issue #123" | claude -p`,
       { timeoutMs: 0 }
-    )
-    console.log('Claude output:', claudeResult.stdout)
+    );
+    console.log('Claude output:', claudeResult.stdout);
 
   } finally {
-    await sandbox.kill()
+    await killSandbox(sandbox);
   }
 }
+```
+
+**Server Action Example:**
+
+```typescript
+// apps/web/app/_lib/server/e2b-actions.ts
+'use server';
+
+import { createSandbox, executePython, killSandbox } from '@kit/e2b';
+import { enhanceAction } from '@kit/next/actions';
+import { z } from 'zod';
+
+export const executeCodeAction = enhanceAction(
+  async (data) => {
+    const sandbox = await createSandbox({ timeoutMs: 60000 });
+
+    try {
+      const result = await executePython(sandbox, data.code);
+      return {
+        success: !result.error,
+        stdout: result.stdout,
+        stderr: result.stderr,
+        error: result.error,
+      };
+    } finally {
+      await killSandbox(sandbox);
+    }
+  },
+  { schema: z.object({ code: z.string() }) }
+);
 ```
 
 ---
@@ -355,7 +416,30 @@ host = sandbox.get_host(3000)
 
 ## Resources
 
-### scripts/
+### packages/e2b/ (TypeScript - Recommended)
+
+The `@kit/e2b` package provides typed wrappers for the E2B SDK with logging:
+
+```typescript
+// Import from the package
+import {
+  createSandbox,
+  executePython,
+  runCommand,
+  killSandbox
+} from '@kit/e2b';
+
+// All operations are logged via @kit/shared/logger
+```
+
+**Source files:**
+- `packages/e2b/src/sandbox.ts` - Sandbox lifecycle
+- `packages/e2b/src/code-execution.ts` - Code execution helpers
+- `packages/e2b/src/commands.ts` - Shell commands & package installation
+- `packages/e2b/src/files.ts` - File operations
+- `packages/e2b/src/errors.ts` - Typed error classes
+
+### scripts/ (Python CLI)
 
 Contains `sandbox_manager.py` - CLI tool for sandbox operations:
 
@@ -377,3 +461,13 @@ Read references when needing:
 - Advanced patterns (parallel execution, caching)
 - Security configurations
 - Dockerfile examples for different tech stacks
+
+### Test Endpoint
+
+Verify E2B is working:
+
+```bash
+curl http://localhost:3000/api/e2b-test
+```
+
+Located at `apps/web/app/api/e2b-test/route.ts`
