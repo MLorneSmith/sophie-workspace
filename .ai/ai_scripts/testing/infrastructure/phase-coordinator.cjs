@@ -251,7 +251,7 @@ class PhaseCoordinator extends EventEmitter {
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 
 			// Clear ports
-			const ports = [3000, 3020, 54321];
+			const ports = [3000, 3020, 54521];
 			for (const port of ports) {
 				await execAsync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
 			}
@@ -339,7 +339,7 @@ class PhaseCoordinator extends EventEmitter {
 			);
 
 			// Clear all test ports
-			const ports = [3000, 3001, 3020, 54321, 54322];
+			const ports = [3000, 3001, 3020, 54521, 54522];
 			for (const port of ports) {
 				await execAsync(`lsof -ti:${port} | xargs kill -9 2>/dev/null || true`);
 			}

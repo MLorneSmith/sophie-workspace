@@ -57,7 +57,7 @@ const CONFIG = {
 	shardTimeout: 30 * 60 * 1000, // 30 minutes per shard (increased for safety)
 	fileTimeout: 3 * 60 * 1000, // 3 minutes per individual test file (fix for #302)
 	ports: {
-		supabase: 54321, // Updated to unified Web Supabase port
+		supabase: 54521, // Updated to unified Web Supabase port
 		web: 3000,
 		payload: 3021, // Payload dev:test uses PORT=3021 (see apps/payload/package.json)
 	},
@@ -261,7 +261,7 @@ class InfrastructureChecker {
 	async healthCheckSupabase() {
 		try {
 			// First check if database is responding on E2E port
-			const response = await fetch("http://127.0.0.1:54321/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54521/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
 					apikey:
@@ -347,7 +347,7 @@ class InfrastructureChecker {
 	async healthCheckDatabase() {
 		try {
 			// Quick connectivity test to Supabase E2E instance
-			const response = await fetch("http://127.0.0.1:54321/rest/v1/", {
+			const response = await fetch("http://127.0.0.1:54521/rest/v1/", {
 				signal: AbortSignal.timeout(2000),
 				headers: {
 					apikey:
@@ -395,7 +395,7 @@ class InfrastructureChecker {
 			// Query the onboarding table which has entries for our test users
 			// This is accessible via the public API and confirms users are properly seeded
 			const response = await fetch(
-				"http://127.0.0.1:54321/rest/v1/onboarding?select=user_id",
+				"http://127.0.0.1:54521/rest/v1/onboarding?select=user_id",
 				{
 					signal: AbortSignal.timeout(3000),
 					headers: {
@@ -528,7 +528,7 @@ class InfrastructureChecker {
 					log("\n📋 Troubleshooting steps:");
 					log("   1. Check Docker is running: docker info");
 					log("   2. Check Supabase CLI: npx supabase --version");
-					log("   3. Check for port conflicts: lsof -ti:54321,54322");
+					log("   3. Check for port conflicts: lsof -ti:54521,54522");
 					log("   4. Try manual start: cd apps/web && npx supabase start");
 					log("   5. Check logs: cd apps/web && npx supabase logs");
 					return "failed";

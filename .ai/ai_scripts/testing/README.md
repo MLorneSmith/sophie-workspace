@@ -65,7 +65,7 @@ Manages infrastructure setup and health checks:
 Main test orchestration controller:
 
 - Uses environment variables for all API authentication
-- Connects to unified Web Supabase on ports 54321/54322
+- Connects to unified Web Supabase on ports 54521/54522
 - Loads test credentials from environment
 
 ## Security Best Practices
@@ -81,6 +81,6 @@ Main test orchestration controller:
 These scripts have been updated from the dual-database architecture to the unified architecture:
 
 - All references to `apps/e2e` changed to `apps/web`
-- All ports updated from 55321/55322 to 54321/54322
+- All ports updated from 55321/55322 to 54521/54522
 - All hardcoded credentials replaced with environment variables
 - Support added for `.env.test.locked` files
