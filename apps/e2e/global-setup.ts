@@ -70,24 +70,37 @@ async function globalSetup(config: FullConfig) {
 	}
 
 	// Initialize Supabase client
-	// CRITICAL: Use the SAME Supabase URL as the web app to ensure cookie names match
-	// The cookie name is derived from the URL (e.g., http://127.0.0.1:54521 -> sb-127-auth-token)
-	// If the E2E setup and web app use different URLs, the cookie names won't match
-	// and the middleware won't recognize the session.
+	// CRITICAL: Cookie names are derived from the Supabase URL hostname
+	// e.g., http://127.0.0.1:54521 -> sb-127-auth-token
+	//       http://host.docker.internal:54521 -> sb-host-auth-token
 	//
-	// Priority: NEXT_PUBLIC_SUPABASE_URL (to match web app) > E2E_SUPABASE_URL > default
-	const supabaseUrl =
-		process.env.NEXT_PUBLIC_SUPABASE_URL ||
-		process.env.E2E_SUPABASE_URL ||
-		"http://127.0.0.1:54521";
+	// When running tests against a Docker server:
+	// - The server uses host.docker.internal (required for Docker to reach host)
+	// - E2E setup runs on host and can use 127.0.0.1 for authentication
+	// - But cookies must use the SAME name the server expects
+	//
+	// Solution: Use two URLs:
+	// - supabaseAuthUrl: For authentication (127.0.0.1 works on host)
+	// - supabaseCookieUrl: For cookie naming (must match server's URL)
+	const supabaseAuthUrl =
+		process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
+	// For cookie naming, we need the URL the SERVER uses (not the E2E setup)
+	// When running against Docker, the server uses host.docker.internal
+	// E2E_SERVER_SUPABASE_URL can override this if needed
+	const supabaseCookieUrl =
+		process.env.E2E_SERVER_SUPABASE_URL || "http://host.docker.internal:54521";
 	const supabaseAnonKey =
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 		process.env.E2E_SUPABASE_ANON_KEY ||
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
-	// Log the Supabase URL being used for debugging
+	// Log the Supabase URLs being used for debugging
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
-	console.log(`🔗 Using Supabase URL: ${supabaseUrl}`);
+	console.log(`🔗 Using Supabase Auth URL: ${supabaseAuthUrl}`);
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(
+		`🍪 Using Supabase Cookie URL: ${supabaseCookieUrl} (for cookie naming)`,
+	);
 
 	// Create auth state directory if it doesn't exist
 	const authDir = join(cwd(), ".auth");
@@ -126,8 +139,8 @@ async function globalSetup(config: FullConfig) {
 
 		const credentials = CredentialValidator.validateAndGet(authState.role);
 
-		// Create a fresh Supabase client for each user
-		const supabase = createClient(supabaseUrl, supabaseAnonKey);
+		// Create a fresh Supabase client for each user (uses auth URL for actual auth)
+		const supabase = createClient(supabaseAuthUrl, supabaseAnonKey);
 
 		// Sign in via API
 		const { data, error } = await supabase.auth.signInWithPassword({
@@ -204,9 +217,10 @@ async function globalSetup(config: FullConfig) {
 		const cookieStore: StoredCookie[] = [];
 
 		// Create an @supabase/ssr client with a custom cookie store
-		// IMPORTANT: Use getAll/setAll pattern to match middleware-client.ts
-		// This ensures consistent cookie handling between setup and runtime
-		const ssrClient = createServerClient(supabaseUrl, supabaseAnonKey, {
+		// IMPORTANT: Use supabaseCookieUrl here - this determines the cookie name
+		// The cookie name is derived from the URL (e.g., host.docker.internal -> sb-host-auth-token)
+		// This must match what the server expects
+		const ssrClient = createServerClient(supabaseCookieUrl, supabaseAnonKey, {
 			cookies: {
 				getAll() {
 					// Return all captured cookies in the format expected by @supabase/ssr
@@ -242,7 +256,7 @@ async function globalSetup(config: FullConfig) {
 		}
 
 		// Log session info for debugging
-		const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+		const projectRef = new URL(supabaseCookieUrl).hostname.split(".")[0];
 		const cookieName = `sb-${projectRef}-auth-token`;
 		debugLog("session:created", {
 			user: authState.name,
