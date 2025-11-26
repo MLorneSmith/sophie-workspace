@@ -56,25 +56,12 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test("user can sign in with valid credentials", async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
-		// Navigate to sign-in page
-		await auth.goToSignIn();
-		await page.waitForLoadState("domcontentloaded");
-
-		// Sign in with test user credentials
-		await auth.signIn({
+		// Use loginAsUser() which properly waits for Supabase auth API response
+		// before waiting for navigation - this prevents timeout race conditions
+		await auth.loginAsUser({
 			email: TEST_USERS.user1.email,
 			password: TEST_USERS.user1.password,
 		});
-
-		// Wait for navigation after successful sign-in
-		// We should be redirected to /home or onboarding
-		await page.waitForURL(
-			(url) => {
-				const pathname = url.pathname;
-				return pathname.includes("/home") || pathname.includes("/onboarding");
-			},
-			{ timeout: 30000 },
-		);
 
 		// Verify we're logged in by checking for authenticated elements
 		const currentUrl = page.url();
@@ -115,21 +102,11 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test("sign out clears session", async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
-		// First sign in
-		await auth.goToSignIn();
-		await auth.signIn({
+		// First sign in using loginAsUser() which properly waits for API response
+		await auth.loginAsUser({
 			email: TEST_USERS.user1.email,
 			password: TEST_USERS.user1.password,
 		});
-
-		// Wait for successful sign-in
-		await page.waitForURL(
-			(url) => {
-				const pathname = url.pathname;
-				return pathname.includes("/home") || pathname.includes("/onboarding");
-			},
-			{ timeout: 30000 },
-		);
 
 		// Now sign out using the simplified method (avoiding portal UI)
 		await auth.signOut();
@@ -243,21 +220,11 @@ test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test("session persists across page navigation", async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
-		// Sign in
-		await auth.goToSignIn();
-		await auth.signIn({
+		// Sign in using loginAsUser() which properly waits for API response
+		await auth.loginAsUser({
 			email: TEST_USERS.user1.email,
 			password: TEST_USERS.user1.password,
 		});
-
-		// Wait for successful sign-in
-		await page.waitForURL(
-			(url) => {
-				const pathname = url.pathname;
-				return pathname.includes("/home") || pathname.includes("/onboarding");
-			},
-			{ timeout: 30000 },
-		);
 
 		// Navigate to different protected pages
 		await page.goto("/home", { waitUntil: "domcontentloaded" });
