@@ -1,5 +1,6 @@
 ---
 description: "Create and manage E2B cloud sandboxes for isolated code execution"
+argument-hint: 'run-claude "/test 1" | create | list | kill <id>'
 allowed-tools: [Bash]
 ---
 
