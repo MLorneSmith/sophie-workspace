@@ -236,13 +236,10 @@ test.describe("Admin", () => {
 	});
 
 	test.describe("Impersonation", () => {
-		test("can sign in as a user", async ({ page }) => {
-			const auth = new AuthPageObject(page);
+		// Use pre-authenticated super admin session - no login needed
+		AuthPageObject.setupSession(AUTH_STATES.SUPER_ADMIN);
 
-			await auth.loginAsSuperAdmin({
-				email: process.env.E2E_ADMIN_EMAIL || "michael@slideheroes.com",
-				password: process.env.E2E_ADMIN_PASSWORD || "",
-			});
+		test("can sign in as a user", async ({ page }) => {
 			const filterText = await createUser(page);
 
 			await page.goto("/admin/accounts");
@@ -267,6 +264,9 @@ test.describe("Admin", () => {
 
 test.describe("Team Account Management", () => {
 	test.describe.configure({ mode: "serial" });
+
+	// Start with clean session - this test performs full auth flows for different users
+	test.use({ storageState: { cookies: [], origins: [] } });
 
 	test.skip(
 		process.env.ENABLE_TEAM_ACCOUNT_TESTS !== "true",
