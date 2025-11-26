@@ -80,11 +80,23 @@ const getUser = async (request: NextRequest, response: NextResponse) => {
 	if (sbCookies.length > 0) {
 		// biome-ignore lint/suspicious/noConsole: Temporary debug logging
 		console.log(
-			`[MIDDLEWARE] First SB cookie value preview: ${sbCookies[0].value.substring(0, 30)}...`,
+			`[MIDDLEWARE] First SB cookie value preview: ${sbCookies[0]?.value.substring(0, 30)}...`,
 		);
 	}
 
 	const supabase = createMiddlewareClient(request, response);
+
+	// First call getSession() to trigger session restoration from cookies
+	// Without this, getClaims() may return null even with valid cookies
+	// See: https://github.com/supabase/ssr/issues/36
+	const sessionResult = await supabase.auth.getSession();
+
+	// TEMP: Debug session result
+	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
+	console.log(
+		`[MIDDLEWARE] getSession result - hasSession: ${!!sessionResult.data?.session}, error: ${sessionResult.error?.message ?? "none"}`,
+	);
+
 	const result = await supabase.auth.getClaims();
 
 	// TEMP: Always log getClaims result for debugging

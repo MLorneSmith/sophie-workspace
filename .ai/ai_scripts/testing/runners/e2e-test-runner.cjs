@@ -110,7 +110,9 @@ class E2ETestRunner {
 		}
 
 		this.shardFilter = shardNumbers;
-		log(`🎯 Shard filter set: will only run shard(s) ${shardNumbers.join(", ")}`);
+		log(
+			`🎯 Shard filter set: will only run shard(s) ${shardNumbers.join(", ")}`,
+		);
 
 		// Filter testGroups to only include specified shards
 		this.testGroups = this.testGroups.filter((group) =>
@@ -1498,7 +1500,9 @@ class E2ETestRunner {
 			const summaryPath = path.join(reportPath, "execution-summary.json");
 			try {
 				await fs.unlink(summaryPath);
-				log(`🧹 Cleared ${clearedCount} old shard reports and execution summary`);
+				log(
+					`🧹 Cleared ${clearedCount} old shard reports and execution summary`,
+				);
 			} catch {
 				// Summary doesn't exist, that's fine
 				if (clearedCount > 0) {

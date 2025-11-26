@@ -70,11 +70,24 @@ async function globalSetup(config: FullConfig) {
 	}
 
 	// Initialize Supabase client
-	// NOTE: Port 54521 is used for WSL2 compatibility (avoiding Windows port conflicts)
-	const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
+	// CRITICAL: Use the SAME Supabase URL as the web app to ensure cookie names match
+	// The cookie name is derived from the URL (e.g., http://127.0.0.1:54521 -> sb-127-auth-token)
+	// If the E2E setup and web app use different URLs, the cookie names won't match
+	// and the middleware won't recognize the session.
+	//
+	// Priority: NEXT_PUBLIC_SUPABASE_URL (to match web app) > E2E_SUPABASE_URL > default
+	const supabaseUrl =
+		process.env.NEXT_PUBLIC_SUPABASE_URL ||
+		process.env.E2E_SUPABASE_URL ||
+		"http://127.0.0.1:54521";
 	const supabaseAnonKey =
+		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 		process.env.E2E_SUPABASE_ANON_KEY ||
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+
+	// Log the Supabase URL being used for debugging
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(`🔗 Using Supabase URL: ${supabaseUrl}`);
 
 	// Create auth state directory if it doesn't exist
 	const authDir = join(cwd(), ".auth");
@@ -182,39 +195,39 @@ async function globalSetup(config: FullConfig) {
 		const domain = new URL(baseURL).hostname;
 
 		// Cookie store that captures what @supabase/ssr wants to set
+		// Use the same getAll/setAll pattern as the middleware for consistency
 		interface StoredCookie {
 			name: string;
 			value: string;
 			options: CookieOptions;
 		}
 		const cookieStore: StoredCookie[] = [];
-		const cookieMap = new Map<string, string>();
 
 		// Create an @supabase/ssr client with a custom cookie store
-		// This lets us capture the cookies in the exact format @supabase/ssr uses
+		// IMPORTANT: Use getAll/setAll pattern to match middleware-client.ts
+		// This ensures consistent cookie handling between setup and runtime
 		const ssrClient = createServerClient(supabaseUrl, supabaseAnonKey, {
 			cookies: {
-				get(name: string) {
-					return cookieMap.get(name);
+				getAll() {
+					// Return all captured cookies in the format expected by @supabase/ssr
+					return cookieStore.map((c) => ({ name: c.name, value: c.value }));
 				},
-				set(name: string, value: string, options: CookieOptions) {
-					cookieMap.set(name, value);
-					cookieStore.push({ name, value, options });
-				},
-				remove(name: string, options: CookieOptions) {
-					cookieMap.delete(name);
-					// Also add a removal cookie (empty value with past expiry)
-					cookieStore.push({
-						name,
-						value: "",
-						options: { ...options, maxAge: 0 },
-					});
+				setAll(cookiesToSet) {
+					// Clear and replace with new cookies
+					cookieStore.length = 0;
+					for (const cookie of cookiesToSet) {
+						cookieStore.push({
+							name: cookie.name,
+							value: cookie.value,
+							options: cookie.options,
+						});
+					}
 				},
 			},
 		});
 
 		// Set the session using @supabase/ssr's internal encoding
-		// This will call our cookie store's set() method with the properly encoded cookies
+		// This will call our cookie store's setAll() method with the properly encoded cookies
 		const { error: setSessionError } = await ssrClient.auth.setSession({
 			access_token: data.session.access_token,
 			refresh_token: data.session.refresh_token,

@@ -1,0 +1,42 @@
+#!/bin/bash
+# E2B Sandbox CLI wrapper
+# Usage: ./sandbox create|list|kill|status|kill-all|run-claude [args]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+
+# Use tsx from e2b package (define paths BEFORE sourcing .env which may have conflicting vars)
+TSX="$PROJECT_ROOT/packages/e2b/node_modules/.bin/tsx"
+CLI_SCRIPT="$SCRIPT_DIR/sandbox-cli.ts"
+
+# Load environment variables from .env files
+load_env_var() {
+    local var_name=$1
+    local current_value
+    eval "current_value=\$$var_name"
+
+    if [ -z "$current_value" ]; then
+        local value=""
+        if [ -f "$PROJECT_ROOT/.env" ]; then
+            value=$(grep -E "^${var_name}=" "$PROJECT_ROOT/.env" | cut -d'=' -f2-)
+        fi
+        if [ -z "$value" ] && [ -f "$PROJECT_ROOT/apps/web/.env.local" ]; then
+            value=$(grep -E "^${var_name}=" "$PROJECT_ROOT/apps/web/.env.local" | cut -d'=' -f2-)
+        fi
+        if [ -n "$value" ]; then
+            export "$var_name=$value"
+        fi
+    fi
+}
+
+# Load required environment variables
+load_env_var "E2B_API_KEY"
+load_env_var "CLAUDE_CODE_OAUTH_TOKEN"
+load_env_var "ANTHROPIC_API_KEY"
+
+if [ ! -f "$TSX" ]; then
+    echo "Error: tsx not found. Run: pnpm --filter @kit/e2b install"
+    exit 1
+fi
+
+exec "$TSX" "$CLI_SCRIPT" "$@"
