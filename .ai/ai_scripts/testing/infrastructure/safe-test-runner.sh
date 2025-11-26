@@ -28,10 +28,25 @@ NC='\033[0m' # No Color
 # Parse arguments
 ARGS=("$@")
 SHOW_VERBOSE=false
+SHARD_MODE=false
+SHARD_NUMS=""
 
 for arg in "$@"; do
     if [[ "$arg" == "--verbose" ]] || [[ "$arg" == "--debug" ]]; then
         SHOW_VERBOSE=true
+    fi
+    # Detect numeric argument (shard number)
+    if [[ "$arg" =~ ^[0-9]+$ ]]; then
+        SHARD_MODE=true
+        if [[ -n "$SHARD_NUMS" ]]; then
+            SHARD_NUMS="$SHARD_NUMS, $arg"
+        else
+            SHARD_NUMS="$arg"
+        fi
+    fi
+    # Detect --shard flag
+    if [[ "$arg" == "--shard" ]]; then
+        SHARD_MODE=true
     fi
 done
 
@@ -98,6 +113,12 @@ echo ""
 # Show what we're running
 if [[ ${#ARGS[@]} -eq 0 ]]; then
     echo "Mode: Comprehensive (unit + e2e)"
+elif [[ "$SHARD_MODE" == "true" ]]; then
+    if [[ -n "$SHARD_NUMS" ]]; then
+        echo -e "Mode: ${GREEN}E2E Shard(s) $SHARD_NUMS${NC}"
+    else
+        echo "Mode: E2E Shard(s) (specific)"
+    fi
 else
     echo "Mode: ${ARGS[*]}"
 fi
@@ -274,20 +295,22 @@ fi
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-# Batch Scheduler Information
-echo ""
-echo -e "${BLUE}📋 E2E Shard Organization${NC}"
-echo "  Shards 1-10: Real business logic tests (run in CI)"
-echo "  Shard 11: Configuration verification tests (local only, @skip-in-ci)"
-echo ""
-echo -e "${BLUE}📋 Batch Scheduler Configuration${NC}"
-echo "  Batch scheduling enabled by default for E2E tests"
-echo "  To run with batch scheduler:"
-echo "    ${YELLOW}cd apps/e2e && npm run test:e2e:shards:batch${NC}"
-echo "  Environment variables:"
-echo "    ${YELLOW}E2E_SHARD_BATCH_SIZE${NC}=N (default: 4, number of shards per batch)"
-echo "    ${YELLOW}E2E_ENABLE_BATCH_SCHEDULING${NC}=true/false (default: true)"
-echo "    ${YELLOW}E2E_RESOURCE_CHECK_ENABLED${NC}=true/false (default: true)"
+# Batch Scheduler Information (only show when running full suite)
+if [[ "$SHARD_MODE" != "true" ]]; then
+    echo ""
+    echo -e "${BLUE}📋 E2E Shard Organization${NC}"
+    echo "  Shards 1-10: Real business logic tests (run in CI)"
+    echo "  Shard 11: Configuration verification tests (local only, @skip-in-ci)"
+    echo ""
+    echo -e "${BLUE}📋 Batch Scheduler Configuration${NC}"
+    echo "  Batch scheduling enabled by default for E2E tests"
+    echo "  To run with batch scheduler:"
+    echo "    ${YELLOW}cd apps/e2e && npm run test:e2e:shards:batch${NC}"
+    echo "  Environment variables:"
+    echo "    ${YELLOW}E2E_SHARD_BATCH_SIZE${NC}=N (default: 4, number of shards per batch)"
+    echo "    ${YELLOW}E2E_ENABLE_BATCH_SCHEDULING${NC}=true/false (default: true)"
+    echo "    ${YELLOW}E2E_RESOURCE_CHECK_ENABLED${NC}=true/false (default: true)"
+fi
 
 # Quick access commands
 echo ""

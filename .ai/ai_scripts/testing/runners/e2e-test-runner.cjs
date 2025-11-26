@@ -91,6 +91,36 @@ class E2ETestRunner {
 		log(
 			`⚙️  Max concurrent shards: ${this.maxConcurrentShards} (calculated: ${calculatedMax})`,
 		);
+
+		// Shard filter (set externally via setShardFilter)
+		this.shardFilter = null;
+
+		// Track if we've cleared old reports this session (prevents mid-run clearing)
+		this._sessionReportsCleared = false;
+	}
+
+	/**
+	 * Set specific shards to run (filter out others)
+	 * @param {number[]} shardNumbers - Array of shard numbers to run (1-11)
+	 */
+	setShardFilter(shardNumbers) {
+		if (!shardNumbers || shardNumbers.length === 0) {
+			this.shardFilter = null;
+			return;
+		}
+
+		this.shardFilter = shardNumbers;
+		log(`🎯 Shard filter set: will only run shard(s) ${shardNumbers.join(", ")}`);
+
+		// Filter testGroups to only include specified shards
+		this.testGroups = this.testGroups.filter((group) =>
+			shardNumbers.includes(group.id),
+		);
+
+		log(`📋 Filtered to ${this.testGroups.length} shard(s):`);
+		for (const group of this.testGroups) {
+			log(`   • Shard ${group.id}: ${group.name}`);
+		}
 	}
 
 	/**
@@ -349,6 +379,10 @@ class E2ETestRunner {
 		log("\n🌐 Starting E2E tests...");
 		await this.testStatus.setPhase("e2e_tests");
 
+		// Clear old reports at the start of each test session
+		// This prevents stale results from previous runs appearing in summaries
+		await this.clearSessionReports();
+
 		try {
 			// Check if servers are already running (started by infrastructure manager)
 			const serversReady = await this.checkServersReady();
@@ -480,6 +514,11 @@ class E2ETestRunner {
 		log(`📊 Output mode: ${this.outputFilter.mode}`);
 		if (this.outputFilter.fileConfig.enabled) {
 			log(`📝 Logging to: ${this.outputFilter.fileConfig.path}`);
+		}
+
+		// Show shard filter status
+		if (this.shardFilter) {
+			log(`🎯 Running specific shard(s): ${this.shardFilter.join(", ")}`);
 		}
 
 		// Run shards in parallel by default when resources allow
@@ -1411,6 +1450,55 @@ class E2ETestRunner {
 	}
 
 	/**
+	 * Clear old shard reports at the start of a new test session.
+	 * This prevents stale results from previous runs appearing in summaries.
+	 * Only runs once per session (tracked by _sessionReportsCleared flag).
+	 */
+	async clearSessionReports() {
+		// Only clear once per session
+		if (this._sessionReportsCleared) {
+			return;
+		}
+
+		try {
+			const reportPath = await this.ensureReportDirectory();
+			if (!reportPath) {
+				return;
+			}
+
+			// Get list of files in report directory
+			const files = await fs.readdir(reportPath);
+
+			// Remove old shard report files
+			let clearedCount = 0;
+			for (const file of files) {
+				if (file.startsWith("shard-") && file.endsWith(".json")) {
+					const filePath = path.join(reportPath, file);
+					await fs.unlink(filePath);
+					clearedCount++;
+				}
+			}
+
+			// Reset execution-summary.json if it exists
+			const summaryPath = path.join(reportPath, "execution-summary.json");
+			try {
+				await fs.unlink(summaryPath);
+				log(`🧹 Cleared ${clearedCount} old shard reports and execution summary`);
+			} catch {
+				// Summary doesn't exist, that's fine
+				if (clearedCount > 0) {
+					log(`🧹 Cleared ${clearedCount} old shard reports`);
+				}
+			}
+
+			this._sessionReportsCleared = true;
+		} catch (error) {
+			logError(`Failed to clear old reports: ${error.message}`);
+			// Non-critical, continue with test execution
+		}
+	}
+
+	/**
 	 * Generate comprehensive shard completion report
 	 */
 	async generateShardReport(
@@ -1583,7 +1671,8 @@ class E2ETestRunner {
 	}
 
 	/**
-	 * Update execution summary with latest shard results
+	 * Update execution summary with latest shard results.
+	 * Uses replace-not-append pattern to prevent duplicate entries.
 	 */
 	async updateExecutionSummary(reportPath, shardReport) {
 		try {
@@ -1613,31 +1702,11 @@ class E2ETestRunner {
 				// File doesn't exist yet, use defaults
 			}
 
-			// Update summary with new shard data
+			// Update timestamp
 			summary.lastUpdated = new Date().toISOString();
-			summary.completedShards++;
 
-			// Update totals
-			summary.overallResults.total += shardReport.results.total;
-			summary.overallResults.passed += shardReport.results.passed;
-			summary.overallResults.failed += shardReport.results.failed;
-			summary.overallResults.skipped += shardReport.results.skipped;
-			summary.overallResults.intentionalFailures +=
-				shardReport.results.intentionalFailures || 0;
-
-			// Track failed/timed out shards (excluding intentional failures)
-			const actualFailures =
-				shardReport.results.failed -
-				(shardReport.results.intentionalFailures || 0);
-			if (actualFailures > 0) {
-				summary.failedShards++;
-			}
-			if (shardReport.execution.timedOut) {
-				summary.timedOutShards++;
-			}
-
-			// Add shard info
-			summary.shards.push({
+			// Create new shard entry
+			const newShardEntry = {
 				id: shardReport.shard.id,
 				name: shardReport.shard.name,
 				success: shardReport.results.success,
@@ -1645,10 +1714,58 @@ class E2ETestRunner {
 				tests: shardReport.results.total,
 				failures: shardReport.results.failed,
 				intentionalFailures: shardReport.results.intentionalFailures || 0,
-			});
+				timedOut: shardReport.execution.timedOut || false,
+			};
+
+			// Replace existing shard entry with same name, or add new one
+			// This prevents duplicate entries from appearing in the summary
+			const existingIndex = summary.shards.findIndex(
+				(s) => s.name === shardReport.shard.name,
+			);
+
+			if (existingIndex >= 0) {
+				// Replace existing entry
+				summary.shards[existingIndex] = newShardEntry;
+			} else {
+				// Add new entry
+				summary.shards.push(newShardEntry);
+			}
 
 			// Sort shards by ID
 			summary.shards.sort((a, b) => a.id - b.id);
+
+			// Recalculate totals from shards array (prevents accumulation bugs)
+			summary.completedShards = summary.shards.length;
+			summary.failedShards = 0;
+			summary.timedOutShards = 0;
+			summary.overallResults = {
+				total: 0,
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				intentionalFailures: 0,
+			};
+
+			for (const shard of summary.shards) {
+				summary.overallResults.total += shard.tests || 0;
+				summary.overallResults.failed += shard.failures || 0;
+				summary.overallResults.intentionalFailures +=
+					shard.intentionalFailures || 0;
+
+				// Calculate passed from total - failed
+				const shardPassed = (shard.tests || 0) - (shard.failures || 0);
+				summary.overallResults.passed += shardPassed;
+
+				// Track failed/timed out shards
+				const actualFailures =
+					(shard.failures || 0) - (shard.intentionalFailures || 0);
+				if (actualFailures > 0) {
+					summary.failedShards++;
+				}
+				if (shard.timedOut) {
+					summary.timedOutShards++;
+				}
+			}
 
 			// Write updated summary
 			await fs.writeFile(summaryPath, stringifyWithTabs(summary), "utf8");

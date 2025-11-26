@@ -2,7 +2,7 @@
 description: Execute comprehensive unit and e2e test suites
 allowed-tools: [Bash(.ai/ai_scripts/testing/*), Bash, Read]
 model: opus
-argument-hint: [--quick | --unit | --e2e | --debug | --continue]
+argument-hint: [--quick | --unit | --e2e | --debug | --continue | <shard-number>]
 ---
 
 # Test Command
@@ -191,13 +191,33 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 
 **Usage:**
 
-- `/test` - Run comprehensive test suite
+- `/test` - Run comprehensive test suite (unit + e2e)
 - `/test --unit` - Unit tests only
 - `/test --e2e` - E2E tests only
+- `/test 3` - Run E2E shard 3 only
+- `/test 1 2 3` - Run E2E shards 1, 2, and 3
+- `/test --shard 3` - Run E2E shard 3 (explicit flag)
+- `/test --shard 1,2,3` - Run multiple shards (comma-separated)
 - `/test --quick` - Quick smoke tests
 - `/test --debug` - Enable verbose debug output
 - `/test --verbose` - Very verbose (show more lines)
 - `/test --continue` - Continue execution despite failures
+
+**E2E Shards (1-11):**
+
+| Shard | Name | Tests |
+|-------|------|-------|
+| 1 | Smoke Tests | 9 |
+| 2 | Authentication | 21 |
+| 3 | Accounts | 20 |
+| 4 | Admin & Invitations | 13 |
+| 5 | Accessibility | 21 |
+| 6 | Config & Health | 12 |
+| 7 | Payload CMS | 42 |
+| 8 | Payload Extended | varies |
+| 9 | User Billing | varies |
+| 10 | Team Billing | varies |
+| 11 | Config Verification | local only |
 
 **Output Management:**
 
