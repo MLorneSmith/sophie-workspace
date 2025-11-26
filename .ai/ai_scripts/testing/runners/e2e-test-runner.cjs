@@ -101,7 +101,7 @@ class E2ETestRunner {
 
 	/**
 	 * Set specific shards to run (filter out others)
-	 * @param {number[]} shardNumbers - Array of shard numbers to run (1-11)
+	 * @param {number[]} shardNumbers - Array of shard numbers to run (1-12)
 	 */
 	setShardFilter(shardNumbers) {
 		if (!shardNumbers || shardNumbers.length === 0) {
@@ -262,15 +262,13 @@ class E2ETestRunner {
 			},
 			{
 				id: 3,
-				name: "Accounts",
+				name: "Personal Accounts",
 				shardCommand: "test:shard3",
 				files: [
 					"tests/account/account.spec.ts",
 					"tests/account/account-simple.spec.ts",
-					"tests/team-accounts/team-accounts.spec.ts",
-					"tests/team-accounts/team-invitation-mfa.spec.ts",
 				],
-				expectedTests: 20,
+				expectedTests: 12,
 			},
 			{
 				id: 4,
@@ -340,10 +338,27 @@ class E2ETestRunner {
 				files: ["tests/team-billing/team-billing.spec.ts"],
 				expectedTests: null,
 			},
+			{
+				id: 11,
+				name: "Config Verification",
+				shardCommand: "test:shard11",
+				files: ["tests/test-configuration-verification.spec.ts"],
+				expectedTests: null,
+			},
+			{
+				id: 12,
+				name: "Team Accounts",
+				shardCommand: "test:shard12",
+				files: [
+					"tests/team-accounts/team-accounts.spec.ts",
+					"tests/team-accounts/team-invitation-mfa.spec.ts",
+				],
+				expectedTests: 8,
+			},
 		];
 
 		log(
-			`📋 Loaded ${shardGroups.length} test shards with ~138+ expected tests`,
+			`📋 Loaded ${shardGroups.length} test shards with ~150+ expected tests`,
 		);
 		for (const group of shardGroups) {
 			log(

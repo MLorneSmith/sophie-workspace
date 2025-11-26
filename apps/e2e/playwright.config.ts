@@ -90,9 +90,9 @@ export default defineConfig({
 		// Accounts for: Vercel cold starts, network latency, edge function initialization
 		navigationTimeout: process.env.CI ? 90 * 1000 : 45 * 1000,
 	},
-	// Test timeout increased for CI to handle deployed environment latency
-	// Setup tests (auth.setup.ts) need more time for authentication flows
-	timeout: process.env.CI ? 180 * 1000 : 120 * 1000, // 3 min in CI, 2 min local
+	// Test timeout - reduced for faster failure detection
+	// CI needs more time for deployed environment latency
+	timeout: process.env.CI ? 120 * 1000 : 90 * 1000, // 2 min in CI, 90s local (reduced from 3min/2min)
 	expect: {
 		// Expect timeout for assertions
 		timeout: process.env.CI ? 15 * 1000 : 10 * 1000, // 15s in CI, 10s local

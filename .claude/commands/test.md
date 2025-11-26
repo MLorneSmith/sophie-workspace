@@ -203,13 +203,13 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 - `/test --verbose` - Very verbose (show more lines)
 - `/test --continue` - Continue execution despite failures
 
-**E2E Shards (1-11):**
+**E2E Shards (1-12):**
 
 | Shard | Name | Tests |
 |-------|------|-------|
 | 1 | Smoke Tests | 9 |
 | 2 | Authentication | 21 |
-| 3 | Accounts | 20 |
+| 3 | Personal Accounts | 12 |
 | 4 | Admin & Invitations | 13 |
 | 5 | Accessibility | 21 |
 | 6 | Config & Health | 12 |
@@ -217,7 +217,8 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 | 8 | Payload Extended | varies |
 | 9 | User Billing | varies |
 | 10 | Team Billing | varies |
-| 11 | Config Verification | local only |
+| 11 | Config Verification | varies |
+| 12 | Team Accounts | 8 |
 
 **Output Management:**
 

@@ -191,8 +191,9 @@ const baseEmail = process.env.CI ? `ci.${Date.now()}@test.com` : 'local.test@exa
   "scripts": {
     "test:shard1": "playwright test tests/smoke/*.spec.ts",
     "test:shard2": "playwright test tests/authentication/*.spec.ts",
-    "test:shard3": "playwright test tests/account/*.spec.ts tests/team-accounts/*.spec.ts"
-    // ... 4 more shards for admin, billing, accessibility, config
+    "test:shard3": "playwright test tests/account/*.spec.ts",
+    "test:shard12": "playwright test tests/team-accounts/*.spec.ts"
+    // ... shards 4-11 for admin, accessibility, config, payload, billing
   }
 }
 ```
