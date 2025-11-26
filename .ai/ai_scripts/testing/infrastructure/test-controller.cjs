@@ -204,7 +204,9 @@ class TestController {
 					const shardArg = args[++i];
 					if (shardArg) {
 						options.shard = options.shard || [];
-						const shardNums = shardArg.split(",").map((s) => parseInt(s.trim(), 10));
+						const shardNums = shardArg
+							.split(",")
+							.map((s) => parseInt(s.trim(), 10));
 						for (const num of shardNums) {
 							if (num >= 1 && num <= 11) {
 								options.shard.push(num);
@@ -566,7 +568,9 @@ class TestController {
 		try {
 			log("🚀 Starting Modular Test Controller");
 			if (this.options.shard) {
-				log(`📋 Configuration: E2E Shard(s) ${this.options.shard.join(", ")} only`);
+				log(
+					`📋 Configuration: E2E Shard(s) ${this.options.shard.join(", ")} only`,
+				);
 			} else {
 				log(
 					`📋 Configuration: Unit=${!this.options.skipUnit}, E2E=${!this.options.skipE2E}`,

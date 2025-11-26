@@ -71,8 +71,15 @@ export async function GET(request: NextRequest) {
 
 	// Create Supabase client and try to get claims
 	const supabase = createMiddlewareClient(request, response);
+
+	// First call getSession() to trigger session restoration
+	const sessionResult = await supabase.auth.getSession();
 	const claimsResult = await supabase.auth.getClaims();
 	const userResult = await supabase.auth.getUser();
+
+	// Get the configured Supabase URL for comparison
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "not-set";
+	const expectedCookiePrefix = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}`;
 
 	return NextResponse.json({
 		debug: {
@@ -87,8 +94,15 @@ export async function GET(request: NextRequest) {
 			})),
 			allCookieNames: allCookies.map((c) => c.name),
 		},
+		config: {
+			supabaseUrl,
+			expectedCookiePrefix,
+			expectedCookieName: `${expectedCookiePrefix}-auth-token`,
+		},
 		manualDecode,
 		auth: {
+			hasSession: !!sessionResult.data?.session,
+			sessionError: sessionResult.error?.message ?? null,
 			hasClaims: !!claimsResult.data?.claims,
 			claimsError: claimsResult.error?.message ?? null,
 			claimsSub: claimsResult.data?.claims?.sub

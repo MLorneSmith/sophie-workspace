@@ -238,7 +238,7 @@ export function getRecoveryInstructions(
 			"   This indicates Docker container may not have started correctly.",
 		);
 		steps.push(
-			"   Check container logs: docker logs " + failedPorts[0]?.containerName,
+			`   Check container logs: docker logs ${failedPorts[0]?.containerName}`,
 		);
 		steps.push(
 			"   Restart containers: docker-compose -f docker-compose.test.yml down && docker-compose -f docker-compose.test.yml up -d\n",
@@ -358,7 +358,7 @@ export function formatDiagnosticMessage(report: DiagnosticReport): string {
 		lines.push(`  ${step}`);
 	}
 
-	lines.push("\n" + "═".repeat(50));
+	lines.push(`\n${"═".repeat(50)}`);
 
 	return lines.join("\n");
 }
