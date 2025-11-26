@@ -2,6 +2,7 @@ import { join } from "node:path";
 import { cwd } from "node:process";
 import { chromium, type FullConfig } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { config as dotenvConfig } from "dotenv";
 
 import { CredentialValidator } from "./tests/utils/credential-validator";
@@ -12,6 +13,23 @@ dotenvConfig({
 	path: [".env", ".env.local"],
 	quiet: true,
 });
+
+// Debug logging flag for E2E auth session troubleshooting (matches middleware flag)
+const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
+
+/**
+ * Log global setup debug info for E2E auth troubleshooting.
+ * Only logs when DEBUG_E2E_AUTH=true.
+ */
+function debugLog(context: string, data: Record<string, unknown>) {
+	if (DEBUG_E2E_AUTH) {
+		// biome-ignore lint/suspicious/noConsole: Debug logging for E2E auth troubleshooting
+		console.log(
+			`[DEBUG_E2E_AUTH:global-setup:${context}]`,
+			JSON.stringify(data, null, 2),
+		);
+	}
+}
 
 /**
  * Global setup runs ONCE before all tests (not per-worker).
@@ -157,33 +175,119 @@ async function globalSetup(config: FullConfig) {
 			await page.reload({ waitUntil: "domcontentloaded" });
 		}
 
-		// Inject Supabase session into cookies (required for @supabase/ssr)
-		// CRITICAL: @supabase/ssr uses cookies, not localStorage
-		// The cookie name follows the pattern: sb-{project_ref}-auth-token
-		// Large sessions are chunked into multiple cookies (.0, .1, etc.)
-		const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
-		const cookieName = `sb-${projectRef}-auth-token`;
-		const sessionStr = JSON.stringify(data.session);
+		// Inject Supabase session into cookies using @supabase/ssr for proper encoding
+		// CRITICAL: We use @supabase/ssr's createServerClient to set cookies in the exact
+		// format the middleware expects. This avoids encoding mismatches.
+		// See: https://github.com/supabase/ssr/issues/36
 		const domain = new URL(baseURL).hostname;
 
-		// Supabase SSR chunks cookies at ~3180 chars to stay under 4KB limit
-		const CHUNK_SIZE = 3180;
-		const chunks: string[] = [];
+		// Cookie store that captures what @supabase/ssr wants to set
+		interface StoredCookie {
+			name: string;
+			value: string;
+			options: CookieOptions;
+		}
+		const cookieStore: StoredCookie[] = [];
+		const cookieMap = new Map<string, string>();
 
-		for (let i = 0; i < sessionStr.length; i += CHUNK_SIZE) {
-			chunks.push(sessionStr.slice(i, i + CHUNK_SIZE));
+		// Create an @supabase/ssr client with a custom cookie store
+		// This lets us capture the cookies in the exact format @supabase/ssr uses
+		const ssrClient = createServerClient(supabaseUrl, supabaseAnonKey, {
+			cookies: {
+				get(name: string) {
+					return cookieMap.get(name);
+				},
+				set(name: string, value: string, options: CookieOptions) {
+					cookieMap.set(name, value);
+					cookieStore.push({ name, value, options });
+				},
+				remove(name: string, options: CookieOptions) {
+					cookieMap.delete(name);
+					// Also add a removal cookie (empty value with past expiry)
+					cookieStore.push({
+						name,
+						value: "",
+						options: { ...options, maxAge: 0 },
+					});
+				},
+			},
+		});
+
+		// Set the session using @supabase/ssr's internal encoding
+		// This will call our cookie store's set() method with the properly encoded cookies
+		const { error: setSessionError } = await ssrClient.auth.setSession({
+			access_token: data.session.access_token,
+			refresh_token: data.session.refresh_token,
+		});
+
+		if (setSessionError) {
+			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+			console.error(
+				`❌ Failed to set session for ${authState.name}: ${setSessionError.message}`,
+			);
+			throw setSessionError;
 		}
 
-		// Set chunked cookies
-		const cookiesToSet = chunks.map((chunk, index) => ({
-			name: chunks.length === 1 ? cookieName : `${cookieName}.${index}`,
-			value: chunk,
+		// Log session info for debugging
+		const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+		const cookieName = `sb-${projectRef}-auth-token`;
+		debugLog("session:created", {
+			user: authState.name,
+			projectRef,
+			cookieName,
 			domain,
-			path: "/",
-			httpOnly: false, // Supabase client needs to read these
-			secure: baseURL.startsWith("https"),
-			sameSite: "Lax" as const,
-		}));
+			userId: data.session?.user?.id
+				? `${data.session.user.id.slice(0, 8)}...`
+				: null,
+			accessTokenLength: data.session?.access_token?.length ?? 0,
+			refreshTokenLength: data.session?.refresh_token?.length ?? 0,
+			cookiesCreated: cookieStore.length,
+		});
+
+		// Set cookie expiration - use session's expires_at or default to 1 hour
+		const cookieExpires =
+			data.session.expires_at ?? Math.floor(Date.now() / 1000) + 3600;
+
+		// Convert captured cookies to Playwright's cookie format
+		// Note: Playwright expects sameSite to be capitalized (Lax, Strict, None)
+		// but @supabase/ssr returns lowercase (lax, strict, none)
+		const normalizeSameSite = (value?: string): "Lax" | "Strict" | "None" => {
+			if (!value) return "Lax";
+			const lower = value.toLowerCase();
+			if (lower === "strict") return "Strict";
+			if (lower === "none") return "None";
+			return "Lax";
+		};
+
+		const cookiesToSet = cookieStore
+			.filter((c) => c.value) // Skip removal cookies (empty values)
+			.map((c) => ({
+				name: c.name,
+				value: c.value,
+				domain,
+				path: c.options.path || "/",
+				expires: cookieExpires, // Unix timestamp in seconds
+				httpOnly: c.options.httpOnly ?? false,
+				secure: baseURL.startsWith("https"),
+				sameSite: normalizeSameSite(c.options.sameSite as string),
+			}));
+
+		// Log cookie details for debugging
+		debugLog("cookies:setting", {
+			user: authState.name,
+			totalCookies: cookiesToSet.length,
+			cookieExpires,
+			expiresDate: new Date(cookieExpires * 1000).toISOString(),
+			cookies: cookiesToSet.map((c) => ({
+				name: c.name,
+				valueLength: c.value.length,
+				valuePreview: `${c.value.substring(0, 30)}...`,
+				domain: c.domain,
+				path: c.path,
+				expires: c.expires,
+				secure: c.secure,
+			})),
+		});
 
 		await context.addCookies(cookiesToSet);
 
@@ -208,6 +312,13 @@ async function globalSetup(config: FullConfig) {
 		await context.storageState({ path: authState.filePath });
 		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 		console.log(`✅ ${authState.name} auth state saved successfully\n`);
+
+		// Log saved state summary for debugging
+		debugLog("state:saved", {
+			user: authState.name,
+			filePath: authState.filePath,
+			cookieName,
+		});
 
 		await context.close();
 	}
