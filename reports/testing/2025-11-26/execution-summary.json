@@ -1,25 +1,25 @@
 {
 	"executionDate": "2025-11-26",
-	"lastUpdated": "2025-11-26T17:05:53.824Z",
+	"lastUpdated": "2025-11-26T22:05:14.119Z",
 	"totalShards": 0,
 	"completedShards": 1,
 	"failedShards": 1,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 6,
-		"passed": 3,
-		"failed": 3,
+		"total": 8,
+		"passed": 2,
+		"failed": 6,
 		"skipped": 0,
 		"intentionalFailures": 0
 	},
 	"shards": [
 		{
 			"id": 1,
-			"name": "Personal Accounts",
+			"name": "Admin & Invitations",
 			"success": false,
-			"duration": "263s",
-			"tests": 6,
-			"failures": 3,
+			"duration": "305s",
+			"tests": 8,
+			"failures": 6,
 			"intentionalFailures": 0,
 			"timedOut": false
 		}
