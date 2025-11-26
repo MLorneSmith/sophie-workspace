@@ -170,18 +170,22 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Wait for page to load completely
 		await page.waitForTimeout(1000);
 
-		// Look for user email display - it's displayed as text on the page
-		const emailDisplay = page
-			.locator(
-				`text="${process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com"}"`,
-			)
-			.first();
+		// Click the account dropdown trigger to open the dropdown menu
+		// The email is displayed in the dropdown content (not in the collapsed sidebar)
+		const accountDropdownTrigger = page.locator(
+			'[data-test="account-dropdown-trigger"]',
+		);
+		await accountDropdownTrigger.waitFor({ state: "visible", timeout: 10000 });
+		await accountDropdownTrigger.click();
 
-		// Wait for the email to be visible
-		await emailDisplay.waitFor({ state: "visible", timeout: 10000 });
+		// Verify the email is displayed in the dropdown content
+		const expectedEmail =
+			process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
+		const emailInDropdown = page
+			.locator('[role="menu"]')
+			.getByText(expectedEmail);
 
-		// Verify email is displayed
-		await expect(emailDisplay).toBeVisible();
+		await expect(emailInDropdown).toBeVisible({ timeout: 5000 });
 	});
 
 	test("sign out is accessible from settings", async ({ page }) => {
