@@ -1,0 +1,32 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Authentication",
+		"files": [
+			"tests/authentication/auth-simple.spec.ts",
+			"tests/authentication/auth.spec.ts",
+			"tests/authentication/password-reset.spec.ts"
+		],
+		"expectedTests": 21,
+		"shardCommand": "test:shard2"
+	},
+	"execution": {
+		"startTime": "2025-11-24T18:41:48.575Z",
+		"endTime": "2025-11-24T18:44:02.575Z",
+		"duration": "134s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 14,
+		"passed": 2,
+		"failed": 1,
+		"skipped": 11,
+		"intentionalFailures": 0,
+		"integrationTests": 2,
+		"success": false
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "...(truncated 3491 bytes)...\nth-simple-c8944-n-in-with-valid-credentials-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 30000ms exceeded.\u001b[39m\n\n    Error: page.waitForURL: Test timeout of 30000ms exceeded.\n    =========================== logs ===========================\n    waiting for navigation until \"load\"\n    ============================================================\n\n      69 | \t\t// Wait for navigation after successful sign-in\n      70 | \t\t// We should be redirected to /home or onboarding\n    > 71 | \t\tawait page.waitForURL(\n         | \t\t           ^\n      72 | \t\t\t(url) => {\n      73 | \t\t\t\tconst pathname = url.pathname;\n      74 | \t\t\t\treturn pathname.includes(\"/home\") || pathname.includes(\"/onboarding\");\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:71:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 30000ms exceeded.\u001b[39m\n\n    Error: page.waitForURL: Test timeout of 30000ms exceeded.\n    =========================== logs ===========================\n    waiting for navigation until \"load\"\n    ============================================================\n\n      69 | \t\t// Wait for navigation after successful sign-in\n      70 | \t\t// We should be redirected to /home or onboarding\n    > 71 | \t\tawait page.waitForURL(\n         | \t\t           ^\n      72 | \t\t\t(url) => {\n      73 | \t\t\t\tconst pathname = url.pathname;\n      74 | \t\t\t\treturn pathname.includes(\"/home\") || pathname.includes(\"/onboarding\");\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:71:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry2/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry2/error-context.md\n\n    Retry #3 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 30000ms exceeded.\u001b[39m\n\n    Error: page.waitForURL: Test timeout of 30000ms exceeded.\n    =========================== logs ===========================\n    waiting for navigation until \"load\"\n    ============================================================\n\n      69 | \t\t// Wait for navigation after successful sign-in\n      70 | \t\t// We should be redirected to /home or onboarding\n    > 71 | \t\tawait page.waitForURL(\n         | \t\t           ^\n      72 | \t\t\t(url) => {\n      73 | \t\t\t\tconst pathname = url.pathname;\n      74 | \t\t\t\treturn pathname.includes(\"/home\") || pathname.includes(\"/onboarding\");\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth-simple.spec.ts:71:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry3/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/authentication-auth-simple-c8944-n-in-with-valid-credentials-chromium-retry3/error-context.md\n\n  1 failed\n    [chromium] › tests/authentication/auth-simple.spec.ts:56:6 › Authentication - Simple Tests @auth @integration › user can sign in with valid credentials \n  11 skipped\n  7 did not run\n  2 passed (2.1m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard2: `playwright test tests/authentication/auth-simple.spec.ts tests/authentication/auth.spec.ts tests/authentication/password-reset.spec.ts --config=playwright.auth.config.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

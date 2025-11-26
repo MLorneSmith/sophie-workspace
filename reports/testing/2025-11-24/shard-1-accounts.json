@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/account/account-simple.spec.ts",
+			"tests/team-accounts/team-accounts.spec.ts",
+			"tests/team-accounts/team-invitation-mfa.spec.ts"
+		],
+		"expectedTests": 20,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-11-24T18:44:02.311Z",
+		"endTime": "2025-11-24T18:44:03.311Z",
+		"duration": "1s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": ["Failed validations:"],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard3 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=dot --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n❌ Supabase: Supabase connection failed: Could not find the table 'public.auth.users' in the schema cache\n\n❌ Some validations failed\n\n\nError: ❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.\n\n   at ../global-setup.ts:37\n\n  35 |\n  36 | \tif (!allValid) {\n> 37 | \t\tthrow new Error(\n     | \t\t      ^\n  38 | \t\t\t\"❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.\",\n  39 | \t\t);\n  40 | \t}\n    at globalSetup (/home/msmith/projects/2025slideheroes/apps/e2e/global-setup.ts:37:9)\n\n\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}

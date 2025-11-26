@@ -1,0 +1,32 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Payload CMS",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts"
+		],
+		"expectedTests": 42,
+		"shardCommand": "test:shard7"
+	},
+	"execution": {
+		"startTime": "2025-11-25T20:04:25.272Z",
+		"endTime": "2025-11-25T20:04:48.272Z",
+		"duration": "23s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 31,
+		"passed": 0,
+		"failed": 31,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "...(truncated 44880 bytes)...\n───────────────────────────────────────────────────\n\n  31 failed\n    [chromium] › tests/payload/payload-auth.spec.ts:11:6 › Payload CMS - Authentication & First User Creation › should be able to access the login page without errors \n    [chromium] › tests/payload/payload-auth.spec.ts:24:6 › Payload CMS - Authentication & First User Creation › should create first user successfully \n    [chromium] › tests/payload/payload-auth.spec.ts:39:6 › Payload CMS - Authentication & First User Creation › should handle database connection errors gracefully \n    [chromium] › tests/payload/payload-auth.spec.ts:68:6 › Payload CMS - Authentication & First User Creation › should login with existing user \n    [chromium] › tests/payload/payload-auth.spec.ts:86:6 › Payload CMS - Authentication & First User Creation › should handle invalid credentials \n    [chromium] › tests/payload/payload-auth.spec.ts:94:6 › Payload CMS - Authentication & First User Creation › should logout successfully \n    [chromium] › tests/payload/payload-auth.spec.ts:113:6 › Payload CMS - Authentication & First User Creation › should maintain session across page refreshes \n    [chromium] › tests/payload/payload-auth.spec.ts:133:6 › Payload CMS - Authentication & First User Creation › should handle concurrent login attempts \n    [chromium] › tests/payload/payload-collections.spec.ts:90:7 › Payload CMS - Collection Navigation & Access › should access Users collection without errors \n    [chromium] › tests/payload/payload-collections.spec.ts:90:7 › Payload CMS - Collection Navigation & Access › should access Courses collection without errors \n    [chromium] › tests/payload/payload-collections.spec.ts:90:7 › Payload CMS - Collection Navigation & Access › should access Survey Questions collection without errors \n    [chromium] › tests/payload/payload-collections.spec.ts:188:6 › Payload CMS - CRUD Operations › should create a new post \n    [chromium] › tests/payload/payload-collections.spec.ts:208:6 › Payload CMS - CRUD Operations › should edit existing item \n    [chromium] › tests/payload/payload-collections.spec.ts:238:6 › Payload CMS - CRUD Operations › should handle validation errors \n    [chromium] › tests/payload/payload-collections.spec.ts:255:6 › Payload CMS - CRUD Operations › should delete item with confirmation \n    [chromium] › tests/payload/payload-collections.spec.ts:287:6 › Payload CMS - Database & Error Handling › should handle database connectivity check \n    [chromium] › tests/payload/payload-collections.spec.ts:291:6 › Payload CMS - Database & Error Handling › should display appropriate error when database is unavailable \n    [chromium] › tests/payload/payload-collections.spec.ts:316:6 › Payload CMS - Database & Error Handling › should recover from temporary network issues \n    [chromium] › tests/payload/payload-collections.spec.ts:343:6 › Payload CMS - Database & Error Handling › should handle session expiry gracefully \n    [chromium] › tests/payload/payload-database.spec.ts:14:6 › Payload CMS - Supabase Database Integration › should verify database connection on startup \n    [chromium] › tests/payload/payload-database.spec.ts:33:6 › Payload CMS - Supabase Database Integration › should handle database schema initialization \n    [chromium] › tests/payload/payload-database.spec.ts:60:6 › Payload CMS - Supabase Database Integration › should verify Payload tables exist in database \n    [chromium] › tests/payload/payload-database.spec.ts:85:6 › Payload CMS - Supabase Database Integration › should handle Supabase connection pool \n    [chromium] › tests/payload/payload-database.spec.ts:117:6 › Payload CMS - Supabase Database Integration › should verify UUID support for Supabase \n    [chromium] › tests/payload/payload-database.spec.ts:149:6 › Payload CMS - Supabase Database Integration › should handle transaction rollback on error \n    [chromium] › tests/payload/payload-database.spec.ts:185:6 › Payload CMS - Supabase Database Integration › should respect Supabase RLS policies if configured \n    [chromium] › tests/payload/payload-database.spec.ts:237:6 › Payload CMS - Error Recovery & Resilience › should show meaningful error when database is down \n    [chromium] › tests/payload/payload-database.spec.ts:269:6 › Payload CMS - Error Recovery & Resilience › should handle large payload data correctly \n    [chromium] › tests/payload/payload-database.spec.ts:294:6 › Payload CMS - Error Recovery & Resilience › should recover from connection timeout \n    [chromium] › tests/payload/payload-database.spec.ts:314:6 › Payload CMS - Error Recovery & Resilience › should maintain data integrity on concurrent updates \n    [chromium] › tests/payload/payload-database.spec.ts:365:6 › Payload CMS - Error Recovery & Resilience › should validate environment variables for database connection \n  11 did not run\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard7: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
