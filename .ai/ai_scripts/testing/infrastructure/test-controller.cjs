@@ -159,6 +159,11 @@ class TestController {
 
 		// Parse command line arguments
 		this.options = this.parseArguments(process.argv.slice(2));
+
+		// Pass shard filter to E2E runner if specified
+		if (this.options.shard) {
+			this.e2eTestRunner.setShardFilter(this.options.shard);
+		}
 	}
 
 	/**
@@ -174,12 +179,42 @@ class TestController {
 			unitOnly: false,
 			outputMode: null,
 			outputFile: null,
+			shard: null, // Specific shard number(s) to run
 		};
 
 		for (let i = 0; i < args.length; i++) {
 			const arg = args[i];
 
+			// Check for numeric argument (shard number)
+			if (/^\d+$/.test(arg)) {
+				const shardNum = parseInt(arg, 10);
+				if (shardNum >= 1 && shardNum <= 11) {
+					options.shard = options.shard || [];
+					options.shard.push(shardNum);
+					options.skipUnit = true; // Shard implies E2E only
+				} else {
+					logError(`Invalid shard number: ${shardNum}. Valid range is 1-11.`);
+				}
+				continue;
+			}
+
 			switch (arg) {
+				case "--shard":
+					// --shard N or --shard 1,2,3
+					const shardArg = args[++i];
+					if (shardArg) {
+						options.shard = options.shard || [];
+						const shardNums = shardArg.split(",").map((s) => parseInt(s.trim(), 10));
+						for (const num of shardNums) {
+							if (num >= 1 && num <= 11) {
+								options.shard.push(num);
+							} else {
+								logError(`Invalid shard number: ${num}. Valid range is 1-11.`);
+							}
+						}
+						options.skipUnit = true; // Shard implies E2E only
+					}
+					break;
 				case "--skip-unit":
 					options.skipUnit = true;
 					break;
@@ -189,6 +224,9 @@ class TestController {
 				case "--unit":
 					options.unitOnly = true;
 					options.skipE2E = true;
+					break;
+				case "--e2e":
+					options.skipUnit = true;
 					break;
 				case "--quick":
 					options.quickCheck = true;
@@ -526,9 +564,13 @@ class TestController {
 
 		try {
 			log("🚀 Starting Modular Test Controller");
-			log(
-				`📋 Configuration: Unit=${!this.options.skipUnit}, E2E=${!this.options.skipE2E}`,
-			);
+			if (this.options.shard) {
+				log(`📋 Configuration: E2E Shard(s) ${this.options.shard.join(", ")} only`);
+			} else {
+				log(
+					`📋 Configuration: Unit=${!this.options.skipUnit}, E2E=${!this.options.skipE2E}`,
+				);
+			}
 
 			// Initialize resource lock (creates lock directory)
 			await this.resourceLock.init();
