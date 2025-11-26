@@ -238,7 +238,7 @@ class InfrastructureManager {
 			const containerName = "supabase_kong_2025slideheroes-db";
 			const report = await verifyPortBindings(
 				containerName,
-				[54321, 54322, 54323],
+				[54521, 54522, 54523],
 				{
 					retries: 1,
 					throwOnFailure: false,
@@ -744,12 +744,12 @@ class InfrastructureManager {
 				// Note: Passwords should be configured in .env.test.locked for security
 				// Get dynamic Supabase configuration for default env
 				const supabaseConfig = getSupabaseConfig();
-				const supabaseUrl = supabaseConfig.API_URL || "http://localhost:54321";
+				const supabaseUrl = supabaseConfig.API_URL || "http://localhost:54521";
 				const anonKey = supabaseConfig.ANON_KEY;
 				const serviceRoleKey = supabaseConfig.SERVICE_ROLE_KEY;
 				const dbUrl =
 					supabaseConfig.DB_URL ||
-					"postgresql://postgres:postgres@localhost:54322/postgres";
+					"postgresql://postgres:postgres@localhost:54522/postgres";
 
 				log(`Using dynamic Supabase config - URL: ${supabaseUrl}`);
 
