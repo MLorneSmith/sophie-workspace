@@ -19,7 +19,7 @@ config({ path: envPath, override: true });
 // Note: sslmode=disable required for local Supabase with self-signed certificates
 if (!process.env.DATABASE_URI) {
 	process.env.DATABASE_URI =
-		"postgresql://postgres:postgres@localhost:54322/postgres?sslmode=disable";
+		"postgresql://postgres:postgres@localhost:54522/postgres?sslmode=disable";
 }
 if (!process.env.PAYLOAD_SECRET) {
 	process.env.PAYLOAD_SECRET = "test_payload_secret_for_e2e_testing";

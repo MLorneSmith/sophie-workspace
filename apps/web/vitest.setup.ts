@@ -99,7 +99,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = "http://localhost:54321";
+process.env.NEXT_PUBLIC_SUPABASE_URL = "http://localhost:54521";
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
 // NODE_ENV is set in vitest.config.ts via define option
 

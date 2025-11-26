@@ -29,7 +29,7 @@ describe('SeedOrchestrator', () => {
 
     // Set up valid test environment - use actual test database credentials
     // sslmode=disable required for local Supabase with self-signed certificates
-    process.env.DATABASE_URI = 'postgresql://postgres:postgres@localhost:54322/postgres?sslmode=disable';
+    process.env.DATABASE_URI = 'postgresql://postgres:postgres@localhost:54522/postgres?sslmode=disable';
     process.env.PAYLOAD_SECRET = 'test_payload_secret_for_e2e_testing';
     process.env.SEED_USER_PASSWORD = 'test-password';
     process.env.PAYLOAD_PUBLIC_SERVER_URL = 'http://localhost:3020';
