@@ -67,45 +67,19 @@ export const config = {
 };
 
 const getUser = async (request: NextRequest, response: NextResponse) => {
-	// Log cookies before creating client
+	// Log cookies before creating client (only when DEBUG_E2E_AUTH=true)
 	logRequestCookies(request, "getUser:before");
-
-	// TEMP: Always log cookies for debugging
-	const allCookies = request.cookies.getAll();
-	const sbCookies = allCookies.filter((c) => c.name.includes("sb-"));
-	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
-	console.log(
-		`[MIDDLEWARE] Path: ${request.nextUrl.pathname}, SB Cookies: ${sbCookies.length}, Names: ${sbCookies.map((c) => c.name).join(", ")}`,
-	);
-	if (sbCookies.length > 0) {
-		// biome-ignore lint/suspicious/noConsole: Temporary debug logging
-		console.log(
-			`[MIDDLEWARE] First SB cookie value preview: ${sbCookies[0]?.value.substring(0, 30)}...`,
-		);
-	}
 
 	const supabase = createMiddlewareClient(request, response);
 
 	// First call getSession() to trigger session restoration from cookies
 	// Without this, getClaims() may return null even with valid cookies
 	// See: https://github.com/supabase/ssr/issues/36
-	const sessionResult = await supabase.auth.getSession();
-
-	// TEMP: Debug session result
-	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
-	console.log(
-		`[MIDDLEWARE] getSession result - hasSession: ${!!sessionResult.data?.session}, error: ${sessionResult.error?.message ?? "none"}`,
-	);
+	await supabase.auth.getSession();
 
 	const result = await supabase.auth.getClaims();
 
-	// TEMP: Always log getClaims result for debugging
-	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
-	console.log(
-		`[MIDDLEWARE] getClaims result - hasClaims: ${!!result.data?.claims}, error: ${result.error?.message ?? "none"}`,
-	);
-
-	// Log claims result
+	// Log claims result (only when DEBUG_E2E_AUTH=true)
 	if (DEBUG_E2E_AUTH) {
 		debugLog("getUser:claims", {
 			path: request.nextUrl.pathname,
