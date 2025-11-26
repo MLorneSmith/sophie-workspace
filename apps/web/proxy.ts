@@ -6,6 +6,53 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import "urlpattern-polyfill";
 
+// Debug logging flag for E2E auth session troubleshooting
+const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
+
+/**
+ * Log middleware debug info for E2E auth troubleshooting.
+ * Only logs when DEBUG_E2E_AUTH=true.
+ */
+function debugLog(context: string, data: Record<string, unknown>) {
+	if (DEBUG_E2E_AUTH) {
+		// biome-ignore lint/suspicious/noConsole: Debug logging for E2E auth troubleshooting
+		console.log(`[DEBUG_E2E_AUTH:${context}]`, JSON.stringify(data, null, 2));
+	}
+}
+
+/**
+ * Log cookies from request for debugging.
+ * Truncates cookie values to avoid exposing sensitive data.
+ */
+function logRequestCookies(request: NextRequest, context: string) {
+	if (!DEBUG_E2E_AUTH) return;
+
+	const allCookies = request.cookies.getAll();
+	const supabaseCookies = allCookies.filter(
+		(c) =>
+			c.name.includes("sb-") ||
+			c.name.includes("supabase") ||
+			c.name.includes("auth"),
+	);
+
+	const cookieSummary = supabaseCookies.map((c) => ({
+		name: c.name,
+		valueLength: c.value?.length ?? 0,
+		valuePreview: c.value
+			? `${c.value.slice(0, 20)}...${c.value.slice(-10)}`
+			: "empty",
+		isChunked: /\.\d+$/.test(c.name),
+	}));
+
+	debugLog(context, {
+		path: request.nextUrl.pathname,
+		totalCookies: allCookies.length,
+		supabaseCookies: cookieSummary.length,
+		cookies: cookieSummary,
+		allCookieNames: allCookies.map((c) => c.name),
+	});
+}
+
 // URLPattern is now available globally via polyfill
 const URLPattern = globalThis.URLPattern;
 
@@ -19,10 +66,47 @@ export const config = {
 	matcher: ["/((?!_next/static|_next/image|images|locales|assets|api/*).*)"],
 };
 
-const getUser = (request: NextRequest, response: NextResponse) => {
-	const supabase = createMiddlewareClient(request, response);
+const getUser = async (request: NextRequest, response: NextResponse) => {
+	// Log cookies before creating client
+	logRequestCookies(request, "getUser:before");
 
-	return supabase.auth.getClaims();
+	// TEMP: Always log cookies for debugging
+	const allCookies = request.cookies.getAll();
+	const sbCookies = allCookies.filter((c) => c.name.includes("sb-"));
+	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
+	console.log(
+		`[MIDDLEWARE] Path: ${request.nextUrl.pathname}, SB Cookies: ${sbCookies.length}, Names: ${sbCookies.map((c) => c.name).join(", ")}`,
+	);
+	if (sbCookies.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Temporary debug logging
+		console.log(
+			`[MIDDLEWARE] First SB cookie value preview: ${sbCookies[0].value.substring(0, 30)}...`,
+		);
+	}
+
+	const supabase = createMiddlewareClient(request, response);
+	const result = await supabase.auth.getClaims();
+
+	// TEMP: Always log getClaims result for debugging
+	// biome-ignore lint/suspicious/noConsole: Temporary debug logging
+	console.log(
+		`[MIDDLEWARE] getClaims result - hasClaims: ${!!result.data?.claims}, error: ${result.error?.message ?? "none"}`,
+	);
+
+	// Log claims result
+	if (DEBUG_E2E_AUTH) {
+		debugLog("getUser:claims", {
+			path: request.nextUrl.pathname,
+			hasClaims: !!result.data?.claims,
+			claimsKeys: result.data?.claims ? Object.keys(result.data.claims) : [],
+			error: result.error?.message ?? null,
+			sub: result.data?.claims?.sub
+				? `${String(result.data.claims.sub).slice(0, 8)}...`
+				: null,
+		});
+	}
+
+	return result;
 };
 
 export async function proxy(request: NextRequest) {
@@ -178,6 +262,14 @@ function getPatterns() {
 		{
 			pattern: new URLPattern({ pathname: "/home/*?" }),
 			handler: async (req: NextRequest, res: NextResponse) => {
+				// Log entry into /home/* handler
+				if (DEBUG_E2E_AUTH) {
+					debugLog("home:entry", {
+						path: req.nextUrl.pathname,
+						origin: req.nextUrl.origin,
+					});
+				}
+
 				const { data } = await getUser(req, res);
 
 				const origin = req.nextUrl.origin;
@@ -185,10 +277,31 @@ function getPatterns() {
 
 				// If user is not logged in, redirect to sign in page.
 				if (!data?.claims) {
+					// Log redirect decision
+					if (DEBUG_E2E_AUTH) {
+						debugLog("home:redirect", {
+							reason: "no claims",
+							path: next,
+							redirectTo: pathsConfig.auth.signIn,
+							dataReceived: !!data,
+							claimsReceived: data?.claims,
+						});
+					}
+
 					const signIn = pathsConfig.auth.signIn;
 					const redirectPath = `${signIn}?next=${next}`;
 
 					return NextResponse.redirect(new URL(redirectPath, origin).href);
+				}
+
+				// Log successful authentication
+				if (DEBUG_E2E_AUTH) {
+					debugLog("home:authenticated", {
+						path: next,
+						sub: data.claims?.sub
+							? `${String(data.claims.sub).slice(0, 8)}...`
+							: null,
+					});
 				}
 
 				const supabase = createMiddlewareClient(req, res);
