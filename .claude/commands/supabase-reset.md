@@ -213,7 +213,7 @@ if [ "$REGENERATE_MIGRATIONS" = true ]; then
 else
   # Run existing migrations with SSL disabled for local Supabase
   echo "🔄 Running Payload migrations..."
-  PAYLOAD_ENABLE_SSL=false pnpm run payload migrate --forceAcceptWarning || {
+  DATABASE_URI="$DATABASE_URL?sslmode=disable" NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run payload migrate --forceAcceptWarning || {
     echo "❌ ERROR: Migration failed"
     echo "Try: --regenerate-payload-migrations flag"
     exit 1
@@ -223,8 +223,8 @@ else
   TABLE_COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';" | tr -d ' ')
   echo "✅ Migrations complete ($TABLE_COUNT tables created)"
 
-  if [ "$TABLE_COUNT" -lt 40 ]; then
-    echo "⚠️  WARNING: Expected 40+ tables, found $TABLE_COUNT"
+  if [ "$TABLE_COUNT" -lt 60 ]; then
+    echo "⚠️  WARNING: Expected 60 tables, found $TABLE_COUNT"
     echo "Consider using --regenerate-payload-migrations flag"
   fi
 fi
@@ -250,7 +250,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   # 5.3 Run seeding (files already pre-uploaded to R2)
   echo "📤 Seeding database with pre-uploaded R2 file URLs..."
-  PAYLOAD_ENABLE_SSL=false pnpm run seed:run || {
+  DATABASE_URI="$DATABASE_URL?sslmode=disable" NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run || {
     echo "❌ ERROR: Seeding failed"
     echo "Check collection configuration and try --regenerate-payload-migrations"
     exit 1
@@ -393,7 +393,7 @@ fi
 
 - R2 storage configured with production credentials
 - Supabase running on localhost:54521-54523
-- Payload schema with 40+ tables
+- Payload schema with 60 tables
 - 252 records seeded across 12 collections (if not --schema-only)
 - Media files (24) and downloads (20) with R2 URLs
 - No duplicate records detected
@@ -407,7 +407,7 @@ fi
 ✅ Phase 1: Environment validated
 ✅ Phase 2: Supabase database reset
 ✅ Phase 3 (was 4): Database reset
-✅ Phase 4 (was 5): Payload migrations applied (42 tables)
+✅ Phase 4 (was 5): Payload migrations applied (60 tables)
 ✅ Phase 5 (was 6): Seeding complete (252/252 records + files uploaded)
 ✅ Phase 6: Database verified
 
@@ -560,7 +560,7 @@ Reset local Supabase database and seed Payload CMS with fresh data.
 1. ✅ Validates environment and configuration
 2. ✅ Resets Supabase database (drops and recreates public + payload schemas)
 3. ✅ Payload schema auto-created by migration (with DROP CASCADE for clean slate)
-4. ✅ Runs Payload CMS migrations (creates 40+ tables)
+4. ✅ Runs Payload CMS migrations (creates 60 tables)
 5. ✅ Seeds Payload CMS with 252 records (unless --schema-only)
 6. ✅ Verifies database state
 
