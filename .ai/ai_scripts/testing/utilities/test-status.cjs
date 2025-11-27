@@ -139,6 +139,10 @@ class TestStatus {
 		const end = new Date();
 		return Math.round((end - start) / 1000); // Duration in seconds
 	}
+
+	getUnitTestResults() {
+		return { ...this.status.unit };
+	}
 }
 
 module.exports = { TestStatus };
