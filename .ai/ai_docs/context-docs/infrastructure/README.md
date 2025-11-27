@@ -42,6 +42,14 @@ Docker debugging guide for WSL2 issues, permissions, networking, health checks, 
 
 **When to use**: Debugging Docker issues, fixing container problems, resolving networking conflicts, emergency recovery.
 
+### E2B Sandboxes
+
+#### [e2b-sandbox.md](./e2b-sandbox.md)
+
+E2B secure cloud sandboxes for AI agent workflows with human-in-the-loop feature development, VS Code Web integration, and live testing.
+
+**When to use**: Running Claude Code in isolated environments, feature development with review gates, testing in sandboxes, understanding `/sandbox` and `/gitmerge` commands.
+
 ### Database
 
 #### [database-seeding.md](./database-seeding.md)

@@ -106,6 +106,23 @@ echo "=== Current Branch ==="
 git branch --show-current
 `;
 
+// VS Code Web (code-server) start script
+const START_VSCODE_SCRIPT = `#!/bin/bash
+cd /home/user/project 2>/dev/null || cd /home/user
+echo "Starting VS Code Web (code-server) on port 8080..."
+code-server --bind-addr 0.0.0.0:8080 --auth none --disable-telemetry /home/user/project &
+sleep 2
+echo "VS Code Web started on port 8080"
+`;
+
+// Dev server (pnpm dev) start script
+const START_DEV_SCRIPT = `#!/bin/bash
+cd /home/user/project
+echo "Starting dev server on port 3000..."
+pnpm dev &
+echo "Dev server starting on port 3000 (may take 10-30 seconds to compile)"
+`;
+
 async function buildTemplate(isDev: boolean = false): Promise<void> {
 	const alias = isDev ? DEV_TEMPLATE_ALIAS : TEMPLATE_ALIAS;
 
@@ -165,6 +182,10 @@ async function buildTemplate(isDev: boolean = false): Promise<void> {
 			"libcairo2",
 			"libpango-1.0-0",
 		])
+		// Install code-server (VS Code Web) for code review
+		.runCmd(["curl -fsSL https://code-server.dev/install.sh | sh"], {
+			user: "root",
+		})
 		// Install Node.js 20 (must run as root)
 		.runCmd(
 			[
@@ -244,6 +265,22 @@ async function buildTemplate(isDev: boolean = false): Promise<void> {
 			],
 			{ user: "root" },
 		)
+		// Create start-vscode script (VS Code Web)
+		.runCmd(
+			[
+				`printf '%s' '${START_VSCODE_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/start-vscode`,
+				"chmod +x /usr/local/bin/start-vscode",
+			],
+			{ user: "root" },
+		)
+		// Create start-dev script (pnpm dev)
+		.runCmd(
+			[
+				`printf '%s' '${START_DEV_SCRIPT.replace(/'/g, "'\\''")}' > /usr/local/bin/start-dev`,
+				"chmod +x /usr/local/bin/start-dev",
+			],
+			{ user: "root" },
+		)
 		// Clone the SlideHeroes repository
 		.runCmd([
 			`git clone --depth 1 --branch ${REPO_BRANCH} ${REPO_URL} /home/user/project`,
@@ -257,10 +294,11 @@ async function buildTemplate(isDev: boolean = false): Promise<void> {
 
 	try {
 		// Build the template
+		// Note: 4GB RAM needed for code-server + dev server + Claude Code concurrently
 		const result = await Template.build(template, {
 			alias,
 			cpuCount: 4,
-			memoryMB: 2048,
+			memoryMB: 4096,
 			onBuildLogs: defaultBuildLogger(),
 		});
 
