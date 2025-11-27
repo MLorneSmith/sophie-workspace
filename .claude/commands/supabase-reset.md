@@ -181,18 +181,27 @@ echo "   Database URL: $DATABASE_URL"
 
 **Update** TodoWrite: Mark Phase 3 complete
 
-#### Phase 4 (was 5): Setup Payload (Schema + Migrations)
+#### Phase 4 (was 5): Verify Payload Schema (Auto-Created by Migration)
 
-**Execute** Payload schema and migration setup:
+**Note**: The payload schema is now automatically created by the Supabase migration
+`20250327_create_payload_schema.sql` during the `supabase db reset` in Phase 2. This migration:
+- Drops any existing payload schema with CASCADE (removes stale objects)
+- Creates a fresh, empty payload schema
+- Includes a production safety guard
+
+**Execute** Payload migration setup:
 
 ```bash
 cd apps/payload
 
-# 4.1 Drop and recreate payload schema (CRITICAL - always run first)
-echo "🗑️  Dropping payload schema..."
-psql "$DATABASE_URL" -c "DROP SCHEMA IF EXISTS payload CASCADE;" || exit 1
-psql "$DATABASE_URL" -c "CREATE SCHEMA payload;" || exit 1
-echo "✅ Payload schema recreated"
+# 4.1 Verify payload schema exists (created by Supabase migration)
+SCHEMA_EXISTS=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';" | tr -d ' ')
+if [ "$SCHEMA_EXISTS" -eq 0 ]; then
+  echo "❌ ERROR: Payload schema not found after Supabase reset"
+  echo "Check migration 20250327_create_payload_schema.sql"
+  exit 1
+fi
+echo "✅ Payload schema exists (created by Supabase migration)"
 
 # 4.2 Option A: Regenerate Migrations (if flag provided)
 if [ "$REGENERATE_MIGRATIONS" = true ]; then
@@ -351,7 +360,7 @@ fi
 
 **Phase 4 Errors**:
 
-- Schema creation fails → Verify database connection
+- Schema not found → Check migration `20250327_create_payload_schema.sql` was applied
 - Migration fails → Suggest --regenerate-payload-migrations flag
 - Low table count → Recommend regenerating migrations
 
@@ -487,15 +496,15 @@ Manual: lsof -ti:54521 | xargs kill -9
 # Stop Supabase
 cd apps/web && npx supabase stop
 
-# Drop payload schema
-psql $DATABASE_URL -c "DROP SCHEMA IF EXISTS payload CASCADE;"
-
 # Kill processes
 pkill -f "supabase"
 
-# Restart fresh
-/database:supabase-reset --regenerate-payload-migrations
+# Restart fresh (migration will automatically drop and recreate payload schema)
+/supabase-reset --regenerate-payload-migrations
 ```
+
+**Note**: The payload schema is automatically dropped and recreated by the
+Supabase migration `20250327_create_payload_schema.sql` during reset.
 
 ## Migration Guide
 
@@ -549,10 +558,11 @@ Reset local Supabase database and seed Payload CMS with fresh data.
 **What It Does:**
 
 1. ✅ Validates environment and configuration
-2. ✅ Resets Supabase database (drops and recreates)
-3. ✅ Sets up Payload schema and runs migrations
-4. ✅ Seeds Payload CMS with 252 records (unless --schema-only)
-5. ✅ Verifies database state
+2. ✅ Resets Supabase database (drops and recreates public + payload schemas)
+3. ✅ Payload schema auto-created by migration (with DROP CASCADE for clean slate)
+4. ✅ Runs Payload CMS migrations (creates 40+ tables)
+5. ✅ Seeds Payload CMS with 252 records (unless --schema-only)
+6. ✅ Verifies database state
 
 **Requirements:**
 
