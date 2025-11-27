@@ -10,7 +10,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"dotenv": "^17.2.3",
+		"dotenv": "17.2.3",
 		"e2b": "^2.8.1"
 	}
 }

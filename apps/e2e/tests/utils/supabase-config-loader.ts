@@ -117,7 +117,6 @@ export function getSupabaseConfig(
 		const missingProps = requiredProps.filter((prop) => !config[prop]);
 
 		if (missingProps.length > 0) {
-			// biome-ignore lint/suspicious/noConsole: Required for diagnostic logging
 			console.warn(
 				`[supabase-config-loader] Missing properties: ${missingProps.join(", ")}. Using fallback values.`,
 			);
@@ -150,14 +149,12 @@ export function getSupabaseConfig(
 		// Update cache
 		configCache = { config: enrichedConfig, timestamp: now };
 
-		// biome-ignore lint/suspicious/noConsole: Required for diagnostic logging
 		console.log(
 			`[supabase-config-loader] Loaded config - API: ${enrichedConfig.API_URL}, DB port: ${dbPort}`,
 		);
 		return enrichedConfig;
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		// biome-ignore lint/suspicious/noConsole: Required for diagnostic logging
 		console.warn(
 			`[supabase-config-loader] Failed to fetch config: ${errorMessage}. Using fallback values.`,
 		);

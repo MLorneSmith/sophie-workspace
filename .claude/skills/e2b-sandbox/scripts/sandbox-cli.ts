@@ -1119,7 +1119,7 @@ ${statusOutput}
 		`cd ${WORKSPACE_DIR} && gh pr create --title "${commitMessage.replace(/"/g, '\\"')}" --body "${prBody.replace(/"/g, '\\"')}" --base dev`,
 		{
 			timeoutMs: 60000,
-			envs: { ...getGitEnvVars(), GH_TOKEN: GITHUB_TOKEN! },
+			envs: { ...getGitEnvVars(), GH_TOKEN: GITHUB_TOKEN ?? "" },
 		},
 	);
 

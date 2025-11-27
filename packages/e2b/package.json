@@ -32,7 +32,7 @@
 	"dependencies": {
 		"@e2b/code-interpreter": "^1.0.4",
 		"@kit/shared": "workspace:*",
-		"e2b": "^2.7.0",
+		"e2b": "^2.8.1",
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
