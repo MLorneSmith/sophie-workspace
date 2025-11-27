@@ -64,7 +64,7 @@ export function AdminDeleteUserDialog(
 
 				<Form {...form}>
 					<form
-						data-test={"admin-delete-user-form"}
+						data-testid={"admin-delete-user-form"}
 						className={"flex flex-col space-y-8"}
 						onSubmit={form.handleSubmit((data) => {
 							startTransition(async () => {

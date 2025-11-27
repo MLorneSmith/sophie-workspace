@@ -22,8 +22,7 @@ export function PasswordInput(
 			</InputGroupAddon>
 
 			<InputGroupInput
-				data-test="password-input"
-				data-testid={dataTestId}
+				data-testid={dataTestId ?? "password-input"}
 				type={showPassword ? "text" : "password"}
 				placeholder={"************"}
 				aria-label="Password"

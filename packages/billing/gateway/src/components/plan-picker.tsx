@@ -365,7 +365,7 @@ export function PlanPicker(
 
 					<div>
 						<Button
-							data-test="checkout-submit-button"
+							data-testid="checkout-submit-button"
 							disabled={props.pending ?? !form.formState.isValid}
 						>
 							{props.pending ? (

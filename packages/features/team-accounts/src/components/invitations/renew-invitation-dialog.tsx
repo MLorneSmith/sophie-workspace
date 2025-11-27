@@ -90,7 +90,7 @@ function RenewInvitationForm({
 					</AlertDialogCancel>
 
 					<Button
-						data-test={"confirm-renew-invitation"}
+						data-testid={"confirm-renew-invitation"}
 						disabled={isSubmitting}
 					>
 						<Trans i18nKey={"teams:renewInvitation"} />

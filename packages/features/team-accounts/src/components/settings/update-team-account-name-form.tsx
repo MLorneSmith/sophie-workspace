@@ -43,7 +43,7 @@ export const UpdateTeamAccountNameForm = (props: {
 		<div className={"space-y-8"}>
 			<Form {...form}>
 				<form
-					data-test={"update-team-account-name-form"}
+					data-testid={"update-team-account-name-form"}
 					className={"flex flex-col space-y-4"}
 					onSubmit={form.handleSubmit((data) => {
 						startTransition(async () => {
@@ -90,7 +90,7 @@ export const UpdateTeamAccountNameForm = (props: {
 
 									<FormControl>
 										<Input
-											data-test={"team-name-input"}
+											data-testid={"team-name-input"}
 											required
 											placeholder={""}
 											{...field}
@@ -106,7 +106,7 @@ export const UpdateTeamAccountNameForm = (props: {
 					<div>
 						<Button
 							className={"w-full md:w-auto"}
-							data-test={"update-team-submit-button"}
+							data-testid={"update-team-submit-button"}
 							disabled={pending}
 						>
 							<Trans i18nKey={"teams:updateTeamSubmitLabel"} />

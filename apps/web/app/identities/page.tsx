@@ -95,11 +95,11 @@ function IdentitiesStep(props: {
 			className={
 				"animate-in fade-in slide-in-from-bottom-4 mx-auto flex w-full max-w-md flex-col space-y-4 duration-500"
 			}
-			data-test="join-step-two"
+			data-testid="join-step-two"
 		>
 			<LinkAccountsList providers={props.oAuthProviders} />
 
-			<Button asChild data-test="skip-identities-button">
+			<Button asChild data-testid="skip-identities-button">
 				<Link href={props.nextPath}>
 					<Trans i18nKey={"common:continueKey"} />
 				</Link>

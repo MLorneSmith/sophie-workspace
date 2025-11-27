@@ -21,8 +21,7 @@ export function EmailInput(
 			</InputGroupAddon>
 
 			<InputGroupInput
-				data-test={"email-input"}
-				data-testid={dataTestId}
+				data-testid={dataTestId ?? "email-input"}
 				required
 				type="email"
 				placeholder={t("emailPlaceholder")}

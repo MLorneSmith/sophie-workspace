@@ -18,7 +18,7 @@ export function BillingSessionStatus({
 }>) {
 	return (
 		<section
-			data-test={"payment-return-success"}
+			data-testid={"payment-return-success"}
 			className={
 				"fade-in dark:border-border mx-auto max-w-xl rounded-xl border border-transparent p-16 xl:drop-shadow-2xl" +
 				" bg-background animate-in slide-in-from-bottom-8 ease-out" +
@@ -54,7 +54,7 @@ export function BillingSessionStatus({
 				</div>
 
 				<div>
-					<Button data-test={"checkout-success-back-link"} asChild>
+					<Button data-testid={"checkout-success-back-link"} asChild>
 						<Link href={redirectPath}>
 							<span>
 								<Trans i18nKey={"billing:checkoutSuccessBackButton"} />

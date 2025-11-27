@@ -117,7 +117,7 @@ export function MagicLinkAuthContainer({
 								</FormLabel>
 
 								<FormControl>
-									<EmailInput data-test="email-input" {...field} />
+									<EmailInput data-testid="email-input" {...field} />
 								</FormControl>
 
 								<FormMessage />

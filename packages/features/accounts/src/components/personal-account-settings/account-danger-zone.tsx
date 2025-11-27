@@ -54,7 +54,7 @@ function DeleteAccountModal() {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
-				<Button data-test={"delete-account-button"} variant={"destructive"}>
+				<Button data-testid={"delete-account-button"} variant={"destructive"}>
 					<Trans i18nKey={"account:deleteAccount"} />
 				</Button>
 			</AlertDialogTrigger>
@@ -102,7 +102,7 @@ function DeleteAccountForm(props: { email: string }) {
 	return (
 		<Form {...form}>
 			<form
-				data-test={"delete-account-form"}
+				data-testid={"delete-account-form"}
 				action={deletePersonalAccountAction}
 				className={"flex flex-col space-y-4"}
 			>
@@ -143,7 +143,7 @@ function DeleteAccountSubmitButton(props: { disabled: boolean }) {
 
 	return (
 		<Button
-			data-test={"confirm-delete-account-button"}
+			data-testid={"confirm-delete-account-button"}
 			type={"submit"}
 			disabled={pending || props.disabled}
 			name={"action"}

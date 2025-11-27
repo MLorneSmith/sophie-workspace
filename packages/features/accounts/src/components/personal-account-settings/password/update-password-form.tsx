@@ -87,7 +87,7 @@ export const UpdatePasswordForm = ({
 	return (
 		<Form {...form}>
 			<form
-				data-test={"account-password-form"}
+				data-testid={"account-password-form"}
 				onSubmit={form.handleSubmit(updatePasswordCallback)}
 			>
 				<div className={"flex flex-col space-y-4"}>
@@ -112,7 +112,7 @@ export const UpdatePasswordForm = ({
 
 									<FormControl>
 										<Input
-											data-test={"account-password-form-password-input"}
+											data-testid={"account-password-form-password-input"}
 											autoComplete={"new-password"}
 											required
 											type={"password"}
@@ -139,7 +139,9 @@ export const UpdatePasswordForm = ({
 
 									<FormControl>
 										<Input
-											data-test={"account-password-form-repeat-password-input"}
+											data-testid={
+												"account-password-form-repeat-password-input"
+											}
 											required
 											type={"password"}
 											{...field}

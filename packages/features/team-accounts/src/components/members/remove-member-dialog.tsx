@@ -90,7 +90,7 @@ function RemoveMemberForm({
 					</AlertDialogCancel>
 
 					<Button
-						data-test={"confirm-remove-member"}
+						data-testid={"confirm-remove-member"}
 						variant={"destructive"}
 						disabled={isSubmitting}
 					>

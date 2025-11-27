@@ -70,7 +70,7 @@ function BanUserForm(props: { userId: string }) {
 	return (
 		<Form {...form}>
 			<form
-				data-test={"admin-ban-user-form"}
+				data-testid={"admin-ban-user-form"}
 				className={"flex flex-col space-y-8"}
 				onSubmit={form.handleSubmit((data) => {
 					startTransition(async () => {

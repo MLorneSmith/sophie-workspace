@@ -84,7 +84,7 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
 
 				<Form {...form}>
 					<form
-						data-test={"admin-create-user-form"}
+						data-testid={"admin-create-user-form"}
 						className={"flex flex-col space-y-4"}
 						onSubmit={form.handleSubmit(onSubmit)}
 					>

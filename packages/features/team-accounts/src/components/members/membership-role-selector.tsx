@@ -26,7 +26,7 @@ export function MembershipRoleSelector({
 		<Select value={value} onValueChange={onChange}>
 			<SelectTrigger
 				className={triggerClassName}
-				data-test={"role-selector-trigger"}
+				data-testid={"role-selector-trigger"}
 			>
 				<SelectValue />
 			</SelectTrigger>
@@ -36,7 +36,7 @@ export function MembershipRoleSelector({
 					return (
 						<SelectItem
 							key={role}
-							data-test={`role-option-${role}`}
+							data-testid={`role-option-${role}`}
 							disabled={currentUserRole === role}
 							value={role}
 						>

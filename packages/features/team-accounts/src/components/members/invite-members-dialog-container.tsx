@@ -133,7 +133,7 @@ function InviteMembersForm({
 		<Form {...form}>
 			<form
 				className={"flex flex-col space-y-8"}
-				data-test={"invite-members-form"}
+				data-testid={"invite-members-form"}
 				onSubmit={form.handleSubmit(onSubmit)}
 			>
 				<div className="flex flex-col gap-y-4">
@@ -144,7 +144,7 @@ function InviteMembersForm({
 						const roleInputName = `invitations.${index}.role` as const;
 
 						return (
-							<div data-test={"invite-member-form-item"} key={field.id}>
+							<div data-testid={"invite-member-form-item"} key={field.id}>
 								<div className={"flex items-end gap-x-1 md:space-x-2"}>
 									<div className={"w-7/12"}>
 										<FormField
@@ -158,7 +158,7 @@ function InviteMembersForm({
 
 														<FormControl>
 															<Input
-																data-test={"invite-email-input"}
+																data-testid={"invite-email-input"}
 																placeholder={t("emailPlaceholder")}
 																type="email"
 																required
@@ -212,7 +212,7 @@ function InviteMembersForm({
 														size={"icon"}
 														type={"button"}
 														disabled={fieldArray.fields.length <= 1}
-														data-test={"remove-invite-button"}
+														data-testid={"remove-invite-button"}
 														aria-label={t("removeInviteButtonLabel")}
 														onClick={() => {
 															fieldArray.remove(index);
@@ -237,7 +237,7 @@ function InviteMembersForm({
 					<If condition={fieldArray.fields.length < MAX_INVITES}>
 						<div>
 							<Button
-								data-test={"add-new-invite-button"}
+								data-testid={"add-new-invite-button"}
 								type={"button"}
 								variant={"link"}
 								size={"sm"}

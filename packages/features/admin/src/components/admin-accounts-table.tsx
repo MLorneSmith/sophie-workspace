@@ -144,7 +144,7 @@ function AccountsTableFilters(props: {
 						<FormItem>
 							<FormControl className={"w-full min-w-36 md:min-w-80"}>
 								<Input
-									data-test={"admin-accounts-table-filter-input"}
+									data-testid={"admin-accounts-table-filter-input"}
 									className={"w-full"}
 									placeholder={"Search account..."}
 									{...field}

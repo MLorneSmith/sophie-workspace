@@ -61,7 +61,7 @@ export function AcceptInvitationContainer(props: {
 
 			<div className={"flex flex-col space-y-4"}>
 				<form
-					data-test={"join-team-form"}
+					data-testid={"join-team-form"}
 					className={"w-full"}
 					action={acceptInvitationAction}
 				>

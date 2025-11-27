@@ -93,7 +93,7 @@ function useGetColumns(permissions: {
 
 					return (
 						<span
-							data-test={"invitation-email"}
+							data-testid={"invitation-email"}
 							className={"flex items-center space-x-4 text-left"}
 						>
 							<span>
@@ -183,7 +183,7 @@ function ActionsDropdown({
 				<DropdownMenuContent>
 					<If condition={permissions.canUpdateInvitation}>
 						<DropdownMenuItem
-							data-test={"update-invitation-trigger"}
+							data-testid={"update-invitation-trigger"}
 							onClick={() => setIsUpdatingRole(true)}
 						>
 							<Trans i18nKey={"teams:updateInvitation"} />
@@ -191,7 +191,7 @@ function ActionsDropdown({
 
 						<If condition={getIsInviteExpired(invitation.expires_at)}>
 							<DropdownMenuItem
-								data-test={"renew-invitation-trigger"}
+								data-testid={"renew-invitation-trigger"}
 								onClick={() => setIsRenewingInvite(true)}
 							>
 								<Trans i18nKey={"teams:renewInvitation"} />
@@ -201,7 +201,7 @@ function ActionsDropdown({
 
 					<If condition={permissions.canRemoveInvitation}>
 						<DropdownMenuItem
-							data-test={"remove-invitation-trigger"}
+							data-testid={"remove-invitation-trigger"}
 							onClick={() => setIsDeletingInvite(true)}
 						>
 							<Trans i18nKey={"teams:removeInvitation"} />

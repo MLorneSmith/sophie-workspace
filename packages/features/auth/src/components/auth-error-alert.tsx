@@ -44,7 +44,7 @@ export function AuthErrorAlert({
 				<Trans i18nKey={"auth:errorAlertHeading"} />
 			</AlertTitle>
 
-			<AlertDescription data-test={"auth-error-message"}>
+			<AlertDescription data-testid={"auth-error-message"}>
 				<Trans
 					i18nKey={`auth:errors.${errorCode}`}
 					defaults={"<DefaultError />"}
