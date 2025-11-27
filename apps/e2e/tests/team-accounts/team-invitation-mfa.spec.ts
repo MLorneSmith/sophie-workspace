@@ -59,7 +59,7 @@ test.describe("Team Invitation with MFA Flow", () => {
 		await auth.visitConfirmEmailLink("super-admin@makerkit.dev");
 
 		await page
-			.locator('[data-test="existing-account-hint"]')
+			.locator('[data-testid="existing-account-hint"]')
 			.getByRole("link", { name: "Already have an account?" })
 			.click();
 

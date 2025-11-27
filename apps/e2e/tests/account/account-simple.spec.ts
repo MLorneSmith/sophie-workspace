@@ -40,7 +40,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Check for profile form fields
 		const displayNameInput = page
 			.locator(
-				'[data-test="account-display-name"], input[name*="name"], input[placeholder*="name"]',
+				'[data-testid="account-display-name"], input[name*="name"], input[placeholder*="name"]',
 			)
 			.first();
 		await expect(displayNameInput).toBeVisible({ timeout: 10000 });
@@ -56,7 +56,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Find and fill display name input
 		const displayNameInput = page
 			.locator(
-				'[data-test="account-display-name"], input[name*="name"], input[placeholder*="name"]',
+				'[data-testid="account-display-name"], input[name*="name"], input[placeholder*="name"]',
 			)
 			.first();
 		await displayNameInput.waitFor({ state: "visible", timeout: 10000 });
@@ -173,7 +173,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Click the account dropdown trigger to open the dropdown menu
 		// The email is displayed in the dropdown content (not in the collapsed sidebar)
 		const accountDropdownTrigger = page.locator(
-			'[data-test="account-dropdown-trigger"]',
+			'[data-testid="account-dropdown-trigger"]',
 		);
 		await accountDropdownTrigger.waitFor({ state: "visible", timeout: 10000 });
 		await accountDropdownTrigger.click();

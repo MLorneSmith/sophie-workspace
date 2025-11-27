@@ -118,7 +118,7 @@ test.describe("Account Deletion", () => {
 		});
 
 		await expect(
-			page.locator('[data-test="auth-error-message"]'),
+			page.locator('[data-testid="auth-error-message"]'),
 		).toBeVisible();
 	});
 });

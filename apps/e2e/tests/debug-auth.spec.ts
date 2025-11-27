@@ -87,7 +87,7 @@ test.describe("Debug Auth @debug", () => {
 
 			// Check for error messages
 			const errorMessage = await page
-				.locator('[data-test="auth-error-message"]')
+				.locator('[data-testid="auth-error-message"]')
 				.textContent()
 				.catch(() => null);
 			if (errorMessage) {

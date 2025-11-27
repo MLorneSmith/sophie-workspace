@@ -101,7 +101,7 @@ test.describe("Team Accounts @team @integration", () => {
 	}) => {
 		// Use the teamAccounts instance from beforeEach which already has an authenticated user
 		await teamAccounts.openAccountsSelector();
-		await page.click('[data-test="create-team-account-trigger"]');
+		await page.click('[data-testid="create-team-account-trigger"]');
 
 		await teamAccounts.tryCreateTeam("billing");
 
@@ -216,7 +216,7 @@ test.describe("Team Member Role Management @team @integration", () => {
 		const memberRow = page.getByRole("row", { name: memberEmail });
 
 		const initialRoleBadge = memberRow.locator(
-			'[data-test="member-role-badge"]',
+			'[data-testid="member-role-badge"]',
 		);
 
 		await expect(initialRoleBadge).toHaveText("Member");
@@ -227,7 +227,7 @@ test.describe("Team Member Role Management @team @integration", () => {
 		await expect(
 			page
 				.getByRole("row", { name: memberEmail })
-				.locator('[data-test="member-role-badge"]'),
+				.locator('[data-testid="member-role-badge"]'),
 		).toHaveText("Owner");
 	});
 });

@@ -66,7 +66,7 @@ test.describe("Invitations", () => {
 
 		const row = invitations.getInvitationRow(email);
 
-		await expect(row.locator('[data-test="member-role-badge"]')).toHaveText(
+		await expect(row.locator('[data-testid="member-role-badge"]')).toHaveText(
 			"Owner",
 		);
 	});

@@ -31,11 +31,11 @@ export class BillingPageObject {
 	}
 
 	manageBillingButton() {
-		return this.page.locator('[data-test="manage-billing-redirect-button"]');
+		return this.page.locator('[data-testid="manage-billing-redirect-button"]');
 	}
 
 	successStatus() {
-		return this.page.locator('[data-test="payment-return-success"]');
+		return this.page.locator('[data-testid="payment-return-success"]');
 	}
 
 	async returnToBilling() {
@@ -43,15 +43,15 @@ export class BillingPageObject {
 		await this.page.waitForTimeout(1000);
 
 		return this.page
-			.locator('[data-test="checkout-success-back-link"]')
+			.locator('[data-testid="checkout-success-back-link"]')
 			.click();
 	}
 
 	proceedToCheckout() {
-		return this.page.click('[data-test="checkout-submit-button"]');
+		return this.page.click('[data-testid="checkout-submit-button"]');
 	}
 
 	getStatus() {
-		return this.page.locator('[data-test="current-plan-card-status-badge"]');
+		return this.page.locator('[data-testid="current-plan-card-status-badge"]');
 	}
 }

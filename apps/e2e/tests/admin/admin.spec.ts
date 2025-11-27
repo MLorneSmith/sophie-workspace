@@ -142,7 +142,7 @@ test.describe("Admin", () => {
 
 			// Should show an error message
 			await expect(
-				page.locator('[data-test="auth-error-message"]'),
+				page.locator('[data-testid="auth-error-message"]'),
 			).toBeVisible();
 		});
 
@@ -230,7 +230,7 @@ test.describe("Admin", () => {
 
 			// Should show an error message
 			await expect(
-				page.locator('[data-test="auth-error-message"]'),
+				page.locator('[data-testid="auth-error-message"]'),
 			).toBeVisible();
 		});
 	});
@@ -349,7 +349,7 @@ async function createUser(_page: Page) {
 
 async function filterAccounts(page: Page, email: string) {
 	await page
-		.locator('[data-test="admin-accounts-table-filter-input"]')
+		.locator('[data-testid="admin-accounts-table-filter-input"]')
 		.first()
 		.fill(email);
 

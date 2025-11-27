@@ -17,8 +17,8 @@ export class AuthPageObject {
   }
 
   async signOut() {
-    await this.page.click('[data-test="account-dropdown-trigger"]');
-    await this.page.click('[data-test="account-dropdown-sign-out"]');
+    await this.page.click('[data-testid="account-dropdown-trigger"]');
+    await this.page.click('[data-testid="account-dropdown-sign-out"]');
   }
 }
 ```text
@@ -83,11 +83,11 @@ await auth.loginAsUser({
 
 ### Test Selectors
 
-**Always use `data-test` attributes** for reliable element selection:
+**Always use `data-testid` attributes** for reliable element selection:
 ```typescript
-// ✅ CORRECT - Use data-test attributes
-await this.page.click('[data-test="submit-button"]');
-await this.page.fill('[data-test="email-input"]', email);
+// ✅ CORRECT - Use data-testid attributes
+await this.page.click('[data-testid="submit-button"]');
+await this.page.fill('[data-testid="email-input"]', email);
 
 // ✅ OR
 await this.page.getByTestId('submit-button').click();

@@ -148,7 +148,7 @@ test.describe
 
 			// Check if the last used method hint is visible
 			const lastMethodHint = page.locator(
-				'[data-test="last-auth-method-hint"]',
+				'[data-testid="last-auth-method-hint"]',
 			);
 			await expect(lastMethodHint).toBeVisible();
 
@@ -167,7 +167,7 @@ test.describe
 
 			// Check if the existing account hint is visible
 			const existingAccountHint = page.locator(
-				'[data-test="existing-account-hint"]',
+				'[data-testid="existing-account-hint"]',
 			);
 
 			await expect(existingAccountHint).toBeVisible();
@@ -200,7 +200,7 @@ test.describe
 
 			// The hint should still be visible after signing in again
 			const lastMethodHint = page.locator(
-				'[data-test="last-auth-method-hint"]',
+				'[data-testid="last-auth-method-hint"]',
 			);
 
 			await expect(lastMethodHint).toBeVisible();
@@ -231,7 +231,7 @@ test.describe
 
 			// The hint should not be visible for expired data
 			const lastMethodHint = page.locator(
-				'[data-test="last-auth-method-hint"]',
+				'[data-testid="last-auth-method-hint"]',
 			);
 			await expect(lastMethodHint).not.toBeVisible();
 
@@ -258,7 +258,7 @@ test.describe
 
 			// Should not crash and not show the hint
 			const lastMethodHint = page.locator(
-				'[data-test="last-auth-method-hint"]',
+				'[data-testid="last-auth-method-hint"]',
 			);
 			await expect(lastMethodHint).not.toBeVisible();
 

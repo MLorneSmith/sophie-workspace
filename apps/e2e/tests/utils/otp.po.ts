@@ -29,7 +29,7 @@ export class OtpPo {
 
 		// Check if OTP form is visible
 		const otpFormVisible = await this.page
-			.locator('[data-test="otp-send-verification-button"]')
+			.locator('[data-testid="otp-send-verification-button"]')
 			.isVisible()
 			.catch(() => false);
 
@@ -42,7 +42,7 @@ export class OtpPo {
 		// Look for a cancel or close button
 		const cancelButton = this.page
 			.locator(
-				'[data-test="otp-cancel"], button:has-text("Cancel"), button[aria-label="Close"]',
+				'[data-testid="otp-cancel"], button:has-text("Cancel"), button[aria-label="Close"]',
 			)
 			.first();
 
@@ -58,7 +58,7 @@ export class OtpPo {
 
 		// Click send button if visible
 		const sendButton = this.page.locator(
-			'[data-test="otp-send-verification-button"]',
+			'[data-testid="otp-send-verification-button"]',
 		);
 		if (await sendButton.isVisible({ timeout: 1000 })) {
 			await sendButton.click();
@@ -70,7 +70,9 @@ export class OtpPo {
 			console.log(`[E2E Test Mode] Trying test OTP: ${testCode}`);
 			await this.enterOtpCode(testCode);
 
-			const verifyButton = this.page.locator('[data-test="otp-verify-button"]');
+			const verifyButton = this.page.locator(
+				'[data-testid="otp-verify-button"]',
+			);
 			if (await verifyButton.isVisible({ timeout: 1000 })) {
 				await verifyButton.click();
 
@@ -79,7 +81,7 @@ export class OtpPo {
 
 				// Check if we're still on OTP page
 				const stillOnOtp = await this.page
-					.locator('[data-test="otp-verify-button"]')
+					.locator('[data-testid="otp-verify-button"]')
 					.isVisible()
 					.catch(() => false);
 

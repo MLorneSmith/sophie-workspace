@@ -169,7 +169,7 @@ test.describe("Payload Admin UI after Seeding", () => {
 
 		// Verify lessons exist
 		const lessonCount = await page
-			.locator('[data-test="collection-item"]')
+			.locator('[data-testid="collection-item"]')
 			.count();
 		expect(lessonCount).toBeGreaterThan(0);
 	});
@@ -179,7 +179,7 @@ test.describe("Payload Admin UI after Seeding", () => {
 		await page.goto("http://localhost:3000/admin/collections/posts");
 
 		// Click on first post
-		await page.locator('[data-test="collection-item"]').first().click();
+		await page.locator('[data-testid="collection-item"]').first().click();
 
 		// Verify Lexical editor loaded
 		await expect(page.locator('[data-lexical-editor="true"]')).toBeVisible({
