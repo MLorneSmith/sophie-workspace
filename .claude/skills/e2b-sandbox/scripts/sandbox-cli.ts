@@ -133,15 +133,48 @@ async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 }
 
 /**
- * Generate a branch name from description
+ * Parse issue number from description
+ * Supports: "#123 description", "issue 123: description", "123 description"
  */
-function generateBranchName(description: string): string {
-	const timestamp = Date.now().toString(36);
+function parseIssueNumber(description: string): {
+	issueNumber?: number;
+	cleanDescription: string;
+} {
+	const patterns = [
+		/^#(\d+)\s+(.+)$/i, // #123 description
+		/^issue\s*(\d+):?\s*(.+)$/i, // issue 123: description
+		/^(\d+)\s+(.+)$/, // 123 description
+	];
+
+	for (const pattern of patterns) {
+		const match = description.match(pattern);
+		if (match) {
+			return {
+				issueNumber: parseInt(match[1], 10),
+				cleanDescription: match[2],
+			};
+		}
+	}
+
+	return { cleanDescription: description };
+}
+
+/**
+ * Generate a branch name from description
+ * Format: sandbox/issue{N}-{slug} when issue number provided
+ * Fallback: sandbox/{slug}-{timestamp} when no issue number
+ */
+function generateBranchName(description: string, issueNumber?: number): string {
 	const slug = description
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-|-$/g, "")
 		.slice(0, 40);
+
+	if (issueNumber) {
+		return `sandbox/issue${issueNumber}-${slug}`;
+	}
+	const timestamp = Date.now().toString(36);
 	return `sandbox/${slug}-${timestamp}`;
 }
 
@@ -419,6 +452,221 @@ async function getReviewSummary(sandbox: Sandbox): Promise<{
 		diffStat: diffStatResult.stdout || "",
 		changedFiles,
 	};
+}
+
+// ============================================================================
+// VS Code Web & Dev Server
+// ============================================================================
+
+const VSCODE_PORT = 8080;
+const DEV_SERVER_PORT = 3000;
+
+/**
+ * Start VS Code Web (code-server) in sandbox
+ */
+async function startVSCode(sandbox: Sandbox): Promise<string> {
+	console.log("Starting VS Code Web (code-server)...");
+
+	await sandbox.commands.run("start-vscode", { timeoutMs: 30000 });
+
+	// Wait for code-server to be ready
+	await new Promise((resolve) => setTimeout(resolve, 3000));
+
+	const host = sandbox.getHost(VSCODE_PORT);
+	return `https://${host}`;
+}
+
+/**
+ * Start dev server (pnpm dev) in sandbox
+ */
+async function startDevServer(sandbox: Sandbox): Promise<string> {
+	console.log("Starting dev server (pnpm dev)...");
+
+	await sandbox.commands.run("start-dev", { timeoutMs: 30000 });
+
+	// Wait for Next.js to compile
+	await new Promise((resolve) => setTimeout(resolve, 10000));
+
+	const host = sandbox.getHost(DEV_SERVER_PORT);
+	return `https://${host}`;
+}
+
+// ============================================================================
+// New Sequential Workflow: feature -> continue -> approve
+// ============================================================================
+
+/**
+ * Phase 1: Run /feature and pause for plan review
+ */
+async function runFeaturePhase(
+	description: string,
+	timeout: number = 1800,
+): Promise<void> {
+	checkApiKey();
+	checkClaudeAuth();
+
+	const { issueNumber, cleanDescription } = parseIssueNumber(description);
+
+	console.log("=== Phase 1: Feature Planning ===\n");
+	console.log(`Description: ${cleanDescription}`);
+	if (issueNumber) console.log(`Issue: #${issueNumber}`);
+
+	// Create sandbox
+	const sandbox = await createSandbox(timeout, DEFAULT_TEMPLATE, true);
+	const sandboxId = sandbox.sandboxId;
+
+	// Sync with origin/dev
+	console.log("\nSyncing with origin/dev...");
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
+		{ timeoutMs: 60000 },
+	);
+
+	// Create feature branch
+	const branchName = generateBranchName(cleanDescription, issueNumber);
+	console.log(`Creating branch: ${branchName}`);
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
+		{ timeoutMs: 30000 },
+	);
+
+	// Store metadata
+	await sandbox.commands.run(
+		`echo '${JSON.stringify({ branchName, description: cleanDescription, issueNumber, phase: "feature" })}' > ${WORKSPACE_DIR}/.sandbox-metadata.json`,
+		{ timeoutMs: 10000 },
+	);
+
+	// Run /feature command
+	console.log("\nRunning Claude Code /feature...\n");
+	await sandbox.commands.run(
+		`run-claude "/feature ${cleanDescription.replace(/"/g, '\\"')}"`,
+		{
+			timeoutMs: 0,
+			envs: getAllEnvVars(),
+			onStdout: (data) => process.stdout.write(data),
+			onStderr: (data) => process.stderr.write(data),
+		},
+	);
+
+	// Start VS Code Web
+	const vscodeUrl = await startVSCode(sandbox);
+
+	// Output review instructions
+	console.log("\n" + "=".repeat(70));
+	console.log("═══ REVIEW GATE 1: Plan Review ═══");
+	console.log("=".repeat(70));
+	console.log("");
+	console.log(`Sandbox ID:  ${sandboxId}`);
+	console.log(`Branch:      ${branchName}`);
+	console.log("");
+	console.log("📝 VS Code Web (review the plan):");
+	console.log(`   ${vscodeUrl}`);
+	console.log("");
+	console.log("   Open: .ai/specs/feature-*.md");
+	console.log("");
+	console.log("=".repeat(70));
+	console.log("NEXT STEPS:");
+	console.log("=".repeat(70));
+	console.log("");
+	console.log("If plan looks good, continue to implementation:");
+	console.log(`   /sandbox continue ${sandboxId}`);
+	console.log("");
+	console.log("Or reject and discard:");
+	console.log(`   /sandbox reject ${sandboxId}`);
+	console.log("");
+}
+
+/**
+ * Phase 2: Run /implement and /review, then pause for code review
+ */
+async function runContinuePhase(sandboxId: string): Promise<void> {
+	checkApiKey();
+	checkClaudeAuth();
+
+	console.log("=== Phase 2: Implementation & Review ===\n");
+
+	const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+
+	// Get metadata
+	const metadata = await getSandboxMetadata(sandbox);
+	if (!metadata) {
+		console.error(
+			"No sandbox metadata found. Was this sandbox created with /sandbox feature?",
+		);
+		process.exit(1);
+	}
+
+	// Update phase
+	await sandbox.commands.run(
+		`echo '${JSON.stringify({ ...metadata, phase: "implement" })}' > ${WORKSPACE_DIR}/.sandbox-metadata.json`,
+		{ timeoutMs: 10000 },
+	);
+
+	// Run /implement command
+	console.log("Running Claude Code /implement...\n");
+	await sandbox.commands.run(`run-claude "/implement"`, {
+		timeoutMs: 0,
+		envs: getAllEnvVars(),
+		onStdout: (data) => process.stdout.write(data),
+		onStderr: (data) => process.stderr.write(data),
+	});
+
+	// Start dev server
+	console.log("\nStarting dev server for manual testing...");
+	const devUrl = await startDevServer(sandbox);
+
+	// Start VS Code (in case it stopped)
+	const vscodeUrl = await startVSCode(sandbox);
+
+	// Run /review command
+	console.log("\nRunning Claude Code /review...\n");
+	await sandbox.commands.run(`run-claude "/review"`, {
+		timeoutMs: 0,
+		envs: getAllEnvVars(),
+		onStdout: (data) => process.stdout.write(data),
+		onStderr: (data) => process.stderr.write(data),
+	});
+
+	// Get changes summary
+	const reviewSummary = await getReviewSummary(sandbox);
+
+	// Output review instructions
+	console.log("\n" + "=".repeat(70));
+	console.log("═══ REVIEW GATE 2: Code Review ═══");
+	console.log("=".repeat(70));
+	console.log("");
+	console.log(`Sandbox ID:  ${sandboxId}`);
+	console.log(`Branch:      ${metadata.branchName}`);
+	console.log("");
+	console.log("📝 VS Code Web (review the code):");
+	console.log(`   ${vscodeUrl}`);
+	console.log("");
+	console.log("🌐 Live App (manual testing):");
+	console.log(`   ${devUrl}`);
+	console.log("");
+	console.log("📊 Changes Summary:");
+	if (reviewSummary.diffStat) {
+		console.log(reviewSummary.diffStat);
+	}
+	console.log("");
+	console.log("📋 Changed Files:");
+	for (const file of reviewSummary.changedFiles.slice(0, 20)) {
+		console.log(`   - ${file}`);
+	}
+	if (reviewSummary.changedFiles.length > 20) {
+		console.log(`   ... and ${reviewSummary.changedFiles.length - 20} more`);
+	}
+	console.log("");
+	console.log("=".repeat(70));
+	console.log("NEXT STEPS:");
+	console.log("=".repeat(70));
+	console.log("");
+	console.log("If code looks good and tests pass, approve to create PR:");
+	console.log(`   /sandbox approve ${sandboxId}`);
+	console.log("");
+	console.log("Or reject and discard:");
+	console.log(`   /sandbox reject ${sandboxId}`);
+	console.log("");
 }
 
 // ============================================================================
@@ -1172,10 +1420,13 @@ E2B Sandbox Manager - Commands:
   pr <sandbox-id> "<message>"               Create PR from sandbox changes
               [--branch NAME]
 
-  FEATURE WORKFLOW (with review by default):
-  feature "<description>"                   Full workflow: create sandbox,
-              [--timeout 1800]              run /feature, PAUSE for review
-              [--no-review]                 Add --no-review to auto-push
+  FEATURE WORKFLOW (Sequential with VS Code Web):
+  feature "<#issue description>"            Phase 1: Create sandbox, run /feature,
+              [--timeout 1800]              open VS Code Web, PAUSE for plan review
+              [--no-review]                 Add --no-review for legacy auto-push mode
+
+  continue <sandbox-id>                     Phase 2: Run /implement and /review,
+                                            start dev server, PAUSE for code review
 
   REVIEW COMMANDS:
   review <sandbox-id>                       Run /review command in sandbox
@@ -1197,16 +1448,26 @@ Examples:
   /sandbox diff abc123                      View changes in sandbox
   /sandbox pr abc123 "Fix auth bug"         Create PR from sandbox changes
 
-  # Feature workflow (DEFAULT: pauses for review)
-  /sandbox feature "Add dark mode toggle"   Creates sandbox, runs /feature,
-                                            PAUSES for review (review URL provided)
+  # === RECOMMENDED: Sequential Feature Workflow ===
 
-  # After review, approve or reject:
-  /sandbox review abc123                    Run /review in sandbox
-  /sandbox approve abc123                   Approve: commit, push, create PR
-  /sandbox reject abc123                    Reject: discard changes, kill sandbox
+  # Step 1: Start feature planning (creates sandbox, VS Code Web)
+  /sandbox feature "#123 Add dark mode"     Creates sandbox, runs /feature,
+                                            opens VS Code Web for plan review
 
-  # Skip review (auto-push like before)
+  # Step 2: Review plan in VS Code Web at provided URL
+  #         Open .ai/specs/feature-*.md and verify plan
+
+  # Step 3: Continue to implementation (after plan approval)
+  /sandbox continue abc123                  Runs /implement, starts dev server,
+                                            runs /review, opens VS Code + app
+
+  # Step 4: Review code in VS Code, test app at provided URL
+
+  # Step 5: Approve or reject
+  /sandbox approve abc123                   Commit, push, create PR
+  /sandbox reject abc123                    Discard changes, kill sandbox
+
+  # === LEGACY: Skip review (auto-push) ===
   /sandbox feature "Quick fix" --no-review  Creates sandbox, runs /feature,
                                             auto-commits, pushes, creates PR
 
@@ -1354,7 +1615,7 @@ async function main(): Promise<void> {
 			break;
 		}
 
-		// Phase 3: Full Feature Workflow
+		// Phase 3: Full Feature Workflow (New Sequential Workflow)
 		case "feature": {
 			let description: string | undefined;
 			let timeout = 1800;
@@ -1373,14 +1634,34 @@ async function main(): Promise<void> {
 
 			if (!description) {
 				console.error(
-					'Usage: sandbox feature "<description>" [--timeout 1800] [--no-review]',
+					'Usage: sandbox feature "<#issue description>" [--timeout 1800] [--no-review]',
 				);
-				console.error('Example: sandbox feature "Add dark mode toggle"');
+				console.error('Example: sandbox feature "#123 Add dark mode toggle"');
 				console.error('Example: sandbox feature "Quick fix" --no-review');
 				process.exit(1);
 			}
 
-			await runFeatureWorkflow(description, timeout, skipReview);
+			if (skipReview) {
+				// Legacy mode: run full workflow without review gates
+				await runFeatureWorkflow(description, timeout, skipReview);
+			} else {
+				// New mode: run Phase 1 (planning) with VS Code Web review gate
+				await runFeaturePhase(description, timeout);
+			}
+			break;
+		}
+
+		// New: Continue command for Phase 2 of sequential workflow
+		case "continue": {
+			const sandboxId = args[1];
+			if (!sandboxId) {
+				console.error("Usage: sandbox continue <sandbox-id>");
+				console.error(
+					"Continues the feature workflow after plan review (runs /implement and /review)",
+				);
+				process.exit(1);
+			}
+			await runContinuePhase(sandboxId);
 			break;
 		}
 

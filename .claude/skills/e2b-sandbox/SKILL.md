@@ -13,6 +13,8 @@ This skill enables Claude to manage E2B secure cloud sandboxes optimized for AI 
 - Pre-cloned repository ready for immediate work
 - Pre-installed dependencies (no network latency)
 - Deterministic, reproducible environments
+- **VS Code Web** for browser-based code review
+- **Live dev server** for manual testing
 
 ## SlideHeroes Integration
 
@@ -135,7 +137,7 @@ memory_mb = 2048
 | Code execution only | 2 | 512 MB |
 | Running tests | 4 | 1024 MB |
 | Building + testing | 4 | 2048 MB |
-| Heavy workloads | 8 | 4096 MB |
+| Heavy workloads (VS Code + dev server) | 4 | 4096 MB |
 
 ### Step 4: Build Template
 
@@ -408,9 +410,107 @@ host = sandbox.get_host(3000)
 1. **Pre-clone repository** - Fastest startup for known codebases
 2. **Pre-install dependencies** - Eliminate network latency
 3. **Create helper scripts** - `run-tests`, `build-project`, etc.
-4. **Set appropriate resources** - 4 CPU / 2GB RAM for most dev workflows
+4. **Set appropriate resources** - 4 CPU / 4GB RAM for VS Code + dev server workflows
 5. **Use `ready_cmd`** - Verify environment is ready before use
 6. **Always cleanup** - Use context managers or try-finally
+
+---
+
+## VS Code Web Integration
+
+The sandbox includes code-server (VS Code Web) for reviewing code in a full IDE:
+
+- **Port 8080**: VS Code Web interface
+- **Port 3000**: Next.js dev server (when running)
+
+### Features Available in VS Code Web
+
+- Full file tree navigation
+- Syntax highlighting and IntelliSense
+- Search across files (Cmd/Ctrl+Shift+F)
+- Git diff viewer
+- Integrated terminal access
+- Extensions (pre-installed: ESLint, Prettier, TypeScript)
+
+### Starting Services Manually
+
+```bash
+# In sandbox terminal:
+start-vscode    # Start VS Code Web on port 8080
+start-dev       # Start pnpm dev on port 3000
+```
+
+### Accessing Services
+
+When using the `/sandbox feature` workflow, URLs are provided automatically:
+
+```
+VS Code Web: https://{sandbox-id}-8080.e2b.app
+Dev Server:  https://{sandbox-id}-3000.e2b.app
+```
+
+### Python/SDK Access
+
+```python
+# Get external URL for VS Code Web
+vscode_host = sandbox.get_host(8080)
+# Returns: "sandbox-id-8080.e2b.app"
+
+# Get external URL for dev server
+dev_host = sandbox.get_host(3000)
+# Returns: "sandbox-id-3000.e2b.app"
+```
+
+---
+
+## Sequential Feature Workflow
+
+The `/sandbox feature` command implements a human-in-the-loop workflow:
+
+### Workflow Phases
+
+```
+Phase 1: /sandbox feature "#123 Add dark mode"
+  ├── Create sandbox
+  ├── Sync with dev branch
+  ├── Create branch: sandbox/issue123-add-dark-mode
+  ├── Run Claude Code: /feature (creates plan)
+  ├── Start VS Code Web
+  └── PAUSE for plan review
+
+Phase 2: /sandbox continue <sandbox-id>
+  ├── Run Claude Code: /implement (executes plan)
+  ├── Start dev server
+  ├── Run Claude Code: /review (AI reviews code)
+  └── PAUSE for code review
+
+Phase 3: /sandbox approve <sandbox-id>
+  ├── Commit all changes
+  ├── Push branch to origin
+  └── Create PR → dev
+```
+
+### Branch Naming Convention
+
+Branches follow the format: `sandbox/issue{N}-{slug}`
+
+Examples:
+- `sandbox/issue123-add-dark-mode`
+- `sandbox/issue456-fix-auth-bug`
+
+If no issue number is provided, a timestamp is used:
+- `sandbox/add-dark-mode-abc123`
+
+### Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `feature "<#N description>"` | Phase 1: Plan review gate |
+| `continue <sandbox-id>` | Phase 2: Code review gate |
+| `approve <sandbox-id>` | Final: Commit, push, create PR |
+| `reject <sandbox-id>` | Discard changes, kill sandbox |
+| `diff <sandbox-id>` | Show git status and diff |
+| `pr <sandbox-id> "<message>"` | Manually create PR |
 
 ---
 

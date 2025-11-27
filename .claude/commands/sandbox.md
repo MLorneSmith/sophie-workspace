@@ -42,93 +42,182 @@ Run the sandbox CLI wrapper script:
 | `branch <sandbox-id> "<name>"` | Create a new branch in sandbox |
 | `pr <sandbox-id> "<message>" [--branch NAME]` | Create PR from sandbox changes |
 
-### Feature Workflow (with review by default)
+### Sequential Feature Workflow (Recommended)
 
 | Command | Description |
 |---------|-------------|
-| `feature "<description>" [--timeout 1800] [--no-review]` | Create sandbox, run /feature, PAUSE for review. Add `--no-review` to auto-push |
+| `feature "<#issue description>" [--timeout 1800]` | Phase 1: Create sandbox, run /feature, open VS Code Web, PAUSE for plan review |
+| `continue <sandbox-id>` | Phase 2: Run /implement and /review, start dev server, PAUSE for code review |
+| `approve <sandbox-id> ["message"]` | Final: Commit, push, create PR |
+| `reject <sandbox-id> [--keep]` | Discard changes and kill sandbox. Use `--keep` to keep alive |
+
+### Legacy Mode
+
+| Command | Description |
+|---------|-------------|
+| `feature "<description>" --no-review` | Skip review gates, auto-push (legacy behavior) |
 
 ### Review Commands
 
 | Command | Description |
 |---------|-------------|
 | `review <sandbox-id>` | Run /review command in sandbox to review changes |
-| `approve <sandbox-id> ["message"]` | Approve changes: commit, push, create PR |
-| `reject <sandbox-id> [--keep]` | Reject changes: discard and kill sandbox. Use `--keep` to keep sandbox alive |
+
+## Recommended Workflow: Sequential Feature Development
+
+The feature workflow runs `/feature`, `/implement`, and `/review` sequentially with human review gates:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SANDBOX FEATURE WORKFLOW (v3)                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  /sandbox feature "#123 Add dark mode"                                       │
+│       │                                                                      │
+│       ├─> Create sandbox                                                     │
+│       ├─> git fetch && pull origin dev                                       │
+│       ├─> Create branch: sandbox/issue123-add-dark-mode                      │
+│       ├─> Run Claude Code: /feature "Add dark mode"                          │
+│       ├─> Start VS Code Web (code-server) on port 8080                       │
+│       └─> OUTPUT:                                                            │
+│           • Sandbox ID: abc123                                               │
+│           • VS Code: https://abc123-8080.e2b.app                             │
+│           • Plan file: .ai/specs/feature-add-dark-mode.md                    │
+│                                                                              │
+│  ════════════════════ REVIEW GATE 1: Plan Review ════════════════════════   │
+│  Human reviews plan in VS Code Web                                           │
+│  ════════════════════════════════════════════════════════════════════════   │
+│                                                                              │
+│  /sandbox continue abc123                                                    │
+│       │                                                                      │
+│       ├─> Run Claude Code: /implement (executes the plan)                    │
+│       ├─> Start dev server: pnpm dev on port 3000                            │
+│       ├─> Run Claude Code: /review (AI reviews the implementation)           │
+│       └─> OUTPUT:                                                            │
+│           • VS Code: https://abc123-8080.e2b.app                             │
+│           • Live App: https://abc123-3000.e2b.app                            │
+│           • Review report in terminal                                        │
+│                                                                              │
+│  ════════════════════ REVIEW GATE 2: Code Review ════════════════════════   │
+│  Human reviews code in VS Code + tests app manually                          │
+│  ════════════════════════════════════════════════════════════════════════   │
+│                                                                              │
+│  /sandbox approve abc123                                                     │
+│       │                                                                      │
+│       ├─> Commit all changes                                                 │
+│       ├─> Push branch to origin                                              │
+│       ├─> Create PR: sandbox/issue123-add-dark-mode → dev                    │
+│       └─> OUTPUT: PR URL                                                     │
+│                                                                              │
+│  /gitmerge 456  (PR number)                                                  │
+│       │                                                                      │
+│       ├─> git fetch origin                                                   │
+│       ├─> git checkout dev && git pull                                       │
+│       ├─> git merge --no-ff origin/sandbox/issue123-add-dark-mode            │
+│       ├─> git push origin dev                                                │
+│       └─> gh pr close 456 --delete-branch                                    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Step-by-Step Guide
+
+### Step 1: Start feature planning
+
+```bash
+/sandbox feature "#123 Add dark mode toggle"
+```
+
+This:
+- Creates a sandbox with VS Code Web
+- Syncs with latest `dev` branch
+- Creates branch: `sandbox/issue123-add-dark-mode`
+- Runs Claude Code `/feature` to create a plan
+- **PAUSES** for human to review the plan
+
+### Step 2: Review plan in VS Code Web
+
+- Open the provided VS Code URL (https://abc123-8080.e2b.app)
+- Navigate to `.ai/specs/feature-*.md`
+- Review the plan and verify it makes sense
+
+### Step 3: Continue to implementation
+
+```bash
+/sandbox continue abc123
+```
+
+This:
+- Runs Claude Code `/implement` to execute the plan
+- Starts the dev server for manual testing (https://abc123-3000.e2b.app)
+- Runs Claude Code `/review` for AI code review
+- **PAUSES** for human to review code + test the app
+
+### Step 4: Review code and test
+
+- Review code changes in VS Code Web
+- Test the app at the provided dev server URL
+- Verify everything works as expected
+
+### Step 5: Approve and create PR
+
+```bash
+/sandbox approve abc123
+```
+
+This:
+- Commits all changes with proper attribution
+- Pushes to GitHub
+- Creates a PR: `sandbox/issue123-add-dark-mode` → `dev`
+
+### Step 6: Merge locally
+
+```bash
+/gitmerge 456
+```
+
+This:
+- Fetches and merges the PR to local `dev`
+- Pushes to origin
+- Closes PR and deletes remote branch
 
 ## Examples
 
 ```bash
-# === Basic Operations ===
+# === RECOMMENDED: Sequential Feature Workflow ===
 
-# Create sandbox with slideheroes template (default)
-/sandbox create
+# Step 1: Start feature planning
+/sandbox feature "#123 Add dark mode toggle"
 
-# Create sandbox with 10 minute timeout
-/sandbox create --timeout 600
+# Step 2: (Review plan in VS Code Web)
 
-# List all running sandboxes
-/sandbox list
+# Step 3: Continue to implementation
+/sandbox continue abc123
 
-# Kill a sandbox
-/sandbox kill abc123
+# Step 4: (Review code + test app)
 
-# === Claude Code Operations ===
-
-# Run Claude Code slash command /test 1 in a new sandbox
-/sandbox run-claude "/test 1"
-
-# Run Claude Code prompt in existing sandbox
-/sandbox run-claude "Fix the auth bug" --sandbox abc123
-
-# === Git Operations ===
-
-# View changes in sandbox
-/sandbox diff abc123
-
-# Create a feature branch in sandbox
-/sandbox branch abc123 "feature/dark-mode"
-
-# Create PR from sandbox changes
-/sandbox pr abc123 "Fix authentication bug"
-
-# Create PR with custom branch name
-/sandbox pr abc123 "Add dark mode" --branch feature/dark-mode-v2
-
-# === Feature Workflow (DEFAULT: pauses for review) ===
-
-# Run feature workflow - PAUSES for review before pushing
-/sandbox feature "Add dark mode toggle to settings"
-
-# With longer timeout for complex features
-/sandbox feature "Implement user dashboard" --timeout 3600
-
-# === Review Workflow ===
-
-# After /sandbox feature completes, you'll get:
-#   - Sandbox ID: abc123
-#   - Review URL: https://abc123-8080.e2b.app (browse files)
-#   - Changed files list
-
-# Run Claude Code /review command on the changes
-/sandbox review abc123
-
-# If satisfied, approve to commit, push, and create PR
+# Step 5: Approve and create PR
 /sandbox approve abc123
 
-# Or provide a custom commit message
-/sandbox approve abc123 "feat: improved dark mode implementation"
+# Step 6: Merge locally
+/gitmerge 456
 
-# If not satisfied, reject and discard changes
-/sandbox reject abc123
+# === Other Operations ===
 
-# Reject but keep sandbox running for debugging
-/sandbox reject abc123 --keep
+# Create sandbox manually
+/sandbox create
 
-# === Skip Review (auto-push like before) ===
+# Run Claude Code command
+/sandbox run-claude "/test 1"
 
-# Use --no-review to skip the review step and auto-push
-/sandbox feature "Quick fix for typo" --no-review
+# View diff
+/sandbox diff abc123
+
+# Kill sandbox
+/sandbox kill abc123
+
+# === LEGACY: Skip review (auto-push) ===
+/sandbox feature "Quick fix" --no-review
 ```
 
 ## Prerequisites
@@ -142,7 +231,7 @@ Run the sandbox CLI wrapper script:
   - `CLAUDE_CODE_OAUTH_TOKEN` (for Max plan - generate with: `claude setup-token`)
   - `ANTHROPIC_API_KEY` (for API access)
 
-### Required for Git operations (pr, approve, feature --no-review)
+### Required for Git operations (pr, approve, gitmerge)
 - `GITHUB_TOKEN` environment variable must be set
 - Create token at: https://github.com/settings/tokens
 - Required scopes: `repo` (full control of private repositories)
@@ -153,41 +242,25 @@ The sandbox uses `slideheroes-claude-agent` template by default, which includes:
 - Pre-cloned SlideHeroes repository
 - Pre-installed dependencies (pnpm install)
 - Claude Code CLI installed
+- **VS Code Web (code-server)** for code review
 - Git pre-configured (credentials set from GITHUB_TOKEN at runtime)
-- Helper scripts: `run-claude`, `run-tests`, `build-project`, `typecheck`, `lint-fix`, `codecheck`
+- Helper scripts: `run-claude`, `run-tests`, `build-project`, `typecheck`, `lint-fix`, `codecheck`, `start-vscode`, `start-dev`
 
-**Note**: Build the template first with `e2b template build` before using.
-
-## Workflow: Feature Development in Sandbox
-
-The `feature` command provides a workflow with human review by default:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ /sandbox feature "Add dark mode toggle"                         │
-├─────────────────────────────────────────────────────────────────┤
-│ Step 1: Create sandbox with git credentials                     │
-│ Step 2: Create feature branch (sandbox/add-dark-mode-xyz123)    │
-│ Step 3: Run Claude Code /feature command                        │
-│ Step 4: Stage changes (but don't commit)                        │
-│ Step 5: Start review server, output:                            │
-│         - Sandbox ID                                            │
-│         - Review URL (browse files in browser)                  │
-│         - Changed files list                                    │
-│                                                                 │
-│ ─── PAUSE FOR HUMAN REVIEW ───                                  │
-│                                                                 │
-│ /sandbox review abc123   (optional: run /review)                │
-│ /sandbox approve abc123  (commit, push, create PR)              │
-│   - OR -                                                        │
-│ /sandbox reject abc123   (discard changes, kill sandbox)        │
-└─────────────────────────────────────────────────────────────────┘
+**Note**: Rebuild the template after changes with:
+```bash
+tsx .claude/skills/e2b-sandbox/scripts/build-template.ts
 ```
 
-After the review step:
-- Use `/sandbox approve <id>` to commit, push, and create a PR
-- Use `/sandbox reject <id>` to discard changes and kill the sandbox
-- The review URL allows browsing the codebase in your browser
+## Branch Naming
+
+Format: `sandbox/issue{N}-{slug}`
+
+Examples:
+- `sandbox/issue123-add-dark-mode`
+- `sandbox/issue456-fix-auth-bug`
+
+If no issue number is provided, a timestamp is used:
+- `sandbox/add-dark-mode-abc123`
 
 ## Execution Instructions
 
