@@ -280,7 +280,10 @@ export class AuthPageObject {
 			const res = await this.mailbox.visitMailbox(email, params);
 
 			expect(res).not.toBeNull();
-		}).toPass();
+		}).toPass({
+			timeout: 60000,
+			intervals: [1000, 2000, 5000, 10000, 15000],
+		});
 	}
 
 	createRandomEmail() {

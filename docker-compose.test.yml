@@ -45,6 +45,11 @@ services:
       # Email configuration (override for Docker networking)
       - EMAIL_HOST=host.docker.internal
       - EMAIL_PORT=54525
+      - EMAIL_SENDER=test@slideheroes.com
+      - EMAIL_USER=user
+      - EMAIL_PASSWORD=password
+      - EMAIL_TLS=false
+      - MAILER_PROVIDER=nodemailer
       # Performance
       - FORCE_COLOR=1
       - CI=false
@@ -109,6 +114,11 @@ services:
       # Email configuration (override for Docker networking)
       - EMAIL_HOST=host.docker.internal
       - EMAIL_PORT=54525
+      - EMAIL_SENDER=test@slideheroes.com
+      - EMAIL_USER=user
+      - EMAIL_PASSWORD=password
+      - EMAIL_TLS=false
+      - MAILER_PROVIDER=nodemailer
       # Performance
       - FORCE_COLOR=1
       - CI=false
