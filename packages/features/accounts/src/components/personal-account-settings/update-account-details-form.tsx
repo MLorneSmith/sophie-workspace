@@ -59,7 +59,7 @@ export function UpdateAccountDetailsForm({
 		<div className={"flex flex-col space-y-8"}>
 			<Form {...form}>
 				<form
-					data-test={"update-account-name-form"}
+					data-testid={"update-account-name-form"}
 					className={"flex flex-col space-y-4"}
 					onSubmit={form.handleSubmit(_onSubmit)}
 				>
@@ -73,7 +73,7 @@ export function UpdateAccountDetailsForm({
 
 								<FormControl>
 									<Input
-										data-test={"account-display-name"}
+										data-testid={"account-display-name"}
 										minLength={2}
 										placeholder={""}
 										maxLength={100}

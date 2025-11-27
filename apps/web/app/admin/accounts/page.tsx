@@ -31,7 +31,7 @@ async function AccountsPage(props: AdminAccountsPageProps) {
 			<PageHeader description={<AppBreadcrumbs />}>
 				<div className="flex justify-end">
 					<AdminCreateUserDialog>
-						<Button data-test="admin-create-user-button">Create User</Button>
+						<Button data-testid="admin-create-user-button">Create User</Button>
 					</AdminCreateUserDialog>
 				</div>
 			</PageHeader>

@@ -64,7 +64,7 @@ export function TestCheckout({
 			/>
 			<Card
 				className="relative z-10 w-full max-w-lg"
-				data-test="test-checkout-modal"
+				data-testid="test-checkout-modal"
 			>
 				<CardHeader>
 					<CardTitle>Test Checkout Mode</CardTitle>
@@ -81,7 +81,7 @@ export function TestCheckout({
 
 					<div className="flex gap-3">
 						<Button
-							data-test="test-checkout-success"
+							data-testid="test-checkout-success"
 							onClick={async () => {
 								setIsProcessing(true);
 								await (window as any).__testCheckout?.simulateSuccess();
@@ -93,7 +93,7 @@ export function TestCheckout({
 						</Button>
 
 						<Button
-							data-test="test-checkout-cancel"
+							data-testid="test-checkout-cancel"
 							variant="outline"
 							onClick={() => {
 								(window as any).__testCheckout?.simulateCancel();

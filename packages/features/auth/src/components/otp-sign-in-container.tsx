@@ -142,7 +142,7 @@ export function OtpSignInContainer(props: OtpSignInContainerProps) {
 					<Button
 						type="submit"
 						disabled={verifyMutation.isPending}
-						data-test="otp-verify-button"
+						data-testid="otp-verify-button"
 					>
 						{verifyMutation.isPending ? (
 							<>
@@ -212,7 +212,7 @@ function OtpEmailForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<EmailInput data-test="otp-email-input" {...field} />
+								<EmailInput data-testid="otp-email-input" {...field} />
 							</FormControl>
 
 							<FormMessage />
@@ -223,7 +223,7 @@ function OtpEmailForm({
 				<Button
 					type="submit"
 					disabled={signInMutation.isPending}
-					data-test="otp-send-button"
+					data-testid="otp-send-button"
 				>
 					{signInMutation.isPending ? (
 						<>

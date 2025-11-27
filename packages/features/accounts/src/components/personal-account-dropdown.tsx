@@ -82,7 +82,6 @@ export function PersonalAccountDropdown({
 		<DropdownMenu>
 			<DropdownMenuTrigger
 				aria-label="Open your profile menu"
-				data-test={"account-dropdown-trigger"}
 				data-testid="account-dropdown"
 				className={cn(
 					"animate-in group/trigger fade-in focus:outline-primary flex cursor-pointer items-center group-data-[minimized=true]/sidebar:px-0",
@@ -110,14 +109,14 @@ export function PersonalAccountDropdown({
 						}
 					>
 						<span
-							data-test={"account-dropdown-display-name"}
+							data-testid={"account-dropdown-display-name"}
 							className={"truncate text-sm"}
 						>
 							{displayName}
 						</span>
 
 						<span
-							data-test={"account-dropdown-email"}
+							data-testid={"account-dropdown-email"}
 							className={"text-muted-foreground truncate text-xs"}
 						>
 							{signedInAsLabel}
@@ -203,7 +202,7 @@ export function PersonalAccountDropdown({
 				<DropdownMenuSeparator />
 
 				<DropdownMenuItem
-					data-test={"account-dropdown-sign-out"}
+					data-testid={"account-dropdown-sign-out"}
 					className={"cursor-pointer"}
 					onClick={signOutRequested}
 				>

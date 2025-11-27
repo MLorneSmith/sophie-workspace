@@ -13,7 +13,7 @@ export async function AdminDashboard() {
 
 	return (
 		<div
-			data-test="admin-dashboard"
+			data-testid="admin-dashboard"
 			className={
 				"grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" +
 				" xl:grid-cols-4"

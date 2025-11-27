@@ -156,7 +156,7 @@ export function MultiFactorChallengeContainer({
 
 					<Button
 						className="w-full"
-						data-test={"submit-mfa-button"}
+						data-testid={"submit-mfa-button"}
 						disabled={
 							verifyMFAChallenge.isPending ||
 							verifyMFAChallenge.isSuccess ||

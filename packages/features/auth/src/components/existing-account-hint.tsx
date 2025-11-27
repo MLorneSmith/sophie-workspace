@@ -67,7 +67,7 @@ export function ExistingAccountHintImpl({
 
 	return (
 		<If condition={Boolean(methodDescription)}>
-			<Alert data-test={"existing-account-hint"} className={className}>
+			<Alert data-testid={"existing-account-hint"} className={className}>
 				<UserCheck className="h-4 w-4" />
 
 				<AlertDescription>

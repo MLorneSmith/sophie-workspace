@@ -72,7 +72,7 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
 	return (
 		<Form {...form}>
 			<form
-				data-test={"create-team-form"}
+				data-testid={"create-team-form"}
 				onSubmit={form.handleSubmit((data) => {
 					startTransition(async () => {
 						try {
@@ -105,7 +105,7 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
 
 									<FormControl>
 										<Input
-											data-test={"create-team-name-input"}
+											data-testid={"create-team-name-input"}
 											required
 											minLength={2}
 											maxLength={50}
@@ -134,7 +134,10 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
 							<Trans i18nKey={"common:cancel"} />
 						</Button>
 
-						<Button data-test={"confirm-create-team-button"} disabled={pending}>
+						<Button
+							data-testid={"confirm-create-team-button"}
+							disabled={pending}
+						>
 							{pending ? (
 								<Trans i18nKey={"teams:creatingTeam"} />
 							) : (

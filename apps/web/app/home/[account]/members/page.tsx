@@ -78,7 +78,10 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
 									userRoleHierarchy={currentUserRoleHierarchy}
 									accountSlug={account.slug}
 								>
-									<Button size={"sm"} data-test={"invite-members-form-trigger"}>
+									<Button
+										size={"sm"}
+										data-testid={"invite-members-form-trigger"}
+									>
 										<PlusCircle className={"mr-2 w-4"} />
 
 										<span>

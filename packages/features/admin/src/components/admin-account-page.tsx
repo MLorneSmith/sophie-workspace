@@ -77,7 +77,7 @@ async function PersonalAccountPage(props: { account: Account }) {
 							<Button
 								size={"sm"}
 								variant={"secondary"}
-								data-test={"admin-reactivate-account-button"}
+								data-testid={"admin-reactivate-account-button"}
 							>
 								<ShieldPlus className={"mr-1 h-4"} />
 								Reactivate
@@ -90,7 +90,7 @@ async function PersonalAccountPage(props: { account: Account }) {
 							<Button
 								size={"sm"}
 								variant={"secondary"}
-								data-test={"admin-ban-account-button"}
+								data-testid={"admin-ban-account-button"}
 							>
 								<Ban className={"text-destructive mr-1 h-3"} />
 								Ban
@@ -101,7 +101,7 @@ async function PersonalAccountPage(props: { account: Account }) {
 							<Button
 								size={"sm"}
 								variant={"secondary"}
-								data-test={"admin-impersonate-button"}
+								data-testid={"admin-impersonate-button"}
 							>
 								<VenetianMask className={"mr-1 h-4 text-blue-500"} />
 								Impersonate
@@ -113,7 +113,7 @@ async function PersonalAccountPage(props: { account: Account }) {
 						<Button
 							size={"sm"}
 							variant={"destructive"}
-							data-test={"admin-delete-account-button"}
+							data-testid={"admin-delete-account-button"}
 						>
 							<BadgeX className={"mr-1 h-4"} />
 							Delete
@@ -182,7 +182,7 @@ async function TeamAccountPage(props: {
 					<Button
 						size={"sm"}
 						variant={"destructive"}
-						data-test={"admin-delete-account-button"}
+						data-testid={"admin-delete-account-button"}
 					>
 						<BadgeX className={"mr-1 h-4"} />
 						Delete

@@ -15,7 +15,7 @@ export function AuthProviderButton({
 			className={"flex w-full gap-x-3 text-center"}
 			style={{ backgroundColor: "#ffffff" }}
 			data-provider={providerId}
-			data-test={"auth-provider-button"}
+			data-testid={"auth-provider-button"}
 			variant={"outline"}
 			onClick={onClick}
 		>

@@ -23,7 +23,7 @@ export function RoleBadge({ role }: { role: Role }) {
 
 	return (
 		<Badge className={className} variant={isCustom ? "outline" : "default"}>
-			<span data-test={"member-role-badge"}>
+			<span data-testid={"member-role-badge"}>
 				<Trans i18nKey={`common:roles.${role}.label`} defaults={role} />
 			</span>
 		</Badge>

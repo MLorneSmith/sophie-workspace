@@ -147,7 +147,7 @@ export function VerifyOtpForm({
 							<Button
 								type="submit"
 								disabled={isPending}
-								data-test="otp-send-verification-button"
+								data-testid="otp-send-verification-button"
 							>
 								{isPending ? (
 									<>
@@ -194,7 +194,7 @@ export function VerifyOtpForm({
 												maxLength={6}
 												{...field}
 												disabled={isPending}
-												data-test="otp-input"
+												data-testid="otp-input"
 											>
 												<InputOTPGroup>
 													<InputOTPSlot index={0} data-slot="0" />
@@ -234,7 +234,7 @@ export function VerifyOtpForm({
 									<Button
 										type="submit"
 										disabled={isPending}
-										data-test="otp-verify-button"
+										data-testid="otp-verify-button"
 									>
 										{isPending ? (
 											<>

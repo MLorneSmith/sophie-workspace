@@ -26,7 +26,7 @@ export function BillingPortalCard() {
 
 			<CardContent className={"space-y-2"}>
 				<div>
-					<Button data-test={"manage-billing-redirect-button"}>
+					<Button data-testid={"manage-billing-redirect-button"}>
 						<span>
 							<Trans i18nKey="billing:billingPortalCardButton" />
 						</span>

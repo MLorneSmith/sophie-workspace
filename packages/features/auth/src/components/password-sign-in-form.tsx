@@ -65,7 +65,6 @@ export function PasswordSignInForm({
 										</InputGroupAddon>
 
 										<InputGroupInput
-											data-test={"email-input"}
 											data-testid="sign-in-email"
 											required
 											type="email"
@@ -112,7 +111,6 @@ export function PasswordSignInForm({
 				</div>
 
 				<Button
-					data-test="auth-submit-button"
 					data-testid="sign-in-button"
 					className={"group w-full"}
 					type="submit"

@@ -63,7 +63,7 @@ export function CurrentSubscriptionCard({
 								className={"s-6 fill-green-500 text-white dark:text-stone-900"}
 							/>
 
-							<span data-test={"current-plan-card-product-name"}>
+							<span data-testid={"current-plan-card-product-name"}>
 								<Trans i18nKey={product.name} defaults={product.name} />
 							</span>
 						</span>
@@ -86,7 +86,7 @@ export function CurrentSubscriptionCard({
           (e.g. trial ending soon, subscription canceled, etc.)
         */}
 				<If condition={!subscription.active}>
-					<div data-test={"current-plan-card-status-alert"}>
+					<div data-testid={"current-plan-card-status-alert"}>
 						<CurrentPlanAlert status={subscription.status} />
 					</div>
 				</If>

@@ -93,7 +93,6 @@ export function AccountSelector({
 			<Popover open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
 					<Button
-						data-test={"account-selector-trigger"}
 						data-testid="team-selector"
 						size={collapsed ? "icon" : "default"}
 						variant="ghost"
@@ -166,7 +165,7 @@ export function AccountSelector({
 				</PopoverTrigger>
 
 				<PopoverContent
-					data-test={"account-selector-content"}
+					data-testid={"account-selector-content"}
 					className="w-full p-0"
 					collisionPadding={collisionPadding}
 				>
@@ -202,7 +201,7 @@ export function AccountSelector({
 								>
 									{(accounts ?? []).map((account) => (
 										<CommandItem
-											data-test={"account-selector-team"}
+											data-testid={"account-selector-team"}
 											data-name={account.label}
 											data-slug={account.value}
 											className={cn(
@@ -254,7 +253,7 @@ export function AccountSelector({
 					<If condition={features.enableTeamCreation}>
 						<div className={"p-1"}>
 							<Button
-								data-test={"create-team-account-trigger"}
+								data-testid={"create-team-account-trigger"}
 								variant="ghost"
 								size={"sm"}
 								className="w-full justify-start text-sm font-normal"

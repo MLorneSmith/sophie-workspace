@@ -70,7 +70,7 @@ export function UpdateEmailForm({
 		<Form {...form}>
 			<form
 				className={"flex flex-col space-y-4"}
-				data-test={"account-email-form"}
+				data-testid={"account-email-form"}
 				onSubmit={form.handleSubmit(updateEmail)}
 			>
 				<If condition={updateUserMutation.data}>
@@ -97,7 +97,7 @@ export function UpdateEmailForm({
 
 								<FormControl>
 									<Input
-										data-test={"account-email-form-email-input"}
+										data-testid={"account-email-form-email-input"}
 										required
 										type={"email"}
 										placeholder={""}
@@ -121,7 +121,7 @@ export function UpdateEmailForm({
 								<FormControl>
 									<Input
 										{...field}
-										data-test={"account-email-form-repeat-email-input"}
+										data-testid={"account-email-form-repeat-email-input"}
 										required
 										type={"email"}
 									/>

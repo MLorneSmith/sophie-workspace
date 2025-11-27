@@ -74,7 +74,7 @@ function SuccessAlert() {
 				<Trans i18nKey={"auth:emailConfirmationAlertHeading"} />
 			</AlertTitle>
 
-			<AlertDescription data-test={"email-confirmation-alert"}>
+			<AlertDescription data-testid={"email-confirmation-alert"}>
 				<Trans i18nKey={"auth:emailConfirmationAlertBody"} />
 			</AlertDescription>
 		</Alert>

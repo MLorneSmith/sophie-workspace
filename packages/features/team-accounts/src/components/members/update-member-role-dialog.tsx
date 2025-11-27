@@ -129,7 +129,7 @@ function UpdateMemberForm({
 	return (
 		<Form {...form}>
 			<form
-				data-test={"update-member-role-form"}
+				data-testid={"update-member-role-form"}
 				onSubmit={form.handleSubmit(onSubmit)}
 				className={"flex flex-col space-y-6"}
 			>
@@ -161,7 +161,7 @@ function UpdateMemberForm({
 					}}
 				/>
 
-				<Button data-test={"confirm-update-member-role"} disabled={pending}>
+				<Button data-testid={"confirm-update-member-role"} disabled={pending}>
 					<Trans i18nKey={"teams:updateRoleSubmitLabel"} />
 				</Button>
 			</form>

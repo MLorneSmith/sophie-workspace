@@ -105,7 +105,7 @@ function TransferOrganizationOwnershipForm({
 							<Trans i18nKey={"common:cancel"} />
 						</AlertDialogCancel>
 					}
-					data-test="verify-otp-form"
+					data-testid="verify-otp-form"
 				/>
 			</div>
 		);
@@ -158,7 +158,7 @@ function TransferOrganizationOwnershipForm({
 
 					<Button
 						type={"submit"}
-						data-test={"confirm-transfer-ownership-button"}
+						data-testid={"confirm-transfer-ownership-button"}
 						variant={"destructive"}
 						disabled={pending}
 					>

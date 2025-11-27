@@ -65,11 +65,7 @@ export function PasswordSignUpForm({
 							<FormItem>
 								<FormLabel className="sr-only">Email</FormLabel>
 								<FormControl>
-									<EmailInput
-										data-test={"email-input"}
-										data-testid="sign-up-email"
-										{...field}
-									/>
+									<EmailInput data-testid="sign-up-email" {...field} />
 								</FormControl>
 
 								<FormMessage />
@@ -100,7 +96,7 @@ export function PasswordSignUpForm({
 								<FormLabel className="sr-only">Repeat Password</FormLabel>
 								<FormControl>
 									<PasswordInput
-										data-test={"repeat-password-input"}
+										data-testid={"repeat-password-input"}
 										{...field}
 									/>
 								</FormControl>
@@ -120,7 +116,6 @@ export function PasswordSignUpForm({
 				</If>
 
 				<Button
-					data-test={"auth-submit-button"}
 					data-testid="sign-up-button"
 					className={"w-full"}
 					type="submit"

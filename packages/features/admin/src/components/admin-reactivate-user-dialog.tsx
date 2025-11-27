@@ -69,7 +69,7 @@ function ReactivateUserForm(props: { userId: string }) {
 	return (
 		<Form {...form}>
 			<form
-				data-test={"admin-reactivate-user-form"}
+				data-testid={"admin-reactivate-user-form"}
 				className={"flex flex-col space-y-8"}
 				onSubmit={form.handleSubmit((data) => {
 					startTransition(async () => {
