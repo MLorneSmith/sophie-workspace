@@ -122,7 +122,6 @@ export async function runPreflightValidations(): Promise<{
 	allValid: boolean;
 	results: ValidationResult[];
 }> {
-	// biome-ignore lint/suspicious/noConsole: Required for test setup diagnostics
 	console.log("\n🔍 Running E2E Environment Pre-flight Validations...\n");
 
 	const results: ValidationResult[] = [];
@@ -130,7 +129,6 @@ export async function runPreflightValidations(): Promise<{
 	// Check Node environment
 	const envValidation = validateNodeEnvironment();
 	results.push(envValidation);
-	// biome-ignore lint/suspicious/noConsole: Required for test setup diagnostics
 	console.log(
 		`${envValidation.success ? "✅" : "❌"} NODE_ENV: ${envValidation.message}`,
 	);
@@ -138,7 +136,6 @@ export async function runPreflightValidations(): Promise<{
 	// Check Payload CLI path
 	const cliValidation = validatePayloadCliPath();
 	results.push(cliValidation);
-	// biome-ignore lint/suspicious/noConsole: Required for test setup diagnostics
 	console.log(
 		`${cliValidation.success ? "✅" : "❌"} CLI Path: ${cliValidation.message}`,
 	);
@@ -146,27 +143,22 @@ export async function runPreflightValidations(): Promise<{
 	// Check Supabase connection
 	const supabaseValidation = await validateSupabaseConnection();
 	results.push(supabaseValidation);
-	// biome-ignore lint/suspicious/noConsole: Required for test setup diagnostics
 	console.log(
 		`${supabaseValidation.success ? "✅" : "❌"} Supabase: ${supabaseValidation.message}`,
 	);
 
 	const allValid = results.every((r) => r.success);
 
-	// biome-ignore lint/suspicious/noConsole: Required for test setup diagnostics
 	console.log(
 		`\n${allValid ? "✅ All validations passed" : "❌ Some validations failed"}\n`,
 	);
 
 	if (!allValid) {
 		const failures = results.filter((r) => !r.success);
-		// biome-ignore lint/suspicious/noConsole: Required for test setup error reporting
 		console.error("Failed validations:");
 		failures.forEach((failure) => {
-			// biome-ignore lint/suspicious/noConsole: Required for test setup error reporting
 			console.error(`  - ${failure.message}`);
 			if (failure.details) {
-				// biome-ignore lint/suspicious/noConsole: Required for test setup error reporting
 				console.error(`    Details: ${JSON.stringify(failure.details)}`);
 			}
 		});
