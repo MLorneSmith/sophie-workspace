@@ -98,20 +98,17 @@ test.describe("Invitations", () => {
 });
 
 test.describe("Full Invitation Flow", () => {
-	// Start with clean session - this test performs full auth flow
-	test.use({ storageState: { cookies: [], origins: [] } });
+	// Use pre-authenticated OWNER_USER state to avoid fresh login timeouts
+	test.use({ storageState: AUTH_STATES.OWNER_USER });
 
 	test("should invite users and let users accept an invite", async ({
 		page,
 	}) => {
 		const invitations = new InvitationsPageObject(page);
 
-		// Use pre-existing test user instead of bootstrapUser
-		const email = process.env.E2E_TEST_USER_EMAIL || "test1@slideheroes.com";
-		const password = process.env.E2E_TEST_USER_PASSWORD || "";
-		if (!password) throw new Error("E2E_TEST_USER_PASSWORD not set");
-
-		await invitations.auth.loginAsUser({ email, password });
+		// Already authenticated via OWNER_USER storage state (test2@slideheroes.com)
+		// Skip loginAsUser and go directly to home
+		await page.goto("/home");
 
 		// Create a team for the test
 		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;

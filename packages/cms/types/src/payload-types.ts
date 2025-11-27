@@ -1278,4 +1278,3 @@ export interface Auth {
 
 
 // Module augmentation removed for cross-app compatibility
-}
