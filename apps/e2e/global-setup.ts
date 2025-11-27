@@ -4,6 +4,7 @@ import { chromium, type FullConfig } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { config as dotenvConfig } from "dotenv";
+import { TOTP } from "totp-generator";
 
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
@@ -16,6 +17,9 @@ dotenvConfig({
 
 // Debug logging flag for E2E auth session troubleshooting (matches middleware flag)
 const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
+
+// MFA TOTP key for super admin verification (matches AuthPageObject)
+const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
 /**
  * Log global setup debug info for E2E auth troubleshooting.
@@ -158,6 +162,73 @@ async function globalSetup(config: FullConfig) {
 
 		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 		console.log(`✅ API authentication successful for ${authState.name}`);
+
+		// For super admin user, verify MFA to get AAL2 session
+		if (authState.role === "admin") {
+			debugLog("mfa:challenge_start", {
+				user: authState.name,
+				userId: data.session?.user?.id?.slice(0, 8),
+			});
+
+			// Get MFA factors for this user
+			const { data: factorsData, error: factorsError } =
+				await supabase.auth.mfa.listFactors();
+
+			if (factorsError) {
+				// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+				console.error(
+					`⚠️  MFA factor retrieval failed for ${authState.name}: ${factorsError.message}`,
+				);
+				// Don't throw - continue without AAL2 (non-admin users don't need MFA)
+			} else if (factorsData?.totp && factorsData.totp.length > 0) {
+				const totpFactor = factorsData.totp[0];
+
+				debugLog("mfa:factor_found", {
+					user: authState.name,
+					factorId: totpFactor.id,
+					factorStatus: totpFactor.status,
+				});
+
+				// Generate TOTP code
+				const { otp } = await TOTP.generate(MFA_KEY, { period: 30 });
+
+				debugLog("mfa:otp_generated", { user: authState.name, otpLength: 6 });
+
+				// Challenge and verify MFA in one step
+				const { data: verifyData, error: verifyError } =
+					await supabase.auth.mfa.challengeAndVerify({
+						factorId: totpFactor.id,
+						code: otp,
+					});
+
+				if (verifyError) {
+					// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+					console.error(
+						`⚠️  MFA verification failed for ${authState.name}: ${verifyError.message}`,
+					);
+				} else if (verifyData) {
+					// Get the updated session with AAL2
+					const { data: sessionData } = await supabase.auth.getSession();
+					if (sessionData?.session) {
+						data.session = sessionData.session;
+
+						debugLog("mfa:verified_success", {
+							user: authState.name,
+							newAal: sessionData.session.user.app_metadata?.aal || "unknown",
+							userId: data.session?.user?.id?.slice(0, 8),
+						});
+
+						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+						console.log(`✅ MFA verified (AAL2) for ${authState.name}`);
+					}
+				}
+			} else {
+				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+				console.log(
+					`ℹ️  No TOTP factors found for ${authState.name}, skipping MFA`,
+				);
+			}
+		}
 
 		// Create browser context with Vercel bypass headers and inject the session
 		const context = await browser.newContext({
