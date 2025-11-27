@@ -206,6 +206,8 @@ class AccountInvitationsService {
 			},
 			"Invitations added to account",
 		);
+
+		return responseInvitations;
 	}
 
 	/**

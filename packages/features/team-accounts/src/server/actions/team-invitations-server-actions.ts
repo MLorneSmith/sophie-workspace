@@ -12,6 +12,7 @@ import { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
 import { InviteMembersSchema } from "../../schema/invite-members.schema";
 import { RenewInvitationSchema } from "../../schema/renew-invitation.schema";
 import { UpdateInvitationSchema } from "../../schema/update-invitation.schema";
+import { createAccountInvitationsDispatchService } from "../services/account-invitations-dispatcher.service";
 import { createAccountInvitationsService } from "../services/account-invitations.service";
 import { createAccountPerSeatBillingService } from "../services/account-per-seat-billing.service";
 
@@ -22,12 +23,24 @@ import { createAccountPerSeatBillingService } from "../services/account-per-seat
 export const createInvitationsAction = enhanceAction(
 	async (params) => {
 		const client = getSupabaseServerClient();
+		const adminClient = getSupabaseServerAdminClient();
 
-		// Create the service
+		// Create the services
 		const service = createAccountInvitationsService(client);
+		const dispatchService =
+			createAccountInvitationsDispatchService(adminClient);
 
-		// send invitations
-		await service.sendInvitations(params);
+		// Create invitations in database
+		const invitations = await service.sendInvitations(params);
+
+		// Send invitation emails
+		await Promise.all(
+			invitations.map((invitation) => {
+				const link = dispatchService.getInvitationLink(invitation.invite_token);
+
+				return dispatchService.sendInvitationEmail({ invitation, link });
+			}),
+		);
 
 		revalidateMemberPage();
 
