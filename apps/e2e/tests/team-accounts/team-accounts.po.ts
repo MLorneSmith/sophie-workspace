@@ -81,7 +81,7 @@ export class TeamAccountsPageObject {
 
 	openAccountsSelector() {
 		return expect(async () => {
-			await this.page.click('[data-testid="account-selector-trigger"]');
+			await this.page.click('[data-testid="team-selector"]');
 
 			return expect(
 				this.page.locator('[data-testid="account-selector-content"]'),

@@ -342,8 +342,9 @@ test.describe("Team Account Management", () => {
 
 async function createUser(_page: Page) {
 	// Use pre-existing test user from seed data
-	// test2@slideheroes.com is a regular user without super-admin privileges
-	return "test2@slideheroes.com";
+	// test1@slideheroes.com is a regular user without super-admin privileges
+	// Note: test2@slideheroes.com has super-admin role in seed data and cannot be banned
+	return "test1@slideheroes.com";
 }
 
 async function filterAccounts(page: Page, email: string) {
