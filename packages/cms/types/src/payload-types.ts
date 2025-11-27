@@ -106,6 +106,7 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
+  fallbackLocale: null;
   globals: {};
   globalsSelect: {};
   locale: null;
@@ -1277,3 +1278,4 @@ export interface Auth {
 
 
 // Module augmentation removed for cross-app compatibility
+}

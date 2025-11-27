@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-11-27T16:28:58.991Z",
+		"endTime": "2025-11-27T16:34:06.991Z",
+		"duration": "308s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 10,
+		"passed": 4,
+		"failed": 6,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 16367 bytes)...\n.toPass();\n         | \t\t   ^\n      90 | \t}\n      91 |\n      92 | \tasync tryCreateTeam(teamName: string) {\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:89:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:104:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:20:34\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  6) [chromium] › tests/invitations/invitations.spec.ts:104:6 › Full Invitation Flow › should invite users and let users accept an invite \n\n    Error: Playwright Test did not expect test.describe() to be called here.\n    Most common reasons include:\n    - You are calling test.describe() in a configuration file.\n    - You are calling test.describe() in a file that is imported by the configuration file.\n    - You have two different versions of @playwright/test. This usually happens\n      when one of the dependencies in your package.json depends on @playwright/test.\n\n      4 | import { InvitationsPageObject } from \"./invitations.po\";\n      5 |\n    > 6 | test.describe(\"Invitations\", () => {\n        |      ^\n      7 | \t// Use pre-authenticated state from global setup\n      8 | \tAuthPageObject.setupSession(AUTH_STATES.TEST_USER);\n      9 |\n        at TestTypeImpl._currentSuite (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13)\n        at TestTypeImpl._describe (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24)\n        at Function.describe (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12)\n        at Object.<anonymous> (/home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:6:6)\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Playwright Test did not expect test.describe() to be called here.\n    Most common reasons include:\n    - You are calling test.describe() in a configuration file.\n    - You are calling test.describe() in a file that is imported by the configuration file.\n    - You have two different versions of @playwright/test. This usually happens\n      when one of the dependencies in your package.json depends on @playwright/test.\n\n      4 | import { InvitationsPageObject } from \"./invitations.po\";\n      5 |\n    > 6 | test.describe(\"Invitations\", () => {\n        |      ^\n      7 | \t// Use pre-authenticated state from global setup\n      8 | \tAuthPageObject.setupSession(AUTH_STATES.TEST_USER);\n      9 |\n        at TestTypeImpl._currentSuite (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:75:13)\n        at TestTypeImpl._describe (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/common/testType.js:115:24)\n        at Function.describe (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/playwright@1.57.0/node_modules/playwright/lib/transform/transform.js:275:12)\n        at Object.<anonymous> (/home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:6:6)\n\n  6 failed\n    [chromium] › tests/admin/admin.spec.ts:102:7 › Admin › Personal Account Management › ban user flow \n    [chromium] › tests/admin/admin.spec.ts:319:6 › Team Account Management › delete team account flow \n    [chromium] › tests/invitations/invitations.spec.ts:26:6 › Invitations › users can delete invites \n    [chromium] › tests/invitations/invitations.spec.ts:48:6 › Invitations › users can update invites \n    [chromium] › tests/invitations/invitations.spec.ts:74:6 › Invitations › user cannot invite a member of the team again \n    [chromium] › tests/invitations/invitations.spec.ts:104:6 › Full Invitation Flow › should invite users and let users accept an invite \n  3 did not run\n  4 passed (4.8m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
