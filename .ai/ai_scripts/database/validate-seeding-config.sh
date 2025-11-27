@@ -13,8 +13,8 @@ echo "🔍 Validating seeding configuration..."
 MAIN_CONFIG="$PAYLOAD_DIR/src/payload.config.ts"
 SEED_CONFIG="$PAYLOAD_DIR/src/payload.seeding.config.ts"
 
-MAIN_COLLECTIONS=$(grep -A 30 "collections:" "$MAIN_CONFIG" | grep -E "^\s+[A-Z]" | tr -d ',' | awk '{print $1}')
-SEED_COLLECTIONS=$(grep -A 30 "collections:" "$SEED_CONFIG" | grep -E "^\s+[A-Z]" | tr -d ',' | awk '{print $1}')
+MAIN_COLLECTIONS=$(grep -A 30 "collections:" "$MAIN_CONFIG" | grep -E "^\s+[A-Z]" | grep -v "({" | tr -d ',' | awk '{print $1}')
+SEED_COLLECTIONS=$(grep -A 30 "collections:" "$SEED_CONFIG" | grep -E "^\s+[A-Z]" | grep -v "({" | tr -d ',' | awk '{print $1}')
 
 # Compare counts
 MAIN_COUNT=$(echo "$MAIN_COLLECTIONS" | wc -l)
