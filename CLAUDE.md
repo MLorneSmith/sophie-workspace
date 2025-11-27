@@ -227,7 +227,7 @@ This automatically generates properly formatted commits with agent traceability 
 - Write small, composable, explicit, well-named components
 - Always use `react-hook-form` and `@kit/ui/form` for writing forms
 - Always use 'use client' directive for client components
-- Add `data-test` for E2E tests where appropriate
+- Add `data-testid` for E2E tests where appropriate
 - `useEffect` is a code smell and must be justified - avoid if possible
 - Do not write many (such as 4-5) separate `useState`, prefer single state object (unless required)
 - Prefer server-side data fetching using RSC
@@ -633,12 +633,41 @@ const ctx = { name: 'operation', userId: user.id };
 
 ### Reports Directory
 
-- Save all reports to `/reports/` with proper structure:
-  - `/reports/YYYY-MM-DD/` - Daily reports
-  - `/reports/features/[name]/` - Feature-specific
-  - `/reports/research/[topic]/` - Research docs
-- Naming: `[type]-[scope]-[date].md` (lowercase with hyphens)
-- Archive reports older than 30 days to `_archive/`
+Reports are saved to `.ai/reports/` with four category-specific subdirectories:
+
+```text
+.ai/reports/
+├── bug-reports/          # Diagnoses, bug plans, bug implementations
+│   └── YYYY-MM-DD/       # Date-organized
+├── feature-reports/      # Feature plans and implementations
+│   └── YYYY-MM-DD/
+├── chore-reports/        # Chore plans and implementations
+│   └── YYYY-MM-DD/
+├── research-reports/     # Research agent findings
+│   └── YYYY-MM-DD/
+└── _migrated/            # Legacy reports from old structure
+```
+
+**Filename Conventions**:
+
+| Report Type | Command | Filename Pattern |
+|-------------|---------|------------------|
+| Bug diagnosis | `/diagnose` | `<issue#>-diagnosis-<slug>.md` |
+| Bug fix plan | `/bug-plan` | `<issue#>-bug-plan-<slug>.md` |
+| Bug implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
+| Feature plan | `/feature` | `<issue#>-feature-plan-<slug>.md` |
+| Feature implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
+| Chore plan | `/chore` | `<issue#>-chore-plan-<slug>.md` |
+| Chore implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
+| Research (context7) | Agent | `context7-<description>.md` |
+| Research (perplexity) | Agent | `perplexity-<description>.md` |
+| Research (exa) | Agent | `exa-<description>.md` |
+| Research (docs-mcp) | Agent | `docs-mcp-<description>.md` |
+
+**Notes**:
+- Reports use `pending-` prefix until GitHub issue is created, then renamed with issue number
+- `<slug>` is a short kebab-case description (first few words of title)
+- Date directories use `YYYY-MM-DD` format (e.g., `2025-11-27`)
 
 ### Temporary Files
 

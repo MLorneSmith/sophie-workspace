@@ -196,12 +196,15 @@ Before starting diagnosis:
    - If the answer to ANY of these is "NO", continue investigation (return to step 5)
    - Only proceed to create the diagnosis if you have clear answers
 
-10. **Create the bug diagnosis** in the `.ai/specs/*.md` file:
+10. **Create the bug diagnosis** report file:
+   - **Directory**: `.ai/reports/bug-reports/YYYY-MM-DD/` (use today's date)
+   - **Initial filename**: `pending-diagnosis-<slug>.md` where `<slug>` is a short kebab-case description (first few words of issue title)
    - Use the `Plan Format` below to create the diagnosis
    - IMPORTANT: Replace every <placeholder> with actual diagnostic data
    - Include all relevant evidence, logs, and analysis
    - Name the diagnosis using the following naming convention:
      - 'Bug Diagnosis: `issueTitle`'
+   - **Example**: `.ai/reports/bug-reports/2025-11-27/pending-diagnosis-login-timeout.md`
 
 11. **Create the issue on GitHub** using the `GitHub Issue Creation` process
 
@@ -379,10 +382,16 @@ gh issue create \
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+
+# After creating the issue, rename the report file to include the issue number
+# OLD: .ai/reports/bug-reports/YYYY-MM-DD/pending-diagnosis-<slug>.md
+# NEW: .ai/reports/bug-reports/YYYY-MM-DD/<issue#>-diagnosis-<slug>.md
+mv .ai/reports/bug-reports/<date>/pending-diagnosis-<slug>.md \
+   .ai/reports/bug-reports/<date>/<issue-number>-diagnosis-<slug>.md
 ```
 
 ## Report
 
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the diagnosis you created in the `.ai/specs/*.md` file.
+- Include the path to the diagnosis report: `.ai/reports/bug-reports/YYYY-MM-DD/<issue#>-diagnosis-<slug>.md`
 - Report the GitHub issue #

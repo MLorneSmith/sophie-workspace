@@ -46,14 +46,17 @@ You're writing a plan to resolve a chore, it should be simple but we need to be 
 5. Research the codebase and put together a plan to accomplish the chore.
 - Start your research by reading the `README.md` file.
 
-6. Create the plan in the `.ai/specs/*.md` file. 
-- Use the `Plan Format` below to create the plan. 
+6. Create the plan in `.ai/reports/chore-reports/YYYY-MM-DD/`:
+- **Directory**: `.ai/reports/chore-reports/YYYY-MM-DD/` (use today's date)
+- **Initial filename**: `pending-chore-plan-<slug>.md` where `<slug>` is a short kebab-case description (first few words of chore title)
+- Use the `Plan Format` below to create the plan.
 - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to accomplish the chore.
 - Use your reasoning model: THINK HARD about the plan and the steps to accomplish the chore.
 - Respect requested files in the `Relevant Files` section.
 - `adws/*.py` contain astral uv single file python scripts. So if you want to run them use `uv run <script_name>`.
 - Name the plan using the following naming convention
   - 'Chore: `choreTitle`'
+- **Example**: `.ai/reports/chore-reports/2025-11-27/pending-chore-plan-update-nextjs.md`
 
 7. Create the plan on Github using the `Github Issue Creation` process
 
@@ -157,6 +160,12 @@ gh issue create \
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+
+# After creating the issue, rename the report file to include the issue number
+# OLD: .ai/reports/chore-reports/YYYY-MM-DD/pending-chore-plan-<slug>.md
+# NEW: .ai/reports/chore-reports/YYYY-MM-DD/<issue#>-chore-plan-<slug>.md
+mv .ai/reports/chore-reports/<date>/pending-chore-plan-<slug>.md \
+   .ai/reports/chore-reports/<date>/<issue-number>-chore-plan-<slug>.md
 ```
 
 ## Chore
@@ -166,5 +175,5 @@ $ARGUMENTS
 ## Report
 
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the plan you created in the `specs/*.md` file.
-- Report the github issue #
+- Include the path to the plan: `.ai/reports/chore-reports/YYYY-MM-DD/<issue#>-chore-plan-<slug>.md`
+- Report the GitHub issue #

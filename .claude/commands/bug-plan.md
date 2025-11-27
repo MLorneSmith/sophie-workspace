@@ -100,13 +100,16 @@ THINK HARD about the best approach to fix this bug:
 
 ### 7. Create the Fix Plan
 
-Create the plan in `.ai/specs/bug-fix-<slug>.md` using the **Plan Format** below:
+Create the plan in `.ai/reports/bug-reports/YYYY-MM-DD/` using the **Plan Format** below:
+- **Directory**: `.ai/reports/bug-reports/YYYY-MM-DD/` (use today's date)
+- **Initial filename**: `pending-bug-plan-<slug>.md` where `<slug>` is a short kebab-case description (first few words of bug title)
 - IMPORTANT: Replace every <placeholder> with actual solution design
 - Focus on **solution architecture and implementation strategy**
 - Be surgical: minimal changes that fix the root cause
 - Include comprehensive testing strategy
 - Add risk assessment and rollback plan
 - Name the plan: `Bug Fix: <bugTitle>`
+- **Example**: `.ai/reports/bug-reports/2025-11-27/pending-bug-plan-login-timeout.md`
 
 ### 8. Create GitHub Issue
 
@@ -506,6 +509,12 @@ gh issue create \
 # Capture the issue URL and number from output
 FIX_ISSUE_NUMBER=<captured-from-output>
 
+# After creating the issue, rename the report file to include the issue number
+# OLD: .ai/reports/bug-reports/YYYY-MM-DD/pending-bug-plan-<slug>.md
+# NEW: .ai/reports/bug-reports/YYYY-MM-DD/<issue#>-bug-plan-<slug>.md
+mv .ai/reports/bug-reports/<date>/pending-bug-plan-<slug>.md \
+   .ai/reports/bug-reports/<date>/${FIX_ISSUE_NUMBER}-bug-plan-<slug>.md
+
 # Link back to diagnosis issue with detailed summary
 gh issue comment <diagnosisIssueNumber> \
   --repo MLorneSmith/2025slideheroes \
@@ -537,7 +546,7 @@ From diagnosis issue: #$ARGUMENTS
 
 After creating the fix plan, report:
 
-- ✅ **Fix plan created**: `.ai/specs/bug-fix-<slug>.md`
+- ✅ **Fix plan created**: `.ai/reports/bug-reports/YYYY-MM-DD/<issue#>-bug-plan-<slug>.md`
 - 🔗 **GitHub issue**: #<fix-issue-number>
 - 🎯 **Solution approach**: <one-sentence summary>
 - ⚠️ **Risk level**: <low|medium|high>

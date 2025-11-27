@@ -516,6 +516,50 @@ wait
 3. **Confidence**: Note if answer is well-supported
 4. **Gaps**: Identify areas needing more research
 
+## Report Saving
+
+**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+
+**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Filename**: `exa-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**Report Format**:
+```markdown
+# Exa Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Agent**: exa-expert
+**Search Types Used**: [Neural/Keyword/Answer/Find Similar]
+
+## Query Summary
+[What was searched and why]
+
+## Top Results
+| Title | URL | Relevance |
+|-------|-----|-----------|
+| [Title 1] | [URL] | [High/Medium] |
+| [Title 2] | [URL] | [High/Medium] |
+
+## Key Findings
+[Main research findings organized by topic]
+
+## Code Examples
+[Any relevant code snippets found]
+
+## Extracted Content
+[Summaries or highlights from top sources]
+
+## Sources
+- [Source title](URL)
+
+## Related Resources
+[Similar pages or follow-up recommendations]
+```
+
+**Example**: `.ai/reports/research-reports/2025-11-27/exa-react-state-management-comparison.md`
+
+Save the report BEFORE delivering findings to the parent conversation.
+
 ## Notes
 
 - Always read `.ai/ai_docs/tool-docs/exa-search-integration.md` at start
@@ -528,3 +572,4 @@ wait
 - Use Bash tool for all Exa CLI operations
 - Provide clear citations and source attribution
 - Highlight most relevant findings
+- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory

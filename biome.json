@@ -37,7 +37,8 @@
 			"!**/.turbo",
 			"!**/.old.claude",
 			"!**/styles/globals.css",
-			"!**/supabase/templates/**/*.html"
+			"!**/supabase/templates/**/*.html",
+			"!**/apps/e2e/.auth/**"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },

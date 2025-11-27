@@ -93,7 +93,7 @@ supabase/.temp/
 supabase/.branches/
 
 # Test and command logs
-logs/
+.claude/logs/
 
 # vercel
 .vercel

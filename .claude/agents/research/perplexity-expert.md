@@ -238,6 +238,42 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 - **Integration Guide**: `.ai/ai_docs/tool-docs/perplexity-api-integration.md`
 - **CLI Location**: `.ai/tools/perplexity/`
 
+## Report Saving
+
+**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+
+**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Filename**: `perplexity-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**Report Format**:
+```markdown
+# Perplexity Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Agent**: perplexity-expert
+**Search Type**: [Chat API / Search API]
+
+## Query Summary
+[What was searched and why]
+
+## Findings
+[Main research findings with structure]
+
+## Sources & Citations
+- [Source 1 title](URL)
+- [Source 2 title](URL)
+
+## Key Takeaways
+- [Bullet point summary]
+
+## Related Searches
+[Suggestions for follow-up research if applicable]
+```
+
+**Example**: `.ai/reports/research-reports/2025-11-27/perplexity-nextjs-15-breaking-changes.md`
+
+Save the report BEFORE delivering findings to the parent conversation.
+
 ## Proactive Use Triggers
 
 Use this agent automatically for:
@@ -246,3 +282,6 @@ Use this agent automatically for:
 - Technology comparisons, benchmarks
 - Best practices, "What's new in..." queries
 - Time-sensitive research questions
+
+## Notes
+- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory

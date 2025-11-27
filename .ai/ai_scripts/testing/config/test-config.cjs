@@ -230,7 +230,7 @@ const CONFIG = {
 	// Reporting configuration
 	reporting: {
 		formats: ["console", "json", "html"],
-		outputDir: path.join(PROJECT_ROOT, "logs/slash-test"),
+		outputDir: path.join(PROJECT_ROOT, ".claude/logs/slash-test"),
 		includePassedTests: false,
 		includeSkippedTests: true,
 		generateSummary: true,

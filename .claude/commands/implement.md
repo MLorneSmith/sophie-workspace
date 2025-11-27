@@ -32,7 +32,14 @@ You're implementing a plan that has already been designed and reviewed. Execute 
    const planType = '[bug-fix|feature|chore]'; // Detected from labels or title prefix
    const issueNumber = '[GitHub issue number]'; // If from GitHub, otherwise null
    const issueUrl = '[GitHub issue URL]'; // If from GitHub, otherwise null
+   const slug = '[short-kebab-case-description]'; // First few words of title, e.g., "login-timeout"
+   const todayDate = '[YYYY-MM-DD]'; // Today's date for report directory
    ```
+
+   **Determine report directory based on plan type**:
+   - `bug-fix` → `.ai/reports/bug-reports/YYYY-MM-DD/`
+   - `feature` → `.ai/reports/feature-reports/YYYY-MM-DD/`
+   - `chore` → `.ai/reports/chore-reports/YYYY-MM-DD/`
 
 3. **Mark issue as in-progress** (if from GitHub):
    ```bash
@@ -186,9 +193,16 @@ After completing the implementation:
      --repo MLorneSmith/2025slideheroes \
      --body-file /tmp/completion-report.md
 
-   # Save local copy for reference
-   mkdir -p .ai/specs/
-   cp /tmp/completion-report.md .ai/specs/implementation-<issue-number>-report.md
+   # Save local copy for reference based on plan type
+   # Directory: .ai/reports/{bug|feature|chore}-reports/YYYY-MM-DD/
+   # Filename: <issue#>-implementation-<slug>.md
+   mkdir -p .ai/reports/<type>-reports/<date>/
+   cp /tmp/completion-report.md .ai/reports/<type>-reports/<date>/<issue-number>-implementation-<slug>.md
+
+   # Examples:
+   # Bug fix:  .ai/reports/bug-reports/2025-11-27/123-implementation-login-timeout.md
+   # Feature:  .ai/reports/feature-reports/2025-11-27/456-implementation-oauth-login.md
+   # Chore:    .ai/reports/chore-reports/2025-11-27/789-implementation-update-nextjs.md
 
    # Update labels and close the issue
    gh issue edit <issue-number> \
@@ -204,5 +218,5 @@ After completing the implementation:
 4. **Display summary to user**:
    - Summarize the work completed in a concise bullet point list
    - Report the GitHub issue # (if applicable)
-   - Include path to local implementation report: `.ai/specs/implementation-<issue-number>-report.md`
+   - Include path to local implementation report: `.ai/reports/<type>-reports/YYYY-MM-DD/<issue#>-implementation-<slug>.md`
    - Show key statistics (files changed, commits made)
