@@ -54,7 +54,9 @@ You're writing a plan to implement a feature, it should be comprehensive and wel
    - Use the Task tool with `subagent_type=Explore` for open-ended codebase exploration.
    - Follow existing patterns and conventions in the codebase. Don't reinvent the wheel.
 
-6. **Create the plan** in the `.ai/specs/*.md` file.
+6. **Create the plan** in `.ai/reports/feature-reports/YYYY-MM-DD/`:
+   - **Directory**: `.ai/reports/feature-reports/YYYY-MM-DD/` (use today's date)
+   - **Initial filename**: `pending-feature-plan-<slug>.md` where `<slug>` is a short kebab-case description (first few words of feature title)
    - Use the `Plan Format` below to create the plan.
    - IMPORTANT: Replace every <placeholder> in the `Plan Format` with the requested value. Add as much detail as needed to implement the feature successfully.
    - Use your reasoning model: THINK HARD about the feature requirements, design, and implementation approach.
@@ -63,6 +65,7 @@ You're writing a plan to implement a feature, it should be comprehensive and wel
    - Respect requested files in the `Relevant Files` section.
    - Name the plan using the following naming convention:
      - 'Feature: `featureTitle`'
+   - **Example**: `.ai/reports/feature-reports/2025-11-27/pending-feature-plan-oauth-social-login.md`
 
 7. **Create the plan on GitHub** using the `GitHub Issue Creation` process
 
@@ -231,6 +234,12 @@ gh issue create \
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+
+# After creating the issue, rename the report file to include the issue number
+# OLD: .ai/reports/feature-reports/YYYY-MM-DD/pending-feature-plan-<slug>.md
+# NEW: .ai/reports/feature-reports/YYYY-MM-DD/<issue#>-feature-plan-<slug>.md
+mv .ai/reports/feature-reports/<date>/pending-feature-plan-<slug>.md \
+   .ai/reports/feature-reports/<date>/<issue-number>-feature-plan-<slug>.md
 ```
 
 ## Feature
@@ -239,5 +248,5 @@ $ARGUMENTS
 ## Report
 
 - Summarize the work you've just done in a concise bullet point list.
-- Include a path to the plan you created in the `.ai/specs/*.md` file.
+- Include the path to the plan: `.ai/reports/feature-reports/YYYY-MM-DD/<issue#>-feature-plan-<slug>.md`
 - Report the GitHub issue #

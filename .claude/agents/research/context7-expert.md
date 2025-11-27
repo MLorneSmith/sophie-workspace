@@ -312,6 +312,46 @@ const result = feature({
 **Cache**: `.ai/tools/context7/.cache/` (24hr TTL)
 **Integration Guide**: `.ai/ai_docs/tool-docs/context7-integration.md`
 
+## Report Saving
+
+**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+
+**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Filename**: `context7-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**Report Format**:
+```markdown
+# Context7 Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Agent**: context7-expert
+**Libraries Researched**: [list]
+
+## Query Summary
+[What was searched and why]
+
+## Findings
+
+### [Library 1]
+[Documentation findings with code examples]
+
+### [Library 2]
+[Documentation findings with code examples]
+
+## Key Takeaways
+- [Bullet point summary]
+
+## Code Examples
+[Most relevant code examples]
+
+## Sources
+- [Library] via Context7 ([owner/repo])
+```
+
+**Example**: `.ai/reports/research-reports/2025-11-27/context7-react-hooks-lifecycle.md`
+
+Save the report BEFORE delivering findings to the parent conversation.
+
 ## Notes
 - Always read `.ai/ai_docs/tool-docs/context7-integration.md` at start of session
 - Use `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search` wrapper script when owner/repo unknown
@@ -321,3 +361,4 @@ const result = feature({
 - Highlight security warnings and deprecation notices
 - Focus on practical, implementable examples
 - Use Bash tool for all Context7 CLI operations
+- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory

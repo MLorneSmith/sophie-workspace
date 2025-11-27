@@ -11,8 +11,8 @@ import os
 from pathlib import Path
 
 # Base directory for all logs
-# Default is 'logs' in the current working directory
-LOG_BASE_DIR = os.environ.get("CLAUDE_HOOKS_LOG_DIR", "logs")
+# Default is '.claude/logs/hooks' in the current working directory
+LOG_BASE_DIR = os.environ.get("CLAUDE_HOOKS_LOG_DIR", ".claude/logs/hooks")
 
 def get_session_log_dir(session_id: str) -> Path:
     """

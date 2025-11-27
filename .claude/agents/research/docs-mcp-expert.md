@@ -206,3 +206,49 @@ Result: Inform user indexing initiated, check back in few minutes
 5. **Version Notes** - Any version-specific considerations
 
 Remember: Focus on delivering actionable documentation with code examples, not just descriptions.
+
+## Report Saving
+
+**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+
+**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Filename**: `docs-mcp-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**Report Format**:
+```markdown
+# Docs-MCP Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Agent**: docs-mcp-expert
+**Libraries Searched**: [list with versions]
+
+## Query Summary
+[What was searched and why]
+
+## Documentation Found
+
+### [Library 1] (v[version])
+[Documentation content with code examples]
+
+### [Library 2] (v[version])
+[Documentation content with code examples]
+
+## API Reference
+[Key API signatures and parameters found]
+
+## Code Examples
+[Most relevant code examples]
+
+## Version Notes
+[Any version-specific considerations]
+
+## Indexing Status
+[Note any libraries that needed indexing]
+```
+
+**Example**: `.ai/reports/research-reports/2025-11-27/docs-mcp-supabase-auth-helpers.md`
+
+Save the report BEFORE delivering findings to the parent conversation.
+
+## Notes
+- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory
