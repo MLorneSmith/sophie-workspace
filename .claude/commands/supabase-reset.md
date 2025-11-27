@@ -90,6 +90,12 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 
 **Execute** the 5-phase reset workflow:
 
+1. **Phase 1**: Validate environment and configuration
+2. **Phase 2**: Start Supabase and reset database
+3. **Phase 3**: Verify Payload schema and run migrations
+4. **Phase 4**: Seed Payload CMS data
+5. **Phase 5**: Verify final database state
+
 #### Progress Tracking Setup
 
 **Initialize** TodoWrite progress tracking:
@@ -152,23 +158,24 @@ echo "✅ Environment validation complete"
 **Execute** database reset with port cleanup:
 
 ```bash
-# 3.1 Cleanup conflicting ports (54521-54527 for web instance)
+# 2.1 Cleanup conflicting ports (54521-54527 for web instance)
 bash .ai/ai_scripts/development/cleanup-ports.sh 54521 54527 || {
   echo "⚠️  Port cleanup failed, attempting to continue..."
 }
 
-# 3.2 Stop Supabase if running
+# 2.2 Stop Supabase if running
 cd apps/web
 npx supabase stop 2>/dev/null || true
 
-# 3.3 Reset database with migrations
-echo "🔄 Resetting Supabase database..."
-npx supabase db reset --debug
-
-# 3.4 Start Supabase
+# 2.3 Start Supabase first (required for db reset to work)
+echo "🚀 Starting Supabase..."
 npx supabase start
 
-# 3.5 Verify database connection
+# 2.4 Reset database with migrations (requires Supabase to be running)
+echo "🔄 Resetting Supabase database..."
+npx supabase db reset
+
+# 2.5 Verify database connection
 DATABASE_URL=$(npx supabase status | grep "DB URL" | awk '{print $3}')
 if [ -z "$DATABASE_URL" ]; then
   echo "❌ ERROR: Could not get database URL from Supabase"
@@ -179,9 +186,12 @@ echo "✅ Database reset complete"
 echo "   Database URL: $DATABASE_URL"
 ```
 
-**Update** TodoWrite: Mark Phase 3 complete
+**IMPORTANT**: The `supabase db reset` command requires Supabase to be running first.
+This is why we start Supabase before running reset, not after.
 
-#### Phase 4 (was 5): Verify Payload Schema (Auto-Created by Migration)
+**Update** TodoWrite: Mark Phase 2 complete
+
+#### Phase 3: Verify Payload Schema and Run Migrations
 
 **Note**: The payload schema is now automatically created by the Supabase migration
 `20250327_create_payload_schema.sql` during the `supabase db reset` in Phase 2. This migration:
@@ -194,7 +204,7 @@ echo "   Database URL: $DATABASE_URL"
 ```bash
 cd apps/payload
 
-# 4.1 Verify payload schema exists (created by Supabase migration)
+# 3.1 Verify payload schema exists (created by Supabase migration)
 SCHEMA_EXISTS=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';" | tr -d ' ')
 if [ "$SCHEMA_EXISTS" -eq 0 ]; then
   echo "❌ ERROR: Payload schema not found after Supabase reset"
@@ -203,13 +213,13 @@ if [ "$SCHEMA_EXISTS" -eq 0 ]; then
 fi
 echo "✅ Payload schema exists (created by Supabase migration)"
 
-# 4.2 Option A: Regenerate Migrations (if flag provided)
+# 3.2 Option A: Regenerate Migrations (if flag provided)
 if [ "$REGENERATE_MIGRATIONS" = true ]; then
   echo "🔄 Regenerating Payload migrations..."
   PAYLOAD_ENABLE_SSL=false bash .ai/ai_scripts/database/regenerate-payload-migrations.sh "$DATABASE_URL" || exit 1
   echo "✅ Payload migrations regenerated"
 
-# 4.3 Option B: Use Existing Migrations (default)
+# 3.3 Option B: Use Existing Migrations (default)
 else
   # Run existing migrations with SSL disabled for local Supabase
   echo "🔄 Running Payload migrations..."
@@ -230,9 +240,9 @@ else
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 4 complete
+**Update** TodoWrite: Mark Phase 3 complete
 
-#### Phase 5 (was 6): Seed Payload Data (Default)
+#### Phase 4: Seed Payload Data (Default)
 
 **Execute** seeding unless --schema-only:
 
@@ -240,15 +250,15 @@ fi
 if [ "$SCHEMA_ONLY" = false ]; then
   echo "🌱 Seeding Payload CMS..."
 
-  # 5.1 Validate seeding configuration
+  # 4.1 Validate seeding configuration
   bash .ai/ai_scripts/database/validate-seeding-config.sh || exit 1
 
-  # 5.2 Cleanup existing data (prevent duplicates)
+  # 4.2 Cleanup existing data (prevent duplicates)
   bash .ai/ai_scripts/database/cleanup-payload-tables.sh "$DATABASE_URL" || {
     echo "⚠️  Cleanup failed, proceeding with seeding..."
   }
 
-  # 5.3 Run seeding (files already pre-uploaded to R2)
+  # 4.3 Run seeding (files already pre-uploaded to R2)
   echo "📤 Seeding database with pre-uploaded R2 file URLs..."
   DATABASE_URI="$DATABASE_URL?sslmode=disable" NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run || {
     echo "❌ ERROR: Seeding failed"
@@ -256,7 +266,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
     exit 1
   }
 
-  # 5.4 Validate seeded data (check for duplicates)
+  # 4.4 Validate seeded data (check for duplicates)
   echo "🔍 Validating seeded data..."
   VALIDATION_RESULT=$(psql "$DATABASE_URL" -t -c "
     SELECT
@@ -299,25 +309,25 @@ else
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 5 complete
+**Update** TodoWrite: Mark Phase 4 complete
 
-#### Phase 6: Verify Database
+#### Phase 5: Verify Database
 
 **Execute** final verification:
 
 ```bash
-# 6.1 Check Supabase status
+# 5.1 Check Supabase status
 cd apps/web
 npx supabase status
 
-# 6.2 Verify database connectivity
+# 5.2 Verify database connectivity
 if psql "$DATABASE_URL" -c "SELECT 1;" >/dev/null 2>&1; then
   echo "✅ Database connection verified"
 else
   echo "⚠️  Database connection issues detected"
 fi
 
-# 6.3 Report completion
+# 5.3 Report completion
 echo ""
 echo "✅ Supabase Reset Complete!"
 echo ""
@@ -336,7 +346,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 6 complete
+**Update** TodoWrite: Mark Phase 5 complete
 
 #### Error Handling
 
@@ -350,21 +360,17 @@ fi
 
 **Phase 2 Errors**:
 
-- R2 URL errors → Verify files were uploaded to Cloudflare R2
--
-
-**Phase 3 Errors**:
-
 - Port conflicts → Manual cleanup instructions
+- Supabase start fails → Check Docker status and available ports
 - Database reset fails → Check Docker status and Supabase logs
 
-**Phase 4 Errors**:
+**Phase 3 Errors**:
 
 - Schema not found → Check migration `20250327_create_payload_schema.sql` was applied
 - Migration fails → Suggest --regenerate-payload-migrations flag
 - Low table count → Recommend regenerating migrations
 
-**Phase 5 Errors**:
+**Phase 4 Errors**:
 
 - Seeding validation fails → Check seeding config consistency
 - Cleanup fails → Continue with warning (seeding may catch duplicates)
@@ -372,7 +378,7 @@ fi
 - File URL errors → Verify R2 credentials in .env.test
 - Duplicate detection → Recommend full reset with regeneration
 
-**Phase 6 Errors**:
+**Phase 5 Errors**:
 
 - Connection issues → Retry Supabase start
 - Missing data → Check seeding logs
@@ -405,17 +411,15 @@ fi
 
 **Results:**
 ✅ Phase 1: Environment validated
-✅ Phase 2: Supabase database reset
-✅ Phase 3 (was 4): Database reset
-✅ Phase 4 (was 5): Payload migrations applied (60 tables)
-✅ Phase 5 (was 6): Seeding complete (252/252 records + files uploaded)
-✅ Phase 6: Database verified
+✅ Phase 2: Supabase started and database reset
+✅ Phase 3: Payload migrations applied (60 tables)
+✅ Phase 4: Seeding complete (252/252 records)
+✅ Phase 5: Database verified
 
 **Connection Details:**
 - Database: localhost:54522
 - Studio: http://localhost:54523
 - R2 Storage: Cloudflare (production buckets)
-- 
 - Status: All services running
 
 **Next Steps:**
