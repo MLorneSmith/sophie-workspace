@@ -23,7 +23,7 @@
 		"@types/node": "^24.10.1",
 		"newrelic": "^13.6.5",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.10"
+		"vitest": "^4.0.14"
 	},
 	"peerDependencies": {
 		"newrelic": "^13.0.0"

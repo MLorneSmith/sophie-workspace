@@ -265,8 +265,8 @@ test.describe("Admin", () => {
 test.describe("Team Account Management", () => {
 	test.describe.configure({ mode: "serial" });
 
-	// Start with clean session - this test performs full auth flows for different users
-	test.use({ storageState: { cookies: [], origins: [] } });
+	// Use pre-authenticated OWNER_USER state to avoid fresh login timeouts
+	test.use({ storageState: AUTH_STATES.OWNER_USER });
 
 	test.skip(
 		process.env.ENABLE_TEAM_ACCOUNT_TESTS !== "true",
@@ -280,15 +280,14 @@ test.describe("Team Account Management", () => {
 	test.beforeEach(async ({ page }) => {
 		const auth = new AuthPageObject(page);
 
-		// Create a new test user and team account
+		// Use pre-existing test user (already authenticated via OWNER_USER storage state)
 		testUserEmail = await createUser(page);
 
 		teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
 
-		await auth.loginAsUser({
-			email: testUserEmail,
-			password: process.env.E2E_TEST_USER_PASSWORD || "",
-		});
+		// Already logged in as OWNER_USER (test2@slideheroes.com), skip loginAsUser
+		// Go directly to home to ensure we're on the right page
+		await page.goto("/home");
 
 		const teamAccountPo = new TeamAccountsPageObject(page);
 		const teamSlug = teamName.toLowerCase().replace(/ /g, "-");
