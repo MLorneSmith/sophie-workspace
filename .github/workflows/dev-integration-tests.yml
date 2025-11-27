@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Download deployment URLs
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: deployment-urls
           run-id: ${{ github.event.workflow_run.id }}
@@ -230,7 +230,7 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: dev  # Explicitly checkout dev branch to match deployment
 
@@ -380,7 +380,7 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     timeout-minutes: 30  # Increased from 15 to allow integration tests to complete
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: dev  # Explicitly checkout dev branch to match deployment
           sparse-checkout: |
@@ -488,7 +488,7 @@ jobs:
     timeout-minutes: 10
     continue-on-error: true  # Don't block on security issues initially
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: dev  # Explicitly checkout dev branch to match deployment
 
@@ -597,10 +597,10 @@ jobs:
     timeout-minutes: 10
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run Lighthouse performance test
-        uses: treosh/lighthouse-ci-action@v11
+        uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
             ${{ needs.check-should-run.outputs.web_deployment_url }}
@@ -610,7 +610,7 @@ jobs:
           temporaryPublicStorage: true
 
       - name: Store performance metrics
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Store metrics for comparison in promotion readiness
@@ -633,7 +633,7 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     steps:
       - name: Generate test summary
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const jobs = {
@@ -695,7 +695,7 @@ jobs:
 
       - name: Trigger promotion readiness if all passed
         if: steps.summary.outputs.all_passed == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Trigger the promotion readiness workflow

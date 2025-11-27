@@ -37,7 +37,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.933.0",
+		"@aws-sdk/client-s3": "^3.937.0",
 		"@hookform/resolvers": "5.2.2",
 		"@kit/shared": "workspace:*",
 		"@markdoc/markdoc": "^0.5.4",
