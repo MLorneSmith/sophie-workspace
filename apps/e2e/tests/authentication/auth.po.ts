@@ -44,12 +44,12 @@ export class AuthPageObject {
 		// This handles the race condition where navigation completes before
 		// the useUser() hook validates the session from localStorage
 		const dropdownTrigger = this.page.locator(
-			'[data-test="account-dropdown-trigger"]',
+			'[data-testid="account-dropdown-trigger"]',
 		);
 		await expect(dropdownTrigger).toBeVisible({ timeout: 15000 });
 
 		await dropdownTrigger.click();
-		await this.page.click('[data-test="account-dropdown-sign-out"]');
+		await this.page.click('[data-testid="account-dropdown-sign-out"]');
 	}
 
 	async signIn(params: { email: string; password: string }) {
@@ -118,8 +118,8 @@ export class AuthPageObject {
 		);
 
 		// Phase 2: Wait for inputs to be truly interactive (not just visible)
-		const emailInput = this.page.locator('[data-test="email-input"]');
-		const passwordInput = this.page.locator('[data-test="password-input"]');
+		const emailInput = this.page.locator('[data-testid="email-input"]');
+		const passwordInput = this.page.locator('[data-testid="password-input"]');
 
 		// Use Playwright's built-in interactivity checks
 		// These automatically wait for: visible, stable, enabled, not obscured
@@ -143,7 +143,7 @@ export class AuthPageObject {
 			await this.page.waitForFunction(
 				(expectedEmail) => {
 					const input = document.querySelector(
-						'[data-test="email-input"]',
+						'[data-testid="email-input"]',
 					) as HTMLInputElement;
 					return input && input.value === expectedEmail;
 				},
@@ -167,7 +167,7 @@ export class AuthPageObject {
 			await this.page.waitForFunction(
 				(expectedPassword) => {
 					const input = document.querySelector(
-						'[data-test="password-input"]',
+						'[data-testid="password-input"]',
 					) as HTMLInputElement;
 					return input && input.value === expectedPassword;
 				},
@@ -254,7 +254,7 @@ export class AuthPageObject {
 		await this.page.waitForFunction(
 			() => {
 				const button = document.querySelector(
-					'[data-test="submit-mfa-button"]',
+					'[data-testid="submit-mfa-button"]',
 				);
 				const isEnabled = button && !button.hasAttribute("disabled");
 				return isEnabled;
@@ -264,7 +264,7 @@ export class AuthPageObject {
 
 		console.log("Form validation complete, button enabled. Clicking submit...");
 
-		await this.page.click('[data-test="submit-mfa-button"]');
+		await this.page.click('[data-testid="submit-mfa-button"]');
 	}
 
 	async visitConfirmEmailLink(

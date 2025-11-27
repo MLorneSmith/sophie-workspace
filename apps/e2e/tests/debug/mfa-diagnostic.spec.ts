@@ -50,7 +50,7 @@ test("MFA page diagnostic", async ({ page }) => {
 	}
 
 	// Check for submit button
-	const submitButton = page.locator('[data-test="submit-mfa-button"]');
+	const submitButton = page.locator('[data-testid="submit-mfa-button"]');
 	const buttonCount = await submitButton.count();
 	console.log("Submit button count:", buttonCount);
 
@@ -110,7 +110,7 @@ test("MFA page diagnostic", async ({ page }) => {
 				await page.waitForFunction(
 					() => {
 						const button = document.querySelector(
-							'[data-test="submit-mfa-button"]',
+							'[data-testid="submit-mfa-button"]',
 						);
 						console.log("Button found in function:", !!button);
 						if (button) {

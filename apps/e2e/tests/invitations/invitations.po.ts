@@ -38,18 +38,18 @@ export class InvitationsPageObject {
 			const nth = index + 1;
 
 			await this.page.fill(
-				`[data-test="invite-member-form-item"]:nth-child(${nth}) [data-test="invite-email-input"]`,
+				`[data-testid="invite-member-form-item"]:nth-child(${nth}) [data-testid="invite-email-input"]`,
 				invite.email,
 			);
 
 			await this.page.click(
-				`[data-test="invite-member-form-item"]:nth-child(${nth}) [data-test="role-selector-trigger"]`,
+				`[data-testid="invite-member-form-item"]:nth-child(${nth}) [data-testid="role-selector-trigger"]`,
 			);
 
-			await this.page.click(`[data-test="role-option-${invite.role}"]`);
+			await this.page.click(`[data-testid="role-option-${invite.role}"]`);
 
 			if (index < invites.length - 1) {
-				await form.locator('[data-test="add-new-invite-button"]').click();
+				await form.locator('[data-testid="add-new-invite-button"]').click();
 			}
 		}
 
@@ -70,14 +70,14 @@ export class InvitationsPageObject {
 
 	async openInviteForm() {
 		await expect(async () => {
-			await this.page.click('[data-test="invite-members-form-trigger"]');
+			await this.page.click('[data-testid="invite-members-form-trigger"]');
 
 			return await expect(this.getInviteForm()).toBeVisible();
 		}).toPass();
 	}
 
 	getInvitations() {
-		return this.page.locator('[data-test="invitation-email"]');
+		return this.page.locator('[data-testid="invitation-email"]');
 	}
 
 	async deleteInvitation(email: string) {
@@ -85,10 +85,12 @@ export class InvitationsPageObject {
 
 		await actions.click();
 
-		await this.page.locator('[data-test="remove-invitation-trigger"]').click();
+		await this.page
+			.locator('[data-testid="remove-invitation-trigger"]')
+			.click();
 
 		await this.page.click(
-			'[data-test="delete-invitation-form"] button[type="submit"]',
+			'[data-testid="delete-invitation-form"] button[type="submit"]',
 		);
 	}
 
@@ -102,13 +104,15 @@ export class InvitationsPageObject {
 
 		await actions.click();
 
-		await this.page.locator('[data-test="update-invitation-trigger"]').click();
+		await this.page
+			.locator('[data-testid="update-invitation-trigger"]')
+			.click();
 
-		await this.page.click(`[data-test="role-selector-trigger"]`);
-		await this.page.click(`[data-test="role-option-${role}"]`);
+		await this.page.click(`[data-testid="role-selector-trigger"]`);
+		await this.page.click(`[data-testid="role-option-${role}"]`);
 
 		await this.page.click(
-			'[data-test="update-invitation-form"] button[type="submit"]',
+			'[data-testid="update-invitation-form"] button[type="submit"]',
 		);
 	}
 
@@ -116,7 +120,7 @@ export class InvitationsPageObject {
 		console.log("Accepting invitation...");
 
 		const click = this.page
-			.locator('[data-test="join-team-form"] button[type="submit"]')
+			.locator('[data-testid="join-team-form"] button[type="submit"]')
 			.click();
 
 		const response = this.page.waitForResponse((response) => {
@@ -132,6 +136,6 @@ export class InvitationsPageObject {
 	}
 
 	private getInviteForm() {
-		return this.page.locator('[data-test="invite-members-form"]');
+		return this.page.locator('[data-testid="invite-members-form"]');
 	}
 }

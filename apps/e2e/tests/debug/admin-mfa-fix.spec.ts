@@ -64,7 +64,7 @@ test("admin access with forced MFA", async ({ page }) => {
 		console.log(`Generated OTP: ${otp}`);
 
 		await page.fill("[data-input-otp]", otp);
-		await page.click('[data-test="submit-mfa-button"]');
+		await page.click('[data-testid="submit-mfa-button"]');
 
 		// Wait for redirect after MFA
 		await page.waitForURL(

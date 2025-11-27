@@ -34,13 +34,13 @@ export class TeamAccountsPageObject {
 	}
 
 	getTeamFromSelector(teamName: string) {
-		return this.page.locator(`[data-test="account-selector-team"]`, {
+		return this.page.locator(`[data-testid="account-selector-team"]`, {
 			hasText: teamName,
 		});
 	}
 
 	getTeams() {
-		return this.page.locator('[data-test="account-selector-team"]');
+		return this.page.locator('[data-testid="account-selector-team"]');
 	}
 
 	goToSettings() {
@@ -81,33 +81,35 @@ export class TeamAccountsPageObject {
 
 	openAccountsSelector() {
 		return expect(async () => {
-			await this.page.click('[data-test="account-selector-trigger"]');
+			await this.page.click('[data-testid="account-selector-trigger"]');
 
 			return expect(
-				this.page.locator('[data-test="account-selector-content"]'),
+				this.page.locator('[data-testid="account-selector-content"]'),
 			).toBeVisible();
 		}).toPass();
 	}
 
 	async tryCreateTeam(teamName: string) {
-		await this.page.locator('[data-test="create-team-form"] input').fill("");
+		await this.page.locator('[data-testid="create-team-form"] input').fill("");
 		await this.page.waitForTimeout(200);
 
 		await this.page
-			.locator('[data-test="create-team-form"] input')
+			.locator('[data-testid="create-team-form"] input')
 			.fill(teamName);
 
-		return this.page.click('[data-test="create-team-form"] button:last-child');
+		return this.page.click(
+			'[data-testid="create-team-form"] button:last-child',
+		);
 	}
 
 	async createTeam({ teamName, slug } = this.createTeamName()) {
 		await this.openAccountsSelector();
 
-		await this.page.click('[data-test="create-team-account-trigger"]');
-		await this.page.fill('[data-test="create-team-form"] input', teamName);
+		await this.page.click('[data-testid="create-team-account-trigger"]');
+		await this.page.fill('[data-testid="create-team-form"] input', teamName);
 
 		const click = this.page.click(
-			'[data-test="create-team-form"] button:last-child',
+			'[data-testid="create-team-form"] button:last-child',
 		);
 
 		const response = this.page.waitForURL(`/home/${slug}`);
@@ -118,12 +120,12 @@ export class TeamAccountsPageObject {
 	async updateName(name: string, slug: string) {
 		await expect(async () => {
 			await this.page.fill(
-				'[data-test="update-team-account-name-form"] input',
+				'[data-testid="update-team-account-name-form"] input',
 				name,
 			);
 
 			const click = this.page.click(
-				'[data-test="update-team-account-name-form"] button',
+				'[data-testid="update-team-account-name-form"] button',
 			);
 
 			// the slug should be updated to match the new team name
@@ -135,12 +137,12 @@ export class TeamAccountsPageObject {
 
 	async deleteAccount(email: string) {
 		await expect(async () => {
-			await this.page.click('[data-test="delete-team-trigger"]');
+			await this.page.click('[data-testid="delete-team-trigger"]');
 
 			await this.otp.completeOtpVerification(email);
 
 			const click = this.page.click(
-				'[data-test="delete-team-form-confirm-button"]',
+				'[data-testid="delete-team-form-confirm-button"]',
 			);
 
 			const response = this.page.waitForURL("**/home");
@@ -159,14 +161,14 @@ export class TeamAccountsPageObject {
 			await this.page.getByText("Update Role").click();
 
 			// Select the new role
-			await this.page.click('[data-test="role-selector-trigger"]');
-			await this.page.click(`[data-test="role-option-${newRole}"]`);
+			await this.page.click('[data-testid="role-selector-trigger"]');
+			await this.page.click(`[data-testid="role-option-${newRole}"]`);
 
 			// Wait for the update to complete and page to reload
 			const response = this.page.waitForResponse("**/members");
 
 			return Promise.all([
-				this.page.click('[data-test="confirm-update-member-role"]'),
+				this.page.click('[data-testid="confirm-update-member-role"]'),
 				response,
 			]);
 		}).toPass();
@@ -188,7 +190,7 @@ export class TeamAccountsPageObject {
 			const response = this.page.waitForResponse("**/members");
 
 			return Promise.all([
-				this.page.click('[data-test="confirm-transfer-ownership-button"]'),
+				this.page.click('[data-testid="confirm-transfer-ownership-button"]'),
 				response,
 			]);
 		}).toPass();
