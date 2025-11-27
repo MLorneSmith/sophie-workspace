@@ -42,6 +42,9 @@ services:
       - NEXT_PUBLIC_PRODUCT_NAME=SlideHeroes
       - NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION=true
       - NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION=true
+      # Email configuration (override for Docker networking)
+      - EMAIL_HOST=host.docker.internal
+      - EMAIL_PORT=54525
       # Performance
       - FORCE_COLOR=1
       - CI=false
@@ -103,6 +106,9 @@ services:
       # Test environment settings
       - NODE_ENV=test
       - PORT=3021
+      # Email configuration (override for Docker networking)
+      - EMAIL_HOST=host.docker.internal
+      - EMAIL_PORT=54525
       # Performance
       - FORCE_COLOR=1
       - CI=false
