@@ -12,9 +12,9 @@ export default defineProject({
 		// Enable React support with automatic JSX transform
 		react({
 			jsxImportSource: "react",
-		}),
+		}) as any,
 		// Synchronize TypeScript paths with Vitest/Vite module resolution
-		tsconfigPaths(),
+		tsconfigPaths() as any,
 	],
 	resolve: {
 		alias: {

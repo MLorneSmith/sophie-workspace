@@ -38,7 +38,7 @@
 			"!**/.old.claude",
 			"!**/styles/globals.css",
 			"!**/supabase/templates/**/*.html",
-			"!**/apps/e2e/.auth/**"
+			"!**/apps/e2e/.auth"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
@@ -117,7 +117,9 @@
 				"**/*.spec.tsx",
 				"**/apps/load-tests/**/*.js",
 				"**/test-*.ts",
-				"**/test-*.tsx"
+				"**/test-*.tsx",
+				"**/vitest.config.mts",
+				"**/vitest.config.ts"
 			],
 			"linter": {
 				"rules": {
