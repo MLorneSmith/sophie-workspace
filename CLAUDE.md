@@ -565,6 +565,26 @@ Please use the Task tool to delegate suitable tasks to specialized sub-agents fo
 - `pnpm build` - Build production
 - `pnpm build:test` - Build for testing
 
+### Payload CMS Operations
+
+- `pnpm --filter payload cache:clear` - Clear Next.js/Turbopack build cache
+- `pnpm --filter payload clean` - Full clean (cache + node_modules)
+- `pnpm --filter payload devsafe` - Clear cache and start dev server
+
+**When to clear Payload cache:**
+
+- After modifying `payload.config.ts` (editor features, collections, globals)
+- When seeing "parseEditorState: type 'block' not found" errors
+- When Lexical editor fails to recognize configured block types
+- After upgrading Payload CMS or its dependencies
+- When config changes aren't reflected in the running server
+
+**Cache clearing fixes common issues like:**
+
+- Lexical editor block type errors
+- Missing editor features despite correct configuration
+- Stale configuration being served by Turbopack
+
 ### Supabase Management
 
 - `npx supabase start` - Start local Supabase
