@@ -24,7 +24,7 @@ jobs:
     name: Simple Validation
     runs-on: runs-on=${{ github.run_id }},runner=2cpu-linux-x64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-deps
       - name: Run quick validation
         run: |
@@ -41,7 +41,7 @@ jobs:
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-deps
       
       - name: Deploy to Vercel

@@ -23,11 +23,11 @@ jobs:
     name: Collect Pipeline Metrics
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Collect workflow metrics
         id: metrics
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { owner, repo } = context.repo;
@@ -145,7 +145,7 @@ jobs:
 
       - name: Generate metrics report
         id: report
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const metrics = ${{ steps.metrics.outputs.result }};
@@ -228,7 +228,7 @@ jobs:
 
       - name: Post metrics to issue
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const report = ${{ steps.report.outputs.result }};
@@ -261,7 +261,7 @@ jobs:
             }
 
       - name: Save metrics to artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-metrics-${{ github.run_id }}
           path: |
@@ -269,7 +269,7 @@ jobs:
           retention-days: 90
 
       - name: Add metrics to summary
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const report = ${{ steps.report.outputs.result }};

@@ -35,11 +35,11 @@ export const banUserAction = adminAction(
 			const { error } = await service.banUser(userId);
 
 			if (error) {
-				logger.error({ error }, "Error banning user");
-
-				return {
-					success: false,
-				};
+				logger.error(
+					{ error: error.message, errorCode: error.code, userId },
+					"Error banning user",
+				);
+				throw new Error(`Failed to ban user: ${error.message}`);
 			}
 
 			revalidateAdmin();
@@ -72,10 +72,7 @@ export const reactivateUserAction = adminAction(
 
 			if (error) {
 				logger.error({ error }, "Error reactivating user");
-
-				return {
-					success: false,
-				};
+				throw new Error(`Failed to reactivate user: ${error.message}`);
 			}
 
 			revalidateAdmin();

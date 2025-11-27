@@ -31,7 +31,7 @@ jobs:
     outputs:
       cache-key: ${{ steps.cache.outputs.key }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-deps
 
@@ -109,14 +109,14 @@ jobs:
           }" > build-info.json
 
       - name: Upload build info
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-info-${{ inputs.environment }}
           path: build-info.json
           retention-days: 7
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-artifacts-${{ inputs.environment }}
           path: |

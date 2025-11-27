@@ -28,7 +28,7 @@ jobs:
       packages: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Scan CI Docker image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: 'ghcr.io/${{ github.repository }}/ci:latest'
           format: 'sarif'
@@ -49,7 +49,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload CI image scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'ci-trivy-results.sarif'
@@ -95,7 +95,7 @@ jobs:
       container_high: ${{ needs.container-security-scan.outputs.container_high }}
     needs: [container-security-scan]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-deps
 
@@ -139,7 +139,7 @@ jobs:
 
       - name: Create comprehensive security report
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const aikidoOutcome = '${{ steps.aikido_scan.outcome }}';
@@ -224,7 +224,7 @@ jobs:
             console.log(`Created security issue for weekly scan`);
 
       - name: Upload scan reports as artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: security-scan-reports

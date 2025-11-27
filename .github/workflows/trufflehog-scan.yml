@@ -23,12 +23,12 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Fetch all history for initial scan
 
       - name: TruffleHog OSS Scan
-        uses: trufflesecurity/trufflehog@v3.82.13
+        uses: trufflesecurity/trufflehog@v3.91.1
         id: trufflehog
         with:
           # Scan the entire repository
@@ -46,7 +46,7 @@ jobs:
       # Note: --github-actions flag outputs directly to GitHub Actions, no SARIF upload needed
 
       - name: Comment on PR if secrets found
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: failure() && github.event_name == 'pull_request'
         with:
           script: |
@@ -88,12 +88,12 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Fetch all history
 
       - name: TruffleHog Full History Scan
-        uses: trufflesecurity/trufflehog@v3.82.13
+        uses: trufflesecurity/trufflehog@v3.91.1
         with:
           path: ./
           extra_args: |
@@ -101,7 +101,7 @@ jobs:
             --include-detectors="all"
 
       - name: Create Issue if Secrets Found
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: failure()
         with:
           script: |

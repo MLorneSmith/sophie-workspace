@@ -42,7 +42,7 @@ jobs:
       artifact_found: ${{ steps.check.outputs.found }}
       build_time: ${{ steps.build.outputs.time }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_sha }}
       
@@ -151,7 +151,7 @@ jobs:
           cat build-manifest.json
       
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-artifacts-${{ inputs.environment }}-${{ inputs.commit_sha }}
           path: |
@@ -198,12 +198,12 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: build-or-reuse
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.commit_sha }}
       
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: build-artifacts-${{ inputs.environment }}-${{ inputs.commit_sha }}
           path: .
@@ -272,7 +272,7 @@ jobs:
           EOF
       
       - name: Upload validation report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: artifact-validation-${{ inputs.environment }}-${{ github.run_id }}
           path: artifact-report.md
