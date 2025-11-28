@@ -186,6 +186,17 @@ async function buildTemplate(isDev: boolean = false): Promise<void> {
 		.runCmd(["curl -fsSL https://code-server.dev/install.sh | sh"], {
 			user: "root",
 		})
+		// Install GitHub CLI (gh) for GitHub automation
+		.runCmd(
+			[
+				"curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg",
+				"chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg",
+				'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null',
+				"apt-get update && apt-get install -y gh",
+				"gh --version",
+			],
+			{ user: "root" },
+		)
 		// Install Node.js 20 (must run as root)
 		.runCmd(
 			[
