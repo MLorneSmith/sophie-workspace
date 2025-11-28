@@ -102,3 +102,32 @@ export async function restoreOriginalPassword(
 export function getOriginalPasswordHash(): string {
 	return ORIGINAL_PASSWORD_HASH;
 }
+
+/**
+ * Unbans a user by setting their banned_until to null.
+ * Used for test cleanup after ban user flow tests.
+ *
+ * @param email - The email of the user to unban
+ * @returns True if the user was found and unbanned, false otherwise
+ */
+export async function unbanUser(email: string): Promise<boolean> {
+	const { Client } = await import("pg");
+	const config = getSupabaseConfig();
+
+	const client = new Client({
+		connectionString: config.DB_URL,
+	});
+
+	try {
+		await client.connect();
+
+		const result = await client.query(
+			"UPDATE auth.users SET banned_until = NULL, updated_at = now() WHERE email = $1",
+			[email],
+		);
+
+		return (result.rowCount ?? 0) > 0;
+	} finally {
+		await client.end();
+	}
+}
