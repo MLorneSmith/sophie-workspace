@@ -147,20 +147,34 @@ test.describe("Admin", () => {
 
 			await page.context().clearCookies();
 
-			// Verify user can't log in
+			// Verify banned user cannot log in
 			await page.goto("/auth/sign-in");
 
-			const auth = new AuthPageObject(page);
-
-			await auth.signIn({
-				email: testUserEmail,
-				password: process.env.E2E_TEST_USER_PASSWORD || "",
+			// Wait for form to be ready and fill credentials directly
+			await page.waitForSelector('[data-testid="sign-in-email"]', {
+				state: "visible",
 			});
 
-			// Should show an error message
+			// Fill form fields directly
+			await page.fill('[data-testid="sign-in-email"]', testUserEmail);
+			await page.fill(
+				'[data-testid="sign-in-password"]',
+				process.env.E2E_TEST_USER_PASSWORD || "",
+			);
+
+			// Submit and wait for auth API response (banned users get 400)
+			await Promise.all([
+				page.waitForResponse(
+					(response) => response.url().includes("auth/v1/token"),
+					{ timeout: 30000 },
+				),
+				page.click('[data-testid="sign-in-button"]'),
+			]);
+
+			// Wait for the error message to appear (auth will fail for banned users)
 			await expect(
 				page.locator('[data-testid="auth-error-message"]'),
-			).toBeVisible();
+			).toBeVisible({ timeout: 15000 });
 		});
 
 		test("reactivate user flow", async ({ page }) => {
@@ -238,17 +252,34 @@ test.describe("Admin", () => {
 			await auth.signOut();
 			await page.waitForURL("/");
 
-			await auth.goToSignIn();
+			// Verify deleted user cannot log in
+			await page.goto("/auth/sign-in");
 
-			await auth.signIn({
-				email: testUserEmail,
-				password: process.env.E2E_TEST_USER_PASSWORD || "",
+			// Wait for form to be ready and fill credentials directly
+			await page.waitForSelector('[data-testid="sign-in-email"]', {
+				state: "visible",
 			});
 
-			// Should show an error message
+			// Fill form fields directly
+			await page.fill('[data-testid="sign-in-email"]', testUserEmail);
+			await page.fill(
+				'[data-testid="sign-in-password"]',
+				process.env.E2E_TEST_USER_PASSWORD || "",
+			);
+
+			// Submit and wait for auth API response (deleted users get 400)
+			await Promise.all([
+				page.waitForResponse(
+					(response) => response.url().includes("auth/v1/token"),
+					{ timeout: 30000 },
+				),
+				page.click('[data-testid="sign-in-button"]'),
+			]);
+
+			// Wait for the error message to appear (auth will fail for deleted users)
 			await expect(
 				page.locator('[data-testid="auth-error-message"]'),
-			).toBeVisible();
+			).toBeVisible({ timeout: 15000 });
 		});
 	});
 
