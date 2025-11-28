@@ -17,7 +17,7 @@ export class AuthPageObject {
   }
 
   async signOut() {
-    await this.page.click('[data-testid="account-dropdown-trigger"]');
+    await this.page.click('[data-testid="account-dropdown"]');
     await this.page.click('[data-testid="account-dropdown-sign-out"]');
   }
 }

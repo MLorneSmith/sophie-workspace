@@ -173,7 +173,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Click the account dropdown trigger to open the dropdown menu
 		// The email is displayed in the dropdown content (not in the collapsed sidebar)
 		const accountDropdownTrigger = page.locator(
-			'[data-testid="account-dropdown-trigger"]',
+			'[data-testid="account-dropdown"]',
 		);
 		await accountDropdownTrigger.waitFor({ state: "visible", timeout: 10000 });
 		await accountDropdownTrigger.click();
