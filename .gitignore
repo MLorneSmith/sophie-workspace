@@ -43,6 +43,9 @@ e2b-sandbox.zip
 .ai/tools/exa/.cache/
 .ai/.ai/
 
+# Sandbox session logs
+.ai/logs/sandbox-logs/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

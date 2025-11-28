@@ -1,6 +1,6 @@
 ---
 description: "Create and manage E2B cloud sandboxes for isolated code execution"
-argument-hint: 'run-claude "/test 1" | create | list | kill <id>'
+argument-hint: 'run-claude "/feature" | create | list | kill <id>'
 allowed-tools: [Bash]
 ---
 
@@ -235,6 +235,62 @@ This:
 - `GITHUB_TOKEN` environment variable must be set
 - Create token at: https://github.com/settings/tokens
 - Required scopes: `repo` (full control of private repositories)
+
+## Session Logging
+
+Every sandbox operation automatically creates a session log in `.ai/logs/sandbox-logs/YYYY-MM-DD/`.
+
+### Log Structure
+
+Each session creates a JSON log file with:
+
+```json
+{
+  "sessionId": "session-abc123-xyz789",
+  "sandboxId": "sandbox-id-here",
+  "template": "slideheroes-claude-agent",
+  "startTime": "2025-11-28T10:30:00.000Z",
+  "endTime": "2025-11-28T10:45:00.000Z",
+  "exitCode": 0,
+  "command": "feature: Add dark mode",
+  "environment": {
+    "E2B_API_KEY": "[REDACTED]",
+    "GITHUB_TOKEN": "[REDACTED]"
+  },
+  "entries": [
+    {"timestamp": "...", "type": "info", "message": "Session started"},
+    {"timestamp": "...", "type": "command", "message": "Running: /feature Add dark mode"},
+    {"timestamp": "...", "type": "stdout", "message": "..."},
+    {"timestamp": "...", "type": "info", "message": "Session completed"}
+  ],
+  "gitChanges": {
+    "status": "M src/components/theme.tsx\nA src/styles/dark-mode.css",
+    "diffStat": "2 files changed, 150 insertions(+), 10 deletions(-)",
+    "changedFiles": ["src/components/theme.tsx", "src/styles/dark-mode.css"]
+  }
+}
+```
+
+### What Gets Logged
+
+- **Session metadata**: Sandbox ID, template, timestamps, exit code
+- **Commands**: All Claude Code prompts executed
+- **Output**: stdout/stderr from sandbox commands (streamed in real-time)
+- **Git changes**: Status, diff summary, and changed files
+- **Errors**: Any errors that occur during execution
+
+### Security
+
+- **Secrets are automatically masked**: API keys, tokens, and credentials are replaced with `[REDACTED]`
+- **Log files are gitignored**: `.ai/logs/sandbox-logs/` is excluded from version control
+
+### Log Location
+
+After any sandbox operation, the log path is displayed:
+
+```
+Log: /path/to/project/.ai/logs/sandbox-logs/2025-11-28/session-abc123-xyz789.json
+```
 
 ## Default Template
 
