@@ -4,7 +4,11 @@ import {
 	sql,
 } from "@payloadcms/db-postgres";
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({
+	db,
+	payload: _payload,
+	req: _req,
+}: MigrateUpArgs): Promise<void> {
 	await db.execute(sql`
    CREATE TYPE "payload"."enum_users_role" AS ENUM('admin', 'user');
   CREATE TYPE "payload"."enum_media_type" AS ENUM('image', 'video', 'document');
@@ -1029,8 +1033,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
 
 export async function down({
 	db,
-	payload,
-	req,
+	payload: _payload,
+	req: _req,
 }: MigrateDownArgs): Promise<void> {
 	await db.execute(sql`
    DROP TABLE "payload"."users_sessions" CASCADE;

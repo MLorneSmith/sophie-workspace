@@ -34,9 +34,9 @@ The E2E database runs on **different ports** than the development database to al
 | API Gateway   | 54321             | **55321** | Main Supabase API endpoint |
 | Database      | 54322             | **55322** | PostgreSQL database        |
 | Studio        | 54323             | **55323** | Supabase Studio UI         |
-| Inbucket Web  | 54324             | **55324** | Email testing interface    |
-| Inbucket SMTP | 54325             | **55325** | SMTP server for emails     |
-| Inbucket POP3 | 54326             | **55326** | POP3 email retrieval       |
+| Mailpit Web   | 54324             | **55324** | Email testing interface    |
+| Mailpit SMTP  | 54325             | **55325** | SMTP server for emails     |
+| Mailpit POP3  | 54326             | **55326** | POP3 email retrieval       |
 | Analytics     | 54327             | **55327** | Analytics service          |
 
 ### Environment Variables
@@ -135,7 +135,7 @@ docker exec -i supabase_db_2025slideheroes-e2e psql -U postgres -d postgres -c "
 
 ### Email Testing
 
-The E2E tests use a dedicated Inbucket instance for email testing:
+The E2E tests use a dedicated Mailpit instance for email testing:
 
 ```bash
 # View E2E email interface
@@ -216,7 +216,7 @@ apps/e2e/
 | ---------------------- | ------------------------------------------------------ |
 | "Port already in use"  | Stop existing E2E Supabase: `pnpm supabase stop`       |
 | "Table does not exist" | Reset database: `pnpm supabase db reset`               |
-| "Emails not arriving"  | Check Inbucket at `http://127.0.0.1:55324`             |
+| "Emails not arriving"  | Check Mailpit at `http://127.0.0.1:55324`              |
 | "Tests timeout"        | Verify E2E Supabase is running: `pnpm supabase status` |
 | "Permission denied"    | Check service role key in `.env.local`                 |
 
