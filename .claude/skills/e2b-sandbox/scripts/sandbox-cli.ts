@@ -18,6 +18,249 @@
  */
 
 import { Sandbox } from "@e2b/code-interpreter";
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+// ============================================================================
+// Sandbox Logger - Comprehensive session logging
+// ============================================================================
+
+// Patterns for masking secrets in logs
+const SECRET_PATTERNS = [
+	/E2B_API_KEY[=:]\s*["']?([^"'\s]+)["']?/gi,
+	/ANTHROPIC_API_KEY[=:]\s*["']?([^"'\s]+)["']?/gi,
+	/CLAUDE_CODE_OAUTH_TOKEN[=:]\s*["']?([^"'\s]+)["']?/gi,
+	/GITHUB_TOKEN[=:]\s*["']?([^"'\s]+)["']?/gi,
+	/sk-[a-zA-Z0-9-_]{20,}/g, // Anthropic API keys
+	/ghp_[a-zA-Z0-9]{36}/g, // GitHub personal access tokens
+	/gho_[a-zA-Z0-9]{36}/g, // GitHub OAuth tokens
+	/github_pat_[a-zA-Z0-9_]{22,}/g, // GitHub fine-grained PATs
+	/e2b_[a-zA-Z0-9]{32,}/gi, // E2B API keys
+	/Bearer\s+[a-zA-Z0-9._-]+/gi, // Bearer tokens
+	/x-access-token:[^@]+@/gi, // Git credential URLs
+];
+
+interface LogEntry {
+	timestamp: string;
+	type: "info" | "command" | "stdout" | "stderr" | "error" | "metadata";
+	message: string;
+	data?: Record<string, unknown>;
+}
+
+interface SessionLog {
+	sessionId: string;
+	sandboxId: string;
+	template: string;
+	startTime: string;
+	endTime?: string;
+	exitCode?: number;
+	command?: string;
+	environment: Record<string, string>;
+	entries: LogEntry[];
+	gitChanges?: {
+		status: string;
+		diffStat: string;
+		changedFiles: string[];
+	};
+}
+
+class SandboxLogger {
+	private logDir: string;
+	private sessionLog: SessionLog;
+	private logFilePath: string;
+
+	constructor(sandboxId: string, template: string, command?: string) {
+		const projectRoot = this.findProjectRoot();
+		const today = new Date().toISOString().split("T")[0];
+		this.logDir = path.join(projectRoot, ".ai", "logs", "sandbox-logs", today);
+
+		this.sessionLog = {
+			sessionId: this.generateSessionId(),
+			sandboxId,
+			template,
+			startTime: new Date().toISOString(),
+			command,
+			environment: this.sanitizeEnvironment(),
+			entries: [],
+		};
+
+		this.logFilePath = path.join(
+			this.logDir,
+			`${this.sessionLog.sessionId}.json`,
+		);
+
+		this.ensureLogDir();
+		this.log("info", "Session started", {
+			sandboxId,
+			template,
+			command,
+		});
+	}
+
+	private findProjectRoot(): string {
+		// Start from the script location and find git root
+		let dir = path.dirname(new URL(import.meta.url).pathname);
+		while (dir !== "/") {
+			if (fs.existsSync(path.join(dir, ".git"))) {
+				return dir;
+			}
+			dir = path.dirname(dir);
+		}
+		// Fallback to current working directory
+		return process.cwd();
+	}
+
+	private generateSessionId(): string {
+		const timestamp = Date.now().toString(36);
+		const random = Math.random().toString(36).substring(2, 8);
+		return `session-${timestamp}-${random}`;
+	}
+
+	private ensureLogDir(): void {
+		try {
+			if (!fs.existsSync(this.logDir)) {
+				fs.mkdirSync(this.logDir, { recursive: true });
+			}
+		} catch {
+			// Silently fail - logging errors shouldn't block sandbox operations
+		}
+	}
+
+	private sanitizeEnvironment(): Record<string, string> {
+		const env: Record<string, string> = {};
+		const relevantKeys = [
+			"E2B_API_KEY",
+			"ANTHROPIC_API_KEY",
+			"CLAUDE_CODE_OAUTH_TOKEN",
+			"GITHUB_TOKEN",
+		];
+
+		for (const key of relevantKeys) {
+			if (process.env[key]) {
+				env[key] = "[REDACTED]";
+			}
+		}
+
+		return env;
+	}
+
+	private maskSecrets(text: string): string {
+		let masked = text;
+		for (const pattern of SECRET_PATTERNS) {
+			masked = masked.replace(pattern, (match) => {
+				// Keep the key name, replace the value
+				const colonIndex = match.indexOf(":");
+				const equalIndex = match.indexOf("=");
+				const sepIndex = Math.max(colonIndex, equalIndex);
+				if (sepIndex !== -1) {
+					return match.substring(0, sepIndex + 1) + " [REDACTED]";
+				}
+				return "[REDACTED]";
+			});
+		}
+		return masked;
+	}
+
+	log(
+		type: LogEntry["type"],
+		message: string,
+		data?: Record<string, unknown>,
+	): void {
+		const entry: LogEntry = {
+			timestamp: new Date().toISOString(),
+			type,
+			message: this.maskSecrets(message),
+		};
+
+		if (data) {
+			// Deep clone and sanitize data
+			entry.data = JSON.parse(this.maskSecrets(JSON.stringify(data))) as Record<
+				string,
+				unknown
+			>;
+		}
+
+		this.sessionLog.entries.push(entry);
+		this.saveLog();
+	}
+
+	logCommand(command: string): void {
+		this.sessionLog.command = this.maskSecrets(command);
+		this.log("command", `Executing: ${command}`);
+	}
+
+	logStdout(data: string): void {
+		this.log("stdout", data);
+	}
+
+	logStderr(data: string): void {
+		this.log("stderr", data);
+	}
+
+	logError(error: Error | string): void {
+		const message = error instanceof Error ? error.message : error;
+		this.log("error", message, {
+			stack: error instanceof Error ? error.stack : undefined,
+		});
+	}
+
+	setGitChanges(changes: SessionLog["gitChanges"]): void {
+		if (changes) {
+			this.sessionLog.gitChanges = {
+				status: this.maskSecrets(changes.status),
+				diffStat: this.maskSecrets(changes.diffStat),
+				changedFiles: changes.changedFiles.map((f) => this.maskSecrets(f)),
+			};
+		}
+		this.saveLog();
+	}
+
+	complete(exitCode?: number): void {
+		this.sessionLog.endTime = new Date().toISOString();
+		this.sessionLog.exitCode = exitCode;
+		this.log("info", "Session completed", { exitCode });
+		this.saveLog();
+	}
+
+	private saveLog(): void {
+		try {
+			fs.writeFileSync(
+				this.logFilePath,
+				JSON.stringify(this.sessionLog, null, 2),
+			);
+		} catch {
+			// Silently fail - logging errors shouldn't block sandbox operations
+		}
+	}
+
+	getLogPath(): string {
+		return this.logFilePath;
+	}
+
+	getSessionId(): string {
+		return this.sessionLog.sessionId;
+	}
+}
+
+// Global logger instance for the current session
+let currentLogger: SandboxLogger | null = null;
+
+function createLogger(
+	sandboxId: string,
+	template: string,
+	command?: string,
+): SandboxLogger {
+	currentLogger = new SandboxLogger(sandboxId, template, command);
+	return currentLogger;
+}
+
+function getLogger(): SandboxLogger | null {
+	return currentLogger;
+}
+
+// ============================================================================
+// Environment Variables and Configuration
+// ============================================================================
 
 const API_KEY = process.env.E2B_API_KEY;
 
@@ -35,7 +278,7 @@ const DEFAULT_TEMPLATE = "slideheroes-claude-agent";
 // Repository configuration
 const REPO_OWNER = "slideheroes";
 const REPO_NAME = "2025slideheroes";
-const WORKSPACE_DIR = "/home/user/slideheroes";
+const WORKSPACE_DIR = "/home/user/project";
 
 function checkApiKey(): void {
 	if (!API_KEY) {
@@ -203,9 +446,19 @@ async function createSandbox(
 
 		const sandbox = await Sandbox.create(template, opts);
 
+		// Create logger for this sandbox session
+		const logger = createLogger(sandbox.sandboxId, template, "create");
+		logger.log("info", "Sandbox created", {
+			timeout,
+			template,
+			claudeAuth: getClaudeAuthType(),
+			gitConfigured: !!GITHUB_TOKEN,
+		});
+
 		// Setup git credentials if token is available
 		if (setupGit && GITHUB_TOKEN) {
 			await setupGitCredentials(sandbox);
+			logger.log("info", "Git credentials configured");
 		}
 
 		console.log("\n=== Sandbox Created ===");
@@ -213,11 +466,18 @@ async function createSandbox(
 		console.log(`Timeout:  ${timeout} seconds`);
 		console.log(`Template: ${template}`);
 		console.log(`Git:      ${GITHUB_TOKEN ? "Configured" : "Not configured"}`);
+		console.log(`Log:      ${logger.getLogPath()}`);
 		console.log("\nTo connect: /sandbox status " + sandbox.sandboxId);
 		console.log("To kill:    /sandbox kill " + sandbox.sandboxId);
 
+		logger.complete(0);
 		return sandbox;
 	} catch (error) {
+		const logger = getLogger();
+		if (logger) {
+			logger.logError(error instanceof Error ? error : String(error));
+			logger.complete(1);
+		}
 		console.error(
 			"Failed to create sandbox:",
 			error instanceof Error ? error.message : error,
@@ -236,19 +496,43 @@ async function runClaude(
 
 	let sandbox: Sandbox;
 	let createdSandbox = false;
+	let logger: SandboxLogger | null = null;
 
 	try {
 		if (sandboxId) {
 			console.log(`Connecting to sandbox ${sandboxId}...`);
 			sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+			logger = createLogger(
+				sandboxId,
+				DEFAULT_TEMPLATE,
+				`run-claude: ${prompt}`,
+			);
 		} else {
 			sandbox = await createSandbox(timeout);
 			createdSandbox = true;
+			// Logger already created by createSandbox, update it
+			logger = getLogger();
+			if (logger) {
+				logger.logCommand(`run-claude: ${prompt}`);
+			}
+		}
+
+		if (!logger) {
+			logger = createLogger(
+				sandbox.sandboxId,
+				DEFAULT_TEMPLATE,
+				`run-claude: ${prompt}`,
+			);
 		}
 
 		console.log(`\nRunning Claude Code with prompt: "${prompt}"`);
 		console.log(`Authentication: ${getClaudeAuthType()}`);
 		console.log("=== Claude Code Output ===\n");
+
+		logger.log("info", "Running Claude Code", {
+			prompt,
+			auth: getClaudeAuthType(),
+		});
 
 		// Run Claude Code in the sandbox with streaming output
 		const result = await sandbox.commands.run(
@@ -256,12 +540,31 @@ async function runClaude(
 			{
 				timeoutMs: 0, // No timeout for long-running Claude tasks
 				envs: getClaudeEnvVars(),
-				onStdout: (data) => process.stdout.write(data),
-				onStderr: (data) => process.stderr.write(data),
+				onStdout: (data) => {
+					process.stdout.write(data);
+					logger?.logStdout(data);
+				},
+				onStderr: (data) => {
+					process.stderr.write(data);
+					logger?.logStderr(data);
+				},
 			},
 		);
 
 		console.log(`\n\nExit code: ${result.exitCode}`);
+
+		// Try to capture git changes
+		try {
+			const reviewSummary = await getReviewSummary(sandbox);
+			if (reviewSummary.status.trim()) {
+				logger.setGitChanges(reviewSummary);
+			}
+		} catch {
+			// Ignore git change capture errors
+		}
+
+		logger.complete(result.exitCode);
+		console.log(`Log: ${logger.getLogPath()}`);
 
 		if (createdSandbox) {
 			console.log(`\nSandbox ${sandbox.sandboxId} is still running.`);
@@ -273,6 +576,10 @@ async function runClaude(
 			console.log("To kill it: /sandbox kill " + sandbox.sandboxId);
 		}
 	} catch (error) {
+		if (logger) {
+			logger.logError(error instanceof Error ? error : String(error));
+			logger.complete(1);
+		}
 		console.error(
 			"Failed to run Claude:",
 			error instanceof Error ? error.message : error,
@@ -515,12 +822,31 @@ async function runFeaturePhase(
 	const sandbox = await createSandbox(timeout, DEFAULT_TEMPLATE, true);
 	const sandboxId = sandbox.sandboxId;
 
+	// Get or create logger
+	let logger = getLogger();
+	if (!logger) {
+		logger = createLogger(
+			sandboxId,
+			DEFAULT_TEMPLATE,
+			`feature: ${cleanDescription}`,
+		);
+	} else {
+		logger.logCommand(`feature: ${cleanDescription}`);
+	}
+
+	logger.log("info", "Starting feature phase", {
+		description: cleanDescription,
+		issueNumber,
+		branchName: generateBranchName(cleanDescription, issueNumber),
+	});
+
 	// Sync with origin/dev
 	console.log("\nSyncing with origin/dev...");
 	await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
 		{ timeoutMs: 60000 },
 	);
+	logger.log("info", "Synced with origin/dev");
 
 	// Create feature branch
 	const branchName = generateBranchName(cleanDescription, issueNumber);
@@ -529,6 +855,7 @@ async function runFeaturePhase(
 		`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
 		{ timeoutMs: 30000 },
 	);
+	logger.log("info", "Created feature branch", { branchName });
 
 	// Store metadata
 	await sandbox.commands.run(
@@ -538,18 +865,36 @@ async function runFeaturePhase(
 
 	// Run /feature command
 	console.log("\nRunning Claude Code /feature...\n");
+	logger.log("command", `Running: /feature ${cleanDescription}`);
 	await sandbox.commands.run(
 		`run-claude "/feature ${cleanDescription.replace(/"/g, '\\"')}"`,
 		{
 			timeoutMs: 0,
 			envs: getAllEnvVars(),
-			onStdout: (data) => process.stdout.write(data),
-			onStderr: (data) => process.stderr.write(data),
+			onStdout: (data) => {
+				process.stdout.write(data);
+				logger?.logStdout(data);
+			},
+			onStderr: (data) => {
+				process.stderr.write(data);
+				logger?.logStderr(data);
+			},
 		},
 	);
 
 	// Start VS Code Web
 	const vscodeUrl = await startVSCode(sandbox);
+	logger.log("info", "VS Code Web started", { url: vscodeUrl });
+
+	// Capture git changes
+	try {
+		const reviewSummary = await getReviewSummary(sandbox);
+		if (reviewSummary.status.trim()) {
+			logger.setGitChanges(reviewSummary);
+		}
+	} catch {
+		// Ignore git change capture errors
+	}
 
 	// Output review instructions
 	console.log("\n" + "=".repeat(70));
@@ -558,6 +903,7 @@ async function runFeaturePhase(
 	console.log("");
 	console.log(`Sandbox ID:  ${sandboxId}`);
 	console.log(`Branch:      ${branchName}`);
+	console.log(`Log:         ${logger.getLogPath()}`);
 	console.log("");
 	console.log("📝 VS Code Web (review the plan):");
 	console.log(`   ${vscodeUrl}`);
@@ -574,6 +920,8 @@ async function runFeaturePhase(
 	console.log("Or reject and discard:");
 	console.log(`   /sandbox reject ${sandboxId}`);
 	console.log("");
+
+	logger.log("info", "Feature phase complete - awaiting review");
 }
 
 /**
@@ -596,6 +944,13 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 		process.exit(1);
 	}
 
+	// Create logger for continue phase
+	const logger = createLogger(sandboxId, DEFAULT_TEMPLATE, "continue");
+	logger.log("info", "Starting continue phase", {
+		branchName: metadata.branchName,
+		description: metadata.description,
+	});
+
 	// Update phase
 	await sandbox.commands.run(
 		`echo '${JSON.stringify({ ...metadata, phase: "implement" })}' > ${WORKSPACE_DIR}/.sandbox-metadata.json`,
@@ -604,31 +959,48 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 
 	// Run /implement command
 	console.log("Running Claude Code /implement...\n");
+	logger.log("command", "Running: /implement");
 	await sandbox.commands.run(`run-claude "/implement"`, {
 		timeoutMs: 0,
 		envs: getAllEnvVars(),
-		onStdout: (data) => process.stdout.write(data),
-		onStderr: (data) => process.stderr.write(data),
+		onStdout: (data) => {
+			process.stdout.write(data);
+			logger.logStdout(data);
+		},
+		onStderr: (data) => {
+			process.stderr.write(data);
+			logger.logStderr(data);
+		},
 	});
 
 	// Start dev server
 	console.log("\nStarting dev server for manual testing...");
 	const devUrl = await startDevServer(sandbox);
+	logger.log("info", "Dev server started", { url: devUrl });
 
 	// Start VS Code (in case it stopped)
 	const vscodeUrl = await startVSCode(sandbox);
+	logger.log("info", "VS Code Web started", { url: vscodeUrl });
 
 	// Run /review command
 	console.log("\nRunning Claude Code /review...\n");
+	logger.log("command", "Running: /review");
 	await sandbox.commands.run(`run-claude "/review"`, {
 		timeoutMs: 0,
 		envs: getAllEnvVars(),
-		onStdout: (data) => process.stdout.write(data),
-		onStderr: (data) => process.stderr.write(data),
+		onStdout: (data) => {
+			process.stdout.write(data);
+			logger.logStdout(data);
+		},
+		onStderr: (data) => {
+			process.stderr.write(data);
+			logger.logStderr(data);
+		},
 	});
 
 	// Get changes summary
 	const reviewSummary = await getReviewSummary(sandbox);
+	logger.setGitChanges(reviewSummary);
 
 	// Output review instructions
 	console.log("\n" + "=".repeat(70));
@@ -637,6 +1009,7 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	console.log("");
 	console.log(`Sandbox ID:  ${sandboxId}`);
 	console.log(`Branch:      ${metadata.branchName}`);
+	console.log(`Log:         ${logger.getLogPath()}`);
 	console.log("");
 	console.log("📝 VS Code Web (review the code):");
 	console.log(`   ${vscodeUrl}`);
@@ -667,6 +1040,8 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	console.log("Or reject and discard:");
 	console.log(`   /sandbox reject ${sandboxId}`);
 	console.log("");
+
+	logger.log("info", "Continue phase complete - awaiting code review");
 }
 
 // ============================================================================
