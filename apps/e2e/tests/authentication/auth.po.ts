@@ -118,8 +118,9 @@ export class AuthPageObject {
 		);
 
 		// Phase 2: Wait for inputs to be truly interactive (not just visible)
-		const emailInput = this.page.locator('[data-testid="email-input"]');
-		const passwordInput = this.page.locator('[data-testid="password-input"]');
+		// Note: The sign-in form uses "sign-in-email" and "sign-in-password" data-testids
+		const emailInput = this.page.locator('[data-testid="sign-in-email"]');
+		const passwordInput = this.page.locator('[data-testid="sign-in-password"]');
 
 		// Use Playwright's built-in interactivity checks
 		// These automatically wait for: visible, stable, enabled, not obscured
@@ -143,7 +144,7 @@ export class AuthPageObject {
 			await this.page.waitForFunction(
 				(expectedEmail) => {
 					const input = document.querySelector(
-						'[data-testid="email-input"]',
+						'[data-testid="sign-in-email"]',
 					) as HTMLInputElement;
 					return input && input.value === expectedEmail;
 				},
@@ -167,7 +168,7 @@ export class AuthPageObject {
 			await this.page.waitForFunction(
 				(expectedPassword) => {
 					const input = document.querySelector(
-						'[data-testid="password-input"]',
+						'[data-testid="sign-in-password"]',
 					) as HTMLInputElement;
 					return input && input.value === expectedPassword;
 				},

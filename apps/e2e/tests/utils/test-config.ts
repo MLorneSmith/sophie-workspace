@@ -66,8 +66,10 @@ export class TestConfigManager {
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
 					short: isCI ? 10000 : 5000,
-					medium: isCI ? 30000 : 15000,
-					long: isCI ? 60000 : 30000,
+					// Medium timeout needs to be long enough for signIn() method
+					// which has multiple phases with their own timeouts (45s+ total)
+					medium: isCI ? 60000 : 45000,
+					long: isCI ? 90000 : 60000,
 				},
 			},
 		};
