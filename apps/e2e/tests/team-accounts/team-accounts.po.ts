@@ -81,12 +81,23 @@ export class TeamAccountsPageObject {
 
 	openAccountsSelector() {
 		return expect(async () => {
-			await this.page.click('[data-testid="team-selector"]');
+			// Wait for page to be fully loaded and network idle before interacting
+			// This prevents race conditions where elements aren't interactive yet
+			await this.page.waitForLoadState("networkidle");
+
+			// Ensure the team selector is visible and ready before clicking
+			const teamSelector = this.page.locator('[data-testid="team-selector"]');
+			await expect(teamSelector).toBeVisible({ timeout: 10000 });
+
+			await teamSelector.click();
 
 			return expect(
 				this.page.locator('[data-testid="account-selector-content"]'),
-			).toBeVisible();
-		}).toPass();
+			).toBeVisible({ timeout: 10000 });
+		}).toPass({
+			timeout: 30000,
+			intervals: [500, 1000, 2000, 5000],
+		});
 	}
 
 	async tryCreateTeam(teamName: string) {

@@ -1,17 +1,41 @@
 import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { unbanUser } from "../utils/database-utilities";
 import { InvitationsPageObject } from "./invitations.po";
 
 test.describe("Invitations", () => {
 	// Use pre-authenticated state from global setup
 	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
 
+	// Ensure test user is in clean state before tests run
+	// This prevents state corruption from previous test runs (e.g., if user was banned)
+	test.beforeAll(async () => {
+		const testUserEmail = "test1@slideheroes.com";
+		try {
+			const restored = await unbanUser(testUserEmail);
+			if (restored) {
+				console.log(
+					`[invitations.spec.ts beforeAll] Test user ${testUserEmail} was banned, now restored`,
+				);
+			}
+		} catch (error) {
+			console.warn(
+				"[invitations.spec.ts beforeAll] Failed to ensure test user state:",
+				error instanceof Error ? error.message : error,
+			);
+		}
+	});
+
 	let invitations: InvitationsPageObject;
 	let slug: string;
 
 	test.beforeEach(async ({ page }) => {
 		invitations = new InvitationsPageObject(page);
+
+		// Navigate to home first - required because Playwright starts with blank page
+		// even when using pre-authenticated storage state
+		await page.goto("/home");
 
 		// Create a team for the test
 		const teamName = `test-${Math.random().toString(36).substring(2, 15)}`;
