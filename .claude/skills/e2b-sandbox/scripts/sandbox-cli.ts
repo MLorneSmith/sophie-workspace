@@ -376,6 +376,39 @@ async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 }
 
 /**
+ * Setup GitHub CLI authentication in the sandbox
+ * Explicitly authenticates with gh CLI for PR creation
+ */
+async function setupGitHubCLI(sandbox: Sandbox): Promise<void> {
+	if (!GITHUB_TOKEN) {
+		console.log("Warning: GITHUB_TOKEN not set, gh CLI will not work");
+		return;
+	}
+
+	console.log("Setting up GitHub CLI authentication...");
+
+	// Export token and authenticate with gh CLI
+	await sandbox.commands.run(
+		`export GITHUB_TOKEN="${GITHUB_TOKEN}" && gh auth login --with-token < <(echo "${GITHUB_TOKEN}")`,
+		{ timeoutMs: 30000 },
+	);
+
+	// Verify authentication
+	const authResult = await sandbox.commands.run("gh auth status", {
+		timeoutMs: 10000,
+	});
+
+	if (authResult.exitCode === 0) {
+		console.log("GitHub CLI authenticated successfully");
+	} else {
+		console.warn(
+			"GitHub CLI authentication may have failed:",
+			authResult.stderr,
+		);
+	}
+}
+
+/**
  * Parse issue number from description
  * Supports: "#123 description", "issue 123: description", "123 description"
  */
@@ -405,20 +438,36 @@ function parseIssueNumber(description: string): {
 /**
  * Generate a branch name from description
  * Format: sandbox/issue{N}-{slug} when issue number provided
- * Fallback: sandbox/{slug}-{timestamp} when no issue number
+ * Fallback: sandbox/{slug}-{MMDD} when no issue number
+ *
+ * Constraints:
+ * - Max 35 characters total (GitHub limit is 255, but we keep ours short)
+ * - Word-boundary truncation (don't cut words in half)
+ * - MMDD suffix for timestamp-based naming
  */
 function generateBranchName(description: string, issueNumber?: number): string {
-	const slug = description
+	// Normalize slug: lowercase, remove non-alphanumeric, max 20 chars
+	let slug = description
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-|-$/g, "")
-		.slice(0, 40);
+		.replace(/^-|-$/g, "");
+
+	// Truncate to 20 chars with word-boundary respect
+	if (slug.length > 20) {
+		// Find last hyphen within 20 chars
+		const truncated = slug.slice(0, 20);
+		const lastHyphen = truncated.lastIndexOf("-");
+		slug = lastHyphen > 0 ? truncated.slice(0, lastHyphen) : truncated;
+	}
 
 	if (issueNumber) {
 		return `sandbox/issue${issueNumber}-${slug}`;
 	}
-	const timestamp = Date.now().toString(36);
-	return `sandbox/${slug}-${timestamp}`;
+
+	// Use MMDD (month-day) for timestamp suffix instead of full hash
+	const now = new Date();
+	const mmdd = `${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+	return `sandbox/${slug}-${mmdd}`;
 }
 
 async function createSandbox(
@@ -455,10 +504,15 @@ async function createSandbox(
 			gitConfigured: !!GITHUB_TOKEN,
 		});
 
-		// Setup git credentials if token is available
+		// Setup git credentials and GitHub CLI if token is available
 		if (setupGit && GITHUB_TOKEN) {
+			console.log("\nStep: Configuring git credentials...");
 			await setupGitCredentials(sandbox);
 			logger.log("info", "Git credentials configured");
+
+			console.log("Step: Setting up GitHub CLI...");
+			await setupGitHubCLI(sandbox);
+			logger.log("info", "GitHub CLI configured");
 		}
 
 		console.log("\n=== Sandbox Created ===");
@@ -770,11 +824,13 @@ const DEV_SERVER_PORT = 3000;
 
 /**
  * Start VS Code Web (code-server) in sandbox
+ * Runs in background with & to prevent timeout blocking
  */
 async function startVSCode(sandbox: Sandbox): Promise<string> {
 	console.log("Starting VS Code Web (code-server)...");
 
-	await sandbox.commands.run("start-vscode", { timeoutMs: 30000 });
+	// Run start-vscode in background with & to prevent timeout
+	await sandbox.commands.run("start-vscode &", { timeoutMs: 10000 });
 
 	// Wait for code-server to be ready
 	await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -814,11 +870,16 @@ async function runFeaturePhase(
 
 	const { issueNumber, cleanDescription } = parseIssueNumber(description);
 
-	console.log("=== Phase 1: Feature Planning ===\n");
+	console.log("═".repeat(70));
+	console.log("═══ E2B SANDBOX: PHASE 1 - FEATURE PLANNING ═══");
+	console.log("═".repeat(70));
+	console.log("");
 	console.log(`Description: ${cleanDescription}`);
 	if (issueNumber) console.log(`Issue: #${issueNumber}`);
+	console.log("");
 
 	// Create sandbox
+	console.log("Step 1/4: Creating sandbox...");
 	const sandbox = await createSandbox(timeout, DEFAULT_TEMPLATE, true);
 	const sandboxId = sandbox.sandboxId;
 
@@ -841,7 +902,7 @@ async function runFeaturePhase(
 	});
 
 	// Sync with origin/dev
-	console.log("\nSyncing with origin/dev...");
+	console.log("Step 2/4: Syncing with origin/dev...");
 	await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
 		{ timeoutMs: 60000 },
@@ -850,7 +911,7 @@ async function runFeaturePhase(
 
 	// Create feature branch
 	const branchName = generateBranchName(cleanDescription, issueNumber);
-	console.log(`Creating branch: ${branchName}`);
+	console.log(`Step 3/4: Creating branch: ${branchName}`);
 	await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
 		{ timeoutMs: 30000 },
@@ -864,7 +925,11 @@ async function runFeaturePhase(
 	);
 
 	// Run /feature command
-	console.log("\nRunning Claude Code /feature...\n");
+	console.log("Step 4/4: Running Claude Code /feature...\n");
+	console.log("═".repeat(70));
+	console.log("═══ Claude Code Output ═══");
+	console.log("═".repeat(70));
+	console.log("");
 	logger.log("command", `Running: /feature ${cleanDescription}`);
 	await sandbox.commands.run(
 		`run-claude "/feature ${cleanDescription.replace(/"/g, '\\"')}"`,
@@ -883,6 +948,7 @@ async function runFeaturePhase(
 	);
 
 	// Start VS Code Web
+	console.log("\nStarting VS Code Web...");
 	const vscodeUrl = await startVSCode(sandbox);
 	logger.log("info", "VS Code Web started", { url: vscodeUrl });
 
@@ -931,7 +997,10 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	checkApiKey();
 	checkClaudeAuth();
 
-	console.log("=== Phase 2: Implementation & Review ===\n");
+	console.log("═".repeat(70));
+	console.log("═══ E2B SANDBOX: PHASE 2 - IMPLEMENTATION & REVIEW ═══");
+	console.log("═".repeat(70));
+	console.log("");
 
 	const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
 
@@ -958,7 +1027,11 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	);
 
 	// Run /implement command
-	console.log("Running Claude Code /implement...\n");
+	console.log("Step 1/3: Running Claude Code /implement...\n");
+	console.log("═".repeat(70));
+	console.log("═══ Claude Code Output ═══");
+	console.log("═".repeat(70));
+	console.log("");
 	logger.log("command", "Running: /implement");
 	await sandbox.commands.run(`run-claude "/implement"`, {
 		timeoutMs: 0,
@@ -974,16 +1047,21 @@ async function runContinuePhase(sandboxId: string): Promise<void> {
 	});
 
 	// Start dev server
-	console.log("\nStarting dev server for manual testing...");
+	console.log("\nStep 2/3: Starting dev server for manual testing...");
 	const devUrl = await startDevServer(sandbox);
 	logger.log("info", "Dev server started", { url: devUrl });
 
 	// Start VS Code (in case it stopped)
+	console.log("Starting VS Code Web...");
 	const vscodeUrl = await startVSCode(sandbox);
 	logger.log("info", "VS Code Web started", { url: vscodeUrl });
 
 	// Run /review command
-	console.log("\nRunning Claude Code /review...\n");
+	console.log("\nStep 3/3: Running Claude Code /review...\n");
+	console.log("═".repeat(70));
+	console.log("═══ Claude Code Output ═══");
+	console.log("═".repeat(70));
+	console.log("");
 	logger.log("command", "Running: /review");
 	await sandbox.commands.run(`run-claude "/review"`, {
 		timeoutMs: 0,

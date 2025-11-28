@@ -65,7 +65,14 @@ Run the sandbox CLI wrapper script:
 
 ## Recommended Workflow: Sequential Feature Development
 
-The feature workflow runs `/feature`, `/implement`, and `/review` sequentially with human review gates:
+The feature workflow runs `/feature`, `/implement`, and `/review` sequentially with human review gates.
+
+**Recent Improvements (v3.1):**
+- ✅ VS Code Web starts in background (no timeout blocking)
+- ✅ GitHub CLI automatically configured during sandbox setup
+- ✅ Smart branch naming with word-boundary truncation (max 35 chars)
+- ✅ Clear progress feedback with step indicators (Step 1/4, etc.)
+- ✅ Improved error handling for gh CLI auth
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -309,14 +316,18 @@ tsx .claude/skills/e2b-sandbox/scripts/build-template.ts
 
 ## Branch Naming
 
-Format: `sandbox/issue{N}-{slug}`
+Format: `sandbox/issue{N}-{slug}` (with smart truncation)
+
+**Constraints:**
+- Maximum 35 characters total
+- Slug limited to 20 characters (word-boundary truncation)
+- Uses MMDD (month-day) suffix instead of full hash for non-issue branches
 
 Examples:
 - `sandbox/issue123-add-dark-mode`
 - `sandbox/issue456-fix-auth-bug`
-
-If no issue number is provided, a timestamp is used:
-- `sandbox/add-dark-mode-abc123`
+- `sandbox/add-dark-mode-1128` (November 28th, no issue number)
+- `sandbox/implement-big-f-1128` (20-char limit with word-boundary truncation)
 
 ## Execution Instructions
 
