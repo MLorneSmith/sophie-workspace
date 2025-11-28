@@ -18,9 +18,9 @@ declare -A PORTS=(
     ["54521"]="Supabase API"
     ["54522"]="Supabase Database"
     ["54523"]="Supabase Studio"
-    ["54524"]="Inbucket Web"
-    ["54525"]="Inbucket SMTP"
-    ["54526"]="Inbucket POP3"
+    ["54524"]="Mailpit Web"
+    ["54525"]="Mailpit SMTP"
+    ["54526"]="Mailpit POP3"
     ["54327"]="Supabase Vector"
 )
 

@@ -54,7 +54,7 @@ const CONFIG = {
 			api: 54521, // Updated to avoid Hyper-V port reservation conflicts
 			db: 54522, // Updated to avoid Hyper-V port reservation conflicts
 			studio: 54523,
-			inbucket: 54524,
+			mailpit: 54524, // Email testing (Supabase uses Mailpit since CLI v2.x)
 		},
 		web: 3000,
 		webTest: 3001,

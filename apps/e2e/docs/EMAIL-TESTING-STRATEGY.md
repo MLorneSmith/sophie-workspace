@@ -3,7 +3,7 @@
 ## Problem
 
 The CI/CD pipeline was failing because tests were attempting to fetch confirmation emails from a local
-email service (Inbucket at 127.0.0.1:54524) when testing against the deployed dev environment
+email service (Mailpit at 127.0.0.1:54524) when testing against the deployed dev environment
 (dev.slideheroes.com). This is a fundamental incompatibility - the deployed environment doesn't have
 access to a local email service.
 
@@ -47,8 +47,8 @@ const shouldSkip =
 
 | Environment | Email Strategy | Implementation |
 |------------|---------------|----------------|
-| **Local Development** | Real (Inbucket) | Local Supabase includes Inbucket email service |
-| **CI + Local** | Real (Inbucket) | Tests run against local Supabase |
+| **Local Development** | Real (Mailpit) | Local Supabase includes Mailpit email service |
+| **CI + Local** | Real (Mailpit) | Tests run against local Supabase |
 | **CI + Deployed** | Skip | Email verification bypassed |
 | **Manual Testing** | Real | Use actual email service |
 
@@ -57,7 +57,7 @@ const shouldSkip =
 ### Local Testing with Real Email
 
 ```bash
-# Start local Supabase (includes Inbucket)
+# Start local Supabase (includes Mailpit)
 npx supabase start
 
 # Run tests
@@ -113,7 +113,7 @@ services:
 
 1. **For Most Projects**: Skip email verification in CI/CD tests
 2. **For Email-Critical Apps**: Use dedicated email testing in separate workflow
-3. **For Local Development**: Continue using Inbucket with Supabase
+3. **For Local Development**: Continue using Mailpit with Supabase
 
 ## Migration Guide
 

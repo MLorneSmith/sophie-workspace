@@ -14,7 +14,7 @@ echo "🔍 Checking for E2E port conflicts..."
 
 # Define E2E Supabase ports (55321-55327)
 E2E_SUPABASE_PORTS=(55321 55322 55323 55324 55325 55326 55327)
-PORT_NAMES=("API" "Database" "Studio" "Inbucket Web" "Inbucket SMTP" "Inbucket POP3" "Analytics")
+PORT_NAMES=("API" "Database" "Studio" "Mailpit Web" "Mailpit SMTP" "Mailpit POP3" "Analytics")
 
 # Check each port for conflicts
 PORTS_IN_USE=()
@@ -73,7 +73,7 @@ if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:55321 | grep -q "200\
         # Double-check email service since it's critical for E2E tests
         echo "📧 Checking E2E email service..."
         if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:55324 | grep -q "200"; then
-            echo "✅ E2E Email service (Inbucket) is accessible"
+            echo "✅ E2E Email service (Mailpit) is accessible"
         else
             echo "❌ E2E Email service is not accessible but database has data."
             echo "⚠️  Cannot restart E2E Supabase as it would reset the database."

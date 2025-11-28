@@ -23,7 +23,7 @@ export class OtpPo {
 	 * @param email The email address to send the OTP to
 	 */
 	async completeOtpVerification(email: string) {
-		// For E2E tests, we'll skip OTP verification since Inbucket is unreliable
+		// For E2E tests, we'll skip OTP verification since Mailpit email delivery can be slow
 		// In a real environment, this would go through the full OTP flow
 		console.log(`[E2E Test Mode] Skipping OTP verification for ${email}`);
 
