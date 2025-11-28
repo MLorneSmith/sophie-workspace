@@ -44,7 +44,7 @@ export class AuthPageObject {
 		// This handles the race condition where navigation completes before
 		// the useUser() hook validates the session from localStorage
 		const dropdownTrigger = this.page.locator(
-			'[data-testid="account-dropdown-trigger"]',
+			'[data-testid="account-dropdown"]',
 		);
 		await expect(dropdownTrigger).toBeVisible({ timeout: 15000 });
 
