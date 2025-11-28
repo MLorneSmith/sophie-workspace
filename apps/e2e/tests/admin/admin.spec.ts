@@ -25,7 +25,7 @@ test.describe("Admin Auth flow with Super Admin but without MFA", () => {
 });
 
 test.describe("Admin", () => {
-	test.describe.configure({ mode: "serial" });
+	test.describe.configure({ mode: "parallel" });
 
 	test.describe("Admin Dashboard", () => {
 		AuthPageObject.setupSession(AUTH_STATES.SUPER_ADMIN);
@@ -263,7 +263,7 @@ test.describe("Admin", () => {
 });
 
 test.describe("Team Account Management", () => {
-	test.describe.configure({ mode: "serial" });
+	test.describe.configure({ mode: "parallel" });
 
 	// Use pre-authenticated OWNER_USER state to avoid fresh login timeouts
 	test.use({ storageState: AUTH_STATES.OWNER_USER });
