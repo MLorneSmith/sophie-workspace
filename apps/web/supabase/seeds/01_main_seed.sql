@@ -24,7 +24,7 @@ BEGIN
                 ''http://host.docker.internal:3000/api/db/webhook'',
                 ''POST'',
                 ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
-                ''{}''::jsonb,
+                ''{}'',
                 ''5000''
             )';
     END IF;
@@ -51,7 +51,7 @@ BEGIN
                 ''http://host.docker.internal:3000/api/db/webhook'',
                 ''POST'',
                 ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
-                ''{}''::jsonb,
+                ''{}'',
                 ''5000''
             )';
     END IF;
@@ -78,7 +78,7 @@ BEGIN
                 ''http://host.docker.internal:3000/api/db/webhook'',
                 ''POST'',
                 ''{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}'',
-                ''{}''::jsonb,
+                ''{}'',
                 ''5000''
             )';
     END IF;
