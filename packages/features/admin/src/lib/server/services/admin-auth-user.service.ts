@@ -59,6 +59,8 @@ class AdminAuthUserService {
 
 	/**
 	 * Impersonate a user by generating a magic link and returning the access and refresh tokens.
+	 * Uses a more robust approach: fetches the magic link action URL with retry logic
+	 * and explicit timeout handling to avoid flaky redirect parsing.
 	 * @param userId
 	 */
 	async impersonateUser(userId: string) {
@@ -92,32 +94,78 @@ class AdminAuthUserService {
 			throw new Error("Error generating magic link");
 		}
 
-		const response = await fetch(data.properties?.action_link, {
-			method: "GET",
-			redirect: "manual",
-		});
+		const actionLink = data.properties?.action_link;
 
-		const location = response.headers.get("Location");
-
-		if (!location) {
-			throw new Error("Error generating magic link. Location header not found");
-		}
-
-		const hash = new URL(location).hash.substring(1);
-		const query = new URLSearchParams(hash);
-		const accessToken = query.get("access_token");
-		const refreshToken = query.get("refresh_token");
-
-		if (!accessToken || !refreshToken) {
+		if (!actionLink) {
 			throw new Error(
-				"Error generating magic link. Tokens not found in URL hash.",
+				"Error generating magic link: action_link not found in response",
 			);
 		}
 
-		return {
-			accessToken,
-			refreshToken,
-		};
+		// Fetch the magic link with retry logic and proper timeout
+		// The redirect will contain access_token and refresh_token in the hash
+		const maxRetries = 3;
+		let lastError: Error | null = null;
+
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const controller = new AbortController();
+				const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+				const response = await fetch(actionLink, {
+					method: "GET",
+					redirect: "manual",
+					signal: controller.signal,
+				});
+
+				clearTimeout(timeoutId);
+
+				const location = response.headers.get("Location");
+
+				if (!location) {
+					throw new Error(
+						`Attempt ${attempt}: Location header not found in response (status: ${response.status})`,
+					);
+				}
+
+				const hash = new URL(location).hash.substring(1);
+				const query = new URLSearchParams(hash);
+				const accessToken = query.get("access_token");
+				const refreshToken = query.get("refresh_token");
+
+				if (!accessToken || !refreshToken) {
+					throw new Error(
+						`Attempt ${attempt}: Tokens not found in URL hash. Hash content: ${hash.substring(0, 50)}...`,
+					);
+				}
+
+				return {
+					accessToken,
+					refreshToken,
+				};
+			} catch (err) {
+				lastError =
+					err instanceof Error ? err : new Error("Unknown error during fetch");
+
+				// Don't retry on abort (timeout)
+				if (lastError.name === "AbortError") {
+					throw new Error(
+						`Impersonation failed: Request timed out after 10 seconds (attempt ${attempt})`,
+					);
+				}
+
+				// Wait before retry (exponential backoff)
+				if (attempt < maxRetries) {
+					await new Promise((resolve) =>
+						setTimeout(resolve, 500 * 2 ** (attempt - 1)),
+					);
+				}
+			}
+		}
+
+		throw new Error(
+			`Impersonation failed after ${maxRetries} attempts: ${lastError?.message}`,
+		);
 	}
 
 	/**
