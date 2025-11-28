@@ -3,6 +3,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { unbanUser } from "../utils/database-utilities";
 
 test.describe("Admin Auth flow without MFA", () => {
 	AuthPageObject.setupSession(AUTH_STATES.OWNER_USER);
@@ -72,6 +73,22 @@ test.describe("Admin", () => {
 
 			await filterAccounts(page, filterText);
 			await selectAccount(page, filterText);
+		});
+
+		test.afterEach(async () => {
+			try {
+				const restored = await unbanUser(testUserEmail);
+				if (restored) {
+					console.log(
+						`[admin.spec.ts] User unbanned after test: ${testUserEmail}`,
+					);
+				}
+			} catch (error) {
+				console.warn(
+					"[admin.spec.ts] Failed to unban user:",
+					error instanceof Error ? error.message : error,
+				);
+			}
 		});
 
 		test("displays personal account details", async ({ page }) => {
