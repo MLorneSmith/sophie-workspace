@@ -21,11 +21,20 @@ export const generateMetadata = async () => {
 
 const NotFoundPage = async () => {
 	const client = getSupabaseServerClient();
-	const user = await requireUser(client, { verifyMfa: false });
+
+	let userData = null;
+
+	try {
+		const user = await requireUser(client, { verifyMfa: false });
+		userData = user.data;
+	} catch {
+		// Silently handle auth errors on 404 page
+		userData = null;
+	}
 
 	return (
 		<div className={"flex h-screen flex-1 flex-col"}>
-			<SiteHeader user={user.data} />
+			<SiteHeader user={userData} />
 
 			<div
 				className={
