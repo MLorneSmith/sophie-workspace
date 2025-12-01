@@ -88,17 +88,26 @@ export async function listSandboxes(apiKey?: string): Promise<SandboxInfo[]> {
 	logger.info("Listing sandboxes");
 
 	try {
-		const sandboxes = await Sandbox.list({ apiKey: key });
+		const paginator = Sandbox.list({ apiKey: key });
+		const allSandboxes: SandboxInfo[] = [];
 
-		const result: SandboxInfo[] = sandboxes.map((s) => ({
-			sandboxId: s.sandboxId,
-			templateId: s.templateId,
-			startedAt: s.startedAt,
-			metadata: s.metadata,
-		}));
+		// Iterate through all pages of the paginator
+		let hasMore = true;
+		while (hasMore) {
+			const page = await paginator.nextItems();
+			for (const s of page) {
+				allSandboxes.push({
+					sandboxId: s.sandboxId,
+					templateId: s.templateId,
+					startedAt: s.startedAt,
+					metadata: s.metadata,
+				});
+			}
+			hasMore = paginator.hasNext;
+		}
 
-		logger.info("Listed sandboxes", { count: result.length });
-		return result;
+		logger.info("Listed sandboxes", { count: allSandboxes.length });
+		return allSandboxes;
 	} catch (error) {
 		logger.error("Failed to list sandboxes", { error });
 		throw wrapError(error, "Failed to list sandboxes");
