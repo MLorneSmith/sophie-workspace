@@ -14,7 +14,7 @@
 	},
 	"scripts": {
 		"clean": "rm -rf .turbo node_modules",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"format": "biome format src",
 		"typecheck": "tsc --noEmit"
 	},
@@ -23,7 +23,6 @@
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*"
 	}
 }

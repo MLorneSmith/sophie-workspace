@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -17,7 +17,6 @@
 	"devDependencies": {
 		"@hookform/resolvers": "5.2.2",
 		"@kit/billing": "workspace:*",
-		"@kit/eslint-config": "workspace:*",
 		"@kit/lemon-squeezy": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/stripe": "workspace:*",

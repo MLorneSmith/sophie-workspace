@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit",
 		"start": "docker compose up"
 	},
@@ -15,7 +15,6 @@
 	},
 	"devDependencies": {
 		"@kit/cms-types": "workspace:*",
-		"@kit/eslint-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
 		"@types/node": "catalog:",

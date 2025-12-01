@@ -11,7 +11,7 @@
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
-		"lint": "eslint src --ext ts,tsx",
+		"lint": "biome lint .",
 		"format": "biome format src"
 	},
 	"dependencies": {

@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -15,7 +15,6 @@
 		"./provider": "./src/i18n-provider.tsx"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@tanstack/react-query": "5.90.10",
