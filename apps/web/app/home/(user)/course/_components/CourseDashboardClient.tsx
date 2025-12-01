@@ -157,12 +157,13 @@ export function CourseDashboardClient({
 			// Update the course completion state
 			setIsCourseCompleted(Boolean(isCompleted));
 
-			// If course is completed, show all lessons, otherwise hide 801 and 802
+			// If course is completed, show all lessons, otherwise hide post-completion lessons
+			// These lessons are identified by their slugs: "congratulations" and "before-you-go"
+			const POST_COMPLETION_SLUGS = ["congratulations", "before-you-go"];
 			const filtered = isCompleted
 				? lessons
 				: lessons.filter(
-						(lesson) =>
-							!["801", "802"].includes(String(lesson.lesson_number || "")),
+						(lesson) => !POST_COMPLETION_SLUGS.includes(lesson.slug || ""),
 					);
 
 			setDisplayedLessons(filtered);
@@ -194,35 +195,6 @@ export function CourseDashboardClient({
 					(p) => p.lesson_id === lesson.id && p.completed_at,
 				);
 				if (progressByLesson) {
-					return true;
-				}
-			}
-
-			// If we still don't have a match, check if any progress record exists
-			// that might be for this lesson but with a different ID
-			const allLessonIds = lessons.map((l) => l.id);
-			const orphanedProgress = lessonProgress.filter(
-				(p) => !allLessonIds.includes(p.lesson_id) && p.completed_at,
-			);
-
-			// If we have orphaned progress records and this is a required lesson,
-			// we'll assume it's completed if we have enough completed lessons
-			if (
-				orphanedProgress.length > 0 &&
-				REQUIRED_LESSON_NUMBERS.includes(String(lessonNumber))
-			) {
-				// Count how many required lessons we have progress for
-				const requiredLessonsWithProgress = lessons.filter(
-					(l) =>
-						REQUIRED_LESSON_NUMBERS.includes(String(l.lesson_number)) &&
-						lessonProgress.find((p) => p.lesson_id === l.id && p.completed_at),
-				);
-
-				// If we have more orphaned progress records than missing required lessons,
-				// assume this lesson is completed
-				const missingRequired =
-					REQUIRED_LESSON_NUMBERS.length - requiredLessonsWithProgress.length;
-				if (orphanedProgress.length >= missingRequired) {
 					return true;
 				}
 			}
@@ -304,9 +276,9 @@ export function CourseDashboardClient({
 									<div className="flex flex-col gap-4 sm:flex-row">
 										<div className="flex flex-1 flex-col gap-4 sm:flex-row">
 											<div className="relative h-[155px] w-[275px] flex-shrink-0">
-												{/* Don't display images for lessons 801 and 802 */}
-												{!["801", "802"].includes(
-													String(lesson.lesson_number || ""),
+												{/* Don't display images for post-completion lessons */}
+												{!["congratulations", "before-you-go"].includes(
+													lesson.slug || "",
 												) ? (
 													<Image
 														src={(() => {
