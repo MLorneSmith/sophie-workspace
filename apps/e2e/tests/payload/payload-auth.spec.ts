@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
+import { TEST_USERS } from "./helpers/test-data";
 
 test.describe("Payload CMS - Authentication & First User Creation", () => {
 	let loginPage: PayloadLoginPage;
@@ -22,7 +23,19 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 	});
 
 	test("should create first user successfully", async ({ page }) => {
-		// This test will handle the first user creation flow
+		// Check if first-user setup is needed (idempotent test)
+		const needsFirstUser = await loginPage.isFirstUserSetupNeeded();
+
+		if (!needsFirstUser) {
+			// First user already exists - skip test (expected in seeded environments)
+			test.skip(
+				true,
+				"First user already exists in database - skipping first-user creation test",
+			);
+			return;
+		}
+
+		// Proceed with first-user creation flow
 		const testEmail = `admin-${Date.now()}@test.com`;
 		const testPassword = "Test123!@#";
 		const testName = "Test Admin";
@@ -34,6 +47,28 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 
 		// Verify we can access the admin dashboard
 		await expect(page).toHaveURL(/.*\/admin(?!\/login)/);
+	});
+
+	test("should handle pre-seeded admin user correctly", async ({
+		page: _page,
+	}) => {
+		// This test verifies behavior when an admin user already exists
+		const needsFirstUser = await loginPage.isFirstUserSetupNeeded();
+
+		if (needsFirstUser) {
+			// No users exist yet - skip this test (only relevant when admin is pre-seeded)
+			test.skip(true, "No users in database - skipping pre-seeded admin test");
+			return;
+		}
+
+		// Admin user exists - verify "Create First User" button is hidden
+		// (isFirstUserSetupNeeded already navigated to login page)
+		await expect(loginPage.createFirstUserButton).not.toBeVisible();
+
+		// Login with pre-seeded admin credentials should work
+		const { email, password } = TEST_USERS.admin;
+		await loginPage.login(email, password);
+		await loginPage.expectLoginSuccess();
 	});
 
 	test("should handle database connection errors gracefully", async ({
@@ -66,9 +101,8 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 	});
 
 	test("should login with existing user", async ({ page: _page }) => {
-		// Use environment variables or test credentials
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		// Use centralized test credentials
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
@@ -93,8 +127,7 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 
 	test("should logout successfully", async ({ page }) => {
 		// First login
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
@@ -111,8 +144,7 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 	});
 
 	test("should maintain session across page refreshes", async ({ page }) => {
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
@@ -134,8 +166,7 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 		page: _page,
 		context,
 	}) => {
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		// Create a second page in the same context
 		const page2 = await context.newPage();
