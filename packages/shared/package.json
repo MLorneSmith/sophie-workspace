@@ -27,7 +27,7 @@
 		"@hookform/resolvers": "5.2.2",
 		"@kit/monitoring-core": "workspace:*",
 		"pino": "^10.1.0",
-		"zod": "^4.1.12"
+		"zod": "^4.1.13"
 	},
 	"typesVersions": {
 		"*": {
