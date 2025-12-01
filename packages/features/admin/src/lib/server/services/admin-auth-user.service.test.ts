@@ -8,9 +8,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createAdminAuthUserService } from "./admin-auth-user.service";
 
-// Mock fetch globally
-global.fetch = vi.fn();
-
 // Mock process.env
 vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://example.com");
 
@@ -42,7 +39,7 @@ function createMockAuthAdmin(config?: {
 		generateLink: vi.fn().mockResolvedValue({
 			data: config?.generateLink?.data ?? {
 				properties: {
-					action_link: "https://example.com/auth/v1/verify",
+					hashed_token: "mock_hashed_token_abc123",
 				},
 			},
 			error: config?.generateLink?.error ?? null,
@@ -54,6 +51,7 @@ function createMockAuthAdmin(config?: {
 function createMockAuth(config?: {
 	getUser?: { user?: any; error?: any };
 	resetPasswordForEmail?: { error?: any };
+	verifyOtp?: { data?: any; error?: any };
 }) {
 	return {
 		getUser: vi.fn().mockResolvedValue({
@@ -64,6 +62,15 @@ function createMockAuth(config?: {
 			data: null,
 			error: config?.resetPasswordForEmail?.error ?? null,
 		}),
+		verifyOtp: vi.fn().mockResolvedValue({
+			data: config?.verifyOtp?.data ?? {
+				session: {
+					access_token: "mock_access_token",
+					refresh_token: "mock_refresh_token",
+				},
+			},
+			error: config?.verifyOtp?.error ?? null,
+		}),
 		admin: createMockAuthAdmin(),
 	};
 }
@@ -72,6 +79,7 @@ function createMockAuth(config?: {
 function createMockClients(config?: {
 	client?: {
 		getUser?: { user?: any; error?: any };
+		verifyOtp?: { data?: any; error?: any };
 	};
 	adminClient?: {
 		getUserById?: { user?: any; error?: any };
@@ -102,7 +110,6 @@ function createMockClients(config?: {
 describe("AdminAuthUserService", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		vi.mocked(global.fetch).mockReset();
 	});
 
 	describe("Factory Function", () => {
@@ -239,25 +246,27 @@ describe("AdminAuthUserService", () => {
 	describe("impersonateUser", () => {
 		it("should impersonate a user successfully", async () => {
 			const { client, adminClient } = createMockClients({
+				client: {
+					verifyOtp: {
+						data: {
+							session: {
+								access_token: "token123",
+								refresh_token: "refresh123",
+							},
+						},
+					},
+				},
 				adminClient: {
 					getUserById: { user: { id: "user_123", email: "user@example.com" } },
 					generateLink: {
 						data: {
 							properties: {
-								action_link: "https://example.com/auth/v1/verify",
+								hashed_token: "hashed_token_xyz",
 							},
 						},
 					},
 				},
 			});
-
-			// Mock fetch response
-			vi.mocked(global.fetch).mockResolvedValue({
-				headers: new Headers({
-					Location:
-						"https://example.com/#access_token=token123&refresh_token=refresh123",
-				}),
-			} as Response);
 
 			const service = createAdminAuthUserService(client, adminClient);
 
@@ -272,6 +281,11 @@ describe("AdminAuthUserService", () => {
 				type: "magiclink",
 				email: "user@example.com",
 				options: { redirectTo: "/" },
+			});
+
+			expect(client.auth.verifyOtp).toHaveBeenCalledWith({
+				token_hash: "hashed_token_xyz",
+				type: "magiclink",
 			});
 		});
 
@@ -314,35 +328,55 @@ describe("AdminAuthUserService", () => {
 			);
 		});
 
-		it("should throw error if location header not found", async () => {
-			const { client, adminClient } = createMockClients();
-
-			// Mock fetch response without Location header
-			vi.mocked(global.fetch).mockResolvedValue({
-				headers: new Headers({}),
-			} as Response);
+		it("should throw error if hashed_token not found in response", async () => {
+			const { client, adminClient } = createMockClients({
+				adminClient: {
+					generateLink: {
+						data: {
+							properties: {
+								// Missing hashed_token
+							},
+						},
+					},
+				},
+			});
 
 			const service = createAdminAuthUserService(client, adminClient);
 
 			await expect(service.impersonateUser("user_123")).rejects.toThrow(
-				"Error generating magic link. Location header not found",
+				"Error generating magic link: hashed_token not found in response",
 			);
 		});
 
-		it("should throw error if tokens not found in URL", async () => {
-			const { client, adminClient } = createMockClients();
-
-			// Mock fetch response with incomplete URL
-			vi.mocked(global.fetch).mockResolvedValue({
-				headers: new Headers({
-					Location: "https://example.com/#access_token=token123",
-				}),
-			} as Response);
+		it("should throw error if verifyOtp fails", async () => {
+			const { client, adminClient } = createMockClients({
+				client: {
+					verifyOtp: {
+						error: { message: "OTP expired" },
+					},
+				},
+			});
 
 			const service = createAdminAuthUserService(client, adminClient);
 
 			await expect(service.impersonateUser("user_123")).rejects.toThrow(
-				"Error generating magic link. Tokens not found in URL hash",
+				"Failed to verify magic link: OTP expired",
+			);
+		});
+
+		it("should throw error if verifyOtp returns no session", async () => {
+			const { client, adminClient } = createMockClients({
+				client: {
+					verifyOtp: {
+						data: { session: null },
+					},
+				},
+			});
+
+			const service = createAdminAuthUserService(client, adminClient);
+
+			await expect(service.impersonateUser("user_123")).rejects.toThrow(
+				"Failed to verify magic link: No session returned",
 			);
 		});
 
