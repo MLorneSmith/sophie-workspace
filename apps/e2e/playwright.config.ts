@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 import { config as dotenvConfig } from "dotenv";
 
@@ -5,7 +6,14 @@ import { config as dotenvConfig } from "dotenv";
 // override: true allows CI environment variables to take precedence over .env file
 // This is critical for integration tests running against deployed environments
 dotenvConfig({
-	path: [".env", ".env.local"],
+	path: [
+		".env",
+		".env.local",
+		// Load Payload test environment for shard 7/8 tests
+		// This sets PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 (test port)
+		// vs development port 3020. The dev:test script runs Payload on 3021.
+		path.resolve(__dirname, "../../apps/payload/.env.test"),
+	],
 	quiet: true, // Suppress dotenv logging
 	override: true, // Allow CI env vars to override .env
 });
