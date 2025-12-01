@@ -1,4 +1,3 @@
-import { CsrfError, createCsrfProtect } from "@edge-csrf/nextjs";
 import { isSuperAdmin } from "@kit/admin";
 import { checkRequiresMultiFactorAuthentication } from "@kit/supabase/check-requires-mfa";
 import { createMiddlewareClient } from "@kit/supabase/middleware-client";
@@ -56,10 +55,8 @@ function logRequestCookies(request: NextRequest, context: string) {
 // URLPattern is now available globally via polyfill
 const URLPattern = globalThis.URLPattern;
 
-import appConfig from "~/config/app.config";
 import pathsConfig from "~/config/paths.config";
 
-const CSRF_SECRET_COOKIE = "csrfSecret";
 const NEXT_ACTION_HEADER = "next-action";
 
 export const config = {
@@ -103,15 +100,12 @@ export async function proxy(request: NextRequest) {
 	// this helps us log and trace requests
 	setRequestId(request);
 
-	// apply CSRF protection for mutating requests
-	const csrfResponse = await withCsrfMiddleware(request, response);
-
 	// handle patterns for specific routes
 	const handlePattern = matchUrlPattern(request.url);
 
 	// if a pattern handler exists, call it
 	if (handlePattern) {
-		const patternHandlerResponse = await handlePattern(request, csrfResponse);
+		const patternHandlerResponse = await handlePattern(request, response);
 
 		// if a pattern handler returns a response, return it
 		if (patternHandlerResponse) {
@@ -122,45 +116,12 @@ export async function proxy(request: NextRequest) {
 	// append the action path to the request headers
 	// which is useful for knowing the action path in server actions
 	if (isServerAction(request)) {
-		csrfResponse.headers.set("x-action-path", request.nextUrl.pathname);
+		response.headers.set("x-action-path", request.nextUrl.pathname);
 	}
 
 	// if no pattern handler returned a response,
-	// return the session response
-	return csrfResponse;
-}
-
-async function withCsrfMiddleware(
-	request: NextRequest,
-	response: NextResponse,
-) {
-	// set up CSRF protection
-	const csrfProtect = createCsrfProtect({
-		cookie: {
-			secure: appConfig.production,
-			name: CSRF_SECRET_COOKIE,
-		},
-		// ignore CSRF errors for server actions since protection is built-in
-		ignoreMethods: isServerAction(request)
-			? ["POST"]
-			: // always ignore GET, HEAD, and OPTIONS requests
-				["GET", "HEAD", "OPTIONS"],
-	});
-
-	try {
-		await csrfProtect(request, response);
-
-		return response;
-	} catch (error) {
-		// if there is a CSRF error, return a 403 response
-		if (error instanceof CsrfError) {
-			return NextResponse.json("Invalid CSRF token", {
-				status: 401,
-			});
-		}
-
-		throw error;
-	}
+	// return the response
+	return response;
 }
 
 function isServerAction(request: NextRequest) {
