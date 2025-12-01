@@ -28,22 +28,6 @@ export async function ContentRenderer({
  */
 async function getContentRenderer(type: CmsType) {
 	switch (type) {
-		case "keystatic": {
-			const { KeystaticContentRenderer } = await import(
-				"@kit/keystatic/renderer"
-			);
-
-			return KeystaticContentRenderer;
-		}
-
-		case "wordpress": {
-			const { WordpressContentRenderer } = await import(
-				"@kit/wordpress/renderer"
-			);
-
-			return WordpressContentRenderer;
-		}
-
 		case "payload": {
 			const { PayloadContentRenderer } = await import("@kit/payload/renderer");
 

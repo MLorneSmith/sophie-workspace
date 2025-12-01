@@ -9,18 +9,6 @@ const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 // Create a registry for CMS client implementations
 const cmsRegistry = createRegistry<CmsClient, CmsType>();
 
-// Register the WordPress CMS client implementation
-cmsRegistry.register("wordpress", async () => {
-	const { createWordpressClient } = await import("@kit/wordpress");
-	return createWordpressClient();
-});
-
-// Register the Keystatic CMS client implementation
-cmsRegistry.register("keystatic", async () => {
-	const { createKeystaticClient } = await import("@kit/keystatic");
-	return createKeystaticClient();
-});
-
 // Register the Payload CMS client implementation
 cmsRegistry.register("payload", async () => {
 	const { createPayloadClient } = await import("@kit/payload");
