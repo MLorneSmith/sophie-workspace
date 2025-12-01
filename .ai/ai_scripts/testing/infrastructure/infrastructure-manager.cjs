@@ -666,17 +666,9 @@ class InfrastructureManager {
 		const payloadUrl = `http://localhost:${payloadPort}`;
 
 		try {
-			// Check if process is running on the port
-			const { stdout: portCheck } = await execAsync(
-				`lsof -ti:${payloadPort} 2>/dev/null || echo 'none'`,
-				{ timeout: 1000 },
-			);
-
-			if (portCheck.trim() === "none") {
-				return "not_running";
-			}
-
 			// Try to fetch from the Payload health endpoint
+			// Note: We use HTTP checks only (not lsof) because lsof cannot detect
+			// Docker port forwarding on WSL2, causing false "not_running" results
 			try {
 				const response = await fetch(`${payloadUrl}/api/health`, {
 					signal: AbortSignal.timeout(5000),
