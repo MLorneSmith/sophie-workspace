@@ -374,9 +374,6 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.6)
-      '@types/uuid':
-        specifier: ^11.0.0
-        version: 11.0.0
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
@@ -440,9 +437,6 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.0)
-      '@edge-csrf/nextjs':
-        specifier: 2.5.3-cloudflare-rc1
-        version: 2.5.3-cloudflare-rc1(next@16.0.3(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.66.1(react@19.2.0))
@@ -654,9 +648,6 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.7)
-      '@types/uuid':
-        specifier: ^11.0.0
-        version: 11.0.0
       '@vitejs/plugin-react':
         specifier: ^5.1.1
         version: 5.1.1(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
@@ -3034,12 +3025,6 @@ packages:
   '@e2b/code-interpreter@2.3.1':
     resolution: {integrity: sha512-/4hJct10gxU9MyFSTiVHVoZVjbmAcxzu0J1/lvvzcp7uFTv5OLU5+1wFPPe/++iGUyw2aRm07Uhr09+lHpS7wQ==}
     engines: {node: '>=20'}
-
-  '@edge-csrf/nextjs@2.5.3-cloudflare-rc1':
-    resolution: {integrity: sha512-sH8HKl2s/zFkIgXcVzODljHsBhKW7LN2gXeUNEQTSP31Chy40ryjR7iTf0MA/DtPhOpXUkd6IBUMMF820sK+rA==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-    peerDependencies:
-      next: ^13.0.0 || ^14.0.0 || ^15.0.0
 
   '@emnapi/core@1.7.1':
     resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
@@ -7411,10 +7396,6 @@ packages:
 
   '@types/uuid@10.0.0':
     resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
-
-  '@types/uuid@11.0.0':
-    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
-    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -14958,10 +14939,6 @@ snapshots:
     dependencies:
       e2b: 2.8.1
 
-  '@edge-csrf/nextjs@2.5.3-cloudflare-rc1(next@16.0.3(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))':
-    dependencies:
-      next: 16.0.3(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.57.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4)
-
   '@emnapi/core@1.7.1':
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
@@ -20431,10 +20408,6 @@ snapshots:
   '@types/use-sync-external-store@0.0.6': {}
 
   '@types/uuid@10.0.0': {}
-
-  '@types/uuid@11.0.0':
-    dependencies:
-      uuid: 13.0.0
 
   '@types/ws@8.18.1':
     dependencies:
