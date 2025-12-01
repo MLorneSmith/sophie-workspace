@@ -1,7 +1,13 @@
 export const TEST_USERS = {
 	admin: {
-		email: process.env.PAYLOAD_TEST_ADMIN_EMAIL || "admin@test.payload.com",
-		password: process.env.PAYLOAD_TEST_ADMIN_PASSWORD || "Admin123!@#",
+		email:
+			process.env.PAYLOAD_TEST_ADMIN_EMAIL ||
+			process.env.E2E_ADMIN_EMAIL ||
+			"michael@slideheroes.com",
+		password:
+			process.env.PAYLOAD_TEST_ADMIN_PASSWORD ||
+			process.env.E2E_ADMIN_PASSWORD ||
+			"aiesec1992",
 		name: "Test Admin",
 	},
 	editor: {

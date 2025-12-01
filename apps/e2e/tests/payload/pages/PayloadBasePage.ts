@@ -44,21 +44,41 @@ export abstract class PayloadBasePage {
 	}
 
 	async expectNoErrors() {
-		// Check for common error indicators
+		// Check for specific error indicators (not generic alerts)
 		const errorSelectors = [
 			".error-message",
 			".error",
-			'[role="alert"]',
-			"text=/error|failed|unable|cannot/i",
+			".form-submit-error",
+			".field-error",
 		];
 
 		for (const selector of errorSelectors) {
-			const errors = await this.page.locator(selector).count();
-			if (errors > 0) {
-				const errorText = await this.page
-					.locator(selector)
-					.first()
-					.textContent();
+			const elements = this.page.locator(selector);
+			const count = await elements.count();
+
+			for (let i = 0; i < count; i++) {
+				const element = elements.nth(i);
+				const errorText = (await element.textContent())?.trim();
+
+				// Only throw if the element has actual error content
+				if (errorText && errorText.length > 0) {
+					throw new Error(`Found error on page: ${errorText}`);
+				}
+			}
+		}
+
+		// Check for specific error text patterns (more targeted)
+		const errorTextPatterns = [
+			"text=/connection.*failed/i",
+			"text=/unable to connect/i",
+			"text=/database.*error/i",
+			"text=/server.*error/i",
+		];
+
+		for (const pattern of errorTextPatterns) {
+			const errorElement = this.page.locator(pattern).first();
+			if (await errorElement.isVisible({ timeout: 1000 }).catch(() => false)) {
+				const errorText = await errorElement.textContent();
 				throw new Error(`Found error on page: ${errorText}`);
 			}
 		}

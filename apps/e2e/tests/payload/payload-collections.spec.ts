@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { PayloadCollectionsPage } from "./pages/PayloadCollectionsPage";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
+import { TEST_USERS } from "./helpers/test-data";
 
 // Collections to test based on the Payload config
 const COLLECTIONS = [
@@ -62,8 +63,7 @@ test.describe("Payload CMS - Collection Navigation & Access", () => {
 		const page = await browser.newPage();
 		loginPage = new PayloadLoginPage(page);
 
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
@@ -80,8 +80,7 @@ test.describe("Payload CMS - Collection Navigation & Access", () => {
 		loginPage = new PayloadLoginPage(page);
 
 		// Ensure we're logged in
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 	});
 
@@ -180,8 +179,7 @@ test.describe("Payload CMS - CRUD Operations", () => {
 		loginPage = new PayloadLoginPage(page);
 
 		// Login
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 	});
 
@@ -315,8 +313,7 @@ test.describe("Payload CMS - Database & Error Handling", () => {
 
 	test("should recover from temporary network issues", async ({ page }) => {
 		// Login first
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 
 		// Simulate network offline
@@ -342,8 +339,7 @@ test.describe("Payload CMS - Database & Error Handling", () => {
 
 	test("should handle session expiry gracefully", async ({ page, context }) => {
 		// Login
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 
 		// Clear cookies to simulate session expiry
