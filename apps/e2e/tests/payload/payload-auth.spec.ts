@@ -1,8 +1,20 @@
 import { expect, test } from "@playwright/test";
-import { PayloadLoginPage } from "./pages/PayloadLoginPage";
 import { TEST_USERS } from "./helpers/test-data";
+import { PayloadLoginPage } from "./pages/PayloadLoginPage";
+
+/**
+ * NOTE: This test file intentionally uses UI-based login rather than storage state.
+ * These tests verify the actual login flow, error handling, and session management,
+ * so they need to interact with the login page directly.
+ *
+ * Other Payload test files (payload-collections, payload-database) use pre-authenticated
+ * storage state from global-setup.ts for faster, more reliable test execution.
+ */
 
 test.describe("Payload CMS - Authentication & First User Creation", () => {
+	// Reset storage state for auth tests - we need a fresh session to test login flow
+	test.use({ storageState: { cookies: [], origins: [] } });
+
 	let loginPage: PayloadLoginPage;
 
 	test.beforeEach(async ({ page }) => {

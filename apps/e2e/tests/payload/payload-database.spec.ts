@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
+import { TEST_USERS } from "./helpers/test-data";
 import { PayloadCollectionsPage } from "./pages/PayloadCollectionsPage";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
-import { TEST_USERS } from "./helpers/test-data";
 
 test.describe("Payload CMS - Supabase Database Integration", () => {
 	let loginPage: PayloadLoginPage;
 	let collectionsPage: PayloadCollectionsPage;
+
+	// Tests use pre-authenticated storage state from global-setup.ts
+	// No login needed - configured in playwright.config.ts for the "payload" project
 
 	test.beforeEach(async ({ page }) => {
 		loginPage = new PayloadLoginPage(page);
@@ -116,14 +119,7 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 	});
 
 	test("should verify UUID support for Supabase", async ({ page }) => {
-		// Login first
-		const { email, password } = TEST_USERS.admin;
-
-		await loginPage.login(email, password);
-
-		if (!(await loginPage.checkAuthenticationState())) {
-			await loginPage.createFirstUser(email, password, "Admin User");
-		}
+		// Pre-authenticated via storage state - no login needed
 
 		// Create a new item and verify UUID is used
 		await collectionsPage.navigateToCollection("posts");
@@ -147,9 +143,8 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 	});
 
 	test("should handle transaction rollback on error", async ({ page }) => {
-		// Login
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// Pre-authenticated via storage state - no login needed
+		const { email } = TEST_USERS.admin;
 
 		// Navigate to users collection
 		await collectionsPage.navigateToCollection("users");
@@ -187,7 +182,8 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 		// This test checks if RLS is properly integrated
 		// Note: This assumes RLS might be configured on some tables
 
-		const response = await page.request.get(
+		// First test without auth (use a new context to clear storage state)
+		const unauthResponse = await page.request.get(
 			`${loginPage.baseURL}/api/private`,
 			{
 				failOnStatusCode: false,
@@ -195,14 +191,11 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 		);
 
 		// If collection has RLS, should get 401 without auth
-		if (response.status() === 401) {
+		if (unauthResponse.status() === 401) {
 			console.log("RLS is properly enforcing access control");
 		}
 
-		// Login and try again
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
-
+		// Pre-authenticated via storage state - test with auth
 		const authResponse = await page.request.get(
 			`${loginPage.baseURL}/api/private`,
 			{
@@ -267,9 +260,7 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 	test("should handle large payload data correctly", async ({
 		page: _page,
 	}) => {
-		// Login
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// Pre-authenticated via storage state - no login needed
 
 		// Create post with large content
 		await collectionsPage.navigateToCollection("posts");
@@ -312,16 +303,10 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 		page,
 		context,
 	}) => {
-		// Login on two pages
-		const { email, password } = TEST_USERS.admin;
-
-		await loginPage.login(email, password);
+		// Pre-authenticated via storage state - both pages share same auth context
 
 		const page2 = await context.newPage();
-		const loginPage2 = new PayloadLoginPage(page2);
 		const collectionsPage2 = new PayloadCollectionsPage(page2);
-
-		await loginPage2.login(email, password);
 
 		// Create a post
 		await collectionsPage.navigateToCollection("posts");

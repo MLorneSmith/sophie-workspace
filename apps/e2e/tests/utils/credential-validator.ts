@@ -156,13 +156,17 @@ export class CredentialValidator {
 	/**
 	 * Get credentials from environment with fallbacks
 	 */
-	static getCredentials(type: "test" | "owner" | "admin"): E2ECredentials {
+	static getCredentials(
+		type: "test" | "owner" | "admin" | "payload-admin",
+	): E2ECredentials {
+		// Payload admin uses the same credentials as regular admin
+		// (Payload CMS authenticates via Supabase with the same user)
 		const envPrefix =
 			type === "test"
 				? "E2E_TEST_USER"
 				: type === "owner"
 					? "E2E_OWNER"
-					: "E2E_ADMIN";
+					: "E2E_ADMIN"; // Both "admin" and "payload-admin" use E2E_ADMIN
 
 		const email = process.env[`${envPrefix}_EMAIL`] || "";
 		const password = process.env[`${envPrefix}_PASSWORD`] || "";
@@ -177,7 +181,9 @@ export class CredentialValidator {
 	/**
 	 * Validate and get credentials with comprehensive error handling
 	 */
-	static validateAndGet(type: "test" | "owner" | "admin"): E2ECredentials {
+	static validateAndGet(
+		type: "test" | "owner" | "admin" | "payload-admin",
+	): E2ECredentials {
 		const credentials = CredentialValidator.getCredentials(type);
 		const result = CredentialValidator.validate(credentials);
 

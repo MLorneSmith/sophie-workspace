@@ -115,7 +115,23 @@ export default defineConfig({
 				// This eliminates per-test authentication and enables true parallel execution
 				storageState: ".auth/test1@slideheroes.com.json",
 			},
-			testIgnore: /.*\.setup\.ts/, // Skip setup files - handled by global setup
+			// Exclude Payload tests from the default project - they use a separate project
+			testIgnore: [/.*\.setup\.ts/, /.*payload.*/],
+		},
+		{
+			name: "payload",
+			use: {
+				...devices["Desktop Chrome"],
+				// Use Payload-specific pre-authenticated storage state
+				// Created in global-setup.ts with navigation to Payload admin panel
+				storageState: ".auth/payload-admin.json",
+				// Use Payload's base URL for all tests in this project
+				baseURL:
+					process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021",
+			},
+			// Only run Payload tests in this project
+			testMatch: /.*payload.*\.spec\.ts/,
+			testIgnore: /.*\.setup\.ts/,
 		},
 		/* Test against mobile viewports. */
 		// {
