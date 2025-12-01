@@ -4,11 +4,10 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		".": "./src/index.ts",
 		"./provider": "./src/components/provider.tsx",
@@ -22,7 +21,6 @@
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
 		"@kit/monitoring-core": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "^24.10.1",
 		"@types/react": "catalog:",

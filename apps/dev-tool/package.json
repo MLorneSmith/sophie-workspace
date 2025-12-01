@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .next .turbo node_modules",
 		"dev": "next dev --turbo --port=3015 | pino-pretty -c",
-		"format": "prettier --check --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\""
+		"format": "biome format src"
 	},
 	"dependencies": {
 		"@ai-sdk/openai": "^2.0.71",
@@ -23,7 +23,6 @@
 	"devDependencies": {
 		"@kit/email-templates": "workspace:*",
 		"@kit/i18n": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
@@ -41,7 +40,6 @@
 		"typescript": "^5.9.3",
 		"zod": "^4.1.12"
 	},
-	"prettier": "@kit/prettier-config",
 	"browserslist": [
 		"last 1 versions",
 		"> 0.7%",

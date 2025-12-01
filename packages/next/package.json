@@ -4,11 +4,10 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		"./actions": "./src/actions/index.ts",
 		"./routes": "./src/routes/index.ts"
@@ -17,7 +16,6 @@
 		"@kit/auth": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
 		"@kit/monitoring": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@supabase/supabase-js": "2.82.0",

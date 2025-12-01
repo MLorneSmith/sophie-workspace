@@ -15,7 +15,7 @@
 	"scripts": {
 		"clean": "rm -rf .turbo node_modules",
 		"lint": "eslint .",
-		"format": "prettier --check \"**/*.{mjs,ts,md,json}\"",
+		"format": "biome format src",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -24,8 +24,6 @@
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*"
-	},
-	"prettier": "@kit/prettier-config"
+	}
 }

@@ -5,11 +5,10 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf ../.turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint ..",
 		"typecheck": "tsc --noEmit"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		"./server": "./src/server.ts",
 		"./instrumentation": "./src/instrumentation.ts",
@@ -20,7 +19,6 @@
 		"@kit/eslint-config": "workspace:*",
 		"@kit/monitoring-core": "workspace:*",
 		"@kit/monitoring-newrelic": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/sentry": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",

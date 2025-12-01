@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit"
 	},
@@ -22,7 +22,6 @@
 	"devDependencies": {
 		"@hookform/resolvers": "5.2.2",
 		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
@@ -39,7 +38,6 @@
 		"sonner": "^2.0.7",
 		"zod": "^4.1.12"
 	},
-	"prettier": "@kit/prettier-config",
 	"typesVersions": {
 		"*": {
 			"*": [
