@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { PayloadCollectionsPage } from "./pages/PayloadCollectionsPage";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
+import { TEST_USERS } from "./helpers/test-data";
 
 test.describe("Payload CMS - Supabase Database Integration", () => {
 	let loginPage: PayloadLoginPage;
@@ -116,8 +117,7 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 
 	test("should verify UUID support for Supabase", async ({ page }) => {
 		// Login first
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
@@ -148,8 +148,7 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 
 	test("should handle transaction rollback on error", async ({ page }) => {
 		// Login
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 
 		// Navigate to users collection
@@ -201,8 +200,7 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 		}
 
 		// Login and try again
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 
 		const authResponse = await page.request.get(
@@ -270,8 +268,7 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 		page: _page,
 	}) => {
 		// Login
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 		await loginPage.login(email, password);
 
 		// Create post with large content
@@ -316,8 +313,7 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 		context,
 	}) => {
 		// Login on two pages
-		const email = process.env.PAYLOAD_TEST_EMAIL || "admin@example.com";
-		const password = process.env.PAYLOAD_TEST_PASSWORD || "Admin123!";
+		const { email, password } = TEST_USERS.admin;
 
 		await loginPage.login(email, password);
 
