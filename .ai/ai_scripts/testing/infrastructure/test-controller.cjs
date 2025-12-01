@@ -790,6 +790,39 @@ class TestController {
 						};
 					}
 
+					// Check if Payload CMS is needed (shards 7 or 8)
+					const payloadShards = [7, 8];
+					const needsPayload =
+						this.options.shard &&
+						this.options.shard.some((s) => payloadShards.includes(s));
+
+					if (needsPayload) {
+						log("📦 Payload CMS required for shard 7/8 tests");
+						const payloadStatus =
+							await this.infrastructureManager.setupPayloadServer();
+
+						if (payloadStatus === "failed") {
+							log("❌ Failed to start Payload CMS server");
+							log(
+								"💡 Suggestion: Start Payload manually with: pnpm --filter payload dev:test",
+							);
+
+							return {
+								success: false,
+								skipped: true,
+								reason: "Payload CMS server failed to start",
+								suggestions: [
+									"Start Payload manually: pnpm --filter payload dev:test",
+									"Check Payload logs for errors",
+									"Ensure database is running",
+								],
+								testsRun: 0,
+								testsPassed: 0,
+								testsFailed: 0,
+							};
+						}
+					}
+
 					// Infrastructure is healthy, run E2E tests
 					const result = await this.e2eTestRunner.run();
 					return result;
