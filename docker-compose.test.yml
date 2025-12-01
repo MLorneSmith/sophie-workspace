@@ -35,6 +35,8 @@ services:
       - NODE_ENV=test
       - NEXT_PUBLIC_SITE_URL=http://localhost:3001
       - PORT=3001
+      # Payload CMS connection (use Docker service name for inter-container communication)
+      - PAYLOAD_PUBLIC_SERVER_URL=http://slideheroes-payload-test:3021
       # Auth configuration
       - NEXT_PUBLIC_AUTH_PASSWORD=true
       - NEXT_PUBLIC_AUTH_MAGIC_LINK=false
