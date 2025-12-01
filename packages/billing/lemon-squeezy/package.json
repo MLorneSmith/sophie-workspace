@@ -25,7 +25,7 @@
 		"@types/react": "catalog:",
 		"next": "catalog:",
 		"react": "19.2.0",
-		"zod": "^4.1.12"
+		"zod": "^4.1.13"
 	},
 	"typesVersions": {
 		"*": {

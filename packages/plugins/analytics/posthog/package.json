@@ -15,8 +15,8 @@
 	"dependencies": {
 		"@hookform/resolvers": "5.2.2",
 		"@kit/shared": "workspace:*",
-		"posthog-js": "1.298.0",
-		"posthog-node": "5.14.0"
+		"posthog-js": "1.298.1",
+		"posthog-node": "5.14.1"
 	},
 	"devDependencies": {
 		"@kit/tsconfig": "workspace:*",

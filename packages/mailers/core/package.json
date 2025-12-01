@@ -18,7 +18,7 @@
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "catalog:",
-		"zod": "^4.1.12"
+		"zod": "^4.1.13"
 	},
 	"typesVersions": {
 		"*": {

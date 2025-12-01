@@ -122,7 +122,7 @@
 	},
 	"devDependencies": {
 		"@ast-grep/napi": "^0.40.0",
-		"@biomejs/biome": "2.3.6",
+		"@biomejs/biome": "2.3.8",
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^20.0.0",
 		"@manypkg/cli": "^0.25.1",
@@ -137,7 +137,7 @@
 		"graph-data-structure": "^4.5.0",
 		"husky": "^9.1.7",
 		"js-yaml": "^4.1.1",
-		"knip": "^5.70.2",
+		"knip": "^5.71.0",
 		"lint-staged": "^16.2.7",
 		"markdownlint-cli2": "^0.19.1",
 		"react": "19.2.0",
