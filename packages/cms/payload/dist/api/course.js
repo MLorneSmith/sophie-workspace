@@ -26,7 +26,7 @@ export async function getCourseBySlug(slug, _options = {}, supabaseClient) {
  * @returns The course lessons
  */
 export async function getCourseLessons(courseId, _options = {}, supabaseClient) {
-    return callPayloadAPI(`course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`, {}, supabaseClient);
+    return callPayloadAPI(`course-lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`, {}, supabaseClient);
 }
 /**
  * Get a lesson by slug
@@ -36,7 +36,7 @@ export async function getCourseLessons(courseId, _options = {}, supabaseClient) 
  * @returns The lesson data
  */
 export async function getLessonBySlug(slug, _options = {}, supabaseClient) {
-    return callPayloadAPI(`course_lessons?where[slug][equals]=${slug}&depth=2`, {}, supabaseClient);
+    return callPayloadAPI(`course-lessons?where[slug][equals]=${slug}&depth=2`, {}, supabaseClient);
 }
 /**
  * Get a quiz by ID with its questions
@@ -65,7 +65,7 @@ export async function getQuiz(quizId, _options = {}, supabaseClient) {
             else if (quizId.id && typeof quizId.id === "string") {
                 actualQuizId = quizId.id;
             }
-            else if (quizId.relationTo === "course_quizzes" && quizId.value) {
+            else if (quizId.relationTo === "course-quizzes" && quizId.value) {
                 // Handle special case for specific relationship format
                 actualQuizId = String(quizId.value);
             }
@@ -107,7 +107,7 @@ export async function getQuiz(quizId, _options = {}, supabaseClient) {
     }
     // Get the quiz WITH its questions using depth parameter
     // This utilizes the unidirectional relationship
-    const quiz = await callPayloadAPI(`course_quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
+    const quiz = await callPayloadAPI(`course-quizzes/${actualQuizId}?depth=1`, {}, supabaseClient);
     if (!quiz || !quiz.id) {
         // TODO: Async logger needed
         // (await getLogger()).error(`getQuiz: Quiz not found for ID: ${actualQuizId}`);
@@ -133,7 +133,7 @@ export async function getQuiz(quizId, _options = {}, supabaseClient) {
             const idQueryParams = questionIds
                 .map((id) => `id[]=${id}`)
                 .join("&");
-            const questionsResponse = await callPayloadAPI(`quiz_questions?${idQueryParams}&sort=order`, {}, supabaseClient);
+            const questionsResponse = await callPayloadAPI(`quiz-questions?${idQueryParams}&sort=order`, {}, supabaseClient);
             // TODO: Async logger needed
             // (await getLogger()).info(`getQuiz: Fetched ${questionsResponse.docs?.length || 0} detailed questions for quiz`, { data:  });
             // Replace the questions array with the full details
