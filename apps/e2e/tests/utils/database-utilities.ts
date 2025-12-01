@@ -131,3 +131,190 @@ export async function unbanUser(email: string): Promise<boolean> {
 		await client.end();
 	}
 }
+
+/**
+ * Removes test team memberships for a user.
+ * This is used before deleting a user to avoid referential integrity errors.
+ * Keeps the user's membership in SlideHeroes Team (the seeded team).
+ *
+ * @param email - The email of the user whose test teams should be removed
+ * @returns Object with number of memberships removed and teams deleted
+ */
+export async function removeTestTeamMemberships(
+	email: string,
+): Promise<{ membershipsRemoved: number; teamsDeleted: number }> {
+	const { Client } = await import("pg");
+	const config = getSupabaseConfig();
+
+	const client = new Client({
+		connectionString: config.DB_URL,
+	});
+
+	try {
+		await client.connect();
+
+		// First, get the user's ID
+		const userResult = await client.query<{ id: string }>(
+			"SELECT id FROM auth.users WHERE email = $1",
+			[email],
+		);
+
+		if (userResult.rows.length === 0) {
+			return { membershipsRemoved: 0, teamsDeleted: 0 };
+		}
+
+		const userId = userResult.rows[0].id;
+
+		// Find all test teams where the user is a member (teams starting with 'test-')
+		// Exclude the SlideHeroes Team which is the seeded team
+		const testTeamsResult = await client.query<{ account_id: string }>(
+			`SELECT am.account_id
+       FROM public.accounts_memberships am
+       JOIN public.accounts a ON am.account_id = a.id
+       WHERE am.user_id = $1
+       AND a.is_personal_account = false
+       AND a.name LIKE 'test-%'`,
+			[userId],
+		);
+
+		const testTeamIds = testTeamsResult.rows.map((row) => row.account_id);
+
+		if (testTeamIds.length === 0) {
+			return { membershipsRemoved: 0, teamsDeleted: 0 };
+		}
+
+		// Remove memberships
+		const membershipResult = await client.query(
+			`DELETE FROM public.accounts_memberships
+       WHERE account_id = ANY($1::uuid[])`,
+			[testTeamIds],
+		);
+		const membershipsRemoved = membershipResult.rowCount ?? 0;
+
+		// Delete the test team accounts
+		// The accounts table has ON DELETE CASCADE for related records
+		const accountResult = await client.query(
+			`DELETE FROM public.accounts
+       WHERE id = ANY($1::uuid[])`,
+			[testTeamIds],
+		);
+		const teamsDeleted = accountResult.rowCount ?? 0;
+
+		return { membershipsRemoved, teamsDeleted };
+	} finally {
+		await client.end();
+	}
+}
+
+/**
+ * Removes ALL team memberships for a user (except personal account).
+ * This is a more aggressive cleanup used when you need to delete a user completely.
+ * WARNING: This will remove the user from ALL teams including SlideHeroes Team.
+ *
+ * @param email - The email of the user whose team memberships should be removed
+ * @returns Object with number of memberships removed and orphan teams deleted
+ */
+export async function removeAllTeamMemberships(
+	email: string,
+): Promise<{ membershipsRemoved: number; teamsDeleted: number }> {
+	const { Client } = await import("pg");
+	const config = getSupabaseConfig();
+
+	const client = new Client({
+		connectionString: config.DB_URL,
+	});
+
+	try {
+		await client.connect();
+
+		// First, get the user's ID
+		const userResult = await client.query<{ id: string }>(
+			"SELECT id FROM auth.users WHERE email = $1",
+			[email],
+		);
+
+		if (userResult.rows.length === 0) {
+			return { membershipsRemoved: 0, teamsDeleted: 0 };
+		}
+
+		const userId = userResult.rows[0].id;
+
+		// Find all team accounts (non-personal) where the user is a member
+		const teamsResult = await client.query<{
+			account_id: string;
+			member_count: string;
+		}>(
+			`SELECT am.account_id,
+              (SELECT COUNT(*) FROM public.accounts_memberships
+               WHERE account_id = am.account_id) as member_count
+       FROM public.accounts_memberships am
+       JOIN public.accounts a ON am.account_id = a.id
+       WHERE am.user_id = $1
+       AND a.is_personal_account = false`,
+			[userId],
+		);
+
+		const teamIds = teamsResult.rows.map((row) => row.account_id);
+
+		if (teamIds.length === 0) {
+			return { membershipsRemoved: 0, teamsDeleted: 0 };
+		}
+
+		// Remove user's memberships from all teams
+		const membershipResult = await client.query(
+			`DELETE FROM public.accounts_memberships
+       WHERE user_id = $1 AND account_id = ANY($2::uuid[])`,
+			[userId, teamIds],
+		);
+		const membershipsRemoved = membershipResult.rowCount ?? 0;
+
+		// Delete teams where user was the only member (orphaned teams)
+		// Re-check member counts after removal
+		const orphanedTeamsResult = await client.query(
+			`DELETE FROM public.accounts
+       WHERE id = ANY($1::uuid[])
+       AND id NOT IN (
+         SELECT DISTINCT account_id FROM public.accounts_memberships
+       )
+       RETURNING id`,
+			[teamIds],
+		);
+		const teamsDeleted = orphanedTeamsResult.rowCount ?? 0;
+
+		return { membershipsRemoved, teamsDeleted };
+	} finally {
+		await client.end();
+	}
+}
+
+/**
+ * Get user ID by email from auth.users table.
+ *
+ * @param email - The email of the user
+ * @returns The user ID or null if not found
+ */
+export async function getUserIdByEmail(email: string): Promise<string | null> {
+	const { Client } = await import("pg");
+	const config = getSupabaseConfig();
+
+	const client = new Client({
+		connectionString: config.DB_URL,
+	});
+
+	try {
+		await client.connect();
+
+		const result = await client.query<{ id: string }>(
+			"SELECT id FROM auth.users WHERE email = $1",
+			[email],
+		);
+
+		if (result.rows.length === 0) {
+			return null;
+		}
+
+		return result.rows[0].id;
+	} finally {
+		await client.end();
+	}
+}
