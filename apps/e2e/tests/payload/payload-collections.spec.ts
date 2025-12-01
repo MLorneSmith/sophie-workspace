@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { PayloadCollectionsPage } from "./pages/PayloadCollectionsPage";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
-import { TEST_USERS } from "./helpers/test-data";
 
 // Collections to test based on the Payload config
 const COLLECTIONS = [
@@ -58,30 +57,13 @@ test.describe("Payload CMS - Collection Navigation & Access", () => {
 	let loginPage: PayloadLoginPage;
 	let collectionsPage: PayloadCollectionsPage;
 
-	test.beforeAll(async ({ browser }) => {
-		// Login once for all collection tests
-		const page = await browser.newPage();
-		loginPage = new PayloadLoginPage(page);
-
-		const { email, password } = TEST_USERS.admin;
-
-		await loginPage.login(email, password);
-
-		// If not logged in, create first user
-		if (!(await loginPage.checkAuthenticationState())) {
-			await loginPage.createFirstUser(email, password, "Admin User");
-		}
-
-		await page.close();
-	});
+	// No beforeAll login needed - tests use pre-authenticated storage state from global-setup.ts
+	// Storage state is configured in playwright.config.ts for the "payload" project
 
 	test.beforeEach(async ({ page }) => {
 		collectionsPage = new PayloadCollectionsPage(page);
 		loginPage = new PayloadLoginPage(page);
-
-		// Ensure we're logged in
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// No login needed - storage state handles authentication
 	});
 
 	// Test each collection individually
@@ -171,16 +153,11 @@ test.describe("Payload CMS - Collection Navigation & Access", () => {
 });
 
 test.describe("Payload CMS - CRUD Operations", () => {
-	let loginPage: PayloadLoginPage;
 	let collectionsPage: PayloadCollectionsPage;
 
 	test.beforeEach(async ({ page }) => {
 		collectionsPage = new PayloadCollectionsPage(page);
-		loginPage = new PayloadLoginPage(page);
-
-		// Login
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// No login needed - storage state handles authentication
 	});
 
 	test("should create a new post", async ({ page: _page }) => {
@@ -275,11 +252,10 @@ test.describe("Payload CMS - CRUD Operations", () => {
 
 test.describe("Payload CMS - Database & Error Handling", () => {
 	let collectionsPage: PayloadCollectionsPage;
-	let loginPage: PayloadLoginPage;
 
 	test.beforeEach(async ({ page }) => {
 		collectionsPage = new PayloadCollectionsPage(page);
-		loginPage = new PayloadLoginPage(page);
+		// No login needed - storage state handles authentication
 	});
 
 	test("should handle database connectivity check", async ({ page: _page }) => {
@@ -312,15 +288,14 @@ test.describe("Payload CMS - Database & Error Handling", () => {
 	});
 
 	test("should recover from temporary network issues", async ({ page }) => {
-		// Login first
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// Navigate to admin first (authenticated via storage state)
+		await collectionsPage.navigateToCollection("posts");
 
 		// Simulate network offline
 		await page.context().setOffline(true);
 
-		// Try to navigate to collection
-		await collectionsPage.navigateToCollection("posts").catch(() => {});
+		// Try to navigate to another collection
+		await collectionsPage.navigateToCollection("users").catch(() => {});
 
 		// Go back online
 		await page.context().setOffline(false);
@@ -338,15 +313,14 @@ test.describe("Payload CMS - Database & Error Handling", () => {
 	});
 
 	test("should handle session expiry gracefully", async ({ page, context }) => {
-		// Login
-		const { email, password } = TEST_USERS.admin;
-		await loginPage.login(email, password);
+		// Navigate to admin (authenticated via storage state)
+		await collectionsPage.navigateToCollection("posts");
 
 		// Clear cookies to simulate session expiry
 		await context.clearCookies();
 
 		// Try to navigate to protected route
-		await collectionsPage.navigateToCollection("posts");
+		await collectionsPage.navigateToCollection("users");
 
 		// Should redirect to login
 		await expect(page).toHaveURL(/.*\/login/);

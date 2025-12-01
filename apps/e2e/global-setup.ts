@@ -1,8 +1,8 @@
 import { join } from "node:path";
 import { cwd } from "node:process";
 import { chromium, type FullConfig } from "@playwright/test";
+import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { config as dotenvConfig } from "dotenv";
 import { TOTP } from "totp-generator";
 
@@ -121,16 +121,25 @@ async function globalSetup(config: FullConfig) {
 			name: "test user",
 			role: "test" as const,
 			filePath: join(authDir, "test1@slideheroes.com.json"),
+			navigateToPayload: false,
 		},
 		{
 			name: "owner user",
 			role: "owner" as const,
 			filePath: join(authDir, "test2@slideheroes.com.json"),
+			navigateToPayload: false,
 		},
 		{
 			name: "super-admin user",
 			role: "admin" as const,
 			filePath: join(authDir, "michael@slideheroes.com.json"),
+			navigateToPayload: false,
+		},
+		{
+			name: "payload-admin user",
+			role: "payload-admin" as const,
+			filePath: join(authDir, "payload-admin.json"),
+			navigateToPayload: true,
 		},
 	];
 
@@ -405,6 +414,80 @@ async function globalSetup(config: FullConfig) {
 		// Reload page to activate the injected session
 		// The Supabase client needs to reinitialize with the new session from localStorage
 		await page.reload({ waitUntil: "domcontentloaded" });
+
+		// For Payload admin users, navigate to Payload admin panel to set up cookies properly
+		// This ensures the admin session is correctly initialized for the Payload CMS interface
+		if (authState.navigateToPayload) {
+			const payloadUrl =
+				process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
+			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+			console.log(
+				`🔄 Navigating to Payload admin panel for ${authState.name}...`,
+			);
+
+			try {
+				// Navigate to Payload admin - the session should already be active
+				await page.goto(`${payloadUrl}/admin`, {
+					waitUntil: "domcontentloaded",
+					timeout: 30000,
+				});
+
+				// Verify we're on the admin dashboard (not login page)
+				// Give it a moment for the page to settle
+				await page.waitForTimeout(1000);
+
+				// Check if we're on the login page (authentication failed)
+				const isOnLoginPage = await page
+					.locator('input[name="email"], input[name="password"]')
+					.first()
+					.isVisible({ timeout: 2000 })
+					.catch(() => false);
+
+				if (isOnLoginPage) {
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(
+						`⚠️  Still on login page for ${authState.name}, attempting UI login...`,
+					);
+
+					// Fill in login form using Payload's UI
+					await page
+						.locator('input[name="email"]')
+						.fill(credentials.email, { timeout: 5000 });
+					await page
+						.locator('input[name="password"]')
+						.fill(credentials.password);
+					await page.locator('button[type="submit"]').click();
+
+					// Wait for navigation away from login page
+					await page
+						.waitForURL(/.*\/admin(?!\/login)/, { timeout: 15000 })
+						.catch(() => {});
+				}
+
+				// Final verification: ensure we're authenticated
+				const adminNav = await page
+					.locator(".nav, .sidebar, .template-default")
+					.first()
+					.isVisible({ timeout: 5000 })
+					.catch(() => false);
+
+				if (adminNav) {
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(`✅ Payload admin panel loaded for ${authState.name}`);
+				} else {
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(
+						`⚠️  Could not verify Payload admin access for ${authState.name}`,
+					);
+				}
+			} catch (error) {
+				// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+				console.error(
+					`❌ Failed to setup Payload admin for ${authState.name}: ${(error as Error).message}`,
+				);
+				// Don't throw - continue with storage state save, tests will reveal if auth failed
+			}
+		}
 
 		// Save authenticated state
 		await context.storageState({ path: authState.filePath });
