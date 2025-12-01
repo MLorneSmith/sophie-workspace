@@ -54,7 +54,7 @@ export async function getCourseLessons(
 	supabaseClient?: SupabaseClient,
 ) {
 	return callPayloadAPI(
-		`course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`,
+		`course-lessons?where[course_id][equals]=${courseId}&sort=lesson_number&depth=2&limit=100`,
 		{},
 		supabaseClient,
 	);
@@ -73,7 +73,7 @@ export async function getLessonBySlug(
 	supabaseClient?: SupabaseClient,
 ) {
 	return callPayloadAPI(
-		`course_lessons?where[slug][equals]=${slug}&depth=2`,
+		`course-lessons?where[slug][equals]=${slug}&depth=2`,
 		{},
 		supabaseClient,
 	);
@@ -109,7 +109,7 @@ export async function getQuiz(
 				actualQuizId = quizId.value;
 			} else if (quizId.id && typeof quizId.id === "string") {
 				actualQuizId = quizId.id;
-			} else if (quizId.relationTo === "course_quizzes" && quizId.value) {
+			} else if (quizId.relationTo === "course-quizzes" && quizId.value) {
 				// Handle special case for specific relationship format
 				actualQuizId = String(quizId.value);
 			} else {
@@ -158,7 +158,7 @@ export async function getQuiz(
 	// Get the quiz WITH its questions using depth parameter
 	// This utilizes the unidirectional relationship
 	const quiz = await callPayloadAPI(
-		`course_quizzes/${actualQuizId}?depth=1`,
+		`course-quizzes/${actualQuizId}?depth=1`,
 		{},
 		supabaseClient,
 	);
@@ -200,7 +200,7 @@ export async function getQuiz(
 				.map((id: string) => `id[]=${id}`)
 				.join("&");
 			const questionsResponse = await callPayloadAPI(
-				`quiz_questions?${idQueryParams}&sort=order`,
+				`quiz-questions?${idQueryParams}&sort=order`,
 				{},
 				supabaseClient,
 			);
