@@ -1,0 +1,27 @@
+{
+	"executionDate": "2025-12-01",
+	"lastUpdated": "2025-12-01T14:48:45.768Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 1,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 31,
+		"passed": 0,
+		"failed": 31,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Payload CMS",
+			"success": false,
+			"duration": "23s",
+			"tests": 31,
+			"failures": 31,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}
