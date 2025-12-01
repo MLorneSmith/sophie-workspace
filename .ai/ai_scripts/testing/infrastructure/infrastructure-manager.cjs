@@ -658,6 +658,151 @@ class InfrastructureManager {
 	}
 
 	/**
+	 * Health check for Payload CMS server (used by shards 7 and 8)
+	 * Payload runs on port 3021 in test mode (dev:test script)
+	 */
+	async healthCheckPayloadServer() {
+		const payloadPort = 3021; // Test port from apps/payload/package.json dev:test
+		const payloadUrl = `http://localhost:${payloadPort}`;
+
+		try {
+			// Check if process is running on the port
+			const { stdout: portCheck } = await execAsync(
+				`lsof -ti:${payloadPort} 2>/dev/null || echo 'none'`,
+				{ timeout: 1000 },
+			);
+
+			if (portCheck.trim() === "none") {
+				return "not_running";
+			}
+
+			// Try to fetch from the Payload health endpoint
+			try {
+				const response = await fetch(`${payloadUrl}/api/health`, {
+					signal: AbortSignal.timeout(5000),
+				});
+
+				if (response.ok) {
+					log(`✅ Payload CMS server healthy on port ${payloadPort}`);
+					return "healthy";
+				}
+			} catch (fetchError) {
+				if (fetchError.name === "AbortError") {
+					return "starting";
+				}
+			}
+
+			// Try the admin login page as fallback
+			try {
+				const response = await fetch(`${payloadUrl}/admin/login`, {
+					signal: AbortSignal.timeout(5000),
+				});
+
+				if (response.status >= 200 && response.status < 400) {
+					log(`✅ Payload CMS server responding on port ${payloadPort}`);
+					return "healthy";
+				}
+			} catch {
+				// Admin page also failed
+			}
+
+			return "not_running";
+		} catch {
+			return "not_running";
+		}
+	}
+
+	/**
+	 * Setup Payload CMS server for E2E tests (shards 7 and 8)
+	 * Uses dev:test script which runs on port 3021
+	 */
+	async setupPayloadServer() {
+		const payloadPort = 3021;
+
+		try {
+			// Check if already running
+			const status = await this.healthCheckPayloadServer();
+			if (status === "healthy") {
+				log("✅ Payload CMS server already running on port 3021");
+				return "already_running";
+			}
+
+			log("🚀 Starting Payload CMS server on port 3021...");
+
+			// Clear port if something is stuck - more aggressive approach
+			try {
+				const { stdout: pids } = await execAsync(
+					`lsof -ti:${payloadPort} 2>/dev/null || echo ""`,
+				);
+				if (pids.trim()) {
+					log(`  🧹 Clearing existing processes on port ${payloadPort}...`);
+					await execAsync(`kill -9 ${pids.trim().split('\n').join(' ')} 2>/dev/null || true`);
+					await new Promise((resolve) => setTimeout(resolve, 2000));
+				}
+			} catch {
+				// Port is likely free
+			}
+
+			// Also kill any existing payload dev processes
+			try {
+				await execAsync('pkill -f "payload.*dev" 2>/dev/null || true');
+			} catch {
+				// Process might not exist - this is expected
+			}
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			// Start Payload with dev:test script (uses port 3021)
+			const payloadProcess = exec("pnpm --filter payload dev:test", {
+				cwd: process.cwd(),
+				env: {
+					...process.env,
+					NODE_ENV: "test",
+					FORCE_COLOR: "0",
+				},
+			});
+
+			// Store reference for cleanup (on this instance)
+			this.payloadProcess = payloadProcess;
+
+			// Log output for debugging
+			payloadProcess.stdout?.on("data", (data) => {
+				const output = data.toString().trim();
+				if (output.includes("Ready") || output.includes("Local:") || output.includes("error")) {
+					log(`  📦 Payload: ${output}`);
+				}
+			});
+
+			payloadProcess.stderr?.on("data", (data) => {
+				const output = data.toString().trim();
+				if (output && !output.includes("ExperimentalWarning")) {
+					log(`  📦 Payload stderr: ${output}`);
+				}
+			});
+
+			// Wait for Payload to be ready
+			log("⏳ Waiting for Payload CMS to be ready...");
+			const maxWaitTime = 60000; // 60 seconds
+			const startTime = Date.now();
+			const checkInterval = 2000;
+
+			while (Date.now() - startTime < maxWaitTime) {
+				const checkStatus = await this.healthCheckPayloadServer();
+				if (checkStatus === "healthy") {
+					log("✅ Payload CMS server is ready");
+					return "started";
+				}
+				await new Promise((resolve) => setTimeout(resolve, checkInterval));
+			}
+
+			logError("❌ Payload CMS server failed to start within timeout");
+			return "failed";
+		} catch (error) {
+			logError(`Failed to setup Payload server: ${error.message}`);
+			return "failed";
+		}
+	}
+
+	/**
 	 * Setup Supabase
 	 */
 	async setupSupabase() {
@@ -924,8 +1069,16 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 			}
 
 			// Additional cleanup for Next.js specific processes
-			await execAsync('pkill -f "next.*dev.*3000" 2>/dev/null || true');
-			await execAsync('pkill -f "node.*next.*3000" 2>/dev/null || true');
+			try {
+				await execAsync('pkill -f "next.*dev.*3000" 2>/dev/null || true');
+			} catch {
+				// Process might not exist - this is expected
+			}
+			try {
+				await execAsync('pkill -f "node.*next.*3000" 2>/dev/null || true');
+			} catch {
+				// Process might not exist - this is expected
+			}
 
 			// Wait for OS to fully release the port
 			log("⏱️ Waiting 3s for port cleanup...");
@@ -949,7 +1102,11 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 			} catch (error) {
 				logError(`Port verification failed: ${error.message}`);
 				// Try one more aggressive cleanup
-				await execAsync("fuser -k 3000/tcp 2>/dev/null || true");
+				try {
+					await execAsync("fuser -k 3000/tcp 2>/dev/null || true");
+				} catch {
+					// Port might already be free - this is expected
+				}
 				await this.waiter.delay(2000, "Final port cleanup");
 			}
 
