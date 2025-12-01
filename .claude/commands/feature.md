@@ -221,16 +221,17 @@ Use the GitHub CLI (`gh`) to create the feature issue:
 
 ```bash
 # Create feature issue on GitHub with 'Feature:' prefix and appropriate labels
-# If the issue title doesn't start with 'Feature:', add the prefix
-# Convert priority and featureType to lowercase for label compatibility
+# Labels use hierarchical naming: type:*, priority:*, status:*, area:*
+# Map priority: critical→priority:critical, high→priority:high, etc.
+# Map featureType to area: user-facing→area:ui, api→area:database, admin→area:auth, etc.
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature: <featureTitle>" \
   --body "<issue-content>" \
-  --label "feature" \
-  --label "ready-to-implement" \
-  --label "<priority>" \
-  --label "<featureType>"
+  --label "type:feature" \
+  --label "status:ready" \
+  --label "priority:<priority>" \
+  --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
