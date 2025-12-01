@@ -67,13 +67,13 @@ async function CoursePage() {
 		);
 	}
 
-	// Get user's progress for this course
+	// Get user's progress for this course (use maybeSingle to avoid 406 when no record exists)
 	const { data: courseProgress } = await supabase
 		.from("course_progress")
 		.select("*")
 		.eq("user_id", user.id)
 		.eq("course_id", decksForDecisionMakersCourse.id)
-		.single();
+		.maybeSingle();
 
 	// Get lessons for this course with progress
 	const { data: lessonProgress } = await supabase

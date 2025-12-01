@@ -106,6 +106,12 @@ function getImagesConfig() {
 		});
 	}
 
+	// Add media.slideheroes.com for course lesson thumbnail images
+	remotePatterns.push({
+		protocol: "https",
+		hostname: "media.slideheroes.com",
+	});
+
 	if (IS_PRODUCTION) {
 		return {
 			remotePatterns,
