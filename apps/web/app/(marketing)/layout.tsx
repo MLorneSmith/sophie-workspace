@@ -1,34 +1,13 @@
 import type { JWTUserData } from "@kit/supabase/types";
-import { getSupabaseServerClient } from "@kit/supabase/server-client";
 
 import { SiteFooter } from "~/(marketing)/_components/site-footer";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
 import { withI18n } from "~/lib/i18n/with-i18n";
 
-async function SiteLayout(props: React.PropsWithChildren) {
-	const client = getSupabaseServerClient();
-
-	let user: JWTUserData | null = null;
-
-	try {
-		const { data } = await client.auth.getUser();
-
-		// Map Supabase User to JWTUserData format if authenticated
-		user = data.user
-			? {
-					id: data.user.id,
-					email: data.user.email ?? "",
-					phone: data.user.phone ?? "",
-					app_metadata: data.user.app_metadata,
-					user_metadata: data.user.user_metadata,
-					aal: "aal1" as const, // Marketing pages don't need MFA check
-					is_anonymous: data.user.is_anonymous ?? false,
-				}
-			: null;
-	} catch {
-		// Silently handle auth errors on public marketing pages
-		user = null;
-	}
+function SiteLayout(props: React.PropsWithChildren) {
+	// User data not fetched here to avoid race condition with middleware's token refresh.
+	// See GitHub #827 for details. Marketing pages work without user context.
+	const user: JWTUserData | null = null;
 
 	return (
 		<div className={"flex min-h-[100vh] flex-col"}>
