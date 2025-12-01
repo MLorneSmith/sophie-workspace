@@ -1,25 +1,25 @@
 {
 	"executionDate": "2025-11-28",
-	"lastUpdated": "2025-11-28T21:24:04.135Z",
+	"lastUpdated": "2025-11-28T23:23:36.194Z",
 	"totalShards": 0,
 	"completedShards": 1,
 	"failedShards": 1,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 12,
-		"passed": 5,
-		"failed": 7,
+		"total": 20,
+		"passed": 19,
+		"failed": 1,
 		"skipped": 0,
 		"intentionalFailures": 0
 	},
 	"shards": [
 		{
 			"id": 1,
-			"name": "Admin & Invitations",
+			"name": "Accessibility",
 			"success": false,
-			"duration": "486s",
-			"tests": 12,
-			"failures": 7,
+			"duration": "106s",
+			"tests": 20,
+			"failures": 1,
 			"intentionalFailures": 0,
 			"timedOut": false
 		}
