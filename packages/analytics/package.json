@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -13,7 +13,6 @@
 		"./server": "./src/server.ts"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "catalog:"
 	},

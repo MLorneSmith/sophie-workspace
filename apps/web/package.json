@@ -10,8 +10,8 @@
 		"build:test": "NODE_ENV=test next build --turbopack",
 		"clean": "git clean -xdf .next .turbo node_modules",
 		"dev": "next dev --turbo | pino-pretty -c",
-		"lint": "eslint .",
-		"lint:fix": "next lint --fix",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint --write .",
 		"format": "biome format src",
 		"start": "next start",
 		"start:test": "NODE_ENV=test next start",
@@ -100,7 +100,6 @@
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@next/bundle-analyzer": "16.0.6",
 		"@tailwindcss/postcss": "^4.1.17",

@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit",
 		"start": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:3000/api/billing/webhook"
 	},
@@ -20,7 +20,6 @@
 	},
 	"devDependencies": {
 		"@kit/billing": "workspace:*",
-		"@kit/eslint-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",

@@ -70,7 +70,7 @@
 			"bash -c 'cd apps/payload && pnpm lint'"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint --fix; fi'"
+			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint; fi'"
 		],
 		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
 			"biome format --write",
@@ -133,7 +133,6 @@
 		"commitizen": "^4.3.1",
 		"cross-env": "^10.1.0",
 		"cz-conventional-changelog": "^3.3.0",
-		"eslint-plugin-react-hooks": "^7.0.1",
 		"fuse.js": "^7.1.0",
 		"graph-data-structure": "^4.5.0",
 		"husky": "^9.1.7",

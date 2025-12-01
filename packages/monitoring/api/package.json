@@ -6,7 +6,7 @@
 	"scripts": {
 		"clean": "git clean -xdf ../.turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint ..",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -16,7 +16,6 @@
 		"./components": "./src/components/index.ts"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/monitoring-core": "workspace:*",
 		"@kit/monitoring-newrelic": "workspace:*",
 		"@kit/sentry": "workspace:*",

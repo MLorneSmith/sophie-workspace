@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -16,7 +16,6 @@
 		"nodemailer": "^7.0.10"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/mailers-shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/nodemailer": "7.0.4",

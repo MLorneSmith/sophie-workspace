@@ -736,7 +736,9 @@ class InfrastructureManager {
 				);
 				if (pids.trim()) {
 					log(`  🧹 Clearing existing processes on port ${payloadPort}...`);
-					await execAsync(`kill -9 ${pids.trim().split('\n').join(' ')} 2>/dev/null || true`);
+					await execAsync(
+						`kill -9 ${pids.trim().split("\n").join(" ")} 2>/dev/null || true`,
+					);
 					await new Promise((resolve) => setTimeout(resolve, 2000));
 				}
 			} catch {
@@ -767,7 +769,11 @@ class InfrastructureManager {
 			// Log output for debugging
 			payloadProcess.stdout?.on("data", (data) => {
 				const output = data.toString().trim();
-				if (output.includes("Ready") || output.includes("Local:") || output.includes("error")) {
+				if (
+					output.includes("Ready") ||
+					output.includes("Local:") ||
+					output.includes("error")
+				) {
 					log(`  📦 Payload: ${output}`);
 				}
 			});

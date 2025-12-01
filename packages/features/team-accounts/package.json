@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -23,7 +23,6 @@
 		"@kit/accounts": "workspace:*",
 		"@kit/billing-gateway": "workspace:*",
 		"@kit/email-templates": "workspace:*",
-		"@kit/eslint-config": "workspace:*",
 		"@kit/mailers": "workspace:*",
 		"@kit/monitoring": "workspace:*",
 		"@kit/next": "workspace:*",

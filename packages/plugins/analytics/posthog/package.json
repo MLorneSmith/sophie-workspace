@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
-		"lint": "eslint .",
+		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"
 	},
 	"exports": {
@@ -19,16 +19,8 @@
 		"posthog-node": "5.14.0"
 	},
 	"devDependencies": {
-		"@kit/eslint-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "^24.10.1"
-	},
-	"eslintConfig": {
-		"root": true,
-		"extends": [
-			"@kit/eslint-config/base",
-			"@kit/eslint-config/react"
-		]
 	},
 	"typesVersions": {
 		"*": {
