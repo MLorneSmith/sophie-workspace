@@ -18,6 +18,8 @@ Options:
     --viewport <WxH>        Set viewport size (default: 1920x1080)
     --output <path>         Save all debug data as JSON to path
     --headed                Run with visible browser (for debugging)
+    --storage-state <path>  Load authentication state from JSON file
+    --auth <role>           Use project auth state: test, owner, admin, payload-admin
 
 Examples:
     # Take a screenshot
@@ -32,6 +34,12 @@ Examples:
     # Inspect specific component
     playwright_inspect.py http://localhost:3000 --selector ".dashboard-card" --dump-html /tmp/card.html
 
+    # Debug authenticated Payload admin page
+    playwright_inspect.py http://localhost:3021/admin --auth payload-admin --screenshot /tmp/payload-admin.png
+
+    # Debug with custom storage state
+    playwright_inspect.py http://localhost:3001/admin --storage-state /path/to/auth.json --screenshot /tmp/page.png
+
 Requirements:
     pip install playwright
     playwright install chromium
@@ -39,6 +47,8 @@ Requirements:
 
 import argparse
 import json
+import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -48,6 +58,56 @@ try:
 except ImportError:
     print("Error: Playwright not installed. Run: pip install playwright && playwright install chromium")
     sys.exit(1)
+
+
+# Auth state mappings: role -> filename in apps/e2e/.auth/
+AUTH_STATE_FILES = {
+    "test": "test1@slideheroes.com.json",
+    "owner": "test2@slideheroes.com.json",
+    "admin": "michael@slideheroes.com.json",
+    "payload-admin": "payload-admin.json",
+}
+
+
+def get_project_root() -> Path:
+    """Find the project root by looking for package.json or .git."""
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        if (parent / "package.json").exists() or (parent / ".git").exists():
+            return parent
+    return Path.cwd()
+
+
+def resolve_auth_state(role: str) -> Path | None:
+    """Resolve auth state file path for the given role."""
+    if role not in AUTH_STATE_FILES:
+        print(f"Error: Unknown auth role '{role}'. Valid roles: {', '.join(AUTH_STATE_FILES.keys())}")
+        sys.exit(1)
+
+    project_root = get_project_root()
+    auth_file = project_root / "apps" / "e2e" / ".auth" / AUTH_STATE_FILES[role]
+
+    if not auth_file.exists():
+        print(f"Warning: Auth state file not found: {auth_file}")
+        print(f"Run the following to generate auth states:")
+        print(f"  cd {project_root} && pnpm --filter web-e2e playwright test --project=setup")
+        print("")
+        print("Or manually run the global setup:")
+        print(f"  cd {project_root}/apps/e2e && npx playwright test --config=playwright.config.ts --project=setup")
+        return None
+
+    return auth_file
+
+
+def check_auth_states_exist() -> dict[str, bool]:
+    """Check which auth states exist."""
+    project_root = get_project_root()
+    auth_dir = project_root / "apps" / "e2e" / ".auth"
+
+    result = {}
+    for role, filename in AUTH_STATE_FILES.items():
+        result[role] = (auth_dir / filename).exists()
+    return result
 
 
 def parse_viewport(viewport_str: str) -> tuple[int, int]:
@@ -81,8 +141,40 @@ Examples:
     parser.add_argument('--viewport', default='1920x1080', metavar='WxH', help='Viewport size')
     parser.add_argument('--output', metavar='PATH', help='Save all data as JSON')
     parser.add_argument('--headed', action='store_true', help='Run with visible browser')
+    parser.add_argument('--storage-state', metavar='PATH', help='Load auth state from JSON file')
+    parser.add_argument('--auth', metavar='ROLE', choices=['test', 'owner', 'admin', 'payload-admin'],
+                        help='Use project auth state (test, owner, admin, payload-admin)')
+    parser.add_argument('--list-auth', action='store_true', help='List available auth states and exit')
 
     args = parser.parse_args()
+
+    # Handle --list-auth
+    if args.list_auth:
+        print("Available authentication states:")
+        print("=" * 50)
+        auth_states = check_auth_states_exist()
+        for role, exists in auth_states.items():
+            status = "✓ Available" if exists else "✗ Not found"
+            print(f"  {role:15} {status}")
+        print("")
+        if not all(auth_states.values()):
+            project_root = get_project_root()
+            print("To generate missing auth states:")
+            print(f"  cd {project_root} && pnpm --filter web-e2e playwright test --project=setup")
+        sys.exit(0)
+
+    # Resolve storage state
+    storage_state_path = None
+    if args.auth:
+        storage_state_path = resolve_auth_state(args.auth)
+        if storage_state_path:
+            print(f"Using auth state: {args.auth} ({storage_state_path})")
+    elif args.storage_state:
+        storage_state_path = Path(args.storage_state)
+        if not storage_state_path.exists():
+            print(f"Error: Storage state file not found: {storage_state_path}")
+            sys.exit(1)
+        print(f"Using storage state: {storage_state_path}")
 
     # Parse viewport
     width, height = parse_viewport(args.viewport)
@@ -101,7 +193,17 @@ Examples:
     with sync_playwright() as p:
         # Launch browser
         browser = p.chromium.launch(headless=not args.headed)
-        context = browser.new_context(viewport={"width": width, "height": height})
+
+        # Create context with optional storage state for authentication
+        context_options = {"viewport": {"width": width, "height": height}}
+        if storage_state_path:
+            context_options["storage_state"] = str(storage_state_path)
+            debug_data["auth"] = {
+                "role": args.auth if args.auth else "custom",
+                "storage_state": str(storage_state_path),
+            }
+
+        context = browser.new_context(**context_options)
         page = context.new_page()
 
         # Set up console log capture
