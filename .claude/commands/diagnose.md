@@ -98,8 +98,39 @@ Before starting diagnosis:
    **Deployment** (build failures, config, runtime errors):
    - `.ai/ai_docs/tool-docs/vercel-cli.md` - Deployment logs, environment debugging, build troubleshooting
 
-   **Frontend/Browser**:
-   - Developer tools: Console errors, network requests, React DevTools, hydration mismatches
+   **Frontend/Browser** (rendering bugs, console errors, UI issues, performance):
+
+   **Use the `frontend-debugging` skill** for systematic frontend debugging. This skill provides:
+   - **Playwright-based inspection**: Screenshots, console logs, network capture, HTML dumps
+   - **Lighthouse audits**: Core Web Vitals, performance metrics, accessibility scores
+   - **Structured workflows**: Visual debugging, console error analysis, hydration mismatch detection
+
+   Quick commands from the skill:
+   ```bash
+   # Full debug capture (screenshot + console + network)
+   python3 .claude/skills/frontend-debugging/scripts/playwright_inspect.py \
+     http://localhost:3000/affected-page \
+     --screenshot /tmp/debug.png \
+     --console-logs \
+     --network \
+     --output /tmp/debug.json
+
+   # Performance audit with Core Web Vitals
+   .claude/skills/frontend-debugging/scripts/lighthouse_audit.sh \
+     http://localhost:3000/affected-page \
+     --summary
+   ```
+
+   **When to use frontend-debugging skill:**
+   - React/Next.js component rendering issues
+   - CSS styling problems or layout bugs
+   - Console errors or JavaScript exceptions
+   - Hydration mismatches in SSR/RSC apps
+   - Core Web Vitals performance issues (LCP, CLS, TBT)
+   - Network request failures visible in browser
+   - Visual regressions or responsive design problems
+
+   The skill will automatically load when investigating these frontend issues. Reference: `.claude/skills/frontend-debugging/SKILL.md`
 
 7. **Research the issue UNTIL root cause is found**:
    - Start by reading the `README.md` file to understand the project context
