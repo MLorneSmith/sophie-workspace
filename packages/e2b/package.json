@@ -28,7 +28,7 @@
 		}
 	},
 	"dependencies": {
-		"@e2b/code-interpreter": "^1.0.4",
+		"@e2b/code-interpreter": "^2.3.1",
 		"@kit/shared": "workspace:*",
 		"e2b": "^2.8.1",
 		"zod": "^4.1.12"

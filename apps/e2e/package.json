@@ -54,7 +54,7 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@playwright/test": "^1.57.0",
-		"@supabase/ssr": "^0.7.0",
+		"@supabase/ssr": "^0.8.0",
 		"@supabase/supabase-js": "2.82.0",
 		"@types/node": "catalog:",
 		"@types/pg": "^8.15.6",
