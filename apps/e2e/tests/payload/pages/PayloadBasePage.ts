@@ -7,8 +7,6 @@ export abstract class PayloadBasePage {
 	// Common elements across all Payload pages
 	readonly navSidebar: Locator;
 	readonly navToggle: Locator;
-	readonly userMenu: Locator;
-	readonly logoutButton: Locator;
 	readonly toastNotification: Locator;
 	readonly loadingIndicator: Locator;
 	readonly saveButton: Locator;
@@ -22,8 +20,6 @@ export abstract class PayloadBasePage {
 		// Navigation elements
 		this.navSidebar = page.locator(".nav");
 		this.navToggle = page.locator('button[aria-label="Open Menu"]');
-		this.userMenu = page.locator(".account");
-		this.logoutButton = page.locator('button:has-text("Log Out")');
 
 		// Common UI elements
 		this.toastNotification = page.locator(".payload-toast-container");
@@ -90,8 +86,8 @@ export abstract class PayloadBasePage {
 	}
 
 	async logout() {
-		await this.userMenu.click();
-		await this.logoutButton.click();
+		// Navigate directly to logout URL to avoid Next.js dev overlay interception
+		await this.page.goto(`${this.baseURL}/admin/logout`);
 		await this.page.waitForURL("**/login");
 	}
 
