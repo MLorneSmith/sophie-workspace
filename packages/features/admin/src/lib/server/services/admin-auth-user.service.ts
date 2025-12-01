@@ -58,9 +58,9 @@ class AdminAuthUserService {
 	}
 
 	/**
-	 * Impersonate a user by generating a magic link and returning the access and refresh tokens.
-	 * Uses a more robust approach: fetches the magic link action URL with retry logic
-	 * and explicit timeout handling to avoid flaky redirect parsing.
+	 * Impersonate a user by generating a magic link and using verifyOtp to get tokens.
+	 * This approach uses the hashed_token from generateLink with verifyOtp,
+	 * which is more reliable than fetching the action_link (avoids redirect issues).
 	 * @param userId
 	 */
 	async impersonateUser(userId: string) {
@@ -94,78 +94,35 @@ class AdminAuthUserService {
 			throw new Error("Error generating magic link");
 		}
 
-		const actionLink = data.properties?.action_link;
+		// Use the hashed_token with verifyOtp to get the session directly
+		// This is more reliable than fetching the action_link and parsing redirects
+		const hashedToken = data.properties?.hashed_token;
 
-		if (!actionLink) {
+		if (!hashedToken) {
 			throw new Error(
-				"Error generating magic link: action_link not found in response",
+				"Error generating magic link: hashed_token not found in response",
 			);
 		}
 
-		// Fetch the magic link with retry logic and proper timeout
-		// The redirect will contain access_token and refresh_token in the hash
-		const maxRetries = 3;
-		let lastError: Error | null = null;
+		// CRITICAL: verifyOtp must be called with the REGULAR client (anon key),
+		// NOT the admin client. The admin client cannot verify OTPs.
+		// Use token_hash parameter for PKCE flow (recommended by Supabase docs).
+		const { data: verifyData, error: verifyError } =
+			await this.client.auth.verifyOtp({
+				token_hash: hashedToken,
+				type: "magiclink",
+			});
 
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				const controller = new AbortController();
-				const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-				const response = await fetch(actionLink, {
-					method: "GET",
-					redirect: "manual",
-					signal: controller.signal,
-				});
-
-				clearTimeout(timeoutId);
-
-				const location = response.headers.get("Location");
-
-				if (!location) {
-					throw new Error(
-						`Attempt ${attempt}: Location header not found in response (status: ${response.status})`,
-					);
-				}
-
-				const hash = new URL(location).hash.substring(1);
-				const query = new URLSearchParams(hash);
-				const accessToken = query.get("access_token");
-				const refreshToken = query.get("refresh_token");
-
-				if (!accessToken || !refreshToken) {
-					throw new Error(
-						`Attempt ${attempt}: Tokens not found in URL hash. Hash content: ${hash.substring(0, 50)}...`,
-					);
-				}
-
-				return {
-					accessToken,
-					refreshToken,
-				};
-			} catch (err) {
-				lastError =
-					err instanceof Error ? err : new Error("Unknown error during fetch");
-
-				// Don't retry on abort (timeout)
-				if (lastError.name === "AbortError") {
-					throw new Error(
-						`Impersonation failed: Request timed out after 10 seconds (attempt ${attempt})`,
-					);
-				}
-
-				// Wait before retry (exponential backoff)
-				if (attempt < maxRetries) {
-					await new Promise((resolve) =>
-						setTimeout(resolve, 500 * 2 ** (attempt - 1)),
-					);
-				}
-			}
+		if (verifyError || !verifyData.session) {
+			throw new Error(
+				`Failed to verify magic link: ${verifyError?.message ?? "No session returned"}`,
+			);
 		}
 
-		throw new Error(
-			`Impersonation failed after ${maxRetries} attempts: ${lastError?.message}`,
-		);
+		return {
+			accessToken: verifyData.session.access_token,
+			refreshToken: verifyData.session.refresh_token,
+		};
 	}
 
 	/**
