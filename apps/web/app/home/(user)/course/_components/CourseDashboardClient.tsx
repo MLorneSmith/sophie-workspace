@@ -61,7 +61,11 @@ type Course = Database["payload"]["Tables"]["courses"]["Row"];
 type CourseProgress = Database["public"]["Tables"]["course_progress"]["Row"];
 type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
 type QuizAttempt = Database["public"]["Tables"]["quiz_attempts"]["Row"];
-type CourseLesson = Database["payload"]["Tables"]["course_lessons"]["Row"];
+// Extend the database type to include expanded thumbnail from Payload API (depth=2)
+type CourseLessonRow = Database["payload"]["Tables"]["course_lessons"]["Row"];
+type CourseLesson = CourseLessonRow & {
+	thumbnail?: { url?: string } | null;
+};
 
 /**
  * Get the best placeholder image based on lesson title or filename
@@ -306,7 +310,14 @@ export function CourseDashboardClient({
 												) ? (
 													<Image
 														src={(() => {
-															// Since featured_image_id doesn't exist, use placeholder
+															// Use thumbnail URL if available, otherwise fall back to placeholder
+															// lesson.thumbnail is expanded by Payload API (depth=2)
+															if (lesson.thumbnail?.url) {
+																return (
+																	_transformImageUrl(lesson.thumbnail.url) ||
+																	getPlaceholderImage(lesson)
+																);
+															}
 															return getPlaceholderImage(lesson);
 														})()}
 														alt={`Illustration for ${lesson.title}`}
