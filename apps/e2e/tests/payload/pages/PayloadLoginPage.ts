@@ -26,8 +26,10 @@ export class PayloadLoginPage extends PayloadBasePage {
 		this.confirmPasswordInput = page.locator('input[name="confirm-password"]');
 		this.nameInput = page.locator('input[name="name"]');
 
-		// Error handling
-		this.errorMessage = page.locator(".field-error, .form-submit-error");
+		// Error handling - Payload CMS uses various error display patterns
+		this.errorMessage = page.locator(
+			".field-error, .form-submit-error, .toast-error, [class*='error'], .banner--error, [data-testid='toast-error']",
+		);
 		this.forgotPasswordLink = page.locator('a:has-text("Forgot Password")');
 	}
 
@@ -102,5 +104,12 @@ export class PayloadLoginPage extends PayloadBasePage {
 			},
 		);
 		return response.ok();
+	}
+
+	async isFirstUserSetupNeeded(): Promise<boolean> {
+		await this.navigateToLogin();
+		return await this.createFirstUserButton
+			.isVisible({ timeout: 5000 })
+			.catch(() => false);
 	}
 }
