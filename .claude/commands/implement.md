@@ -44,10 +44,11 @@ You're implementing a plan that has already been designed and reviewed. Execute 
 3. **Mark issue as in-progress** (if from GitHub):
    ```bash
    # Update issue to show implementation has started
+   # Labels use hierarchical naming: status:in-progress replaces status:ready
    gh issue edit <issue-number> \
      --repo MLorneSmith/2025slideheroes \
-     --add-label "in-progress" \
-     --remove-label "ready-to-implement"
+     --add-label "status:in-progress" \
+     --remove-label "status:ready"
 
    # Add initial comment
    gh issue comment <issue-number> \
@@ -205,10 +206,11 @@ After completing the implementation:
    # Chore:    .ai/reports/chore-reports/2025-11-27/789-implementation-update-nextjs.md
 
    # Update labels and close the issue
+   # Move from status:in-progress to status:review before closing
    gh issue edit <issue-number> \
      --repo MLorneSmith/2025slideheroes \
-     --add-label "implemented" \
-     --remove-label "in-progress"
+     --add-label "status:review" \
+     --remove-label "status:in-progress"
 
    gh issue close <issue-number> \
      --repo MLorneSmith/2025slideheroes \

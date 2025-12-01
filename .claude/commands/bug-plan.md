@@ -483,28 +483,25 @@ gh issue view <diagnosisIssueNumber> \
   --json labels,title \
   --jq '{labels: [.labels[].name], title: .title}'
 
-# Verify it has "needs-investigation" label or "Bug Diagnosis:" title prefix
+# Verify it has "status:triage" label or "Bug Diagnosis:" title prefix
 # If not, warn user and ask them to run /diagnose first
 
-# Extract severity and bug type from diagnosis labels
-SEVERITY=$(gh issue view <diagnosisIssueNumber> --repo MLorneSmith/2025slideheroes --json labels --jq '.labels[].name' | grep -E '^(critical|high|medium|low)$' | head -1)
-BUG_TYPE=$(gh issue view <diagnosisIssueNumber> --repo MLorneSmith/2025slideheroes --json labels --jq '.labels[].name' | grep -E '^(bug|performance|error|regression|integration)$' | head -1)
+# Extract priority from diagnosis labels (format: priority:critical, priority:high, etc.)
+PRIORITY=$(gh issue view <diagnosisIssueNumber> --repo MLorneSmith/2025slideheroes --json labels --jq '.labels[].name' | grep -E '^priority:' | head -1)
 
-# Determine risk and complexity from your analysis
-RISK_LEVEL="<low|medium|high>"  # From your risk assessment
+# Determine complexity from your analysis
 COMPLEXITY="<simple|moderate|complex>"  # From your complexity analysis
 
-# Create bug fix issue with comprehensive labels
+# Create bug fix issue with hierarchical labels
+# Labels: type:bug, status:ready, priority:*, complexity:*, area:*
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Bug Fix: <bugTitle>" \
   --body "<full-plan-content>" \
-  --label "bug-fix" \
-  --label "ready-to-implement" \
-  --label "${SEVERITY}" \
-  --label "${BUG_TYPE}" \
-  --label "risk-${RISK_LEVEL}" \
-  --label "complexity-${COMPLEXITY}"
+  --label "type:bug" \
+  --label "status:ready" \
+  --label "${PRIORITY}" \
+  --label "complexity:${COMPLEXITY}"
 
 # Capture the issue URL and number from output
 FIX_ISSUE_NUMBER=<captured-from-output>
@@ -521,16 +518,16 @@ gh issue comment <diagnosisIssueNumber> \
   --body "✅ **Fix Plan Created**: #${FIX_ISSUE_NUMBER}
 
 **Solution Approach**: <one-sentence summary of chosen solution>
-**Risk Level**: ${RISK_LEVEL}
 **Complexity**: ${COMPLEXITY}
 **Estimated Effort**: <small|medium|large>
 
 The fix plan is ready for implementation. See #${FIX_ISSUE_NUMBER} for full details."
 
-# Add "diagnosed" label to diagnosis issue
+# Update diagnosis issue status to planning complete
 gh issue edit <diagnosisIssueNumber> \
   --repo MLorneSmith/2025slideheroes \
-  --add-label "diagnosed"
+  --add-label "status:planning" \
+  --remove-label "status:triage"
 
 # Close the diagnosis issue
 gh issue close <diagnosisIssueNumber> \

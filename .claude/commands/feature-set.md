@@ -232,7 +232,7 @@ For each identified feature, generate a GitHub issue stub:
 
 **Title**: `Feature: [Feature Name]`
 **Body**: Detailed description from the master plan
-**Labels**: `feature`, `from-feature-set`, `[phase]`
+**Labels**: `type:feature`, `status:planning`, `priority:<priority>`, `area:<area>`
 **Links**: Reference to master feature-set issue
 
 ## GitHub Integration

@@ -205,20 +205,28 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 
 **E2E Shards (1-12):**
 
-| Shard | Name | Tests |
-|-------|------|-------|
-| 1 | Smoke Tests | 9 |
-| 2 | Authentication | 21 |
-| 3 | Personal Accounts | 12 |
-| 4 | Admin & Invitations | 13 |
-| 5 | Accessibility | 21 |
-| 6 | Config & Health | 12 |
-| 7 | Payload CMS | 42 |
-| 8 | Payload Extended | varies |
-| 9 | User Billing | varies |
-| 10 | Team Billing | varies |
-| 11 | Config Verification | varies |
-| 12 | Team Accounts | 8 |
+| Shard | Name | Tests | Notes |
+|-------|------|-------|-------|
+| 1 | Smoke Tests | 9 | |
+| 2 | Authentication | 21 | |
+| 3 | Personal Accounts | 12 | |
+| 4 | Admin & Invitations | 13 | |
+| 5 | Accessibility | 21 | |
+| 6 | Config & Health | 12 | |
+| 7 | Payload CMS | 42 | Auto-starts Payload on port 3021 |
+| 8 | Payload Extended | varies | Auto-starts Payload on port 3021 |
+| 9 | User Billing | varies | |
+| 10 | Team Billing | varies | |
+| 11 | Config Verification | varies | |
+| 12 | Team Accounts | 8 | |
+
+**Payload CMS Tests (Shards 7-8):**
+
+Shards 7 and 8 test Payload CMS functionality. The test controller automatically:
+- Detects when shards 7 or 8 are requested
+- Starts Payload CMS server on port 3021 (via `pnpm --filter payload dev:test`)
+- Waits for server to be healthy before running tests
+- Uses `apps/payload/.env.test` for correct test configuration
 
 **Output Management:**
 

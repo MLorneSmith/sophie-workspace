@@ -369,16 +369,17 @@ Use the GitHub CLI (`gh`) to create the diagnosis issue:
 
 ```bash
 # Create diagnosis issue on GitHub with 'Bug Diagnosis:' prefix and appropriate labels
-# If the issue title doesn't start with 'Bug Diagnosis:', add the prefix
-# Convert severity and issueType to lowercase for label compatibility
+# Labels use hierarchical naming: type:*, priority:*, status:*, area:*
+# Map severity to priority: critical→priority:critical, high→priority:high, etc.
+# Map issueType to type: bug→type:bug, performance→type:performance, etc.
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Bug Diagnosis: <issueTitle>" \
   --body "<issue-content>" \
-  --label "issue" \
-  --label "needs-investigation" \
-  --label "<severity>" \
-  --label "<issueType>"
+  --label "type:bug" \
+  --label "status:triage" \
+  --label "priority:<severity>" \
+  --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>

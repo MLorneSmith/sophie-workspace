@@ -148,15 +148,17 @@ Use the GitHub CLI (`gh`) to create the issue:
 
 ```bash
 # Create issue on GitHub with 'Chore:' prefix and appropriate labels
-# If the issue title doesn't start with 'Chore:', add the prefix
-# Convert severity and choreType to lowercase for label compatibility
+# Labels use hierarchical naming: type:*, priority:*, status:*, area:*
+# Map severity to priority: critical→priority:critical, high→priority:high, etc.
+# Map choreType to area: tooling→area:infra, documentation→type:docs, etc.
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Chore: <choreTitle>" \
   --body "<issue-content>" \
-  --label "chore" \
-  --label "<severity>" \
-  --label "<choreType>"
+  --label "type:chore" \
+  --label "status:ready" \
+  --label "priority:<severity>" \
+  --label "area:<affected-area>"
 
 # Capture the issue URL and number from the output
 # The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
