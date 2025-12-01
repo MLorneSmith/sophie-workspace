@@ -4,17 +4,15 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		".": "./src/index.ts"
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/node": "^24.10.1",
 		"zod": "^4.1.12"

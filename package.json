@@ -62,7 +62,6 @@
 		"e2b:build:dev": "cd packages/e2b/e2b-template && npx tsx build.dev.ts",
 		"e2b:build:prod": "cd packages/e2b/e2b-template && npx tsx build.prod.ts"
 	},
-	"prettier": "@kit/prettier-config",
 	"lint-staged": {
 		"*": [
 			"bash ./scripts/git/trufflehog-scan.sh"
@@ -90,6 +89,7 @@
 	"packageManager": "pnpm@10.14.0",
 	"pnpm": {
 		"overrides": {
+			"baseline-browser-mapping": "2.8.32",
 			"react-is": "19.0.0",
 			"require-in-the-middle": "7.5.2",
 			"import-in-the-middle": "1.15.0",
@@ -141,7 +141,6 @@
 		"knip": "^5.70.2",
 		"lint-staged": "^16.2.7",
 		"markdownlint-cli2": "^0.19.1",
-		"prettier": "^3.6.2",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"tailwind-merge": "^3.4.0",

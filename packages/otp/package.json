@@ -4,11 +4,10 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		".": "./src/api/index.ts",
 		"./components": "./src/components/index.ts"
@@ -19,7 +18,6 @@
 		"@kit/eslint-config": "workspace:*",
 		"@kit/mailers": "workspace:*",
 		"@kit/next": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",

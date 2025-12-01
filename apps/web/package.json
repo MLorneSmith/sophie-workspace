@@ -12,7 +12,7 @@
 		"dev": "next dev --turbo | pino-pretty -c",
 		"lint": "eslint .",
 		"lint:fix": "next lint --fix",
-		"format": "prettier --check \"**/*.{js,cjs,mjs,ts,tsx,md,json}\"",
+		"format": "biome format src",
 		"start": "next start",
 		"start:test": "NODE_ENV=test next start",
 		"typecheck": "tsc --noEmit",
@@ -101,7 +101,6 @@
 	},
 	"devDependencies": {
 		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@next/bundle-analyzer": "16.0.3",
 		"@tailwindcss/postcss": "^4.1.17",
@@ -116,7 +115,6 @@
 		"cssnano": "^7.1.2",
 		"pino-pretty": "13.1.2",
 		"pptxgenjs": "^4.0.1",
-		"prettier": "^3.6.2",
 		"supabase": "^2.63.1",
 		"tailwindcss": "catalog:",
 		"tailwindcss-animate": "^1.0.7",
@@ -124,7 +122,6 @@
 		"uuid": "^13.0.0",
 		"vite-tsconfig-paths": "^5.1.4"
 	},
-	"prettier": "@kit/prettier-config",
 	"browserslist": [
 		"last 1 versions",
 		"> 0.7%",

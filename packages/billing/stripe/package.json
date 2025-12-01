@@ -4,12 +4,11 @@
 	"version": "0.1.0",
 	"scripts": {
 		"clean": "git clean -xdf .turbo node_modules",
-		"format": "prettier --check \"**/*.{ts,tsx}\"",
+		"format": "biome format src",
 		"lint": "eslint .",
 		"typecheck": "tsc --noEmit",
 		"start": "docker run --rm -it --name=stripe -v ~/.config/stripe:/root/.config/stripe stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:3000/api/billing/webhook"
 	},
-	"prettier": "@kit/prettier-config",
 	"exports": {
 		".": "./src/index.ts",
 		"./components": "./src/components/index.ts"
@@ -22,7 +21,6 @@
 	"devDependencies": {
 		"@kit/billing": "workspace:*",
 		"@kit/eslint-config": "workspace:*",
-		"@kit/prettier-config": "workspace:*",
 		"@kit/shared": "workspace:*",
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
