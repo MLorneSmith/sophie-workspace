@@ -81,10 +81,14 @@ export const CIRCULAR_REFERENCES: Record<string, {
   targetCollection: string;
 }> = {
   'course-lessons': {
-    fields: ['quiz_id'],
+    fields: ['quiz_id', 'survey_id'],
     targetCollection: 'course-quizzes',
   },
   'course-quizzes': {
+    fields: ['lesson'],
+    targetCollection: 'course-lessons',
+  },
+  'surveys': {
     fields: ['lesson'],
     targetCollection: 'course-lessons',
   },

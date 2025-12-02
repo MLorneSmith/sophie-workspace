@@ -1,0 +1,34 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Payload CMS",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts"
+		],
+		"expectedTests": 42,
+		"shardCommand": "test:shard7"
+	},
+	"execution": {
+		"startTime": "2025-12-02T17:55:55.330Z",
+		"endTime": "2025-12-02T18:01:32.330Z",
+		"duration": "337s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 42,
+		"passed": 37,
+		"failed": 4,
+		"skipped": 1,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 11326 bytes)...\n──────────────────────────────────────────────────────────\n    test-results/payload-payload-collection-6a5d2-om-temporary-network-issues-payload-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/payload-payload-collection-6a5d2-om-temporary-network-issues-payload-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/payload-payload-collection-6a5d2-om-temporary-network-issues-payload-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/payload-payload-collection-6a5d2-om-temporary-network-issues-payload-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  4) [payload] › tests/payload/payload-database.spec.ts:366:6 › Payload CMS - Error Recovery & Resilience › should validate environment variables for database connection \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\n    Received: \u001b[31mfalse\u001b[39m\n\n      385 | \t\t}\n      386 |\n    > 387 | \t\texpect(configResponse.ok()).toBeTruthy();\n          | \t\t                            ^\n      388 | \t});\n      389 | });\n      390 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/payload-database.spec.ts:387:31\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-database-P-eda4f-les-for-database-connection-payload/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\n    Received: \u001b[31mfalse\u001b[39m\n\n      385 | \t\t}\n      386 |\n    > 387 | \t\texpect(configResponse.ok()).toBeTruthy();\n          | \t\t                            ^\n      388 | \t});\n      389 | });\n      390 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/payload-database.spec.ts:387:31\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-database-P-eda4f-les-for-database-connection-payload-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/payload-payload-database-P-eda4f-les-for-database-connection-payload-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/payload-payload-database-P-eda4f-les-for-database-connection-payload-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  5) [payload] › tests/payload/payload-database.spec.ts:148:6 › Payload CMS - Supabase Database Integration › should handle transaction rollback on error \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\n    Received: \u001b[31mfalse\u001b[39m\n\n      185 | \t\t\t}\n      186 | \t\t}\n    > 187 | \t\texpect(errorVisible).toBeTruthy();\n          | \t\t                     ^\n      188 |\n      189 | \t\t// Verify the duplicate was not created\n      190 | \t\tawait collectionsPage.navigateToCollection(\"users\");\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/payload-database.spec.ts:187:24\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-database-P-b65db-ansaction-rollback-on-error-payload/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/payload-payload-database-P-b65db-ansaction-rollback-on-error-payload/error-context.md\n\n  4 failed\n    [payload] › tests/payload/payload-collections.spec.ts:209:6 › Payload CMS - CRUD Operations › should handle validation errors \n    [payload] › tests/payload/payload-collections.spec.ts:226:6 › Payload CMS - CRUD Operations › should delete item with confirmation \n    [payload] › tests/payload/payload-collections.spec.ts:287:6 › Payload CMS - Database & Error Handling › should recover from temporary network issues \n    [payload] › tests/payload/payload-database.spec.ts:366:6 › Payload CMS - Error Recovery & Resilience › should validate environment variables for database connection \n  1 flaky\n    [payload] › tests/payload/payload-database.spec.ts:148:6 › Payload CMS - Supabase Database Integration › should handle transaction rollback on error \n  1 skipped\n  37 passed (5.1m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard7: `playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
