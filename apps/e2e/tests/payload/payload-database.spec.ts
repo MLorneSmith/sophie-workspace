@@ -132,7 +132,10 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 
 		await collectionsPage.saveItem();
 		// Wait for redirect to edit page with UUID in URL
-		await page.waitForURL(/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, { timeout: 10000 });
+		await page.waitForURL(
+			/\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+			{ timeout: 10000 },
+		);
 
 		// Get the current URL which should contain the UUID
 		const currentUrl = page.url();

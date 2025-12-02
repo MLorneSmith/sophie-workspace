@@ -74,7 +74,8 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Environment Requirements**:
 
 - `PAYLOAD_ENABLE_SSL=false` is automatically set for local Supabase (prevents SSL cert errors)
-- `DATABASE_URI` should include `?sslmode=disable` in .env.test
+- `DATABASE_URL` is hardcoded to `postgresql://postgres:postgres@127.0.0.1:54522/postgres` for reliability
+- Local Supabase always uses ports 54521-54527 (API, DB, Studio, etc.)
 
 **Validate**:
 
@@ -154,10 +155,9 @@ echo "✅ Environment validation complete"
 
 #### Phase 2 & 3: Reset Supabase Database and Run Payload Migrations
 
-**IMPORTANT - SHELL SESSION ISOLATION FIX**: Phase 2 (database reset) and Phase 3 (Payload
-migrations) MUST be executed in a single Bash tool call. Each Claude Code Bash call runs in
-an independent shell session, so `DATABASE_URL` captured in Phase 2 would be lost if Phase 3
-ran in a separate call. This consolidation ensures the variable persists.
+**NOTE**: These phases CAN be run separately because we hardcode the DATABASE_URL for local
+Supabase (it always uses the same ports). Running them separately provides better error
+isolation and debugging. The hardcoded URL is more reliable than parsing `supabase status`.
 
 **Note**: The payload schema is automatically created by the Supabase migration
 `20250327_create_payload_schema.sql` during `supabase db reset`. This migration:
@@ -186,15 +186,13 @@ echo "🚀 Starting Supabase..."
 npx supabase start
 
 # 2.4 Reset database with migrations (requires Supabase to be running)
+# Pipe "n" to reject remote database reset prompt when project is linked
 echo "🔄 Resetting Supabase database..."
-npx supabase db reset
+echo "n" | npx supabase db reset
 
-# 2.5 Capture DATABASE_URL - CRITICAL: Must be used in same shell session
-DATABASE_URL=$(npx supabase status | grep "DB URL" | awk '{print $3}')
-if [ -z "$DATABASE_URL" ]; then
-  echo "❌ ERROR: Could not get database URL from Supabase"
-  exit 1
-fi
+# 2.5 Set DATABASE_URL for local Supabase (always uses these ports)
+# Hardcoding is more reliable than parsing supabase status output
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54522/postgres"
 
 echo "✅ Database reset complete"
 echo "   Database URL: $DATABASE_URL"
@@ -344,7 +342,7 @@ if [ "$SCHEMA_ONLY" = false ]; then
   psql "$DATABASE_URL" -c "
     SELECT schemaname, relname as table, n_live_tup as records
     FROM pg_stat_user_tables
-    WHERE schemaname = 'payload' AND relname != 'payload_migrations'
+    WHERE schemaname = 'payload' AND relname <> 'payload_migrations'
     ORDER BY n_live_tup DESC;
   "
 fi
@@ -367,6 +365,7 @@ fi
 - Port conflicts → Manual cleanup instructions
 - Supabase start fails → Check Docker status and available ports
 - Database reset fails → Check Docker status and Supabase logs
+- Remote database prompt → Command pipes "n" automatically; if still prompted, project may need unlinking
 
 **Phase 3 Errors**:
 

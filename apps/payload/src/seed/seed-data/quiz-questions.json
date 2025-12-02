@@ -1,7 +1,7 @@
 [
   {
     "_ref": "basic-graphs-quiz-q1",
-    "id": "ca820b08-23dd-4095-9c33-c990a6a776d4",
+    "id": "ca7149ff-457c-4d3b-8a2b-486c43b4e2bd",
     "question": "There are many types of relationships that we use graphs to display. What chart type best communicates the 'Part-to-Whole' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q1",
@@ -58,7 +58,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q2",
-    "id": "0da077ae-0c8a-4bc9-ba27-166215f5454a",
+    "id": "db957313-2c34-4f08-88c4-86a5fca1113b",
     "question": "What chart type best communicates the 'Correlation' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q2",
@@ -115,7 +115,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q3",
-    "id": "0071f8d2-0e2d-4b42-8929-5fc2dcc9e55d",
+    "id": "0e828fcf-75f2-427b-83ce-4e0a08c69ada",
     "question": "What chart type best communicates the 'Time Series' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q3",
@@ -172,7 +172,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q4",
-    "id": "5ce36a51-1e30-4e88-87b5-fc9774a8e734",
+    "id": "b5fd27f4-cf20-43f7-b89d-e3bb192bfa87",
     "question": "What chart types best communicates the 'Deviation' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q4",
@@ -229,7 +229,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q5",
-    "id": "4e1a60e8-4f70-47e1-85db-7e157502c4a6",
+    "id": "405cc937-7d4e-48a4-83a5-88158b9d5124",
     "question": "What chart type best communicates the 'Distribution' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q5",
@@ -286,7 +286,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q6",
-    "id": "ebb71b07-5221-41ec-957d-cbf0152123ea",
+    "id": "10041a19-7a6c-468a-af53-5648876d52a9",
     "question": "What chart type best communicates the 'Nominal Comparison' relationship",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q6",
@@ -343,7 +343,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q7",
-    "id": "ca1735e5-fdcc-4803-8dfe-96f228687af0",
+    "id": "cf0e9053-cbe9-4f1d-93d8-ff2d8e5f80a0",
     "question": "What chart type best communicates the 'Geospatial' relationship?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q7",
@@ -400,7 +400,7 @@
   },
   {
     "_ref": "basic-graphs-quiz-q8",
-    "id": "9546ac7d-4620-49bc-a97b-414e7123e207",
+    "id": "28c0c1cc-ab08-41a4-b815-6229249db6b4",
     "question": "When should we use Pie Charts?",
     "type": "multiple_choice",
     "questionSlug": "basic-graphs-quiz-q8",
@@ -453,7 +453,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q1",
-    "id": "c789abcb-4f0b-4419-84e1-3342a609949e",
+    "id": "84012d0f-8d41-46c8-8b23-875301a3249e",
     "question": "Why do we use contrast?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q1",
@@ -502,7 +502,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q2",
-    "id": "8e00e549-b511-40dc-b4c2-95c6bacd2439",
+    "id": "cece3d74-5f1c-4c27-8a33-9aa97d73e3b9",
     "question": "How important is alignment?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q2",
@@ -543,7 +543,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q3",
-    "id": "a85872ad-684c-43b7-8582-84aa51fe353e",
+    "id": "9f5a3e3a-4763-4fdd-9b05-6a721a7c673c",
     "question": "How is the principle of proximity helpful?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q3",
@@ -592,7 +592,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q4",
-    "id": "03668552-7784-412f-a9a8-b69502c4b31e",
+    "id": "fc827e74-cb76-4d08-a214-e9e0450db0b8",
     "question": "How many different font types should you use in a single presentation?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q4",
@@ -649,7 +649,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q5",
-    "id": "0515b261-e58a-416b-90d9-1a8a1d65cef1",
+    "id": "a956a4b5-b8ac-4a5f-8725-07fad570f13b",
     "question": "How many colors should we use in a presentation?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q5",
@@ -706,7 +706,7 @@
   },
   {
     "_ref": "elements-of-design-detail-quiz-q6",
-    "id": "d78e8dc1-0a74-4caa-ab28-bba92749b968",
+    "id": "a18630f4-fc88-4bba-a439-9aaf6b57fd2c",
     "question": "What should you do with whitespace?",
     "type": "multiple_choice",
     "questionSlug": "elements-of-design-detail-quiz-q6",
@@ -755,7 +755,7 @@
   },
   {
     "_ref": "fact-persuasion-quiz-q1",
-    "id": "da194ca4-d61c-4e68-b0a9-6925194fd837",
+    "id": "1735f97f-48d9-45a5-9008-9519b6ffd5f9",
     "question": "What is the bare assertion fallacy?",
     "type": "multiple_choice",
     "questionSlug": "fact-persuasion-quiz-q1",
@@ -808,7 +808,7 @@
   },
   {
     "_ref": "fact-persuasion-quiz-q2",
-    "id": "e76f532f-e78b-4c1c-9059-0c5c68f1db75",
+    "id": "d031ca8e-4feb-4bb0-8c57-51213d9320d4",
     "question": "What is graphical excellence?",
     "type": "multiple_choice",
     "questionSlug": "fact-persuasion-quiz-q2",
@@ -869,7 +869,7 @@
   },
   {
     "_ref": "gestalt-principles-quiz-q1",
-    "id": "920944d3-a8d5-418a-8220-e8a193fc3783",
+    "id": "d617be6e-e1cc-4ee5-a53b-1f617187fe00",
     "question": "Why have we repeated the principle of proximity in this lesson and the previous lesson?",
     "type": "multiple_choice",
     "questionSlug": "gestalt-principles-quiz-q1",
@@ -918,7 +918,7 @@
   },
   {
     "_ref": "gestalt-principles-quiz-q2",
-    "id": "06ff4042-14c8-4345-9165-30f8f2466733",
+    "id": "e742afd7-ee99-4754-bf1e-eedd523ccd51",
     "question": "The principle of similarity states that we tend to group things which share visual characteristics such as:",
     "type": "multiple_choice",
     "questionSlug": "gestalt-principles-quiz-q2",
@@ -983,7 +983,7 @@
   },
   {
     "_ref": "gestalt-principles-quiz-q3",
-    "id": "2ef57c98-1688-43f1-b234-dc3178177fa5",
+    "id": "d2272733-a85e-45a5-9a4e-9baa0fd8f249",
     "question": "What is symmetry associated with?",
     "type": "multiple_choice",
     "questionSlug": "gestalt-principles-quiz-q3",
@@ -1044,7 +1044,7 @@
   },
   {
     "_ref": "gestalt-principles-quiz-q4",
-    "id": "ebd0610e-45e2-4fd7-9192-80049c31ce81",
+    "id": "f6ac9f65-16aa-48f2-a10d-1b70a385aa78",
     "question": "What does the principle of connection state?",
     "type": "multiple_choice",
     "questionSlug": "gestalt-principles-quiz-q4",
@@ -1093,7 +1093,7 @@
   },
   {
     "_ref": "idea-generation-quiz-q1",
-    "id": "ff355e08-bf1e-4f02-900f-0063de0d4277",
+    "id": "b3cbfd22-f234-442e-ab50-bb51a4412179",
     "question": "What is the key to making brainstorming as effective as possible?",
     "type": "multiple_choice",
     "questionSlug": "idea-generation-quiz-q1",
@@ -1146,7 +1146,7 @@
   },
   {
     "_ref": "idea-generation-quiz-q2",
-    "id": "d198ecad-4d10-4242-b73b-cab4908bfeeb",
+    "id": "ae14d6e6-bec8-4fcc-ba89-121811ce1c4a",
     "question": "What are our Cardinal Rules of brainstorming?",
     "type": "multiple_choice",
     "questionSlug": "idea-generation-quiz-q2",
@@ -1219,7 +1219,7 @@
   },
   {
     "_ref": "idea-generation-quiz-q3",
-    "id": "e90af23d-b858-4f9d-a1c9-725731fd2a27",
+    "id": "4eaacfcd-9926-4101-94ff-2c5f0db071e5",
     "question": "What was the golden rule talked about in this lesson?",
     "type": "multiple_choice",
     "questionSlug": "idea-generation-quiz-q3",
@@ -1280,7 +1280,7 @@
   },
   {
     "_ref": "introductions-quiz-q1",
-    "id": "7804f679-f456-4273-8327-eafcde90ece4",
+    "id": "659713d3-cc60-45f3-a496-2ebb82ce8305",
     "question": "Hypothetical example: We are in the finance department and are giving an update. What is the best way for us to frame our presentation?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q1",
@@ -1333,7 +1333,7 @@
   },
   {
     "_ref": "introductions-quiz-q2",
-    "id": "3996b24e-5043-4c49-8367-b65370df8c83",
+    "id": "a7b426a9-0950-4854-ba3e-12073be3f0ba",
     "question": "Why are we creating our presentation?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q2",
@@ -1390,7 +1390,7 @@
   },
   {
     "_ref": "introductions-quiz-q3",
-    "id": "8fbbc5dd-4e59-41c1-bd32-a46a7dd4f76e",
+    "id": "93e61633-7ec5-4f03-9d87-0de1528aff85",
     "question": "What are they four parts to our introduction?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q3",
@@ -1459,7 +1459,7 @@
   },
   {
     "_ref": "introductions-quiz-q4",
-    "id": "292f3b86-7894-45ff-9fec-ef272759e509",
+    "id": "0b7e8186-1c63-4a84-994e-9293b5729433",
     "question": "What is the Context part of the Introduction?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q4",
@@ -1508,7 +1508,7 @@
   },
   {
     "_ref": "introductions-quiz-q5",
-    "id": "1f0009ed-dbb3-4f73-9409-c4febebe19ba",
+    "id": "44ccae02-696c-41b5-9c9f-8f36cc6e544d",
     "question": "What is the Catalyst portion of the Introduction?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q5",
@@ -1561,7 +1561,7 @@
   },
   {
     "_ref": "introductions-quiz-q6",
-    "id": "559c76e1-6ac7-4557-b980-3446ac1da6dd",
+    "id": "8fc9e2b0-765d-444b-a029-eabb2a30c3ae",
     "question": "What is the Question portion of the Introduction?",
     "type": "multiple_choice",
     "questionSlug": "introductions-quiz-q6",
@@ -1610,7 +1610,7 @@
   },
   {
     "_ref": "our-process-quiz-q1",
-    "id": "8b9a62a7-f3fa-4673-b70f-d8594991f195",
+    "id": "1b652d9d-7317-46ad-8ef5-30420b12ea9c",
     "question": "Why is it important to follow a process to develop a presentation?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q1",
@@ -1663,7 +1663,7 @@
   },
   {
     "_ref": "our-process-quiz-q2",
-    "id": "7a76493e-f0ab-4738-9634-024f1bef79cf",
+    "id": "ada740b4-33e0-4a93-911a-e26f2e9db0c5",
     "question": "What is the 1st step of our process?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q2",
@@ -1716,7 +1716,7 @@
   },
   {
     "_ref": "our-process-quiz-q3",
-    "id": "8ffadc81-05e3-4f6d-b708-84beb063fea3",
+    "id": "7a4804f2-4a5c-4da2-ab46-3ae1f2115354",
     "question": "What is the 2nd step of our process?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q3",
@@ -1769,7 +1769,7 @@
   },
   {
     "_ref": "our-process-quiz-q4",
-    "id": "d58fd742-37a6-4180-a1ce-1981d6bf3401",
+    "id": "ed6ad9c1-8d52-457c-9cf1-878f25570042",
     "question": "What is the 3rd step of our process?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q4",
@@ -1822,7 +1822,7 @@
   },
   {
     "_ref": "our-process-quiz-q5",
-    "id": "a7de9597-4bfd-4c7c-8f27-28a6d42fd31c",
+    "id": "3e5482b3-1393-4c9f-ac92-54c9c64338de",
     "question": "What is the 4th step of our process?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q5",
@@ -1875,7 +1875,7 @@
   },
   {
     "_ref": "our-process-quiz-q6",
-    "id": "7f9ca717-82ca-40fb-a0aa-192096e0d6a3",
+    "id": "661b935a-6eec-4b8a-a44f-0c7ba97bf578",
     "question": "Our first step is 'The Who'. What do we mean by this?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q6",
@@ -1924,7 +1924,7 @@
   },
   {
     "_ref": "our-process-quiz-q7",
-    "id": "6fe23e4f-7cb7-4d0a-8ea1-2b111a723990",
+    "id": "8f11e4aa-0595-4958-94ac-c969e7b1df0f",
     "question": "The second step in our process is 'The Why'. What do we mean by this?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q7",
@@ -1973,7 +1973,7 @@
   },
   {
     "_ref": "our-process-quiz-q8",
-    "id": "9c353857-1680-4616-889e-f4ecb6e6240b",
+    "id": "3f9cedfd-fd09-4fee-9798-be18eeb8dbc9",
     "question": "The third step in our process is 'The What'. What does 'The What' focus on?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q8",
@@ -2026,7 +2026,7 @@
   },
   {
     "_ref": "our-process-quiz-q9",
-    "id": "6f9fdc43-2519-40f9-b5da-52fa15bef6b8",
+    "id": "9596a8aa-75ef-4877-85a5-a7c7f37b143f",
     "question": "The final step in our process is 'The How'. What is the focus of 'The How'?",
     "type": "multiple_choice",
     "questionSlug": "our-process-quiz-q9",
@@ -2079,7 +2079,7 @@
   },
   {
     "_ref": "overview-elements-of-design-quiz-q1",
-    "id": "e39d7668-ab43-44f6-b6fa-de6f75e67c2b",
+    "id": "94bccac9-bdfd-4f6e-90dd-761fda0359bc",
     "question": "What are some of the fundamental elements and principles of design?",
     "type": "multiple_choice",
     "questionSlug": "overview-elements-of-design-quiz-q1",
@@ -2148,7 +2148,7 @@
   },
   {
     "_ref": "performance-quiz-q1",
-    "id": "118be9c0-ec07-41ad-bce9-6f7195ddb6c7",
+    "id": "dbb90908-6b4c-4a08-85f5-e5b8f4b44ff8",
     "question": "What can we do to try and set the right tone?",
     "type": "multiple_choice",
     "questionSlug": "performance-quiz-q1",
@@ -2205,7 +2205,7 @@
   },
   {
     "_ref": "performance-quiz-q2",
-    "id": "10acbeb4-7924-43ac-a70e-3419f9d3e0aa",
+    "id": "4c02f3f0-7826-475b-ae75-17aa21607f8b",
     "question": "What are some things you can do to manage stress?",
     "type": "multiple_choice",
     "questionSlug": "performance-quiz-q2",
@@ -2270,7 +2270,7 @@
   },
   {
     "_ref": "performance-quiz-q3",
-    "id": "de01606f-6539-44a3-b3cd-4480615e1ad5",
+    "id": "f1564e91-2a8a-4efd-ae2f-18fc0c1e35eb",
     "question": "What body language and delivery mistakes should you be on the lookout for?",
     "type": "multiple_choice",
     "questionSlug": "performance-quiz-q3",
@@ -2327,7 +2327,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q1",
-    "id": "d40b4f09-d664-4c63-9cbf-09e946276415",
+    "id": "7ae02c2e-b77c-4ebb-afc3-851ca85aa898",
     "question": "When preparing and practicing the delivery of your presentation, what four factors should you focus on?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q1",
@@ -2392,7 +2392,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q2",
-    "id": "0470c5b6-1277-4a9b-91e2-71f4fb39759b",
+    "id": "a4a88a6e-bffa-4fc4-b968-43378c065b8e",
     "question": "What is the first step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q2",
@@ -2457,7 +2457,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q3",
-    "id": "5275c7b2-3757-42a3-a99b-fb07a42e1eab",
+    "id": "c792a8f1-9557-4196-8262-d05568bae96a",
     "question": "What is the second step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q3",
@@ -2522,7 +2522,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q4",
-    "id": "19f27d24-6363-462b-ad88-6925350d520b",
+    "id": "378bd092-a8f5-4cfe-bbd6-98811f11d482",
     "question": "What is the third step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q4",
@@ -2587,7 +2587,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q5",
-    "id": "94a2688d-3eb4-4206-90ee-d325e82ce2f5",
+    "id": "c682986e-09ed-492d-a62b-a088540e601b",
     "question": "What is the fourth step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q5",
@@ -2652,7 +2652,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q6",
-    "id": "ccda765d-4f0b-41ef-a0a8-669f5b2fe113",
+    "id": "3fcf13f9-604c-417d-b76e-56e4bf08a1a1",
     "question": "What is the fifth step pf the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q6",
@@ -2717,7 +2717,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q7",
-    "id": "edfc5791-b8a6-4fa8-b2d6-a91f0c17df09",
+    "id": "88700597-4f53-4104-b404-6011adff3351",
     "question": "What is the sixth step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q7",
@@ -2782,7 +2782,7 @@
   },
   {
     "_ref": "preparation-practice-quiz-q8",
-    "id": "33e828e5-5b00-48ee-99a3-0947e543b787",
+    "id": "22e4bd79-d1bf-4adb-9181-d63ed6bec431",
     "question": "What is the seventh step of the recommended preparation process?",
     "type": "multiple_choice",
     "questionSlug": "preparation-practice-quiz-q8",
@@ -2847,7 +2847,7 @@
   },
   {
     "_ref": "slide-composition-quiz-q1",
-    "id": "204ecab0-8f5d-420a-bd1b-7610aacd88d7",
+    "id": "8036a372-87b8-4fb6-9ceb-da15f1ca7088",
     "question": "What goes in the headline?",
     "type": "multiple_choice",
     "questionSlug": "slide-composition-quiz-q1",
@@ -2900,7 +2900,7 @@
   },
   {
     "_ref": "slide-composition-quiz-q2",
-    "id": "4fcd17a2-c40e-4b2e-8a1c-2c38e9a8e5f7",
+    "id": "031ecf10-8e67-41ec-b8a7-acbb2ce12c20",
     "question": "What goes in the body of the slide?",
     "type": "multiple_choice",
     "questionSlug": "slide-composition-quiz-q2",
@@ -2953,7 +2953,7 @@
   },
   {
     "_ref": "slide-composition-quiz-q3",
-    "id": "d29c8f15-5cbe-436d-a303-ec7d8a33812c",
+    "id": "56196c67-a2b7-4d7e-9302-31ee4736973f",
     "question": "What is a swipe file?",
     "type": "multiple_choice",
     "questionSlug": "slide-composition-quiz-q3",
@@ -3006,7 +3006,7 @@
   },
   {
     "_ref": "slide-composition-quiz-q4",
-    "id": "f8fa672e-ad65-49a5-9297-4591ea85a9e4",
+    "id": "345d20b5-f015-4f9c-a38e-f040c4f47205",
     "question": "When is the best time to use clip art?",
     "type": "multiple_choice",
     "questionSlug": "slide-composition-quiz-q4",
@@ -3059,7 +3059,7 @@
   },
   {
     "_ref": "slide-composition-quiz-q5",
-    "id": "2bf76ca2-0906-43d7-886d-223ae7f67a7b",
+    "id": "e8739451-7724-4861-8288-ebab431135a6",
     "question": "What elements can be repeated on all slides?",
     "type": "multiple_choice",
     "questionSlug": "slide-composition-quiz-q5",
@@ -3120,7 +3120,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q1",
-    "id": "2d093475-7a5b-4155-97b8-f892bd1ef098",
+    "id": "9cd3867f-d2b8-44a3-abda-c4502524f56f",
     "question": "What do we use Tornado diagrams for?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q1",
@@ -3173,7 +3173,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q2",
-    "id": "d8a0a3c1-e37c-4464-be65-fc8070623eb2",
+    "id": "65043567-79d2-4ebe-a28e-3dfb460946f8",
     "question": "When do we use a Bubble Chart?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q2",
@@ -3226,7 +3226,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q3",
-    "id": "84936505-43f0-4d2b-a229-cb977f1bfc48",
+    "id": "134f4cf6-7ecf-42c1-8dee-207e8228ba69",
     "question": "What chart types should we try and avoid using?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q3",
@@ -3287,7 +3287,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q4",
-    "id": "4d36042a-55bf-4526-9c1a-2a3936d1db67",
+    "id": "e765013b-85b6-43e6-abbc-fbffbea4ba29",
     "question": "What is the best use of a Waterfall Chart?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q4",
@@ -3340,7 +3340,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q5",
-    "id": "46829027-b2b1-4fad-a894-64628fd5fb32",
+    "id": "356e7c89-7d7b-4c94-9d3c-94163fe5bc4d",
     "question": "What is one of the more common uses of a Marimekko Chart?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q5",
@@ -3393,7 +3393,7 @@
   },
   {
     "_ref": "specialist-graphs-quiz-q6",
-    "id": "15e5ca75-15b3-4c6f-bb89-9d80c5e7f925",
+    "id": "bb12b02c-7bcb-4d5a-8165-2677d0aab2b6",
     "question": "What are Motion Charts used for?",
     "type": "multiple_choice",
     "questionSlug": "specialist-graphs-quiz-q6",
@@ -3446,7 +3446,7 @@
   },
   {
     "_ref": "storyboards-in-film-quiz-q1",
-    "id": "f525ee35-c8ac-4184-a5d5-eb550bee7793",
+    "id": "e3399844-ba8e-438a-9a92-142fa1032dff",
     "question": "What is a storyboard?",
     "type": "multiple_choice",
     "questionSlug": "storyboards-in-film-quiz-q1",
@@ -3499,7 +3499,7 @@
   },
   {
     "_ref": "storyboards-in-film-quiz-q2",
-    "id": "45ea1633-cc47-45c5-9be1-a8f133094ca2",
+    "id": "b445975b-8a76-4ad6-ac3b-f40bbed442a1",
     "question": "Who invented storyboards?",
     "type": "multiple_choice",
     "questionSlug": "storyboards-in-film-quiz-q2",
@@ -3552,7 +3552,7 @@
   },
   {
     "_ref": "storyboards-in-film-quiz-q3",
-    "id": "44885380-2ff5-4dde-9724-21a64735daab",
+    "id": "7be59368-c47a-4355-b5ea-0fe5b1c7da00",
     "question": "What was the great innovation of storyboarding?",
     "type": "multiple_choice",
     "questionSlug": "storyboards-in-film-quiz-q3",
@@ -3605,7 +3605,7 @@
   },
   {
     "_ref": "storyboards-in-presentations-quiz-q1",
-    "id": "26706327-3966-4ac6-8142-f0a0a4dd2d91",
+    "id": "89b1fcb0-8e4f-475c-929c-5bbecce07b4a",
     "question": "What are the two approaches discussed in the lesson?",
     "type": "multiple_choice",
     "questionSlug": "storyboards-in-presentations-quiz-q1",
@@ -3658,7 +3658,7 @@
   },
   {
     "_ref": "storyboards-in-presentations-quiz-q2",
-    "id": "2b51109f-199f-4ba8-8020-0eb4209497b1",
+    "id": "096af96a-7866-47fe-b739-327ab2fcd479",
     "question": "What tools are recommended to use for storyboarding?",
     "type": "multiple_choice",
     "questionSlug": "storyboards-in-presentations-quiz-q2",
@@ -3711,7 +3711,7 @@
   },
   {
     "_ref": "structure-quiz-q1",
-    "id": "03c82132-f759-4989-a2ed-c8cb123bfde6",
+    "id": "af077ee1-ecff-4c04-8628-4a0ffdb8af0a",
     "question": "What is the principle of Abstraction?",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q1",
@@ -3760,7 +3760,7 @@
   },
   {
     "_ref": "structure-quiz-q2",
-    "id": "2eb156f3-83e5-4414-8f6d-697c48846451",
+    "id": "195f62e2-d39e-413a-b177-83ca2d03ec24",
     "question": "Which lists are MECE (pick 2)",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q2",
@@ -3809,7 +3809,7 @@
   },
   {
     "_ref": "structure-quiz-q3",
-    "id": "8872e951-c4fe-4b19-a685-8eb482a56edf",
+    "id": "c8b50cc9-4432-414b-8d74-8f24f5fc1ba7",
     "question": "What are the three Golden Rules to follow when applying the principle of abstraction and organizing your ideas?",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q3",
@@ -3870,7 +3870,7 @@
   },
   {
     "_ref": "structure-quiz-q4",
-    "id": "29f9d11b-8682-47f1-a91e-813a9cb49d52",
+    "id": "42d472ff-e9ca-404c-8484-ec3177e55126",
     "question": "Match the argument with whether it is deductive or inductive: 'Jill and Bob are friends. Jill likes to dance, cook and write. Bob likes to dance and cook. Therefore it can be assumed he also likes to write.",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q4",
@@ -3915,7 +3915,7 @@
   },
   {
     "_ref": "structure-quiz-q5",
-    "id": "4c481830-cc58-406d-89f0-fe59282d732a",
+    "id": "36592d43-3e83-4366-9940-5d70c1d08f96",
     "question": "Match the argument with whether it is deductive or inductive: 'All dogs are mammals. All mammals have kidneys. Therefore all dogs have kidneys.",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q5",
@@ -3960,7 +3960,7 @@
   },
   {
     "_ref": "structure-quiz-q6",
-    "id": "1564bc65-e799-4f53-994d-f5eaf427ae94",
+    "id": "a3f14c43-42a8-44c0-90c4-4953c88befbd",
     "question": "What is the rule of 7 (updated)?",
     "type": "multiple_choice",
     "questionSlug": "structure-quiz-q6",
@@ -4013,7 +4013,7 @@
   },
   {
     "_ref": "tables-vs-graphs-quiz-q1",
-    "id": "0a468538-9ff0-48e9-be8a-ca53d20cc779",
+    "id": "55d5b97f-0d01-4695-bb26-7c6cbbf5dba1",
     "question": "What are the two defining characteristics of Tables?",
     "type": "multiple_choice",
     "questionSlug": "tables-vs-graphs-quiz-q1",
@@ -4066,7 +4066,7 @@
   },
   {
     "_ref": "tables-vs-graphs-quiz-q2",
-    "id": "b7d68940-61cf-4022-b997-692c9d18079c",
+    "id": "37fa3783-c611-4f78-97b2-ea8527f1e633",
     "question": "What re some of the primary benefits of a table?",
     "type": "multiple_choice",
     "questionSlug": "tables-vs-graphs-quiz-q2",
@@ -4123,7 +4123,7 @@
   },
   {
     "_ref": "tables-vs-graphs-quiz-q3",
-    "id": "82effc8f-2d1b-4390-9582-94404cd48611",
+    "id": "b6ee150c-975e-4579-84dc-47d958473ca0",
     "question": "What are some of the characteristics that define graphs?",
     "type": "multiple_choice",
     "questionSlug": "tables-vs-graphs-quiz-q3",
@@ -4184,7 +4184,7 @@
   },
   {
     "_ref": "tables-vs-graphs-quiz-q4",
-    "id": "8397febf-d265-4c4a-a1bf-765e1102678a",
+    "id": "12e3fb82-acd3-48df-8cf1-ef456f142696",
     "question": "When should you use graphs?",
     "type": "multiple_choice",
     "questionSlug": "tables-vs-graphs-quiz-q4",
@@ -4237,7 +4237,7 @@
   },
   {
     "_ref": "the-who-quiz-q1",
-    "id": "1a95ba6f-184c-4ef3-b276-06ccaaab1df6",
+    "id": "f786a0bb-ecb6-4236-b47e-54e2c1971e56",
     "question": "Who is the hero of our presentation?",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q1",
@@ -4290,7 +4290,7 @@
   },
   {
     "_ref": "the-who-quiz-q2",
-    "id": "4f396fd0-5fe5-48a7-8ad1-3b1598d6c842",
+    "id": "c74fff22-9064-4587-9b35-3167350eef81",
     "question": "What is the Audience Map used for?",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q2",
@@ -4339,7 +4339,7 @@
   },
   {
     "_ref": "the-who-quiz-q3",
-    "id": "c9b81528-bc16-4427-b256-3472f12a672c",
+    "id": "3474da6e-4ec4-4c1d-8efd-7110754430c6",
     "question": "What are the 4 quadrants of the Audience Map?",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q3",
@@ -4392,7 +4392,7 @@
   },
   {
     "_ref": "the-who-quiz-q4",
-    "id": "c0b2c627-b0a4-4e9f-b27f-ca4da90a921e",
+    "id": "56fafe1d-cba1-4484-9624-dbcd78744e95",
     "question": "Pick the question that corresponds with the 'Personality' quadrant",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q4",
@@ -4445,7 +4445,7 @@
   },
   {
     "_ref": "the-who-quiz-q5",
-    "id": "d68a0353-6f51-4260-ad47-e25d74fb0441",
+    "id": "f20ea445-f84d-46cd-9478-46ab5a43b2d3",
     "question": "Pick the question that corresponds with the 'Access' quadrant",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q5",
@@ -4498,7 +4498,7 @@
   },
   {
     "_ref": "the-who-quiz-q6",
-    "id": "c650c22f-a1a4-46cc-a671-f9e33b8a49a4",
+    "id": "8c06f9b2-56bb-4201-b9b3-4d3261244a6a",
     "question": "Pick the question that corresponds with the 'Power' quadrant",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q6",
@@ -4551,7 +4551,7 @@
   },
   {
     "_ref": "the-who-quiz-q7",
-    "id": "38abf98d-84bc-4c24-bbb3-94371baca13f",
+    "id": "c96d24b9-a9dd-4a66-917b-2a2f87dfa6ff",
     "question": "Pick the question that corresponds with the 'Resistance' quadrant",
     "type": "multiple_choice",
     "questionSlug": "the-who-quiz-q7",
@@ -4604,7 +4604,7 @@
   },
   {
     "_ref": "using-stories-quiz-q1",
-    "id": "f82ca994-1d2a-44e1-ad59-33edc2b12386",
+    "id": "a375ab9e-0022-455c-94ad-b3920cf2165f",
     "question": "Why are stories like a cup?",
     "type": "multiple_choice",
     "questionSlug": "using-stories-quiz-q1",
@@ -4657,7 +4657,7 @@
   },
   {
     "_ref": "using-stories-quiz-q2",
-    "id": "27263f63-f89d-41ed-93a0-95ba6ddc2d14",
+    "id": "9c938bbe-7970-4bf2-a900-0a0cc222945e",
     "question": "What do stories add to our presentations? Why should be use them?",
     "type": "multiple_choice",
     "questionSlug": "using-stories-quiz-q2",
@@ -4714,7 +4714,7 @@
   },
   {
     "_ref": "using-stories-quiz-q3",
-    "id": "d094dd9a-9bc3-4186-ba89-39e211a6cb8c",
+    "id": "59c2631e-32db-42dc-acce-f27aab205fb5",
     "question": "What characteristics make stories memorable?",
     "type": "multiple_choice",
     "questionSlug": "using-stories-quiz-q3",
@@ -4771,7 +4771,7 @@
   },
   {
     "_ref": "visual-perception-quiz-q1",
-    "id": "c9741603-7b3e-4974-8fc2-1cb8838629f3",
+    "id": "3f6c3eeb-af48-4f45-95cb-8225d535296f",
     "question": "What is visual thinking?",
     "type": "multiple_choice",
     "questionSlug": "visual-perception-quiz-q1",
@@ -4824,7 +4824,7 @@
   },
   {
     "_ref": "visual-perception-quiz-q2",
-    "id": "945c65ae-dfd3-4e81-9833-64d60f5e89c4",
+    "id": "307b422a-fbd0-4fb0-bd6d-bf4cf1cae484",
     "question": "Match the type of mental processing with the characteristic: 'Conscious, sequential, and slow/hard'",
     "type": "multiple_choice",
     "questionSlug": "visual-perception-quiz-q2",
@@ -4869,7 +4869,7 @@
   },
   {
     "_ref": "visual-perception-quiz-q3",
-    "id": "12841e26-b046-47a7-a231-0b8754bdaa17",
+    "id": "86c07623-7b53-4252-b416-c1d332e7a80f",
     "question": "Match the type of mental processing with the characteristic: 'Below the level of consciousness, very rapid'",
     "type": "multiple_choice",
     "questionSlug": "visual-perception-quiz-q3",
@@ -4914,7 +4914,7 @@
   },
   {
     "_ref": "visual-perception-quiz-q4",
-    "id": "4de536fd-5c93-4e1a-9892-697a758ced00",
+    "id": "dc1e1a73-4f69-4bd3-8e2d-012c97d626a8",
     "question": "What are the visual attribute triggers of pre-attentive processing?",
     "type": "multiple_choice",
     "questionSlug": "visual-perception-quiz-q4",
@@ -5003,7 +5003,7 @@
   },
   {
     "_ref": "why-next-steps-quiz-q1",
-    "id": "d2279466-c8f0-45af-99ad-a7a5e59851e9",
+    "id": "bcd5944f-1b09-4325-aea3-9c0443f48156",
     "question": "Who is Cicero?",
     "type": "multiple_choice",
     "questionSlug": "why-next-steps-quiz-q1",
@@ -5052,7 +5052,7 @@
   },
   {
     "_ref": "why-next-steps-quiz-q2",
-    "id": "c1218c18-dd45-4a63-bc8f-e6ba95061b82",
+    "id": "bc084787-6c7d-4eef-9b97-bf7760bac70b",
     "question": "What is the ultimate objective of our presentation?",
     "type": "multiple_choice",
     "questionSlug": "why-next-steps-quiz-q2",
@@ -5101,7 +5101,7 @@
   },
   {
     "_ref": "why-next-steps-quiz-q3",
-    "id": "5726ebf2-65d7-46ae-916a-12d7538a139e",
+    "id": "f8aff15f-cec2-469a-b39d-816a4f8f5eae",
     "question": "Which of the following are reasonable next steps to follow your presentation?",
     "type": "multiple_choice",
     "questionSlug": "why-next-steps-quiz-q3",
@@ -5150,7 +5150,7 @@
   },
   {
     "_ref": "why-next-steps-quiz-q4",
-    "id": "a2efd9f8-cbda-4beb-9d73-0d8203773e05",
+    "id": "32934bca-d2a3-4b69-b0db-1303ba5e9e58",
     "question": "Where should the next steps go in your presentation?",
     "type": "multiple_choice",
     "questionSlug": "why-next-steps-quiz-q4",

@@ -184,11 +184,11 @@
           {
             "type": "block",
             "version": 1,
-            "id": "167f0bcb-c810-4a0c-a94a-c6769d19bb12",
+            "id": "27ae9037-2dd8-4292-bd1b-c4e07e3015be",
             "format": "",
             "indent": 0,
             "fields": {
-              "id": "167f0bcb-c810-4a0c-a94a-c6769d19bb12",
+              "id": "27ae9037-2dd8-4292-bd1b-c4e07e3015be",
               "blockName": "Call To Action",
               "blockType": "call-to-action",
               "headline": "Ready to get started?",
@@ -4068,7 +4068,7 @@
       "description": "A ‘teardown' of a presentation from Boston Consulting Group, exploring what it does well and making some suggestions on areas where there may be room for improvement.",
       "image": null
     },
-    "publishedAt": "2025-11-04T19:04:38.645Z",
+    "publishedAt": "2025-12-02T14:46:29.374Z",
     "_status": "published",
     "featuredImage": "{ref:media:blog-brainstorming}",
     "categories": [
@@ -6511,7 +6511,7 @@
       "description": "10 Business Presentation Mistakes That Will Get You Fired, Demoted or Ignored",
       "image": null
     },
-    "publishedAt": "2025-11-04T19:04:38.646Z",
+    "publishedAt": "2025-12-02T14:46:29.375Z",
     "_status": "published",
     "featuredImage": "{ref:media:blog-brainstorming}",
     "categories": [
@@ -6533,11 +6533,11 @@
           {
             "type": "block",
             "version": 1,
-            "id": "e66519f4-22e5-4e1e-909f-84b6dc309414",
+            "id": "00bc929f-d959-4145-8eec-20a7ff73b966",
             "format": "",
             "indent": 0,
             "fields": {
-              "id": "e66519f4-22e5-4e1e-909f-84b6dc309414",
+              "id": "00bc929f-d959-4145-8eec-20a7ff73b966",
               "blockName": "YouTube Video",
               "blockType": "youtube-video",
               "videoId": "yk9lXobJ95E"
@@ -6597,11 +6597,11 @@
           {
             "type": "block",
             "version": 1,
-            "id": "f15e6737-e7d4-423f-ba89-b05cce83cc5b",
+            "id": "4bb77d93-bf75-403b-9345-64d8c8667d49",
             "format": "",
             "indent": 0,
             "fields": {
-              "id": "f15e6737-e7d4-423f-ba89-b05cce83cc5b",
+              "id": "4bb77d93-bf75-403b-9345-64d8c8667d49",
               "blockName": "Call To Action",
               "blockType": "call-to-action",
               "headline": "Ready to get started?",
@@ -6649,11 +6649,11 @@
           {
             "type": "block",
             "version": 1,
-            "id": "61473ea3-ea54-4830-a66f-ac879270ae5a",
+            "id": "b6da2565-22be-49ed-9bc5-cf7aeaa91a06",
             "format": "",
             "indent": 0,
             "fields": {
-              "id": "61473ea3-ea54-4830-a66f-ac879270ae5a",
+              "id": "b6da2565-22be-49ed-9bc5-cf7aeaa91a06",
               "blockName": "Bunny Video",
               "blockType": "bunny-video",
               "videoId": "7e39514a-18fd-41e3-a07b-e1cbf05dd365"
@@ -6869,7 +6869,7 @@
       "description": "Seneca College is Canada's largest community college. Hear students & instructors describe how SlideHeroes is helping students deliver presentations with structure, story, substance, style & self-confidence.",
       "image": null
     },
-    "publishedAt": "2025-11-04T19:04:38.647Z",
+    "publishedAt": "2025-12-02T14:46:29.375Z",
     "_status": "published",
     "featuredImage": "{ref:media:blog-brainstorming}",
     "categories": [
@@ -9146,7 +9146,7 @@
       "description": "Guide and infographic on the most effective charts in business and how to use them.",
       "image": null
     },
-    "publishedAt": "2025-11-04T19:04:38.647Z",
+    "publishedAt": "2025-12-02T14:46:29.376Z",
     "_status": "published",
     "featuredImage": "{ref:media:blog-brainstorming}",
     "categories": [
