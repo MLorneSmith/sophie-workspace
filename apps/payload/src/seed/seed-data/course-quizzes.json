@@ -20,8 +20,8 @@
       "{ref:quiz-questions:basic-graphs-quiz-q8}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.380Z",
-    "updatedAt": "2025-12-02T14:46:29.380Z",
+    "createdAt": "2025-12-02T20:25:09.113Z",
+    "updatedAt": "2025-12-02T20:25:09.113Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:basic-graphs}"
   },
@@ -44,8 +44,8 @@
       "{ref:quiz-questions:elements-of-design-detail-quiz-q6}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.380Z",
-    "updatedAt": "2025-12-02T14:46:29.380Z",
+    "createdAt": "2025-12-02T20:25:09.113Z",
+    "updatedAt": "2025-12-02T20:25:09.113Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fundamental-design-detail}"
   },
@@ -64,8 +64,8 @@
       "{ref:quiz-questions:fact-persuasion-quiz-q2}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.381Z",
-    "updatedAt": "2025-12-02T14:46:29.381Z",
+    "createdAt": "2025-12-02T20:25:09.114Z",
+    "updatedAt": "2025-12-02T20:25:09.114Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fact-based-persuasion}"
   },
@@ -86,8 +86,8 @@
       "{ref:quiz-questions:gestalt-principles-quiz-q4}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.381Z",
-    "updatedAt": "2025-12-02T14:46:29.381Z",
+    "createdAt": "2025-12-02T20:25:09.114Z",
+    "updatedAt": "2025-12-02T20:25:09.114Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:gestalt-principles}"
   },
@@ -107,8 +107,8 @@
       "{ref:quiz-questions:idea-generation-quiz-q3}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.382Z",
-    "updatedAt": "2025-12-02T14:46:29.382Z",
+    "createdAt": "2025-12-02T20:25:09.115Z",
+    "updatedAt": "2025-12-02T20:25:09.115Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:idea-generation}"
   },
@@ -131,8 +131,8 @@
       "{ref:quiz-questions:introductions-quiz-q6}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.382Z",
-    "updatedAt": "2025-12-02T14:46:29.382Z",
+    "createdAt": "2025-12-02T20:25:09.115Z",
+    "updatedAt": "2025-12-02T20:25:09.115Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-why-introductions}"
   },
@@ -158,8 +158,8 @@
       "{ref:quiz-questions:our-process-quiz-q9}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.383Z",
-    "updatedAt": "2025-12-02T14:46:29.383Z",
+    "createdAt": "2025-12-02T20:25:09.116Z",
+    "updatedAt": "2025-12-02T20:25:09.116Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:our-process}"
   },
@@ -177,8 +177,8 @@
       "{ref:quiz-questions:overview-elements-of-design-quiz-q1}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.383Z",
-    "updatedAt": "2025-12-02T14:46:29.383Z",
+    "createdAt": "2025-12-02T20:25:09.116Z",
+    "updatedAt": "2025-12-02T20:25:09.116Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:fundamental-design-overview}"
   },
@@ -198,8 +198,8 @@
       "{ref:quiz-questions:performance-quiz-q3}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.383Z",
-    "updatedAt": "2025-12-02T14:46:29.383Z",
+    "createdAt": "2025-12-02T20:25:09.116Z",
+    "updatedAt": "2025-12-02T20:25:09.116Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:performance}"
   },
@@ -224,8 +224,8 @@
       "{ref:quiz-questions:preparation-practice-quiz-q8}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.384Z",
-    "updatedAt": "2025-12-02T14:46:29.384Z",
+    "createdAt": "2025-12-02T20:25:09.117Z",
+    "updatedAt": "2025-12-02T20:25:09.117Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:preparation-practice}"
   },
@@ -247,8 +247,8 @@
       "{ref:quiz-questions:slide-composition-quiz-q5}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.384Z",
-    "updatedAt": "2025-12-02T14:46:29.384Z",
+    "createdAt": "2025-12-02T20:25:09.117Z",
+    "updatedAt": "2025-12-02T20:25:09.117Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:slide-composition}"
   },
@@ -271,8 +271,8 @@
       "{ref:quiz-questions:specialist-graphs-quiz-q6}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.385Z",
-    "updatedAt": "2025-12-02T14:46:29.385Z",
+    "createdAt": "2025-12-02T20:25:09.118Z",
+    "updatedAt": "2025-12-02T20:25:09.118Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:specialist-graphs}"
   },
@@ -292,8 +292,8 @@
       "{ref:quiz-questions:storyboards-in-film-quiz-q3}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.385Z",
-    "updatedAt": "2025-12-02T14:46:29.385Z",
+    "createdAt": "2025-12-02T20:25:09.118Z",
+    "updatedAt": "2025-12-02T20:25:09.118Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:storyboards-film}"
   },
@@ -312,8 +312,8 @@
       "{ref:quiz-questions:storyboards-in-presentations-quiz-q2}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.385Z",
-    "updatedAt": "2025-12-02T14:46:29.385Z",
+    "createdAt": "2025-12-02T20:25:09.118Z",
+    "updatedAt": "2025-12-02T20:25:09.118Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:storyboards-presentations}"
   },
@@ -336,8 +336,8 @@
       "{ref:quiz-questions:structure-quiz-q6}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.386Z",
-    "updatedAt": "2025-12-02T14:46:29.386Z",
+    "createdAt": "2025-12-02T20:25:09.119Z",
+    "updatedAt": "2025-12-02T20:25:09.119Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:what-is-structure}"
   },
@@ -358,8 +358,8 @@
       "{ref:quiz-questions:tables-vs-graphs-quiz-q4}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.386Z",
-    "updatedAt": "2025-12-02T14:46:29.386Z",
+    "createdAt": "2025-12-02T20:25:09.119Z",
+    "updatedAt": "2025-12-02T20:25:09.119Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:tables-vs-graphs}"
   },
@@ -383,8 +383,8 @@
       "{ref:quiz-questions:the-who-quiz-q7}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.386Z",
-    "updatedAt": "2025-12-02T14:46:29.386Z",
+    "createdAt": "2025-12-02T20:25:09.119Z",
+    "updatedAt": "2025-12-02T20:25:09.119Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-who}"
   },
@@ -404,8 +404,8 @@
       "{ref:quiz-questions:using-stories-quiz-q3}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.387Z",
-    "updatedAt": "2025-12-02T14:46:29.387Z",
+    "createdAt": "2025-12-02T20:25:09.119Z",
+    "updatedAt": "2025-12-02T20:25:09.119Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:using-stories}"
   },
@@ -426,8 +426,8 @@
       "{ref:quiz-questions:visual-perception-quiz-q4}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.387Z",
-    "updatedAt": "2025-12-02T14:46:29.387Z",
+    "createdAt": "2025-12-02T20:25:09.120Z",
+    "updatedAt": "2025-12-02T20:25:09.120Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:visual-perception}"
   },
@@ -448,8 +448,8 @@
       "{ref:quiz-questions:why-next-steps-quiz-q4}"
     ],
     "published": true,
-    "createdAt": "2025-12-02T14:46:29.387Z",
-    "updatedAt": "2025-12-02T14:46:29.387Z",
+    "createdAt": "2025-12-02T20:25:09.120Z",
+    "updatedAt": "2025-12-02T20:25:09.120Z",
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "lesson": "{ref:course-lessons:the-why-next-steps}"
   }
