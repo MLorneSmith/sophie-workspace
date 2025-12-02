@@ -103,8 +103,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 ```javascript
 todos = [
   {content: "Validate environment and configuration", status: "pending", activeForm: "Validating environment"},
-  {content: "Reset Supabase database", status: "pending", activeForm: "Resetting database"},
-  {content: "Setup Payload schema and migrations", status: "pending", activeForm: "Setting up Payload"},
+  {content: "Reset Supabase and run Payload migrations", status: "pending", activeForm: "Resetting database and running migrations"},
   {content: "Seed Payload CMS (unless --schema-only)", status: "pending", activeForm: "Seeding Payload"},
   {content: "Verify database state", status: "pending", activeForm: "Verifying database"}
 ]
@@ -153,11 +152,26 @@ echo "✅ Environment validation complete"
 
 **Update** TodoWrite: Mark Phase 1 complete
 
-#### Phase 2: Reset Supabase Database
+#### Phase 2 & 3: Reset Supabase Database and Run Payload Migrations
 
-**Execute** database reset with port cleanup:
+**IMPORTANT - SHELL SESSION ISOLATION FIX**: Phase 2 (database reset) and Phase 3 (Payload
+migrations) MUST be executed in a single Bash tool call. Each Claude Code Bash call runs in
+an independent shell session, so `DATABASE_URL` captured in Phase 2 would be lost if Phase 3
+ran in a separate call. This consolidation ensures the variable persists.
+
+**Note**: The payload schema is automatically created by the Supabase migration
+`20250327_create_payload_schema.sql` during `supabase db reset`. This migration:
+- Drops any existing payload schema with CASCADE (removes stale objects)
+- Creates a fresh, empty payload schema
+- Includes a production safety guard
+
+**Execute** database reset and Payload migrations in a single shell session:
 
 ```bash
+# ============================================================
+# PHASE 2: Reset Supabase Database
+# ============================================================
+
 # 2.1 Cleanup conflicting ports (54521-54527 for web instance)
 bash .ai/ai_scripts/development/cleanup-ports.sh 54521 54527 || {
   echo "⚠️  Port cleanup failed, attempting to continue..."
@@ -175,7 +189,7 @@ npx supabase start
 echo "🔄 Resetting Supabase database..."
 npx supabase db reset
 
-# 2.5 Verify database connection
+# 2.5 Capture DATABASE_URL - CRITICAL: Must be used in same shell session
 DATABASE_URL=$(npx supabase status | grep "DB URL" | awk '{print $3}')
 if [ -z "$DATABASE_URL" ]; then
   echo "❌ ERROR: Could not get database URL from Supabase"
@@ -184,25 +198,12 @@ fi
 
 echo "✅ Database reset complete"
 echo "   Database URL: $DATABASE_URL"
-```
 
-**IMPORTANT**: The `supabase db reset` command requires Supabase to be running first.
-This is why we start Supabase before running reset, not after.
+# ============================================================
+# PHASE 3: Verify Payload Schema and Run Migrations
+# ============================================================
 
-**Update** TodoWrite: Mark Phase 2 complete
-
-#### Phase 3: Verify Payload Schema and Run Migrations
-
-**Note**: The payload schema is now automatically created by the Supabase migration
-`20250327_create_payload_schema.sql` during the `supabase db reset` in Phase 2. This migration:
-- Drops any existing payload schema with CASCADE (removes stale objects)
-- Creates a fresh, empty payload schema
-- Includes a production safety guard
-
-**Execute** Payload migration setup:
-
-```bash
-cd apps/payload
+cd ../payload
 
 # 3.1 Verify payload schema exists (created by Supabase migration)
 SCHEMA_EXISTS=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';" | tr -d ' ')
@@ -240,7 +241,10 @@ else
 fi
 ```
 
-**Update** TodoWrite: Mark Phase 3 complete
+**IMPORTANT**: The `supabase db reset` command requires Supabase to be running first.
+This is why we start Supabase before running reset, not after.
+
+**Update** TodoWrite: Mark Phase 2 and Phase 3 complete
 
 #### Phase 4: Seed Payload Data (Default)
 
