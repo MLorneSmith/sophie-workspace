@@ -20,6 +20,7 @@ interface SurveyMeta {
 
 interface SurveyJson {
 	id: string;
+	slug: string;
 	title: string;
 	description: string;
 	instructions?: any; // Lexical JSON
@@ -109,6 +110,7 @@ export async function convertSurveys(
 			// Build survey object
 			const survey: SurveyJson = {
 				id: surveyId,
+				slug: surveyId,
 				title: surveyMeta.title,
 				description: surveyMeta.description,
 				anonymous: surveyMeta.anonymous ?? true,
