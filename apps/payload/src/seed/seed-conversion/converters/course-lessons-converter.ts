@@ -311,49 +311,45 @@ function convertToSimpleLexical(markdown: string): {
 		.filter((p) => p.trim())
 		.map((p) => p.trim());
 
-	const children = paragraphs.map((paragraph) => {
-		// Handle different types of content
-		if (paragraph.startsWith("#")) {
-			// Headers
-			const level = paragraph.match(/^#+/)?.[0].length || 1;
-			const text = paragraph.replace(/^#+\s*/, "");
-			return {
-				type: "heading",
-				tag: `h${Math.min(level, 6)}`,
-				version: 1,
-				children: [{ type: "text", text }],
-			};
-		} else if (paragraph.includes("{% bunny")) {
-			// Video components
-			const videoMatch = paragraph.match(/{% bunny\s+([^%]+)\s+%}/);
-			if (videoMatch) {
+	const children = paragraphs
+		.map((paragraph) => {
+			// Handle different types of content
+			if (paragraph.startsWith("#")) {
+				// Headers
+				const level = paragraph.match(/^#+/)?.[0].length || 1;
+				const text = paragraph.replace(/^#+\s*/, "");
 				return {
-					type: "bunny-video",
-					videoId: videoMatch[1].trim(),
+					type: "heading",
+					tag: `h${Math.min(level, 6)}`,
 					version: 1,
-					children: [{ type: "text", text: "" }],
+					children: [{ type: "text", text }],
 				};
+			} else if (paragraph.includes("{% bunny")) {
+				// Video components - match self-closing shortcode format: {% bunny bunnyvideoid="UUID" /%}
+				// Skip bunny shortcodes entirely - the video ID is already extracted to bunny_video_id field
+				// Return null to filter out this paragraph
+				return null;
+			} else if (paragraph.includes("{% highlight")) {
+				// Highlight components
+				const highlightMatch = paragraph.match(/{% highlight\s+([^%]+)\s+%}/);
+				if (highlightMatch) {
+					return {
+						type: "highlight",
+						content: highlightMatch[1].trim(),
+						version: 1,
+						children: [{ type: "text", text: highlightMatch[1].trim() }],
+					};
+				}
 			}
-		} else if (paragraph.includes("{% highlight")) {
-			// Highlight components
-			const highlightMatch = paragraph.match(/{% highlight\s+([^%]+)\s+%}/);
-			if (highlightMatch) {
-				return {
-					type: "highlight",
-					content: highlightMatch[1].trim(),
-					version: 1,
-					children: [{ type: "text", text: highlightMatch[1].trim() }],
-				};
-			}
-		}
 
-		// Regular paragraph
-		return {
-			type: "paragraph",
-			version: 1,
-			children: [{ type: "text", text: paragraph }],
-		};
-	});
+			// Regular paragraph
+			return {
+				type: "paragraph",
+				version: 1,
+				children: [{ type: "text", text: paragraph }],
+			};
+		})
+		.filter((child): child is NonNullable<typeof child> => child !== null);
 
 	return {
 		root: {
