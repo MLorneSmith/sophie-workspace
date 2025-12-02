@@ -28,7 +28,7 @@ export function QuestionCard({
 	const [selectedOption, _setSelectedOption] = useState<string | null>(null);
 
 	// Render different question types based on the question type
-	if (question.type === "text_field") {
+	if (question.type === "text_field" || question.type === "textarea") {
 		return (
 			<TextFieldQuestion
 				question={question}
