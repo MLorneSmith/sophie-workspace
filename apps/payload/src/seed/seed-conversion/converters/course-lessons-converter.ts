@@ -26,27 +26,29 @@ interface LessonMeta {
 	publishedAt?: string;
 }
 
+interface LexicalContent {
+	root: {
+		type: string;
+		children: Array<{
+			type: string;
+			version: number;
+			[k: string]: unknown;
+		}>;
+		direction: ("ltr" | "rtl") | null;
+		format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+		indent: number;
+		version: number;
+	};
+	[k: string]: unknown;
+}
+
 interface CourseLessonJson {
 	_ref: string;
 	id: string;
 	slug: string;
 	title: string;
 	description: string;
-	content: {
-		root: {
-			type: string;
-			children: Array<{
-				type: string;
-				version: number;
-				[k: string]: unknown;
-			}>;
-			direction: ("ltr" | "rtl") | null;
-			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-			indent: number;
-			version: number;
-		};
-		[k: string]: unknown;
-	};
+	content: LexicalContent;
 	bunny_video_id?: string; // Bunny video ID extracted from shortcode
 	quiz_id?: string; // Reference to quiz (renamed from quiz)
 	survey_id?: string; // Reference to survey (renamed from surveys, now singular)
@@ -57,6 +59,10 @@ interface CourseLessonJson {
 	thumbnail?: string; // Reference to media
 	publishedAt?: string; // Published date from frontmatter
 	todo_complete_quiz?: boolean; // Parse from To-Do section
+	todo?: LexicalContent; // General todo instructions
+	todo_watch_content?: LexicalContent; // Content to watch
+	todo_read_content?: LexicalContent; // Content to read
+	todo_course_project?: LexicalContent; // Course project instructions
 	_status: "draft" | "published"; // Payload draft status
 	createdAt: string;
 	updatedAt: string;
@@ -124,8 +130,17 @@ export async function convertCourseLessons(
 			// Extract bunny video ID from shortcode in content
 			const bunnyVideoId = extractBunnyVideoId(markdownContent);
 
-			// Convert content to simple Lexical format
-			const lexicalContent = convertToSimpleLexical(markdownContent);
+			// Extract action item sections before stripping them from content
+			const todoContent = extractTodoSectionContent(markdownContent);
+			const watchContent = extractWatchSection(markdownContent);
+			const readContent = extractReadSection(markdownContent);
+			const courseProjectContent = extractCourseProjectSection(markdownContent);
+
+			// Strip action sections from main content to prevent duplication
+			const strippedContent = stripActionSections(markdownContent);
+
+			// Convert content to simple Lexical format (without action sections)
+			const lexicalContent = convertToSimpleLexical(strippedContent);
 
 			// Generate lesson ID
 			const lessonId = file.replace(".mdoc", "");
@@ -230,6 +245,35 @@ export async function convertCourseLessons(
 			const todoCompleteQuiz = parseTodoSection(markdownContent);
 			if (todoCompleteQuiz !== null) {
 				lesson.todo_complete_quiz = todoCompleteQuiz;
+			}
+
+			// Add structured todo fields if they have content
+			if (todoContent) {
+				const todoLexical = textToLexicalRichText(todoContent);
+				if (todoLexical) {
+					lesson.todo = todoLexical;
+				}
+			}
+
+			if (watchContent) {
+				const watchLexical = textToLexicalRichText(watchContent);
+				if (watchLexical) {
+					lesson.todo_watch_content = watchLexical;
+				}
+			}
+
+			if (readContent) {
+				const readLexical = textToLexicalRichText(readContent);
+				if (readLexical) {
+					lesson.todo_read_content = readLexical;
+				}
+			}
+
+			if (courseProjectContent) {
+				const courseProjectLexical = textToLexicalRichText(courseProjectContent);
+				if (courseProjectLexical) {
+					lesson.todo_course_project = courseProjectLexical;
+				}
 			}
 
 			lessons.push(lesson);
@@ -474,4 +518,175 @@ function parseTodoSection(content: string): boolean | null {
 
 	// If no To-Do section found, return null (no information)
 	return null;
+}
+
+/**
+ * Extracts a specific section from lesson content.
+ * Sections are identified by their header (e.g., "To-Do", "Watch", "Read")
+ * and end at the next section header, markdown heading, or end of content.
+ *
+ * @param content - The full markdown content
+ * @param sectionHeader - The section header to find (e.g., "To-Do", "Watch")
+ * @returns The bullet point content of the section, or null if not found or "None"
+ */
+function extractSection(content: string, sectionHeader: string): string | null {
+	// Build regex pattern to match section header and capture content until next section
+	// Sections can be plain text headers like "Watch" or use {% custombullet %} prefix for "Course Project"
+	const escapedHeader = sectionHeader.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const sectionPattern = new RegExp(
+		`(?:{% custombullet[^%]*%})?\\s*${escapedHeader}\\s*\\n([\\s\\S]*?)(?=\\n(?:{% custombullet[^%]*%})?\\s*(?:To-Do|Watch|Read|Course Project)\\s*\\n|\\n###|\\n{% r2file|$)`,
+		"i",
+	);
+
+	const match = content.match(sectionPattern);
+	if (!match) {
+		return null;
+	}
+
+	const sectionContent = match[1].trim();
+
+	// Return null if section contains only "None" or is empty
+	if (!sectionContent || /^\s*-?\s*None\s*$/i.test(sectionContent)) {
+		return null;
+	}
+
+	// Extract bullet points (lines starting with -)
+	const bulletPoints = sectionContent
+		.split("\n")
+		.filter((line) => line.trim().startsWith("-"))
+		.map((line) => line.trim().replace(/^-\s*/, "").trim())
+		.filter((line) => line && !/^None$/i.test(line));
+
+	if (bulletPoints.length === 0) {
+		return null;
+	}
+
+	return bulletPoints.join("\n");
+}
+
+/**
+ * Extracts To-Do section content (general instructions, not quiz-related)
+ */
+function extractTodoSectionContent(content: string): string | null {
+	const todoContent = extractSection(content, "To-Do");
+	if (!todoContent) {
+		return null;
+	}
+
+	// Filter out "Complete the lesson quiz" as that's handled by todo_complete_quiz
+	const filteredLines = todoContent
+		.split("\n")
+		.filter((line) => !/complete\s+the\s+lesson\s+quiz/i.test(line));
+
+	return filteredLines.length > 0 ? filteredLines.join("\n") : null;
+}
+
+/**
+ * Extracts Watch section content
+ */
+function extractWatchSection(content: string): string | null {
+	return extractSection(content, "Watch");
+}
+
+/**
+ * Extracts Read section content
+ */
+function extractReadSection(content: string): string | null {
+	return extractSection(content, "Read");
+}
+
+/**
+ * Extracts Course Project section content
+ */
+function extractCourseProjectSection(content: string): string | null {
+	return extractSection(content, "Course Project");
+}
+
+/**
+ * Converts plain text (bullet points) to Lexical richText format.
+ * Creates a proper Lexical structure with list items.
+ */
+function textToLexicalRichText(text: string): LexicalContent | null {
+	if (!text || !text.trim()) {
+		return null;
+	}
+
+	const lines = text.split("\n").filter((line) => line.trim());
+
+	if (lines.length === 0) {
+		return null;
+	}
+
+	// Create list items from the lines
+	const listItems = lines.map((line) => ({
+		type: "listitem",
+		version: 1,
+		value: 1,
+		children: [
+			{
+				type: "paragraph",
+				version: 1,
+				children: [{ type: "text", text: line.trim() }],
+			},
+		],
+	}));
+
+	// Wrap in an unordered list
+	const children = [
+		{
+			type: "list",
+			version: 1,
+			listType: "bullet",
+			start: 1,
+			tag: "ul",
+			children: listItems,
+		},
+	];
+
+	return {
+		root: {
+			type: "root",
+			format: "",
+			indent: 0,
+			version: 1,
+			direction: null,
+			children,
+		},
+	};
+}
+
+/**
+ * Strips action item sections from markdown content.
+ * Removes To-Do, Watch, Read, and Course Project sections to prevent duplication
+ * in the main content field.
+ */
+function stripActionSections(content: string): string {
+	// Remove To-Do section
+	let result = content.replace(
+		/To-Do\s*\n[\s\S]*?(?=\n(?:{% custombullet[^%]*%})?\s*(?:Watch|Read|Course Project)\s*\n|###|{% r2file|$)/i,
+		"",
+	);
+
+	// Remove Watch section
+	result = result.replace(
+		/Watch\s*\n[\s\S]*?(?=\n(?:{% custombullet[^%]*%})?\s*(?:Read|Course Project)\s*\n|###|{% r2file|$)/i,
+		"",
+	);
+
+	// Remove Read section
+	result = result.replace(
+		/Read\s*\n[\s\S]*?(?=\n(?:{% custombullet[^%]*%})?\s*(?:Course Project)\s*\n|###|{% r2file|$)/i,
+		"",
+	);
+
+	// Remove Course Project section (with optional {% custombullet %} prefix)
+	result = result.replace(
+		/(?:{% custombullet[^%]*%})?\s*Course Project\s*\n[\s\S]*?(?=\n###|{% r2file|$)/i,
+		"",
+	);
+
+	// Clean up multiple consecutive blank lines
+	result = result.replace(/\n{3,}/g, "\n\n");
+
+	return result.trim();
 }
