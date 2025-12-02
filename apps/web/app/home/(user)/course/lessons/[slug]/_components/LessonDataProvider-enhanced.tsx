@@ -262,14 +262,14 @@ export async function LessonDataProviderEnhanced({
 
 				// Determine slug based on lesson number as a fallback
 				let surveySlug = "";
-				if (lesson.lesson_number === 103) {
+				if (lesson.lesson_number === 8) {
 					surveySlug = "three-quick-questions";
-					logger.info("Using survey slug for lesson 103", {
+					logger.info("Using survey slug for lesson 8 (before-we-begin)", {
 						surveySlug,
 					});
-				} else if (lesson.lesson_number === 802) {
+				} else if (lesson.lesson_number === 31) {
 					surveySlug = "feedback";
-					logger.info("Using survey slug for lesson 802", {
+					logger.info("Using survey slug for lesson 31 (before-you-go)", {
 						surveySlug,
 					});
 				}
