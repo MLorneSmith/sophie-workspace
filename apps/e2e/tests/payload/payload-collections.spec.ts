@@ -180,34 +180,30 @@ test.describe("Payload CMS - CRUD Operations", () => {
 		await collectionsPage.expectToastMessage("successfully");
 	});
 
-	test("should edit existing item", async ({ page: _page }) => {
+	test("should edit existing item", async ({ page }) => {
+		// Always create a fresh post first to ensure we have valid data
 		await collectionsPage.navigateToCollection("posts");
+		await collectionsPage.createNewItem();
 
-		const itemCount = await collectionsPage.getItemCount();
+		const originalTitle = `Post to Edit ${Date.now()}`;
+		await collectionsPage.fillRequiredFields({
+			title: originalTitle,
+			content: "Original content for edit test",
+		});
+		await collectionsPage.saveItem();
 
-		if (itemCount > 0) {
-			// Select first item
-			await collectionsPage.selectFirstItem();
+		// Wait for redirect to edit page with UUID
+		await page.waitForURL(/\/[0-9a-f-]{36}$/i, { timeout: 10000 });
 
-			// Make changes
-			const updatedTitle = `Updated Post ${Date.now()}`;
-			await collectionsPage.fillRequiredFields({
-				title: updatedTitle,
-			});
+		// Now edit the post we just created
+		const updatedTitle = `Updated Post ${Date.now()}`;
+		await page.fill('input[name="title"]', updatedTitle);
 
-			// Save changes
-			await collectionsPage.saveItem();
+		// Save changes
+		await collectionsPage.saveItem();
 
-			// Verify success
-			await collectionsPage.expectToastMessage("successfully");
-		} else {
-			// Create one first
-			await collectionsPage.createNewItem();
-			await collectionsPage.fillRequiredFields({
-				title: `Test Post for Edit ${Date.now()}`,
-			});
-			await collectionsPage.saveItem();
-		}
+		// Verify success
+		await collectionsPage.expectToastMessage("successfully");
 	});
 
 	test("should handle validation errors", async ({ page }) => {
@@ -235,6 +231,7 @@ test.describe("Payload CMS - CRUD Operations", () => {
 		const testTitle = `Post to Delete ${Date.now()}`;
 		await collectionsPage.fillRequiredFields({
 			title: testTitle,
+			content: "Test content for delete test",
 		});
 		await collectionsPage.saveItem();
 

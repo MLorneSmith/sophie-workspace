@@ -134,14 +134,48 @@ export class PayloadCollectionsPage extends PayloadBasePage {
 		expect(count).toBeGreaterThanOrEqual(minCount);
 	}
 
+	/**
+	 * Fill content into a Lexical rich text editor
+	 * Lexical editors render as contenteditable divs, not standard inputs
+	 */
+	async fillLexicalContent(content: string) {
+		// Try multiple selectors for Lexical editor - Payload uses different structures
+		const selectors = [
+			'[data-lexical-editor="true"]',
+			'.rich-text-lexical [contenteditable="true"]',
+			".LexicalEditorTheme__root",
+			'[role="textbox"][contenteditable="true"]',
+		];
+
+		for (const selector of selectors) {
+			const lexicalEditor = this.page.locator(selector).first();
+			if (await lexicalEditor.isVisible({ timeout: 1000 }).catch(() => false)) {
+				// Click to focus the editor
+				await lexicalEditor.click();
+				// Small delay to ensure focus
+				await this.page.waitForTimeout(100);
+				// Type the content directly
+				await this.page.keyboard.type(content);
+				return;
+			}
+		}
+	}
+
 	async fillRequiredFields(data: Record<string, any>) {
 		// Fill text inputs
 		for (const [fieldName, value] of Object.entries(data)) {
+			// First try standard input/textarea fields
 			const field = this.page.locator(
 				`input[name="${fieldName}"], textarea[name="${fieldName}"]`,
 			);
 			if (await field.isVisible({ timeout: 1000 }).catch(() => false)) {
 				await field.fill(String(value));
+				continue;
+			}
+
+			// If field is 'content', try Lexical editor
+			if (fieldName === "content") {
+				await this.fillLexicalContent(String(value));
 			}
 		}
 	}
