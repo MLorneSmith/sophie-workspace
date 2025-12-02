@@ -27,6 +27,13 @@ profiles:
           - "infrastructure/database-seeding.md"
         priority: high
 
+      # Database Reset & Seeding System
+      - keywords: ["reset", "seed", "payload seed", "supabase reset", "seed engine", "local database"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
       # Authentication & Authorization
       - keywords: ["auth", "login", "signup", "permission", "role", "session", "oauth", "mfa"]
         files:
@@ -120,6 +127,13 @@ profiles:
       - keywords: ["RLS", "query", "timeout", "database error", "postgres", "migration", "constraint"]
         files:
           - "development/database-patterns.md"
+        priority: high
+
+      # Database Reset & Seeding Issues
+      - keywords: ["reset failed", "seed failed", "seeding error", "payload seed", "duplicate records", "collection not found"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
         priority: high
 
       # Authentication Issues
@@ -221,6 +235,13 @@ profiles:
           - "infrastructure/database-seeding.md"
         priority: high
 
+      # Seeding System Features
+      - keywords: ["seed", "reset", "payload cms", "content seeding", "local database setup"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
       # API/Server Features
       - keywords: ["api", "endpoint", "server action", "mutation", "validation"]
         files:
@@ -317,6 +338,13 @@ profiles:
           - "infrastructure/database-seeding.md"
         priority: high
 
+      # Database Reset & Seeding Maintenance
+      - keywords: ["reset", "seed", "payload seed", "supabase reset", "regenerate migrations"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
       # Code Quality
       - keywords: ["refactor", "cleanup", "lint", "format", "typescript", "eslint"]
         files:
@@ -379,6 +407,13 @@ profiles:
       - keywords: ["database", "RLS", "query", "migration", "constraint", "postgres"]
         files:
           - "development/database-patterns.md"
+        priority: high
+
+      # Seeding & Reset Bugs
+      - keywords: ["seed", "reset", "seeding", "duplicate", "collection not found", "migration failed"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
         priority: high
 
       # Authentication Bugs

@@ -19,8 +19,8 @@
     "estimated_duration": 8,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.516Z",
-    "updatedAt": "2025-12-02T19:00:58.516Z",
+    "createdAt": "2025-12-02T20:25:09.140Z",
+    "updatedAt": "2025-12-02T20:25:09.140Z",
     "bunny_video_id": "2620df68-c2a8-4255-986e-24c1d4c1dbf2",
     "thumbnail": "{ref:media:lesson_zero}",
     "publishedAt": "2024-09-06T00:00:00.000Z"
@@ -56,8 +56,8 @@
     "estimated_duration": 3,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.513Z",
-    "updatedAt": "2025-12-02T19:00:58.513Z",
+    "createdAt": "2025-12-02T20:25:09.138Z",
+    "updatedAt": "2025-12-02T20:25:09.138Z",
     "thumbnail": "{ref:media:before_we_begin}",
     "publishedAt": "2024-09-06T00:00:00.000Z"
   },
@@ -182,8 +182,8 @@
     "estimated_duration": 10,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.519Z",
-    "updatedAt": "2025-12-02T19:00:58.519Z",
+    "createdAt": "2025-12-02T20:25:09.143Z",
+    "updatedAt": "2025-12-02T20:25:09.143Z",
     "downloads": [
       "{ref:downloads:slide-templates}",
       "{ref:downloads:swipe-file}"
@@ -253,8 +253,8 @@
     "estimated_duration": 6,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.516Z",
-    "updatedAt": "2025-12-02T19:00:58.516Z",
+    "createdAt": "2025-12-02T20:25:09.140Z",
+    "updatedAt": "2025-12-02T20:25:09.140Z",
     "bunny_video_id": "70b1f616-8e55-4c58-8898-c5cefa05417b",
     "quiz_id": "{ref:course-quizzes:our-process-quiz}",
     "downloads": [
@@ -284,15 +284,178 @@
     "estimated_duration": 15,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.518Z",
-    "updatedAt": "2025-12-02T19:00:58.518Z",
+    "createdAt": "2025-12-02T20:25:09.142Z",
+    "updatedAt": "2025-12-02T20:25:09.142Z",
     "bunny_video_id": "8e80b4f3-76d4-44a3-994b-29937ee870ec",
     "quiz_id": "{ref:course-quizzes:the-who-quiz}",
     "downloads": [
       "{ref:downloads:the-who-slides}"
     ],
     "thumbnail": "{ref:media:2-the_who}",
-    "publishedAt": "2024-08-26T00:00:00.000Z"
+    "publishedAt": "2024-08-26T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Download and complete Audience Map tenmplate"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "[HBR Guide to Persuasive Presentations by Nancy Duarte](https://www.amazon.com/gp/product/1422187101/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1422187101&linkCode=as2&tag=slideheroesco-20&linkId=SXHESAMTAMTOMBCT)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Stay out of PowerPoint!"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Select a presentation that you would like to create as your course project"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Identify the audience for your presentation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Create an audience map for your audience"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "the-why-introductions",
@@ -314,14 +477,123 @@
     "estimated_duration": 13,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.519Z",
-    "updatedAt": "2025-12-02T19:00:58.519Z",
+    "createdAt": "2025-12-02T20:25:09.142Z",
+    "updatedAt": "2025-12-02T20:25:09.142Z",
     "bunny_video_id": "eaa1e745-ec67-42c4-b474-e34bd6bdc830",
     "quiz_id": "{ref:course-quizzes:introductions-quiz}",
     "downloads": [
       "{ref:downloads:introduction-slides}"
     ],
-    "thumbnail": "{ref:media:3-the_why_introductions}"
+    "thumbnail": "{ref:media:3-the_why_introductions}",
+    "todo_complete_quiz": true,
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "[The Pyramid Principle](https://www.amazon.com/gp/product/0273710516/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0273710516&linkCode=as2&tag=slideheroesco-20&linkId=MXT5Y6K4NYDNRVCD) by Barbara Minto"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Identify what your audience already knows; build the context portion of your Introduction"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Determine the catalyst for the presentation. What has happened that has created the need for this presentation?"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Determine what the question is that you are answering"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "the-why-next-steps",
@@ -343,14 +615,106 @@
     "estimated_duration": 5,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.519Z",
-    "updatedAt": "2025-12-02T19:00:58.519Z",
+    "createdAt": "2025-12-02T20:25:09.142Z",
+    "updatedAt": "2025-12-02T20:25:09.142Z",
     "bunny_video_id": "22511e58-40ce-4f11-9961-90070c1a3e94",
     "quiz_id": "{ref:course-quizzes:why-next-steps-quiz}",
     "downloads": [
       "{ref:downloads:next-steps-slides}"
     ],
-    "thumbnail": "{ref:media:4-the_why_next_steps}"
+    "thumbnail": "{ref:media:4-the_why_next_steps}",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Write down a single goal or next step for yuour presentation"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Write down a single goal or next step for yuour presentation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Think about the component pieces of your goal - start thinking about what an action Agenda for the first 72 hours might look like"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "idea-generation",
@@ -372,15 +736,249 @@
     "estimated_duration": 13,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.515Z",
-    "updatedAt": "2025-12-02T19:00:58.516Z",
+    "createdAt": "2025-12-02T20:25:09.140Z",
+    "updatedAt": "2025-12-02T20:25:09.140Z",
     "bunny_video_id": "2caf80c4-e364-4565-b92e-a353d4e531ff",
     "quiz_id": "{ref:course-quizzes:idea-generation-quiz}",
     "downloads": [
       "{ref:downloads:idea-generation-slides}"
     ],
     "thumbnail": "{ref:media:5-idea_generation}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": false,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Groupthink](https://www.newyorker.com/magazine/2012/01/30/groupthink) from the New Yorker"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Brainstorking: Does it Work](https://www.youtube.com/watch?v=RgPIkx2JyQU) from the RSA"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Brainstorking: Does it Work](https://www.youtube.com/watch?v=RgPIkx2JyQU) from the RSA"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Wath [ABC Nightline: IDEO Shopping Cart](https://www.youtube.com/watch?v=M66ZU2PCIcM#aid=P-PoocZcn9w) for a deep-dive into IDEO brainstorming techniques"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [How to Mind Map](https://www.youtube.com/watch?v=4wZ5wV5dPZc) for an explanation of mind mapping"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Groupthink](https://www.newyorker.com/magazine/2012/01/30/groupthink) from the New Yorker"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Gather as much useful content as possible to answer your question (existign content and new analysis)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Run a brainstorming sessioon to generate new ideas and approaches to answering your question - write enverything Download"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Select a visual thinking tool to use to keep track of your ideas"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "what-is-structure",
@@ -402,15 +1000,195 @@
     "estimated_duration": 22,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.520Z",
-    "updatedAt": "2025-12-02T19:00:58.520Z",
+    "createdAt": "2025-12-02T20:25:09.143Z",
+    "updatedAt": "2025-12-02T20:25:09.143Z",
     "bunny_video_id": "17d23794-696e-41df-af6c-faf9b54bd87d",
     "quiz_id": "{ref:course-quizzes:structure-quiz}",
     "downloads": [
       "{ref:downloads:what-is-structure-slides}"
     ],
     "thumbnail": "{ref:media:6-what_structure}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Structure](https://www.newyorker.com/magazine/2013/01/14/structure?currentPage=all) by John McPhee in the New Yorker"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Structure](https://www.newyorker.com/magazine/2013/01/14/structure?currentPage=all) by John McPhee in the New Yorker"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [A Treatise on God as First Principle](https://www.ewtn.com/catholicism/library/treatise-on-god-as-first-principle-10044) by John Duns Scotus for the first reference to MECE"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "[The Pyramid Principle](https://www.amazon.com/gp/product/0273710516/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0273710516&linkCode=as2&tag=slideheroesco-20&linkId=MXT5Y6K4NYDNRVCD) by Barbara Minto"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Create an Arguement Map for your answer to the question"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Start by building an inductive arguement that supports your answer to the question"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Structure your supporting evidence and ideas into groups of similar ideas, ensuring your groups are MECE and contain no more that 4-5 key ideas"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "using-stories",
@@ -432,15 +1210,232 @@
     "estimated_duration": 15,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.520Z",
-    "updatedAt": "2025-12-02T19:00:58.520Z",
+    "createdAt": "2025-12-02T20:25:09.143Z",
+    "updatedAt": "2025-12-02T20:25:09.143Z",
     "bunny_video_id": "f311d324-c0ca-4157-afeb-bba29e71a9ce",
     "quiz_id": "{ref:course-quizzes:using-stories-quiz}",
     "downloads": [
       "{ref:downloads:using-stories-slides}"
     ],
     "thumbnail": "{ref:media:7-using_stories}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Ira Glass on Storytelling](https://www.youtube.com/watch?v=5pFI9UuC_fc), an extract from a This American Life segment"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Ira Glass on Storytelling](https://www.youtube.com/watch?v=5pFI9UuC_fc), an extract from a This American Life segment"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Listen to [Dinstinguishing good anecdotes from relevant ones](https://www.thisamericanlife.org/234/say-anything), from Elizabeth Gilbert"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [The New Language of Business](https://www.amazon.com/gp/product/098423604X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=098423604X&linkCode=as2&tag=slideheroesco-20&linkId=MKVBAVZK6ABVD32D) by Bruce Gabrielle"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [The Neuroscience of your Brain on Fiction](https://www.nytimes.com/2012/03/18/opinion/sunday/the-neuroscience-of-your-brain-on-fiction.html) by Annie Murphy Pall in the New York Times Sunday Review"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Identify how and where you might be able to inject a story into your presentation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Consider adding a story at the beginning of the presentation. in the middle or at the end"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Design your story to be a story 'that sticks'"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "storyboards-film",
@@ -461,11 +1456,211 @@
     "lesson_number": 17,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.518Z",
-    "updatedAt": "2025-12-02T19:00:58.518Z",
+    "createdAt": "2025-12-02T20:25:09.141Z",
+    "updatedAt": "2025-12-02T20:25:09.141Z",
     "quiz_id": "{ref:course-quizzes:storyboards-in-film-quiz}",
     "thumbnail": "{ref:media:8-storyboards_in_film}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Pixar on Storyboarding](https://www.youtube.com/watch?v=7LKPVAIcDXY) above"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Learn more from this RocketJum Film School [Intro to storyboarding](https://www.youtube.com/watch?v=RQsvhq28sOI)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Pixar on Storyboarding](https://www.youtube.com/watch?v=7LKPVAIcDXY)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [From Word to Image: Storyboarding and the Film Making Process](https://www.amazon.com/gp/product/193290767X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=193290767X&linkCode=as2&tag=slideheroesco-20&linkId=TPE5KYZF7P7R74CR) by Marcie Begleiter"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [The Art of the Storyboard](https://www.amazon.com/gp/product/0240809602/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0240809602&linkCode=as2&tag=slideheroesco-20&linkId=P5TXBEBSG3IOKBHM) by John Hart"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Start thinking about how you might apply these techniques to your owbn presentation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Complete the next lesson before you start creating your own storyboard"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "storyboards-presentations",
@@ -487,15 +1682,144 @@
     "estimated_duration": 10,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.518Z",
-    "updatedAt": "2025-12-02T19:00:58.518Z",
+    "createdAt": "2025-12-02T20:25:09.142Z",
+    "updatedAt": "2025-12-02T20:25:09.142Z",
     "bunny_video_id": "7f63356c-2bca-4c36-8765-4fe9efd59d71",
     "quiz_id": "{ref:course-quizzes:storyboards-in-presentations-quiz}",
     "downloads": [
       "{ref:downloads:storyboards-presentations-slides}"
     ],
     "thumbnail": "{ref:media:9-storyboards_in_presentations}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Steve Jobs on Storyboarding](https://www.youtube.com/watch?v=BiXK11naSfY)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Storyboarding 101](https://www.scribd.com/document/253886523/Storyboarding) by FridgeMonsters"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Create your storyboard; write it out on paper"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Iterate the storyboard several times, focusing first on key messages, then on flow, and finally on supporting arguments"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "visual-perception",
@@ -517,15 +1841,90 @@
     "estimated_duration": 8,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.520Z",
-    "updatedAt": "2025-12-02T19:00:58.520Z",
+    "createdAt": "2025-12-02T20:25:09.143Z",
+    "updatedAt": "2025-12-02T20:25:09.143Z",
     "bunny_video_id": "5c9b5f03-f5d0-479a-84b2-2cd489fc8584",
     "quiz_id": "{ref:course-quizzes:visual-perception-quiz}",
     "downloads": [
       "{ref:downloads:visual-perception-slides}"
     ],
     "thumbnail": "{ref:media:10-visual_perception}",
-    "publishedAt": "2024-08-29T00:00:00.000Z"
+    "publishedAt": "2024-08-29T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Upside-Down Brilliance: The Visual-Spatial Learner](https://www.amazon.com/gp/product/193218600X/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=193218600X&linkCode=as2&tag=slideheroesco-20&linkId=JXKTKZJMI3ECPXPB) by Linda Kreger Silverman"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Continue to refine your storyboard, now with an emphasis on strikling a balanace between text and visual forms of communication (charts, graphs, diagrams, frameworks)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "fundamental-design-overview",
@@ -546,14 +1945,15 @@
     "lesson_number": 20,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.515Z",
-    "updatedAt": "2025-12-02T19:00:58.515Z",
+    "createdAt": "2025-12-02T20:25:09.139Z",
+    "updatedAt": "2025-12-02T20:25:09.139Z",
     "quiz_id": "{ref:course-quizzes:overview-elements-of-design-quiz}",
     "downloads": [
       "{ref:downloads:fundamental-elements-slides}"
     ],
     "thumbnail": "{ref:media:11-overview_elements_design}",
-    "publishedAt": "2024-09-09T00:00:00.000Z"
+    "publishedAt": "2024-09-09T00:00:00.000Z",
+    "todo_complete_quiz": true
   },
   {
     "_ref": "fundamental-design-detail",
@@ -575,15 +1975,300 @@
     "estimated_duration": 16,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.515Z",
-    "updatedAt": "2025-12-02T19:00:58.515Z",
+    "createdAt": "2025-12-02T20:25:09.139Z",
+    "updatedAt": "2025-12-02T20:25:09.139Z",
     "bunny_video_id": "d91060f9-9a36-4827-8f15-aa56cf8f6b7c",
     "quiz_id": "{ref:course-quizzes:elements-of-design-detail-quiz}",
     "downloads": [
       "{ref:downloads:fundamental-elements-slides}"
     ],
     "thumbnail": "{ref:media:12-detail_elements_of_design}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Learn to use [PowerPoint's Alignment Tool](https://www.youtube.com/watch?v=d-FbsfIOszY)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Play with and learn to use [Adobe's Color Wheel](https://color.adobe.com/create/color-wheel/) tool"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Explore [Google Fonts](https://fonts.google.com/), Google's open source font directory"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Downloading Google Fonts](https://www.youtube.com/watch?v=i4DjReoH2DY) to learn how to use Google Fonts within PowerPoint"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch this overview on [PowerPoint's Alignment Tool](https://www.youtube.com/watch?v=d-FbsfIOszY)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [PowerPoint's Alignment Guide](https://www.youtube.com/watch?v=e9bvWa1qRUI) to get up to speed on the alignment guide feature"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Downloading Google Fonts](https://www.youtube.com/watch?v=i4DjReoH2DY) to learn how to use Google Fonts within PowerPoint"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read the [Typographical twins: 20 perfect font pairings](https://www.creativebloq.com/typography/20-perfect-font-pairings-3132120) blog post from Dreative Blog for some examples of good font combinations"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read the blog post [Why Whitespace Matters](https://boagworld.com/design/why-whitespace-matters/) by Paul Boag"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Use Adobe Color Wheel to create a color palette for your presentation"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Select a set of custom fonts to use for your presentation, download and install them in PowerPoint"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Review your Storyboard for instances where you are breaking the fundamental principles of design (pay particular attention to whitespace, alignmnet, and proximity)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "gestalt-principles",
@@ -605,15 +2290,107 @@
     "estimated_duration": 6,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.515Z",
-    "updatedAt": "2025-12-02T19:00:58.515Z",
+    "createdAt": "2025-12-02T20:25:09.140Z",
+    "updatedAt": "2025-12-02T20:25:09.140Z",
     "bunny_video_id": "e2256d0f-8a14-4567-9992-ac20713c9793",
     "quiz_id": "{ref:course-quizzes:gestalt-principles-quiz}",
     "downloads": [
       "{ref:downloads:gestalt-principles-slides}"
     ],
     "thumbnail": "{ref:media:13-gestalt_principles_of_perception}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Review the key concepts"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Start thining about how you can apply these principles to the design of some of your slides"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Take the mock-up of some of your slides in your Storyboard to the next level in terms of detail, applying the Gestalt Principles"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "slide-composition",
@@ -635,15 +2412,124 @@
     "estimated_duration": 13,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.517Z",
-    "updatedAt": "2025-12-02T19:00:58.517Z",
+    "createdAt": "2025-12-02T20:25:09.141Z",
+    "updatedAt": "2025-12-02T20:25:09.141Z",
     "bunny_video_id": "08100ca6-f998-42dc-8924-4a6d7f8bffeb",
     "quiz_id": "{ref:course-quizzes:slide-composition-quiz}",
     "downloads": [
       "{ref:downloads:slide-composition-slides}"
     ],
     "thumbnail": "{ref:media:14-slide_composition}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Explore the [Periodic Table of Visualization Methods](https://www.visual-literacy.org/periodic_table/periodic_table.html) from Ralph Lengler abnd Martin Eppler for inspiration"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Start creating your own 'Swipe File' from great McKinsey, BCG, Bain, Oliver Wyman slides"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Grab a copy of the SlideHeroes PowerPoint presentation tenmplate"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "The time is right to move beyond storyboarding and start to design your slides in detail"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "fact-based-persuasion",
@@ -665,15 +2551,215 @@
     "estimated_duration": 10,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.514Z",
-    "updatedAt": "2025-12-02T19:00:58.514Z",
+    "createdAt": "2025-12-02T20:25:09.139Z",
+    "updatedAt": "2025-12-02T20:25:09.139Z",
     "bunny_video_id": "1a745407-88b6-41ea-bfe1-fb1e5da7f2ef",
     "quiz_id": "{ref:course-quizzes:fact-persuasion-quiz}",
     "downloads": [
       "{ref:downloads:fact-based-persuasion-slides}"
     ],
     "thumbnail": "{ref:media:15-fact_based_persuasion_overview}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Inspect up close Carles Minard's fantastic [Russion Campaign 18-12-18-13 graph](https://en.wikipedia.org/wiki/File:Minard.png)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch Aaron Koblin's very cool data visualizations in his TED Talk [Visualizing Ourselves with Crowd-Sourced Data](https://www.ted.com/talks/aaron_koblin_visualizing_ourselves_with_crowd_sourced_data?language=en#t-93416)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Play with the New York Time's [A Year of Heavy Losses](https://archive.nytimes.com/www.nytimes.com/interactive/2008/09/15/business/20080916-treemap-graphic.html?_r=2) interactive graphic of the 2007 Financial Crisis"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [The Visual Display of Quantitative Information](https://www.amazon.com/gp/product/0961392142/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0961392142&linkCode=as2&tag=slideheroesco-20&linkId=6U2KI7BSRJHAK3JP) by Edward Tufte"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Show Me the Numbers](https://www.amazon.com/gp/product/0970601972/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0970601972&linkCode=as2&tag=slideheroesco-20&linkId=UJ3XAMHH42IUPQEH) by Stephen Few"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Start creating your graphs, tables, and charts in PowerPoint"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Apply Tufte's principles to your own charts"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "tables-vs-graphs",
@@ -695,15 +2781,90 @@
     "estimated_duration": 5,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.518Z",
-    "updatedAt": "2025-12-02T19:00:58.518Z",
+    "createdAt": "2025-12-02T20:25:09.142Z",
+    "updatedAt": "2025-12-02T20:25:09.142Z",
     "bunny_video_id": "aae42644-8e3a-4ef3-a186-869f802869eb",
     "quiz_id": "{ref:course-quizzes:tables-vs-graphs-quiz}",
     "downloads": [
       "{ref:downloads:tables-vs-graphs-slides}"
     ],
     "thumbnail": "{ref:media:16-tables_vs_graphs}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read Read [Show Me the Numbers](https://www.amazon.com/gp/product/0970601972/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0970601972&linkCode=as2&tag=slideheroesco-20&linkId=UJ3XAMHH42IUPQEH) by Stephen Few"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Determine where you need to display data using graphs, and where tables make more sense"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "basic-graphs",
@@ -725,15 +2886,164 @@
     "estimated_duration": 17,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.512Z",
-    "updatedAt": "2025-12-02T19:00:58.512Z",
+    "createdAt": "2025-12-02T20:25:09.137Z",
+    "updatedAt": "2025-12-02T20:25:09.137Z",
     "bunny_video_id": "74be3c05-f774-4e3c-bbe0-495580a17931",
     "quiz_id": "{ref:course-quizzes:basic-graphs-quiz}",
     "downloads": [
       "{ref:downloads:standard-graphs-slides}"
     ],
     "thumbnail": "{ref:media:17-standard_graphs}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Review the key concepts"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch the supplementary video on YouTube"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read Chapter 3 of the course handbook"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Apply the concepts to your project"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "specialist-graphs",
@@ -755,15 +3065,144 @@
     "estimated_duration": 8,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.517Z",
-    "updatedAt": "2025-12-02T19:00:58.517Z",
+    "createdAt": "2025-12-02T20:25:09.141Z",
+    "updatedAt": "2025-12-02T20:25:09.141Z",
     "bunny_video_id": "579076d8-e225-497d-8ff3-52fad07c9640",
     "quiz_id": "{ref:course-quizzes:specialist-graphs-quiz}",
     "downloads": [
       "{ref:downloads:specialist-graphs-slides}"
     ],
     "thumbnail": "{ref:media:18-specialist_graphs}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo_watch_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch Hans Rosling's original TED Talk [The Best Stats You've Ever Seen](https://www.ted.com/talks/hans_rosling_the_best_stats_you_ve_ever_seen)."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Watch [Journalism in the Age of Data](https://datajournalism.stanford.edu/), a video report on data visualization as a storytelling medium"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read this tutorial for instruction on [How to Make a Merimekko Chart in Excel](https://peltiertech.com/marimekko-charts/)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Determine what types of relationships you need to illustrate and select your chart type on that basis"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "preparation-practice",
@@ -785,15 +3224,192 @@
     "estimated_duration": 16,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.517Z",
-    "updatedAt": "2025-12-02T19:00:58.517Z",
+    "createdAt": "2025-12-02T20:25:09.141Z",
+    "updatedAt": "2025-12-02T20:25:09.141Z",
     "bunny_video_id": "582ab921-8eec-45c2-9223-c54fed288be9",
     "quiz_id": "{ref:course-quizzes:preparation-practice-quiz}",
     "downloads": [
       "{ref:downloads:preparation-practice-slides}"
     ],
     "thumbnail": "{ref:media:19-preparation_practice}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo_read_content": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read the research paper [The 10-minute Oral Presentation: What Should I Focus On?](https://pubmed.ncbi.nlm.nih.gov/15958872/)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Read [Presentation Secrets](https://www.amazon.com/gp/product/1118034961/ref=as_li_qf_sp_asin_il_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1118034961&linkCode=as2&tag=slideheroesco-20&linkId=PGE35BULYFUSKSAX) by Alexei Kapterev"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Write your voiceover script"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Memoraise your script"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Focus delivery efforst on the 4 key areas discussed in the lesson"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Test the length of your presentation and edit to fix alloted time"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Practice in front of others and solicit feedback"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Develop a shorter 'Plan B' deck"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "performance",
@@ -815,15 +3431,90 @@
     "estimated_duration": 14,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.517Z",
-    "updatedAt": "2025-12-02T19:00:58.517Z",
+    "createdAt": "2025-12-02T20:25:09.141Z",
+    "updatedAt": "2025-12-02T20:25:09.141Z",
     "bunny_video_id": "04697977-e686-43c2-b12b-cc81ba1e5aec",
     "quiz_id": "{ref:course-quizzes:performance-quiz}",
     "downloads": [
       "{ref:downloads:performance-slides}"
     ],
     "thumbnail": "{ref:media:20-performance}",
-    "publishedAt": "2024-09-03T00:00:00.000Z"
+    "publishedAt": "2024-09-03T00:00:00.000Z",
+    "todo_complete_quiz": true,
+    "todo": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Record video of yourself presenting and watch it"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "todo_course_project": {
+      "root": {
+        "type": "root",
+        "format": "",
+        "indent": 0,
+        "version": 1,
+        "direction": null,
+        "children": [
+          {
+            "type": "list",
+            "version": 1,
+            "listType": "bullet",
+            "start": 1,
+            "tag": "ul",
+            "children": [
+              {
+                "type": "listitem",
+                "version": 1,
+                "value": 1,
+                "children": [
+                  {
+                    "type": "paragraph",
+                    "version": 1,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "Record video of yourself presenting and watch it"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
   },
   {
     "_ref": "congratulations",
@@ -855,8 +3546,8 @@
     "lesson_number": 30,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.514Z",
-    "updatedAt": "2025-12-02T19:00:58.514Z",
+    "createdAt": "2025-12-02T20:25:09.139Z",
+    "updatedAt": "2025-12-02T20:25:09.139Z",
     "publishedAt": "2024-09-03T00:00:00.000Z"
   },
   {
@@ -878,8 +3569,8 @@
     "lesson_number": 31,
     "course_id": "{ref:courses:decks-for-decision-makers}",
     "_status": "published",
-    "createdAt": "2025-12-02T19:00:58.514Z",
-    "updatedAt": "2025-12-02T19:00:58.514Z",
+    "createdAt": "2025-12-02T20:25:09.138Z",
+    "updatedAt": "2025-12-02T20:25:09.138Z",
     "publishedAt": "2024-09-06T00:00:00.000Z"
   }
 ]
