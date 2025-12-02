@@ -107,8 +107,9 @@ export async function LessonDataProviderEnhanced({
 	let quiz: PayloadQuiz | null = null;
 	let quizAttempts: QuizAttempt[] = [];
 
-	// Check for quiz relationship using quiz_id_id (correct column name)
-	const quizId = lesson.quiz_id_id;
+	// Check for quiz relationship - Payload API returns quiz_id, database uses quiz_id_id
+	// biome-ignore lint/suspicious/noExplicitAny: Payload API returns dynamic field names
+	const quizId = (lesson as any).quiz_id || lesson.quiz_id_id;
 
 	if (quizId) {
 		try {
@@ -236,8 +237,9 @@ export async function LessonDataProviderEnhanced({
 	let survey: PayloadSurvey | null = null;
 	let surveyResponses: SurveyResponse[] = [];
 
-	// Check for survey relationship - use survey_id_id (correct column name)
-	const surveyId = lesson.survey_id_id;
+	// Check for survey relationship - Payload API returns survey_id, database uses survey_id_id
+	// biome-ignore lint/suspicious/noExplicitAny: Payload API returns dynamic field names
+	const surveyId = (lesson as any).survey_id || lesson.survey_id_id;
 
 	if (surveyId) {
 		try {
