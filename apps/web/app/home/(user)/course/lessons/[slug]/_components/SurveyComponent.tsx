@@ -197,22 +197,8 @@ export function SurveyComponent({
 						options: [],
 					};
 
-					// Special handling for scale questions
-					if (q.type === "scale") {
-						// Create default scale options if none exist
-						if (!Array.isArray(q.options) || q.options.length === 0) {
-							question.options = [
-								{ id: `${q.id}_option_1`, text: "1 - Very inexperienced" },
-								{ id: `${q.id}_option_2`, text: "2 - Somewhat inexperienced" },
-								{ id: `${q.id}_option_3`, text: "3 - Neutral" },
-								{ id: `${q.id}_option_4`, text: "4 - Somewhat experienced" },
-								{ id: `${q.id}_option_5`, text: "5 - Very experienced" },
-							];
-						}
-					}
-
 					// Handle options based on different possible formats
-					else if (Array.isArray(q.options)) {
+					if (Array.isArray(q.options) && q.options.length > 0) {
 						question.options = q.options.map(
 							(
 								opt: NonNullable<
@@ -235,10 +221,19 @@ export function SurveyComponent({
 								};
 							},
 						);
+					} else if (q.type === "scale") {
+						// Scale questions without options get default scale
+						question.options = [
+							{ id: `${q.id}_option_1`, text: "1 - Very inexperienced" },
+							{ id: `${q.id}_option_2`, text: "2 - Somewhat inexperienced" },
+							{ id: `${q.id}_option_3`, text: "3 - Neutral" },
+							{ id: `${q.id}_option_4`, text: "4 - Somewhat experienced" },
+							{ id: `${q.id}_option_5`, text: "5 - Very experienced" },
+						];
 					}
 
-					// Special handling for text_field questions
-					if (q.type === "text_field") {
+					// Special handling for text_field and textarea questions
+					if (q.type === "text_field" || q.type === "textarea") {
 						// Text field questions don't need options
 						question.options = [];
 					}
@@ -283,7 +278,7 @@ export function SurveyComponent({
 						id: "61a8e0b5-c600-49cc-9b18-6ba0f158bed3",
 						title: "Goals Question",
 						text: "Fill in the blank: After taking this course, I will be able to ________________________.",
-						type: "text_field",
+						type: "textarea",
 						category: "goals",
 						position: 0,
 						options: [],
@@ -302,15 +297,15 @@ export function SurveyComponent({
 							},
 							{
 								id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d_option_2",
-								text: "2 - Somewhat inexperienced",
+								text: "2",
 							},
 							{
 								id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d_option_3",
-								text: "3 - Neutral",
+								text: "3",
 							},
 							{
 								id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d_option_4",
-								text: "4 - Somewhat experienced",
+								text: "4",
 							},
 							{
 								id: "e0a592e6-d96a-4b62-ad11-3d6e16b2175d_option_5",
@@ -322,7 +317,7 @@ export function SurveyComponent({
 						id: "e0b335b6-dde9-4117-963b-c482b3ae5595",
 						title: "Roadblocks",
 						text: "What's the biggest roadblock you have with this course's subject matter right now?",
-						type: "text_field",
+						type: "textarea",
 						category: "roadblocks",
 						position: 2,
 						options: [],
@@ -440,6 +435,7 @@ export function SurveyComponent({
 									type: currentQuestion.type as
 										| "multiple_choice"
 										| "text_field"
+										| "textarea"
 										| "scale",
 									options: currentQuestion.options.map((opt) => ({
 										option: opt.text,

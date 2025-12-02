@@ -13,7 +13,7 @@ interface SurveyQuestionData {
 	answers: Array<{ answer: string }>;
 	questioncategory?: string;
 	questionspin?: "positive" | "negative";
-	type?: "scale" | "text_field";
+	type?: "scale" | "text_field" | "textarea" | "multiple_choice";
 }
 
 interface SurveyData {
