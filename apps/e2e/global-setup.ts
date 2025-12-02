@@ -22,6 +22,76 @@ const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
 /**
+ * Payload login response type from /api/users/login endpoint
+ */
+interface PayloadLoginResponse {
+	message?: string;
+	user?: {
+		id: string;
+		email: string;
+	};
+	token?: string;
+	exp?: number;
+}
+
+/**
+ * Log in to Payload CMS via the /api/users/login endpoint.
+ * Returns the JWT token on success, null on failure.
+ *
+ * @param payloadUrl - Base URL of the Payload CMS server
+ * @param email - User email for authentication
+ * @param password - User password for authentication
+ * @returns JWT token string or null if login failed
+ */
+async function loginToPayloadViaAPI(
+	payloadUrl: string,
+	email: string,
+	password: string,
+): Promise<string | null> {
+	try {
+		const response = await fetch(`${payloadUrl}/api/users/login`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email, password }),
+		});
+
+		if (!response.ok) {
+			debugLog("payload:api_login_failed", {
+				status: response.status,
+				statusText: response.statusText,
+			});
+			return null;
+		}
+
+		const data = (await response.json()) as PayloadLoginResponse;
+
+		if (!data.token) {
+			debugLog("payload:api_login_no_token", {
+				message: data.message || "No token in response",
+				hasUser: !!data.user,
+			});
+			return null;
+		}
+
+		debugLog("payload:api_login_success", {
+			userId: data.user?.id?.slice(0, 8),
+			email: data.user?.email,
+			tokenLength: data.token.length,
+			tokenExp: data.exp,
+		});
+
+		return data.token;
+	} catch (error) {
+		debugLog("payload:api_login_error", {
+			error: (error as Error).message,
+		});
+		return null;
+	}
+}
+
+/**
  * Log global setup debug info for E2E auth troubleshooting.
  * Only logs when DEBUG_E2E_AUTH=true.
  */
@@ -415,69 +485,82 @@ async function globalSetup(config: FullConfig) {
 		// The Supabase client needs to reinitialize with the new session from localStorage
 		await page.reload({ waitUntil: "domcontentloaded" });
 
-		// For Payload admin users, navigate to Payload admin panel to set up cookies properly
-		// This ensures the admin session is correctly initialized for the Payload CMS interface
+		// For Payload admin users, authenticate via Payload's API and inject the token cookie
+		// Payload CMS uses its own independent authentication system with payload-token cookies
 		if (authState.navigateToPayload) {
 			const payloadUrl =
 				process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
 			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 			console.log(
-				`🔄 Navigating to Payload admin panel for ${authState.name}...`,
+				`🔄 Authenticating to Payload CMS via API for ${authState.name}...`,
 			);
 
 			try {
-				// Navigate to Payload admin - the session should already be active
-				await page.goto(`${payloadUrl}/admin`, {
-					waitUntil: "domcontentloaded",
-					timeout: 30000,
-				});
+				// Use Payload's login API to get a JWT token
+				const payloadToken = await loginToPayloadViaAPI(
+					payloadUrl,
+					credentials.email,
+					credentials.password,
+				);
 
-				// Verify we're on the admin dashboard (not login page)
-				// Give it a moment for the page to settle
-				await page.waitForTimeout(1000);
+				if (payloadToken) {
+					// Inject the payload-token cookie into the browser context
+					const payloadDomain = new URL(payloadUrl).hostname;
+					await context.addCookies([
+						{
+							name: "payload-token",
+							value: payloadToken,
+							domain: payloadDomain,
+							path: "/",
+							httpOnly: true,
+							secure: payloadUrl.startsWith("https"),
+							sameSite: "Lax",
+							// Token expires in 2 hours (standard Payload JWT lifetime)
+							expires: Math.floor(Date.now() / 1000) + 7200,
+						},
+					]);
 
-				// Check if we're on the login page (authentication failed)
-				const isOnLoginPage = await page
-					.locator('input[name="email"], input[name="password"]')
-					.first()
-					.isVisible({ timeout: 2000 })
-					.catch(() => false);
-
-				if (isOnLoginPage) {
 					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 					console.log(
-						`⚠️  Still on login page for ${authState.name}, attempting UI login...`,
+						`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
 					);
 
-					// Fill in login form using Payload's UI
-					await page
-						.locator('input[name="email"]')
-						.fill(credentials.email, { timeout: 5000 });
-					await page
-						.locator('input[name="password"]')
-						.fill(credentials.password);
-					await page.locator('button[type="submit"]').click();
+					debugLog("payload:cookie_injected", {
+						user: authState.name,
+						domain: payloadDomain,
+						tokenLength: payloadToken.length,
+						expires: Math.floor(Date.now() / 1000) + 7200,
+					});
 
-					// Wait for navigation away from login page
-					await page
-						.waitForURL(/.*\/admin(?!\/login)/, { timeout: 15000 })
-						.catch(() => {});
-				}
+					// Navigate to Payload admin to verify authentication works
+					await page.goto(`${payloadUrl}/admin`, {
+						waitUntil: "domcontentloaded",
+						timeout: 30000,
+					});
 
-				// Final verification: ensure we're authenticated
-				const adminNav = await page
-					.locator(".nav, .sidebar, .template-default")
-					.first()
-					.isVisible({ timeout: 5000 })
-					.catch(() => false);
+					// Give it a moment for the page to settle
+					await page.waitForTimeout(1000);
 
-				if (adminNav) {
-					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-					console.log(`✅ Payload admin panel loaded for ${authState.name}`);
+					// Final verification: ensure we're authenticated (not on login page)
+					const adminNav = await page
+						.locator(".nav, .sidebar, .template-default")
+						.first()
+						.isVisible({ timeout: 5000 })
+						.catch(() => false);
+
+					if (adminNav) {
+						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+						console.log(`✅ Payload admin panel loaded for ${authState.name}`);
+					} else {
+						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+						console.log(
+							`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
+						);
+					}
 				} else {
-					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-					console.log(
-						`⚠️  Could not verify Payload admin access for ${authState.name}`,
+					// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+					console.error(
+						`❌ Payload API login failed for ${authState.name} - no token received`,
 					);
 				}
 			} catch (error) {
