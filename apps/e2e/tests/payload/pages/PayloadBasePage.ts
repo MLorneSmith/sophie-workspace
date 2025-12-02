@@ -24,7 +24,7 @@ export abstract class PayloadBasePage {
 		// Common UI elements
 		this.toastNotification = page.locator(".payload-toast-container");
 		this.loadingIndicator = page.locator(".loading-overlay");
-		this.saveButton = page.getByRole("button", { name: /Save Draft|Publish/i });
+		this.saveButton = page.locator("#action-save-draft");
 		this.publishButton = page.locator('button:has-text("Publish")');
 	}
 
