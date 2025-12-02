@@ -369,8 +369,11 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 	test("should validate environment variables for database connection", async ({
 		page,
 	}) => {
-		// Check if required env vars are set
-		const configResponse = await page.request.get(`${loginPage.baseURL}/api`);
+		// Check if required env vars are set via the health endpoint
+		// Note: Payload 3.x doesn't have a root /api endpoint, use /api/health instead
+		const configResponse = await page.request.get(
+			`${loginPage.baseURL}/api/health`,
+		);
 
 		if (!configResponse.ok()) {
 			const responseText = await configResponse.text();

@@ -7,6 +7,7 @@ export class PayloadCollectionsPage extends PayloadBasePage {
 	readonly listTable: Locator;
 	readonly paginationNext: Locator;
 	readonly paginationPrev: Locator;
+	readonly actionsDropdownTrigger: Locator;
 	readonly deleteButton: Locator;
 	readonly confirmDeleteButton: Locator;
 	readonly bulkActionsCheckbox: Locator;
@@ -32,10 +33,16 @@ export class PayloadCollectionsPage extends PayloadBasePage {
 		this.paginationNext = page.locator('button[aria-label="Next Page"]');
 		this.paginationPrev = page.locator('button[aria-label="Previous Page"]');
 
-		// Actions
-		this.deleteButton = page.locator('button:has-text("Delete")');
+		// Actions - Payload 3.x uses a dropdown menu for document actions
+		// The trigger is an unlabeled button next to Save/Publish buttons
+		this.actionsDropdownTrigger = page.locator(
+			'.popup-button-list__toggle, button#action-delete + button, [class*="popup-button-list"] > button:first-child',
+		);
+		this.deleteButton = page.locator(
+			'#action-delete, button:has-text("Delete")',
+		);
 		this.confirmDeleteButton = page.locator(
-			'.modal button:has-text("Confirm")',
+			'dialog button:has-text("Delete"), .modal button:has-text("Confirm"), button:has-text("Confirm")',
 		);
 		this.bulkActionsCheckbox = page.locator(
 			'input[type="checkbox"][aria-label="Select all"]',
@@ -110,8 +117,53 @@ export class PayloadCollectionsPage extends PayloadBasePage {
 
 	async deleteFirstItem() {
 		await this.selectFirstItem();
-		await this.deleteButton.click();
-		await this.confirmDeleteButton.click();
+
+		// Payload 3.x hides the delete button inside an actions dropdown menu
+		// The delete button has id="action-delete" and class="popup-button-list__button"
+		// Force-clicking the hidden button is the most reliable approach
+
+		// First, clear any focus from form fields to prevent issues
+		await this.page.keyboard.press("Escape");
+		await this.page.waitForTimeout(200);
+
+		// Force click the delete button - it exists in the DOM but is hidden in dropdown
+		// Force click bypasses the visibility check
+		await this.page.locator("#action-delete").click({ force: true });
+
+		// Wait for confirmation dialog to appear
+		await this.page.waitForTimeout(500);
+
+		// Payload 3.x shows a confirmation dialog with "Delete" button
+		// Multiple possible selectors for the confirmation button
+		const confirmSelectors = [
+			"button#confirm-delete",
+			'dialog button:has-text("Delete")',
+			'[role="dialog"] button:has-text("Delete")',
+			".confirm-delete button",
+			'button:has-text("Confirm")',
+			'button.btn--style-primary:has-text("Delete")',
+		];
+
+		let confirmed = false;
+		for (const selector of confirmSelectors) {
+			const confirmBtn = this.page.locator(selector).first();
+			if (await confirmBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+				await confirmBtn.click();
+				confirmed = true;
+				break;
+			}
+		}
+
+		// If no confirm button found, the delete might have already succeeded
+		// or the dialog has a different structure
+		if (!confirmed) {
+			// Try clicking any visible button with "Delete" text
+			const anyDeleteBtn = this.page.getByRole("button", { name: /delete/i });
+			if (await anyDeleteBtn.isVisible({ timeout: 500 }).catch(() => false)) {
+				await anyDeleteBtn.click();
+			}
+		}
+
 		await this.expectToastMessage("successfully deleted");
 	}
 
