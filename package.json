@@ -66,15 +66,14 @@
 		"*": [
 			"bash ./scripts/git/trufflehog-scan.sh"
 		],
-		"apps/payload/!(src/seed)/**/*.{js,jsx,ts,tsx,json}": [
-			"bash -c 'cd apps/payload && pnpm lint'"
+		"apps/payload/**/*.{js,jsx,ts,tsx,json}": [
+			"bash -c 'if [[ \"$0\" != *\"/src/seed/\"* ]]; then cd apps/payload && pnpm lint; fi'"
 		],
 		"packages/**/*.{js,jsx,ts,tsx,json}": [
 			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint; fi'"
 		],
-		"!(apps/payload|packages)/**/*.{js,jsx,ts,tsx,json,css}": [
-			"biome format --write",
-			"biome lint --write"
+		"*.{js,jsx,ts,tsx,json,css}": [
+			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
 		],
 		"**/*.{md,mdx}": [
 			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
