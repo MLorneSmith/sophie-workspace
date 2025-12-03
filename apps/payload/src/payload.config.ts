@@ -18,6 +18,7 @@ type PayloadPlugin =
 	| ReturnType<typeof s3Storage>
 	| ReturnType<typeof nestedDocsPlugin>;
 
+import { allBlocks } from "./blocks/index";
 import { CourseLessons } from "./collections/CourseLessons";
 import { CourseQuizzes } from "./collections/CourseQuizzes";
 import { Courses } from "./collections/Courses";
@@ -30,7 +31,6 @@ import { QuizQuestions } from "./collections/QuizQuestions";
 import { SurveyQuestions } from "./collections/SurveyQuestions";
 import { Surveys } from "./collections/Surveys";
 import { Users } from "./collections/Users";
-import { allBlocks } from "./blocks/index";
 import { getDatabaseAdapter } from "./lib/database-adapter-singleton";
 import {
 	getR2Config,
