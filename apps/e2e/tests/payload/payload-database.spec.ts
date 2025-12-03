@@ -175,8 +175,8 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 		await page.waitForTimeout(1000); // Wait for error messages to render
 
 		const errorMessages = [
-			page.locator('text="A user with the given email is already registered"'),
-			page.locator('text="The following field is invalid: email"'),
+			page.locator("text=/A user with the given email is already registered/"),
+			page.locator("text=/The following field is invalid: email/"),
 			page.locator('[class*="error"]'),
 		];
 
