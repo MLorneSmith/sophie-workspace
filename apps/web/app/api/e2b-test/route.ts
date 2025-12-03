@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 import {
 	createSandbox,
 	executePython,
@@ -7,6 +5,7 @@ import {
 	listSandboxes,
 	runCommand,
 } from "@kit/e2b";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 

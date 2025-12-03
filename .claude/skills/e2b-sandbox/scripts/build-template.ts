@@ -12,7 +12,7 @@
  *   E2B_API_KEY - Required for building templates
  */
 
-import { Template, defaultBuildLogger } from "e2b";
+import { defaultBuildLogger, Template } from "e2b";
 
 const TEMPLATE_ALIAS = "slideheroes-claude-agent";
 const DEV_TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
