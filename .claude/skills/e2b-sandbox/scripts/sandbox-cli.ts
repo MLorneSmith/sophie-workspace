@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+
 /**
  * E2B Sandbox CLI - TypeScript CLI for managing E2B cloud sandboxes
  *
@@ -17,9 +18,9 @@
  *   GITHUB_TOKEN for git operations (pr, feature commands)
  */
 
-import { Sandbox } from "@e2b/code-interpreter";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { Sandbox } from "@e2b/code-interpreter";
 
 // ============================================================================
 // Sandbox Logger - Comprehensive session logging
