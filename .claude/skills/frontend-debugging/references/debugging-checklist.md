@@ -350,6 +350,63 @@ jq '.network[] | {url: .url, timing: .timing}' /tmp/network.json
 - [ ] Verify form labels are associated
 - [ ] Check for proper landmark regions
 
+## E2E Authentication Failures
+
+### Cookie Mismatch (Port 3000 vs 3001)
+
+**Symptoms**: Tests pass global setup but fail authentication; protected pages redirect to login despite valid auth states.
+
+**Root Cause**: Auth cookie names are derived from the Supabase URL hostname:
+- Docker test server (`host.docker.internal`) → `sb-host-auth-token`
+- Dev server (`127.0.0.1`) → `sb-127-auth-token`
+
+Running E2E tests against port 3000 (dev server) when auth states were generated for port 3001 (Docker) causes silent authentication failures.
+
+**Diagnostic Commands**:
+```bash
+# Check which port is being used
+grep -i "baseURL" apps/e2e/playwright.config.ts
+
+# Check if Docker test container is running
+curl -s http://localhost:3001/api/health && echo "Docker ready" || echo "Docker not running"
+
+# Check what cookies are in auth state files
+jq '.cookies[] | {name: .name, domain: .domain}' apps/e2e/.auth/test1@slideheroes.com.json
+
+# Look for cookie name in auth states
+grep -o 'sb-[^-]*-auth-token' apps/e2e/.auth/*.json | sort | uniq
+```
+
+**Resolution Checklist**:
+- [ ] Start Docker test environment: `docker-compose -f docker-compose.test.yml up -d`
+- [ ] Wait for health check: `curl http://localhost:3001/api/health`
+- [ ] Run E2E tests against port 3001 (default): `pnpm --filter e2e test`
+- [ ] If must use port 3000, set `E2E_SERVER_SUPABASE_URL=http://127.0.0.1:54521`
+
+**Prevention**:
+- Always use Docker test environment for E2E tests
+- The global setup will warn if running against port 3000
+- See SKILL.md "⚠️ CRITICAL: E2E Auth State Requirements" section
+
+### Auth State File Issues
+
+**Symptoms**: "Cannot find auth state file", authentication redirects even with `--auth` flag.
+
+**Checklist**:
+- [ ] Check auth state files exist: `ls -la apps/e2e/.auth/`
+- [ ] Regenerate auth states: `cd apps/e2e && npx playwright test --project=setup`
+- [ ] Ensure Supabase is running: `pnpm supabase:web:status`
+- [ ] Check test users exist in database
+
+### Session Expired
+
+**Symptoms**: Auth worked previously but now fails; sporadic authentication failures.
+
+**Checklist**:
+- [ ] Auth states contain JWT tokens that expire
+- [ ] Delete and regenerate: `rm -rf apps/e2e/.auth/*.json && cd apps/e2e && npx playwright test --project=setup`
+- [ ] Check system clock is correct (JWT validation is time-sensitive)
+
 ## Quick Diagnostic Commands
 
 | Issue Type | Command |
@@ -360,3 +417,5 @@ jq '.network[] | {url: .url, timing: .timing}' /tmp/network.json
 | Performance metrics | `lighthouse_audit.sh --summary` |
 | Component HTML | `--selector ".class" --dump-html` |
 | Full debug data | `--screenshot --console-logs --network --output` |
+| **E2E cookie mismatch** | `grep -o 'sb-[^-]*-auth-token' apps/e2e/.auth/*.json` |
+| **Docker status** | `curl -s http://localhost:3001/api/health` |
