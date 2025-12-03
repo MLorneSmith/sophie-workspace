@@ -52,6 +52,10 @@ services:
       - EMAIL_PASSWORD=password
       - EMAIL_TLS=false
       - MAILER_PROVIDER=nodemailer
+      # Stripe Configuration (Test Mode - expires 2026-03-03)
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_eljFaamtkdMFLip95M3BVrSF
+      - STRIPE_SECRET_KEY=sk_test_5102rc32RkIMsD46Quk7hswSqmbO8J1d5NkUpw4OsPcNLdPakjChMSDSfmFYjG1tMoqr7GuW4UhORKTNty0ueU3qE00G1T7iuid
+      - STRIPE_WEBHOOK_SECRET=whsec_eb57bde9bf2e50cc5ae4d020a6b987651005153b8f21317bee3d65f0586bf81d
       # Performance
       - FORCE_COLOR=1
       - CI=false

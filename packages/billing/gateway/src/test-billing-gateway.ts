@@ -194,7 +194,7 @@ export class TestBillingGateway {
 						id: "test_line_item_1",
 						subscription_id: subscriptionId,
 						product_id: "starter",
-						variant_id: "price_1S05jtS8mvjG8zYVqE8gnumz",
+						variant_id: "price_1SaNS32RkIMsD46QcyA0Y9oJ",
 						type: "flat",
 						price_amount: 999,
 						quantity: 1,
