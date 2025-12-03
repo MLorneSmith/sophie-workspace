@@ -59,6 +59,18 @@ export function PayloadContentRenderer({ content }) {
             }
         }
     }
+    // Helper function to render a text or link node
+    const renderTextOrLinkNode = (node, keyPrefix) => {
+        if (node.type === "link" && node.url) {
+            const linkText = Array.isArray(node.children) && node.children.length > 0
+                ? node.children.map((child) => child.text || "").join("")
+                : node.text || node.url;
+            return (<a key={`${keyPrefix}-link`} href={node.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">
+					{linkText}
+				</a>);
+        }
+        return (<span key={`${keyPrefix}-text`}>{node.text || ""}</span>);
+    };
     // For Lexical content, extract the text and render it
     try {
         const lexicalContent = content;
@@ -68,7 +80,7 @@ export function PayloadContentRenderer({ content }) {
             if (Array.isArray(lexicalContent.root.children)) {
                 return (<div className="payload-content">
 						{lexicalContent.root.children.map((node, i) => {
-                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
+                        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
                         // Handle custom blocks
                         // Check for Call To Action block
                         if (node.type === "custom-call-to-action" ||
@@ -259,18 +271,77 @@ export function PayloadContentRenderer({ content }) {
                             // Check if node.children exists and is an array
                             if (Array.isArray(node.children)) {
                                 return (<p key={`p-block-${i}-${((_h = node.text) === null || _h === void 0 ? void 0 : _h.slice(0, 20)) || "text"}`}>
-												{node.children.map((textNode, j) => {
-                                        var _a;
-                                        return (<span key={`text-${i}-${j}-${((_a = textNode.text) === null || _a === void 0 ? void 0 : _a.slice(0, 10)) || "empty"}`}>
-															{textNode.text || ""}
-														</span>);
-                                    })}
+												{node.children.map((textNode, j) => renderTextOrLinkNode(textNode, `p-${i}-${j}`))}
 											</p>);
                             }
                             // Fallback for when children is not an array
                             return (<p key={`p-${i}-${((_j = node.text) === null || _j === void 0 ? void 0 : _j.slice(0, 20)) || "text"}`}>
 											{node.text || ""}
 										</p>);
+                        }
+                        // Handle list type nodes
+                        if (node.type === "list") {
+                            const ListTag = node.tag === "ol" ? "ol" : "ul";
+                            const listChildren = Array.isArray(node.children)
+                                ? node.children
+                                : [];
+                            return (<ListTag key={`list-${i}-${node.tag || "ul"}`} className={node.tag === "ol" ? "list-decimal" : "list-disc"}>
+											{listChildren.map((listItem, li) => {
+                                    var _a;
+                                    // Extract content from listitem > paragraph > text/link structure
+                                    const paragraphChildren = Array.isArray(listItem.children)
+                                        ? listItem.children
+                                        : [];
+                                    // Render all children, supporting both text and link nodes
+                                    const renderedContent = paragraphChildren.flatMap((para, pi) => {
+                                        if (Array.isArray(para.children)) {
+                                            return para.children.map((textNode, ti) => renderTextOrLinkNode(textNode, `li-${i}-${li}-${pi}-${ti}`));
+                                        }
+                                        const paraText = para.text || "";
+                                        return [
+                                            <span key={`li-${i}-${li}-para-${paraText.slice(0, 10) || "empty"}`}>
+																{paraText}
+															</span>,
+                                        ];
+                                    });
+                                    // Get first text for key
+                                    const firstTextNode = paragraphChildren[0];
+                                    const keyText = Array.isArray(firstTextNode === null || firstTextNode === void 0 ? void 0 : firstTextNode.children) &&
+                                        ((_a = firstTextNode.children[0]) === null || _a === void 0 ? void 0 : _a.text)
+                                        ? firstTextNode.children[0].text.slice(0, 10)
+                                        : "item";
+                                    return (<li key={`li-${i}-${li}-${keyText}`}>
+														{renderedContent}
+													</li>);
+                                })}
+										</ListTag>);
+                        }
+                        // Handle listitem type (standalone, outside of list context)
+                        if (node.type === "listitem") {
+                            const paragraphChildren = Array.isArray(node.children)
+                                ? node.children
+                                : [];
+                            // Render all children, supporting both text and link nodes
+                            const renderedContent = paragraphChildren.flatMap((para, pi) => {
+                                if (Array.isArray(para.children)) {
+                                    return para.children.map((textNode, ti) => renderTextOrLinkNode(textNode, `listitem-${i}-${pi}-${ti}`));
+                                }
+                                const paraText = para.text || "";
+                                return [
+                                    <span key={`listitem-${i}-para-${paraText.slice(0, 10) || "empty"}`}>
+													{paraText}
+												</span>,
+                                ];
+                            });
+                            // Get first text for key
+                            const firstTextNode = paragraphChildren[0];
+                            const keyText = Array.isArray(firstTextNode === null || firstTextNode === void 0 ? void 0 : firstTextNode.children) &&
+                                ((_k = firstTextNode.children[0]) === null || _k === void 0 ? void 0 : _k.text)
+                                ? firstTextNode.children[0].text.slice(0, 10)
+                                : "item";
+                            return (<span key={`listitem-${i}-${keyText}`}>
+											{renderedContent}
+										</span>);
                         }
                         if (node.type === "heading") {
                             // Use a switch statement to handle different heading levels
@@ -281,31 +352,31 @@ export function PayloadContentRenderer({ content }) {
                                 // Use switch for the fallback case too
                                 switch (tag) {
                                     case "h1":
-                                        return (<h1 key={`h1-${i}-${((_k = node.text) === null || _k === void 0 ? void 0 : _k.slice(0, 20)) || "heading"}`}>
+                                        return (<h1 key={`h1-${i}-${((_l = node.text) === null || _l === void 0 ? void 0 : _l.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h1>);
                                     case "h2":
-                                        return (<h2 key={`h2-${i}-${((_l = node.text) === null || _l === void 0 ? void 0 : _l.slice(0, 20)) || "heading"}`}>
+                                        return (<h2 key={`h2-${i}-${((_m = node.text) === null || _m === void 0 ? void 0 : _m.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h2>);
                                     case "h3":
-                                        return (<h3 key={`h3-${i}-${((_m = node.text) === null || _m === void 0 ? void 0 : _m.slice(0, 20)) || "heading"}`}>
+                                        return (<h3 key={`h3-${i}-${((_o = node.text) === null || _o === void 0 ? void 0 : _o.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h3>);
                                     case "h4":
-                                        return (<h4 key={`h4-${i}-${((_o = node.text) === null || _o === void 0 ? void 0 : _o.slice(0, 20)) || "heading"}`}>
+                                        return (<h4 key={`h4-${i}-${((_p = node.text) === null || _p === void 0 ? void 0 : _p.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h4>);
                                     case "h5":
-                                        return (<h5 key={`h5-${i}-${((_p = node.text) === null || _p === void 0 ? void 0 : _p.slice(0, 20)) || "heading"}`}>
+                                        return (<h5 key={`h5-${i}-${((_q = node.text) === null || _q === void 0 ? void 0 : _q.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h5>);
                                     case "h6":
-                                        return (<h6 key={`h6-${i}-${((_q = node.text) === null || _q === void 0 ? void 0 : _q.slice(0, 20)) || "heading"}`}>
+                                        return (<h6 key={`h6-${i}-${((_r = node.text) === null || _r === void 0 ? void 0 : _r.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h6>);
                                     default:
-                                        return (<h2 key={`h2-${i}-${((_r = node.text) === null || _r === void 0 ? void 0 : _r.slice(0, 20)) || "heading"}`}>
+                                        return (<h2 key={`h2-${i}-${((_s = node.text) === null || _s === void 0 ? void 0 : _s.slice(0, 20)) || "heading"}`}>
 														{node.text || ""}
 													</h2>);
                                 }
@@ -319,31 +390,31 @@ export function PayloadContentRenderer({ content }) {
                             });
                             switch (tag) {
                                 case "h1":
-                                    return (<h1 key={`h1-${i}-${((_s = node.text) === null || _s === void 0 ? void 0 : _s.slice(0, 20)) || "heading"}`}>
+                                    return (<h1 key={`h1-${i}-${((_t = node.text) === null || _t === void 0 ? void 0 : _t.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h1>);
                                 case "h2":
-                                    return (<h2 key={`h2-${i}-${((_t = node.text) === null || _t === void 0 ? void 0 : _t.slice(0, 20)) || "heading"}`}>
+                                    return (<h2 key={`h2-${i}-${((_u = node.text) === null || _u === void 0 ? void 0 : _u.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h2>);
                                 case "h3":
-                                    return (<h3 key={`h3-${i}-${((_u = node.text) === null || _u === void 0 ? void 0 : _u.slice(0, 20)) || "heading"}`}>
+                                    return (<h3 key={`h3-${i}-${((_v = node.text) === null || _v === void 0 ? void 0 : _v.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h3>);
                                 case "h4":
-                                    return (<h4 key={`h4-${i}-${((_v = node.text) === null || _v === void 0 ? void 0 : _v.slice(0, 20)) || "heading"}`}>
+                                    return (<h4 key={`h4-${i}-${((_w = node.text) === null || _w === void 0 ? void 0 : _w.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h4>);
                                 case "h5":
-                                    return (<h5 key={`h5-${i}-${((_w = node.text) === null || _w === void 0 ? void 0 : _w.slice(0, 20)) || "heading"}`}>
+                                    return (<h5 key={`h5-${i}-${((_x = node.text) === null || _x === void 0 ? void 0 : _x.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h5>);
                                 case "h6":
-                                    return (<h6 key={`h6-${i}-${((_x = node.text) === null || _x === void 0 ? void 0 : _x.slice(0, 20)) || "heading"}`}>
+                                    return (<h6 key={`h6-${i}-${((_y = node.text) === null || _y === void 0 ? void 0 : _y.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h6>);
                                 default:
-                                    return (<h2 key={`h2-${i}-${((_y = node.text) === null || _y === void 0 ? void 0 : _y.slice(0, 20)) || "heading"}`}>
+                                    return (<h2 key={`h2-${i}-${((_z = node.text) === null || _z === void 0 ? void 0 : _z.slice(0, 20)) || "heading"}`}>
 													{headingContent}
 												</h2>);
                             }

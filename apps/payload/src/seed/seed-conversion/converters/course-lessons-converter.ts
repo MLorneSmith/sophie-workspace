@@ -611,8 +611,63 @@ function extractCourseProjectSection(content: string): string | null {
 }
 
 /**
+ * Parses a line of text and extracts markdown links, returning an array of Lexical text/link nodes.
+ * Handles multiple links per line and preserves surrounding text.
+ *
+ * @param lineText - The text to parse for markdown links
+ * @returns Array of Lexical nodes (text and link nodes)
+ */
+function parseMarkdownLinks(
+	lineText: string,
+): Array<{ type: string; text?: string; url?: string; children?: Array<{ type: string; text: string }> }> {
+	const nodes: Array<{ type: string; text?: string; url?: string; children?: Array<{ type: string; text: string }> }> = [];
+	const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+
+	// biome-ignore lint/suspicious/noAssignInExpressions: Intentional assignment in loop condition for regex matching
+	while ((match = linkPattern.exec(lineText)) !== null) {
+		// Add text before the link (if any)
+		if (match.index > lastIndex) {
+			const textBefore = lineText.substring(lastIndex, match.index);
+			if (textBefore) {
+				nodes.push({ type: "text", text: textBefore });
+			}
+		}
+
+		// Add the link node
+		const linkText = match[1];
+		const linkUrl = match[2];
+		nodes.push({
+			type: "link",
+			url: linkUrl,
+			children: [{ type: "text", text: linkText }],
+		});
+
+		lastIndex = match.index + match[0].length;
+	}
+
+	// Add any remaining text after the last link
+	if (lastIndex < lineText.length) {
+		const textAfter = lineText.substring(lastIndex);
+		if (textAfter) {
+			nodes.push({ type: "text", text: textAfter });
+		}
+	}
+
+	// If no links were found, return a single text node
+	if (nodes.length === 0) {
+		nodes.push({ type: "text", text: lineText });
+	}
+
+	return nodes;
+}
+
+/**
  * Converts plain text (bullet points) to Lexical richText format.
  * Creates a proper Lexical structure with list items.
+ * Parses markdown links [text](url) into proper Lexical link nodes.
  * For "none" content, creates a bullet list with "None" text (capitalized).
  */
 function textToLexicalRichText(text: string): LexicalContent | null {
@@ -663,7 +718,7 @@ function textToLexicalRichText(text: string): LexicalContent | null {
 		return null;
 	}
 
-	// Create list items from the lines
+	// Create list items from the lines, parsing markdown links
 	const listItems = lines.map((line) => ({
 		type: "listitem",
 		version: 1,
@@ -672,7 +727,7 @@ function textToLexicalRichText(text: string): LexicalContent | null {
 			{
 				type: "paragraph",
 				version: 1,
-				children: [{ type: "text", text: line.trim() }],
+				children: parseMarkdownLinks(line.trim()),
 			},
 		],
 	}));
