@@ -100,7 +100,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 	const renderTextOrLinkNode = (
 		node: LexicalNode,
 		keyPrefix: string,
-	): React.ReactNode => {
+	): React.ReactElement => {
 		// Check both node.url and node.fields.url for link URL
 		// Payload CMS stores link URLs in node.fields.url
 		const url = node.url || (node.fields?.url as string);
@@ -492,7 +492,10 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 												const renderedContent = listItemChildren.flatMap(
 													(child: LexicalNode, ci: number) => {
 														// If child is directly a link or text node, render it
-														if (child.type === "link" || child.type === "text") {
+														if (
+															child.type === "link" ||
+															child.type === "text"
+														) {
 															return [
 																renderTextOrLinkNode(
 																	child,
@@ -554,10 +557,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 											// If child is directly a link or text node, render it
 											if (child.type === "link" || child.type === "text") {
 												return [
-													renderTextOrLinkNode(
-														child,
-														`listitem-${i}-${ci}`,
-													),
+													renderTextOrLinkNode(child, `listitem-${i}-${ci}`),
 												];
 											}
 											// If child is a paragraph or has children, process its children
