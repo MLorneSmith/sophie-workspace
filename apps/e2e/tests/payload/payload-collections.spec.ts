@@ -230,21 +230,21 @@ test.describe("Payload CMS - CRUD Operations", () => {
 		// 3. The page stays on the create form (doesn't redirect to edit page)
 		const validationIndicators = [
 			// Toast with error message
-			'text=/invalid|required|error/i',
+			"text=/invalid|required|error/i",
 			// Toast container visible
-			'.payload-toast-container',
+			".payload-toast-container",
 			'[class*="toast"]',
 			// Field-level errors
 			'[aria-invalid="true"]',
 			// Stay on create page (URL still has /create)
-			async () => page.url().includes('/create'),
+			async () => page.url().includes("/create"),
 			// Page title still shows untitled/new
-			'text=/untitled|create new/i',
+			"text=/untitled|create new/i",
 		];
 
 		let validationDetected = false;
 		for (const indicator of validationIndicators) {
-			if (typeof indicator === 'function') {
+			if (typeof indicator === "function") {
 				if (await indicator()) {
 					validationDetected = true;
 					break;
@@ -265,7 +265,7 @@ test.describe("Payload CMS - CRUD Operations", () => {
 
 		// If none of the validation indicators were found, but we're still on create page,
 		// that also indicates validation prevented the save
-		if (!validationDetected && page.url().includes('/create')) {
+		if (!validationDetected && page.url().includes("/create")) {
 			validationDetected = true;
 		}
 
@@ -361,20 +361,20 @@ test.describe("Payload CMS - Database & Error Handling", () => {
 		// Use multiple selectors that match actual Payload 3.x DOM structure
 		const recoverySelectors = [
 			// Navigation elements
-			'navigation',
-			'complementary',
+			"navigation",
+			"complementary",
 			'[role="navigation"]',
 			// Sidebar navigation links
 			'a[href*="/admin/collections/"]',
 			// Page heading
-			'h1',
+			"h1",
 			// Table or list content
-			'table',
-			'tbody',
+			"table",
+			"tbody",
 			// Create new button
 			'a:has-text("Create New")',
 			// Any visible banner
-			'banner',
+			"banner",
 		];
 
 		let hasContent = false;
