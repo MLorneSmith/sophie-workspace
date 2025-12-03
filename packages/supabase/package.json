@@ -27,8 +27,8 @@
 		"@tanstack/react-query": "5.90.11",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
-		"next": "16.0.6",
-		"react": "19.2.0",
+		"next": "16.0.7",
+		"react": "19.2.1",
 		"server-only": "^0.0.1",
 		"zod": "^4.1.13"
 	},
