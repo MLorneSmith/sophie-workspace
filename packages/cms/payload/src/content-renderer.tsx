@@ -121,9 +121,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 				</a>
 			);
 		}
-		return (
-			<span key={`${keyPrefix}-text`}>{node.text || ""}</span>
-		);
+		return <span key={`${keyPrefix}-text`}>{node.text || ""}</span>;
 	};
 
 	// For Lexical content, extract the text and render it
@@ -452,9 +450,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 											<p
 												key={`p-block-${i}-${node.text?.slice(0, 20) || "text"}`}
 											>
-												{node.children.map(
-													(textNode: LexicalNode, j: number) =>
-														renderTextOrLinkNode(textNode, `p-${i}-${j}`),
+												{node.children.map((textNode: LexicalNode, j: number) =>
+													renderTextOrLinkNode(textNode, `p-${i}-${j}`),
 												)}
 											</p>
 										);
@@ -482,36 +479,50 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 											}
 										>
 											{listChildren.map((listItem: LexicalNode, li: number) => {
-												// Extract content from listitem > paragraph > text/link structure
-												const paragraphChildren = Array.isArray(
+												// Extract content from listitem children
+												// Supports both: listitem > paragraph > text/link
+												// and: listitem > link/text (direct children)
+												const listItemChildren = Array.isArray(
 													listItem.children,
 												)
 													? listItem.children
 													: [];
 
 												// Render all children, supporting both text and link nodes
-												const renderedContent = paragraphChildren.flatMap(
-													(para: LexicalNode, pi: number) => {
-														if (Array.isArray(para.children)) {
-															return para.children.map(
+												const renderedContent = listItemChildren.flatMap(
+													(child: LexicalNode, ci: number) => {
+														// If child is directly a link or text node, render it
+														if (child.type === "link" || child.type === "text") {
+															return [
+																renderTextOrLinkNode(
+																	child,
+																	`li-${i}-${li}-${ci}`,
+																),
+															];
+														}
+														// If child is a paragraph or has children, process its children
+														if (Array.isArray(child.children)) {
+															return child.children.map(
 																(textNode: LexicalNode, ti: number) =>
 																	renderTextOrLinkNode(
 																		textNode,
-																		`li-${i}-${li}-${pi}-${ti}`,
+																		`li-${i}-${li}-${ci}-${ti}`,
 																	),
 															);
 														}
-														const paraText = para.text || "";
+														const childText = child.text || "";
 														return [
-															<span key={`li-${i}-${li}-para-${paraText.slice(0, 10) || "empty"}`}>
-																{paraText}
+															<span
+																key={`li-${i}-${li}-child-${childText.slice(0, 10) || "empty"}`}
+															>
+																{childText}
 															</span>,
 														];
 													},
 												);
 
 												// Get first text for key
-												const firstTextNode = paragraphChildren[0];
+												const firstTextNode = listItemChildren[0];
 												const keyText =
 													Array.isArray(firstTextNode?.children) &&
 													firstTextNode.children[0]?.text
@@ -530,33 +541,48 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 
 								// Handle listitem type (standalone, outside of list context)
 								if (node.type === "listitem") {
-									const paragraphChildren = Array.isArray(node.children)
+									// Extract content from listitem children
+									// Supports both: listitem > paragraph > text/link
+									// and: listitem > link/text (direct children)
+									const listItemChildren = Array.isArray(node.children)
 										? node.children
 										: [];
 
 									// Render all children, supporting both text and link nodes
-									const renderedContent = paragraphChildren.flatMap(
-										(para: LexicalNode, pi: number) => {
-											if (Array.isArray(para.children)) {
-												return para.children.map(
+									const renderedContent = listItemChildren.flatMap(
+										(child: LexicalNode, ci: number) => {
+											// If child is directly a link or text node, render it
+											if (child.type === "link" || child.type === "text") {
+												return [
+													renderTextOrLinkNode(
+														child,
+														`listitem-${i}-${ci}`,
+													),
+												];
+											}
+											// If child is a paragraph or has children, process its children
+											if (Array.isArray(child.children)) {
+												return child.children.map(
 													(textNode: LexicalNode, ti: number) =>
 														renderTextOrLinkNode(
 															textNode,
-															`listitem-${i}-${pi}-${ti}`,
+															`listitem-${i}-${ci}-${ti}`,
 														),
 												);
 											}
-											const paraText = para.text || "";
+											const childText = child.text || "";
 											return [
-												<span key={`listitem-${i}-para-${paraText.slice(0, 10) || "empty"}`}>
-													{paraText}
+												<span
+													key={`listitem-${i}-child-${childText.slice(0, 10) || "empty"}`}
+												>
+													{childText}
 												</span>,
 											];
 										},
 									);
 
 									// Get first text for key
-									const firstTextNode = paragraphChildren[0];
+									const firstTextNode = listItemChildren[0];
 									const keyText =
 										Array.isArray(firstTextNode?.children) &&
 										firstTextNode.children[0]?.text
