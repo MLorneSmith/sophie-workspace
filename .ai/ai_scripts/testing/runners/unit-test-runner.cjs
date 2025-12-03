@@ -295,8 +295,9 @@ class UnitTestRunner {
 			results.passed = Math.max(results.passed, passed);
 		}
 
-		// Parse failed tests
-		const failedMatch = cleanLine.match(/(\d+)\s+failed/);
+		// Parse failed tests - require "Tests" prefix to avoid false positives from retry log messages
+		// (e.g., "Attempt 4/5 failed, retrying..." should not match)
+		const failedMatch = cleanLine.match(/Tests\s+.*?(\d+)\s+failed/);
 		if (failedMatch) {
 			const failed = parseInt(failedMatch[1], 10);
 			results.failed = Math.max(results.failed, failed);
