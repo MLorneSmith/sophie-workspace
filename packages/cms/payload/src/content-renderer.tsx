@@ -78,6 +78,7 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 		type: string;
 		tag?: string;
 		text?: string;
+		url?: string;
 		children?: LexicalNode[];
 		fields?: Record<string, unknown>;
 		blockType?: string;
@@ -93,6 +94,33 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 		leftButtonUrl?: string;
 		rightButtonLabel?: string;
 		rightButtonUrl?: string;
+	};
+
+	// Helper function to render a text or link node
+	const renderTextOrLinkNode = (
+		node: LexicalNode,
+		keyPrefix: string,
+	): React.ReactNode => {
+		if (node.type === "link" && node.url) {
+			const linkText =
+				Array.isArray(node.children) && node.children.length > 0
+					? node.children.map((child) => child.text || "").join("")
+					: node.text || node.url;
+			return (
+				<a
+					key={`${keyPrefix}-link`}
+					href={node.url}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-blue-600 underline hover:text-blue-800"
+				>
+					{linkText}
+				</a>
+			);
+		}
+		return (
+			<span key={`${keyPrefix}-text`}>{node.text || ""}</span>
+		);
 	};
 
 	// For Lexical content, extract the text and render it
@@ -422,13 +450,8 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 												key={`p-block-${i}-${node.text?.slice(0, 20) || "text"}`}
 											>
 												{node.children.map(
-													(textNode: LexicalNode, j: number) => (
-														<span
-															key={`text-${i}-${j}-${textNode.text?.slice(0, 10) || "empty"}`}
-														>
-															{textNode.text || ""}
-														</span>
-													),
+													(textNode: LexicalNode, j: number) =>
+														renderTextOrLinkNode(textNode, `p-${i}-${j}`),
 												)}
 											</p>
 										);
@@ -456,31 +479,45 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 											}
 										>
 											{listChildren.map((listItem: LexicalNode, li: number) => {
-												// Extract text from listitem > paragraph > text structure
+												// Extract content from listitem > paragraph > text/link structure
 												const paragraphChildren = Array.isArray(
 													listItem.children,
 												)
 													? listItem.children
 													: [];
-												const textContent = paragraphChildren
-													.map((para: LexicalNode) => {
+
+												// Render all children, supporting both text and link nodes
+												const renderedContent = paragraphChildren.flatMap(
+													(para: LexicalNode, pi: number) => {
 														if (Array.isArray(para.children)) {
-															return para.children
-																.map(
-																	(textNode: LexicalNode) =>
-																		textNode.text || "",
-																)
-																.join("");
+															return para.children.map(
+																(textNode: LexicalNode, ti: number) =>
+																	renderTextOrLinkNode(
+																		textNode,
+																		`li-${i}-${li}-${pi}-${ti}`,
+																	),
+															);
 														}
-														return para.text || "";
-													})
-													.join("");
+														const paraText = para.text || "";
+														return [
+															<span key={`li-${i}-${li}-para-${paraText.slice(0, 10) || "empty"}`}>
+																{paraText}
+															</span>,
+														];
+													},
+												);
+
+												// Get first text for key
+												const firstTextNode = paragraphChildren[0];
+												const keyText =
+													Array.isArray(firstTextNode?.children) &&
+													firstTextNode.children[0]?.text
+														? firstTextNode.children[0].text.slice(0, 10)
+														: "item";
 
 												return (
-													<li
-														key={`li-${i}-${li}-${textContent.slice(0, 10) || "item"}`}
-													>
-														{textContent}
+													<li key={`li-${i}-${li}-${keyText}`}>
+														{renderedContent}
 													</li>
 												);
 											})}
@@ -493,22 +530,39 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									const paragraphChildren = Array.isArray(node.children)
 										? node.children
 										: [];
-									const textContent = paragraphChildren
-										.map((para: LexicalNode) => {
+
+									// Render all children, supporting both text and link nodes
+									const renderedContent = paragraphChildren.flatMap(
+										(para: LexicalNode, pi: number) => {
 											if (Array.isArray(para.children)) {
-												return para.children
-													.map((textNode: LexicalNode) => textNode.text || "")
-													.join("");
+												return para.children.map(
+													(textNode: LexicalNode, ti: number) =>
+														renderTextOrLinkNode(
+															textNode,
+															`listitem-${i}-${pi}-${ti}`,
+														),
+												);
 											}
-											return para.text || "";
-										})
-										.join("");
+											const paraText = para.text || "";
+											return [
+												<span key={`listitem-${i}-para-${paraText.slice(0, 10) || "empty"}`}>
+													{paraText}
+												</span>,
+											];
+										},
+									);
+
+									// Get first text for key
+									const firstTextNode = paragraphChildren[0];
+									const keyText =
+										Array.isArray(firstTextNode?.children) &&
+										firstTextNode.children[0]?.text
+											? firstTextNode.children[0].text.slice(0, 10)
+											: "item";
 
 									return (
-										<span
-											key={`listitem-${i}-${textContent.slice(0, 10) || "item"}`}
-										>
-											{textContent}
+										<span key={`listitem-${i}-${keyText}`}>
+											{renderedContent}
 										</span>
 									);
 								}
