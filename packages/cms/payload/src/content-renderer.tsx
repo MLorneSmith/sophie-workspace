@@ -441,6 +441,78 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 									);
 								}
 
+								// Handle list type nodes
+								if (node.type === "list") {
+									const ListTag = node.tag === "ol" ? "ol" : "ul";
+									const listChildren = Array.isArray(node.children)
+										? node.children
+										: [];
+
+									return (
+										<ListTag
+											key={`list-${i}-${node.tag || "ul"}`}
+											className={
+												node.tag === "ol" ? "list-decimal" : "list-disc"
+											}
+										>
+											{listChildren.map((listItem: LexicalNode, li: number) => {
+												// Extract text from listitem > paragraph > text structure
+												const paragraphChildren = Array.isArray(
+													listItem.children,
+												)
+													? listItem.children
+													: [];
+												const textContent = paragraphChildren
+													.map((para: LexicalNode) => {
+														if (Array.isArray(para.children)) {
+															return para.children
+																.map(
+																	(textNode: LexicalNode) =>
+																		textNode.text || "",
+																)
+																.join("");
+														}
+														return para.text || "";
+													})
+													.join("");
+
+												return (
+													<li
+														key={`li-${i}-${li}-${textContent.slice(0, 10) || "item"}`}
+													>
+														{textContent}
+													</li>
+												);
+											})}
+										</ListTag>
+									);
+								}
+
+								// Handle listitem type (standalone, outside of list context)
+								if (node.type === "listitem") {
+									const paragraphChildren = Array.isArray(node.children)
+										? node.children
+										: [];
+									const textContent = paragraphChildren
+										.map((para: LexicalNode) => {
+											if (Array.isArray(para.children)) {
+												return para.children
+													.map((textNode: LexicalNode) => textNode.text || "")
+													.join("");
+											}
+											return para.text || "";
+										})
+										.join("");
+
+									return (
+										<span
+											key={`listitem-${i}-${textContent.slice(0, 10) || "item"}`}
+										>
+											{textContent}
+										</span>
+									);
+								}
+
 								if (node.type === "heading") {
 									// Use a switch statement to handle different heading levels
 									const tag = node.tag || "h2"; // Default to h2 if tag is not specified

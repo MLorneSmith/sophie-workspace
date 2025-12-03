@@ -527,7 +527,7 @@ function parseTodoSection(content: string): boolean | null {
  *
  * @param content - The full markdown content
  * @param sectionHeader - The section header to find (e.g., "To-Do", "Watch")
- * @returns The bullet point content of the section, or null if not found or "None"
+ * @returns The bullet point content of the section, "none" if the section contains "None", or null if not found
  */
 function extractSection(content: string, sectionHeader: string): string | null {
 	// Build regex pattern to match section header and capture content until next section
@@ -545,9 +545,10 @@ function extractSection(content: string, sectionHeader: string): string | null {
 
 	const sectionContent = match[1].trim();
 
-	// Return null if section contains only "None" or is empty
+	// Return "none" if section contains only "None" or is empty
+	// This ensures all lesson fields always exist with consistent structure
 	if (!sectionContent || /^\s*-?\s*None\s*$/i.test(sectionContent)) {
-		return null;
+		return "none";
 	}
 
 	// Extract bullet points (lines starting with -)
@@ -557,8 +558,9 @@ function extractSection(content: string, sectionHeader: string): string | null {
 		.map((line) => line.trim().replace(/^-\s*/, "").trim())
 		.filter((line) => line && !/^None$/i.test(line));
 
+	// Return "none" if no bullet points found (ensures field always exists)
 	if (bulletPoints.length === 0) {
-		return null;
+		return "none";
 	}
 
 	return bulletPoints.join("\n");
@@ -573,12 +575,18 @@ function extractTodoSectionContent(content: string): string | null {
 		return null;
 	}
 
+	// If the section only has "none", return it as-is
+	if (todoContent === "none") {
+		return "none";
+	}
+
 	// Filter out "Complete the lesson quiz" as that's handled by todo_complete_quiz
 	const filteredLines = todoContent
 		.split("\n")
 		.filter((line) => !/complete\s+the\s+lesson\s+quiz/i.test(line));
 
-	return filteredLines.length > 0 ? filteredLines.join("\n") : null;
+	// Return "none" if all content was filtered out, ensuring field always exists
+	return filteredLines.length > 0 ? filteredLines.join("\n") : "none";
 }
 
 /**
@@ -605,10 +613,48 @@ function extractCourseProjectSection(content: string): string | null {
 /**
  * Converts plain text (bullet points) to Lexical richText format.
  * Creates a proper Lexical structure with list items.
+ * For "none" content, creates a bullet list with "None" text (capitalized).
  */
 function textToLexicalRichText(text: string): LexicalContent | null {
 	if (!text || !text.trim()) {
 		return null;
+	}
+
+	// Special case: if text is exactly "none", create a bullet list with "None" (capitalized)
+	// This ensures consistent rendering with actual content (both as bullet lists)
+	if (text.trim().toLowerCase() === "none") {
+		return {
+			root: {
+				type: "root",
+				format: "",
+				indent: 0,
+				version: 1,
+				direction: null,
+				children: [
+					{
+						type: "list",
+						version: 1,
+						listType: "bullet",
+						start: 1,
+						tag: "ul",
+						children: [
+							{
+								type: "listitem",
+								version: 1,
+								value: 1,
+								children: [
+									{
+										type: "paragraph",
+										version: 1,
+										children: [{ type: "text", text: "None" }],
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		};
 	}
 
 	const lines = text.split("\n").filter((line) => line.trim());
