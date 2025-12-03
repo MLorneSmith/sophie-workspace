@@ -1,7 +1,7 @@
 [
   {
-    "id": "6f366552-d3ca-4d0d-8298-0327ff0773b0",
-    "_ref": "6f366552-d3ca-4d0d-8298-0327ff0773b0",
+    "id": "a0d43ced-0c27-4bd4-898c-569fcd0e2efb",
+    "_ref": "a0d43ced-0c27-4bd4-898c-569fcd0e2efb",
     "questionSlug": "feedback-q1",
     "text": "Did 'Decks for Decision Makers' meet your expectations?",
     "type": "scale",
@@ -27,8 +27,8 @@
     "_status": "published"
   },
   {
-    "id": "a90dbefe-81c8-4d29-8b5a-41d6bff9d9e4",
-    "_ref": "a90dbefe-81c8-4d29-8b5a-41d6bff9d9e4",
+    "id": "aff7a0d4-ac8a-46fd-8f7e-68305b3db5c5",
+    "_ref": "aff7a0d4-ac8a-46fd-8f7e-68305b3db5c5",
     "questionSlug": "feedback-q2",
     "text": "How would you rate the quality of the training?",
     "type": "scale",
@@ -54,8 +54,8 @@
     "_status": "published"
   },
   {
-    "id": "3bc934f5-a1f3-4ebb-a7c0-58b591852df2",
-    "_ref": "3bc934f5-a1f3-4ebb-a7c0-58b591852df2",
+    "id": "4ea45044-6dfe-4477-a97b-0b2559934f58",
+    "_ref": "4ea45044-6dfe-4477-a97b-0b2559934f58",
     "questionSlug": "feedback-q3",
     "text": "How likely are you to recommend this course to a friend, partner, or colleague?",
     "type": "scale",
@@ -96,8 +96,8 @@
     "_status": "published"
   },
   {
-    "id": "335c5645-38a3-4772-8cf0-4e89ae57bb12",
-    "_ref": "335c5645-38a3-4772-8cf0-4e89ae57bb12",
+    "id": "ef80e40c-839b-4179-8c83-d1906b4be154",
+    "_ref": "ef80e40c-839b-4179-8c83-d1906b4be154",
     "questionSlug": "feedback-q4",
     "text": "Do you have any suggestions to improve this course?",
     "type": "textarea",
@@ -106,8 +106,8 @@
     "_status": "published"
   },
   {
-    "id": "12735ef2-cd95-4c85-b62b-9990673d7e9d",
-    "_ref": "12735ef2-cd95-4c85-b62b-9990673d7e9d",
+    "id": "d72efa20-4079-4936-acfe-d46a591e74d0",
+    "_ref": "d72efa20-4079-4936-acfe-d46a591e74d0",
     "questionSlug": "self-assessment-q1",
     "text": "While presenting, no one has trouble following my thought process",
     "type": "scale",
@@ -133,8 +133,8 @@
     "_status": "published"
   },
   {
-    "id": "91620b00-4497-4907-adae-10285789cf4e",
-    "_ref": "91620b00-4497-4907-adae-10285789cf4e",
+    "id": "24bb298c-057d-474b-8336-59ccc71f7177",
+    "_ref": "24bb298c-057d-474b-8336-59ccc71f7177",
     "questionSlug": "self-assessment-q2",
     "text": "I regularly use metaphors, analogies, and anecdote in my presentations",
     "type": "scale",
@@ -160,8 +160,8 @@
     "_status": "published"
   },
   {
-    "id": "55863fb7-e041-45ed-87ab-d3719f7793fa",
-    "_ref": "55863fb7-e041-45ed-87ab-d3719f7793fa",
+    "id": "f40a46ed-dfd8-43f9-8fb4-3dee04124aca",
+    "_ref": "f40a46ed-dfd8-43f9-8fb4-3dee04124aca",
     "questionSlug": "self-assessment-q3",
     "text": "I support my arguments with trustworthy evidence from authentic sources",
     "type": "scale",
@@ -187,8 +187,8 @@
     "_status": "published"
   },
   {
-    "id": "4261b16b-06c0-4b12-908b-d78dfd7705a8",
-    "_ref": "4261b16b-06c0-4b12-908b-d78dfd7705a8",
+    "id": "905eb1af-baf1-4354-8a8d-bae17c053931",
+    "_ref": "905eb1af-baf1-4354-8a8d-bae17c053931",
     "questionSlug": "self-assessment-q4",
     "text": "I am good at designing simple, clear slides that convey my point",
     "type": "scale",
@@ -214,8 +214,8 @@
     "_status": "published"
   },
   {
-    "id": "e2a18b7d-fb94-4e7c-8375-614a863426f3",
-    "_ref": "e2a18b7d-fb94-4e7c-8375-614a863426f3",
+    "id": "3a8ffd97-ff80-48db-9335-79d118cb82af",
+    "_ref": "3a8ffd97-ff80-48db-9335-79d118cb82af",
     "questionSlug": "self-assessment-q5",
     "text": "I always feel anxious and nervous before giving a presentation",
     "type": "scale",
@@ -241,8 +241,8 @@
     "_status": "published"
   },
   {
-    "id": "30156d32-4c93-4fbb-8e40-5318dbd89558",
-    "_ref": "30156d32-4c93-4fbb-8e40-5318dbd89558",
+    "id": "4c0cb134-a625-4899-b776-df2137f8cd5b",
+    "_ref": "4c0cb134-a625-4899-b776-df2137f8cd5b",
     "questionSlug": "self-assessment-q6",
     "text": "I always tailor my presentation strategy, content, and approach to different audiences and different levels of knowledge",
     "type": "scale",
@@ -268,8 +268,8 @@
     "_status": "published"
   },
   {
-    "id": "d18e816a-e0c9-4e97-964b-ae5e6f148be0",
-    "_ref": "d18e816a-e0c9-4e97-964b-ae5e6f148be0",
+    "id": "e150db54-6c38-4f80-8119-e22ae50c1e80",
+    "_ref": "e150db54-6c38-4f80-8119-e22ae50c1e80",
     "questionSlug": "self-assessment-q7",
     "text": "I tend to read the slides back to my audience, rather than adding additional verbal context or color",
     "type": "scale",
@@ -295,8 +295,8 @@
     "_status": "published"
   },
   {
-    "id": "871ae63d-442e-4ab1-8413-ba8e644d25fb",
-    "_ref": "871ae63d-442e-4ab1-8413-ba8e644d25fb",
+    "id": "ad28e0d2-5792-4b53-bdaf-1cf381846b49",
+    "_ref": "ad28e0d2-5792-4b53-bdaf-1cf381846b49",
     "questionSlug": "self-assessment-q8",
     "text": "I regularly present data to support my conclusions and effectively leverage all types of charts and tables",
     "type": "scale",
@@ -322,8 +322,8 @@
     "_status": "published"
   },
   {
-    "id": "97c58fbc-5f54-436d-b297-b0b4d3945c3d",
-    "_ref": "97c58fbc-5f54-436d-b297-b0b4d3945c3d",
+    "id": "6c18bca1-e799-4a3c-9c4a-246f7e333006",
+    "_ref": "6c18bca1-e799-4a3c-9c4a-246f7e333006",
     "questionSlug": "self-assessment-q9",
     "text": "The content I develop for my presentations has the appropriate level of detail for the audience and situation",
     "type": "scale",
@@ -349,8 +349,8 @@
     "_status": "published"
   },
   {
-    "id": "7c9cfa1c-70a3-43f6-9877-dc6e7957706f",
-    "_ref": "7c9cfa1c-70a3-43f6-9877-dc6e7957706f",
+    "id": "e59fe030-a4b0-4e27-b10a-33347d4197e3",
+    "_ref": "e59fe030-a4b0-4e27-b10a-33347d4197e3",
     "questionSlug": "self-assessment-q10",
     "text": "When presenting I have command over the room. I look and sound confident and assertive. I exude charisma.",
     "type": "scale",
@@ -376,8 +376,8 @@
     "_status": "published"
   },
   {
-    "id": "d41d1b58-5661-4b10-8288-db19e425ab3f",
-    "_ref": "d41d1b58-5661-4b10-8288-db19e425ab3f",
+    "id": "8df426df-329a-4359-a2f2-a98ceddc1a17",
+    "_ref": "8df426df-329a-4359-a2f2-a98ceddc1a17",
     "questionSlug": "self-assessment-q11",
     "text": "I create presentations designed to meet the needs of my audience",
     "type": "scale",
@@ -403,8 +403,8 @@
     "_status": "published"
   },
   {
-    "id": "32007323-53a6-4094-b4eb-a401fc9bb2f3",
-    "_ref": "32007323-53a6-4094-b4eb-a401fc9bb2f3",
+    "id": "638ee5fa-9130-459a-9448-d30093320c70",
+    "_ref": "638ee5fa-9130-459a-9448-d30093320c70",
     "questionSlug": "self-assessment-q12",
     "text": "I use storyboards to map out my presentations in advance",
     "type": "scale",
@@ -430,8 +430,8 @@
     "_status": "published"
   },
   {
-    "id": "867f1cee-6508-43f5-9e25-385d2b19f625",
-    "_ref": "867f1cee-6508-43f5-9e25-385d2b19f625",
+    "id": "8cb7f982-e87c-4a41-b30f-19a1aca3bb10",
+    "_ref": "8cb7f982-e87c-4a41-b30f-19a1aca3bb10",
     "questionSlug": "self-assessment-q13",
     "text": "I create my ideas first, before creating slides",
     "type": "scale",
@@ -457,8 +457,8 @@
     "_status": "published"
   },
   {
-    "id": "9a1f3ea0-9c84-4b4f-ab1a-80118dee4a76",
-    "_ref": "9a1f3ea0-9c84-4b4f-ab1a-80118dee4a76",
+    "id": "bb29bbf7-c79b-4543-89d2-3bad91bab4ae",
+    "_ref": "bb29bbf7-c79b-4543-89d2-3bad91bab4ae",
     "questionSlug": "self-assessment-q14",
     "text": "The visuals of my presentation match well with the information I am communicating",
     "type": "scale",
@@ -484,8 +484,8 @@
     "_status": "published"
   },
   {
-    "id": "3c98b38e-3452-4e08-bca6-e033c92fec87",
-    "_ref": "3c98b38e-3452-4e08-bca6-e033c92fec87",
+    "id": "3497bfad-a9eb-4b38-bcec-5ae8425cdeef",
+    "_ref": "3497bfad-a9eb-4b38-bcec-5ae8425cdeef",
     "questionSlug": "self-assessment-q15",
     "text": "I rehearse so there is a minimum use of notes and maximum attention paid to the audience",
     "type": "scale",
@@ -511,8 +511,8 @@
     "_status": "published"
   },
   {
-    "id": "dbd98ade-62ec-4080-b086-554acf127e10",
-    "_ref": "dbd98ade-62ec-4080-b086-554acf127e10",
+    "id": "95ac8930-e6ca-440d-8bd0-f9516326be17",
+    "_ref": "95ac8930-e6ca-440d-8bd0-f9516326be17",
     "questionSlug": "self-assessment-q16",
     "text": "I spend significant time and effort optimizing the structure of my presentation",
     "type": "scale",
@@ -538,8 +538,8 @@
     "_status": "published"
   },
   {
-    "id": "c6083d68-8394-46b5-9916-828167164595",
-    "_ref": "c6083d68-8394-46b5-9916-828167164595",
+    "id": "a1d1f522-0086-4c37-b891-ceabbb49fa47",
+    "_ref": "a1d1f522-0086-4c37-b891-ceabbb49fa47",
     "questionSlug": "self-assessment-q17",
     "text": "I am good at turning examples into colorful stories",
     "type": "scale",
@@ -565,8 +565,8 @@
     "_status": "published"
   },
   {
-    "id": "7a23ab81-e257-40d3-929a-ab00895a7eae",
-    "_ref": "7a23ab81-e257-40d3-929a-ab00895a7eae",
+    "id": "b94fd0df-6f88-415b-9dc4-715843e25e79",
+    "_ref": "b94fd0df-6f88-415b-9dc4-715843e25e79",
     "questionSlug": "self-assessment-q18",
     "text": "I have a good sense as to when it is better to use a graph over a table (and vice versa)",
     "type": "scale",
@@ -592,8 +592,8 @@
     "_status": "published"
   },
   {
-    "id": "d270a668-33d3-41a9-8b80-a02715a913b1",
-    "_ref": "d270a668-33d3-41a9-8b80-a02715a913b1",
+    "id": "b6147551-9099-40d8-bb52-41205c694cca",
+    "_ref": "b6147551-9099-40d8-bb52-41205c694cca",
     "questionSlug": "self-assessment-q19",
     "text": "I apply a basic understanding of the principles of visual perception to create more effective slides",
     "type": "scale",
@@ -619,8 +619,8 @@
     "_status": "published"
   },
   {
-    "id": "4e3e9a16-ff74-44b0-95fd-027f850b90ca",
-    "_ref": "4e3e9a16-ff74-44b0-95fd-027f850b90ca",
+    "id": "091995c1-3da0-4500-96d3-9d7d6533e181",
+    "_ref": "091995c1-3da0-4500-96d3-9d7d6533e181",
     "questionSlug": "self-assessment-q20",
     "text": "I develop a script in advance of my most important meetings",
     "type": "scale",
@@ -646,8 +646,8 @@
     "_status": "published"
   },
   {
-    "id": "35798cdd-7210-469a-8778-485686106d23",
-    "_ref": "35798cdd-7210-469a-8778-485686106d23",
+    "id": "874520b1-68e9-4636-b440-83d1acd7ad97",
+    "_ref": "874520b1-68e9-4636-b440-83d1acd7ad97",
     "questionSlug": "self-assessment-q21",
     "text": "I understand concepts like MECE, inductive versus deductive reasoning, and the principle of abstration",
     "type": "scale",
@@ -673,8 +673,8 @@
     "_status": "published"
   },
   {
-    "id": "44f15014-80c5-4710-a83a-ea98d252a714",
-    "_ref": "44f15014-80c5-4710-a83a-ea98d252a714",
+    "id": "ae1afcc1-3d28-464a-b8b1-1c65bf09e562",
+    "_ref": "ae1afcc1-3d28-464a-b8b1-1c65bf09e562",
     "questionSlug": "self-assessment-q22",
     "text": "I emulate scriptwriters and start with a bang to hook my audience from the very first moment",
     "type": "scale",
@@ -700,8 +700,8 @@
     "_status": "published"
   },
   {
-    "id": "03b035b8-1afc-485a-b793-d4f6e473944f",
-    "_ref": "03b035b8-1afc-485a-b793-d4f6e473944f",
+    "id": "96f1661d-3426-4788-9f8f-7a0573ddae65",
+    "_ref": "96f1661d-3426-4788-9f8f-7a0573ddae65",
     "questionSlug": "self-assessment-q23",
     "text": "I am familiar with tornado diagrams and waterfall & marimekko charts",
     "type": "scale",
@@ -727,8 +727,8 @@
     "_status": "published"
   },
   {
-    "id": "5c625fb7-e139-4f0c-a601-0ef175d9bf42",
-    "_ref": "5c625fb7-e139-4f0c-a601-0ef175d9bf42",
+    "id": "1211d186-83f7-42e0-935f-c43d02bc594c",
+    "_ref": "1211d186-83f7-42e0-935f-c43d02bc594c",
     "questionSlug": "self-assessment-q24",
     "text": "I create slides that leverage graphics and images (in addition to text) to communicate my ideas",
     "type": "scale",
@@ -754,8 +754,8 @@
     "_status": "published"
   },
   {
-    "id": "9236ff91-197d-41cd-bb42-d44e48571153",
-    "_ref": "9236ff91-197d-41cd-bb42-d44e48571153",
+    "id": "abb04170-b251-449f-ac72-eb9503fd7d41",
+    "_ref": "abb04170-b251-449f-ac72-eb9503fd7d41",
     "questionSlug": "self-assessment-q25",
     "text": "I usually go well over my allotted time to speak",
     "type": "scale",
@@ -781,8 +781,8 @@
     "_status": "published"
   },
   {
-    "id": "b360bcd8-7871-4c15-9b8d-d3994e86a535",
-    "_ref": "b360bcd8-7871-4c15-9b8d-d3994e86a535",
+    "id": "4f1a557a-cfc4-4f36-aa3d-1d935fb43593",
+    "_ref": "4f1a557a-cfc4-4f36-aa3d-1d935fb43593",
     "questionSlug": "three-quick-questions-q1",
     "text": "Fill in the blank: After taking this course, I will be able to ________________________.",
     "type": "textarea",
@@ -791,8 +791,8 @@
     "_status": "published"
   },
   {
-    "id": "2116c87f-a3dc-475e-b310-f9a84a535c67",
-    "_ref": "2116c87f-a3dc-475e-b310-f9a84a535c67",
+    "id": "9b42411f-f83e-4022-85aa-009193ef7b16",
+    "_ref": "9b42411f-f83e-4022-85aa-009193ef7b16",
     "questionSlug": "three-quick-questions-q2",
     "text": "How experienced do you feel in this course's subject matter?",
     "type": "scale",
@@ -818,8 +818,8 @@
     "_status": "published"
   },
   {
-    "id": "8941971e-2e1f-4dad-ba38-9bfd357b5a34",
-    "_ref": "8941971e-2e1f-4dad-ba38-9bfd357b5a34",
+    "id": "73b9cb6d-1dff-43b9-aebc-e425d1b8ff60",
+    "_ref": "73b9cb6d-1dff-43b9-aebc-e425d1b8ff60",
     "questionSlug": "three-quick-questions-q3",
     "text": "What's the biggest roadblock you have with this course's subject matter right now?",
     "type": "textarea",

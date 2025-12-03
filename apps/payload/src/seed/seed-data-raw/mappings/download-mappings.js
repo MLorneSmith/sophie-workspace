@@ -14,7 +14,10 @@
 export const DOWNLOAD_ID_MAP = {
   // Define IDs for course resources downloads that actually exist
   'slide-templates': '9e12f8b7-5c32-4a89-b8f0-6d7c9e20a2e1', // SlideHeroes Presentation Template.zip
-  'swipe-file': 'a1b2c3d4-5e6f-4f8b-9e0a-c1d2e3f4a5b6', // SlideHeroes Swipe File.zip
+  'swipe-file': 'a1b2c3d4-5e6f-4f8b-9e0a-c1d2e3f4a5b6', // SlideHeroes Golden Rules.pdf
+  'welcome': 'cc29d375-7f29-96e1-g466-387b326g0374', // 101 Welcome.pdf
+  'audience-map': 'dd3ae486-8g3a-a7f2-h577-498c437h1485', // Audience Map.pdf
+  'slideheroes-presentation-template': 'ee4bf597-9h4b-b8g3-i688-5a9d548i2596', // SlideHeroes Presentation Template.zip
 
   // Lesson PDFs - using consistent naming convention for keys
   'our-process-slides': 'd7e389a2-5f10-4b8c-9a21-3e78f9c61d28', // 201 Our Process.pdf
@@ -44,7 +47,7 @@ export const DOWNLOAD_ID_MAP = {
 export const LESSON_DOWNLOADS_MAPPING = {
   // Format: lessonSlug: [downloadIdKey1, downloadIdKey2]
   'our-process': ['our-process-slides'],
-  'the-who': ['the-who-slides'],
+  'the-who': ['the-who-slides', 'audience-map'],
   'the-why-introductions': ['introduction-slides'],
   'the-why-next-steps': ['next-steps-slides'],
   'idea-generation': ['idea-generation-slides'],
@@ -55,13 +58,13 @@ export const LESSON_DOWNLOADS_MAPPING = {
   'fundamental-design-overview': ['fundamental-elements-slides'],
   'fundamental-design-detail': ['fundamental-elements-slides'],
   'gestalt-principles': ['gestalt-principles-slides'],
-  'slide-composition': ['slide-composition-slides'],
+  'slide-composition': ['slide-composition-slides', 'slideheroes-presentation-template'],
   'tables-vs-graphs': ['tables-vs-graphs-slides'],
   'basic-graphs': ['standard-graphs-slides'],
   'fact-based-persuasion': ['fact-based-persuasion-slides'],
   'specialist-graphs': ['specialist-graphs-slides'],
   'preparation-practice': ['preparation-practice-slides'],
-  performance: ['performance-slides'],
+  performance: ['performance-slides', 'swipe-file'],
   // Add course-wide resources to specific lessons or all lessons as needed
   'tools-and-resources': ['slide-templates', 'swipe-file'],
 };
