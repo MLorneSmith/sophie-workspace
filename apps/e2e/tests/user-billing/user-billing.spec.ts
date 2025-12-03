@@ -35,7 +35,22 @@ test.describe("User Billing @billing @integration", () => {
 
 		await po.billing.returnToBilling();
 
-		await expect(po.billing.getStatus()).toContainText("Active");
+		// Wait for subscription status to update after webhook processing
+		// Stripe webhook events (checkout.session.completed, customer.subscription.created)
+		// are forwarded by stripe-webhook container and processed by the billing webhook handler.
+		// This can take 2-10 seconds depending on Stripe's event delivery timing.
+		await expect(async () => {
+			// Reload to get fresh subscription status from the database
+			await page.reload({ waitUntil: "domcontentloaded" });
+			await expect(po.billing.getStatus()).toContainText("Active", {
+				timeout: 5000,
+			});
+		}).toPass({
+			// Use exponential backoff intervals: 2s, 4s, 6s, 8s, 10s
+			intervals: [2000, 4000, 6000, 8000, 10000],
+			timeout: 45_000, // Total timeout: 45 seconds for webhook delivery + processing
+		});
+
 		await expect(po.billing.manageBillingButton()).toBeVisible();
 	});
 });

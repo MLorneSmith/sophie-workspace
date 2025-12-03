@@ -14,6 +14,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app:cached
+      # Shared volume for Stripe webhook secret (written by stripe-webhook service)
+      - stripe-webhook-data:/stripe:ro
     tmpfs:
       - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
       - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
@@ -154,6 +156,85 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - test-network
+
+  # Stripe CLI Webhook Forwarder
+  # Forwards Stripe webhook events to the test app container
+  # Required for E2E billing tests to receive checkout.session.completed events
+  #
+  # How it works:
+  # 1. Uses the stripe/stripe-cli Docker image
+  # 2. Authenticates with Stripe using STRIPE_SECRET_KEY
+  # 3. Forwards webhook events to the app container
+  # 4. The webhook signing secret is captured and written to /stripe/webhook-secret
+  # 5. The app-test container reads this secret to validate incoming webhooks
+  #
+  # To enable: Set ENABLE_STRIPE_WEBHOOK=true and provide STRIPE_SECRET_KEY
+  stripe-webhook:
+    image: stripe/stripe-cli:latest
+    container_name: slideheroes-stripe-webhook
+    restart: unless-stopped
+    profiles:
+      - billing  # Only start when billing tests are enabled
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_DEVICE_NAME=slideheroes-e2e-tests
+    # The entrypoint script captures the webhook secret and writes it to a shared file
+    # Then starts the webhook listener
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "🔗 Starting Stripe webhook forwarder..."
+        echo "📡 Forwarding events to http://slideheroes-app-test:3001/api/billing/webhook"
+
+        # Start stripe listen in background, capture output to extract webhook secret
+        stripe listen \
+          --api-key $${STRIPE_API_KEY} \
+          --device-name slideheroes-e2e-tests \
+          --forward-to http://slideheroes-app-test:3001/api/billing/webhook \
+          --skip-verify \
+          --log-level info 2>&1 | tee /stripe/webhook.log &
+
+        STRIPE_PID=$$!
+
+        # Wait for the webhook secret to appear in the log
+        echo "⏳ Waiting for webhook signing secret..."
+        for i in $$(seq 1 60); do
+          if grep -q "whsec_" /stripe/webhook.log 2>/dev/null; then
+            # Extract the webhook signing secret
+            SECRET=$$(grep -o 'whsec_[a-zA-Z0-9]*' /stripe/webhook.log | head -1)
+            if [ -n "$$SECRET" ]; then
+              echo "$$SECRET" > /stripe/webhook-secret
+              echo "✅ Webhook secret captured and saved to /stripe/webhook-secret"
+              break
+            fi
+          fi
+          sleep 1
+        done
+
+        if [ ! -f /stripe/webhook-secret ]; then
+          echo "❌ Failed to capture webhook secret after 60 seconds"
+          exit 1
+        fi
+
+        # Keep the stripe listen process running
+        wait $$STRIPE_PID
+    volumes:
+      - stripe-webhook-data:/stripe
+    depends_on:
+      app-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /stripe/webhook-secret && pgrep -f 'stripe listen' > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    networks:
+      - test-network
+
+volumes:
+  stripe-webhook-data:
+    name: slideheroes-stripe-webhook-data
 
 networks:
   test-network:
