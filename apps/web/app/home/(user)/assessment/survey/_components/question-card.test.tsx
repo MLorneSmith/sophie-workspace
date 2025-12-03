@@ -1,8 +1,8 @@
+import type { SurveyQuestion } from "@kit/cms-types";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { QuestionCard } from "./question-card";
-import type { SurveyQuestion } from "@kit/cms-types";
 
 // Mock the UI components
 vi.mock("@kit/ui/button", () => ({

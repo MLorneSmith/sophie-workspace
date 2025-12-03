@@ -13,7 +13,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@kit/ui/dialog";
-import Image from "next/image";
 import {
 	Form,
 	FormControl,
@@ -36,6 +35,7 @@ import { Trans } from "@kit/ui/trans";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
