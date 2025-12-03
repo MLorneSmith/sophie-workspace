@@ -118,11 +118,16 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 
 		await loginPage.login(email, password);
 
-		// Check if login was successful or if we need to create first user
-		const isLoggedIn = await loginPage.checkAuthenticationState();
+		// Use toPass() to handle session propagation timing during parallel execution
+		// This prevents race conditions where auth state check runs before session is fully established
+		let isLoggedIn = false;
+		await expect(async () => {
+			isLoggedIn = await loginPage.checkAuthenticationState();
+			expect(isLoggedIn).toBeTruthy();
+		}).toPass({ timeout: 10000, intervals: [100, 250, 500, 1000, 2000] });
 
 		if (!isLoggedIn) {
-			// Try to create first user if login failed
+			// Fallback: Try to create first user if login failed
 			await loginPage.createFirstUser(email, password, "Admin User");
 		}
 

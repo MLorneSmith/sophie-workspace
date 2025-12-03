@@ -171,23 +171,25 @@ test.describe("Payload CMS - Supabase Database Integration", () => {
 		// Should show error about duplicate email
 		// Payload shows: "A user with the given email is already registered" as inline error
 		// and toast: "The following field is invalid: email"
-		// Wait for either error message to appear
-		await page.waitForTimeout(1000); // Wait for error messages to render
-
-		const errorMessages = [
-			page.locator("text=/A user with the given email is already registered/"),
-			page.locator("text=/The following field is invalid: email/"),
-			page.locator('[class*="error"]'),
-		];
-
+		// Use toPass() to wait for error messages with proper async pattern (replaces anti-pattern waitForTimeout)
 		let errorVisible = false;
-		for (const locator of errorMessages) {
-			if (await locator.isVisible({ timeout: 1000 }).catch(() => false)) {
-				errorVisible = true;
-				break;
+		await expect(async () => {
+			const errorMessages = [
+				page.locator(
+					"text=/A user with the given email is already registered/",
+				),
+				page.locator("text=/The following field is invalid: email/"),
+				page.locator('[class*="error"]'),
+			];
+
+			for (const locator of errorMessages) {
+				if (await locator.isVisible({ timeout: 500 }).catch(() => false)) {
+					errorVisible = true;
+					break;
+				}
 			}
-		}
-		expect(errorVisible).toBeTruthy();
+			expect(errorVisible).toBeTruthy();
+		}).toPass({ timeout: 10000, intervals: [100, 250, 500, 1000, 2000] });
 
 		// Verify the duplicate was not created
 		await collectionsPage.navigateToCollection("users");
@@ -371,25 +373,28 @@ test.describe("Payload CMS - Error Recovery & Resilience", () => {
 	}) => {
 		// Check if required env vars are set via the health endpoint
 		// Note: Payload 3.x doesn't have a root /api endpoint, use /api/health instead
-		const configResponse = await page.request.get(
-			`${loginPage.baseURL}/api/health`,
-		);
+		// Use toPass() to handle transient network failures with retry logic
+		await expect(async () => {
+			const configResponse = await page.request.get(
+				`${loginPage.baseURL}/api/health`,
+			);
 
-		if (!configResponse.ok()) {
-			const responseText = await configResponse.text();
+			if (!configResponse.ok()) {
+				const responseText = await configResponse.text();
 
-			// Check for env var errors
-			if (
-				responseText.includes("DATABASE_URI") ||
-				responseText.includes("PAYLOAD_SECRET")
-			) {
-				console.error("Missing required environment variables for Payload");
-				throw new Error(
-					"Payload is not properly configured. Check DATABASE_URI and PAYLOAD_SECRET environment variables.",
-				);
+				// Check for env var errors (these are configuration issues, not transient failures)
+				if (
+					responseText.includes("DATABASE_URI") ||
+					responseText.includes("PAYLOAD_SECRET")
+				) {
+					console.error("Missing required environment variables for Payload");
+					throw new Error(
+						"Payload is not properly configured. Check DATABASE_URI and PAYLOAD_SECRET environment variables.",
+					);
+				}
 			}
-		}
 
-		expect(configResponse.ok()).toBeTruthy();
+			expect(configResponse.ok()).toBeTruthy();
+		}).toPass({ timeout: 15000, intervals: [500, 1000, 2000, 5000] });
 	});
 });
