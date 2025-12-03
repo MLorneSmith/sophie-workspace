@@ -143,6 +143,35 @@ async function globalSetup(config: FullConfig) {
 		);
 	}
 
+	// ⚠️ Validate Docker environment for E2E tests
+	// Auth cookies are generated based on Supabase URL hostname:
+	// - Docker test environment uses host.docker.internal → sb-host-auth-token
+	// - Dev server uses 127.0.0.1 → sb-127-auth-token
+	// Running against dev server (port 3000) will cause cookie mismatch failures
+	if (baseURL?.includes(":3000") && !process.env.SKIP_DOCKER_WARNING) {
+		// biome-ignore lint/suspicious/noConsole: Required for warning visibility
+		console.warn(`
+╔════════════════════════════════════════════════════════════════════════════╗
+║  ⚠️  WARNING: E2E Tests Running Against Dev Server (Port 3000)            ║
+╠════════════════════════════════════════════════════════════════════════════╣
+║                                                                            ║
+║  Authentication cookies may not match between E2E setup and dev server!   ║
+║                                                                            ║
+║  The E2E auth setup generates cookies named 'sb-host-auth-token' but      ║
+║  the dev server expects 'sb-127-auth-token'.                              ║
+║                                                                            ║
+║  RECOMMENDED: Use Docker test environment (port 3001) for E2E tests:      ║
+║                                                                            ║
+║    docker-compose -f docker-compose.test.yml up -d                        ║
+║    curl http://localhost:3001/api/health  # Wait for ready                ║
+║    pnpm --filter e2e test                                                 ║
+║                                                                            ║
+║  Set SKIP_DOCKER_WARNING=true to suppress this warning.                   ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+`);
+	}
+
 	// Initialize Supabase client
 	// CRITICAL: Cookie names are derived from the Supabase URL hostname
 	// e.g., http://127.0.0.1:54521 -> sb-127-auth-token

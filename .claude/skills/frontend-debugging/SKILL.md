@@ -411,8 +411,53 @@ This project has existing Playwright E2E infrastructure:
 - **Playwright docs**: `.ai/ai_docs/tool-docs/playwright.md`
 - **E2E tests**: `apps/e2e/tests/`
 
+### ⚠️ CRITICAL: E2E Auth State Requirements
+
+**E2E tests MUST run against the Docker test environment (port 3001), NOT the dev server (port 3000).**
+
+**Why**: Authentication cookies are named based on the Supabase URL hostname:
+- Docker test server uses `host.docker.internal` → cookies named `sb-host-auth-token`
+- Dev server uses `127.0.0.1` → cookies named `sb-127-auth-token`
+
+The E2E global setup generates auth states using `host.docker.internal` URL for cookie naming. If you run tests against the dev server (port 3000), the server expects `sb-127-auth-token` but receives `sb-host-auth-token` → **authentication fails silently**.
+
+**Symptoms of cookie mismatch**:
+- Tests pass global setup but fail authentication checks
+- Protected pages redirect to login despite valid auth states
+- "Session not found" or silent auth failures
+- Tests work in isolation but fail in suites
+
+**Pre-flight check before running E2E tests**:
+```bash
+# 1. Verify Docker test container is running
+curl -s http://localhost:3001/api/health && echo "✅ Docker test environment ready" || echo "❌ Docker not running"
+
+# 2. If not running, start Docker:
+docker-compose -f docker-compose.test.yml up -d
+sleep 10  # Wait for startup
+curl -s http://localhost:3001/api/health  # Verify ready
+```
+
+**Never run E2E tests against port 3000 (dev server)** unless you:
+1. Understand the cookie naming implications
+2. Have configured `E2E_SERVER_SUPABASE_URL` to match
+3. Set `SKIP_DOCKER_WARNING=true` to suppress the warning
+
 ### Using Project E2E Commands
 
+**Always start Docker first**:
+```bash
+# Start Docker test environment
+docker-compose -f docker-compose.test.yml up -d
+
+# Wait for health check
+curl http://localhost:3001/api/health  # Should return {"status":"ready"}
+
+# Run E2E tests (defaults to port 3001)
+pnpm --filter e2e test
+```
+
+**Available commands**:
 ```bash
 # Run E2E with trace capture (uses Docker container on port 3001)
 pnpm --filter web-e2e playwright test --trace on
@@ -426,7 +471,7 @@ pnpm --filter web-e2e playwright test --ui
 # Debug mode with Inspector
 pnpm --filter web-e2e playwright test --debug
 
-# Generate test by recording (use port 3001 for Docker, 3000 for host)
+# Generate test by recording (use port 3001 for Docker)
 npx playwright codegen http://localhost:3001
 ```
 
