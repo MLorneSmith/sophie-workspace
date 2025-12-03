@@ -22,7 +22,7 @@
 		"@kit/shared": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@types/react": "catalog:",
-		"react": "19.2.0",
+		"react": "19.2.1",
 		"zod": "^4.1.13"
 	},
 	"typesVersions": {

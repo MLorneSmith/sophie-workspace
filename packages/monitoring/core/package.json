@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@kit/tsconfig": "workspace:*",
 		"@types/react": "catalog:",
-		"react": "19.2.0"
+		"react": "19.2.1"
 	},
 	"typesVersions": {
 		"*": {
