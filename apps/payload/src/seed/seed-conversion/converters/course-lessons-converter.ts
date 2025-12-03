@@ -50,6 +50,8 @@ interface CourseLessonJson {
 	description: string;
 	content: LexicalContent;
 	bunny_video_id?: string; // Bunny video ID extracted from shortcode
+	youtube_video_id?: string; // YouTube video ID from frontmatter
+	video_source_type?: string; // Video platform: 'youtube' | 'vimeo' | 'bunny'
 	quiz_id?: string; // Reference to quiz (renamed from quiz)
 	survey_id?: string; // Reference to survey (renamed from surveys, now singular)
 	downloads?: string[]; // References to downloads
@@ -165,6 +167,12 @@ export async function convertCourseLessons(
 			// Add bunny video ID if present (extracted from shortcode)
 			if (bunnyVideoId) {
 				lesson.bunny_video_id = bunnyVideoId;
+			}
+
+			// Add YouTube/Vimeo video ID if present (from frontmatter)
+			if (lessonMeta.videoID) {
+				lesson.youtube_video_id = lessonMeta.videoID;
+				lesson.video_source_type = lessonMeta.videoPlatform || "youtube";
 			}
 
 			// Add quiz reference using lesson-quiz mapping
