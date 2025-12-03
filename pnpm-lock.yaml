@@ -52,6 +52,7 @@ overrides:
   '@lexical/text': 0.35.0
   '@lexical/utils': 0.35.0
   '@lexical/yjs': 0.35.0
+  nodemailer: ^7.0.11
 
 importers:
 
@@ -9097,10 +9098,6 @@ packages:
     resolution: {integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==}
     engines: {node: '>=6.0.0'}
 
-  nodemailer@7.0.9:
-    resolution: {integrity: sha512-9/Qm0qXIByEP8lEV2qOqcAW7bRpL8CR9jcTwk3NBnHJNmP9fIJ86g2fgmIXqHY+nj55ZEMwWqYAT2QTDpRUYiQ==}
-    engines: {node: '>=6.0.0'}
-
   noms@0.0.0:
     resolution: {integrity: sha512-lNDU9VJaOPxUmXcLb+HQFeUgQQPtMI24Gt6hgfuMHRJgMRHMF/qZ4HJD3GDru4sSw9IQl2jPjAYnQrdIeLbwow==}
 
@@ -14049,7 +14046,7 @@ snapshots:
 
   '@payloadcms/email-nodemailer@3.65.0(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))':
     dependencies:
-      nodemailer: 7.0.9
+      nodemailer: 7.0.11
       payload: 3.65.0(graphql@16.12.0)(typescript@5.9.3)
 
   '@payloadcms/graphql@3.65.0(graphql@16.12.0)(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))(typescript@5.9.3)':
@@ -14098,7 +14095,7 @@ snapshots:
       '@aws-sdk/lib-storage': 3.940.0(@aws-sdk/client-s3@3.940.0)
       '@payloadcms/email-nodemailer': 3.65.0(payload@3.65.0(graphql@16.12.0)(typescript@5.9.3))
       amazon-cognito-identity-js: 6.3.16
-      nodemailer: 7.0.9
+      nodemailer: 7.0.11
       payload: 3.65.0(graphql@16.12.0)(typescript@5.9.3)
     transitivePeerDependencies:
       - aws-crt
@@ -19719,8 +19716,6 @@ snapshots:
   node-releases@2.0.27: {}
 
   nodemailer@7.0.11: {}
-
-  nodemailer@7.0.9: {}
 
   noms@0.0.0:
     dependencies:
