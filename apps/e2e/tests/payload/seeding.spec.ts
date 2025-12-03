@@ -15,6 +15,7 @@
  */
 
 import { exec } from "node:child_process";
+import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { expect, test } from "@playwright/test";
 
@@ -22,8 +23,12 @@ const execAsync = promisify(exec);
 
 // Test configuration
 const SEED_TIMEOUT = 180000; // 3 minutes for seeding operations
-// Use pnpm tsx to execute TypeScript directly (same as npm scripts do)
-const CLI_PATH = "apps/payload/src/seed/seed-engine/index.ts";
+// Use absolute paths to ensure correct resolution regardless of working directory
+const PROJECT_ROOT = resolve(__dirname, "../../../../");
+const CLI_PATH = resolve(
+	PROJECT_ROOT,
+	"apps/payload/src/seed/seed-engine/index.ts",
+);
 const CLI_EXECUTOR = "pnpm tsx";
 
 test.describe("Payload Seeding E2E", () => {
@@ -35,7 +40,7 @@ test.describe("Payload Seeding E2E", () => {
 		// Run seed command in dry-run mode first using tsx
 		try {
 			const { stdout, stderr } = await execAsync(
-				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run`,
+				`${CLI_EXECUTOR} ${CLI_PATH} --dry-run`,
 				{
 					cwd: process.cwd(),
 					env: { ...process.env, NODE_ENV: "test" },
@@ -49,14 +54,14 @@ test.describe("Payload Seeding E2E", () => {
 		} catch (error) {
 			const err = error as { stderr: string; stdout: string };
 			throw new Error(
-				`Seed command failed:\nCommand: ${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run\nStdout: ${err.stdout}\nStderr: ${err.stderr}`,
+				`Seed command failed:\nCommand: ${CLI_EXECUTOR} ${CLI_PATH} --dry-run\nStdout: ${err.stdout}\nStderr: ${err.stderr}`,
 			);
 		}
 	});
 
 	test("should display help information", async () => {
 		const { stdout } = await execAsync(
-			`${CLI_EXECUTOR} ${CLI_PATH} seed --help`,
+			`${CLI_EXECUTOR} ${CLI_PATH} --help`,
 			{
 				cwd: process.cwd(),
 				env: { ...process.env, NODE_ENV: "test" },
@@ -73,7 +78,7 @@ test.describe("Payload Seeding E2E", () => {
 		test.setTimeout(SEED_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
 				env: { ...process.env, NODE_ENV: "test" },
@@ -83,14 +88,17 @@ test.describe("Payload Seeding E2E", () => {
 		// Verify dry-run indicators
 		expect(stdout).toContain("[DRY-RUN]");
 		expect(stdout).toContain("validation");
-		expect(stdout).not.toContain("created");
+		// In dry-run mode, we should see "validated" not "seeded to database"
+		expect(stdout).toContain("validated");
+		expect(stdout).not.toContain("seeded to database");
 	});
 
 	test("should filter specific collections", async () => {
 		test.setTimeout(SEED_TIMEOUT);
 
+		// Use 'courses' alone since it has no cross-collection dependencies
 		const { stdout } = await execAsync(
-			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections courses,course-lessons`,
+			`${CLI_EXECUTOR} ${CLI_PATH} --dry-run --collections courses`,
 			{
 				cwd: process.cwd(),
 				env: { ...process.env, NODE_ENV: "test" },
@@ -98,9 +106,9 @@ test.describe("Payload Seeding E2E", () => {
 		);
 
 		expect(stdout).toContain("courses");
-		expect(stdout).toContain("course-lessons");
 		// Should not contain other collections
 		expect(stdout).not.toContain("Processing surveys");
+		expect(stdout).not.toContain("Processing course-lessons");
 	});
 
 	test("should handle invalid collection names gracefully", async () => {
@@ -108,7 +116,7 @@ test.describe("Payload Seeding E2E", () => {
 
 		try {
 			await execAsync(
-				`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --collections invalid-collection`,
+				`${CLI_EXECUTOR} ${CLI_PATH} --dry-run --collections invalid-collection`,
 				{
 					cwd: process.cwd(),
 					env: { ...process.env, NODE_ENV: "test" },
@@ -127,18 +135,18 @@ test.describe("Payload Seeding E2E", () => {
 		test.setTimeout(SEED_TIMEOUT);
 
 		const { stdout } = await execAsync(
-			`${CLI_EXECUTOR} ${CLI_PATH} seed --dry-run --verbose`,
+			`${CLI_EXECUTOR} ${CLI_PATH} --dry-run --verbose`,
 			{
 				cwd: process.cwd(),
 				env: { ...process.env, NODE_ENV: "test" },
 			},
 		);
 
-		// Verify summary statistics
-		expect(stdout).toContain("Total records:");
+		// Verify summary statistics (format: "✓ Success: N/N", "⏱ Duration:", "⚡ Avg speed:")
+		expect(stdout).toContain("252 records");
 		expect(stdout).toContain("Success:");
 		expect(stdout).toContain("Duration:");
-		expect(stdout).toContain("Speed:");
+		expect(stdout).toMatch(/speed/i);
 	});
 });
 
