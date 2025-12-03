@@ -12,8 +12,8 @@ import { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
 import { InviteMembersSchema } from "../../schema/invite-members.schema";
 import { RenewInvitationSchema } from "../../schema/renew-invitation.schema";
 import { UpdateInvitationSchema } from "../../schema/update-invitation.schema";
-import { createAccountInvitationsDispatchService } from "../services/account-invitations-dispatcher.service";
 import { createAccountInvitationsService } from "../services/account-invitations.service";
+import { createAccountInvitationsDispatchService } from "../services/account-invitations-dispatcher.service";
 import { createAccountPerSeatBillingService } from "../services/account-per-seat-billing.service";
 
 /**
