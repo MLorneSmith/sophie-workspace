@@ -165,11 +165,27 @@ class DatabaseAdapterManager {
 	}
 
 	/**
-	 * Determine if SSL should be enabled based on environment variables
+	 * Check if the connection string points to Supabase Cloud
+	 * Supabase Cloud pooler requires SSL
 	 */
-	private shouldEnableSSL(): boolean {
+	private isSupabaseCloud(connectionString: string): boolean {
+		return (
+			connectionString.includes("supabase.com") ||
+			connectionString.includes("supabase.co")
+		);
+	}
+
+	/**
+	 * Determine if SSL should be enabled based on environment and connection
+	 */
+	private shouldEnableSSL(connectionString?: string): boolean {
 		// Check for explicit SSL configuration first
 		if (process.env.PAYLOAD_ENABLE_SSL === "true") {
+			return true;
+		}
+
+		// Supabase Cloud pooler always requires SSL
+		if (connectionString && this.isSupabaseCloud(connectionString)) {
 			return true;
 		}
 
@@ -183,16 +199,44 @@ class DatabaseAdapterManager {
 	}
 
 	/**
+	 * Clean SSL parameters from connection string to prevent conflicts
+	 * node-postgres gives precedence to connection string params over config object
+	 * See: https://node-postgres.com/features/ssl
+	 */
+	private cleanConnectionString(connectionString: string): string {
+		try {
+			const url = new URL(connectionString);
+			// Remove SSL-related parameters that would override our ssl config
+			url.searchParams.delete("sslmode");
+			url.searchParams.delete("sslcert");
+			url.searchParams.delete("sslkey");
+			url.searchParams.delete("sslrootcert");
+			return url.toString();
+		} catch {
+			// If URL parsing fails, return original string
+			this.log(
+				"Failed to parse connection string for SSL cleanup, using original",
+				"warn",
+			);
+			return connectionString;
+		}
+	}
+
+	/**
 	 * Build environment-specific adapter configuration
 	 */
 	private buildAdapterConfig(): PostgresAdapterArgs {
-		const connectionString = process.env.DATABASE_URI;
-		if (!connectionString) {
+		const rawConnectionString = process.env.DATABASE_URI;
+		if (!rawConnectionString) {
 			throw new Error("DATABASE_URI environment variable is required");
 		}
 
-		// Enhanced SSL configuration
-		const shouldUseSSL = this.shouldEnableSSL();
+		// Clean SSL parameters from connection string to prevent conflicts
+		// node-postgres connection string params override config object
+		const connectionString = this.cleanConnectionString(rawConnectionString);
+
+		// Enhanced SSL configuration - pass raw connection string for cloud detection
+		const shouldUseSSL = this.shouldEnableSSL(rawConnectionString);
 		const sslConfig = shouldUseSSL
 			? {
 					rejectUnauthorized: false,
@@ -219,11 +263,13 @@ class DatabaseAdapterManager {
 			sslReason:
 				process.env.PAYLOAD_ENABLE_SSL === "true"
 					? "PAYLOAD_ENABLE_SSL"
-					: process.env.PAYLOAD_MIGRATION_MODE === "production"
-						? "PAYLOAD_MIGRATION_MODE"
-						: this.environment === "production"
-							? "NODE_ENV=production"
-							: "none",
+					: this.isSupabaseCloud(rawConnectionString)
+						? "supabase-cloud-pooler"
+						: process.env.PAYLOAD_MIGRATION_MODE === "production"
+							? "PAYLOAD_MIGRATION_MODE"
+							: this.environment === "production"
+								? "NODE_ENV=production"
+								: "none",
 			poolMax: poolConfig.max,
 			poolMin: poolConfig.min,
 			schemaName: config.schemaName,
