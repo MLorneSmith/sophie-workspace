@@ -526,9 +526,9 @@ export function LessonViewClient({
 											<CheckSquare className="text-primary mt-0.5 mr-2 h-5 w-5" />
 											<div>
 												<span className="font-medium">To-Do: </span>
-												<span className="prose prose-sm dark:prose-invert inline">
+												<div className="prose prose-sm dark:prose-invert">
 													<PayloadContentRenderer content={lesson.todo} />
-												</span>
+												</div>
 											</div>
 										</div>
 									)}
@@ -539,11 +539,11 @@ export function LessonViewClient({
 											<Play className="text-primary mt-0.5 mr-2 h-5 w-5" />
 											<div>
 												<span className="font-medium">Watch: </span>
-												<span className="prose prose-sm dark:prose-invert inline">
+												<div className="prose prose-sm dark:prose-invert">
 													<PayloadContentRenderer
 														content={lesson.todo_watch_content}
 													/>
-												</span>
+												</div>
 											</div>
 										</div>
 									)}
@@ -554,11 +554,11 @@ export function LessonViewClient({
 											<BookOpen className="text-primary mt-0.5 mr-2 h-5 w-5" />
 											<div>
 												<span className="font-medium">Read: </span>
-												<span className="prose prose-sm dark:prose-invert inline">
+												<div className="prose prose-sm dark:prose-invert">
 													<PayloadContentRenderer
 														content={lesson.todo_read_content}
 													/>
-												</span>
+												</div>
 											</div>
 										</div>
 									)}
@@ -569,11 +569,11 @@ export function LessonViewClient({
 											<Briefcase className="text-primary mt-0.5 mr-2 h-5 w-5" />
 											<div>
 												<span className="font-medium">Course Project: </span>
-												<span className="prose prose-sm dark:prose-invert inline">
+												<div className="prose prose-sm dark:prose-invert">
 													<PayloadContentRenderer
 														content={lesson.todo_course_project}
 													/>
-												</span>
+												</div>
 											</div>
 										</div>
 									)}
