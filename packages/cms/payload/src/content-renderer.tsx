@@ -101,15 +101,18 @@ export function PayloadContentRenderer({ content }: { content: unknown }) {
 		node: LexicalNode,
 		keyPrefix: string,
 	): React.ReactNode => {
-		if (node.type === "link" && node.url) {
+		// Check both node.url and node.fields.url for link URL
+		// Payload CMS stores link URLs in node.fields.url
+		const url = node.url || (node.fields?.url as string);
+		if (node.type === "link" && url) {
 			const linkText =
 				Array.isArray(node.children) && node.children.length > 0
 					? node.children.map((child) => child.text || "").join("")
-					: node.text || node.url;
+					: node.text || url;
 			return (
 				<a
 					key={`${keyPrefix}-link`}
-					href={node.url}
+					href={url}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-blue-600 underline hover:text-blue-800"
