@@ -1,15 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { execSync } from "node:child_process";
 import { createConnection } from "node:net";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	inspectPortBindings,
-	verifyPortConnectivity,
-	diagnosePortBindingFailure,
-	getRecoveryInstructions,
-	formatDiagnosticMessage,
-	verifyPortBindings,
-	type PortBindingInfo,
 	type DiagnosticReport,
+	diagnosePortBindingFailure,
+	formatDiagnosticMessage,
+	getRecoveryInstructions,
+	inspectPortBindings,
+	type PortBindingInfo,
+	verifyPortBindings,
+	verifyPortConnectivity,
 } from "../port-binding-verifier";
 
 // Mock dependencies

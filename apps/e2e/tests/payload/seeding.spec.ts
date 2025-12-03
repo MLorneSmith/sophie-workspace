@@ -60,13 +60,10 @@ test.describe("Payload Seeding E2E", () => {
 	});
 
 	test("should display help information", async () => {
-		const { stdout } = await execAsync(
-			`${CLI_EXECUTOR} ${CLI_PATH} --help`,
-			{
-				cwd: process.cwd(),
-				env: { ...process.env, NODE_ENV: "test" },
-			},
-		);
+		const { stdout } = await execAsync(`${CLI_EXECUTOR} ${CLI_PATH} --help`, {
+			cwd: process.cwd(),
+			env: { ...process.env, NODE_ENV: "test" },
+		});
 
 		expect(stdout).toContain("Usage:");
 		expect(stdout).toContain("--dry-run");
