@@ -619,16 +619,42 @@ function extractCourseProjectSection(content: string): string | null {
 }
 
 /**
+ * Lexical link node structure for Payload CMS.
+ * Links require a `fields` object with url, linkType, and newTab properties.
+ */
+interface LexicalLinkNode {
+	type: "link";
+	version: number;
+	direction: "ltr" | "rtl";
+	format: string;
+	indent: number;
+	fields: {
+		url: string;
+		linkType: "custom" | "internal";
+		newTab: boolean;
+	};
+	children: Array<{ type: string; text: string }>;
+}
+
+interface LexicalTextNode {
+	type: "text";
+	text: string;
+}
+
+type LexicalInlineNode = LexicalLinkNode | LexicalTextNode;
+
+/**
  * Parses a line of text and extracts markdown links, returning an array of Lexical text/link nodes.
  * Handles multiple links per line and preserves surrounding text.
+ *
+ * IMPORTANT: Payload CMS Lexical requires link nodes to have a `fields` object structure,
+ * not a flat `url` property. This is different from vanilla Lexical.
  *
  * @param lineText - The text to parse for markdown links
  * @returns Array of Lexical nodes (text and link nodes)
  */
-function parseMarkdownLinks(
-	lineText: string,
-): Array<{ type: string; text?: string; url?: string; children?: Array<{ type: string; text: string }> }> {
-	const nodes: Array<{ type: string; text?: string; url?: string; children?: Array<{ type: string; text: string }> }> = [];
+function parseMarkdownLinks(lineText: string): LexicalInlineNode[] {
+	const nodes: LexicalInlineNode[] = [];
 	const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
 
 	let lastIndex = 0;
@@ -644,12 +670,20 @@ function parseMarkdownLinks(
 			}
 		}
 
-		// Add the link node
+		// Add the link node with Payload CMS required structure
 		const linkText = match[1];
 		const linkUrl = match[2];
 		nodes.push({
 			type: "link",
-			url: linkUrl,
+			version: 1,
+			direction: "ltr",
+			format: "",
+			indent: 0,
+			fields: {
+				url: linkUrl,
+				linkType: "custom",
+				newTab: false,
+			},
 			children: [{ type: "text", text: linkText }],
 		});
 
@@ -677,6 +711,9 @@ function parseMarkdownLinks(
  * Creates a proper Lexical structure with list items.
  * Parses markdown links [text](url) into proper Lexical link nodes.
  * For "none" content, creates a bullet list with "None" text (capitalized).
+ *
+ * IMPORTANT: ListItemNode children must be direct text/link nodes, NOT wrapped in paragraph.
+ * Payload CMS Lexical validation rejects paragraph nodes inside listitem.
  */
 function textToLexicalRichText(text: string): LexicalContent | null {
 	if (!text || !text.trim()) {
@@ -696,22 +733,12 @@ function textToLexicalRichText(text: string): LexicalContent | null {
 				children: [
 					{
 						type: "list",
-						version: 1,
 						listType: "bullet",
-						start: 1,
-						tag: "ul",
+						version: 1,
 						children: [
 							{
 								type: "listitem",
-								version: 1,
-								value: 1,
-								children: [
-									{
-										type: "paragraph",
-										version: 1,
-										children: [{ type: "text", text: "None" }],
-									},
-								],
+								children: [{ type: "text", text: "None" }],
 							},
 						],
 					},
@@ -727,27 +754,18 @@ function textToLexicalRichText(text: string): LexicalContent | null {
 	}
 
 	// Create list items from the lines, parsing markdown links
+	// ListItemNode children must be direct text/link nodes (no paragraph wrapper)
 	const listItems = lines.map((line) => ({
 		type: "listitem",
-		version: 1,
-		value: 1,
-		children: [
-			{
-				type: "paragraph",
-				version: 1,
-				children: parseMarkdownLinks(line.trim()),
-			},
-		],
+		children: parseMarkdownLinks(line.trim()),
 	}));
 
 	// Wrap in an unordered list
 	const children = [
 		{
 			type: "list",
-			version: 1,
 			listType: "bullet",
-			start: 1,
-			tag: "ul",
+			version: 1,
 			children: listItems,
 		},
 	];

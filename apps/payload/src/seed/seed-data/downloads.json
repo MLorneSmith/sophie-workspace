@@ -218,5 +218,38 @@
     "createdAt": "2025-10-09T16:15:28.933Z",
     "updatedAt": "2025-10-09T16:15:28.933Z",
     "filename": "702 Performance.pdf"
+  },
+  {
+    "_ref": "welcome",
+    "slug": "welcome",
+    "title": "Welcome",
+    "description": "Course welcome document",
+    "url": "https://pub-40e84da466344af19a7192a514a7400e.r2.dev/101%20Welcome.pdf",
+    "published": true,
+    "createdAt": "2025-12-03T17:06:18.342Z",
+    "updatedAt": "2025-12-03T17:06:18.342Z",
+    "filename": "101 Welcome.pdf"
+  },
+  {
+    "_ref": "audience-map",
+    "slug": "audience-map",
+    "title": "Audience Map",
+    "description": "Template for mapping your presentation audience",
+    "url": "https://pub-40e84da466344af19a7192a514a7400e.r2.dev/Audience%20Map.pdf",
+    "published": true,
+    "createdAt": "2025-12-03T17:06:18.342Z",
+    "updatedAt": "2025-12-03T17:06:18.342Z",
+    "filename": "Audience Map.pdf"
+  },
+  {
+    "_ref": "slideheroes-presentation-template",
+    "slug": "slideheroes-presentation-template",
+    "title": "SlideHeroes Presentation Template",
+    "description": "PowerPoint presentation template for SlideHeroes course",
+    "url": "https://pub-40e84da466344af19a7192a514a7400e.r2.dev/SlideHeroes%20Presentation%20Template.zip",
+    "published": true,
+    "createdAt": "2025-12-03T17:06:18.342Z",
+    "updatedAt": "2025-12-03T17:06:18.342Z",
+    "filename": "SlideHeroes Presentation Template.zip"
   }
 ]
