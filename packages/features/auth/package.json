@@ -6,7 +6,10 @@
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
 		"lint": "biome lint .",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"test:coverage": "vitest run --coverage"
 	},
 	"exports": {
 		"./sign-in": "./src/sign-in.ts",
@@ -35,6 +38,8 @@
 		"react-hook-form": "^7.67.0",
 		"react-i18next": "^16.3.5",
 		"sonner": "^2.0.7",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^4.0.14",
 		"zod": "^4.1.13"
 	},
 	"typesVersions": {

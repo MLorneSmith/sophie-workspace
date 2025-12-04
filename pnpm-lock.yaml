@@ -1090,6 +1090,12 @@ importers:
       react-i18next:
         specifier: ^16.3.5
         version: 16.3.5(i18next@25.7.0(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      vitest:
+        specifier: ^4.0.14
+        version: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       zod:
         specifier: ^4.1.13
         version: 4.1.13
@@ -1222,6 +1228,12 @@ importers:
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      vitest:
+        specifier: ^4.0.14
+        version: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       zod:
         specifier: ^4.1.13
         version: 4.1.13
@@ -1350,6 +1362,12 @@ importers:
       react-i18next:
         specifier: ^16.3.5
         version: 16.3.5(i18next@25.7.0(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      vitest:
+        specifier: ^4.0.14
+        version: 4.0.14(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.2.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
       zod:
         specifier: ^4.1.13
         version: 4.1.13
