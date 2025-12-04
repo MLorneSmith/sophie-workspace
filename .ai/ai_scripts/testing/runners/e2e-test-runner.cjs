@@ -147,6 +147,7 @@ class E2ETestRunner {
 	 */
 	async startBillingProfile() {
 		const COMPOSE_FILE = "docker-compose.test.yml";
+		const ENV_FILE = "apps/web/.env.test";
 
 		log("🔧 Billing tests requested (shards: 9, 10)");
 		log("🔧 Starting docker-compose with profiles: billing");
@@ -159,10 +160,18 @@ class E2ETestRunner {
 				return { success: false, message: "docker-compose.test.yml not found" };
 			}
 
+			// Check if env file exists (needed for STRIPE_SECRET_KEY)
+			const envExists = require("node:fs").existsSync(ENV_FILE);
+			if (!envExists) {
+				logError(`${ENV_FILE} not found - required for STRIPE_SECRET_KEY`);
+				return { success: false, message: "apps/web/.env.test not found - required for Stripe billing tests" };
+			}
+
 			// Start docker-compose with billing profile
 			// This will start the stripe-webhook service alongside app-test and payload-test
+			// The --env-file flag loads STRIPE_SECRET_KEY which is mapped to STRIPE_API_KEY in the container
 			const { stdout, stderr } = await execAsync(
-				`docker-compose -f ${COMPOSE_FILE} --profile billing up -d`,
+				`docker-compose -f ${COMPOSE_FILE} --env-file ${ENV_FILE} --profile billing up -d`,
 				{ timeout: 120000 }, // 2 minute timeout for container startup
 			);
 

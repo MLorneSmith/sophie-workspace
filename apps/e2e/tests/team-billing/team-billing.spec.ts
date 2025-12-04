@@ -6,7 +6,11 @@ test.describe("Team Billing @billing @integration", () => {
 	test("a team can subscribe to a plan", async ({ page }) => {
 		const po = new TeamBillingPageObject(page);
 
-		// User is already logged in from billing.setup.ts, create team and go to billing
+		// Navigate to home page first - authentication is already set via global setup storageState
+		// but we need to be on a page that has the team selector UI
+		await page.goto("/home", { waitUntil: "domcontentloaded", timeout: 15000 });
+
+		// Now create team and navigate to billing
 		await po.teamAccounts.createTeam();
 		await po.teamAccounts.goToBilling();
 
