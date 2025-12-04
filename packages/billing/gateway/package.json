@@ -23,7 +23,7 @@
 		"@kit/supabase": "workspace:*",
 		"@kit/tsconfig": "workspace:*",
 		"@kit/ui": "workspace:*",
-		"@supabase/supabase-js": "2.86.0",
+		"@supabase/supabase-js": "2.86.2",
 		"@types/react": "catalog:",
 		"date-fns": "^4.1.0",
 		"lucide-react": "^0.555.0",
