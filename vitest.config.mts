@@ -17,6 +17,8 @@ export default defineConfig({
 			"packages/monitoring/newrelic",
 			"packages/shared",
 			"packages/features/admin",
+			"packages/next",
+			"packages/supabase",
 		],
 
 		// Global configuration options

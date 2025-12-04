@@ -6,7 +6,10 @@
 		"clean": "git clean -xdf .turbo node_modules",
 		"format": "biome format src",
 		"lint": "biome lint .",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
 	},
 	"exports": {
 		"./server-client": "./src/clients/server-client.ts",
@@ -30,6 +33,8 @@
 		"next": "16.0.7",
 		"react": "19.2.1",
 		"server-only": "^0.0.1",
+		"vite-tsconfig-paths": "^5.1.4",
+		"vitest": "^4.0.14",
 		"zod": "^4.1.13"
 	},
 	"typesVersions": {
