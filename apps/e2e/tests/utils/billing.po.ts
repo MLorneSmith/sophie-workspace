@@ -79,7 +79,9 @@ export class BillingPageObject {
 		// Wait for either the subscription card OR plan selection cards to be visible
 		// This handles both states: user with subscription and user without
 		const subscriptionIndicator = this.page.locator('h3:has-text("Your Plan")');
-		const planSelectionIndicator = this.page.locator("[data-test-plan]").first();
+		const planSelectionIndicator = this.page
+			.locator("[data-test-plan]")
+			.first();
 
 		// Wait for either to appear with a generous timeout for SSR hydration
 		await expect(subscriptionIndicator.or(planSelectionIndicator)).toBeVisible({
@@ -105,7 +107,9 @@ export class BillingPageObject {
 
 		// Also verify the subscription shows as "Active" (or other valid status)
 		const statusBadge = this.getStatus();
-		const hasActiveStatus = await statusBadge.isVisible({ timeout: 2000 }).catch(() => false);
+		const hasActiveStatus = await statusBadge
+			.isVisible({ timeout: 2000 })
+			.catch(() => false);
 
 		return hasActiveStatus;
 	}

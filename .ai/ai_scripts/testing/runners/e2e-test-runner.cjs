@@ -164,7 +164,11 @@ class E2ETestRunner {
 			const envExists = require("node:fs").existsSync(ENV_FILE);
 			if (!envExists) {
 				logError(`${ENV_FILE} not found - required for STRIPE_SECRET_KEY`);
-				return { success: false, message: "apps/web/.env.test not found - required for Stripe billing tests" };
+				return {
+					success: false,
+					message:
+						"apps/web/.env.test not found - required for Stripe billing tests",
+				};
 			}
 
 			// Start docker-compose with billing profile
