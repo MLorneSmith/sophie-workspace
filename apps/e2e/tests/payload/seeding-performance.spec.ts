@@ -172,7 +172,7 @@ test.describe("Seeding Performance Benchmarks", () => {
 	test("should handle large collections efficiently", async () => {
 		test.setTimeout(PERF_TIMEOUT);
 
-		// Run all collections to test with full dataset (252 records)
+		// Run all collections to test with full dataset (255 records)
 		const startTime = Date.now();
 
 		const { stdout } = await execAsync(
@@ -190,7 +190,7 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		// Verify records processed
 		expect(stdout).toContain("course-lessons");
-		expect(stdout).toContain("252 records");
+		expect(stdout).toContain("255 records");
 	});
 
 	test("should process all collections within benchmark", async () => {
