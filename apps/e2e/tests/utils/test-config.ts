@@ -21,7 +21,6 @@ export interface TestEnvironment {
 }
 
 export class TestConfigManager {
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used in getInstance() singleton pattern
 	private static instance: TestConfigManager;
 	private config: TestEnvironment;
 
@@ -39,7 +38,6 @@ export class TestConfigManager {
 	/**
 	 * Detect the current test environment based on environment variables
 	 */
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Called in constructor during initialization
 	private detectEnvironment(): TestEnvironment {
 		const isCI = process.env.CI === "true" || !!process.env.GITHUB_ACTIONS;
 		const envName =
