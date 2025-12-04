@@ -126,6 +126,176 @@ class E2ETestRunner {
 	}
 
 	/**
+	 * Check if billing tests are requested (shards 9, 10)
+	 * @returns {boolean} True if billing shards will run
+	 */
+	isBillingTestsRequested() {
+		const billingShards = [9, 10];
+
+		// If no filter is set, all shards will run (including billing)
+		if (!this.shardFilter || this.shardFilter.length === 0) {
+			return true;
+		}
+
+		// Check if any billing shard is in the filter
+		return this.shardFilter.some((shard) => billingShards.includes(shard));
+	}
+
+	/**
+	 * Start docker-compose with billing profile enabled
+	 * @returns {Promise<{success: boolean, message: string}>}
+	 */
+	async startBillingProfile() {
+		const COMPOSE_FILE = "docker-compose.test.yml";
+
+		log("🔧 Billing tests requested (shards: 9, 10)");
+		log("🔧 Starting docker-compose with profiles: billing");
+
+		try {
+			// Check if docker-compose file exists
+			const composeExists = require("node:fs").existsSync(COMPOSE_FILE);
+			if (!composeExists) {
+				logError(`${COMPOSE_FILE} not found`);
+				return { success: false, message: "docker-compose.test.yml not found" };
+			}
+
+			// Start docker-compose with billing profile
+			// This will start the stripe-webhook service alongside app-test and payload-test
+			const { stdout, stderr } = await execAsync(
+				`docker-compose -f ${COMPOSE_FILE} --profile billing up -d`,
+				{ timeout: 120000 }, // 2 minute timeout for container startup
+			);
+
+			if (stdout) {
+				log(`📦 Docker output: ${stdout.trim().split("\n")[0]}`);
+			}
+
+			if (
+				stderr &&
+				!stderr.includes("Creating") &&
+				!stderr.includes("Starting")
+			) {
+				// Only log actual errors, not status messages
+				log(`📦 Docker stderr: ${stderr.trim().split("\n")[0]}`);
+			}
+
+			log("✅ Docker containers started with billing profile");
+			return { success: true, message: "Billing profile containers started" };
+		} catch (error) {
+			logError(
+				`Failed to start docker-compose with billing profile: ${error.message}`,
+			);
+			return { success: false, message: error.message };
+		}
+	}
+
+	/**
+	 * Wait for stripe-webhook container to be healthy
+	 * The container needs to:
+	 * 1. Start the stripe listen process
+	 * 2. Capture the webhook signing secret
+	 * 3. Write it to /stripe/webhook-secret
+	 * @returns {Promise<{healthy: boolean, message: string}>}
+	 */
+	async waitForStripeWebhookHealth() {
+		const containerName = "slideheroes-stripe-webhook";
+		const maxWaitTime = 120000; // 120 seconds (2 minutes)
+		const checkInterval = 5000; // Check every 5 seconds
+		const startTime = Date.now();
+
+		log("⏳ Waiting for stripe-webhook to become healthy...");
+
+		while (Date.now() - startTime < maxWaitTime) {
+			try {
+				// Check if container exists and is running
+				const { stdout: containerStatus } = await execAsync(
+					`docker inspect --format='{{.State.Status}}' ${containerName} 2>/dev/null || echo "not_found"`,
+				);
+
+				const status = containerStatus.trim();
+
+				if (status === "not_found") {
+					log("  ⏳ Waiting for stripe-webhook container to be created...");
+				} else if (status === "running") {
+					// Check health status
+					const { stdout: healthOutput } = await execAsync(
+						`docker inspect --format='{{.State.Health.Status}}' ${containerName} 2>/dev/null || echo "unknown"`,
+					);
+
+					const healthStatus = healthOutput.trim();
+
+					if (healthStatus === "healthy") {
+						// Verify webhook secret file exists
+						const { stdout: secretCheck } = await execAsync(
+							`docker exec ${containerName} test -f /stripe/webhook-secret && echo "exists" || echo "missing"`,
+						);
+
+						if (secretCheck.trim() === "exists") {
+							log("✅ stripe-webhook container is healthy");
+							log("✅ Webhook signing secret captured and available");
+							return {
+								healthy: true,
+								message: "Stripe webhook forwarder ready",
+							};
+						}
+						log("  ⏳ Webhook secret not yet captured...");
+					} else {
+						log(`  ⏳ stripe-webhook health: ${healthStatus}`);
+					}
+				} else {
+					log(`  ⏳ stripe-webhook status: ${status}`);
+				}
+			} catch (error) {
+				log(`  ⏳ Checking stripe-webhook: ${error.message}`);
+			}
+
+			// Wait before next check
+			await new Promise((resolve) => setTimeout(resolve, checkInterval));
+		}
+
+		// Timeout reached
+		logError(
+			`❌ stripe-webhook container did not become healthy within ${maxWaitTime / 1000}s`,
+		);
+
+		// Get container logs for debugging
+		try {
+			const { stdout: logs } = await execAsync(
+				`docker logs ${containerName} --tail 20 2>&1`,
+			);
+			logError(`Last 20 lines of stripe-webhook logs:\n${logs}`);
+		} catch {
+			logError("Could not retrieve container logs");
+		}
+
+		return {
+			healthy: false,
+			message: "Stripe webhook container health check timeout",
+		};
+	}
+
+	/**
+	 * Setup billing infrastructure (docker-compose with billing profile)
+	 * @returns {Promise<{success: boolean, message: string}>}
+	 */
+	async setupBillingInfrastructure() {
+		// Step 1: Start docker-compose with billing profile
+		const startResult = await this.startBillingProfile();
+		if (!startResult.success) {
+			return startResult;
+		}
+
+		// Step 2: Wait for stripe-webhook container to be healthy
+		const healthResult = await this.waitForStripeWebhookHealth();
+		if (!healthResult.healthy) {
+			return { success: false, message: healthResult.message };
+		}
+
+		log("🚀 Ready to start billing tests");
+		return { success: true, message: "Billing infrastructure ready" };
+	}
+
+	/**
 	 * Dynamically discover all E2E test files
 	 */
 	discoverTestFiles() {
