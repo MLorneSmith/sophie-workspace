@@ -1180,16 +1180,6 @@ class E2ETestRunner {
 									} else {
 										proc.kill("SIGKILL");
 									}
-									// Also kill related processes immediately
-									const { execSync } = require("node:child_process");
-									execSync(`pkill -9 -f "chromium" || true`, {
-										stdio: "ignore",
-										timeout: 1000,
-									});
-									execSync(`pkill -9 -f "playwright" || true`, {
-										stdio: "ignore",
-										timeout: 1000,
-									});
 								} catch (error) {
 									log(
 										`${shardPrefix}⚠️ Failed to kill timeout process: ${error.message}`,
