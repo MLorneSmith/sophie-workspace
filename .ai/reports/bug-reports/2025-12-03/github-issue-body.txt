@@ -1,0 +1,45 @@
+## Summary
+
+Playwright E2E tests fail to authenticate because the auth state cookies are generated with a cookie name (`sb-host-auth-token`) that doesn't match what the web server expects when running in development mode (`sb-127-auth-token`). This is caused by a mismatch between the Supabase URL used during auth state generation and the URL the development server uses.
+
+## Root Cause
+
+Supabase SSR derives authentication cookie names from the Supabase URL hostname:
+- `http://127.0.0.1:54521` → cookie name `sb-127-auth-token`
+- `http://host.docker.internal:54521` → cookie name `sb-host-auth-token`
+
+The `global-setup.ts` defaults to `host.docker.internal` for cookie naming:
+```typescript
+const supabaseCookieUrl =
+  process.env.E2E_SERVER_SUPABASE_URL || "http://host.docker.internal:54521";
+```
+
+When running `pnpm dev`, the web app uses `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54521`, so the middleware expects cookies named `sb-127-auth-token`. But auth states contain `sb-host-auth-token` cookies.
+
+## Reproduction Steps
+
+1. Run `pnpm dev` to start the development server on port 3000
+2. Run Playwright tests (`pnpm --filter e2e test`)
+3. Tests navigate to protected pages (e.g., `/home/*`)
+4. Server expects `sb-127-auth-token` but finds `sb-host-auth-token`
+5. Session not recognized → user redirected to login page
+
+## Affected Files
+
+- `apps/e2e/global-setup.ts` (lines 159-165) - Cookie URL configuration
+- `apps/e2e/playwright.config.ts` (lines 75-79) - Base URL configuration
+- E2E environment configuration
+
+## Fix Options
+
+**Option 1: Use Docker for E2E Tests (Recommended)**
+- Run Playwright tests against Docker test environment (`docker-compose.test.yml`)
+- Docker uses `host.docker.internal`, matching the auth state cookies
+
+**Option 2: Make Cookie URL Configurable**
+- Set `E2E_SERVER_SUPABASE_URL=http://127.0.0.1:54521` when running against `pnpm dev`
+- Auth states will be generated with correct cookie names
+
+## Diagnosis Report
+
+Full diagnosis available in `.ai/reports/bug-reports/2025-12-03/`
