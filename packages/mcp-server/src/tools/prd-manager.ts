@@ -92,10 +92,8 @@ interface StructuredPRD {
 
 // biome-ignore lint/complexity/noStaticOnlyClass: PRDManager uses static methods as a namespace pattern for utility functions
 export class PRDManager {
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used by PRDS_DIR getter and setRootPath
 	private static ROOT_PATH = process.cwd();
 
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Used throughout class for file operations
 	private static get PRDS_DIR() {
 		return join(PRDManager.ROOT_PATH, ".prds");
 	}
@@ -525,7 +523,6 @@ export class PRDManager {
 	}
 
 	// Private methods
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Core method used by all PRD operations
 	private static async loadPRD(filename: string): Promise<StructuredPRD> {
 		const filePath = join(PRDManager.PRDS_DIR, filename);
 		try {
@@ -536,7 +533,6 @@ export class PRDManager {
 		}
 	}
 
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: Core method used by all PRD write operations
 	private static async savePRD(
 		filename: string,
 		prd: StructuredPRD,
