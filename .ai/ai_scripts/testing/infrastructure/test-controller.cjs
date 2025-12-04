@@ -792,9 +792,9 @@ class TestController {
 
 					// Check if Payload CMS is needed (shards 7 or 8)
 					const payloadShards = [7, 8];
-					const needsPayload =
-						this.options.shard &&
-						this.options.shard.some((s) => payloadShards.includes(s));
+					const needsPayload = this.options.shard?.some((s) =>
+						payloadShards.includes(s),
+					);
 
 					if (needsPayload) {
 						log("📦 Payload CMS required for shard 7/8 tests");
@@ -1211,12 +1211,19 @@ class TestController {
 				CONFIG.ports.payload,
 			];
 
-			// Skip Docker container ports to avoid signal conflicts
-			const dockerAvailable =
-				await this.infrastructureManager.checkDockerContainer();
-			if (dockerAvailable) {
-				log("🐳 Skipping Docker container port (3001) from final cleanup");
-				portsToCheck = portsToCheck.filter((port) => port !== 3001);
+			// Skip Docker container check entirely for unit tests to avoid timeout
+			if (this.options.unitOnly) {
+				log(
+					"⚡ Unit-only mode: skipping Docker container validation in cleanup",
+				);
+			} else {
+				// Skip Docker container ports to avoid signal conflicts
+				const dockerAvailable =
+					await this.infrastructureManager.checkDockerContainer();
+				if (dockerAvailable) {
+					log("🐳 Skipping Docker container port (3001) from final cleanup");
+					portsToCheck = portsToCheck.filter((port) => port !== 3001);
+				}
 			}
 
 			const portsInUse = [];

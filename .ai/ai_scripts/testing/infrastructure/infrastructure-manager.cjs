@@ -141,7 +141,7 @@ class InfrastructureManager {
 		}
 
 		// Always clean ports as this is lightweight and prevents conflicts
-		setupResults.ports = await this.cleanupPorts();
+		setupResults.ports = await this.cleanupPorts(unitOnly);
 
 		// Re-verify health after setup
 		if (needsVerification) {
@@ -1179,8 +1179,9 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 
 	/**
 	 * Cleanup ports
+	 * @param {boolean} unitOnly - When true, skip Docker container validation
 	 */
-	async cleanupPorts() {
+	async cleanupPorts(unitOnly = false) {
 		try {
 			log("🧹 Cleaning up test ports...");
 
@@ -1190,13 +1191,18 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 				this.config.ports.payload,
 			];
 
-			// Skip Docker container ports to avoid signal propagation issues
-			const dockerAvailable = await this.checkDockerContainer();
-			if (dockerAvailable) {
-				log(
-					"🐳 Skipping Docker container port cleanup (3001) to avoid signal conflicts",
-				);
-				portsToClean = portsToClean.filter((port) => port !== 3001);
+			// Skip Docker container check entirely for unit tests to avoid timeout
+			if (unitOnly) {
+				log("⚡ Unit-only mode: skipping Docker container validation");
+			} else {
+				// Skip Docker container ports to avoid signal propagation issues
+				const dockerAvailable = await this.checkDockerContainer();
+				if (dockerAvailable) {
+					log(
+						"🐳 Skipping Docker container port cleanup (3001) to avoid signal conflicts",
+					);
+					portsToClean = portsToClean.filter((port) => port !== 3001);
+				}
 			}
 
 			let portsCleared = 0;
