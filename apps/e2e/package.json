@@ -55,7 +55,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.57.0",
 		"@supabase/ssr": "^0.8.0",
-		"@supabase/supabase-js": "2.86.0",
+		"@supabase/supabase-js": "2.86.2",
 		"@types/node": "catalog:",
 		"@types/pg": "^8.15.6",
 		"chrome-launcher": "^1.2.1",
