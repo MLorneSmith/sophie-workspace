@@ -498,16 +498,15 @@ class E2ETestRunner {
 			},
 			{
 				id: 8,
-				name: "Payload CMS Extended",
+				name: "Seeding Tests",
 				shardCommand: "test:shard8",
 				files: [
-					"tests/payload/payload-auth.spec.ts",
-					"tests/payload/payload-collections.spec.ts",
-					"tests/payload/payload-database.spec.ts",
+					// NOTE: Seeding tests only - Payload core tests run in Shard 7
+					// Duplicates removed to reduce test execution time by ~10 minutes
 					"tests/payload/seeding.spec.ts",
 					"tests/payload/seeding-performance.spec.ts",
 				],
-				expectedTests: null, // Extended with seeding tests
+				expectedTests: 25, // Seeding tests only (was duplicating Shard 7's 42 tests)
 			},
 			{
 				id: 9,

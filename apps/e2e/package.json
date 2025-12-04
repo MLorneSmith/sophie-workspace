@@ -28,7 +28,7 @@
 		"test:shard5": "playwright test tests/accessibility/accessibility-hybrid.spec.ts tests/accessibility/accessibility-hybrid-simple.spec.ts",
 		"test:shard6": "playwright test tests/healthcheck.spec.ts",
 		"test:shard7": "playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts",
-		"test:shard8": "playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts",
+		"test:shard8": "playwright test tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts",
 		"test:shard9": "playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts",
 		"test:shard10": "playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts",
 		"test:shard11": "playwright test tests/test-configuration-verification.spec.ts",
