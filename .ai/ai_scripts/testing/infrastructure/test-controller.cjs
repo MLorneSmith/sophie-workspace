@@ -188,12 +188,12 @@ class TestController {
 			// Check for numeric argument (shard number)
 			if (/^\d+$/.test(arg)) {
 				const shardNum = parseInt(arg, 10);
-				if (shardNum >= 1 && shardNum <= 11) {
+				if (shardNum >= 1 && shardNum <= 12) {
 					options.shard = options.shard || [];
 					options.shard.push(shardNum);
 					options.skipUnit = true; // Shard implies E2E only
 				} else {
-					logError(`Invalid shard number: ${shardNum}. Valid range is 1-11.`);
+					logError(`Invalid shard number: ${shardNum}. Valid range is 1-12.`);
 				}
 				continue;
 			}
@@ -208,10 +208,10 @@ class TestController {
 							.split(",")
 							.map((s) => parseInt(s.trim(), 10));
 						for (const num of shardNums) {
-							if (num >= 1 && num <= 11) {
+							if (num >= 1 && num <= 12) {
 								options.shard.push(num);
 							} else {
-								logError(`Invalid shard number: ${num}. Valid range is 1-11.`);
+								logError(`Invalid shard number: ${num}. Valid range is 1-12.`);
 							}
 						}
 						options.skipUnit = true; // Shard implies E2E only
