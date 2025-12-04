@@ -74,9 +74,23 @@ test.describe("Team Accounts @team @integration", () => {
 	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
 
 	let teamAccounts: TeamAccountsPageObject;
+	let slug: string;
 
 	test.beforeEach(async ({ page }) => {
 		teamAccounts = new TeamAccountsPageObject(page);
+
+		// Navigate to home first - required because Playwright starts with blank page
+		// even when using pre-authenticated storage state
+		await page.goto("/home");
+
+		// Create a team for the test
+		const teamName = teamAccounts.createTeamName();
+		slug = teamName.slug;
+
+		await teamAccounts.createTeam({
+			teamName: teamName.teamName,
+			slug: teamName.slug,
+		});
 	});
 
 	test("user can update their team name (and slug)", async ({ page }) => {
