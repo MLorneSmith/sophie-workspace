@@ -82,6 +82,10 @@ test.describe("Admin", () => {
 	});
 
 	test.describe("Personal Account Management", () => {
+		// Run these tests serially to prevent race conditions when multiple tests
+		// modify the same user's banned state simultaneously
+		test.describe.configure({ mode: "serial" });
+
 		AuthPageObject.setupSession(AUTH_STATES.SUPER_ADMIN);
 
 		let testUserEmail: string;
