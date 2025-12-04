@@ -1160,12 +1160,11 @@ class E2ETestRunner {
 							log(`${shardPrefix}⚠️ Test may be hanging on element visibility`);
 						}
 
-						// Check for timeout patterns
+						// Check for timeout patterns - only match specific Playwright patterns
+						// Avoid broad patterns like "Timeout" that kill tests handling timeout errors intentionally
 						if (
 							line.includes("Test timeout of") ||
-							line.includes("exceeded while") ||
-							line.includes("Timeout") ||
-							line.includes("TimeoutError")
+							line.includes("exceeded while")
 						) {
 							log(
 								`${shardPrefix}⚠️ Playwright timeout detected - aggressively killing test`,
