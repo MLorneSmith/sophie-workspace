@@ -823,6 +823,45 @@ class TestController {
 						}
 					}
 
+					// Check if billing tests are needed (shards 9 or 10)
+					// This requires the stripe-webhook container to be running
+					const needsBilling = this.e2eTestRunner.isBillingTestsRequested();
+
+					if (needsBilling) {
+						log(
+							"💳 Billing tests requested - setting up Stripe webhook infrastructure",
+						);
+						const billingSetup =
+							await this.e2eTestRunner.setupBillingInfrastructure();
+
+						if (!billingSetup.success) {
+							log(
+								`❌ Failed to setup billing infrastructure: ${billingSetup.message}`,
+							);
+							log(
+								"💡 Suggestion: Ensure docker-compose.test.yml is configured correctly",
+							);
+							log(
+								"💡 Suggestion: Check if STRIPE_SECRET_KEY is set in environment",
+							);
+
+							return {
+								success: false,
+								skipped: true,
+								reason: `Billing infrastructure failed: ${billingSetup.message}`,
+								suggestions: [
+									"Check docker-compose.test.yml has stripe-webhook service",
+									"Ensure STRIPE_SECRET_KEY environment variable is set",
+									"Verify Stripe API key is valid",
+									"Run: docker-compose -f docker-compose.test.yml --profile billing up -d",
+								],
+								testsRun: 0,
+								testsPassed: 0,
+								testsFailed: 0,
+							};
+						}
+					}
+
 					// Infrastructure is healthy, run E2E tests
 					const result = await this.e2eTestRunner.run();
 					return result;

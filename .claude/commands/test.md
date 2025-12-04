@@ -215,8 +215,8 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 | 6 | Config & Health | 12 | |
 | 7 | Payload CMS | 42 | Auto-starts Payload on port 3021 |
 | 8 | Payload Extended | varies | Auto-starts Payload on port 3021 |
-| 9 | User Billing | varies | |
-| 10 | Team Billing | varies | |
+| 9 | User Billing | varies | Auto-starts Stripe webhook forwarder |
+| 10 | Team Billing | varies | Auto-starts Stripe webhook forwarder |
 | 11 | Config Verification | varies | |
 | 12 | Team Accounts | 8 | |
 
@@ -227,6 +227,15 @@ Shards 7 and 8 test Payload CMS functionality. The test controller automatically
 - Starts Payload CMS server on port 3021 (via `pnpm --filter payload dev:test`)
 - Waits for server to be healthy before running tests
 - Uses `apps/payload/.env.test` for correct test configuration
+
+**Billing Tests (Shards 9-10):**
+
+Shards 9 and 10 test Stripe billing functionality. The test controller automatically:
+- Detects when shards 9 or 10 are requested
+- Starts docker-compose with `--profile billing` flag
+- Launches the `stripe-webhook` container to forward Stripe webhooks
+- Waits for webhook signing secret to be captured
+- Enables end-to-end subscription flow testing with real Stripe events
 
 **Output Management:**
 
