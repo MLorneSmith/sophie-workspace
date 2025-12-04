@@ -301,7 +301,8 @@ export function PayloadContentRenderer({ content }) {
                                     // Render all children, supporting both text and link nodes
                                     const renderedContent = listItemChildren.flatMap((child, ci) => {
                                         // If child is directly a link or text node, render it
-                                        if (child.type === "link" || child.type === "text") {
+                                        if (child.type === "link" ||
+                                            child.type === "text") {
                                             return [
                                                 renderTextOrLinkNode(child, `li-${i}-${li}-${ci}`),
                                             ];

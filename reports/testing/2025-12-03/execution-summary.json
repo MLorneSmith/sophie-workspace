@@ -1,0 +1,27 @@
+{
+	"executionDate": "2025-12-03",
+	"lastUpdated": "2025-12-03T21:39:22.116Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 1,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 13,
+		"passed": 12,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Admin & Invitations",
+			"success": false,
+			"duration": "134s",
+			"tests": 13,
+			"failures": 1,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

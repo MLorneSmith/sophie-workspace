@@ -1,16 +1,14 @@
 "use client";
 
-import { useCaptureException } from "@kit/monitoring/hooks";
-import { useUser } from "@kit/supabase/hooks/use-user";
-import { Button } from "@kit/ui/button";
-import { Heading } from "@kit/ui/heading";
-import { Trans } from "@kit/ui/trans";
-import { ArrowLeft, MessageCircle } from "lucide-react";
-import Link from "next/link";
+import { useEffect } from "react";
 
-import { SiteHeader } from "~/(marketing)/_components/site-header";
-import { RootProviders } from "~/components/root-providers";
-
+/**
+ * Global error page - renders when the root layout itself fails.
+ * Must be completely self-contained with NO external dependencies
+ * since providers/context may have caused the error.
+ *
+ * Uses inline styles to avoid any Tailwind/CSS dependencies.
+ */
 const GlobalErrorPage = ({
 	error,
 	reset,
@@ -18,70 +16,114 @@ const GlobalErrorPage = ({
 	error: Error & { digest?: string };
 	reset: () => void;
 }) => {
-	useCaptureException(error);
-
-	const user = useUser();
+	useEffect(() => {
+		// biome-ignore lint/suspicious/noConsole: Error logging for debugging
+		console.error("Global error:", error);
+	}, [error]);
 
 	return (
 		<html lang="en">
-			<body>
-				<RootProviders>
-					<div className={"flex h-screen flex-1 flex-col"}>
-						<SiteHeader user={user.data} />
+			<head>
+				<title>Error - SlideHeroes</title>
+			</head>
+			<body
+				style={{
+					margin: 0,
+					padding: 0,
+					fontFamily:
+						'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+					backgroundColor: "#0a0a0a",
+					color: "#fafafa",
+					minHeight: "100vh",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<div style={{ textAlign: "center", padding: "2rem" }}>
+					<h1
+						style={{
+							fontSize: "6rem",
+							fontWeight: 600,
+							margin: "0 0 1rem 0",
+							color: "#fafafa",
+						}}
+					>
+						500
+					</h1>
 
-						<div
-							className={
-								"container m-auto flex w-full flex-1 flex-col items-center justify-center"
-							}
+					<h2
+						style={{
+							fontSize: "1.5rem",
+							fontWeight: 600,
+							margin: "0 0 1rem 0",
+						}}
+					>
+						Something went wrong
+					</h2>
+
+					<p
+						style={{
+							fontSize: "1rem",
+							color: "#a1a1aa",
+							margin: "0 0 2rem 0",
+							maxWidth: "400px",
+						}}
+					>
+						We encountered an unexpected error. Please try again or return to
+						the home page.
+					</p>
+
+					{error.digest && (
+						<p
+							style={{
+								fontSize: "0.875rem",
+								color: "#71717a",
+								margin: "0 0 2rem 0",
+							}}
 						>
-							<div className={"flex flex-col items-center space-y-8"}>
-								<div>
-									<h1 className={"font-heading text-9xl font-semibold"}>
-										<Trans i18nKey={"common:errorPageHeading"} />
-									</h1>
-								</div>
+							Error ID: {error.digest}
+						</p>
+					)}
 
-								<div className={"flex flex-col items-center space-y-8"}>
-									<div
-										className={
-											"flex max-w-xl flex-col items-center gap-y-2 text-center"
-										}
-									>
-										<div>
-											<Heading level={2}>
-												<Trans i18nKey={"common:genericError"} />
-											</Heading>
-										</div>
+					<div
+						style={{ display: "flex", gap: "1rem", justifyContent: "center" }}
+					>
+						<button
+							onClick={reset}
+							type="button"
+							style={{
+								padding: "0.75rem 1.5rem",
+								fontSize: "0.875rem",
+								fontWeight: 500,
+								backgroundColor: "#fafafa",
+								color: "#0a0a0a",
+								border: "none",
+								borderRadius: "0.375rem",
+								cursor: "pointer",
+							}}
+						>
+							Try Again
+						</button>
 
-										<p className={"text-muted-foreground text-lg"}>
-											<Trans i18nKey={"common:genericErrorSubHeading"} />
-										</p>
-									</div>
-
-									<div className={"flex space-x-4"}>
-										<Button
-											className={"w-full"}
-											variant={"default"}
-											onClick={reset}
-										>
-											<ArrowLeft className={"mr-2 h-4"} />
-
-											<Trans i18nKey={"common:goBack"} />
-										</Button>
-
-										<Button className={"w-full"} variant={"outline"} asChild>
-											<Link href={"/contact"}>
-												<MessageCircle className={"mr-2 h-4"} />
-
-												<Trans i18nKey={"common:contactUs"} />
-											</Link>
-										</Button>
-									</div>
-								</div>
-							</div>
-						</div>
+						<a
+							href="/"
+							style={{
+								padding: "0.75rem 1.5rem",
+								fontSize: "0.875rem",
+								fontWeight: 500,
+								backgroundColor: "transparent",
+								color: "#fafafa",
+								border: "1px solid #27272a",
+								borderRadius: "0.375rem",
+								textDecoration: "none",
+								display: "inline-block",
+							}}
+						>
+							Home
+						</a>
 					</div>
-				</RootProviders>
+				</div>
 			</body>
 		</html>
 	);

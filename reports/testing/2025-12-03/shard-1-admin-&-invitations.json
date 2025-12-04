@@ -1,0 +1,42 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-12-03T21:37:07.910Z",
+		"endTime": "2025-12-03T21:39:21.910Z",
+		"duration": "134s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 13,
+		"passed": 8,
+		"failed": 1,
+		"skipped": 4,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 8160 bytes)...\nstorage-js_dist_module_93c09a42._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/0f7e6_%40supabase_auth-js_dist_module_10b71e9f._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_app_auth_layout_tsx_96703fb8._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_app_auth_loading_tsx_901863b1._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_app_auth_sign-in_page_tsx_901863b1._.js\n[Network] Request: GET http://localhost:3001/_next/image?url=%2Fimages%2Foauth%2Fgoogle.webp&w=32&q=75\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/d2cd0_%40supabase_realtime-js_dist_module_5023d864._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/f96a7_%40supabase_storage-js_dist_module_93c09a42._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/0f7e6_%40supabase_auth-js_dist_module_10b71e9f._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_layout_tsx_96703fb8._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_loading_tsx_901863b1._.js\n[Network] Response: 304 http://localhost:3001/_next/image?url=%2Fimages%2Foauth%2Fgoogle.webp&w=32&q=75\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_app_auth_sign-in_page_tsx_901863b1._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[Network] Request: GET http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_27f23fa3._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_27f23fa3._.js\n[Network] Response: 200 http://localhost:3001/_next/static/chunks/apps_web_public_locales_en_auth_json_f5d2e7b6._.js\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\nF\n\n  1) [chromium] › tests/admin/admin.spec.ts:204:7 › Admin › Personal Account Management › reactivate user flow \n\n    TimeoutError: page.waitForResponse: Timeout 45000ms exceeded while waiting for event \"response\"\n\n       at authentication/auth.po.ts:538\n\n      536 | \t\ttry {\n      537 | \t\t\tawait Promise.all([\n    > 538 | \t\t\t\tthis.page.waitForResponse(\n          | \t\t\t\t          ^\n      539 | \t\t\t\t\t(response) => {\n      540 | \t\t\t\t\t\tconst url = response.url();\n      541 | \t\t\t\t\t\tconst isAuthToken = url.includes(\"auth/v1/token\");\n        at AuthPageObject.loginAsUser (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:538:15)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/admin/admin.spec.ts:243:4\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    TimeoutError: page.waitForResponse: Timeout 45000ms exceeded while waiting for event \"response\"\n\n       at authentication/auth.po.ts:538\n\n      536 | \t\ttry {\n      537 | \t\t\tawait Promise.all([\n    > 538 | \t\t\t\tthis.page.waitForResponse(\n          | \t\t\t\t          ^\n      539 | \t\t\t\t\t(response) => {\n      540 | \t\t\t\t\t\tconst url = response.url();\n      541 | \t\t\t\t\t\tconst isAuthToken = url.includes(\"auth/v1/token\");\n        at AuthPageObject.loginAsUser (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:538:15)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/admin/admin.spec.ts:243:4\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    [chromium] › tests/admin/admin.spec.ts:204:7 › Admin › Personal Account Management › reactivate user flow \n  4 skipped\n  8 passed (2.0m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=dot --retries=0`\nExit status 1\n"
+}
