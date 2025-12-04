@@ -6,13 +6,13 @@ packages:
   - .claude/scripts
 
 catalog:
-  '@next/bundle-analyzer': 16.0.1
-  '@next/eslint-plugin-next': 16.0.1
+  '@next/bundle-analyzer': 16.0.7
+  '@next/eslint-plugin-next': 16.0.7
   '@tailwindcss/postcss': 4.1.16
   '@types/node': 24.10.1
   '@types/react': 19.2.7
   '@types/react-dom': 19.2.3
-  eslint-config-next: 16.0.1
+  eslint-config-next: 16.0.7
   next: 16.0.7
   supabase: 2.54.11
   tailwindcss: 4.1.17
