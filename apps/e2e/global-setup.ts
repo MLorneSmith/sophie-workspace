@@ -188,10 +188,15 @@ async function globalSetup(config: FullConfig) {
 	const supabaseAuthUrl =
 		process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
 	// For cookie naming, we need the URL the SERVER uses (not the E2E setup)
-	// When running against Docker, the server uses host.docker.internal
-	// E2E_SERVER_SUPABASE_URL can override this if needed
+	// Three-tier fallback:
+	// 1. E2E_SERVER_SUPABASE_URL - explicit override for any environment
+	// 2. CI environment (GitHub Actions) - use auth URL (same Supabase instance)
+	// 3. Local Docker - use host.docker.internal (for Docker-to-host communication)
 	const supabaseCookieUrl =
-		process.env.E2E_SERVER_SUPABASE_URL || "http://host.docker.internal:54521";
+		process.env.E2E_SERVER_SUPABASE_URL ||
+		(process.env.CI === "true"
+			? supabaseAuthUrl
+			: "http://host.docker.internal:54521");
 	const supabaseAnonKey =
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 		process.env.E2E_SUPABASE_ANON_KEY ||
