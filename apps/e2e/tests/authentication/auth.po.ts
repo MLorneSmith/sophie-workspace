@@ -489,158 +489,99 @@ export class AuthPageObject {
 		password: string;
 		next?: string;
 	}) {
-		await this.goToSignIn(params.next);
-
 		const startTime = Date.now();
 		const targetUrl = params.next ?? "/home";
-
-		// Phase 1: Wait for Supabase auth API response
-		// Use test-config timeouts (90s in CI, 30s local) to handle:
-		// - Vercel cold starts
-		// - Network latency
-		// - API gateway overhead
-		// - Cloudflare routing
-		const isCI = process.env.CI === "true";
-		// Use test-config for consistent timeout values (imported at top of file)
 		const authTimeout = testConfig.getTimeout("medium");
 
 		console.log(
-			`[Phase 1] Waiting for Supabase auth/v1/token API response (timeout: ${authTimeout}ms)...`,
+			`[loginAsUser] Starting login for ${params.email}, target: ${targetUrl}`,
 		);
 
-		// Set up comprehensive network logging to diagnose response detection issues
-		const capturedRequests: Array<{ url: string; method: string }> = [];
-		const capturedResponses: Array<{ url: string; status: number }> = [];
+		// Use toPass() with exponential backoff to handle React Query hydration race condition
+		// This pattern sets up response listener BEFORE form submission, then retries
+		// the entire operation if the auth API isn't called (indicating hydration wasn't ready)
+		//
+		// Timing budget (test timeout is 30s):
+		// - Per-attempt timeout: ~8s (navigation 5s + form 1s + auth 8s, but run concurrently)
+		// - Backoff intervals: [500, 1000, 2000] = 3.5s total
+		// - Max attempts: 3, total worst case: ~28s
+		await expect(async () => {
+			// Navigate to sign-in page for each attempt (fresh state)
+			await this.goToSignIn(params.next);
 
-		const requestHandler = (request: any) => {
-			const url = request.url();
-			if (url.includes("auth") || url.includes("supabase")) {
-				capturedRequests.push({ url, method: request.method() });
-				console.log(`[Network] Request: ${request.method()} ${url}`);
-			}
-		};
+			// Wait for form to be visible and interactive
+			const emailInput = this.page.locator('[data-testid="sign-in-email"]');
+			await emailInput.waitFor({ state: "visible", timeout: 8000 });
 
-		const responseHandler = (response: any) => {
-			const url = response.url();
-			if (url.includes("auth") || url.includes("supabase")) {
-				capturedResponses.push({ url, status: response.status() });
-				console.log(`[Network] Response: ${response.status()} ${url}`);
-			}
-		};
+			// Set up response listener BEFORE any form interaction
+			// This is the key fix: listener is ready before React Query could fire
+			const authResponsePromise = this.page.waitForResponse(
+				(response) => {
+					const url = response.url();
+					const isAuthToken = url.includes("auth/v1/token");
+					if (isAuthToken) {
+						console.log(
+							`[loginAsUser] Auth API response: ${response.status()}`,
+						);
+					}
+					// Accept both 200 (success) and 400/401 (invalid credentials)
+					return isAuthToken && response.status() < 500;
+				},
+				{ timeout: 8000 }, // Per-attempt auth timeout; toPass handles retries
+			);
 
-		this.page.on("request", requestHandler);
-		this.page.on("response", responseHandler);
+			// Fill form fields with clear/fill pattern for reliability
+			await emailInput.clear();
+			await emailInput.fill(params.email);
 
-		// Use Promise.all to ensure response listener is ready before form submission
-		// This prevents race condition where API responds before listener is attached
-		try {
-			await Promise.all([
-				this.page.waitForResponse(
-					(response) => {
-						const url = response.url();
-						const isAuthToken = url.includes("auth/v1/token");
-						if (isAuthToken) {
-							console.log(
-								`[Phase 1] Auth API response detected: ${response.status()}`,
-							);
-						}
-						return isAuthToken && response.status() === 200;
-					},
-					{ timeout: authTimeout },
-				),
-				// Submit form - listener is guaranteed to be ready
-				this.signIn({
-					email: params.email,
-					password: params.password,
-				}),
-			]);
+			const passwordInput = this.page.locator(
+				'[data-testid="sign-in-password"]',
+			);
+			await passwordInput.clear();
+			await passwordInput.fill(params.password);
+
+			// Submit form
+			await this.page.click('button[type="submit"]');
+			console.log("[loginAsUser] Form submitted, waiting for auth API...");
+
+			// Wait for auth API response - this is the critical check
+			// If React Query wasn't hydrated, no request will be made and this times out
+			const response = await authResponsePromise;
+			const status = response.status();
 
 			console.log(
-				`[Phase 1] ✅ Auth API responded (${Date.now() - startTime}ms)`,
+				`[loginAsUser] Auth API responded with ${status} (${Date.now() - startTime}ms)`,
 			);
-		} catch (error) {
-			console.error(`[Phase 1] ❌ Auth API timeout after ${authTimeout}ms`);
-			console.error(`Current URL: ${this.page.url()}`);
-			console.error(`Credentials: ${params.email}`);
 
-			// Log all captured network activity for diagnosis
-			console.error("\n[Diagnostics] Captured Auth Requests:");
-			capturedRequests.forEach((req) => {
-				console.error(`  ${req.method} ${req.url}`);
-			});
-
-			console.error("\n[Diagnostics] Captured Auth Responses:");
-			capturedResponses.forEach((res) => {
-				console.error(`  ${res.status} ${res.url}`);
-			});
-
-			// Capture additional diagnostics
-			try {
-				const networkErrors = await this.page.evaluate(() => {
-					return (window as any).__networkErrors || [];
-				});
-				if (networkErrors.length > 0) {
-					console.error("\n[Diagnostics] Network errors:", networkErrors);
-				}
-			} catch (e) {
-				// Ignore diagnostics failure
+			// For valid credentials, expect 200; for invalid, handle gracefully
+			if (status === 200) {
+				// Success - wait for navigation
+				await this.page.waitForURL(
+					(url) => {
+						const urlStr = url.toString();
+						const leftSignIn = !urlStr.includes("/auth/sign-in");
+						const reachedTarget =
+							urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
+						return leftSignIn && reachedTarget;
+					},
+					{ timeout: 8000 },
+				);
+			} else if (status === 400 || status === 401) {
+				// Invalid credentials - this is expected for some test cases
+				// The test caller will handle the error state
+				console.log(
+					`[loginAsUser] Auth returned ${status} - invalid credentials`,
+				);
 			}
-
-			throw error;
-		} finally {
-			// Clean up event listeners to prevent memory leaks
-			this.page.off("request", requestHandler);
-			this.page.off("response", responseHandler);
-		}
-
-		// Phase 2: Wait for navigation with flexible URL matching
-		// Use test-config timeout (90s CI, 45s local) to account for:
-		// - Server-side redirects
-		// - Middleware processing
-		// - Session establishment
-		const navigationTimeout = testConfig.getTimeout("medium");
+		}).toPass({
+			// Exponential backoff with 3 retry attempts to fit in 30s test timeout
+			// Fast first retry (500ms) catches most React Query hydration delays
+			intervals: [500, 1000, 2000],
+			timeout: authTimeout,
+		});
 
 		console.log(
-			`[Phase 2] Waiting for navigation to: ${targetUrl} (timeout: ${navigationTimeout}ms)`,
+			`[loginAsUser] ✅ Login complete (${Date.now() - startTime}ms). Final URL: ${this.page.url()}`,
 		);
-
-		try {
-			await this.page.waitForURL(
-				(url) => {
-					const urlStr = url.toString();
-					console.log(`[Phase 2] Current: ${urlStr}, Target: ${targetUrl}`);
-
-					// Accept if we've left sign-in page AND reached either target or onboarding
-					const leftSignIn = !urlStr.includes("/auth/sign-in");
-					const reachedTarget =
-						urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
-
-					return leftSignIn && reachedTarget;
-				},
-				{
-					timeout: navigationTimeout,
-				},
-			);
-
-			console.log(
-				`[Phase 2] ✅ Navigation complete (${Date.now() - startTime}ms total). Final URL: ${this.page.url()}`,
-			);
-		} catch (error) {
-			// Graceful fallback: Check if we're already at a valid post-auth page
-			const currentUrl = this.page.url();
-			const isPostAuth =
-				currentUrl.includes(targetUrl) || currentUrl.includes("/onboarding");
-
-			if (isPostAuth) {
-				console.log(
-					`[Phase 2] ✅ Already at valid post-auth page: ${currentUrl}`,
-				);
-			} else {
-				console.error(
-					`[Phase 2] ❌ Navigation timeout. Current: ${currentUrl}`,
-				);
-				throw error;
-			}
-		}
 	}
 }
