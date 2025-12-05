@@ -10,6 +10,11 @@ import { AuthPageObject } from "./auth.po";
 test.describe("Authentication - Simple Tests @auth @integration", () => {
 	test.describe.configure({ mode: "serial", timeout: 30000 });
 
+	// Clear global storage state so tests start unauthenticated
+	// This overrides playwright.config.ts storageState for this describe block
+	// Using empty state object instead of undefined for reliable clearing
+	test.use({ storageState: { cookies: [], origins: [] } });
+
 	test("sign in page loads with correct elements", async ({ page }) => {
 		await page.goto("/auth/sign-in", { waitUntil: "domcontentloaded" });
 
