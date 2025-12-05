@@ -53,9 +53,7 @@ describe("Documentation Collection", () => {
 		const fields = Documentation.fields;
 
 		it("should have title field that is required", () => {
-			const titleField = fields.find(
-				(f) => "name" in f && f.name === "title",
-			);
+			const titleField = fields.find((f) => "name" in f && f.name === "title");
 			expect(titleField).toBeDefined();
 			expect(titleField).toMatchObject({
 				name: "title",
@@ -173,9 +171,7 @@ describe("Documentation Collection", () => {
 		});
 
 		it("should have order number field with default 0", () => {
-			const orderField = fields.find(
-				(f) => "name" in f && f.name === "order",
-			);
+			const orderField = fields.find((f) => "name" in f && f.name === "order");
 			expect(orderField).toBeDefined();
 			expect(orderField).toMatchObject({
 				name: "order",

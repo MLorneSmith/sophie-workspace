@@ -37,9 +37,7 @@ describe("Media Collection", () => {
 			// @ts-expect-error - testing access function
 			expect(Media.access?.create({ req: { user: null } })).toBe(false);
 			// @ts-expect-error - testing access function
-			expect(Media.access?.create({ req: { user: { id: "123" } } })).toBe(
-				true,
-			);
+			expect(Media.access?.create({ req: { user: { id: "123" } } })).toBe(true);
 		});
 
 		it("should require authentication for update", () => {
@@ -47,9 +45,7 @@ describe("Media Collection", () => {
 			// @ts-expect-error - testing access function
 			expect(Media.access?.update({ req: { user: null } })).toBe(false);
 			// @ts-expect-error - testing access function
-			expect(Media.access?.update({ req: { user: { id: "123" } } })).toBe(
-				true,
-			);
+			expect(Media.access?.update({ req: { user: { id: "123" } } })).toBe(true);
 		});
 
 		it("should require authentication for delete", () => {
@@ -57,9 +53,7 @@ describe("Media Collection", () => {
 			// @ts-expect-error - testing access function
 			expect(Media.access?.delete({ req: { user: null } })).toBe(false);
 			// @ts-expect-error - testing access function
-			expect(Media.access?.delete({ req: { user: { id: "123" } } })).toBe(
-				true,
-			);
+			expect(Media.access?.delete({ req: { user: { id: "123" } } })).toBe(true);
 		});
 	});
 
