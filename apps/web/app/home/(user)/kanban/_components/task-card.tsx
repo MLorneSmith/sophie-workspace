@@ -111,10 +111,12 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 									</div>
 									<div className="space-y-1">
 										{task.subtasks.map((subtask) => (
-											<button
+											// biome-ignore lint/a11y/useSemanticElements: Cannot use <button> here as it would create invalid nested buttons with Radix Checkbox (which renders as <button>)
+											<div
 												key={subtask.id}
-												type="button"
-												className="flex items-center gap-2 w-full text-left bg-transparent border-none p-0"
+												role="button"
+												tabIndex={0}
+												className="flex items-center gap-2 w-full text-left bg-transparent border-none p-0 cursor-pointer"
 												onClick={(e) => {
 													e.stopPropagation();
 													e.preventDefault();
@@ -124,6 +126,18 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 														title: subtask.title,
 														is_completed: !subtask.is_completed,
 													});
+												}}
+												onKeyDown={(e) => {
+													if (e.key === "Enter" || e.key === " ") {
+														e.stopPropagation();
+														e.preventDefault();
+														updateSubtask.mutate({
+															id: subtask.id || "",
+															task_id: task.id,
+															title: subtask.title,
+															is_completed: !subtask.is_completed,
+														});
+													}
 												}}
 												onMouseDown={(e) => {
 													// Prevent drag initiation when clicking subtasks
@@ -156,7 +170,7 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 												>
 													{subtask.title}
 												</label>
-											</button>
+											</div>
 										))}
 									</div>
 								</div>
