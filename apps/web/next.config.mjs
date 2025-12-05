@@ -69,7 +69,9 @@ const config = {
 	reactCompiler: ENABLE_REACT_COMPILER,
 	experimental: {
 		mdxRs: true,
-		turbopackFileSystemCacheForDev: true,
+		// DISABLED: turbopackFileSystemCacheForDev causes Turbopack panics in Next.js 16.0.7
+		// See diagnosis #933 for details. Re-enable when Vercel fixes the upstream bug.
+		turbopackFileSystemCacheForDev: false,
 		optimizePackageImports: [
 			"recharts",
 			"lucide-react",
