@@ -204,6 +204,8 @@ jobs:
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
+      # Required: Tell Playwright which port the app is running on
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v6
 
