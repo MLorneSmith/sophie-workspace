@@ -120,7 +120,11 @@ jobs:
     name: Full Test Suite
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, validate]
-    if: always() && !failure() && !cancelled()
+    # Only run tests when validation is needed (direct pushes, not PR merges)
+    # PR merges already ran comprehensive e2e-sharded tests before merging
+    if: |
+      always() && !failure() && !cancelled() &&
+      needs.check-validation.outputs.should-validate == 'true'
     timeout-minutes: 30
     env:
       # Required for build - validated at module load time by Zod schemas
@@ -145,7 +149,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          # More specific cache key including playwright version from package.json
+          key: playwright-${{ runner.os }}-${{ hashFiles('apps/e2e/package.json') }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-${{ hashFiles('apps/e2e/package.json') }}-
+            playwright-${{ runner.os }}-
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -177,21 +185,21 @@ jobs:
           echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
           echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
 
-      - name: Start Stripe CLI
+      - name: Build and start services in parallel
         run: |
+          # Start Stripe CLI in background (doesn't need Supabase env vars)
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
             stripe/stripe-cli:latest listen \
             --forward-to http://host.docker.internal:3000/api/billing/webhook \
-            --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug
+            --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
 
-      - name: Build application
-        run: pnpm turbo build:test --filter=web
+          # Build application (can run while Stripe starts)
+          pnpm turbo build:test --filter=web
 
-      - name: Start application
-        run: pnpm --filter web start:test &
+          # Start application
+          pnpm --filter web start:test &
 
-      - name: Wait for application
-        run: |
+          # Wait for application to be ready
           npx wait-on http://localhost:3000 -t 60000
 
       - name: Run full E2E test suite
@@ -209,7 +217,12 @@ jobs:
   build:
     name: Build Application
     needs: [check-validation, validate, test-full]
-    if: always() && !failure() && !cancelled()
+    # Handle skipped test-full job (for PR merges) - proceed if tests passed OR were skipped
+    if: |
+      always() &&
+      (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
+      (needs.test-full.result == 'success' || needs.test-full.result == 'skipped') &&
+      !failure() && !cancelled()
     uses: ./.github/workflows/artifact-sharing.yml
     with:
       environment: staging
@@ -221,7 +234,7 @@ jobs:
   deploy-web:
     name: Deploy Web App to Staging
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    needs: build
+    needs: [build, test-full]
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
@@ -272,6 +285,16 @@ jobs:
               environment_url: '${{ steps.deploy.outputs.url }}',
               description: 'Web app deployed to staging environment'
             });
+
+      - name: Add workflow summary
+        run: |
+          echo "## Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Skipped | ${{ needs.test-full.result == 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy URL | ${{ steps.deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Deploy Payload CMS to Vercel Staging environment
   deploy-payload:
