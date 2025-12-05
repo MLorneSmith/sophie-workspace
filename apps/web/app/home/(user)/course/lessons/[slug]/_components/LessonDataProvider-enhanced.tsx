@@ -15,7 +15,7 @@ type PayloadQuiz = {
 		questiontype: "single-answer" | "multi-answer";
 		options: Array<{
 			text: string;
-			iscorrect: boolean;
+			isCorrect: boolean;
 		}>;
 	}>;
 	passingScore: number;

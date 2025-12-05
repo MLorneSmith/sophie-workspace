@@ -27,7 +27,7 @@ const logger = {
 
 interface QuizOption {
 	text: string;
-	iscorrect: boolean;
+	isCorrect: boolean;
 }
 
 interface QuizQuestion {
@@ -221,7 +221,7 @@ export function QuizComponent({
 
 		// Count correct options
 		const correctOptions = (question?.options || []).filter(
-			(option: QuizOption) => option?.iscorrect,
+			(option: QuizOption) => option?.isCorrect,
 		);
 
 		// If more than one correct option, treat as multi-answer
@@ -289,7 +289,7 @@ export function QuizComponent({
 
 							// Check if this is a correct option that wasn't selected
 							if (
-								option.iscorrect === true &&
+								option.isCorrect === true &&
 								!selectedOptionIndices.includes(optIndex)
 							) {
 								allCorrectSelected = false;
@@ -297,7 +297,7 @@ export function QuizComponent({
 
 							// Check if this is an incorrect option that was selected
 							if (
-								option.iscorrect === false &&
+								option.isCorrect === false &&
 								selectedOptionIndices.includes(optIndex)
 							) {
 								noIncorrectSelected = false;
@@ -313,7 +313,7 @@ export function QuizComponent({
 						// Add guard clause to check if selectedIndex is defined
 						if (selectedIndex !== undefined) {
 							const selectedOption = options[selectedIndex];
-							if (selectedOption && selectedOption.iscorrect === true) {
+							if (selectedOption && selectedOption.isCorrect === true) {
 								correctAnswers++;
 							}
 						}

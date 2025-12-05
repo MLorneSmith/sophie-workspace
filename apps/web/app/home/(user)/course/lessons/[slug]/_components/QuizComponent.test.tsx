@@ -14,7 +14,7 @@ interface PayloadQuiz {
 		questiontype: "single-answer" | "multi-answer";
 		options: Array<{
 			text: string;
-			iscorrect: boolean;
+			isCorrect: boolean;
 		}>;
 	}>;
 	passingScore: number;
@@ -273,9 +273,9 @@ describe("QuizComponent", () => {
 				question: "What is 2 + 2?",
 				questiontype: "single-answer" as const,
 				options: [
-					{ text: "3", iscorrect: false },
-					{ text: "4", iscorrect: true },
-					{ text: "5", iscorrect: false },
+					{ text: "3", isCorrect: false },
+					{ text: "4", isCorrect: true },
+					{ text: "5", isCorrect: false },
 				],
 			},
 			{
@@ -283,10 +283,10 @@ describe("QuizComponent", () => {
 				question: "Select all even numbers",
 				questiontype: "multi-answer" as const,
 				options: [
-					{ text: "1", iscorrect: false },
-					{ text: "2", iscorrect: true },
-					{ text: "3", iscorrect: false },
-					{ text: "4", iscorrect: true },
+					{ text: "1", isCorrect: false },
+					{ text: "2", isCorrect: true },
+					{ text: "3", isCorrect: false },
+					{ text: "4", isCorrect: true },
 				],
 			},
 		],
@@ -515,8 +515,8 @@ describe("QuizComponent", () => {
 						question: "Test question",
 						questiontype: "multi-answer" as const,
 						options: [
-							{ text: "Option 1", iscorrect: true },
-							{ text: "Option 2", iscorrect: false },
+							{ text: "Option 1", isCorrect: true },
+							{ text: "Option 2", isCorrect: false },
 						],
 					},
 				],
@@ -536,9 +536,9 @@ describe("QuizComponent", () => {
 						question: "Test question",
 						questiontype: "multi-answer" as const,
 						options: [
-							{ text: "Option 1", iscorrect: true },
-							{ text: "Option 2", iscorrect: true },
-							{ text: "Option 3", iscorrect: false },
+							{ text: "Option 1", isCorrect: true },
+							{ text: "Option 2", isCorrect: true },
+							{ text: "Option 3", isCorrect: false },
 						],
 					},
 				],
@@ -618,8 +618,8 @@ describe("QuizComponent", () => {
 						question: "What is 2 + 2?",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "3", iscorrect: false },
-							{ text: "4", iscorrect: true },
+							{ text: "3", isCorrect: false },
+							{ text: "4", isCorrect: true },
 						],
 					},
 					{
@@ -627,8 +627,8 @@ describe("QuizComponent", () => {
 						question: "What is 3 + 3?",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "6", iscorrect: true },
-							{ text: "7", iscorrect: false },
+							{ text: "6", isCorrect: true },
+							{ text: "7", isCorrect: false },
 						],
 					},
 				],
@@ -655,8 +655,8 @@ describe("QuizComponent", () => {
 						question: "What is 2 + 2?",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "3", iscorrect: false },
-							{ text: "4", iscorrect: true },
+							{ text: "3", isCorrect: false },
+							{ text: "4", isCorrect: true },
 						],
 					},
 					{
@@ -664,8 +664,8 @@ describe("QuizComponent", () => {
 						question: "What is 3 + 3?",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "6", iscorrect: true },
-							{ text: "7", iscorrect: false },
+							{ text: "6", isCorrect: true },
+							{ text: "7", isCorrect: false },
 						],
 					},
 				],
@@ -692,8 +692,8 @@ describe("QuizComponent", () => {
 						question: "What is 2 + 2?",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "3", iscorrect: false },
-							{ text: "4", iscorrect: true },
+							{ text: "3", isCorrect: false },
+							{ text: "4", isCorrect: true },
 						],
 					},
 				],
@@ -1012,8 +1012,8 @@ describe("QuizComponent", () => {
 						options: [
 							null,
 							undefined,
-							{ text: "Valid option", iscorrect: true },
-						] as unknown as Array<{ text: string; iscorrect: boolean }>,
+							{ text: "Valid option", isCorrect: true },
+						] as unknown as Array<{ text: string; isCorrect: boolean }>,
 					},
 				],
 			} as PayloadQuiz;
@@ -1035,8 +1035,8 @@ describe("QuizComponent", () => {
 						question: "Impossible question",
 						questiontype: "single-answer" as const,
 						options: [
-							{ text: "Option 1", iscorrect: false },
-							{ text: "Option 2", iscorrect: false },
+							{ text: "Option 1", isCorrect: false },
+							{ text: "Option 2", isCorrect: false },
 						],
 					},
 				],
