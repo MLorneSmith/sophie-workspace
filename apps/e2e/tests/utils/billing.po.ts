@@ -84,7 +84,10 @@ export class BillingPageObject {
 			.first();
 
 		// Wait for either to appear with a generous timeout for SSR hydration
-		await expect(subscriptionIndicator.or(planSelectionIndicator)).toBeVisible({
+		// Using .first() to satisfy Playwright's strict mode when .or() matches multiple elements
+		await expect(
+			subscriptionIndicator.or(planSelectionIndicator).first(),
+		).toBeVisible({
 			timeout: 15000,
 		});
 	}
