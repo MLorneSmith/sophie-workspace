@@ -68,9 +68,7 @@ describe("Downloads Collection", () => {
 		const fields = Downloads.fields;
 
 		it("should have title field that is required", () => {
-			const titleField = fields.find(
-				(f) => "name" in f && f.name === "title",
-			);
+			const titleField = fields.find((f) => "name" in f && f.name === "title");
 			expect(titleField).toBeDefined();
 			expect(titleField).toMatchObject({
 				name: "title",
