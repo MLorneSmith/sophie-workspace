@@ -115,9 +115,9 @@ jobs:
             exit 1
           fi
 
-  # Run full test suite for staging
-  test-full:
-    name: Full Test Suite
+  # Test setup job - prepares build artifacts and Supabase for sharded tests
+  test-setup:
+    name: Test Setup
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     needs: [check-validation, validate]
     # Only run tests when validation is needed (direct pushes, not PR merges)
@@ -125,15 +125,80 @@ jobs:
     if: |
       always() && !failure() && !cancelled() &&
       needs.check-validation.outputs.should-validate == 'true'
-    timeout-minutes: 30
+    timeout-minutes: 15
+    outputs:
+      cache-key: ${{ steps.cache.outputs.cache-key }}
     env:
-      # Required for build - validated at module load time by Zod schemas
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
-      # NOTE: SUPABASE_SERVICE_ROLE_KEY is exported from local Supabase in "Export Supabase environment variables" step
-      # Do NOT set it here from secrets as it will be empty and override the exported value
+      SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      DO_NOT_TRACK: 1
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-deps
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase services
+        run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
+
+      - name: Export Supabase environment variables
+        run: |
+          cd apps/web
+          SUPABASE_URL=$(npx supabase status | grep "Project URL" | sed 's/│//g' | awk '{print $3}')
+          SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable" | sed 's/│//g' | awk '{print $2}')
+          SUPABASE_SERVICE_KEY=$(npx supabase status | grep -E "^│ Secret" | sed 's/│//g' | awk '{print $2}')
+
+          echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY" >> $GITHUB_ENV
+
+          echo "✅ Exported NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL"
+          echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
+          echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
+
+      - name: Build application
+        run: pnpm turbo build:test --filter=web
+
+      - name: Cache build artifacts for shards
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+          key: staging-test-build-${{ github.sha }}-${{ github.run_id }}
+
+  # Sharded E2E test execution - runs tests in parallel for faster completion
+  test-shards:
+    name: E2E Shard ${{ matrix.shard }}
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [check-validation, test-setup]
+    if: |
+      always() && !failure() && !cancelled() &&
+      needs.check-validation.outputs.should-validate == 'true' &&
+      needs.test-setup.result == 'success'
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
+      NEXT_PUBLIC_CI: true
+      EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
@@ -144,12 +209,23 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Restore build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next
+            apps/payload/dist
+            packages/*/dist
+            .turbo
+          key: staging-test-build-${{ github.sha }}-${{ github.run_id }}
+          restore-keys: |
+            staging-test-build-${{ github.sha }}-
+
       - name: Cache Playwright browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          # More specific cache key including playwright version from package.json
           key: playwright-${{ runner.os }}-${{ hashFiles('apps/e2e/package.json') }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             playwright-${{ runner.os }}-${{ hashFiles('apps/e2e/package.json') }}-
@@ -159,42 +235,36 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
 
-      - name: Start Supabase
+      - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
-      
+        with:
+          version: latest
+
       - name: Start Supabase services
         run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
       - name: Export Supabase environment variables
         run: |
-          # Get Supabase status and extract URLs and keys
-          # NOTE: Supabase CLI status output format (table-based as of v1+)
-          # Project URL is in 3rd field, keys are in 2nd field after stripping table delimiters
           cd apps/web
           SUPABASE_URL=$(npx supabase status | grep "Project URL" | sed 's/│//g' | awk '{print $3}')
           SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable" | sed 's/│//g' | awk '{print $2}')
           SUPABASE_SERVICE_KEY=$(npx supabase status | grep -E "^│ Secret" | sed 's/│//g' | awk '{print $2}')
 
-          # Export to GITHUB_ENV for subsequent steps
           echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY" >> $GITHUB_ENV
 
-          # Verify variables were set
           echo "✅ Exported NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL"
           echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
           echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
 
-      - name: Build and start services in parallel
+      - name: Start Stripe CLI and application
         run: |
-          # Start Stripe CLI in background (doesn't need Supabase env vars)
+          # Start Stripe CLI in background
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
             stripe/stripe-cli:latest listen \
             --forward-to http://host.docker.internal:3000/api/billing/webhook \
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
-
-          # Build application (can run while Stripe starts)
-          pnpm turbo build:test --filter=web
 
           # Start application
           pnpm --filter web start:test &
@@ -202,26 +272,84 @@ jobs:
           # Wait for application to be ready
           npx wait-on http://localhost:3000 -t 60000
 
-      - name: Run full E2E test suite
-        run: pnpm test
+      - name: Run E2E tests for shard ${{ matrix.shard }}
+        run: |
+          echo "🚀 Running E2E test shard ${{ matrix.shard }} of 10"
+          pnpm --filter web-e2e test:shard${{ matrix.shard }}
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: playwright-report-staging
+          name: playwright-report-staging-shard-${{ matrix.shard }}
           path: apps/e2e/playwright-report/
           retention-days: 7
+
+  # Aggregate results from all shards
+  test-aggregate:
+    name: Test Results
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    needs: [check-validation, test-shards]
+    if: |
+      always() &&
+      needs.check-validation.outputs.should-validate == 'true'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download all shard results
+        uses: actions/download-artifact@v6
+        with:
+          path: shard-results
+          pattern: playwright-report-staging-shard-*
+
+      - name: Generate consolidated report
+        run: |
+          echo "## 🎭 Staging E2E Test Results (Sharded)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Shards**: 10" >> $GITHUB_STEP_SUMMARY
+          echo "- **Max Parallel**: 3" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Shard Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Shard | Description | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | Smoke Tests | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2 | Authentication | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3 | Account & Team Accounts | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4 | Admin & Invitations | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5 | Accessibility | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 6 | Healthcheck | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 7 | Payload Auth, Collections, Database | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 8 | Payload Seeding & Performance | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 9 | User Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "| 10 | Team Billing | Check artifacts |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.test-shards.result }}" == "success" ]]; then
+            echo "### ✅ All shards completed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Some shards failed - review artifacts for details" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check test results
+        run: |
+          if [[ "${{ needs.test-shards.result }}" != "success" ]]; then
+            echo "❌ E2E tests failed"
+            exit 1
+          fi
+          echo "✅ All E2E tests passed"
 
   # Build application with artifact sharing
   build:
     name: Build Application
-    needs: [check-validation, validate, test-full]
-    # Handle skipped test-full job (for PR merges) - proceed if tests passed OR were skipped
+    needs: [check-validation, validate, test-aggregate]
+    # Handle skipped test-aggregate job (for PR merges) - proceed if tests passed OR were skipped
     if: |
       always() &&
       (needs.validate.result == 'success' || needs.validate.result == 'skipped') &&
-      (needs.test-full.result == 'success' || needs.test-full.result == 'skipped') &&
+      (needs.test-aggregate.result == 'success' || needs.test-aggregate.result == 'skipped') &&
       !failure() && !cancelled()
     uses: ./.github/workflows/artifact-sharing.yml
     with:
@@ -234,7 +362,7 @@ jobs:
   deploy-web:
     name: Deploy Web App to Staging
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
-    needs: [build, test-full]
+    needs: [build, test-aggregate]
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
@@ -293,7 +421,7 @@ jobs:
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Tests Skipped | ${{ needs.test-full.result == 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests Skipped | ${{ needs.test-aggregate.result == 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Deploy URL | ${{ steps.deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
 
   # Deploy Payload CMS to Vercel Staging environment
