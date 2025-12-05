@@ -3,6 +3,11 @@ import { expect, test } from "@playwright/test";
 import { UserBillingPageObject } from "./user-billing.po";
 
 test.describe("User Billing @billing @integration", () => {
+	test.skip(
+		process.env.ENABLE_BILLING_TESTS !== "true",
+		"Billing tests disabled",
+	);
+
 	test("user can subscribe to a plan", async ({ page }) => {
 		const po = new UserBillingPageObject(page);
 
