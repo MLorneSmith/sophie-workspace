@@ -417,6 +417,92 @@ test.describe("Accessibility Tests - Comprehensive Reporting", () => {
 	});
 });
 
+test.describe("Accessibility - Quick Validation", () => {
+	test("All pages have proper document structure", async ({ page }) => {
+		const pages = ["/", "/auth/sign-in", "/auth/sign-up"];
+
+		for (const path of pages) {
+			await page.goto(path);
+			await page.waitForLoadState("networkidle");
+
+			// Wait for content to be rendered
+			await page.waitForTimeout(500);
+
+			// Check for essential ARIA landmarks or major content containers
+			const hasMain = await page
+				.locator('main, [role="main"], .main-content, #main')
+				.count();
+			const hasH1 = await page.locator("h1").count();
+			const hasContentArea = await page
+				.locator(
+					'main, [role="main"], section, article, .container, div[class*="container"], div[id*="root"]',
+				)
+				.count();
+
+			// More flexible checks - auth pages might not have h1 but have h2
+			const hasHeading = hasH1 > 0 || (await page.locator("h2").count()) > 0;
+
+			// At least have some content structure
+			expect(hasContentArea).toBeGreaterThan(0);
+			expect(hasHeading).toBeTruthy();
+		}
+	});
+
+	test("Forms have proper labels", async ({ page }) => {
+		await page.goto("/auth/sign-in");
+		await page.waitForLoadState("networkidle");
+
+		// Check all inputs have labels or aria-labels
+		const inputs = await page.locator('input:not([type="hidden"])').all();
+
+		for (const input of inputs) {
+			const id = await input.getAttribute("id");
+			const ariaLabel = await input.getAttribute("aria-label");
+			const ariaLabelledBy = await input.getAttribute("aria-labelledby");
+
+			if (id) {
+				const labelCount = await page.locator(`label[for="${id}"]`).count();
+				const hasLabel = labelCount > 0 || ariaLabel || ariaLabelledBy;
+				expect(hasLabel).toBeTruthy();
+			} else {
+				// Input should have aria-label if no id
+				expect(ariaLabel || ariaLabelledBy).toBeTruthy();
+			}
+		}
+	});
+
+	test("Interactive elements are keyboard accessible", async ({ page }) => {
+		await page.goto("/");
+		await page.waitForLoadState("networkidle");
+
+		// Check that buttons and links are focusable
+		const interactiveElements = await page
+			.locator("button, a[href], input, select, textarea")
+			.all();
+
+		for (const element of interactiveElements.slice(0, 10)) {
+			// Check first 10 to keep test fast
+			const tabindex = await element.getAttribute("tabindex");
+
+			// Elements should not have negative tabindex (unless intentionally hidden)
+			if (tabindex) {
+				expect(Number(tabindex)).toBeGreaterThanOrEqual(-1);
+			}
+
+			// Check element is visible
+			const isVisible = await element.isVisible();
+			if (isVisible) {
+				const isDisabled = await element.isDisabled();
+				// If visible and not disabled, should be focusable
+				if (!isDisabled) {
+					// Element should be reachable by keyboard
+					expect(tabindex !== "-1").toBeTruthy();
+				}
+			}
+		}
+	});
+});
+
 test.describe("Accessibility Tests - Performance", () => {
 	test("Lighthouse performance benchmark", async ({ page }) => {
 		await page.goto("/");
