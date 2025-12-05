@@ -160,10 +160,12 @@ jobs:
       - name: Export Supabase environment variables
         run: |
           # Get Supabase status and extract URLs and keys
+          # NOTE: Supabase CLI status output format (table-based as of v1+)
+          # Project URL is in 3rd field, keys are in 2nd field after stripping table delimiters
           cd apps/web
-          SUPABASE_URL=$(npx supabase status | grep "API URL" | awk '{print $3}')
-          SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable key" | awk '{print $3}')
-          SUPABASE_SERVICE_KEY=$(npx supabase status | grep "Secret key" | awk '{print $3}')
+          SUPABASE_URL=$(npx supabase status | grep "Project URL" | sed 's/│//g' | awk '{print $3}')
+          SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable" | sed 's/│//g' | awk '{print $2}')
+          SUPABASE_SERVICE_KEY=$(npx supabase status | grep -E "^│ Secret" | sed 's/│//g' | awk '{print $2}')
 
           # Export to GITHUB_ENV for subsequent steps
           echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV

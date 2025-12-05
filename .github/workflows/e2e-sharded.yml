@@ -165,9 +165,9 @@ jobs:
           # Start Supabase (will reuse existing if setup-server ran on same runner)
           supabase start --ignore-health-check || true
           
-          # Quick health check
+          # Quick health check (uses "Project URL" as of Supabase CLI v1+ table format)
           for i in {1..10}; do
-            if supabase status 2>/dev/null | grep -q "API URL"; then
+            if supabase status 2>/dev/null | grep -q "Project URL"; then
               echo "✓ Supabase ready after $i checks"
               break
             fi
