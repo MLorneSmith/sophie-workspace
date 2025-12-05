@@ -123,6 +123,10 @@ jobs:
     if: always() && !failure() && !cancelled()
     timeout-minutes: 30
     env:
+      # Required for build - validated at module load time by Zod schemas
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
+      EMAIL_SENDER: noreply@slideheroes.com
       # NOTE: SUPABASE_SERVICE_ROLE_KEY is exported from local Supabase in "Export Supabase environment variables" step
       # Do NOT set it here from secrets as it will be empty and override the exported value
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
