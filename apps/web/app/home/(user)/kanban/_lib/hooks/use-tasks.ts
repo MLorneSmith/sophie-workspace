@@ -6,12 +6,12 @@ import { pino } from "pino";
 
 import type { Database } from "~/lib/database.types";
 
-import { DEFAULT_TASKS } from "../config/default-tasks";
 import type { Task } from "../schema/task.schema";
 import {
 	createTaskAction,
 	deleteTaskAction,
 	resetTasksAction,
+	seedDefaultTasksAction,
 	updateSubtaskAction,
 	updateTaskAction,
 	updateTaskStatusAction,
@@ -82,24 +82,27 @@ export function useTasks() {
 		queryFn: async () => {
 			const tasks = await getTasks(client, user.id);
 
-			// If no tasks exist, create default tasks
+			// If no tasks exist, seed default presentation tasks
 			if (!tasks.length) {
 				const ctx = {
-					name: "create-default-tasks",
+					name: "seed-default-tasks",
 					userId: user.id,
 				};
 
-				logger.info({ ...ctx }, "Creating default tasks...");
+				logger.info({ ...ctx }, "Seeding default presentation tasks...");
 
 				try {
-					for (const task of DEFAULT_TASKS) {
-						await createTaskAction(task);
+					// Use batch seeding action for optimal performance (69 tasks)
+					const result = await seedDefaultTasksAction({});
+
+					if (!result.success) {
+						throw new Error(result.error ?? "Failed to seed tasks");
 					}
 
-					logger.info({ ...ctx }, "Default tasks created successfully");
+					logger.info({ ...ctx }, "Default tasks seeded successfully");
 					return getTasks(client, user.id);
 				} catch (error) {
-					logger.error({ ...ctx, error }, "Failed to create default tasks");
+					logger.error({ ...ctx, error }, "Failed to seed default tasks");
 					throw error;
 				}
 			}

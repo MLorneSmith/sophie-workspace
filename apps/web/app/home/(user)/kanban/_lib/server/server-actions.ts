@@ -369,33 +369,49 @@ const resetTasksAction = enhanceAction(
 				);
 			}
 
-			// Create default tasks
-			for (const task of DEFAULT_TASKS) {
-				const { data: newTask, error: taskError } = await client
-					.from("tasks")
-					.insert({
-						title: task.title,
-						description: task.description,
-						status: task.status,
-						priority: task.priority,
-						image_url: task.image_url,
-						account_id: user.id,
-					})
-					.select()
-					.single();
+			// Batch insert all default tasks at once for optimal performance
+			const tasksToInsert = DEFAULT_TASKS.map((task) => ({
+				title: task.title,
+				description: task.description ?? null,
+				status: task.status,
+				priority: task.priority,
+				image_url: task.image_url ?? null,
+				account_id: user.id,
+			}));
 
-				if (taskError) throw taskError;
+			const { data: insertedTasks, error: tasksError } = await client
+				.from("tasks")
+				.insert(tasksToInsert)
+				.select("id");
 
-				if (task.subtasks && task.subtasks.length > 0) {
-					const { error: subtasksError } = await client.from("subtasks").insert(
-						task.subtasks.map((subtask) => ({
-							...subtask,
-							task_id: newTask.id,
-						})),
-					);
+			if (tasksError) throw tasksError;
+			if (!insertedTasks) throw new Error("No tasks returned from insert");
 
-					if (subtasksError) throw subtasksError;
+			// Collect and batch insert all subtasks
+			const subtasksToInsert: Array<{
+				title: string;
+				is_completed: boolean;
+				task_id: string;
+			}> = [];
+
+			DEFAULT_TASKS.forEach((task, index) => {
+				if (task.subtasks && task.subtasks.length > 0 && insertedTasks[index]) {
+					for (const subtask of task.subtasks) {
+						subtasksToInsert.push({
+							title: subtask.title,
+							is_completed: subtask.is_completed ?? false,
+							task_id: insertedTasks[index].id,
+						});
+					}
 				}
+			});
+
+			if (subtasksToInsert.length > 0) {
+				const { error: subtasksError } = await client
+					.from("subtasks")
+					.insert(subtasksToInsert);
+
+				if (subtasksError) throw subtasksError;
 			}
 
 			logger.info({ ...ctx }, "Tasks reset successfully");
@@ -412,6 +428,81 @@ const resetTasksAction = enhanceAction(
 	},
 );
 
+/**
+ * Seed default tasks for new users.
+ * Uses batch insert for optimal performance with 69 presentation tasks.
+ */
+const seedDefaultTasksAction = enhanceAction(
+	async (_, user) => {
+		const ctx = {
+			name: "seed-default-tasks",
+			userId: user.id,
+		};
+
+		logger.info({ ...ctx }, "Seeding default tasks for new user...");
+
+		const client = getSupabaseServerClient();
+
+		try {
+			// Batch insert all default tasks at once for optimal performance
+			const tasksToInsert = DEFAULT_TASKS.map((task) => ({
+				title: task.title,
+				description: task.description ?? null,
+				status: task.status,
+				priority: task.priority,
+				image_url: task.image_url ?? null,
+				account_id: user.id,
+			}));
+
+			const { data: insertedTasks, error: tasksError } = await client
+				.from("tasks")
+				.insert(tasksToInsert)
+				.select("id");
+
+			if (tasksError) throw tasksError;
+			if (!insertedTasks) throw new Error("No tasks returned from insert");
+
+			// Collect and batch insert all subtasks
+			const subtasksToInsert: Array<{
+				title: string;
+				is_completed: boolean;
+				task_id: string;
+			}> = [];
+
+			DEFAULT_TASKS.forEach((task, index) => {
+				if (task.subtasks && task.subtasks.length > 0 && insertedTasks[index]) {
+					for (const subtask of task.subtasks) {
+						subtasksToInsert.push({
+							title: subtask.title,
+							is_completed: subtask.is_completed ?? false,
+							task_id: insertedTasks[index].id,
+						});
+					}
+				}
+			});
+
+			if (subtasksToInsert.length > 0) {
+				const { error: subtasksError } = await client
+					.from("subtasks")
+					.insert(subtasksToInsert);
+
+				if (subtasksError) throw subtasksError;
+			}
+
+			logger.info({ ...ctx }, "Default tasks seeded successfully");
+			revalidatePath("/home/kanban");
+
+			return { success: true };
+		} catch (error) {
+			logger.error({ ...ctx, error }, "Failed to seed default tasks");
+			return { success: false, error: "Failed to seed default tasks" };
+		}
+	},
+	{
+		auth: true,
+	},
+);
+
 export {
 	createTaskAction,
 	updateTaskAction,
@@ -419,4 +510,5 @@ export {
 	deleteTaskAction,
 	updateSubtaskAction,
 	resetTasksAction,
+	seedDefaultTasksAction,
 };
