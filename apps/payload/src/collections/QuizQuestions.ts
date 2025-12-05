@@ -33,6 +33,19 @@ export const QuizQuestions: CollectionConfig = {
 			required: true,
 		},
 		{
+			name: "questiontype",
+			type: "select",
+			options: [
+				{ label: "Single Answer", value: "single-answer" },
+				{ label: "Multi Answer", value: "multi-answer" },
+			],
+			defaultValue: "single-answer",
+			admin: {
+				description:
+					"Determines whether radio buttons (single) or checkboxes (multi) are displayed",
+			},
+		},
+		{
 			name: "questionSlug",
 			type: "text",
 			required: true,

@@ -70,6 +70,7 @@ export async function convertQuizQuestions(
 					id: questionId,
 					question: question.question,
 					type: "multiple_choice",
+					questiontype: question.questiontype || "single-answer",
 					questionSlug: questionSlug,
 					options: question.answers.map((answer) => ({
 						text: answer.answer,
