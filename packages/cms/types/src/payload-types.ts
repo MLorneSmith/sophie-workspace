@@ -538,6 +538,78 @@ export interface CourseLesson {
   youtube_video_id?: string | null;
   todo_complete_quiz?: boolean | null;
   /**
+   * General todo instructions for this lesson - supports rich text formatting like bullet points and links
+   */
+  todo?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Content to watch - supports rich text formatting like bullet points and links
+   */
+  todo_watch_content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Content to read - supports rich text formatting like bullet points and links
+   */
+  todo_read_content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Course project instructions - supports rich text formatting like bullet points and links
+   */
+  todo_course_project?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
    * The URL-friendly identifier for this lesson
    */
   slug: string;
@@ -1054,6 +1126,10 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   video_source_type?: T;
   youtube_video_id?: T;
   todo_complete_quiz?: T;
+  todo?: T;
+  todo_watch_content?: T;
+  todo_read_content?: T;
+  todo_course_project?: T;
   slug?: T;
   description?: T;
   thumbnail?: T;

@@ -16,7 +16,7 @@ export async function GET() {
 				status: dbStatus,
 				lastCheck: metrics.lastHealthCheck.toISOString(),
 			},
-			version: "3.65.0",
+			version: "3.66.0",
 			ready: dbConnected,
 		});
 	} catch (error) {
