@@ -2,23 +2,12 @@
 description: Decompose complex initiatives into multiple coherent features with dependency mapping, GitHub integration, and coordinated execution planning
 argument-hint: [initiative-description]
 model: opus
-allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite]
+allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
 
 # Feature Set Decomposition
 
-Break down large, complex multi-feature initiatives into manageable, independently implementable features with explicit dependency mapping and integrated GitHub tracking. Creates a master feature set plan and individual feature stubs ready for `/feature` command expansion.
-
-## Overview
-
-The `/feature-set` command analyzes high-level work requests, decomposes them into 3-8 logical feature boundaries, maps dependencies, and creates a coordinated execution plan that integrates seamlessly with the existing `/feature` → `/implement` workflow.
-
-**Key Benefits:**
-- Reduces planning time by 40-60%
-- Ensures no work is missed
-- Identifies dependencies explicitly
-- Enables parallel execution where possible
-- Creates traceable GitHub issue structure
+Decompose complex multi-feature initiatives into 3-8 logical features with dependency mapping and GitHub tracking. Creates master plan + feature stubs for `/feature` → `/implement` workflow.
 
 ## Instructions
 
@@ -28,24 +17,18 @@ IMPORTANT: The output will be used to create `/feature` plans for each identifie
 
 ### Step 1: Interview User
 
-Gather the initiative context by asking for:
+Use AskUserQuestion to gather initiative context:
 
-1. **Initiative Summary**: High-level description of what's being built
-2. **Problem Statement**: What problem does this solve?
-3. **Scope & Constraints**: Boundaries, technical constraints, external dependencies
-4. **Success Criteria**: How we'll measure if this initiative is successful
-5. **Integration Points**: Which existing systems does this connect to?
-6. **Timeline**: Expected overall timeline
-7. **Risks & Concerns**: Known risks or blockers
-8. **Team Familiarity**: Which areas of codebase is the team comfortable with?
+| Question | Header | Options |
+|----------|--------|---------|
+| What type of initiative? | Initiative | New system, Major enhancement, Integration, Migration/Refactor |
+| Expected feature count? | Complexity | 3-5 features, 6-8 features, 8+ features (split recommended) |
+| Primary domains affected? | Domain | Database/Schema, API/Services, UI/Frontend, Infrastructure (multiSelect) |
+| Risk level? | Risk | Low, Medium, High |
 
-Extract and define:
-```typescript
-const initiativeTitle = '[Brief description]'; // e.g., "Real-time Collaboration System"
-const problemStatement = '[What problem is this solving]';
-const scope = '[Initiative boundaries and constraints]';
-const successCriteria = '[Measurable success indicators]';
-```
+Follow-up as needed: Initiative Summary, Problem Statement, Scope & Constraints, Success Criteria, Integration Points, Risks & Concerns.
+
+Extract: `initiativeTitle`, `problemStatement`, `scope`, `successCriteria`
 
 ### Step 2: Read Relevant Context Documentation
 
@@ -150,27 +133,19 @@ Ensure the decomposition is complete and logical:
 
 If validation fails, refine the decomposition.
 
-## Relevant Files to Reference
+### Step 8: Create GitHub Issues
 
-### Command Structure
-- `.claude/commands/feature.md` - Feature planning command to understand integration
-- `.claude/commands/implement.md` - Implementation command workflow
-- `.claude/commands/diagnose.md` - Diagnosis patterns for reference
+After user reviews and approves the decomposition:
 
-### Configuration
-- `.claude/config/command-profiles.yaml` - Add feature-set routing profile
-- `CLAUDE.md` - Project standards and patterns
+1. **Create master feature-set issue** using the `GitHub Issue Creation` process
+2. **Create feature stub issues** for each identified feature
+3. **Link all issues** with dependency information
+4. **Create github-mapping.md** to track issue relationships
+5. **Rename plan file** from `pending-overview.md` to `<issue#>-overview.md`
 
-### Documentation Sources
-- `.ai/ai_docs/context-docs/development/` - Architecture and patterns
-- `.ai/ai_docs/context-docs/infrastructure/` - Infrastructure patterns
-- `.ai/specs/` - Where feature set plans will be stored
+### Step 9: Report Results
 
-### New Files to Create
-- `.claude/commands/feature-set.md` - This command (the structure itself)
-- `.claude/config/command-profiles.yaml` - Update with feature-set profile
-- `.ai/ai_docs/context-docs/development/feature-set-workflow.md` - Usage documentation
-- `CLAUDE.md` - Update with feature-set guidance
+Follow the `Report` section to properly report the results of your work.
 
 ## Master Feature Set Plan Format
 
@@ -226,44 +201,155 @@ The output will be a master plan document with this structure:
 [Links to master feature-set issue and individual feature issues]
 ```
 
-## Feature Stub Format
+## GitHub Issue Creation
 
-For each identified feature, generate a GitHub issue stub:
+After user approves the decomposition, create GitHub issues for tracking.
 
-**Title**: `Feature: [Feature Name]`
-**Body**: Detailed description from the master plan
-**Labels**: `type:feature`, `status:planning`, `priority:<priority>`, `area:<area>`
-**Links**: Reference to master feature-set issue
+### Step 1: Create Master Feature Set Issue
 
-## GitHub Integration
+```bash
+# Create master feature-set issue with overview and dependency graph
+gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Feature Set: <initiativeTitle>" \
+  --body "<master-plan-content-from-overview.md>" \
+  --label "type:feature-set" \
+  --label "status:planning" \
+  --label "priority:<priority>" \
+  --label "area:<primary-domain>"
 
-Create:
-1. **Master Feature Set Issue**: Comprehensive overview with all features listed
-2. **Individual Feature Issues**: One per identified feature with links to master
-3. **Dependency Graph**: Visual or explicit in master issue
+# Capture the master issue number from output
+# The gh CLI will output the URL in format: https://github.com/MLorneSmith/2025slideheroes/issues/<number>
+MASTER_ISSUE_NUMBER=<captured-from-output>
 
-This creates full traceability: Feature Set → Features → Issues → Implementations
+# Rename the overview file to include issue number
+# OLD: .ai/specs/feature-sets/<initiative-slug>/pending-overview.md
+# NEW: .ai/specs/feature-sets/<initiative-slug>/<issue#>-overview.md
+mv .ai/specs/feature-sets/<slug>/pending-overview.md \
+   .ai/specs/feature-sets/<slug>/${MASTER_ISSUE_NUMBER}-overview.md
+```
 
-## Pre-Decomposition Checklist
+### Step 2: Create Individual Feature Stub Issues
 
-Before creating the feature set plan:
-- [ ] Verify you have read the recommended context documents
-- [ ] Understand the initiative requirements thoroughly
-- [ ] Research codebase architecture and existing patterns
-- [ ] Validate feature boundaries with team familiarity
-- [ ] Confirm scope and timeline are realistic
-- [ ] Identify all integration points
-- [ ] Validate decomposition against checklist
+For each identified feature in the decomposition:
+
+```bash
+# Create feature stub issue linked to master
+# Note: These are stubs - full plans created via /feature command
+gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Feature: <featureName>" \
+  --body "## Feature Stub
+
+**Part of Feature Set**: #${MASTER_ISSUE_NUMBER}
+**Implementation Phase**: <phase-number>
+**Dependencies**: <list-of-blocking-feature-issues-or-none>
+**Effort Estimate**: <S|M|L|XL>
+
+### Description
+<feature-description-from-decomposition>
+
+### Purpose
+<what-this-feature-does>
+
+---
+*This is a feature stub created by \`/feature-set\`. Run \`/feature <description>\` to create the full implementation plan.*" \
+  --label "type:feature" \
+  --label "status:blocked" \
+  --label "priority:<priority>" \
+  --label "area:<feature-area>"
+
+# Capture feature issue number for dependency mapping
+FEATURE_<N>_ISSUE=<captured-from-output>
+```
+
+### Step 3: Update Master Issue with Feature Links
+
+```bash
+# Comment on master issue with all feature issue links and dependency graph
+gh issue comment ${MASTER_ISSUE_NUMBER} \
+  --repo MLorneSmith/2025slideheroes \
+  --body "## Feature Issues Created
+
+### Phase 1: Foundation
+- #<feature-1-issue> - <feature-1-name>
+- #<feature-2-issue> - <feature-2-name>
+
+### Phase 2: Core Implementation
+- #<feature-3-issue> - <feature-3-name> (blocked by #<feature-1-issue>)
+- #<feature-4-issue> - <feature-4-name> (parallel)
+
+### Phase 3: Integration
+- #<feature-5-issue> - <feature-5-name> (blocked by #<feature-3-issue>, #<feature-4-issue>)
+
+---
+**Dependency Graph**:
+\`\`\`
+#<f1> ──┬──> #<f3> ──┐
+        │           ├──> #<f5>
+#<f2> ──┴──> #<f4> ──┘
+\`\`\`
+
+**Next Steps**: Run \`/feature\` on each stub to create detailed implementation plans."
+```
+
+### Step 4: Create GitHub Mapping File
+
+Save the issue mapping for reference:
+
+```bash
+# Create mapping file for tracking
+cat > .ai/specs/feature-sets/<slug>/github-mapping.md << 'EOF'
+# GitHub Issue Mapping
+
+## Master Issue
+- **Feature Set**: #<MASTER_ISSUE_NUMBER> - <initiativeTitle>
+
+## Feature Issues
+
+| Phase | Issue | Feature | Status | Dependencies |
+|-------|-------|---------|--------|--------------|
+| 1 | #<issue> | <name> | blocked | none |
+| 1 | #<issue> | <name> | blocked | none |
+| 2 | #<issue> | <name> | blocked | #<dep1> |
+| 2 | #<issue> | <name> | blocked | #<dep1> |
+| 3 | #<issue> | <name> | blocked | #<dep2>, #<dep3> |
+
+## Workflow
+
+1. Unblock Phase 1 features: `gh issue edit #<issue> --remove-label "status:blocked" --add-label "status:ready"`
+2. Run `/feature <description>` for each feature to create detailed plans
+3. Run `/implement <issue#>` to execute each plan
+4. Update dependencies as features complete
+EOF
+```
+
+## Feature Status Workflow
+
+| Action | Command |
+|--------|---------|
+| Unblock feature | `gh issue edit #<issue> --remove-label "status:blocked" --add-label "status:ready"` |
+| Complete feature | `gh issue close #<issue> --comment "✅ Complete"` |
+| Close master | `gh issue close #<master> --comment "🎉 Feature Set complete"` |
+
+Traceability: Feature Set → Features → Issues → Implementations
 
 ## Plan Storage
 
 Master feature set plans are stored in:
 ```
 .ai/specs/feature-sets/[initiative-slug]/
-├── overview.md          # Master plan
-├── dependency-graph.md  # Visual dependency mapping
-└── notes.md            # Implementation notes
+├── pending-overview.md      # Master plan (before GitHub issue creation)
+├── <issue#>-overview.md     # Master plan (after GitHub issue creation)
+├── dependency-graph.md      # Visual dependency mapping
+├── github-mapping.md        # Issue tracking and workflow reference
+└── notes.md                 # Implementation notes
 ```
+
+**Filename Convention**:
+- Use `pending-overview.md` initially when creating the plan
+- After GitHub issue creation, rename to `<issue#>-overview.md`
+- Example: `pending-overview.md` → `42-overview.md`
 
 Individual features are then created using `/feature` command.
 
@@ -282,101 +368,31 @@ For each feature:
         ↓ Executes plan
 ```
 
-## Key Principles
+## Initiative Input
 
-1. **Logical Boundaries**: Features map to architectural/domain boundaries, not arbitrary divisions
-2. **Clear Dependencies**: All dependencies are explicit, enabling optimal parallelization
-3. **Independent Implementation**: Each feature can be implemented, tested, and reviewed separately
-4. **Traceability**: Complete linking from initiative → features → issues → code
-5. **Flexibility**: Can adjust decomposition based on team feedback before implementation
+$ARGUMENTS
 
-## Decision Framework
+## Report
 
-**When to use `/feature-set`:**
-- Complex initiatives requiring 3+ features
-- Multiple systems/layers involved
-- Unclear feature boundaries
-- High dependency complexity
-- Large team requiring clear coordination
+After creating the feature set plan and GitHub issues, report:
 
-**When to use `/feature` directly:**
-- Single, well-defined feature
-- Simple, isolated functionality
-- Clear implementation approach
-- No complex dependencies
+- **Master plan created**: `.ai/specs/feature-sets/<slug>/<issue#>-overview.md`
+- **Master GitHub issue**: #<master-issue-number>
+- **Feature stub issues created**: List all feature issues with their numbers
+- **Dependency mapping**: `.ai/specs/feature-sets/<slug>/github-mapping.md`
+- **Total features identified**: <count>
+- **Phases**: <count> phases with parallel/sequential breakdown
 
-## Example Decompositions
+**Summary**:
+- Summarize the decomposition in 2-3 sentences
+- Highlight any risks or concerns identified
+- Note any features that may need further decomposition
 
-### Example 1: Real-Time Collaboration System
-```
-Foundation Phase:
-- Feature: Database Schema for Real-Time Sync
-- Feature: Conflict Resolution Service
-
-Core Features (Parallel):
-- Feature: Presence Indicators UI
-- Feature: Live Cursor Tracking
-- Feature: Real-Time Awareness Service
-
-Integration Phase:
-- Feature: Multi-User Synchronization Tests
-- Feature: Performance Optimization
-```
-
-### Example 2: Payment System Integration
-```
-Phase 1:
-- Feature: Stripe API Integration Service
-- Feature: Subscription Database Schema
-
-Phase 2 (Sequential):
-- Feature: Billing Checkout Flow
-- Feature: Payment Status Management
-- Feature: Invoice Generation
-
-Phase 3:
-- Feature: Subscription Renewal Automation
-- Feature: Payment Analytics & Reporting
-```
-
-## Common Pitfalls to Avoid
-
-**Too Granular**: Creating features that are too small (< 1 day work each)
-- Solution: Combine related small features into logical groups
-
-**Circular Dependencies**: Feature A depends on B, B depends on A
-- Solution: Identify shared infrastructure, create separate feature for it
-
-**Missing Coordination**: Features that look independent but require integration work
-- Solution: Add explicit integration features or note in dependencies
-
-**Unclear Boundaries**: Overlapping feature scopes that could be clearer
-- Solution: Review with team, refine based on architecture knowledge
-
-**Unbalanced Load**: One phase has all the work, others are empty
-- Solution: Look for opportunities to parallelize or redistribute work
-
-## Success Metrics
-
-The feature-set command is successful when:
-
-1. **Complete Coverage**: All initiative requirements covered by identified features
-2. **Clear Boundaries**: Each feature has distinct, non-overlapping scope
-3. **Accurate Dependencies**: Dependency graph reflects actual constraints
-4. **Optimal Sequencing**: Phases are logically ordered for delivery value
-5. **Implementable**: Each feature is independently reviewable and completable
-6. **Team Confidence**: Team agrees decomposition is logical and realistic
-
-## Notes
-
-This command is designed to be used for **complex strategic decomposition**, not for incremental feature planning. It works best when:
-
-- Initiative requirements are well-understood
-- Team has domain knowledge of affected areas
-- Architecture is established and documented
-- Dependencies can be explicitly identified
-
-The output feeds directly into the existing `/feature` → `/implement` workflow, maintaining consistency with project standards.
+**Next Steps**:
+1. Review the master plan and feature stubs
+2. Unblock Phase 1 features: `gh issue edit #<issue> --remove-label "status:blocked" --add-label "status:ready"`
+3. Run `/feature <description>` on each feature to create detailed implementation plans
+4. Run `/implement <issue#>` to execute each plan
 
 ## Related Commands
 
