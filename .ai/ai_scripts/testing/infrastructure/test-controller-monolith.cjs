@@ -2302,6 +2302,9 @@ class E2ETestRunner {
 		const shardResults = await this.runShardsWithQueue(status);
 
 		// Aggregate results
+		// Note: intentionalFailures will be 0 since test-configuration-verification.spec.ts
+		// now uses Playwright's native test.fail() annotation. Playwright reports these as
+		// "expected failures" which don't count as actual failures in results.
 		const totals = {
 			total: 0,
 			passed: 0,
