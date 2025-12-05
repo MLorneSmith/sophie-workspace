@@ -65,18 +65,32 @@ export async function convertQuizQuestions(
 				const questionSlug = `${quizSlug}-q${index + 1}`;
 				questionSlugs.push(questionSlug);
 
+				// Auto-detect questiontype based on number of correct answers
+				// If more than 1 correct answer, it's a multi-answer question
+				const correctAnswerCount = question.answers.filter(
+					(a) => a.correct,
+				).length;
+				const inferredQuestionType: "single-answer" | "multi-answer" =
+					correctAnswerCount > 1 ? "multi-answer" : "single-answer";
+
+				// Use explicit questiontype from source if provided, otherwise infer from data
+				const questiontype = question.questiontype || inferredQuestionType;
+
 				const quizQuestion: Partial<QuizQuestion> = {
 					_ref: questionSlug, // ✅ Add _ref field for seeding engine
 					id: questionId,
 					question: question.question,
 					type: "multiple_choice",
-					questiontype: question.questiontype || "single-answer",
+					questiontype: questiontype,
 					questionSlug: questionSlug,
 					options: question.answers.map((answer) => ({
 						text: answer.answer,
 						isCorrect: answer.correct,
 					})),
-					explanation: createLexicalExplanation(question),
+					explanation: createLexicalExplanation({
+						...question,
+						questiontype, // Use the resolved questiontype for explanation
+					}),
 					order: index + 1,
 				} as Partial<QuizQuestion> & { _ref: string };
 
@@ -259,20 +273,29 @@ async function parseTypeScriptQuizQuestions(
 					// Generate questionSlug
 					const questionSlug = `${quizSlug}-q${index + 1}`;
 
+					// Auto-detect questiontype based on number of correct answers
+					const correctAnswerCount = options.filter((o) => o.isCorrect).length;
+					const questiontype: "single-answer" | "multi-answer" =
+						correctAnswerCount > 1 ? "multi-answer" : "single-answer";
+
 					const qId = q.id || uuidv4();
 					questions.push({
 						_ref: questionSlug, // ✅ Add _ref field for seeding engine
 						id: qId,
 						question: q.text,
 						type: "multiple_choice",
+						questiontype: questiontype,
 						questionSlug: questionSlug,
 						options,
 						explanation:
 							q.explanation ||
 							createLexicalExplanation({
 								question: q.text,
-								questiontype: "single-answer",
-								answers: [],
+								questiontype: questiontype,
+								answers: options.map((o) => ({
+									answer: o.text,
+									correct: o.isCorrect,
+								})),
 							}),
 						order: index + 1,
 					} as Partial<QuizQuestion> & { _ref: string });

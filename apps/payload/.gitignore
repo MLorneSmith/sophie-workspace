@@ -45,3 +45,4 @@ next-env.d.ts
 
 # Test temporary directories
 __test-seed-data-temp__
+.migrations-backup*
