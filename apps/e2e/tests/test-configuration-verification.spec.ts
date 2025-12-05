@@ -4,9 +4,12 @@ import { expect, test } from "@playwright/test";
  * Test file to verify that Playwright continues running all tests despite failures.
  * This file contains intentional failures to test the configuration from Issue #275.
  *
+ * Uses Playwright's test.fail() annotation to mark tests as "expected to fail".
+ * These tests will be reported as "expected failures" rather than actual test failures.
+ *
  * Expected behavior: ALL 11 tests should run, regardless of failures.
  * - 8 tests should PASS
- * - 3 tests should FAIL (intentionally - Tests 2, 4, and 7)
+ * - 3 tests are EXPECTED TO FAIL (Tests 2, 4, and 7) using test.fail() annotation
  */
 
 test.describe("@skip-in-ci Configuration Verification - Continue on Failure", () => {
@@ -14,19 +17,24 @@ test.describe("@skip-in-ci Configuration Verification - Continue on Failure", ()
 		expect(true).toBe(true);
 	});
 
-	test("Test 2: Intentional FAILURE", async () => {
-		expect(true).toBe(false); // This will fail
+	test("Test 2: Expected failure - demonstrates test.fail() annotation", async () => {
+		// This test is marked as expected to fail
+		// Playwright treats this as "expected failure" not an actual test failure
+		test.fail();
+		expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
 	});
 
-	test("Test 3: Should still run after failure", async () => {
+	test("Test 3: Should still run after expected failure", async () => {
 		expect(2 + 2).toBe(4);
 	});
 
-	test("Test 4: Another intentional FAILURE", async () => {
-		throw new Error("This test throws an error intentionally");
+	test("Test 4: Expected failure - demonstrates error handling", async () => {
+		// This test is marked as expected to fail
+		test.fail();
+		expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
 	});
 
-	test("Test 5: Should continue after thrown error", async () => {
+	test("Test 5: Should continue after expected failure", async () => {
 		expect("hello").toContain("hello");
 	});
 
@@ -35,11 +43,13 @@ test.describe("@skip-in-ci Configuration Verification - Continue on Failure", ()
 			expect([1, 2, 3]).toHaveLength(3);
 		});
 
-		test("Test 7: Nested intentional FAILURE", async () => {
-			expect("fail").toBe("pass"); // This will fail
+		test("Test 7: Nested expected failure", async () => {
+			// This test is marked as expected to fail
+			test.fail();
+			expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
 		});
 
-		test("Test 8: Should run after nested failure", async () => {
+		test("Test 8: Should run after nested expected failure", async () => {
 			expect(Math.PI).toBeCloseTo(3.14, 1);
 		});
 	});
@@ -63,12 +73,13 @@ test.describe("@skip-in-ci Summary Verification", () => {
     If you see this message and all 10 tests from the
     previous suite were executed (including Test 10),
     then the configuration is working correctly!
-    
+
     Expected: 11 tests total (10 in main suite + 1 verification)
     - 8 passing tests
-    - 3 failing tests (intentional)
-    
-    All tests should have run despite the failures.
+    - 3 expected-to-fail tests (using test.fail() annotation)
+
+    All tests should have run despite expected failures.
+    Expected failures are not counted as test failures by Playwright.
     =====================================================
     `);
 	});

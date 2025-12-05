@@ -1503,32 +1503,10 @@ class E2ETestRunner {
 			results.errorMessages.push(errorMsg);
 		}
 
-		// Check for deliberate failures in test-configuration-verification.spec.ts
-		if (
-			output.includes("Configuration Verification - Continue on Failure") ||
-			output.includes("test-configuration-verification.spec.ts")
-		) {
-			// This test file has known intentional failures
-			const intentionalTestPatterns = [
-				"Test 2: Intentional FAILURE",
-				"Test 4: Another intentional FAILURE",
-				"Test 7: Nested intentional FAILURE",
-			];
-
-			let intentionalCount = 0;
-			for (const pattern of intentionalTestPatterns) {
-				if (output.includes(pattern)) {
-					intentionalCount++;
-				}
-			}
-
-			// Track intentional failures separately (do NOT subtract from failed count)
-			// The actual failure calculation happens in getSummary() to avoid double-subtraction
-			if (intentionalCount > 0) {
-				results.intentionalFailures = intentionalCount;
-				// Keep results.failed as-is (total failures including intentional)
-			}
-		}
+		// Note: Intentional failures in test-configuration-verification.spec.ts now use
+		// Playwright's native test.fail() annotation. These are reported as "expected
+		// failures" by Playwright and don't count as actual test failures. No special
+		// handling needed here.
 
 		// Count integration tests (@integration tagged tests)
 		const integrationMatches = output.match(/@integration/g);
@@ -1583,25 +1561,9 @@ class E2ETestRunner {
 			if (failed > results.failed) results.failed = failed;
 		}
 
-		// Check for intentional failures in test-configuration-verification
-		if (buffer.includes("test-configuration-verification.spec.ts")) {
-			const intentionalPatterns = [
-				"Test 2: Intentional FAILURE",
-				"Test 4: Another intentional FAILURE",
-				"Test 7: Nested intentional FAILURE",
-			];
-
-			let intentionalCount = 0;
-			for (const pattern of intentionalPatterns) {
-				if (buffer.includes(pattern)) {
-					intentionalCount++;
-				}
-			}
-
-			if (intentionalCount > 0) {
-				results.intentionalFailures = intentionalCount;
-			}
-		}
+		// Note: Intentional failures in test-configuration-verification.spec.ts now use
+		// Playwright's native test.fail() annotation. These are reported as "expected
+		// failures" by Playwright and don't count as actual test failures.
 
 		// Count integration tests
 		const integrationMatches = buffer.match(/@integration/g);

@@ -194,14 +194,9 @@ else
     DURATION="unknown"
     STATUS="unknown"
 
-    # Adjust for intentional test failures
-    if grep -q "test-configuration-verification.spec.ts" "$LOG_FILE" 2>/dev/null; then
-        INTENTIONAL_COUNT=$(grep -c "Intentional FAILURE" "$LOG_FILE" 2>/dev/null || echo "0")
-        if [[ $INTENTIONAL_COUNT -ge 3 ]]; then
-            TOTAL_FAILED=$((TOTAL_FAILED - 3))
-            INTENTIONAL_FAILURES=3
-        fi
-    fi
+    # Note: Intentional test failures in test-configuration-verification.spec.ts
+    # now use Playwright's native test.fail() annotation, so they are reported as
+    # "expected failures" rather than actual failures. No manual adjustment needed.
 
     TOTAL_TESTS=$((TOTAL_PASSED + TOTAL_FAILED))
 fi
