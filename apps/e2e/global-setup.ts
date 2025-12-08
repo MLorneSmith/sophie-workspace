@@ -92,6 +92,64 @@ async function loginToPayloadViaAPI(
 }
 
 /**
+ * Log in to Payload CMS with retry logic and exponential backoff.
+ * Throws an error after all retries are exhausted for clear failure visibility.
+ *
+ * @param payloadUrl - Base URL of the Payload CMS server
+ * @param email - User email for authentication
+ * @param password - User password for authentication
+ * @param maxAttempts - Maximum number of login attempts (default: 3)
+ * @returns JWT token string
+ * @throws Error if all login attempts fail
+ */
+async function loginToPayloadWithRetry(
+	payloadUrl: string,
+	email: string,
+	password: string,
+	maxAttempts = 3,
+): Promise<string> {
+	// Exponential backoff delays: 500ms, 1000ms, 2000ms
+	const backoffDelays = [500, 1000, 2000];
+	let lastError: string | null = null;
+
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		// biome-ignore lint/suspicious/noConsole: Required for setup progress visibility
+		console.log(`   Payload login attempt ${attempt}/${maxAttempts}...`);
+
+		const token = await loginToPayloadViaAPI(payloadUrl, email, password);
+
+		if (token) {
+			if (attempt > 1) {
+				// biome-ignore lint/suspicious/noConsole: Required for setup progress visibility
+				console.log(`   ✅ Payload login succeeded on attempt ${attempt}`);
+			}
+			return token;
+		}
+
+		lastError = `Attempt ${attempt} failed: no token received`;
+		debugLog("payload:retry_attempt_failed", {
+			attempt,
+			maxAttempts,
+			willRetry: attempt < maxAttempts,
+		});
+
+		// Wait before next attempt (except on last attempt)
+		if (attempt < maxAttempts) {
+			const delay = backoffDelays[attempt - 1] ?? 2000;
+			debugLog("payload:retry_backoff", { delay, nextAttempt: attempt + 1 });
+			await new Promise((resolve) => setTimeout(resolve, delay));
+		}
+	}
+
+	// All retries exhausted - throw clear error for visibility
+	throw new Error(
+		`Payload CMS login failed after ${maxAttempts} attempts. ` +
+			`Last error: ${lastError}. ` +
+			`Check that Payload server is running at ${payloadUrl} and credentials are valid.`,
+	);
+}
+
+/**
  * Log global setup debug info for E2E auth troubleshooting.
  * Only logs when DEBUG_E2E_AUTH=true.
  */
@@ -530,71 +588,65 @@ async function globalSetup(config: FullConfig) {
 			);
 
 			try {
-				// Use Payload's login API to get a JWT token
-				const payloadToken = await loginToPayloadViaAPI(
+				// Use Payload's login API with retry logic to handle transient failures
+				// This throws an error after 3 failed attempts for clear failure visibility
+				const payloadToken = await loginToPayloadWithRetry(
 					payloadUrl,
 					credentials.email,
 					credentials.password,
 				);
 
-				if (payloadToken) {
-					// Inject the payload-token cookie into the browser context
-					const payloadDomain = new URL(payloadUrl).hostname;
-					await context.addCookies([
-						{
-							name: "payload-token",
-							value: payloadToken,
-							domain: payloadDomain,
-							path: "/",
-							httpOnly: true,
-							secure: payloadUrl.startsWith("https"),
-							sameSite: "Lax",
-							// Token expires in 2 hours (standard Payload JWT lifetime)
-							expires: Math.floor(Date.now() / 1000) + 7200,
-						},
-					]);
+				// Inject the payload-token cookie into the browser context
+				const payloadDomain = new URL(payloadUrl).hostname;
+				await context.addCookies([
+					{
+						name: "payload-token",
+						value: payloadToken,
+						domain: payloadDomain,
+						path: "/",
+						httpOnly: true,
+						secure: payloadUrl.startsWith("https"),
+						sameSite: "Lax",
+						// Token expires in 2 hours (standard Payload JWT lifetime)
+						expires: Math.floor(Date.now() / 1000) + 7200,
+					},
+				]);
 
+				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+				console.log(
+					`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
+				);
+
+				debugLog("payload:cookie_injected", {
+					user: authState.name,
+					domain: payloadDomain,
+					tokenLength: payloadToken.length,
+					expires: Math.floor(Date.now() / 1000) + 7200,
+				});
+
+				// Navigate to Payload admin to verify authentication works
+				await page.goto(`${payloadUrl}/admin`, {
+					waitUntil: "domcontentloaded",
+					timeout: 30000,
+				});
+
+				// Give it a moment for the page to settle
+				await page.waitForTimeout(1000);
+
+				// Final verification: ensure we're authenticated (not on login page)
+				const adminNav = await page
+					.locator(".nav, .sidebar, .template-default")
+					.first()
+					.isVisible({ timeout: 5000 })
+					.catch(() => false);
+
+				if (adminNav) {
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(`✅ Payload admin panel loaded for ${authState.name}`);
+				} else {
 					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 					console.log(
-						`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
-					);
-
-					debugLog("payload:cookie_injected", {
-						user: authState.name,
-						domain: payloadDomain,
-						tokenLength: payloadToken.length,
-						expires: Math.floor(Date.now() / 1000) + 7200,
-					});
-
-					// Navigate to Payload admin to verify authentication works
-					await page.goto(`${payloadUrl}/admin`, {
-						waitUntil: "domcontentloaded",
-						timeout: 30000,
-					});
-
-					// Give it a moment for the page to settle
-					await page.waitForTimeout(1000);
-
-					// Final verification: ensure we're authenticated (not on login page)
-					const adminNav = await page
-						.locator(".nav, .sidebar, .template-default")
-						.first()
-						.isVisible({ timeout: 5000 })
-						.catch(() => false);
-
-					if (adminNav) {
-						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-						console.log(`✅ Payload admin panel loaded for ${authState.name}`);
-					} else {
-						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-						console.log(
-							`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
-						);
-					}
-				} else {
-					// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
-					console.error(
-						`❌ Payload API login failed for ${authState.name} - no token received`,
+						`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
 					);
 				}
 			} catch (error) {
@@ -602,7 +654,10 @@ async function globalSetup(config: FullConfig) {
 				console.error(
 					`❌ Failed to setup Payload admin for ${authState.name}: ${(error as Error).message}`,
 				);
-				// Don't throw - continue with storage state save, tests will reveal if auth failed
+				// Re-throw error to fail setup loudly rather than silently continuing
+				// This ensures Payload auth issues are caught immediately in setup rather than
+				// manifesting as confusing failures in individual tests
+				throw error;
 			}
 		}
 

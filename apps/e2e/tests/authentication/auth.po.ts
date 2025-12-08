@@ -501,17 +501,23 @@ export class AuthPageObject {
 		// This pattern sets up response listener BEFORE form submission, then retries
 		// the entire operation if the auth API isn't called (indicating hydration wasn't ready)
 		//
-		// Timing budget (test timeout is 30s):
-		// - Per-attempt timeout: ~8s (navigation 5s + form 1s + auth 8s, but run concurrently)
-		// - Backoff intervals: [500, 1000, 2000] = 3.5s total
-		// - Max attempts: 3, total worst case: ~28s
+		// Timing budget uses environment-aware config from testConfig:
+		// - CI environments use longer timeouts and more aggressive retry intervals
+		// - Local environments use shorter timeouts for faster feedback
+		// - Per-attempt timeout is derived from "short" timeout config
+		const perAttemptTimeout = testConfig.getTimeout("short");
+		const authIntervals = testConfig.getRetryIntervals("auth");
+
 		await expect(async () => {
 			// Navigate to sign-in page for each attempt (fresh state)
 			await this.goToSignIn(params.next);
 
 			// Wait for form to be visible and interactive
 			const emailInput = this.page.locator('[data-testid="sign-in-email"]');
-			await emailInput.waitFor({ state: "visible", timeout: 8000 });
+			await emailInput.waitFor({
+				state: "visible",
+				timeout: perAttemptTimeout,
+			});
 
 			// Set up response listener BEFORE any form interaction
 			// This is the key fix: listener is ready before React Query could fire
@@ -527,7 +533,7 @@ export class AuthPageObject {
 					// Accept both 200 (success) and 400/401 (invalid credentials)
 					return isAuthToken && response.status() < 500;
 				},
-				{ timeout: 8000 }, // Per-attempt auth timeout; toPass handles retries
+				{ timeout: perAttemptTimeout }, // Per-attempt auth timeout from config; toPass handles retries
 			);
 
 			// Fill form fields with clear/fill pattern for reliability
@@ -564,7 +570,7 @@ export class AuthPageObject {
 							urlStr.includes(targetUrl) || urlStr.includes("/onboarding");
 						return leftSignIn && reachedTarget;
 					},
-					{ timeout: 8000 },
+					{ timeout: perAttemptTimeout },
 				);
 			} else if (status === 400 || status === 401) {
 				// Invalid credentials - this is expected for some test cases
@@ -574,9 +580,9 @@ export class AuthPageObject {
 				);
 			}
 		}).toPass({
-			// Exponential backoff with 3 retry attempts to fit in 30s test timeout
-			// Fast first retry (500ms) catches most React Query hydration delays
-			intervals: [500, 1000, 2000],
+			// Use environment-aware retry intervals from testConfig
+			// CI environments get longer intervals for network latency resilience
+			intervals: authIntervals,
 			timeout: authTimeout,
 		});
 
