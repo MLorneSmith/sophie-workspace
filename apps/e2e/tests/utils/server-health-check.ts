@@ -28,7 +28,7 @@ export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(
 			() => controller.abort(),
-			HEALTH_CHECK_TIMEOUT
+			HEALTH_CHECK_TIMEOUT,
 		);
 
 		// Check the REST API health endpoint
@@ -85,7 +85,7 @@ export async function checkNextJsHealth(): Promise<HealthCheckResult> {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(
 			() => controller.abort(),
-			HEALTH_CHECK_TIMEOUT
+			HEALTH_CHECK_TIMEOUT,
 		);
 
 		const response = await fetch(baseUrl, {
@@ -136,7 +136,7 @@ export async function checkPayloadHealth(): Promise<HealthCheckResult> {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(
 			() => controller.abort(),
-			HEALTH_CHECK_TIMEOUT
+			HEALTH_CHECK_TIMEOUT,
 		);
 
 		// Check the API endpoint
@@ -214,13 +214,13 @@ export function logHealthCheckResults(results: {
 }): void {
 	console.log("\n📋 Server Health Check Results:");
 	console.log(
-		`  ${results.supabase.healthy ? "✅" : "❌"} Supabase: ${results.supabase.message}`
+		`  ${results.supabase.healthy ? "✅" : "❌"} Supabase: ${results.supabase.message}`,
 	);
 	console.log(
-		`  ${results.nextjs.healthy ? "✅" : "❌"} Next.js: ${results.nextjs.message}`
+		`  ${results.nextjs.healthy ? "✅" : "❌"} Next.js: ${results.nextjs.message}`,
 	);
 	console.log(
-		`  ${results.payload.healthy ? "✅" : "⚠️"} Payload: ${results.payload.message}`
+		`  ${results.payload.healthy ? "✅" : "⚠️"} Payload: ${results.payload.message}`,
 	);
 	console.log("");
 }
