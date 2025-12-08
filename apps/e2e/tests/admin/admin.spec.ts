@@ -456,7 +456,16 @@ async function filterAccounts(page: Page, email: string) {
 		.fill(email);
 
 	await page.keyboard.press("Enter");
-	await page.waitForTimeout(250);
+
+	// Wait for the filtered row to appear in the table
+	// Using toPass() pattern for reliability instead of fixed timeout
+	await expect(async () => {
+		const row = page.locator("tr", { hasText: email.split("@")[0] });
+		await expect(row).toBeVisible();
+	}).toPass({
+		timeout: 10000,
+		intervals: [500, 1000, 2000],
+	});
 }
 
 async function selectAccount(page: Page, email: string) {
