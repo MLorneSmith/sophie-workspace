@@ -29,6 +29,7 @@ describe('payload-initializer', () => {
     // sslmode=disable required for local Supabase with self-signed certificates
     process.env.DATABASE_URI = 'postgresql://test:test@localhost:5432/test?sslmode=disable';
     process.env.PAYLOAD_SECRET = 'test-secret-key-for-testing';
+    process.env.SEED_USER_PASSWORD = 'test-password';
     // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
     process.env.NODE_ENV = 'test';
   });
