@@ -70,7 +70,7 @@ export async function convertPrivate(
 				// Add reference mapping for this post
 				referenceManager.addMapping({
 					type: "collection",
-					collection: "private",
+					collection: "private-posts",
 					originalId: ref,
 					identifier: slug,
 				});

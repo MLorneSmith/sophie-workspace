@@ -41,7 +41,7 @@ export const SEED_ORDER: readonly string[] = [
   // Level 1: Depend on Level 0 (media, downloads, users)
   'posts', // Blog posts (may reference media)
   'courses', // Course definitions (may reference media/downloads)
-  'private', // Private posts (may reference media/downloads)
+  'private-posts', // Private posts (may reference media/downloads)
   'quiz-questions', // Quiz questions (independent of quizzes/lessons)
   'survey-questions', // Survey questions (independent of surveys)
 
@@ -112,7 +112,7 @@ export const PRODUCTION_COLLECTIONS = [
   'surveys',
   'quiz-questions',
   'survey-questions',
-  'private',
+  'private-posts',
 ] as const;
 
 /**
@@ -209,8 +209,8 @@ export const COLLECTION_CONFIGS: Record<string, CollectionConfig> = {
     processor: 'content',
     dependencies: [],
   },
-  private: {
-    name: 'private',
+  'private-posts': {
+    name: 'private-posts',
     dataFile: 'private.json',
     processor: 'content',
     dependencies: ['media', 'downloads'],

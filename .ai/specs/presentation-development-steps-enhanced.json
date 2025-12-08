@@ -1,0 +1,864 @@
+{
+	"version": "2.0.0",
+	"description": "Enhanced presentation development workflow combining course lessons with professional best practices",
+	"source": {
+		"original": "apps/payload/src/seed/seed-data-raw/lessons/*.mdoc",
+		"enhanced": "Professional presentation development best practices analysis"
+	},
+	"extractedAt": "2025-12-05",
+	"phases": [
+		{
+			"id": "phase-1-discovery",
+			"name": "Discovery & Research",
+			"description": "Understand your topic, audience, and context before planning",
+			"order": 1,
+			"isNew": true,
+			"lessons": [],
+			"tasks": [
+				{
+					"id": "task-001",
+					"title": "Research your topic deeply",
+					"description": "Build subject matter expertise before you can teach others",
+					"priority": "high",
+					"order": 1,
+					"isNew": true
+				},
+				{
+					"id": "task-002",
+					"title": "Analyze competing or similar presentations",
+					"description": "Review what has worked before in this space - TED talks, industry presentations, competitor decks",
+					"priority": "medium",
+					"order": 2,
+					"isNew": true
+				},
+				{
+					"id": "task-003",
+					"title": "Identify constraints and logistics",
+					"description": "Time limits, venue, technical setup, audience size, remote vs in-person",
+					"priority": "high",
+					"order": 3,
+					"isNew": true
+				},
+				{
+					"id": "task-004",
+					"title": "Define success metrics",
+					"description": "How will you know if the presentation succeeded? What actions or outcomes do you want?",
+					"priority": "medium",
+					"order": 4,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-2-the-start",
+			"name": "The Start",
+			"description": "Define your audience and presentation goals",
+			"order": 2,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "our-process",
+					"lessonNumber": 201,
+					"title": "Our Process",
+					"chapter": "the-start"
+				},
+				{
+					"lessonId": "the-who",
+					"lessonNumber": 202,
+					"title": "The Who",
+					"chapter": "the-start"
+				},
+				{
+					"lessonId": "the-why-introductions",
+					"lessonNumber": 203,
+					"title": "The Why: Building the Introduction",
+					"chapter": "the-start"
+				},
+				{
+					"lessonId": "the-why-next-steps",
+					"lessonNumber": 204,
+					"title": "The Why: Next Steps",
+					"chapter": "the-start"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-005",
+					"lessonId": "the-who",
+					"title": "Stay out of PowerPoint!",
+					"description": "Resist the urge to open PowerPoint too early in the process",
+					"priority": "high",
+					"order": 5,
+					"isNew": false
+				},
+				{
+					"id": "task-006",
+					"lessonId": "the-who",
+					"title": "Select a presentation for your project",
+					"description": "Choose a real presentation to work on throughout the process",
+					"priority": "high",
+					"order": 6,
+					"isNew": false
+				},
+				{
+					"id": "task-007",
+					"lessonId": "the-who",
+					"title": "Identify the audience for your presentation",
+					"description": "Determine who will be receiving your presentation",
+					"priority": "high",
+					"order": 7,
+					"isNew": false
+				},
+				{
+					"id": "task-008",
+					"lessonId": "the-who",
+					"title": "Create an audience map",
+					"description": "Document key characteristics, needs, expectations, and knowledge level of your audience",
+					"priority": "high",
+					"order": 8,
+					"isNew": false
+				},
+				{
+					"id": "task-009",
+					"title": "Identify audience pain points and motivations",
+					"description": "What problems does your audience face? What do they care about most?",
+					"priority": "medium",
+					"order": 9,
+					"isNew": true
+				},
+				{
+					"id": "task-010",
+					"lessonId": "the-why-introductions",
+					"title": "Build the context portion of your introduction",
+					"description": "Identify what your audience already knows and establish common ground",
+					"priority": "high",
+					"order": 10,
+					"isNew": false
+				},
+				{
+					"id": "task-011",
+					"lessonId": "the-why-introductions",
+					"title": "Determine the catalyst for the presentation",
+					"description": "What has happened that has created the need for this presentation?",
+					"priority": "high",
+					"order": 11,
+					"isNew": false
+				},
+				{
+					"id": "task-012",
+					"lessonId": "the-why-introductions",
+					"title": "Determine the central question you are answering",
+					"description": "Clarify the central question your presentation addresses",
+					"priority": "high",
+					"order": 12,
+					"isNew": false
+				},
+				{
+					"id": "task-013",
+					"lessonId": "the-why-next-steps",
+					"title": "Write down a single goal or next step",
+					"description": "Define the ultimate objective of your presentation - the ONE thing",
+					"priority": "high",
+					"order": 13,
+					"isNew": false
+				},
+				{
+					"id": "task-014",
+					"lessonId": "the-why-next-steps",
+					"title": "Plan the Action Agenda for the first 72 hours",
+					"description": "Think about the component pieces of your goal and immediate next steps",
+					"priority": "medium",
+					"order": 14,
+					"isNew": false
+				}
+			]
+		},
+		{
+			"id": "phase-3-structure",
+			"name": "Structure",
+			"description": "Generate and organize your ideas into a logical flow",
+			"order": 3,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "idea-generation",
+					"lessonNumber": 301,
+					"title": "Idea Generation",
+					"chapter": "structure"
+				},
+				{
+					"lessonId": "what-is-structure",
+					"lessonNumber": 302,
+					"title": "What is Structure?",
+					"chapter": "structure"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-015",
+					"lessonId": "idea-generation",
+					"title": "Gather content to answer your question",
+					"description": "Collect existing content, data, research, and new analysis",
+					"priority": "high",
+					"order": 15,
+					"isNew": false
+				},
+				{
+					"id": "task-016",
+					"lessonId": "idea-generation",
+					"title": "Run a brainstorming session",
+					"description": "Generate new ideas and approaches - write everything down without judgment",
+					"priority": "high",
+					"order": 16,
+					"isNew": false
+				},
+				{
+					"id": "task-017",
+					"lessonId": "idea-generation",
+					"title": "Select a visual thinking tool",
+					"description": "Choose a method to organize and visualize your thoughts (mind map, sticky notes, etc.)",
+					"priority": "medium",
+					"order": 17,
+					"isNew": false
+				},
+				{
+					"id": "task-018",
+					"title": "Define your key message hierarchy",
+					"description": "What's the ONE thing they must remember? What are the 3-5 supporting points?",
+					"priority": "high",
+					"order": 18,
+					"isNew": true
+				},
+				{
+					"id": "task-019",
+					"lessonId": "what-is-structure",
+					"title": "Create an Argument Map",
+					"description": "Visually map out your reasoning structure for your answer",
+					"priority": "high",
+					"order": 19,
+					"isNew": false
+				},
+				{
+					"id": "task-020",
+					"lessonId": "what-is-structure",
+					"title": "Build an inductive argument",
+					"description": "Build logical support for your conclusion from evidence to claim",
+					"priority": "high",
+					"order": 20,
+					"isNew": false
+				},
+				{
+					"id": "task-021",
+					"lessonId": "what-is-structure",
+					"title": "Structure evidence into MECE groups",
+					"description": "Organize supporting evidence into mutually exclusive, collectively exhaustive groups (4-5 max)",
+					"priority": "high",
+					"order": 21,
+					"isNew": false
+				},
+				{
+					"id": "task-022",
+					"title": "Develop the 'so what?' for each point",
+					"description": "For every piece of content, answer: Why should the audience care?",
+					"priority": "high",
+					"order": 22,
+					"isNew": true
+				},
+				{
+					"id": "task-023",
+					"title": "Build transitions between sections",
+					"description": "Plan how ideas flow together - create bridges between major sections",
+					"priority": "medium",
+					"order": 23,
+					"isNew": true
+				},
+				{
+					"id": "task-024",
+					"title": "Identify potential objections and questions",
+					"description": "Anticipate pushback and prepare responses - address objections proactively",
+					"priority": "medium",
+					"order": 24,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-4-storytelling",
+			"name": "Storytelling",
+			"description": "Craft your narrative arc and create the storyboard",
+			"order": 4,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "using-stories",
+					"lessonNumber": 401,
+					"title": "Using Stories",
+					"chapter": "storytelling"
+				},
+				{
+					"lessonId": "storyboards-film",
+					"lessonNumber": 402,
+					"title": "Storyboards in Film",
+					"chapter": "storytelling"
+				},
+				{
+					"lessonId": "storyboards-presentations",
+					"lessonNumber": 403,
+					"title": "Storyboards in Presentations",
+					"chapter": "storytelling"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-025",
+					"lessonId": "using-stories",
+					"title": "Identify where to inject stories",
+					"description": "Find opportunities for narrative elements in your presentation",
+					"priority": "medium",
+					"order": 25,
+					"isNew": false
+				},
+				{
+					"id": "task-026",
+					"lessonId": "using-stories",
+					"title": "Determine story placement",
+					"description": "Consider adding stories at the beginning (hook), middle (illustration), or end (inspiration)",
+					"priority": "medium",
+					"order": 26,
+					"isNew": false
+				},
+				{
+					"id": "task-027",
+					"lessonId": "using-stories",
+					"title": "Design stories that stick",
+					"description": "Make your stories memorable using concrete details, emotion, and unexpectedness",
+					"priority": "medium",
+					"order": 27,
+					"isNew": false
+				},
+				{
+					"id": "task-028",
+					"title": "Gather supporting evidence for your stories",
+					"description": "Stories need credibility - collect data, quotes, or visuals that reinforce them",
+					"priority": "medium",
+					"order": 28,
+					"isNew": true
+				},
+				{
+					"id": "task-029",
+					"title": "Map the emotional arc",
+					"description": "Plan where the highs and lows are - tension, relief, inspiration, call to action",
+					"priority": "medium",
+					"order": 29,
+					"isNew": true
+				},
+				{
+					"id": "task-030",
+					"lessonId": "storyboards-presentations",
+					"title": "Create your storyboard on paper",
+					"description": "Draft your presentation flow on paper or sticky notes first - one idea per 'slide'",
+					"priority": "high",
+					"order": 30,
+					"isNew": false
+				},
+				{
+					"id": "task-031",
+					"lessonId": "storyboards-presentations",
+					"title": "Iterate the storyboard several times",
+					"description": "Refine focusing first on key messages, then flow, then supporting arguments",
+					"priority": "high",
+					"order": 31,
+					"isNew": false
+				},
+				{
+					"id": "task-032",
+					"title": "Test story resonance with a sample audience",
+					"description": "Share your storyboard with 1-2 trusted people - does the narrative land?",
+					"priority": "medium",
+					"order": 32,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-5-design",
+			"name": "Design",
+			"description": "Apply visual design principles and create slides",
+			"order": 5,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "visual-perception",
+					"lessonNumber": 501,
+					"title": "Visual Perception and Communication",
+					"chapter": "design"
+				},
+				{
+					"lessonId": "fundamental-design-overview",
+					"lessonNumber": 502,
+					"title": "Overview of the Fundamental Elements of Design",
+					"chapter": "design"
+				},
+				{
+					"lessonId": "fundamental-design-detail",
+					"lessonNumber": 503,
+					"title": "The Fundamental Elements of Design in Detail",
+					"chapter": "design"
+				},
+				{
+					"lessonId": "gestalt-principles",
+					"lessonNumber": 504,
+					"title": "Gestalt Principles",
+					"chapter": "design"
+				},
+				{
+					"lessonId": "slide-composition",
+					"lessonNumber": 511,
+					"title": "Slide Composition",
+					"chapter": "design"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-033",
+					"lessonId": "visual-perception",
+					"title": "Refine storyboard for visual balance",
+					"description": "Strike the balance between text and visual forms (charts, graphs, diagrams)",
+					"priority": "medium",
+					"order": 33,
+					"isNew": false
+				},
+				{
+					"id": "task-034",
+					"lessonId": "fundamental-design-detail",
+					"title": "Create a color palette",
+					"description": "Use Adobe Color Wheel or similar tool to define your presentation's color scheme",
+					"priority": "medium",
+					"order": 34,
+					"isNew": false
+				},
+				{
+					"id": "task-035",
+					"lessonId": "fundamental-design-detail",
+					"title": "Select custom fonts",
+					"description": "Choose complementary fonts for headings and body text, download and install",
+					"priority": "medium",
+					"order": 35,
+					"isNew": false
+				},
+				{
+					"id": "task-036",
+					"title": "Create a master slide template",
+					"description": "Build consistent layouts before creating individual slides - title, content, section dividers",
+					"priority": "high",
+					"order": 36,
+					"isNew": true
+				},
+				{
+					"id": "task-037",
+					"title": "Design title slide and section dividers",
+					"description": "First impressions matter - create a compelling opening visual",
+					"priority": "medium",
+					"order": 37,
+					"isNew": true
+				},
+				{
+					"id": "task-038",
+					"title": "Build an icon and image library",
+					"description": "Gather consistent visual assets - icons, photos, illustrations in a unified style",
+					"priority": "medium",
+					"order": 38,
+					"isNew": true
+				},
+				{
+					"id": "task-039",
+					"lessonId": "fundamental-design-detail",
+					"title": "Review storyboard for design principle violations",
+					"description": "Check whitespace, alignment, proximity, contrast, and repetition",
+					"priority": "medium",
+					"order": 39,
+					"isNew": false
+				},
+				{
+					"id": "task-040",
+					"lessonId": "slide-composition",
+					"title": "Design your slides in detail",
+					"description": "Move beyond storyboarding and start actual slide creation",
+					"priority": "high",
+					"order": 40,
+					"isNew": false
+				},
+				{
+					"id": "task-041",
+					"title": "Create a handout or leave-behind version",
+					"description": "Design a version suitable for distribution after the presentation",
+					"priority": "low",
+					"order": 41,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-6-data-visualization",
+			"name": "Data Visualization",
+			"description": "Create effective charts, graphs, and data displays",
+			"order": 6,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "tables-vs-graphs",
+					"lessonNumber": 601,
+					"title": "Tables vs Graphs",
+					"chapter": "data-visualization"
+				},
+				{
+					"lessonId": "basic-graphs",
+					"lessonNumber": 602,
+					"title": "Basic Graphs",
+					"chapter": "data-visualization"
+				},
+				{
+					"lessonId": "specialist-graphs",
+					"lessonNumber": 603,
+					"title": "Specialist Graphs",
+					"chapter": "data-visualization"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-042",
+					"title": "Validate data accuracy",
+					"description": "Fact-check all data before visualizing - verify sources and calculations",
+					"priority": "high",
+					"order": 42,
+					"isNew": true
+				},
+				{
+					"id": "task-043",
+					"lessonId": "tables-vs-graphs",
+					"title": "Decide tables vs graphs for your data",
+					"description": "Choose the right format for each data point based on the story you're telling",
+					"priority": "medium",
+					"order": 43,
+					"isNew": false
+				},
+				{
+					"id": "task-044",
+					"lessonId": "basic-graphs",
+					"title": "Create basic charts",
+					"description": "Apply best practices for bar charts, line charts, and pie charts",
+					"priority": "medium",
+					"order": 44,
+					"isNew": false
+				},
+				{
+					"id": "task-045",
+					"lessonId": "specialist-graphs",
+					"title": "Consider specialized chart types",
+					"description": "Explore waterfall charts, scatter plots, and other advanced visualizations if appropriate",
+					"priority": "low",
+					"order": 45,
+					"isNew": false
+				},
+				{
+					"id": "task-046",
+					"title": "Add source citations to data",
+					"description": "Include sources for credibility - small text at bottom of data slides",
+					"priority": "medium",
+					"order": 46,
+					"isNew": true
+				},
+				{
+					"id": "task-047",
+					"title": "Create animation and build sequences",
+					"description": "Plan progressive disclosure of complex data - reveal data points sequentially",
+					"priority": "low",
+					"order": 47,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-7-review",
+			"name": "Review & Refinement",
+			"description": "Quality assurance and feedback incorporation",
+			"order": 7,
+			"isNew": true,
+			"lessons": [],
+			"tasks": [
+				{
+					"id": "task-048",
+					"title": "Conduct peer review of content",
+					"description": "Get expert feedback on accuracy, logic, and persuasiveness",
+					"priority": "high",
+					"order": 48,
+					"isNew": true
+				},
+				{
+					"id": "task-049",
+					"title": "Conduct design review",
+					"description": "Fresh eyes on visual consistency, readability, and professional appearance",
+					"priority": "medium",
+					"order": 49,
+					"isNew": true
+				},
+				{
+					"id": "task-050",
+					"title": "Perform accessibility check",
+					"description": "Verify color contrast, font sizes, alt text for images, and screen reader compatibility",
+					"priority": "medium",
+					"order": 50,
+					"isNew": true
+				},
+				{
+					"id": "task-051",
+					"title": "Complete legal and compliance review",
+					"description": "If presenting externally, verify trademarks, confidential info, and regulatory compliance",
+					"priority": "high",
+					"order": 51,
+					"isNew": true,
+					"conditional": "External presentations only"
+				},
+				{
+					"id": "task-052",
+					"title": "Final proofread",
+					"description": "Check for typos, grammar, consistency in terminology, and formatting",
+					"priority": "high",
+					"order": 52,
+					"isNew": true
+				},
+				{
+					"id": "task-053",
+					"title": "Incorporate feedback and finalize",
+					"description": "Address review comments and lock the final version",
+					"priority": "high",
+					"order": 53,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-8-performance",
+			"name": "Performance",
+			"description": "Prepare, practice, and deliver your presentation",
+			"order": 8,
+			"isNew": false,
+			"lessons": [
+				{
+					"lessonId": "preparation-practice",
+					"lessonNumber": 701,
+					"title": "Preparation and Practice",
+					"chapter": "performance"
+				},
+				{
+					"lessonId": "performance",
+					"lessonNumber": 702,
+					"title": "Performance",
+					"chapter": "performance"
+				}
+			],
+			"tasks": [
+				{
+					"id": "task-054",
+					"lessonId": "preparation-practice",
+					"title": "Write your voiceover script",
+					"description": "Document what you will say for each slide - word for word initially",
+					"priority": "high",
+					"order": 54,
+					"isNew": false
+				},
+				{
+					"id": "task-055",
+					"title": "Create speaker notes",
+					"description": "Condense script into bullet-point reminders for each slide - not full sentences",
+					"priority": "medium",
+					"order": 55,
+					"isNew": true
+				},
+				{
+					"id": "task-056",
+					"lessonId": "preparation-practice",
+					"title": "Memorize your script",
+					"description": "Know your content well enough to deliver naturally without reading",
+					"priority": "high",
+					"order": 56,
+					"isNew": false
+				},
+				{
+					"id": "task-057",
+					"title": "Prepare for Q&A",
+					"description": "Anticipate 10-15 likely questions and prepare concise answers",
+					"priority": "high",
+					"order": 57,
+					"isNew": true
+				},
+				{
+					"id": "task-058",
+					"title": "Create backup slides for Q&A",
+					"description": "Build an appendix with supporting data for anticipated questions",
+					"priority": "medium",
+					"order": 58,
+					"isNew": true
+				},
+				{
+					"id": "task-059",
+					"lessonId": "preparation-practice",
+					"title": "Test presentation length and edit to fit time",
+					"description": "Time yourself and cut or expand to fit the allotted time (aim for 80% to allow for Q&A)",
+					"priority": "high",
+					"order": 59,
+					"isNew": false
+				},
+				{
+					"id": "task-060",
+					"title": "Conduct technical rehearsal",
+					"description": "Test equipment, clicker, screen resolution, audio/video playback in actual venue if possible",
+					"priority": "high",
+					"order": 60,
+					"isNew": true
+				},
+				{
+					"id": "task-061",
+					"lessonId": "preparation-practice",
+					"title": "Practice in front of others and solicit feedback",
+					"description": "Do at least 2-3 full run-throughs with a live audience",
+					"priority": "high",
+					"order": 61,
+					"isNew": false
+				},
+				{
+					"id": "task-062",
+					"lessonId": "performance",
+					"title": "Record and review yourself presenting",
+					"description": "Record video and watch it critically - note verbal tics, pacing, eye contact",
+					"priority": "medium",
+					"order": 62,
+					"isNew": false
+				},
+				{
+					"id": "task-063",
+					"lessonId": "preparation-practice",
+					"title": "Develop a 'Plan B' deck",
+					"description": "Prepare a condensed 50% version for time-constrained situations",
+					"priority": "low",
+					"order": 63,
+					"isNew": false
+				},
+				{
+					"id": "task-064",
+					"title": "Prepare backup plans for technical failures",
+					"description": "What if projector fails? No internet? Have PDF backup, printed handouts ready",
+					"priority": "medium",
+					"order": 64,
+					"isNew": true
+				}
+			]
+		},
+		{
+			"id": "phase-9-follow-up",
+			"name": "Follow-Up",
+			"description": "Post-presentation activities and continuous improvement",
+			"order": 9,
+			"isNew": true,
+			"lessons": [],
+			"tasks": [
+				{
+					"id": "task-065",
+					"title": "Send follow-up materials",
+					"description": "Distribute slides, handouts, or additional resources to attendees",
+					"priority": "high",
+					"order": 65,
+					"isNew": true
+				},
+				{
+					"id": "task-066",
+					"title": "Execute the Action Agenda",
+					"description": "Follow through on the next steps you promised in the presentation",
+					"priority": "high",
+					"order": 66,
+					"isNew": true
+				},
+				{
+					"id": "task-067",
+					"title": "Collect feedback from attendees",
+					"description": "Send a brief survey or request informal feedback on what worked",
+					"priority": "medium",
+					"order": 67,
+					"isNew": true
+				},
+				{
+					"id": "task-068",
+					"title": "Conduct personal retrospective",
+					"description": "What went well? What would you do differently? Document lessons learned",
+					"priority": "medium",
+					"order": 68,
+					"isNew": true
+				},
+				{
+					"id": "task-069",
+					"title": "Archive presentation materials",
+					"description": "Store final version, speaker notes, and feedback for future reference",
+					"priority": "low",
+					"order": 69,
+					"isNew": true
+				}
+			]
+		}
+	],
+	"summary": {
+		"totalPhases": 9,
+		"originalPhases": 6,
+		"newPhases": 3,
+		"totalTasks": 69,
+		"originalTasks": 33,
+		"newTasks": 36,
+		"phaseBreakdown": [
+			{ "phase": "Discovery & Research", "tasks": 4, "new": 4 },
+			{ "phase": "The Start", "tasks": 10, "new": 1 },
+			{ "phase": "Structure", "tasks": 10, "new": 4 },
+			{ "phase": "Storytelling", "tasks": 8, "new": 3 },
+			{ "phase": "Design", "tasks": 9, "new": 4 },
+			{ "phase": "Data Visualization", "tasks": 6, "new": 3 },
+			{ "phase": "Review & Refinement", "tasks": 6, "new": 6 },
+			{ "phase": "Performance", "tasks": 11, "new": 6 },
+			{ "phase": "Follow-Up", "tasks": 5, "new": 5 }
+		]
+	},
+	"kanbanMapping": {
+		"description": "Suggested mapping of tasks to kanban columns",
+		"columns": {
+			"backlog": {
+				"name": "Backlog",
+				"description": "Tasks not yet ready to start"
+			},
+			"do": {
+				"name": "To Do",
+				"description": "Tasks ready to be worked on"
+			},
+			"doing": {
+				"name": "In Progress",
+				"description": "Tasks currently being worked on"
+			},
+			"review": {
+				"name": "Review",
+				"description": "Tasks awaiting feedback or approval"
+			},
+			"done": {
+				"name": "Done",
+				"description": "Completed tasks"
+			}
+		},
+		"priorities": {
+			"high": "Critical path tasks that block other work",
+			"medium": "Standard workflow tasks",
+			"low": "Optional or enhancement tasks"
+		},
+		"suggestedWorkflow": {
+			"description": "Tasks should generally flow through phases in order, but some parallel work is possible",
+			"parallelizablePhases": [
+				["phase-5-design", "phase-6-data-visualization"]
+			],
+			"gatekeepingPhases": ["phase-7-review"]
+		}
+	}
+}

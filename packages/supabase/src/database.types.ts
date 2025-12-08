@@ -2561,6 +2561,9 @@ export type Database = {
 					order: number | null;
 					question: string;
 					question_slug: string;
+					questiontype:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
 					type: Database["payload"]["Enums"]["enum_quiz_questions_type"];
 					updated_at: string;
 				};
@@ -2571,6 +2574,9 @@ export type Database = {
 					order?: number | null;
 					question: string;
 					question_slug: string;
+					questiontype?:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
 					type?: Database["payload"]["Enums"]["enum_quiz_questions_type"];
 					updated_at?: string;
 				};
@@ -2581,6 +2587,9 @@ export type Database = {
 					order?: number | null;
 					question?: string;
 					question_slug?: string;
+					questiontype?:
+						| Database["payload"]["Enums"]["enum_quiz_questions_questiontype"]
+						| null;
 					type?: Database["payload"]["Enums"]["enum_quiz_questions_type"];
 					updated_at?: string;
 				};
@@ -2864,38 +2873,7 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			collection_has_download: {
-				Args: {
-					collection_id: string;
-					collection_type: string;
-					download_id: string;
-				};
-				Returns: boolean;
-			};
-			ensure_downloads_id_column: {
-				Args: { table_name: string };
-				Returns: undefined;
-			};
-			ensure_downloads_id_column_exists: {
-				Args: { table_name: string };
-				Returns: boolean;
-			};
-			ensure_relationship_columns: {
-				Args: { table_name: string };
-				Returns: undefined;
-			};
-			fix_dynamic_table: { Args: { table_name: string }; Returns: boolean };
-			get_downloads_for_collection: {
-				Args: { collection_id: string; collection_type: string };
-				Returns: {
-					download_id: string;
-				}[];
-			};
-			get_relationship_data: {
-				Args: { fallback_column?: string; id: string; table_name: string };
-				Returns: string;
-			};
-			safe_uuid_conversion: { Args: { text_value: string }; Returns: string };
+			[_ in never]: never;
 		};
 		Enums: {
 			enum__course_lessons_v_version_status: "draft" | "published";
@@ -2930,6 +2908,7 @@ export type Database = {
 			enum_media_type: "image" | "video" | "document";
 			enum_posts_status: "draft" | "published";
 			enum_private_status: "draft" | "published";
+			enum_quiz_questions_questiontype: "single-answer" | "multi-answer";
 			enum_quiz_questions_type: "multiple_choice";
 			enum_survey_questions_questionspin: "Positive" | "Negative";
 			enum_survey_questions_status: "draft" | "published";
@@ -5399,6 +5378,7 @@ export const Constants = {
 			enum_media_type: ["image", "video", "document"],
 			enum_posts_status: ["draft", "published"],
 			enum_private_status: ["draft", "published"],
+			enum_quiz_questions_questiontype: ["single-answer", "multi-answer"],
 			enum_quiz_questions_type: ["multiple_choice"],
 			enum_survey_questions_questionspin: ["Positive", "Negative"],
 			enum_survey_questions_status: ["draft", "published"],

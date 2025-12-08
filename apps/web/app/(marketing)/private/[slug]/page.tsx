@@ -18,7 +18,7 @@ const getPrivatePostBySlug = cache(privatePostLoader);
 async function privatePostLoader(slug: string) {
 	const client = await createCmsClient();
 
-	return client.getContentItemBySlug({ slug, collection: "private" });
+	return client.getContentItemBySlug({ slug, collection: "private-posts" });
 }
 
 export async function generateMetadata({

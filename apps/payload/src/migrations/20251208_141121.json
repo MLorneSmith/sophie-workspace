@@ -3059,8 +3059,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload.private_categories": {
-      "name": "private_categories",
+    "payload.private_posts_categories": {
+      "name": "private_posts_categories",
       "schema": "payload",
       "columns": {
         "_order": {
@@ -3089,8 +3089,8 @@
         }
       },
       "indexes": {
-        "private_categories_order_idx": {
-          "name": "private_categories_order_idx",
+        "private_posts_categories_order_idx": {
+          "name": "private_posts_categories_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -3104,8 +3104,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_categories_parent_id_idx": {
-          "name": "private_categories_parent_id_idx",
+        "private_posts_categories_parent_id_idx": {
+          "name": "private_posts_categories_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -3121,10 +3121,10 @@
         }
       },
       "foreignKeys": {
-        "private_categories_parent_id_fk": {
-          "name": "private_categories_parent_id_fk",
-          "tableFrom": "private_categories",
-          "tableTo": "private",
+        "private_posts_categories_parent_id_fk": {
+          "name": "private_posts_categories_parent_id_fk",
+          "tableFrom": "private_posts_categories",
+          "tableTo": "private_posts",
           "schemaTo": "payload",
           "columnsFrom": [
             "_parent_id"
@@ -3142,8 +3142,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload.private_tags": {
-      "name": "private_tags",
+    "payload.private_posts_tags": {
+      "name": "private_posts_tags",
       "schema": "payload",
       "columns": {
         "_order": {
@@ -3172,8 +3172,8 @@
         }
       },
       "indexes": {
-        "private_tags_order_idx": {
-          "name": "private_tags_order_idx",
+        "private_posts_tags_order_idx": {
+          "name": "private_posts_tags_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -3187,8 +3187,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_tags_parent_id_idx": {
-          "name": "private_tags_parent_id_idx",
+        "private_posts_tags_parent_id_idx": {
+          "name": "private_posts_tags_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -3204,10 +3204,10 @@
         }
       },
       "foreignKeys": {
-        "private_tags_parent_id_fk": {
-          "name": "private_tags_parent_id_fk",
-          "tableFrom": "private_tags",
-          "tableTo": "private",
+        "private_posts_tags_parent_id_fk": {
+          "name": "private_posts_tags_parent_id_fk",
+          "tableFrom": "private_posts_tags",
+          "tableTo": "private_posts",
           "schemaTo": "payload",
           "columnsFrom": [
             "_parent_id"
@@ -3225,8 +3225,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload.private": {
-      "name": "private",
+    "payload.private_posts": {
+      "name": "private_posts",
       "schema": "payload",
       "columns": {
         "id": {
@@ -3280,7 +3280,7 @@
         },
         "status": {
           "name": "status",
-          "type": "enum_private_status",
+          "type": "enum_private_posts_status",
           "typeSchema": "payload",
           "primaryKey": false,
           "notNull": false,
@@ -3302,7 +3302,7 @@
         },
         "_status": {
           "name": "_status",
-          "type": "enum_private_status",
+          "type": "enum_private_posts_status",
           "typeSchema": "payload",
           "primaryKey": false,
           "notNull": false,
@@ -3310,8 +3310,8 @@
         }
       },
       "indexes": {
-        "private_image_id_idx": {
-          "name": "private_image_id_idx",
+        "private_posts_image_id_idx": {
+          "name": "private_posts_image_id_idx",
           "columns": [
             {
               "expression": "image_id_id",
@@ -3325,8 +3325,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_featured_image_id_idx": {
-          "name": "private_featured_image_id_idx",
+        "private_posts_featured_image_id_idx": {
+          "name": "private_posts_featured_image_id_idx",
           "columns": [
             {
               "expression": "featured_image_id_id",
@@ -3340,8 +3340,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_updated_at_idx": {
-          "name": "private_updated_at_idx",
+        "private_posts_updated_at_idx": {
+          "name": "private_posts_updated_at_idx",
           "columns": [
             {
               "expression": "updated_at",
@@ -3355,8 +3355,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_created_at_idx": {
-          "name": "private_created_at_idx",
+        "private_posts_created_at_idx": {
+          "name": "private_posts_created_at_idx",
           "columns": [
             {
               "expression": "created_at",
@@ -3370,8 +3370,8 @@
           "method": "btree",
           "with": {}
         },
-        "private__status_idx": {
-          "name": "private__status_idx",
+        "private_posts__status_idx": {
+          "name": "private_posts__status_idx",
           "columns": [
             {
               "expression": "_status",
@@ -3387,9 +3387,9 @@
         }
       },
       "foreignKeys": {
-        "private_image_id_id_downloads_id_fk": {
-          "name": "private_image_id_id_downloads_id_fk",
-          "tableFrom": "private",
+        "private_posts_image_id_id_downloads_id_fk": {
+          "name": "private_posts_image_id_id_downloads_id_fk",
+          "tableFrom": "private_posts",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -3401,9 +3401,9 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "private_featured_image_id_id_downloads_id_fk": {
-          "name": "private_featured_image_id_id_downloads_id_fk",
-          "tableFrom": "private",
+        "private_posts_featured_image_id_id_downloads_id_fk": {
+          "name": "private_posts_featured_image_id_id_downloads_id_fk",
+          "tableFrom": "private_posts",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -3422,8 +3422,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload.private_rels": {
-      "name": "private_rels",
+    "payload.private_posts_rels": {
+      "name": "private_posts_rels",
       "schema": "payload",
       "columns": {
         "id": {
@@ -3458,8 +3458,8 @@
         }
       },
       "indexes": {
-        "private_rels_order_idx": {
-          "name": "private_rels_order_idx",
+        "private_posts_rels_order_idx": {
+          "name": "private_posts_rels_order_idx",
           "columns": [
             {
               "expression": "order",
@@ -3473,8 +3473,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_rels_parent_idx": {
-          "name": "private_rels_parent_idx",
+        "private_posts_rels_parent_idx": {
+          "name": "private_posts_rels_parent_idx",
           "columns": [
             {
               "expression": "parent_id",
@@ -3488,8 +3488,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_rels_path_idx": {
-          "name": "private_rels_path_idx",
+        "private_posts_rels_path_idx": {
+          "name": "private_posts_rels_path_idx",
           "columns": [
             {
               "expression": "path",
@@ -3503,8 +3503,8 @@
           "method": "btree",
           "with": {}
         },
-        "private_rels_downloads_id_idx": {
-          "name": "private_rels_downloads_id_idx",
+        "private_posts_rels_downloads_id_idx": {
+          "name": "private_posts_rels_downloads_id_idx",
           "columns": [
             {
               "expression": "downloads_id",
@@ -3520,10 +3520,10 @@
         }
       },
       "foreignKeys": {
-        "private_rels_parent_fk": {
-          "name": "private_rels_parent_fk",
-          "tableFrom": "private_rels",
-          "tableTo": "private",
+        "private_posts_rels_parent_fk": {
+          "name": "private_posts_rels_parent_fk",
+          "tableFrom": "private_posts_rels",
+          "tableTo": "private_posts",
           "schemaTo": "payload",
           "columnsFrom": [
             "parent_id"
@@ -3534,9 +3534,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "private_rels_downloads_fk": {
-          "name": "private_rels_downloads_fk",
-          "tableFrom": "private_rels",
+        "private_posts_rels_downloads_fk": {
+          "name": "private_posts_rels_downloads_fk",
+          "tableFrom": "private_posts_rels",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -3555,8 +3555,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload._private_v_version_categories": {
-      "name": "_private_v_version_categories",
+    "payload._private_posts_v_version_categories": {
+      "name": "_private_posts_v_version_categories",
       "schema": "payload",
       "columns": {
         "_order": {
@@ -3592,8 +3592,8 @@
         }
       },
       "indexes": {
-        "_private_v_version_categories_order_idx": {
-          "name": "_private_v_version_categories_order_idx",
+        "_private_posts_v_version_categories_order_idx": {
+          "name": "_private_posts_v_version_categories_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -3607,8 +3607,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_categories_parent_id_idx": {
-          "name": "_private_v_version_categories_parent_id_idx",
+        "_private_posts_v_version_categories_parent_id_idx": {
+          "name": "_private_posts_v_version_categories_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -3624,10 +3624,10 @@
         }
       },
       "foreignKeys": {
-        "_private_v_version_categories_parent_id_fk": {
-          "name": "_private_v_version_categories_parent_id_fk",
-          "tableFrom": "_private_v_version_categories",
-          "tableTo": "_private_v",
+        "_private_posts_v_version_categories_parent_id_fk": {
+          "name": "_private_posts_v_version_categories_parent_id_fk",
+          "tableFrom": "_private_posts_v_version_categories",
+          "tableTo": "_private_posts_v",
           "schemaTo": "payload",
           "columnsFrom": [
             "_parent_id"
@@ -3645,8 +3645,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload._private_v_version_tags": {
-      "name": "_private_v_version_tags",
+    "payload._private_posts_v_version_tags": {
+      "name": "_private_posts_v_version_tags",
       "schema": "payload",
       "columns": {
         "_order": {
@@ -3682,8 +3682,8 @@
         }
       },
       "indexes": {
-        "_private_v_version_tags_order_idx": {
-          "name": "_private_v_version_tags_order_idx",
+        "_private_posts_v_version_tags_order_idx": {
+          "name": "_private_posts_v_version_tags_order_idx",
           "columns": [
             {
               "expression": "_order",
@@ -3697,8 +3697,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_tags_parent_id_idx": {
-          "name": "_private_v_version_tags_parent_id_idx",
+        "_private_posts_v_version_tags_parent_id_idx": {
+          "name": "_private_posts_v_version_tags_parent_id_idx",
           "columns": [
             {
               "expression": "_parent_id",
@@ -3714,10 +3714,10 @@
         }
       },
       "foreignKeys": {
-        "_private_v_version_tags_parent_id_fk": {
-          "name": "_private_v_version_tags_parent_id_fk",
-          "tableFrom": "_private_v_version_tags",
-          "tableTo": "_private_v",
+        "_private_posts_v_version_tags_parent_id_fk": {
+          "name": "_private_posts_v_version_tags_parent_id_fk",
+          "tableFrom": "_private_posts_v_version_tags",
+          "tableTo": "_private_posts_v",
           "schemaTo": "payload",
           "columnsFrom": [
             "_parent_id"
@@ -3735,8 +3735,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload._private_v": {
-      "name": "_private_v",
+    "payload._private_posts_v": {
+      "name": "_private_posts_v",
       "schema": "payload",
       "columns": {
         "id": {
@@ -3796,7 +3796,7 @@
         },
         "version_status": {
           "name": "version_status",
-          "type": "enum__private_v_version_status",
+          "type": "enum__private_posts_v_version_status",
           "typeSchema": "payload",
           "primaryKey": false,
           "notNull": false,
@@ -3816,7 +3816,7 @@
         },
         "version__status": {
           "name": "version__status",
-          "type": "enum__private_v_version_status",
+          "type": "enum__private_posts_v_version_status",
           "typeSchema": "payload",
           "primaryKey": false,
           "notNull": false,
@@ -3844,8 +3844,8 @@
         }
       },
       "indexes": {
-        "_private_v_parent_idx": {
-          "name": "_private_v_parent_idx",
+        "_private_posts_v_parent_idx": {
+          "name": "_private_posts_v_parent_idx",
           "columns": [
             {
               "expression": "parent_id",
@@ -3859,8 +3859,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_version_image_id_idx": {
-          "name": "_private_v_version_version_image_id_idx",
+        "_private_posts_v_version_version_image_id_idx": {
+          "name": "_private_posts_v_version_version_image_id_idx",
           "columns": [
             {
               "expression": "version_image_id_id",
@@ -3874,8 +3874,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_version_featured_image_id_idx": {
-          "name": "_private_v_version_version_featured_image_id_idx",
+        "_private_posts_v_version_version_featured_image_id_idx": {
+          "name": "_private_posts_v_version_version_featured_image_id_idx",
           "columns": [
             {
               "expression": "version_featured_image_id_id",
@@ -3889,8 +3889,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_version_updated_at_idx": {
-          "name": "_private_v_version_version_updated_at_idx",
+        "_private_posts_v_version_version_updated_at_idx": {
+          "name": "_private_posts_v_version_version_updated_at_idx",
           "columns": [
             {
               "expression": "version_updated_at",
@@ -3904,8 +3904,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_version_created_at_idx": {
-          "name": "_private_v_version_version_created_at_idx",
+        "_private_posts_v_version_version_created_at_idx": {
+          "name": "_private_posts_v_version_version_created_at_idx",
           "columns": [
             {
               "expression": "version_created_at",
@@ -3919,8 +3919,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_version_version__status_idx": {
-          "name": "_private_v_version_version__status_idx",
+        "_private_posts_v_version_version__status_idx": {
+          "name": "_private_posts_v_version_version__status_idx",
           "columns": [
             {
               "expression": "version__status",
@@ -3934,8 +3934,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_created_at_idx": {
-          "name": "_private_v_created_at_idx",
+        "_private_posts_v_created_at_idx": {
+          "name": "_private_posts_v_created_at_idx",
           "columns": [
             {
               "expression": "created_at",
@@ -3949,8 +3949,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_updated_at_idx": {
-          "name": "_private_v_updated_at_idx",
+        "_private_posts_v_updated_at_idx": {
+          "name": "_private_posts_v_updated_at_idx",
           "columns": [
             {
               "expression": "updated_at",
@@ -3964,8 +3964,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_latest_idx": {
-          "name": "_private_v_latest_idx",
+        "_private_posts_v_latest_idx": {
+          "name": "_private_posts_v_latest_idx",
           "columns": [
             {
               "expression": "latest",
@@ -3981,10 +3981,10 @@
         }
       },
       "foreignKeys": {
-        "_private_v_parent_id_private_id_fk": {
-          "name": "_private_v_parent_id_private_id_fk",
-          "tableFrom": "_private_v",
-          "tableTo": "private",
+        "_private_posts_v_parent_id_private_posts_id_fk": {
+          "name": "_private_posts_v_parent_id_private_posts_id_fk",
+          "tableFrom": "_private_posts_v",
+          "tableTo": "private_posts",
           "schemaTo": "payload",
           "columnsFrom": [
             "parent_id"
@@ -3995,9 +3995,9 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "_private_v_version_image_id_id_downloads_id_fk": {
-          "name": "_private_v_version_image_id_id_downloads_id_fk",
-          "tableFrom": "_private_v",
+        "_private_posts_v_version_image_id_id_downloads_id_fk": {
+          "name": "_private_posts_v_version_image_id_id_downloads_id_fk",
+          "tableFrom": "_private_posts_v",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -4009,9 +4009,9 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "_private_v_version_featured_image_id_id_downloads_id_fk": {
-          "name": "_private_v_version_featured_image_id_id_downloads_id_fk",
-          "tableFrom": "_private_v",
+        "_private_posts_v_version_featured_image_id_id_downloads_id_fk": {
+          "name": "_private_posts_v_version_featured_image_id_id_downloads_id_fk",
+          "tableFrom": "_private_posts_v",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -4030,8 +4030,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "payload._private_v_rels": {
-      "name": "_private_v_rels",
+    "payload._private_posts_v_rels": {
+      "name": "_private_posts_v_rels",
       "schema": "payload",
       "columns": {
         "id": {
@@ -4066,8 +4066,8 @@
         }
       },
       "indexes": {
-        "_private_v_rels_order_idx": {
-          "name": "_private_v_rels_order_idx",
+        "_private_posts_v_rels_order_idx": {
+          "name": "_private_posts_v_rels_order_idx",
           "columns": [
             {
               "expression": "order",
@@ -4081,8 +4081,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_rels_parent_idx": {
-          "name": "_private_v_rels_parent_idx",
+        "_private_posts_v_rels_parent_idx": {
+          "name": "_private_posts_v_rels_parent_idx",
           "columns": [
             {
               "expression": "parent_id",
@@ -4096,8 +4096,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_rels_path_idx": {
-          "name": "_private_v_rels_path_idx",
+        "_private_posts_v_rels_path_idx": {
+          "name": "_private_posts_v_rels_path_idx",
           "columns": [
             {
               "expression": "path",
@@ -4111,8 +4111,8 @@
           "method": "btree",
           "with": {}
         },
-        "_private_v_rels_downloads_id_idx": {
-          "name": "_private_v_rels_downloads_id_idx",
+        "_private_posts_v_rels_downloads_id_idx": {
+          "name": "_private_posts_v_rels_downloads_id_idx",
           "columns": [
             {
               "expression": "downloads_id",
@@ -4128,10 +4128,10 @@
         }
       },
       "foreignKeys": {
-        "_private_v_rels_parent_fk": {
-          "name": "_private_v_rels_parent_fk",
-          "tableFrom": "_private_v_rels",
-          "tableTo": "_private_v",
+        "_private_posts_v_rels_parent_fk": {
+          "name": "_private_posts_v_rels_parent_fk",
+          "tableFrom": "_private_posts_v_rels",
+          "tableTo": "_private_posts_v",
           "schemaTo": "payload",
           "columnsFrom": [
             "parent_id"
@@ -4142,9 +4142,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "_private_v_rels_downloads_fk": {
-          "name": "_private_v_rels_downloads_fk",
-          "tableFrom": "_private_v_rels",
+        "_private_posts_v_rels_downloads_fk": {
+          "name": "_private_posts_v_rels_downloads_fk",
+          "tableFrom": "_private_posts_v_rels",
           "tableTo": "downloads",
           "schemaTo": "payload",
           "columnsFrom": [
@@ -6669,6 +6669,14 @@
           "notNull": true,
           "default": "'multiple_choice'"
         },
+        "questiontype": {
+          "name": "questiontype",
+          "type": "enum_quiz_questions_questiontype",
+          "typeSchema": "payload",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'single-answer'"
+        },
         "question_slug": {
           "name": "question_slug",
           "type": "varchar",
@@ -8154,8 +8162,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "private_id": {
-          "name": "private_id",
+        "private_posts_id": {
+          "name": "private_posts_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -8318,11 +8326,11 @@
           "method": "btree",
           "with": {}
         },
-        "payload_locked_documents_rels_private_id_idx": {
-          "name": "payload_locked_documents_rels_private_id_idx",
+        "payload_locked_documents_rels_private_posts_id_idx": {
+          "name": "payload_locked_documents_rels_private_posts_id_idx",
           "columns": [
             {
-              "expression": "private_id",
+              "expression": "private_posts_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8509,13 +8517,13 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "payload_locked_documents_rels_private_fk": {
-          "name": "payload_locked_documents_rels_private_fk",
+        "payload_locked_documents_rels_private_posts_fk": {
+          "name": "payload_locked_documents_rels_private_posts_fk",
           "tableFrom": "payload_locked_documents_rels",
-          "tableTo": "private",
+          "tableTo": "private_posts",
           "schemaTo": "payload",
           "columnsFrom": [
-            "private_id"
+            "private_posts_id"
           ],
           "columnsTo": [
             "id"
@@ -8989,16 +8997,16 @@
         "published"
       ]
     },
-    "payload.enum_private_status": {
-      "name": "enum_private_status",
+    "payload.enum_private_posts_status": {
+      "name": "enum_private_posts_status",
       "schema": "payload",
       "values": [
         "draft",
         "published"
       ]
     },
-    "payload.enum__private_v_version_status": {
-      "name": "enum__private_v_version_status",
+    "payload.enum__private_posts_v_version_status": {
+      "name": "enum__private_posts_v_version_status",
       "schema": "payload",
       "values": [
         "draft",
@@ -9074,6 +9082,14 @@
       "schema": "payload",
       "values": [
         "multiple_choice"
+      ]
+    },
+    "payload.enum_quiz_questions_questiontype": {
+      "name": "enum_quiz_questions_questiontype",
+      "schema": "payload",
+      "values": [
+        "single-answer",
+        "multi-answer"
       ]
     },
     "payload.enum_survey_questions_type": {
@@ -9157,6 +9173,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "05c302fb-657c-46a0-9c7a-24d39bf4e43f",
+  "id": "df84f4a7-7d26-4756-b97b-1af3965eec63",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
