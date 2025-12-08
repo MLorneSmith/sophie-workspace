@@ -1074,6 +1074,16 @@ class E2ETestRunner {
 				// Use the predefined shard command from package.json if available
 				let command, args, cwd;
 
+				// PHASE 1 FIX: Use JSON reporter for reliable result parsing
+				// Instead of parsing stdout strings, we write JSON output to a file
+				// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+				const jsonOutputPath = path.join(
+					process.cwd(),
+					"apps",
+					"e2e",
+					`.playwright-results-shard-${shardId || "default"}.json`,
+				);
+
 				if (group.shardCommand) {
 					command = "pnpm";
 					args = [
@@ -1081,12 +1091,13 @@ class E2ETestRunner {
 						"web-e2e",
 						group.shardCommand,
 						"--",
-						"--reporter=dot",
+						"--reporter=json,dot",
+						`--output-file=${jsonOutputPath}`,
 						"--retries=0", // Disable retries when running through test controller
 					];
 					cwd = process.cwd();
 					log(
-						`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand} -- --reporter=dot --retries=0`,
+						`${shardPrefix}🎯 Running ${group.name} using: pnpm --filter web-e2e ${group.shardCommand} -- --reporter=json,dot --retries=0`,
 					);
 				} else {
 					log(`${shardPrefix}⚠️ Using fallback execution for ${group.name}`);
@@ -1094,13 +1105,17 @@ class E2ETestRunner {
 					args = [
 						"playwright",
 						"test",
-						"--reporter=dot",
+						"--reporter=json,dot",
+						`--output-file=${jsonOutputPath}`,
 						"--retries=0", // Disable retries when running through test controller
 						"--workers=1",
 						...group.files,
 					];
 					cwd = path.join(process.cwd(), "apps", "e2e");
 				}
+
+				// Store jsonOutputPath for later use in close handler
+				const jsonOutputFile = jsonOutputPath;
 
 				// Use the TEST_BASE_URL if set
 				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
@@ -1159,31 +1174,19 @@ class E2ETestRunner {
 							log(`${shardPrefix}⚠️ Test may be hanging on element visibility`);
 						}
 
-						// Check for timeout patterns - only match specific Playwright patterns
-						// Avoid broad patterns like "Timeout" that kill tests handling timeout errors intentionally
+						// PHASE 1 FIX: Log timeout patterns but DO NOT kill the process
+						// Let Playwright's built-in retry mechanism handle timeouts gracefully
+						// Previous aggressive killing caused net::ERR_EMPTY_RESPONSE errors
+						// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
 						if (
 							line.includes("Test timeout of") ||
 							line.includes("exceeded while")
 						) {
 							log(
-								`${shardPrefix}⚠️ Playwright timeout detected - aggressively killing test`,
+								`${shardPrefix}⏱️ Playwright timeout detected - letting Playwright handle retry (not killing process)`,
 							);
-							if (proc && !proc.killed) {
-								try {
-									if (proc.detached && proc.pid) {
-										log(
-											`${shardPrefix}💥 Killing timeout process group ${proc.pid}`,
-										);
-										process.kill(-proc.pid, "SIGKILL");
-									} else {
-										proc.kill("SIGKILL");
-									}
-								} catch (error) {
-									log(
-										`${shardPrefix}⚠️ Failed to kill timeout process: ${error.message}`,
-									);
-								}
-							}
+							// DO NOT kill the process - Playwright will retry or mark test as failed
+							// The shard's overall timeout will handle truly hung processes
 						}
 					}
 				});
@@ -1213,46 +1216,56 @@ class E2ETestRunner {
 					}
 				});
 
-				// Start stall detection - check every 20 seconds for output
-				// Increased from 45s to 240s to accommodate longer-running tests
-				// (MFA auth flows, Payload CMS operations, billing tests)
-				// Super-admin login with MFA can take significant time without output
-				const stallTimeout = 240000; // Kill if no output for 240 seconds (4 minutes)
+				// PHASE 1 FIX: Stall detection with graceful termination
+				// Check every 30 seconds for output, use SIGTERM first with grace period
+				// This allows tests to complete cleanup before force-killing
+				// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+				const stallTimeout = 300000; // 5 minutes (increased from 4 to allow retries)
+				const stallGracePeriod = 30000; // 30 seconds grace after SIGTERM before SIGKILL
+				let stallTermSent = false;
+
 				stallCheckInterval = setInterval(() => {
 					const timeSinceLastOutput = Date.now() - lastOutputTime;
-					if (timeSinceLastOutput > stallTimeout) {
+
+					if (timeSinceLastOutput > stallTimeout + stallGracePeriod && stallTermSent) {
+						// Grace period expired after SIGTERM, now force kill
 						logError(
-							`${shardPrefix}❌ Test stalled - no output for ${stallTimeout / 1000}s, aggressively killing process`,
+							`${shardPrefix}❌ Test stalled - no response after SIGTERM, force killing`,
 						);
-						// Aggressive kill for stalled processes
 						if (proc && !proc.killed) {
 							try {
 								if (proc.detached && proc.pid) {
-									log(
-										`${shardPrefix}💥 Killing stalled process group ${proc.pid}`,
-									);
+									log(`${shardPrefix}💥 Force killing stalled process group ${proc.pid}`);
 									process.kill(-proc.pid, "SIGKILL");
 								} else {
 									proc.kill("SIGKILL");
 								}
-								// Also kill any related processes
-								const { execSync } = require("node:child_process");
-								execSync(`pkill -9 -f "playwright" || true`, {
-									stdio: "ignore",
-									timeout: 1000,
-								});
 							} catch (error) {
-								log(
-									`${shardPrefix}⚠️ Failed to kill stalled process: ${error.message}`,
-								);
+								log(`${shardPrefix}⚠️ Failed to kill stalled process: ${error.message}`);
 							}
 						}
 						clearInterval(stallCheckInterval);
-						resolveWithError(
-							`Test stalled - no output for ${stallTimeout / 1000}s`,
+						resolveWithError(`Test stalled - no output for ${(stallTimeout + stallGracePeriod) / 1000}s`);
+					} else if (timeSinceLastOutput > stallTimeout && !stallTermSent) {
+						// First stall detection - send SIGTERM and wait for grace period
+						log(
+							`${shardPrefix}⚠️ Test appears stalled - no output for ${stallTimeout / 1000}s, sending SIGTERM`,
 						);
+						stallTermSent = true;
+						if (proc && !proc.killed) {
+							try {
+								if (proc.detached && proc.pid) {
+									log(`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`);
+									process.kill(-proc.pid, "SIGTERM");
+								} else {
+									proc.kill("SIGTERM");
+								}
+							} catch (error) {
+								log(`${shardPrefix}⚠️ Failed to send SIGTERM: ${error.message}`);
+							}
+						}
 					}
-				}, 20000); // Check every 20 seconds
+				}, 30000); // Check every 30 seconds (reduced frequency)
 
 				// Enhanced timeout with warning and aggressive termination
 				const timeoutMs = this.config.timeouts.shardTimeout || 180000; // 3 minutes default
@@ -1312,86 +1325,71 @@ class E2ETestRunner {
 					}
 				}, killMs);
 
-				// Hard timeout - absolutely kill the process and all children
+				// PHASE 1 FIX: Hard timeout with graceful shutdown sequence
+				// First try SIGTERM to allow cleanup, then SIGKILL only if process doesn't exit
+				// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
 				timeout = setTimeout(async () => {
 					logError(
 						`${shardPrefix}❌ Shard ${shardId} (${group.name}) timed out after ${timeoutMs / 1000}s`,
 					);
 
-					// Multi-step aggressive cleanup
+					// Step 1: Try graceful termination first (SIGTERM)
 					try {
-						// Step 1: Kill the main process
 						if (proc && !proc.killed) {
 							if (proc.detached && proc.pid) {
-								log(`${shardPrefix}💥 Killing process group ${proc.pid}`);
-								process.kill(-proc.pid, "SIGKILL");
+								log(`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`);
+								process.kill(-proc.pid, "SIGTERM");
 							} else {
-								proc.kill("SIGKILL");
-							}
-						}
-
-						// Step 2: Kill by pattern matching
-						const { execSync } = require("node:child_process");
-						const killCommands = [
-							`pkill -f "playwright.*test" || true`,
-							`pkill -f "node.*playwright" || true`,
-							`pkill -f "${group.shardCommand}" || true`,
-							`pkill -f "chromium.*headless" || true`,
-							`pkill -9 -f "shard.*${shardId}" || true`,
-						];
-
-						log(
-							`${shardPrefix}🧹 Running ${killCommands.length} cleanup commands...`,
-						);
-						for (const cmd of killCommands) {
-							try {
-								execSync(cmd, { stdio: "ignore", timeout: 2000 });
-							} catch {
-								// Ignore individual command failures
-							}
-						}
-
-						// Step 3: Kill by port if we know it
-						if (proc.pid) {
-							try {
-								execSync(
-									"lsof -ti:3000 -ti:3001 | xargs kill -9 2>/dev/null || true",
-									{ stdio: "ignore", timeout: 2000 },
-								);
-							} catch {
-								// Ignore errors
+								proc.kill("SIGTERM");
 							}
 						}
 					} catch (error) {
-						log(`${shardPrefix}⚠️ Cleanup error: ${error.message}`);
+						log(`${shardPrefix}⚠️ SIGTERM error: ${error.message}`);
 					}
 
-					// Final check if process is still running
+					// Step 2: Wait 10 seconds for graceful shutdown, then force kill if needed
+					setTimeout(() => {
+						if (proc?.pid && this.isProcessRunning(proc.pid)) {
+							log(`${shardPrefix}⚠️ Process didn't exit after SIGTERM, sending SIGKILL`);
+							try {
+								if (proc.detached && proc.pid) {
+									process.kill(-proc.pid, "SIGKILL");
+								} else {
+									proc.kill("SIGKILL");
+								}
+							} catch (error) {
+								log(`${shardPrefix}⚠️ SIGKILL error: ${error.message}`);
+							}
+						}
+					}, 10000); // 10 second grace period
+
+					// Step 3: Final cleanup after 15 seconds (only if absolutely necessary)
 					setTimeout(() => {
 						if (proc?.pid && this.isProcessRunning(proc.pid)) {
 							logError(
-								`${shardPrefix}🚨 CRITICAL: Process ${proc.pid} still running after kill attempts!`,
+								`${shardPrefix}🚨 Process ${proc.pid} still running after kill attempts`,
 							);
-							// Last resort - try system kill
+							// Only kill the specific process, not all playwright processes
+							// This prevents disrupting other running shards
 							try {
 								const { execSync } = require("node:child_process");
 								execSync(`kill -9 ${proc.pid} 2>/dev/null || true`, {
 									stdio: "ignore",
 								});
 							} catch {
-								// If all else fails, log it but continue
+								// Log but continue - shard timeout will handle it
 								logError(
-									`${shardPrefix}💀 Unable to kill process ${proc.pid} - manual intervention may be required`,
+									`${shardPrefix}💀 Unable to kill process ${proc.pid}`,
 								);
 							}
 						}
-					}, 2000);
+					}, 15000);
 
 					resolveWithError(`Test group timed out after ${timeoutMs / 1000}s`);
 				}, timeoutMs);
 
 				// Handle process exit
-				proc.on("close", (code) => {
+				proc.on("close", async (code) => {
 					if (resolved) return;
 					resolved = true;
 
@@ -1402,11 +1400,40 @@ class E2ETestRunner {
 
 					const duration = Math.round((Date.now() - startTime) / 1000);
 
-					// Calculate total from incremental results
-					results.total = results.passed + results.failed + results.skipped;
+					// PHASE 1 FIX: Parse results from JSON file first (most reliable)
+					// Fall back to stdout parsing only if JSON file not available
+					// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+					let jsonParsed = false;
+					try {
+						const jsonResults = await this.parseJsonResults(jsonOutputFile);
+						if (jsonResults) {
+							results.total = jsonResults.total;
+							results.passed = jsonResults.passed;
+							results.failed = jsonResults.failed;
+							results.skipped = jsonResults.skipped;
+							results.failedTests = jsonResults.failedTests || [];
+							jsonParsed = true;
+							log(`${shardPrefix}✅ Parsed results from JSON reporter: ${results.total} total, ${results.passed} passed, ${results.failed} failed`);
+						}
+					} catch (jsonError) {
+						log(`${shardPrefix}⚠️ JSON parsing failed, falling back to stdout: ${jsonError.message}`);
+					}
 
-					// Final pass: parse any remaining data from bounded buffer
-					this.finalizeE2EResults(outputBuffer, results);
+					// Fallback to stdout parsing if JSON not available
+					if (!jsonParsed) {
+						// Calculate total from incremental results
+						results.total = results.passed + results.failed + results.skipped;
+						// Final pass: parse any remaining data from bounded buffer
+						this.finalizeE2EResults(outputBuffer, results);
+						log(`${shardPrefix}⚠️ Using stdout-based results: ${results.total} total`);
+					}
+
+					// Cleanup JSON output file
+					try {
+						await fs.unlink(jsonOutputFile);
+					} catch {
+						// Ignore cleanup errors
+					}
 
 					// Add error information if exit code is non-zero
 					if (code !== 0 && errorBuffer) {
@@ -1456,6 +1483,109 @@ class E2ETestRunner {
 	 */
 	async runTestGroup(group, shardId = null) {
 		return this.runTestGroupWithTimeout(group, shardId);
+	}
+
+	/**
+	 * PHASE 1 FIX: Parse test results from Playwright JSON reporter output
+	 * This provides reliable, structured results instead of fragile stdout parsing
+	 * See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+	 *
+	 * @param {string} jsonFilePath - Path to the JSON output file
+	 * @returns {Promise<{total: number, passed: number, failed: number, skipped: number, failedTests: Array}>}
+	 */
+	async parseJsonResults(jsonFilePath) {
+		try {
+			const jsonContent = await fs.readFile(jsonFilePath, "utf8");
+			const report = JSON.parse(jsonContent);
+
+			// Playwright JSON reporter format has stats at the top level
+			const stats = report.stats || {};
+			const results = {
+				total: stats.expected || 0,
+				passed: 0,
+				failed: 0,
+				skipped: 0,
+				flaky: 0,
+				failedTests: [],
+			};
+
+			// Calculate from stats
+			// Playwright stats: expected, unexpected, flaky, skipped
+			results.passed = (stats.expected || 0) - (stats.unexpected || 0) - (stats.skipped || 0);
+			results.failed = stats.unexpected || 0;
+			results.skipped = stats.skipped || 0;
+			results.flaky = stats.flaky || 0;
+
+			// Flaky tests eventually pass on retry, so add to passed count
+			if (results.flaky > 0) {
+				results.passed += results.flaky;
+			}
+
+			// Calculate total properly
+			results.total = results.passed + results.failed + results.skipped;
+
+			// Extract failed test details from suites
+			if (report.suites && report.suites.length > 0) {
+				this.extractFailedTestsFromSuites(report.suites, results.failedTests);
+			}
+
+			return results;
+		} catch (error) {
+			// File doesn't exist or invalid JSON - return null to trigger fallback
+			if (error.code === "ENOENT") {
+				return null;
+			}
+			throw error;
+		}
+	}
+
+	/**
+	 * Recursively extract failed tests from Playwright JSON reporter suites
+	 * @param {Array} suites - Array of test suites from JSON report
+	 * @param {Array} failedTests - Array to populate with failed test info
+	 */
+	extractFailedTestsFromSuites(suites, failedTests) {
+		for (const suite of suites) {
+			// Check specs in this suite
+			if (suite.specs) {
+				for (const spec of suite.specs) {
+					if (spec.tests) {
+						for (const test of spec.tests) {
+							// Check if test has any unexpected result
+							if (test.results && test.results.some((r) => r.status === "unexpected" || r.status === "failed")) {
+								failedTests.push({
+									name: spec.title || test.title || "Unknown test",
+									file: suite.file || "unknown",
+									error: this.extractErrorFromTestResult(test.results),
+								});
+							}
+						}
+					}
+				}
+			}
+
+			// Recurse into nested suites
+			if (suite.suites && suite.suites.length > 0) {
+				this.extractFailedTestsFromSuites(suite.suites, failedTests);
+			}
+		}
+	}
+
+	/**
+	 * Extract error message from test results array
+	 * @param {Array} results - Array of test results
+	 * @returns {string} Error message or empty string
+	 */
+	extractErrorFromTestResult(results) {
+		for (const result of results) {
+			if (result.error && result.error.message) {
+				return result.error.message;
+			}
+			if (result.errors && result.errors.length > 0) {
+				return result.errors[0].message || "Unknown error";
+			}
+		}
+		return "Error details not available";
 	}
 
 	/**

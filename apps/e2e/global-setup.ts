@@ -8,6 +8,12 @@ import { TOTP } from "totp-generator";
 
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
+import {
+	checkSupabaseHealth,
+	checkNextJsHealth,
+	checkPayloadHealth,
+	logHealthCheckResults,
+} from "./tests/utils/server-health-check";
 
 // Ensure environment variables are loaded
 dotenvConfig({
@@ -186,6 +192,46 @@ async function globalSetup(config: FullConfig) {
 	if (!allValid) {
 		throw new Error(
 			"❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.",
+		);
+	}
+
+	// PHASE 2 FIX: Run health checks before auth setup
+	// This provides early warning if services are unhealthy
+	// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+	// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+	console.log("\n🏥 Running server health checks...\n");
+	const [supabaseHealth, nextJsHealth, payloadHealth] = await Promise.all([
+		checkSupabaseHealth(),
+		checkNextJsHealth(),
+		checkPayloadHealth(),
+	]);
+
+	logHealthCheckResults({
+		supabase: supabaseHealth,
+		nextjs: nextJsHealth,
+		payload: payloadHealth,
+	});
+
+	// Supabase and Next.js are required for tests
+	if (!supabaseHealth.healthy) {
+		throw new Error(
+			`❌ Supabase health check failed: ${supabaseHealth.message}. Cannot proceed with auth setup.`,
+		);
+	}
+
+	if (!nextJsHealth.healthy) {
+		throw new Error(
+			`❌ Next.js health check failed: ${nextJsHealth.message}. Cannot proceed with tests.`,
+		);
+	}
+
+	// Payload is optional - only warn if unhealthy
+	// Payload tests will be skipped if Payload is unavailable
+	const skipPayloadAuth = !payloadHealth.healthy;
+	if (skipPayloadAuth) {
+		// biome-ignore lint/suspicious/noConsole: Required for warning visibility
+		console.warn(
+			"⚠️  Payload is unhealthy - Payload auth will be skipped. Payload tests may fail.",
 		);
 	}
 
@@ -579,88 +625,98 @@ async function globalSetup(config: FullConfig) {
 
 		// For Payload admin users, authenticate via Payload's API and inject the token cookie
 		// Payload CMS uses its own independent authentication system with payload-token cookies
+		// PHASE 2 FIX: Skip Payload auth if health check failed (prevents cascade failures)
+		// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
 		if (authState.navigateToPayload) {
-			const payloadUrl =
-				process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
-			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-			console.log(
-				`🔄 Authenticating to Payload CMS via API for ${authState.name}...`,
-			);
-
-			try {
-				// Use Payload's login API with retry logic to handle transient failures
-				// This throws an error after 3 failed attempts for clear failure visibility
-				const payloadToken = await loginToPayloadWithRetry(
-					payloadUrl,
-					credentials.email,
-					credentials.password,
-				);
-
-				// Inject the payload-token cookie into the browser context
-				const payloadDomain = new URL(payloadUrl).hostname;
-				await context.addCookies([
-					{
-						name: "payload-token",
-						value: payloadToken,
-						domain: payloadDomain,
-						path: "/",
-						httpOnly: true,
-						secure: payloadUrl.startsWith("https"),
-						sameSite: "Lax",
-						// Token expires in 2 hours (standard Payload JWT lifetime)
-						expires: Math.floor(Date.now() / 1000) + 7200,
-					},
-				]);
-
+			if (skipPayloadAuth) {
 				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 				console.log(
-					`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
+					`⏭️  Skipping Payload auth for ${authState.name} (Payload server unhealthy)`,
+				);
+				// Still save the Supabase auth state - Payload tests will be skipped at runtime
+			} else {
+				const payloadUrl =
+					process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
+				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+				console.log(
+					`🔄 Authenticating to Payload CMS via API for ${authState.name}...`,
 				);
 
-				debugLog("payload:cookie_injected", {
-					user: authState.name,
-					domain: payloadDomain,
-					tokenLength: payloadToken.length,
-					expires: Math.floor(Date.now() / 1000) + 7200,
-				});
+				try {
+					// Use Payload's login API with retry logic to handle transient failures
+					// This throws an error after 3 failed attempts for clear failure visibility
+					const payloadToken = await loginToPayloadWithRetry(
+						payloadUrl,
+						credentials.email,
+						credentials.password,
+					);
 
-				// Navigate to Payload admin to verify authentication works
-				await page.goto(`${payloadUrl}/admin`, {
-					waitUntil: "domcontentloaded",
-					timeout: 30000,
-				});
+					// Inject the payload-token cookie into the browser context
+					const payloadDomain = new URL(payloadUrl).hostname;
+					await context.addCookies([
+						{
+							name: "payload-token",
+							value: payloadToken,
+							domain: payloadDomain,
+							path: "/",
+							httpOnly: true,
+							secure: payloadUrl.startsWith("https"),
+							sameSite: "Lax",
+							// Token expires in 2 hours (standard Payload JWT lifetime)
+							expires: Math.floor(Date.now() / 1000) + 7200,
+						},
+					]);
 
-				// Give it a moment for the page to settle
-				await page.waitForTimeout(1000);
-
-				// Final verification: ensure we're authenticated (not on login page)
-				const adminNav = await page
-					.locator(".nav, .sidebar, .template-default")
-					.first()
-					.isVisible({ timeout: 5000 })
-					.catch(() => false);
-
-				if (adminNav) {
-					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-					console.log(`✅ Payload admin panel loaded for ${authState.name}`);
-				} else {
 					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 					console.log(
-						`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
+						`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
+					);
+
+					debugLog("payload:cookie_injected", {
+						user: authState.name,
+						domain: payloadDomain,
+						tokenLength: payloadToken.length,
+						expires: Math.floor(Date.now() / 1000) + 7200,
+					});
+
+					// Navigate to Payload admin to verify authentication works
+					await page.goto(`${payloadUrl}/admin`, {
+						waitUntil: "domcontentloaded",
+						timeout: 30000,
+					});
+
+					// Give it a moment for the page to settle
+					await page.waitForTimeout(1000);
+
+					// Final verification: ensure we're authenticated (not on login page)
+					const adminNav = await page
+						.locator(".nav, .sidebar, .template-default")
+						.first()
+						.isVisible({ timeout: 5000 })
+						.catch(() => false);
+
+					if (adminNav) {
+						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+						console.log(`✅ Payload admin panel loaded for ${authState.name}`);
+					} else {
+						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+						console.log(
+							`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
+						);
+					}
+				} catch (error) {
+					// Payload authentication is optional - only needed for Payload-specific test shards (7-8)
+					// When Payload server isn't running (batches 1, 3, etc.), we log a warning and continue
+					// This allows non-Payload test batches to run successfully without the Payload server
+					// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
+					console.warn(
+						`⚠️  Payload authentication skipped for ${authState.name}: ${(error as Error).message}`,
+					);
+					// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
+					console.warn(
+						"   (This is expected if Payload server is not running - Payload tests will start it when needed)",
 					);
 				}
-			} catch (error) {
-				// Payload authentication is optional - only needed for Payload-specific test shards (7-8)
-				// When Payload server isn't running (batches 1, 3, etc.), we log a warning and continue
-				// This allows non-Payload test batches to run successfully without the Payload server
-				// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
-				console.warn(
-					`⚠️  Payload authentication skipped for ${authState.name}: ${(error as Error).message}`,
-				);
-				// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
-				console.warn(
-					"   (This is expected if Payload server is not running - Payload tests will start it when needed)",
-				);
 			}
 		}
 
