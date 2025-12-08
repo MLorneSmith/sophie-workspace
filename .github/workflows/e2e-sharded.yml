@@ -99,7 +99,11 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
-    runs-on: "runs-on/runner=2cpu-linux-x64"
+    # Unique per-job labels prevent GitHub Actions scheduler from stealing runners across matrix jobs
+    # See: #982, #983 - fixes Shard 10 stuck in 'queued' status indefinitely
+    runs-on:
+      - runs-on/runner=2cpu-linux-x64
+      - runs-on/run-id=${{ github.run_id }}-${{ strategy.job-index }}-${{ github.run_attempt }}
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
