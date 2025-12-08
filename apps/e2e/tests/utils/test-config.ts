@@ -1,7 +1,39 @@
 /**
  * Environment-aware test configuration utility
  * Provides centralized configuration management for different environments
+ *
+ * PHASE 1 FIX: Timeout Policy (Issue #992)
+ * =========================================
+ * DO NOT increase these timeouts further. If tests are timing out, the root
+ * cause is likely:
+ * - UI-based auth instead of API-based auth (fix: use Supabase client directly)
+ * - Waiting for elements that don't exist (fix: improve selectors)
+ * - Network issues (fix: add health checks before tests)
+ * - Server not ready (fix: add server health gate)
+ *
+ * Maximum allowed timeouts (caps to prevent endless escalation):
+ * - Auth timeout: 15s max (API-based auth should complete in <2s)
+ * - Navigation timeout: 90s max (includes cold starts)
+ * - Test timeout: 120s max (single test execution)
+ * - Shard timeout: 300s max (entire shard execution)
+ *
+ * See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
  */
+
+/**
+ * TIMEOUT CAPS - DO NOT INCREASE THESE VALUES
+ * If you find yourself needing higher timeouts, fix the root cause instead.
+ */
+export const TIMEOUT_CAPS = {
+	/** Maximum auth timeout - API-based auth should be <2s */
+	AUTH_MAX: 15000,
+	/** Maximum navigation timeout - includes cold starts */
+	NAVIGATION_MAX: 90000,
+	/** Maximum single test timeout */
+	TEST_MAX: 120000,
+	/** Maximum shard execution timeout */
+	SHARD_MAX: 300000,
+} as const;
 
 export interface TestEnvironment {
 	name: "CI" | "LOCAL" | "DEV" | "STAGING";
@@ -63,13 +95,11 @@ export class TestConfigManager {
 				maxRetries: isCI ? 5 : 3,
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
-					// Increased CI short timeout from 12s to 15s to handle React Query
-					// hydration delays and auth API cold starts (see #990, #989)
-					short: isCI ? 15000 : 8000,
-					// Medium timeout needs to be long enough for signIn() method
-					// which has multiple phases with their own timeouts (45s+ total)
-					medium: isCI ? 60000 : 45000,
-					long: isCI ? 90000 : 60000,
+					// CAPPED - see TIMEOUT_CAPS and Issue #992
+					// These values are at their maximum - do not increase
+					short: Math.min(isCI ? 15000 : 8000, TIMEOUT_CAPS.AUTH_MAX),
+					medium: Math.min(isCI ? 60000 : 45000, TIMEOUT_CAPS.NAVIGATION_MAX),
+					long: Math.min(isCI ? 90000 : 60000, TIMEOUT_CAPS.NAVIGATION_MAX),
 				},
 			},
 		};
