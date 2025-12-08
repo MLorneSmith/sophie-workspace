@@ -1,0 +1,717 @@
+{
+	"version": "1.0.0",
+	"description": "Presentation development workflow steps extracted from course lessons for kanban board population",
+	"source": "apps/payload/src/seed/seed-data-raw/lessons/*.mdoc",
+	"extractedAt": "2025-12-05",
+	"phases": [
+		{
+			"id": "phase-1-the-start",
+			"name": "The Start",
+			"description": "Define your audience and presentation goals",
+			"order": 1,
+			"lessons": [
+				{
+					"lessonId": "our-process",
+					"lessonNumber": 201,
+					"title": "Our Process",
+					"chapter": "the-start",
+					"courseProjectTasks": []
+				},
+				{
+					"lessonId": "the-who",
+					"lessonNumber": 202,
+					"title": "The Who",
+					"chapter": "the-start",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Stay out of PowerPoint!",
+							"description": "Resist the urge to open PowerPoint too early in the process"
+						},
+						{
+							"order": 2,
+							"task": "Select a presentation that you would like to create as your course project",
+							"description": "Choose a real presentation to work on throughout the course"
+						},
+						{
+							"order": 3,
+							"task": "Identify the audience for your presentation",
+							"description": "Determine who will be receiving your presentation"
+						},
+						{
+							"order": 4,
+							"task": "Create an audience map for your audience",
+							"description": "Document key characteristics, needs, and expectations of your audience"
+						}
+					]
+				},
+				{
+					"lessonId": "the-why-introductions",
+					"lessonNumber": 203,
+					"title": "The Why: Building the Introduction",
+					"chapter": "the-start",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Identify what your audience already knows; build the context portion of your introduction",
+							"description": "Establish common ground with your audience"
+						},
+						{
+							"order": 2,
+							"task": "Determine the catalyst for the presentation",
+							"description": "What has happened that has created the need for this presentation?"
+						},
+						{
+							"order": 3,
+							"task": "Determine what the question is that you are answering",
+							"description": "Clarify the central question your presentation addresses"
+						}
+					]
+				},
+				{
+					"lessonId": "the-why-next-steps",
+					"lessonNumber": 204,
+					"title": "The Why: Next Steps",
+					"chapter": "the-start",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Write down a single goal or next step for your presentation",
+							"description": "Define the ultimate objective of your presentation"
+						},
+						{
+							"order": 2,
+							"task": "Think about the component pieces of your goal",
+							"description": "Start thinking about what an Action Agenda for the first 72 hours might look like"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "phase-2-structure",
+			"name": "Structure",
+			"description": "Generate and organize your ideas",
+			"order": 2,
+			"lessons": [
+				{
+					"lessonId": "idea-generation",
+					"lessonNumber": 301,
+					"title": "Idea Generation",
+					"chapter": "structure",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Gather as much useful content as possible to answer your question",
+							"description": "Collect existing content and new analysis"
+						},
+						{
+							"order": 2,
+							"task": "Run a brainstorming session to generate new ideas and approaches",
+							"description": "Write everything down when answering your question"
+						},
+						{
+							"order": 3,
+							"task": "Select a visual thinking tool to use to keep track of your ideas",
+							"description": "Choose a method to organize and visualize your thoughts"
+						}
+					]
+				},
+				{
+					"lessonId": "what-is-structure",
+					"lessonNumber": 302,
+					"title": "What is Structure?",
+					"chapter": "structure",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Create an Argument Map for your answer to the question",
+							"description": "Visually map out your reasoning structure"
+						},
+						{
+							"order": 2,
+							"task": "Start by building an inductive argument that supports your answer",
+							"description": "Build logical support for your conclusion"
+						},
+						{
+							"order": 3,
+							"task": "Structure your supporting evidence and ideas into groups of similar ideas",
+							"description": "Ensure your groups are MECE and contain no more than 4-5 key ideas"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "phase-3-storytelling",
+			"name": "Storytelling",
+			"description": "Craft your narrative and storyboard",
+			"order": 3,
+			"lessons": [
+				{
+					"lessonId": "using-stories",
+					"lessonNumber": 401,
+					"title": "Using Stories",
+					"chapter": "storytelling",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Identify how and where you might be able to inject a story into your presentation",
+							"description": "Find opportunities for narrative elements"
+						},
+						{
+							"order": 2,
+							"task": "Consider adding a story at the beginning, middle, or end of the presentation",
+							"description": "Determine optimal placement for maximum impact"
+						},
+						{
+							"order": 3,
+							"task": "Design your story to be a story 'that sticks'",
+							"description": "Make your story memorable and impactful"
+						}
+					]
+				},
+				{
+					"lessonId": "storyboards-film",
+					"lessonNumber": 402,
+					"title": "Storyboards in Film",
+					"chapter": "storytelling",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Start thinking about how you might apply these techniques to your own presentation",
+							"description": "Consider film storyboarding principles"
+						},
+						{
+							"order": 2,
+							"task": "Complete the next lesson before you start creating your own storyboard",
+							"description": "Prepare for the practical storyboarding exercise"
+						}
+					]
+				},
+				{
+					"lessonId": "storyboards-presentations",
+					"lessonNumber": 403,
+					"title": "Storyboards in Presentations",
+					"chapter": "storytelling",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Create your storyboard; write it out on paper",
+							"description": "Draft your presentation flow on paper first"
+						},
+						{
+							"order": 2,
+							"task": "Iterate the storyboard several times",
+							"description": "Focus first on key messages, then on flow, and finally on supporting arguments"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "phase-4-design",
+			"name": "Design",
+			"description": "Apply visual design principles and create slides",
+			"order": 4,
+			"lessons": [
+				{
+					"lessonId": "visual-perception",
+					"lessonNumber": 501,
+					"title": "Visual Perception and Communication",
+					"chapter": "design",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Continue to refine your storyboard with emphasis on visual communication",
+							"description": "Strike the balance between text and visual forms (charts, graphs, diagrams, frameworks)"
+						}
+					]
+				},
+				{
+					"lessonId": "fundamental-design-overview",
+					"lessonNumber": 502,
+					"title": "Overview of the Fundamental Elements of Design",
+					"chapter": "design",
+					"courseProjectTasks": []
+				},
+				{
+					"lessonId": "fundamental-design-detail",
+					"lessonNumber": 503,
+					"title": "The Fundamental Elements of Design in Detail",
+					"chapter": "design",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Use Adobe Color Wheel to create a color palette for your presentation",
+							"description": "Define your presentation's color scheme"
+						},
+						{
+							"order": 2,
+							"task": "Select a set of custom fonts to use for your presentation",
+							"description": "Download and install them in PowerPoint"
+						},
+						{
+							"order": 3,
+							"task": "Review your Storyboard for instances where you are breaking design principles",
+							"description": "Pay particular attention to whitespace, alignment, and proximity"
+						}
+					]
+				},
+				{
+					"lessonId": "gestalt-principles",
+					"lessonNumber": 504,
+					"title": "Gestalt Principles",
+					"chapter": "design",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Apply Gestalt principles to your slide designs",
+							"description": "Use proximity, similarity, and other Gestalt principles effectively"
+						}
+					]
+				},
+				{
+					"lessonId": "slide-composition",
+					"lessonNumber": 511,
+					"title": "Slide Composition",
+					"chapter": "design",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Move beyond storyboarding and start to design your slides in detail",
+							"description": "Transition from planning to actual slide creation"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "phase-5-data-visualization",
+			"name": "Data Visualization",
+			"description": "Create effective charts and graphs",
+			"order": 5,
+			"lessons": [
+				{
+					"lessonId": "tables-vs-graphs",
+					"lessonNumber": 601,
+					"title": "Tables vs Graphs",
+					"chapter": "data-visualization",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Decide which data in your presentation should be tables vs graphs",
+							"description": "Choose the right format for each data point"
+						}
+					]
+				},
+				{
+					"lessonId": "basic-graphs",
+					"lessonNumber": 602,
+					"title": "Basic Graphs",
+					"chapter": "data-visualization",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Create basic charts for your presentation data",
+							"description": "Apply best practices for bar charts, line charts, and pie charts"
+						}
+					]
+				},
+				{
+					"lessonId": "specialist-graphs",
+					"lessonNumber": 603,
+					"title": "Specialist Graphs",
+					"chapter": "data-visualization",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Consider if specialized chart types would better communicate your data",
+							"description": "Explore waterfall charts, scatter plots, and other advanced visualizations"
+						}
+					]
+				}
+			]
+		},
+		{
+			"id": "phase-6-performance",
+			"name": "Performance",
+			"description": "Prepare and practice your delivery",
+			"order": 6,
+			"lessons": [
+				{
+					"lessonId": "preparation-practice",
+					"lessonNumber": 701,
+					"title": "Preparation and Practice",
+					"chapter": "performance",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Write your voiceover script",
+							"description": "Document what you will say for each slide"
+						},
+						{
+							"order": 2,
+							"task": "Memorize your script",
+							"description": "Know your content well enough to deliver naturally"
+						},
+						{
+							"order": 3,
+							"task": "Focus delivery efforts on the 4 key areas discussed in the lesson",
+							"description": "Apply the core delivery techniques"
+						},
+						{
+							"order": 4,
+							"task": "Test the length of your presentation and edit to fit allotted time",
+							"description": "Ensure your presentation fits the time constraints"
+						},
+						{
+							"order": 5,
+							"task": "Practice in front of others and solicit feedback",
+							"description": "Get external input on your delivery"
+						},
+						{
+							"order": 6,
+							"task": "Develop a shorter 'Plan B' deck",
+							"description": "Prepare a condensed version for time-constrained situations"
+						}
+					]
+				},
+				{
+					"lessonId": "performance",
+					"lessonNumber": 702,
+					"title": "Performance",
+					"chapter": "performance",
+					"courseProjectTasks": [
+						{
+							"order": 1,
+							"task": "Record video of yourself presenting and watch it",
+							"description": "Self-review your delivery for improvement opportunities"
+						}
+					]
+				}
+			]
+		}
+	],
+	"kanbanMapping": {
+		"description": "Suggested mapping of tasks to kanban columns",
+		"columns": {
+			"do": {
+				"name": "To Do",
+				"description": "Tasks not yet started"
+			},
+			"doing": {
+				"name": "In Progress",
+				"description": "Tasks currently being worked on"
+			},
+			"done": {
+				"name": "Done",
+				"description": "Completed tasks"
+			}
+		},
+		"priorities": {
+			"high": "Critical path tasks that block other work",
+			"medium": "Standard workflow tasks",
+			"low": "Optional or enhancement tasks"
+		}
+	},
+	"flattenedTasks": [
+		{
+			"id": "task-001",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-who",
+			"title": "Stay out of PowerPoint!",
+			"description": "Resist the urge to open PowerPoint too early in the process",
+			"priority": "high",
+			"order": 1
+		},
+		{
+			"id": "task-002",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-who",
+			"title": "Select a presentation for your course project",
+			"description": "Choose a real presentation to work on throughout the course",
+			"priority": "high",
+			"order": 2
+		},
+		{
+			"id": "task-003",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-who",
+			"title": "Identify the audience for your presentation",
+			"description": "Determine who will be receiving your presentation",
+			"priority": "high",
+			"order": 3
+		},
+		{
+			"id": "task-004",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-who",
+			"title": "Create an audience map",
+			"description": "Document key characteristics, needs, and expectations of your audience",
+			"priority": "high",
+			"order": 4
+		},
+		{
+			"id": "task-005",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-why-introductions",
+			"title": "Build the context portion of your introduction",
+			"description": "Identify what your audience already knows and establish common ground",
+			"priority": "high",
+			"order": 5
+		},
+		{
+			"id": "task-006",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-why-introductions",
+			"title": "Determine the catalyst for the presentation",
+			"description": "What has happened that has created the need for this presentation?",
+			"priority": "high",
+			"order": 6
+		},
+		{
+			"id": "task-007",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-why-introductions",
+			"title": "Determine the central question you are answering",
+			"description": "Clarify the central question your presentation addresses",
+			"priority": "high",
+			"order": 7
+		},
+		{
+			"id": "task-008",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-why-next-steps",
+			"title": "Write down a single goal or next step",
+			"description": "Define the ultimate objective of your presentation",
+			"priority": "high",
+			"order": 8
+		},
+		{
+			"id": "task-009",
+			"phase": "phase-1-the-start",
+			"lessonId": "the-why-next-steps",
+			"title": "Plan the Action Agenda for the first 72 hours",
+			"description": "Think about the component pieces of your goal",
+			"priority": "medium",
+			"order": 9
+		},
+		{
+			"id": "task-010",
+			"phase": "phase-2-structure",
+			"lessonId": "idea-generation",
+			"title": "Gather content to answer your question",
+			"description": "Collect existing content and new analysis",
+			"priority": "high",
+			"order": 10
+		},
+		{
+			"id": "task-011",
+			"phase": "phase-2-structure",
+			"lessonId": "idea-generation",
+			"title": "Run a brainstorming session",
+			"description": "Generate new ideas and approaches - write everything down",
+			"priority": "high",
+			"order": 11
+		},
+		{
+			"id": "task-012",
+			"phase": "phase-2-structure",
+			"lessonId": "idea-generation",
+			"title": "Select a visual thinking tool",
+			"description": "Choose a method to organize and visualize your thoughts",
+			"priority": "medium",
+			"order": 12
+		},
+		{
+			"id": "task-013",
+			"phase": "phase-2-structure",
+			"lessonId": "what-is-structure",
+			"title": "Create an Argument Map",
+			"description": "Visually map out your reasoning structure for your answer",
+			"priority": "high",
+			"order": 13
+		},
+		{
+			"id": "task-014",
+			"phase": "phase-2-structure",
+			"lessonId": "what-is-structure",
+			"title": "Build an inductive argument",
+			"description": "Build logical support for your conclusion",
+			"priority": "high",
+			"order": 14
+		},
+		{
+			"id": "task-015",
+			"phase": "phase-2-structure",
+			"lessonId": "what-is-structure",
+			"title": "Structure evidence into MECE groups",
+			"description": "Organize supporting evidence into groups with no more than 4-5 key ideas each",
+			"priority": "high",
+			"order": 15
+		},
+		{
+			"id": "task-016",
+			"phase": "phase-3-storytelling",
+			"lessonId": "using-stories",
+			"title": "Identify where to inject a story",
+			"description": "Find opportunities for narrative elements in your presentation",
+			"priority": "medium",
+			"order": 16
+		},
+		{
+			"id": "task-017",
+			"phase": "phase-3-storytelling",
+			"lessonId": "using-stories",
+			"title": "Determine story placement",
+			"description": "Consider adding a story at the beginning, middle, or end",
+			"priority": "medium",
+			"order": 17
+		},
+		{
+			"id": "task-018",
+			"phase": "phase-3-storytelling",
+			"lessonId": "using-stories",
+			"title": "Design a story that sticks",
+			"description": "Make your story memorable and impactful",
+			"priority": "medium",
+			"order": 18
+		},
+		{
+			"id": "task-019",
+			"phase": "phase-3-storytelling",
+			"lessonId": "storyboards-presentations",
+			"title": "Create your storyboard on paper",
+			"description": "Draft your presentation flow on paper first",
+			"priority": "high",
+			"order": 19
+		},
+		{
+			"id": "task-020",
+			"phase": "phase-3-storytelling",
+			"lessonId": "storyboards-presentations",
+			"title": "Iterate the storyboard several times",
+			"description": "Focus first on key messages, then flow, then supporting arguments",
+			"priority": "high",
+			"order": 20
+		},
+		{
+			"id": "task-021",
+			"phase": "phase-4-design",
+			"lessonId": "visual-perception",
+			"title": "Refine storyboard for visual balance",
+			"description": "Strike the balance between text and visual forms (charts, graphs, diagrams)",
+			"priority": "medium",
+			"order": 21
+		},
+		{
+			"id": "task-022",
+			"phase": "phase-4-design",
+			"lessonId": "fundamental-design-detail",
+			"title": "Create a color palette",
+			"description": "Use Adobe Color Wheel to define your presentation's color scheme",
+			"priority": "medium",
+			"order": 22
+		},
+		{
+			"id": "task-023",
+			"phase": "phase-4-design",
+			"lessonId": "fundamental-design-detail",
+			"title": "Select custom fonts",
+			"description": "Download and install fonts for your presentation in PowerPoint",
+			"priority": "medium",
+			"order": 23
+		},
+		{
+			"id": "task-024",
+			"phase": "phase-4-design",
+			"lessonId": "fundamental-design-detail",
+			"title": "Review storyboard for design principle violations",
+			"description": "Pay attention to whitespace, alignment, and proximity",
+			"priority": "medium",
+			"order": 24
+		},
+		{
+			"id": "task-025",
+			"phase": "phase-4-design",
+			"lessonId": "slide-composition",
+			"title": "Design your slides in detail",
+			"description": "Move beyond storyboarding and start actual slide creation",
+			"priority": "high",
+			"order": 25
+		},
+		{
+			"id": "task-026",
+			"phase": "phase-5-data-visualization",
+			"lessonId": "tables-vs-graphs",
+			"title": "Decide tables vs graphs for your data",
+			"description": "Choose the right format for each data point",
+			"priority": "medium",
+			"order": 26
+		},
+		{
+			"id": "task-027",
+			"phase": "phase-5-data-visualization",
+			"lessonId": "basic-graphs",
+			"title": "Create basic charts",
+			"description": "Apply best practices for bar charts, line charts, and pie charts",
+			"priority": "medium",
+			"order": 27
+		},
+		{
+			"id": "task-028",
+			"phase": "phase-6-performance",
+			"lessonId": "preparation-practice",
+			"title": "Write your voiceover script",
+			"description": "Document what you will say for each slide",
+			"priority": "high",
+			"order": 28
+		},
+		{
+			"id": "task-029",
+			"phase": "phase-6-performance",
+			"lessonId": "preparation-practice",
+			"title": "Memorize your script",
+			"description": "Know your content well enough to deliver naturally",
+			"priority": "high",
+			"order": 29
+		},
+		{
+			"id": "task-030",
+			"phase": "phase-6-performance",
+			"lessonId": "preparation-practice",
+			"title": "Test presentation length and edit to fit time",
+			"description": "Ensure your presentation fits the time constraints",
+			"priority": "high",
+			"order": 30
+		},
+		{
+			"id": "task-031",
+			"phase": "phase-6-performance",
+			"lessonId": "preparation-practice",
+			"title": "Practice and solicit feedback",
+			"description": "Practice in front of others and get external input",
+			"priority": "high",
+			"order": 31
+		},
+		{
+			"id": "task-032",
+			"phase": "phase-6-performance",
+			"lessonId": "preparation-practice",
+			"title": "Develop a 'Plan B' deck",
+			"description": "Prepare a condensed version for time-constrained situations",
+			"priority": "low",
+			"order": 32
+		},
+		{
+			"id": "task-033",
+			"phase": "phase-6-performance",
+			"lessonId": "performance",
+			"title": "Record and review yourself presenting",
+			"description": "Record video of yourself presenting and watch it for improvement",
+			"priority": "medium",
+			"order": 33
+		}
+	]
+}

@@ -4,7 +4,7 @@ import { Private } from "../Private";
 describe("Private Collection", () => {
 	describe("Collection Configuration", () => {
 		it("should have correct slug", () => {
-			expect(Private.slug).toBe("private");
+			expect(Private.slug).toBe("private-posts");
 		});
 
 		it("should have correct labels", () => {

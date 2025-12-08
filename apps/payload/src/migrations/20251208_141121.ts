@@ -10,8 +10,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "payload"."enum__posts_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_documentation_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__documentation_v_version_status" AS ENUM('draft', 'published');
-  CREATE TYPE "payload"."enum_private_status" AS ENUM('draft', 'published');
-  CREATE TYPE "payload"."enum__private_v_version_status" AS ENUM('draft', 'published');
+  CREATE TYPE "payload"."enum_private_posts_status" AS ENUM('draft', 'published');
+  CREATE TYPE "payload"."enum__private_posts_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_courses_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__courses_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_course_lessons_video_source_type" AS ENUM('youtube', 'vimeo');
@@ -21,6 +21,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "payload"."enum_course_quizzes_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum__course_quizzes_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "payload"."enum_quiz_questions_type" AS ENUM('multiple_choice');
+  CREATE TYPE "payload"."enum_quiz_questions_questiontype" AS ENUM('single-answer', 'multi-answer');
   CREATE TYPE "payload"."enum_survey_questions_type" AS ENUM('multiple_choice', 'text_field', 'textarea', 'scale');
   CREATE TYPE "payload"."enum_survey_questions_questionspin" AS ENUM('Positive', 'Negative');
   CREATE TYPE "payload"."enum_survey_questions_status" AS ENUM('draft', 'published');
@@ -282,21 +283,21 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"downloads_id" uuid
   );
   
-  CREATE TABLE "payload"."private_categories" (
+  CREATE TABLE "payload"."private_posts_categories" (
   	"_order" integer NOT NULL,
   	"_parent_id" uuid NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"category" varchar
   );
   
-  CREATE TABLE "payload"."private_tags" (
+  CREATE TABLE "payload"."private_posts_tags" (
   	"_order" integer NOT NULL,
   	"_parent_id" uuid NOT NULL,
   	"id" varchar PRIMARY KEY NOT NULL,
   	"tag" varchar
   );
   
-  CREATE TABLE "payload"."private" (
+  CREATE TABLE "payload"."private_posts" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"title" varchar,
   	"slug" varchar,
@@ -305,13 +306,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"published_at" timestamp(3) with time zone,
   	"image_id_id" uuid,
   	"featured_image_id_id" uuid,
-  	"status" "payload"."enum_private_status" DEFAULT 'draft',
+  	"status" "payload"."enum_private_posts_status" DEFAULT 'draft',
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"_status" "payload"."enum_private_status" DEFAULT 'draft'
+  	"_status" "payload"."enum_private_posts_status" DEFAULT 'draft'
   );
   
-  CREATE TABLE "payload"."private_rels" (
+  CREATE TABLE "payload"."private_posts_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
   	"parent_id" uuid NOT NULL,
@@ -319,7 +320,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"downloads_id" uuid
   );
   
-  CREATE TABLE "payload"."_private_v_version_categories" (
+  CREATE TABLE "payload"."_private_posts_v_version_categories" (
   	"_order" integer NOT NULL,
   	"_parent_id" uuid NOT NULL,
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -327,7 +328,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "payload"."_private_v_version_tags" (
+  CREATE TABLE "payload"."_private_posts_v_version_tags" (
   	"_order" integer NOT NULL,
   	"_parent_id" uuid NOT NULL,
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -335,7 +336,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_uuid" varchar
   );
   
-  CREATE TABLE "payload"."_private_v" (
+  CREATE TABLE "payload"."_private_posts_v" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"parent_id" uuid,
   	"version_title" varchar,
@@ -345,16 +346,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"version_published_at" timestamp(3) with time zone,
   	"version_image_id_id" uuid,
   	"version_featured_image_id_id" uuid,
-  	"version_status" "payload"."enum__private_v_version_status" DEFAULT 'draft',
+  	"version_status" "payload"."enum__private_posts_v_version_status" DEFAULT 'draft',
   	"version_updated_at" timestamp(3) with time zone,
   	"version_created_at" timestamp(3) with time zone,
-  	"version__status" "payload"."enum__private_v_version_status" DEFAULT 'draft',
+  	"version__status" "payload"."enum__private_posts_v_version_status" DEFAULT 'draft',
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"latest" boolean
   );
   
-  CREATE TABLE "payload"."_private_v_rels" (
+  CREATE TABLE "payload"."_private_posts_v_rels" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"order" integer,
   	"parent_id" uuid NOT NULL,
@@ -538,6 +539,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"question" varchar NOT NULL,
   	"type" "payload"."enum_quiz_questions_type" DEFAULT 'multiple_choice' NOT NULL,
+  	"questiontype" "payload"."enum_quiz_questions_questiontype" DEFAULT 'single-answer',
   	"question_slug" varchar NOT NULL,
   	"explanation" jsonb,
   	"order" numeric DEFAULT 0,
@@ -659,7 +661,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"downloads_id" uuid,
   	"posts_id" uuid,
   	"documentation_id" uuid,
-  	"private_id" uuid,
+  	"private_posts_id" uuid,
   	"courses_id" uuid,
   	"course_lessons_id" uuid,
   	"course_quizzes_id" uuid,
@@ -721,19 +723,19 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload"."_documentation_v" ADD CONSTRAINT "_documentation_v_version_parent_id_documentation_id_fk" FOREIGN KEY ("version_parent_id") REFERENCES "payload"."documentation"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v_rels" ADD CONSTRAINT "_documentation_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_documentation_v"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_documentation_v_rels" ADD CONSTRAINT "_documentation_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."private_categories" ADD CONSTRAINT "private_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."private"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."private_tags" ADD CONSTRAINT "private_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."private"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."private" ADD CONSTRAINT "private_image_id_id_downloads_id_fk" FOREIGN KEY ("image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "payload"."private" ADD CONSTRAINT "private_featured_image_id_id_downloads_id_fk" FOREIGN KEY ("featured_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "payload"."private_rels" ADD CONSTRAINT "private_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."private"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."private_rels" ADD CONSTRAINT "private_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v_version_categories" ADD CONSTRAINT "_private_v_version_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_private_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v_version_tags" ADD CONSTRAINT "_private_v_version_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_private_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v" ADD CONSTRAINT "_private_v_parent_id_private_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."private"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v" ADD CONSTRAINT "_private_v_version_image_id_id_downloads_id_fk" FOREIGN KEY ("version_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v" ADD CONSTRAINT "_private_v_version_featured_image_id_id_downloads_id_fk" FOREIGN KEY ("version_featured_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v_rels" ADD CONSTRAINT "_private_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_private_v"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."_private_v_rels" ADD CONSTRAINT "_private_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts_categories" ADD CONSTRAINT "private_posts_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."private_posts"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts_tags" ADD CONSTRAINT "private_posts_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."private_posts"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts" ADD CONSTRAINT "private_posts_image_id_id_downloads_id_fk" FOREIGN KEY ("image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts" ADD CONSTRAINT "private_posts_featured_image_id_id_downloads_id_fk" FOREIGN KEY ("featured_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts_rels" ADD CONSTRAINT "private_posts_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."private_posts"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."private_posts_rels" ADD CONSTRAINT "private_posts_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v_version_categories" ADD CONSTRAINT "_private_posts_v_version_categories_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_private_posts_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v_version_tags" ADD CONSTRAINT "_private_posts_v_version_tags_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "payload"."_private_posts_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v" ADD CONSTRAINT "_private_posts_v_parent_id_private_posts_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."private_posts"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v" ADD CONSTRAINT "_private_posts_v_version_image_id_id_downloads_id_fk" FOREIGN KEY ("version_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v" ADD CONSTRAINT "_private_posts_v_version_featured_image_id_id_downloads_id_fk" FOREIGN KEY ("version_featured_image_id_id") REFERENCES "payload"."downloads"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v_rels" ADD CONSTRAINT "_private_posts_v_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."_private_posts_v"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."_private_posts_v_rels" ADD CONSTRAINT "_private_posts_v_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."courses_rels" ADD CONSTRAINT "courses_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."courses"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."courses_rels" ADD CONSTRAINT "courses_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."_courses_v" ADD CONSTRAINT "_courses_v_parent_id_courses_id_fk" FOREIGN KEY ("parent_id") REFERENCES "payload"."courses"("id") ON DELETE set null ON UPDATE no action;
@@ -774,7 +776,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_downloads_fk" FOREIGN KEY ("downloads_id") REFERENCES "payload"."downloads"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_posts_fk" FOREIGN KEY ("posts_id") REFERENCES "payload"."posts"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_documentation_fk" FOREIGN KEY ("documentation_id") REFERENCES "payload"."documentation"("id") ON DELETE cascade ON UPDATE no action;
-  ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_private_fk" FOREIGN KEY ("private_id") REFERENCES "payload"."private"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_private_posts_fk" FOREIGN KEY ("private_posts_id") REFERENCES "payload"."private_posts"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_courses_fk" FOREIGN KEY ("courses_id") REFERENCES "payload"."courses"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_course_lessons_fk" FOREIGN KEY ("course_lessons_id") REFERENCES "payload"."course_lessons"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload"."payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_course_quizzes_fk" FOREIGN KEY ("course_quizzes_id") REFERENCES "payload"."course_quizzes"("id") ON DELETE cascade ON UPDATE no action;
@@ -860,36 +862,36 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_documentation_v_rels_parent_idx" ON "payload"."_documentation_v_rels" USING btree ("parent_id");
   CREATE INDEX "_documentation_v_rels_path_idx" ON "payload"."_documentation_v_rels" USING btree ("path");
   CREATE INDEX "_documentation_v_rels_downloads_id_idx" ON "payload"."_documentation_v_rels" USING btree ("downloads_id");
-  CREATE INDEX "private_categories_order_idx" ON "payload"."private_categories" USING btree ("_order");
-  CREATE INDEX "private_categories_parent_id_idx" ON "payload"."private_categories" USING btree ("_parent_id");
-  CREATE INDEX "private_tags_order_idx" ON "payload"."private_tags" USING btree ("_order");
-  CREATE INDEX "private_tags_parent_id_idx" ON "payload"."private_tags" USING btree ("_parent_id");
-  CREATE INDEX "private_image_id_idx" ON "payload"."private" USING btree ("image_id_id");
-  CREATE INDEX "private_featured_image_id_idx" ON "payload"."private" USING btree ("featured_image_id_id");
-  CREATE INDEX "private_updated_at_idx" ON "payload"."private" USING btree ("updated_at");
-  CREATE INDEX "private_created_at_idx" ON "payload"."private" USING btree ("created_at");
-  CREATE INDEX "private__status_idx" ON "payload"."private" USING btree ("_status");
-  CREATE INDEX "private_rels_order_idx" ON "payload"."private_rels" USING btree ("order");
-  CREATE INDEX "private_rels_parent_idx" ON "payload"."private_rels" USING btree ("parent_id");
-  CREATE INDEX "private_rels_path_idx" ON "payload"."private_rels" USING btree ("path");
-  CREATE INDEX "private_rels_downloads_id_idx" ON "payload"."private_rels" USING btree ("downloads_id");
-  CREATE INDEX "_private_v_version_categories_order_idx" ON "payload"."_private_v_version_categories" USING btree ("_order");
-  CREATE INDEX "_private_v_version_categories_parent_id_idx" ON "payload"."_private_v_version_categories" USING btree ("_parent_id");
-  CREATE INDEX "_private_v_version_tags_order_idx" ON "payload"."_private_v_version_tags" USING btree ("_order");
-  CREATE INDEX "_private_v_version_tags_parent_id_idx" ON "payload"."_private_v_version_tags" USING btree ("_parent_id");
-  CREATE INDEX "_private_v_parent_idx" ON "payload"."_private_v" USING btree ("parent_id");
-  CREATE INDEX "_private_v_version_version_image_id_idx" ON "payload"."_private_v" USING btree ("version_image_id_id");
-  CREATE INDEX "_private_v_version_version_featured_image_id_idx" ON "payload"."_private_v" USING btree ("version_featured_image_id_id");
-  CREATE INDEX "_private_v_version_version_updated_at_idx" ON "payload"."_private_v" USING btree ("version_updated_at");
-  CREATE INDEX "_private_v_version_version_created_at_idx" ON "payload"."_private_v" USING btree ("version_created_at");
-  CREATE INDEX "_private_v_version_version__status_idx" ON "payload"."_private_v" USING btree ("version__status");
-  CREATE INDEX "_private_v_created_at_idx" ON "payload"."_private_v" USING btree ("created_at");
-  CREATE INDEX "_private_v_updated_at_idx" ON "payload"."_private_v" USING btree ("updated_at");
-  CREATE INDEX "_private_v_latest_idx" ON "payload"."_private_v" USING btree ("latest");
-  CREATE INDEX "_private_v_rels_order_idx" ON "payload"."_private_v_rels" USING btree ("order");
-  CREATE INDEX "_private_v_rels_parent_idx" ON "payload"."_private_v_rels" USING btree ("parent_id");
-  CREATE INDEX "_private_v_rels_path_idx" ON "payload"."_private_v_rels" USING btree ("path");
-  CREATE INDEX "_private_v_rels_downloads_id_idx" ON "payload"."_private_v_rels" USING btree ("downloads_id");
+  CREATE INDEX "private_posts_categories_order_idx" ON "payload"."private_posts_categories" USING btree ("_order");
+  CREATE INDEX "private_posts_categories_parent_id_idx" ON "payload"."private_posts_categories" USING btree ("_parent_id");
+  CREATE INDEX "private_posts_tags_order_idx" ON "payload"."private_posts_tags" USING btree ("_order");
+  CREATE INDEX "private_posts_tags_parent_id_idx" ON "payload"."private_posts_tags" USING btree ("_parent_id");
+  CREATE INDEX "private_posts_image_id_idx" ON "payload"."private_posts" USING btree ("image_id_id");
+  CREATE INDEX "private_posts_featured_image_id_idx" ON "payload"."private_posts" USING btree ("featured_image_id_id");
+  CREATE INDEX "private_posts_updated_at_idx" ON "payload"."private_posts" USING btree ("updated_at");
+  CREATE INDEX "private_posts_created_at_idx" ON "payload"."private_posts" USING btree ("created_at");
+  CREATE INDEX "private_posts__status_idx" ON "payload"."private_posts" USING btree ("_status");
+  CREATE INDEX "private_posts_rels_order_idx" ON "payload"."private_posts_rels" USING btree ("order");
+  CREATE INDEX "private_posts_rels_parent_idx" ON "payload"."private_posts_rels" USING btree ("parent_id");
+  CREATE INDEX "private_posts_rels_path_idx" ON "payload"."private_posts_rels" USING btree ("path");
+  CREATE INDEX "private_posts_rels_downloads_id_idx" ON "payload"."private_posts_rels" USING btree ("downloads_id");
+  CREATE INDEX "_private_posts_v_version_categories_order_idx" ON "payload"."_private_posts_v_version_categories" USING btree ("_order");
+  CREATE INDEX "_private_posts_v_version_categories_parent_id_idx" ON "payload"."_private_posts_v_version_categories" USING btree ("_parent_id");
+  CREATE INDEX "_private_posts_v_version_tags_order_idx" ON "payload"."_private_posts_v_version_tags" USING btree ("_order");
+  CREATE INDEX "_private_posts_v_version_tags_parent_id_idx" ON "payload"."_private_posts_v_version_tags" USING btree ("_parent_id");
+  CREATE INDEX "_private_posts_v_parent_idx" ON "payload"."_private_posts_v" USING btree ("parent_id");
+  CREATE INDEX "_private_posts_v_version_version_image_id_idx" ON "payload"."_private_posts_v" USING btree ("version_image_id_id");
+  CREATE INDEX "_private_posts_v_version_version_featured_image_id_idx" ON "payload"."_private_posts_v" USING btree ("version_featured_image_id_id");
+  CREATE INDEX "_private_posts_v_version_version_updated_at_idx" ON "payload"."_private_posts_v" USING btree ("version_updated_at");
+  CREATE INDEX "_private_posts_v_version_version_created_at_idx" ON "payload"."_private_posts_v" USING btree ("version_created_at");
+  CREATE INDEX "_private_posts_v_version_version__status_idx" ON "payload"."_private_posts_v" USING btree ("version__status");
+  CREATE INDEX "_private_posts_v_created_at_idx" ON "payload"."_private_posts_v" USING btree ("created_at");
+  CREATE INDEX "_private_posts_v_updated_at_idx" ON "payload"."_private_posts_v" USING btree ("updated_at");
+  CREATE INDEX "_private_posts_v_latest_idx" ON "payload"."_private_posts_v" USING btree ("latest");
+  CREATE INDEX "_private_posts_v_rels_order_idx" ON "payload"."_private_posts_v_rels" USING btree ("order");
+  CREATE INDEX "_private_posts_v_rels_parent_idx" ON "payload"."_private_posts_v_rels" USING btree ("parent_id");
+  CREATE INDEX "_private_posts_v_rels_path_idx" ON "payload"."_private_posts_v_rels" USING btree ("path");
+  CREATE INDEX "_private_posts_v_rels_downloads_id_idx" ON "payload"."_private_posts_v_rels" USING btree ("downloads_id");
   CREATE UNIQUE INDEX "courses_slug_idx" ON "payload"."courses" USING btree ("slug");
   CREATE INDEX "courses_updated_at_idx" ON "payload"."courses" USING btree ("updated_at");
   CREATE INDEX "courses_created_at_idx" ON "payload"."courses" USING btree ("created_at");
@@ -1013,7 +1015,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_downloads_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("downloads_id");
   CREATE INDEX "payload_locked_documents_rels_posts_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("posts_id");
   CREATE INDEX "payload_locked_documents_rels_documentation_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("documentation_id");
-  CREATE INDEX "payload_locked_documents_rels_private_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("private_id");
+  CREATE INDEX "payload_locked_documents_rels_private_posts_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("private_posts_id");
   CREATE INDEX "payload_locked_documents_rels_courses_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("courses_id");
   CREATE INDEX "payload_locked_documents_rels_course_lessons_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("course_lessons_id");
   CREATE INDEX "payload_locked_documents_rels_course_quizzes_id_idx" ON "payload"."payload_locked_documents_rels" USING btree ("course_quizzes_id");
@@ -1057,14 +1059,14 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "payload"."_documentation_v_version_tags" CASCADE;
   DROP TABLE "payload"."_documentation_v" CASCADE;
   DROP TABLE "payload"."_documentation_v_rels" CASCADE;
-  DROP TABLE "payload"."private_categories" CASCADE;
-  DROP TABLE "payload"."private_tags" CASCADE;
-  DROP TABLE "payload"."private" CASCADE;
-  DROP TABLE "payload"."private_rels" CASCADE;
-  DROP TABLE "payload"."_private_v_version_categories" CASCADE;
-  DROP TABLE "payload"."_private_v_version_tags" CASCADE;
-  DROP TABLE "payload"."_private_v" CASCADE;
-  DROP TABLE "payload"."_private_v_rels" CASCADE;
+  DROP TABLE "payload"."private_posts_categories" CASCADE;
+  DROP TABLE "payload"."private_posts_tags" CASCADE;
+  DROP TABLE "payload"."private_posts" CASCADE;
+  DROP TABLE "payload"."private_posts_rels" CASCADE;
+  DROP TABLE "payload"."_private_posts_v_version_categories" CASCADE;
+  DROP TABLE "payload"."_private_posts_v_version_tags" CASCADE;
+  DROP TABLE "payload"."_private_posts_v" CASCADE;
+  DROP TABLE "payload"."_private_posts_v_rels" CASCADE;
   DROP TABLE "payload"."courses" CASCADE;
   DROP TABLE "payload"."courses_rels" CASCADE;
   DROP TABLE "payload"."_courses_v" CASCADE;
@@ -1101,8 +1103,8 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "payload"."enum__posts_v_version_status";
   DROP TYPE "payload"."enum_documentation_status";
   DROP TYPE "payload"."enum__documentation_v_version_status";
-  DROP TYPE "payload"."enum_private_status";
-  DROP TYPE "payload"."enum__private_v_version_status";
+  DROP TYPE "payload"."enum_private_posts_status";
+  DROP TYPE "payload"."enum__private_posts_v_version_status";
   DROP TYPE "payload"."enum_courses_status";
   DROP TYPE "payload"."enum__courses_v_version_status";
   DROP TYPE "payload"."enum_course_lessons_video_source_type";
@@ -1112,6 +1114,7 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "payload"."enum_course_quizzes_status";
   DROP TYPE "payload"."enum__course_quizzes_v_version_status";
   DROP TYPE "payload"."enum_quiz_questions_type";
+  DROP TYPE "payload"."enum_quiz_questions_questiontype";
   DROP TYPE "payload"."enum_survey_questions_type";
   DROP TYPE "payload"."enum_survey_questions_questionspin";
   DROP TYPE "payload"."enum_survey_questions_status";

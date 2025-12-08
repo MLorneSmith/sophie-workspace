@@ -3,7 +3,7 @@ import type { CollectionConfig } from "payload";
 import { BunnyVideo, CallToAction, TestBlock, YouTubeVideo } from "../blocks";
 
 export const Private: CollectionConfig = {
-	slug: "private",
+	slug: "private-posts",
 	labels: {
 		singular: "Private Post",
 		plural: "Private Posts",
