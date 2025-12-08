@@ -27,3 +27,6 @@ if (!process.env.PAYLOAD_SECRET) {
 if (!process.env.PAYLOAD_PUBLIC_SERVER_URL) {
 	process.env.PAYLOAD_PUBLIC_SERVER_URL = "http://localhost:3020";
 }
+if (!process.env.SEED_USER_PASSWORD) {
+	process.env.SEED_USER_PASSWORD = "test-password";
+}
