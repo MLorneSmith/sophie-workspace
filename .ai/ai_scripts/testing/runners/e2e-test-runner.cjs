@@ -1543,6 +1543,14 @@ class E2ETestRunner {
 			const skipped = parseInt(skippedMatch[1], 10);
 			results.skipped = Math.max(results.skipped, skipped);
 		}
+
+		// Match flaky tests (tests that failed initially but passed on retry)
+		const flakyMatch = line.match(/(\d+)\s+flaky/);
+		if (flakyMatch) {
+			const flaky = parseInt(flakyMatch[1], 10);
+			// Flaky tests pass on retry, so add to passed count
+			results.passed = Math.max(results.passed, (results.passed || 0) + flaky);
+		}
 	}
 
 	/**
@@ -1559,6 +1567,14 @@ class E2ETestRunner {
 			// Use final summary if more accurate
 			if (passed > results.passed) results.passed = passed;
 			if (failed > results.failed) results.failed = failed;
+		}
+
+		// Match flaky tests in final summary (tests that failed initially but passed on retry)
+		const flakyMatch = buffer.match(/(\d+)\s+flaky/);
+		if (flakyMatch) {
+			const flaky = parseInt(flakyMatch[1], 10);
+			// Flaky tests pass on retry, so add to passed count
+			results.passed = Math.max(results.passed, (results.passed || 0) + flaky);
 		}
 
 		// Note: Intentional failures in test-configuration-verification.spec.ts now use
