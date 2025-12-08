@@ -109,7 +109,7 @@ jobs:
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
       max-parallel: ${{ github.event.inputs.max_parallel || 3 }}
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
       # E2E Database Configuration - Local Supabase instance (ports 54521/54522)
       SUPABASE_URL: 'http://127.0.0.1:54521'
