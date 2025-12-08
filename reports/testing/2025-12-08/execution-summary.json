@@ -1,24 +1,134 @@
 {
 	"executionDate": "2025-12-08",
-	"lastUpdated": "2025-12-08T18:02:52.620Z",
+	"lastUpdated": "2025-12-08T18:20:22.297Z",
 	"totalShards": 0,
-	"completedShards": 1,
-	"failedShards": 0,
+	"completedShards": 12,
+	"failedShards": 1,
 	"timedOutShards": 0,
 	"overallResults": {
-		"total": 11,
-		"passed": 11,
-		"failed": 0,
+		"total": 151,
+		"passed": 147,
+		"failed": 4,
 		"skipped": 0,
 		"intentionalFailures": 0
 	},
 	"shards": [
 		{
 			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Authentication",
+			"success": true,
+			"duration": "59s",
+			"tests": 10,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Personal Accounts",
+			"success": true,
+			"duration": "26s",
+			"tests": 13,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Admin & Invitations",
+			"success": true,
+			"duration": "90s",
+			"tests": 12,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "57s",
+			"tests": 17,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "14s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Payload CMS",
+			"success": false,
+			"duration": "732s",
+			"tests": 43,
+			"failures": 4,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Seeding Tests",
+			"success": true,
+			"duration": "39s",
+			"tests": 26,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "User Billing",
+			"success": true,
+			"duration": "15s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Billing",
+			"success": true,
+			"duration": "27s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
 			"name": "Config Verification",
 			"success": true,
 			"duration": "11s",
 			"tests": 11,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Accounts",
+			"success": true,
+			"duration": "21s",
+			"tests": 7,
 			"failures": 0,
 			"intentionalFailures": 0,
 			"timedOut": false
