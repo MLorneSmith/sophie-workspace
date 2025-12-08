@@ -63,7 +63,9 @@ export class TestConfigManager {
 				maxRetries: isCI ? 5 : 3,
 				baseDelay: isCI ? 2000 : 1000,
 				timeouts: {
-					short: isCI ? 12000 : 8000,
+					// Increased CI short timeout from 12s to 15s to handle React Query
+					// hydration delays and auth API cold starts (see #990, #989)
+					short: isCI ? 15000 : 8000,
 					// Medium timeout needs to be long enough for signIn() method
 					// which has multiple phases with their own timeouts (45s+ total)
 					medium: isCI ? 60000 : 45000,
@@ -89,12 +91,13 @@ export class TestConfigManager {
 		switch (type) {
 			case "auth":
 				// Authentication operations need more time in CI
-				// Extended intervals to handle cold starts and network latency
+				// Extended intervals to handle cold starts, React Query hydration,
+				// and network latency. Expanded to 35s max to match increased
+				// timeout budget (see #990, #989)
 				if (config.isCI) {
-					return [1000, 2000, 5000, 10000, 15000, 20000, 25000, 30000].slice(
-						0,
-						maxRetries + 3,
-					);
+					return [
+						1000, 2000, 5000, 10000, 15000, 20000, 25000, 30000, 35000,
+					].slice(0, maxRetries + 4);
 				}
 				return [500, 1500, 3000, 6000].slice(0, maxRetries + 1);
 
