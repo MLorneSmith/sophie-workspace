@@ -318,3 +318,39 @@ export async function getUserIdByEmail(email: string): Promise<string | null> {
 		await client.end();
 	}
 }
+
+/**
+ * Unlocks a Payload CMS user by clearing their lockUntil timestamp and resetting login attempts.
+ * Use this before auth tests to prevent lockout from accumulated failed attempts.
+ *
+ * @param email - The email of the Payload user to unlock
+ * @returns True if a user was found and updated, false if user not found
+ */
+export async function unlockPayloadUser(email: string): Promise<boolean> {
+	const { Client } = await import("pg");
+	const config = getSupabaseConfig();
+
+	const client = new Client({
+		connectionString: config.DB_URL,
+	});
+
+	try {
+		await client.connect();
+
+		const result = await client.query(
+			`UPDATE payload.users
+			 SET lock_until = NULL, login_attempts = 0, updated_at = NOW()
+			 WHERE email = $1`,
+			[email],
+		);
+
+		const updated = (result.rowCount ?? 0) > 0;
+		if (updated) {
+			console.log(`[database-utilities] Unlocked Payload user: ${email}`);
+		}
+
+		return updated;
+	} finally {
+		await client.end();
+	}
+}

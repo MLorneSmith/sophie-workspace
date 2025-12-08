@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { TEST_USERS } from "./helpers/test-data";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
+import { unlockPayloadUser } from "../utils/database-utilities";
 
 /**
  * NOTE: This test file intentionally uses UI-based login rather than storage state.
@@ -16,6 +17,11 @@ test.describe("Payload CMS - Authentication & First User Creation", () => {
 	test.use({ storageState: { cookies: [], origins: [] } });
 
 	let loginPage: PayloadLoginPage;
+
+	// Unlock admin user before tests to prevent lockout from accumulated failed attempts
+	test.beforeAll(async () => {
+		await unlockPayloadUser(TEST_USERS.admin.email);
+	});
 
 	test.beforeEach(async ({ page }) => {
 		loginPage = new PayloadLoginPage(page);
