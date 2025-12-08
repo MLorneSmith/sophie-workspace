@@ -182,11 +182,7 @@ jobs:
   # Sharded E2E test execution - runs tests in parallel for faster completion
   test-shards:
     name: E2E Shard ${{ matrix.shard }}
-    # Unique per-job labels prevent GitHub Actions scheduler from stealing runners across matrix jobs
-    # See: #982, #983 - fixes Shard 10 stuck in 'queued' status indefinitely
-    runs-on:
-      - runs-on/runner=4cpu-linux-x64
-      - runs-on/run-id=${{ github.run_id }}-${{ strategy.job-index }}-${{ github.run_attempt }}
+    runs-on: "runs-on/runner=4cpu-linux-x64"
     needs: [check-validation, test-setup]
     if: |
       always() && !failure() && !cancelled() &&
