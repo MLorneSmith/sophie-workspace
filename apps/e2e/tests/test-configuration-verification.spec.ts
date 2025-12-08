@@ -21,7 +21,7 @@ test.describe("@skip-in-ci Configuration Verification - Continue on Failure", ()
 		// This test is marked as expected to fail
 		// Playwright treats this as "expected failure" not an actual test failure
 		test.fail();
-		expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
+		expect(true).toBe(false); // This fails, matching what test.fail() expects
 	});
 
 	test("Test 3: Should still run after expected failure", async () => {
@@ -31,7 +31,7 @@ test.describe("@skip-in-ci Configuration Verification - Continue on Failure", ()
 	test("Test 4: Expected failure - demonstrates error handling", async () => {
 		// This test is marked as expected to fail
 		test.fail();
-		expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
+		expect(true).toBe(false); // This fails, matching what test.fail() expects
 	});
 
 	test("Test 5: Should continue after expected failure", async () => {
@@ -46,7 +46,7 @@ test.describe("@skip-in-ci Configuration Verification - Continue on Failure", ()
 		test("Test 7: Nested expected failure", async () => {
 			// This test is marked as expected to fail
 			test.fail();
-			expect(true).toBe(true); // This passes, so with test.fail() the test fails as expected
+			expect(true).toBe(false); // This fails, matching what test.fail() expects
 		});
 
 		test("Test 8: Should run after nested expected failure", async () => {
