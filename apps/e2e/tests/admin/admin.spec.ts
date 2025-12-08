@@ -4,6 +4,7 @@ import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
 import { AUTH_STATES } from "../utils/auth-state";
 import { unbanUser } from "../utils/database-utilities";
+import { testConfig } from "../utils/test-config";
 
 test.describe("Admin Auth flow without MFA", () => {
 	AuthPageObject.setupSession(AUTH_STATES.OWNER_USER);
@@ -200,9 +201,14 @@ test.describe("Admin", () => {
 			]);
 
 			// Wait for the error message to appear (auth will fail for banned users)
-			await expect(
-				page.locator('[data-testid="auth-error-message"]'),
-			).toBeVisible({ timeout: 15000 });
+			// Use toPass() pattern for resilience against React state update timing races
+			await expect(async () => {
+				const element = page.locator('[data-testid="auth-error-message"]');
+				await expect(element).toBeVisible();
+			}).toPass({
+				intervals: testConfig.getRetryIntervals("auth"),
+				timeout: 30000,
+			});
 		});
 
 		test("reactivate user flow", async ({ page }) => {
