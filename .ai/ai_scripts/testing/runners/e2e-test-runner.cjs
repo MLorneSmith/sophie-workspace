@@ -1227,7 +1227,10 @@ class E2ETestRunner {
 				stallCheckInterval = setInterval(() => {
 					const timeSinceLastOutput = Date.now() - lastOutputTime;
 
-					if (timeSinceLastOutput > stallTimeout + stallGracePeriod && stallTermSent) {
+					if (
+						timeSinceLastOutput > stallTimeout + stallGracePeriod &&
+						stallTermSent
+					) {
 						// Grace period expired after SIGTERM, now force kill
 						logError(
 							`${shardPrefix}❌ Test stalled - no response after SIGTERM, force killing`,
@@ -1235,17 +1238,23 @@ class E2ETestRunner {
 						if (proc && !proc.killed) {
 							try {
 								if (proc.detached && proc.pid) {
-									log(`${shardPrefix}💥 Force killing stalled process group ${proc.pid}`);
+									log(
+										`${shardPrefix}💥 Force killing stalled process group ${proc.pid}`,
+									);
 									process.kill(-proc.pid, "SIGKILL");
 								} else {
 									proc.kill("SIGKILL");
 								}
 							} catch (error) {
-								log(`${shardPrefix}⚠️ Failed to kill stalled process: ${error.message}`);
+								log(
+									`${shardPrefix}⚠️ Failed to kill stalled process: ${error.message}`,
+								);
 							}
 						}
 						clearInterval(stallCheckInterval);
-						resolveWithError(`Test stalled - no output for ${(stallTimeout + stallGracePeriod) / 1000}s`);
+						resolveWithError(
+							`Test stalled - no output for ${(stallTimeout + stallGracePeriod) / 1000}s`,
+						);
 					} else if (timeSinceLastOutput > stallTimeout && !stallTermSent) {
 						// First stall detection - send SIGTERM and wait for grace period
 						log(
@@ -1255,7 +1264,9 @@ class E2ETestRunner {
 						if (proc && !proc.killed) {
 							try {
 								if (proc.detached && proc.pid) {
-									log(`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`);
+									log(
+										`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`,
+									);
 									process.kill(-proc.pid, "SIGTERM");
 								} else {
 									proc.kill("SIGTERM");
@@ -1337,7 +1348,9 @@ class E2ETestRunner {
 					try {
 						if (proc && !proc.killed) {
 							if (proc.detached && proc.pid) {
-								log(`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`);
+								log(
+									`${shardPrefix}🔄 Sending SIGTERM to process group ${proc.pid}`,
+								);
 								process.kill(-proc.pid, "SIGTERM");
 							} else {
 								proc.kill("SIGTERM");
@@ -1350,7 +1363,9 @@ class E2ETestRunner {
 					// Step 2: Wait 10 seconds for graceful shutdown, then force kill if needed
 					setTimeout(() => {
 						if (proc?.pid && this.isProcessRunning(proc.pid)) {
-							log(`${shardPrefix}⚠️ Process didn't exit after SIGTERM, sending SIGKILL`);
+							log(
+								`${shardPrefix}⚠️ Process didn't exit after SIGTERM, sending SIGKILL`,
+							);
 							try {
 								if (proc.detached && proc.pid) {
 									process.kill(-proc.pid, "SIGKILL");
@@ -1378,9 +1393,7 @@ class E2ETestRunner {
 								});
 							} catch {
 								// Log but continue - shard timeout will handle it
-								logError(
-									`${shardPrefix}💀 Unable to kill process ${proc.pid}`,
-								);
+								logError(`${shardPrefix}💀 Unable to kill process ${proc.pid}`);
 							}
 						}
 					}, 15000);
@@ -1413,10 +1426,14 @@ class E2ETestRunner {
 							results.skipped = jsonResults.skipped;
 							results.failedTests = jsonResults.failedTests || [];
 							jsonParsed = true;
-							log(`${shardPrefix}✅ Parsed results from JSON reporter: ${results.total} total, ${results.passed} passed, ${results.failed} failed`);
+							log(
+								`${shardPrefix}✅ Parsed results from JSON reporter: ${results.total} total, ${results.passed} passed, ${results.failed} failed`,
+							);
 						}
 					} catch (jsonError) {
-						log(`${shardPrefix}⚠️ JSON parsing failed, falling back to stdout: ${jsonError.message}`);
+						log(
+							`${shardPrefix}⚠️ JSON parsing failed, falling back to stdout: ${jsonError.message}`,
+						);
 					}
 
 					// Fallback to stdout parsing if JSON not available
@@ -1425,7 +1442,9 @@ class E2ETestRunner {
 						results.total = results.passed + results.failed + results.skipped;
 						// Final pass: parse any remaining data from bounded buffer
 						this.finalizeE2EResults(outputBuffer, results);
-						log(`${shardPrefix}⚠️ Using stdout-based results: ${results.total} total`);
+						log(
+							`${shardPrefix}⚠️ Using stdout-based results: ${results.total} total`,
+						);
 					}
 
 					// Cleanup JSON output file
@@ -1511,7 +1530,8 @@ class E2ETestRunner {
 
 			// Calculate from stats
 			// Playwright stats: expected, unexpected, flaky, skipped
-			results.passed = (stats.expected || 0) - (stats.unexpected || 0) - (stats.skipped || 0);
+			results.passed =
+				(stats.expected || 0) - (stats.unexpected || 0) - (stats.skipped || 0);
 			results.failed = stats.unexpected || 0;
 			results.skipped = stats.skipped || 0;
 			results.flaky = stats.flaky || 0;
@@ -1552,7 +1572,12 @@ class E2ETestRunner {
 					if (spec.tests) {
 						for (const test of spec.tests) {
 							// Check if test has any unexpected result
-							if (test.results && test.results.some((r) => r.status === "unexpected" || r.status === "failed")) {
+							if (
+								test.results &&
+								test.results.some(
+									(r) => r.status === "unexpected" || r.status === "failed",
+								)
+							) {
 								failedTests.push({
 									name: spec.title || test.title || "Unknown test",
 									file: suite.file || "unknown",

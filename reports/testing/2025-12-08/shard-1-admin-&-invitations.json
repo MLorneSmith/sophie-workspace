@@ -1,0 +1,42 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-12-08T23:03:57.090Z",
+		"endTime": "2025-12-08T23:06:14.090Z",
+		"duration": "137s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 12,
+		"passed": 9,
+		"failed": 0,
+		"skipped": 4,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 510 bytes)...\nad/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (33ms)\n  ✅ Next.js: Next.js healthy (960ms)\n  ⚠️ Payload: Payload unreachable: fetch failed\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase Auth URL: http://127.0.0.1:54521\n🍪 Using Supabase Cookie URL: http://host.docker.internal:54521 (for cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n✅ Session injected into cookies and localStorage for payload-admin user\n⏭️  Skipping Payload auth for payload-admin user (Payload server unhealthy)\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 13 tests using 3 workers\n[admin.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored to active state\n·°[admin.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored to active state\n·°°[invitations.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored\n·[invitations.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·Inviting 1846378791762@slideheroes.com with role member...\nInviting 2186693817081@slideheroes.com with role member...\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n··[invitations.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored\n·Inviting 5029610228640@slideheroes.com with role member...\nInviting 5029610228640@slideheroes.com with role member...\n·[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n×°[admin.spec.ts beforeAll] Test user test1@slideheroes.com was banned, now restored to active state\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n·[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Auth API response: 200\n[loginAsUser] Auth API responded with 200 (32347ms)\n[loginAsUser] ✅ Login complete (32631ms). Final URL: http://localhost:3001/home\n[admin.spec.ts] User unbanned after test: test1@slideheroes.com\n±°\n\n  1) [chromium] › tests/admin/admin.spec.ts:214:7 › Admin › Personal Account Management › reactivate user flow \n\n    Error: page.waitForResponse: Timeout 8000ms exceeded while waiting for event \"response\"\n\n    Call Log:\n    - Timeout 45000ms exceeded while waiting on the predicate\n\n       at authentication/auth.po.ts:582\n\n      580 | \t\t\t\t);\n      581 | \t\t\t}\n    > 582 | \t\t}).toPass({\n          | \t\t   ^\n      583 | \t\t\t// Use environment-aware retry intervals from testConfig\n      584 | \t\t\t// CI environments get longer intervals for network latency resilience\n      585 | \t\t\tintervals: authIntervals,\n        at AuthPageObject.loginAsUser (/home/msmith/projects/2025slideheroes/apps/e2e/tests/authentication/auth.po.ts:582:6)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/admin/admin.spec.ts:253:15\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/admin-admin-Admin-Personal-179fe-gement-reactivate-user-flow-chromium/error-context.md\n\n  1 flaky\n    [chromium] › tests/admin/admin.spec.ts:214:7 › Admin › Personal Account Management › reactivate user flow \n  4 skipped\n  8 passed (2.2m)\n"
+}
