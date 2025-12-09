@@ -2,40 +2,40 @@
  * Configuration for course completion requirements.
  *
  * A course is considered completed when all 23 required lessons are marked as completed.
- * The required lessons are: 101, 103, 104, 201, 202, 203, 204, 301, 302, 401, 402, 403,
- * 501, 502, 503, 504, 511, 602, 603, 604, 611, 701, 702
+ * The required lessons are numbered 6-29 in the database (sequential IDs).
  *
- * Lessons 801 and 802 are not required for completion and are only shown after
+ * Lessons 30 and 31 are not required for completion and are only shown after
  * the course is completed.
  */
 
 /**
  * List of lesson numbers that are required for course completion.
+ * These match the lesson_number values in the course_lessons table.
  */
 export const REQUIRED_LESSON_NUMBERS = [
-	"101",
-	"103",
-	"104",
-	"201",
-	"202",
-	"203",
-	"204",
-	"301",
-	"302",
-	"401",
-	"402",
-	"403",
-	"501",
-	"502",
-	"503",
-	"504",
-	"511",
-	"602",
-	"603",
-	"604",
-	"611",
-	"701",
-	"702",
+	"6",
+	"8",
+	"9",
+	"10",
+	"11",
+	"12",
+	"13",
+	"14",
+	"15",
+	"16",
+	"17",
+	"18",
+	"19",
+	"20",
+	"21",
+	"22",
+	"23",
+	"24",
+	"25",
+	"26",
+	"27",
+	"28",
+	"29",
 ];
 
 /**
