@@ -70,22 +70,6 @@ export function validateEnvironment(): ValidationResult {
 }
 
 /**
- * Prevent seeding in production environment
- *
- * @throws Error if NODE_ENV is 'production'
- */
-function preventProductionSeeding(): void {
-  const nodeEnv = process.env[ENV_VARS.NODE_ENV];
-
-  if (nodeEnv === 'production') {
-    throw new Error(
-      'SAFETY CHECK FAILED: Seeding is not allowed in production environment. ' +
-        'Set NODE_ENV to "development" or "test" to proceed.'
-    );
-  }
-}
-
-/**
  * Get or initialize Payload instance (singleton pattern)
  *
  * This function ensures only one Payload instance is created and reused
@@ -118,14 +102,6 @@ export async function initializePayload(): Promise<Payload> {
     const errorMessage = `Missing required environment variables: ${validation.missing.join(', ')}`;
     logger.error(errorMessage);
     throw new Error(errorMessage);
-  }
-
-  // Prevent production seeding
-  try {
-    preventProductionSeeding();
-  } catch (error) {
-    logger.error('Production seeding prevented', error instanceof Error ? error : undefined);
-    throw error;
   }
 
   try {
