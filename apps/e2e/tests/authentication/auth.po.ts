@@ -519,6 +519,18 @@ export class AuthPageObject {
 				timeout: perAttemptTimeout,
 			});
 
+			// Hydration wait guard 1: Ensure Supabase auth is initialized
+			// waitForLoadState('networkidle') ensures auth SDK and React Query are fully hydrated
+			console.log(
+				"[loginAsUser] Waiting for network idle to ensure Supabase auth initialization...",
+			);
+			await this.page.waitForLoadState("networkidle");
+
+			// Hydration wait guard 2: Safety timeout for JavaScript execution context
+			// Allows async effects and React state updates to settle (150ms buffer)
+			console.log("[loginAsUser] 150ms safety timeout for React hydration...");
+			await this.page.waitForTimeout(150);
+
 			// Set up response listener BEFORE any form interaction
 			// This is the key fix: listener is ready before React Query could fire
 			const authResponsePromise = this.page.waitForResponse(
