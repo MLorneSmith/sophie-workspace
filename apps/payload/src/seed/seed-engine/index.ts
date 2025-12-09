@@ -99,6 +99,11 @@ export function parseArguments(): SeedOptions {
       'Operation timeout in milliseconds',
       String(DEFAULT_OPTIONS.TIMEOUT_MS)
     )
+    .option(
+      '--env <environment>',
+      'Environment file to load (test, production, development)',
+      'test'
+    )
     .addHelpText(
       'after',
       `
@@ -117,6 +122,9 @@ Examples:
 
   $ pnpm seed:run --dry-run --verbose
     Full validation with detailed output
+
+  $ pnpm seed:run --env=production
+    Seed using production environment file (.env.production)
 
 Environment Variables:
   DATABASE_URI       PostgreSQL connection string (required)
