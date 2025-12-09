@@ -115,34 +115,8 @@ Examples:
 	};
 }
 
-// Import the required lesson numbers directly to avoid ESM import issues
-const REQUIRED_LESSON_NUMBERS = [
-	"101",
-	"103",
-	"104",
-	"201",
-	"202",
-	"203",
-	"204",
-	"301",
-	"302",
-	"401",
-	"402",
-	"403",
-	"501",
-	"502",
-	"503",
-	"504",
-	"511",
-	"602",
-	"603",
-	"604",
-	"611",
-	"701",
-	"702",
-];
-
-const TOTAL_REQUIRED_LESSONS = REQUIRED_LESSON_NUMBERS.length; // 23
+// Lesson numbers that count toward completion are determined dynamically from Payload
+// No hardcoded lesson numbers - we calculate completion based on all fetched lessons
 
 // Define types
 interface LessonData {
@@ -185,7 +159,8 @@ async function runScript() {
 	const supabase = createClient(supabaseUrl, supabaseKey);
 
 	// Course ID for "Decks for Decision Makers"
-	const COURSE_ID = "3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8";
+	// Note: This ID matches the course in Payload CMS
+	const COURSE_ID = "e64f4913-a5b0-42b2-958c-f0c39a254e39";
 	const TEST_USER_EMAIL = cliArgs.userEmail;
 	const RANGE_START = cliArgs.rangeStart;
 	const RANGE_END = cliArgs.rangeEnd;
@@ -204,8 +179,9 @@ async function runScript() {
 
 		try {
 			// Use the Payload API to get the current lessons
+			// Note: Payload uses 'course-lessons' (hyphenated) not 'course_lessons' (underscored)
 			const response = await fetch(
-				`${payloadUrl}/api/course_lessons?where[course_id][equals]=${courseId}&sort=lesson_number&limit=100`,
+				`${payloadUrl}/api/course-lessons?where[course_id][equals]=${courseId}&sort=lesson_number&limit=100`,
 			);
 
 			if (!response.ok) {
@@ -488,38 +464,26 @@ async function runScript() {
 			}
 
 			// 4. Update overall course progress
-			// Count completed required lessons
-			const completedRequiredLessons = REQUIRED_LESSON_NUMBERS.filter(
-				(lessonNumber: string) => {
-					// Find the lesson with this number
-					const lesson = lessonsData.find(
-						(l) => String(l.lesson_number) === lessonNumber,
-					);
-
-					if (!lesson) return false;
-
-					// Check if this lesson is completed
-					return lessonProgress.some(
-						(p: ProgressData) =>
-							p.lesson_id === lesson.id && p.completed_at !== null,
-					);
-				},
+			// Count completed lessons dynamically based on fetched lessons from Payload
+			const totalLessonsInCourse = lessonsData.length;
+			const completedLessonsInProgress = lessonProgress.filter(
+				(p: ProgressData) => p.completed_at !== null,
 			).length;
 
-			// Calculate completion percentage based on completed required lessons
+			// Calculate completion percentage based on all lessons in the course
 			const completionPercentage = Math.round(
-				(completedRequiredLessons / TOTAL_REQUIRED_LESSONS) * 100,
+				(completedLessonsInProgress / totalLessonsInCourse) * 100,
 			);
 
-			// Check if all required lessons are completed (including 702)
-			const isCompleted = completedRequiredLessons === TOTAL_REQUIRED_LESSONS;
+			// Check if all lessons are completed
+			const isCompleted = completedLessonsInProgress === totalLessonsInCourse;
 
 			logger.info("Course progress summary", {
 				operation: "course_progress_summary",
 				userId,
 				courseId: COURSE_ID,
-				totalRequiredLessons: TOTAL_REQUIRED_LESSONS,
-				completedRequiredLessons,
+				totalLessonsInCourse,
+				completedLessonsInProgress,
 				completionPercentage,
 				isCompleted,
 			});

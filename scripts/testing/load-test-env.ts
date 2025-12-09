@@ -1,28 +1,40 @@
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
 
 /**
  * Load test environment variables from .env.test file
  * This function should be called at the beginning of test scripts
+ *
+ * Supports loading from either:
+ * 1. scripts/.env.test (if running from scripts directory)
+ * 2. apps/web/.env.test (fallback, with variable name mapping)
  */
 export function loadTestEnv(): void {
-	const envPath = join(process.cwd(), ".env.test");
+	const __dirname = dirname(fileURLToPath(import.meta.url));
+	const scriptsDir = join(__dirname, "..");
+	const projectRoot = join(__dirname, "../..");
 
-	if (!existsSync(envPath)) {
+	// Try scripts/.env.test first, then apps/web/.env.test
+	const scriptEnvPath = join(scriptsDir, ".env.test");
+	const webEnvPath = join(projectRoot, "apps/web/.env.test");
+
+	let envPath: string;
+	let useWebEnv = false;
+
+	if (existsSync(scriptEnvPath)) {
+		envPath = scriptEnvPath;
+	} else if (existsSync(webEnvPath)) {
+		envPath = webEnvPath;
+		useWebEnv = true;
+	} else {
 		console.error("❌ .env.test file not found!");
-		console.error(
-			"Please create a .env.test file with the following variables:",
-		);
-		console.error("  - TEST_SUPABASE_URL");
-		console.error("  - TEST_SUPABASE_SERVICE_ROLE_KEY");
-		console.error("  - TEST_PDF_CO_API_KEY");
-		console.error("  - TEST_USER_EMAIL");
-		console.error("  - TEST_PAYLOAD_URL");
+		console.error("Please create scripts/.env.test or apps/web/.env.test");
 		process.exit(1);
 	}
 
-	// Load environment variables from .env.test
+	// Load environment variables
 	const result = config({ path: envPath });
 
 	if (result.error) {
@@ -30,23 +42,34 @@ export function loadTestEnv(): void {
 		process.exit(1);
 	}
 
-	// Verify required variables are present
+	// Map web env variable names to test script variable names
+	// Always apply mapping since both scripts/.env.test and apps/web/.env.test
+	// use the same NEXT_PUBLIC_* naming convention
+	process.env.TEST_SUPABASE_URL =
+		process.env.TEST_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+	process.env.TEST_SUPABASE_SERVICE_ROLE_KEY =
+		process.env.TEST_SUPABASE_SERVICE_ROLE_KEY ||
+		process.env.SUPABASE_SERVICE_ROLE_KEY;
+	process.env.TEST_USER_EMAIL =
+		process.env.TEST_USER_EMAIL || "test1@slideheroes.com";
+	process.env.TEST_PAYLOAD_URL =
+		process.env.TEST_PAYLOAD_URL || "http://localhost:3020";
+	process.env.TEST_PDF_CO_API_KEY =
+		process.env.TEST_PDF_CO_API_KEY || process.env.PDF_CO_API_KEY || "";
+
+	// Verify required variables are present (PDF_CO_API_KEY is optional for progress script)
 	const requiredVars = [
 		"TEST_SUPABASE_URL",
 		"TEST_SUPABASE_SERVICE_ROLE_KEY",
-		"TEST_PDF_CO_API_KEY",
-		"TEST_USER_EMAIL",
-		"TEST_PAYLOAD_URL",
 	];
 
 	const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 
 	if (missingVars.length > 0) {
-		console.error("❌ Missing required environment variables in .env.test:");
-		// biome-ignore lint/suspicious/useIterableCallbackReturn: console.error() doesn't return a value, false positive
+		console.error("❌ Missing required environment variables:");
 		missingVars.forEach((varName) => console.error(`  - ${varName}`));
 		process.exit(1);
 	}
 
-	console.log("✅ Test environment variables loaded successfully");
+	console.log(`✅ Test environment loaded from ${envPath}`);
 }

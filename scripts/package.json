@@ -1,20 +1,21 @@
 {
-	"name": "slideheroes-scripts",
+	"name": "testing-scripts",
 	"version": "1.0.0",
 	"description": "Scripts for SlideHeroes",
 	"type": "module",
 	"scripts": {
-		"update-test-user": "node --loader ts-node/esm update-test-user-progress.ts"
+		"update-test-user": "tsx testing/update-test-user-progress.ts"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.39.7",
-		"@types/node-fetch": "^2.6.12",
-		"dotenv": "^16.4.5",
+		"@kit/shared": "workspace:*",
+		"@supabase/supabase-js": "2.86.2",
+		"dotenv": "17.2.3",
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.25",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.4.2"
+		"@types/node": "^24.10.1",
+		"@types/node-fetch": "^2.6.12",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
 	}
 }
