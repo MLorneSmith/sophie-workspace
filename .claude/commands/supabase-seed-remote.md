@@ -2,7 +2,7 @@
 description: Reset and rebuild the remote Supabase database from migrations and seeds
 allowed-tools: [Read, Write, Bash, Task, TodoWrite]
 model: opus
-argument-hint: [--push-only] [--schema-only] [--verbose]
+argument-hint: [--push-only] [--schema-only] [--full-backup] [--verbose]
 ---
 
 # Supabase Remote Database Reset
@@ -13,18 +13,20 @@ Reset remote Supabase database and seed Payload CMS with fresh data.
 
 - **Remote Database Focus**: Manages linked remote Supabase project
 - **Full Payload Integration**: Runs Payload migrations AND seeding (unlike local which uses Docker)
-- **Safety Mechanisms**: Automatic backup before destructive operations
+- **Safety Mechanisms**: Automatic backup before destructive operations with auto-cleanup
+- **Backup Options**: Schema-only (default, fast) or full backup with `--full-backup` (includes data)
 - **Flag Options**: `--push-only` for non-destructive, `--schema-only` to skip seeding
 
 ## Usage
 
 ```
-/supabase-seed-remote [--push-only] [--schema-only] [--verbose]
+/supabase-seed-remote [--push-only] [--schema-only] [--full-backup] [--verbose]
 ```
 
 - Default: Full reset (drops everything, rebuilds from migrations + Payload seeds)
 - `--push-only`: Only push new migrations (non-destructive)
 - `--schema-only`: Reset database and migrations but skip Payload seeding
+- `--full-backup`: Backup both schema AND data (default is schema-only)
 - `--verbose`: Enable detailed logging
 
 ## Prompt
@@ -52,7 +54,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Remote database reset outcomes**:
 
 1. **Primary Objective**: Fresh remote Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 252 records seeded across 12 collections
+2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 255 records seeded across 12 collections
 3. **Safety Features**: Pre-backup, progress tracking, comprehensive verification
 
 </purpose>
@@ -82,11 +84,13 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 
 - `--push-only`: Only push new migrations, skip reset (non-destructive)
 - `--schema-only`: Skip Payload seeding, only reset database and run migrations
+- `--full-backup`: Backup both schema AND data before reset (default is schema-only)
 - `--verbose`: Enable detailed logging
 
 **Environment Requirements**:
 
-- Remote DATABASE_URL is obtained from Supabase after reset
+- Remote DATABASE_URI from `apps/payload/.env.production`
+- `SEED_USER_PASSWORD` from `apps/payload/.env` (for test user creation)
 - SSL mode required for remote connections
 - `NODE_TLS_REJECT_UNAUTHORIZED=0` may be needed for some environments
 
@@ -155,12 +159,14 @@ npx supabase migration list --linked
 # 1.1 Parse arguments
 PUSH_ONLY=false
 SCHEMA_ONLY=false
+FULL_BACKUP=false
 VERBOSE=false
 
 for arg in "$@"; do
   case $arg in
     --push-only) PUSH_ONLY=true ;;
     --schema-only) SCHEMA_ONLY=true ;;
+    --full-backup) FULL_BACKUP=true ;;
     --verbose) VERBOSE=true ;;
     *) echo "Unknown argument: $arg"; exit 1 ;;
   esac
@@ -181,11 +187,38 @@ if ! npx supabase projects list --linked 2>/dev/null | grep -q "ldebzombxtszzcgn
   exit 1
 fi
 
-# 1.4 Create backup before destructive operations
-echo "Creating backup of remote database..."
-BACKUP_FILE="backup-remote-$(date +%Y%m%d-%H%M%S).sql"
-npx supabase db dump --linked -f "$BACKUP_FILE"
-echo "Backup saved to: $BACKUP_FILE"
+# 1.4 Cleanup old backups (keep last 5)
+echo "Cleaning up old backups..."
+BACKUP_COUNT=$(ls -1 backup-remote-*.sql 2>/dev/null | wc -l)
+if [ "$BACKUP_COUNT" -gt 5 ]; then
+  echo "Found $BACKUP_COUNT backups, removing oldest..."
+  ls -1t backup-remote-*.sql | tail -n +6 | xargs rm -f
+  echo "Kept 5 most recent backups"
+fi
+
+# 1.5 Create backup before destructive operations
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+BACKUP_SCHEMA="backup-remote-${TIMESTAMP}-schema.sql"
+
+echo "Creating schema backup..."
+npx supabase db dump --linked -f "$BACKUP_SCHEMA"
+echo "Schema backup saved: $BACKUP_SCHEMA"
+
+if [ "$FULL_BACKUP" = true ]; then
+  BACKUP_DATA="backup-remote-${TIMESTAMP}-data.sql"
+  echo "Creating data backup (--full-backup enabled)..."
+  npx supabase db dump --linked --data-only -f "$BACKUP_DATA"
+  echo "Data backup saved: $BACKUP_DATA"
+  echo ""
+  echo "Full backup complete:"
+  echo "  Schema: $BACKUP_SCHEMA"
+  echo "  Data:   $BACKUP_DATA"
+  BACKUP_FILE="$BACKUP_SCHEMA + $BACKUP_DATA"
+else
+  echo ""
+  echo "Schema-only backup (use --full-backup to include data)"
+  BACKUP_FILE="$BACKUP_SCHEMA"
+fi
 
 echo "Environment validation complete"
 ```
@@ -203,7 +236,8 @@ echo "Resetting remote Supabase database..."
 echo "This will drop all tables and reapply migrations..."
 
 # Full reset (destructive) - creates empty payload schema via migration
-npx supabase db reset --linked
+# Note: Requires confirmation - pipe "y" or use interactive prompt
+echo "y" | npx supabase db reset --linked
 
 echo "Supabase reset complete"
 
@@ -250,10 +284,12 @@ else
 fi
 
 # Verify payload schema exists (created by Supabase migration)
+# Note: Use psql with DATABASE_URI since supabase db exec doesn't support --linked
 echo "Verifying payload schema exists..."
-SCHEMA_CHECK=$(npx supabase db exec --linked "
+source .env.production
+SCHEMA_CHECK=$(psql "$DATABASE_URI" -t -c "
   SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';
-" 2>/dev/null | grep -o '[0-9]' | head -1)
+" 2>/dev/null | tr -d ' ')
 
 if [ "$SCHEMA_CHECK" != "1" ]; then
   echo "ERROR: Payload schema not found after Supabase reset"
@@ -277,9 +313,9 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 \
 
 # Verify tables were created
 echo "Verifying Payload tables created..."
-TABLE_COUNT=$(npx supabase db exec --linked "
+TABLE_COUNT=$(psql "$DATABASE_URI" -t -c "
   SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';
-" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+" 2>/dev/null | tr -d ' ')
 
 echo "Payload migrations complete ($TABLE_COUNT tables created)"
 
@@ -311,7 +347,14 @@ if [ "$SCHEMA_ONLY" = false ]; then
   # --env=production: Use .env.production to connect to remote database
   # --force: Bypass NODE_ENV=production safety check for intentional remote seeding
   # --verbose: Enable detailed logging of seeding operations (if specified)
+  # SEED_USER_PASSWORD: Required for creating test users (get from .env or .env.example)
   echo "Seeding database with Payload content..."
+
+  # Source SEED_USER_PASSWORD from local .env if not already set
+  if [ -z "$SEED_USER_PASSWORD" ] && [ -f ".env" ]; then
+    export SEED_USER_PASSWORD=$(grep "^SEED_USER_PASSWORD=" .env | cut -d'=' -f2)
+  fi
+
   NODE_TLS_REJECT_UNAUTHORIZED=0 \
     pnpm run seed:run:remote $SEED_FLAGS || {
       echo "ERROR: Seeding failed"
@@ -324,22 +367,22 @@ if [ "$SCHEMA_ONLY" = false ]; then
       exit 1
     }
 
-  # Validate seeded data
+  # Validate seeded data using psql (supabase db exec doesn't support --linked)
   echo "Validating seeded data..."
-  VALIDATION_RESULT=$(npx supabase db exec --linked "
+  VALIDATION_RESULT=$(psql "$DATABASE_URI" -c "
     SELECT
       collection,
       actual,
       expected,
       CASE
         WHEN actual = expected THEN 'OK'
-        WHEN actual > expected THEN 'DUPLICATE'
+        WHEN actual > expected THEN 'EXTRA'
         ELSE 'MISSING'
       END as status
     FROM (
       SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
       UNION ALL SELECT 'media', COUNT(*)::int, 24 FROM payload.media
-      UNION ALL SELECT 'downloads', COUNT(*)::int, 20 FROM payload.downloads
+      UNION ALL SELECT 'downloads', COUNT(*)::int, 23 FROM payload.downloads
       UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
       UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
       UNION ALL SELECT 'course_lessons', COUNT(*)::int, 25 FROM payload.course_lessons
@@ -348,8 +391,9 @@ if [ "$SCHEMA_ONLY" = false ]; then
       UNION ALL SELECT 'survey_questions', COUNT(*)::int, 32 FROM payload.survey_questions
       UNION ALL SELECT 'surveys', COUNT(*)::int, 3 FROM payload.surveys
       UNION ALL SELECT 'documentation', COUNT(*)::int, 19 FROM payload.documentation
-      UNION ALL SELECT 'private', COUNT(*)::int, 5 FROM payload.private
-    ) counts;
+      UNION ALL SELECT 'private_posts', COUNT(*)::int, 5 FROM payload.private_posts
+    ) counts
+    ORDER BY collection;
   " 2>/dev/null)
 
   echo "$VALIDATION_RESULT"
@@ -390,34 +434,31 @@ echo ""
 echo "Migration Status:"
 npx supabase migration list --linked | tail -10
 
-# 5.2 Verify Payload tables
+# 5.2 Verify Payload tables using psql
+cd ../payload && source .env.production
 echo ""
 echo "Payload Tables:"
-TABLE_COUNT=$(npx supabase db exec --linked "
+TABLE_COUNT=$(psql "$DATABASE_URI" -t -c "
   SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';
-" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+" 2>/dev/null | tr -d ' ')
 echo "Total Payload tables: $TABLE_COUNT"
 
-# 5.3 Verify test users (if seeded)
+# 5.3 Verify seeded data (if seeded)
 if [ "$SCHEMA_ONLY" = false ]; then
   echo ""
-  echo "Test Users:"
-  npx supabase db exec --linked "
-    SELECT email, email_confirmed_at IS NOT NULL as confirmed
-    FROM auth.users
-    WHERE email LIKE '%@slideheroes.com'
-    ORDER BY email;
-  " 2>/dev/null
+  echo "Payload Admin User:"
+  psql "$DATABASE_URI" -c "SELECT email FROM payload.users;" 2>/dev/null
 
   echo ""
   echo "Seeded Collections:"
-  npx supabase db exec --linked "
+  psql "$DATABASE_URI" -c "
     SELECT
       'courses' as collection, COUNT(*) as records FROM payload.courses
     UNION ALL SELECT 'course_lessons', COUNT(*) FROM payload.course_lessons
     UNION ALL SELECT 'posts', COUNT(*) FROM payload.posts
     UNION ALL SELECT 'media', COUNT(*) FROM payload.media
-    UNION ALL SELECT 'downloads', COUNT(*) FROM payload.downloads;
+    UNION ALL SELECT 'downloads', COUNT(*) FROM payload.downloads
+    ORDER BY collection;
   " 2>/dev/null
 fi
 
@@ -429,7 +470,7 @@ echo ""
 echo "Remote project: ldebzombxtszzcgnylgq (2025slideheroes)"
 echo "Payload tables: $TABLE_COUNT"
 if [ "$SCHEMA_ONLY" = false ]; then
-  echo "Seeding: Complete (252 records expected)"
+  echo "Seeding: Complete (255 records expected)"
 else
   echo "Seeding: Skipped (--schema-only)"
 fi
@@ -486,7 +527,7 @@ echo ""
 
 - Supabase migrations applied successfully
 - Payload schema exists with 60+ tables
-- 252 records seeded across 12 collections (if not --schema-only)
+- 255 records seeded across 12 collections (if not --schema-only)
 - No duplicate records detected
 - Verification queries succeed
 
@@ -501,7 +542,7 @@ Results:
 Phase 1: Environment validated, backup created
 Phase 2: Supabase reset complete
 Phase 3: Payload migrations applied (60+ tables)
-Phase 4: Seeding complete (252/252 records)
+Phase 4: Seeding complete (255/255 records)
 Phase 5: Database verified
 
 Remote project: ldebzombxtszzcgnylgq
@@ -521,12 +562,13 @@ https://supabase.com/dashboard/project/ldebzombxtszzcgnylgq/editor
 
 Completely rebuilds the remote database:
 
-1. Creates backup of current database
-2. Drops all tables, functions, policies
-3. Re-applies all Supabase migrations from scratch
-4. **Runs Payload CMS migrations** (creates 60+ tables)
-5. **Seeds Payload CMS data** (252 records)
-6. Verifies final database state
+1. Cleans up old backups (keeps last 5)
+2. Creates backup of current database (schema-only by default, or full with `--full-backup`)
+3. Drops all tables, functions, policies
+4. Re-applies all Supabase migrations from scratch
+5. **Runs Payload CMS migrations** (creates 60+ tables)
+6. **Seeds Payload CMS data** (255 records)
+7. Verifies final database state
 
 ### Push Only (--push-only)
 
@@ -585,20 +627,39 @@ Reset remote Supabase database and seed Payload CMS with fresh data.
 - `/supabase-seed-remote` - Full reset + Payload migrations + seed (default)
 - `/supabase-seed-remote --push-only` - Only push new migrations (non-destructive)
 - `/supabase-seed-remote --schema-only` - Reset + migrations but skip seeding
+- `/supabase-seed-remote --full-backup` - Include data in backup (not just schema)
 - `/supabase-seed-remote --verbose` - Enable detailed seed engine logging
 
 **Flag Details:**
 
+- `--full-backup` - Creates both schema AND data backups before reset. Default is schema-only which is faster but doesn't preserve existing data. Use this when you have important data to preserve.
 - `--verbose` - Enables detailed logging from the seed engine, showing each record being created and any warnings/errors encountered during seeding
 - `--force` - (Passed internally to seed engine) Bypasses NODE_ENV=production safety check for intentional remote seeding. This is automatically included when seeding remote databases.
 - `--env=production` - (Used internally) Tells seed engine to use `.env.production` for database connection
 
+**Backup Behavior:**
+
+- Default: Schema-only backup (~300KB, fast)
+- With `--full-backup`: Schema + data backup (larger, complete)
+- Auto-cleanup: Keeps only the 5 most recent backups
+- Backup location: `apps/web/backup-remote-*.sql`
+
+**Restoring from Backup:**
+
+```bash
+# Restore schema
+psql "$DATABASE_URI" < backup-remote-YYYYMMDD-HHMMSS-schema.sql
+
+# Restore data (if --full-backup was used)
+psql "$DATABASE_URI" < backup-remote-YYYYMMDD-HHMMSS-data.sql
+```
+
 **What It Does:**
 
-1. Validates environment and creates backup
+1. Validates environment, cleans old backups, creates new backup
 2. Resets Supabase database (drops and recreates)
 3. Runs Payload CMS migrations (creates 60+ tables)
-4. Seeds Payload CMS with 252 records (unless --schema-only)
+4. Seeds Payload CMS with 255 records (unless --schema-only)
 5. Verifies database state
 
 **Requirements:**
@@ -606,6 +667,7 @@ Reset remote Supabase database and seed Payload CMS with fresh data.
 - Supabase CLI installed
 - Project linked to remote (`npx supabase link`)
 - `apps/payload/.env.production` with DATABASE_URI (already configured)
+- `SEED_USER_PASSWORD` in `apps/payload/.env` (for seeding test users)
 
 **Default Behavior:**
 Full reset WITH Payload migrations AND seeding - complete database rebuild.

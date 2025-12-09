@@ -1,13 +1,13 @@
 {
 	"executionDate": "2025-12-08",
-	"lastUpdated": "2025-12-08T23:06:14.327Z",
+	"lastUpdated": "2025-12-08T23:24:04.059Z",
 	"totalShards": 0,
-	"completedShards": 4,
+	"completedShards": 12,
 	"failedShards": 0,
-	"timedOutShards": 0,
+	"timedOutShards": 1,
 	"overallResults": {
-		"total": 44,
-		"passed": 44,
+		"total": 108,
+		"passed": 108,
 		"failed": 0,
 		"skipped": 0,
 		"intentionalFailures": 0
@@ -49,6 +49,86 @@
 			"success": true,
 			"duration": "137s",
 			"tests": 12,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "75s",
+			"tests": 17,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "17s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Payload CMS",
+			"success": false,
+			"duration": "1208s",
+			"tests": 0,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": true
+		},
+		{
+			"id": 2,
+			"name": "Seeding Tests",
+			"success": true,
+			"duration": "43s",
+			"tests": 26,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "User Billing",
+			"success": true,
+			"duration": "15s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Billing",
+			"success": true,
+			"duration": "28s",
+			"tests": 1,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Config Verification",
+			"success": true,
+			"duration": "13s",
+			"tests": 11,
+			"failures": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Accounts",
+			"success": true,
+			"duration": "22s",
+			"tests": 7,
 			"failures": 0,
 			"intentionalFailures": 0,
 			"timedOut": false
