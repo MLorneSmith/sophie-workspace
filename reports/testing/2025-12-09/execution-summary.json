@@ -1,0 +1,29 @@
+{
+	"executionDate": "2025-12-09",
+	"lastUpdated": "2025-12-09T18:22:41.238Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 9,
+		"passed": 9,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "7s",
+			"tests": 9,
+			"passed": 9,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

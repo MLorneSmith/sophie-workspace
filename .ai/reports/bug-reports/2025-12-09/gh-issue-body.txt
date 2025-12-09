@@ -1,0 +1,56 @@
+## Summary
+
+The dev-integration-tests.yml workflow consistently fails because the checkSupabaseHealth() function in server-health-check.ts uses NEXT_PUBLIC_SUPABASE_URL (which falls back to localhost:54321), while the CI workflow only sets E2E_SUPABASE_URL. This causes the health check to attempt connecting to localhost, which is unreachable from the CI runner, failing all integration tests.
+
+## Environment
+
+- **Severity**: High
+- **Environment**: CI (GitHub Actions)
+- **Affected Workflow**: dev-integration-tests.yml
+- **Branch**: dev
+
+## Reproduction Steps
+
+1. Push a commit to the dev branch that triggers the Deploy to Dev workflow
+2. Wait for the deployment to complete successfully
+3. The Dev Integration Tests workflow is automatically triggered
+4. Observe the Integration Tests job fails in the Run integration test suite step
+
+## Error Output
+
+```
+Server Health Check Results:
+  Supabase: Supabase unreachable: fetch failed
+  Next.js: Next.js returned status 401
+  Payload: Payload unreachable: fetch failed
+
+Error: Supabase health check failed: Supabase unreachable: fetch failed. Cannot proceed with auth setup.
+```
+
+## Root Cause
+
+The checkSupabaseHealth() function in apps/e2e/tests/utils/server-health-check.ts (line 23-24) uses NEXT_PUBLIC_SUPABASE_URL:
+
+```typescript
+const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:54321";
+```
+
+However, the CI workflow only sets E2E_SUPABASE_URL, not NEXT_PUBLIC_SUPABASE_URL. All other E2E test files consistently use E2E_SUPABASE_URL:
+- apps/e2e/global-setup.ts:293
+- apps/e2e/tests/utils/e2e-validation.ts:26
+- apps/e2e/tests/authentication/auth.po.ts:466
+- apps/e2e/scripts/*.js
+
+## Fix Approach
+
+Update apps/e2e/tests/utils/server-health-check.ts to prioritize E2E_SUPABASE_URL:
+
+```typescript
+const supabaseUrl =
+    process.env.E2E_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:54321";
+```
+
+## Related Issues
+
+- #992: E2E Test Infrastructure Systemic Architecture Problems (the health check was added as part of this fix)

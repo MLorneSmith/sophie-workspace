@@ -72,7 +72,7 @@ export interface Config {
     downloads: Download;
     posts: Post;
     documentation: Documentation;
-    private: Private;
+    'private-posts': PrivatePost;
     courses: Course;
     'course-lessons': CourseLesson;
     'course-quizzes': CourseQuizz;
@@ -91,7 +91,7 @@ export interface Config {
     downloads: DownloadsSelect<false> | DownloadsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     documentation: DocumentationSelect<false> | DocumentationSelect<true>;
-    private: PrivateSelect<false> | PrivateSelect<true>;
+    'private-posts': PrivatePostsSelect<false> | PrivatePostsSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
     'course-lessons': CourseLessonsSelect<false> | CourseLessonsSelect<true>;
     'course-quizzes': CourseQuizzesSelect<false> | CourseQuizzesSelect<true>;
@@ -399,9 +399,9 @@ export interface Documentation {
  * Private posts that are not indexed by search engines
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "private".
+ * via the `definition` "private-posts".
  */
-export interface Private {
+export interface PrivatePost {
   id: string;
   title: string;
   /**
@@ -694,6 +694,10 @@ export interface QuizQuestion {
   question: string;
   type: 'multiple_choice';
   /**
+   * Determines whether radio buttons (single) or checkboxes (multi) are displayed
+   */
+  questiontype?: ('single-answer' | 'multi-answer') | null;
+  /**
    * Auto-generated unique slug for API lookups, derived from question text.
    */
   questionSlug: string;
@@ -854,8 +858,8 @@ export interface PayloadLockedDocument {
         value: string | Documentation;
       } | null)
     | ({
-        relationTo: 'private';
-        value: string | Private;
+        relationTo: 'private-posts';
+        value: string | PrivatePost;
       } | null)
     | ({
         relationTo: 'courses';
@@ -1071,9 +1075,9 @@ export interface DocumentationSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "private_select".
+ * via the `definition` "private-posts_select".
  */
-export interface PrivateSelect<T extends boolean = true> {
+export interface PrivatePostsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   description?: T;
@@ -1167,6 +1171,7 @@ export interface CourseQuizzesSelect<T extends boolean = true> {
 export interface QuizQuestionsSelect<T extends boolean = true> {
   question?: T;
   type?: T;
+  questiontype?: T;
   questionSlug?: T;
   options?:
     | T
