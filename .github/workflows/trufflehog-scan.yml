@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0 # Fetch all history for initial scan
 
       - name: TruffleHog OSS Scan
-        uses: trufflesecurity/trufflehog@v3.91.1
+        uses: trufflesecurity/trufflehog@v3.91.2
         id: trufflehog
         with:
           # Scan the entire repository
@@ -93,7 +93,7 @@ jobs:
           fetch-depth: 0 # Fetch all history
 
       - name: TruffleHog Full History Scan
-        uses: trufflesecurity/trufflehog@v3.91.1
+        uses: trufflesecurity/trufflehog@v3.91.2
         with:
           path: ./
           extra_args: |
