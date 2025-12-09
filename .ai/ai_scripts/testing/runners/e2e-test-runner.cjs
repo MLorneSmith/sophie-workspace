@@ -738,9 +738,13 @@ class E2ETestRunner {
 
 	/**
 	 * Run test groups in parallel shards
+	 * FIX: Issue #1020 - Race condition fix: Shards run in parallel but
+	 * results are aggregated sequentially after Promise.allSettled()
+	 * to prevent lost updates from concurrent mutations.
 	 */
 	async runParallelShards(results, startTime) {
 		const shardPromises = [];
+		const shardIdMap = new Map(); // Track which promise index maps to which shardId
 		const availableGroups = [...this.testGroups];
 		let shardId = 1;
 
@@ -758,23 +762,44 @@ class E2ETestRunner {
 			}
 
 			if (shardGroups.length > 0) {
-				const shardPromise = this.runShard(shardId, shardGroups, results);
+				// NOTE: runShard no longer mutates the results object
+				// It only returns shard results for post-execution aggregation
+				const shardPromise = this.runShard(shardId, shardGroups);
+				shardIdMap.set(shardPromises.length, shardId);
 				shardPromises.push(shardPromise);
 				shardId++;
 			}
 		}
 
 		// Wait for all shards to complete
-		const shardResults = await Promise.allSettled(shardPromises);
+		const settledResults = await Promise.allSettled(shardPromises);
 
-		// Aggregate results
+		// RACE CONDITION FIX: Aggregate results sequentially in single-threaded loop
+		// This happens AFTER all parallel work is complete, so no concurrent mutations
 		let allSuccess = true;
-		shardResults.forEach((result, index) => {
-			if (result.status === "rejected") {
-				logError(`Shard ${index + 1} failed: ${result.reason}`);
+		for (let index = 0; index < settledResults.length; index++) {
+			const settledResult = settledResults[index];
+			const mappedShardId = shardIdMap.get(index);
+
+			if (settledResult.status === "rejected") {
+				logError(`Shard ${mappedShardId} failed: ${settledResult.reason}`);
 				allSuccess = false;
+			} else if (settledResult.status === "fulfilled") {
+				const shardResults = settledResult.value;
+
+				// Sequential aggregation - safe, no race condition
+				results.total += shardResults.total;
+				results.passed += shardResults.passed;
+				results.failed += shardResults.failed;
+				results.skipped += shardResults.skipped;
+				results.intentionalFailures += shardResults.intentionalFailures || 0;
+				results.integrationTests += shardResults.integrationTests || 0;
+				results.shards[shardResults.shardId] = shardResults;
 			}
-		});
+		}
+
+		// Validate math consistency after aggregation
+		this.validateTestMath(results, "runParallelShards");
 
 		const duration = Math.round((Date.now() - startTime) / 1000);
 
@@ -951,8 +976,12 @@ class E2ETestRunner {
 
 	/**
 	 * Run a single shard with assigned groups
+	 * NOTE: This method returns shard results without mutating shared state.
+	 * Aggregation is done sequentially in runParallelShards() after Promise.allSettled()
+	 * to avoid race conditions when multiple shards run in parallel.
+	 * See: Issue #1020 - E2E Test Failures Due to Parallel Execution Race Condition
 	 */
-	async runShard(shardId, groups, results) {
+	async runShard(shardId, groups) {
 		log(`🎯 Shard ${shardId}: Starting with ${groups.length} groups`);
 
 		const shardResults = {
@@ -961,6 +990,8 @@ class E2ETestRunner {
 			passed: 0,
 			failed: 0,
 			skipped: 0,
+			intentionalFailures: 0,
+			integrationTests: 0,
 			groups: [],
 		};
 
@@ -971,20 +1002,13 @@ class E2ETestRunner {
 			shardResults.passed += groupResult.passed;
 			shardResults.failed += groupResult.failed;
 			shardResults.skipped += groupResult.skipped;
+			shardResults.intentionalFailures += groupResult.intentionalFailures || 0;
+			shardResults.integrationTests += groupResult.integrationTests || 0;
 			shardResults.groups.push(group.name);
 
 			// Update shard status
 			await this.testStatus.updateShard(shardId, shardResults);
 		}
-
-		// Update overall results
-		results.total += shardResults.total;
-		results.passed += shardResults.passed;
-		results.failed += shardResults.failed;
-		results.skipped += shardResults.skipped;
-		results.intentionalFailures += shardResults.intentionalFailures || 0;
-		results.integrationTests += shardResults.integrationTests || 0;
-		results.shards[shardId] = shardResults;
 
 		log(
 			`✅ Shard ${shardId} completed: ${shardResults.passed}/${shardResults.total} passed`,
