@@ -76,7 +76,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 
 - Remote Supabase project must be linked (`npx supabase link`)
 - Payload CMS migrations located in `apps/payload/src/migrations/`
-- Seeding scripts in `.ai/ai_scripts/database/`
+- Seed engine and scripts in `apps/payload/src/seed/`
 
 **Arguments & Validation**:
 
@@ -301,12 +301,19 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   echo "Seeding Payload CMS..."
 
+  # Build SEED_FLAGS based on command-line options
+  SEED_FLAGS=""
+  if [ "$VERBOSE" = true ]; then
+    SEED_FLAGS="$SEED_FLAGS --verbose"
+  fi
+
   # Run seeding with --env=production and --force flags
   # --env=production: Use .env.production to connect to remote database
   # --force: Bypass NODE_ENV=production safety check for intentional remote seeding
+  # --verbose: Enable detailed logging of seeding operations (if specified)
   echo "Seeding database with Payload content..."
   NODE_TLS_REJECT_UNAUTHORIZED=0 \
-    pnpm run seed:run:remote || {
+    pnpm run seed:run:remote $SEED_FLAGS || {
       echo "ERROR: Seeding failed"
       echo ""
       echo "Troubleshooting:"
@@ -578,7 +585,13 @@ Reset remote Supabase database and seed Payload CMS with fresh data.
 - `/supabase-seed-remote` - Full reset + Payload migrations + seed (default)
 - `/supabase-seed-remote --push-only` - Only push new migrations (non-destructive)
 - `/supabase-seed-remote --schema-only` - Reset + migrations but skip seeding
-- `/supabase-seed-remote --verbose` - Detailed logging
+- `/supabase-seed-remote --verbose` - Enable detailed seed engine logging
+
+**Flag Details:**
+
+- `--verbose` - Enables detailed logging from the seed engine, showing each record being created and any warnings/errors encountered during seeding
+- `--force` - (Passed internally to seed engine) Bypasses NODE_ENV=production safety check for intentional remote seeding. This is automatically included when seeding remote databases.
+- `--env=production` - (Used internally) Tells seed engine to use `.env.production` for database connection
 
 **What It Does:**
 
