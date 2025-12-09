@@ -193,11 +193,12 @@ class TestCleanupGuard {
 	async cleanupTestPorts() {
 		// Skip ports 3001 and 3021 if using external test servers
 		const skipTestPorts = process.env.SKIP_DEV_SERVER === "true";
-		let testPorts = [3000, 3001, 3010, 3020];
+		// Note: Port 3000 is for development only and should never be managed by test infrastructure
+		let testPorts = [3001, 3010, 3020];
 
 		if (skipTestPorts) {
 			// Remove test server ports when using containerized testing
-			testPorts = [3000, 3010, 3020];
+			testPorts = [3010, 3020];
 		} else {
 		}
 
@@ -241,11 +242,12 @@ class TestCleanupGuard {
 	async preTestCleanup() {
 		// Skip ports 3001 and 3021 if using external test servers
 		const skipTestPorts = process.env.SKIP_DEV_SERVER === "true";
-		let testPorts = [3000, 3001, 3010, 3020];
+		// Note: Port 3000 is for development only and should never be managed by test infrastructure
+		let testPorts = [3001, 3010, 3020];
 
 		if (skipTestPorts) {
 			// Remove test server ports when using containerized testing
-			testPorts = [3000, 3010, 3020];
+			testPorts = [3010, 3020];
 		} else {
 		}
 
