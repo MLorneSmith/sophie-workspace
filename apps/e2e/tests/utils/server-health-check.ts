@@ -90,10 +90,17 @@ export async function checkNextJsHealth(): Promise<HealthCheckResult> {
 			HEALTH_CHECK_TIMEOUT,
 		);
 
+		// Conditionally include Vercel bypass header for CI environments
+		const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+		const headers: HeadersInit = bypassSecret
+			? { "x-vercel-protection-bypass": bypassSecret }
+			: {};
+
 		const response = await fetch(baseUrl, {
 			method: "HEAD",
 			signal: controller.signal,
 			redirect: "manual", // Don't follow redirects, just check server response
+			headers,
 		});
 
 		clearTimeout(timeoutId);
@@ -141,10 +148,20 @@ export async function checkPayloadHealth(): Promise<HealthCheckResult> {
 			HEALTH_CHECK_TIMEOUT,
 		);
 
+		// Conditionally include Vercel bypass header for CI environments
+		// Falls back to main secret if Payload-specific secret is not set
+		const bypassSecret =
+			process.env.VERCEL_AUTOMATION_BYPASS_SECRET_PAYLOAD ||
+			process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+		const headers: HeadersInit = bypassSecret
+			? { "x-vercel-protection-bypass": bypassSecret }
+			: {};
+
 		// Check the API endpoint
 		const response = await fetch(`${payloadUrl}/api/access`, {
 			method: "GET",
 			signal: controller.signal,
+			headers,
 		});
 
 		clearTimeout(timeoutId);
