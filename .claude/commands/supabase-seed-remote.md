@@ -1,15 +1,514 @@
+---
+description: Reset and rebuild the remote Supabase database from migrations and seeds
+allowed-tools: [Read, Write, Bash, Task, TodoWrite]
+model: opus
+argument-hint: [--push-only] [--schema-only] [--verbose]
+---
+
 # Supabase Remote Database Reset
 
-Reset and rebuild the remote Supabase database from migrations and seeds.
+Reset remote Supabase database and seed Payload CMS with fresh data.
+
+## Key Features
+
+- **Remote Database Focus**: Manages linked remote Supabase project
+- **Full Payload Integration**: Runs Payload migrations AND seeding (unlike local which uses Docker)
+- **Safety Mechanisms**: Automatic backup before destructive operations
+- **Flag Options**: `--push-only` for non-destructive, `--schema-only` to skip seeding
 
 ## Usage
 
 ```
-/supabase-seed-remote [--push-only]
+/supabase-seed-remote [--push-only] [--schema-only] [--verbose]
 ```
 
-- Default: Full reset (drops everything, rebuilds from migrations + seeds)
+- Default: Full reset (drops everything, rebuilds from migrations + Payload seeds)
 - `--push-only`: Only push new migrations (non-destructive)
+- `--schema-only`: Reset database and migrations but skip Payload seeding
+- `--verbose`: Enable detailed logging
+
+## Prompt
+
+<role>
+You are a Database Operations Specialist with expertise in Supabase management, PostgreSQL administration, and Payload CMS integration. You execute remote database resets with safety validation and comprehensive progress tracking.
+</role>
+
+<instructions>
+
+**CORE REQUIREMENTS**:
+
+- **Execute** sequential database reset workflow
+- **Backup** database before destructive operations
+- **Run Payload migrations** to create CMS tables (60+ tables)
+- **Seed** Payload CMS by default unless --schema-only specified
+- **Track** progress with TodoWrite for visibility
+
+## PRIME Framework
+
+### Phase P - PURPOSE
+
+<purpose>
+
+**Remote database reset outcomes**:
+
+1. **Primary Objective**: Fresh remote Supabase database with seeded Payload CMS
+2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 252 records seeded across 12 collections
+3. **Safety Features**: Pre-backup, progress tracking, comprehensive verification
+
+</purpose>
+
+### Phase R - ROLE
+
+<role_definition>
+
+1. **Expertise Domain**: Supabase CLI, PostgreSQL, Payload CMS, remote database management
+2. **Experience Level**: Senior database administrator for remote environments
+3. **Decision Authority**: Autonomous execution of remote reset procedures with safety backups
+4. **Approach Style**: Safety-first with validation and detailed progress reporting
+
+</role_definition>
+
+### Phase I - INPUTS
+
+<inputs>
+
+**Essential Context**:
+
+- Remote Supabase project must be linked (`npx supabase link`)
+- Payload CMS migrations located in `apps/payload/src/migrations/`
+- Seeding scripts in `.ai/ai_scripts/database/`
+
+**Arguments & Validation**:
+
+- `--push-only`: Only push new migrations, skip reset (non-destructive)
+- `--schema-only`: Skip Payload seeding, only reset database and run migrations
+- `--verbose`: Enable detailed logging
+
+**Environment Requirements**:
+
+- Remote DATABASE_URL is obtained from Supabase after reset
+- SSL mode required for remote connections
+- `NODE_TLS_REJECT_UNAUTHORIZED=0` may be needed for some environments
+
+**Validate**:
+
+- Supabase CLI is available
+- Project is linked to remote (`supabase projects list`)
+- Required scripts exist
+
+</inputs>
+
+### Phase M - METHOD
+
+<method>
+
+**Execute** the workflow based on flags:
+
+**Push Only Mode** (`--push-only`):
+1. Push new migrations to remote (non-destructive)
+2. Verify migration status
+
+**Full Reset Mode** (default):
+1. **Phase 1**: Validate environment and backup
+2. **Phase 2**: Reset Supabase database (drops everything, applies migrations)
+3. **Phase 3**: Run Payload migrations (creates 60+ CMS tables)
+4. **Phase 4**: Seed Payload CMS data (unless --schema-only)
+5. **Phase 5**: Verify final database state
+
+#### Progress Tracking Setup
+
+**Initialize** TodoWrite progress tracking:
+
+```javascript
+todos = [
+  {content: "Validate environment and create backup", status: "pending", activeForm: "Validating environment"},
+  {content: "Reset Supabase database", status: "pending", activeForm: "Resetting remote database"},
+  {content: "Run Payload migrations", status: "pending", activeForm: "Running Payload migrations"},
+  {content: "Seed Payload CMS (unless --schema-only)", status: "pending", activeForm: "Seeding Payload"},
+  {content: "Verify database state", status: "pending", activeForm: "Verifying database"}
+]
+```
+
+#### Push Only Mode
+
+**Execute** for `--push-only` flag:
+
+```bash
+cd apps/web
+
+echo "📤 Pushing new migrations to remote..."
+npx supabase db push
+
+echo "✅ Migrations pushed successfully"
+
+# Verify migration status
+npx supabase migration list --linked
+```
+
+**Skip remaining phases** and report success.
+
+#### Phase 1: Validate Environment and Backup
+
+**Execute** pre-flight checks and backup:
+
+```bash
+# 1.1 Parse arguments
+PUSH_ONLY=false
+SCHEMA_ONLY=false
+VERBOSE=false
+
+for arg in "$@"; do
+  case $arg in
+    --push-only) PUSH_ONLY=true ;;
+    --schema-only) SCHEMA_ONLY=true ;;
+    --verbose) VERBOSE=true ;;
+    *) echo "Unknown argument: $arg"; exit 1 ;;
+  esac
+done
+
+# 1.2 Verify Supabase CLI
+if ! command -v supabase >/dev/null 2>&1; then
+  echo "ERROR: Supabase CLI not found"
+  echo "Install: pnpm add supabase --save-dev"
+  exit 1
+fi
+
+# 1.3 Verify project is linked
+cd apps/web
+if ! npx supabase projects list --linked 2>/dev/null | grep -q "ldebzombxtszzcgnylgq"; then
+  echo "ERROR: Project not linked to remote"
+  echo "Run: npx supabase link --project-ref ldebzombxtszzcgnylgq"
+  exit 1
+fi
+
+# 1.4 Create backup before destructive operations
+echo "Creating backup of remote database..."
+BACKUP_FILE="backup-remote-$(date +%Y%m%d-%H%M%S).sql"
+npx supabase db dump --linked -f "$BACKUP_FILE"
+echo "Backup saved to: $BACKUP_FILE"
+
+echo "Environment validation complete"
+```
+
+**Update** TodoWrite: Mark Phase 1 complete
+
+#### Phase 2: Reset Supabase Database
+
+**Execute** database reset:
+
+```bash
+cd apps/web
+
+echo "Resetting remote Supabase database..."
+echo "This will drop all tables and reapply migrations..."
+
+# Full reset (destructive) - creates empty payload schema via migration
+npx supabase db reset --linked
+
+echo "Supabase reset complete"
+
+# Verify migrations applied
+echo "Verifying migrations..."
+npx supabase migration list --linked
+```
+
+**Update** TodoWrite: Mark Phase 2 complete
+
+#### Phase 3: Run Payload Migrations
+
+**Execute** Payload migrations to create CMS tables:
+
+```bash
+cd apps/payload
+
+echo "Running Payload migrations on remote database..."
+
+# Get remote database connection string from Supabase
+# The remote URL format is: postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+# We need to get this from the linked project settings
+
+# Method 1: Use environment variable if set
+if [ -n "$REMOTE_DATABASE_URL" ]; then
+  DATABASE_URL="$REMOTE_DATABASE_URL"
+  echo "Using REMOTE_DATABASE_URL from environment"
+else
+  # Method 2: Get from Supabase CLI (requires access token)
+  echo "Retrieving database URL from Supabase..."
+
+  # Get the database password from supabase
+  DB_PASSWORD=$(npx supabase secrets list --linked 2>/dev/null | grep "POSTGRES_PASSWORD" | awk '{print $2}')
+
+  if [ -z "$DB_PASSWORD" ]; then
+    echo "ERROR: Could not retrieve database password"
+    echo ""
+    echo "Please set REMOTE_DATABASE_URL environment variable:"
+    echo "  export REMOTE_DATABASE_URL='postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres'"
+    echo ""
+    echo "You can find this in Supabase Dashboard > Settings > Database > Connection string"
+    exit 1
+  fi
+
+  # Construct connection string (using pooler for better connection management)
+  DATABASE_URL="postgresql://postgres.ldebzombxtszzcgnylgq:${DB_PASSWORD}@aws-0-us-east-1.pooler.supabase.com:6543/postgres"
+fi
+
+# Verify payload schema exists (created by Supabase migration)
+echo "Verifying payload schema exists..."
+SCHEMA_CHECK=$(npx supabase db exec --linked "
+  SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';
+" 2>/dev/null | grep -o '[0-9]' | head -1)
+
+if [ "$SCHEMA_CHECK" != "1" ]; then
+  echo "ERROR: Payload schema not found after Supabase reset"
+  echo "Check migration 20250327_create_payload_schema.sql was applied"
+  exit 1
+fi
+echo "Payload schema exists"
+
+# Run Payload migrations with SSL enabled for remote
+echo "Executing Payload migrations..."
+DATABASE_URI="${DATABASE_URL}?sslmode=require" \
+  NODE_TLS_REJECT_UNAUTHORIZED=0 \
+  pnpm run payload migrate --forceAcceptWarning || {
+    echo "ERROR: Payload migration failed"
+    echo ""
+    echo "Troubleshooting:"
+    echo "1. Verify REMOTE_DATABASE_URL is correct"
+    echo "2. Check Supabase Dashboard for connection issues"
+    echo "3. Try: npx supabase db exec --linked 'SELECT 1;'"
+    exit 1
+  }
+
+# Verify tables were created
+echo "Verifying Payload tables created..."
+TABLE_COUNT=$(npx supabase db exec --linked "
+  SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';
+" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+
+echo "Payload migrations complete ($TABLE_COUNT tables created)"
+
+if [ "$TABLE_COUNT" -lt 60 ]; then
+  echo "WARNING: Expected 60+ tables, found $TABLE_COUNT"
+  echo "Some tables may not have been created"
+fi
+```
+
+**Update** TodoWrite: Mark Phase 3 complete
+
+#### Phase 4: Seed Payload Data
+
+**Execute** seeding unless --schema-only:
+
+```bash
+if [ "$SCHEMA_ONLY" = false ]; then
+  cd apps/payload
+
+  echo "Seeding Payload CMS..."
+
+  # Run seeding with remote database URL
+  echo "Seeding database with Payload content..."
+  DATABASE_URI="${DATABASE_URL}?sslmode=require" \
+    NODE_TLS_REJECT_UNAUTHORIZED=0 \
+    pnpm run seed:run || {
+      echo "ERROR: Seeding failed"
+      echo ""
+      echo "Troubleshooting:"
+      echo "1. Check seeding script for errors"
+      echo "2. Verify all collections exist in Payload config"
+      echo "3. Try running migrations again"
+      exit 1
+    }
+
+  # Validate seeded data
+  echo "Validating seeded data..."
+  VALIDATION_RESULT=$(npx supabase db exec --linked "
+    SELECT
+      collection,
+      actual,
+      expected,
+      CASE
+        WHEN actual = expected THEN 'OK'
+        WHEN actual > expected THEN 'DUPLICATE'
+        ELSE 'MISSING'
+      END as status
+    FROM (
+      SELECT 'users' as collection, COUNT(*)::int as actual, 1 as expected FROM payload.users
+      UNION ALL SELECT 'media', COUNT(*)::int, 24 FROM payload.media
+      UNION ALL SELECT 'downloads', COUNT(*)::int, 20 FROM payload.downloads
+      UNION ALL SELECT 'posts', COUNT(*)::int, 8 FROM payload.posts
+      UNION ALL SELECT 'courses', COUNT(*)::int, 1 FROM payload.courses
+      UNION ALL SELECT 'course_lessons', COUNT(*)::int, 25 FROM payload.course_lessons
+      UNION ALL SELECT 'course_quizzes', COUNT(*)::int, 20 FROM payload.course_quizzes
+      UNION ALL SELECT 'quiz_questions', COUNT(*)::int, 94 FROM payload.quiz_questions
+      UNION ALL SELECT 'survey_questions', COUNT(*)::int, 32 FROM payload.survey_questions
+      UNION ALL SELECT 'surveys', COUNT(*)::int, 3 FROM payload.surveys
+      UNION ALL SELECT 'documentation', COUNT(*)::int, 19 FROM payload.documentation
+      UNION ALL SELECT 'private', COUNT(*)::int, 5 FROM payload.private
+    ) counts;
+  " 2>/dev/null)
+
+  echo "$VALIDATION_RESULT"
+
+  # Check for issues
+  if echo "$VALIDATION_RESULT" | grep -q "DUPLICATE"; then
+    echo "WARNING: Duplicate records detected"
+    echo "This may indicate seeding ran multiple times"
+  fi
+
+  if echo "$VALIDATION_RESULT" | grep -q "MISSING"; then
+    echo "WARNING: Some expected records are missing"
+    echo "Check seeding script output for errors"
+  fi
+
+  echo "Seeding complete"
+else
+  echo "Skipping seeding (--schema-only flag)"
+fi
+```
+
+**Update** TodoWrite: Mark Phase 4 complete
+
+#### Phase 5: Verify Database
+
+**Execute** final verification:
+
+```bash
+cd apps/web
+
+echo ""
+echo "============================================"
+echo "        VERIFICATION RESULTS"
+echo "============================================"
+echo ""
+
+# 5.1 Check migration status
+echo "Migration Status:"
+npx supabase migration list --linked | tail -10
+
+# 5.2 Verify Payload tables
+echo ""
+echo "Payload Tables:"
+TABLE_COUNT=$(npx supabase db exec --linked "
+  SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';
+" 2>/dev/null | grep -o '[0-9]\+' | head -1)
+echo "Total Payload tables: $TABLE_COUNT"
+
+# 5.3 Verify test users (if seeded)
+if [ "$SCHEMA_ONLY" = false ]; then
+  echo ""
+  echo "Test Users:"
+  npx supabase db exec --linked "
+    SELECT email, email_confirmed_at IS NOT NULL as confirmed
+    FROM auth.users
+    WHERE email LIKE '%@slideheroes.com'
+    ORDER BY email;
+  " 2>/dev/null
+
+  echo ""
+  echo "Seeded Collections:"
+  npx supabase db exec --linked "
+    SELECT
+      'courses' as collection, COUNT(*) as records FROM payload.courses
+    UNION ALL SELECT 'course_lessons', COUNT(*) FROM payload.course_lessons
+    UNION ALL SELECT 'posts', COUNT(*) FROM payload.posts
+    UNION ALL SELECT 'media', COUNT(*) FROM payload.media
+    UNION ALL SELECT 'downloads', COUNT(*) FROM payload.downloads;
+  " 2>/dev/null
+fi
+
+echo ""
+echo "============================================"
+echo "        REMOTE RESET COMPLETE"
+echo "============================================"
+echo ""
+echo "Remote project: ldebzombxtszzcgnylgq (2025slideheroes)"
+echo "Payload tables: $TABLE_COUNT"
+if [ "$SCHEMA_ONLY" = false ]; then
+  echo "Seeding: Complete (252 records expected)"
+else
+  echo "Seeding: Skipped (--schema-only)"
+fi
+echo ""
+echo "Backup file: $BACKUP_FILE"
+echo ""
+echo "View in Supabase Dashboard:"
+echo "https://supabase.com/dashboard/project/ldebzombxtszzcgnylgq/editor"
+echo ""
+```
+
+**Update** TodoWrite: Mark Phase 5 complete
+
+#### Error Handling
+
+**Handle** failures at each phase:
+
+**Phase 1 Errors**:
+- Supabase CLI missing -> Provide installation command
+- Project not linked -> Provide link command
+- Backup fails -> Continue with warning (data loss risk)
+
+**Phase 2 Errors**:
+- Reset fails -> Check Supabase Dashboard for issues
+- Migration conflicts -> May need manual intervention
+
+**Phase 3 Errors**:
+- Database URL missing -> Guide to set REMOTE_DATABASE_URL
+- Schema not found -> Check Supabase migration applied
+- Migration fails -> Check SSL settings, connection string
+
+**Phase 4 Errors**:
+- Seeding fails -> Check collection configuration
+- Duplicate records -> Consider re-running with full reset
+- Missing records -> Check seeding script
+
+**Phase 5 Errors**:
+- Verification queries fail -> Check database connectivity
+- Missing data -> Review previous phase logs
+
+</method>
+
+### Phase E - EXPECTATIONS
+
+<expectations>
+
+**Output Specification**:
+
+- **Format**: Console output with progress indicators and final status
+- **Structure**: 5-phase workflow with clear completion messages
+- **Quality Standards**: Database operational, migrations applied, seeding validated
+
+**Success Validation**:
+
+- Supabase migrations applied successfully
+- Payload schema exists with 60+ tables
+- 252 records seeded across 12 collections (if not --schema-only)
+- No duplicate records detected
+- Verification queries succeed
+
+**Final Status Report**:
+
+```
+============================================
+        REMOTE RESET COMPLETE
+============================================
+
+Results:
+Phase 1: Environment validated, backup created
+Phase 2: Supabase reset complete
+Phase 3: Payload migrations applied (60+ tables)
+Phase 4: Seeding complete (252/252 records)
+Phase 5: Database verified
+
+Remote project: ldebzombxtszzcgnylgq
+Backup file: backup-remote-20251209-123456.sql
+
+View in Supabase Dashboard:
+https://supabase.com/dashboard/project/ldebzombxtszzcgnylgq/editor
+```
+
+</expectations>
+
+</instructions>
 
 ## What It Does
 
@@ -17,23 +516,12 @@ Reset and rebuild the remote Supabase database from migrations and seeds.
 
 Completely rebuilds the remote database:
 
-1. Backs up current database
+1. Creates backup of current database
 2. Drops all tables, functions, policies
-3. Re-applies all migrations from scratch
-4. Runs seed files
-
-```bash
-cd apps/web
-
-# Backup first
-npx supabase db dump --linked -f backup-$(date +%Y%m%d).sql
-
-# Full reset (destructive)
-npx supabase db reset --linked
-
-# Verify
-npx supabase migration list --linked
-```
+3. Re-applies all Supabase migrations from scratch
+4. **Runs Payload CMS migrations** (creates 60+ tables)
+5. **Seeds Payload CMS data** (252 records)
+6. Verifies final database state
 
 ### Push Only (--push-only)
 
@@ -44,25 +532,31 @@ cd apps/web
 npx supabase db push
 ```
 
-## Verification
+### Schema Only (--schema-only)
 
-```bash
-# Check migration status
-npx supabase migration list --linked
+Resets database and runs migrations but skips seeding:
 
-# Verify test users
-npx supabase db exec --linked "
-  SELECT email, email_confirmed_at IS NOT NULL as confirmed
-  FROM auth.users
-  WHERE email LIKE '%@slideheroes.com'
-  ORDER BY email;
-"
-```
+1. Creates backup
+2. Resets database
+3. Runs Supabase migrations
+4. Runs Payload migrations
+5. Skips seeding
 
 ## When to Use
 
-- **Full reset**: Schema changes during active development, starting fresh
+- **Full reset**: Starting fresh, major schema changes, testing deployment
 - **Push only**: Adding new migrations to a working database
+- **Schema only**: Need empty database with correct schema
+
+## Environment Variables
+
+For remote Payload migrations, you may need to set:
+
+```bash
+export REMOTE_DATABASE_URL='postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres'
+```
+
+Find this in Supabase Dashboard > Settings > Database > Connection string
 
 ## Local Development
 
@@ -71,3 +565,35 @@ For local development, use `/supabase-reset` instead.
 ## Project Reference
 
 Remote project: `ldebzombxtszzcgnylgq` (2025slideheroes)
+
+<help>
+**Supabase Remote Database Reset**
+
+Reset remote Supabase database and seed Payload CMS with fresh data.
+
+**Usage:**
+
+- `/supabase-seed-remote` - Full reset + Payload migrations + seed (default)
+- `/supabase-seed-remote --push-only` - Only push new migrations (non-destructive)
+- `/supabase-seed-remote --schema-only` - Reset + migrations but skip seeding
+- `/supabase-seed-remote --verbose` - Detailed logging
+
+**What It Does:**
+
+1. Validates environment and creates backup
+2. Resets Supabase database (drops and recreates)
+3. Runs Payload CMS migrations (creates 60+ tables)
+4. Seeds Payload CMS with 252 records (unless --schema-only)
+5. Verifies database state
+
+**Requirements:**
+
+- Supabase CLI installed
+- Project linked to remote (`npx supabase link`)
+- REMOTE_DATABASE_URL environment variable (or Supabase access token)
+
+**Default Behavior:**
+Full reset WITH Payload migrations AND seeding - complete database rebuild.
+
+Your remote database will be reset with comprehensive validation!
+</help>
