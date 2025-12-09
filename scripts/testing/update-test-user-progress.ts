@@ -339,15 +339,20 @@ async function runScript() {
 
 			logger.info(`Found ${lessonsData.length} lessons`);
 
-			// Validate range against available lessons
-			const totalLessons = lessonsData.length;
-			if (RANGE_END > totalLessons) {
-				console.error(
-					`Warning: Range end (${RANGE_END}) exceeds total lessons (${totalLessons}). Adjusting to ${totalLessons}.`,
+			// Extract lesson numbers and find the maximum lesson_number value
+			const lessonNumbers = lessonsData.map((l) =>
+				parseInt(String(l.lesson_number), 10),
+			);
+			const maxLessonNumber = Math.max(...lessonNumbers);
+
+			// Validate range against available lesson numbers (not array length)
+			if (RANGE_END > maxLessonNumber) {
+				console.warn(
+					`Warning: Range end (${RANGE_END}) exceeds max lesson number (${maxLessonNumber}). Adjusting to ${maxLessonNumber}.`,
 				);
 			}
 
-			const effectiveRangeEnd = Math.min(RANGE_END, totalLessons);
+			const effectiveRangeEnd = Math.min(RANGE_END, maxLessonNumber);
 
 			// 3. Mark lessons within range as complete
 			const now = new Date().toISOString();
@@ -583,7 +588,7 @@ async function runScript() {
 			console.log(`  User: ${TEST_USER_EMAIL}`);
 			console.log(`  User ID: ${userId}`);
 			console.log(`  Range: Lessons ${RANGE_START}-${effectiveRangeEnd}`);
-			console.log(`  Total lessons in course: ${totalLessons}`);
+			console.log(`  Total lessons in course: ${lessonsData.length}`);
 			console.log(`  Lessons marked complete: ${completedLessonsCount}`);
 			console.log(`  Lessons skipped: ${skippedLessons.length}`);
 			console.log(`  Course completion: ${completionPercentage}%`);
