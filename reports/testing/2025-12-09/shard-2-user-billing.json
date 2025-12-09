@@ -1,0 +1,30 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "User Billing",
+		"files": ["tests/user-billing/user-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard9"
+	},
+	"execution": {
+		"startTime": "2025-12-09T20:10:54.066Z",
+		"endTime": "2025-12-09T20:12:31.066Z",
+		"duration": "97s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 1,
+		"passed": 2,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 4,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 44 bytes)...\nojects/2025slideheroes/apps/e2e\n> playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (7ms)\n  ✅ Next.js: Next.js healthy (568ms)\n  ✅ Payload: Payload healthy (19ms)\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase Auth URL: http://127.0.0.1:54521\n🍪 Using Supabase Cookie URL: http://host.docker.internal:54521 (for cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n✅ Session injected into cookies and localStorage for payload-admin user\n🔄 Authenticating to Payload CMS via API for payload-admin user...\n   Payload login attempt 1/3...\n✅ Payload API login successful, payload-token cookie injected for payload-admin user\n✅ Payload admin panel loaded for payload-admin user\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 1 test using 1 worker\n\nStarting billing test, current URL: about:blank\nNavigating to /home first...\nAt /home, URL: http://localhost:3001/home\nNavigating to /home/billing...\nAt /home/billing, URL: http://localhost:3001/home/billing\nNo existing subscription found - proceeding with checkout\n  ✘  1 [chromium] › tests/user-billing/user-billing.spec.ts:11:6 › User Billing @billing @integration › user can subscribe to a plan (1.1m)\nStarting billing test, current URL: about:blank\nNavigating to /home first...\nAt /home, URL: http://localhost:3001/home\nNavigating to /home/billing...\nAt /home/billing, URL: http://localhost:3001/home/billing\nUser already has an active subscription - verifying existing state\nExisting subscription verified successfully\n  ✓  2 [chromium] › tests/user-billing/user-billing.spec.ts:11:6 › User Billing @billing @integration › user can subscribe to a plan (retry #1) (2.4s)\n\n\n  1) [chromium] › tests/user-billing/user-billing.spec.ts:11:6 › User Billing @billing @integration › user can subscribe to a plan \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('[data-testid=\"current-plan-card-status-badge\"]').or(locator('h3:has-text(\"Your Plan\")').locator('..').locator('..').getByText(/^(Active|Trialing|Past Due|Canceled|Paused)$/))\n    Expected substring: \u001b[32m\"Active\"\u001b[39m\n    Timeout: 5000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toContainText\" with timeout 5000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"current-plan-card-status-badge\"]').or(locator('h3:has-text(\"Your Plan\")').locator('..').locator('..').getByText(/^(Active|Trialing|Past Due|Canceled|Paused)$/))\u001b[22m\n\n\n    Call Log:\n    - Timeout 45000ms exceeded while waiting on the predicate\n\n      70 | \t\t\t\ttimeout: 5000,\n      71 | \t\t\t});\n    > 72 | \t\t}).toPass({\n         | \t\t   ^\n      73 | \t\t\t// Use exponential backoff intervals: 2s, 4s, 6s, 8s, 10s\n      74 | \t\t\tintervals: [2000, 4000, 6000, 8000, 10000],\n      75 | \t\t\ttimeout: 45_000, // Total timeout: 45 seconds for webhook delivery + processing\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:72:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium/error-context.md\n\n  1 flaky\n    [chromium] › tests/user-billing/user-billing.spec.ts:11:6 › User Billing @billing @integration › user can subscribe to a plan \n"
+}
