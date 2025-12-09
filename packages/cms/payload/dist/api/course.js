@@ -19,6 +19,16 @@ export async function getCourseBySlug(slug, _options = {}, supabaseClient) {
     return callPayloadAPI(`courses?where[slug][equals]=${slug}&depth=1`, {}, supabaseClient);
 }
 /**
+ * Get a course by ID
+ * @param id The ID of the course
+ * @param options Additional options for the API call
+ * @param supabaseClient Optional Supabase client (for client-side usage)
+ * @returns The course data
+ */
+export async function getCourseById(id, _options = {}, supabaseClient) {
+    return callPayloadAPI(`courses/${id}?depth=1`, {}, supabaseClient);
+}
+/**
  * Get lessons for a course
  * @param courseId The ID of the course
  * @param options Additional options for the API call

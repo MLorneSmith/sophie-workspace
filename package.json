@@ -145,7 +145,7 @@
 		"tailwind-merge": "^3.4.0",
 		"turbo": "2.6.3",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.14",
+		"vitest": "^4.0.15",
 		"yaml-lint": "^1.7.0"
 	}
 }
