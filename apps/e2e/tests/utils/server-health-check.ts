@@ -21,7 +21,9 @@ const HEALTH_CHECK_TIMEOUT = 5000; // 5 seconds per check
  */
 export async function checkSupabaseHealth(): Promise<HealthCheckResult> {
 	const supabaseUrl =
-		process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:54321";
+		process.env.E2E_SUPABASE_URL ||
+		process.env.NEXT_PUBLIC_SUPABASE_URL ||
+		"http://localhost:54321";
 
 	try {
 		const startTime = Date.now();
