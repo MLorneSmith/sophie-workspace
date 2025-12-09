@@ -1,24 +1,119 @@
 /**
- * Script to update course progress for test2@slideheroes.com
- * Marks all lessons as complete except for 801 and 802
+ * Script to update course progress for a test user with partial completion
  *
  * This script fetches the current lesson data from Payload CMS to ensure
  * it always uses the latest lesson IDs, even after database resets.
  *
- * Note: Lesson 702 is now included as completed to trigger course completion
- * and certificate generation.
+ * Usage:
+ *   npx tsx scripts/testing/update-test-user-progress.ts
+ *   npx tsx scripts/testing/update-test-user-progress.ts --user test1@slideheroes.com
+ *   npx tsx scripts/testing/update-test-user-progress.ts --range 6-28
+ *   npx tsx scripts/testing/update-test-user-progress.ts --user test1@slideheroes.com --range 1-28
+ *
+ * Arguments:
+ *   --user <email>   Target user email (default: test1@slideheroes.com)
+ *   --range <start-end>   Lesson index range to mark complete (default: 6-28)
+ *                         Uses 1-based indexing (lesson 1 = index 1)
+ *   --help           Show this help message
+ *
+ * Examples:
+ *   Mark lessons 6-28 complete for test1@slideheroes.com (default):
+ *     npx tsx scripts/testing/update-test-user-progress.ts
+ *
+ *   Mark lessons 1-28 complete (all but lesson 29):
+ *     npx tsx scripts/testing/update-test-user-progress.ts --range 1-28
+ *
+ *   Mark only lessons 10-20 complete:
+ *     npx tsx scripts/testing/update-test-user-progress.ts --range 10-20
  */
 
 import { createServiceLogger } from "@kit/shared/logger";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
 import { loadTestEnv } from "./load-test-env";
+import { parseArgs } from "node:util";
 
 // Load test environment variables
 loadTestEnv();
 
 // Initialize service logger
 const { getLogger } = createServiceLogger("UPDATE_TEST_USER_PROGRESS");
+
+// Parse command line arguments
+function parseCliArgs() {
+	const { values } = parseArgs({
+		options: {
+			user: {
+				type: "string",
+				short: "u",
+				default: "test1@slideheroes.com",
+			},
+			range: {
+				type: "string",
+				short: "r",
+				default: "6-28",
+			},
+			help: {
+				type: "boolean",
+				short: "h",
+				default: false,
+			},
+		},
+	});
+
+	if (values.help) {
+		console.log(`
+Usage: npx tsx scripts/testing/update-test-user-progress.ts [options]
+
+Options:
+  --user, -u <email>       Target user email (default: test1@slideheroes.com)
+  --range, -r <start-end>  Lesson index range to mark complete (default: 6-28)
+                           Uses 1-based indexing (lesson 1 = index 1)
+  --help, -h               Show this help message
+
+Examples:
+  # Mark lessons 6-28 complete for test1@slideheroes.com (default)
+  npx tsx scripts/testing/update-test-user-progress.ts
+
+  # Mark lessons 1-28 complete (all but lesson 29)
+  npx tsx scripts/testing/update-test-user-progress.ts --range 1-28
+
+  # Mark only lessons 10-20 complete for test2@slideheroes.com
+  npx tsx scripts/testing/update-test-user-progress.ts --user test2@slideheroes.com --range 10-20
+`);
+		process.exit(0);
+	}
+
+	// Parse range
+	const rangeMatch = values.range?.match(/^(\d+)-(\d+)$/);
+	if (!rangeMatch) {
+		console.error(
+			`Error: Invalid range format "${values.range}". Expected format: start-end (e.g., 6-28)`,
+		);
+		process.exit(1);
+	}
+
+	const rangeStart = parseInt(rangeMatch[1], 10);
+	const rangeEnd = parseInt(rangeMatch[2], 10);
+
+	if (rangeStart < 1) {
+		console.error("Error: Range start must be at least 1");
+		process.exit(1);
+	}
+
+	if (rangeEnd < rangeStart) {
+		console.error(
+			"Error: Range end must be greater than or equal to range start",
+		);
+		process.exit(1);
+	}
+
+	return {
+		userEmail: values.user as string,
+		rangeStart,
+		rangeEnd,
+	};
+}
 
 // Import the required lesson numbers directly to avoid ESM import issues
 const REQUIRED_LESSON_NUMBERS = [
@@ -70,6 +165,7 @@ interface ProgressData {
 // Main async wrapper to enable top-level async logger usage
 async function runScript() {
 	const logger = await getLogger();
+	const cliArgs = parseCliArgs();
 
 	// Load credentials from environment variables
 	const supabaseUrl = process.env.TEST_SUPABASE_URL;
@@ -90,10 +186,9 @@ async function runScript() {
 
 	// Course ID for "Decks for Decision Makers"
 	const COURSE_ID = "3e352ade-c6a9-4e4a-9ffa-9680a5d5f9e8";
-	const TEST_USER_EMAIL =
-		process.env.TEST_USER_EMAIL || "test2@slideheroes.com";
-	// Only exclude the congratulations and final lessons, not 702 which is required for completion
-	const EXCLUDED_LESSONS = ["801", "802"];
+	const TEST_USER_EMAIL = cliArgs.userEmail;
+	const RANGE_START = cliArgs.rangeStart;
+	const RANGE_END = cliArgs.rangeEnd;
 
 	/**
 	 * Fetch lessons from Payload CMS
@@ -234,7 +329,19 @@ async function runScript() {
 
 	async function main() {
 		try {
-			logger.info("Starting course progress update...");
+			// Print configuration summary
+			console.log("\n========================================");
+			console.log("  Course Progress Update Script");
+			console.log("========================================");
+			console.log(`  User:  ${TEST_USER_EMAIL}`);
+			console.log(`  Range: Lessons ${RANGE_START}-${RANGE_END}`);
+			console.log("========================================\n");
+
+			logger.info("Starting course progress update...", {
+				userEmail: TEST_USER_EMAIL,
+				rangeStart: RANGE_START,
+				rangeEnd: RANGE_END,
+			});
 
 			// 1. Get the user
 			const user = await getUser(TEST_USER_EMAIL);
@@ -248,32 +355,58 @@ async function runScript() {
 				throw new Error("No lessons found for the course");
 			}
 
+			// Sort lessons by lesson_number for consistent indexing
+			lessonsData.sort((a, b) => {
+				const numA = parseInt(String(a.lesson_number), 10);
+				const numB = parseInt(String(b.lesson_number), 10);
+				return numA - numB;
+			});
+
 			logger.info(`Found ${lessonsData.length} lessons`);
 
-			// 3. Mark all lessons as complete except the excluded ones
+			// Validate range against available lessons
+			const totalLessons = lessonsData.length;
+			if (RANGE_END > totalLessons) {
+				console.error(
+					`Warning: Range end (${RANGE_END}) exceeds total lessons (${totalLessons}). Adjusting to ${totalLessons}.`,
+				);
+			}
+
+			const effectiveRangeEnd = Math.min(RANGE_END, totalLessons);
+
+			// 3. Mark lessons within range as complete
 			const now = new Date().toISOString();
 			let completedLessonsCount = 0;
+			const skippedLessons: string[] = [];
+			const markedLessons: string[] = [];
 
-			for (const lesson of lessonsData) {
-				// Skip excluded lessons
-				if (EXCLUDED_LESSONS.includes(String(lesson.lesson_number))) {
+			for (let i = 0; i < lessonsData.length; i++) {
+				const lesson = lessonsData[i];
+				const lessonIndex = i + 1; // 1-based index
+
+				// Check if this lesson is within the range
+				if (lessonIndex < RANGE_START || lessonIndex > effectiveRangeEnd) {
+					skippedLessons.push(`${lesson.lesson_number}`);
 					logger.info(
-						`Skipping lesson ${lesson.lesson_number}: ${lesson.title}`,
+						`Skipping lesson ${lessonIndex} (${lesson.lesson_number}): ${lesson.title} - outside range`,
 						{
 							operation: "skip_lesson",
 							lessonNumber: lesson.lesson_number,
 							lessonId: lesson.id,
+							lessonIndex,
+							reason: "outside_range",
 						},
 					);
 					continue;
 				}
 
 				logger.info(
-					`Marking lesson ${lesson.lesson_number} as complete: ${lesson.title}`,
+					`Marking lesson ${lessonIndex} (${lesson.lesson_number}) as complete: ${lesson.title}`,
 					{
 						operation: "mark_lesson_complete",
 						lessonNumber: lesson.lesson_number,
 						lessonId: lesson.id,
+						lessonIndex,
 						userId,
 					},
 				);
@@ -337,6 +470,7 @@ async function runScript() {
 					}
 				}
 
+				markedLessons.push(`${lesson.lesson_number}`);
 				completedLessonsCount++;
 			}
 
@@ -416,6 +550,9 @@ async function runScript() {
 							courseId: COURSE_ID,
 						},
 					);
+				} else {
+					// Clear completed_at if course is not complete (partial progress)
+					updateData.completed_at = null;
 				}
 
 				const { error: updateError } = await supabase
@@ -478,6 +615,25 @@ async function runScript() {
 				});
 			}
 
+			// Print final summary
+			console.log("\n========================================");
+			console.log("  Summary");
+			console.log("========================================");
+			console.log(`  User: ${TEST_USER_EMAIL}`);
+			console.log(`  User ID: ${userId}`);
+			console.log(`  Range: Lessons ${RANGE_START}-${effectiveRangeEnd}`);
+			console.log(`  Total lessons in course: ${totalLessons}`);
+			console.log(`  Lessons marked complete: ${completedLessonsCount}`);
+			console.log(`  Lessons skipped: ${skippedLessons.length}`);
+			console.log(`  Course completion: ${completionPercentage}%`);
+			console.log(`  Course completed: ${isCompleted ? "YES" : "NO"}`);
+			console.log("========================================");
+			console.log("\n  Marked complete:");
+			console.log(`    Lesson numbers: ${markedLessons.join(", ")}`);
+			console.log("\n  Skipped (incomplete):");
+			console.log(`    Lesson numbers: ${skippedLessons.join(", ")}`);
+			console.log("========================================\n");
+
 			logger.info(
 				`Successfully updated course progress for ${TEST_USER_EMAIL}`,
 				{
@@ -485,8 +641,11 @@ async function runScript() {
 					email: TEST_USER_EMAIL,
 					userId,
 					completedLessonsCount,
+					skippedLessonsCount: skippedLessons.length,
 					completionPercentage,
 					isCompleted,
+					markedLessons,
+					skippedLessons,
 				},
 			);
 
