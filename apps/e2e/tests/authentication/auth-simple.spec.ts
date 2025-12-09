@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { TEST_USERS } from "../helpers/test-users";
+import { testConfig } from "../utils/test-config";
 import { AuthPageObject } from "./auth.po";
 
 /**
@@ -8,7 +9,10 @@ import { AuthPageObject } from "./auth.po";
  * triggering the problematic dropdown components
  */
 test.describe("Authentication - Simple Tests @auth @integration", () => {
-	test.describe.configure({ mode: "serial", timeout: 30000 });
+	test.describe.configure({
+		mode: "serial",
+		timeout: testConfig.getTimeout("medium"),
+	});
 
 	// Clear global storage state so tests start unauthenticated
 	// This overrides playwright.config.ts storageState for this describe block
