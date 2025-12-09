@@ -5,11 +5,12 @@
  * -------------------------------------------------------
  */
 
--- Account Image
+-- Account Image (idempotent - handles existing bucket on remote reset)
 insert into
   storage.buckets (id, name, PUBLIC)
 values
-  ('account_image', 'account_image', true);
+  ('account_image', 'account_image', true)
+on conflict (id) do nothing;
 
 -- Function: get the storage filename as a UUID.
 -- Useful if you want to name files with UUIDs related to an account

@@ -36,8 +36,9 @@ create policy "Anyone can read approved testimonials"
     to anon, authenticated
     using (status = 'approved');
 
--- Storage
+-- Storage (idempotent - handles existing bucket on remote reset)
 insert into
   storage.buckets (id, name, PUBLIC)
 values
-  ('testimonials', 'testimonials', true);
+  ('testimonials', 'testimonials', true)
+on conflict (id) do nothing;

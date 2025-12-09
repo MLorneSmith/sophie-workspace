@@ -1,8 +1,9 @@
--- Create certificates bucket
+-- Create certificates bucket (idempotent - handles existing bucket on remote reset)
 insert into
   storage.buckets (id, name, PUBLIC)
 values
-  ('certificates', 'certificates', true);
+  ('certificates', 'certificates', true)
+on conflict (id) do nothing;
 
 -- Add appropriate storage policies
 create policy "Anyone can read certificates"
