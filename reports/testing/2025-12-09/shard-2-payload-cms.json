@@ -1,0 +1,43 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Payload CMS",
+		"files": [
+			"tests/payload/payload-auth.spec.ts",
+			"tests/payload/payload-collections.spec.ts",
+			"tests/payload/payload-database.spec.ts"
+		],
+		"expectedTests": 42,
+		"shardCommand": "test:shard7"
+	},
+	"execution": {
+		"startTime": "2025-12-09T19:48:53.265Z",
+		"endTime": "2025-12-09T20:10:08.265Z",
+		"duration": "1275s",
+		"exitCode": -1,
+		"timedOut": true
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard7 /home/msmith/projects/2025slideheroes/apps/e2e\n> PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (6ms)\n  ✅ Next.js: Next.js healthy (2691ms)\n  ⚠️ Payload: Payload unreachable: This operation was aborted\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase Auth URL: http://127.0.0.1:54521\n🍪 Using Supabase Cookie URL: http://host.docker.internal:54521 (for cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n✅ Session injected into cookies and localStorage for payload-admin user\n⏭️  Skipping Payload auth for payload-admin user (Payload server unhealthy)\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 43 tests using 3 workers\n[database-utilities] Unlocked Payload user: michael@slideheroes.com\n[database-utilities] Unlocked Payload user: michael@slideheroes.com\n[database-utilities] Unlocked Payload user: michael@slideheroes.com\n·×[database-utilities] Unlocked Payload user: michael@slideheroes.com\nF[database-utilities] Unlocked Payload user: michael@slideheroes.com\n°×[database-utilities] Unlocked Payload user: michael@slideheroes.com\n×[database-utilities] Unlocked Payload user: michael@slideheroes.com\n×[database-utilities] Unlocked Payload user: michael@slideheroes.com\nT[database-utilities] Unlocked Payload user: michael@slideheroes.com\nT×FT[database-utilities] Unlocked Payload user: michael@slideheroes.com\n××FF××FF××F×[database-utilities] Unlocked Payload user: michael@slideheroes.com\nF××FF××FF××FT[database-utilities] Unlocked Payload user: michael@slideheroes.com\nF·××[database-utilities] Unlocked Payload user: michael@slideheroes.com\n×TTT°··×F×××FPayload Health Status: {\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[32m'2025-12-09T20:06:23.134Z'\u001b[39m,\n  service: \u001b[32m'payload-cms'\u001b[39m,\n  database: { status: \u001b[32m'connected'\u001b[39m, lastCheck: \u001b[32m'2025-12-09T14:24:10.908Z'\u001b[39m },\n  version: \u001b[32m'3.67.0'\u001b[39m,\n  ready: \u001b[33mtrue\u001b[39m\n}\n····TT··×"
+}
