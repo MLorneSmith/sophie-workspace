@@ -1185,11 +1185,8 @@ E2E_ADMIN_EMAIL=michael@slideheroes.com
 		try {
 			log("🧹 Cleaning up test ports...");
 
-			let portsToClean = [
-				this.config.ports.web,
-				this.config.ports.webTest,
-				this.config.ports.payload,
-			];
+			// Note: Port 3000 (web) is for development only and should never be managed by test infrastructure
+			let portsToClean = [this.config.ports.webTest, this.config.ports.payload];
 
 			// Skip Docker container check entirely for unit tests to avoid timeout
 			if (unitOnly) {
