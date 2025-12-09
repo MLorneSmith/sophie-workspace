@@ -12,8 +12,8 @@
  *
  * Arguments:
  *   --user <email>   Target user email (default: test1@slideheroes.com)
- *   --range <start-end>   Lesson index range to mark complete (default: 6-28)
- *                         Uses 1-based indexing (lesson 1 = index 1)
+ *   --range <start-end>   Lesson number range to mark complete (default: 6-28)
+ *                         Uses actual lesson_number values from the database
  *   --help           Show this help message
  *
  * Examples:
@@ -27,11 +27,11 @@
  *     npx tsx scripts/testing/update-test-user-progress.ts --range 10-20
  */
 
+import { parseArgs } from "node:util";
 import { createServiceLogger } from "@kit/shared/logger";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
 import { loadTestEnv } from "./load-test-env";
-import { parseArgs } from "node:util";
 
 // Load test environment variables
 loadTestEnv();
@@ -67,8 +67,8 @@ Usage: npx tsx scripts/testing/update-test-user-progress.ts [options]
 
 Options:
   --user, -u <email>       Target user email (default: test1@slideheroes.com)
-  --range, -r <start-end>  Lesson index range to mark complete (default: 6-28)
-                           Uses 1-based indexing (lesson 1 = index 1)
+  --range, -r <start-end>  Lesson number range to mark complete (default: 6-28)
+                           Uses actual lesson_number values from the database
   --help, -h               Show this help message
 
 Examples:
@@ -358,18 +358,17 @@ async function runScript() {
 
 			for (let i = 0; i < lessonsData.length; i++) {
 				const lesson = lessonsData[i];
-				const lessonIndex = i + 1; // 1-based index
+				const lessonNumber = parseInt(String(lesson.lesson_number), 10);
 
-				// Check if this lesson is within the range
-				if (lessonIndex < RANGE_START || lessonIndex > effectiveRangeEnd) {
+				// Check if this lesson is within the range (using actual lesson_number, not array index)
+				if (lessonNumber < RANGE_START || lessonNumber > effectiveRangeEnd) {
 					skippedLessons.push(`${lesson.lesson_number}`);
 					logger.info(
-						`Skipping lesson ${lessonIndex} (${lesson.lesson_number}): ${lesson.title} - outside range`,
+						`Skipping lesson ${lessonNumber}: ${lesson.title} - outside range`,
 						{
 							operation: "skip_lesson",
-							lessonNumber: lesson.lesson_number,
+							lessonNumber,
 							lessonId: lesson.id,
-							lessonIndex,
 							reason: "outside_range",
 						},
 					);
@@ -377,12 +376,11 @@ async function runScript() {
 				}
 
 				logger.info(
-					`Marking lesson ${lessonIndex} (${lesson.lesson_number}) as complete: ${lesson.title}`,
+					`Marking lesson ${lessonNumber} as complete: ${lesson.title}`,
 					{
 						operation: "mark_lesson_complete",
-						lessonNumber: lesson.lesson_number,
+						lessonNumber,
 						lessonId: lesson.id,
-						lessonIndex,
 						userId,
 					},
 				);
