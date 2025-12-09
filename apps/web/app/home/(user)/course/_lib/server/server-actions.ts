@@ -177,13 +177,12 @@ export const updateLessonProgressAction = enhanceAction(
 			.eq("course_id", data.courseId);
 
 		// Get total lessons for this course from Payload CMS
-		const { getCourseBySlug, getCourseLessons } = await import(
+		const { getCourseById, getCourseLessons } = await import(
 			"@kit/cms/payload"
 		);
-		const courseData = await getCourseBySlug(data.courseId);
+		const course = await getCourseById(data.courseId);
 
-		if (courseData?.docs?.[0]) {
-			const course = courseData.docs[0];
+		if (course?.id) {
 			const lessonsData = await getCourseLessons(course.id);
 
 			if (lessonsData?.docs && lessonProgress) {

@@ -88,11 +88,11 @@ vi.mock("~/lib/course/course-config", () => ({
 }));
 
 // Mock CMS functions
-const mockGetCourseBySlug = vi.fn();
+const mockGetCourseById = vi.fn();
 const mockGetCourseLessons = vi.fn();
 
 vi.mock("@kit/cms/payload", async () => ({
-	getCourseBySlug: mockGetCourseBySlug,
+	getCourseById: mockGetCourseById,
 	getCourseLessons: mockGetCourseLessons,
 }));
 
@@ -478,7 +478,8 @@ describe("Course Server Actions", () => {
 	describe("updateLessonProgressAction", () => {
 		beforeEach(() => {
 			// Mock CMS data for lesson progress tests
-			mockGetCourseBySlug.mockResolvedValue({});
+			// getCourseById returns a single course object (not wrapped in docs array)
+			mockGetCourseById.mockResolvedValue({ id: "course-123" });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
 			});
@@ -626,10 +627,8 @@ describe("Course Server Actions", () => {
 					completed: true,
 				};
 
-				// Mock CMS responses
-				mockGetCourseBySlug.mockResolvedValueOnce({
-					docs: [{ id: "course-123" }],
-				});
+				// Mock CMS responses - getCourseById returns single course object
+				mockGetCourseById.mockResolvedValueOnce({ id: "course-123" });
 				mockGetCourseLessons.mockResolvedValueOnce({
 					docs: [
 						{ id: "lesson-456", lesson_number: "101", title: "Test Lesson" },
@@ -638,15 +637,13 @@ describe("Course Server Actions", () => {
 
 				await updateLessonProgressAction(input);
 
-				expect(mockGetCourseBySlug).toHaveBeenCalledWith("course-123");
+				expect(mockGetCourseById).toHaveBeenCalledWith("course-123");
 				expect(mockGetCourseLessons).toHaveBeenCalledWith("course-123");
 			});
 
 			it("should handle missing course data gracefully", async () => {
-				// Mock CMS returning no course data
-				mockGetCourseBySlug.mockResolvedValueOnce({
-					docs: [],
-				});
+				// Mock CMS returning no course data (null or undefined)
+				mockGetCourseById.mockResolvedValueOnce(null);
 
 				const input = {
 					courseId: "nonexistent-course",
@@ -660,13 +657,36 @@ describe("Course Server Actions", () => {
 				);
 				expect(result).toEqual({ success: true });
 			});
+
+			it("should use getCourseById with UUID instead of getCourseBySlug (regression test for #1030)", async () => {
+				// This test ensures we call getCourseById (for UUID lookup) instead of getCourseBySlug
+				// The courseId is a UUID like "123e4567-e89b-12d3-a456-426614174000"
+				const courseUuid = "123e4567-e89b-12d3-a456-426614174000";
+				const input = {
+					courseId: courseUuid,
+					lessonId: "lesson-456",
+					completed: true,
+				};
+
+				mockGetCourseById.mockResolvedValueOnce({ id: courseUuid });
+				mockGetCourseLessons.mockResolvedValueOnce({
+					docs: [{ id: "lesson-456", lesson_number: "101" }],
+				});
+
+				await updateLessonProgressAction(input);
+
+				// Verify getCourseById was called with the UUID (not getCourseBySlug)
+				expect(mockGetCourseById).toHaveBeenCalledWith(courseUuid);
+				expect(mockGetCourseLessons).toHaveBeenCalledWith(courseUuid);
+			});
 		});
 	});
 
 	describe("submitQuizAttemptAction", () => {
 		beforeEach(() => {
 			// Mock CMS data for the recursive lesson progress call
-			mockGetCourseBySlug.mockResolvedValue({});
+			// getCourseById returns a single course object (not wrapped in docs array)
+			mockGetCourseById.mockResolvedValue({ id: "course-123" });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
 			});
@@ -895,8 +915,8 @@ describe("Course Server Actions", () => {
 				passed: true,
 			};
 
-			// Mock CMS data
-			mockGetCourseBySlug.mockResolvedValue({});
+			// Mock CMS data - getCourseById returns single course object
+			mockGetCourseById.mockResolvedValue({ id: "course-123" });
 			mockGetCourseLessons.mockResolvedValue({
 				docs: [{ id: "lesson-456", lesson_number: "101" }],
 			});
