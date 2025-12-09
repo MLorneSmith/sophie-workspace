@@ -223,33 +223,30 @@ cd apps/payload
 
 echo "Running Payload migrations on remote database..."
 
-# Get remote database connection string from Supabase
-# The remote URL format is: postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
-# We need to get this from the linked project settings
+# Get remote database connection string
+# Priority: 1) REMOTE_DATABASE_URL env var, 2) .env.production file
 
-# Method 1: Use environment variable if set
 if [ -n "$REMOTE_DATABASE_URL" ]; then
-  DATABASE_URL="$REMOTE_DATABASE_URL"
+  DATABASE_URI="$REMOTE_DATABASE_URL"
   echo "Using REMOTE_DATABASE_URL from environment"
-else
-  # Method 2: Get from Supabase CLI (requires access token)
-  echo "Retrieving database URL from Supabase..."
-
-  # Get the database password from supabase
-  DB_PASSWORD=$(npx supabase secrets list --linked 2>/dev/null | grep "POSTGRES_PASSWORD" | awk '{print $2}')
-
-  if [ -z "$DB_PASSWORD" ]; then
-    echo "ERROR: Could not retrieve database password"
-    echo ""
-    echo "Please set REMOTE_DATABASE_URL environment variable:"
-    echo "  export REMOTE_DATABASE_URL='postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres'"
-    echo ""
-    echo "You can find this in Supabase Dashboard > Settings > Database > Connection string"
+elif [ -f ".env.production" ]; then
+  # Source DATABASE_URI from .env.production (already configured for remote)
+  source .env.production
+  if [ -n "$DATABASE_URI" ]; then
+    echo "Using DATABASE_URI from apps/payload/.env.production"
+  else
+    echo "ERROR: DATABASE_URI not found in .env.production"
     exit 1
   fi
-
-  # Construct connection string (using pooler for better connection management)
-  DATABASE_URL="postgresql://postgres.ldebzombxtszzcgnylgq:${DB_PASSWORD}@aws-0-us-east-1.pooler.supabase.com:6543/postgres"
+else
+  echo "ERROR: No remote database configuration found"
+  echo ""
+  echo "Options:"
+  echo "1. Ensure apps/payload/.env.production exists with DATABASE_URI"
+  echo "2. Set REMOTE_DATABASE_URL environment variable"
+  echo ""
+  echo "You can find the connection string in Supabase Dashboard > Settings > Database"
+  exit 1
 fi
 
 # Verify payload schema exists (created by Supabase migration)
@@ -265,15 +262,14 @@ if [ "$SCHEMA_CHECK" != "1" ]; then
 fi
 echo "Payload schema exists"
 
-# Run Payload migrations with SSL enabled for remote
+# Run Payload migrations (DATABASE_URI already set above)
 echo "Executing Payload migrations..."
-DATABASE_URI="${DATABASE_URL}?sslmode=require" \
-  NODE_TLS_REJECT_UNAUTHORIZED=0 \
+NODE_TLS_REJECT_UNAUTHORIZED=0 \
   pnpm run payload migrate --forceAcceptWarning || {
     echo "ERROR: Payload migration failed"
     echo ""
     echo "Troubleshooting:"
-    echo "1. Verify REMOTE_DATABASE_URL is correct"
+    echo "1. Verify DATABASE_URI in apps/payload/.env.production is correct"
     echo "2. Check Supabase Dashboard for connection issues"
     echo "3. Try: npx supabase db exec --linked 'SELECT 1;'"
     exit 1
@@ -305,10 +301,9 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   echo "Seeding Payload CMS..."
 
-  # Run seeding with remote database URL
+  # Run seeding (DATABASE_URI already set from Phase 3)
   echo "Seeding database with Payload content..."
-  DATABASE_URI="${DATABASE_URL}?sslmode=require" \
-    NODE_TLS_REJECT_UNAUTHORIZED=0 \
+  NODE_TLS_REJECT_UNAUTHORIZED=0 \
     pnpm run seed:run || {
       echo "ERROR: Seeding failed"
       echo ""
@@ -548,15 +543,19 @@ Resets database and runs migrations but skips seeding:
 - **Push only**: Adding new migrations to a working database
 - **Schema only**: Need empty database with correct schema
 
-## Environment Variables
+## Database Connection
 
-For remote Payload migrations, you may need to set:
+The command uses `DATABASE_URI` from `apps/payload/.env.production` for Payload migrations and seeding.
+
+**Default**: Uses existing `apps/payload/.env.production` (already configured)
+
+**Override**: Set `REMOTE_DATABASE_URL` environment variable:
 
 ```bash
 export REMOTE_DATABASE_URL='postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres'
 ```
 
-Find this in Supabase Dashboard > Settings > Database > Connection string
+Connection string can be found in Supabase Dashboard > Settings > Database
 
 ## Local Development
 
@@ -590,7 +589,7 @@ Reset remote Supabase database and seed Payload CMS with fresh data.
 
 - Supabase CLI installed
 - Project linked to remote (`npx supabase link`)
-- REMOTE_DATABASE_URL environment variable (or Supabase access token)
+- `apps/payload/.env.production` with DATABASE_URI (already configured)
 
 **Default Behavior:**
 Full reset WITH Payload migrations AND seeding - complete database rebuild.
