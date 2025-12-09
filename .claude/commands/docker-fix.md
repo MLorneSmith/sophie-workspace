@@ -7,11 +7,11 @@ argument-hint: "[container-name|stack-name] [--auto] [--manual-approval]"
 
 # Infrastructure Docker Fix
 
-Docker container health validation and aggressive restoration for all 16 containers.
+Docker container health validation and aggressive restoration for all 17 containers.
 
 ## Key Features
 
-- **Complete Container Coverage**: Validates all 16 containers including Supabase-managed services
+- **Complete Container Coverage**: Validates all 17 containers including Supabase-managed services
 - **Supabase Container Expertise**: Process-based health checks for PostgREST and Edge Runtime containers
 - **Aggressive Fix Strategies**: Auto-escalation from restart → recreate with minimal prompting
 - **Progressive Health Detection**: Native Docker health + process monitoring + container state
@@ -26,7 +26,7 @@ Docker container health validation and aggressive restoration for all 16 contain
 ## Prompt
 
 <role>
-You are a Docker Infrastructure Specialist with deep expertise in container health management, diagnostics, and aggressive recovery strategies. You excel at validating all containers in the SlideHeroes environment (16 total), with specialized knowledge of Supabase container health verification using process-based checks for PostgREST and Edge Runtime.
+You are a Docker Infrastructure Specialist with deep expertise in container health management, diagnostics, and aggressive recovery strategies. You excel at validating all containers in the SlideHeroes environment (17 total), with specialized knowledge of Supabase container health verification using process-based checks for PostgREST and Edge Runtime.
 </role>
 
 <instructions>
@@ -35,7 +35,7 @@ You are a Docker Infrastructure Specialist with deep expertise in container heal
 **CORE REQUIREMENTS**:
 
 - **Track** major workflow phases using TodoWrite for visibility
-- **Validate** all 16 containers systematically (8 Supabase managed + 2 external + custom)
+- **Validate** all 17 containers systematically (12 Supabase managed + 5 custom)
 - **Apply** aggressive fix strategies with auto-escalation
 - **Execute** sequential container processing for reliable recovery
 - **Confirm** health using native checks + process monitoring for Supabase containers
@@ -47,14 +47,14 @@ You are a Docker Infrastructure Specialist with deep expertise in container heal
 <purpose>
 **Define** clear restoration outcomes and success criteria:
 
-1. **Primary Objective**: Restore all unhealthy containers to healthy operational state across 16 total containers
+1. **Primary Objective**: Restore all unhealthy containers to healthy operational state across 17 total containers
 2. **Success Criteria**:
    - All containers show "healthy" or "running" status
    - PostgREST process confirmed running (docker top | grep postgrest)
    - Edge Runtime Deno process confirmed running (docker top | grep deno)
    - Before/after metrics show improvement
 3. **Scope Boundaries**:
-   - Include: All 16 containers (Supabase managed + external monitoring + custom)
+   - Include: All 17 containers (Supabase managed + custom)
    - Focus: Unhealthy, stopped, or degraded containers only
    - Exclude: Healthy containers (no unnecessary restarts)
 4. **Key Features**: Aggressive recovery, process-based Supabase validation, sequential execution, phase tracking
@@ -108,7 +108,7 @@ Authority Matrix:
 - **Automation Level**: --auto flag for fully automated fixes
 - **Approval Mode**: --manual-approval to require confirmation for all operations
 
-#### Container Inventory (16 Total)
+#### Container Inventory (17 Total)
 
 **Identify** all containers in SlideHeroes environment:
 
@@ -127,9 +127,16 @@ Authority Matrix:
 9. supabase_rest_2025slideheroes-db (PostgREST process check)
 10. supabase_edge_runtime_2025slideheroes-db (Deno process check)
 
-**Custom Containers (2+)**:
-11. ccmp-dashboard (HTTP health check)
-12. docs-mcp-server (HTTP health check)
+**Supabase Additional Services (2 containers)** - Native Docker health checks:
+11. supabase_vector_2025slideheroes-db (HTTP endpoint)
+12. supabase_analytics_2025slideheroes-db (HTTP endpoint)
+
+**Custom Containers (5)**:
+13. slideheroes-app-test (HTTP health check)
+14. slideheroes-payload-test (HTTP health check)
+15. slideheroes-stripe-webhook (HTTP health check)
+16. docs-mcp-server (HTTP health check)
+17. ccmp-dashboard (HTTP health check)
 
 #### Pre-Flight Diagnostics
 
@@ -139,18 +146,40 @@ Authority Matrix:
 # STEP 1: Initialize progress tracking
 TodoWrite([
   {content: "Discover container health status", status: "in_progress", activeForm: "Discovering health status"},
+  {content: "Cleanup orphaned backup containers", status: "pending", activeForm: "Cleaning up backup containers"},
   {content: "Diagnose unhealthy containers", status: "pending", activeForm: "Diagnosing issues"},
   {content: "Apply aggressive fix strategies", status: "pending", activeForm: "Applying fixes"},
   {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
 ])
 
-# STEP 2: Get complete container inventory (ALL 16 containers)
+# STEP 2: Get complete container inventory (ALL 17 containers)
 ALL_CONTAINERS=$(docker ps -a --format "{{.Names}}\t{{.Status}}\t{{.State}}")
 TOTAL_CONTAINERS=$(docker ps -a --format "{{.Names}}" | wc -l)
 
 # STEP 3: Identify stopped containers (unhealthy by definition)
 STOPPED_CONTAINERS=$(docker ps -a --filter "status=exited" --format "{{.Names}}")
 STOPPED_COUNT=$(echo "$STOPPED_CONTAINERS" | grep -v '^$' | wc -l)
+
+# STEP 3.5: Identify orphaned backup containers (created by supabase db dump)
+# These are postgres containers with:
+# - status=exited (completed backup)
+# - exit code 0 (successful)
+# - Random Docker names (not matching supabase_db_* pattern)
+# Note: We inspect each exited container's image since ancestor filter requires exact tag
+BACKUP_CONTAINERS=$(docker ps -a --filter "status=exited" --format "{{.ID}}" | \
+  xargs -I {} sh -c 'name=$(docker inspect {} --format "{{.Name}}" | sed "s/^\///"); \
+  img=$(docker inspect {} --format "{{.Config.Image}}"); \
+  echo "$img" | grep -q "supabase/postgres" && echo "$name" | grep -qv "^supabase_db_" && echo "$name"' 2>/dev/null)
+
+BACKUP_COUNT=$(echo "$BACKUP_CONTAINERS" | grep -v '^$' | wc -l)
+
+# Report backup containers found
+if [[ "$BACKUP_COUNT" -gt 0 ]]; then
+  echo "=== ORPHANED BACKUP CONTAINERS DETECTED ==="
+  echo "Found $BACKUP_COUNT temporary backup container(s) from supabase db dump:"
+  echo "$BACKUP_CONTAINERS"
+  echo "These will be cleaned up automatically."
+fi
 
 # STEP 4: Check native Docker health for managed containers
 UNHEALTHY_NATIVE=$(docker ps --filter "health=unhealthy" --format "{{.Names}}")
@@ -187,9 +216,10 @@ if [[ "$EDGE_RUNTIME_HEALTH" == "unhealthy" ]]; then
 fi
 
 # STEP 7: Report inventory validation
-echo "=== CONTAINER INVENTORY VALIDATION (16 TOTAL) ==="
+echo "=== CONTAINER INVENTORY VALIDATION (17 TOTAL) ==="
 echo "Total containers found: $TOTAL_CONTAINERS"
 echo "Stopped containers: $STOPPED_COUNT"
+echo "Backup containers (orphaned): $BACKUP_COUNT"
 echo "Unhealthy (native): $(echo "$UNHEALTHY_NATIVE" | grep -v '^$' | wc -l)"
 echo "PostgREST health: $POSTGREST_HEALTH"
 echo "Edge Runtime health: $EDGE_RUNTIME_HEALTH"
@@ -197,7 +227,8 @@ echo "Edge Runtime health: $EDGE_RUNTIME_HEALTH"
 # STEP 8: Update progress
 TodoWrite([
   {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
-  {content: "Diagnose unhealthy containers", status: "in_progress", activeForm: "Diagnosing issues"},
+  {content: "Cleanup orphaned backup containers", status: "in_progress", activeForm: "Cleaning up backup containers"},
+  {content: "Diagnose unhealthy containers", status: "pending", activeForm: "Diagnosing issues"},
   {content: "Apply aggressive fix strategies", status: "pending", activeForm: "Applying fixes"},
   {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
 ])
@@ -221,6 +252,35 @@ TodoWrite([
   - Process missing: PostgREST/Deno process not running
 - **Categorize** by container type (managed, external monitoring, custom)
 - **Prioritize** stopped containers first (highest impact)
+
+#### 1.5. **Cleanup** Orphaned Backup Containers
+
+**Remove** temporary backup containers that have completed their task:
+
+IF backup containers detected:
+  → **Verify** exit code is 0 (successful completion)
+  → **Remove** containers: docker rm <container_name>
+  → **Report** cleanup results
+  → **Update** container inventory count
+
+**Execute** cleanup (AUTONOMOUS - these are completed ephemeral containers):
+
+```bash
+CLEANUP_COUNT=0
+for container in $BACKUP_CONTAINERS; do
+  # Verify exit code is 0 before removal
+  EXIT_CODE=$(docker inspect --format '{{.State.ExitCode}}' "$container" 2>/dev/null)
+  if [[ "$EXIT_CODE" == "0" ]]; then
+    echo "Removing completed backup container: $container"
+    docker rm "$container"
+    ((CLEANUP_COUNT++))
+  else
+    echo "Skipping $container (exit code: $EXIT_CODE)"
+  fi
+done
+
+echo "Cleaned up $CLEANUP_COUNT backup container(s)"
+```
 
 #### 2. **Select** Aggressive Fix Strategy
 
@@ -265,6 +325,7 @@ ELSE:
 ```bash
 TodoWrite([
   {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Cleanup orphaned backup containers", status: "completed", activeForm: "Cleaning up backup containers"},
   {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
   {content: "Apply aggressive fix strategies", status: "in_progress", activeForm: "Applying fixes"},
   {content: "Validate restoration success", status: "pending", activeForm: "Validating fixes"}
@@ -364,18 +425,19 @@ echo "Verifying recreation..."
 
 #### 4. **Confirm** Fix Success
 
-**Validate** health restoration across all 16 containers:
+**Validate** health restoration across all 17 containers:
 
 ```bash
 # Update progress
 TodoWrite([
   {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Cleanup orphaned backup containers", status: "completed", activeForm: "Cleaning up backup containers"},
   {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
   {content: "Apply aggressive fix strategies", status: "completed", activeForm: "Applying fixes"},
   {content: "Validate restoration success", status: "in_progress", activeForm: "Validating fixes"}
 ])
 
-# Re-check all 16 containers
+# Re-check all 17 containers
 FINAL_TOTAL=$(docker ps -a --format "{{.Names}}" | wc -l)
 FINAL_RUNNING=$(docker ps --format "{{.Names}}" | wc -l)
 FINAL_STOPPED=$(docker ps -a --filter "status=exited" --format "{{.Names}}" | wc -l)
@@ -387,7 +449,7 @@ FINAL_EDGE_RUNTIME=$(check_edge_runtime_health)
 
 # Compare before/after
 echo "=== VALIDATION COMPLETE ==="
-echo "Total containers: $TOTAL_CONTAINERS → $FINAL_TOTAL (expected: 16)"
+echo "Total containers: $TOTAL_CONTAINERS → $FINAL_TOTAL (expected: 17)"
 echo "Stopped: $STOPPED_COUNT → $FINAL_STOPPED (target: 0)"
 echo "Unhealthy (native): → $FINAL_UNHEALTHY (target: 0)"
 echo "PostgREST: $POSTGREST_HEALTH → $FINAL_POSTGREST (target: healthy)"
@@ -404,6 +466,7 @@ fi
 # Final progress update
 TodoWrite([
   {content: "Discover container health status", status: "completed", activeForm: "Discovering health status"},
+  {content: "Cleanup orphaned backup containers", status: "completed", activeForm: "Cleaning up backup containers"},
   {content: "Diagnose unhealthy containers", status: "completed", activeForm: "Diagnosing issues"},
   {content: "Apply aggressive fix strategies", status: "completed", activeForm: "Applying fixes"},
   {content: "Validate restoration success", status: "completed", activeForm: "Validating fixes"}
@@ -423,7 +486,7 @@ TodoWrite([
 
 - **Format**: Console output with before/after metrics
 - **Structure**: Phase-tracked progress with TodoWrite visibility
-- **Quality Standards**: All 16 containers validated, Supabase processes confirmed
+- **Quality Standards**: All 17 containers validated, Supabase processes confirmed
 
 #### Success Reporting
 
@@ -433,34 +496,38 @@ TodoWrite([
 ✅ **Docker Fix Completed Successfully!**
 
 **PRIME Framework Results:**
-✅ Purpose: All 16 containers validated and restored
+✅ Purpose: All 17 containers validated and restored
 ✅ Role: Aggressive recovery strategies applied autonomously
-✅ Inputs: Complete inventory assessed (16 containers)
+✅ Inputs: Complete inventory assessed (17 containers)
 ✅ Method: Sequential processing with phase tracking
 ✅ Expectations: All success criteria met
 
 **Fix Summary:**
-- Containers Processed: X total (16 expected)
+- Containers Processed: X total (17 expected)
+- Backup Containers Cleaned: Y
 - Stopped Container Fixes: A successful
 - Restart Fixes: B successful
 - Recreate Fixes: C successful
 - Success Rate: XX%
 - Total Duration: N minutes
 
-**Container Health (16 Total):**
+**Container Health (17 Total):**
 - Supabase Managed (8): X/8 healthy
 - Supabase External (2): X/2 healthy
   - PostgREST: ✅ Process running
   - Edge Runtime: ✅ Process running
-- Custom Containers: X/X healthy
+- Supabase Additional (2): X/2 healthy
+- Custom Containers (5): X/5 healthy
+- Orphaned Backup Containers: Y cleaned up
 
 **Before/After Comparison:**
-- Total Containers: 16 → 16 ✅
+- Total Containers: 17 → 17 ✅
 - Running: A → B
 - Stopped: C → 0 ✅ (target achieved)
 - Unhealthy (Native): D → 0 ✅
 - PostgREST Process: [status] → healthy ✅
 - Edge Runtime Process: [status] → healthy ✅
+- Backup Containers: Y → 0 ✅ (cleaned)
 
 **Next Steps:**
 - Monitor containers for 24h stability
@@ -509,7 +576,7 @@ TodoWrite([
 <help>
 🔧 **Infrastructure Docker Fix**
 
-Aggressively diagnose and fix unhealthy containers across all 16 containers with specialized Supabase process validation.
+Aggressively diagnose and fix unhealthy containers across all 17 containers with specialized Supabase process validation.
 
 **Usage:**
 
@@ -520,17 +587,18 @@ Aggressively diagnose and fix unhealthy containers across all 16 containers with
 
 **PRIME Process:**
 
-1. **Purpose**: Restore all 16 containers to healthy state
+1. **Purpose**: Restore all 17 containers to healthy state
 2. **Role**: Aggressive recovery specialist with Supabase expertise
 3. **Inputs**: Complete health assessment with process validation
 4. **Method**: Sequential fixes with TodoWrite phase tracking
 5. **Expectations**: All containers healthy including PostgREST and Edge Runtime processes
 
-**Container Coverage (16 Total):**
+**Container Coverage (17 Total):**
 
 - 8 Supabase managed (native health checks)
 - 2 Supabase external (PostgREST + Edge Runtime process checks)
-- 2+ Custom containers (HTTP health checks)
+- 2 Supabase additional (vector + analytics)
+- 5 Custom containers (HTTP health checks)
 
 **Requirements:**
 
