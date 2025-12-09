@@ -301,16 +301,18 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   echo "Seeding Payload CMS..."
 
-  # Run seeding (DATABASE_URI already set from Phase 3)
+  # Run seeding with --env=production flag to use .env.production
+  # This ensures the seeding script connects to the remote database
   echo "Seeding database with Payload content..."
   NODE_TLS_REJECT_UNAUTHORIZED=0 \
-    pnpm run seed:run || {
+    pnpm run seed:run:remote || {
       echo "ERROR: Seeding failed"
       echo ""
       echo "Troubleshooting:"
       echo "1. Check seeding script for errors"
       echo "2. Verify all collections exist in Payload config"
       echo "3. Try running migrations again"
+      echo "4. Verify apps/payload/.env.production has correct DATABASE_URI"
       exit 1
     }
 
