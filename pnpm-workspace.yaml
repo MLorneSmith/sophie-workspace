@@ -4,6 +4,7 @@ packages:
   - '!packages/mcp-server'
   - tooling/*
   - .claude/scripts
+  - scripts
 
 catalog:
   '@next/bundle-analyzer': 16.0.7
