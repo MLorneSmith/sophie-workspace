@@ -158,12 +158,55 @@ async function runScript() {
 	// Supabase client setup
 	const supabase = createClient(supabaseUrl, supabaseKey);
 
-	// Course ID for "Decks for Decision Makers"
-	// Note: This ID matches the course in Payload CMS
-	const COURSE_ID = "e64f4913-a5b0-42b2-958c-f0c39a254e39";
 	const TEST_USER_EMAIL = cliArgs.userEmail;
 	const RANGE_START = cliArgs.rangeStart;
 	const RANGE_END = cliArgs.rangeEnd;
+
+	/**
+	 * Fetch course ID by course title from Payload CMS
+	 * @param payloadUrl The Payload CMS URL
+	 * @param courseTitle The course title to search for
+	 * @returns The course ID UUID
+	 */
+	async function fetchCourseIdByTitle(
+		payloadUrl: string,
+		courseTitle: string,
+	): Promise<string> {
+		try {
+			const response = await fetch(
+				`${payloadUrl}/api/courses?where[title][equals]=${encodeURIComponent(courseTitle)}&limit=1`,
+			);
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch courses: ${response.statusText}`);
+			}
+
+			const data = (await response.json()) as { docs?: Array<{ id: string }> };
+			const courses = data.docs || [];
+
+			if (courses.length === 0) {
+				throw new Error(
+					`Course not found: "${courseTitle}". Available courses should be seeded in Payload CMS.`,
+				);
+			}
+
+			const courseId = courses[0].id;
+			logger.info(`Found course "${courseTitle}" with ID: ${courseId}`, {
+				operation: "fetch_course_id",
+				courseTitle,
+				courseId,
+			});
+
+			return courseId;
+		} catch (error) {
+			logger.error(`Error fetching course ID for "${courseTitle}":`, {
+				operation: "fetch_course_id",
+				error,
+				courseTitle,
+			});
+			throw error;
+		}
+	}
 
 	/**
 	 * Fetch lessons from Payload CMS
@@ -207,61 +250,10 @@ async function runScript() {
 				error,
 				courseId,
 			});
-
-			// Fallback to fetching from Supabase if Payload API fails
-			logger.info("Attempting to fetch lessons from Supabase as fallback...");
-
-			try {
-				// Try a direct query with the schema specified
-				const { data, error: supabaseError } = await supabase
-					.from("payload.course_lessons")
-					.select("id, lesson_number, title")
-					.eq("course_id", courseId)
-					.order("lesson_number", { ascending: true });
-
-				if (supabaseError) {
-					// If that fails, try querying without the schema
-					logger.info("Query with schema failed, trying without schema...");
-					const { data: noSchemaData, error: noSchemaError } = await supabase
-						.from("course_lessons")
-						.select("id, lesson_number, title")
-						.eq("course_id", courseId)
-						.order("lesson_number", { ascending: true });
-
-					if (noSchemaError) {
-						throw noSchemaError;
-					}
-
-					logger.info(
-						`Successfully fetched ${noSchemaData?.length || 0} lessons from Supabase without schema`,
-						{
-							operation: "fetch_lessons_supabase_no_schema",
-							courseId,
-							lessonCount: noSchemaData?.length || 0,
-						},
-					);
-					return (noSchemaData as LessonData[]) || [];
-				}
-
-				logger.info(
-					`Successfully fetched ${data?.length || 0} lessons from Supabase with schema`,
-					{
-						operation: "fetch_lessons_supabase",
-						courseId,
-						lessonCount: data?.length || 0,
-					},
-				);
-				return (data as LessonData[]) || [];
-			} catch (fallbackError) {
-				logger.error("Fallback fetch also failed:", {
-					operation: "fetch_lessons_fallback",
-					error: fallbackError,
-					courseId,
-				});
-				throw new Error(
-					"Failed to fetch lessons from both Payload CMS and Supabase",
-				);
-			}
+			throw new Error(
+				`Failed to fetch lessons from Payload CMS for course ${courseId}. ` +
+					`Ensure Payload CMS is running at ${payloadUrl} and the course ID is correct.`,
+			);
 		}
 	}
 
@@ -323,7 +315,14 @@ async function runScript() {
 			const user = await getUser(TEST_USER_EMAIL);
 			const userId = user.id;
 
-			// 2. Get all lessons for the course from Payload CMS
+			// 2. Dynamically fetch the course ID by title
+			logger.info("Fetching course ID for 'Decks for Decision Makers'...");
+			const COURSE_ID = await fetchCourseIdByTitle(
+				payloadUrl,
+				"Decks for Decision Makers",
+			);
+
+			// 3. Get all lessons for the course from Payload CMS
 			logger.info("Fetching course lessons from Payload CMS...");
 			const lessonsData = await fetchLessonsFromPayload(COURSE_ID);
 
