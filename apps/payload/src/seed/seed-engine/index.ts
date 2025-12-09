@@ -33,13 +33,32 @@ import { validateEnvironment, initializePayload, cleanupPayload } from './core/p
 import { ENV_VARS, DEFAULT_OPTIONS } from './config';
 import type { SeedOptions } from './types';
 
-// Load .env.test file at the very start
+// Parse --env flag from process.argv to determine which environment file to load
+// Defaults to 'test' for backwards compatibility, supports 'production' for remote seeding
+function getEnvNameFromArgs(): string {
+  const envFlagIndex = process.argv.findIndex(arg => arg.startsWith('--env='));
+  if (envFlagIndex !== -1) {
+    const envValue = process.argv[envFlagIndex].split('=')[1];
+    if (envValue && ['test', 'production', 'development'].includes(envValue)) {
+      return envValue;
+    }
+    // biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+    console.warn(`Warning: Invalid --env value "${envValue}", defaulting to "test"`);
+  }
+  return 'test'; // Default for backwards compatibility
+}
+
+// Load environment file at the very start
 // This ensures environment variables are available before any validation
+// Using override: true to prevent shell environment pollution (fixes #966/#967)
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+const envName = getEnvNameFromArgs();
 // From src/seed/seed-engine/ go up 3 levels to apps/payload/
-const envPath = path.resolve(dirname, '../../../.env.test');
-loadEnv({ path: envPath });
+const envPath = path.resolve(dirname, `../../../.env.${envName}`);
+// biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+console.log(`[seed-engine] Loading environment from: .env.${envName}`);
+loadEnv({ path: envPath, override: true });
 
 /**
  * Exit codes for CLI process

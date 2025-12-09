@@ -33,6 +33,7 @@
 		"seed:convert": "tsx src/seed/seed-conversion/index.ts",
 		"seed:convert:dry": "tsx src/seed/seed-conversion/index.ts --dry-run",
 		"seed:run": "cross-env SKIP_STORAGE_PLUGIN=true tsx src/seed/seed-engine/index.ts",
+		"seed:run:remote": "cross-env SKIP_STORAGE_PLUGIN=true tsx src/seed/seed-engine/index.ts --env=production",
 		"seed:dry": "cross-env SKIP_STORAGE_PLUGIN=true tsx src/seed/seed-engine/index.ts --dry-run",
 		"seed:validate": "tsx src/seed/seed-engine/index.ts --dry-run --verbose",
 		"seed:courses": "tsx src/seed/seed-engine/index.ts -c courses,course-lessons,course-quizzes",

@@ -19,10 +19,35 @@ import { Users } from "./collections/Users.js";
 const filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(filename);
 
-// Load .env.test file explicitly for seeding with override to ignore shell environment variables
+// Parse --env flag from process.argv to determine which environment file to load
+// Defaults to 'test' for backwards compatibility, supports 'production' for remote seeding
+function getEnvNameFromArgs(): string {
+	const envFlagIndex = process.argv.findIndex((arg) =>
+		arg.startsWith("--env="),
+	);
+	if (envFlagIndex !== -1) {
+		const envValue = process.argv[envFlagIndex].split("=")[1];
+		if (envValue && ["test", "production", "development"].includes(envValue)) {
+			return envValue;
+		}
+		// biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+		console.warn(
+			`Warning: Invalid --env value "${envValue}", defaulting to "test"`,
+		);
+	}
+	return "test"; // Default for backwards compatibility
+}
+
+// Load environment file explicitly for seeding with override to ignore shell environment variables
 // This ensures environment variables are available at module evaluation time
+// Using override: true to prevent shell environment pollution (fixes #966/#967)
 // From src/ go up 1 level to apps/payload/
-const envPath = path.resolve(_dirname, "../.env.test");
+const envName = getEnvNameFromArgs();
+const envPath = path.resolve(_dirname, `../.env.${envName}`);
+// biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+console.log(
+	`[payload.seeding.config] Loading environment from: .env.${envName}`,
+);
 loadEnv({ path: envPath, override: true });
 
 // Note: Environment variables are read at config evaluation time
