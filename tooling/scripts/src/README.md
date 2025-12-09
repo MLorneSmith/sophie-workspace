@@ -1,7 +1,7 @@
 # Makerkit Validation Scripts
 
-This directory contains Makerkit framework validation and security scripts that run automatically during development to ensure
-proper project setup and prevent common issues.
+This directory contains Makerkit framework validation and security scripts that run
+automatically during development to ensure proper project setup and prevent common issues.
 
 ## Scripts Overview
 

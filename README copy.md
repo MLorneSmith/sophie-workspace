@@ -242,7 +242,8 @@ relevant assistance.
 
 ### Available Roles
 
-- **Full Stack Engineer** (`/read .claude/roles/full-stack-engineer.md`): End-to-end implementation across frontend and backend
+- **Full Stack Engineer** (`/read .claude/roles/full-stack-engineer.md`): End-to-end
+  implementation across frontend and backend
 - **UI Engineer** (`/read .claude/roles/ui-engineer.md`): Frontend implementation, component design, user experience
 - **Data Engineer** (`/read .claude/roles/data-engineer.md`): Database design, data access patterns, authentication
 - **AI Engineer** (`/read .claude/roles/ai-engineer.md`): AI integration, prompt engineering, model optimization
