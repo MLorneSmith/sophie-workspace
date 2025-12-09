@@ -301,8 +301,9 @@ if [ "$SCHEMA_ONLY" = false ]; then
 
   echo "Seeding Payload CMS..."
 
-  # Run seeding with --env=production flag to use .env.production
-  # This ensures the seeding script connects to the remote database
+  # Run seeding with --env=production and --force flags
+  # --env=production: Use .env.production to connect to remote database
+  # --force: Bypass NODE_ENV=production safety check for intentional remote seeding
   echo "Seeding database with Payload content..."
   NODE_TLS_REJECT_UNAUTHORIZED=0 \
     pnpm run seed:run:remote || {

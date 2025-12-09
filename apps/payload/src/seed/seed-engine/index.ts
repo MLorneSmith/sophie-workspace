@@ -33,18 +33,44 @@ import { validateEnvironment, initializePayload, cleanupPayload } from './core/p
 import { ENV_VARS, DEFAULT_OPTIONS } from './config';
 import type { SeedOptions } from './types';
 
+// Parse --force flag from process.argv early (before Commander runs)
+// This is needed because validateEnvironmentSafety() runs before Commander parses arguments
+export function getForceFromArgs(): boolean {
+  return process.argv.includes('--force');
+}
+
 // Parse --env flag from process.argv to determine which environment file to load
 // Defaults to 'test' for backwards compatibility, supports 'production' for remote seeding
-function getEnvNameFromArgs(): string {
-  const envFlagIndex = process.argv.findIndex(arg => arg.startsWith('--env='));
-  if (envFlagIndex !== -1) {
-    const envValue = process.argv[envFlagIndex].split('=')[1];
-    if (envValue && ['test', 'production', 'development'].includes(envValue)) {
-      return envValue;
+// Supports both --env=value and --env value formats
+export function getEnvNameFromArgs(): string {
+  const validEnvs = ['test', 'production', 'development'];
+
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+
+    // Handle --env=value format
+    if (arg.startsWith('--env=')) {
+      const envValue = arg.split('=')[1];
+      if (envValue && validEnvs.includes(envValue)) {
+        return envValue;
+      }
+      // biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+      console.warn(`Warning: Invalid --env value "${envValue}", defaulting to "test"`);
+      return 'test';
     }
-    // biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
-    console.warn(`Warning: Invalid --env value "${envValue}", defaulting to "test"`);
+
+    // Handle --env value format (space-separated)
+    if (arg === '--env') {
+      const nextArg = process.argv[i + 1];
+      if (nextArg && validEnvs.includes(nextArg)) {
+        return nextArg;
+      }
+      // biome-ignore lint/suspicious/noConsole: Intentional log at module init time before Logger is available
+      console.warn(`Warning: Invalid --env value "${nextArg}", defaulting to "test"`);
+      return 'test';
+    }
   }
+
   return 'test'; // Default for backwards compatibility
 }
 
@@ -104,6 +130,11 @@ export function parseArguments(): SeedOptions {
       'Environment file to load (test, production, development)',
       'test'
     )
+    .option(
+      '--force',
+      'Bypass production safety check for intentional remote seeding',
+      false
+    )
     .addHelpText(
       'after',
       `
@@ -126,13 +157,16 @@ Examples:
   $ pnpm seed:run --env=production
     Seed using production environment file (.env.production)
 
+  $ pnpm seed:run --env=production --force
+    Seed production environment, bypassing safety check
+
 Environment Variables:
   DATABASE_URI       PostgreSQL connection string (required)
   PAYLOAD_SECRET     Payload secret key (required)
   NODE_ENV           Must be 'development' or 'test' (not 'production')
 
 Safety:
-  - Production seeding is blocked by default
+  - Production seeding is blocked by default (use --force to bypass)
   - Dry-run mode validates without side effects
   - All operations are logged with timestamps
   - Graceful cleanup on errors or interruption
@@ -154,6 +188,7 @@ Safety:
     collections: collectionsFilter,
     maxRetries: parseInt(opts.maxRetries as string, 10),
     timeout: parseInt(opts.timeout as string, 10),
+    force: opts.force as boolean,
   };
 }
 
@@ -161,15 +196,21 @@ Safety:
  * Validate environment and check safety conditions
  *
  * @param logger - Logger instance for output
+ * @param force - If true, bypass production safety check
  * @returns True if validation passes, false otherwise
  */
-export function validateEnvironmentSafety(logger: Logger): boolean {
+export function validateEnvironmentSafety(logger: Logger, force = false): boolean {
   // Check NODE_ENV
   const nodeEnv = process.env[ENV_VARS.NODE_ENV];
   if (nodeEnv === 'production') {
-    logger.error('SAFETY CHECK FAILED: Seeding is not allowed in production environment');
-    logger.info('Set NODE_ENV to "development" or "test" to proceed');
-    return false;
+    if (force) {
+      logger.warn('WARNING: Production safety check bypassed with --force flag');
+    } else {
+      logger.error('SAFETY CHECK FAILED: Seeding is not allowed in production environment');
+      logger.info('Set NODE_ENV to "development" or "test" to proceed');
+      logger.info('Use --force to bypass this check for intentional remote seeding');
+      return false;
+    }
   }
 
   // Check required environment variables
@@ -179,8 +220,8 @@ export function validateEnvironmentSafety(logger: Logger): boolean {
     logger.error(`Missing required environment variables: ${validation.missing.join(', ')}`);
     logger.info('');
     logger.info('Required environment variables:');
-    logger.info(`  ${ENV_VARS.DATABASE_URI}  - PostgreSQL connection string`);
-    logger.info(`  ${ENV_VARS.PAYLOAD_SECRET}  - Payload secret key`);
+    logger.info(`${ENV_VARS.DATABASE_URI}  - PostgreSQL connection string`);
+    logger.info(`${ENV_VARS.PAYLOAD_SECRET}  - Payload secret key`);
     return false;
   }
 
@@ -263,6 +304,9 @@ export async function runSeeding(options: SeedOptions, logger: Logger): Promise<
  * Main CLI entry point
  */
 export async function main(): Promise<void> {
+  // Get --force flag early (before Commander parses) for use in validation
+  const forceFlag = getForceFromArgs();
+
   // Parse arguments
   const options = parseArguments();
 
@@ -278,8 +322,8 @@ export async function main(): Promise<void> {
   logger.info('═══════════════════════════════════════════════════════');
   logger.info('');
 
-  // Validate environment
-  if (!validateEnvironmentSafety(logger)) {
+  // Validate environment (pass force flag to bypass production safety check if specified)
+  if (!validateEnvironmentSafety(logger, forceFlag)) {
     process.exit(EXIT_CODES.VALIDATION_ERROR);
   }
 
