@@ -539,4 +539,80 @@ describe('CLI Interface', () => {
       expect([0, 1, 2, 3]).toContain(exitCode);
     });
   });
+
+  describe('Production seeding with --force flag (integration)', () => {
+    // These tests verify that the --force flag works end-to-end,
+    // after removing the duplicate preventProductionSeeding() check
+    // from payload-initializer.ts (fix for issue #1016).
+    //
+    // The production safety check is now handled ONLY by
+    // validateEnvironmentSafety() in index.ts, which supports --force.
+
+    it('should allow seeding in production with --force flag', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+
+      const logger = new Logger({ verbose: false, level: LogLevel.ERROR });
+      vi.spyOn(logger, 'warn').mockImplementation(() => {});
+
+      // Validate environment safety with --force flag
+      const isValid = validateEnvironmentSafety(logger, true);
+
+      expect(isValid).toBe(true);
+      expect(logger.warn).toHaveBeenCalledWith(
+        'WARNING: Production safety check bypassed with --force flag'
+      );
+    });
+
+    it('should block seeding in production without --force flag', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+
+      const logger = new Logger({ verbose: false, level: LogLevel.ERROR });
+      vi.spyOn(logger, 'error').mockImplementation(() => {});
+      vi.spyOn(logger, 'info').mockImplementation(() => {});
+
+      // Validate environment safety without --force flag
+      const isValid = validateEnvironmentSafety(logger, false);
+
+      expect(isValid).toBe(false);
+      expect(logger.error).toHaveBeenCalledWith(
+        'SAFETY CHECK FAILED: Seeding is not allowed in production environment'
+      );
+    });
+
+    it('should complete full seeding workflow with --force flag in production', async () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+      process.argv.push('--force', '--dry-run');
+
+      const logger = new Logger({ verbose: false, level: LogLevel.ERROR });
+      vi.spyOn(logger, 'info').mockImplementation(() => {});
+      vi.spyOn(logger, 'warn').mockImplementation(() => {});
+      vi.spyOn(logger, 'success').mockImplementation(() => {});
+      vi.spyOn(logger, 'error').mockImplementation(() => {});
+      vi.spyOn(logger, 'debug').mockImplementation(() => {});
+
+      // Parse arguments to get force flag
+      const options = parseArguments();
+      expect(options.force).toBe(true);
+      expect(options.dryRun).toBe(true);
+
+      // Validate environment safety should pass with force
+      const isValid = validateEnvironmentSafety(logger, options.force);
+      expect(isValid).toBe(true);
+
+      // Run seeding in dry-run mode to verify initialization works
+      const exitCode = await runSeeding(options, logger);
+
+      // Should succeed (0) or complete with no collections to seed (0)
+      // In dry-run mode with production + force, it should initialize successfully
+      expect([0, 1, 2, 3]).toContain(exitCode);
+
+      // Verify force flag warning was logged
+      expect(logger.warn).toHaveBeenCalledWith(
+        'WARNING: Production safety check bypassed with --force flag'
+      );
+    });
+  });
 });

@@ -4,8 +4,11 @@
  * Tests:
  * - Environment variable validation
  * - Singleton pattern behavior
- * - Production environment protection
  * - Graceful cleanup
+ *
+ * Note: Production environment protection is tested in index.test.ts
+ * via validateEnvironmentSafety(), which is the single source of truth
+ * for production safety checks (supports --force flag).
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -90,22 +93,18 @@ describe('payload-initializer', () => {
     });
   });
 
-  describe('initializePayload - production protection', () => {
-    it('should throw error when NODE_ENV is production', async () => {
-      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
-      process.env.NODE_ENV = 'production';
-
-      await expect(initializePayload()).rejects.toThrow(
-        'SAFETY CHECK FAILED: Seeding is not allowed in production environment'
-      );
-    });
+  describe('initializePayload - environment support', () => {
+    // Note: Production safety checks are handled by validateEnvironmentSafety()
+    // in index.ts before initializePayload() is called. This ensures:
+    // 1. Single source of truth for production checks
+    // 2. Support for --force flag to bypass in production
+    // See index.test.ts for production safety check tests.
 
     it('should allow initialization in development', async () => {
       // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'development';
 
       // With valid environment, Payload successfully initializes
-      // This verifies the production check passes in development mode
       const result = await initializePayload();
       expect(result).toBeDefined();
     });
@@ -115,7 +114,16 @@ describe('payload-initializer', () => {
       process.env.NODE_ENV = 'test';
 
       // With valid environment, Payload successfully initializes
-      // This verifies the production check passes in test mode
+      const result = await initializePayload();
+      expect(result).toBeDefined();
+    });
+
+    it('should allow initialization in production (safety check is at entry point)', async () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+
+      // initializePayload() no longer blocks production - that's handled by
+      // validateEnvironmentSafety() at the entry point, which supports --force flag
       const result = await initializePayload();
       expect(result).toBeDefined();
     });
