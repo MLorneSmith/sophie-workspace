@@ -246,8 +246,6 @@ test.describe("Admin", () => {
 			await page.context().clearCookies();
 
 			// Verify user can log in again
-			await page.goto("/auth/sign-in");
-
 			const auth = new AuthPageObject(page);
 
 			await auth.loginAsUser({
