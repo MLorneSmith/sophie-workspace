@@ -58,16 +58,15 @@ export function loadTestEnv(): void {
 		process.env.TEST_PDF_CO_API_KEY || process.env.PDF_CO_API_KEY || "";
 
 	// Verify required variables are present (PDF_CO_API_KEY is optional for progress script)
-	const requiredVars = [
-		"TEST_SUPABASE_URL",
-		"TEST_SUPABASE_SERVICE_ROLE_KEY",
-	];
+	const requiredVars = ["TEST_SUPABASE_URL", "TEST_SUPABASE_SERVICE_ROLE_KEY"];
 
 	const missingVars = requiredVars.filter((varName) => !process.env[varName]);
 
 	if (missingVars.length > 0) {
 		console.error("❌ Missing required environment variables:");
-		missingVars.forEach((varName) => console.error(`  - ${varName}`));
+		for (const varName of missingVars) {
+			console.error(`  - ${varName}`);
+		}
 		process.exit(1);
 	}
 

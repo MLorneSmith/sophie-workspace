@@ -1604,8 +1604,7 @@ class E2ETestRunner {
 						for (const test of spec.tests) {
 							// Check if test has any unexpected result
 							if (
-								test.results &&
-								test.results.some(
+								test.results?.some(
 									(r) => r.status === "unexpected" || r.status === "failed",
 								)
 							) {
@@ -1634,7 +1633,7 @@ class E2ETestRunner {
 	 */
 	extractErrorFromTestResult(results) {
 		for (const result of results) {
-			if (result.error && result.error.message) {
+			if (result.error?.message) {
 				return result.error.message;
 			}
 			if (result.errors && result.errors.length > 0) {
