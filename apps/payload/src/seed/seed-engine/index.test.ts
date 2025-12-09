@@ -140,6 +140,36 @@ describe('CLI Interface', () => {
 
       expect(options.collections).toEqual([]);
     });
+
+    it('should parse --env flag without error', () => {
+      process.argv.push('--env', 'production');
+
+      // Should not throw - Commander now recognizes --env flag
+      const options = parseArguments();
+
+      // Options should parse successfully (env is handled pre-parse, not returned in options)
+      expect(options.dryRun).toBe(false);
+    });
+
+    it('should parse --env=value format without error', () => {
+      process.argv.push('--env=test');
+
+      // Should not throw - Commander now recognizes --env flag
+      const options = parseArguments();
+
+      expect(options.dryRun).toBe(false);
+    });
+
+    it('should parse --env flag with other flags', () => {
+      process.argv.push('--env=production', '--dry-run', '--verbose', '-c', 'courses');
+
+      // Should not throw - Commander now recognizes --env flag
+      const options = parseArguments();
+
+      expect(options.dryRun).toBe(true);
+      expect(options.verbose).toBe(true);
+      expect(options.collections).toEqual(['courses']);
+    });
   });
 
   describe('validateEnvironmentSafety', () => {
