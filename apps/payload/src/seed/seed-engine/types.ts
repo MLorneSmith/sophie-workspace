@@ -173,6 +173,7 @@ export interface BatchProcessorResult {
  * @property collections - Filter to specific collections (comma-separated)
  * @property maxRetries - Maximum retry attempts for transient failures
  * @property timeout - Operation timeout in milliseconds
+ * @property force - Bypass production safety check for intentional remote seeding
  *
  * @example
  * ```typescript
@@ -181,7 +182,8 @@ export interface BatchProcessorResult {
  *   verbose: true,
  *   collections: ["courses", "course-lessons"],
  *   maxRetries: 3,
- *   timeout: 120000
+ *   timeout: 120000,
+ *   force: false
  * };
  * ```
  */
@@ -196,6 +198,8 @@ export interface SeedOptions {
   maxRetries: number;
   /** Operation timeout in milliseconds (default: 120000) */
   timeout: number;
+  /** Bypass production safety check for intentional remote seeding (default: false) */
+  force?: boolean;
 }
 
 /**

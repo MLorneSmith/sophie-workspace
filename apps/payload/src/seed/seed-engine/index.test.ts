@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { parseArguments, validateEnvironmentSafety, runSeeding } from './index';
+import { parseArguments, validateEnvironmentSafety, runSeeding, getForceFromArgs } from './index';
 import { Logger, LogLevel } from './utils/logger';
 import type { SeedOptions } from './types';
 
@@ -52,6 +52,7 @@ describe('CLI Interface', () => {
         collections: [],
         maxRetries: 3,
         timeout: 120000,
+        force: false,
       });
     });
 
@@ -130,6 +131,7 @@ describe('CLI Interface', () => {
         collections: ['courses', 'posts'],
         maxRetries: 5,
         timeout: 120000,
+        force: false,
       });
     });
 
@@ -170,6 +172,28 @@ describe('CLI Interface', () => {
       expect(options.verbose).toBe(true);
       expect(options.collections).toEqual(['courses']);
     });
+
+    it('should parse --force flag', () => {
+      process.argv.push('--force');
+
+      const options = parseArguments();
+
+      expect(options.force).toBe(true);
+    });
+
+    it('should default --force flag to false', () => {
+      const options = parseArguments();
+
+      expect(options.force).toBe(false);
+    });
+
+    it('should parse --force flag with --env=production', () => {
+      process.argv.push('--env=production', '--force');
+
+      const options = parseArguments();
+
+      expect(options.force).toBe(true);
+    });
   });
 
   describe('validateEnvironmentSafety', () => {
@@ -206,7 +230,7 @@ describe('CLI Interface', () => {
       expect(logger.error).toHaveBeenCalledWith('Environment validation failed');
     });
 
-    it('should fail validation in production environment', () => {
+    it('should fail validation in production environment without --force', () => {
       // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
       process.env.NODE_ENV = 'production';
 
@@ -215,6 +239,30 @@ describe('CLI Interface', () => {
       expect(result).toBe(false);
       expect(logger.error).toHaveBeenCalledWith(
         'SAFETY CHECK FAILED: Seeding is not allowed in production environment'
+      );
+    });
+
+    it('should pass validation in production environment with --force flag', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+      vi.spyOn(logger, 'warn').mockImplementation(() => {});
+
+      const result = validateEnvironmentSafety(logger, true);
+
+      expect(result).toBe(true);
+      expect(logger.warn).toHaveBeenCalledWith(
+        'WARNING: Production safety check bypassed with --force flag'
+      );
+    });
+
+    it('should suggest --force flag when blocked in production', () => {
+      // @ts-expect-error - NODE_ENV is read-only in strict mode but writable at runtime
+      process.env.NODE_ENV = 'production';
+
+      validateEnvironmentSafety(logger);
+
+      expect(logger.info).toHaveBeenCalledWith(
+        'Use --force to bypass this check for intentional remote seeding'
       );
     });
 
@@ -246,6 +294,30 @@ describe('CLI Interface', () => {
       expect(logger.error).toHaveBeenCalledWith(
         'Missing required environment variables: DATABASE_URI, PAYLOAD_SECRET'
       );
+    });
+  });
+
+  describe('getForceFromArgs', () => {
+    it('should return true when --force flag is present', () => {
+      process.argv.push('--force');
+
+      const result = getForceFromArgs();
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when --force flag is not present', () => {
+      const result = getForceFromArgs();
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true when --force is among other flags', () => {
+      process.argv.push('--env=production', '--force', '--dry-run');
+
+      const result = getForceFromArgs();
+
+      expect(result).toBe(true);
     });
   });
 
@@ -400,6 +472,7 @@ describe('CLI Interface', () => {
         collections: ['courses'],
         maxRetries: 10,
         timeout: 60000,
+        force: false,
       });
     });
 
