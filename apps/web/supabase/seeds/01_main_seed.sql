@@ -226,7 +226,7 @@ INSERT INTO "public"."onboarding" (
   created_at, 
   updated_at
 ) VALUES (
-  uuid_generate_v4(),
+  gen_random_uuid(),
   'f47ac10b-58cc-4372-a567-0e02b2c3d479',
   TRUE,
   NOW(),
@@ -260,7 +260,7 @@ INSERT INTO "public"."onboarding" (
   updated_at
 ) VALUES 
 (
-  uuid_generate_v4(),
+  gen_random_uuid(),
   '31a03e74-1639-45b6-bfa7-77447f1a4762', -- test1@slideheroes.com
   TRUE,
   NOW(),
@@ -276,7 +276,7 @@ INSERT INTO "public"."onboarding" (
   NOW()
 ),
 (
-  uuid_generate_v4(),
+  gen_random_uuid(),
   '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', -- michael@slideheroes.com
   TRUE,
   NOW(),
