@@ -109,7 +109,7 @@
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"@vitejs/plugin-react": "^5.1.1",
+		"@vitejs/plugin-react": "^5.1.2",
 		"babel-plugin-react-compiler": "1.0.0",
 		"cssnano": "^7.1.2",
 		"pino-pretty": "13.1.3",

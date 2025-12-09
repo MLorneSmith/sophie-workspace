@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^24.10.1",
-		"newrelic": "^13.6.6",
+		"newrelic": "^13.7.0",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.14"
 	},
