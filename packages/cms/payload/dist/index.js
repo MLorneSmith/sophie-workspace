@@ -1,5 +1,5 @@
 // Export course API functions
-export { getCourseBySlug, getCourseLessons, getCourses, getLessonBySlug, getQuiz, } from "./api/course";
+export { getCourseById, getCourseBySlug, getCourseLessons, getCourses, getLessonBySlug, getQuiz, } from "./api/course";
 // Export API functions
 export { callPayloadAPI } from "./api/payload-api";
 // Export survey API functions

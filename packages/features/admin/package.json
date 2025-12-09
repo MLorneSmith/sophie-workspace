@@ -36,7 +36,7 @@
 		"react-dom": "19.2.1",
 		"react-hook-form": "^7.67.0",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.14",
+		"vitest": "^4.0.15",
 		"zod": "^4.1.13"
 	},
 	"exports": {
