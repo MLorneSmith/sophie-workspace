@@ -1,5 +1,6 @@
 // Export course API functions
 export {
+	getCourseById,
 	getCourseBySlug,
 	getCourseLessons,
 	getCourses,
