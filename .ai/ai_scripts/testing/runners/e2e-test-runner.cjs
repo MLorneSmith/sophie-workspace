@@ -1509,6 +1509,10 @@ class E2ETestRunner {
 	 * This provides reliable, structured results instead of fragile stdout parsing
 	 * See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
 	 *
+	 * BUG FIX: Issue #995 - Fixed math inconsistency where total != passed + failed + skipped
+	 * - Playwright's stats.expected means "tests that ran as expected", not "total tests"
+	 * - We now calculate passed correctly and validate math consistency
+	 *
 	 * @param {string} jsonFilePath - Path to the JSON output file
 	 * @returns {Promise<{total: number, passed: number, failed: number, skipped: number, failedTests: Array}>}
 	 */
@@ -1520,7 +1524,7 @@ class E2ETestRunner {
 			// Playwright JSON reporter format has stats at the top level
 			const stats = report.stats || {};
 			const results = {
-				total: stats.expected || 0,
+				total: 0,
 				passed: 0,
 				failed: 0,
 				skipped: 0,
@@ -1528,21 +1532,24 @@ class E2ETestRunner {
 				failedTests: [],
 			};
 
-			// Calculate from stats
-			// Playwright stats: expected, unexpected, flaky, skipped
-			results.passed =
-				(stats.expected || 0) - (stats.unexpected || 0) - (stats.skipped || 0);
+			// BUG FIX #995: Calculate values correctly from Playwright stats
+			// Playwright stats:
+			// - expected: number of tests that passed on first try (ran as expected)
+			// - unexpected: number of tests that failed
+			// - flaky: number of tests that passed on retry (initially failed, then passed)
+			// - skipped: number of tests that were skipped
 			results.failed = stats.unexpected || 0;
 			results.skipped = stats.skipped || 0;
 			results.flaky = stats.flaky || 0;
 
-			// Flaky tests eventually pass on retry, so add to passed count
-			if (results.flaky > 0) {
-				results.passed += results.flaky;
-			}
+			// Passed = tests that ran as expected + flaky tests (which eventually passed)
+			results.passed = (stats.expected || 0) + results.flaky;
 
-			// Calculate total properly
+			// Total = passed + failed + skipped (self-consistent math)
 			results.total = results.passed + results.failed + results.skipped;
+
+			// Validate math consistency
+			this.validateTestMath(results, "parseJsonResults");
 
 			// Extract failed test details from suites
 			if (report.suites && report.suites.length > 0) {
@@ -1611,6 +1618,31 @@ class E2ETestRunner {
 			}
 		}
 		return "Error details not available";
+	}
+
+	/**
+	 * BUG FIX #995: Validate test math consistency
+	 * Ensures that total = passed + failed + skipped
+	 *
+	 * @param {Object} results - Object with total, passed, failed, skipped properties
+	 * @param {string} source - Source identifier for logging (e.g., "parseJsonResults")
+	 * @returns {boolean} True if math is consistent, false otherwise
+	 */
+	validateTestMath(results, source = "unknown") {
+		const { total, passed, failed, skipped } = results;
+		const calculated = (passed || 0) + (failed || 0) + (skipped || 0);
+
+		if (total !== calculated) {
+			log(
+				`⚠️ Math inconsistency in ${source}: total=${total}, but passed(${passed}) + failed(${failed}) + skipped(${skipped}) = ${calculated}`,
+			);
+			return false;
+		}
+
+		log(
+			`✅ Test math validated (${source}): ${passed}/${total} passed, ${failed} failed, ${skipped} skipped`,
+		);
+		return true;
 	}
 
 	/**
@@ -1996,6 +2028,11 @@ class E2ETestRunner {
 	/**
 	 * Update execution summary with latest shard results.
 	 * Uses replace-not-append pattern to prevent duplicate entries.
+	 *
+	 * BUG FIX: Issue #995 - Include skipped tests in shard entries and aggregation
+	 * - Added skipped field to newShardEntry
+	 * - Fixed calculation: passed = total - failed - skipped (not just total - failed)
+	 * - Added validation to ensure math consistency
 	 */
 	async updateExecutionSummary(reportPath, shardReport) {
 		try {
@@ -2028,14 +2065,16 @@ class E2ETestRunner {
 			// Update timestamp
 			summary.lastUpdated = new Date().toISOString();
 
-			// Create new shard entry
+			// BUG FIX #995: Create new shard entry with skipped count
 			const newShardEntry = {
 				id: shardReport.shard.id,
 				name: shardReport.shard.name,
 				success: shardReport.results.success,
 				duration: shardReport.execution.duration,
 				tests: shardReport.results.total,
+				passed: shardReport.results.passed || 0,
 				failures: shardReport.results.failed,
+				skipped: shardReport.results.skipped || 0,
 				intentionalFailures: shardReport.results.intentionalFailures || 0,
 				timedOut: shardReport.execution.timedOut || false,
 			};
@@ -2072,11 +2111,16 @@ class E2ETestRunner {
 			for (const shard of summary.shards) {
 				summary.overallResults.total += shard.tests || 0;
 				summary.overallResults.failed += shard.failures || 0;
+				summary.overallResults.skipped += shard.skipped || 0;
 				summary.overallResults.intentionalFailures +=
 					shard.intentionalFailures || 0;
 
-				// Calculate passed from total - failed
-				const shardPassed = (shard.tests || 0) - (shard.failures || 0);
+				// BUG FIX #995: Use stored passed count if available, otherwise calculate correctly
+				// Formula: passed = total - failed - skipped (not just total - failed)
+				const shardPassed =
+					shard.passed !== undefined
+						? shard.passed
+						: (shard.tests || 0) - (shard.failures || 0) - (shard.skipped || 0);
 				summary.overallResults.passed += shardPassed;
 
 				// Track failed/timed out shards
@@ -2089,6 +2133,9 @@ class E2ETestRunner {
 					summary.timedOutShards++;
 				}
 			}
+
+			// BUG FIX #995: Validate math consistency before writing
+			this.validateTestMath(summary.overallResults, "updateExecutionSummary");
 
 			// Write updated summary
 			await fs.writeFile(summaryPath, stringifyWithTabs(summary), "utf8");
