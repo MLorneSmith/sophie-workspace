@@ -276,41 +276,30 @@ export function CourseDashboardClient({
 									<div className="flex flex-col gap-4 sm:flex-row">
 										<div className="flex flex-1 flex-col gap-4 sm:flex-row">
 											<div className="relative h-[155px] w-[275px] flex-shrink-0">
-												{/* Don't display images for post-completion lessons */}
-												{!["congratulations", "before-you-go"].includes(
-													lesson.slug || "",
-												) ? (
-													<Image
-														src={(() => {
-															// Use thumbnail URL if available, otherwise fall back to placeholder
-															// lesson.thumbnail is expanded by Payload API (depth=2)
-															if (lesson.thumbnail?.url) {
-																return (
-																	_transformImageUrl(lesson.thumbnail.url) ||
-																	getPlaceholderImage(lesson)
-																);
-															}
-															return getPlaceholderImage(lesson);
-														})()}
-														alt={`Illustration for ${lesson.title}`}
-														className="rounded-lg object-cover"
-														fill
-														sizes="(max-width: 640px) 100vw, 275px"
-														priority={true}
-														onError={(e) => {
-															// Get the original source that failed
-															const target = e.target as HTMLImageElement;
-															// Set placeholder based on lesson title
-															target.src = getPlaceholderImage(lesson);
-														}}
-													/>
-												) : (
-													<div className="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800">
-														<span className="text-muted-foreground text-sm">
-															No image required
-														</span>
-													</div>
-												)}
+												<Image
+													src={(() => {
+														// Use thumbnail URL if available, otherwise fall back to placeholder
+														// lesson.thumbnail is expanded by Payload API (depth=2)
+														if (lesson.thumbnail?.url) {
+															return (
+																_transformImageUrl(lesson.thumbnail.url) ||
+																getPlaceholderImage(lesson)
+															);
+														}
+														return getPlaceholderImage(lesson);
+													})()}
+													alt={`Illustration for ${lesson.title}`}
+													className="rounded-lg object-cover"
+													fill
+													sizes="(max-width: 640px) 100vw, 275px"
+													priority={true}
+													onError={(e) => {
+														// Get the original source that failed
+														const target = e.target as HTMLImageElement;
+														// Set placeholder based on lesson title
+														target.src = getPlaceholderImage(lesson);
+													}}
+												/>
 											</div>
 											<div className="flex-1">
 												<p className="text-muted-foreground mr-28 ml-2">
