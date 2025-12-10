@@ -18,9 +18,14 @@ import {
 	ChevronRight,
 	Play,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
+
+// Dynamically import the Confetti component to avoid SSR issues
+const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
 // Import database types
 import type { Database } from "~/lib/database.types";
 import {
@@ -230,6 +235,7 @@ export function LessonViewClient({
 		surveyResponses.length > 0 && surveyResponses[0]?.completed === true,
 	);
 	const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
+	const [showConfetti, setShowConfetti] = useState(false);
 
 	// Calculate progress
 	const _progress = lessonProgress?.completion_percentage || 0;
@@ -411,8 +417,23 @@ export function LessonViewClient({
 	// Check if this is the congratulations lesson (801)
 	const isCongratulationsLesson = lesson.lesson_number === "801";
 
+	// Trigger confetti animation when congratulations lesson is viewed
+	useEffect(() => {
+		if (isCongratulationsLesson) {
+			setShowConfetti(true);
+		}
+	}, [isCongratulationsLesson]);
+
 	return (
 		<div className="container mx-auto max-w-4xl p-4">
+			{/* Confetti animation for congratulations lesson */}
+			{showConfetti &&
+				typeof document !== "undefined" &&
+				createPortal(
+					<Confetti numberOfPieces={500} recycle={false} />,
+					document.body,
+				)}
+
 			{/* Lesson content */}
 			<Card className="mb-6">
 				<CardHeader>
