@@ -187,13 +187,11 @@ if ! npx supabase projects list --linked 2>/dev/null | grep -q "ldebzombxtszzcgn
   exit 1
 fi
 
-# 1.4 Cleanup old backups (keep last 5)
-echo "Cleaning up old backups..."
+# 1.4 Report old backups (advisory only - auto-delete blocked by security hooks)
 BACKUP_COUNT=$(ls -1 backup-remote-*.sql 2>/dev/null | wc -l)
 if [ "$BACKUP_COUNT" -gt 5 ]; then
-  echo "Found $BACKUP_COUNT backups, removing oldest..."
-  ls -1t backup-remote-*.sql | tail -n +6 | xargs rm -f
-  echo "Kept 5 most recent backups"
+  echo "INFO: Found $BACKUP_COUNT backups. Consider manual cleanup of oldest:"
+  ls -1t backup-remote-*.sql | tail -n +6
 fi
 
 # 1.5 Create backup before destructive operations
@@ -283,22 +281,7 @@ else
   exit 1
 fi
 
-# Verify payload schema exists (created by Supabase migration)
-# Note: Use psql with DATABASE_URI since supabase db exec doesn't support --linked
-echo "Verifying payload schema exists..."
-source .env.production
-SCHEMA_CHECK=$(psql "$DATABASE_URI" -t -c "
-  SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload';
-" 2>/dev/null | tr -d ' ')
-
-if [ "$SCHEMA_CHECK" != "1" ]; then
-  echo "ERROR: Payload schema not found after Supabase reset"
-  echo "Check migration 20250327_create_payload_schema.sql was applied"
-  exit 1
-fi
-echo "Payload schema exists"
-
-# Run Payload migrations (DATABASE_URI already set above)
+# Run Payload migrations
 echo "Executing Payload migrations..."
 NODE_TLS_REJECT_UNAUTHORIZED=0 \
   pnpm run payload migrate --forceAcceptWarning || {
@@ -307,22 +290,32 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 \
     echo "Troubleshooting:"
     echo "1. Verify DATABASE_URI in apps/payload/.env.production is correct"
     echo "2. Check Supabase Dashboard for connection issues"
-    echo "3. Try: npx supabase db exec --linked 'SELECT 1;'"
+    echo "3. Verify connection: npx supabase inspect db table-stats --linked"
     exit 1
   }
 
-# Verify tables were created
-echo "Verifying Payload tables created..."
-TABLE_COUNT=$(psql "$DATABASE_URI" -t -c "
-  SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='payload';
-" 2>/dev/null | tr -d ' ')
+# Verify Payload tables using supabase inspect (no credentials needed)
+cd ../web
+echo "Verifying Payload tables..."
+PAYLOAD_TABLE_COUNT=$(npx supabase inspect db table-stats --linked 2>&1 | grep -c "payload\.")
 
-echo "Payload migrations complete ($TABLE_COUNT tables created)"
-
-if [ "$TABLE_COUNT" -lt 60 ]; then
-  echo "WARNING: Expected 60+ tables, found $TABLE_COUNT"
-  echo "Some tables may not have been created"
+if [ "$PAYLOAD_TABLE_COUNT" -lt 60 ]; then
+  echo "ERROR: Expected 60+ Payload tables, found $PAYLOAD_TABLE_COUNT"
+  echo "Payload migrations may have failed"
+  exit 1
 fi
+
+echo "Payload migrations complete ($PAYLOAD_TABLE_COUNT tables created)"
+
+# Check critical tables exist
+CRITICAL_TABLES="payload.users payload.media payload.courses payload.posts"
+for table in $CRITICAL_TABLES; do
+  if ! npx supabase inspect db table-stats --linked 2>&1 | grep -q "$table "; then
+    echo "ERROR: Critical table missing: $table"
+    exit 1
+  fi
+done
+echo "✓ All critical tables present"
 ```
 
 **Update** TodoWrite: Mark Phase 3 complete
