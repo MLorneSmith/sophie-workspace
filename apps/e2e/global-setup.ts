@@ -28,6 +28,67 @@ const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
 
 /**
+ * Determine the appropriate cookie domain for a given base URL.
+ * Handles Vercel preview deployments, localhost, and custom domains.
+ *
+ * @param baseURL - The base URL of the application
+ * @returns Object with domain and isVercelPreview flag
+ */
+function getCookieDomainConfig(baseURL: string): {
+	domain: string;
+	isVercelPreview: boolean;
+	sameSite: "Lax" | "None";
+} {
+	try {
+		const url = new URL(baseURL);
+		const hostname = url.hostname;
+
+		// Vercel preview deployments: *.vercel.app
+		// Use the full hostname as domain since Vercel preview URLs are unique
+		// SameSite=None required for cross-origin cookie handling in some Vercel scenarios
+		if (hostname.endsWith(".vercel.app")) {
+			debugLog("cookie:vercel_preview_detected", {
+				hostname,
+				baseURL,
+				domain: hostname,
+			});
+			return {
+				domain: hostname,
+				isVercelPreview: true,
+				sameSite: "Lax", // Vercel protection bypass handles cross-origin
+			};
+		}
+
+		// Localhost: Use default browser behavior
+		if (hostname === "localhost" || hostname === "127.0.0.1") {
+			return {
+				domain: hostname,
+				isVercelPreview: false,
+				sameSite: "Lax",
+			};
+		}
+
+		// Custom domains: Use the hostname directly
+		return {
+			domain: hostname,
+			isVercelPreview: false,
+			sameSite: "Lax",
+		};
+	} catch (error) {
+		debugLog("cookie:domain_parse_error", {
+			baseURL,
+			error: (error as Error).message,
+		});
+		// Fallback to localhost behavior
+		return {
+			domain: "localhost",
+			isVercelPreview: false,
+			sameSite: "Lax",
+		};
+	}
+}
+
+/**
  * Payload login response type from /api/users/login endpoint
  */
 interface PayloadLoginResponse {
@@ -493,7 +554,18 @@ async function globalSetup(config: FullConfig) {
 		// CRITICAL: We use @supabase/ssr's createServerClient to set cookies in the exact
 		// format the middleware expects. This avoids encoding mismatches.
 		// See: https://github.com/supabase/ssr/issues/36
-		const domain = new URL(baseURL).hostname;
+		//
+		// Get domain configuration for cookies based on deployment type
+		// Handles Vercel preview URLs, localhost, and custom domains appropriately
+		// See Issue #1062, #1063 for context on cookie domain handling
+		const cookieConfig = getCookieDomainConfig(baseURL);
+		const domain = cookieConfig.domain;
+
+		// Log cookie domain configuration for visibility
+		// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+		console.log(
+			`🍪 Cookie domain config: ${domain} (isVercelPreview: ${cookieConfig.isVercelPreview})`,
+		);
 
 		// Cookie store that captures what @supabase/ssr wants to set
 		// Use the same getAll/setAll pattern as the middleware for consistency
@@ -566,8 +638,11 @@ async function globalSetup(config: FullConfig) {
 		// Convert captured cookies to Playwright's cookie format
 		// Note: Playwright expects sameSite to be capitalized (Lax, Strict, None)
 		// but @supabase/ssr returns lowercase (lax, strict, none)
-		const normalizeSameSite = (value?: string): "Lax" | "Strict" | "None" => {
-			if (!value) return "Lax";
+		const normalizeSameSite = (
+			value?: string,
+			defaultValue: "Lax" | "Strict" | "None" = "Lax",
+		): "Lax" | "Strict" | "None" => {
+			if (!value) return defaultValue;
 			const lower = value.toLowerCase();
 			if (lower === "strict") return "Strict";
 			if (lower === "none") return "None";
@@ -584,7 +659,11 @@ async function globalSetup(config: FullConfig) {
 				expires: cookieExpires, // Unix timestamp in seconds
 				httpOnly: c.options.httpOnly ?? false,
 				secure: baseURL.startsWith("https"),
-				sameSite: normalizeSameSite(c.options.sameSite as string),
+				// Use domain-specific sameSite default (important for Vercel preview deployments)
+				sameSite: normalizeSameSite(
+					c.options.sameSite as string,
+					cookieConfig.sameSite,
+				),
 			}));
 
 		// Log cookie details for debugging

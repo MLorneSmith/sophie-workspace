@@ -72,12 +72,28 @@ const getUser = async (request: NextRequest, response: NextResponse) => {
 	// First call getSession() to trigger session restoration from cookies
 	// Without this, getClaims() may return null even with valid cookies
 	// See: https://github.com/supabase/ssr/issues/36
-	await supabase.auth.getSession();
+	const sessionResult = await supabase.auth.getSession();
 
 	const result = await supabase.auth.getClaims();
 
-	// Log claims result (only when DEBUG_E2E_AUTH=true)
+	// Log claims and session validation result (only when DEBUG_E2E_AUTH=true)
+	// Enhanced logging for Issue #1062, #1063 debugging
 	if (DEBUG_E2E_AUTH) {
+		const session = sessionResult.data?.session;
+		const now = Math.floor(Date.now() / 1000);
+		const expiresAt = session?.expires_at ?? 0;
+		const isExpired = expiresAt > 0 && expiresAt < now;
+
+		debugLog("getUser:session_validation", {
+			path: request.nextUrl.pathname,
+			hasSession: !!session,
+			sessionError: sessionResult.error?.message ?? null,
+			expiresAt:
+				expiresAt > 0 ? new Date(expiresAt * 1000).toISOString() : null,
+			isExpired,
+			timeUntilExpiry: expiresAt > 0 ? expiresAt - now : null,
+		});
+
 		debugLog("getUser:claims", {
 			path: request.nextUrl.pathname,
 			hasClaims: !!result.data?.claims,

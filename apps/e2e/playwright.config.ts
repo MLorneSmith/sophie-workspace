@@ -21,11 +21,20 @@ dotenvConfig({
 
 /**
  * Number of workers to use for test execution.
- * CI: 3 workers for 4-core runners (1 core reserved for OS/overhead)
+ *
+ * CI: 1 worker (serial execution) to eliminate authentication race conditions.
+ * When multiple workers authenticate simultaneously via global-setup, cookies can
+ * conflict causing session validation failures in Supabase middleware. This is
+ * especially problematic on Vercel preview deployments where cookie domain/SameSite
+ * attributes need careful handling.
+ *
  * Local: 4 workers with updated .wslconfig (24GB RAM, 16 processors)
  * Each worker spawns a browser instance (~300-500MB RAM each)
+ *
+ * See Issue #1062, #1063 for diagnosis and fix details.
+ * Future improvement: Implement proper worker isolation to re-enable parallel execution.
  */
-const CI_WORKERS = 3;
+const CI_WORKERS = 1;
 const LOCAL_WORKERS = 4;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
