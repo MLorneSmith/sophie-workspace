@@ -2,6 +2,10 @@ import { expect, type Page, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { InvitationsPageObject } from "../invitations/invitations.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import {
+	CI_TIMEOUTS,
+	navigateAndWaitForHydration,
+} from "../utils/wait-for-hydration";
 import { TeamAccountsPageObject } from "./team-accounts.po";
 
 // Helper function to set up a team with a member
@@ -79,9 +83,12 @@ test.describe("Team Accounts @team @integration", () => {
 	test.beforeEach(async ({ page }) => {
 		teamAccounts = new TeamAccountsPageObject(page);
 
-		// Navigate to home first - required because Playwright starts with blank page
-		// even when using pre-authenticated storage state
-		await page.goto("/home");
+		// Navigate to home first with hydration wait - required because Playwright
+		// starts with blank page even when using pre-authenticated storage state
+		// Use navigateAndWaitForHydration for CI reliability (Issue #1051)
+		await navigateAndWaitForHydration(page, "/home", {
+			timeout: CI_TIMEOUTS.navigation,
+		});
 
 		// Create a team for the test
 		const teamName = teamAccounts.createTeamName();
