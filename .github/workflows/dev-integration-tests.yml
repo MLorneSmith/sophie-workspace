@@ -455,29 +455,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter web-e2e exec playwright install --with-deps chromium
 
-      - name: Configure E2E Supabase environment
+      - name: Validate Supabase configuration
         id: e2e-config
         run: |
-          echo "📋 Configuring E2E tests to use deployed Supabase instance..."
+          echo "📋 Validating E2E Supabase configuration..."
+          echo ""
+          echo "🔑 CRITICAL: E2E_SUPABASE_URL must match NEXT_PUBLIC_SUPABASE_URL"
+          echo "   This ensures cookie names match between E2E setup and deployed middleware."
+          echo "   Fix for #1067: Auth session regression caused by cookie name mismatch"
+          echo ""
 
-          # Use the same Supabase credentials as the deployed environment
-          # This ensures session keys match between test injection and app consumption
+          # Validate required secrets are configured
           SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           SUPABASE_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
-            echo "⚠️ NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
-            echo "ℹ️ Falling back to E2E_SUPABASE_URL and E2E_SUPABASE_ANON_KEY if available"
-            echo "configured=false" >> $GITHUB_OUTPUT
-          else
-            echo "✅ Using deployed Supabase instance for E2E tests"
-            echo "✅ URL: ${SUPABASE_URL:0:30}..."
-            echo "configured=true" >> $GITHUB_OUTPUT
-
-            # Export for use in subsequent steps
-            echo "SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
-            echo "SUPABASE_KEY=$SUPABASE_KEY" >> $GITHUB_ENV
+            echo "❌ CRITICAL: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
+            echo "   These secrets are REQUIRED for E2E tests to authenticate correctly."
+            echo "   Please configure them in the repository settings."
+            exit 1
           fi
+
+          echo "✅ Supabase URL configured: ${SUPABASE_URL:0:40}..."
+          echo "✅ Supabase anon key configured (${#SUPABASE_KEY} chars)"
+          echo "configured=true" >> $GITHUB_OUTPUT
 
       - name: Run integration test suite
         env:
@@ -505,10 +506,13 @@ jobs:
           E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
           E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
           # Supabase configuration for E2E tests
-          # Use deployed environment's Supabase instance to match session key derivation
-          # This resolves authentication state persistence issues in dev integration tests
-          E2E_SUPABASE_URL: ${{ env.SUPABASE_URL || secrets.E2E_SUPABASE_URL }}
-          E2E_SUPABASE_ANON_KEY: ${{ env.SUPABASE_KEY || secrets.E2E_SUPABASE_ANON_KEY }}
+          # CRITICAL: E2E_SUPABASE_URL MUST match NEXT_PUBLIC_SUPABASE_URL used by deployed app
+          # This ensures cookie names (derived from URL) match between E2E setup and middleware
+          # Fix for #1067: Auth session regression caused by cookie name mismatch
+          E2E_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Enable debug logging for auth session troubleshooting
+          DEBUG_E2E_AUTH: true
           # Add debug logging for Playwright
           DEBUG: pw:api
         run: |
