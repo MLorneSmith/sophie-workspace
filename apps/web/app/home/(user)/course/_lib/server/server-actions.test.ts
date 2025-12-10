@@ -337,6 +337,46 @@ describe("Course Server Actions", () => {
 		});
 
 		describe("Certificate Generation", () => {
+			it("should generate certificate when course completed on first access (INSERT path)", async () => {
+				// Mock no existing progress record - this is the INSERT path
+				let callCount = 0;
+				(
+					mockSupabaseClient.from as ReturnType<typeof vi.fn>
+				).mockImplementation((table: string) => {
+					const chain = createMockSupabaseChain();
+
+					if (table === "course_progress" && callCount === 0) {
+						// First call - check for existing progress, return null (none exists)
+						chain.single.mockResolvedValue({ data: null, error: null });
+					} else if (table === "accounts") {
+						// Fetch user's name for certificate
+						chain.single.mockResolvedValue({
+							data: { name: "Jane Smith" },
+							error: null,
+						});
+					}
+
+					callCount++;
+					return chain;
+				});
+
+				const input = {
+					courseId: "course-123",
+					completed: true,
+				};
+
+				await updateCourseProgressAction(input);
+
+				const { generateCertificate } = await import(
+					"~/lib/certificates/certificate-service"
+				);
+				expect(generateCertificate).toHaveBeenCalledWith({
+					userId: "user-123",
+					courseId: "course-123",
+					fullName: "Jane Smith",
+				});
+			});
+
 			it("should generate certificate when course completed and not already generated", async () => {
 				const existingProgress = {
 					id: "progress-123",
