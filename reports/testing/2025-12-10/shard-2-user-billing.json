@@ -1,0 +1,31 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "User Billing",
+		"files": ["tests/user-billing/user-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard9"
+	},
+	"execution": {
+		"startTime": "2025-12-10T13:50:20.596Z",
+		"endTime": "2025-12-10T13:50:32.596Z",
+		"duration": "12s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"❌ Failed to set session for payload-admin user: Auth session missing!"
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard9 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (9ms)\n  ✅ Next.js: Next.js healthy (441ms)\n  ✅ Payload: Payload healthy (40ms)\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase Auth URL: http://127.0.0.1:54521\n🍪 Using Supabase Cookie URL: http://host.docker.internal:54521 (for cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\nAuthSessionMissingError: Auth session missing!\n    at handleError (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:99:11)\n    at _handleRequest (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:195:5)\n    at _request (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/lib/fetch.ts:157:16)\n    at SupabaseAuthClient._getUser (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/GoTrueClient.ts:1725:16)\n    at SupabaseAuthClient._setSession (/home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/GoTrueClient.ts:1884:33)\n    at /home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/GoTrueClient.ts:1848:14\n    at /home/msmith/projects/2025slideheroes/node_modules/.pnpm/@supabase+auth-js@2.86.2/node_modules/@supabase/auth-js/src/GoTrueClient.ts:1488:18\n\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard9: `playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0`\nExit status 1\n"
+}
