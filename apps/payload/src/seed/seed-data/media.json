@@ -166,5 +166,19 @@
     "url": "https://media.slideheroes.com/tools_resources.png",
     "alt": "Tools and Resources - SlideHeroes course content",
     "type": "image"
+  },
+  {
+    "_ref": "congratulations",
+    "filename": "Congratulations.png",
+    "url": "https://media.slideheroes.com/Congratulations.png",
+    "alt": "Congratulations - SlideHeroes course content",
+    "type": "image"
+  },
+  {
+    "_ref": "before_you_go",
+    "filename": "Before_you_go.png",
+    "url": "https://media.slideheroes.com/Before_you_go.png",
+    "alt": "Before You Go - SlideHeroes course content",
+    "type": "image"
   }
 ]
