@@ -1,3 +1,4 @@
+import { getCourses } from "@kit/cms/payload";
 import { requireUser } from "@kit/supabase/require-user";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
 import { PageBody } from "@kit/ui/page";
@@ -38,11 +39,27 @@ async function CertificatePage() {
 	// User is authenticated
 	const user = auth.data;
 
-	// Get the course ID from the URL or use a default
-	const courseId = "decks-for-decision-makers"; // Default course ID
+	// Define type alias for cleaner code
+	type Course = Database["payload"]["Tables"]["courses"]["Row"];
 
-	// Get the user's certificate for this course
-	// Using a direct query with type assertion to handle TypeScript errors
+	// Get all published courses from Payload CMS (same pattern as course/page.tsx)
+	const coursesData = await getCourses();
+	const courses = coursesData.docs || [];
+
+	// Find the "Decks for Decision Makers" course by slug
+	const decksForDecisionMakersCourse = courses.find(
+		(course: Course) => course.slug === "decks-for-decision-makers",
+	);
+
+	// If course not found, redirect to course page
+	if (!decksForDecisionMakersCourse?.id) {
+		redirect("/home/course");
+	}
+
+	// Use the course UUID for certificate lookup (not the slug)
+	const courseId = decksForDecisionMakersCourse.id;
+
+	// Get the user's certificate for this course using the UUID
 	const { data: certificateData, error } = await supabase
 		.from("certificates")
 		.select("*")

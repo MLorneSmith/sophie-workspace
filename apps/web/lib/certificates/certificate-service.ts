@@ -10,6 +10,14 @@ interface GenerateCertificateParams {
 // Initialize service logger for certificate generation
 const { getLogger } = createServiceLogger("CERTIFICATE-SERVICE");
 
+// UUID format validation regex
+const UUID_REGEX =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUUID(value: string): boolean {
+	return UUID_REGEX.test(value);
+}
+
 export async function generateCertificate({
 	userId,
 	courseId,
@@ -23,6 +31,20 @@ export async function generateCertificate({
 		courseId,
 		fullName: `${fullName.substring(0, 10)}...`, // Partial name for privacy
 	});
+
+	// Validate that courseId is a valid UUID (not a slug)
+	if (!isValidUUID(courseId)) {
+		const error = new Error(
+			`Invalid courseId format: expected UUID but received "${courseId}". This may indicate a slug was passed instead of a UUID.`,
+		);
+		logger.error("Invalid courseId format - expected UUID", {
+			operation: "validate_courseId",
+			courseId,
+			userId,
+			error,
+		});
+		throw error;
+	}
 
 	// 1. Get PDF.co API key from environment variables
 	const pdfCoApiKey = process.env.PDF_CO_API_KEY;
