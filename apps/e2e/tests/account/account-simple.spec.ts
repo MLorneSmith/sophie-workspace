@@ -21,8 +21,9 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("settings page loads successfully", async ({ page }) => {
 		// Navigate to settings page with hydration wait
+		// Use specific form selector to avoid multiple form ambiguity
 		await navigateAndWaitForHydration(page, "/home/settings", {
-			waitForSelector: "form",
+			waitForSelector: '[data-testid="update-account-name-form"]',
 		});
 
 		// Verify we're on the settings page
@@ -31,7 +32,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		// Check for common settings elements with toPass() pattern
 		await expect(async () => {
 			const pageLoaded = await page.waitForSelector(
-				'form, [data-test*="account"], h1, h2',
+				'[data-testid="update-account-name-form"], [data-test*="account"], h1, h2',
 				{ timeout: CI_TIMEOUTS.short },
 			);
 			expect(pageLoaded).toBeTruthy();
@@ -43,12 +44,13 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("user profile form is visible", async ({ page }) => {
 		// Navigate to settings page with hydration wait
+		// Use specific form selector to avoid multiple form ambiguity
 		await navigateAndWaitForHydration(page, "/home/settings", {
-			waitForSelector: "form",
+			waitForSelector: '[data-testid="update-account-name-form"]',
 		});
 
-		// Wait for form to be visible with toPass() pattern
-		await waitForContentReady(page, "form");
+		// Wait for account name form to be visible with toPass() pattern
+		await waitForContentReady(page, '[data-testid="update-account-name-form"]');
 
 		// Check for profile form fields with extended timeout
 		const displayNameInput = page
@@ -63,12 +65,13 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("user can update display name", async ({ page }) => {
 		// Navigate to settings page with hydration wait
+		// Use specific form selector to avoid multiple form ambiguity
 		await navigateAndWaitForHydration(page, "/home/settings", {
-			waitForSelector: "form",
+			waitForSelector: '[data-testid="update-account-name-form"]',
 		});
 
-		// Wait for form to be visible with toPass() pattern
-		await waitForContentReady(page, "form");
+		// Wait for account name form to be visible with toPass() pattern
+		await waitForContentReady(page, '[data-testid="update-account-name-form"]');
 
 		// Find and fill display name input with extended timeout
 		const displayNameInput = page
@@ -249,12 +252,13 @@ test.describe("Account Settings - Simple @account @integration", () => {
 
 	test("settings form handles validation errors", async ({ page }) => {
 		// Navigate to settings page with hydration wait
+		// Use specific form selector to avoid multiple form ambiguity
 		await navigateAndWaitForHydration(page, "/home/settings", {
-			waitForSelector: "form",
+			waitForSelector: '[data-testid="update-account-name-form"]',
 		});
 
-		// Wait for form to be visible with toPass() pattern
-		await waitForContentReady(page, "form");
+		// Wait for account name form to be visible with toPass() pattern
+		await waitForContentReady(page, '[data-testid="update-account-name-form"]');
 
 		// Based on debug output, we have input[name="displayName"] with a value
 		const displayNameInput = page.locator('input[name="displayName"]').first();
