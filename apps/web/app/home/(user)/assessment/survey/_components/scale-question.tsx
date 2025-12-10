@@ -2,7 +2,7 @@
 
 import type { SurveyQuestion } from "@kit/cms-types";
 import { Button } from "@kit/ui/button";
-import { Label } from "@kit/ui/label";
+import { cn } from "@kit/ui/utils";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
 import { useState } from "react";
@@ -54,28 +54,23 @@ export function ScaleQuestion({
 			>
 				{question.options?.map((option) => {
 					const optionId = option.id || option.option;
+					const isSelected = selectedOption === optionId;
 					return (
-						<button
+						<label
 							key={optionId}
-							type="button"
-							className="hover:bg-accent flex cursor-pointer items-center space-x-2 rounded-md border p-4 text-left w-full"
-							onClick={() => setSelectedOption(optionId)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									e.preventDefault();
-									setSelectedOption(optionId);
-								}
-							}}
-							aria-label={`Select option: ${option.option}`}
+							htmlFor={optionId}
+							className={cn(
+								"flex cursor-pointer items-center space-x-4 rounded-md border p-4 text-sm transition-all",
+								"focus-within:border-primary",
+								{
+									"bg-muted": isSelected,
+									"hover:bg-muted": !isSelected,
+								},
+							)}
 						>
 							<RadioGroupItem value={optionId} id={optionId} />
-							<Label
-								htmlFor={optionId}
-								className="flex-1 cursor-pointer font-normal"
-							>
-								{option.option}
-							</Label>
-						</button>
+							<span className="flex-1 font-normal">{option.option}</span>
+						</label>
 					);
 				})}
 			</RadioGroup>
