@@ -79,6 +79,7 @@ interface PayloadLesson {
 	content: PayloadContent;
 	lessonNumber: number;
 	lesson_number?: number | string;
+	slug?: string;
 	id: string;
 	quiz_id?: string;
 	quiz_id_id?: string;
@@ -414,8 +415,8 @@ export function LessonViewClient({
 		}
 	};
 
-	// Check if this is the congratulations lesson (801)
-	const isCongratulationsLesson = lesson.lesson_number === "801";
+	// Check if this is the congratulations lesson (identified by slug)
+	const isCongratulationsLesson = lesson.slug === "congratulations";
 
 	// Trigger confetti animation when congratulations lesson is viewed
 	useEffect(() => {

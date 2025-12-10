@@ -154,6 +154,7 @@ vi.mock("next/link", () => ({
 const createBasicLesson = (overrides = {}) => ({
 	id: "lesson-1",
 	title: "Test Lesson",
+	slug: "test-lesson",
 	content: { root: { children: [] } },
 	lessonNumber: 1,
 	lesson_number: "1",
@@ -162,12 +163,13 @@ const createBasicLesson = (overrides = {}) => ({
 	...overrides,
 });
 
-// Helper to create congratulations lesson
+// Helper to create congratulations lesson (identified by slug, not lesson_number)
 const createCongratulationsLesson = (overrides = {}) =>
 	createBasicLesson({
-		id: "lesson-801",
+		id: "lesson-congratulations",
 		title: "Congratulations!",
-		lesson_number: "801",
+		slug: "congratulations",
+		lesson_number: "30", // Actual database value
 		...overrides,
 	});
 
@@ -177,7 +179,7 @@ describe("LessonViewClient", () => {
 	});
 
 	describe("Confetti Animation", () => {
-		it("should render confetti for congratulations lesson (lesson_number 801)", async () => {
+		it("should render confetti for congratulations lesson (identified by slug)", async () => {
 			// Arrange
 			const congratsLesson = createCongratulationsLesson();
 
@@ -242,7 +244,7 @@ describe("LessonViewClient", () => {
 			});
 		});
 
-		it("should render congratulations message for lesson 801", () => {
+		it("should render congratulations message for congratulations lesson", () => {
 			// Arrange
 			const congratsLesson = createCongratulationsLesson();
 
@@ -264,9 +266,12 @@ describe("LessonViewClient", () => {
 			expect(screen.getByText(/View Certificate/i)).toBeInTheDocument();
 		});
 
-		it("should NOT render congratulations section for non-801 lessons", () => {
+		it("should NOT render congratulations section for non-congratulations lessons", () => {
 			// Arrange
-			const regularLesson = createBasicLesson({ lesson_number: "100" });
+			const regularLesson = createBasicLesson({
+				slug: "regular-lesson",
+				lesson_number: "100",
+			});
 
 			// Act
 			render(
@@ -284,6 +289,52 @@ describe("LessonViewClient", () => {
 				screen.queryByText(/Congratulations on completing the course!/i),
 			).not.toBeInTheDocument();
 			expect(screen.queryByText(/View Certificate/i)).not.toBeInTheDocument();
+		});
+
+		it("should render confetti when lesson_number is 30 but slug is congratulations", async () => {
+			// This test ensures we don't regress if lesson_number changes
+			// The fix uses slug-based identification, not lesson_number
+			const congratsLesson = createCongratulationsLesson({
+				lesson_number: "30", // Actual database value
+			});
+
+			render(
+				<LessonViewClient
+					lesson={congratsLesson}
+					quiz={null}
+					quizAttempts={[]}
+					lessonProgress={null}
+					userId="user-1"
+				/>,
+			);
+
+			// Should render because slug matches, regardless of lesson_number
+			await waitFor(() => {
+				expect(screen.getByTestId("confetti-component")).toBeInTheDocument();
+			});
+		});
+
+		it("should NOT render confetti for lesson_number 30 without congratulations slug", () => {
+			// Ensures we don't accidentally trigger confetti for lesson 30 with different slug
+			const regularLesson30 = createBasicLesson({
+				slug: "some-other-lesson",
+				lesson_number: "30",
+			});
+
+			render(
+				<LessonViewClient
+					lesson={regularLesson30}
+					quiz={null}
+					quizAttempts={[]}
+					lessonProgress={null}
+					userId="user-1"
+				/>,
+			);
+
+			// Should NOT render because slug doesn't match
+			expect(
+				screen.queryByTestId("confetti-component"),
+			).not.toBeInTheDocument();
 		});
 	});
 
