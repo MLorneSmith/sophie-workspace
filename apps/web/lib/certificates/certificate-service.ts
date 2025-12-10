@@ -42,11 +42,11 @@ export async function generateCertificate({
 	logger.debug("Getting field names from certificate form");
 
 	// Use the correct path to the certificate template
+	// In Next.js dev mode, process.cwd() is already apps/web, so we don't need to add it again
 	const fs = require("node:fs");
 	const path = require("node:path");
-	const appDir = path.join(process.cwd(), "apps", "web");
 	const templatePath = path.join(
-		appDir,
+		process.cwd(),
 		"lib",
 		"certificates",
 		"templates",
