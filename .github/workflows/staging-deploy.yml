@@ -196,13 +196,14 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
+      NODE_ENV: 'test'
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
       # Required: Tell Playwright which port the app is running on
