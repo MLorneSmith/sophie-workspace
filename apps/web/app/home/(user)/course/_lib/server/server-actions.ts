@@ -95,15 +95,51 @@ export const updateCourseProgressAction = enhanceAction(
 				.eq("id", existingProgress.id);
 		} else {
 			// Create new record
-			await supabase.from("course_progress").insert({
-				user_id: user.id,
-				course_id: data.courseId,
-				started_at: now,
-				last_accessed_at: now,
-				current_lesson_id: data.currentLessonId,
-				completion_percentage: data.completionPercentage || 0,
-				completed_at: data.completed ? now : null,
-			});
+			const insertData: Database["public"]["Tables"]["course_progress"]["Insert"] =
+				{
+					user_id: user.id,
+					course_id: data.courseId,
+					started_at: now,
+					last_accessed_at: now,
+					current_lesson_id: data.currentLessonId,
+					completion_percentage: data.completionPercentage || 0,
+					completed_at: data.completed ? now : null,
+				};
+
+			// Generate certificate if course is completed on first access
+			if (data.completed) {
+				try {
+					// Get the user's full name from the accounts table
+					const { data: accountData } = await supabase
+						.from("accounts")
+						.select("name")
+						.eq("id", user.id)
+						.single();
+
+					const fullName = accountData?.name || user.email || "Student";
+
+					// Generate the certificate
+					await generateCertificate({
+						userId: user.id,
+						courseId: data.courseId,
+						fullName,
+					});
+
+					// Mark the certificate as generated
+					insertData.certificate_generated = true;
+				} catch (error) {
+					const logger = await getLogger();
+					logger.error("Failed to generate certificate on new progress", {
+						operation: "certificate_generation_insert",
+						error,
+						userId: user.id,
+						courseId: data.courseId,
+					});
+					// Continue with the insert even if certificate generation fails
+				}
+			}
+
+			await supabase.from("course_progress").insert(insertData);
 		}
 
 		return { success: true };
