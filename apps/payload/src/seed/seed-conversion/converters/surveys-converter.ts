@@ -19,6 +19,7 @@ interface SurveyMeta {
 }
 
 interface SurveyJson {
+	_ref: string; // Required for seeding engine reference resolution
 	id: string;
 	slug: string;
 	title: string;
@@ -109,6 +110,7 @@ export async function convertSurveys(
 
 			// Build survey object
 			const survey: SurveyJson = {
+				_ref: surveyId, // Required for seeding engine reference resolution
 				id: surveyId,
 				slug: surveyId,
 				title: surveyMeta.title,
