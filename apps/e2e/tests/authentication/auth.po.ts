@@ -520,11 +520,12 @@ export class AuthPageObject {
 			});
 
 			// Hydration wait guard 1: Ensure Supabase auth is initialized
-			// waitForLoadState('networkidle') ensures auth SDK and React Query are fully hydrated
+			// waitForLoadState('domcontentloaded') ensures page is ready without waiting for analytics
+			// Note: 'networkidle' causes timeouts in deployed environments due to persistent analytics connections
 			console.log(
-				"[loginAsUser] Waiting for network idle to ensure Supabase auth initialization...",
+				"[loginAsUser] Waiting for DOM content loaded to ensure page is ready...",
 			);
-			await this.page.waitForLoadState("networkidle");
+			await this.page.waitForLoadState("domcontentloaded");
 
 			// Hydration wait guard 2: Safety timeout for JavaScript execution context
 			// Allows async effects and React state updates to settle (150ms buffer)
