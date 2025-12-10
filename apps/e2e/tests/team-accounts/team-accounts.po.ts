@@ -81,9 +81,11 @@ export class TeamAccountsPageObject {
 
 	openAccountsSelector() {
 		return expect(async () => {
-			// Wait for page to be fully loaded and network idle before interacting
+			// Wait for page to be fully loaded before interacting
 			// This prevents race conditions where elements aren't interactive yet
-			await this.page.waitForLoadState("networkidle");
+			// Note: Using domcontentloaded instead of networkidle because persistent
+			// analytics connections (Vercel Live, Segment, Posthog) prevent networkidle
+			await this.page.waitForLoadState("domcontentloaded");
 
 			// Ensure the team selector is visible and ready before clicking
 			const teamSelector = this.page.locator('[data-testid="team-selector"]');
