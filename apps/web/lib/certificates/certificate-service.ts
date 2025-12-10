@@ -18,6 +18,72 @@ function isValidUUID(value: string): boolean {
 	return UUID_REGEX.test(value);
 }
 
+/**
+ * Upload a PDF template to PDF.co and get a temporary URL for subsequent operations.
+ *
+ * PDF.co deprecated the inline `file` parameter for base64 data and now requires
+ * a two-step process: upload first, then use the returned URL for API operations.
+ *
+ * @param templateBase64 - Base64-encoded PDF template
+ * @param pdfCoApiKey - PDF.co API key
+ * @returns Temporary URL for the uploaded file
+ */
+async function uploadPdfTemplate(
+	templateBase64: string,
+	pdfCoApiKey: string,
+): Promise<string> {
+	const { getLogger } = createServiceLogger("CERTIFICATE-SERVICE");
+	const logger = await getLogger();
+
+	logger.info("Uploading PDF template to PDF.co", {
+		operation: "upload_template",
+		templateSize: templateBase64.length,
+	});
+
+	const uploadResponse = await fetch(
+		"https://api.pdf.co/v1/file/upload/base64",
+		{
+			method: "POST",
+			headers: {
+				"x-api-key": pdfCoApiKey,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				file: templateBase64,
+			}),
+		},
+	);
+
+	const uploadResult = await uploadResponse.json();
+
+	if (uploadResult.error) {
+		const errorMessage = `Failed to upload template: ${uploadResult.message || "Unknown error"}`;
+		logger.error("PDF.co upload failed", {
+			operation: "upload_template",
+			error: errorMessage,
+			status: uploadResponse.status,
+		});
+		throw new Error(errorMessage);
+	}
+
+	if (!uploadResult.url) {
+		const errorMessage = "Upload succeeded but no URL returned from PDF.co API";
+		logger.error("PDF.co upload response missing URL", {
+			operation: "upload_template",
+			response: uploadResult,
+		});
+		throw new Error(errorMessage);
+	}
+
+	logger.info("PDF template uploaded successfully", {
+		operation: "upload_template",
+		// Note: URL is temporary and safe to log
+		urlReceived: true,
+	});
+
+	return uploadResult.url;
+}
+
 export async function generateCertificate({
 	userId,
 	courseId,
@@ -98,6 +164,20 @@ export async function generateCertificate({
 	const certificateTemplateBase64 =
 		Buffer.from(certificateTemplate).toString("base64");
 
+	// Step 1: Upload the template to PDF.co to get a temporary URL
+	// PDF.co deprecated inline base64 `file` parameter - now requires upload-first workflow
+	const templateUrl = await uploadPdfTemplate(
+		certificateTemplateBase64,
+		pdfCoApiKey,
+	);
+
+	logger.info("Template uploaded, fetching field info", {
+		operation: "field_info",
+		userId,
+		courseId,
+	});
+
+	// Step 2: Get field info using the uploaded template URL
 	const fieldInfoResponse = await fetch(
 		"https://api.pdf.co/v1/pdf/info/fields",
 		{
@@ -107,8 +187,8 @@ export async function generateCertificate({
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				// Use the base64-encoded template
-				file: certificateTemplateBase64,
+				// Use the uploaded template URL instead of inline base64
+				url: templateUrl,
 				async: false,
 			}),
 		},
@@ -117,8 +197,18 @@ export async function generateCertificate({
 	const fieldInfo = await fieldInfoResponse.json();
 
 	if (fieldInfo.error) {
+		logger.error("Failed to get field info from PDF.co", {
+			operation: "field_info",
+			error: fieldInfo.message,
+			status: fieldInfoResponse.status,
+		});
 		throw new Error(`Failed to get field info: ${fieldInfo.message}`);
 	}
+
+	logger.info("Field info retrieved successfully", {
+		operation: "field_info",
+		fieldsCount: fieldInfo.info?.FieldsInfo?.Fields?.length || 0,
+	});
 
 	// Extract the field name for the name field
 	// This assumes the field name is something like "name" or "fullName"
@@ -149,7 +239,7 @@ export async function generateCertificate({
 		throw new Error("Failed to get field info: Invalid response format");
 	}
 
-	// 3. Fill the form with the user's name
+	// Step 3: Fill the form with the user's name using the uploaded template URL
 	logger.info("Filling certificate form", {
 		operation: "fill_form",
 		userId,
@@ -164,8 +254,8 @@ export async function generateCertificate({
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
-			// Use the same base64-encoded template
-			file: certificateTemplateBase64,
+			// Use the uploaded template URL instead of inline base64
+			url: templateUrl,
 			name: `certificate-${userId}-${courseId}.pdf`,
 			async: false,
 			fields: [
@@ -181,8 +271,19 @@ export async function generateCertificate({
 	const fillFormResult = await fillFormResponse.json();
 
 	if (fillFormResult.error) {
+		logger.error("Failed to fill certificate form", {
+			operation: "fill_form",
+			error: fillFormResult.message,
+			status: fillFormResponse.status,
+		});
 		throw new Error(`Failed to fill form: ${fillFormResult.message}`);
 	}
+
+	logger.info("Certificate form filled successfully", {
+		operation: "fill_form",
+		userId,
+		courseId,
+	});
 
 	// 4. Download the filled form
 	const certificateUrl = fillFormResult.url;
