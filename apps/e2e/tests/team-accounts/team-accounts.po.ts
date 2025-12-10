@@ -2,6 +2,11 @@ import { expect, type Page } from "@playwright/test";
 
 import { AuthPageObject } from "../authentication/auth.po";
 import { OtpPo } from "../utils/otp.po";
+import {
+	CI_TIMEOUTS,
+	RETRY_INTERVALS,
+	waitForHydration,
+} from "../utils/wait-for-hydration";
 
 export class TeamAccountsPageObject {
 	private readonly page: Page;
@@ -81,24 +86,25 @@ export class TeamAccountsPageObject {
 
 	openAccountsSelector() {
 		return expect(async () => {
-			// Wait for page to be fully loaded before interacting
-			// This prevents race conditions where elements aren't interactive yet
-			// Note: Using domcontentloaded instead of networkidle because persistent
-			// analytics connections (Vercel Live, Segment, Posthog) prevent networkidle
-			await this.page.waitForLoadState("domcontentloaded");
+			// Wait for React hydration to complete before interacting
+			// This addresses CI flakiness due to Vercel cold starts (Issue #1051)
+			await waitForHydration(this.page, {
+				selector: '[data-testid="team-selector"]',
+				timeout: CI_TIMEOUTS.hydration,
+			});
 
 			// Ensure the team selector is visible and ready before clicking
 			const teamSelector = this.page.locator('[data-testid="team-selector"]');
-			await expect(teamSelector).toBeVisible({ timeout: 10000 });
+			await expect(teamSelector).toBeVisible({ timeout: CI_TIMEOUTS.element });
 
 			await teamSelector.click();
 
 			return expect(
 				this.page.locator('[data-testid="account-selector-content"]'),
-			).toBeVisible({ timeout: 10000 });
+			).toBeVisible({ timeout: CI_TIMEOUTS.element });
 		}).toPass({
-			timeout: 30000,
-			intervals: [500, 1000, 2000, 5000],
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
 		});
 	}
 

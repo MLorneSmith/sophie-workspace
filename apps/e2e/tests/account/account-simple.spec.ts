@@ -1,85 +1,111 @@
 import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import {
+	CI_TIMEOUTS,
+	RETRY_INTERVALS,
+	navigateAndWaitForHydration,
+	waitForContentReady,
+} from "../utils/wait-for-hydration";
 
 /**
  * Account settings tests with proper wait strategy for deployed environments
  * Uses domcontentloaded + explicit waits for reliable testing with analytics scripts
  */
 test.describe("Account Settings - Simple @account @integration", () => {
-	test.describe.configure({ mode: "serial", timeout: 30000 });
+	// Use CI-aware timeout configuration (Issue #1051)
+	test.describe.configure({ mode: "serial", timeout: CI_TIMEOUTS.element });
 
 	// Use pre-authenticated state from global setup
 	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
 
 	test("settings page loads successfully", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings", {
+			waitForSelector: "form",
+		});
 
 		// Verify we're on the settings page
 		await expect(page).toHaveURL(/\/home\/settings/);
 
-		// Check for common settings elements - look for form or settings-related content
-		// Wait for some indication the page loaded (form, heading, or specific element)
-		const pageLoaded = await page.waitForSelector(
-			'form, [data-test*="account"], h1, h2',
-			{
-				timeout: 10000,
-			},
-		);
-		expect(pageLoaded).toBeTruthy();
+		// Check for common settings elements with toPass() pattern
+		await expect(async () => {
+			const pageLoaded = await page.waitForSelector(
+				'form, [data-test*="account"], h1, h2',
+				{ timeout: CI_TIMEOUTS.short },
+			);
+			expect(pageLoaded).toBeTruthy();
+		}).toPass({
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
+		});
 	});
 
 	test("user profile form is visible", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings", {
+			waitForSelector: "form",
+		});
 
-		// Wait for form to be visible
-		await page.waitForSelector("form", { timeout: 10000 });
+		// Wait for form to be visible with toPass() pattern
+		await waitForContentReady(page, "form");
 
-		// Check for profile form fields
+		// Check for profile form fields with extended timeout
 		const displayNameInput = page
 			.locator(
 				'[data-testid="account-display-name"], input[name*="name"], input[placeholder*="name"]',
 			)
 			.first();
-		await expect(displayNameInput).toBeVisible({ timeout: 10000 });
+		await expect(displayNameInput).toBeVisible({
+			timeout: CI_TIMEOUTS.element,
+		});
 	});
 
 	test("user can update display name", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings", {
+			waitForSelector: "form",
+		});
 
-		// Wait for form to be visible
-		await page.waitForSelector("form", { timeout: 10000 });
+		// Wait for form to be visible with toPass() pattern
+		await waitForContentReady(page, "form");
 
-		// Find and fill display name input
+		// Find and fill display name input with extended timeout
 		const displayNameInput = page
 			.locator(
 				'[data-testid="account-display-name"], input[name*="name"], input[placeholder*="name"]',
 			)
 			.first();
-		await displayNameInput.waitFor({ state: "visible", timeout: 10000 });
+		await displayNameInput.waitFor({
+			state: "visible",
+			timeout: CI_TIMEOUTS.element,
+		});
 
 		// Clear and fill with new name
 		const newName = `Test User ${Date.now()}`;
 		await displayNameInput.clear();
 		await displayNameInput.fill(newName);
 
-		// Find and click save button
+		// Find and click save button with toPass() pattern
 		const saveButton = page
 			.locator('button[type="submit"], button')
 			.filter({ hasText: /save|update/i })
 			.first();
-		await expect(saveButton).toBeVisible();
 
-		// Set up response listener for the update
+		await expect(async () => {
+			await expect(saveButton).toBeVisible({ timeout: CI_TIMEOUTS.short });
+		}).toPass({
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
+		});
+
+		// Set up response listener for the update with extended timeout
 		const responsePromise = page
 			.waitForResponse(
 				(response) =>
 					response.url().includes("/rest/v1/accounts") &&
 					response.status() === 200,
-				{ timeout: 10000 },
+				{ timeout: CI_TIMEOUTS.element },
 			)
 			.catch(() => null); // Catch timeout if API structure is different
 
@@ -96,7 +122,10 @@ test.describe("Account Settings - Simple @account @integration", () => {
 				.locator('[role="alert"], .toast, [data-testid*="success"]')
 				.first();
 			try {
-				await successIndicator.waitFor({ state: "visible", timeout: 5000 });
+				await successIndicator.waitFor({
+					state: "visible",
+					timeout: CI_TIMEOUTS.short,
+				});
 				await expect(successIndicator).toBeVisible();
 			} catch {
 				// If no success indicator, just verify the input still has our value
@@ -106,8 +135,8 @@ test.describe("Account Settings - Simple @account @integration", () => {
 	});
 
 	test("team settings link is accessible", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings");
 
 		// Look for team settings link
 		const teamLink = page
@@ -123,8 +152,8 @@ test.describe("Account Settings - Simple @account @integration", () => {
 	});
 
 	test("billing settings link is accessible", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings");
 
 		// Look for billing settings link
 		const billingLink = page
@@ -140,8 +169,8 @@ test.describe("Account Settings - Simple @account @integration", () => {
 	});
 
 	test("user can navigate between settings sections", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings");
 
 		// Try to find navigation tabs or links
 		const navLinks = page.locator(
@@ -150,33 +179,42 @@ test.describe("Account Settings - Simple @account @integration", () => {
 		const count = await navLinks.count();
 
 		if (count > 0) {
-			// Click first navigation item
+			// Click first navigation item with toPass() pattern
 			const firstLink = navLinks.first();
-			await firstLink.click();
+			await expect(async () => {
+				await firstLink.click();
+			}).toPass({
+				timeout: CI_TIMEOUTS.short,
+				intervals: RETRY_INTERVALS as unknown as number[],
+			});
 
 			// Wait for any navigation to complete
 			await page.waitForTimeout(1000);
 
 			// Verify page updated (URL change or content change)
-			// This is a simple check - adjust based on actual app behavior
 			expect(page.url()).toContain("/home");
 		}
 	});
 
 	test("settings page shows user email", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings");
 
-		// Wait for page to load completely
-		await page.waitForTimeout(1000);
-
-		// Click the account dropdown trigger to open the dropdown menu
-		// The email is displayed in the dropdown content (not in the collapsed sidebar)
+		// Click the account dropdown trigger to open the dropdown menu with toPass() pattern
 		const accountDropdownTrigger = page.locator(
 			'[data-testid="account-dropdown"]',
 		);
-		await accountDropdownTrigger.waitFor({ state: "visible", timeout: 10000 });
-		await accountDropdownTrigger.click();
+
+		await expect(async () => {
+			await accountDropdownTrigger.waitFor({
+				state: "visible",
+				timeout: CI_TIMEOUTS.short,
+			});
+			await accountDropdownTrigger.click();
+		}).toPass({
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
+		});
 
 		// Verify the email is displayed in the dropdown content
 		const expectedEmail =
@@ -185,41 +223,47 @@ test.describe("Account Settings - Simple @account @integration", () => {
 			.locator('[role="menu"]')
 			.getByText(expectedEmail);
 
-		await expect(emailInDropdown).toBeVisible({ timeout: 5000 });
+		await expect(emailInDropdown).toBeVisible({ timeout: CI_TIMEOUTS.short });
 	});
 
 	test("sign out is accessible from settings", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings");
 
-		// Wait for page to load
-		await page.waitForTimeout(1000);
-
-		// Since sign out is in dropdown menus (detected 7 dropdown buttons)
-		// We'll check that dropdown menus exist that could contain sign out
+		// Since sign out is in dropdown menus, verify dropdown buttons exist
 		const dropdownButtons = page
 			.locator(
 				'button[aria-haspopup], button[data-state], button[role="combobox"], button[type="button"]',
 			)
 			.first();
 
-		// Verify at least one dropdown/menu button exists
-		const hasDropdowns = await dropdownButtons.isVisible().catch(() => false);
-		expect(hasDropdowns).toBeTruthy();
+		// Verify at least one dropdown/menu button exists with toPass() pattern
+		await expect(async () => {
+			const hasDropdowns = await dropdownButtons.isVisible().catch(() => false);
+			expect(hasDropdowns).toBeTruthy();
+		}).toPass({
+			timeout: CI_TIMEOUTS.element,
+			intervals: RETRY_INTERVALS as unknown as number[],
+		});
 	});
 
 	test("settings form handles validation errors", async ({ page }) => {
-		// Navigate to settings page
-		await page.goto("/home/settings", { waitUntil: "domcontentloaded" });
+		// Navigate to settings page with hydration wait
+		await navigateAndWaitForHydration(page, "/home/settings", {
+			waitForSelector: "form",
+		});
 
-		// Wait for form to be visible
-		await page.waitForSelector("form", { timeout: 10000 });
+		// Wait for form to be visible with toPass() pattern
+		await waitForContentReady(page, "form");
 
 		// Based on debug output, we have input[name="displayName"] with a value
 		const displayNameInput = page.locator('input[name="displayName"]').first();
 
-		// Wait for input to be visible
-		await displayNameInput.waitFor({ state: "visible", timeout: 5000 });
+		// Wait for input to be visible with extended timeout
+		await displayNameInput.waitFor({
+			state: "visible",
+			timeout: CI_TIMEOUTS.short,
+		});
 
 		// Verify the input exists and we can interact with it
 		await expect(displayNameInput).toBeVisible();
@@ -244,13 +288,7 @@ test.describe("Account Settings - Simple @account @integration", () => {
 			// Check if form still has empty input (validation prevented submission)
 			const currentValue = await displayNameInput.inputValue();
 
-			// If validation works, either:
-			// 1. The input is still empty (form didn't submit)
-			// 2. An error message appears
-			// 3. The input has a red border or error styling
-
 			// This test passes if we can interact with the form
-			// Real validation testing would need knowledge of the specific validation behavior
 			expect(buttonVisible).toBeTruthy();
 		} else {
 			// No save button visible, but form exists - this is still acceptable

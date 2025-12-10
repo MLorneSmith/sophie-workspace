@@ -104,7 +104,8 @@ export default defineConfig({
 	timeout: process.env.CI ? 120 * 1000 : 90 * 1000, // 2 min in CI, 90s local (reduced from 3min/2min)
 	expect: {
 		// Expect timeout for assertions
-		timeout: process.env.CI ? 15 * 1000 : 10 * 1000, // 15s in CI, 10s local
+		// Increased for CI to handle Vercel cold starts and React hydration delays (Issue #1051)
+		timeout: process.env.CI ? 30 * 1000 : 10 * 1000, // 30s in CI, 10s local
 	},
 	/*Configure projects for major browsers */
 	projects: [

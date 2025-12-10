@@ -222,10 +222,56 @@ jobs:
           echo "ready=false" >> $GITHUB_OUTPUT
           exit 1
 
+  # Warmup Deployment
+  # Hit critical pages before tests to eliminate serverless cold starts
+  # This addresses intermittent element visibility timeouts in CI (Issue #1051)
+  warmup-deployment:
+    name: Warmup Deployment
+    needs: [check-should-run, wait-for-deployment]
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
+    runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
+    timeout-minutes: 5
+    steps:
+      - name: Warmup critical pages
+        run: |
+          echo "🔥 Warming up deployment to eliminate cold starts..."
+
+          WEB_URL="${{ needs.check-should-run.outputs.web_deployment_url }}"
+          BYPASS_SECRET="${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
+
+          # Define critical pages to warm up
+          PAGES=("/" "/auth/sign-in" "/pricing" "/templates")
+
+          # Build curl command with bypass header if available
+          CURL_OPTS="--max-time 30 -s -o /dev/null -w '%{http_code}'"
+          if [ -n "$BYPASS_SECRET" ]; then
+            CURL_OPTS="$CURL_OPTS -H 'x-vercel-protection-bypass: $BYPASS_SECRET'"
+          fi
+
+          # Hit each page 3 times with 2 second delays
+          for page in "${PAGES[@]}"; do
+            echo "Warming up: ${WEB_URL}${page}"
+            for i in 1 2 3; do
+              HTTP_CODE=$(eval "curl $CURL_OPTS '${WEB_URL}${page}'") || HTTP_CODE="000"
+              echo "  Attempt $i: HTTP $HTTP_CODE"
+
+              # Accept 200, 304, 401, 403 as successful warmups
+              if [[ "$HTTP_CODE" =~ ^(200|304|401|403)$ ]]; then
+                echo "  ✅ Page warmed up"
+              else
+                echo "  ⚠️ Unexpected status, continuing..."
+              fi
+
+              sleep 2
+            done
+          done
+
+          echo "✅ Deployment warmup complete"
+
   # API Contract Testing
   api-contract-tests:
     name: API Contract Tests
-    needs: [check-should-run, wait-for-deployment]
+    needs: [check-should-run, wait-for-deployment, warmup-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     timeout-minutes: 10
@@ -375,7 +421,7 @@ jobs:
   # Integration Tests
   integration-tests:
     name: Integration Tests
-    needs: [check-should-run, wait-for-deployment]
+    needs: [check-should-run, wait-for-deployment, warmup-deployment]
     if: needs.check-should-run.outputs.should_run == 'true' && needs.wait-for-deployment.outputs.deployment_ready == 'true'
     runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64
     timeout-minutes: 30  # Increased from 15 to allow integration tests to complete
