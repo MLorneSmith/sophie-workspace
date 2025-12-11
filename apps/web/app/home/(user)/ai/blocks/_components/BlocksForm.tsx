@@ -14,7 +14,7 @@ import { Spinner } from "@kit/ui/spinner";
 import { Textarea } from "@kit/ui/textarea";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
 import {
@@ -62,46 +62,51 @@ function useSuggestions(_userId: string) {
 	const [suggestions, setSuggestions] = useState<string[]>([]);
 	const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-	// Create a debounced function outside of useCallback
-	const debouncedFetchSuggestions = debounce(
-		async (
-			field: "title" | "audience" | "situation" | "complication" | "answer",
-			presentationType?: string,
-			title?: string,
-			setIsLoadingSuggestions?: (loading: boolean) => void,
-			setSuggestions?: (suggestions: string[]) => void,
-		) => {
-			// Only require title for non-title suggestions
-			if (field !== "title" && !title) return;
+	// Create a debounced function with useMemo for stable reference
+	const debouncedFetchSuggestions = useMemo(
+		() =>
+			debounce(
+				async (
+					field: "title" | "audience" | "situation" | "complication" | "answer",
+					presentationType?: string,
+					title?: string,
+					setIsLoadingSuggestions?: (loading: boolean) => void,
+					setSuggestions?: (suggestions: string[]) => void,
+				) => {
+					// Only require title for non-title suggestions
+					if (field !== "title" && !title) return;
 
-			if (setIsLoadingSuggestions) setIsLoadingSuggestions(true);
-			try {
-				const result = await getSuggestions({
-					title: title || "",
-					field,
-					presentationType,
-				});
+					if (setIsLoadingSuggestions) setIsLoadingSuggestions(true);
+					try {
+						const result = await getSuggestions({
+							title: title || "",
+							field,
+							presentationType,
+						});
 
-				if (result.success && result.data && setSuggestions) {
-					setSuggestions(result.data);
-				} else if (setSuggestions) {
-					setSuggestions([
-						`Error: ${result.error || "Failed to get suggestions"}`,
-					]);
-				}
-			} catch (_error) {
-				logger.error("Error getting suggestions:", {
-					field,
-					presentationType,
-					title,
-					error: _error,
-				});
-				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
-			} finally {
-				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
-			}
-		},
-		300,
+						if (result.success && result.data && setSuggestions) {
+							setSuggestions(result.data);
+						} else if (setSuggestions) {
+							setSuggestions([
+								`Error: ${result.error || "Failed to get suggestions"}`,
+							]);
+						}
+					} catch (_error) {
+						logger.error("Error getting suggestions:", {
+							field,
+							presentationType,
+							title,
+							error: _error,
+						});
+						if (setSuggestions)
+							setSuggestions(["An unexpected error occurred"]);
+					} finally {
+						if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
+					}
+				},
+				300,
+			),
+		[],
 	);
 
 	// Use the debounced function inside useCallback
