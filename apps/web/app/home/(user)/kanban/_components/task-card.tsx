@@ -35,7 +35,10 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 			transform,
 			transition,
 			isDragging,
-		} = useSortable({ id: task.id });
+		} = useSortable({
+			id: task.id,
+			data: { type: "card", containerId: task.status },
+		});
 
 		const style = {
 			transform: CSS.Transform.toString(transform),

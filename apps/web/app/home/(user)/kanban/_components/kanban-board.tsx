@@ -4,7 +4,6 @@ import {
 	closestCorners,
 	DndContext,
 	type DragEndEvent,
-	type DragOverEvent,
 	DragOverlay,
 	type DragStartEvent,
 	KeyboardSensor,
@@ -62,7 +61,6 @@ export function KanbanBoard() {
 	const updateStatus = _useUpdateTaskStatus();
 	const resetTasks = _useResetTasks();
 	const [activeId, setActiveId] = useState<string | null>(null);
-	const [activeOverId, setActiveOverId] = useState<string | null>(null);
 	const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const activeTask = tasks?.find((task) => task.id === activeId);
@@ -83,49 +81,31 @@ export function KanbanBoard() {
 		setActiveId(event.active.id as string);
 	}, []);
 
-	const handleDragOver = useCallback((event: DragOverEvent) => {
-		setActiveOverId(event.over?.id as string | null);
-	}, []);
-
 	const handleDragEnd = useCallback(
 		async (event: DragEndEvent) => {
 			const { active, over } = event;
 
 			if (!over || !tasks) {
-				setActiveOverId(null);
 				setActiveId(null);
 				return;
 			}
 
 			const activeTaskItem = tasks.find((t) => t.id === active.id);
-			const overId = over.id as string;
 
-			// Determine target status: prioritize column targets over card targets
-			// This fixes asymmetric drag behavior where collision detection may select
-			// a card in the source column as closest when dragging across columns
+			// Use dnd-kit's data property pattern to identify target container
+			// This handles both direct column drops and drops onto cards
 			let targetStatus: TaskStatus | null = null;
-			const isColumnTarget = COLUMNS.some((col) => col.id === overId);
+			const overData = over.data.current as
+				| { type: "column" }
+				| { type: "card"; containerId: TaskStatus }
+				| undefined;
 
-			if (isColumnTarget) {
+			if (overData?.type === "column") {
 				// Dropped on a column directly
-				targetStatus = overId as TaskStatus;
-			} else {
-				// Collision detection pointed to a card, but check if we were dragging over a column
-				// If activeOverId is a column, prioritize that over the card target
-				const isActiveOverColumn = COLUMNS.some(
-					(col) => col.id === activeOverId,
-				);
-
-				if (activeOverId && isActiveOverColumn) {
-					// User was dragging over a column - use that as the target
-					targetStatus = activeOverId as TaskStatus;
-				} else {
-					// Fall back to original card-based logic
-					const targetTask = tasks.find((t) => t.id === overId);
-					if (targetTask) {
-						targetStatus = targetTask.status;
-					}
-				}
+				targetStatus = over.id as TaskStatus;
+			} else if (overData?.type === "card") {
+				// Dropped on a card - use the card's parent container
+				targetStatus = overData.containerId;
 			}
 
 			// Update status if we have a valid target and it's different from current
@@ -147,10 +127,9 @@ export function KanbanBoard() {
 				}
 			}
 
-			setActiveOverId(null);
 			setActiveId(null);
 		},
-		[tasks, updateStatus, activeOverId],
+		[tasks, updateStatus],
 	);
 
 	if (isError) {
@@ -227,7 +206,6 @@ export function KanbanBoard() {
 				sensors={sensors}
 				collisionDetection={closestCorners}
 				onDragStart={handleDragStart}
-				onDragOver={handleDragOver}
 				onDragEnd={handleDragEnd}
 			>
 				<div className="grid h-full grid-cols-1 gap-4 md:grid-cols-3">

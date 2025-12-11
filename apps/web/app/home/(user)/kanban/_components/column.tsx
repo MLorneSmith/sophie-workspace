@@ -24,6 +24,7 @@ export function Column({
 }: ColumnProps) {
 	const { setNodeRef } = useDroppable({
 		id,
+		data: { type: "column" },
 	});
 
 	return (
