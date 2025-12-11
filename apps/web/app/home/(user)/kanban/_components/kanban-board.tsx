@@ -34,7 +34,7 @@ import {
 	_useUpdateTaskStatus,
 	useTasks,
 } from "../_lib/hooks/use-tasks";
-import type { Task, TaskStatus } from "../_lib/schema/task.schema";
+import type { TaskStatus } from "../_lib/schema/task.schema";
 import { Column } from "./column";
 import { TaskCard } from "./task-card";
 
@@ -88,22 +88,34 @@ export function KanbanBoard() {
 			if (!over || !tasks) return;
 
 			const activeTask = tasks.find((t) => t.id === active.id);
-			const overId = over.id as Task["status"];
+			const overId = over.id as string;
 
-			// If dragging to a column
+			// Determine target status: either from column ID or from the task being dropped onto
+			let targetStatus: TaskStatus | null = null;
+
 			if (COLUMNS.some((col) => col.id === overId)) {
-				if (activeTask && activeTask.status !== overId) {
-					setUpdatingTaskId(activeTask.id);
-					try {
-						await updateStatus.mutateAsync({
-							id: activeTask.id,
-							status: overId as TaskStatus,
-						});
-					} catch (_error) {
-						logger.error("Failed to update task status:", _error);
-					} finally {
-						setUpdatingTaskId(null);
-					}
+				// Dropped on a column directly
+				targetStatus = overId as TaskStatus;
+			} else {
+				// Dropped on another task - find that task's status
+				const targetTask = tasks.find((t) => t.id === overId);
+				if (targetTask) {
+					targetStatus = targetTask.status;
+				}
+			}
+
+			// Update status if we have a valid target and it's different from current
+			if (targetStatus && activeTask && activeTask.status !== targetStatus) {
+				setUpdatingTaskId(activeTask.id);
+				try {
+					await updateStatus.mutateAsync({
+						id: activeTask.id,
+						status: targetStatus,
+					});
+				} catch (_error) {
+					logger.error("Failed to update task status:", _error);
+				} finally {
+					setUpdatingTaskId(null);
 				}
 			}
 
