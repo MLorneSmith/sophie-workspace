@@ -1,7 +1,7 @@
 "use client";
 
 import {
-	closestCenter,
+	closestCorners,
 	DndContext,
 	type DragEndEvent,
 	DragOverlay,
@@ -196,7 +196,7 @@ export function KanbanBoard() {
 
 			<DndContext
 				sensors={sensors}
-				collisionDetection={closestCenter}
+				collisionDetection={closestCorners}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
 			>
