@@ -88,16 +88,20 @@ export default defineConfig({
 			process.env.BASE_URL ||
 			"http://localhost:3001",
 
-		// Add Vercel protection bypass headers for deployed environments
-		// x-vercel-protection-bypass: For direct API/HTTP requests
-		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows
-		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-			? {
-					"x-vercel-protection-bypass":
-						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-					"x-vercel-set-bypass-cookie": "samesitenone",
-				}
-			: {},
+		// Add Vercel bypass and configuration headers for E2E tests
+		// x-vercel-protection-bypass: For direct API/HTTP requests (deployed environments)
+		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows (deployed environments)
+		// x-vercel-skip-toolbar: Disable Vercel Live toolbar to prevent cross-origin cookie interference (Issue #1078)
+		extraHTTPHeaders: {
+			// Always disable Vercel Live toolbar - it causes cross-origin cookie issues in Playwright
+			"x-vercel-skip-toolbar": "1",
+			// Add bypass headers only when secret is configured (deployed environments)
+			...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET && {
+				"x-vercel-protection-bypass":
+					process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+				"x-vercel-set-bypass-cookie": "samesitenone",
+			}),
+		},
 
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",
