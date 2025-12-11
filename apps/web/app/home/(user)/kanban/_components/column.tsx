@@ -50,7 +50,10 @@ export function Column({
 						<Trans i18nKey="kanban:task.dropHint" />
 					</p>
 				) : (
-					<SortableContext items={tasks} strategy={rectSortingStrategy}>
+					<SortableContext
+						items={tasks.map((t) => t.id)}
+						strategy={rectSortingStrategy}
+					>
 						{tasks.map((task) => (
 							<div key={task.id} className="relative">
 								<TaskCard task={task} />
