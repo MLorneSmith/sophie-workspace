@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Seeding Tests",
+		"files": [
+			"tests/payload/seeding.spec.ts",
+			"tests/payload/seeding-performance.spec.ts"
+		],
+		"expectedTests": 25,
+		"shardCommand": "test:shard8"
+	},
+	"execution": {
+		"startTime": "2025-12-11T14:21:51.690Z",
+		"endTime": "2025-12-11T14:23:07.690Z",
+		"duration": "76s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 24,
+		"passed": 20,
+		"failed": 0,
+		"skipped": 6,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard8 /home/msmith/projects/2025slideheroes/apps/e2e\n> PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (8ms)\n  ✅ Next.js: Next.js healthy (606ms)\n  ✅ Payload: Payload healthy (43ms)\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase Auth URL: http://127.0.0.1:54521\n🍪 Using Supabase Cookie URL: http://host.docker.internal:54521 (for cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n✅ Session injected into cookies and localStorage for payload-admin user\n🔄 Authenticating to Payload CMS via API for payload-admin user...\n   Payload login attempt 1/3...\n✅ Payload API login successful, payload-token cookie injected for payload-admin user\n✅ Payload admin panel loaded for payload-admin user\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 26 tests using 1 worker\n···×±········×±·······°°°°°°\n\n  1) [payload] › tests/payload/seeding-performance.spec.ts:121:6 › Seeding Performance Benchmarks › should maintain consistent speed across runs \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n    Expected: < \u001b[32m3272\u001b[39m\n    Received:   \u001b[31m4044\u001b[39m\n\n      143 |\n      144 | \t\t// Max should be within 2x of min (accounting for system variance)\n    > 145 | \t\texpect(maxDuration).toBeLessThan(minDuration * 2);\n          | \t\t                    ^\n      146 |\n      147 | \t\t// Average should be reasonable\n      148 | \t\texpect(avgDuration).toBeLessThan(\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/seeding-performance.spec.ts:145:23\n\n  2) [payload] › tests/payload/seeding-performance.spec.ts:330:6 › Throughput Benchmarks › should process records without significant overhead \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n    Expected: < \u001b[32m3000\u001b[39m\n    Received:   \u001b[31m3958\u001b[39m\n\n      343 |\n      344 | \t\t// Even 1 record should complete fast (allowing for Payload init overhead ~2s)\n    > 345 | \t\texpect(duration).toBeLessThan(3000);\n          | \t\t                 ^\n      346 | \t});\n      347 |\n      348 | \ttest(\"should maintain speed with complex collections\", async () => {\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/seeding-performance.spec.ts:345:20\n\n  2 flaky\n    [payload] › tests/payload/seeding-performance.spec.ts:121:6 › Seeding Performance Benchmarks › should maintain consistent speed across runs \n    [payload] › tests/payload/seeding-performance.spec.ts:330:6 › Throughput Benchmarks › should process records without significant overhead \n  6 skipped\n  18 passed (1.2m)\n"
+}

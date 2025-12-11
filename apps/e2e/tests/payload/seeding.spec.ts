@@ -140,7 +140,7 @@ test.describe("Payload Seeding E2E", () => {
 		);
 
 		// Verify summary statistics (format: "✓ Success: N/N", "⏱ Duration:", "⚡ Avg speed:")
-		expect(stdout).toContain("255 records");
+		expect(stdout).toContain("257 records");
 		expect(stdout).toContain("Success:");
 		expect(stdout).toContain("Duration:");
 		expect(stdout).toMatch(/speed/i);

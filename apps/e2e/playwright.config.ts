@@ -103,6 +103,15 @@ export default defineConfig({
 			}),
 		},
 
+		// Enable request/response interception for debugging cookie transmission
+		// This helps diagnose if cookies created in global setup are being sent to the server
+		// See Issue #1083 for cookie verification patterns
+		...(process.env.RECORD_HAR_LOGS && {
+			recordHar: {
+				path: "./test-results/requests.har",
+			},
+		}),
+
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",
 

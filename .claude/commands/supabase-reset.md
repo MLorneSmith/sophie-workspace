@@ -40,7 +40,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Database reset outcomes**:
 
 1. **Primary Objective**: Fresh local Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, migrations applied, 252 records seeded across 12 collections
+2. **Success Criteria**: Database reset, migrations applied, 257 records seeded across 12 collections
 3. **Safety Features**: Pre-flight validation, automatic cleanup, duplicate prevention
 
 </purpose>
@@ -403,7 +403,7 @@ fi
 - R2 storage configured with production credentials
 - Supabase running on localhost:54521-54523
 - Payload schema with 60 tables
-- 252 records seeded across 12 collections (if not --schema-only)
+- 257 records seeded across 12 collections (if not --schema-only)
 - Media files (24) and downloads (20) with R2 URLs
 - No duplicate records detected
 
@@ -416,7 +416,7 @@ fi
 ✅ Phase 1: Environment validated
 ✅ Phase 2: Supabase started and database reset
 ✅ Phase 3: Payload migrations applied (60 tables)
-✅ Phase 4: Seeding complete (252/252 records)
+✅ Phase 4: Seeding complete (257/257 records)
 ✅ Phase 5: Database verified
 
 **Connection Details:**
@@ -568,7 +568,7 @@ Reset local Supabase database and seed Payload CMS with fresh data.
 2. ✅ Resets Supabase database (drops and recreates public + payload schemas)
 3. ✅ Payload schema auto-created by migration (with DROP CASCADE for clean slate)
 4. ✅ Runs Payload CMS migrations (creates 60 tables)
-5. ✅ Seeds Payload CMS with 252 records (unless --schema-only)
+5. ✅ Seeds Payload CMS with 257 records (unless --schema-only)
 6. ✅ Verifies database state
 
 **Requirements:**

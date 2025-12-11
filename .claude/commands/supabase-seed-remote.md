@@ -54,7 +54,7 @@ You are a Database Operations Specialist with expertise in Supabase management, 
 **Remote database reset outcomes**:
 
 1. **Primary Objective**: Fresh remote Supabase database with seeded Payload CMS
-2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 255 records seeded across 12 collections
+2. **Success Criteria**: Database reset, Supabase migrations applied, Payload migrations run (60+ tables), 257 records seeded across 12 collections
 3. **Safety Features**: Pre-backup, progress tracking, comprehensive verification
 
 </purpose>
@@ -463,7 +463,7 @@ echo ""
 echo "Remote project: ldebzombxtszzcgnylgq (2025slideheroes)"
 echo "Payload tables: $TABLE_COUNT"
 if [ "$SCHEMA_ONLY" = false ]; then
-  echo "Seeding: Complete (255 records expected)"
+  echo "Seeding: Complete (257 records expected)"
 else
   echo "Seeding: Skipped (--schema-only)"
 fi
@@ -520,7 +520,7 @@ echo ""
 
 - Supabase migrations applied successfully
 - Payload schema exists with 60+ tables
-- 255 records seeded across 12 collections (if not --schema-only)
+- 257 records seeded across 12 collections (if not --schema-only)
 - No duplicate records detected
 - Verification queries succeed
 
@@ -535,7 +535,7 @@ Results:
 Phase 1: Environment validated, backup created
 Phase 2: Supabase reset complete
 Phase 3: Payload migrations applied (60+ tables)
-Phase 4: Seeding complete (255/255 records)
+Phase 4: Seeding complete (257/257 records)
 Phase 5: Database verified
 
 Remote project: ldebzombxtszzcgnylgq
@@ -560,7 +560,7 @@ Completely rebuilds the remote database:
 3. Drops all tables, functions, policies
 4. Re-applies all Supabase migrations from scratch
 5. **Runs Payload CMS migrations** (creates 60+ tables)
-6. **Seeds Payload CMS data** (255 records)
+6. **Seeds Payload CMS data** (257 records)
 7. Verifies final database state
 
 ### Push Only (--push-only)
@@ -652,7 +652,7 @@ psql "$DATABASE_URI" < backup-remote-YYYYMMDD-HHMMSS-data.sql
 1. Validates environment, cleans old backups, creates new backup
 2. Resets Supabase database (drops and recreates)
 3. Runs Payload CMS migrations (creates 60+ tables)
-4. Seeds Payload CMS with 255 records (unless --schema-only)
+4. Seeds Payload CMS with 257 records (unless --schema-only)
 5. Verifies database state
 
 **Requirements:**
