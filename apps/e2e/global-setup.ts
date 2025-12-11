@@ -451,7 +451,7 @@ async function globalSetup(config: FullConfig) {
   Email: ${credentials.email}
   Supabase URL: ${supabaseAuthUrl}
   Error: ${error?.message || "No error message"}
-  Error Code: ${(error as Record<string, unknown>)?.code || "unknown"}
+  Error Code: ${error?.code || "unknown"}
   Has Session: ${!!data?.session}
 
 🔧 Troubleshooting:
