@@ -735,12 +735,14 @@ async function globalSetup(config: FullConfig) {
 						),
 					};
 
-					// Only add domain if explicitly set (not for Vercel preview deployments)
-					// When domain is undefined, browser uses current host automatically
+					// For Vercel preview deployments, use url property instead of domain/path
+					// to satisfy Playwright's cookie API validation requirements
+					// Playwright requires: cookie must have url OR (domain AND path)
 					if (domain) {
 						return { ...cookieBase, domain };
 					}
-					return cookieBase;
+					// When domain is undefined (Vercel preview), use url property instead
+					return { ...cookieBase, url: baseURL };
 				});
 
 			// Log cookie details for debugging
