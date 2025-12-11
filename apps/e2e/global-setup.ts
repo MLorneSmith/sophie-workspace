@@ -735,14 +735,36 @@ async function globalSetup(config: FullConfig) {
 						),
 					};
 
-					// For Vercel preview deployments, use url property instead of domain/path
-					// to satisfy Playwright's cookie API validation requirements
-					// Playwright requires: cookie must have url OR (domain AND path)
+					// Cookie domain/url strategy based on environment:
+					// - Local/Docker: Use explicit domain (e.g., "localhost")
+					// - Vercel preview: Use url property (domain is undefined)
+					//
+					// Playwright's addCookies() API requires: url OR (domain AND path)
+					// See: Issue #1109 - E2E Local Test Regression After Vercel Preview Cookie Fixes
+					//
+					// IMPORTANT: We explicitly check isVercelPreview to ensure local tests
+					// NEVER accidentally get the url property, which can cause cookie
+					// transmission issues with Docker-based test infrastructure.
 					if (domain) {
+						// Local development, Docker tests, or production with explicit domain
 						return { ...cookieBase, domain };
 					}
-					// When domain is undefined (Vercel preview), use url property instead
-					return { ...cookieBase, url: baseURL };
+
+					// Only use url property for Vercel preview deployments
+					// This is required because Vercel preview URLs are dynamic and
+					// we cannot set an explicit domain
+					if (cookieConfig.isVercelPreview) {
+						return { ...cookieBase, url: baseURL };
+					}
+
+					// Fallback: If domain is undefined but NOT Vercel preview,
+					// default to localhost for safety (prevents test failures)
+					debugLog("cookie:fallback_domain", {
+						name: c.name,
+						reason: "domain undefined but not Vercel preview",
+						fallback: "localhost",
+					});
+					return { ...cookieBase, domain: "localhost" };
 				});
 
 			// Log cookie details for debugging
