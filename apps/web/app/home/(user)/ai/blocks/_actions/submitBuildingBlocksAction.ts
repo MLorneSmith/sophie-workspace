@@ -1,35 +1,25 @@
 "use server";
 
-import { createServiceLogger } from "@kit/shared/logger";
+import { enhanceAction } from "@kit/next/actions";
 import { getSupabaseServerClient } from "@kit/supabase/server-client";
-
 import type { Database } from "~/lib/database.types";
-
+import { SubmitBuildingBlocksSchema } from "../_lib/schemas/submit-building-blocks.schema";
 import { createTiptapFromText } from "./tiptap-format-utils";
 
-const { getLogger } = createServiceLogger("BUILDING-BLOCKS-SUBMIT");
+export const submitBuildingBlocksAction = enhanceAction(
+	async (data) => {
+		const client = getSupabaseServerClient<Database>();
 
-export type SubmitFormData = {
-	title: string;
-	audience: string;
-	presentation_type: string;
-	question_type: string;
-	situation: string;
-	complication: string;
-	answer: string;
-};
-
-export async function submitBuildingBlocksAction(data: SubmitFormData) {
-	const client = getSupabaseServerClient<Database>();
-	const logger = await getLogger();
-
-	try {
 		const {
 			data: { user },
 			error: userError,
 		} = await client.auth.getUser();
+
 		if (userError || !user) {
-			throw new Error("User not authenticated");
+			return {
+				success: false,
+				error: "User not authenticated",
+			};
 		}
 
 		// Check if a submission already exists with the same data
@@ -70,30 +60,16 @@ export async function submitBuildingBlocksAction(data: SubmitFormData) {
 			.single();
 
 		if (error) {
-			logger.error("Error submitting building blocks:", {
-				error,
-				userId: user.id,
-				operation: "insert_building_blocks",
-				data: {
-					title: data.title,
-					presentation_type: data.presentation_type,
-					question_type: data.question_type,
-				},
-			});
-			throw new Error("Failed to submit building blocks");
+			return {
+				success: false,
+				error: "Failed to submit building blocks",
+			};
 		}
 
 		return { success: true, submissionId: result.id };
-	} catch (error) {
-		logger.error("Error in submitBuildingBlocksAction:", {
-			error,
-			operation: "submit_building_blocks",
-			data: {
-				title: data.title,
-				presentation_type: data.presentation_type,
-				question_type: data.question_type,
-			},
-		});
-		throw new Error("Failed to submit building blocks");
-	}
-}
+	},
+	{
+		schema: SubmitBuildingBlocksSchema,
+		auth: true,
+	},
+);

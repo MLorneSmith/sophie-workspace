@@ -394,7 +394,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				complication,
 				answer,
 			} = formData;
-			await submitBuildingBlocksAction({
+			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
 				presentation_type: getPresentationTypeLabel(presentation_type),
@@ -403,12 +403,31 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				complication,
 				answer,
 			});
+
+			if (!response.success) {
+				logger.error("Form submission failed:", {
+					error: response.error,
+					formData: {
+						title,
+						presentation_type: getPresentationTypeLabel(presentation_type),
+						question_type: getQuestionTypeLabel(question_type),
+					},
+				});
+				setErrors({
+					answer: response.error || "Failed to submit form. Please try again.",
+				});
+				return;
+			}
+
 			// Navigate back to AI home page
 			router.push("/home/ai");
 		} catch (_error) {
 			logger.error("Form submission error:", {
 				formData,
 				error: _error,
+			});
+			setErrors({
+				answer: "An unexpected error occurred. Please try again.",
 			});
 		} finally {
 			setIsSubmitting(false);
