@@ -160,6 +160,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 
 		// Initialize Tiptap editor
 		const editor = useEditor({
+			immediatelyRender: false, // Prevents SSR hydration mismatch in Next.js
 			extensions: [
 				StarterKit,
 				Placeholder.configure({ placeholder: "Enter your content..." }),
