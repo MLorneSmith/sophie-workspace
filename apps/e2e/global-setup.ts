@@ -36,11 +36,19 @@ const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
  * Determine the appropriate cookie domain for a given base URL.
  * Handles Vercel preview deployments, localhost, and custom domains.
  *
+ * IMPORTANT: For Vercel preview deployments, we do NOT set an explicit domain.
+ * This allows the browser to use its default behavior (current host), which is
+ * compatible with how Vercel handles cookies. Setting an explicit domain can
+ * prevent cookies from being transmitted to the server-side middleware.
+ *
+ * See: Issue #1096 - Auth session lost in Vercel preview deployments
+ * Research: Vercel best practices recommend domain-less cookies for preview URLs
+ *
  * @param baseURL - The base URL of the application
- * @returns Object with domain and isVercelPreview flag
+ * @returns Object with optional domain and isVercelPreview flag
  */
 function getCookieDomainConfig(baseURL: string): {
-	domain: string;
+	domain: string | undefined;
 	isVercelPreview: boolean;
 	sameSite: "Lax" | "None";
 } {
@@ -49,22 +57,23 @@ function getCookieDomainConfig(baseURL: string): {
 		const hostname = url.hostname;
 
 		// Vercel preview deployments: *.vercel.app
-		// Use the full hostname as domain since Vercel preview URLs are unique
-		// SameSite=None required for cross-origin cookie handling in some Vercel scenarios
+		// Do NOT set an explicit domain - let browser use default (current host)
+		// This fixes cookies not being transmitted to server-side middleware
+		// See: Issue #1096 for diagnosis details
 		if (hostname.endsWith(".vercel.app")) {
 			debugLog("cookie:vercel_preview_detected", {
 				hostname,
 				baseURL,
-				domain: hostname,
+				domain: "(browser default - no explicit domain)",
 			});
 			return {
-				domain: hostname,
+				domain: undefined, // Browser uses current host automatically
 				isVercelPreview: true,
 				sameSite: "Lax", // Vercel protection bypass handles cross-origin
 			};
 		}
 
-		// Localhost: Use default browser behavior
+		// Localhost: Use explicit hostname for consistency
 		if (hostname === "localhost" || hostname === "127.0.0.1") {
 			return {
 				domain: hostname,
@@ -560,18 +569,35 @@ async function globalSetup(config: FullConfig) {
 			// Explicitly set Vercel bypass cookie if secret is available
 			// This ensures the bypass persists in the saved storage state
 			if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
-				const domain = new URL(baseURL).hostname;
-				await context.addCookies([
-					{
-						name: "_vercel_jwt",
-						value: process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-						domain,
-						path: "/",
-						httpOnly: true,
-						secure: true,
-						sameSite: "Lax",
-					},
-				]);
+				const hostname = new URL(baseURL).hostname;
+				const isVercelPreview = hostname.endsWith(".vercel.app");
+
+				// For Vercel preview deployments, don't set explicit domain
+				// to match auth cookie behavior and ensure proper transmission
+				// See: Issue #1096 - consistent domain handling for all cookies
+				const vercelCookie: {
+					name: string;
+					value: string;
+					path: string;
+					httpOnly: boolean;
+					secure: boolean;
+					sameSite: "Lax" | "Strict" | "None";
+					domain?: string;
+				} = {
+					name: "_vercel_jwt",
+					value: process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+					path: "/",
+					httpOnly: true,
+					secure: true,
+					sameSite: "Lax",
+				};
+
+				// Only set domain for non-Vercel preview deployments
+				if (!isVercelPreview) {
+					vercelCookie.domain = hostname;
+				}
+
+				await context.addCookies([vercelCookie]);
 
 				// Reload page to ensure bypass cookie is active
 				await page.reload({ waitUntil: "domcontentloaded" });
@@ -591,7 +617,7 @@ async function globalSetup(config: FullConfig) {
 			// Log cookie domain configuration for visibility
 			// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
 			console.log(
-				`🍪 Cookie domain config: ${domain} (isVercelPreview: ${cookieConfig.isVercelPreview})`,
+				`🍪 Cookie domain config: ${domain || "(browser default)"} (isVercelPreview: ${cookieConfig.isVercelPreview})`,
 			);
 
 			// Cookie store that captures what @supabase/ssr wants to set
@@ -684,10 +710,12 @@ async function globalSetup(config: FullConfig) {
 					const isAuthCookie = c.name.includes("auth");
 					const isVercelCookie = c.name === "_vercel_jwt";
 
-					return {
+					// Build cookie object, conditionally including domain
+					// For Vercel preview deployments, domain is undefined to let browser use defaults
+					// See: Issue #1096 - domain-less cookies fix server-side middleware cookie reception
+					const cookieBase = {
 						name: c.name,
 						value: c.value,
-						domain,
 						path: c.options.path || "/",
 						expires: cookieExpires, // Unix timestamp in seconds
 						// Force httpOnly=true for auth tokens (improves security)
@@ -706,19 +734,30 @@ async function globalSetup(config: FullConfig) {
 							cookieConfig.sameSite,
 						),
 					};
+
+					// Only add domain if explicitly set (not for Vercel preview deployments)
+					// When domain is undefined, browser uses current host automatically
+					if (domain) {
+						return { ...cookieBase, domain };
+					}
+					return cookieBase;
 				});
 
 			// Log cookie details for debugging
+			// Note: domain may be undefined for Vercel preview deployments (browser uses default)
 			debugLog("cookies:setting", {
 				user: authState.name,
 				totalCookies: cookiesToSet.length,
 				cookieExpires,
 				expiresDate: new Date(cookieExpires * 1000).toISOString(),
+				domainStrategy: domain
+					? `explicit: ${domain}`
+					: "browser default (Vercel preview)",
 				cookies: cookiesToSet.map((c) => ({
 					name: c.name,
 					valueLength: c.value.length,
 					valuePreview: `${c.value.substring(0, 30)}...`,
-					domain: c.domain,
+					domain: "domain" in c ? c.domain : "(browser default)",
 					path: c.path,
 					expires: c.expires,
 					secure: c.secure,
@@ -726,6 +765,23 @@ async function globalSetup(config: FullConfig) {
 			});
 
 			await context.addCookies(cookiesToSet);
+
+			// Log cookie summary for visibility (especially useful for Vercel preview debugging)
+			// This helps diagnose Issue #1096 - Auth session lost in Vercel preview deployments
+			for (const cookie of cookiesToSet) {
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`   🍪 ${cookie.name}:`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(
+					`      Domain: ${"domain" in cookie ? cookie.domain : "(browser default)"}`,
+				);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      SameSite: ${cookie.sameSite}`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      Secure: ${cookie.secure}`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      HttpOnly: ${cookie.httpOnly}`);
+			}
 
 			// Also set in localStorage for any client-side code that might read from there
 			await page.evaluate(

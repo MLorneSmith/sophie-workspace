@@ -515,12 +515,17 @@ jobs:
           DEBUG_E2E_AUTH: true
           # Add debug logging for Playwright
           DEBUG: pw:api
+          # Enable HAR recording for debugging cookie transmission issues
+          # HAR files capture HTTP headers including cookies sent to server
+          # See: Issue #1096 - Auth session lost in Vercel preview deployments
+          RECORD_HAR_LOGS: true
         run: |
           echo "🧪 Running integration tests..."
           echo "⚠️ Email verification will be SKIPPED (testing against deployed environment)"
           echo "ℹ️ Note: Tests may fail if Vercel protection bypass is not properly configured"
           echo "ℹ️ Ensure VERCEL_AUTOMATION_BYPASS_SECRET is set in GitHub Secrets"
-          
+          echo "ℹ️ HAR recording enabled for debugging (RECORD_HAR_LOGS=true)"
+
           # Run integration tests (not just smoke tests)
           pnpm --filter web-e2e test:integration || {
             EXIT_CODE=$?
@@ -529,9 +534,18 @@ jobs:
             echo "  - Vercel protection blocking test automation"
             echo "  - Missing or incorrect VERCEL_AUTOMATION_BYPASS_SECRET"
             echo "  - Dev deployment not fully ready"
-            echo "📝 Check test artifacts for screenshots and traces"
+            echo "📝 Check test artifacts for screenshots, traces, and HAR files"
             exit $EXIT_CODE
           }
+
+      - name: Upload HAR files on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: har-logs-${{ github.run_id }}
+          path: apps/e2e/test-results/*.har
+          retention-days: 7
+          if-no-files-found: ignore
 
   # Security Quick Scan
   security-scan:

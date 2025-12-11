@@ -105,10 +105,15 @@ export default defineConfig({
 
 		// Enable request/response interception for debugging cookie transmission
 		// This helps diagnose if cookies created in global setup are being sent to the server
-		// See Issue #1083 for cookie verification patterns
-		...(process.env.RECORD_HAR_LOGS && {
+		// HAR files include HTTP headers, showing if cookies are being transmitted to server
+		// See Issue #1083, #1096 for cookie verification patterns
+		...(process.env.RECORD_HAR_LOGS === "true" && {
 			recordHar: {
 				path: "./test-results/requests.har",
+				// Include all content for comprehensive debugging
+				omitContent: false,
+				// 'minimal' mode excludes bodies to reduce file size
+				mode: "minimal" as const,
 			},
 		}),
 
