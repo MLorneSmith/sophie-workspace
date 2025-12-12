@@ -44,26 +44,23 @@ export function useAuthChangeListener({
 				onEvent(event, user);
 			}
 
-			// log user out if user is falsy
-			// and if the current path is a private route
-			const shouldRedirectUser =
-				!user && isPrivateRoute(pathName, privatePathPrefixes);
-
-			if (shouldRedirectUser) {
-				// send user away when signed out
-				window.location.assign("/");
-
-				return;
-			}
-
-			// revalidate user session when user signs in or out
+			// Only redirect on explicit SIGNED_OUT event, not for initial null user states.
+			// During INITIAL_SESSION event, user can be null momentarily before the session
+			// loads from localStorage/cookies. We must not redirect during this brief window.
+			// See GitHub issue #1109 for root cause analysis.
 			if (event === "SIGNED_OUT") {
-				// sometimes Supabase sends SIGNED_OUT event
-				// but in the auth path, so we ignore it
+				// Sometimes Supabase sends SIGNED_OUT event on auth paths, so ignore it there
 				if (AUTH_PATHS.some((path) => pathName.startsWith(path))) {
 					return;
 				}
 
+				// Only redirect if on a private route
+				if (isPrivateRoute(pathName, privatePathPrefixes)) {
+					window.location.assign("/");
+					return;
+				}
+
+				// Reload for other routes to clear any stale auth state
 				window.location.reload();
 			}
 		});
