@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Team Accounts",
+		"files": [
+			"tests/team-accounts/team-accounts.spec.ts",
+			"tests/team-accounts/team-invitation-mfa.spec.ts"
+		],
+		"expectedTests": 8,
+		"shardCommand": "test:shard12"
+	},
+	"execution": {
+		"startTime": "2025-12-11T16:33:47.859Z",
+		"endTime": "2025-12-11T16:36:28.859Z",
+		"duration": "161s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 7,
+		"passed": 0,
+		"failed": 2,
+		"skipped": 5,
+		"intentionalFailures": 0,
+		"integrationTests": 4,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 6765 bytes)...\n-name-and-slug--chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2) [chromium] › tests/team-accounts/team-accounts.spec.ts:120:6 › Team Accounts @team @integration › cannot create a Team account using reserved names \n\n    Error: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"team-selector\"]') to be visible\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.spec.ts:97:22\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"team-selector\"]') to be visible\u001b[22m\n    \u001b[2m    - locator resolved to visible <button type=\"button\" data-state=\"closed\" aria-expanded=\"false\" aria-haspopup=\"listbox\" data-testid=\"team-selector\" aria-controls=\"radix-_R_apknebn5lb_\" class=\"focus-visible:ring-ring inline-flex items-center rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 dark:shadow-primary/10 group w-full min-w-0 lg:max-w-fit m-auto justify-center px-…>…</button>\u001b[22m\n    \u001b[2m    - waiting for\" http://localhost:3001/\" navigation to finish...\u001b[22m\n    \u001b[2m    - navigated to \"http://localhost:3001/\"\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.spec.ts:97:22\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/team-accounts-team-account-43161-ccount-using-reserved-names-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2 failed\n    [chromium] › tests/team-accounts/team-accounts.spec.ts:103:6 › Team Accounts @team @integration › user can update their team name (and slug) \n    [chromium] › tests/team-accounts/team-accounts.spec.ts:120:6 › Team Accounts @team @integration › cannot create a Team account using reserved names \n  5 skipped\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard12: `playwright test tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0`\nExit status 1\n"
+}
