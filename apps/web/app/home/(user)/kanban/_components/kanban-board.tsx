@@ -1,13 +1,15 @@
 "use client";
 
 import {
-	closestCorners,
+	type CollisionDetection,
 	DndContext,
 	type DragEndEvent,
 	DragOverlay,
 	type DragStartEvent,
 	KeyboardSensor,
 	PointerSensor,
+	pointerWithin,
+	rectIntersection,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -57,6 +59,39 @@ const COLUMNS = [
 ] as const;
 
 const COLUMN_IDS = COLUMNS.map((col) => col.id) as readonly TaskStatus[];
+
+// Custom collision detection that prioritizes columns over cards
+// This ensures drops register on the target column, not cards from the source column
+const columnPriorityCollision: CollisionDetection = (args) => {
+	// First, get all collisions using pointerWithin (most accurate for determining "where am I dropping")
+	const pointerCollisions = pointerWithin(args);
+
+	// Check if any collision is a column - if so, prioritize it
+	const columnCollision = pointerCollisions.find((collision) => {
+		const data = collision.data?.droppableContainer?.data?.current;
+		return data?.type === "column";
+	});
+
+	if (columnCollision) {
+		return [columnCollision];
+	}
+
+	// Fall back to rectIntersection for card-to-card interactions
+	const rectCollisions = rectIntersection(args);
+
+	// Again prioritize columns if found
+	const rectColumnCollision = rectCollisions.find((collision) => {
+		const data = collision.data?.droppableContainer?.data?.current;
+		return data?.type === "column";
+	});
+
+	if (rectColumnCollision) {
+		return [rectColumnCollision];
+	}
+
+	// Return whatever we found (cards for reordering within column)
+	return pointerCollisions.length > 0 ? pointerCollisions : rectCollisions;
+};
 
 export function KanbanBoard() {
 	const { data: tasks, isLoading, isError, refetch } = useTasks();
@@ -211,7 +246,7 @@ export function KanbanBoard() {
 
 			<DndContext
 				sensors={sensors}
-				collisionDetection={closestCorners}
+				collisionDetection={columnPriorityCollision}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
 			>
