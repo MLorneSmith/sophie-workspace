@@ -11,30 +11,38 @@ export function useUpdateAccountData(accountId: string) {
 	const mutationKey = ["account:data", accountId];
 
 	const mutationFn = async (data: UpdateData) => {
-		const response = await client
-			.from("accounts")
-			.update(data)
-			.match({
-				id: accountId,
-			})
-			.select("id, name, picture_url, public_data")
-			.single();
+		const response = await client.from("accounts").update(data).match({
+			id: accountId,
+		});
 
 		if (response.error) {
 			throw response.error;
 		}
 
-		return response.data;
+		return data;
 	};
 
 	return useMutation({
 		mutationKey,
 		mutationFn,
-		onSuccess: (data) => {
-			if (data) {
-				// Directly update the cache with the new data
-				queryClient.setQueryData(["account:data", accountId], data);
-			}
+		onSuccess: async (data) => {
+			// Optimistically update the cache with the new data
+			// This ensures UI updates immediately without waiting for a refetch
+			queryClient.setQueryData(
+				["account:data", accountId],
+				(oldData: unknown) => {
+					if (!oldData || typeof oldData !== "object") {
+						return data;
+					}
+					return { ...oldData, ...data };
+				},
+			);
+
+			// Also invalidate to ensure consistency with server state
+			await queryClient.invalidateQueries({
+				queryKey: ["account:data", accountId],
+				refetchType: "all",
+			});
 		},
 	});
 }

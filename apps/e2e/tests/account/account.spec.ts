@@ -55,7 +55,8 @@ test.describe("Account Settings", () => {
 
 		// Wait for the API response
 		const response = await responsePromise;
-		expect(response.status()).toBe(200);
+		// Supabase returns 200 with data or 204 (No Content) for successful updates
+		expect([200, 204]).toContain(response.status());
 
 		// Wait for the dropdown to update with the new name
 		await expect(account.getProfileName()).toHaveText(name, { timeout: 10000 });
