@@ -159,7 +159,7 @@ export const UpdatePasswordForm = ({
 					/>
 
 					<div>
-						<Button disabled={updateUserMutation.isPending}>
+						<Button type="submit" disabled={updateUserMutation.isPending}>
 							<Trans i18nKey={"account:updatePasswordSubmitLabel"} />
 						</Button>
 					</div>
