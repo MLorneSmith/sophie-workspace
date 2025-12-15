@@ -51,6 +51,12 @@ export class AccountPageObject {
 	}
 
 	async updatePassword(password: string) {
+		// Wait for form to be visible and interactive
+		await this.page.waitForSelector(
+			'[data-testid="account-password-form-password-input"]',
+			{ state: "visible" },
+		);
+
 		await this.page.fill(
 			'[data-testid="account-password-form-password-input"]',
 			password,
@@ -61,7 +67,12 @@ export class AccountPageObject {
 			password,
 		);
 
-		await this.page.click('[data-testid="account-password-form"] button');
+		// Wait for button to be enabled before clicking
+		const submitButton = this.page.locator(
+			'[data-testid="account-password-form"] button[type="submit"]',
+		);
+		await submitButton.waitFor({ state: "visible" });
+		await submitButton.click();
 	}
 
 	async deleteAccount(email: string) {

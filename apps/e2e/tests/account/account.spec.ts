@@ -43,15 +43,20 @@ test.describe("Account Settings", () => {
 	test("user can update their profile name", async ({ page }) => {
 		const name = "John Doe";
 
-		const request = account.updateName(name);
-
-		const response = page.waitForResponse((resp) => {
-			return resp.url().includes("accounts");
+		// Set up response listener BEFORE triggering the action
+		const responsePromise = page.waitForResponse((resp) => {
+			return resp.url().includes("accounts") && resp.request().method() === "PATCH";
 		});
 
-		await Promise.all([request, response]);
+		// Trigger the update
+		await account.updateName(name);
 
-		await expect(account.getProfileName()).toHaveText(name);
+		// Wait for the API response
+		const response = await responsePromise;
+		expect(response.status()).toBe(200);
+
+		// Wait for the dropdown to update with the new name
+		await expect(account.getProfileName()).toHaveText(name, { timeout: 10000 });
 	});
 
 	test.skip("user can update their email", async ({ page: _page }) => {
@@ -62,15 +67,20 @@ test.describe("Account Settings", () => {
 	});
 
 	test("user can update their password", async ({ page }) => {
-		const password = (Math.random() * 100000).toString();
+		// Generate a valid password (at least 8 characters)
+		const password = `Test${Math.random().toString(36).substring(2, 10)}!`;
 
-		const request = account.updatePassword(password);
-
-		const response = page.waitForResponse((resp) => {
-			return resp.url().includes("auth/v1/user");
+		// Set up response listener BEFORE triggering the action
+		const responsePromise = page.waitForResponse((resp) => {
+			return resp.url().includes("auth/v1/user") && resp.request().method() === "PUT";
 		});
 
-		await Promise.all([request, response]);
+		// Trigger the update
+		await account.updatePassword(password);
+
+		// Wait for the API response
+		const response = await responsePromise;
+		expect(response.status()).toBe(200);
 
 		await page.context().clearCookies();
 

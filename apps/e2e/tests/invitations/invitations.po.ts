@@ -89,9 +89,20 @@ export class InvitationsPageObject {
 			.locator('[data-testid="remove-invitation-trigger"]')
 			.click();
 
+		// Wait for dialog to be visible
+		await this.page.waitForSelector('[data-testid="delete-invitation-form"]', {
+			state: "visible",
+		});
+
 		await this.page.click(
 			'[data-testid="delete-invitation-form"] button[type="submit"]',
 		);
+
+		// Wait for dialog to close (indicates action completed)
+		await this.page.waitForSelector('[data-testid="delete-invitation-form"]', {
+			state: "hidden",
+			timeout: 30000,
+		});
 	}
 
 	getInvitationRow(email: string) {
@@ -108,12 +119,23 @@ export class InvitationsPageObject {
 			.locator('[data-testid="update-invitation-trigger"]')
 			.click();
 
+		// Wait for dialog to be visible
+		await this.page.waitForSelector('[data-testid="update-invitation-form"]', {
+			state: "visible",
+		});
+
 		await this.page.click(`[data-testid="role-selector-trigger"]`);
 		await this.page.click(`[data-testid="role-option-${role}"]`);
 
 		await this.page.click(
 			'[data-testid="update-invitation-form"] button[type="submit"]',
 		);
+
+		// Wait for dialog to close (indicates action completed)
+		await this.page.waitForSelector('[data-testid="update-invitation-form"]', {
+			state: "hidden",
+			timeout: 30000,
+		});
 	}
 
 	async acceptInvitation() {

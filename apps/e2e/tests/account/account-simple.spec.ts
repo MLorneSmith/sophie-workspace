@@ -3,8 +3,8 @@ import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
 import {
 	CI_TIMEOUTS,
-	RETRY_INTERVALS,
 	navigateAndWaitForHydration,
+	RETRY_INTERVALS,
 	waitForContentReady,
 } from "../utils/wait-for-hydration";
 
@@ -135,6 +135,14 @@ test.describe("Account Settings - Simple @account @integration", () => {
 				await expect(displayNameInput).toHaveValue(newName);
 			}
 		}
+
+		// Verify the account dropdown now shows the updated name
+		const accountDropdownName = page.locator(
+			'[data-testid="account-dropdown-display-name"]',
+		);
+		await expect(accountDropdownName).toHaveText(newName, {
+			timeout: CI_TIMEOUTS.element,
+		});
 	});
 
 	test("team settings link is accessible", async ({ page }) => {
