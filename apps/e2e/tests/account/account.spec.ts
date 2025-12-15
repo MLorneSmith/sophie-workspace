@@ -45,7 +45,9 @@ test.describe("Account Settings", () => {
 
 		// Set up response listener BEFORE triggering the action
 		const responsePromise = page.waitForResponse((resp) => {
-			return resp.url().includes("accounts") && resp.request().method() === "PATCH";
+			return (
+				resp.url().includes("accounts") && resp.request().method() === "PATCH"
+			);
 		});
 
 		// Trigger the update
@@ -72,7 +74,9 @@ test.describe("Account Settings", () => {
 
 		// Set up response listener BEFORE triggering the action
 		const responsePromise = page.waitForResponse((resp) => {
-			return resp.url().includes("auth/v1/user") && resp.request().method() === "PUT";
+			return (
+				resp.url().includes("auth/v1/user") && resp.request().method() === "PUT"
+			);
 		});
 
 		// Trigger the update

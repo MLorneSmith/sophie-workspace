@@ -1,9 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { AUTH_STATES } from "../utils/auth-state";
-import {
-	navigateAndWaitForHydration,
-	CI_TIMEOUTS,
-} from "../utils/wait-for-hydration";
+import { CI_TIMEOUTS } from "../utils/wait-for-hydration";
 
 // Use pre-authenticated storage state
 test.use({ storageState: AUTH_STATES.TEST_USER });
@@ -37,7 +34,7 @@ test("debug storage state auth - simulating team-accounts flow", async ({
 		const status = response.status();
 		if (status >= 300 && status < 400) {
 			redirects.push(
-				`${response.url()} -> ${response.headers()["location"] || "no location"} (${status})`,
+				`${response.url()} -> ${response.headers().location || "no location"} (${status})`,
 			);
 		}
 	});
