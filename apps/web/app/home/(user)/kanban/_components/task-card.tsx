@@ -2,18 +2,12 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@kit/ui/card";
+import { Badge } from "@kit/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@kit/ui/card";
 import { Checkbox } from "@kit/ui/checkbox";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
 import { CheckCircle2Icon } from "lucide-react";
-import Image from "next/image";
 import { forwardRef, useState } from "react";
 
 import { _useUpdateSubtask } from "../_lib/hooks/use-tasks";
@@ -82,24 +76,16 @@ export const TaskCard = forwardRef<HTMLDivElement, TaskCardProps>(
 						// Override any duplicate props from attributes/listeners
 						tabIndex={0}
 					>
-						<CardHeader className="space-y-3 p-4 pb-2">
-							<CardTitle className="text-base">{task.title}</CardTitle>
-							{task.image_url && (
-								<div className="relative h-32 w-full overflow-hidden rounded-lg">
-									<Image
-										src={task.image_url}
-										alt={task.title}
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 33vw"
-									/>
-								</div>
+						<CardHeader className="relative space-y-3 p-4 pb-2">
+							{task.phase && (
+								<Badge
+									variant="secondary"
+									className="absolute top-2 right-2 text-xs"
+								>
+									{task.phase}
+								</Badge>
 							)}
-							{task.description && (
-								<CardDescription className="line-clamp-2">
-									{task.description}
-								</CardDescription>
-							)}
+							<CardTitle className="text-base pr-20">{task.title}</CardTitle>
 						</CardHeader>
 
 						<CardContent className="space-y-4 p-4 pt-0">

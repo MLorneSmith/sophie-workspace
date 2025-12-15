@@ -78,15 +78,6 @@ vi.mock("@kit/supabase/server-client", () => ({
 	getSupabaseServerClient: vi.fn(() => mockSupabaseClient),
 }));
 
-// Mock image actions
-vi.mock("./image-actions", () => ({
-	uploadTaskImageAction: vi.fn().mockResolvedValue({
-		success: true,
-		data: { url: "https://example.com/uploaded-image.jpg" },
-	}),
-	deleteTaskImageAction: vi.fn().mockResolvedValue({ success: true }),
-}));
-
 // Mock default tasks
 vi.mock("../config/default-tasks", () => ({
 	DEFAULT_TASKS: [
@@ -246,30 +237,6 @@ describe("Kanban Server Actions", () => {
 
 				// Verify subtasks table was called
 				expect(mockSupabaseClient.from).toHaveBeenCalledWith("subtasks");
-			});
-
-			it("should handle image upload when image provided", async () => {
-				const { uploadTaskImageAction } = await import("./image-actions");
-				const chain = createMockSupabaseChain();
-				chain.single.mockResolvedValue({
-					data: { id: "task-123" },
-					error: null,
-				});
-				mockSupabaseClient.from.mockReturnValue(chain);
-
-				const mockImage = new File(["test"], "test.jpg", {
-					type: "image/jpeg",
-				});
-				const input = {
-					title: "Task with Image",
-					status: "do" as const,
-					priority: "medium" as const,
-					image: mockImage,
-				};
-
-				await createTaskAction(input);
-
-				expect(uploadTaskImageAction).toHaveBeenCalledWith({ file: mockImage });
 			});
 
 			it("should return success with task data on successful creation", async () => {
@@ -440,52 +407,6 @@ describe("Kanban Server Actions", () => {
 
 				// Should call delete on subtasks table
 				expect(mockSupabaseClient.from).toHaveBeenCalledWith("subtasks");
-			});
-
-			it("should handle image removal", async () => {
-				const { deleteTaskImageAction } = await import("./image-actions");
-
-				const chain = createMockSupabaseChain();
-				chain.single.mockResolvedValue({
-					data: { image_url: "https://example.com/old-image.jpg" },
-					error: null,
-				});
-				mockSupabaseClient.from.mockReturnValue(chain);
-
-				const input = {
-					id: validUuid,
-					title: "Task",
-					status: "do" as const,
-					priority: "medium" as const,
-					image_url: null,
-				};
-
-				await updateTaskAction(input);
-
-				expect(deleteTaskImageAction).toHaveBeenCalledWith({
-					url: "https://example.com/old-image.jpg",
-				});
-			});
-
-			it("should handle new image upload during update", async () => {
-				const { uploadTaskImageAction } = await import("./image-actions");
-				const chain = createMockSupabaseChain();
-				mockSupabaseClient.from.mockReturnValue(chain);
-
-				const mockImage = new File(["test"], "new-image.jpg", {
-					type: "image/jpeg",
-				});
-				const input = {
-					id: validUuid,
-					title: "Task",
-					status: "do" as const,
-					priority: "medium" as const,
-					image: mockImage,
-				};
-
-				await updateTaskAction(input);
-
-				expect(uploadTaskImageAction).toHaveBeenCalledWith({ file: mockImage });
 			});
 		});
 
@@ -663,77 +584,20 @@ describe("Kanban Server Actions", () => {
 				expect(chain.eq).toHaveBeenCalledWith("id", validUuid);
 				expect(chain.eq).toHaveBeenCalledWith("account_id", "user-123");
 			});
-
-			it("should delete associated image if exists", async () => {
-				const { deleteTaskImageAction } = await import("./image-actions");
-
-				let callCount = 0;
-				(
-					mockSupabaseClient.from as ReturnType<typeof vi.fn>
-				).mockImplementation((table: string) => {
-					const chain = createMockSupabaseChain();
-					if (table === "tasks" && callCount === 0) {
-						// First call for select to get image_url
-						chain.single.mockResolvedValue({
-							data: { image_url: "https://example.com/image.jpg" },
-							error: null,
-						});
-					}
-					callCount++;
-					return chain;
-				});
-
-				await deleteTaskAction({ id: validUuid });
-
-				expect(deleteTaskImageAction).toHaveBeenCalledWith({
-					url: "https://example.com/image.jpg",
-				});
-			});
-
-			it("should not call delete image if no image exists", async () => {
-				const { deleteTaskImageAction } = await import("./image-actions");
-				vi.mocked(deleteTaskImageAction).mockClear();
-
-				let callCount = 0;
-				mockSupabaseClient.from.mockImplementation(() => {
-					const chain = createMockSupabaseChain();
-					if (callCount === 0) {
-						chain.single.mockResolvedValue({
-							data: { image_url: null },
-							error: null,
-						});
-					}
-					callCount++;
-					return chain;
-				});
-
-				await deleteTaskAction({ id: validUuid });
-
-				expect(deleteTaskImageAction).not.toHaveBeenCalled();
-			});
 		});
 
 		describe("Error Handling", () => {
 			it("should handle database delete error gracefully", async () => {
-				let callCount = 0;
-				mockSupabaseClient.from.mockImplementation(() => {
-					const chain = createMockSupabaseChain();
-					if (callCount === 0) {
-						// First call for select
-						chain.single.mockResolvedValue({ data: null, error: null });
-					} else {
-						// Second call for delete
-						chain.eq.mockReturnValue({
-							...chain,
-							eq: vi.fn().mockResolvedValue({
-								data: null,
-								error: { message: "Delete failed" },
-							}),
-						});
-					}
-					callCount++;
-					return chain;
+				const chain = createMockSupabaseChain();
+				// Make the second eq() call return a promise that resolves with an error
+				chain.eq.mockReturnValueOnce({
+					...chain,
+					eq: vi.fn().mockResolvedValue({
+						data: null,
+						error: { message: "Delete failed" },
+					}),
 				});
+				mockSupabaseClient.from.mockReturnValue(chain);
 
 				const result = await deleteTaskAction({ id: validUuid });
 				expect(result.success).toBe(false);
@@ -1004,24 +868,6 @@ describe("Kanban Server Actions", () => {
 				await resetTasksAction({});
 
 				expect(chain.insert).toHaveBeenCalled();
-			});
-
-			it("should delete images from tasks with images", async () => {
-				const { deleteTaskImageAction } = await import("./image-actions");
-				vi.mocked(deleteTaskImageAction).mockClear();
-
-				const chain = createResetMockChain();
-				// Mock the select for getting tasks with images
-				chain.not.mockResolvedValue({
-					data: [{ image_url: "https://example.com/image.jpg" }],
-					error: null,
-				});
-				mockSupabaseClient.from.mockReturnValue(chain);
-
-				await resetTasksAction({});
-
-				// Image deletion should be attempted
-				expect(deleteTaskImageAction).toHaveBeenCalled();
 			});
 
 			it("should insert subtasks for default tasks", async () => {

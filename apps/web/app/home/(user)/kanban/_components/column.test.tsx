@@ -48,17 +48,18 @@ vi.mock("@kit/ui/trans", () => ({
 }));
 
 // Helper to create mock tasks with proper typing
-const createMockTask = (overrides: Partial<Task> & { id: string }): Task => ({
-	title: "Default Task",
-	status: "do",
-	priority: "medium",
-	image_url: null,
-	created_at: "2024-01-01T00:00:00Z",
-	updated_at: "2024-01-01T00:00:00Z",
-	account_id: "user-123",
-	subtasks: [],
-	...overrides,
-});
+const createMockTask = (overrides: Partial<Task> & { id: string }): Task =>
+	({
+		title: "Default Task",
+		status: "do",
+		priority: "medium",
+		phase: null,
+		created_at: "2024-01-01T00:00:00Z",
+		updated_at: "2024-01-01T00:00:00Z",
+		account_id: "user-123",
+		subtasks: [],
+		...overrides,
+	}) as Task;
 
 const mockTasks: Task[] = [
 	createMockTask({

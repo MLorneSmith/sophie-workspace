@@ -1,11 +1,11 @@
 /**
  * Presentation Development Workflow Tasks
  *
- * A comprehensive workflow organized into 9 phase tasks, each containing
- * subtasks for individual steps. This hierarchical structure provides
- * better organization and progress tracking per phase.
+ * A comprehensive workflow organized into 5 phases, each containing
+ * tasks with subtasks for individual steps. This hierarchical structure
+ * provides better organization and progress tracking per phase.
  *
- * Source: .ai/specs/presentation-development-steps-enhanced.json
+ * Source: apps/web/app/home/(user)/kanban/_lib/config/kanban-tasks.md
  */
 
 import type { CreateTaskInput } from "../schema/task.schema";
@@ -24,154 +24,102 @@ export interface PresentationPhase {
 
 export const PRESENTATION_PHASES: PresentationPhase[] = [
 	{
-		id: "phase-1-discovery",
-		name: "Discovery & Research",
-		description: "Understand your topic, audience, and context before planning",
+		id: "phase-1-the-start",
+		name: "The Start",
+		description:
+			"Identify your audience, purpose, answer, and build your argument",
 		order: 1,
 		taskCount: 4,
 	},
 	{
-		id: "phase-2-the-start",
-		name: "The Start",
-		description: "Define your audience and presentation goals",
+		id: "phase-2-storytelling",
+		name: "The Art of Storytelling",
+		description: "Develop your outline, inject stories, and storyboard",
 		order: 2,
-		taskCount: 10,
+		taskCount: 3,
 	},
 	{
-		id: "phase-3-structure",
-		name: "Structure",
-		description: "Generate and organize your ideas into a logical flow",
+		id: "phase-3-design",
+		name: "The Harmony of Design",
+		description: "Create templates and design each slide",
 		order: 3,
-		taskCount: 10,
+		taskCount: 2,
 	},
 	{
-		id: "phase-4-storytelling",
-		name: "Storytelling",
-		description: "Craft your narrative arc and create the storyboard",
+		id: "phase-4-persuasion",
+		name: "The Science of Fact-based Persuasion",
+		description: "Develop compelling data visualizations",
 		order: 4,
-		taskCount: 8,
+		taskCount: 1,
 	},
 	{
-		id: "phase-5-design",
-		name: "Design",
-		description: "Apply visual design principles and create slides",
+		id: "phase-5-the-how",
+		name: "The How",
+		description: "Review, practice, perform, and follow-up",
 		order: 5,
-		taskCount: 9,
-	},
-	{
-		id: "phase-6-data-visualization",
-		name: "Data Visualization",
-		description: "Create effective charts, graphs, and data displays",
-		order: 6,
-		taskCount: 6,
-	},
-	{
-		id: "phase-7-review",
-		name: "Review & Refinement",
-		description: "Quality assurance and feedback incorporation",
-		order: 7,
-		taskCount: 6,
-	},
-	{
-		id: "phase-8-performance",
-		name: "Performance",
-		description: "Prepare, practice, and deliver your presentation",
-		order: 8,
-		taskCount: 11,
-	},
-	{
-		id: "phase-9-follow-up",
-		name: "Follow-Up",
-		description: "Post-presentation activities and continuous improvement",
-		order: 9,
-		taskCount: 5,
+		taskCount: 4,
 	},
 ];
 
 /**
  * Presentation development tasks organized hierarchically by phase.
  *
- * Each phase is a parent task containing subtasks for individual steps.
+ * Each task is a parent containing subtasks for individual steps.
  * This structure provides:
- * - Clear phase-level progress tracking
- * - Less cluttered kanban board (9 cards vs 69)
+ * - Clear task-level progress tracking
+ * - Organized kanban board (14 cards across 5 phases)
  * - Better organization with expandable subtask details
  *
- * All 9 phases contain a total of 69 subtasks derived from the
- * enhanced presentation development workflow.
+ * All 5 phases contain 14 tasks with a total of 59 subtasks.
  */
 export const PRESENTATION_TASKS: CreateTaskInput[] = [
 	// ============================================================
-	// Phase 1: Discovery & Research (4 subtasks)
+	// Phase 1: The Start (4 tasks, 16 subtasks)
 	// ============================================================
 	{
-		title: "Phase 1: Discovery & Research",
-		description: "Understand your topic, audience, and context before planning",
+		title: "A. Identify WHO your audience is",
+		description:
+			"Determine who the hero of your presentation is - your audience",
 		status: "do",
 		priority: "high",
+		phase: "The Start",
 		subtasks: [
 			{
-				title: "Research your topic deeply",
+				title:
+					"Determine who the hero of your presentation is (hint: it is not you - it is your audience)",
 				is_completed: false,
 			},
 			{
-				title: "Analyze competing or similar presentations",
+				title: "Profile your Audience using an Audience Map",
 				is_completed: false,
 			},
 			{
-				title: "Identify constraints and logistics",
-				is_completed: false,
-			},
-			{
-				title: "Define success metrics",
+				title: "Identify your audience's pain points and motivations",
 				is_completed: false,
 			},
 		],
 	},
-
-	// ============================================================
-	// Phase 2: The Start (10 subtasks)
-	// ============================================================
 	{
-		title: "Phase 2: The Start",
-		description: "Define your audience and presentation goals",
+		title: "B. Determine WHY you are speaking with them",
+		description: "Establish context, catalyst, question, and objectives",
 		status: "do",
 		priority: "high",
+		phase: "The Start",
 		subtasks: [
 			{
-				title: "Stay out of PowerPoint!",
+				title: "Determine the Context of the Presentation",
 				is_completed: false,
 			},
 			{
-				title: "Select a presentation for your project",
+				title: "Identify the Catalyst of the Presentation or meeting",
 				is_completed: false,
 			},
 			{
-				title: "Identify the audience for your presentation",
+				title: "Determine the central Question your audience wants answered",
 				is_completed: false,
 			},
 			{
-				title: "Create an audience map",
-				is_completed: false,
-			},
-			{
-				title: "Identify audience pain points and motivations",
-				is_completed: false,
-			},
-			{
-				title: "Build the context portion of your introduction",
-				is_completed: false,
-			},
-			{
-				title: "Determine the catalyst for the presentation",
-				is_completed: false,
-			},
-			{
-				title: "Determine the central question you are answering",
-				is_completed: false,
-			},
-			{
-				title: "Write down a single goal or next step",
+				title: "Determine the Objective / Next Step for the Meeting",
 				is_completed: false,
 			},
 			{
@@ -180,36 +128,34 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 			},
 		],
 	},
-
-	// ============================================================
-	// Phase 3: Structure (10 subtasks)
-	// ============================================================
 	{
-		title: "Phase 3: Structure",
-		description: "Generate and organize your ideas into a logical flow",
+		title: "C. Determine WHAT your answer is to your audience's question",
+		description: "Gather existing work and develop new thinking",
 		status: "do",
 		priority: "high",
+		phase: "The Start",
 		subtasks: [
 			{
-				title: "Gather content to answer your question",
+				title: "Gather existing work and improve it",
 				is_completed: false,
 			},
 			{
-				title: "Run a brainstorming session",
+				title: "Develop new thinking - Run a brainstorming session",
 				is_completed: false,
 			},
 			{
-				title: "Select a visual thinking tool",
+				title: "Summarize and organize your ideas",
 				is_completed: false,
 			},
-			{
-				title: "Define your key message hierarchy",
-				is_completed: false,
-			},
-			{
-				title: "Create an Argument Map",
-				is_completed: false,
-			},
+		],
+	},
+	{
+		title: "D. Build an argument map to define the logic of your Answer",
+		description: "Structure your argument with evidence and logic",
+		status: "do",
+		priority: "high",
+		phase: "The Start",
+		subtasks: [
 			{
 				title: "Build an inductive argument",
 				is_completed: false,
@@ -223,7 +169,7 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 				is_completed: false,
 			},
 			{
-				title: "Build transitions between sections",
+				title: "Focus on logical levels of abstraction",
 				is_completed: false,
 			},
 			{
@@ -234,40 +180,44 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 	},
 
 	// ============================================================
-	// Phase 4: Storytelling (8 subtasks)
+	// Phase 2: The Art of Storytelling (3 tasks, 8 subtasks)
 	// ============================================================
 	{
-		title: "Phase 4: Storytelling",
-		description: "Craft your narrative arc and create the storyboard",
+		title: "A. Develop a text-based outline of the presentation",
+		description: "Convert your argument into a structured outline",
 		status: "do",
 		priority: "high",
+		phase: "The Art of Storytelling",
 		subtasks: [
 			{
-				title: "Identify where to inject stories",
+				title:
+					"Develop your Introduction with your Context, Catalyst and Question",
 				is_completed: false,
 			},
 			{
-				title: "Determine story placement",
+				title:
+					"Convert your argument map to a set of bullets that Answer your audience's Question",
 				is_completed: false,
 			},
+			{
+				title: "Focus on main 'headline' messages as main bullets",
+				is_completed: false,
+			},
+			{
+				title: "Create supporting ideas as sub-bullets under your main bullets",
+				is_completed: false,
+			},
+		],
+	},
+	{
+		title: "B. Identify where to potentially inject stories",
+		description: "Design memorable stories and test their resonance",
+		status: "do",
+		priority: "medium",
+		phase: "The Art of Storytelling",
+		subtasks: [
 			{
 				title: "Design stories that stick",
-				is_completed: false,
-			},
-			{
-				title: "Gather supporting evidence for your stories",
-				is_completed: false,
-			},
-			{
-				title: "Map the emotional arc",
-				is_completed: false,
-			},
-			{
-				title: "Create your storyboard on paper",
-				is_completed: false,
-			},
-			{
-				title: "Iterate the storyboard several times",
 				is_completed: false,
 			},
 			{
@@ -276,18 +226,36 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 			},
 		],
 	},
-
-	// ============================================================
-	// Phase 5: Design (9 subtasks)
-	// ============================================================
 	{
-		title: "Phase 5: Design",
-		description: "Apply visual design principles and create slides",
+		title: "C. Storyboard the presentation",
+		description: "Visualize your outline as a storyboard",
 		status: "do",
 		priority: "high",
+		phase: "The Art of Storytelling",
 		subtasks: [
 			{
-				title: "Refine storyboard for visual balance",
+				title: "Convert the outline into a storyboard",
+				is_completed: false,
+			},
+			{
+				title: "Start to think about how to visually communicate your ideas",
+				is_completed: false,
+			},
+		],
+	},
+
+	// ============================================================
+	// Phase 3: The Harmony of Design (2 tasks, 11 subtasks)
+	// ============================================================
+	{
+		title: "A. Develop a Slide Template",
+		description: "Create consistent visual foundation",
+		status: "do",
+		priority: "high",
+		phase: "The Harmony of Design",
+		subtasks: [
+			{
+				title: "Use ours (or create your own)",
 				is_completed: false,
 			},
 			{
@@ -299,10 +267,6 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 				is_completed: false,
 			},
 			{
-				title: "Create a master slide template",
-				is_completed: false,
-			},
-			{
 				title: "Design title slide and section dividers",
 				is_completed: false,
 			},
@@ -310,76 +274,90 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 				title: "Build an icon and image library",
 				is_completed: false,
 			},
+		],
+	},
+	{
+		title: "B. Design each slide",
+		description: "Create individual slides with proper design",
+		status: "do",
+		priority: "high",
+		phase: "The Harmony of Design",
+		subtasks: [
 			{
-				title: "Review storyboard for design principle violations",
+				title: "Write out each heading for each slide",
 				is_completed: false,
 			},
 			{
-				title: "Design your slides in detail",
+				title:
+					"Write out each sub-heading for each supporting piece of evidence/chart",
 				is_completed: false,
 			},
 			{
-				title: "Create a handout or leave-behind version",
+				title: "Design charts and supporting visuals",
+				is_completed: false,
+			},
+			{
+				title: "Open PowerPoint!",
+				is_completed: false,
+			},
+			{
+				title: "Populate slides with supporting evidence",
+				is_completed: false,
+			},
+			{
+				title: "Review slides for design principle violations",
 				is_completed: false,
 			},
 		],
 	},
 
 	// ============================================================
-	// Phase 6: Data Visualization (6 subtasks)
+	// Phase 4: The Science of Fact-based Persuasion (1 task, 5 subtasks)
 	// ============================================================
 	{
-		title: "Phase 6: Data Visualization",
-		description: "Create effective charts, graphs, and data displays",
+		title: "A. Develop Graphs and Tables for your data",
+		description: "Create compelling data visualizations",
 		status: "do",
 		priority: "high",
+		phase: "The Science of Fact-based Persuasion",
 		subtasks: [
 			{
-				title: "Validate data accuracy",
+				title:
+					"Determine what tables or chart types are best for the data you wish to show",
 				is_completed: false,
 			},
 			{
-				title: "Decide tables vs graphs for your data",
+				title: "Create the tables or charts",
 				is_completed: false,
 			},
 			{
-				title: "Create basic charts",
+				title: "Reduce and eliminate chart-junk",
 				is_completed: false,
 			},
 			{
-				title: "Consider specialized chart types",
+				title:
+					"Design tables and graphs to emphasize the key data elements that support your story",
 				is_completed: false,
 			},
 			{
 				title: "Add source citations to data",
 				is_completed: false,
 			},
-			{
-				title: "Create animation and build sequences",
-				is_completed: false,
-			},
 		],
 	},
 
 	// ============================================================
-	// Phase 7: Review & Refinement (6 subtasks)
+	// Phase 5: The How (4 tasks, 19 subtasks)
 	// ============================================================
 	{
-		title: "Phase 7: Review & Refinement",
+		title: "A. Review",
 		description: "Quality assurance and feedback incorporation",
 		status: "do",
 		priority: "high",
+		phase: "The How",
 		subtasks: [
 			{
 				title: "Conduct peer review of content",
-				is_completed: false,
-			},
-			{
-				title: "Conduct design review",
-				is_completed: false,
-			},
-			{
-				title: "Perform accessibility check",
 				is_completed: false,
 			},
 			{
@@ -387,7 +365,7 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 				is_completed: false,
 			},
 			{
-				title: "Final proofread",
+				title: "Conduct final proofread",
 				is_completed: false,
 			},
 			{
@@ -396,82 +374,87 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
 			},
 		],
 	},
-
-	// ============================================================
-	// Phase 8: Performance (11 subtasks)
-	// ============================================================
 	{
-		title: "Phase 8: Performance",
-		description: "Prepare, practice, and deliver your presentation",
+		title: "B. Practice",
+		description: "Rehearse and refine your delivery",
 		status: "do",
 		priority: "high",
+		phase: "The How",
 		subtasks: [
 			{
-				title: "Write your voiceover script",
+				title:
+					"Do an initial run through of the presentation. Speak the presentation out loud and improvise",
 				is_completed: false,
 			},
 			{
-				title: "Create speaker notes",
+				title: "Write this version down as a formal script",
 				is_completed: false,
 			},
 			{
-				title: "Memorize your script",
+				title:
+					"Run through the presentation two or three more times working on length, simplifying language",
 				is_completed: false,
 			},
 			{
-				title: "Prepare for Q&A",
+				title:
+					"If the length needs editing, revise the presentation, eliminating or combining slide ideas",
 				is_completed: false,
 			},
 			{
-				title: "Create backup slides for Q&A",
+				title:
+					"Present to someone else to solicit feedback and simulate a 'live' presentation",
 				is_completed: false,
 			},
 			{
-				title: "Test presentation length and edit to fit time",
+				title: "Run through the script a few more times and then park it",
 				is_completed: false,
 			},
 			{
-				title: "Conduct technical rehearsal",
-				is_completed: false,
-			},
-			{
-				title: "Practice in front of others and solicit feedback",
-				is_completed: false,
-			},
-			{
-				title: "Record and review yourself presenting",
-				is_completed: false,
-			},
-			{
-				title: "Develop a 'Plan B' deck",
-				is_completed: false,
-			},
-			{
-				title: "Prepare backup plans for technical failures",
+				title:
+					"Get a good night's sleep; review the script once or twice just before the presentation",
 				is_completed: false,
 			},
 		],
 	},
-
-	// ============================================================
-	// Phase 9: Follow-Up (5 subtasks)
-	// ============================================================
 	{
-		title: "Phase 9: Follow-Up",
-		description: "Post-presentation activities and continuous improvement",
+		title: "C. Perform",
+		description: "Deliver your presentation with impact",
 		status: "do",
 		priority: "high",
+		phase: "The How",
 		subtasks: [
 			{
-				title: "Send follow-up materials",
+				title:
+					"Conduct a pre-presentation flight-check to ensure you have everything you need",
 				is_completed: false,
 			},
+			{
+				title: "Deliver with conviction, passion and drama",
+				is_completed: false,
+			},
+			{
+				title: "Focus on managing stress",
+				is_completed: false,
+			},
+			{
+				title: "Answer the Audience's questions",
+				is_completed: false,
+			},
+		],
+	},
+	{
+		title: "D. Follow-up",
+		description: "Post-presentation activities and continuous improvement",
+		status: "do",
+		priority: "medium",
+		phase: "The How",
+		subtasks: [
 			{
 				title: "Execute the Action Agenda",
 				is_completed: false,
 			},
 			{
-				title: "Collect feedback from attendees",
+				title: "Send follow-up materials",
 				is_completed: false,
 			},
 			{
@@ -490,22 +473,18 @@ export const PRESENTATION_TASKS: CreateTaskInput[] = [
  * Summary statistics for the presentation workflow.
  *
  * Note: With the hierarchical structure:
- * - totalTasks = 9 (one per phase)
- * - totalSubtasks = 69 (original tasks now as subtasks)
+ * - totalTasks = 14 (tasks across 5 phases)
+ * - totalSubtasks = 59 (individual action items)
  */
 export const PRESENTATION_TASKS_SUMMARY = {
-	totalPhases: 9,
-	totalTasks: 9,
-	totalSubtasks: 69,
+	totalPhases: 5,
+	totalTasks: 14,
+	totalSubtasks: 59,
 	subtasksByPhase: {
-		"discovery-research": 4,
-		"the-start": 10,
-		structure: 10,
+		"the-start": 16,
 		storytelling: 8,
-		design: 9,
-		"data-visualization": 6,
-		"review-refinement": 6,
-		performance: 11,
-		"follow-up": 5,
+		design: 11,
+		persuasion: 5,
+		"the-how": 19,
 	},
 };
