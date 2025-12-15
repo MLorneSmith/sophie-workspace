@@ -56,6 +56,8 @@ const COLUMNS = [
 	{ id: "done", title: "Done" },
 ] as const;
 
+const COLUMN_IDS = COLUMNS.map((col) => col.id) as readonly TaskStatus[];
+
 export function KanbanBoard() {
 	const { data: tasks, isLoading, isError, refetch } = useTasks();
 	const updateStatus = _useUpdateTaskStatus();
@@ -106,6 +108,11 @@ export function KanbanBoard() {
 			} else if (overData?.type === "card") {
 				// Dropped on a card - use the card's parent container
 				targetStatus = overData.containerId;
+			}
+
+			// Fallback: check if over.id is a valid column ID (for cases where metadata is undefined)
+			if (!targetStatus && COLUMN_IDS.includes(over.id as TaskStatus)) {
+				targetStatus = over.id as TaskStatus;
 			}
 
 			// Update status if we have a valid target and it's different from current
