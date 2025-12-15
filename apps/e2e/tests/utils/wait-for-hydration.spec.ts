@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "./auth-state";
 import {

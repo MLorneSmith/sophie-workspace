@@ -16,7 +16,7 @@
 import { exec } from "node:child_process";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 
 const execAsync = promisify(exec);
 

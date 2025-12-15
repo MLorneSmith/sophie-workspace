@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 import { TOTP } from "totp-generator";
 
 const ADMIN_EMAIL = "michael@slideheroes.com";

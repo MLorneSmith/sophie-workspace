@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../utils/base-test";
 import { AUTH_STATES } from "../utils/auth-state";
 import { CI_TIMEOUTS } from "../utils/wait-for-hydration";
 

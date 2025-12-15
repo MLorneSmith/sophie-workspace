@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./utils/base-test";
 
 test.describe("Debug Auth @debug", () => {
 	test("check storage state cookies", async ({ page, context }) => {

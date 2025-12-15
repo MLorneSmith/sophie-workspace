@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../utils/base-test";
 import { TOTP } from "totp-generator";
 
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";

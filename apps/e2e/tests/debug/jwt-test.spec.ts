@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 
 test.describe("JWT Debug Test", () => {

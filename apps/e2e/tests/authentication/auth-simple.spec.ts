@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 import { TEST_USERS } from "../helpers/test-users";
 import { testConfig } from "../utils/test-config";
 import { AuthPageObject } from "./auth.po";

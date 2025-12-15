@@ -1,4 +1,4 @@
-import test, { expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../utils/base-test";
 import { createClient } from "@supabase/supabase-js";
 
 import type { AUTH_STATES } from "../utils/auth-state";

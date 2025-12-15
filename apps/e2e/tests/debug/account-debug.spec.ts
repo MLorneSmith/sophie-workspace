@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { TEST_USERS } from "../helpers/test-users";
 

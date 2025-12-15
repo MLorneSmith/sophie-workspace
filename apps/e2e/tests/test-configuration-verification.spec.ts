@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./utils/base-test";
 
 /**
  * Test file to verify that Playwright continues running all tests despite failures.
