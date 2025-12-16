@@ -58,22 +58,31 @@ const initiative = args
   .trim();
 ```
 
-### Step 2: Load Research Manifest
+### Step 2: Load Research Manifest (MANDATORY)
 
-If manifest path provided:
+**CRITICAL**: The manifest contains research that MUST inform your decomposition. Do NOT skip this step.
 
 ```bash
 # Read the research manifest
-cat <manifest-path>
+Read(file_path: "<manifest-path>")
 ```
 
-Extract from manifest:
-- Technology overview
-- Recommended patterns
-- Gotchas and warnings
-- Code examples
+**Verify manifest loaded successfully** by checking for these sections:
+- [ ] Technology Overview
+- [ ] Recommended Patterns
+- [ ] Gotchas & Warnings
+- [ ] Existing Codebase Patterns
 
-This research informs your decomposition - use it extensively.
+**If manifest is missing or empty**: STOP and inform orchestrator. Do not proceed with decomposition without research context.
+
+**Extract and note these key findings** (you will reference them in feature descriptions):
+- Technology overview - What technologies/patterns are recommended
+- Recommended patterns - How to structure implementations
+- Gotchas and warnings - What to avoid, critical issues
+- Code examples - Reference implementations to follow
+- Existing codebase patterns - Files and patterns already in codebase
+
+This research MUST inform your decomposition - reference specific manifest sections when defining features.
 
 ### Step 3: Quick Context Validation
 
@@ -177,6 +186,14 @@ Create:
 {
   "success": true,
   "issues_created": true,
+  "manifest_loaded": true,
+  "manifest_path": ".ai/reports/feature-reports/2024-12-16/local-first-rxdb/manifest.md",
+  "research_sections_referenced": [
+    "Technology Overview",
+    "Recommended Patterns",
+    "Gotchas & Warnings",
+    "Existing Codebase Patterns"
+  ],
   "initiative": {
     "title": "Local-First Architecture with RxDB",
     "slug": "local-first-rxdb",
@@ -193,7 +210,8 @@ Create:
       "phase": 1,
       "dependencies": [],
       "effort": "M",
-      "description": "Create RxDB schemas and collections for presentation data"
+      "description": "Create RxDB schemas and collections for presentation data",
+      "research_informed_by": ["Technology Overview", "Code Examples"]
     },
     {
       "name": "Encryption Service",
@@ -201,7 +219,8 @@ Create:
       "phase": 1,
       "dependencies": [],
       "effort": "S",
-      "description": "Implement Web Crypto API encryption utilities"
+      "description": "Implement Web Crypto API encryption utilities",
+      "research_informed_by": ["Security Considerations"]
     },
     {
       "name": "Sync Engine",
@@ -209,7 +228,8 @@ Create:
       "phase": 2,
       "dependencies": [124, 125],
       "effort": "L",
-      "description": "Build bi-directional sync with conflict resolution"
+      "description": "Build bi-directional sync with conflict resolution",
+      "research_informed_by": ["Gotchas & Warnings", "Performance Considerations"]
     }
   ],
   "dependency_graph": {
@@ -233,6 +253,13 @@ Create:
 {
   "success": true,
   "issues_created": false,
+  "manifest_loaded": true,
+  "manifest_path": ".ai/reports/feature-reports/2024-12-16/local-first-rxdb/manifest.md",
+  "research_sections_referenced": [
+    "Technology Overview",
+    "Recommended Patterns",
+    "Existing Codebase Patterns"
+  ],
   "initiative": {
     "title": "Local-First Architecture with RxDB",
     "slug": "local-first-rxdb",
@@ -246,7 +273,8 @@ Create:
       "phase": 1,
       "dependencies": [],
       "effort": "M",
-      "description": "Create RxDB schemas and collections for presentation data"
+      "description": "Create RxDB schemas and collections for presentation data",
+      "research_informed_by": ["Technology Overview", "Code Examples"]
     }
   ],
   "dependency_graph": {

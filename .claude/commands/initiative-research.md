@@ -1,5 +1,5 @@
 ---
-description: Conduct research phase for /initiative orchestrator - interviews user, launches research agents, creates manifest
+description: Conduct research phase for /initiative orchestrator - interviews user, launches research tools, creates manifest
 argument-hint: [initiative-description] [--quick]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
@@ -10,14 +10,30 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQue
 Handles Phase 1 (Interview & Research) of the `/initiative` workflow. This sub-agent:
 1. Parses the initiative description and flags
 2. Interviews the user to gather context
-3. Launches research agents (full or quick mode)
+3. Executes research using CLI tools (full or quick mode)
 4. Collects and synthesizes research results
 5. Creates the research manifest
 6. Returns structured JSON output for the orchestrator
 
 ## Why This Exists
 
-The research phase involves launching multiple background agents and collecting their outputs, which consumes significant context. By delegating this to a sub-agent, the main orchestrator preserves context for the decomposition and implementation phases.
+The research phase involves multiple research operations and collecting outputs, which consumes significant context. By delegating this to a sub-agent, the main orchestrator preserves context for the decomposition and implementation phases.
+
+## Research Tools Quick Reference
+
+| Tool | Use For | How to Use |
+|------|---------|------------|
+| **Context7** | Library documentation, API references | `Bash: .ai/bin/context7-get-context <owner> <repo> --topic "<topic>" --tokens 2500` |
+| **Perplexity Chat** | Best practices, Q&A with citations | `Bash: .ai/bin/perplexity-chat "<question>" --model sonar-pro --show-citations` |
+| **Perplexity Search** | Find specific resources | `Bash: .ai/bin/perplexity-search "<query>" --domains <d1,d2> --num-results 10` |
+| **Explore Agent** | Codebase pattern discovery | `Task(Explore, prompt: "...")` |
+
+**IMPORTANT - Tool Restrictions**:
+- ✅ Use direct Bash commands for Context7 and Perplexity (NOT Task agents)
+- ✅ Task(Explore) works because it's a first-level agent call from this sub-agent
+- ❌ Do NOT use `Task(perplexity-expert)` or `Task(context7-expert)` - agents within agents don't work
+- ❌ Do NOT use `docs-mcp` or any MCP-based research tools (mcp__docs-mcp__*) - they are unreliable in this context
+- ❌ Do NOT use WebFetch or WebSearch for research - use the CLI tools above instead
 
 ## Instructions
 
@@ -33,10 +49,11 @@ const slug = initiative
   .substring(0, 30);
 const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-console.log(`📋 Initiative: ${initiative}`);
-console.log(`📁 Slug: ${slug}`);
-console.log(`📅 Date: ${todayDate}`);
-console.log(`🚀 Mode: ${quickMode ? 'QUICK' : 'FULL'}`);
+console.log(`[RESEARCH] Starting initiative research...`);
+console.log(`[RESEARCH] Initiative: ${initiative}`);
+console.log(`[RESEARCH] Slug: ${slug}`);
+console.log(`[RESEARCH] Date: ${todayDate}`);
+console.log(`[RESEARCH] Mode: ${quickMode ? 'QUICK' : 'FULL'}`);
 ```
 
 ### Step 2: Interview User
@@ -89,99 +106,120 @@ const interviewResults = {
   clarification: "<user response>",
   expectedSize: "<user response>"
 };
+
+console.log(`[RESEARCH] Interview complete`);
 ```
 
-### Step 3: Launch Research Agents
+### Step 3: Create Report Directory
 
-**Mode determines which research agents to launch:**
-
-```typescript
-if (quickMode) {
-  // QUICK MODE: Only explore codebase, skip external research
-  console.log("🚀 QUICK MODE: Launching codebase exploration only");
-
-  Task(Explore, prompt: `
-    Explore this codebase for patterns relevant to: ${initiative}
-    Focus on:
-    - Similar implementations
-    - Data fetching patterns
-    - State management approaches
-    - Testing patterns
-    Return file paths and pattern descriptions.
-  `, run_in_background: true)
-
-} else {
-  // FULL MODE: Launch all three research agents simultaneously
-  console.log("📚 FULL MODE: Launching all research agents in parallel");
-
-  Task(perplexity-expert, prompt: `
-    Research best practices for: ${initiative}
-    Focus on:
-    - Implementation patterns for 2024-2025
-    - Common pitfalls and gotchas
-    - Security considerations
-    - Performance optimizations
-    Return structured findings.
-  `, run_in_background: true)
-
-  Task(context7-expert, prompt: `
-    Get comprehensive documentation for libraries involved in: ${initiative}
-    Focus on:
-    - API references and examples
-    - Migration guides if applicable
-    - TypeScript integration
-    - React/Next.js patterns
-    Return key code examples.
-  `, run_in_background: true)
-
-  Task(Explore, prompt: `
-    Explore this codebase for patterns relevant to: ${initiative}
-    Focus on:
-    - Similar implementations
-    - Data fetching patterns
-    - State management approaches
-    - Testing patterns
-    Return file paths and pattern descriptions.
-  `, run_in_background: true)
-}
-```
-
-### Step 4: Collect Research Results
-
-Wait for research agents to complete:
-
-```typescript
-if (quickMode) {
-  // QUICK MODE: Only collect Explore results
-  const exploreResults = TaskOutput(agentId: exploreAgentId);
-  const perplexityResults = null;
-  const context7Results = null;
-
-  console.log("🚀 QUICK MODE: Codebase exploration complete");
-
-} else {
-  // FULL MODE: Collect all three results
-  const perplexityResults = TaskOutput(agentId: perplexityAgentId);
-  const context7Results = TaskOutput(agentId: context7AgentId);
-  const exploreResults = TaskOutput(agentId: exploreAgentId);
-
-  console.log("📚 FULL MODE: All research complete");
-}
-```
-
-### Step 5: Create Research Manifest
-
-Create the initiative directory:
+**CRITICAL**: Create the directory structure FIRST before any research.
 
 ```bash
-mkdir -p .ai/reports/feature-reports/<date>/<slug>/research
+# Create directory structure
+mkdir -p .ai/reports/feature-reports/$(date +%Y-%m-%d)/<slug>/research
 ```
 
-**Synthesize research into manifest.** This is the key value-add of this sub-agent - distilling research into actionable summary.
+Use the Bash tool to create this directory with the actual slug value.
 
-Write manifest file using Write tool:
+### Step 4: Execute Research
 
-**Full Mode Manifest:**
+**Mode determines research approach:**
+
+#### QUICK MODE
+
+```typescript
+if (quickMode) {
+  console.log("[RESEARCH] QUICK MODE: Launching codebase exploration only");
+
+  // Only run Explore agent for codebase patterns
+  Task(Explore, prompt: `
+    Explore this codebase for patterns relevant to: ${initiative}
+
+    Focus on:
+    - Similar implementations (components, pages, features)
+    - Data fetching patterns (loaders, server actions, React Query)
+    - State management approaches
+    - UI component patterns (shadcn/ui usage)
+    - Testing patterns
+
+    Return:
+    1. File paths with brief descriptions
+    2. Pattern summaries
+    3. Recommended approaches based on existing code
+  `)
+
+  // Save explore results
+  // Use Write tool to save to: .ai/reports/feature-reports/<date>/<slug>/research/explore-<slug>.md
+}
+```
+
+#### FULL MODE
+
+```typescript
+if (!quickMode) {
+  console.log("[RESEARCH] FULL MODE: Executing research tools");
+
+  // Step 4a: Identify libraries to research based on interview
+  // Extract library names from user's technology response
+  // Common mappings:
+  // - "shadcn charts" → owner: "shadcn", repo: "ui", topic: "charts"
+  // - "recharts" → owner: "recharts", repo: "recharts"
+  // - "react query" → owner: "TanStack", repo: "query"
+  // - "supabase" → owner: "supabase", repo: "supabase-js"
+  // - "next.js" → owner: "vercel", repo: "next.js"
+
+  // Step 4b: Run Context7 for library documentation
+  // Execute 1-3 Context7 calls based on identified libraries
+  console.log("[RESEARCH] Fetching library documentation via Context7...");
+
+  // Example Context7 calls (adapt based on initiative):
+  Bash(command: `.ai/bin/context7-get-context <owner> <repo> --topic "<relevant-topic>" --tokens 3000`)
+
+  // Save Context7 results using Write tool to:
+  // .ai/reports/feature-reports/<date>/<slug>/research/context7-<slug>.md
+
+  // Step 4c: Run Perplexity for best practices
+  console.log("[RESEARCH] Researching best practices via Perplexity...");
+
+  Bash(command: `.ai/bin/perplexity-chat "Best practices for ${initiative} in Next.js 15 with TypeScript. Focus on: 1) Implementation patterns 2) Common pitfalls 3) Performance considerations 4) Security best practices" --model sonar-pro --show-citations`)
+
+  // Save Perplexity results using Write tool to:
+  // .ai/reports/feature-reports/<date>/<slug>/research/perplexity-<slug>.md
+
+  // Step 4d: Run Explore agent for codebase patterns
+  console.log("[RESEARCH] Exploring codebase patterns...");
+
+  Task(Explore, prompt: `
+    Explore this codebase for patterns relevant to: ${initiative}
+
+    Focus on:
+    - Similar implementations (components, pages, features)
+    - Data fetching patterns (loaders, server actions, React Query)
+    - State management approaches
+    - UI component patterns (shadcn/ui usage)
+    - Database schema patterns
+    - Testing patterns
+
+    Return:
+    1. File paths with brief descriptions
+    2. Pattern summaries with code snippets
+    3. Recommended approaches based on existing code
+  `)
+
+  // Save explore results using Write tool to:
+  // .ai/reports/feature-reports/<date>/<slug>/research/explore-<slug>.md
+
+  console.log("[RESEARCH] All research complete");
+}
+```
+
+### Step 5: Synthesize Research into Manifest
+
+**This is the key value-add** - distilling research into an actionable summary.
+
+Read all research reports and synthesize into a manifest:
+
+**Full Mode Manifest Template:**
 
 ```markdown
 # Research Manifest: <Initiative Name>
@@ -209,25 +247,38 @@ Write manifest file using Write tool:
 ## Key Findings Summary
 
 ### Technology Overview
-<Synthesized from perplexity-expert - 3-5 bullet points>
+<Synthesized from Perplexity - 3-5 bullet points on recommended approach>
 
 ### Recommended Patterns
-<Synthesized from context7-expert - key patterns with brief explanations>
+<Synthesized from Context7 - key patterns with brief explanations>
 
 ### Code Examples
-<2-3 most relevant code examples from context7-expert>
+<2-3 most relevant code examples from Context7 or codebase>
 
 ### Gotchas & Warnings
-<Critical issues from perplexity-expert - bulleted list>
+<Critical issues from Perplexity - bulleted list by severity>
 
 ### Existing Codebase Patterns
 <Synthesized from Explore agent - relevant files and patterns>
 
+| Pattern | Location | Relevance |
+|---------|----------|-----------|
+| <pattern name> | <file path> | <why relevant> |
+
 ## Feature Mapping
 <Will be populated after decomposition>
+
+## Dependencies & Prerequisites
+<List any prerequisites identified during research>
+
+## Security Considerations
+<Security-related findings from research>
+
+## Performance Considerations
+<Performance-related findings from research>
 ```
 
-**Quick Mode Manifest:**
+**Quick Mode Manifest Template:**
 
 ```markdown
 # Research Manifest: <Initiative Name>
@@ -250,28 +301,36 @@ Write manifest file using Write tool:
 ## Research Reports
 - [Codebase Patterns](./research/explore-<slug>.md)
 
-⚠️ **Quick Mode**: External research (Perplexity, Context7) was skipped.
-Decomposition is based on codebase patterns only.
+> **Quick Mode**: External research (Perplexity, Context7) was skipped.
+> Decomposition is based on codebase patterns only.
 
 ## Existing Codebase Patterns
 <Synthesized from Explore agent - relevant files and patterns>
+
+| Pattern | Location | Relevance |
+|---------|----------|-----------|
+| <pattern name> | <file path> | <why relevant> |
 
 ## Feature Mapping
 <Will be populated after decomposition>
 ```
 
-Save individual research reports:
-
-```bash
-# Save each agent's full output to research subdirectory
-# Example: .ai/reports/feature-reports/2024-12-16/local-first-rxdb/research/perplexity-local-first-rxdb.md
-```
+Write manifest using Write tool to: `.ai/reports/feature-reports/<date>/<slug>/manifest.md`
 
 ### Step 6: Return Structured Output
 
 **CRITICAL**: Return structured JSON for orchestrator consumption.
 
-```json
+```
+[RESEARCH] Synthesizing research results...
+[RESEARCH] Creating manifest...
+[RESEARCH] ✓ Research phase complete
+```
+
+Output the JSON block at the very end, clearly marked:
+
+```
+=== RESEARCH OUTPUT ===
 {
   "success": true,
   "initiative": {
@@ -295,48 +354,40 @@ Save individual research reports:
     "relevant_files": ["<file 1>", "<file 2>"]
   }
 }
-```
-
-## Output Requirements
-
-The sub-agent MUST output:
-
-1. **Structured JSON** (for orchestrator parsing) - output at the END
-2. **Progress messages** (for user visibility) - output during execution
-
-### Progress Messages Format
-
-```
-[RESEARCH] Starting initiative research...
-[RESEARCH] Mode: FULL|QUICK
-[RESEARCH] Interviewing user...
-[RESEARCH] Launching research agents...
-[RESEARCH] Waiting for agents to complete...
-[RESEARCH] Synthesizing research results...
-[RESEARCH] Creating manifest...
-[RESEARCH] ✓ Research phase complete
-```
-
-### JSON Output Format
-
-Output the JSON block at the very end, clearly marked:
-
-```
-=== RESEARCH OUTPUT ===
-{
-  "success": true,
-  ...
-}
 === END RESEARCH OUTPUT ===
 ```
 
+## Context7 Library Reference
+
+Common library mappings for Context7:
+
+| Technology | Owner | Repo | Common Topics |
+|------------|-------|------|---------------|
+| Next.js | vercel | next.js | routing, server-actions, middleware, caching |
+| React | facebook | react | hooks, state, components, context |
+| Recharts | recharts | recharts | charts, radar, radial, bar |
+| shadcn/ui | shadcn | ui | components, charts, forms |
+| TanStack Query | TanStack | query | queries, mutations, caching |
+| Supabase JS | supabase | supabase-js | auth, database, storage, rls |
+| Tailwind CSS | tailwindlabs | tailwindcss | utilities, responsive, dark-mode |
+| Zod | colinhacks | zod | schemas, validation, inference |
+
 ## Error Handling
 
-If any research agent fails:
+If any research tool fails:
 - Continue with available results
-- Note the failure in the manifest
+- Note the failure in the manifest under a "Research Gaps" section
 - Set `success: true` if manifest was created (even with partial results)
 - Set `success: false` only if manifest creation failed
+
+```typescript
+if (context7Failed) {
+  // Add to manifest:
+  // ## Research Gaps
+  // - Context7 documentation fetch failed: <error message>
+  // - Recommendation: Manually review library docs at <url>
+}
+```
 
 ## Initiative Input
 

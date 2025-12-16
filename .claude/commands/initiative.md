@@ -52,7 +52,8 @@ Orchestrate the complete lifecycle of a large feature initiative:
 │       │                                                                  │
 │       ├─> Task(general-purpose): /initiative-research                    │
 │       │       • Interview user (scope, technologies, constraints)        │
-│       │       • Launch research agents (perplexity, context7, Explore)   │
+│       │       • Execute research via Bash (context7, perplexity CLIs)    │
+│       │       • Launch Explore agent for codebase patterns               │
 │       │       • Synthesize research into manifest                        │
 │       │       • Return: manifest path + research summary JSON            │
 │       ├─> [PROGRESS] Research complete ✓ (context preserved)             │
@@ -139,8 +140,8 @@ Orchestrate the complete lifecycle of a large feature initiative:
 | `manifestPath` | Step 1.5 | `.ai/reports/feature-reports/{todayDate}/{slug}/manifest.md` | ⬜ |
 | `masterIssueNumber` | Step 2.1 | GitHub issue number from feature-set | ⬜ |
 | `featureIssues[]` | Step 2.1 | Array of feature issue numbers | ⬜ |
-| `branchName` | Step 2.5 | `feature/{slug}` or custom | ⬜ |
 | `sandboxId` | Step 3.1 | E2B sandbox ID from creation | ⬜ |
+| `branchName` | Step 3.2 | `feature/{slug}` (created IN sandbox) | ⬜ |
 | `prNumber` | Step 4.2 | GitHub PR number from creation | ⬜ |
 
 **How to Use:**
@@ -159,13 +160,13 @@ Orchestrate the complete lifecycle of a large feature initiative:
 
 **Full Mode:**
 - [ ] User has been interviewed (Question 1, 2, 3 completed)
-- [ ] Research agents have completed (perplexity, context7, Explore)
+- [ ] Research completed (Context7 CLI, Perplexity CLI, Explore agent)
 - [ ] Research manifest exists at `.ai/reports/feature-reports/<date>/<slug>/manifest.md` and is readable
 - [ ] Research reports saved to `.ai/reports/feature-reports/<date>/<slug>/research/`
 
 **Quick Mode (simplified requirements):**
 - [ ] User has been interviewed (Question 1, 2, 3 completed)
-- [ ] Explore agent has completed (perplexity, context7 skipped)
+- [ ] Explore agent has completed (Context7, Perplexity skipped)
 - [ ] Research manifest exists at `.ai/reports/feature-reports/<date>/<slug>/manifest.md` and is readable
 - [ ] Codebase patterns report saved to `.ai/reports/feature-reports/<date>/<slug>/research/`
 
@@ -199,8 +200,8 @@ This cannot be rationalized away or skipped silently. The user MUST make an expl
 
 - [ ] All features processed (each feature has ✓ complete status)
 - [ ] `sandboxId` is set (sandbox created and alive)
-- [ ] All feature branches merged to feature branch
-- [ ] Documentation tasks completed (background documentation agents finished)
+- [ ] `branchName` is set (branch created in sandbox during Step 3.2)
+- [ ] All feature commits pushed to feature branch in sandbox
 
 **If assertion fails**: Resume feature loop or handle incomplete features. Do not proceed to Phase 4.
 
@@ -242,7 +243,7 @@ const researchAgent = Task(general-purpose, prompt: `
 
   This will:
   1. Interview the user about technologies and scope
-  2. Launch research agents (perplexity, context7, Explore) - or just Explore in quick mode
+  2. Execute research via CLI tools (Context7, Perplexity) and Explore agent
   3. Collect and synthesize research results
   4. Create the research manifest at .ai/reports/feature-reports/${todayDate}/${slug}/manifest.md
   5. Return structured JSON with manifest path and research summary
@@ -460,49 +461,10 @@ If issues are missing or mapping file doesn't exist:
 
 ---
 
-### Step 2.5: Create Feature Branch (MANDATORY)
-
-**This step MUST execute before Phase 3. Work happens on isolated branch, not dev/main.**
-
-#### Option 1: Manual Branch Creation
-
-```bash
-git checkout -b feature/${slug}
-```
-
-#### Option 2: Sandbox-Based Creation
-
-Use the `/sandbox feature` command which creates branch automatically:
-
-```bash
-/sandbox feature "${initiative}"
-```
-
-#### Validation
-
-**Run this to confirm you're on the correct branch:**
-
-```bash
-git branch --show-current
-```
-
-**Expected output**: `feature/<slug>` (NOT `dev` or `main`)
-
-**If output is wrong:**
-- STOP
-- Run `git checkout -b feature/${slug}` to create correct branch
-- Do NOT proceed to Phase 3 until on correct branch
-
-#### State Tracking
-
-Update the state variables table:
-- `branchName` = output of `git branch --show-current`
-
-**[PROGRESS]** Feature branch created: <branch-name> ✓
-
----
-
 ### Phase 3: Feature Loop (E2B Sandbox)
+
+> **NOTE**: Feature branch is created INSIDE the sandbox (Step 3.2), not locally.
+> This allows the user to continue working on `dev` locally while sandbox work happens.
 
 #### Step 3.0: HARD STOP - E2B Sandbox Assertion
 
@@ -543,7 +505,7 @@ if (SANDBOX_REQUIRED && !sandboxId) {
 1. **Isolation**: Feature implementations run in isolated environment
 2. **Safety**: Mistakes don't affect your local codebase until reviewed
 3. **Rollback**: Easy to discard failed implementations
-4. **Parallel Safety**: Multiple features can be worked on without conflicts
+4. **Parallel Safety**: User can continue working on `dev` locally while sandbox runs
 
 **Escape Hatch**: User can explicitly override by selecting "SKIP (unsafe)" but this is STRONGLY discouraged.
 
@@ -553,74 +515,117 @@ if (SANDBOX_REQUIRED && !sandboxId) {
 
 ```bash
 # Create sandbox using the project's template
-/sandbox feature "${initiative}"
+./.claude/skills/e2b-sandbox/scripts/sandbox create --template slideheroes-claude-agent --timeout 3600
 ```
 
-This command will:
-1. Create isolated E2B sandbox with slideheroes-claude-agent template
-2. Set up sandbox environment with dependencies
-3. Return sandbox ID (capture this)
+**Capture the sandbox ID from the output:**
+```
+=== Sandbox Created ===
+ID:       <sandboxId>    ← CAPTURE THIS
+Timeout:  3600 seconds
+```
 
 #### Required Output
 
 You MUST capture and record:
-- `sandboxId` = ID of created sandbox
+- `sandboxId` = ID from sandbox creation output
 - Sandbox status = "running"
 
-**Validation**:
-
-If you cannot provide a sandbox ID, STOP and troubleshoot before proceeding:
+**Validation - Verify sandbox is running:**
 
 ```bash
-# Check sandbox status
-/sandbox list
+./.claude/skills/e2b-sandbox/scripts/sandbox list
 ```
 
 **If sandbox creation fails:**
 1. Review error message
 2. Check E2B account status and quota
-3. Try again with explicit timeout: `/sandbox create --timeout 7200`
+3. Try again with shorter timeout: `--timeout 1800`
 4. If still failing, return to Step 3.0 and ask user whether to skip sandbox
 
 **[PROGRESS]** E2B sandbox created: sandboxId=<id> ✓
 
-#### Step 3.2: Sync Research Manifest to Sandbox
+#### Step 3.2: Create Feature Branch IN SANDBOX
+
+**IMPORTANT**: Branch creation happens IN the sandbox, not locally. This allows the user to continue working on `dev` locally.
 
 ```bash
-# Copy manifest to sandbox
-# The sandbox script handles file sync internally
+# Run branch creation command in the existing sandbox
+# CORRECT SYNTAX: prompt FIRST, then --sandbox flag
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "git checkout -b feature/${slug} && git push -u origin feature/${slug}" --sandbox ${sandboxId}
 ```
+
+**⚠️ ARGUMENT ORDER MATTERS:**
+```bash
+# ✅ CORRECT - prompt first, then --sandbox
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "<prompt>" --sandbox <id>
+
+# ❌ WRONG - this creates a NEW sandbox instead of using existing one
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude <id> "<prompt>"
+```
+
+Update state variable:
+- `branchName` = `feature/${slug}`
+
+**[PROGRESS]** Feature branch created in sandbox: feature/<slug> ✓
 
 #### Step 3.3: Feature Loop
 
-Process features in dependency order. Use `/sandbox feature` workflow for each feature:
+Process features in dependency order.
 
 **For EACH feature (in dependency order):**
 
-**1. Create Sandbox Feature**
+##### 3.3.1: Generate Feature Plan
+
+Run `/initiative-feature` in the sandbox:
 
 ```bash
-/sandbox feature "#<issue> <description>" --manifest ${manifestPath}
+# Generate plan for this feature
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/initiative-feature #<issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
 ```
 
-This command:
-- Plans the feature using `/initiative-feature`
-- Implements the feature using `/initiative-implement`
-- Runs validation
-- Returns structured output with results
+##### 3.3.2: Display Plan Summary for User Review
 
-**Example:**
-```bash
-/sandbox feature "#42 Add OAuth2 social login" --manifest .ai/research/oauth-login/manifest.md
+**CRITICAL**: Before asking for approval, display the plan to the user.
+
+After the sandbox generates the plan:
+
+1. Parse the sandbox output for the plan file path (look for `plan_file` in JSON output)
+2. Read the plan from the sandbox or local (if synced)
+3. Present a summary to the user:
+
+```markdown
+### Plan Summary for #<issue>: <title>
+
+**Tasks**: <count> tasks across <count> phases
+
+**Files to create/modify**:
+- <file 1>
+- <file 2>
+- ...
+
+**Key Implementation Notes**:
+<2-3 bullet points from plan>
+
+**Research Patterns Applied**:
+- <pattern 1 from manifest>
+- <pattern 2 from manifest>
+
+**Validation Commands**:
+- pnpm typecheck
+- pnpm test:unit
+- pnpm build
+
+[Full plan: .ai/specs/features/<slug>/<issue>-feature-plan.md]
 ```
 
-**2. User Approval Gate**
+##### 3.3.3: User Approval Gate
 
-After plan is generated:
+**Only AFTER displaying the plan summary**, ask for approval:
 
 ```typescript
 AskUserQuestion({
-  question: `Approve plan for feature "#<issue>"?`,
+  question: `Approve this plan for feature "#<issue>: <title>"?`,
   header: "Plan",
   options: [
     { label: "Approve", description: "Proceed with implementation" },
@@ -630,21 +635,24 @@ AskUserQuestion({
 })
 ```
 
-If "Revise": Address feedback and re-run `/sandbox feature` for this issue
+If "Revise": Address feedback and re-run Step 3.3.1 for this issue
 If "Skip": Continue to next feature
 
-**3. Implementation & Review**
+##### 3.3.4: Implementation
 
-After approval:
+After approval, run `/initiative-implement` in the sandbox:
 
 ```bash
-/sandbox continue <sandbox-id>
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/initiative-implement #<issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
 ```
 
-This will:
-- Execute implementation
-- Run validation tests
-- Return review results
+##### 3.3.5: Review
+
+Run review in sandbox:
+
+```bash
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/review #<issue>" --sandbox ${sandboxId}
+```
 
 If review has blocking issues:
 
@@ -660,32 +668,41 @@ AskUserQuestion({
 })
 ```
 
-**4. Commit & Document**
+##### 3.3.6: Commit Feature
 
-After review passes:
+After review passes, commit in sandbox:
 
 ```bash
-/sandbox approve <sandbox-id>
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/commit initiative-orchestrator feat <scope>" --sandbox ${sandboxId}
 ```
 
-This will:
-- Commit changes with proper message
-- Push to feature branch
-- Start documentation (background)
-
-**5. Progress Checkpoint**
+##### 3.3.7: Progress Checkpoint
 
 ```
 [PROGRESS] Feature X/N: <name> ✓ COMPLETE
   - Branch: feature/<slug>
-  - Sandbox: <sandbox-id>
+  - Sandbox: <sandboxId>
   - Changes: <file count> files
-  - Status: Ready for PR
+  - Status: Committed
 ```
 
-**6. Continue to Next Feature**
+##### 3.3.8: Validate Sandbox Still Running
 
-Loop back to step 1 with next feature in dependency order
+Before processing next feature, verify sandbox is alive:
+
+```bash
+./.claude/skills/e2b-sandbox/scripts/sandbox status ${sandboxId}
+```
+
+If sandbox has timed out:
+1. Create new sandbox: `./sandbox create --template slideheroes-claude-agent --timeout 3600`
+2. Pull the feature branch: `run-claude "git fetch && git checkout feature/${slug}"`
+3. Update `sandboxId` state variable
+4. Continue with next feature
+
+##### 3.3.9: Continue to Next Feature
+
+Loop back to Step 3.3.1 with next feature in dependency order
 
 ---
 
@@ -871,9 +888,18 @@ If sandbox times out:
 |-------|---------|
 | `review-expert` | Delegated implementation review |
 | `documentation-expert` | Delegated documentation creation |
-| `perplexity-expert` | Web research for technologies |
-| `context7-expert` | Library documentation lookup |
 | `Explore` | Codebase pattern exploration |
+
+## Research Tools (Used via Bash in /initiative-research)
+
+| Tool | Purpose |
+|------|---------|
+| `.ai/bin/context7-get-context` | Library documentation lookup |
+| `.ai/bin/perplexity-chat` | Best practices research with citations |
+| `.ai/bin/perplexity-search` | Web search for specific resources |
+
+> **Note**: Research tools are invoked via direct Bash commands, not Task agents.
+> This is because agents within agents don't work in Claude Code.
 
 ---
 
