@@ -1,6 +1,6 @@
 ---
 description: Sandbox-optimized feature-set decomposition that loads research manifest and outputs structured data for /initiative orchestrator
-argument-hint: [initiative-description] --manifest [path]
+argument-hint: [initiative-description] --manifest [path] [--dry-run]
 model: opus
 allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
@@ -8,6 +8,16 @@ allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 # Initiative Feature Set Decomposition
 
 Sandbox-optimized version of `/feature-set` that integrates with the `/initiative` orchestrator workflow. Loads pre-generated research manifest and outputs structured data for orchestration.
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `--manifest <path>` | Path to research manifest file |
+| `--dry-run` | **Default**. Decompose and create local plan files only. NO GitHub issues created. |
+| `--create-issues` | Create GitHub issues after user approval. Must be explicitly specified. |
+
+**IMPORTANT**: GitHub issues are ONLY created when `--create-issues` is explicitly passed. This ensures user approval gate before any GitHub modifications.
 
 ## Key Differences from /feature-set
 
@@ -17,6 +27,7 @@ Sandbox-optimized version of `/feature-set` that integrates with the `/initiativ
 | Output | Human-readable report | Structured JSON + files |
 | Context | Standalone command | Part of /initiative workflow |
 | Interview | Full user interview | Minimal (context from orchestrator) |
+| GitHub | Creates issues by default | `--dry-run` default, `--create-issues` explicit |
 
 ## Instructions
 
@@ -32,12 +43,19 @@ Extract from `$ARGUMENTS`:
 
 ```typescript
 // Expected format:
-// $ARGUMENTS = "local-first architecture with RxDB --manifest .ai/research/local-first-rxdb/manifest.md"
+// $ARGUMENTS = "local-first architecture with RxDB --manifest .ai/reports/feature-reports/2024-12-16/local-first-rxdb/manifest.md"
+// $ARGUMENTS = "local-first architecture with RxDB --manifest <path> --create-issues"
 
 const args = "$ARGUMENTS";
 const manifestMatch = args.match(/--manifest\s+(\S+)/);
 const manifestPath = manifestMatch ? manifestMatch[1] : null;
-const initiative = args.replace(/--manifest\s+\S+/, '').trim();
+const isDryRun = !args.includes('--create-issues'); // Default is dry-run
+const createIssues = args.includes('--create-issues');
+const initiative = args
+  .replace(/--manifest\s+\S+/, '')
+  .replace(/--dry-run/, '')
+  .replace(/--create-issues/, '')
+  .trim();
 ```
 
 ### Step 2: Load Research Manifest
@@ -116,7 +134,24 @@ Feature B (shared utils) ────┘
 - Features integrating Phase 2 components
 - Testing and polish
 
-### Step 7: Create GitHub Issues
+### Step 7: Create GitHub Issues (ONLY if `--create-issues` flag is set)
+
+**GATE CHECK**: Only create GitHub issues if `createIssues === true`.
+
+```typescript
+if (!createIssues) {
+  // DRY-RUN MODE: Skip GitHub issue creation
+  // Output plan files only, return structured JSON with placeholder issue numbers
+  console.log("🔒 DRY-RUN MODE: Skipping GitHub issue creation");
+  console.log("   To create issues, re-run with --create-issues flag");
+  // Continue to Step 8 with placeholder data
+} else {
+  // CREATE-ISSUES MODE: Proceed with GitHub issue creation
+  // Follow standard GitHub issue creation process (see /feature-set)
+}
+```
+
+**If `createIssues === true`**:
 
 Follow standard GitHub issue creation process (see /feature-set).
 
@@ -126,13 +161,22 @@ Create:
 3. Link with dependencies
 4. Create github-mapping.md
 
+**If dry-run mode (default)**:
+
+1. Create local plan files only
+2. Output structured JSON with `"issues_created": false`
+3. Include placeholder issue numbers as `-1` or `null`
+
 ### Step 8: Generate Structured Output
 
 **CRITICAL**: Output structured JSON for orchestrator:
 
+**When `--create-issues` is set (issues created)**:
+
 ```json
 {
   "success": true,
+  "issues_created": true,
   "initiative": {
     "title": "Local-First Architecture with RxDB",
     "slug": "local-first-rxdb",
@@ -180,6 +224,44 @@ Create:
   },
   "plan_file": ".ai/specs/feature-sets/local-first-rxdb/123-overview.md",
   "mapping_file": ".ai/specs/feature-sets/local-first-rxdb/github-mapping.md"
+}
+```
+
+**When dry-run mode (default, no issues created)**:
+
+```json
+{
+  "success": true,
+  "issues_created": false,
+  "initiative": {
+    "title": "Local-First Architecture with RxDB",
+    "slug": "local-first-rxdb",
+    "description": "Implement local-first data architecture with encrypted sync"
+  },
+  "master_issue": null,
+  "features": [
+    {
+      "name": "Database Schema Layer",
+      "issue_number": null,
+      "phase": 1,
+      "dependencies": [],
+      "effort": "M",
+      "description": "Create RxDB schemas and collections for presentation data"
+    }
+  ],
+  "dependency_graph": {
+    "feature-0": [],
+    "feature-1": [],
+    "feature-2": ["feature-0", "feature-1"]
+  },
+  "phases": {
+    "1": {"name": "Foundation", "features": ["feature-0", "feature-1"]},
+    "2": {"name": "Core Implementation", "features": ["feature-2"]},
+    "3": {"name": "Integration", "features": []}
+  },
+  "plan_file": ".ai/specs/feature-sets/local-first-rxdb/pending-overview.md",
+  "mapping_file": null,
+  "next_step": "Review decomposition, then run with --create-issues to create GitHub issues"
 }
 ```
 
