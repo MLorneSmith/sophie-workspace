@@ -108,6 +108,65 @@ Orchestrate the complete lifecycle of a large feature initiative:
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+## State Variables (Track Throughout)
+
+**CRITICAL**: Track these variables throughout execution. If any required variable is empty at the start of a phase, STOP and backfill the missing value.
+
+| Variable | Set In | Value | Status |
+|----------|--------|-------|--------|
+| `slug` | Step 1.1 | Initiative slug (kebab-case, max 30 chars) | ⬜ |
+| `manifestPath` | Step 1.5 | `.ai/research/{slug}/manifest.md` | ⬜ |
+| `masterIssueNumber` | Step 2.1 | GitHub issue number from feature-set | ⬜ |
+| `featureIssues[]` | Step 2.1 | Array of feature issue numbers | ⬜ |
+| `branchName` | Step 2.5 | `feature/{slug}` or custom | ⬜ |
+| `sandboxId` | Step 3.1 | E2B sandbox ID from creation | ⬜ |
+| `prNumber` | Step 4.2 | GitHub PR number from creation | ⬜ |
+
+**How to Use:**
+- Update this table as you progress through each step
+- Check at phase boundaries: before Phase 2, Phase 3, Phase 4
+- If a variable is missing, search back to find where it should have been set
+- Print this table for reference during long implementation sessions
+
+---
+
+## Pre-Phase Assertions
+
+### Pre-Phase 2 Assertions
+
+**STOP if any of these are false. Resolve before proceeding.**
+
+- [ ] User has been interviewed (Question 1, 2, 3 completed)
+- [ ] Research agents have completed (perplexity, context7, Explore)
+- [ ] Research manifest exists at `.ai/research/<slug>/manifest.md` and is readable
+- [ ] Research reports saved to `.ai/reports/research-reports/<date>/`
+
+**If assertion fails**: Go back to Phase 1 and complete the missing steps. Do not proceed to Phase 2.
+
+### Pre-Phase 3 Assertions
+
+**STOP if any of these are false. Resolve before proceeding.**
+
+- [ ] `masterIssueNumber` is set (from feature-set decomposition)
+- [ ] `featureIssues[]` has at least one issue number
+- [ ] `manifestPath` exists and is readable
+- [ ] User has approved decomposition (approval gate passed)
+
+**If assertion fails**: Go back to Phase 2 and verify decomposition completed successfully. Do not proceed to Phase 3.
+
+### Pre-Phase 4 Assertions
+
+**STOP if any of these are false. Resolve before proceeding.**
+
+- [ ] All features processed (each feature has ✓ complete status)
+- [ ] `sandboxId` is set (sandbox created and alive)
+- [ ] All feature branches merged to feature branch
+- [ ] Documentation tasks completed (background documentation agents finished)
+
+**If assertion fails**: Resume feature loop or handle incomplete features. Do not proceed to Phase 4.
+
+---
+
 ## Instructions
 
 ### Phase 1: Interview & Research
@@ -286,13 +345,15 @@ mkdir -p .ai/reports/research-reports/<date>
 
 ### Phase 2: Decomposition
 
-#### Step 2.1: Run Feature-Set Decomposition
+#### Step 2.1: YOU MUST Execute /initiative-feature-set (MANDATORY)
 
-Delegate to /initiative-feature-set with research manifest:
+**Do NOT manually decompose. The sub-command handles critical GitHub integration.**
+
+Execute the feature-set decomposition sub-command:
 
 ```typescript
 Task(general-purpose, prompt: `
-  Execute the /initiative-feature-set command:
+  YOU MUST execute the /initiative-feature-set command. This is not optional.
 
   /initiative-feature-set "${initiative}" --manifest .ai/research/${slug}/manifest.md
 
@@ -302,9 +363,35 @@ Task(general-purpose, prompt: `
   3. Create GitHub issues (master + feature stubs)
   4. Return structured JSON with feature list and dependencies
 
-  Return the JSON output for orchestrator consumption.
+  Do NOT skip this step. It handles essential GitHub integration.
+  Return the full JSON output for orchestrator consumption.
 `)
 ```
+
+#### Validation After Sub-Command Execution
+
+**VERIFY that delegation completed successfully:**
+
+- [ ] Master issue created (GitHub issue #<number> exists)
+- [ ] Feature stub issues created (count matches expected from decomposition)
+- [ ] `.claude/specs/<slug>/github-mapping.md` file exists
+- [ ] Structured JSON output received with feature list and dependencies
+
+**If any validation fails:**
+
+```bash
+# Check GitHub for created issues
+gh issue list --repo MLorneSmith/2025slideheroes --label "area:feature-set-<slug>"
+
+# Check for mapping file
+ls -la .claude/specs/<slug>/github-mapping.md
+```
+
+If issues are missing or mapping file doesn't exist:
+1. Sub-command may have failed silently
+2. Check error logs from the Task agent
+3. Retry the sub-command execution
+4. Do NOT proceed until all validation passes
 
 #### Step 2.2: Parse Decomposition Results
 
@@ -347,16 +434,88 @@ AskUserQuestion({
 
 ---
 
+### Step 2.5: Create Feature Branch (MANDATORY)
+
+**This step MUST execute before Phase 3. Work happens on isolated branch, not dev/main.**
+
+#### Option 1: Manual Branch Creation
+
+```bash
+git checkout -b feature/${slug}
+```
+
+#### Option 2: Sandbox-Based Creation
+
+Use the `/sandbox feature` command which creates branch automatically:
+
+```bash
+/sandbox feature "${initiative}"
+```
+
+#### Validation
+
+**Run this to confirm you're on the correct branch:**
+
+```bash
+git branch --show-current
+```
+
+**Expected output**: `feature/<slug>` (NOT `dev` or `main`)
+
+**If output is wrong:**
+- STOP
+- Run `git checkout -b feature/${slug}` to create correct branch
+- Do NOT proceed to Phase 3 until on correct branch
+
+#### State Tracking
+
+Update the state variables table:
+- `branchName` = output of `git branch --show-current`
+
+**[PROGRESS]** Feature branch created: <branch-name> ✓
+
+---
+
 ### Phase 3: Feature Loop (E2B Sandbox)
 
-#### Step 3.1: Create E2B Sandbox
+#### Step 3.1: MANDATORY: Create E2B Sandbox
+
+**This step is NOT optional. E2B sandbox isolation is a core safety requirement.**
 
 ```bash
 # Create sandbox using the project's template
-./.claude/skills/e2b-sandbox/scripts/sandbox create --timeout 3600
+/sandbox feature "${initiative}"
 ```
 
-Capture sandbox ID for subsequent operations.
+This command will:
+1. Create isolated E2B sandbox with slideheroes-claude-agent template
+2. Set up sandbox environment with dependencies
+3. Return sandbox ID (capture this)
+
+#### Required Output
+
+You MUST capture and record:
+- `sandboxId` = ID of created sandbox
+- Sandbox status = "running"
+
+**Validation**:
+
+If you cannot provide a sandbox ID, STOP and troubleshoot before proceeding:
+
+```bash
+# Check sandbox status
+/sandbox list
+```
+
+**If sandbox creation fails:**
+1. Review error message
+2. Check E2B account status and quota
+3. Try again with explicit timeout: `/sandbox create --timeout 7200`
+4. If still failing, STOP and review E2B troubleshooting docs
+
+**If you skip this step**, Phase 3 feature implementations will execute in local environment instead of isolated sandbox, compromising the core safety principle.
+
+**[PROGRESS]** E2B sandbox created: sandboxId=<id> ✓
 
 #### Step 3.2: Sync Research Manifest to Sandbox
 
@@ -367,67 +526,99 @@ Capture sandbox ID for subsequent operations.
 
 #### Step 3.3: Feature Loop
 
-Process features in dependency order (Phase 1 first, then Phase 2, etc.):
+Process features in dependency order. Use `/sandbox feature` workflow for each feature:
+
+**For EACH feature (in dependency order):**
+
+**1. Create Sandbox Feature**
+
+```bash
+/sandbox feature "#<issue> <description>" --manifest ${manifestPath}
+```
+
+This command:
+- Plans the feature using `/initiative-feature`
+- Implements the feature using `/initiative-implement`
+- Runs validation
+- Returns structured output with results
+
+**Example:**
+```bash
+/sandbox feature "#42 Add OAuth2 social login" --manifest .ai/research/oauth-login/manifest.md
+```
+
+**2. User Approval Gate**
+
+After plan is generated:
 
 ```typescript
-for (const feature of features.sortedByDependency()) {
-  // Check dependencies are complete
-  if (!feature.dependenciesMet()) {
-    // Handle blocked feature
-    continue;
-  }
-
-  console.log(`[PROGRESS] Feature ${current}/${total}: ${feature.name}`);
-
-  // === PLANNING ===
-  const planResult = await runInSandbox(`
-    /initiative-feature ${feature.issueNumber} --manifest ${manifestPath}
-  `);
-
-  // [GATE] User approves plan?
-  const planApproval = await AskUserQuestion({
-    question: `Approve plan for "${feature.name}"?`,
-    header: "Plan",
-    options: [
-      { label: "Approve", description: "Proceed with implementation" },
-      { label: "Revise", description: "Request changes to plan" },
-      { label: "Skip", description: "Skip this feature for now" }
-    ]
-  });
-
-  if (planApproval === "Skip") continue;
-  if (planApproval === "Revise") {
-    // Handle revision loop
-  }
-
-  // === IMPLEMENTATION ===
-  const implResult = await runInSandbox(`
-    /initiative-implement ${feature.issueNumber} --manifest ${manifestPath}
-  `);
-
-  // === REVIEW ===
-  const reviewResult = await Task(review-expert, `${feature.issueNumber}`);
-
-  // [GATE] Review passed?
-  if (!reviewResult.success) {
-    const reviewAction = await AskUserQuestion({
-      question: `Review found blocking issues. How to proceed?`,
-      header: "Review",
-      options: [
-        { label: "Fix issues", description: "Attempt to fix blocking issues" },
-        { label: "Skip feature", description: "Mark as needs-work, continue" },
-        { label: "Pause initiative", description: "Stop and review manually" }
-      ]
-    });
-    // Handle based on choice
-  }
-
-  // === DOCUMENTATION (Background) ===
-  Task(documentation-expert, `${feature.issueNumber}`, run_in_background: true);
-
-  console.log(`[PROGRESS] Feature ${current}/${total} complete ✓`);
-}
+AskUserQuestion({
+  question: `Approve plan for feature "#<issue>"?`,
+  header: "Plan",
+  options: [
+    { label: "Approve", description: "Proceed with implementation" },
+    { label: "Revise", description: "Request changes to plan" },
+    { label: "Skip", description: "Skip this feature for now" }
+  ]
+})
 ```
+
+If "Revise": Address feedback and re-run `/sandbox feature` for this issue
+If "Skip": Continue to next feature
+
+**3. Implementation & Review**
+
+After approval:
+
+```bash
+/sandbox continue <sandbox-id>
+```
+
+This will:
+- Execute implementation
+- Run validation tests
+- Return review results
+
+If review has blocking issues:
+
+```typescript
+AskUserQuestion({
+  question: `Review found blocking issues. How to proceed?`,
+  header: "Review",
+  options: [
+    { label: "Fix issues", description: "Attempt to fix blocking issues" },
+    { label: "Skip feature", description: "Mark as needs-work, continue" },
+    { label: "Pause initiative", description: "Stop and review manually" }
+  ]
+})
+```
+
+**4. Commit & Document**
+
+After review passes:
+
+```bash
+/sandbox approve <sandbox-id>
+```
+
+This will:
+- Commit changes with proper message
+- Push to feature branch
+- Start documentation (background)
+
+**5. Progress Checkpoint**
+
+```
+[PROGRESS] Feature X/N: <name> ✓ COMPLETE
+  - Branch: feature/<slug>
+  - Sandbox: <sandbox-id>
+  - Changes: <file count> files
+  - Status: Ready for PR
+```
+
+**6. Continue to Next Feature**
+
+Loop back to step 1 with next feature in dependency order
 
 ---
 
