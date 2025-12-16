@@ -47,16 +47,15 @@ Orchestrate the complete lifecycle of a large feature initiative:
 │  /initiative "local-first architecture with RxDB encrypted sync"         │
 │       │                                                                  │
 │       │  ╔═══════════════════════════════════════════════════════════╗   │
-│       │  ║  PHASE 1: INTERVIEW & RESEARCH (Local - Fast)             ║   │
+│       │  ║  PHASE 1: INTERVIEW & RESEARCH (DELEGATED TO SUB-AGENT)   ║   │
 │       │  ╚═══════════════════════════════════════════════════════════╝   │
 │       │                                                                  │
-│       ├─> Interview user (scope, technologies, constraints)              │
-│       ├─> Launch research agents IN PARALLEL:                            │
-│       │       • Task(perplexity-expert): Technology research             │
-│       │       • Task(context7-expert): Library documentation             │
-│       │       • Task(Explore): Codebase patterns                         │
-│       ├─> Create manifest: .ai/reports/feature-reports/<date>/<slug>/    │
-│       ├─> [PROGRESS] Research complete ✓                                 │
+│       ├─> Task(general-purpose): /initiative-research                    │
+│       │       • Interview user (scope, technologies, constraints)        │
+│       │       • Launch research agents (perplexity, context7, Explore)   │
+│       │       • Synthesize research into manifest                        │
+│       │       • Return: manifest path + research summary JSON            │
+│       ├─> [PROGRESS] Research complete ✓ (context preserved)             │
 │       │                                                                  │
 │       │  ╔═══════════════════════════════════════════════════════════╗   │
 │       │  ║  PHASE 2: DECOMPOSITION (Local)                           ║   │
@@ -209,9 +208,15 @@ This cannot be rationalized away or skipped silently. The user MUST make an expl
 
 ## Instructions
 
-### Phase 1: Interview & Research
+### Phase 1: Interview & Research (DELEGATED TO SUB-AGENT)
 
-#### Step 1.1: Parse Initiative Description and Flags
+**Context Optimization**: Phase 1 is delegated to `/initiative-research` sub-agent to preserve orchestrator context for decomposition and implementation phases. The sub-agent handles:
+- User interview
+- Research agent coordination (perplexity, context7, Explore)
+- Research synthesis
+- Manifest creation
+
+#### Step 1.1: Parse Arguments (Orchestrator)
 
 ```typescript
 const args = "$ARGUMENTS";
@@ -222,237 +227,65 @@ const slug = initiative
   .replace(/[^a-z0-9]+/g, '-')
   .substring(0, 30);
 const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-
-if (quickMode) {
-  console.log("🚀 QUICK MODE: Skipping external research agents");
-  console.log("   Using codebase patterns only for decomposition");
-}
 ```
 
-#### Step 1.2: Interview User
+#### Step 1.2: Delegate Research to Sub-Agent
 
-Use AskUserQuestion to gather context:
+**CRITICAL**: Delegate the entire research phase to preserve orchestrator context.
 
 ```typescript
-// Question 1: Technologies
-{
-  question: "What technologies or libraries are involved in this initiative?",
-  header: "Technologies",
-  options: [
-    { label: "Specify in next question", description: "I'll describe the technologies" },
-    { label: "Research needed", description: "I'm not sure, please research" }
-  ]
-}
+// Launch research sub-agent
+const researchAgent = Task(general-purpose, prompt: `
+  Execute the /initiative-research command to conduct the research phase.
 
-// Question 2: Dynamic Clarification (GENERATE FROM INITIATIVE DESCRIPTION)
-// Analyze the initiative description and generate a context-aware clarifying question.
-// The question should help understand, flesh out, and define:
-// - Ambiguous terms or scope
-// - Key decision points that affect implementation
-// - Expected outcomes or success criteria
-// - Technical trade-offs that need resolution
-//
-// Example input: "local-first architecture with RxDB"
-// Example generated question: "Should the local-first sync prioritize offline-first
-// (data available immediately, syncs when online) or real-time collaboration
-// (sync conflicts handled live)?"
-//
-// To generate the dynamic question:
-// 1. Parse the initiative description: "${initiative}"
-// 2. Identify ambiguous terms, unclear scope, or missing success criteria
-// 3. Generate a targeted question that clarifies the most important ambiguity
-// 4. Provide 2-4 options that represent distinct approaches or interpretations
-{
-  question: "<GENERATED: Analyze initiative description and create clarifying question>",
-  header: "Clarify",
-  options: [
-    { label: "<Option 1>", description: "<Approach/interpretation 1>" },
-    { label: "<Option 2>", description: "<Approach/interpretation 2>" }
-    // Add more options as needed based on the initiative
-  ]
-}
+  /initiative-research "${initiative}"${quickMode ? ' --quick' : ''}
 
-// Question 3: Feature count expectation
-{
-  question: "How many features do you expect this initiative to produce?",
-  header: "Size",
-  options: [
-    { label: "Small (1-3 features)", description: "Focused initiative" },
-    { label: "Medium (4-7 features)", description: "Standard initiative" },
-    { label: "Large (8+ features)", description: "Complex initiative" }
-  ]
-}
+  This will:
+  1. Interview the user about technologies and scope
+  2. Launch research agents (perplexity, context7, Explore) - or just Explore in quick mode
+  3. Collect and synthesize research results
+  4. Create the research manifest at .ai/reports/feature-reports/${todayDate}/${slug}/manifest.md
+  5. Return structured JSON with manifest path and research summary
+
+  Execute this command and return the full output including the JSON block.
+`)
 ```
 
-#### Step 1.3: Launch Research Agents (PARALLEL) - Conditional on Mode
+#### Step 1.3: Parse Research Output
 
-**Mode determines which research agents to launch:**
+Extract structured data from the sub-agent's output:
 
 ```typescript
-if (quickMode) {
-  // QUICK MODE: Only explore codebase, skip external research
-  console.log("🚀 QUICK MODE: Launching codebase exploration only");
+// Look for JSON block in output
+// Format: === RESEARCH OUTPUT === { ... } === END RESEARCH OUTPUT ===
+const researchOutput = parseJSONFromOutput(researchAgent.output);
 
-  Task(Explore, prompt: `
-    Explore this codebase for patterns relevant to: ${initiative}
-    Focus on:
-    - Similar implementations
-    - Data fetching patterns
-    - State management approaches
-    - Testing patterns
-    Return file paths and pattern descriptions.
-  `, run_in_background: true)
+// Extract key variables for orchestrator
+const manifestPath = researchOutput.manifest_path;
+const researchSummary = researchOutput.research_summary;
 
-  // Skip perplexity-expert and context7-expert
-  // Proceed directly to Step 1.4 with partial results
-
-} else {
-  // FULL MODE: Launch all three research agents simultaneously
-  console.log("📚 FULL MODE: Launching all research agents in parallel");
-
-  Task(perplexity-expert, prompt: `
-    Research best practices for: ${initiative}
-    Focus on:
-    - Implementation patterns for 2024-2025
-    - Common pitfalls and gotchas
-    - Security considerations
-    - Performance optimizations
-    Return structured findings.
-  `, run_in_background: true)
-
-  Task(context7-expert, prompt: `
-    Get comprehensive documentation for libraries involved in: ${initiative}
-    Focus on:
-    - API references and examples
-    - Migration guides if applicable
-    - TypeScript integration
-    - React/Next.js patterns
-    Return key code examples.
-  `, run_in_background: true)
-
-  Task(Explore, prompt: `
-    Explore this codebase for patterns relevant to: ${initiative}
-    Focus on:
-    - Similar implementations
-    - Data fetching patterns
-    - State management approaches
-    - Testing patterns
-    Return file paths and pattern descriptions.
-  `, run_in_background: true)
-}
+// Update state variables
+slug = researchOutput.initiative.slug;
+todayDate = researchOutput.date;
 ```
 
-#### Step 1.4: Collect Research Results
+#### Step 1.4: Validate Research Completion
 
-Wait for research agents to complete (varies by mode):
+**VERIFY that research phase completed successfully:**
 
 ```typescript
-if (quickMode) {
-  // QUICK MODE: Only collect Explore results
-  const exploreResults = AgentOutputTool(agentId: exploreAgentId);
-  const perplexityResults = null; // Not launched
-  const context7Results = null;   // Not launched
+if (!researchOutput.success) {
+  throw new Error("Research phase failed. Cannot proceed to decomposition.");
+}
 
-  console.log("🚀 QUICK MODE: Codebase exploration complete");
-
-} else {
-  // FULL MODE: Collect all three results
-  const perplexityResults = AgentOutputTool(agentId: perplexityAgentId);
-  const context7Results = AgentOutputTool(agentId: context7AgentId);
-  const exploreResults = AgentOutputTool(agentId: exploreAgentId);
-
-  console.log("📚 FULL MODE: All research complete");
+// Verify manifest file exists
+const manifestExists = await fileExists(manifestPath);
+if (!manifestExists) {
+  throw new Error(`Manifest not found at ${manifestPath}`);
 }
 ```
 
-#### Step 1.5: Create Research Manifest
-
-Create the initiative directory with all artifacts in a single location:
-
-```bash
-# All initiative artifacts go in one consolidated location
-mkdir -p .ai/reports/feature-reports/<date>/<slug>/research
-```
-
-Write manifest to the initiative directory.
-
-**Full Mode Manifest:**
-
-```markdown
-# Research Manifest: <Initiative Name>
-
-## Quick Reference
-| Field | Value |
-|-------|-------|
-| **Initiative** | <initiative description> |
-| **Mode** | full |
-| **Technologies** | <from research> |
-| **Research Date** | <today's date> |
-| **GitHub Issue** | #<pending - will be updated> |
-| **Status** | active |
-
-## Research Reports
-- [Perplexity Research](./research/perplexity-<slug>.md)
-- [Context7 Documentation](./research/context7-<slug>.md)
-- [Codebase Patterns](./research/explore-<slug>.md)
-
-## Key Findings Summary
-<Synthesize findings from all three research agents>
-
-### Technology Overview
-<From perplexity-expert>
-
-### Recommended Patterns
-<From context7-expert code examples>
-
-### Code Examples
-<Key examples from context7-expert>
-
-## Gotchas & Warnings
-<Critical issues from perplexity-expert>
-
-## Existing Codebase Patterns
-<From Explore agent>
-
-## Feature Mapping
-<Will be populated after decomposition>
-```
-
-**Quick Mode Manifest (Simplified):**
-
-```markdown
-# Research Manifest: <Initiative Name>
-
-## Quick Reference
-| Field | Value |
-|-------|-------|
-| **Initiative** | <initiative description> |
-| **Mode** | quick |
-| **Technologies** | <inferred from codebase> |
-| **Research Date** | <today's date> |
-| **GitHub Issue** | #<pending - will be updated> |
-| **Status** | active |
-
-## Research Reports
-- [Codebase Patterns](./research/explore-<slug>.md)
-
-⚠️ **Quick Mode**: External research (Perplexity, Context7) was skipped.
-Decomposition is based on codebase patterns only.
-
-## Existing Codebase Patterns
-<From Explore agent>
-
-## Feature Mapping
-<Will be populated after decomposition>
-```
-
-Save research reports to the same initiative directory:
-```bash
-# Save each agent's output as separate report in the research subdirectory
-# Example: .ai/reports/feature-reports/2024-12-16/local-first-rxdb/research/perplexity-local-first-rxdb.md
-```
-
-**[PROGRESS]** Research complete ✓
+**[PROGRESS]** Research complete ✓ (delegated to sub-agent)
 
 ---
 
@@ -1023,6 +856,7 @@ If sandbox times out:
 
 | Command | Purpose |
 |---------|---------|
+| `/initiative-research` | **Phase 1 sub-agent**: Interview, research, manifest creation |
 | `/initiative-feature-set` | Decompose initiative into features |
 | `/initiative-feature` | Create detailed plan for a feature |
 | `/initiative-implement` | Execute a feature plan |
