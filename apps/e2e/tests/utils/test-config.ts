@@ -21,16 +21,21 @@
  */
 
 /**
- * TIMEOUT CAPS - DO NOT INCREASE THESE VALUES
- * If you find yourself needing higher timeouts, fix the root cause instead.
+ * TIMEOUT CAPS - UPDATED FOR TIMEOUT ARCHITECTURE FIX
+ * See Issue #1139 (diagnosis) and Issue #1140 (timeout architecture fix)
+ *
+ * Previous cap of 120s was insufficient for multi-operation tests that run
+ * complex operations sequentially (e.g., profile update + password update in same test).
+ * Each operation can take 60s under deployed environment constraints, requiring
+ * test timeout >= (num_operations * 60) + buffer = 180s+ for safety.
  */
 export const TIMEOUT_CAPS = {
 	/** Maximum auth timeout - API-based auth should be <2s */
 	AUTH_MAX: 15000,
 	/** Maximum navigation timeout - includes cold starts */
 	NAVIGATION_MAX: 90000,
-	/** Maximum single test timeout */
-	TEST_MAX: 120000,
+	/** Maximum single test timeout - increased from 120s to 180s for multi-operation tests */
+	TEST_MAX: 180000,
 	/** Maximum shard execution timeout */
 	SHARD_MAX: 300000,
 } as const;

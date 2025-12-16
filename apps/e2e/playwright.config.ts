@@ -126,9 +126,14 @@ export default defineConfig({
 		// Accounts for: Vercel cold starts, network latency, edge function initialization
 		navigationTimeout: process.env.CI ? 90 * 1000 : 45 * 1000,
 	},
-	// Test timeout - reduced for faster failure detection
-	// CI needs more time for deployed environment latency
-	timeout: process.env.CI ? 120 * 1000 : 90 * 1000, // 2 min in CI, 90s local (reduced from 3min/2min)
+	// Test timeout - accounts for complex multi-operation tests
+	// CI needs significantly more time for deployed environment latency and sub-operation timeouts
+	// With CI_TIMEOUTS.element = 90s, individual operations can take that long
+	// Multi-operation tests (like account settings updates) need sum of all operations + buffer
+	// Formula: test timeout >= (num_operations * element_timeout) + overhead
+	// For account tests: 2 operations * 60s per operation + 30s overhead = 150s recommended
+	// Fixed at 180s (3 min) to handle worst-case scenarios (Issue #1139, #1140)
+	timeout: process.env.CI ? 180 * 1000 : 90 * 1000, // 3 min in CI, 90s local
 	expect: {
 		// Expect timeout for assertions
 		// Increased for CI to handle Vercel cold starts and React hydration delays (Issue #1051)

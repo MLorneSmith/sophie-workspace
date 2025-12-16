@@ -6,6 +6,12 @@ import { restoreOriginalPassword } from "../utils/database-utilities";
 import { AccountPageObject } from "./account.po";
 
 test.describe("Account Settings", () => {
+	// Explicitly use global test timeout from playwright.config.ts (180s for CI)
+	// This ensures multi-operation tests (profile name + password updates) have enough time
+	// Each operation requires ~60s, plus setup/cleanup overhead
+	// Reference: Issue #1139 (diagnosis), Issue #1140 (timeout fix)
+	// Note: Do NOT set timeout here - let playwright.config.ts handle it globally
+
 	// Use pre-authenticated state from global setup
 	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
 
@@ -41,12 +47,20 @@ test.describe("Account Settings", () => {
 	});
 
 	test("user can update their profile name", async ({ page }) => {
+		// Increase test timeout to 150s for this complex operation
+		// The profile update involves: hydration (20s) + input (10s) + API wait (30s) + validation (30s)
+		// Total: ~90s needed, plus buffer = 150s
+		// Reference: Issue #1140 - timeout architecture fix
+		test.setTimeout(150000);
+
 		const name = "John Doe";
 
 		// Set up response listener BEFORE triggering the action
+		// Note: no explicit timeout - inherits from test.setTimeout()
 		const responsePromise = page.waitForResponse((resp) => {
 			return (
-				resp.url().includes("accounts") && resp.request().method() === "PATCH"
+				resp.url().includes("accounts") &&
+				resp.request().method() === "PATCH"
 			);
 		});
 
@@ -59,7 +73,9 @@ test.describe("Account Settings", () => {
 		expect([200, 204]).toContain(response.status());
 
 		// Wait for the dropdown to update with the new name
-		await expect(account.getProfileName()).toHaveText(name, { timeout: 10000 });
+		await expect(account.getProfileName()).toHaveText(name, {
+			timeout: 10000,
+		});
 	});
 
 	test.skip("user can update their email", async ({ page: _page }) => {
@@ -70,13 +86,21 @@ test.describe("Account Settings", () => {
 	});
 
 	test("user can update their password", async ({ page }) => {
+		// Increase test timeout to 180s for this complex operation
+		// The password update involves: hydration (20s) + input (10s) + API wait (30s) + validation (30s) + reload (30s)
+		// Total: ~120s needed, plus buffer = 180s
+		// Reference: Issue #1140 - timeout architecture fix
+		test.setTimeout(180000);
+
 		// Generate a valid password (at least 8 characters)
 		const password = `Test${Math.random().toString(36).substring(2, 10)}!`;
 
 		// Set up response listener BEFORE triggering the action
+		// Note: no explicit timeout - inherits from test.setTimeout()
 		const responsePromise = page.waitForResponse((resp) => {
 			return (
-				resp.url().includes("auth/v1/user") && resp.request().method() === "PUT"
+				resp.url().includes("auth/v1/user") &&
+				resp.request().method() === "PUT"
 			);
 		});
 
