@@ -352,42 +352,35 @@ async function globalSetup(config: FullConfig) {
 	}
 
 	// Initialize Supabase client
-	// CRITICAL: Cookie names are derived from the Supabase URL hostname
-	// e.g., http://127.0.0.1:54521 -> sb-127-auth-token
-	//       http://host.docker.internal:54521 -> sb-host-auth-token
+	// CRITICAL: JWT issuer URL and cookie names are derived from the Supabase URL hostname
+	// e.g., http://127.0.0.1:54521 -> JWT iss: http://127.0.0.1:54521/auth/v1, cookie: sb-127-auth-token
+	//       http://host.docker.internal:54521 -> JWT iss: http://host.docker.internal:54521/auth/v1, cookie: sb-host-auth-token
 	//
 	// When running tests against a Docker server:
 	// - The server uses host.docker.internal (required for Docker to reach host)
-	// - E2E setup runs on host and can use 127.0.0.1 for authentication
-	// - But cookies must use the SAME name the server expects
+	// - E2E global setup MUST also use host.docker.internal for authentication
+	// - This ensures JWT tokens have matching issuer URLs (required for session validation)
+	// - See: Issue #1143 - E2E Password Update Test Fails - Supabase URL Mismatch
 	//
-	// Solution: Use two URLs:
-	// - supabaseAuthUrl: For authentication (127.0.0.1 works on host)
-	// - supabaseCookieUrl: For cookie naming (must match server's URL)
-	const supabaseAuthUrl =
-		process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
-	// For cookie naming, we need the URL the SERVER uses (not the E2E setup)
-	// Three-tier fallback:
-	// 1. E2E_SERVER_SUPABASE_URL - explicit override for any environment
-	// 2. CI environment (GitHub Actions) - use auth URL (same Supabase instance)
-	// 3. Local Docker - use host.docker.internal (for Docker-to-host communication)
-	const supabaseCookieUrl =
-		process.env.E2E_SERVER_SUPABASE_URL ||
+	// Solution: Use the SAME URL for both authentication and cookie naming:
+	// - Local Docker tests: host.docker.internal (resolves to host from containers AND host system)
+	// - CI environment: 127.0.0.1 (GitHub Actions runs Supabase locally without Docker networking)
+	const supabaseUrl =
+		process.env.E2E_SUPABASE_URL ||
 		(process.env.CI === "true"
-			? supabaseAuthUrl
+			? "http://127.0.0.1:54521"
 			: "http://host.docker.internal:54521");
+	// supabaseAuthUrl and supabaseCookieUrl use the same URL to ensure JWT issuer matches
+	const supabaseAuthUrl = supabaseUrl;
+	const supabaseCookieUrl = supabaseUrl;
 	const supabaseAnonKey =
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 		process.env.E2E_SUPABASE_ANON_KEY ||
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
-	// Log the Supabase URLs being used for debugging
+	// Log the Supabase URL being used for debugging
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
-	console.log(`🔗 Using Supabase Auth URL: ${supabaseAuthUrl}`);
-	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
-	console.log(
-		`🍪 Using Supabase Cookie URL: ${supabaseCookieUrl} (for cookie naming)`,
-	);
+	console.log(`🔗 Using Supabase URL: ${supabaseUrl} (auth + cookie naming)`);
 
 	// Create auth state directory if it doesn't exist
 	const authDir = join(cwd(), ".auth");

@@ -59,8 +59,7 @@ test.describe("Account Settings", () => {
 		// Note: no explicit timeout - inherits from test.setTimeout()
 		const responsePromise = page.waitForResponse((resp) => {
 			return (
-				resp.url().includes("accounts") &&
-				resp.request().method() === "PATCH"
+				resp.url().includes("accounts") && resp.request().method() === "PATCH"
 			);
 		});
 
@@ -99,8 +98,7 @@ test.describe("Account Settings", () => {
 		// Note: no explicit timeout - inherits from test.setTimeout()
 		const responsePromise = page.waitForResponse((resp) => {
 			return (
-				resp.url().includes("auth/v1/user") &&
-				resp.request().method() === "PUT"
+				resp.url().includes("auth/v1/user") && resp.request().method() === "PUT"
 			);
 		});
 
