@@ -195,27 +195,79 @@ AskUserQuestion({
 
 **Execute GitHub operations DIRECTLY in orchestrator**. Do NOT delegate to Task().
 
+**IMPORTANT: Issue Number Prefix Convention**
+
+After creating the master issue, rename all directories to include the issue number prefix.
+This ensures consistent organization and easy navigation.
+
 ```bash
-# Create master issue
-gh issue create \
+# Step 0: Ensure type:feature-set label exists (create if missing)
+if ! gh label list --repo MLorneSmith/2025slideheroes | grep -q "type:feature-set"; then
+  gh label create "type:feature-set" \
+    --description "Multi-feature initiative" \
+    --color "7057ff" \
+    --repo MLorneSmith/2025slideheroes
+  echo "Created missing label: type:feature-set"
+fi
+
+# Step 1: Create master issue FIRST (before renaming directories)
+MASTER_ISSUE=$(gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature Set: ${initiative}" \
   --body-file .ai/specs/feature-sets/${slug}/pending-overview.md \
   --label "type:feature-set" \
-  --label "status:planning"
+  --label "status:planning" \
+  | grep -oE '[0-9]+$')
 
-# Capture issue number, rename file
-MASTER_ISSUE=<from-output>
-mv .ai/specs/feature-sets/${slug}/pending-overview.md \
-   .ai/specs/feature-sets/${slug}/${MASTER_ISSUE}-overview.md
+echo "Created master issue: #${MASTER_ISSUE}"
 
-# Create feature stub issues (loop)
-gh issue create \
-  --repo MLorneSmith/2025slideheroes \
-  --title "Feature: <name>" \
-  --body "<stub-body>" \
-  --label "type:feature" \
-  --label "status:blocked"
+# Step 2: Rename directories with issue number prefix
+# Feature specs directory
+if [ -d ".ai/specs/feature-sets/${slug}" ]; then
+  mv ".ai/specs/feature-sets/${slug}" ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}"
+  echo "Renamed specs dir: ${MASTER_ISSUE}-${slug}"
+fi
+
+# Feature reports directory (same date)
+if [ -d ".ai/reports/feature-reports/${todayDate}/${slug}" ]; then
+  mv ".ai/reports/feature-reports/${todayDate}/${slug}" \
+     ".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}"
+  echo "Renamed reports dir: ${MASTER_ISSUE}-${slug}"
+fi
+
+# Step 3: Update file references inside renamed directories
+mv ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/pending-overview.md" \
+   ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/${MASTER_ISSUE}-overview.md"
+
+# Step 4: Create feature stub issues (loop)
+for feature in features; do
+  FEATURE_ISSUE=$(gh issue create \
+    --repo MLorneSmith/2025slideheroes \
+    --title "Feature: <name>" \
+    --body "<stub-body with parent ref #${MASTER_ISSUE}>" \
+    --label "type:feature" \
+    --label "status:blocked" \
+    | grep -oE '[0-9]+$')
+
+  echo "Created feature issue: #${FEATURE_ISSUE}"
+  featureIssues+=($FEATURE_ISSUE)
+done
+
+# Step 5: Update manifest path variable to use new directory name
+manifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}/manifest.md"
+```
+
+**Final Directory Structure:**
+```
+.ai/specs/feature-sets/
+└── <issue#>-<slug>/          # e.g., 1165-user-dashboard-home/
+    ├── <issue#>-overview.md
+    └── dependency-graph.md
+
+.ai/reports/feature-reports/YYYY-MM-DD/
+└── <issue#>-<slug>/          # e.g., 1165-user-dashboard-home/
+    ├── manifest.md
+    └── research/
 ```
 
 **[PROGRESS]** Decomposition complete: N features across M phases ✓
@@ -276,18 +328,59 @@ Display plan summary, ask for approval.
   --sandbox ${sandboxId}
 ```
 
-#### 3.3.4: Review
+#### 3.3.4: User Review Gate (Live Preview)
+
+After implementation, start the dev server and pause for user review:
+
+```bash
+# Start dev server in sandbox
+./.claude/skills/e2b-sandbox/scripts/sandbox exec "start-dev" \
+  --sandbox ${sandboxId}
+
+# Get the dev server URL (port 3000)
+DEV_URL=$(./.claude/skills/e2b-sandbox/scripts/sandbox url 3000 \
+  --sandbox ${sandboxId})
+
+echo "Dev server starting at: ${DEV_URL}"
+echo "(May take 10-30 seconds to compile)"
+```
+
+Present to user with live preview URL:
+
+```typescript
+AskUserQuestion({
+  question: `Feature #<issue> implemented. Review live at: ${DEV_URL}\n\nApprove implementation?`,
+  header: "Review",
+  options: [
+    { label: "Approve", description: "Implementation looks good, continue to commit" },
+    { label: "Request changes", description: "Describe what needs fixing" },
+    { label: "Reject", description: "Discard implementation and move to next feature" }
+  ]
+})
+```
+
+**If "Approve"**: Proceed to automated review and commit.
+**If "Request changes"**:
+- Capture user feedback
+- Run additional implementation prompts in sandbox
+- Loop back to implementation review
+**If "Reject"**:
+- Log rejection reason
+- Revert changes in sandbox: `git checkout .`
+- Move to next feature
+
+#### 3.3.5: Automated Review
 ```bash
 ./sandbox run-claude "/review #<issue>" --sandbox ${sandboxId}
 ```
 
-#### 3.3.5: Commit
+#### 3.3.6: Commit
 ```bash
 ./sandbox run-claude "/commit initiative-orchestrator feat <scope>" \
   --sandbox ${sandboxId}
 ```
 
-#### 3.3.6: Progress
+#### 3.3.7: Progress
 ```
 [PROGRESS] Feature X/N: <name> ✓ COMPLETE
 ```

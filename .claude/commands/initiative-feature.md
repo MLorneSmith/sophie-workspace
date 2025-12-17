@@ -90,10 +90,28 @@ In most cases, the orchestrator and feature-set have already gathered this conte
 
 ### Step 5: Load Conditional Documentation
 
-Use the conditional docs system for project-specific patterns:
+Use the conditional docs system for project-specific patterns.
 
+**Option A: Use SlashCommand tool (correct casing)**
+```typescript
+SlashCommand({ command: '/conditional_docs feature "<feature-summary-from-issue>"' })
+```
+
+**Option B: Direct file reads if in sandbox (fallback)**
+If running in E2B sandbox where SlashCommand may not be available, read key docs directly:
 ```bash
-slashCommand /conditional_docs feature "<feature-summary-from-issue>"
+# Core development patterns
+cat .ai/ai_docs/context-docs/development/architecture-overview.md
+cat .ai/ai_docs/context-docs/development/database-patterns.md
+cat .ai/ai_docs/context-docs/development/server-actions.md
+```
+
+**Option C: Use docs from orchestrator (recommended for sandbox)**
+The `/initiative` orchestrator can pass relevant docs in the prompt before calling sandbox:
+```typescript
+// In orchestrator, before calling /initiative-feature in sandbox:
+const conditionalDocs = await SlashCommand('/conditional_docs feature "<summary>"');
+// Pass docs as part of manifest or additional context
 ```
 
 Read suggested documentation files to understand:
@@ -101,9 +119,79 @@ Read suggested documentation files to understand:
 - Integration points
 - Testing conventions
 
+### Step 5.5: Feature-Specific Research (When Needed)
+
+Based on the feature requirements and manifest, identify knowledge gaps:
+
+**1. Check Manifest Coverage**
+Does the research manifest address this feature's specific needs?
+- All technologies covered? ✓/✗
+- All patterns documented? ✓/✗
+- Any unknowns remain? List them
+
+**2. Identify Unknowns**
+What technologies/patterns need additional clarification?
+- Libraries not in manifest (e.g., new external API)
+- Complex database schema changes
+- Security-sensitive functionality
+- Performance-critical operations
+
+**3. Targeted Research (If Needed)**
+
+Use Task(Explore) or docs-mcp for specific queries:
+
+```typescript
+// Example: Feature involves a library not in manifest
+if (needsAdditionalResearch(feature, manifest)) {
+  const research = await Task('Explore', {
+    prompt: `Research implementation patterns for ${feature.unknowns.join(', ')}.
+             Focus on: code examples, common pitfalls, integration patterns.`
+  });
+  // Append findings to planning context
+}
+
+// Example: External API documentation
+if (feature.involvesExternalAPI) {
+  const apiDocs = await mcp__docs-mcp__search_docs({
+    library: "api-name",
+    query: "authentication endpoint usage"
+  });
+}
+```
+
+**Triggers for Additional Research:**
+- Feature involves library not covered in manifest
+- Database schema changes require understanding existing patterns
+- Security functionality (auth, permissions, encryption)
+- Integration with external services (Cal.com, Stripe, etc.)
+- Performance-critical paths (caching, pagination)
+
+**Research Output:**
+If additional research was performed, include it in the plan:
+```md
+## Additional Research Findings
+- **Topic**: <what was researched>
+- **Source**: <docs-mcp / Explore agent / Context7>
+- **Key Findings**: <summary of findings>
+- **Applied To**: <how this informs the plan>
+```
+
 ### Step 6: Research-Informed Planning
 
 Using research manifest findings, create the implementation plan:
+
+**CRITICAL: Progress Markers**
+
+Output progress markers throughout planning for orchestrator visibility:
+
+```
+[PROGRESS] Planning: Loading manifest from <path>
+[PROGRESS] Planning: Analyzing feature #<issue>
+[PROGRESS] Planning: Exploring codebase for <pattern>
+[PROGRESS] Planning: Designing solution approach
+[PROGRESS] Planning: Creating plan file
+[PROGRESS] Planning: Updating GitHub issue
+```
 
 **Research-Guided Approach:**
 - Apply technology patterns from manifest
@@ -166,6 +254,18 @@ gh issue edit <issue-number> \
     "packages": ["rxdb", "@rxdb/encryption"],
     "features": []
   },
+  "database_impact": {
+    "requires_changes": true,
+    "new_tables": ["activity_log"],
+    "modified_tables": [],
+    "schema_file": "apps/web/supabase/schemas/50-activity-log.sql",
+    "rls_policies": ["activity_log_select_own", "activity_log_insert_own"],
+    "migration_commands": [
+      "pnpm --filter web supabase:db:diff -f add-activity-log",
+      "pnpm --filter web supabase migration up",
+      "pnpm supabase:web:typegen"
+    ]
+  },
   "estimated_files": [
     "apps/web/lib/rxdb/schemas/presentation.ts",
     "apps/web/lib/rxdb/collections/index.ts"
@@ -224,6 +324,29 @@ So that <benefit/value>
 
 ### Dependencies Affected
 <packages and features affected>
+
+### Database Impact
+<Analyze if this feature requires database changes>
+
+**Tables Affected:**
+- [ ] New tables needed: <table names or "None">
+- [ ] Existing tables modified: <table names or "None">
+- [ ] New columns needed: <column names or "None">
+
+**Schema Changes Required:**
+- [ ] Schema file: `apps/web/supabase/schemas/XX-<feature>.sql`
+- [ ] Migration needed: Yes/No
+- [ ] RLS policies needed: <policy names or "None">
+
+**Migration Commands:**
+```bash
+# If schema changes are needed, include in validation:
+pnpm --filter web supabase:db:diff -f <migration-name>
+pnpm --filter web supabase migration up
+pnpm supabase:web:typegen
+```
+
+**Note:** If database changes are required, add a `db-changes` label to the GitHub issue and include migration commands in validation steps.
 
 ### Risk Assessment
 <risk level with justification>

@@ -100,16 +100,59 @@ TodoWrite([
 ]);
 ```
 
+### Step 5.5: Load Relevant Skills (If Recommended)
+
+Check the manifest's "Recommended Skills" section. If skills are suggested for this feature type:
+
+```typescript
+// Load skills before implementation
+if (manifest.skills.includes('frontend-design')) {
+  Skill({ skill: 'frontend-design' });
+}
+
+if (manifest.skills.includes('webapp-testing')) {
+  Skill({ skill: 'webapp-testing' });
+}
+```
+
+**Skill-Feature Mapping:**
+| Feature Involves | Load Skill |
+|------------------|------------|
+| UI components, dashboard | `frontend-design` |
+| Frontend debugging | `webapp-testing` |
+| PDF generation | `pdf` |
+| Spreadsheet export | `xlsx` |
+| Offline-first data | `local-first-db` |
+
 ### Step 6: Execute Implementation
 
 Follow the plan's Step by Step Tasks exactly:
 
 1. **Read each task** carefully before starting
 2. **Reference manifest patterns** when implementing
-3. **Mark task in_progress** before starting work
-4. **Implement task** following plan details
-5. **Mark task completed** immediately after finishing
-6. **Move to next task**
+3. **Load relevant skills** if applicable to task
+4. **Mark task in_progress** before starting work
+5. **Output progress marker** before starting each task
+6. **Implement task** following plan details
+7. **Output progress marker** after completing task
+8. **Mark task completed** immediately after finishing
+9. **Move to next task**
+
+**CRITICAL: Progress Markers**
+
+Output progress markers throughout implementation for orchestrator visibility:
+
+```
+[PROGRESS] Starting task: <task name>
+[PROGRESS] Files: Creating <file path>
+[PROGRESS] Files: Modifying <file path>
+[PROGRESS] Completed: <task name>
+[PROGRESS] Validation: Running <command>
+[PROGRESS] Validation: <command> - PASSED/FAILED
+[PROGRESS] Implementation: <X>/<N> tasks complete
+```
+
+These markers are parsed by the sandbox logger for real-time status updates.
 
 **Research-Guided Implementation:**
 - Apply code patterns from manifest

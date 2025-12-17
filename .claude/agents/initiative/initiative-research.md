@@ -230,6 +230,27 @@ Read all research reports and create a unified manifest.
 ## Feature Mapping
 <Will be populated after decomposition>
 
+## Recommended Skills
+
+Based on initiative requirements, suggest relevant Claude Code skills:
+
+| Feature Type | Recommended Skills | Relevance |
+|-------------|-------------------|-----------|
+| UI/Dashboard | `frontend-design` | HIGH - For dashboard UI components |
+| Data Viz | `canvas-design` | MEDIUM - For static visualizations |
+| Testing | `webapp-testing` | HIGH - For frontend debugging |
+| Spreadsheets | `xlsx` | HIGH - If data export involved |
+| PDF Generation | `pdf` | HIGH - If document output needed |
+| Local Storage | `local-first-db` | HIGH - For offline-first features |
+
+**Skill Triggers**:
+- If `ui`, `dashboard`, `component` in initiative: suggest `frontend-design`
+- If `chart`, `visualization` in initiative: suggest `canvas-design`
+- If `test`, `debug` in initiative: suggest `webapp-testing`
+- If `spreadsheet`, `excel`, `csv` in initiative: suggest `xlsx`
+- If `pdf`, `document`, `export` in initiative: suggest `pdf`
+- If `offline`, `local-first`, `sync` in initiative: suggest `local-first-db`
+
 ## Dependencies & Prerequisites
 <List any prerequisites identified during research>
 
