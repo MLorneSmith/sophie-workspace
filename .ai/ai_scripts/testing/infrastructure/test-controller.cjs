@@ -790,14 +790,14 @@ class TestController {
 						};
 					}
 
-					// Check if Payload CMS is needed (shards 7 or 8)
-					const payloadShards = [7, 8];
+					// Check if Payload CMS is needed (shards 6, 7, 8, 13, or 14)
+					const payloadShards = [6, 7, 8, 13, 14];
 					const needsPayload = this.options.shard?.some((s) =>
 						payloadShards.includes(s),
 					);
 
 					if (needsPayload) {
-						log("📦 Payload CMS required for shard 7/8 tests");
+						log("📦 Payload CMS required for Payload test shards");
 						const payloadStatus =
 							await this.infrastructureManager.setupPayloadServer();
 

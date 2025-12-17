@@ -113,14 +113,20 @@ Execute all research tools:
 
 Parse the interview technologies response to identify libraries:
 
-| User Mention | Context7 Mapping |
-|-------------|------------------|
-| "shadcn charts", "shadcn/ui charts" | owner: "shadcn", repo: "ui", topic: "charts" |
-| "recharts" | owner: "recharts", repo: "recharts" |
-| "react query", "tanstack query" | owner: "TanStack", repo: "query" |
-| "supabase" | owner: "supabase", repo: "supabase-js" |
-| "next.js" | owner: "vercel", repo: "next.js" |
-| "tailwind" | owner: "tailwindlabs", repo: "tailwindcss" |
+| User Mention | Context7 Owner | Context7 Repo | Common Topics |
+|-------------|----------------|---------------|---------------|
+| "shadcn charts", "shadcn/ui" | `shadcn-ui` | `ui` | charts, components, forms, tables |
+| "recharts" | `recharts` | `recharts` | charts, radar, radial, bar, pie |
+| "react query", "tanstack query" | `TanStack` | `query` | queries, mutations, caching |
+| "supabase" | `supabase` | `supabase-js` | auth, database, storage, rls |
+| "next.js" | `vercel` | `next.js` | routing, server-actions, middleware |
+| "tailwind" | `tailwindlabs` | `tailwindcss` | utilities, responsive, dark-mode |
+| "zod" | `colinhacks` | `zod` | schemas, validation, inference |
+| "rxdb" | `pubkey` | `rxdb` | local-first, sync, offline |
+| "dexie" | `dexie` | `Dexie.js` | indexeddb, queries, transactions |
+| "payload" | `payloadcms` | `payload` | cms, collections, fields |
+
+**IMPORTANT**: Use exact owner names above. Context7 uses GitHub `owner/repo` format.
 
 **Step 3b: Context7 - Library Documentation**
 
@@ -132,14 +138,17 @@ Fetch documentation for identified libraries:
 
 Common patterns:
 ```bash
-# shadcn/ui charts
-.ai/bin/context7-get-context shadcn ui --topic "charts radial radar" --tokens 3000
+# shadcn/ui charts (note: owner is "shadcn-ui" not "shadcn")
+.ai/bin/context7-get-context shadcn-ui ui --topic "charts radial radar" --tokens 3000
 
 # Recharts
 .ai/bin/context7-get-context recharts recharts --topic "radar radial progress" --tokens 3000
 
 # Supabase
 .ai/bin/context7-get-context supabase supabase-js --topic "queries rpc" --tokens 2500
+
+# Next.js
+.ai/bin/context7-get-context vercel next.js --topic "server-actions routing" --tokens 3000
 ```
 
 Save results to: `.ai/reports/feature-reports/<date>/<slug>/research/context7-<slug>.md`
@@ -304,33 +313,105 @@ Write manifest to: `.ai/reports/feature-reports/<date>/<slug>/manifest.md`
 
 Output the JSON block with all required fields. Ensure `success: true` if manifest was created (even with partial research results).
 
-## Error Handling
+## Error Handling & Graceful Degradation
+
+### Pre-flight Validation
+
+Before fetching from Context7, validate library availability:
+
+```bash
+# Check if library exists in Context7
+LIBRARY_CHECK=$(.ai/bin/context7-search "<library>" 2>&1 | head -5)
+if echo "$LIBRARY_CHECK" | grep -q "Found 0 libraries"; then
+  echo "WARNING: Library not found in Context7, using fallback"
+  # Use docs-mcp or Perplexity as fallback
+fi
+```
+
+### Fallback Strategy
+
+If Context7 fails for a library:
+
+1. **Try docs-mcp** (if library is indexed):
+   ```typescript
+   mcp__docs-mcp__search_docs({
+     library: "<library-name>",
+     query: "<relevant-topic>"
+   })
+   ```
+
+2. **Use Perplexity** with specific library query:
+   ```bash
+   .ai/bin/perplexity-chat "<library> documentation <topic> best practices" --model sonar-pro
+   ```
+
+3. **Continue without** and note in Research Gaps
+
+### Error Response Protocol
 
 If a research tool fails:
-1. Log the error
-2. Continue with remaining tools
-3. Note the gap in manifest under "Research Gaps" section
-4. Set `success: true` if manifest was created
-5. Set `success: false` only if manifest creation failed
+1. Log the error with tool name and message
+2. Attempt fallback (docs-mcp → Perplexity → skip)
+3. Continue with remaining tools
+4. Note the gap in manifest under "Research Gaps" section
+5. Include fallback source if used
+6. Set `success: true` if manifest was created (even with partial research)
+7. Set `success: false` only if manifest creation failed
+
+### Research Gaps Format
 
 ```markdown
 ## Research Gaps
-- Context7 documentation fetch failed: <error message>
-- Recommendation: Manually review library docs at <url>
+
+| Tool | Library | Error | Fallback Used | Action Needed |
+|------|---------|-------|---------------|---------------|
+| Context7 | shadcn-ui/ui | Library not found | docs-mcp | None - fallback successful |
+| Context7 | custom-lib | Not indexed | Perplexity | Manual review at <url> |
+| Perplexity | N/A | Rate limited | None | Retry later |
+
+### Recommendations
+- For `custom-lib`: Review documentation at https://custom-lib.dev/docs
+- Consider indexing frequently-used libraries at context7.com/add-library
+```
+
+### Partial Success Output
+
+When research partially succeeds, include `research_gaps` in output:
+
+```json
+{
+  "success": true,
+  "research_gaps": [
+    {
+      "tool": "context7",
+      "library": "custom-lib",
+      "error": "Library not indexed",
+      "fallback": "perplexity",
+      "fallback_success": true
+    }
+  ],
+  "manifest_path": "..."
+}
 ```
 
 ## Context7 Library Reference
 
 | Technology | Owner | Repo | Common Topics |
 |------------|-------|------|---------------|
-| Next.js | vercel | next.js | routing, server-actions, middleware, caching |
-| React | facebook | react | hooks, state, components, context |
-| Recharts | recharts | recharts | charts, radar, radial, bar, pie |
-| shadcn/ui | shadcn | ui | components, charts, forms, tables |
-| TanStack Query | TanStack | query | queries, mutations, caching |
-| Supabase JS | supabase | supabase-js | auth, database, storage, rls |
-| Tailwind CSS | tailwindlabs | tailwindcss | utilities, responsive, dark-mode |
-| Zod | colinhacks | zod | schemas, validation, inference |
+| Next.js | `vercel` | `next.js` | routing, server-actions, middleware, caching |
+| React | `facebook` | `react` | hooks, state, components, context |
+| Recharts | `recharts` | `recharts` | charts, radar, radial, bar, pie |
+| shadcn/ui | `shadcn-ui` | `ui` | components, charts, forms, tables |
+| TanStack Query | `TanStack` | `query` | queries, mutations, caching |
+| Supabase JS | `supabase` | `supabase-js` | auth, database, storage, rls |
+| Tailwind CSS | `tailwindlabs` | `tailwindcss` | utilities, responsive, dark-mode |
+| Zod | `colinhacks` | `zod` | schemas, validation, inference |
+| RxDB | `pubkey` | `rxdb` | local-first, sync, offline, replication |
+| Dexie.js | `dexie` | `Dexie.js` | indexeddb, queries, transactions |
+| Payload CMS | `payloadcms` | `payload` | cms, collections, fields, hooks |
+| Playwright | `microsoft` | `playwright` | e2e, testing, browser, automation |
+
+**Note**: Always verify library availability with `.ai/bin/context7-search "<library>"` before fetching.
 
 ## Delegation Protocol
 

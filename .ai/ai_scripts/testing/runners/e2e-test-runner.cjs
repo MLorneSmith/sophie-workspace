@@ -477,36 +477,27 @@ class E2ETestRunner {
 			},
 			{
 				id: 6,
-				name: "Config & Health",
+				name: "Health & Payload Auth",
 				shardCommand: "test:shard6",
 				files: [
-					"tests/test-configuration-verification.spec.ts",
 					"tests/healthcheck.spec.ts",
+					"tests/payload/payload-auth.spec.ts",
 				],
-				expectedTests: 12,
+				expectedTests: 10, // healthcheck (1) + payload-auth (9)
 			},
 			{
 				id: 7,
-				name: "Payload CMS",
+				name: "Payload Collections",
 				shardCommand: "test:shard7",
-				files: [
-					"tests/payload/payload-auth.spec.ts",
-					"tests/payload/payload-collections.spec.ts",
-					"tests/payload/payload-database.spec.ts",
-				],
-				expectedTests: 42,
+				files: ["tests/payload/payload-collections.spec.ts"],
+				expectedTests: 22,
 			},
 			{
 				id: 8,
-				name: "Seeding Tests",
+				name: "Payload Database",
 				shardCommand: "test:shard8",
-				files: [
-					// NOTE: Seeding tests only - Payload core tests run in Shard 7
-					// Duplicates removed to reduce test execution time by ~10 minutes
-					"tests/payload/seeding.spec.ts",
-					"tests/payload/seeding-performance.spec.ts",
-				],
-				expectedTests: 25, // Seeding tests only (was duplicating Shard 7's 42 tests)
+				files: ["tests/payload/payload-database.spec.ts"],
+				expectedTests: 12,
 			},
 			{
 				id: 9,
@@ -538,6 +529,20 @@ class E2ETestRunner {
 					"tests/team-accounts/team-invitation-mfa.spec.ts",
 				],
 				expectedTests: 8,
+			},
+			{
+				id: 13,
+				name: "Payload Seeding",
+				shardCommand: "test:shard13",
+				files: ["tests/payload/seeding.spec.ts"],
+				expectedTests: 12,
+			},
+			{
+				id: 14,
+				name: "Payload Seeding Perf",
+				shardCommand: "test:shard14",
+				files: ["tests/payload/seeding-performance.spec.ts"],
+				expectedTests: 14,
 			},
 		];
 

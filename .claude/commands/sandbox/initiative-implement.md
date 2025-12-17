@@ -368,6 +368,8 @@ After completion, output:
 ## Related Commands
 
 - **`/initiative`**: Main orchestrator (calls this command)
-- **`/initiative-feature`**: Creates the plan this executes
-- **`/initiative-feature-set`**: Creates feature stub issues
+- **`/sandbox/initiative-feature`**: Creates the plan this executes (E2B sandbox)
+- **`/feature-set`**: Creates feature stub issues
 - **`/implement`**: Standalone version (without orchestrator)
+
+**Note**: This command is in `.claude/commands/sandbox/` and is designed for E2B sandbox execution only.
