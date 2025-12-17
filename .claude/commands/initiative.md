@@ -10,10 +10,9 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQue
 Orchestrate the complete lifecycle of a large feature initiative:
 1. **Research** - Gather comprehensive knowledge about technologies (delegated to `initiative-research` agent)
 2. **Decomposition** - Break initiative into features (delegated to `initiative-decomposition` agent)
-3. **Planning** - Create detailed plans for each feature
+3. **Planning** - Create detailed plans for each feature (local agents for context preservation)
 4. **Implementation** - Execute plans in isolated E2B sandbox
-5. **Review** - Validate implementations against specifications
-6. **Documentation** - Capture knowledge for future reference
+5. **Completion** - Create PR, close issues, cleanup
 
 ## Flags
 
@@ -31,12 +30,21 @@ Orchestrate the complete lifecycle of a large feature initiative:
     │
     ├── [Phase 2] Task(initiative-decomposition) ──> feature list + GitHub issues
     │       └── Uses: Research manifest, creates dependency graph
+    │       └── User approval gate
     │
-    ├── [Phase 3] E2B Sandbox Loop
-    │       └── For each feature: plan → implement → review → commit
+    ├── [Phase 3] Feature Planning Loop (LOCAL - context preservation)
+    │       └── For each feature: Task(general-purpose) with /initiative-feature
+    │       └── Creates detailed plans in GitHub issues
+    │       └── User approval gate (all plans ready)
     │
-    └── [Phase 4] Completion
-            └── PR creation, issue closure, documentation collection
+    ├── [Phase 4] Implementation Loop (E2B SANDBOX - isolation)
+    │       └── Create sandbox ONCE for all features
+    │       └── For each feature: run-claude "/implement #<issue>"
+    │       └── User review gate per feature
+    │       └── Commit and unblock dependents
+    │
+    └── [Phase 5] Completion
+            └── Push changes, create PR, close issues, kill sandbox
 ```
 
 ## State Variables
@@ -51,9 +59,9 @@ Track these throughout execution:
 | `manifestPath` | Phase 1 | Path to research manifest |
 | `masterIssueNumber` | Phase 2 | GitHub issue number for feature-set |
 | `featureIssues[]` | Phase 2 | Array of feature issue numbers |
-| `sandboxId` | Phase 3 | E2B sandbox ID |
-| `branchName` | Phase 3 | Feature branch name |
-| `prNumber` | Phase 4 | Pull request number |
+| `sandboxId` | Phase 4 | E2B sandbox ID |
+| `branchName` | Phase 4 | Feature branch name |
+| `prNumber` | Phase 5 | Pull request number |
 
 ---
 
@@ -135,7 +143,7 @@ Extract:
 - [ ] Manifest file exists at `manifestPath`
 - [ ] Research reports exist in research directory
 
-**[PROGRESS]** Research complete ✓
+**[PROGRESS]** Phase 1 complete: Research gathered ✓
 
 ---
 
@@ -198,10 +206,9 @@ AskUserQuestion({
 **IMPORTANT: Issue Number Prefix Convention**
 
 After creating the master issue, rename all directories to include the issue number prefix.
-This ensures consistent organization and easy navigation.
 
 ```bash
-# Step 1: Create master issue FIRST (before renaming directories)
+# Step 1: Create master issue FIRST
 MASTER_ISSUE=$(gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature Set: ${initiative}" \
@@ -213,28 +220,23 @@ MASTER_ISSUE=$(gh issue create \
 echo "Created master issue: #${MASTER_ISSUE}"
 
 # Step 2: Rename directories with issue number prefix
-# Feature specs directory
 if [ -d ".ai/specs/feature-sets/${slug}" ]; then
   mv ".ai/specs/feature-sets/${slug}" ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}"
-  echo "Renamed specs dir: ${MASTER_ISSUE}-${slug}"
 fi
 
-# Feature reports directory (same date)
 if [ -d ".ai/reports/feature-reports/${todayDate}/${slug}" ]; then
   mv ".ai/reports/feature-reports/${todayDate}/${slug}" \
      ".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}"
-  echo "Renamed reports dir: ${MASTER_ISSUE}-${slug}"
 fi
 
-# Step 3: Update file references inside renamed directories
+# Step 3: Update file references
 mv ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/pending-overview.md" \
    ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/${MASTER_ISSUE}-overview.md"
 
-# Step 4: Create feature stub issues with smart initial status
+# Step 4: Create feature stub issues
 # Features with no dependencies start as "status:ready"
 # Features with dependencies start as "status:blocked"
 for feature in features; do
-  # Determine initial status based on dependencies
   if [ -z "${feature_dependencies[$feature]}" ]; then
     INITIAL_STATUS="status:ready"
   else
@@ -249,61 +251,115 @@ for feature in features; do
     --label "${INITIAL_STATUS}" \
     | grep -oE '[0-9]+$')
 
-  echo "Created feature issue: #${FEATURE_ISSUE} (${INITIAL_STATUS})"
   featureIssues+=($FEATURE_ISSUE)
 done
 
-# Step 5: Update manifest path variable to use new directory name
+# Step 5: Update manifest path
 manifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}/manifest.md"
 ```
 
-**Final Directory Structure:**
-```
-.ai/specs/feature-sets/
-└── <issue#>-<slug>/          # e.g., 1165-user-dashboard-home/
-    ├── <issue#>-overview.md
-    └── dependency-graph.md
-
-.ai/reports/feature-reports/YYYY-MM-DD/
-└── <issue#>-<slug>/          # e.g., 1165-user-dashboard-home/
-    ├── manifest.md
-    └── research/
-```
-
-**[PROGRESS]** Decomposition complete: N features across M phases ✓
+**[PROGRESS]** Phase 2 complete: N features decomposed, GitHub issues created ✓
 
 ---
 
-## Phase 3: Feature Loop (E2B Sandbox or Local)
+## Phase 3: Feature Planning (LOCAL)
 
-### Constants
+**WHY LOCAL**: Planning happens locally (not in sandbox) because:
+1. No code is written - just markdown plans
+2. Context preservation - agents retain research manifest
+3. User interaction works reliably (fails in sandbox)
+4. Faster - no sandbox startup overhead
+5. GitHub CLI is already authenticated locally
 
-Define sandbox CLI path at the start of Phase 3:
+### Step 3.1: Plan Each Feature
+
+**For EACH feature (in dependency order):**
+
 ```typescript
-const SANDBOX_CLI = ".claude/skills/e2b-sandbox/scripts/sandbox";
+// Use general-purpose agent to run /initiative-feature command
+Task(general-purpose, prompt: `
+Run the /initiative-feature command to create a detailed plan for feature #${featureIssue}.
+
+Command: /initiative-feature ${featureIssue} --manifest ${manifestPath}
+
+This will:
+1. Fetch the feature stub from GitHub
+2. Load the research manifest for context
+3. Create a detailed implementation plan
+4. Update the GitHub issue with the plan
+5. Mark the issue as "status:planned"
+
+After completion, return the JSON output from the command.
+`)
 ```
 
-### Step 3.0: Sandbox Selection
+Parse output for:
+- `success: true` - Planning succeeded
+- `plan.file_path` - Location of detailed plan file
+- `github_updated: true` - GitHub issue updated
+
+**If planning fails**: Log error, ask user whether to retry or skip.
+
+### Step 3.2: User Approval Gate (All Plans)
+
+After ALL features are planned, present summary:
 
 ```typescript
 AskUserQuestion({
-  question: "Implementation requires code changes. Where should changes be made?",
-  header: "Environment",
+  question: `All ${featureCount} feature plans created. Review plans in GitHub issues.\n\nProceed to implementation?`,
+  header: "Approve Plans",
   options: [
-    { label: "E2B Sandbox (Recommended)", description: "Isolated cloud environment - changes are safe to experiment" },
-    { label: "Local (Direct)", description: "Changes made directly to your working directory" },
-    { label: "Abort", description: "Stop initiative - issues are created, can resume later" }
+    { label: "Yes, start implementation", description: "Create E2B sandbox and begin coding" },
+    { label: "Revise plans", description: "I need to update some plans first" },
+    { label: "Abort", description: "Stop here - plans are created, can resume later" }
   ]
 })
 ```
 
-**If "Abort"**: Stop. GitHub issues are created and can be implemented later.
+**If "Abort"**: Stop. Plans exist in GitHub issues for later implementation.
+**If "Revise plans"**: Allow user to make changes, then re-confirm.
+**If "Yes"**: Proceed to sandbox implementation.
+
+**[PROGRESS]** Phase 3 complete: All feature plans created and approved ✓
 
 ---
 
-### Path A: E2B Sandbox Mode
+## Phase 4: Implementation (E2B SANDBOX)
 
-#### Step 3.1: Create Sandbox
+### Constants
+
+```typescript
+const SANDBOX_CLI = ".claude/skills/e2b-sandbox/scripts/sandbox";
+```
+
+### Step 4.0: Verify Prerequisites
+
+Before creating sandbox, verify environment:
+
+```bash
+# Check E2B API key
+if [ -z "$E2B_API_KEY" ]; then
+  echo "ERROR: E2B_API_KEY not set"
+  exit 1
+fi
+
+# Check GitHub token for sandbox
+if [ -z "$GITHUB_TOKEN" ] && [ -z "$GH_TOKEN" ]; then
+  echo "ERROR: GITHUB_TOKEN or GH_TOKEN not set (needed for sandbox git operations)"
+  exit 1
+fi
+
+# Check template exists
+${SANDBOX_CLI} templates 2>/dev/null | grep -q "slideheroes-claude-agent" || {
+  echo "ERROR: E2B template 'slideheroes-claude-agent' not found"
+  echo "Rebuild template with: pnpm e2b:build:prod"
+  exit 1
+}
+```
+
+**If prerequisites fail**: Output error with fix instructions and stop.
+
+### Step 4.1: Create Sandbox
 
 ```bash
 ${SANDBOX_CLI} create --template slideheroes-claude-agent --timeout 3600
@@ -311,58 +367,40 @@ ${SANDBOX_CLI} create --template slideheroes-claude-agent --timeout 3600
 
 Capture `sandboxId` from output (e.g., `ikm4xe1i9bh19b5dlasoq`).
 
-#### Step 3.2: Create Feature Branch
-
-Use the `exec` command to run git commands directly in the sandbox:
+### Step 4.2: Create Feature Branch
 
 ```bash
-${SANDBOX_CLI} exec ${sandboxId} "git fetch origin && git checkout dev && git pull origin dev && git checkout -b feature/${masterIssueNumber}-${slug} && git push -u origin feature/${masterIssueNumber}-${slug}"
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git fetch origin && git checkout dev && git pull origin dev && git checkout -b feature/${masterIssueNumber}-${slug} && git push -u origin feature/${masterIssueNumber}-${slug}"
 ```
 
-**Note**: Use `exec` for git commands, NOT `run-claude`. The Claude CLI may not be available in the sandbox.
+**IMPORTANT**: Commands must specify the project directory (`/home/user/project`).
 
-#### Step 3.3: Feature Loop
+### Step 4.3: Implementation Loop
 
 **For EACH feature (in dependency order):**
 
-##### 3.3.0: Plan Feature
+#### 4.3.1: Implement Feature
 
-Run the `/sandbox/initiative-feature` command to create a detailed plan:
-
-```bash
-${SANDBOX_CLI} run-claude "/sandbox/initiative-feature #<feature-issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
-```
-
-Parse output for:
-- `success: true` - Planning succeeded
-- `plan.file_path` - Location of detailed plan file
-
-**If planning fails**: Log error, skip feature, continue to next.
-
-##### 3.3.1: Implement Feature
-
-Run the `/sandbox/initiative-implement` command to execute the plan:
+Run `/implement` in the sandbox:
 
 ```bash
-${SANDBOX_CLI} run-claude "/sandbox/initiative-implement #<feature-issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
+${SANDBOX_CLI} run-claude "/implement #${featureIssue}" --sandbox ${sandboxId}
 ```
 
 Parse output for:
 - `success: true` - Implementation succeeded
-- `validation.all_passed` - All checks passed
-- `ready_for_review: true` - Ready for user review
+- Validation results
+- Files changed
 
-**If `run-claude` fails** (Claude CLI not found):
-- Fall back to local mode for this feature
-- Or use `exec` to run git and shell commands directly
+**If implementation fails**: Log error, ask user whether to retry or skip.
 
-##### 3.3.2: User Review Gate
+#### 4.3.2: User Review Gate
 
-After implementation, get the dev server URL and ask for approval:
+After implementation, get the dev server URL:
 
 ```bash
 # Start dev server in sandbox (background)
-${SANDBOX_CLI} exec ${sandboxId} "pnpm dev &" --timeout 30000
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && pnpm dev &" --timeout 30000
 
 # Get the public URL for port 3000
 ${SANDBOX_CLI} url ${sandboxId} 3000
@@ -372,7 +410,7 @@ Present to user:
 
 ```typescript
 AskUserQuestion({
-  question: `Feature #<issue> implemented. Review at dev URL above.\n\nApprove implementation?`,
+  question: `Feature #${featureIssue} implemented. Review at dev URL above.\n\nApprove implementation?`,
   header: "Review",
   options: [
     { label: "Approve", description: "Implementation looks good, continue to commit" },
@@ -384,34 +422,29 @@ AskUserQuestion({
 
 **If "Approve"**: Commit changes.
 **If "Request changes"**: Capture feedback, run additional implementation, loop back.
-**If "Skip feature"**: Revert changes in sandbox: `${SANDBOX_CLI} exec ${sandboxId} "git checkout ."`
+**If "Skip feature"**: Revert changes: `${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git checkout ."`
 
-##### 3.3.3: Commit Feature
+#### 4.3.3: Commit Feature
 
 ```bash
-${SANDBOX_CLI} exec ${sandboxId} "git add -A && git commit -m 'feat(<scope>): <feature-description>
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git add -A && git commit -m 'feat(<scope>): <feature-description>
 
 Part of #${masterIssueNumber}
-Implements #<feature-issue>
+Implements #${featureIssue}
 
 🤖 Generated with Claude Code
 
 Co-Authored-By: Claude <noreply@anthropic.com>'"
 ```
 
-##### 3.3.4: Progress
-```
-[PROGRESS] Feature X/N: <name> ✓ COMPLETE
-```
+#### 4.3.4: Unblock Dependent Features
 
-##### 3.3.5: Unblock Dependent Features
-
-After feature completion, update dependent features from `status:blocked` to `status:ready`:
+Update dependent features from `status:blocked` to `status:ready`:
 
 ```bash
 # For each feature that depends on the completed feature
 for dependent_issue in ${dependents_of_completed_feature}; do
-  # Check if ALL dependencies of this dependent are now complete
+  # Check if ALL dependencies are complete
   all_deps_complete=true
   for dep in ${dependencies_of[$dependent_issue]}; do
     if ! is_complete($dep); then
@@ -420,96 +453,36 @@ for dependent_issue in ${dependents_of_completed_feature}; do
     fi
   done
 
-  # If all dependencies complete, unblock this feature
   if [ "$all_deps_complete" = true ]; then
     gh issue edit ${dependent_issue} \
       --repo MLorneSmith/2025slideheroes \
       --add-label "status:ready" \
       --remove-label "status:blocked"
-    echo "Unblocked feature #${dependent_issue}"
   fi
 done
 ```
 
-#### Step 3.4: Push All Changes
+#### 4.3.5: Progress
+
+```
+[PROGRESS] Feature X/N: <name> ✓ COMPLETE
+```
+
+### Step 4.4: Push All Changes
 
 After all features are committed:
 
 ```bash
-${SANDBOX_CLI} exec ${sandboxId} "git push origin feature/${masterIssueNumber}-${slug}"
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git push origin feature/${masterIssueNumber}-${slug}"
 ```
+
+**[PROGRESS]** Phase 4 complete: All features implemented ✓
 
 ---
 
-### Path B: Local Mode
+## Phase 5: Completion
 
-#### Step 3.1L: Create Feature Branch Locally
-
-```bash
-git checkout dev
-git pull origin dev
-git checkout -b feature/${masterIssueNumber}-${slug}
-git push -u origin feature/${masterIssueNumber}-${slug}
-```
-
-#### Step 3.2L: Feature Loop
-
-**For EACH feature (in dependency order):**
-
-##### 3.2L.1: Implement Feature
-
-Use the `/implement` slash command directly:
-
-```
-/implement #<feature-issue>
-```
-
-##### 3.2L.2: User Review
-
-After implementation, ask for approval:
-
-```typescript
-AskUserQuestion({
-  question: `Feature #<issue> implemented locally. Run 'pnpm dev' to test.\n\nApprove implementation?`,
-  header: "Review",
-  options: [
-    { label: "Approve", description: "Implementation looks good, continue to commit" },
-    { label: "Request changes", description: "Describe what needs fixing" },
-    { label: "Skip feature", description: "Move to next feature without committing" }
-  ]
-})
-```
-
-##### 3.2L.3: Commit Feature
-
-Execute git commit directly:
-
-```bash
-git add -A && git commit -m "feat(<scope>): <feature-description>
-
-Part of #${masterIssueNumber}
-Implements #<feature-issue>
-
-🤖 Generated with Claude Code
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-```
-
-##### 3.2L.4: Unblock Dependent Features
-
-Same as Step 3.3.5 - update dependent features from `status:blocked` to `status:ready` when all their dependencies are complete.
-
-#### Step 3.3L: Push All Changes
-
-```bash
-git push origin feature/${masterIssueNumber}-${slug}
-```
-
----
-
-## Phase 4: Completion
-
-### Step 4.1: Create Pull Request (DIRECT)
+### Step 5.1: Create Pull Request (DIRECT)
 
 Execute directly in orchestrator (not in sandbox):
 
@@ -534,7 +507,7 @@ Closes #${masterIssueNumber}
 
 Capture `prNumber` from output.
 
-### Step 4.2: Update Master Issue
+### Step 5.2: Update Master Issue
 
 ```bash
 gh issue comment ${masterIssueNumber} \
@@ -551,15 +524,13 @@ $(for i, issue in enumerate(featureIssues); do echo "| Feature $i | #${issue} | 
 🤖 Generated by /initiative orchestrator"
 ```
 
-### Step 4.3: Kill Sandbox (if used)
-
-If sandbox mode was used:
+### Step 5.3: Kill Sandbox
 
 ```bash
 ${SANDBOX_CLI} kill ${sandboxId}
 ```
 
-**[PROGRESS]** Initiative complete: N/N features shipped ✓
+**[PROGRESS]** Phase 5 complete: Initiative finished ✓
 
 ---
 
@@ -571,7 +542,7 @@ ${SANDBOX_CLI} kill ${sandboxId}
 ### Summary
 - **Initiative**: <name>
 - **Features shipped**: N/N
-- **Master issue**: #<number> (closed)
+- **Master issue**: #<number>
 - **PR created**: #<pr-number>
 
 ### Features
@@ -580,7 +551,7 @@ ${SANDBOX_CLI} kill ${sandboxId}
 | 1 | <name> | #<n> | ✓ Complete |
 
 ### Research Manifest
-.ai/reports/feature-reports/<date>/<slug>/manifest.md
+.ai/reports/feature-reports/<date>/<issue#>-<slug>/manifest.md
 
 ### Next Steps
 1. Review PR: <url>
@@ -589,28 +560,53 @@ ${SANDBOX_CLI} kill ${sandboxId}
 
 ---
 
+## Error Recovery
+
+### Sandbox Creation Fails
+
+```
+ERROR: E2B sandbox creation failed
+
+Possible causes:
+1. E2B_API_KEY not set or invalid
+2. Template 'slideheroes-claude-agent' not found
+3. E2B service unavailable
+
+Fix: Rebuild template with `pnpm e2b:build:prod` (requires GITHUB_TOKEN)
+
+For individual features, use:
+  /feature #<issue>   → Create plan
+  /implement #<issue> → Execute plan
+```
+
+### GitHub Auth Missing in Sandbox
+
+```
+ERROR: GitHub operations failing in sandbox
+
+The sandbox needs GH_TOKEN to push changes.
+Ensure GITHUB_TOKEN or GH_TOKEN is set in your environment before running /initiative.
+```
+
+---
+
 ## Related Agents
 
-| Agent | Purpose | Invocation |
-|-------|---------|------------|
-| `initiative-research` | Research phase | `Task(initiative-research, prompt: "{json}")` |
-| `initiative-decomposition` | Decomposition phase | `Task(initiative-decomposition, prompt: "{json}")` |
-| `review-expert` | Implementation review | `Task(review-expert, prompt: "#<issue>")` |
-| `documentation-expert` | Documentation creation | `Task(documentation-expert, prompt: "#<issue>")` |
-| `Explore` | Codebase exploration | `Task(Explore, prompt: "...")` |
+| Agent | Purpose | Phase |
+|-------|---------|-------|
+| `initiative-research` | Research phase | 1 |
+| `initiative-decomposition` | Decomposition phase | 2 |
+| `general-purpose` | Run /initiative-feature for planning | 3 |
+| `Explore` | Codebase exploration | 1, 3 |
 
 ## Related Commands
 
-| Command | Purpose | Mode |
-|---------|---------|------|
-| `/sandbox/initiative-feature` | Create detailed plan using research manifest | E2B Sandbox |
+| Command | Purpose | Environment |
+|---------|---------|-------------|
+| `/initiative-feature` | Create detailed plan using research manifest | Local |
 | `/sandbox/initiative-implement` | Execute plan with manifest context | E2B Sandbox |
-| `/implement` | Self-contained implementation (does own planning) | Local |
-| `/review` | Review implementation against spec | Both |
-
-**Mode Notes**:
-- **E2B Sandbox**: Uses `/sandbox/initiative-feature` → `/sandbox/initiative-implement` sequence with manifest
-- **Local Mode**: Uses `/implement` directly (handles its own planning internally)
+| `/feature` | Standalone feature planning | Local |
+| `/implement` | Standalone implementation | Local |
 
 ---
 

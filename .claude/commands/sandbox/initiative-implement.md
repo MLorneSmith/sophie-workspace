@@ -124,6 +124,48 @@ if (manifest.skills.includes('webapp-testing')) {
 | Spreadsheet export | `xlsx` |
 | Offline-first data | `local-first-db` |
 
+### Step 5.6: Additional Research During Implementation
+
+When encountering unknowns NOT covered by the manifest:
+
+**Context7 CLI** - For library documentation:
+```bash
+# Search for libraries
+.ai/bin/context7-search "library-name"
+
+# Get documentation for specific topic
+.ai/bin/context7-get-context <owner> <repo> --topic <topic> --tokens 3000
+
+# Examples:
+.ai/bin/context7-get-context vercel next.js --topic "server actions" --tokens 2500
+.ai/bin/context7-get-context facebook react --topic hooks --tokens 2000
+.ai/bin/context7-get-context supabase supabase --topic rls --tokens 2500
+```
+
+**Perplexity CLI** - For best practices and current information:
+```bash
+# Search for information
+.ai/bin/perplexity-search "topic" --num-results 10
+
+# Get AI-generated answer with citations
+.ai/bin/perplexity-chat "What are the best practices for X?"
+
+# With specific domains
+.ai/bin/perplexity-search "React dashboard patterns" --domains github.com,stackoverflow.com
+```
+
+**When to Research:**
+- API usage unclear from manifest code examples
+- Error encountered not covered in gotchas
+- Alternative pattern needed for edge case
+- Library version compatibility questions
+
+**Research Output Format:**
+```
+[PROGRESS] Research: Looking up <topic> via Context7/Perplexity
+[PROGRESS] Research: Found pattern for <topic>
+```
+
 ### Step 6: Execute Implementation
 
 Follow the plan's Step by Step Tasks exactly:
@@ -368,8 +410,16 @@ After completion, output:
 ## Related Commands
 
 - **`/initiative`**: Main orchestrator (calls this command)
-- **`/sandbox/initiative-feature`**: Creates the plan this executes (E2B sandbox)
+- **`/initiative-feature`**: Creates the plan this executes (runs locally for context preservation)
 - **`/feature-set`**: Creates feature stub issues
 - **`/implement`**: Standalone version (without orchestrator)
 
 **Note**: This command is in `.claude/commands/sandbox/` and is designed for E2B sandbox execution only.
+
+## Research Tools Reference
+
+| Tool | Use For | Example |
+|------|---------|---------|
+| Context7 | Library docs, API reference | `.ai/bin/context7-get-context vercel next.js --topic hooks` |
+| Perplexity | Best practices, current info | `.ai/bin/perplexity-chat "React 19 patterns"` |
+| Manifest | Pre-gathered research | Reference `manifest.md` passed via `--manifest` |

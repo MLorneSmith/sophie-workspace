@@ -9,7 +9,7 @@
  * - Claude Code CLI
  * - VS Code Web (code-server) for code review
  * - GitHub CLI (gh) for PR automation
- * - Supabase CLI, Turbo CLI
+ * - Turbo CLI (Supabase CLI available via pnpm exec in project)
  * - Playwright with Chromium for E2E testing
  * - Pre-cloned repository with dependencies installed
  *
@@ -239,9 +239,11 @@ export function createTemplate(cloneRepo: boolean = true): ReturnType<typeof Tem
 
 		// ========================================
 		// Global npm tools
+		// Note: Supabase CLI doesn't support global npm install anymore
+		// It's available via pnpm in the project (pnpm exec supabase)
 		// ========================================
 		.runCmd(
-			["npm install -g supabase@latest turbo@2.6.1 @anthropic-ai/claude-code"],
+			["npm install -g turbo@2.6.1 @anthropic-ai/claude-code"],
 			{ user: "root" },
 		)
 
