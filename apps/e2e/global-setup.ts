@@ -698,9 +698,6 @@ async function globalSetup(config: FullConfig) {
 			const cookiesToSet = cookieStore
 				.filter((c) => c.value) // Skip removal cookies (empty values)
 				.map((c) => {
-					// Ensure auth tokens have httpOnly set for security
-					// This prevents JavaScript from accessing sensitive tokens (XSS protection)
-					const isAuthCookie = c.name.includes("auth");
 					const isVercelCookie = c.name === "_vercel_jwt";
 
 					// Build cookie object, conditionally including domain
@@ -711,12 +708,13 @@ async function globalSetup(config: FullConfig) {
 						value: c.value,
 						path: c.options.path || "/",
 						expires: cookieExpires, // Unix timestamp in seconds
-						// Force httpOnly=true for auth tokens (improves security)
-						// For Vercel bypass cookie, use the option or default to true
-						httpOnly:
-							isAuthCookie || isVercelCookie
-								? true
-								: (c.options.httpOnly ?? false),
+						// CRITICAL: Do NOT force httpOnly for auth cookies!
+						// The @supabase/ssr browser client reads cookies via document.cookie
+						// If cookies are httpOnly, JavaScript can't read them and getSession() returns null
+						// See: Issue #1143 - E2E Password Update Test Fails - Supabase URL Mismatch
+						// The Supabase SSR library sets httpOnly appropriately - trust its defaults
+						// Only force httpOnly for Vercel bypass cookie which is truly server-only
+						httpOnly: isVercelCookie ? true : (c.options.httpOnly ?? false),
 						// Use HTTPS requirement based on deployment type
 						// IMPORTANT: Vercel deployments require secure: true
 						secure: baseURL.startsWith("https"),
@@ -837,8 +835,11 @@ async function globalSetup(config: FullConfig) {
 				}
 
 				// Verify cookie attributes are correct
+				// Note: We do NOT require httpOnly for Supabase auth cookies because
+				// the @supabase/ssr browser client needs to read them via document.cookie
+				// See: Issue #1143 - E2E Password Update Test Fails
 				const attributeVerification = await verifyCookieAttributes(context, {
-					requireHttpOnly: true,
+					requireHttpOnly: false,
 					expectedSameSite: cookieConfig.sameSite,
 				});
 
