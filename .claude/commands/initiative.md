@@ -19,6 +19,8 @@ Orchestrate the complete lifecycle of a large feature initiative:
 | Flag | Description |
 |------|-------------|
 | `--quick` | Skip external research (Perplexity, Context7). Use codebase patterns only. |
+| `--parallel-planning` | Use parallel agents for planning phase. Faster but uses more API calls. Best for ≤5 features. |
+| `--skip-validation` | Skip pnpm build during implementation. Faster but less safe. Use for known-good patterns. |
 
 ## Architecture
 
@@ -32,9 +34,10 @@ Orchestrate the complete lifecycle of a large feature initiative:
     │       └── Uses: Research manifest, creates dependency graph
     │       └── User approval gate
     │
-    ├── [Phase 3] Feature Planning Loop (LOCAL - context preservation)
-    │       └── For each feature: Task(general-purpose) with /initiative-feature
-    │       └── Creates detailed plans in GitHub issues
+    ├── [Phase 3] Task(initiative-planning) ──> plans for ALL features
+    │       └── Single coordinator with Skill access (frontend-design, etc.)
+    │       └── Loads conditional docs, research manifest, skills ONCE
+    │       └── Returns compact JSON (prevents context exhaustion)
     │       └── User approval gate (all plans ready)
     │
     ├── [Phase 4] Implementation Loop (E2B SANDBOX - isolation)
@@ -56,6 +59,8 @@ Track these throughout execution:
 | `slug` | Step 1.1 | Initiative slug (kebab-case, max 30 chars) |
 | `todayDate` | Step 1.1 | Today's date (YYYY-MM-DD) |
 | `quickMode` | Step 1.1 | true if --quick flag passed |
+| `parallelPlanning` | Step 1.1 | true if --parallel-planning flag passed |
+| `skipValidation` | Step 1.1 | true if --skip-validation flag passed |
 | `skipImplementation` | Step 1.1.5 | true if E2B prerequisites missing and user chose to continue |
 | `manifestPath` | Phase 1 | Local path to research manifest (backup) |
 | `manifestContent` | Phase 1 | Full manifest markdown content |
@@ -75,7 +80,13 @@ Track these throughout execution:
 ```typescript
 const args = "$ARGUMENTS";
 const quickMode = args.includes('--quick');
-const initiative = args.replace('--quick', '').trim();
+const parallelPlanning = args.includes('--parallel-planning');
+const skipValidation = args.includes('--skip-validation');
+const initiative = args
+  .replace('--quick', '')
+  .replace('--parallel-planning', '')
+  .replace('--skip-validation', '')
+  .trim();
 const slug = initiative.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
 const todayDate = new Date().toISOString().split('T')[0];
 ```
@@ -320,173 +331,205 @@ localManifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${sl
 
 ---
 
-## Phase 3: Feature Planning (LOCAL)
+## Phase 3: Feature Planning
 
-**WHY LOCAL**: Planning happens locally (not in sandbox) because:
-1. No code is written - just markdown plans
-2. Context preservation - agents retain research manifest
-3. User interaction works reliably (fails in sandbox)
-4. Faster - no sandbox startup overhead
-5. GitHub CLI is already authenticated locally
+### Planning Strategy Selection
 
-### Step 3.1: Plan Each Feature
+**Check `parallelPlanning` flag** to determine planning approach:
 
-**For EACH feature (in dependency order):**
+| Mode | When to Use | Trade-offs |
+|------|-------------|------------|
+| **Sequential (default)** | >5 features, complex dependencies | Slower but context-efficient, skills loaded once |
+| **Parallel (`--parallel-planning`)** | ≤5 features, independent features | Faster but more API calls, each agent loads skills |
 
 ```typescript
-// Use general-purpose agent to run /initiative-feature command
-// CRITICAL: Pass --master-issue so the command knows where to save files
-// P5 Fix: Include explicit verification requirements in prompt
-Task(general-purpose, prompt: `
-Run the /initiative-feature command to create a detailed plan for feature #${featureIssue}.
-
-Command: /initiative-feature ${featureIssue} --manifest ${manifestPath} --master-issue ${masterIssueNumber}
-
-This will:
-1. Fetch the feature stub from GitHub
-2. Load the research manifest for context
-3. Invoke frontend-design skill (if UI feature)
-4. Conduct additional research (if complex feature)
-5. Create a detailed implementation plan
-6. Update the GitHub issue with the FULL plan content (not a local file reference)
-7. Mark the issue as "status:planned"
-
-IMPORTANT: The plan must be EMBEDDED in the GitHub issue body, not referenced as a local file path.
-The sandbox clones from GitHub and won't have access to local files.
-
-=== VERIFICATION REQUIREMENTS (P5 Fix) ===
-
-You MUST perform and report on these verification steps:
-
-1. **Skill Invocation**: If this is a UI/frontend feature (dashboard, component, widget, card, chart, layout, grid), you MUST invoke the frontend-design skill:
-   \`\`\`typescript
-   Skill({ skill: "frontend-design" })
-   \`\`\`
-   Report in output: skills_invoked: ["frontend-design"]
-
-2. **Conditional Documentation**: You MUST load relevant context documentation:
-   \`\`\`typescript
-   SlashCommand({ command: '/conditional_docs initiative-feature "<feature-title>"' })
-   \`\`\`
-   Report in output: conditional_docs_loaded: ["file1.md", "file2.md"]
-
-3. **Research Manifest**: You MUST read the research manifest from: ${manifestPath}
-   Report in output: research_sections_used: ["section1", "section2"]
-
-4. **Plan File Creation**: After writing the plan file, verify it exists and has content:
-   \`\`\`bash
-   test -f "<plan-file-path>" && wc -c < "<plan-file-path>"
-   \`\`\`
-   Report in output: plan_file_size_bytes: <size>
-
-5. **GitHub Issue Update**: After updating the issue, verify body length:
-   \`\`\`bash
-   gh issue view ${featureIssue} --json body -q '.body | length'
-   \`\`\`
-   Report in output: github_issue_body_length: <length>
-
-If ANY verification step fails, include the failure details in your output:
-\`\`\`json
-{
-  "verification": {
-    "failures": ["skill_not_invoked", "docs_not_loaded"]
-  }
+if (parallelPlanning && featureIssues.length <= 5) {
+  // Use Step 3.1a: Parallel Planning
+} else {
+  // Use Step 3.1b: Sequential Planning (Coordinator Pattern)
 }
-\`\`\`
+```
 
-=== END VERIFICATION REQUIREMENTS ===
+### Step 3.1a: Parallel Planning (when `--parallel-planning` flag set)
 
-After completion, return the JSON output from the command with all verification data.
+Launch multiple planning agents in parallel, one per feature:
+
+```typescript
+// Launch all planning agents in parallel
+const planningPromises = featureIssues.map(featureIssue =>
+  Task('initiative-planning', {
+    prompt: `Plan SINGLE feature #${featureIssue}.
+Manifest issue: #${manifestIssueNumber}
+Master issue: #${masterIssueNumber}
+
+1. Fetch feature stub from GitHub
+2. Load manifest from GitHub issue #${manifestIssueNumber}
+3. Load relevant skills (frontend-design if UI feature)
+4. Create detailed implementation plan
+5. Write plan file to .ai/specs/feature-sets/${masterIssueNumber}-${slug}/
+6. Embed FULL plan in GitHub issue body
+7. Update label to status:planned
+
+Return compact JSON with: success, issue_number, plan_file, skills_used`,
+    run_in_background: true
+  })
+);
+
+// Wait for all to complete
+const results = await Promise.all(planningPromises.map(p => TaskOutput(p.id, { block: true })));
+```
+
+**Parse parallel results:**
+```typescript
+const planningOutput = {
+  success: results.every(r => r.success),
+  features_planned: results.filter(r => r.success).length,
+  issues_updated: results.filter(r => r.success).map(r => r.issue_number),
+  errors: results.filter(r => !r.success).map(r => ({ issue: r.issue_number, error: r.error }))
+};
+```
+
+### Step 3.1b: Sequential Planning - Coordinator Pattern (default)
+
+**WHY COORDINATOR**: A single `initiative-planning` agent plans ALL features because:
+1. **Context Preservation** - Caches manifest, skills, docs ONCE at start
+2. **Skill Access** - Has explicit Skill tool access (frontend-design, local-first-db, webapp-testing)
+3. **SlashCommand Access** - Can invoke `/conditional_docs` for documentation routing
+4. **Compact Output** - Returns only JSON summary, not verbose plans (prevents context exhaustion)
+5. **Sequential Planning** - Plans features in order, managing its own context
+
+**USE TASK TOOL** with `initiative-planning` subagent type:
+
+```typescript
+// Single coordinator plans ALL features
+// Returns compact JSON to preserve orchestrator context
+Task(initiative-planning, prompt: `
+{
+  "manifest_issue": ${manifestIssueNumber},
+  "master_issue": ${masterIssueNumber},
+  "features": [${featureIssues.join(', ')}],
+  "initiative_slug": "${slug}",
+  "date": "${todayDate}"
+}
+
+Plan ALL features in this initiative. You have access to:
+- Skill tool: frontend-design, local-first-db, webapp-testing
+- SlashCommand tool: /conditional_docs
+- Research CLIs: context7, perplexity
+
+For each feature:
+1. Fetch feature stub from GitHub
+2. Create detailed implementation plan
+3. Write plan file locally (backup)
+4. Embed FULL plan in GitHub issue body
+5. Update label to status:planned
+
+Return ONLY the compact JSON output - do NOT include verbose summaries.
 `)
 ```
 
-Parse output for:
-- `success: true` - Planning succeeded
-- `plan.file_path` - Location of local plan file (backup)
-- `github_updated: true` - GitHub issue updated
-- `plan_embedded_in_issue: true` - Full plan is in GitHub (REQUIRED)
-- `skills_invoked` - List of skills used (e.g., ["frontend-design"])
-- `verification` - Verification data from agent (P4 fix)
+### Step 3.2: Parse Planning Output
 
-**If planning fails**: Log error, ask user whether to retry or skip.
+Look for JSON block in agent output:
+```
+=== PLANNING OUTPUT ===
+{
+  "success": true,
+  "features_planned": 9,
+  "issues_updated": [1258, 1259, 1260, ...],
+  "skills_used": ["frontend-design"],
+  "conditional_docs_loaded": ["development/architecture-overview.md"],
+  "research_conducted": {
+    "context7_queries": 2,
+    "perplexity_queries": 1
+  },
+  "plan_files": [
+    ".ai/specs/feature-sets/1257-user-dashboard/1258-feature-plan-data-loader.md"
+  ],
+  "errors": []
+}
+=== END PLANNING OUTPUT ===
+```
 
-#### 3.1.1: Verify Planning Output (P4 Fix)
+Extract and validate:
+- `success: true` - Planning completed successfully
+- `features_planned` - Count of features planned
+- `issues_updated` - Array of issue numbers updated
+- `skills_used` - Array of skills invoked (validates skill access worked)
+- `errors` - Array of any failures
 
-**CRITICAL**: Validate that planning agent completed successfully before proceeding.
+**If errors exist**: Log errors, ask user whether to retry failed features or continue.
 
 ```typescript
-// P4 Fix: Explicit verification after planning
-const verifyPlanningOutput = async (featureIssue: number, planFilePath: string) => {
-  const verification = {
-    plan_file_exists: false,
-    plan_file_size: 0,
-    github_issue_updated: false,
-    github_body_length: 0,
-    labels_correct: false,
-    verification_passed: false
-  };
+if (planningOutput.errors.length > 0) {
+  console.warn(`[WARNING] ${planningOutput.errors.length} features failed to plan:`);
+  for (const error of planningOutput.errors) {
+    console.warn(`  - #${error.issue}: ${error.error}`);
+  }
 
-  // Verify plan file exists and has content
-  const planExists = await Bash(`test -f "${planFilePath}" && wc -c < "${planFilePath}"`);
-  verification.plan_file_exists = planExists.success;
-  verification.plan_file_size = parseInt(planExists.stdout) || 0;
-
-  // Verify GitHub issue has substantial content (>1000 chars indicates full plan)
-  const issueBodyLength = await Bash(
-    `gh issue view ${featureIssue} --repo MLorneSmith/2025slideheroes --json body -q '.body | length'`
-  );
-  verification.github_body_length = parseInt(issueBodyLength.stdout) || 0;
-  verification.github_issue_updated = verification.github_body_length > 1000;
-
-  // Verify labels were updated to "status:planned"
-  const labels = await Bash(
-    `gh issue view ${featureIssue} --repo MLorneSmith/2025slideheroes --json labels -q '.labels[].name'`
-  );
-  verification.labels_correct = labels.stdout.includes('status:planned');
-
-  // Overall verification
-  verification.verification_passed = (
-    verification.plan_file_exists &&
-    verification.plan_file_size > 500 &&
-    verification.github_issue_updated &&
-    verification.labels_correct
-  );
-
-  return verification;
-};
-
-// Run verification
-const verificationResult = await verifyPlanningOutput(featureIssue, planFilePath);
-
-// Log verification results
-console.log(`[VERIFICATION] Feature #${featureIssue}:`);
-console.log(`  Plan file exists: ${verificationResult.plan_file_exists} (${verificationResult.plan_file_size} bytes)`);
-console.log(`  GitHub updated: ${verificationResult.github_issue_updated} (${verificationResult.github_body_length} chars)`);
-console.log(`  Labels correct: ${verificationResult.labels_correct}`);
-console.log(`  PASSED: ${verificationResult.verification_passed}`);
-
-// Fail gracefully with warning if verification fails
-if (!verificationResult.verification_passed) {
-  console.warn(`[WARNING] Verification failed for feature #${featureIssue}`);
-  // Ask user whether to retry or continue
   AskUserQuestion({
-    question: `Planning verification failed for #${featureIssue}. How to proceed?`,
+    question: `${planningOutput.errors.length} feature(s) failed to plan. How to proceed?`,
+    header: "Planning Errors",
     options: [
-      { label: "Retry planning", description: "Run /initiative-feature again" },
-      { label: "Continue anyway", description: "Proceed despite verification failure" },
-      { label: "Skip feature", description: "Move to next feature" }
+      { label: "Retry failed features", description: "Run planning again for failed features only" },
+      { label: "Continue without them", description: "Proceed with successfully planned features" },
+      { label: "Abort", description: "Stop and investigate errors" }
     ]
   });
 }
 ```
 
-### Step 3.2: User Approval Gate (All Plans)
+### Step 3.3: Verify Planning Results
+
+**CRITICAL**: Validate that plans were embedded in GitHub issues.
+
+```typescript
+// Verify a sample of planned features
+const verifyPlanning = async (sampleSize: number = 3) => {
+  const samplesToCheck = planningOutput.issues_updated.slice(0, sampleSize);
+  const verification = { passed: true, details: [] };
+
+  for (const issueNum of samplesToCheck) {
+    const bodyLength = await Bash(
+      `gh issue view ${issueNum} --repo MLorneSmith/2025slideheroes --json body -q '.body | length'`
+    );
+    const length = parseInt(bodyLength.stdout) || 0;
+    const hasFullPlan = length > 1000; // Full plans are >1000 chars
+
+    verification.details.push({
+      issue: issueNum,
+      bodyLength: length,
+      hasFullPlan
+    });
+
+    if (!hasFullPlan) {
+      verification.passed = false;
+    }
+  }
+
+  return verification;
+};
+
+const verificationResult = await verifyPlanning();
+
+if (!verificationResult.passed) {
+  console.warn('[WARNING] Some issues may not have full plans embedded:');
+  for (const detail of verificationResult.details) {
+    console.warn(`  #${detail.issue}: ${detail.bodyLength} chars (${detail.hasFullPlan ? 'OK' : 'TOO SHORT'})`);
+  }
+}
+```
+
+### Step 3.4: User Approval Gate (All Plans)
 
 After ALL features are planned, present summary:
 
 ```typescript
 AskUserQuestion({
-  question: `All ${featureCount} feature plans created. Review plans in GitHub issues.\n\nProceed to implementation?`,
+  question: `${planningOutput.features_planned} feature plans created.\n\n` +
+            `Skills used: ${planningOutput.skills_used.join(', ') || 'none'}\n` +
+            `Errors: ${planningOutput.errors.length || 'none'}\n\n` +
+            `Review plans in GitHub issues. Proceed to implementation?`,
   header: "Approve Plans",
   options: [
     { label: "Yes, start implementation", description: "Create E2B sandbox and begin coding" },
@@ -864,17 +907,28 @@ Ensure GITHUB_TOKEN or GH_TOKEN is set in your environment before running /initi
 |-------|---------|-------|
 | `initiative-research` | Research phase | 1 |
 | `initiative-decomposition` | Decomposition phase | 2 |
-| `general-purpose` | Run /initiative-feature for planning | 3 |
+| `initiative-planning` | Plan ALL features with Skill/SlashCommand access | 3 |
 | `Explore` | Codebase exploration | 1, 3 |
 
 ## Related Commands
 
 | Command | Purpose | Environment |
 |---------|---------|-------------|
-| `/initiative-feature` | Create detailed plan using research manifest | Local |
+| `/initiative-planning-coordinator` | Coordinate planning for ALL features (has Skill access) | Local |
+| `/initiative-feature` | Plan single feature with existing manifest (for re-planning or additions) | Local |
 | `/sandbox/initiative-implement` | Execute plan with manifest context | E2B Sandbox |
-| `/feature` | Standalone feature planning | Local |
-| `/implement` | Standalone implementation | Local |
+| `/feature` | Standalone feature planning (no manifest, does own research) | Local |
+| `/implement` | Standalone implementation (no manifest context) | Local |
+
+### When to Use Each Command
+
+| Scenario | Command |
+|----------|---------|
+| New large initiative (4+ features) | `/initiative` |
+| Single new feature (standalone) | `/feature` |
+| Re-plan existing initiative feature | `/initiative-feature 123 --manifest github:issue:456` |
+| Implement standalone feature | `/implement 123` |
+| Implement initiative feature | Handled by `/initiative` orchestrator |
 
 ---
 

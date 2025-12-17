@@ -9,6 +9,37 @@ allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, Skill,
 
 Create a detailed implementation plan for a feature that is part of an `/initiative` workflow. Uses pre-generated research manifest for context and updates the GitHub issue with the complete plan.
 
+## When to Use This Command
+
+| Scenario | Use This Command | Use Instead |
+|----------|------------------|-------------|
+| Part of `/initiative` workflow | ✅ Called automatically by orchestrator | - |
+| Planning a single feature in an existing initiative | ✅ Use standalone with `--manifest` flag | - |
+| Planning a brand new feature (not part of initiative) | ❌ | Use `/feature` |
+| Re-planning a feature after changes | ✅ Use standalone with existing manifest | - |
+
+### Standalone Usage
+
+If you have an existing initiative manifest and want to plan (or re-plan) a single feature:
+
+```bash
+/initiative-feature 1273 --manifest github:issue:1267 --master-issue 1268
+```
+
+This is useful when:
+- A feature plan needs revision after user feedback
+- Adding a new feature to an existing initiative
+- Re-running planning after manifest updates
+
+### Integration with /initiative
+
+When called by `/initiative`, this command receives:
+- GitHub issue number for the feature stub
+- Manifest reference (GitHub issue or local path)
+- Master issue number for the parent feature-set
+
+The orchestrator collects the output JSON and continues to implementation phase.
+
 ## Key Differences from /feature
 
 | Aspect | /feature | /initiative-feature |

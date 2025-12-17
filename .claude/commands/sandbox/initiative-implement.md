@@ -2,7 +2,7 @@
 description: Sandbox-optimized implementation that executes plans with research manifest context and outputs structured data for /initiative orchestrator
 argument-hint: [issue-number] --manifest [path]
 model: opus
-allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite]
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, Skill]
 ---
 
 # Initiative Implementation
@@ -201,21 +201,35 @@ Follow the plan's Step by Step Tasks exactly:
 8. **Mark task completed** immediately after finishing
 9. **Move to next task**
 
-**CRITICAL: Progress Markers**
+**CRITICAL: Progress Markers - OUTPUT IMMEDIATELY**
 
-Output progress markers throughout implementation for orchestrator visibility:
+**IMPORTANT**: Output text directly (not via echo/bash). Text output is streamed to the orchestrator in real-time.
 
+**At Command Start** (output IMMEDIATELY when command begins):
 ```
-[PROGRESS] Starting task: <task name>
+[PROGRESS] Implementation starting for #<issue-number>
+[PROGRESS] Loading plan from GitHub...
+```
+
+**During Execution** (output BEFORE each action):
+```
+[PROGRESS] Task: Starting "<task name>" (1/<N>)
 [PROGRESS] Files: Creating <file path>
 [PROGRESS] Files: Modifying <file path>
-[PROGRESS] Completed: <task name>
+[PROGRESS] Task: Completed "<task name>" (1/<N>)
 [PROGRESS] Validation: Running <command>
 [PROGRESS] Validation: <command> - PASSED/FAILED
 [PROGRESS] Implementation: <X>/<N> tasks complete
 ```
 
-These markers are parsed by the sandbox logger for real-time status updates.
+**At Command End**:
+```
+[PROGRESS] Implementation complete for #<issue-number>
+```
+
+These markers are streamed to the orchestrator via stdout. The sandbox logger captures them for visibility.
+
+**WHY THIS MATTERS**: Without progress markers, the orchestrator sees no output for 10+ minutes during implementation. Users need visibility into what's happening.
 
 **Research-Guided Implementation:**
 - Apply code patterns from manifest
