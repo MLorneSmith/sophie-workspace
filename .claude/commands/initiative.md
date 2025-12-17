@@ -8,8 +8,8 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQue
 # Initiative Orchestrator
 
 Orchestrate the complete lifecycle of a large feature initiative:
-1. **Research** - Gather comprehensive knowledge about unfamiliar technologies
-2. **Decomposition** - Break initiative into manageable features
+1. **Research** - Gather comprehensive knowledge about technologies (delegated to `initiative-research` agent)
+2. **Decomposition** - Break initiative into features (delegated to `initiative-decomposition` agent)
 3. **Planning** - Create detailed plans for each feature
 4. **Implementation** - Execute plans in isolated E2B sandbox
 5. **Review** - Validate implementations against specifications
@@ -19,367 +19,184 @@ Orchestrate the complete lifecycle of a large feature initiative:
 
 | Flag | Description |
 |------|-------------|
-| `--quick` | **Simplified workflow**. Skip external research agents (perplexity, context7). Use codebase patterns only. Best for familiar technologies or smaller initiatives. |
-
-### When to Use `--quick` Mode
-
-✅ **Use `--quick` when:**
-- Technologies are already familiar (existing patterns in codebase)
-- Initiative is straightforward (1-3 features expected)
-- External research would be redundant
-- Speed is more important than comprehensive research
-
-❌ **Don't use `--quick` when:**
-- Introducing new/unfamiliar technologies
-- Complex integration work
-- Security-sensitive implementations
-- Performance-critical features needing best practices
+| `--quick` | Skip external research (Perplexity, Context7). Use codebase patterns only. |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    /initiative ORCHESTRATOR WORKFLOW                     │
-│                                                                          │
-│  LOCAL EXECUTION (Your machine)                                          │
-│  ════════════════════════════════                                        │
-│                                                                          │
-│  /initiative "local-first architecture with RxDB encrypted sync"         │
-│       │                                                                  │
-│       │  ╔═══════════════════════════════════════════════════════════╗   │
-│       │  ║  PHASE 1: INTERVIEW & RESEARCH (DELEGATED TO SUB-AGENT)   ║   │
-│       │  ╚═══════════════════════════════════════════════════════════╝   │
-│       │                                                                  │
-│       ├─> Task(general-purpose): /initiative-research                    │
-│       │       • Interview user (scope, technologies, constraints)        │
-│       │       • Execute research via Bash (context7, perplexity CLIs)    │
-│       │       • Launch Explore agent for codebase patterns               │
-│       │       • Synthesize research into manifest                        │
-│       │       • Return: manifest path + research summary JSON            │
-│       ├─> [PROGRESS] Research complete ✓ (context preserved)             │
-│       │                                                                  │
-│       │  ╔═══════════════════════════════════════════════════════════╗   │
-│       │  ║  PHASE 2: DECOMPOSITION (Local)                           ║   │
-│       │  ╚═══════════════════════════════════════════════════════════╝   │
-│       │                                                                  │
-│       ├─> Task(general-purpose): /initiative-feature-set                 │
-│       │       • Load research manifest                                   │
-│       │       • Decompose into features                                  │
-│       │       • Create GitHub issues                                     │
-│       │       • Return: feature list + dependency graph                  │
-│       ├─> [PROGRESS] Decomposition: N features across M phases ✓         │
-│       │                                                                  │
-│       │  [GATE] ─────────────────────────────────────────────────────    │
-│       │  │  User approves decomposition? (Y/n)                           │
-│       │  └───────────────────────────────────────────────────────────    │
-│       │                                                                  │
-│  ═══════════════════════════════════════════════════════════════════════ │
-│                                                                          │
-│  E2B SANDBOX EXECUTION (Cloud - Isolated & Safe)                         │
-│  ═══════════════════════════════════════════════                         │
-│       │                                                                  │
-│       │  ╔═══════════════════════════════════════════════════════════╗   │
-│       │  ║  PHASE 3: FEATURE LOOP (in E2B sandbox)                   ║   │
-│       │  ╚═══════════════════════════════════════════════════════════╝   │
-│       │                                                                  │
-│       ├─> Create sandbox from slideheroes-claude-agent template          │
-│       ├─> Sync research manifest to sandbox                              │
-│       │                                                                  │
-│       │  FOR EACH feature (in dependency order):                         │
-│       │                                                                  │
-│       │    [PROGRESS] Feature M/N: <name>                                │
-│       │                                                                  │
-│       │    /initiative-feature #<issue> --manifest <path>                │
-│       │         └─> Creates detailed implementation plan                 │
-│       │                                                                  │
-│       │    [GATE] ─────────────────────────────────────────────────────  │
-│       │    │  User approves plan? (Y/n)                                  │
-│       │    └───────────────────────────────────────────────────────────  │
-│       │                                                                  │
-│       │    /initiative-implement #<issue> --manifest <path>              │
-│       │         └─> Implements feature + runs validations                │
-│       │                                                                  │
-│       │    Task(review-expert): "#<issue>"                               │
-│       │         └─> Reviews implementation, returns JSON                 │
-│       │                                                                  │
-│       │    [GATE] ─────────────────────────────────────────────────────  │
-│       │    │  Review passed? Fix blocking issues?                        │
-│       │    └───────────────────────────────────────────────────────────  │
-│       │                                                                  │
-│       │    Task(documentation-expert, background): "#<issue>"            │
-│       │         └─> Creates documentation                                │
-│       │                                                                  │
-│       │    [PROGRESS] Feature M/N complete ✓                             │
-│       │                                                                  │
-│       │  END FOR EACH                                                    │
-│       │                                                                  │
-│       │  ╔═══════════════════════════════════════════════════════════╗   │
-│       │  ║  PHASE 4: COMPLETION                                      ║   │
-│       │  ╚═══════════════════════════════════════════════════════════╝   │
-│       │                                                                  │
-│       ├─> Commit all changes in sandbox                                  │
-│       ├─> Push branch to origin                                          │
-│       ├─> Create PR                                                      │
-│       ├─> Collect documentation-expert outputs                           │
-│       ├─> Present command-profiles.yaml update suggestions               │
-│       ├─> Close master feature-set issue                                 │
-│       └─> [PROGRESS] Initiative complete: N/N features shipped ✓         │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+/initiative (this orchestrator)
+    │
+    ├── [Phase 1] Task(initiative-research) ──> manifest.md
+    │       └── Uses: Context7, Perplexity, Explore agent
+    │
+    ├── [Phase 2] Task(initiative-decomposition) ──> feature list + GitHub issues
+    │       └── Uses: Research manifest, creates dependency graph
+    │
+    ├── [Phase 3] E2B Sandbox Loop
+    │       └── For each feature: plan → implement → review → commit
+    │
+    └── [Phase 4] Completion
+            └── PR creation, issue closure, documentation collection
 ```
 
-## State Variables (Track Throughout)
+## State Variables
 
-**CRITICAL**: Track these variables throughout execution. If any required variable is empty at the start of a phase, STOP and backfill the missing value.
+Track these throughout execution:
 
-| Variable | Set In | Value | Status |
-|----------|--------|-------|--------|
-| `slug` | Step 1.1 | Initiative slug (kebab-case, max 30 chars) | ⬜ |
-| `todayDate` | Step 1.1 | Today's date (YYYY-MM-DD format) | ⬜ |
-| `quickMode` | Step 1.1 | `true` if `--quick` flag passed, else `false` | ⬜ |
-| `manifestPath` | Step 1.5 | `.ai/reports/feature-reports/{todayDate}/{slug}/manifest.md` | ⬜ |
-| `masterIssueNumber` | Step 2.1 | GitHub issue number from feature-set | ⬜ |
-| `featureIssues[]` | Step 2.1 | Array of feature issue numbers | ⬜ |
-| `sandboxId` | Step 3.1 | E2B sandbox ID from creation | ⬜ |
-| `branchName` | Step 3.2 | `feature/{slug}` (created IN sandbox) | ⬜ |
-| `prNumber` | Step 4.2 | GitHub PR number from creation | ⬜ |
-
-**How to Use:**
-- Update this table as you progress through each step
-- Check at phase boundaries: before Phase 2, Phase 3, Phase 4
-- If a variable is missing, search back to find where it should have been set
-- Print this table for reference during long implementation sessions
+| Variable | Set In | Description |
+|----------|--------|-------------|
+| `slug` | Step 1.1 | Initiative slug (kebab-case, max 30 chars) |
+| `todayDate` | Step 1.1 | Today's date (YYYY-MM-DD) |
+| `quickMode` | Step 1.1 | true if --quick flag passed |
+| `manifestPath` | Phase 1 | Path to research manifest |
+| `masterIssueNumber` | Phase 2 | GitHub issue number for feature-set |
+| `featureIssues[]` | Phase 2 | Array of feature issue numbers |
+| `sandboxId` | Phase 3 | E2B sandbox ID |
+| `branchName` | Phase 3 | Feature branch name |
+| `prNumber` | Phase 4 | Pull request number |
 
 ---
 
-## Pre-Phase Assertions
+## Phase 1: Interview & Research
 
-### Pre-Phase 2 Assertions
-
-**STOP if any of these are false. Resolve before proceeding.**
-
-**Full Mode:**
-- [ ] User has been interviewed (Question 1, 2, 3 completed)
-- [ ] Research completed (Context7 CLI, Perplexity CLI, Explore agent)
-- [ ] Research manifest exists at `.ai/reports/feature-reports/<date>/<slug>/manifest.md` and is readable
-- [ ] Research reports saved to `.ai/reports/feature-reports/<date>/<slug>/research/`
-
-**Quick Mode (simplified requirements):**
-- [ ] User has been interviewed (Question 1, 2, 3 completed)
-- [ ] Explore agent has completed (Context7, Perplexity skipped)
-- [ ] Research manifest exists at `.ai/reports/feature-reports/<date>/<slug>/manifest.md` and is readable
-- [ ] Codebase patterns report saved to `.ai/reports/feature-reports/<date>/<slug>/research/`
-
-**If assertion fails**: Go back to Phase 1 and complete the missing steps. Do not proceed to Phase 2.
-
-### Pre-Phase 3 Assertions
-
-**STOP if any of these are false. Resolve before proceeding.**
-
-- [ ] `masterIssueNumber` is set (from feature-set decomposition)
-- [ ] `featureIssues[]` has at least one issue number
-- [ ] `manifestPath` exists and is readable
-- [ ] User has approved decomposition (approval gate passed)
-- [ ] GitHub issues have been created (`issues_created: true` in JSON output)
-
-**If assertion fails**: Go back to Phase 2 and verify decomposition completed successfully. Do not proceed to Phase 3.
-
-### E2B Sandbox Requirement (Enforced in Step 3.0)
-
-**⛔ E2B Sandbox is MANDATORY for Phase 3 feature implementations.**
-
-Step 3.0 includes a hard-stop assertion that BLOCKS execution unless:
-1. An E2B sandbox is successfully created, OR
-2. User explicitly overrides with "SKIP (unsafe)" option
-
-This cannot be rationalized away or skipped silently. The user MUST make an explicit choice.
-
-### Pre-Phase 4 Assertions
-
-**STOP if any of these are false. Resolve before proceeding.**
-
-- [ ] All features processed (each feature has ✓ complete status)
-- [ ] `sandboxId` is set (sandbox created and alive)
-- [ ] `branchName` is set (branch created in sandbox during Step 3.2)
-- [ ] All feature commits pushed to feature branch in sandbox
-
-**If assertion fails**: Resume feature loop or handle incomplete features. Do not proceed to Phase 4.
-
----
-
-## Instructions
-
-### Phase 1: Interview & Research (DELEGATED TO SUB-AGENT)
-
-**Context Optimization**: Phase 1 is delegated to `/initiative-research` sub-agent to preserve orchestrator context for decomposition and implementation phases. The sub-agent handles:
-- User interview
-- Research agent coordination (perplexity, context7, Explore)
-- Research synthesis
-- Manifest creation
-
-#### Step 1.1: Parse Arguments (Orchestrator)
+### Step 1.1: Parse Arguments
 
 ```typescript
 const args = "$ARGUMENTS";
 const quickMode = args.includes('--quick');
 const initiative = args.replace('--quick', '').trim();
-const slug = initiative
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .substring(0, 30);
-const todayDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+const slug = initiative.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
+const todayDate = new Date().toISOString().split('T')[0];
 ```
 
-#### Step 1.2: Delegate Research to Sub-Agent
+### Step 1.2: Interview User (DIRECT - Do Not Delegate)
 
-**CRITICAL**: Delegate the entire research phase to preserve orchestrator context.
+**CRITICAL**: Conduct interview directly in orchestrator. User interaction is unreliable in sub-agents.
+
+Ask these questions using AskUserQuestion:
+
+1. **Technologies**: "What technologies or libraries are involved?"
+   - Options: "Specify below", "Research needed"
+
+2. **Clarifying Question**: Generate based on initiative description
+   - Identify ambiguous terms or key decisions
+   - Options: Context-specific choices
+
+3. **Expected Size**: "How many features do you expect?"
+   - Options: "Small (1-3)", "Medium (4-7)", "Large (8+)"
+
+Capture responses:
+```typescript
+const interviewResults = {
+  technologies: "<response>",
+  clarification: "<response>",
+  expectedSize: "<response>"
+};
+```
+
+### Step 1.3: Delegate Research to Sub-Agent
+
+**USE TASK TOOL** with `initiative-research` subagent type:
 
 ```typescript
-// Launch research sub-agent
-const researchAgent = Task(general-purpose, prompt: `
-  Execute the /initiative-research command to conduct the research phase.
-
-  /initiative-research "${initiative}"${quickMode ? ' --quick' : ''}
-
-  This will:
-  1. Interview the user about technologies and scope
-  2. Execute research via CLI tools (Context7, Perplexity) and Explore agent
-  3. Collect and synthesize research results
-  4. Create the research manifest at .ai/reports/feature-reports/${todayDate}/${slug}/manifest.md
-  5. Return structured JSON with manifest path and research summary
-
-  Execute this command and return the full output including the JSON block.
+Task(initiative-research, prompt: `
+{
+  "initiative": "${initiative}",
+  "slug": "${slug}",
+  "date": "${todayDate}",
+  "mode": "${quickMode ? 'quick' : 'full'}",
+  "interview": {
+    "technologies": "${interviewResults.technologies}",
+    "clarification": "${interviewResults.clarification}",
+    "expectedSize": "${interviewResults.expectedSize}"
+  }
+}
 `)
 ```
 
-#### Step 1.3: Parse Research Output
+**DO NOT use SlashCommand** - it expands inline and defeats context preservation.
 
-Extract structured data from the sub-agent's output:
+### Step 1.4: Parse Research Output
 
-```typescript
-// Look for JSON block in output
-// Format: === RESEARCH OUTPUT === { ... } === END RESEARCH OUTPUT ===
-const researchOutput = parseJSONFromOutput(researchAgent.output);
-
-// Extract key variables for orchestrator
-const manifestPath = researchOutput.manifest_path;
-const researchSummary = researchOutput.research_summary;
-
-// Update state variables
-slug = researchOutput.initiative.slug;
-todayDate = researchOutput.date;
+Look for JSON block in agent output:
+```
+=== RESEARCH OUTPUT ===
+{ ... }
+=== END RESEARCH OUTPUT ===
 ```
 
-#### Step 1.4: Validate Research Completion
+Extract:
+- `manifestPath` from `manifest_path`
+- `researchSummary` from `research_summary`
 
-**VERIFY that research phase completed successfully:**
+### Step 1.5: Validate Research
 
-```typescript
-if (!researchOutput.success) {
-  throw new Error("Research phase failed. Cannot proceed to decomposition.");
-}
+- [ ] `success: true` in output
+- [ ] Manifest file exists at `manifestPath`
+- [ ] Research reports exist in research directory
 
-// Verify manifest file exists
-const manifestExists = await fileExists(manifestPath);
-if (!manifestExists) {
-  throw new Error(`Manifest not found at ${manifestPath}`);
-}
-```
-
-**[PROGRESS]** Research complete ✓ (delegated to sub-agent)
+**[PROGRESS]** Research complete ✓
 
 ---
 
-### Phase 2: Decomposition
+## Phase 2: Decomposition
 
-#### Step 2.1: Execute /initiative-feature-set in DRY-RUN mode (MANDATORY)
+### Step 2.1: Delegate Decomposition (Dry-Run)
 
-**Do NOT manually decompose. The sub-command handles critical decomposition logic.**
-
-**IMPORTANT**: First call uses dry-run mode (default). NO GitHub issues are created yet.
-
-Execute the feature-set decomposition sub-command in dry-run mode:
+**USE TASK TOOL** with `initiative-decomposition` subagent type:
 
 ```typescript
-Task(general-purpose, prompt: `
-  YOU MUST execute the /initiative-feature-set command in dry-run mode. This is not optional.
-
-  /initiative-feature-set "${initiative}" --manifest .ai/reports/feature-reports/${todayDate}/${slug}/manifest.md
-
-  This will:
-  1. Load the research manifest
-  2. Decompose the initiative into features
-  3. Create LOCAL plan files only (NO GitHub issues yet)
-  4. Return structured JSON with feature list and dependencies
-
-  Do NOT skip this step. Do NOT add --create-issues flag yet.
-  Return the full JSON output for orchestrator consumption.
+Task(initiative-decomposition, prompt: `
+{
+  "initiative": "${initiative}",
+  "slug": "${slug}",
+  "date": "${todayDate}",
+  "manifest_path": "${manifestPath}",
+  "create_issues": false
+}
 `)
 ```
 
-#### Validation After Dry-Run Execution
+### Step 2.2: Parse Decomposition Output
 
-**VERIFY that decomposition completed successfully:**
-
-- [ ] Plan file exists: `.ai/specs/feature-sets/<slug>/pending-overview.md`
-- [ ] Structured JSON output received with `issues_created: false`
-- [ ] Feature list is complete and well-scoped
-- [ ] Dependencies are logical and correct
-
-#### Step 2.2: Parse Decomposition Results
-
-Extract from the structured output:
-- Master feature-set issue number
-- Feature list with issue numbers
-- Dependency graph
-- Phase assignments
-
-#### Step 2.3: Update Research Manifest
-
-Update the manifest with feature mapping:
-
-```markdown
-## Feature Mapping
-| Feature | Issue | Research Sections |
-|---------|-------|-------------------|
-| <feature-1> | #<n> | Technology Overview, Pattern 1 |
-| <feature-2> | #<n> | Code Example 1, Gotcha 2 |
+Look for JSON block:
+```
+=== DECOMPOSITION OUTPUT ===
+{ ... }
+=== END DECOMPOSITION OUTPUT ===
 ```
 
-**[PROGRESS]** Decomposition complete (dry-run): N features across M phases ✓
+Extract:
+- Feature list with phases and dependencies
+- Plan file path
+- Dependency graph
 
-#### Step 2.4: User Approval Gate
+### Step 2.3: User Approval Gate
+
+Present decomposition summary, then ask:
 
 ```typescript
-// Present decomposition summary and ask for approval
-// CRITICAL: This gate MUST complete BEFORE any GitHub issues are created
 AskUserQuestion({
   question: "Approve this decomposition? GitHub issues will be created if you proceed.",
   header: "Approve",
   options: [
-    { label: "Yes, create issues", description: "Create GitHub issues and proceed to implementation" },
-    { label: "Modify scope", description: "Adjust feature boundaries before creating issues" },
-    { label: "Cancel", description: "Stop without creating any GitHub issues" }
+    { label: "Yes, create issues", description: "Create GitHub issues and proceed" },
+    { label: "Modify scope", description: "Adjust feature boundaries" },
+    { label: "Cancel", description: "Stop without creating issues" }
   ]
 })
 ```
 
-**[GATE]** User approves decomposition? (Y/n)
+**If "Cancel"**: Stop. No GitHub issues created.
+**If "Modify scope"**: Discuss changes, re-run decomposition.
+**If "Yes"**: Proceed to create issues.
 
-**If user selects "Cancel"**: Stop immediately. No GitHub issues created. User can review local plan files.
+### Step 2.4: Create GitHub Issues (DIRECT - After Approval)
 
-**If user selects "Modify scope"**: Revise decomposition and return to Step 2.1.
-
-**If user selects "Yes, create issues"**: Proceed to Step 2.4.1 to create GitHub issues.
-
-#### Step 2.4.1: Create GitHub Issues DIRECTLY (ONLY after user approval)
-
-**CRITICAL**: This step ONLY executes after explicit user approval in Step 2.4.
-
-**⚠️ IMPORTANT**: Execute GitHub operations DIRECTLY in the orchestrator. Do NOT delegate to Task() agents as GitHub CLI operations fail silently in sub-agents.
+**Execute GitHub operations DIRECTLY in orchestrator**. Do NOT delegate to Task().
 
 ```bash
-# Step 1: Create master feature-set issue DIRECTLY
+# Create master issue
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature Set: ${initiative}" \
@@ -387,428 +204,137 @@ gh issue create \
   --label "type:feature-set" \
   --label "status:planning"
 
-# Capture the master issue number from the output URL
-# Example output: https://github.com/MLorneSmith/2025slideheroes/issues/123
-MASTER_ISSUE_NUMBER=<extract-from-output>
-
-# Step 2: Rename overview file with issue number
+# Capture issue number, rename file
+MASTER_ISSUE=<from-output>
 mv .ai/specs/feature-sets/${slug}/pending-overview.md \
-   .ai/specs/feature-sets/${slug}/${MASTER_ISSUE_NUMBER}-overview.md
+   .ai/specs/feature-sets/${slug}/${MASTER_ISSUE}-overview.md
 
-# Step 3: For each feature from the decomposition, create stub issues DIRECTLY
-# Do NOT use Task() for this - execute gh commands directly
-for feature in features:
-  gh issue create \
-    --repo MLorneSmith/2025slideheroes \
-    --title "Feature: ${feature.name}" \
-    --body "## Feature Stub
-
-**Part of Feature Set**: #${MASTER_ISSUE_NUMBER}
-**Phase**: ${feature.phase}
-**Dependencies**: ${feature.dependencies || 'none'}
-**Effort**: ${feature.effort}
-
-### Description
-${feature.description}
-
----
-*Stub created by /initiative. Run /initiative-feature to create full plan.*" \
-    --label "type:feature" \
-    --label "status:blocked"
-
-# Step 4: Comment on master issue with feature links DIRECTLY
-gh issue comment ${MASTER_ISSUE_NUMBER} \
+# Create feature stub issues (loop)
+gh issue create \
   --repo MLorneSmith/2025slideheroes \
-  --body "## Feature Issues Created
-
-<feature-list-with-phases-and-dependencies>
-
-**Next Steps**: Proceed with E2B sandbox execution."
-
-# Step 5: Create github-mapping.md file
-# Write the mapping directly using Write tool, NOT cat heredoc in bash
+  --title "Feature: <name>" \
+  --body "<stub-body>" \
+  --label "type:feature" \
+  --label "status:blocked"
 ```
 
-**Why Direct Execution?**
-- Task() delegation for GitHub operations often fails silently
-- Sub-agents may not have proper GitHub CLI authentication
-- Direct execution ensures operations complete and can be verified immediately
-- Error handling is immediate rather than delayed
-
-#### Validation After GitHub Issue Creation
-
-**VERIFY that GitHub issues were created successfully:**
-
-- [ ] Master issue created (GitHub issue #<number> exists)
-- [ ] Feature stub issues created (count matches expected from decomposition)
-- [ ] `.ai/specs/<slug>/github-mapping.md` file exists
-- [ ] Structured JSON output received with `issues_created: true`
-
-**If any validation fails:**
-
-```bash
-# Check GitHub for created issues
-gh issue list --repo MLorneSmith/2025slideheroes --label "area:feature-set-<slug>"
-
-# Check for mapping file
-ls -la .ai/specs/<slug>/github-mapping.md
-```
-
-If issues are missing or mapping file doesn't exist:
-1. Check error logs from the Task agent
-2. Retry the sub-command execution with `--create-issues`
-3. Do NOT proceed until all validation passes
+**[PROGRESS]** Decomposition complete: N features across M phases ✓
 
 ---
 
-### Phase 3: Feature Loop (E2B Sandbox)
+## Phase 3: Feature Loop (E2B Sandbox)
 
-> **NOTE**: Feature branch is created INSIDE the sandbox (Step 3.2), not locally.
-> This allows the user to continue working on `dev` locally while sandbox work happens.
+### Step 3.0: Sandbox Assertion
 
-#### Step 3.0: HARD STOP - E2B Sandbox Assertion
-
-**⛔ BLOCKING ASSERTION - DO NOT PROCEED WITHOUT USER OVERRIDE**
+**BLOCKING**: E2B sandbox is required for implementation.
 
 ```typescript
-// This assertion BLOCKS execution until sandbox is confirmed or user explicitly overrides
-const SANDBOX_REQUIRED = true;
-
-if (SANDBOX_REQUIRED && !sandboxId) {
-  // HARD STOP - Cannot proceed without sandbox
-  const override = AskUserQuestion({
-    question: "⚠️ E2B Sandbox is REQUIRED for Phase 3. Skip sandbox at your own risk?",
-    header: "⛔ SANDBOX",
-    options: [
-      { label: "Create sandbox now", description: "Recommended: Create E2B sandbox before proceeding" },
-      { label: "SKIP (unsafe)", description: "⚠️ DANGEROUS: Run locally without isolation. Code executes on your machine." },
-      { label: "Abort initiative", description: "Stop initiative and review manually" }
-    ]
-  });
-
-  if (override === "Create sandbox now") {
-    // Proceed to Step 3.1
-  } else if (override === "SKIP (unsafe)") {
-    console.warn("⚠️ USER OVERRIDE: Proceeding without E2B sandbox");
-    console.warn("   All code will execute in local environment");
-    console.warn("   This is NOT recommended for production codebases");
-    // Set flag for local execution
-    sandboxId = "LOCAL_OVERRIDE";
-  } else {
-    // Abort
-    throw new Error("Initiative aborted: E2B sandbox required");
-  }
-}
+AskUserQuestion({
+  question: "E2B Sandbox is required for Phase 3. How to proceed?",
+  header: "Sandbox",
+  options: [
+    { label: "Create sandbox", description: "Recommended: Create E2B sandbox" },
+    { label: "SKIP (unsafe)", description: "Run locally without isolation" },
+    { label: "Abort", description: "Stop initiative" }
+  ]
+})
 ```
 
-**Why E2B Sandbox is Required:**
-1. **Isolation**: Feature implementations run in isolated environment
-2. **Safety**: Mistakes don't affect your local codebase until reviewed
-3. **Rollback**: Easy to discard failed implementations
-4. **Parallel Safety**: User can continue working on `dev` locally while sandbox runs
-
-**Escape Hatch**: User can explicitly override by selecting "SKIP (unsafe)" but this is STRONGLY discouraged.
-
-#### Step 3.1: Create E2B Sandbox
-
-**This step is NOT optional unless user explicitly overrode in Step 3.0.**
+### Step 3.1: Create E2B Sandbox
 
 ```bash
-# Create sandbox using the project's template
-./.claude/skills/e2b-sandbox/scripts/sandbox create --template slideheroes-claude-agent --timeout 3600
+./.claude/skills/e2b-sandbox/scripts/sandbox create \
+  --template slideheroes-claude-agent --timeout 3600
 ```
 
-**Capture the sandbox ID from the output:**
-```
-=== Sandbox Created ===
-ID:       <sandboxId>    ← CAPTURE THIS
-Timeout:  3600 seconds
-```
+Capture `sandboxId` from output.
 
-#### Required Output
-
-You MUST capture and record:
-- `sandboxId` = ID from sandbox creation output
-- Sandbox status = "running"
-
-**Validation - Verify sandbox is running:**
+### Step 3.2: Create Feature Branch (In Sandbox)
 
 ```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox list
+./.claude/skills/e2b-sandbox/scripts/sandbox run-claude \
+  "git checkout -b feature/${slug} && git push -u origin feature/${slug}" \
+  --sandbox ${sandboxId}
 ```
 
-**If sandbox creation fails:**
-1. Review error message
-2. Check E2B account status and quota
-3. Try again with shorter timeout: `--timeout 1800`
-4. If still failing, return to Step 3.0 and ask user whether to skip sandbox
-
-**[PROGRESS]** E2B sandbox created: sandboxId=<id> ✓
-
-#### Step 3.2: Create Feature Branch IN SANDBOX
-
-**IMPORTANT**: Branch creation happens IN the sandbox, not locally. This allows the user to continue working on `dev` locally.
-
-```bash
-# Run branch creation command in the existing sandbox
-# CORRECT SYNTAX: prompt FIRST, then --sandbox flag
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "git checkout -b feature/${slug} && git push -u origin feature/${slug}" --sandbox ${sandboxId}
-```
-
-**⚠️ ARGUMENT ORDER MATTERS:**
-```bash
-# ✅ CORRECT - prompt first, then --sandbox
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "<prompt>" --sandbox <id>
-
-# ❌ WRONG - this creates a NEW sandbox instead of using existing one
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude <id> "<prompt>"
-```
-
-Update state variable:
-- `branchName` = `feature/${slug}`
-
-**[PROGRESS]** Feature branch created in sandbox: feature/<slug> ✓
-
-#### Step 3.3: Feature Loop
-
-Process features in dependency order.
+### Step 3.3: Feature Loop
 
 **For EACH feature (in dependency order):**
 
-##### 3.3.1: Generate Feature Plan
-
-Run `/initiative-feature` in the sandbox:
-
+#### 3.3.1: Generate Plan
 ```bash
-# Generate plan for this feature
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/initiative-feature #<issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
+./sandbox run-claude "/initiative-feature #<issue> --manifest ${manifestPath}" \
+  --sandbox ${sandboxId}
 ```
 
-##### 3.3.2: Display Plan Summary for User Review
+#### 3.3.2: User Approval
+Display plan summary, ask for approval.
 
-**CRITICAL**: Before asking for approval, display the plan to the user.
-
-After the sandbox generates the plan:
-
-1. Parse the sandbox output for the plan file path (look for `plan_file` in JSON output)
-2. Read the plan from the sandbox or local (if synced)
-3. Present a summary to the user:
-
-```markdown
-### Plan Summary for #<issue>: <title>
-
-**Tasks**: <count> tasks across <count> phases
-
-**Files to create/modify**:
-- <file 1>
-- <file 2>
-- ...
-
-**Key Implementation Notes**:
-<2-3 bullet points from plan>
-
-**Research Patterns Applied**:
-- <pattern 1 from manifest>
-- <pattern 2 from manifest>
-
-**Validation Commands**:
-- pnpm typecheck
-- pnpm test:unit
-- pnpm build
-
-[Full plan: .ai/specs/features/<slug>/<issue>-feature-plan.md]
-```
-
-##### 3.3.3: User Approval Gate
-
-**Only AFTER displaying the plan summary**, ask for approval:
-
-```typescript
-AskUserQuestion({
-  question: `Approve this plan for feature "#<issue>: <title>"?`,
-  header: "Plan",
-  options: [
-    { label: "Approve", description: "Proceed with implementation" },
-    { label: "Revise", description: "Request changes to plan" },
-    { label: "Skip", description: "Skip this feature for now" }
-  ]
-})
-```
-
-If "Revise": Address feedback and re-run Step 3.3.1 for this issue
-If "Skip": Continue to next feature
-
-##### 3.3.4: Implementation
-
-After approval, run `/initiative-implement` in the sandbox:
-
+#### 3.3.3: Implement
 ```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/initiative-implement #<issue> --manifest ${manifestPath}" --sandbox ${sandboxId}
+./sandbox run-claude "/initiative-implement #<issue> --manifest ${manifestPath}" \
+  --sandbox ${sandboxId}
 ```
 
-##### 3.3.5: Review
-
-Run review in sandbox:
-
+#### 3.3.4: Review
 ```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/review #<issue>" --sandbox ${sandboxId}
+./sandbox run-claude "/review #<issue>" --sandbox ${sandboxId}
 ```
 
-If review has blocking issues:
-
-```typescript
-AskUserQuestion({
-  question: `Review found blocking issues. How to proceed?`,
-  header: "Review",
-  options: [
-    { label: "Fix issues", description: "Attempt to fix blocking issues" },
-    { label: "Skip feature", description: "Mark as needs-work, continue" },
-    { label: "Pause initiative", description: "Stop and review manually" }
-  ]
-})
-```
-
-##### 3.3.6: Commit Feature
-
-After review passes, commit in sandbox:
-
+#### 3.3.5: Commit
 ```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox run-claude "/commit initiative-orchestrator feat <scope>" --sandbox ${sandboxId}
+./sandbox run-claude "/commit initiative-orchestrator feat <scope>" \
+  --sandbox ${sandboxId}
 ```
 
-##### 3.3.7: Progress Checkpoint
-
+#### 3.3.6: Progress
 ```
 [PROGRESS] Feature X/N: <name> ✓ COMPLETE
-  - Branch: feature/<slug>
-  - Sandbox: <sandboxId>
-  - Changes: <file count> files
-  - Status: Committed
 ```
-
-##### 3.3.8: Validate Sandbox Still Running
-
-Before processing next feature, verify sandbox is alive:
-
-```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox status ${sandboxId}
-```
-
-If sandbox has timed out:
-1. Create new sandbox: `./sandbox create --template slideheroes-claude-agent --timeout 3600`
-2. Pull the feature branch: `run-claude "git fetch && git checkout feature/${slug}"`
-3. Update `sandboxId` state variable
-4. Continue with next feature
-
-##### 3.3.9: Continue to Next Feature
-
-Loop back to Step 3.3.1 with next feature in dependency order
 
 ---
 
-### Phase 4: Completion
+## Phase 4: Completion
 
-**⚠️ IMPORTANT**: Execute ALL GitHub operations DIRECTLY in this phase. Do NOT delegate to Task() agents.
-
-#### Step 4.1: Commit and Push Changes
-
+### Step 4.1: Push Changes
 ```bash
-# In sandbox (or local if sandbox was skipped):
-git add -A
-git commit -m "feat(<scope>): implement <initiative-name>
-
-<list of features implemented>
-
-Closes #<master-issue>
-Refs #<feature-1>, #<feature-2>, ...
-
-[agent: initiative-orchestrator]
-"
-
-git push origin <branch-name>
+# In sandbox
+git push origin feature/${slug}
 ```
 
-#### Step 4.2: Create Pull Request DIRECTLY
-
-**Execute this gh command DIRECTLY - do NOT delegate to Task() agent.**
-
+### Step 4.2: Create Pull Request (DIRECT)
 ```bash
 gh pr create \
-  --title "feat: <initiative-name>" \
-  --body "$(cat <<'EOF'
-## Initiative: <name>
+  --title "feat: ${initiative}" \
+  --body "## Initiative: ${initiative}
 
 ### Features Implemented
-- [ ] #<feature-1>: <name>
-- [ ] #<feature-2>: <name>
-...
+<feature-list>
 
 ### Research Manifest
-See `.ai/reports/feature-reports/<date>/<slug>/manifest.md`
-
-### Documentation Created
-- <doc-1>
-- <doc-2>
+.ai/reports/feature-reports/${todayDate}/${slug}/manifest.md
 
 ---
-Generated by /initiative orchestrator
-EOF
-)"
+Generated by /initiative orchestrator"
 ```
 
-#### Step 4.3: Collect Documentation Outputs
-
-Wait for all documentation-expert background agents:
-
-```typescript
-const docResults = [];
-for (const docAgentId of documentationAgentIds) {
-  const result = await AgentOutputTool(agentId: docAgentId);
-  docResults.push(result);
-}
-```
-
-#### Step 4.4: Present Profile Update Suggestions
-
-If documentation-expert agents suggested command-profiles.yaml updates:
-
-```typescript
-if (docResults.some(r => r.suggested_profile_updates?.length > 0)) {
-  AskUserQuestion({
-    question: "Apply suggested command-profiles.yaml updates?",
-    header: "Updates",
-    options: [
-      { label: "Apply all", description: "Add all new keywords and files" },
-      { label: "Review each", description: "Approve updates individually" },
-      { label: "Skip", description: "Don't update profiles" }
-    ]
-  });
-}
-```
-
-#### Step 4.5: Close Master Issue DIRECTLY
-
-**Execute this gh command DIRECTLY - do NOT delegate to Task() agent.**
-
+### Step 4.3: Close Master Issue (DIRECT)
 ```bash
-gh issue close <master-issue-number> \
+gh issue close ${masterIssueNumber} \
   --repo MLorneSmith/2025slideheroes \
-  --comment "Initiative complete: N/N features shipped. PR: #<pr-number>"
+  --comment "Initiative complete: N/N features. PR: #${prNumber}"
 ```
 
-#### Step 4.6: Kill Sandbox
-
+### Step 4.4: Kill Sandbox
 ```bash
-./.claude/skills/e2b-sandbox/scripts/sandbox kill <sandbox-id>
+./sandbox kill ${sandboxId}
 ```
 
 **[PROGRESS]** Initiative complete: N/N features shipped ✓
 
 ---
 
-## Output Format
-
-### Final Summary
+## Final Summary Template
 
 ```
 ## Initiative Complete
@@ -823,83 +349,34 @@ gh issue close <master-issue-number> \
 | # | Feature | Issue | Status |
 |---|---------|-------|--------|
 | 1 | <name> | #<n> | ✓ Complete |
-| 2 | <name> | #<n> | ✓ Complete |
-
-### Documentation Created
-- <path-1>
-- <path-2>
 
 ### Research Manifest
-`.ai/reports/feature-reports/<date>/<slug>/manifest.md`
-
-### Profile Updates Applied
-- Added keywords: <list>
-- Added files: <list>
+.ai/reports/feature-reports/<date>/<slug>/manifest.md
 
 ### Next Steps
 1. Review PR: <url>
 2. Merge when ready
-3. Delete feature branch after merge
 ```
 
 ---
 
-## Error Handling
+## Related Agents
 
-### Research Failure
-If research agents fail, proceed with available results and note gaps.
-
-### Decomposition Failure
-If feature-set fails, present error and allow manual decomposition.
-
-### Implementation Failure
-If implementation fails with validation errors:
-1. Present error details
-2. Offer options: retry, skip, or pause
-
-### Review Blocking Issues
-If review finds blockers:
-1. Show issues with severity
-2. Offer: fix, skip, or pause
-
-### Sandbox Timeout
-If sandbox times out:
-1. Save work state
-2. Offer: resume in new sandbox or pause
-
----
+| Agent | Purpose | Invocation |
+|-------|---------|------------|
+| `initiative-research` | Research phase | `Task(initiative-research, prompt: "{json}")` |
+| `initiative-decomposition` | Decomposition phase | `Task(initiative-decomposition, prompt: "{json}")` |
+| `review-expert` | Implementation review | `Task(review-expert, prompt: "#<issue>")` |
+| `documentation-expert` | Documentation creation | `Task(documentation-expert, prompt: "#<issue>")` |
+| `Explore` | Codebase exploration | `Task(Explore, prompt: "...")` |
 
 ## Related Commands
 
 | Command | Purpose |
 |---------|---------|
-| `/initiative-research` | **Phase 1 sub-agent**: Interview, research, manifest creation |
-| `/initiative-feature-set` | Decompose initiative into features |
 | `/initiative-feature` | Create detailed plan for a feature |
 | `/initiative-implement` | Execute a feature plan |
-| `/feature-set` | Standalone decomposition (no orchestrator) |
-| `/feature` | Standalone feature planning |
-| `/implement` | Standalone implementation |
-| `/sandbox` | Manual sandbox operations |
-
-## Related Agents
-
-| Agent | Purpose |
-|-------|---------|
-| `review-expert` | Delegated implementation review |
-| `documentation-expert` | Delegated documentation creation |
-| `Explore` | Codebase pattern exploration |
-
-## Research Tools (Used via Bash in /initiative-research)
-
-| Tool | Purpose |
-|------|---------|
-| `.ai/bin/context7-get-context` | Library documentation lookup |
-| `.ai/bin/perplexity-chat` | Best practices research with citations |
-| `.ai/bin/perplexity-search` | Web search for specific resources |
-
-> **Note**: Research tools are invoked via direct Bash commands, not Task agents.
-> This is because agents within agents don't work in Claude Code.
+| `/review` | Review implementation |
 
 ---
 
