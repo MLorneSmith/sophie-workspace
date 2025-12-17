@@ -203,7 +203,7 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 - `/test --verbose` - Very verbose (show more lines)
 - `/test --continue` - Continue execution despite failures
 
-**E2E Shards (1-12):**
+**E2E Shards (1-15):**
 
 | Shard | Name | Tests | Notes |
 |-------|------|-------|-------|
@@ -212,26 +212,29 @@ Execute test suites with minimal output to prevent Claude Code crashes while pre
 | 3 | Personal Accounts | 12 | |
 | 4 | Admin & Invitations | 13 | |
 | 5 | Accessibility | 21 | |
-| 6 | Config & Health | 12 | |
-| 7 | Payload CMS | 42 | Auto-starts Payload on port 3021 |
-| 8 | Payload Extended | varies | Auto-starts Payload on port 3021 |
-| 9 | User Billing | varies | Auto-starts Stripe webhook forwarder |
-| 10 | Team Billing | varies | Auto-starts Stripe webhook forwarder |
-| 11 | Config Verification | varies | |
-| 12 | Team Accounts | 8 | |
+| 6 | Healthcheck | 1 | |
+| 7 | Payload Auth | 9 | Auto-starts Payload on port 3021 |
+| 8 | Payload Collections | 22 | Auto-starts Payload on port 3021 |
+| 9 | Payload Database | 12 | Auto-starts Payload on port 3021 |
+| 10 | User Billing | varies | Auto-starts Stripe webhook forwarder |
+| 11 | Team Billing | varies | Auto-starts Stripe webhook forwarder |
+| 12 | Config Verification | varies | |
+| 13 | Team Accounts | 8 | |
+| 14 | Payload Seeding | 12 | Auto-starts Payload on port 3021 |
+| 15 | Payload Seeding Perf | 14 | Auto-starts Payload on port 3021 |
 
-**Payload CMS Tests (Shards 7-8):**
+**Payload CMS Tests (Shards 7-9, 14-15):**
 
-Shards 7 and 8 test Payload CMS functionality. The test controller automatically:
-- Detects when shards 7 or 8 are requested
+Shards 7, 8, 9, 14, and 15 test Payload CMS functionality. The test controller automatically:
+- Detects when any Payload shard is requested
 - Starts Payload CMS server on port 3021 (via `pnpm --filter payload dev:test`)
 - Waits for server to be healthy before running tests
 - Uses `apps/payload/.env.test` for correct test configuration
 
-**Billing Tests (Shards 9-10):**
+**Billing Tests (Shards 10-11):**
 
-Shards 9 and 10 test Stripe billing functionality. The test controller automatically:
-- Detects when shards 9 or 10 are requested
+Shards 10 and 11 test Stripe billing functionality. The test controller automatically:
+- Detects when shards 10 or 11 are requested
 - Starts docker-compose with `--profile billing` flag
 - Launches the `stripe-webhook` container to forward Stripe webhooks
 - Waits for webhook signing secret to be captured

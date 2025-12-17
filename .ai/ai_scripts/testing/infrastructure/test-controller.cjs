@@ -188,12 +188,12 @@ class TestController {
 			// Check for numeric argument (shard number)
 			if (/^\d+$/.test(arg)) {
 				const shardNum = parseInt(arg, 10);
-				if (shardNum >= 1 && shardNum <= 12) {
+				if (shardNum >= 1 && shardNum <= 15) {
 					options.shard = options.shard || [];
 					options.shard.push(shardNum);
 					options.skipUnit = true; // Shard implies E2E only
 				} else {
-					logError(`Invalid shard number: ${shardNum}. Valid range is 1-12.`);
+					logError(`Invalid shard number: ${shardNum}. Valid range is 1-15.`);
 				}
 				continue;
 			}
@@ -208,10 +208,10 @@ class TestController {
 							.split(",")
 							.map((s) => parseInt(s.trim(), 10));
 						for (const num of shardNums) {
-							if (num >= 1 && num <= 12) {
+							if (num >= 1 && num <= 15) {
 								options.shard.push(num);
 							} else {
-								logError(`Invalid shard number: ${num}. Valid range is 1-12.`);
+								logError(`Invalid shard number: ${num}. Valid range is 1-15.`);
 							}
 						}
 						options.skipUnit = true; // Shard implies E2E only
@@ -790,8 +790,8 @@ class TestController {
 						};
 					}
 
-					// Check if Payload CMS is needed (shards 6, 7, 8, 13, or 14)
-					const payloadShards = [6, 7, 8, 13, 14];
+					// Check if Payload CMS is needed (shards 7, 8, 9, 14, or 15)
+					const payloadShards = [7, 8, 9, 14, 15];
 					const needsPayload = this.options.shard?.some((s) =>
 						payloadShards.includes(s),
 					);
