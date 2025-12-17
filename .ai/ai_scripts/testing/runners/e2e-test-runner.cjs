@@ -476,14 +476,18 @@ class E2ETestRunner {
 				expectedTests: 21,
 			},
 			{
-				id: 6,
-				name: "Health & Payload Auth",
-				shardCommand: "test:shard6",
-				files: [
-					"tests/healthcheck.spec.ts",
-					"tests/payload/payload-auth.spec.ts",
-				],
-				expectedTests: 10, // healthcheck (1) + payload-auth (9)
+				id: "6a",
+				name: "Healthcheck",
+				shardCommand: "test:shard6a",
+				files: ["tests/healthcheck.spec.ts"],
+				expectedTests: 1,
+			},
+			{
+				id: "6b",
+				name: "Payload Auth",
+				shardCommand: "test:shard6b",
+				files: ["tests/payload/payload-auth.spec.ts"],
+				expectedTests: 9,
 			},
 			{
 				id: 7,
