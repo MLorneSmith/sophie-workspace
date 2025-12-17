@@ -395,23 +395,39 @@ async function setupGitHubCLI(sandbox: Sandbox): Promise<void> {
 	console.log("Setting up GitHub CLI authentication...");
 
 	// Export token and authenticate with gh CLI
-	await sandbox.commands.run(
-		`export GITHUB_TOKEN="${GITHUB_TOKEN}" && gh auth login --with-token < <(echo "${GITHUB_TOKEN}")`,
-		{ timeoutMs: 30000 },
-	);
+	// Use echo with pipe (more portable than bash process substitution)
+	try {
+		const loginResult = await sandbox.commands.run(
+			`echo "${GITHUB_TOKEN}" | gh auth login --with-token`,
+			{ timeoutMs: 30000 },
+		);
+
+		if (loginResult.exitCode !== 0) {
+			console.warn(
+				"gh auth login warning:",
+				loginResult.stderr || loginResult.stdout,
+			);
+		}
+	} catch (loginError) {
+		console.warn("gh auth login error (non-fatal):", loginError);
+	}
 
 	// Verify authentication
-	const authResult = await sandbox.commands.run("gh auth status", {
-		timeoutMs: 10000,
-	});
+	try {
+		const authResult = await sandbox.commands.run("gh auth status", {
+			timeoutMs: 10000,
+		});
 
-	if (authResult.exitCode === 0) {
-		console.log("GitHub CLI authenticated successfully");
-	} else {
-		console.warn(
-			"GitHub CLI authentication may have failed:",
-			authResult.stderr,
-		);
+		if (authResult.exitCode === 0) {
+			console.log("GitHub CLI authenticated successfully");
+		} else {
+			console.warn(
+				"GitHub CLI authentication may have failed:",
+				authResult.stderr,
+			);
+		}
+	} catch (authError) {
+		console.warn("gh auth status check failed (non-fatal):", authError);
 	}
 }
 

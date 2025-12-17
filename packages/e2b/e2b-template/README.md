@@ -31,7 +31,7 @@ pnpm e2b:build:prod
 
 | Variable | Description |
 |----------|-------------|
-| `E2B_API_KEY` | E2B API key from https://e2b.dev/dashboard |
+| `E2B_API_KEY` | E2B API key from <https://e2b.dev/dashboard> |
 | `GITHUB_TOKEN` | GitHub token with `repo` scope for private repo cloning |
 
 ## Using the Template
@@ -63,7 +63,7 @@ const sandbox = await Sandbox.create('slideheroes-claude-agent')
 
 ## Template Architecture
 
-```
+```text
 template.ts exports:
 ├── template           # Default template with repo cloning
 ├── createTemplate()   # Factory function (cloneRepo: boolean)

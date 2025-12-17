@@ -159,7 +159,9 @@ echo "Dev server starting on port 3000 (may take 10-30 seconds to compile)"
  * @param cloneRepo - Whether to clone the repository during build (default: true)
  *                    Set to false for faster iteration during template development
  */
-export function createTemplate(cloneRepo: boolean = true): ReturnType<typeof Template> {
+export function createTemplate(
+	cloneRepo: boolean = true,
+): ReturnType<typeof Template> {
 	let tmpl = Template()
 		// Start from Ubuntu 24.04 base image
 		.fromUbuntuImage("24.04")
@@ -242,10 +244,9 @@ export function createTemplate(cloneRepo: boolean = true): ReturnType<typeof Tem
 		// Note: Supabase CLI doesn't support global npm install anymore
 		// It's available via pnpm in the project (pnpm exec supabase)
 		// ========================================
-		.runCmd(
-			["npm install -g turbo@2.6.1 @anthropic-ai/claude-code"],
-			{ user: "root" },
-		)
+		.runCmd(["npm install -g turbo@2.6.1 @anthropic-ai/claude-code"], {
+			user: "root",
+		})
 
 		// ========================================
 		// Environment Variables
@@ -343,9 +344,7 @@ export function createTemplate(cloneRepo: boolean = true): ReturnType<typeof Tem
 			.runCmd(["pnpm exec playwright install chromium"]);
 	} else {
 		// Just set the working directory without cloning
-		tmpl = tmpl
-			.runCmd([`mkdir -p ${WORKSPACE_DIR}`])
-			.setWorkdir(WORKSPACE_DIR);
+		tmpl = tmpl.runCmd([`mkdir -p ${WORKSPACE_DIR}`]).setWorkdir(WORKSPACE_DIR);
 	}
 
 	return tmpl;
