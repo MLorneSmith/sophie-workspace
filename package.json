@@ -118,6 +118,9 @@
 			"@lexical/utils": "0.35.0",
 			"@lexical/yjs": "0.35.0",
 			"nodemailer": "^7.0.11"
+		},
+		"patchedDependencies": {
+			"payload@3.68.3": "patches/payload@3.68.3.patch"
 		}
 	},
 	"devDependencies": {
@@ -140,6 +143,7 @@
 		"knip": "^5.72.0",
 		"lint-staged": "^16.2.7",
 		"markdownlint-cli2": "^0.20.0",
+		"patch-package": "^8.0.0",
 		"react": "19.2.1",
 		"react-dom": "19.2.1",
 		"tailwind-merge": "^3.4.0",

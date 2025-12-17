@@ -12,7 +12,8 @@
 			"SlashCommand(/conditional_docs:*)",
 			"Bash(/home/msmith/projects/2025slideheroes/.ai/ai_scripts/testing/infrastructure/safe-test-runner.sh:*)",
 			"SlashCommand(/initiative-research:*)",
-			"SlashCommand(/initiative-feature-set:*)"
+			"SlashCommand(/initiative-feature-set:*)",
+			"SlashCommand(/initiative-feature:*)"
 		]
 	},
 	"enabledMcpjsonServers": ["playwright"],

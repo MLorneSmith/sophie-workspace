@@ -41,7 +41,8 @@
 			"!**/styles/globals.css",
 			"!**/supabase/templates/**/*.html",
 			"!**/apps/e2e/.auth",
-			"!**/.ai/tools/context7/.cache"
+			"!**/.ai/tools/context7/.cache",
+			"!**/temp"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
