@@ -106,9 +106,7 @@ export async function logCookieDetails(
 ): Promise<void> {
 	const cookies = await context.cookies();
 
-	// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 	console.log(`\n🍪 ${label}:`);
-	// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 	console.log(`   Total cookies: ${cookies.length}`);
 
 	for (const cookie of cookies) {
@@ -117,27 +115,18 @@ export async function logCookieDetails(
 				? `${cookie.value.substring(0, 20)}...`
 				: cookie.value;
 
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`   - ${cookie.name}:`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     value: ${valuePreview} (${cookie.value.length} chars)`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     domain: ${cookie.domain}`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     path: ${cookie.path}`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     secure: ${cookie.secure}`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     httpOnly: ${cookie.httpOnly}`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(`     sameSite: ${cookie.sameSite}`);
-		// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 		console.log(
 			`     expires: ${new Date(cookie.expires * 1000).toISOString()}`,
 		);
 	}
 
-	// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 	console.log("");
 }
 
@@ -243,20 +232,17 @@ export async function verifyRequestHasCookies(
 
 			if (cookieHeader) {
 				hasCookieHeader = true;
-				// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 				console.log(`   ✓ Cookie header found in request to ${targetUrl}`);
 			}
 
 			if (authHeader) {
 				hasAuthorizationHeader = true;
-				// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 				console.log(
 					`   ✓ Authorization header found in request to ${targetUrl}`,
 				);
 			}
 
 			if (!cookieHeader && !authHeader) {
-				// biome-ignore lint/suspicious/noConsole: Debugging output for E2E tests
 				console.warn(
 					`   ✗ No Cookie or Authorization header in request to ${targetUrl}`,
 				);
@@ -313,7 +299,6 @@ export async function verifyCookieSetup(
 		requestHasCookies = await verifyRequestHasCookies(page, "/home");
 	} catch {
 		// Request verification is optional - doesn't fail entire setup
-		// biome-ignore lint/suspicious/noConsole: Debug output
 		console.log("   Note: Could not verify request cookies (non-critical)");
 	}
 
