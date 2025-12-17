@@ -485,6 +485,144 @@ profiles:
         - "development/server-actions.md"
         - "development/react-query-patterns.md"
 
+  # ============================================================================
+  # /initiative - Orchestrate complete feature development lifecycle
+  # ============================================================================
+  initiative:
+    description: "Orchestrate complete feature development lifecycle with E2B sandbox isolation"
+
+    defaults:
+      - "development/initiative-patterns.md"
+      - "development/architecture-overview.md"
+
+    rules:
+      # UI/Dashboard Features
+      - keywords: ["dashboard", "ui", "component", "widget", "card", "chart", "frontend", "layout", "grid", "visualization"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Database & Schema Changes
+      - keywords: ["database", "schema", "migration", "RLS", "table", "query", "postgres"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Authentication & Authorization
+      - keywords: ["auth", "login", "permission", "role", "session", "oauth"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+      # Server Actions & API
+      - keywords: ["server action", "mutation", "form", "validation", "api", "endpoint", "loader"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # E2B Sandbox
+      - keywords: ["sandbox", "e2b", "isolated", "implementation"]
+        files:
+          - "infrastructure/e2b-sandbox.md"
+        priority: medium
+
+      # Data Fetching
+      - keywords: ["react query", "tanstack", "data fetching", "cache"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Testing
+      - keywords: ["test", "spec", "e2e", "unit"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: low
+
+    categories:
+      frontend:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+        - "development/initiative-patterns.md"
+      backend:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
+      infrastructure:
+        - "infrastructure/e2b-sandbox.md"
+
+  # ============================================================================
+  # /initiative-feature - Create detailed feature plans for initiative workflow
+  # ============================================================================
+  initiative-feature:
+    description: "Create detailed feature plans for initiative workflow"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # UI Components & Frontend (high priority for dashboard features)
+      - keywords: ["dashboard", "component", "widget", "card", "chart", "graph", "table", "form", "ui", "layout", "grid", "visualization", "radial", "spider", "radar"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Database & Schema Changes
+      - keywords: ["database", "schema", "migration", "RLS", "table", "query", "postgres"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Server Actions & API
+      - keywords: ["server action", "mutation", "form", "validation", "api", "endpoint", "loader"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # Authentication & Authorization
+      - keywords: ["auth", "login", "permission", "role", "session"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+      # Data Fetching & State
+      - keywords: ["react query", "tanstack", "data fetching", "cache", "parallel"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # External Integrations
+      - keywords: ["cal.com", "stripe", "external", "integration", "webhook"]
+        files:
+          - "development/server-actions.md"
+        priority: medium
+
+      # Testing
+      - keywords: ["test", "spec", "e2e", "unit", "integration"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: low
+
+    categories:
+      frontend:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      backend:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
+      full_stack:
+        - "development/architecture-overview.md"
+        - "development/server-actions.md"
+        - "development/shadcn-ui-components.md"
+
 # ============================================================================
 # Routing Configuration
 # ============================================================================

@@ -1,8 +1,8 @@
 ---
 description: Create detailed feature plan using research manifest from /initiative workflow. Updates GitHub issue with plan and marks as planned
-argument-hint: [issue-number] --manifest [path]
+argument-hint: [issue-number] --manifest [path] --master-issue [number]
 model: opus
-allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
+allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, Skill, SlashCommand]
 ---
 
 # Initiative Feature Planning
@@ -14,32 +14,54 @@ Create a detailed implementation plan for a feature that is part of an `/initiat
 | Aspect | /feature | /initiative-feature |
 |--------|----------|---------------------|
 | Research | Does own codebase exploration | Loads research manifest |
-| Input | Feature description | GitHub issue number |
-| Output | Human-readable plan | Structured JSON + plan file |
+| Input | Feature description | GitHub issue number + master issue |
+| Output | Structured JSON + GitHub issue (full plan embedded) | |
 | Interview | Full user interview | Minimal (context from orchestrator) |
 | Context | Standalone command | Part of /initiative workflow |
+| Skills | Manual invocation | Auto-invokes frontend-design for UI |
 
 ## Instructions
 
 IMPORTANT: This command is called by `/initiative` orchestrator with research context already gathered.
 IMPORTANT: Load and use the research manifest - do NOT duplicate research.
 IMPORTANT: Output must be structured for orchestrator consumption.
+IMPORTANT: The full plan MUST be embedded in the GitHub issue body - not referenced as a local file path.
 
 ### Step 1: Parse Arguments
 
 Extract from `$ARGUMENTS`:
 - **Issue number**: The GitHub issue number for this feature
 - **Manifest path**: Path to research manifest (look for `--manifest` flag)
+- **Master issue number**: Parent feature-set issue number (look for `--master-issue` flag)
 
 ```typescript
 // Expected format:
-// $ARGUMENTS = "124 --manifest .ai/reports/feature-reports/2025-12-17/1208-user-dashboard/manifest.md"
+// $ARGUMENTS = "1235 --manifest .ai/reports/feature-reports/2025-12-17/1234-user-dashboard/manifest.md --master-issue 1234"
 
 const args = "$ARGUMENTS";
+
+// Extract manifest path
 const manifestMatch = args.match(/--manifest\s+(\S+)/);
 const manifestPath = manifestMatch ? manifestMatch[1] : null;
-const issueNumber = args.replace(/--manifest\s+\S+/, '').trim().replace('#', '');
+
+// Extract master issue number
+const masterMatch = args.match(/--master-issue\s+(\d+)/);
+const masterIssueNumber = masterMatch ? masterMatch[1] : null;
+
+// Extract feature issue number (remaining after removing flags)
+const issueNumber = args
+  .replace(/--manifest\s+\S+/, '')
+  .replace(/--master-issue\s+\d+/, '')
+  .trim()
+  .replace('#', '');
+
+// Derive initiative slug from manifest path
+// e.g., ".ai/reports/.../1234-user-dashboard/manifest.md" -> "user-dashboard"
+const slugMatch = manifestPath?.match(/\/(\d+)-([^/]+)\/manifest\.md$/);
+const initiativeSlug = slugMatch ? slugMatch[2] : 'unknown';
 ```
+
+**CRITICAL**: If `--master-issue` is not provided, extract it from the manifest path (the number prefix).
 
 ### Step 2: Fetch GitHub Issue
 
@@ -53,13 +75,45 @@ gh issue view <issue-number> \
 
 Extract from issue:
 - Feature title and description
-- Parent feature-set issue reference
+- Parent feature-set issue reference (verify matches --master-issue)
 - Initial scope/requirements
 - Feature type and priority
 
+**Derive feature slug from title:**
+```typescript
+// "Feature: Dashboard Layout Grid and Data Loader" -> "dashboard-layout"
+const featureSlug = title
+  .replace(/^Feature:\s*/i, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .substring(0, 30)
+  .replace(/-+$/, '');
+```
+
 ### Step 3: Load Research Manifest
 
-If manifest path provided:
+**P1 Fix**: Manifest can be a local file path OR a GitHub issue reference.
+
+```typescript
+// Check if manifest is a GitHub issue reference
+if (manifestPath && manifestPath.startsWith('github:issue:')) {
+  // Extract issue number and fetch from GitHub
+  const issueNumber = manifestPath.replace('github:issue:', '');
+  // Fetch manifest from GitHub issue
+}
+```
+
+**If manifest is GitHub issue reference (`github:issue:<number>`):**
+
+```bash
+# Fetch manifest content from GitHub issue
+gh issue view <manifest-issue-number> \
+  --repo MLorneSmith/2025slideheroes \
+  --json body \
+  -q .body
+```
+
+**If manifest is local file path:**
 
 ```bash
 cat <manifest-path>
@@ -74,25 +128,37 @@ Extract from manifest:
 
 This research informs your planning - use it extensively.
 
-### Step 4: Quick Context Validation
+### Step 4: Detect Feature Type and Invoke Skills
 
-Use AskUserQuestion ONLY if critical information is missing from the issue:
+**CRITICAL**: Analyze the feature to determine if specialized skills should be invoked.
 
+**UI/Frontend Detection Keywords:**
+- dashboard, component, widget, card, chart, graph, table, form
+- button, modal, dialog, panel, sidebar, navigation
+- layout, grid, responsive, styling, design
+- radial, spider, radar, progress, visualization
+
+**If UI/Frontend feature detected:**
 ```typescript
-// Only ask if NOT provided in issue or manifest:
-// - Specific implementation approach preferences
-// - Trade-offs that need user decision
-// - Ambiguous requirements
+Skill({ skill: "frontend-design" })
 ```
 
-In most cases, the orchestrator and feature-set have already gathered this context. Proceed with planning using manifest research and issue details.
+Read the skill output and apply its guidelines to the plan.
+
+**Database Detection Keywords:**
+- schema, migration, table, column, RLS, policy
+- query, index, foreign key, constraint
+
+**If database changes detected:**
+- Flag for schema file creation
+- Include migration commands in validation
 
 ### Step 5: Load Conditional Documentation
 
 Use the conditional docs system for project-specific patterns:
 
 ```typescript
-SlashCommand({ command: '/conditional_docs feature "<feature-summary-from-issue>"' })
+SlashCommand({ command: '/conditional_docs initiative-feature "<feature-title>"' })
 ```
 
 Read suggested documentation files to understand:
@@ -100,26 +166,18 @@ Read suggested documentation files to understand:
 - Integration points
 - Testing conventions
 
-### Step 5.5: Feature-Specific Research (When Needed)
+### Step 6: Feature-Specific Research (MANDATORY for Complex Features)
 
-Based on the feature requirements and manifest, identify knowledge gaps:
+**MANDATORY RESEARCH TRIGGERS** - If ANY of these apply, you MUST conduct additional research:
 
-**1. Check Manifest Coverage**
-Does the research manifest address this feature's specific needs?
-- All technologies covered? ✓/✗
-- All patterns documented? ✓/✗
-- Any unknowns remain? List them
+1. **External Libraries**: Feature uses library not covered in manifest
+2. **External Services**: Integration with Cal.com, Stripe, external APIs
+3. **Security Features**: Authentication, authorization, encryption, permissions
+4. **Database Schema**: New tables, columns, or RLS policies needed
+5. **Performance Critical**: Caching, pagination, real-time updates
+6. **Complex UI**: Charts, visualizations, complex state management
 
-**2. Identify Unknowns**
-What technologies/patterns need additional clarification?
-- Libraries not in manifest (e.g., new external API)
-- Complex database schema changes
-- Security-sensitive functionality
-- Performance-critical operations
-
-**3. Targeted Research (If Needed)**
-
-Use these tools for additional research:
+**Research Tools:**
 
 **Context7 CLI** - For library documentation:
 ```bash
@@ -128,104 +186,111 @@ Use these tools for additional research:
 
 # Get documentation for specific topic
 .ai/bin/context7-get-context <owner> <repo> --topic <topic> --tokens 3000
-
-# Examples:
-.ai/bin/context7-get-context vercel next.js --topic "server actions" --tokens 2500
-.ai/bin/context7-get-context facebook react --topic hooks --tokens 2000
-.ai/bin/context7-get-context supabase supabase --topic rls --tokens 2500
 ```
 
-**Perplexity CLI** - For best practices and current information:
+**Perplexity CLI** - For best practices:
 ```bash
-# Search for information
-.ai/bin/perplexity-search "topic" --num-results 10
-
 # Get AI-generated answer with citations
 .ai/bin/perplexity-chat "What are the best practices for X?"
-
-# With specific domains
-.ai/bin/perplexity-search "React dashboard patterns" --domains github.com,stackoverflow.com
 ```
 
-**Task(Explore)** - For codebase exploration:
+**Task(Explore)** - For codebase patterns:
 ```typescript
 Task('Explore', {
-  prompt: `Find existing patterns for ${feature.unknowns.join(', ')}.
-           Focus on: code examples, common patterns, integration points.`
+  prompt: `Find existing patterns for <specific-pattern>.
+           Focus on: code examples, integration points.`
 })
 ```
 
-**Triggers for Additional Research:**
-- Feature involves library not covered in manifest
-- Database schema changes require understanding existing patterns
-- Security functionality (auth, permissions, encryption)
-- Integration with external services (Cal.com, Stripe, etc.)
-- Performance-critical paths (caching, pagination)
-
-**Research Output:**
-If additional research was performed, include it in the plan:
+**REQUIRED OUTPUT** if research was performed:
 ```md
-## Additional Research Findings
-- **Topic**: <what was researched>
-- **Source**: <Context7 / Perplexity / Explore agent>
-- **Key Findings**: <summary of findings>
+## Additional Research Conducted
+
+### Research Topic 1: <topic>
+- **Source**: Context7 / Perplexity / Explore agent
+- **Key Findings**: <summary>
 - **Applied To**: <how this informs the plan>
 ```
 
-### Step 6: Research-Informed Planning
+### Step 7: Research-Informed Planning
 
-Using research manifest findings, create the implementation plan:
+Using research manifest findings AND skill guidelines (if invoked), create the implementation plan.
 
 **CRITICAL: Progress Markers**
 
-Output progress markers throughout planning for orchestrator visibility:
+Output progress markers throughout planning:
 
 ```
 [PROGRESS] Planning: Loading manifest from <path>
 [PROGRESS] Planning: Analyzing feature #<issue>
-[PROGRESS] Planning: Exploring codebase for <pattern>
+[PROGRESS] Planning: Invoking frontend-design skill (if UI feature)
+[PROGRESS] Planning: Conducting additional research (if triggered)
 [PROGRESS] Planning: Designing solution approach
 [PROGRESS] Planning: Creating plan file
-[PROGRESS] Planning: Updating GitHub issue
+[PROGRESS] Planning: Updating GitHub issue with full plan
 ```
 
 **Research-Guided Approach:**
 - Apply technology patterns from manifest
+- Apply design guidelines from frontend-design skill (if invoked)
 - Reference code examples for implementation
 - Consider gotchas when designing solution
 - Follow recommended patterns from research
 
-**Codebase Integration:**
-- Use Task with `subagent_type=Explore` for targeted exploration
-- Focus on integration points identified in manifest
-- Verify existing patterns match research recommendations
+### Step 8: Create Plan File
 
-### Step 7: Create Plan File
+**Directory**: `.ai/specs/feature-sets/<master-issue#>-<initiative-slug>/`
+**Filename**: `<feature-issue#>-<feature-slug>.md`
 
-Create plan in `.ai/specs/features/<initiative-slug>/`:
-
-**Directory**: `.ai/specs/features/<initiative-slug>/`
-**Filename**: `<issue#>-feature-plan.md`
-
-Use the Plan Format below, enhanced with research context.
-
-### Step 8: Update GitHub Issue
-
-Update the stub issue with the detailed plan:
+Example: `.ai/specs/feature-sets/1234-user-dashboard/1235-dashboard-layout.md`
 
 ```bash
+# Create directory if needed
+mkdir -p ".ai/specs/feature-sets/${masterIssueNumber}-${initiativeSlug}"
+
+# Write plan file
+cat > ".ai/specs/feature-sets/${masterIssueNumber}-${initiativeSlug}/${issueNumber}-${featureSlug}.md" << 'EOF'
+<plan-content>
+EOF
+```
+
+Use the Plan Format below, enhanced with research context and skill guidelines.
+
+### Step 9: Update GitHub Issue (FULL PLAN EMBEDDED)
+
+**CRITICAL**: The GitHub issue body MUST contain the COMPLETE plan content. Do NOT reference local file paths.
+
+The sandbox clones from GitHub and won't have access to local files. The plan must be fully readable from the GitHub issue.
+
+```bash
+# Update issue with FULL plan content (not a file reference)
 gh issue edit <issue-number> \
   --repo MLorneSmith/2025slideheroes \
-  --body "<full-plan-content>"
+  --body "$(cat << 'PLAN_EOF'
+<FULL PLAN CONTENT HERE - NOT A FILE PATH REFERENCE>
+PLAN_EOF
+)"
 
-# Add label indicating plan is ready
+# Add labels
 gh issue edit <issue-number> \
   --repo MLorneSmith/2025slideheroes \
   --add-label "status:planned" \
   --remove-label "status:ready"
 ```
 
-### Step 9: Generate Structured Output
+**The issue body should contain:**
+1. Full feature description
+2. Solution approach
+3. All implementation tasks
+4. Validation commands
+5. Acceptance criteria
+
+**NOT acceptable:**
+- `**Plan File**: .ai/specs/features/...` (local path reference)
+- Links to local files
+- Abbreviated plans
+
+### Step 10: Generate Structured Output
 
 **CRITICAL**: Output structured JSON for orchestrator:
 
@@ -234,233 +299,187 @@ gh issue edit <issue-number> \
 {
   "success": true,
   "feature": {
-    "issue_number": 124,
-    "title": "Database Schema Layer",
-    "url": "https://github.com/MLorneSmith/2025slideheroes/issues/124"
+    "issue_number": 1235,
+    "title": "Dashboard Layout Grid and Data Loader",
+    "slug": "dashboard-layout",
+    "url": "https://github.com/MLorneSmith/2025slideheroes/issues/1235"
+  },
+  "initiative": {
+    "master_issue": 1234,
+    "slug": "user-dashboard"
   },
   "plan": {
-    "file_path": ".ai/specs/features/local-first-rxdb/124-feature-plan.md",
+    "file_path": ".ai/specs/feature-sets/1234-user-dashboard/1235-dashboard-layout.md",
+    "file_size_bytes": 5432,
     "phases": 3,
     "tasks": 12
   },
+  "skills_invoked": ["frontend-design"],
+  "research_conducted": true,
   "validation_commands": [
     "pnpm typecheck",
-    "pnpm test:unit",
+    "pnpm lint:fix",
     "pnpm build"
   ],
   "dependencies": {
-    "packages": ["rxdb", "@rxdb/encryption"],
+    "packages": [],
     "features": []
   },
   "database_impact": {
-    "requires_changes": true,
-    "new_tables": ["activity_log"],
+    "requires_changes": false,
+    "new_tables": [],
     "modified_tables": [],
-    "schema_file": "apps/web/supabase/schemas/50-activity-log.sql",
-    "rls_policies": ["activity_log_select_own", "activity_log_insert_own"],
-    "migration_commands": [
-      "pnpm --filter web supabase:db:diff -f add-activity-log",
-      "pnpm --filter web supabase migration up",
-      "pnpm supabase:web:typegen"
-    ]
+    "schema_file": null,
+    "rls_policies": [],
+    "migration_commands": []
   },
   "estimated_files": [
-    "apps/web/lib/rxdb/schemas/presentation.ts",
-    "apps/web/lib/rxdb/collections/index.ts"
+    "apps/web/app/home/(user)/page.tsx",
+    "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
   ],
   "research_sections_used": [
     "Technology Overview",
-    "Code Examples - Schema Definition",
-    "Gotchas - Migration Strategy"
+    "Code Examples - Data Loading Pattern",
+    "Gotchas - User ID context"
   ],
-  "github_updated": true
+  "github_updated": true,
+  "plan_embedded_in_issue": true,
+  "verification": {
+    "plan_file_created": true,
+    "plan_file_path": ".ai/specs/feature-sets/1234-user-dashboard/1235-dashboard-layout.md",
+    "plan_file_size_bytes": 5432,
+    "github_issue_updated": true,
+    "github_issue_body_length": 8234,
+    "labels_updated": true,
+    "skills_invoked": ["frontend-design"],
+    "conditional_docs_loaded": ["development/shadcn-ui-components.md", "development/react-query-patterns.md"]
+  }
 }
 === END PLANNING OUTPUT ===
 ```
 
+**P4 Fix**: The `verification` block provides explicit data for orchestrator validation. Include:
+- `plan_file_created`: Boolean - was the plan file successfully written
+- `plan_file_path`: String - full path to plan file
+- `plan_file_size_bytes`: Number - size of plan file (should be >500 bytes)
+- `github_issue_updated`: Boolean - was the GitHub issue updated
+- `github_issue_body_length`: Number - length of issue body (should be >1000 chars)
+- `labels_updated`: Boolean - was status:planned label added
+- `skills_invoked`: Array - which skills were loaded
+- `conditional_docs_loaded`: Array - which context docs were loaded
+
 ## Plan Format
+
+The plan should follow this structure (to be embedded in GitHub issue):
 
 ```md
 # Feature: <feature name>
 
-## Context
+**Parent Initiative**: #<master-issue-number>
+**Feature Issue**: #<feature-issue-number>
+**Phase**: <phase number>
+**Effort**: <S/M/L>
+**Dependencies**: <list or "None">
 
-**Parent Initiative**: <initiative name> (#<feature-set-issue>)
-**Research Manifest**: <manifest-path>
-**Issue**: #<issue-number>
+---
 
-## Feature Description
-<describe the feature in detail, referencing research findings>
+## Description
 
-## Research Insights Applied
-
-### From Technology Overview
-<relevant findings from manifest>
-
-### From Recommended Patterns
-<patterns being applied>
-
-### Gotchas Addressed
-<how gotchas from manifest are being handled>
+<detailed description of what this feature does>
 
 ## User Story
+
 As a <type of user>
 I want to <action/goal>
 So that <benefit/value>
 
 ## Solution Approach
-<describe the solution, referencing research code examples where applicable>
 
-## Relevant Files
+<describe the technical approach, referencing patterns from research>
 
-### Existing Files to Modify
-<files that need changes, with explanation>
+## Research Applied
 
-### New Files to Create
-<new files needed for this feature>
+### From Manifest
+- <key pattern or insight applied>
 
-## Impact Analysis
+### From Skills
+- <guidelines from frontend-design skill if invoked>
 
-### Dependencies Affected
-<packages and features affected>
+### Additional Research
+- <findings from Context7/Perplexity if conducted>
 
-### Database Impact
-<Analyze if this feature requires database changes>
+## Files to Create/Modify
 
-**Tables Affected:**
-- [ ] New tables needed: <table names or "None">
-- [ ] Existing tables modified: <table names or "None">
-- [ ] New columns needed: <column names or "None">
+### New Files
+| File | Purpose |
+|------|---------|
+| `path/to/file.tsx` | Description |
 
-**Schema Changes Required:**
-- [ ] Schema file: `apps/web/supabase/schemas/XX-<feature>.sql`
-- [ ] Migration needed: Yes/No
-- [ ] RLS policies needed: <policy names or "None">
+### Modified Files
+| File | Changes |
+|------|---------|
+| `path/to/existing.tsx` | What changes |
 
-**Migration Commands:**
-```bash
-# If schema changes are needed, include in validation:
-pnpm --filter web supabase:db:diff -f <migration-name>
-pnpm --filter web supabase migration up
-pnpm supabase:web:typegen
-```
+## Database Impact
 
-**Note:** If database changes are required, add a `db-changes` label to the GitHub issue and include migration commands in validation steps.
+- **Schema Changes**: Yes/No
+- **New Tables**: <list or "None">
+- **New RLS Policies**: <list or "None">
+- **Migration Commands**: <commands or "N/A">
 
-### Risk Assessment
-<risk level with justification>
+## Implementation Tasks
 
-### Security Considerations
-<security aspects, especially if mentioned in manifest gotchas>
-
-### Performance Impact
-<performance considerations from research>
-
-## Implementation Plan
-
-### Phase 1: Foundation
-<foundational work, referencing manifest patterns>
-
-### Phase 2: Core Implementation
-<main implementation, applying research code examples>
-
-### Phase 3: Integration
-<integration with existing features>
-
-## Step by Step Tasks
-
-### Task 1: <Task Name>
-- [ ] Subtask 1
-- [ ] Subtask 2
-- **Research Reference**: <relevant manifest section>
-
-### Task 2: <Task Name>
+### Task 1: <name>
 - [ ] Subtask 1
 - [ ] Subtask 2
 
-<continue with all tasks>
+### Task 2: <name>
+- [ ] Subtask 1
+- [ ] Subtask 2
+
+<continue for all tasks>
 
 ## Testing Strategy
 
-### Unit Tests
-<unit tests needed>
-
-### Integration Tests
-<integration tests, especially for patterns from manifest>
-
-### E2E Tests
-<end-to-end tests>
+- **Unit Tests**: <what to test>
+- **Integration Tests**: <what to test>
+- **E2E Tests**: <what to test>
 
 ## Acceptance Criteria
-<specific criteria for completion>
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] All validation commands pass
 
 ## Validation Commands
-```bash
+
+\`\`\`bash
 pnpm typecheck
-pnpm test:unit
-pnpm test:e2e
+pnpm lint:fix
+pnpm format:fix
 pnpm build
+\`\`\`
+
+---
+*Plan generated by /initiative-feature*
+*Skills used: <list>*
+*Research conducted: <yes/no>*
 ```
-
-## Notes
-<additional context, future considerations, manifest references>
-```
-
-## Research Manifest Integration
-
-When loading the manifest, specifically look for:
-
-### Technology Overview
-Understand the overall technology landscape and apply to this specific feature.
-
-### Recommended Patterns
-Apply these patterns directly to your implementation plan.
-
-### Code Examples
-Reference and adapt examples for this feature's specific needs.
-
-### Gotchas & Warnings
-Proactively address these in your plan design.
-
-### Feature Mapping
-Check if the manifest has specific guidance for this feature.
-
-## Plan Storage
-
-```
-.ai/specs/features/<initiative-slug>/
-├── <issue#>-feature-plan.md    # This feature's plan
-├── <other-issue#>-feature-plan.md
-└── ...
-```
-
-## Initiative Input
-
-$ARGUMENTS
-
-## Report
-
-After completion, output:
-
-1. **Structured JSON** (for orchestrator - output FIRST within markers)
-2. **Human-readable summary** (for user visibility)
-
-### Summary
-
-- **Feature**: #<number> - <title>
-- **Plan file**: <path>
-- **Tasks**: <count> tasks across <count> phases
-- **Research sections used**: <list>
-- **Next**: Implementation will run in E2B sandbox
 
 ## Error Handling
 
 - **Issue not found**: Return error status with message
 - **Manifest not found**: Return warning, proceed with standard /feature approach
+- **Master issue not provided**: Extract from manifest path or return error
 - **GitHub update failure**: Include in output, don't fail entire planning
+- **Skill invocation failure**: Log warning, continue without skill
 
 ## Related Commands
 
 - **`/initiative`**: Main orchestrator (calls this command)
 - **`/feature`**: Standalone version (without orchestrator)
 - **`/implement`**: Execute this plan in sandbox
+
+## Initiative Input
+
+$ARGUMENTS

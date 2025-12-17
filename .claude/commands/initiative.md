@@ -2,7 +2,7 @@
 description: Orchestrate complete feature development lifecycle from research through implementation, review, and documentation with E2B sandbox isolation
 argument-hint: [initiative-description] [--quick]
 model: opus
-allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, SlashCommand]
 ---
 
 # Initiative Orchestrator
@@ -56,7 +56,10 @@ Track these throughout execution:
 | `slug` | Step 1.1 | Initiative slug (kebab-case, max 30 chars) |
 | `todayDate` | Step 1.1 | Today's date (YYYY-MM-DD) |
 | `quickMode` | Step 1.1 | true if --quick flag passed |
-| `manifestPath` | Phase 1 | Path to research manifest |
+| `skipImplementation` | Step 1.1.5 | true if E2B prerequisites missing and user chose to continue |
+| `manifestPath` | Phase 1 | Local path to research manifest (backup) |
+| `manifestContent` | Phase 1 | Full manifest markdown content |
+| `manifestIssueNumber` | Phase 2 | GitHub issue number containing manifest (P1 fix) |
 | `masterIssueNumber` | Phase 2 | GitHub issue number for feature-set |
 | `featureIssues[]` | Phase 2 | Array of feature issue numbers |
 | `sandboxId` | Phase 4 | E2B sandbox ID |
@@ -76,6 +79,34 @@ const initiative = args.replace('--quick', '').trim();
 const slug = initiative.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
 const todayDate = new Date().toISOString().split('T')[0];
 ```
+
+### Step 1.1.5: Early E2B Credential Check
+
+**CRITICAL**: Check E2B prerequisites BEFORE doing any work. Fail fast if credentials are missing.
+
+```bash
+# Run the prerequisite check script
+.ai/bin/check-e2b-prerequisites --json
+```
+
+**Parse the JSON output:**
+- If `success: false`, display the missing items and fix instructions
+- Ask user whether to continue (planning only) or abort
+
+```typescript
+AskUserQuestion({
+  question: "E2B sandbox prerequisites are missing. How would you like to proceed?",
+  header: "E2B Setup",
+  options: [
+    { label: "Continue with planning only", description: "Create plans but skip implementation phase" },
+    { label: "Abort", description: "Stop and fix prerequisites first" }
+  ]
+})
+```
+
+**If credentials are set (`success: true`)**: Continue to interview.
+**If "Abort"**: Stop immediately with fix instructions.
+**If "Continue with planning only"**: Set `skipImplementation = true` and proceed.
 
 ### Step 1.2: Interview User (DIRECT - Do Not Delegate)
 
@@ -134,8 +165,11 @@ Look for JSON block in agent output:
 ```
 
 Extract:
-- `manifestPath` from `manifest_path`
+- `manifestPath` from `manifest_path` (local backup)
+- `manifestContent` from `manifest_content` (FULL markdown content for GitHub issue)
 - `researchSummary` from `research_summary`
+
+**CRITICAL (P1 Fix)**: The `manifestContent` field contains the full manifest that will be stored in a GitHub issue for sandbox accessibility.
 
 ### Step 1.5: Validate Research
 
@@ -205,21 +239,41 @@ AskUserQuestion({
 
 **IMPORTANT: Issue Number Prefix Convention**
 
-After creating the master issue, rename all directories to include the issue number prefix.
+Create manifest issue FIRST (for sandbox accessibility), then master issue, then feature stubs.
 
 ```bash
-# Step 1: Create master issue FIRST
+# Step 1: Create MANIFEST ISSUE FIRST (P1 Fix - Critical for sandbox accessibility)
+# This issue contains the full research manifest content so it's accessible from E2B sandbox
+MANIFEST_ISSUE=$(gh issue create \
+  --repo MLorneSmith/2025slideheroes \
+  --title "Research Manifest: ${initiative}" \
+  --body "${manifestContent}" \
+  --label "type:research" \
+  --label "status:active" \
+  | grep -oE '[0-9]+$')
+
+echo "Created manifest issue: #${MANIFEST_ISSUE}"
+manifestIssueNumber=${MANIFEST_ISSUE}
+
+# Step 2: Create master issue with reference to manifest
 MASTER_ISSUE=$(gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature Set: ${initiative}" \
-  --body-file .ai/specs/feature-sets/${slug}/pending-overview.md \
+  --body "$(cat << BODY_EOF
+$(cat .ai/specs/feature-sets/${slug}/pending-overview.md)
+
+---
+## Research Manifest
+See #${MANIFEST_ISSUE} for complete research manifest.
+BODY_EOF
+)" \
   --label "type:feature-set" \
   --label "status:planning" \
   | grep -oE '[0-9]+$')
 
 echo "Created master issue: #${MASTER_ISSUE}"
 
-# Step 2: Rename directories with issue number prefix
+# Step 3: Rename directories with issue number prefix
 if [ -d ".ai/specs/feature-sets/${slug}" ]; then
   mv ".ai/specs/feature-sets/${slug}" ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}"
 fi
@@ -229,11 +283,11 @@ if [ -d ".ai/reports/feature-reports/${todayDate}/${slug}" ]; then
      ".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}"
 fi
 
-# Step 3: Update file references
+# Step 4: Update file references
 mv ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/pending-overview.md" \
    ".ai/specs/feature-sets/${MASTER_ISSUE}-${slug}/${MASTER_ISSUE}-overview.md"
 
-# Step 4: Create feature stub issues
+# Step 5: Create feature stub issues
 # Features with no dependencies start as "status:ready"
 # Features with dependencies start as "status:blocked"
 for feature in features; do
@@ -246,7 +300,7 @@ for feature in features; do
   FEATURE_ISSUE=$(gh issue create \
     --repo MLorneSmith/2025slideheroes \
     --title "Feature: <name>" \
-    --body "<stub-body with parent ref #${MASTER_ISSUE}>" \
+    --body "<stub-body with parent ref #${MASTER_ISSUE} and manifest ref #${MANIFEST_ISSUE}>" \
     --label "type:feature" \
     --label "${INITIAL_STATUS}" \
     | grep -oE '[0-9]+$')
@@ -254,8 +308,12 @@ for feature in features; do
   featureIssues+=($FEATURE_ISSUE)
 done
 
-# Step 5: Update manifest path
-manifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}/manifest.md"
+# Step 6: Update manifest path to use GitHub issue reference (P1 Fix)
+# This format tells commands to fetch from GitHub instead of local file
+manifestPath="github:issue:${MANIFEST_ISSUE}"
+
+# Local backup path (for reference only)
+localManifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}/manifest.md"
 ```
 
 **[PROGRESS]** Phase 2 complete: N features decomposed, GitHub issues created ✓
@@ -277,28 +335,150 @@ manifestPath=".ai/reports/feature-reports/${todayDate}/${MASTER_ISSUE}-${slug}/m
 
 ```typescript
 // Use general-purpose agent to run /initiative-feature command
+// CRITICAL: Pass --master-issue so the command knows where to save files
+// P5 Fix: Include explicit verification requirements in prompt
 Task(general-purpose, prompt: `
 Run the /initiative-feature command to create a detailed plan for feature #${featureIssue}.
 
-Command: /initiative-feature ${featureIssue} --manifest ${manifestPath}
+Command: /initiative-feature ${featureIssue} --manifest ${manifestPath} --master-issue ${masterIssueNumber}
 
 This will:
 1. Fetch the feature stub from GitHub
 2. Load the research manifest for context
-3. Create a detailed implementation plan
-4. Update the GitHub issue with the plan
-5. Mark the issue as "status:planned"
+3. Invoke frontend-design skill (if UI feature)
+4. Conduct additional research (if complex feature)
+5. Create a detailed implementation plan
+6. Update the GitHub issue with the FULL plan content (not a local file reference)
+7. Mark the issue as "status:planned"
 
-After completion, return the JSON output from the command.
+IMPORTANT: The plan must be EMBEDDED in the GitHub issue body, not referenced as a local file path.
+The sandbox clones from GitHub and won't have access to local files.
+
+=== VERIFICATION REQUIREMENTS (P5 Fix) ===
+
+You MUST perform and report on these verification steps:
+
+1. **Skill Invocation**: If this is a UI/frontend feature (dashboard, component, widget, card, chart, layout, grid), you MUST invoke the frontend-design skill:
+   \`\`\`typescript
+   Skill({ skill: "frontend-design" })
+   \`\`\`
+   Report in output: skills_invoked: ["frontend-design"]
+
+2. **Conditional Documentation**: You MUST load relevant context documentation:
+   \`\`\`typescript
+   SlashCommand({ command: '/conditional_docs initiative-feature "<feature-title>"' })
+   \`\`\`
+   Report in output: conditional_docs_loaded: ["file1.md", "file2.md"]
+
+3. **Research Manifest**: You MUST read the research manifest from: ${manifestPath}
+   Report in output: research_sections_used: ["section1", "section2"]
+
+4. **Plan File Creation**: After writing the plan file, verify it exists and has content:
+   \`\`\`bash
+   test -f "<plan-file-path>" && wc -c < "<plan-file-path>"
+   \`\`\`
+   Report in output: plan_file_size_bytes: <size>
+
+5. **GitHub Issue Update**: After updating the issue, verify body length:
+   \`\`\`bash
+   gh issue view ${featureIssue} --json body -q '.body | length'
+   \`\`\`
+   Report in output: github_issue_body_length: <length>
+
+If ANY verification step fails, include the failure details in your output:
+\`\`\`json
+{
+  "verification": {
+    "failures": ["skill_not_invoked", "docs_not_loaded"]
+  }
+}
+\`\`\`
+
+=== END VERIFICATION REQUIREMENTS ===
+
+After completion, return the JSON output from the command with all verification data.
 `)
 ```
 
 Parse output for:
 - `success: true` - Planning succeeded
-- `plan.file_path` - Location of detailed plan file
+- `plan.file_path` - Location of local plan file (backup)
 - `github_updated: true` - GitHub issue updated
+- `plan_embedded_in_issue: true` - Full plan is in GitHub (REQUIRED)
+- `skills_invoked` - List of skills used (e.g., ["frontend-design"])
+- `verification` - Verification data from agent (P4 fix)
 
 **If planning fails**: Log error, ask user whether to retry or skip.
+
+#### 3.1.1: Verify Planning Output (P4 Fix)
+
+**CRITICAL**: Validate that planning agent completed successfully before proceeding.
+
+```typescript
+// P4 Fix: Explicit verification after planning
+const verifyPlanningOutput = async (featureIssue: number, planFilePath: string) => {
+  const verification = {
+    plan_file_exists: false,
+    plan_file_size: 0,
+    github_issue_updated: false,
+    github_body_length: 0,
+    labels_correct: false,
+    verification_passed: false
+  };
+
+  // Verify plan file exists and has content
+  const planExists = await Bash(`test -f "${planFilePath}" && wc -c < "${planFilePath}"`);
+  verification.plan_file_exists = planExists.success;
+  verification.plan_file_size = parseInt(planExists.stdout) || 0;
+
+  // Verify GitHub issue has substantial content (>1000 chars indicates full plan)
+  const issueBodyLength = await Bash(
+    `gh issue view ${featureIssue} --repo MLorneSmith/2025slideheroes --json body -q '.body | length'`
+  );
+  verification.github_body_length = parseInt(issueBodyLength.stdout) || 0;
+  verification.github_issue_updated = verification.github_body_length > 1000;
+
+  // Verify labels were updated to "status:planned"
+  const labels = await Bash(
+    `gh issue view ${featureIssue} --repo MLorneSmith/2025slideheroes --json labels -q '.labels[].name'`
+  );
+  verification.labels_correct = labels.stdout.includes('status:planned');
+
+  // Overall verification
+  verification.verification_passed = (
+    verification.plan_file_exists &&
+    verification.plan_file_size > 500 &&
+    verification.github_issue_updated &&
+    verification.labels_correct
+  );
+
+  return verification;
+};
+
+// Run verification
+const verificationResult = await verifyPlanningOutput(featureIssue, planFilePath);
+
+// Log verification results
+console.log(`[VERIFICATION] Feature #${featureIssue}:`);
+console.log(`  Plan file exists: ${verificationResult.plan_file_exists} (${verificationResult.plan_file_size} bytes)`);
+console.log(`  GitHub updated: ${verificationResult.github_issue_updated} (${verificationResult.github_body_length} chars)`);
+console.log(`  Labels correct: ${verificationResult.labels_correct}`);
+console.log(`  PASSED: ${verificationResult.verification_passed}`);
+
+// Fail gracefully with warning if verification fails
+if (!verificationResult.verification_passed) {
+  console.warn(`[WARNING] Verification failed for feature #${featureIssue}`);
+  // Ask user whether to retry or continue
+  AskUserQuestion({
+    question: `Planning verification failed for #${featureIssue}. How to proceed?`,
+    options: [
+      { label: "Retry planning", description: "Run /initiative-feature again" },
+      { label: "Continue anyway", description: "Proceed despite verification failure" },
+      { label: "Skip feature", description: "Move to next feature" }
+    ]
+  });
+}
+```
 
 ### Step 3.2: User Approval Gate (All Plans)
 
@@ -330,32 +510,47 @@ AskUserQuestion({
 
 ```typescript
 const SANDBOX_CLI = ".claude/skills/e2b-sandbox/scripts/sandbox";
+
+// P3 Fix: Effort-based timeout configuration (in milliseconds)
+const EFFORT_TIMEOUT = {
+  'S': 900000,    // 15 minutes for Small
+  'M': 1800000,   // 30 minutes for Medium
+  'L': 2700000,   // 45 minutes for Large
+  'XL': 3600000   // 60 minutes for Extra Large
+};
+
+// Default timeout if effort not specified
+const DEFAULT_TIMEOUT = 1800000; // 30 minutes
 ```
 
-### Step 4.0: Verify Prerequisites
+**Timeout Guidelines**:
+| Effort | Timeout | Use Case |
+|--------|---------|----------|
+| S | 15 min | Simple card components, minor updates |
+| M | 30 min | Data loaders, complex components |
+| L | 45 min | Multi-file features, integrations |
+| XL | 60 min | Large features, full-page implementations |
 
-Before creating sandbox, verify environment:
+### Step 4.0: Verify Prerequisites (or Skip)
+
+**If `skipImplementation` was set in Step 1.1.5**: Skip Phase 4 entirely and go to Phase 5 (partial completion).
+
+Otherwise, verify environment using the utility script:
 
 ```bash
-# Check E2B API key
-if [ -z "$E2B_API_KEY" ]; then
-  echo "ERROR: E2B_API_KEY not set"
-  exit 1
-fi
-
-# Check GitHub token for sandbox
-if [ -z "$GITHUB_TOKEN" ] && [ -z "$GH_TOKEN" ]; then
-  echo "ERROR: GITHUB_TOKEN or GH_TOKEN not set (needed for sandbox git operations)"
-  exit 1
-fi
-
-# Check template exists
-${SANDBOX_CLI} templates 2>/dev/null | grep -q "slideheroes-claude-agent" || {
-  echo "ERROR: E2B template 'slideheroes-claude-agent' not found"
-  echo "Rebuild template with: pnpm e2b:build:prod"
-  exit 1
-}
+# Use the prerequisite check utility script
+.ai/bin/check-e2b-prerequisites
 ```
+
+**If script exits with code 0**: All prerequisites met, continue.
+**If script exits with code 1**: Prerequisites missing, display output and stop.
+
+The script checks:
+- `E2B_API_KEY` - Required for sandbox creation
+- `GITHUB_TOKEN` or `GH_TOKEN` - Required for git operations in sandbox
+- `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` - Required for Claude Code
+- Sandbox CLI exists at `.claude/skills/e2b-sandbox/scripts/sandbox`
+- Template `slideheroes-claude-agent` exists (if API key is set)
 
 **If prerequisites fail**: Output error with fix instructions and stop.
 
@@ -381,10 +576,83 @@ ${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git fetch origin && g
 
 #### 4.3.1: Implement Feature
 
-Run `/implement` in the sandbox:
+**P2 Fix**: Use `/sandbox/initiative-implement` instead of `/implement` to leverage manifest context.
+**P3 Fix**: Use effort-based timeout for appropriate feature complexity.
+
+Determine timeout based on feature effort (from plan):
+```typescript
+// Get effort from feature plan (S, M, L, XL)
+const featureEffort = feature.effort || 'M'; // Default to Medium if not specified
+const timeout = EFFORT_TIMEOUT[featureEffort] || DEFAULT_TIMEOUT;
+```
+
+Run `/sandbox/initiative-implement` in the sandbox with manifest context:
 
 ```bash
-${SANDBOX_CLI} run-claude "/implement #${featureIssue}" --sandbox ${sandboxId}
+# P2 Fix: Use /sandbox/initiative-implement with manifest reference
+# P3 Fix: Pass effort-based timeout
+${SANDBOX_CLI} run-claude "/sandbox/initiative-implement ${featureIssue} --manifest github:issue:${MANIFEST_ISSUE}" \
+  --sandbox ${sandboxId} \
+  --timeout ${timeout}
+```
+
+**Why `/sandbox/initiative-implement` instead of `/implement`:**
+- Loads research manifest for implementation guidance
+- Outputs structured JSON for orchestrator consumption
+- Designed for E2B sandbox environment
+- References pre-gathered research patterns and gotchas
+
+**P6 Fix: Progress Streaming**
+
+The sandbox outputs progress markers that can be parsed for real-time status:
+
+```
+[PROGRESS] Phase: Implementation
+[PROGRESS] Starting task: <task-name>
+[PROGRESS] Files: Creating <file-path>
+[PROGRESS] Files: Modifying <file-path>
+[PROGRESS] Completed: <task-name>
+[PROGRESS] Validation: <command> - PASSED|FAILED
+[PROGRESS] Implementation: <X>/<N> tasks complete
+```
+
+**Parse progress markers as they stream:**
+```typescript
+// Parse sandbox output for progress markers
+const parseProgress = (line: string) => {
+  if (line.startsWith('[PROGRESS]')) {
+    const progressMatch = line.match(/\[PROGRESS\]\s+(.+?):\s+(.+)/);
+    if (progressMatch) {
+      const [_, type, detail] = progressMatch;
+      switch (type) {
+        case 'Phase':
+          console.log(`📍 Phase: ${detail}`);
+          break;
+        case 'Starting task':
+          console.log(`🔄 Starting: ${detail}`);
+          // Update todo list
+          TodoWrite([...todos, { content: detail, status: 'in_progress', activeForm: `Implementing ${detail}` }]);
+          break;
+        case 'Completed':
+          console.log(`✅ Completed: ${detail}`);
+          // Mark todo as complete
+          break;
+        case 'Validation':
+          const passed = detail.includes('PASSED');
+          console.log(`${passed ? '✅' : '❌'} Validation: ${detail}`);
+          break;
+        case 'Implementation':
+          console.log(`📊 Progress: ${detail}`);
+          break;
+        case 'Files':
+          console.log(`📁 ${detail}`);
+          break;
+      }
+    }
+  }
+};
+
+// Note: Actual parsing happens via onStdout callback in sandbox CLI
 ```
 
 Parse output for:

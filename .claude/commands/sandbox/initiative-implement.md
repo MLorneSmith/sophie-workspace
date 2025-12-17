@@ -60,7 +60,28 @@ Extract:
 
 ### Step 3: Load Research Manifest (Reference)
 
-Load manifest for implementation guidance:
+**P1 Fix**: Manifest can be a local file path OR a GitHub issue reference.
+
+```typescript
+// Check if manifest is a GitHub issue reference
+if (manifestPath && manifestPath.startsWith('github:issue:')) {
+  // Extract issue number and fetch from GitHub
+  const issueNumber = manifestPath.replace('github:issue:', '');
+  // Fetch manifest from GitHub issue
+}
+```
+
+**If manifest is GitHub issue reference (`github:issue:<number>`):**
+
+```bash
+# Fetch manifest content from GitHub issue (works in E2B sandbox)
+gh issue view <manifest-issue-number> \
+  --repo MLorneSmith/2025slideheroes \
+  --json body \
+  -q .body
+```
+
+**If manifest is local file path:**
 
 ```bash
 cat <manifest-path>

@@ -46,6 +46,7 @@ You receive a JSON object with:
   "mode": "full|quick",
   "date": "YYYY-MM-DD",
   "manifest_path": ".ai/reports/feature-reports/<date>/<slug>/manifest.md",
+  "manifest_content": "<full manifest markdown content for GitHub issue>",
   "research_dir": ".ai/reports/feature-reports/<date>/<slug>/research/",
   "interview": {
     "technologies": "...",
@@ -61,6 +62,8 @@ You receive a JSON object with:
 }
 === END RESEARCH OUTPUT ===
 ```
+
+**IMPORTANT**: The `manifest_content` field must contain the FULL manifest markdown content. The orchestrator will create a GitHub issue with this content so the manifest is accessible from the E2B sandbox.
 
 ## Execution Protocol
 
@@ -309,9 +312,22 @@ Based on initiative requirements, suggest relevant Claude Code skills:
 
 Write manifest to: `.ai/reports/feature-reports/<date>/<slug>/manifest.md`
 
+### Step 4.1: Capture Manifest Content for Output
+
+**CRITICAL**: After writing the manifest file, read it back and include the FULL content in the JSON output's `manifest_content` field.
+
+```bash
+# Read manifest content for output
+MANIFEST_CONTENT=$(cat .ai/reports/feature-reports/<date>/<slug>/manifest.md)
+```
+
+This content will be used by the orchestrator to create a GitHub issue, making the manifest accessible from the E2B sandbox.
+
 ### Step 5: Return Structured Output
 
 Output the JSON block with all required fields. Ensure `success: true` if manifest was created (even with partial research results).
+
+**CRITICAL**: The `manifest_content` field MUST contain the complete manifest markdown. This is required for P1 - Manifest Accessibility.
 
 ## Error Handling & Graceful Degradation
 
