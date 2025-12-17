@@ -10,7 +10,9 @@
 			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*)",
 			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*)",
 			"SlashCommand(/conditional_docs:*)",
-			"Bash(/home/msmith/projects/2025slideheroes/.ai/ai_scripts/testing/infrastructure/safe-test-runner.sh:*)"
+			"Bash(/home/msmith/projects/2025slideheroes/.ai/ai_scripts/testing/infrastructure/safe-test-runner.sh:*)",
+			"SlashCommand(/initiative-research:*)",
+			"SlashCommand(/initiative-feature-set:*)"
 		]
 	},
 	"enabledMcpjsonServers": ["playwright"],
