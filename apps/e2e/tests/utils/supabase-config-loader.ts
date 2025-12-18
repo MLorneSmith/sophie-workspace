@@ -8,6 +8,7 @@
  */
 
 import { execSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 export interface SupabaseConfig {
@@ -49,6 +50,26 @@ let configCache: { config: SupabaseConfig | null; timestamp: number } = {
  * Cache duration in milliseconds (5 minutes)
  */
 const CACHE_DURATION_MS = 5 * 60 * 1000;
+
+/**
+ * Determine the shell path to use for execSync
+ * Fixes ENOENT errors in Playwright worker contexts where /bin/sh may not be found
+ *
+ * @returns The shell path to use, or undefined to use Node's default
+ */
+function getShellPath(): string | undefined {
+	// Common shell paths in order of preference
+	const shellPaths = ["/bin/bash", "/bin/sh", "/usr/bin/bash", "/usr/bin/sh"];
+
+	for (const shellPath of shellPaths) {
+		if (existsSync(shellPath)) {
+			return shellPath;
+		}
+	}
+
+	// Return undefined to let Node use its default
+	return undefined;
+}
 
 interface GetSupabaseConfigOptions {
 	cwd?: string;
@@ -103,11 +124,18 @@ export function getSupabaseConfig(
 	}
 
 	try {
+		// Get explicit shell path to fix ENOENT errors in Playwright worker contexts
+		// See: Issue #1290 - execSync throws "spawnSync /bin/sh ENOENT" in test environment
+		const shellPath = getShellPath();
+
 		const output = execSync("npx supabase status --output json", {
 			encoding: "utf-8",
 			cwd,
 			timeout,
 			stdio: ["pipe", "pipe", "pipe"],
+			// Explicitly set shell to fix ENOENT errors
+			// If shellPath is undefined, Node will use its default behavior
+			shell: shellPath ?? true,
 		});
 
 		const config = JSON.parse(output.trim()) as Record<string, unknown>;
