@@ -1,14 +1,19 @@
 diff --git a/dist/utilities/createLocalReq.js b/dist/utilities/createLocalReq.js
-index acc599c5d7f7733bb3e9fe28db02e68624168e97..600861bfabdd2000fea719dbe4bb387acc0c2e85 100644
+index acc599c5d7f7733bb3e9fe28db02e68624168e97..8bfba854e9d7d5179d9d2e19916cfb03ef1bcbbf 100644
 --- a/dist/utilities/createLocalReq.js
 +++ b/dist/utilities/createLocalReq.js
-@@ -31,7 +31,8 @@ const attachFakeURLProperties = (req, urlSuffix)=>{
+@@ -31,7 +31,13 @@ const attachFakeURLProperties = (req, urlSuffix)=>{
              return urlObject;
          }
          const fallbackURL = `http://${req.host || 'localhost'}${urlSuffix || ''}`;
 -        const urlToUse = req?.url || req.payload?.config?.serverURL ? `${req.payload?.config.serverURL}${urlSuffix || ''}` : fallbackURL;
-+        // Fix operator precedence bug - prioritize req.url if it exists
-+        const urlToUse = req?.url || (req.payload?.config?.serverURL ? `${req.payload?.config.serverURL}${urlSuffix || ''}` : fallbackURL);
++        // Fix: handle when urlSuffix is already a full URL (starts with http:// or https://)
++        // to prevent URL duplication like "http://localhost:3021http://localhost:3021/admin/login"
++        const isUrlSuffixFullUrl = urlSuffix && (urlSuffix.startsWith('http://') || urlSuffix.startsWith('https://'));
++        const urlToUse = req?.url
++            || (isUrlSuffixFullUrl ? urlSuffix : null)
++            || (req.payload?.config?.serverURL ? `${req.payload?.config.serverURL}${urlSuffix || ''}` : null)
++            || fallbackURL;
          try {
              urlObject = new URL(urlToUse);
          } catch (_err) {
