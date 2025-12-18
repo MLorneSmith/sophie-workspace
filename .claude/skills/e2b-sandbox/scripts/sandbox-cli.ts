@@ -1935,6 +1935,95 @@ async function getPortUrl(sandboxId: string, port: number): Promise<void> {
 	}
 }
 
+/**
+ * Get implementation progress from sandbox (P3 Fix)
+ * Reads the progress file written by /sandbox/initiative-implement
+ */
+async function getProgress(
+	sandboxId: string,
+	jsonOutput: boolean = false,
+): Promise<void> {
+	checkApiKey();
+
+	const PROGRESS_FILE = "/home/user/project/.initiative-progress.json";
+
+	try {
+		const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+
+		// Read progress file
+		const result = await sandbox.commands.run(
+			`cat ${PROGRESS_FILE} 2>/dev/null || echo '{"entries":[]}'`,
+			{
+				timeoutMs: 10000,
+			},
+		);
+
+		const output = result.stdout.trim();
+
+		if (jsonOutput) {
+			console.log(output);
+		} else {
+			try {
+				const progress = JSON.parse(output) as {
+					feature?: { issue_number: number; title: string };
+					current_task?: { name: string; index: number; total: number };
+					entries: Array<{ timestamp: string; type: string; message: string }>;
+					status?: string;
+				};
+
+				if (progress.feature) {
+					console.log(
+						`\n📋 Feature #${progress.feature.issue_number}: ${progress.feature.title}`,
+					);
+				}
+
+				if (progress.current_task) {
+					console.log(
+						`\n🔄 Current Task: ${progress.current_task.name} (${progress.current_task.index}/${progress.current_task.total})`,
+					);
+				}
+
+				if (progress.status) {
+					console.log(`\n📊 Status: ${progress.status}`);
+				}
+
+				// Show last 5 progress entries
+				const entries = progress.entries || [];
+				if (entries.length > 0) {
+					console.log("\n📝 Recent Progress:");
+					const recent = entries.slice(-5);
+					for (const entry of recent) {
+						const time = new Date(entry.timestamp).toLocaleTimeString();
+						const icon =
+							entry.type === "task_start"
+								? "🔄"
+								: entry.type === "task_complete"
+									? "✅"
+									: entry.type === "file"
+										? "📁"
+										: entry.type === "validation"
+											? "🧪"
+											: "📍";
+						console.log(`  ${icon} [${time}] ${entry.message}`);
+					}
+				} else {
+					console.log(
+						"\n⏳ No progress entries yet (implementation may be starting)",
+					);
+				}
+			} catch {
+				console.log("📍 Progress file not yet created or invalid format");
+			}
+		}
+	} catch (error) {
+		console.error(
+			"Failed to get progress:",
+			error instanceof Error ? error.message : error,
+		);
+		process.exit(1);
+	}
+}
+
 function showHelp(): void {
 	console.log(`
 E2B Sandbox Manager - Commands:
@@ -1951,6 +2040,7 @@ E2B Sandbox Manager - Commands:
   exec <sandbox-id> "<command>"             Execute shell command in sandbox
               [--timeout 120000]
   url <sandbox-id> [port]                   Get public URL for a port (default: 3000)
+  progress <sandbox-id> [--json]            Get implementation progress (P3 Fix)
 
   CLAUDE CODE:
   run-claude "<prompt>" [--sandbox ID]      Run Claude Code with a prompt
@@ -2125,6 +2215,21 @@ async function main(): Promise<void> {
 			}
 
 			await getPortUrl(sandboxId, port);
+			break;
+		}
+
+		case "progress": {
+			const sandboxId = args[1];
+			const jsonOutput = args.includes("--json");
+
+			if (!sandboxId) {
+				console.error("Usage: sandbox progress <sandbox-id> [--json]");
+				console.error("Example: sandbox progress abc123");
+				console.error("Example: sandbox progress abc123 --json");
+				process.exit(1);
+			}
+
+			await getProgress(sandboxId, jsonOutput);
 			break;
 		}
 

@@ -21,6 +21,7 @@ Orchestrate the complete lifecycle of a large feature initiative:
 | `--quick` | Skip external research (Perplexity, Context7). Use codebase patterns only. |
 | `--parallel-planning` | Use parallel agents for planning phase. Faster but uses more API calls. Best for ≤5 features. |
 | `--skip-validation` | Skip pnpm build during implementation. Faster but less safe. Use for known-good patterns. |
+| `--multi-sandbox` | **(P4 Fix)** Use parallel sandboxes for Phase 2 features. Faster for large initiatives (>5 features). |
 
 ## Architecture
 
@@ -41,7 +42,8 @@ Orchestrate the complete lifecycle of a large feature initiative:
     │       └── User approval gate (all plans ready)
     │
     ├── [Phase 4] Implementation Loop (E2B SANDBOX - isolation)
-    │       └── Create sandbox ONCE for all features
+    │       └── DEFAULT: Single sandbox for all features (with WIP commits)
+    │       └── --multi-sandbox: Parallel sandboxes for Phase 2 features
     │       └── For each feature: run-claude "/implement #<issue>"
     │       └── User review gate per feature
     │       └── Commit and unblock dependents
@@ -61,13 +63,14 @@ Track these throughout execution:
 | `quickMode` | Step 1.1 | true if --quick flag passed |
 | `parallelPlanning` | Step 1.1 | true if --parallel-planning flag passed |
 | `skipValidation` | Step 1.1 | true if --skip-validation flag passed |
+| `multiSandbox` | Step 1.1 | true if --multi-sandbox flag passed (P4 fix) |
 | `skipImplementation` | Step 1.1.5 | true if E2B prerequisites missing and user chose to continue |
 | `manifestPath` | Phase 1 | Local path to research manifest (backup) |
 | `manifestContent` | Phase 1 | Full manifest markdown content |
 | `manifestIssueNumber` | Phase 2 | GitHub issue number containing manifest (P1 fix) |
 | `masterIssueNumber` | Phase 2 | GitHub issue number for feature-set |
 | `featureIssues[]` | Phase 2 | Array of feature issue numbers |
-| `sandboxId` | Phase 4 | E2B sandbox ID |
+| `sandboxId` | Phase 4 | E2B sandbox ID (or array if multiSandbox) |
 | `branchName` | Phase 4 | Feature branch name |
 | `prNumber` | Phase 5 | Pull request number |
 
@@ -82,10 +85,12 @@ const args = "$ARGUMENTS";
 const quickMode = args.includes('--quick');
 const parallelPlanning = args.includes('--parallel-planning');
 const skipValidation = args.includes('--skip-validation');
+const multiSandbox = args.includes('--multi-sandbox'); // P4 Fix
 const initiative = args
   .replace('--quick', '')
   .replace('--parallel-planning', '')
   .replace('--skip-validation', '')
+  .replace('--multi-sandbox', '')
   .trim();
 const slug = initiative.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
 const todayDate = new Date().toISOString().split('T')[0];
@@ -574,6 +579,71 @@ const DEFAULT_TIMEOUT = 1800000; // 30 minutes
 | L | 45 min | Multi-file features, integrations |
 | XL | 60 min | Large features, full-page implementations |
 
+### Multi-Sandbox Mode (P4 Fix)
+
+**When `--multi-sandbox` flag is set**, use parallel sandboxes for independent features:
+
+```
+Phase 1 Features (Foundation)     Phase 2 Features (Independent)     Phase 3 Features (Integration)
+        │                                    │                                    │
+        ▼                                    ▼                                    ▼
+   ┌─────────┐                    ┌─────────────────────┐                  ┌─────────┐
+   │Sandbox A│                    │Sandbox B │Sandbox C │                  │Sandbox A│
+   │Feature 1│────commit───┐      │Feature 3 │Feature 4 │                  │Feature 6│
+   │Feature 2│             │      └────┬─────┴────┬─────┘                  └─────────┘
+   └─────────┘             │           │          │
+                           ▼           ▼          ▼
+                      ┌───────────────────────────────┐
+                      │   Merge all feature branches  │
+                      │   into main feature branch    │
+                      └───────────────────────────────┘
+```
+
+**Multi-Sandbox Implementation Flow**:
+
+1. **Phase 1 (Foundation)**: Single sandbox, sequential features
+   - Create main feature branch
+   - Implement Phase 1 features with WIP commits
+   - Push after each feature completes
+
+2. **Phase 2 (Parallel)**: Multiple sandboxes, concurrent features
+   - For each Phase 2 feature without dependencies on pending Phase 2 features:
+     - Create sandbox with fresh clone
+     - Create feature-specific branch: `feature/${masterIssue}-${slug}-${featureIssue}`
+     - Implement feature
+     - Push to feature-specific branch
+   - Wait for all Phase 2 sandboxes to complete
+   - Merge all feature branches into main feature branch:
+     ```bash
+     git checkout feature/${masterIssue}-${slug}
+     for branch in feature/${masterIssue}-${slug}-*; do
+       git merge $branch --no-edit || {
+         # If merge conflict, prompt user
+         echo "Merge conflict in $branch"
+       }
+     done
+     ```
+
+3. **Phase 3 (Integration)**: Single sandbox, sequential features
+   - Continue on main feature branch
+   - Implement Phase 3 features with WIP commits
+   - Final push and PR creation
+
+**When to Use Multi-Sandbox**:
+- Initiative has >5 features
+- Phase 2 has 3+ independent features
+- Features are truly independent (no shared state/files)
+
+**When NOT to Use Multi-Sandbox**:
+- Features share files (merge conflicts likely)
+- Sequential logic dependencies
+- <5 features (overhead not worth it)
+
+**Limitations**:
+- Merge conflicts must be resolved manually
+- More API calls (sandbox creation overhead)
+- Requires careful dependency analysis
+
 ### Step 4.0: Verify Prerequisites (or Skip)
 
 **If `skipImplementation` was set in Step 1.1.5**: Skip Phase 4 entirely and go to Phase 5 (partial completion).
@@ -645,9 +715,35 @@ ${SANDBOX_CLI} run-claude "/sandbox/initiative-implement ${featureIssue} --manif
 - Designed for E2B sandbox environment
 - References pre-gathered research patterns and gotchas
 
-**P6 Fix: Progress Streaming**
+**P3 Fix: Progress File Polling (Recommended)**
 
-The sandbox outputs progress markers that can be parsed for real-time status:
+The sandbox writes progress to a file that can be polled for status:
+
+```bash
+# Poll progress during implementation (every 30 seconds)
+while implementation_running; do
+  ${SANDBOX_CLI} progress ${sandboxId}
+  sleep 30
+done
+```
+
+Example output:
+```
+📋 Feature #1288: Presentations Table
+
+🔄 Current Task: Create table component (3/6)
+
+📊 Status: in_progress
+
+📝 Recent Progress:
+  ✅ [10:32:15] Completed: Create data loader
+  ✅ [10:33:42] Completed: Create table component
+  🔄 [10:34:01] Starting: Add pagination
+```
+
+**P6 Fix: Progress Streaming (Alternative)**
+
+The sandbox also outputs progress markers to stdout that can be parsed in real-time:
 
 ```
 [PROGRESS] Phase: Implementation
@@ -705,23 +801,55 @@ Parse output for:
 
 **If implementation fails**: Log error, ask user whether to retry or skip.
 
-#### 4.3.2: User Review Gate
+#### 4.3.1.5: Auto-Commit WIP (P1 Fix - Prevent Work Loss)
+
+**CRITICAL**: Immediately commit after successful implementation to prevent work loss on sandbox death.
+
+```bash
+# Auto-commit with WIP prefix (no hooks to avoid blocking)
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && \
+  git add -A && \
+  git commit -m 'wip(#${featureIssue}): implement ${featureName}
+
+Part of #${masterIssueNumber}
+
+[WIP - will be amended after review]' --no-verify" --timeout 30000
+```
+
+**Why WIP commits:**
+- Work is saved immediately after implementation succeeds
+- Sandbox death only loses current in-progress feature
+- Can resume from last WIP commit
+- WIP commits are amended/squashed in Step 4.3.3 after review
+
+**If commit fails**: Log warning but continue to review gate (changes still in working directory).
+
+#### 4.3.2: User Review Gate (P2 Fix - Preview URL)
 
 After implementation, get the dev server URL:
 
 ```bash
-# Start dev server in sandbox (background)
+# Dev server should already be started by /sandbox/initiative-implement (Step 9)
+# If not running, start it:
 ${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && pnpm dev &" --timeout 30000
 
-# Get the public URL for port 3000
-${SANDBOX_CLI} url ${sandboxId} 3000
+# Wait for server to be ready
+sleep 5
+
+# Get the public URL for port 3000 (P2 Fix)
+PREVIEW_URL=$(${SANDBOX_CLI} url ${sandboxId} 3000)
+echo "🌐 Preview URL: ${PREVIEW_URL}"
 ```
+
+**IMPORTANT**: Always display the preview URL prominently to the user.
 
 Present to user:
 
 ```typescript
 AskUserQuestion({
-  question: `Feature #${featureIssue} implemented. Review at dev URL above.\n\nApprove implementation?`,
+  question: `Feature #${featureIssue} implemented.\n\n` +
+            `🌐 **Preview URL**: ${PREVIEW_URL}\n\n` +
+            `Review the implementation in your browser, then approve or request changes.`,
   header: "Review",
   options: [
     { label: "Approve", description: "Implementation looks good, continue to commit" },
@@ -731,22 +859,29 @@ AskUserQuestion({
 })
 ```
 
-**If "Approve"**: Commit changes.
-**If "Request changes"**: Capture feedback, run additional implementation, loop back.
-**If "Skip feature"**: Revert changes: `${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git checkout ."`
+**If "Approve"**: Amend WIP commit with final message (Step 4.3.3).
+**If "Request changes"**: Capture feedback, run additional implementation, loop back to 4.3.1.
+**If "Skip feature"**: Reset WIP commit: `${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git reset --hard HEAD~1"`
 
-#### 4.3.3: Commit Feature
+#### 4.3.3: Finalize Commit (Amend WIP)
+
+Amend the WIP commit from Step 4.3.1.5 with a proper commit message:
 
 ```bash
-${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && git add -A && git commit -m 'feat(<scope>): <feature-description>
+# Amend WIP commit with final message (includes any review-requested changes)
+${SANDBOX_CLI} exec ${sandboxId} "cd /home/user/project && \
+  git add -A && \
+  git commit --amend -m 'feat(<scope>): <feature-description>
 
 Part of #${masterIssueNumber}
 Implements #${featureIssue}
 
 🤖 Generated with Claude Code
 
-Co-Authored-By: Claude <noreply@anthropic.com>'"
+Co-Authored-By: Claude <noreply@anthropic.com>'" --timeout 30000
 ```
+
+**Note**: Using `--amend` replaces the WIP commit with the final commit. This keeps history clean while maintaining the protection of WIP commits during implementation.
 
 #### 4.3.4: Unblock Dependent Features
 

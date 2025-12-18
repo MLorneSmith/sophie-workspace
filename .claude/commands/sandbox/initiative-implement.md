@@ -201,35 +201,79 @@ Follow the plan's Step by Step Tasks exactly:
 8. **Mark task completed** immediately after finishing
 9. **Move to next task**
 
-**CRITICAL: Progress Markers - OUTPUT IMMEDIATELY**
+**CRITICAL: Progress Markers and File (P3 Fix)**
 
-**IMPORTANT**: Output text directly (not via echo/bash). Text output is streamed to the orchestrator in real-time.
+**IMPORTANT**: Output progress both to stdout AND to a progress file. The progress file allows the orchestrator to poll for status.
 
-**At Command Start** (output IMMEDIATELY when command begins):
+**Progress File**: `/home/user/project/.initiative-progress.json`
+
+**Initialize Progress File** (at command start):
+```bash
+cat > /home/user/project/.initiative-progress.json << 'EOF'
+{
+  "feature": {
+    "issue_number": <issue-number>,
+    "title": "<feature-title>"
+  },
+  "status": "starting",
+  "current_task": null,
+  "entries": []
+}
+EOF
+```
+
+**Update Progress File** (during execution):
+```bash
+# Helper function to append progress entry
+append_progress() {
+  local type="$1"
+  local message="$2"
+  local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  # Read current file, append entry, write back
+  jq --arg type "$type" --arg msg "$message" --arg ts "$timestamp" \
+    '.entries += [{"timestamp": $ts, "type": $type, "message": $msg}]' \
+    /home/user/project/.initiative-progress.json > /tmp/progress.tmp && \
+    mv /tmp/progress.tmp /home/user/project/.initiative-progress.json
+}
+
+# Update current task
+update_current_task() {
+  local name="$1"
+  local index="$2"
+  local total="$3"
+
+  jq --arg name "$name" --argjson idx "$index" --argjson tot "$total" \
+    '.current_task = {"name": $name, "index": $idx, "total": $tot} | .status = "in_progress"' \
+    /home/user/project/.initiative-progress.json > /tmp/progress.tmp && \
+    mv /tmp/progress.tmp /home/user/project/.initiative-progress.json
+}
+```
+
+**Stdout Markers** (output BEFORE each action - still required):
 ```
 [PROGRESS] Implementation starting for #<issue-number>
-[PROGRESS] Loading plan from GitHub...
-```
-
-**During Execution** (output BEFORE each action):
-```
 [PROGRESS] Task: Starting "<task name>" (1/<N>)
 [PROGRESS] Files: Creating <file path>
-[PROGRESS] Files: Modifying <file path>
 [PROGRESS] Task: Completed "<task name>" (1/<N>)
-[PROGRESS] Validation: Running <command>
 [PROGRESS] Validation: <command> - PASSED/FAILED
 [PROGRESS] Implementation: <X>/<N> tasks complete
-```
-
-**At Command End**:
-```
 [PROGRESS] Implementation complete for #<issue-number>
 ```
 
-These markers are streamed to the orchestrator via stdout. The sandbox logger captures them for visibility.
+**Update Progress File at Key Points**:
+1. **Task Start**: `update_current_task "task-name" 1 8` + `append_progress "task_start" "Starting task-name"`
+2. **File Created**: `append_progress "file" "Creating path/to/file.tsx"`
+3. **Task Complete**: `append_progress "task_complete" "Completed task-name"`
+4. **Validation**: `append_progress "validation" "pnpm typecheck - PASSED"`
 
-**WHY THIS MATTERS**: Without progress markers, the orchestrator sees no output for 10+ minutes during implementation. Users need visibility into what's happening.
+**At Command End**:
+```bash
+jq '.status = "complete"' /home/user/project/.initiative-progress.json > /tmp/progress.tmp && \
+  mv /tmp/progress.tmp /home/user/project/.initiative-progress.json
+```
+
+**WHY THIS MATTERS**: The orchestrator can poll `/sandbox progress <sandboxId>` to get real-time status instead of waiting for stdout which may be buffered.
 
 **Research-Guided Implementation:**
 - Apply code patterns from manifest
@@ -264,7 +308,38 @@ git diff --name-only origin/main
 git log --oneline origin/main..HEAD
 ```
 
-### Step 9: Update GitHub Issue
+### Step 9: Start Dev Server and Get Preview URL (P2 Fix)
+
+**IMPORTANT**: Before finalizing, start the dev server to enable preview.
+
+```bash
+# Start dev server in background (will continue running after command completes)
+cd /home/user/project && pnpm dev &
+
+# Wait for server to start (poll for ready)
+for i in {1..30}; do
+  if curl -s http://localhost:3000 > /dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+```
+
+**Get Preview URL** (E2B provides public URLs for sandbox ports):
+
+The preview URL is available at the sandbox's public host. The orchestrator retrieves this via:
+```bash
+# Run by orchestrator after implementation completes
+${SANDBOX_CLI} url ${sandboxId} 3000
+```
+
+**Output Progress Marker for URL:**
+```
+[PROGRESS] Preview: Dev server starting on port 3000
+[PROGRESS] Preview: Server ready - orchestrator will provide public URL
+```
+
+### Step 10: Update GitHub Issue
 
 ```bash
 # Post completion comment
@@ -299,7 +374,7 @@ gh issue edit <issue-number> \
   --remove-label "status:in-progress"
 ```
 
-### Step 10: Generate Structured Output
+### Step 11: Generate Structured Output
 
 **CRITICAL**: Output structured JSON for orchestrator:
 
@@ -334,6 +409,11 @@ gh issue edit <issue-number> \
       "apps/web/lib/rxdb/schemas/presentation.ts",
       "apps/web/lib/rxdb/collections/index.ts"
     ]
+  },
+  "preview": {
+    "dev_server_started": true,
+    "port": 3000,
+    "note": "Orchestrator retrieves public URL via: /sandbox url <sandboxId> 3000"
   },
   "research_patterns_applied": [
     "Schema Definition Pattern",
@@ -427,6 +507,10 @@ After completion, output:
   "implementation": {...},
   "validation": {...},
   "git": {...},
+  "preview": {
+    "dev_server_started": true,
+    "port": 3000
+  },
   "research_patterns_applied": [...],
   "github_updated": true,
   "ready_for_review": true
