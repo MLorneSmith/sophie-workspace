@@ -134,8 +134,8 @@ export function getSupabaseConfig(
 			timeout,
 			stdio: ["pipe", "pipe", "pipe"],
 			// Explicitly set shell to fix ENOENT errors
-			// If shellPath is undefined, Node will use its default behavior
-			shell: shellPath ?? true,
+			// Use the detected shell path, or undefined to let Node use default behavior
+			shell: shellPath,
 		});
 
 		const config = JSON.parse(output.trim()) as Record<string, unknown>;

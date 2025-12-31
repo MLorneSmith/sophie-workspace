@@ -1,35 +1,39 @@
 {
-	"env": {
-		"NODE_ENV": "development"
-	},
-	"permissions": {
-		"allow": [
-			"WebSearch",
-			"WebFetch(domain:code.claude.com)",
-			"WebFetch(domain:docs.perplexity.ai)",
-			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*)",
-			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*)",
-			"SlashCommand(/conditional_docs:*)",
-			"Bash(/home/msmith/projects/2025slideheroes/.ai/ai_scripts/testing/infrastructure/safe-test-runner.sh:*)",
-			"SlashCommand(/initiative-research:*)",
-			"SlashCommand(/initiative-feature-set:*)",
-			"SlashCommand(/initiative-feature:*)"
-		]
-	},
-	"enabledMcpjsonServers": ["playwright"],
-	"disabledMcpjsonServers": [
-		"exa",
-		"perplexity-ask",
-		"supabase",
-		"context7",
-		"cloudflare-observability",
-		"cloudflare-bindings",
-		"cloudflare-playwright",
-		"postgres",
-		"browser-tools",
-		"code-reasoning",
-		"github",
-		"newrelic",
-		"docs-mcp"
-	]
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:docs.perplexity.ai)",
+      "Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*)",
+      "Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*)",
+      "SlashCommand(/conditional_docs:*)",
+      "Bash(/home/msmith/projects/2025slideheroes/.ai/ai_scripts/testing/infrastructure/safe-test-runner.sh:*)",
+      "SlashCommand(/initiative-research:*)",
+      "SlashCommand(/initiative-feature-set:*)",
+      "SlashCommand(/initiative-feature:*)",
+      "Skill(skillcreator)",
+      "Skill(slashcommand-writer)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "playwright"
+  ],
+  "disabledMcpjsonServers": [
+    "exa",
+    "perplexity-ask",
+    "supabase",
+    "context7",
+    "cloudflare-observability",
+    "cloudflare-bindings",
+    "cloudflare-playwright",
+    "postgres",
+    "browser-tools",
+    "code-reasoning",
+    "github",
+    "newrelic",
+    "docs-mcp"
+  ]
 }

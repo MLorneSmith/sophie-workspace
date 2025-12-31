@@ -2,10 +2,6 @@
 name: review-expert
 description: Execute /review command as delegated agent to preserve main context. Use when reviewing implemented work against specifications with screenshot capture and GitHub integration.
 tools: Read, Grep, Glob, Bash, Task
-allowed-tools: Read, Grep, Glob, Bash(gh *), Bash(git *), Task
-category: workflow
-displayName: Review Expert
-color: green
 ---
 
 # Review Expert Agent

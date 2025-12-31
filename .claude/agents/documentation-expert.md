@@ -2,10 +2,6 @@
 name: documentation-expert
 description: Execute /document command as delegated agent to create feature documentation and identify new conditional-docs patterns. Use when generating technical documentation after implementation.
 tools: Read, Write, Edit, Grep, Glob, Bash, Task
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash(gh *), Bash(git *), Bash(mkdir *), Bash(cp *), Task
-category: workflow
-displayName: Documentation Expert
-color: purple
 ---
 
 # Documentation Expert Agent
