@@ -1,52 +1,52 @@
 {
-  "initiative_id": 1365,
-  "spec_id": 1362,
-  "title": "Activity & Task Tracking",
-  "status": "completed",
-  "current_phase": "finalization",
-  "started_at": "2026-01-01T00:00:00Z",
-  "completed_at": "2026-01-01T00:15:00Z",
-  "features": {
-    "1373": {
-      "title": "Activity Database Schema",
-      "status": "completed",
-      "task_count": 8,
-      "github_issue": 1386,
-      "hours_estimate": 10,
-      "hours_parallel": 8
-    },
-    "1374": {
-      "title": "Activity Recording Service",
-      "status": "completed",
-      "task_count": 6,
-      "github_issue": 1387,
-      "hours_estimate": 12,
-      "hours_parallel": 7
-    },
-    "1375": {
-      "title": "Activity Feed Component",
-      "status": "completed",
-      "task_count": 12,
-      "github_issue": 1389,
-      "hours_estimate": 17,
-      "hours_parallel": 11
-    },
-    "1376": {
-      "title": "Kanban Summary Card",
-      "status": "completed",
-      "task_count": 6,
-      "github_issue": 1391,
-      "hours_estimate": 16,
-      "hours_parallel": 12
-    }
-  },
-  "spikes_pending": [],
-  "totals": {
-    "features_completed": 4,
-    "features_failed": 0,
-    "total_tasks": 32,
-    "total_spikes": 0,
-    "total_hours_sequential": 55,
-    "total_hours_parallel": 38
-  }
+	"initiative_id": 1365,
+	"spec_id": 1362,
+	"title": "Activity & Task Tracking",
+	"status": "completed",
+	"current_phase": "finalization",
+	"started_at": "2026-01-01T00:00:00Z",
+	"completed_at": "2026-01-01T00:15:00Z",
+	"features": {
+		"1373": {
+			"title": "Activity Database Schema",
+			"status": "completed",
+			"task_count": 8,
+			"github_issue": 1386,
+			"hours_estimate": 10,
+			"hours_parallel": 8
+		},
+		"1374": {
+			"title": "Activity Recording Service",
+			"status": "completed",
+			"task_count": 6,
+			"github_issue": 1387,
+			"hours_estimate": 12,
+			"hours_parallel": 7
+		},
+		"1375": {
+			"title": "Activity Feed Component",
+			"status": "completed",
+			"task_count": 12,
+			"github_issue": 1389,
+			"hours_estimate": 17,
+			"hours_parallel": 11
+		},
+		"1376": {
+			"title": "Kanban Summary Card",
+			"status": "completed",
+			"task_count": 6,
+			"github_issue": 1391,
+			"hours_estimate": 16,
+			"hours_parallel": 12
+		}
+	},
+	"spikes_pending": [],
+	"totals": {
+		"features_completed": 4,
+		"features_failed": 0,
+		"total_tasks": 32,
+		"total_spikes": 0,
+		"total_hours_sequential": 55,
+		"total_hours_parallel": 38
+	}
 }

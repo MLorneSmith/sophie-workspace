@@ -1,149 +1,160 @@
 {
-  "id": "webhook-integration",
-  "type": "integration",
-  "name": "Webhook Integration",
-  "description": "External webhook integration with signature verification, event handling, and database sync. Follows security-first approach.",
-  "keywords": ["webhook", "integration", "api", "callback", "event", "sync", "external", "third-party", "signature", "verify"],
-  "applicable_to": {
-    "technologies": ["next.js", "supabase"],
-    "contexts": ["payments", "calendar", "notifications", "sync"]
-  },
-  "steps": [
-    {
-      "step_number": 1,
-      "name": "Research webhook documentation",
-      "action_template": "Spike: Research {{service_name}} webhook API and security requirements",
-      "input_template": "Service documentation URL or API reference",
-      "output_template": "Spike report with endpoint requirements, event types, signature format, and security requirements",
-      "critical": true,
-      "parallel_group": "0",
-      "estimated_hours": 2,
-      "variables": ["service_name"]
-    },
-    {
-      "step_number": 2,
-      "name": "Create webhook types",
-      "action_template": "Create TypeScript types for {{service_name}} webhook payloads",
-      "input_template": "Spike report documents event structure",
-      "output_template": "Types at {{types_path}}/{{service_name}}-webhook.types.ts",
-      "critical": false,
-      "parallel_group": "A",
-      "estimated_hours": 1,
-      "variables": ["service_name", "types_path"]
-    },
-    {
-      "step_number": 3,
-      "name": "Create signature verification",
-      "action_template": "Create verify{{ServiceName}}Signature utility function",
-      "input_template": "Spike report documents signature algorithm",
-      "output_template": "Utility at {{utils_path}}/{{service_name}}-webhook.ts with signature verification",
-      "critical": true,
-      "parallel_group": "A",
-      "estimated_hours": 2,
-      "variables": ["ServiceName", "service_name", "utils_path"]
-    },
-    {
-      "step_number": 4,
-      "name": "Create webhook route handler",
-      "action_template": "Create POST handler at /api/webhooks/{{service_name}}",
-      "input_template": "Types and signature verification exist",
-      "output_template": "Route handler at {{api_path}}/webhooks/{{service_name}}/route.ts with verification and event routing",
-      "critical": true,
-      "parallel_group": "B",
-      "estimated_hours": 2,
-      "variables": ["service_name", "api_path"]
-    },
-    {
-      "step_number": 5,
-      "name": "Create event handlers",
-      "action_template": "Create handlers for {{event_types}} webhook events",
-      "input_template": "Route handler dispatches to event handlers",
-      "output_template": "Event handlers at {{handlers_path}}/{{service_name}}-events.ts",
-      "critical": false,
-      "parallel_group": "C",
-      "estimated_hours": 3,
-      "variables": ["event_types", "handlers_path", "service_name"]
-    },
-    {
-      "step_number": 6,
-      "name": "Create database sync logic",
-      "action_template": "Create functions to sync {{service_name}} data to database",
-      "input_template": "Event handlers process webhook data",
-      "output_template": "Sync functions that update local database from webhook events",
-      "critical": true,
-      "parallel_group": "C",
-      "estimated_hours": 2,
-      "variables": ["service_name"]
-    },
-    {
-      "step_number": 7,
-      "name": "Add webhook configuration",
-      "action_template": "Add {{service_name}} webhook secret to environment config",
-      "input_template": "Route handler requires webhook secret",
-      "output_template": "Environment variable {{SERVICE_NAME}}_WEBHOOK_SECRET added to .env.example and documentation",
-      "critical": true,
-      "parallel_group": "D",
-      "estimated_hours": 1,
-      "variables": ["service_name", "SERVICE_NAME"]
-    },
-    {
-      "step_number": 8,
-      "name": "Add integration tests",
-      "action_template": "Create integration tests for webhook handler",
-      "input_template": "Webhook handler is complete",
-      "output_template": "Tests at {{tests_path}}/{{service_name}}-webhook.test.ts with mocked payloads",
-      "critical": false,
-      "parallel_group": "E",
-      "estimated_hours": 2,
-      "variables": ["tests_path", "service_name"]
-    },
-    {
-      "step_number": 9,
-      "name": "Document webhook setup",
-      "action_template": "Update documentation with {{service_name}} webhook configuration",
-      "input_template": "Integration is complete and tested",
-      "output_template": "Documentation updated with webhook URL, required secrets, and event handling",
-      "critical": false,
-      "parallel_group": "E",
-      "estimated_hours": 1,
-      "variables": ["service_name"]
-    }
-  ],
-  "dependency_graph": {
-    "1": [],
-    "2": [1],
-    "3": [1],
-    "4": [2, 3],
-    "5": [4],
-    "6": [4],
-    "7": [4],
-    "8": [5, 6],
-    "9": [8]
-  },
-  "parallel_groups": {
-    "0": [1],
-    "A": [2, 3],
-    "B": [4],
-    "C": [5, 6],
-    "D": [7],
-    "E": [8, 9]
-  },
-  "adaptation_notes": [
-    "Step 1 (spike) is CRITICAL - do not skip for unfamiliar services",
-    "Replace {{service_name}} with lowercase service (e.g., 'calcom', 'stripe')",
-    "Replace {{ServiceName}} with PascalCase (e.g., 'CalCom', 'Stripe')",
-    "Replace {{SERVICE_NAME}} with SCREAMING_SNAKE_CASE (e.g., 'CALCOM', 'STRIPE')",
-    "Replace {{event_types}} with actual events (e.g., 'booking.created, booking.cancelled')",
-    "Signature verification algorithm varies by service - check documentation",
-    "Consider adding webhook event logging for debugging production issues"
-  ],
-  "metadata": {
-    "created_at": "2025-12-31T00:00:00Z",
-    "created_by": "alpha-workflow",
-    "last_used": null,
-    "usage_count": 0,
-    "success_count": 0,
-    "failure_count": 0,
-    "avg_execution_hours": 0
-  }
+	"id": "webhook-integration",
+	"type": "integration",
+	"name": "Webhook Integration",
+	"description": "External webhook integration with signature verification, event handling, and database sync. Follows security-first approach.",
+	"keywords": [
+		"webhook",
+		"integration",
+		"api",
+		"callback",
+		"event",
+		"sync",
+		"external",
+		"third-party",
+		"signature",
+		"verify"
+	],
+	"applicable_to": {
+		"technologies": ["next.js", "supabase"],
+		"contexts": ["payments", "calendar", "notifications", "sync"]
+	},
+	"steps": [
+		{
+			"step_number": 1,
+			"name": "Research webhook documentation",
+			"action_template": "Spike: Research {{service_name}} webhook API and security requirements",
+			"input_template": "Service documentation URL or API reference",
+			"output_template": "Spike report with endpoint requirements, event types, signature format, and security requirements",
+			"critical": true,
+			"parallel_group": "0",
+			"estimated_hours": 2,
+			"variables": ["service_name"]
+		},
+		{
+			"step_number": 2,
+			"name": "Create webhook types",
+			"action_template": "Create TypeScript types for {{service_name}} webhook payloads",
+			"input_template": "Spike report documents event structure",
+			"output_template": "Types at {{types_path}}/{{service_name}}-webhook.types.ts",
+			"critical": false,
+			"parallel_group": "A",
+			"estimated_hours": 1,
+			"variables": ["service_name", "types_path"]
+		},
+		{
+			"step_number": 3,
+			"name": "Create signature verification",
+			"action_template": "Create verify{{ServiceName}}Signature utility function",
+			"input_template": "Spike report documents signature algorithm",
+			"output_template": "Utility at {{utils_path}}/{{service_name}}-webhook.ts with signature verification",
+			"critical": true,
+			"parallel_group": "A",
+			"estimated_hours": 2,
+			"variables": ["ServiceName", "service_name", "utils_path"]
+		},
+		{
+			"step_number": 4,
+			"name": "Create webhook route handler",
+			"action_template": "Create POST handler at /api/webhooks/{{service_name}}",
+			"input_template": "Types and signature verification exist",
+			"output_template": "Route handler at {{api_path}}/webhooks/{{service_name}}/route.ts with verification and event routing",
+			"critical": true,
+			"parallel_group": "B",
+			"estimated_hours": 2,
+			"variables": ["service_name", "api_path"]
+		},
+		{
+			"step_number": 5,
+			"name": "Create event handlers",
+			"action_template": "Create handlers for {{event_types}} webhook events",
+			"input_template": "Route handler dispatches to event handlers",
+			"output_template": "Event handlers at {{handlers_path}}/{{service_name}}-events.ts",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 3,
+			"variables": ["event_types", "handlers_path", "service_name"]
+		},
+		{
+			"step_number": 6,
+			"name": "Create database sync logic",
+			"action_template": "Create functions to sync {{service_name}} data to database",
+			"input_template": "Event handlers process webhook data",
+			"output_template": "Sync functions that update local database from webhook events",
+			"critical": true,
+			"parallel_group": "C",
+			"estimated_hours": 2,
+			"variables": ["service_name"]
+		},
+		{
+			"step_number": 7,
+			"name": "Add webhook configuration",
+			"action_template": "Add {{service_name}} webhook secret to environment config",
+			"input_template": "Route handler requires webhook secret",
+			"output_template": "Environment variable {{SERVICE_NAME}}_WEBHOOK_SECRET added to .env.example and documentation",
+			"critical": true,
+			"parallel_group": "D",
+			"estimated_hours": 1,
+			"variables": ["service_name", "SERVICE_NAME"]
+		},
+		{
+			"step_number": 8,
+			"name": "Add integration tests",
+			"action_template": "Create integration tests for webhook handler",
+			"input_template": "Webhook handler is complete",
+			"output_template": "Tests at {{tests_path}}/{{service_name}}-webhook.test.ts with mocked payloads",
+			"critical": false,
+			"parallel_group": "E",
+			"estimated_hours": 2,
+			"variables": ["tests_path", "service_name"]
+		},
+		{
+			"step_number": 9,
+			"name": "Document webhook setup",
+			"action_template": "Update documentation with {{service_name}} webhook configuration",
+			"input_template": "Integration is complete and tested",
+			"output_template": "Documentation updated with webhook URL, required secrets, and event handling",
+			"critical": false,
+			"parallel_group": "E",
+			"estimated_hours": 1,
+			"variables": ["service_name"]
+		}
+	],
+	"dependency_graph": {
+		"1": [],
+		"2": [1],
+		"3": [1],
+		"4": [2, 3],
+		"5": [4],
+		"6": [4],
+		"7": [4],
+		"8": [5, 6],
+		"9": [8]
+	},
+	"parallel_groups": {
+		"0": [1],
+		"A": [2, 3],
+		"B": [4],
+		"C": [5, 6],
+		"D": [7],
+		"E": [8, 9]
+	},
+	"adaptation_notes": [
+		"Step 1 (spike) is CRITICAL - do not skip for unfamiliar services",
+		"Replace {{service_name}} with lowercase service (e.g., 'calcom', 'stripe')",
+		"Replace {{ServiceName}} with PascalCase (e.g., 'CalCom', 'Stripe')",
+		"Replace {{SERVICE_NAME}} with SCREAMING_SNAKE_CASE (e.g., 'CALCOM', 'STRIPE')",
+		"Replace {{event_types}} with actual events (e.g., 'booking.created, booking.cancelled')",
+		"Signature verification algorithm varies by service - check documentation",
+		"Consider adding webhook event logging for debugging production issues"
+	],
+	"metadata": {
+		"created_at": "2025-12-31T00:00:00Z",
+		"created_by": "alpha-workflow",
+		"last_used": null,
+		"usage_count": 0,
+		"success_count": 0,
+		"failure_count": 0,
+		"avg_execution_hours": 0
+	}
 }

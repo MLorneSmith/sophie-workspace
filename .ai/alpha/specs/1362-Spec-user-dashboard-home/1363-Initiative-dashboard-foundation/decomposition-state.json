@@ -1,19 +1,47 @@
 {
-  "initiative_id": 1363,
-  "spec_id": 1362,
-  "status": "completed",
-  "current_phase": "finalization",
-  "started_at": "2026-01-01T00:00:00Z",
-  "completed_at": "2026-01-01T01:00:00Z",
-  "features": {
-    "1367": { "title": "Dashboard Page & Grid Layout", "status": "completed", "task_count": 20, "github_issue": 1381, "sequential_hours": 41, "parallel_hours": 17 },
-    "1368": { "title": "Presentation Outline Table", "status": "completed", "task_count": 12, "github_issue": 1383, "sequential_hours": 21, "parallel_hours": 12 },
-    "1369": { "title": "Quick Actions Panel", "status": "completed", "task_count": 6, "github_issue": 1384, "sequential_hours": 15, "parallel_hours": 8 },
-    "1370": { "title": "Empty State System", "status": "completed", "task_count": 5, "github_issue": 1385, "sequential_hours": 9, "parallel_hours": 6 }
-  },
-  "spikes_pending": [],
-  "total_spikes": 0,
-  "total_tasks": 43,
-  "total_hours_sequential": 86,
-  "total_hours_parallel": 43
+	"initiative_id": 1363,
+	"spec_id": 1362,
+	"status": "completed",
+	"current_phase": "finalization",
+	"started_at": "2026-01-01T00:00:00Z",
+	"completed_at": "2026-01-01T01:00:00Z",
+	"features": {
+		"1367": {
+			"title": "Dashboard Page & Grid Layout",
+			"status": "completed",
+			"task_count": 20,
+			"github_issue": 1381,
+			"sequential_hours": 41,
+			"parallel_hours": 17
+		},
+		"1368": {
+			"title": "Presentation Outline Table",
+			"status": "completed",
+			"task_count": 12,
+			"github_issue": 1383,
+			"sequential_hours": 21,
+			"parallel_hours": 12
+		},
+		"1369": {
+			"title": "Quick Actions Panel",
+			"status": "completed",
+			"task_count": 6,
+			"github_issue": 1384,
+			"sequential_hours": 15,
+			"parallel_hours": 8
+		},
+		"1370": {
+			"title": "Empty State System",
+			"status": "completed",
+			"task_count": 5,
+			"github_issue": 1385,
+			"sequential_hours": 9,
+			"parallel_hours": 6
+		}
+	},
+	"spikes_pending": [],
+	"total_spikes": 0,
+	"total_tasks": 43,
+	"total_hours_sequential": 86,
+	"total_hours_parallel": 43
 }

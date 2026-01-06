@@ -1,461 +1,457 @@
 {
-  "$schema": "./tasks.schema.json",
-  "metadata": {
-    "feature_id": 1340,
-    "feature_name": "Core Dashboard Foundation",
-    "feature_slug": "core-dashboard-foundation",
-    "initiative_id": 1335,
-    "spec_id": 1333,
-    "created_at": "2025-01-15T10:30:00Z",
-    "complexity": {
-      "score": 55,
-      "level": "STANDARD",
-      "target_steps": { "min": 6, "max": 12 },
-      "pattern_matched": "dashboard-card"
-    }
-  },
-  "tasks": [
-    {
-      "id": "S1",
-      "type": "spike",
-      "name": "Spike: Evaluate dashboard layout patterns",
-      "action": {
-        "verb": "Spike",
-        "target": "dashboard layout options"
-      },
-      "purpose": "Determine optimal grid layout approach for responsive dashboard",
-      "status": "draft",
-      "estimated_hours": 4,
-      "priority": 0,
-      "group": 0,
-      "acceptance_criterion": "Decision document with recommended layout approach and implementation tasks",
-      "verification_command": "test -f ${FEAT_DIR}/spike-reports/s1-layout-decision.md",
-      "spike_details": {
-        "question": "Should we use CSS Grid, Flexbox, or a layout library for the dashboard?",
-        "timebox_hours": 4,
-        "investigation_scope": [
-          "Existing layout patterns in codebase",
-          "Responsive behavior requirements",
-          "shadcn/ui layout components"
-        ],
-        "blocks_tasks": ["T1", "T2", "T3"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T1",
-      "type": "task",
-      "name": "Create dashboard page route",
-      "action": {
-        "verb": "Create",
-        "target": "dashboard page.tsx with basic layout"
-      },
-      "purpose": "Establish the dashboard page route and shell structure",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 1,
-      "group": 1,
-      "context": {
-        "files": [
-          "apps/web/app/home/[account]/page.tsx",
-          "apps/web/app/home/[account]/layout.tsx"
-        ],
-        "types": ["AccountPageParams"],
-        "dependencies": ["getSupabaseServerClient", "loadTeamWorkspace"],
-        "constraints": [
-          "Follow existing page patterns in [account] directory",
-          "Use Server Components by default"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/app/home/[account]/settings/page.tsx",
-            "description": "Example of account-scoped page with loader"
-          }
-        ]
-      },
-      "acceptance_criterion": "Dashboard page renders at /home/[account]/dashboard with header",
-      "verification_command": "curl -s http://localhost:3000/home/test-team/dashboard | grep -q 'Dashboard'",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/[account]/dashboard/page.tsx",
-          "description": "Dashboard page component with basic layout"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["S1"],
-        "blocks": ["T2", "T3"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T2",
-      "type": "task",
-      "name": "Create dashboard loader function",
-      "action": {
-        "verb": "Create",
-        "target": "loadDashboardData server loader"
-      },
-      "purpose": "Fetch initial dashboard data with parallel queries",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 2,
-      "group": 2,
-      "context": {
-        "files": [
-          "apps/web/app/home/[account]/members/_lib/server/team-account-members.loader.ts"
-        ],
-        "types": ["Database", "SupabaseClient"],
-        "dependencies": ["getSupabaseServerClient"],
-        "constraints": [
-          "Use Promise.all for parallel fetching",
-          "Add 'server-only' import"
-        ]
-      },
-      "acceptance_criterion": "Loader returns user stats, recent activity, and upcoming sessions",
-      "verification_command": "pnpm typecheck && grep -q 'loadDashboardData' apps/web/app/home/[account]/dashboard/_lib/server/dashboard.loader.ts",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/[account]/dashboard/_lib/server/dashboard.loader.ts",
-          "description": "Server-side data loader for dashboard"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T1"],
-        "blocks": ["T4", "T5"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T3",
-      "type": "task",
-      "name": "Create dashboard TypeScript types",
-      "action": {
-        "verb": "Create",
-        "target": "DashboardData and related types"
-      },
-      "purpose": "Define type-safe interfaces for dashboard data structures",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 2,
-      "group": 2,
-      "context": {
-        "files": [
-          "apps/web/lib/types.ts"
-        ],
-        "constraints": [
-          "Derive from Database types where applicable",
-          "Export from _lib/types.ts"
-        ]
-      },
-      "acceptance_criterion": "DashboardData, UserStats, and ActivityItem types exported and used by loader",
-      "verification_command": "pnpm typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/[account]/dashboard/_lib/types.ts",
-          "description": "TypeScript interfaces for dashboard"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T1"],
-        "blocks": ["T2", "T4"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T4",
-      "type": "task",
-      "name": "Create StatsCard component",
-      "action": {
-        "verb": "Create",
-        "target": "StatsCard component with progress indicator"
-      },
-      "purpose": "Display user progress statistics in a card format",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 3,
-      "group": 3,
-      "context": {
-        "files": [
-          "packages/ui/src/components/card.tsx",
-          "packages/ui/src/components/progress.tsx"
-        ],
-        "dependencies": ["Card", "Progress", "cn"],
-        "constraints": [
-          "Use shadcn Card and Progress components",
-          "Add responsive styling"
-        ]
-      },
-      "acceptance_criterion": "StatsCard renders with title, value, and optional progress bar",
-      "verification_command": "pnpm typecheck && test -f apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
-          "description": "Reusable stats card component"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T2", "T3"],
-        "blocks": ["T6"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T5",
-      "type": "task",
-      "name": "Create ActivityFeed component",
-      "action": {
-        "verb": "Create",
-        "target": "ActivityFeed component with item list"
-      },
-      "purpose": "Display recent user activity in chronological order",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 3,
-      "group": 3,
-      "context": {
-        "files": [
-          "packages/ui/src/components/card.tsx",
-          "packages/ui/src/components/avatar.tsx"
-        ],
-        "dependencies": ["Card", "Avatar", "formatDistanceToNow"],
-        "constraints": [
-          "Limit to 10 most recent items",
-          "Use relative timestamps"
-        ]
-      },
-      "acceptance_criterion": "ActivityFeed renders list of activity items with icons and timestamps",
-      "verification_command": "pnpm typecheck && test -f apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx",
-          "description": "Activity feed component"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T2", "T3"],
-        "blocks": ["T6"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T6",
-      "type": "task",
-      "name": "Wire components to dashboard page",
-      "action": {
-        "verb": "Wire",
-        "target": "StatsCard and ActivityFeed to dashboard page"
-      },
-      "purpose": "Integrate components with loader data on dashboard page",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 4,
-      "group": 4,
-      "context": {
-        "files": [
-          "apps/web/app/home/[account]/dashboard/page.tsx",
-          "apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
-          "apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx"
-        ],
-        "constraints": [
-          "Use Suspense for loading states",
-          "Pass loader data as props"
-        ]
-      },
-      "acceptance_criterion": "Dashboard page displays StatsCard grid and ActivityFeed with real data",
-      "verification_command": "curl -s http://localhost:3000/home/test-team/dashboard | grep -q 'activity'",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/[account]/dashboard/page.tsx",
-          "description": "Updated to use components with loader data"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T4", "T5"],
-        "blocks": ["T7"]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "T7",
-      "type": "task",
-      "name": "Add E2E test for dashboard",
-      "action": {
-        "verb": "Test",
-        "target": "dashboard page with Playwright"
-      },
-      "purpose": "Verify dashboard renders correctly with authenticated user",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 5,
-      "group": 5,
-      "context": {
-        "files": [
-          "apps/e2e/tests/home/settings.spec.ts"
-        ],
-        "dependencies": ["test", "expect", "authenticatedPage"],
-        "constraints": [
-          "Follow existing E2E test patterns",
-          "Use test fixtures for auth"
-        ]
-      },
-      "acceptance_criterion": "E2E test passes verifying dashboard loads with stats and activity",
-      "verification_command": "pnpm --filter web-e2e test:shard -- --grep dashboard",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/e2e/tests/home/dashboard.spec.ts",
-          "description": "Playwright E2E tests for dashboard"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": ["T6"],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    }
-  ],
-  "execution": {
-    "groups": [
-      {
-        "id": 0,
-        "name": "Spikes",
-        "task_ids": ["S1"],
-        "depends_on_groups": [],
-        "estimated_hours": 4,
-        "parallel_hours": 4
-      },
-      {
-        "id": 1,
-        "name": "Foundation",
-        "task_ids": ["T1"],
-        "depends_on_groups": [0],
-        "estimated_hours": 2,
-        "parallel_hours": 2
-      },
-      {
-        "id": 2,
-        "name": "Data Layer",
-        "task_ids": ["T2", "T3"],
-        "depends_on_groups": [1],
-        "estimated_hours": 5,
-        "parallel_hours": 3
-      },
-      {
-        "id": 3,
-        "name": "Components",
-        "task_ids": ["T4", "T5"],
-        "depends_on_groups": [2],
-        "estimated_hours": 6,
-        "parallel_hours": 3
-      },
-      {
-        "id": 4,
-        "name": "Integration",
-        "task_ids": ["T6"],
-        "depends_on_groups": [3],
-        "estimated_hours": 2,
-        "parallel_hours": 2
-      },
-      {
-        "id": 5,
-        "name": "Testing",
-        "task_ids": ["T7"],
-        "depends_on_groups": [4],
-        "estimated_hours": 2,
-        "parallel_hours": 2
-      }
-    ],
-    "critical_path": {
-      "task_ids": ["S1", "T1", "T3", "T4", "T6", "T7"],
-      "total_hours": 15
-    },
-    "duration": {
-      "sequential": 21,
-      "parallel": 16,
-      "time_saved_percent": 24
-    }
-  },
-  "validation": {
-    "discriminator_verdict": "APPROVED",
-    "scores": {
-      "completeness": 95,
-      "atomicity": 100,
-      "dependencies": 100,
-      "state_flow": 92,
-      "testability": 88
-    },
-    "dependency_checks": {
-      "no_cycles": true,
-      "all_documented": true,
-      "spikes_first": true,
-      "critical_path_valid": true
-    },
-    "m1_compliance": 100
-  },
-  "github": {
-    "issues_created": false,
-    "issue_map": {}
-  }
+	"$schema": "./tasks.schema.json",
+	"metadata": {
+		"feature_id": 1340,
+		"feature_name": "Core Dashboard Foundation",
+		"feature_slug": "core-dashboard-foundation",
+		"initiative_id": 1335,
+		"spec_id": 1333,
+		"created_at": "2025-01-15T10:30:00Z",
+		"complexity": {
+			"score": 55,
+			"level": "STANDARD",
+			"target_steps": { "min": 6, "max": 12 },
+			"pattern_matched": "dashboard-card"
+		}
+	},
+	"tasks": [
+		{
+			"id": "S1",
+			"type": "spike",
+			"name": "Spike: Evaluate dashboard layout patterns",
+			"action": {
+				"verb": "Spike",
+				"target": "dashboard layout options"
+			},
+			"purpose": "Determine optimal grid layout approach for responsive dashboard",
+			"status": "draft",
+			"estimated_hours": 4,
+			"priority": 0,
+			"group": 0,
+			"acceptance_criterion": "Decision document with recommended layout approach and implementation tasks",
+			"verification_command": "test -f ${FEAT_DIR}/spike-reports/s1-layout-decision.md",
+			"spike_details": {
+				"question": "Should we use CSS Grid, Flexbox, or a layout library for the dashboard?",
+				"timebox_hours": 4,
+				"investigation_scope": [
+					"Existing layout patterns in codebase",
+					"Responsive behavior requirements",
+					"shadcn/ui layout components"
+				],
+				"blocks_tasks": ["T1", "T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create dashboard page route",
+			"action": {
+				"verb": "Create",
+				"target": "dashboard page.tsx with basic layout"
+			},
+			"purpose": "Establish the dashboard page route and shell structure",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/app/home/[account]/page.tsx",
+					"apps/web/app/home/[account]/layout.tsx"
+				],
+				"types": ["AccountPageParams"],
+				"dependencies": ["getSupabaseServerClient", "loadTeamWorkspace"],
+				"constraints": [
+					"Follow existing page patterns in [account] directory",
+					"Use Server Components by default"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/[account]/settings/page.tsx",
+						"description": "Example of account-scoped page with loader"
+					}
+				]
+			},
+			"acceptance_criterion": "Dashboard page renders at /home/[account]/dashboard with header",
+			"verification_command": "curl -s http://localhost:3000/home/test-team/dashboard | grep -q 'Dashboard'",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/[account]/dashboard/page.tsx",
+					"description": "Dashboard page component with basic layout"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1"],
+				"blocks": ["T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create dashboard loader function",
+			"action": {
+				"verb": "Create",
+				"target": "loadDashboardData server loader"
+			},
+			"purpose": "Fetch initial dashboard data with parallel queries",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 2,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/[account]/members/_lib/server/team-account-members.loader.ts"
+				],
+				"types": ["Database", "SupabaseClient"],
+				"dependencies": ["getSupabaseServerClient"],
+				"constraints": [
+					"Use Promise.all for parallel fetching",
+					"Add 'server-only' import"
+				]
+			},
+			"acceptance_criterion": "Loader returns user stats, recent activity, and upcoming sessions",
+			"verification_command": "pnpm typecheck && grep -q 'loadDashboardData' apps/web/app/home/[account]/dashboard/_lib/server/dashboard.loader.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/[account]/dashboard/_lib/server/dashboard.loader.ts",
+					"description": "Server-side data loader for dashboard"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T4", "T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create dashboard TypeScript types",
+			"action": {
+				"verb": "Create",
+				"target": "DashboardData and related types"
+			},
+			"purpose": "Define type-safe interfaces for dashboard data structures",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 2,
+			"context": {
+				"files": ["apps/web/lib/types.ts"],
+				"constraints": [
+					"Derive from Database types where applicable",
+					"Export from _lib/types.ts"
+				]
+			},
+			"acceptance_criterion": "DashboardData, UserStats, and ActivityItem types exported and used by loader",
+			"verification_command": "pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/[account]/dashboard/_lib/types.ts",
+					"description": "TypeScript interfaces for dashboard"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T2", "T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Create StatsCard component",
+			"action": {
+				"verb": "Create",
+				"target": "StatsCard component with progress indicator"
+			},
+			"purpose": "Display user progress statistics in a card format",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 3,
+			"group": 3,
+			"context": {
+				"files": [
+					"packages/ui/src/components/card.tsx",
+					"packages/ui/src/components/progress.tsx"
+				],
+				"dependencies": ["Card", "Progress", "cn"],
+				"constraints": [
+					"Use shadcn Card and Progress components",
+					"Add responsive styling"
+				]
+			},
+			"acceptance_criterion": "StatsCard renders with title, value, and optional progress bar",
+			"verification_command": "pnpm typecheck && test -f apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
+					"description": "Reusable stats card component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T3"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Create ActivityFeed component",
+			"action": {
+				"verb": "Create",
+				"target": "ActivityFeed component with item list"
+			},
+			"purpose": "Display recent user activity in chronological order",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 3,
+			"group": 3,
+			"context": {
+				"files": [
+					"packages/ui/src/components/card.tsx",
+					"packages/ui/src/components/avatar.tsx"
+				],
+				"dependencies": ["Card", "Avatar", "formatDistanceToNow"],
+				"constraints": [
+					"Limit to 10 most recent items",
+					"Use relative timestamps"
+				]
+			},
+			"acceptance_criterion": "ActivityFeed renders list of activity items with icons and timestamps",
+			"verification_command": "pnpm typecheck && test -f apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx",
+					"description": "Activity feed component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T3"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Wire components to dashboard page",
+			"action": {
+				"verb": "Wire",
+				"target": "StatsCard and ActivityFeed to dashboard page"
+			},
+			"purpose": "Integrate components with loader data on dashboard page",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/[account]/dashboard/page.tsx",
+					"apps/web/app/home/[account]/dashboard/_components/stats-card.tsx",
+					"apps/web/app/home/[account]/dashboard/_components/activity-feed.tsx"
+				],
+				"constraints": [
+					"Use Suspense for loading states",
+					"Pass loader data as props"
+				]
+			},
+			"acceptance_criterion": "Dashboard page displays StatsCard grid and ActivityFeed with real data",
+			"verification_command": "curl -s http://localhost:3000/home/test-team/dashboard | grep -q 'activity'",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/[account]/dashboard/page.tsx",
+					"description": "Updated to use components with loader data"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T4", "T5"],
+				"blocks": ["T7"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Add E2E test for dashboard",
+			"action": {
+				"verb": "Test",
+				"target": "dashboard page with Playwright"
+			},
+			"purpose": "Verify dashboard renders correctly with authenticated user",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 5,
+			"context": {
+				"files": ["apps/e2e/tests/home/settings.spec.ts"],
+				"dependencies": ["test", "expect", "authenticatedPage"],
+				"constraints": [
+					"Follow existing E2E test patterns",
+					"Use test fixtures for auth"
+				]
+			},
+			"acceptance_criterion": "E2E test passes verifying dashboard loads with stats and activity",
+			"verification_command": "pnpm --filter web-e2e test:shard -- --grep dashboard",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/e2e/tests/home/dashboard.spec.ts",
+					"description": "Playwright E2E tests for dashboard"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T6"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 0,
+				"name": "Spikes",
+				"task_ids": ["S1"],
+				"depends_on_groups": [],
+				"estimated_hours": 4,
+				"parallel_hours": 4
+			},
+			{
+				"id": 1,
+				"name": "Foundation",
+				"task_ids": ["T1"],
+				"depends_on_groups": [0],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Data Layer",
+				"task_ids": ["T2", "T3"],
+				"depends_on_groups": [1],
+				"estimated_hours": 5,
+				"parallel_hours": 3
+			},
+			{
+				"id": 3,
+				"name": "Components",
+				"task_ids": ["T4", "T5"],
+				"depends_on_groups": [2],
+				"estimated_hours": 6,
+				"parallel_hours": 3
+			},
+			{
+				"id": 4,
+				"name": "Integration",
+				"task_ids": ["T6"],
+				"depends_on_groups": [3],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 5,
+				"name": "Testing",
+				"task_ids": ["T7"],
+				"depends_on_groups": [4],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S1", "T1", "T3", "T4", "T6", "T7"],
+			"total_hours": 15
+		},
+		"duration": {
+			"sequential": 21,
+			"parallel": 16,
+			"time_saved_percent": 24
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 95,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 92,
+			"testability": 88
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": false,
+		"issue_map": {}
+	}
 }

@@ -1,392 +1,428 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://slideheroes.com/schemas/alpha/tasks.schema.json",
-  "title": "Alpha Task Decomposition",
-  "description": "Schema for MAKER-compliant task decomposition in the Alpha autonomous coding workflow",
-  "type": "object",
-  "required": ["metadata", "tasks", "execution", "validation"],
-  "properties": {
-    "metadata": {
-      "type": "object",
-      "description": "Feature and decomposition metadata",
-      "required": ["feature_id", "feature_name", "initiative_id", "spec_id", "created_at", "complexity"],
-      "properties": {
-        "feature_id": {
-          "type": "integer",
-          "description": "GitHub issue number for the feature"
-        },
-        "feature_name": {
-          "type": "string",
-          "description": "Human-readable feature name"
-        },
-        "feature_slug": {
-          "type": "string",
-          "pattern": "^[a-z0-9-]+$",
-          "description": "URL-safe feature identifier"
-        },
-        "initiative_id": {
-          "type": "integer",
-          "description": "GitHub issue number for parent initiative"
-        },
-        "spec_id": {
-          "type": "integer",
-          "description": "GitHub issue number for parent spec"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "description": "ISO 8601 timestamp of decomposition"
-        },
-        "complexity": {
-          "type": "object",
-          "required": ["score", "level", "target_steps"],
-          "properties": {
-            "score": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 100,
-              "description": "Complexity score from estimator"
-            },
-            "level": {
-              "type": "string",
-              "enum": ["MINIMAL", "LOW", "STANDARD", "HIGH", "MAXIMAL"],
-              "description": "Granularity level based on score"
-            },
-            "target_steps": {
-              "type": "object",
-              "properties": {
-                "min": { "type": "integer" },
-                "max": { "type": "integer" }
-              }
-            },
-            "pattern_matched": {
-              "type": ["string", "null"],
-              "description": "Decomposition pattern used, if any"
-            }
-          }
-        }
-      }
-    },
-    "tasks": {
-      "type": "array",
-      "description": "All tasks including spikes",
-      "items": {
-        "$ref": "#/definitions/task"
-      }
-    },
-    "execution": {
-      "type": "object",
-      "description": "Execution planning and dependency analysis",
-      "required": ["groups", "critical_path", "duration"],
-      "properties": {
-        "groups": {
-          "type": "array",
-          "description": "Parallel execution groups (Group 0 = spikes)",
-          "items": {
-            "type": "object",
-            "required": ["id", "name", "task_ids"],
-            "properties": {
-              "id": {
-                "type": "integer",
-                "description": "Group number (0 = spikes, run first)"
-              },
-              "name": {
-                "type": "string",
-                "description": "Human-readable group name"
-              },
-              "task_ids": {
-                "type": "array",
-                "items": { "type": "string" },
-                "description": "Task IDs in this group (can run in parallel)"
-              },
-              "depends_on_groups": {
-                "type": "array",
-                "items": { "type": "integer" },
-                "description": "Group IDs that must complete before this group starts"
-              },
-              "estimated_hours": {
-                "type": "number",
-                "description": "Total hours if run sequentially"
-              },
-              "parallel_hours": {
-                "type": "number",
-                "description": "Hours if run in parallel (max of tasks)"
-              }
-            }
-          }
-        },
-        "critical_path": {
-          "type": "object",
-          "required": ["task_ids", "total_hours"],
-          "properties": {
-            "task_ids": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Ordered list of tasks on critical path"
-            },
-            "total_hours": {
-              "type": "number",
-              "description": "Total duration of critical path"
-            }
-          }
-        },
-        "duration": {
-          "type": "object",
-          "required": ["sequential", "parallel"],
-          "properties": {
-            "sequential": {
-              "type": "number",
-              "description": "Total hours if all tasks run sequentially"
-            },
-            "parallel": {
-              "type": "number",
-              "description": "Total hours with parallel execution"
-            },
-            "time_saved_percent": {
-              "type": "number",
-              "description": "Percentage time saved through parallelization"
-            }
-          }
-        }
-      }
-    },
-    "validation": {
-      "type": "object",
-      "description": "MAKER compliance validation results",
-      "required": ["discriminator_verdict", "scores", "dependency_checks"],
-      "properties": {
-        "discriminator_verdict": {
-          "type": "string",
-          "enum": ["APPROVED", "NEEDS_REVISION", "REJECTED"],
-          "description": "Overall validation result"
-        },
-        "scores": {
-          "type": "object",
-          "properties": {
-            "completeness": { "type": "number", "minimum": 0, "maximum": 100 },
-            "atomicity": { "type": "number", "minimum": 0, "maximum": 100 },
-            "dependencies": { "type": "number", "minimum": 0, "maximum": 100 },
-            "state_flow": { "type": "number", "minimum": 0, "maximum": 100 },
-            "testability": { "type": "number", "minimum": 0, "maximum": 100 }
-          }
-        },
-        "dependency_checks": {
-          "type": "object",
-          "properties": {
-            "no_cycles": { "type": "boolean" },
-            "all_documented": { "type": "boolean" },
-            "spikes_first": { "type": "boolean" },
-            "critical_path_valid": { "type": "boolean" }
-          }
-        },
-        "m1_compliance": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 100,
-          "description": "Percentage of tasks that are m=1 compliant"
-        }
-      }
-    },
-    "github": {
-      "type": "object",
-      "description": "GitHub issue tracking (populated after issues created)",
-      "properties": {
-        "issues_created": {
-          "type": "boolean",
-          "default": false
-        },
-        "issue_map": {
-          "type": "object",
-          "description": "Map of task_id to GitHub issue number",
-          "additionalProperties": {
-            "type": "integer"
-          }
-        }
-      }
-    }
-  },
-  "definitions": {
-    "task": {
-      "type": "object",
-      "required": ["id", "type", "name", "action", "status", "estimated_hours", "priority", "group", "acceptance_criterion"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^(S|T)\\d+$",
-          "description": "Task ID: S1, S2 for spikes; T1, T2, etc. for tasks"
-        },
-        "type": {
-          "type": "string",
-          "enum": ["spike", "task"],
-          "description": "Task type"
-        },
-        "name": {
-          "type": "string",
-          "description": "Single-verb task name"
-        },
-        "action": {
-          "type": "object",
-          "required": ["verb", "target"],
-          "properties": {
-            "verb": {
-              "type": "string",
-              "enum": ["Create", "Add", "Update", "Remove", "Wire", "Extract", "Rename", "Move", "Configure", "Test", "Spike"],
-              "description": "Single action verb"
-            },
-            "target": {
-              "type": "string",
-              "description": "What the action applies to"
-            }
-          }
-        },
-        "purpose": {
-          "type": "string",
-          "description": "Why this task exists (one sentence)"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["draft", "ready", "in_progress", "blocked", "completed", "skipped"],
-          "default": "draft"
-        },
-        "estimated_hours": {
-          "type": "number",
-          "minimum": 1,
-          "maximum": 8,
-          "description": "Estimated hours (2-8 for MAKER compliance)"
-        },
-        "priority": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Execution priority (0 = spikes, run first)"
-        },
-        "group": {
-          "type": "integer",
-          "description": "Parallel execution group ID"
-        },
-        "context": {
-          "type": "object",
-          "description": "Minimal context needed for execution (≤750 tokens)",
-          "properties": {
-            "files": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Relevant existing files"
-            },
-            "types": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Available type definitions"
-            },
-            "dependencies": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Available functions/components"
-            },
-            "constraints": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Implementation constraints"
-            },
-            "patterns": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "file": { "type": "string" },
-                  "description": { "type": "string" }
-                }
-              },
-              "description": "Reference files with patterns to follow"
-            }
-          }
-        },
-        "acceptance_criterion": {
-          "type": "string",
-          "description": "Single testable condition for done state"
-        },
-        "verification_command": {
-          "type": "string",
-          "description": "Bash command to verify completion"
-        },
-        "outputs": {
-          "type": "array",
-          "description": "Expected outputs from this task",
-          "items": {
-            "type": "object",
-            "required": ["type", "path"],
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["new", "modified", "deleted"]
-              },
-              "path": {
-                "type": "string",
-                "description": "File path"
-              },
-              "description": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "dependencies": {
-          "type": "object",
-          "properties": {
-            "blocked_by": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Task IDs that must complete first"
-            },
-            "blocks": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Task IDs waiting on this"
-            }
-          }
-        },
-        "spike_details": {
-          "type": "object",
-          "description": "Additional fields for spike tasks only",
-          "properties": {
-            "question": {
-              "type": "string",
-              "description": "Specific question to answer"
-            },
-            "timebox_hours": {
-              "type": "number",
-              "minimum": 2,
-              "maximum": 8,
-              "description": "Maximum hours to spend"
-            },
-            "investigation_scope": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Areas to investigate"
-            },
-            "blocks_tasks": {
-              "type": "array",
-              "items": { "type": "string" },
-              "description": "Task IDs that cannot be estimated until spike completes"
-            }
-          }
-        },
-        "m1_checks": {
-          "type": "object",
-          "description": "MAKER m=1 compliance checks",
-          "properties": {
-            "single_verb": { "type": "boolean" },
-            "no_conjunctions": { "type": "boolean" },
-            "under_8_hours": { "type": "boolean" },
-            "under_750_tokens": { "type": "boolean" },
-            "binary_done_state": { "type": "boolean" },
-            "max_3_files": { "type": "boolean" }
-          }
-        },
-        "github_issue": {
-          "type": "integer",
-          "description": "GitHub issue number (populated after creation)"
-        }
-      }
-    }
-  }
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://slideheroes.com/schemas/alpha/tasks.schema.json",
+	"title": "Alpha Task Decomposition",
+	"description": "Schema for MAKER-compliant task decomposition in the Alpha autonomous coding workflow",
+	"type": "object",
+	"required": ["metadata", "tasks", "execution", "validation"],
+	"properties": {
+		"metadata": {
+			"type": "object",
+			"description": "Feature and decomposition metadata",
+			"required": [
+				"feature_id",
+				"feature_name",
+				"initiative_id",
+				"spec_id",
+				"created_at",
+				"complexity"
+			],
+			"properties": {
+				"feature_id": {
+					"type": "integer",
+					"description": "GitHub issue number for the feature"
+				},
+				"feature_name": {
+					"type": "string",
+					"description": "Human-readable feature name"
+				},
+				"feature_slug": {
+					"type": "string",
+					"pattern": "^[a-z0-9-]+$",
+					"description": "URL-safe feature identifier"
+				},
+				"initiative_id": {
+					"type": "integer",
+					"description": "GitHub issue number for parent initiative"
+				},
+				"spec_id": {
+					"type": "integer",
+					"description": "GitHub issue number for parent spec"
+				},
+				"created_at": {
+					"type": "string",
+					"format": "date-time",
+					"description": "ISO 8601 timestamp of decomposition"
+				},
+				"complexity": {
+					"type": "object",
+					"required": ["score", "level", "target_steps"],
+					"properties": {
+						"score": {
+							"type": "integer",
+							"minimum": 0,
+							"maximum": 100,
+							"description": "Complexity score from estimator"
+						},
+						"level": {
+							"type": "string",
+							"enum": ["MINIMAL", "LOW", "STANDARD", "HIGH", "MAXIMAL"],
+							"description": "Granularity level based on score"
+						},
+						"target_steps": {
+							"type": "object",
+							"properties": {
+								"min": { "type": "integer" },
+								"max": { "type": "integer" }
+							}
+						},
+						"pattern_matched": {
+							"type": ["string", "null"],
+							"description": "Decomposition pattern used, if any"
+						}
+					}
+				}
+			}
+		},
+		"tasks": {
+			"type": "array",
+			"description": "All tasks including spikes",
+			"items": {
+				"$ref": "#/definitions/task"
+			}
+		},
+		"execution": {
+			"type": "object",
+			"description": "Execution planning and dependency analysis",
+			"required": ["groups", "critical_path", "duration"],
+			"properties": {
+				"groups": {
+					"type": "array",
+					"description": "Parallel execution groups (Group 0 = spikes)",
+					"items": {
+						"type": "object",
+						"required": ["id", "name", "task_ids"],
+						"properties": {
+							"id": {
+								"type": "integer",
+								"description": "Group number (0 = spikes, run first)"
+							},
+							"name": {
+								"type": "string",
+								"description": "Human-readable group name"
+							},
+							"task_ids": {
+								"type": "array",
+								"items": { "type": "string" },
+								"description": "Task IDs in this group (can run in parallel)"
+							},
+							"depends_on_groups": {
+								"type": "array",
+								"items": { "type": "integer" },
+								"description": "Group IDs that must complete before this group starts"
+							},
+							"estimated_hours": {
+								"type": "number",
+								"description": "Total hours if run sequentially"
+							},
+							"parallel_hours": {
+								"type": "number",
+								"description": "Hours if run in parallel (max of tasks)"
+							}
+						}
+					}
+				},
+				"critical_path": {
+					"type": "object",
+					"required": ["task_ids", "total_hours"],
+					"properties": {
+						"task_ids": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Ordered list of tasks on critical path"
+						},
+						"total_hours": {
+							"type": "number",
+							"description": "Total duration of critical path"
+						}
+					}
+				},
+				"duration": {
+					"type": "object",
+					"required": ["sequential", "parallel"],
+					"properties": {
+						"sequential": {
+							"type": "number",
+							"description": "Total hours if all tasks run sequentially"
+						},
+						"parallel": {
+							"type": "number",
+							"description": "Total hours with parallel execution"
+						},
+						"time_saved_percent": {
+							"type": "number",
+							"description": "Percentage time saved through parallelization"
+						}
+					}
+				}
+			}
+		},
+		"validation": {
+			"type": "object",
+			"description": "MAKER compliance validation results",
+			"required": ["discriminator_verdict", "scores", "dependency_checks"],
+			"properties": {
+				"discriminator_verdict": {
+					"type": "string",
+					"enum": ["APPROVED", "NEEDS_REVISION", "REJECTED"],
+					"description": "Overall validation result"
+				},
+				"scores": {
+					"type": "object",
+					"properties": {
+						"completeness": { "type": "number", "minimum": 0, "maximum": 100 },
+						"atomicity": { "type": "number", "minimum": 0, "maximum": 100 },
+						"dependencies": { "type": "number", "minimum": 0, "maximum": 100 },
+						"state_flow": { "type": "number", "minimum": 0, "maximum": 100 },
+						"testability": { "type": "number", "minimum": 0, "maximum": 100 }
+					}
+				},
+				"dependency_checks": {
+					"type": "object",
+					"properties": {
+						"no_cycles": { "type": "boolean" },
+						"all_documented": { "type": "boolean" },
+						"spikes_first": { "type": "boolean" },
+						"critical_path_valid": { "type": "boolean" }
+					}
+				},
+				"m1_compliance": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 100,
+					"description": "Percentage of tasks that are m=1 compliant"
+				}
+			}
+		},
+		"github": {
+			"type": "object",
+			"description": "GitHub issue tracking (populated after issues created)",
+			"properties": {
+				"issues_created": {
+					"type": "boolean",
+					"default": false
+				},
+				"issue_map": {
+					"type": "object",
+					"description": "Map of task_id to GitHub issue number",
+					"additionalProperties": {
+						"type": "integer"
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"task": {
+			"type": "object",
+			"required": [
+				"id",
+				"type",
+				"name",
+				"action",
+				"status",
+				"estimated_hours",
+				"priority",
+				"group",
+				"acceptance_criterion"
+			],
+			"properties": {
+				"id": {
+					"type": "string",
+					"pattern": "^(S|T)\\d+$",
+					"description": "Task ID: S1, S2 for spikes; T1, T2, etc. for tasks"
+				},
+				"type": {
+					"type": "string",
+					"enum": ["spike", "task"],
+					"description": "Task type"
+				},
+				"name": {
+					"type": "string",
+					"description": "Single-verb task name"
+				},
+				"action": {
+					"type": "object",
+					"required": ["verb", "target"],
+					"properties": {
+						"verb": {
+							"type": "string",
+							"enum": [
+								"Create",
+								"Add",
+								"Update",
+								"Remove",
+								"Wire",
+								"Extract",
+								"Rename",
+								"Move",
+								"Configure",
+								"Test",
+								"Spike"
+							],
+							"description": "Single action verb"
+						},
+						"target": {
+							"type": "string",
+							"description": "What the action applies to"
+						}
+					}
+				},
+				"purpose": {
+					"type": "string",
+					"description": "Why this task exists (one sentence)"
+				},
+				"status": {
+					"type": "string",
+					"enum": [
+						"draft",
+						"ready",
+						"in_progress",
+						"blocked",
+						"completed",
+						"skipped"
+					],
+					"default": "draft"
+				},
+				"estimated_hours": {
+					"type": "number",
+					"minimum": 1,
+					"maximum": 8,
+					"description": "Estimated hours (2-8 for MAKER compliance)"
+				},
+				"priority": {
+					"type": "integer",
+					"minimum": 0,
+					"description": "Execution priority (0 = spikes, run first)"
+				},
+				"group": {
+					"type": "integer",
+					"description": "Parallel execution group ID"
+				},
+				"context": {
+					"type": "object",
+					"description": "Minimal context needed for execution (≤750 tokens)",
+					"properties": {
+						"files": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Relevant existing files"
+						},
+						"types": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Available type definitions"
+						},
+						"dependencies": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Available functions/components"
+						},
+						"constraints": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Implementation constraints"
+						},
+						"patterns": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"file": { "type": "string" },
+									"description": { "type": "string" }
+								}
+							},
+							"description": "Reference files with patterns to follow"
+						}
+					}
+				},
+				"acceptance_criterion": {
+					"type": "string",
+					"description": "Single testable condition for done state"
+				},
+				"verification_command": {
+					"type": "string",
+					"description": "Bash command to verify completion"
+				},
+				"outputs": {
+					"type": "array",
+					"description": "Expected outputs from this task",
+					"items": {
+						"type": "object",
+						"required": ["type", "path"],
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": ["new", "modified", "deleted"]
+							},
+							"path": {
+								"type": "string",
+								"description": "File path"
+							},
+							"description": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"dependencies": {
+					"type": "object",
+					"properties": {
+						"blocked_by": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Task IDs that must complete first"
+						},
+						"blocks": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Task IDs waiting on this"
+						}
+					}
+				},
+				"spike_details": {
+					"type": "object",
+					"description": "Additional fields for spike tasks only",
+					"properties": {
+						"question": {
+							"type": "string",
+							"description": "Specific question to answer"
+						},
+						"timebox_hours": {
+							"type": "number",
+							"minimum": 2,
+							"maximum": 8,
+							"description": "Maximum hours to spend"
+						},
+						"investigation_scope": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Areas to investigate"
+						},
+						"blocks_tasks": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Task IDs that cannot be estimated until spike completes"
+						}
+					}
+				},
+				"m1_checks": {
+					"type": "object",
+					"description": "MAKER m=1 compliance checks",
+					"properties": {
+						"single_verb": { "type": "boolean" },
+						"no_conjunctions": { "type": "boolean" },
+						"under_8_hours": { "type": "boolean" },
+						"under_750_tokens": { "type": "boolean" },
+						"binary_done_state": { "type": "boolean" },
+						"max_3_files": { "type": "boolean" }
+					}
+				},
+				"github_issue": {
+					"type": "integer",
+					"description": "GitHub issue number (populated after creation)"
+				}
+			}
+		}
+	}
 }
