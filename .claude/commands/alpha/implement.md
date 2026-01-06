@@ -1,6 +1,6 @@
 ---
 description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes sequentially with sub-agents, validates, commits, and reports progress to orchestrator
-argument-hint: <feature-id>
+argument-hint: <feature-id> [--resume-from=<task-id>]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch]
 ---
@@ -8,6 +8,10 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQue
 # Alpha Feature Implementation
 
 Implement ALL tasks for Feature #$ARGUMENTS from the Alpha autonomous coding workflow.
+
+**Arguments:**
+- `<feature-id>` - Required. The GitHub issue number for the feature.
+- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5`).
 
 ## Context
 
@@ -63,27 +67,84 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 
 ### Phase 2: Execute Tasks
 
+**CRITICAL: Handle --resume-from argument**
+
+If `--resume-from=<task-id>` was provided:
+1. Parse the task ID from the argument (e.g., `T5` from `--resume-from=T5`)
+2. Read the progress file to get list of completed tasks
+3. Skip all tasks until reaching the resume task
+4. Continue from that task
+
 Execute tasks in order, respecting execution groups:
 
 ```
 For each execution_group (sorted by group.id ascending):
     For each task_id in group.task_ids:
-        1. Mark task as in_progress (in TodoWrite and tasks.json)
-        2. Read task context and constraints
-        3. Implement the task using the action verb
-        4. Run verification_command
-        5. If verification fails:
+        # Skip completed tasks if resuming
+        If task_id is in completed_tasks from progress file:
+            Skip to next task
+
+        # PRE-TASK CHECKPOINT (CRITICAL for crash recovery)
+        1. Save checkpoint BEFORE starting task:
+           - Write progress file with status "starting"
+           - This ensures we can resume if process crashes
+
+        2. Mark task as in_progress (in TodoWrite and tasks.json)
+        3. Read task context and constraints
+        4. Implement the task using the action verb
+        5. Run verification_command
+        6. If verification fails:
            - Fix the issue
            - Retry (max 3 attempts)
            - If still failing, mark as blocked
-        6. Mark task as completed
-        7. Update progress file
+        7. Mark task as completed
+        8. Update progress file with completed status
 
     After completing group:
         - Commit changes with conventional format
         - Push to remote
         - Check context usage - exit if > 60%
 ```
+
+### Pre-Task Checkpoint (CRITICAL)
+
+**Before starting each task, save a checkpoint to enable crash recovery:**
+
+```bash
+# Create checkpoint BEFORE starting task implementation
+# This ensures orchestrator can resume from this task if sandbox crashes
+
+FEATURE_ID="$ARGUMENTS"  # Parse feature ID from arguments
+TASK_ID="T5"             # Current task ID
+COMPLETED='["T1", "T2", "T3", "T4"]'  # Array of completed task IDs
+TIMESTAMP=$(date -Iseconds)
+
+cat > .initiative-progress.json << EOF
+{
+  "feature": {
+    "issue_number": ${FEATURE_ID},
+    "title": "Feature title from tasks.json"
+  },
+  "current_task": {
+    "id": "${TASK_ID}",
+    "name": "Task name",
+    "status": "starting",
+    "started_at": "${TIMESTAMP}"
+  },
+  "completed_tasks": ${COMPLETED},
+  "failed_tasks": [],
+  "checkpoint_type": "pre_task",
+  "status": "in_progress",
+  "last_checkpoint": "${TIMESTAMP}"
+}
+EOF
+```
+
+**Why pre-task checkpointing matters:**
+- If sandbox runs out of memory/CPU, the process is killed immediately
+- Without pre-task checkpoint, we lose track of where we were
+- With pre-task checkpoint, orchestrator knows which task to resume from
+- Saves significant time by not re-running completed tasks
 
 ### Task Implementation Guidelines
 
@@ -303,12 +364,14 @@ Commits: 7
 
 ## Important Reminders
 
-1. **Never skip tasks** - Execute ALL tasks in order
-2. **Always verify** - Run verification_command for every task
-3. **Commit often** - After each execution group
-4. **Report progress** - Update progress file after each task
-5. **Preserve context** - Use sub-agents for exploration
-6. **Exit cleanly** - Save state before context limit
+1. **CHECKPOINT BEFORE EACH TASK** - Save progress file with "starting" status BEFORE implementing
+2. **Never skip tasks** - Execute ALL tasks in order (unless resuming)
+3. **Always verify** - Run verification_command for every task
+4. **Commit often** - After each execution group
+5. **Report progress** - Update progress file after each task completes
+6. **Preserve context** - Use sub-agents for exploration
+7. **Exit cleanly** - Save state before context limit
+8. **Handle --resume-from** - Skip completed tasks when resuming from crash
 
 ## Arguments
 

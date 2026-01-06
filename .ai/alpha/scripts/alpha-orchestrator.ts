@@ -49,7 +49,8 @@ interface FeatureEntry {
 		| "completed"
 		| "failed"
 		| "blocked"
-		| "partial";
+		| "partial"
+		| "resource_exhausted";
 	tasks_file: string;
 	feature_dir: string;
 	task_count: number;
@@ -471,6 +472,7 @@ async function runFeatureImplementation(
 	sandbox: Sandbox,
 	manifest: InitiativeManifest,
 	featureId: number,
+	resumeFromTask?: string,
 ): Promise<ProgressReport> {
 	const feature = manifest.features.find((f) => f.id === featureId);
 
@@ -489,24 +491,60 @@ async function runFeatureImplementation(
 	console.log(`   Tasks: ${feature.task_count}`);
 	console.log(`   Estimated hours: ${feature.parallel_hours}`);
 
+	// Check for partial progress from previous run
+	if (!resumeFromTask) {
+		const partialProgress = await getPartialProgress(sandbox, featureId);
+		if (partialProgress && partialProgress.completedTasks.length > 0) {
+			console.log(
+				`   📋 Found partial progress: ${partialProgress.completedTasks.length} tasks completed`,
+			);
+			console.log(
+				`   📋 Completed tasks: ${partialProgress.completedTasks.join(", ")}`,
+			);
+			if (partialProgress.currentTask) {
+				resumeFromTask = partialProgress.currentTask;
+				console.log(`   📋 Will resume from task: ${resumeFromTask}`);
+			}
+		}
+	}
+
 	// Update feature status
 	feature.status = "in_progress";
 	manifest.progress.current_feature = featureId;
 	saveManifest(manifest);
 
 	// Run Claude Code with /alpha:implement command
-	const prompt = `/alpha:implement ${featureId}`;
+	let prompt = `/alpha:implement ${featureId}`;
+	if (resumeFromTask) {
+		prompt += ` --resume-from=${resumeFromTask}`;
+	}
 
 	console.log(`   Running: ${prompt}`);
 	console.log("   " + "─".repeat(60));
 
+	// Test streaming with a simple command first
+	console.log("   │ Testing sandbox connectivity...");
+	const testResult = await sandbox.commands.run(
+		"echo 'Sandbox OK' && which claude",
+		{
+			timeoutMs: 10000,
+		},
+	);
+	console.log(`   │ Test result: ${testResult.stdout.trim()}`);
+
+	// Capture stdout/stderr for error analysis
+	let capturedStdout = "";
+	let capturedStderr = "";
+
 	try {
+		// Run claude with unbuffered output
 		const result = await sandbox.commands.run(
-			`run-claude "${prompt.replace(/"/g, '\\"')}"`,
+			`stdbuf -oL -eL run-claude "${prompt.replace(/"/g, '\\"')}"`,
 			{
-				timeoutMs: 0, // No timeout for long-running tasks
+				timeoutMs: 1800000, // 30 min timeout per feature
 				envs: getAllEnvVars(),
 				onStdout: (data) => {
+					capturedStdout += data;
 					// Stream output with prefix
 					const lines = data.split("\n");
 					for (const line of lines) {
@@ -516,6 +554,7 @@ async function runFeatureImplementation(
 					}
 				},
 				onStderr: (data) => {
+					capturedStderr += data;
 					process.stderr.write(`   │ [ERR] ${data}`);
 				},
 			},
@@ -523,6 +562,42 @@ async function runFeatureImplementation(
 
 		console.log("   " + "─".repeat(60));
 		console.log(`   Exit code: ${result.exitCode}`);
+
+		// Check for resource exhaustion FIRST (before reading progress)
+		if (
+			result.exitCode !== 0 &&
+			isResourceExhausted(result.exitCode, capturedStdout, capturedStderr)
+		) {
+			console.log("   🔥 Detected resource exhaustion (OOM/CPU/healthcheck)");
+
+			// Try to read any partial progress that was saved
+			const progressResult = await sandbox.commands.run(
+				`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null || echo '{}'`,
+				{ timeoutMs: 10000 },
+			);
+
+			let tasksCompleted = 0;
+			try {
+				const parsed = JSON.parse(progressResult.stdout || "{}");
+				tasksCompleted = parsed.completed_tasks?.length || 0;
+			} catch {
+				// Ignore parse errors
+			}
+
+			feature.status = "resource_exhausted";
+			feature.error = "Resource exhaustion - sandbox healthcheck failure";
+			feature.tasks_completed = tasksCompleted;
+			saveManifest(manifest);
+
+			return {
+				feature_id: featureId,
+				status: "resource_exhausted",
+				tasks_completed: tasksCompleted,
+				tasks_total: feature.task_count,
+				context_usage_percent: 0,
+				error: "Resource exhaustion - will retry after recovery",
+			};
+		}
 
 		// Read progress file from sandbox
 		const progressResult = await sandbox.commands.run(
@@ -580,8 +655,30 @@ async function runFeatureImplementation(
 			context_usage_percent: progress.context_usage_percent || 0,
 		};
 	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+
+		// Check if the caught exception indicates resource exhaustion
+		if (isResourceExhausted(0, capturedStdout, capturedStderr, errorMessage)) {
+			console.log(
+				"   🔥 Detected resource exhaustion from exception (OOM/CPU/healthcheck)",
+			);
+
+			feature.status = "resource_exhausted";
+			feature.error = "Resource exhaustion - sandbox healthcheck failure";
+			saveManifest(manifest);
+
+			return {
+				feature_id: featureId,
+				status: "resource_exhausted",
+				tasks_completed: feature.tasks_completed || 0,
+				tasks_total: feature.task_count,
+				context_usage_percent: 0,
+				error: "Resource exhaustion - will retry after recovery",
+			};
+		}
+
 		feature.status = "failed";
-		feature.error = error instanceof Error ? error.message : String(error);
+		feature.error = errorMessage;
 		saveManifest(manifest);
 
 		return {
@@ -603,6 +700,61 @@ async function handlePartialFeature(
 	// Feature hit context limit - restart implementation
 	console.log(`\n🔄 Resuming partial feature #${featureId}...`);
 	return runFeatureImplementation(sandbox, manifest, featureId);
+}
+
+/**
+ * Handle resource exhaustion by waiting for recovery and retrying.
+ * Uses exponential backoff and checks sandbox health before retrying.
+ */
+async function handleResourceExhaustion(
+	sandbox: Sandbox,
+	manifest: InitiativeManifest,
+	featureId: number,
+	attempt: number = 1,
+	maxAttempts: number = 3,
+): Promise<ProgressReport> {
+	console.log(
+		`\n🔥 Handling resource exhaustion for feature #${featureId} (attempt ${attempt}/${maxAttempts})`,
+	);
+
+	// Wait for sandbox to recover
+	const recovered = await waitForSandboxRecovery(sandbox);
+
+	if (!recovered) {
+		console.log("   ❌ Sandbox did not recover - marking feature as failed");
+		const feature = manifest.features.find((f) => f.id === featureId);
+		if (feature) {
+			feature.status = "failed";
+			feature.error = "Sandbox resource exhaustion - did not recover";
+			saveManifest(manifest);
+		}
+
+		return {
+			feature_id: featureId,
+			status: "failed",
+			tasks_completed: feature?.tasks_completed || 0,
+			tasks_total: feature?.task_count || 0,
+			context_usage_percent: 0,
+			error: "Sandbox resource exhaustion - did not recover",
+		};
+	}
+
+	// Retry the implementation
+	console.log("   🔄 Retrying feature implementation...");
+	const result = await runFeatureImplementation(sandbox, manifest, featureId);
+
+	// If still resource exhausted and we have attempts left, recurse
+	if (result.status === "resource_exhausted" && attempt < maxAttempts) {
+		return handleResourceExhaustion(
+			sandbox,
+			manifest,
+			featureId,
+			attempt + 1,
+			maxAttempts,
+		);
+	}
+
+	return result;
 }
 
 // ============================================================================
@@ -737,6 +889,14 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					featureId,
 				);
 
+				// Handle resource exhaustion (OOM/CPU/healthcheck failure)
+				if (result.status === "resource_exhausted") {
+					console.log(
+						`   🔥 Feature #${featureId} hit resource exhaustion, waiting for recovery...`,
+					);
+					result = await handleResourceExhaustion(sandbox, manifest, featureId);
+				}
+
 				// Handle partial completion (context limit)
 				let retries = 0;
 				while (result.status === "partial" && retries < 3) {
@@ -745,6 +905,18 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					);
 					result = await handlePartialFeature(sandbox, manifest, featureId);
 					retries++;
+
+					// Check if partial retry caused resource exhaustion
+					if (result.status === "resource_exhausted") {
+						console.log(
+							`   🔥 Feature #${featureId} hit resource exhaustion during partial retry...`,
+						);
+						result = await handleResourceExhaustion(
+							sandbox,
+							manifest,
+							featureId,
+						);
+					}
 				}
 
 				// Log result
@@ -755,7 +927,9 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 							? "⚠️"
 							: result.status === "blocked"
 								? "🚫"
-								: "❌";
+								: result.status === "resource_exhausted"
+									? "🔥"
+									: "❌";
 				console.log(
 					`   ${icon} Feature #${featureId}: ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
 				);
@@ -858,6 +1032,146 @@ function chunk<T>(array: T[], size: number): T[][] {
 		chunks.push(array.slice(i, i + size));
 	}
 	return chunks;
+}
+
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ============================================================================
+// Resource Exhaustion Detection & Recovery
+// ============================================================================
+
+/**
+ * Detect if a failure was due to resource exhaustion (OOM, CPU throttling, healthcheck failure).
+ * These failures are recoverable by waiting for resources to free up.
+ */
+function isResourceExhausted(
+	exitCode: number,
+	stdout: string,
+	stderr: string,
+	errorMessage?: string,
+): boolean {
+	// Exit code 137 = SIGKILL (typically OOM killer)
+	// Exit code 2 with "context canceled" = E2B healthcheck killed the process
+	if (exitCode === 137) {
+		return true;
+	}
+
+	const combinedOutput =
+		`${stdout} ${stderr} ${errorMessage || ""}`.toLowerCase();
+
+	// Check for resource-related error patterns
+	const resourcePatterns = [
+		"context canceled",
+		"context cancelled",
+		"healthcheck",
+		"out of memory",
+		"oom",
+		"killed",
+		"memory limit",
+		"cpu limit",
+		"resource exhausted",
+	];
+
+	return resourcePatterns.some((pattern) => combinedOutput.includes(pattern));
+}
+
+/**
+ * Check sandbox health by examining system load.
+ * Returns healthy if load average is below threshold (3.5 for 4 cores).
+ */
+async function checkSandboxHealth(
+	sandbox: Sandbox,
+): Promise<{ healthy: boolean; load: number; memUsedPercent: number }> {
+	try {
+		const result = await sandbox.commands.run(
+			`cat /proc/loadavg && free | grep Mem | awk '{print $3/$2 * 100}'`,
+			{ timeoutMs: 5000 },
+		);
+
+		const lines = result.stdout.trim().split("\n");
+		const loadAvg = parseFloat(lines[0]?.split(" ")[0] || "0");
+		const memUsedPercent = parseFloat(lines[1] || "0");
+
+		// 4 cores, so load < 3.5 is healthy; memory < 85% is healthy
+		const healthy = loadAvg < 3.5 && memUsedPercent < 85;
+
+		return { healthy, load: loadAvg, memUsedPercent };
+	} catch {
+		// If we can't check health, assume unhealthy
+		return { healthy: false, load: 999, memUsedPercent: 100 };
+	}
+}
+
+/**
+ * Wait for sandbox to recover from resource exhaustion with exponential backoff.
+ * Returns true if sandbox recovered, false if max attempts exceeded.
+ */
+async function waitForSandboxRecovery(
+	sandbox: Sandbox,
+	maxAttempts: number = 5,
+): Promise<boolean> {
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		// Exponential backoff: 30s, 60s, 90s, 120s, 120s
+		const backoffMs = Math.min(30000 * attempt, 120000);
+
+		console.log(
+			`   ⏳ Waiting ${backoffMs / 1000}s for sandbox to recover (attempt ${attempt}/${maxAttempts})...`,
+		);
+		await sleep(backoffMs);
+
+		const health = await checkSandboxHealth(sandbox);
+		console.log(
+			`   📊 Health check: load=${health.load.toFixed(2)}, mem=${health.memUsedPercent.toFixed(1)}%`,
+		);
+
+		if (health.healthy) {
+			console.log("   ✅ Sandbox recovered");
+			return true;
+		}
+	}
+
+	console.log("   ❌ Sandbox did not recover after max attempts");
+	return false;
+}
+
+/**
+ * Read partial progress from the sandbox to enable resuming from last checkpoint.
+ */
+async function getPartialProgress(
+	sandbox: Sandbox,
+	featureId: number,
+): Promise<{
+	completedTasks: string[];
+	currentTask: string | null;
+	lastCommit: string | null;
+} | null> {
+	try {
+		const result = await sandbox.commands.run(
+			`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null || echo "null"`,
+			{ timeoutMs: 10000 },
+		);
+
+		if (result.stdout.trim() === "null") {
+			return null;
+		}
+
+		const progress = JSON.parse(result.stdout);
+
+		// Verify it's for the right feature
+		if (progress?.feature?.issue_number !== featureId) {
+			return null;
+		}
+
+		return {
+			completedTasks: progress.completed_tasks || [],
+			currentTask: progress.current_task?.id || null,
+			lastCommit: progress.last_commit || null,
+		};
+	} catch {
+		return null;
+	}
 }
 
 // ============================================================================
