@@ -136,6 +136,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const VSCODE_PORT = 8080;
 const DEV_SERVER_PORT = 3000;
 const PROGRESS_FILE = ".initiative-progress.json";
+const PROGRESS_POLL_INTERVAL_MS = 30000; // Poll progress file every 30 seconds
 
 /**
  * Read OAuth token from Claude Code credentials file.
@@ -468,6 +469,142 @@ async function startServices(sandbox: Sandbox): Promise<{
 // Feature Implementation
 // ============================================================================
 
+interface SandboxProgress {
+	feature?: {
+		issue_number: number;
+		title: string;
+	};
+	current_task?: {
+		id: string;
+		name: string;
+		status: string;
+		started_at?: string;
+	};
+	completed_tasks?: string[];
+	failed_tasks?: string[];
+	current_group?: {
+		id: number;
+		name: string;
+		tasks_total: number;
+		tasks_completed: number;
+	};
+	context_usage_percent?: number;
+	status?: string;
+	last_commit?: string;
+	last_update?: string;
+}
+
+/**
+ * Display a structured progress update from the sandbox progress file.
+ */
+function displayProgressUpdate(
+	progress: SandboxProgress,
+	featureTaskCount: number,
+	lastDisplayed: string,
+): string {
+	const completed = progress.completed_tasks?.length || 0;
+	const total = featureTaskCount;
+	const current = progress.current_task;
+	const contextPercent = progress.context_usage_percent || 0;
+
+	// Create a unique key to avoid duplicate displays
+	const updateKey = `${completed}-${current?.id}-${current?.status}`;
+	if (updateKey === lastDisplayed) {
+		return lastDisplayed; // No change
+	}
+
+	// Build progress bar
+	const progressPercent = Math.round((completed / total) * 100);
+	const barLength = 20;
+	const filledLength = Math.round((progressPercent / 100) * barLength);
+	const progressBar =
+		"█".repeat(filledLength) + "░".repeat(barLength - filledLength);
+
+	console.log(`\n   ┌─ 📊 Progress Update ${"─".repeat(40)}`);
+	console.log(
+		`   │ Tasks: [${progressBar}] ${completed}/${total} (${progressPercent}%)`,
+	);
+
+	if (current) {
+		const statusIcon =
+			current.status === "in_progress"
+				? "🔄"
+				: current.status === "completed"
+					? "✅"
+					: current.status === "starting"
+						? "⏳"
+						: "📋";
+		console.log(`   │ Current: ${statusIcon} [${current.id}] ${current.name}`);
+	}
+
+	if (progress.current_group) {
+		console.log(
+			`   │ Group: ${progress.current_group.name} (${progress.current_group.tasks_completed}/${progress.current_group.tasks_total})`,
+		);
+	}
+
+	if (contextPercent > 0) {
+		const contextIcon = contextPercent > 50 ? "⚠️" : "📈";
+		console.log(`   │ Context: ${contextIcon} ${contextPercent}%`);
+	}
+
+	if (progress.last_commit) {
+		console.log(`   │ Last commit: ${progress.last_commit.substring(0, 7)}`);
+	}
+
+	console.log(`   └${"─".repeat(52)}\n`);
+
+	return updateKey;
+}
+
+/**
+ * Start polling the progress file in the sandbox.
+ * Returns a cleanup function to stop polling.
+ */
+function startProgressPolling(
+	sandbox: Sandbox,
+	featureTaskCount: number,
+): { stop: () => void } {
+	let lastDisplayed = "";
+	let isPolling = true;
+
+	const poll = async () => {
+		while (isPolling) {
+			try {
+				const result = await sandbox.commands.run(
+					`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null`,
+					{ timeoutMs: 5000 },
+				);
+
+				if (result.stdout && result.stdout.trim()) {
+					const progress: SandboxProgress = JSON.parse(result.stdout);
+					lastDisplayed = displayProgressUpdate(
+						progress,
+						featureTaskCount,
+						lastDisplayed,
+					);
+				}
+			} catch {
+				// Ignore polling errors - sandbox may be busy
+			}
+
+			// Wait for next poll interval
+			if (isPolling) {
+				await sleep(PROGRESS_POLL_INTERVAL_MS);
+			}
+		}
+	};
+
+	// Start polling in background
+	poll();
+
+	return {
+		stop: () => {
+			isPolling = false;
+		},
+	};
+}
+
 async function runFeatureImplementation(
 	sandbox: Sandbox,
 	manifest: InitiativeManifest,
@@ -536,6 +673,12 @@ async function runFeatureImplementation(
 	let capturedStdout = "";
 	let capturedStderr = "";
 
+	// Start progress polling (every 30 seconds)
+	console.log(
+		`   │ Starting progress polling (every ${PROGRESS_POLL_INTERVAL_MS / 1000}s)...`,
+	);
+	const progressPoller = startProgressPolling(sandbox, feature.task_count);
+
 	try {
 		// Run claude with unbuffered output
 		const result = await sandbox.commands.run(
@@ -559,6 +702,9 @@ async function runFeatureImplementation(
 				},
 			},
 		);
+
+		// Stop polling once command completes
+		progressPoller.stop();
 
 		console.log("   " + "─".repeat(60));
 		console.log(`   Exit code: ${result.exitCode}`);
@@ -655,6 +801,9 @@ async function runFeatureImplementation(
 			context_usage_percent: progress.context_usage_percent || 0,
 		};
 	} catch (error) {
+		// Stop polling on error
+		progressPoller.stop();
+
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
 		// Check if the caught exception indicates resource exhaustion
