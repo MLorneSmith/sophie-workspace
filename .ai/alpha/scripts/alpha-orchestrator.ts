@@ -189,7 +189,9 @@ function checkEnvironment(): void {
 	if (!ANTHROPIC_API_KEY && !oauthToken) {
 		console.error("ERROR: No Claude authentication found");
 		console.error("Options:");
-		console.error("  1. Log in to Claude Code (oauth token auto-detected from ~/.claude/.credentials.json)");
+		console.error(
+			"  1. Log in to Claude Code (oauth token auto-detected from ~/.claude/.credentials.json)",
+		);
 		console.error("  2. Set CLAUDE_CODE_OAUTH_TOKEN environment variable");
 		console.error("  3. Set ANTHROPIC_API_KEY environment variable");
 		process.exit(1);
@@ -313,15 +315,38 @@ async function createSandbox(
 		await setupGitCredentials(sandbox);
 	}
 
-	// Create feature branch
+	// Pull latest code from origin
 	const branchName = `alpha/initiative-${manifest.metadata.initiative_id}`;
-	console.log(`   Creating branch: ${branchName}`);
+	console.log("   Pulling latest code from origin...");
 
-	await sandbox.commands.run(
+	const pullResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
-		{ timeoutMs: 60000 },
+		{ timeoutMs: 120000 },
 	);
 
+	// Show what was pulled
+	const logResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git log --oneline -3`,
+		{ timeoutMs: 10000 },
+	);
+	console.log(
+		`   Latest commits:\n${logResult.stdout
+			.split("\n")
+			.map((l) => `      ${l}`)
+			.join("\n")}`,
+	);
+
+	// Install dependencies if needed
+	console.log("   Installing dependencies...");
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+		{
+			timeoutMs: 300000, // 5 minutes for install
+		},
+	);
+
+	// Create feature branch
+	console.log(`   Creating branch: ${branchName}`);
 	await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
 		{ timeoutMs: 30000 },
