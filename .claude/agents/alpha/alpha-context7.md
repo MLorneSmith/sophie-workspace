@@ -1,8 +1,8 @@
 ---
-name: context7-expert
+name: alpha-context7
 description: Execute documentation retrieval and analysis using Context7 CLI integration for comprehensive library research. Use PROACTIVELY for documentation lookup, API reference queries, version comparisons, or best practices extraction.
-tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
+tools: Bash, Read, Write, Grep, Glob
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read, Write
 category: research
 displayName: Context7 Documentation Expert
 color: green
@@ -314,17 +314,20 @@ const result = feature({
 
 ## Report Saving
 
-**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+**REQUIRED**: Save all research findings to the spec's `research-library/` directory.
 
-**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Directory**: `${SPEC_DIR}/research-library/` where `SPEC_DIR` is the spec directory path provided by the caller (e.g., `.ai/alpha/specs/1333-user-dashboard-home/research-library/`)
 **Filename**: `context7-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**IMPORTANT**: The caller MUST provide the `SPEC_DIR` path when invoking this agent. If not provided, ask for clarification.
 
 **Report Format**:
 ```markdown
 # Context7 Research: [Topic]
 
 **Date**: YYYY-MM-DD
-**Agent**: context7-expert
+**Agent**: alpha-context7
+**Spec Directory**: ${SPEC_DIR}
 **Libraries Researched**: [list]
 
 ## Query Summary
@@ -348,7 +351,7 @@ const result = feature({
 - [Library] via Context7 ([owner/repo])
 ```
 
-**Example**: `.ai/reports/research-reports/2025-11-27/context7-react-hooks-lifecycle.md`
+**Example**: `.ai/alpha/specs/1333-user-dashboard-home/research-library/context7-react-hooks-lifecycle.md`
 
 Save the report BEFORE delivering findings to the parent conversation.
 
@@ -361,4 +364,4 @@ Save the report BEFORE delivering findings to the parent conversation.
 - Highlight security warnings and deprecation notices
 - Focus on practical, implementable examples
 - Use Bash tool for all Context7 CLI operations
-- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory
+- **Save all findings** to `${SPEC_DIR}/research-library/` directory (caller must provide SPEC_DIR)

@@ -11,13 +11,13 @@
 ## Directory Structure
 
 ```
-.ai/alpha/specs/[spec-#]-[slug]/
+.ai/alpha/specs/[spec-#]-Spec-[slug]/
 ├── spec.md                           # Project specification
 ├── README.md                         # This file - initiatives overview
-├── [init-#]-[slug]/                  # Initiative 1
+├── [init-#]-Initiative-[slug]/       # Initiative 1
 │   ├── initiative.md
 │   └── README.md                     # (Created later) Features overview
-├── [init-#]-[slug]/                  # Initiative 2
+├── [init-#]-Initiative-[slug]/       # Initiative 2
 │   ├── initiative.md
 │   └── ...
 └── ...
@@ -29,9 +29,9 @@
 
 | ID | Directory | Priority | Weeks | Dependencies | Status |
 |----|-----------|----------|-------|--------------|--------|
-| [init-#] | `[init-#]-[slug]/` | 1 | [X] | None | Draft |
-| [init-#] | `[init-#]-[slug]/` | 2 | [Y] | I1 | Draft |
-| [init-#] | `[init-#]-[slug]/` | 3 | [Z] | I1 | Draft |
+| [init-#] | `[init-#]-Initiative-[slug]/` | 1 | [X] | None | Draft |
+| [init-#] | `[init-#]-Initiative-[slug]/` | 2 | [Y] | I1 | Draft |
+| [init-#] | `[init-#]-Initiative-[slug]/` | 3 | [Z] | I1 | Draft |
 
 ---
 

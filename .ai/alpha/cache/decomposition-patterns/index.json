@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "created_at": "2025-12-31T00:00:00Z",
+  "last_updated": "2025-12-31T00:00:00Z",
+  "patterns_by_type": {
+    "crud": [
+      {
+        "id": "crud-server-action",
+        "name": "CRUD with Server Actions",
+        "description": "Full CRUD implementation using Next.js server actions, Supabase RPC, and Zod validation",
+        "created_at": "2025-12-31T00:00:00Z",
+        "usage_count": 0,
+        "success_count": 0,
+        "success_rate": 1.0,
+        "file": "crud-server-action.json"
+      }
+    ],
+    "integration": [
+      {
+        "id": "webhook-integration",
+        "name": "Webhook Integration",
+        "description": "External webhook integration with signature verification and event handling",
+        "created_at": "2025-12-31T00:00:00Z",
+        "usage_count": 0,
+        "success_count": 0,
+        "success_rate": 1.0,
+        "file": "webhook-integration.json"
+      }
+    ],
+    "component": [
+      {
+        "id": "dashboard-card",
+        "name": "Dashboard Card Component",
+        "description": "Dashboard card with loader, multiple states (empty, loading, populated, error), and data display",
+        "created_at": "2025-12-31T00:00:00Z",
+        "usage_count": 0,
+        "success_count": 0,
+        "success_rate": 1.0,
+        "file": "dashboard-card.json"
+      }
+    ],
+    "refactor": [],
+    "migration": [],
+    "configuration": [],
+    "testing": [],
+    "other": []
+  }
+}

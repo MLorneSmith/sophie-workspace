@@ -77,7 +77,9 @@ Use AskUserQuestion to gather missing information. Ask **5-8 questions** coverin
 - "What's the biggest technical unknown?"
 - "What assumption, if wrong, would kill this project?"
 
-### Step 4: Explore the Codebase
+### Step 4: Conduct Research
+
+#### Step 4.1: Explore the Codebase
 
 Use the Task tool with `subagent_type=code-explorer` to understand existing patterns and data structures:
 
@@ -92,6 +94,57 @@ Task tool with subagent_type=code-xplorer
 prompt: "Explore the <domain-area> implementation patterns in this codebase"
 ```
 
+#### Step 4.2: Create Spec Directory Structure
+
+**BEFORE launching research agents**, create the spec directory to store research artifacts:
+
+```bash
+# Create spec directory with research-library (MUST run before research agents)
+mkdir -p .ai/alpha/specs/pending-Spec-<project-slug>/research-library
+```
+
+This ensures research agents have a destination for their findings.
+
+#### Step 4.3: Conduct External Research
+
+Identify gaps in your understanding after codebase exploration. Use research sub-agents to fill knowledge gaps:
+
+**When to use each sub-agent:**
+
+| Gap Type | Sub-Agent | Example Queries |
+|----------|-----------|-----------------|
+| Library/Framework docs | `alpha-context7` | "How does Next.js App Router handle streaming?" |
+| Best practices | `alpha-perplexity` | "Best practices for real-time dashboards 2025" |
+| Industry patterns | `alpha-perplexity` | "How do SaaS platforms implement activity feeds?" |
+| API documentation | `alpha-context7` | "Supabase RLS policies for multi-tenant apps" |
+| Integration guides | `alpha-context7` | "Cal.com embed SDK usage" |
+
+**Launch research agents in parallel:**
+
+```
+Task tool with subagent_type=alpha-context7
+prompt: |
+  SPEC_DIR: .ai/alpha/specs/pending-Spec-<project-slug>
+  Research: [Library/framework documentation needed]
+  Topics: [specific topics to investigate]
+  Save findings to: ${SPEC_DIR}/research-library/
+```
+
+```
+Task tool with subagent_type=alpha-perplexity
+prompt: |
+  SPEC_DIR: .ai/alpha/specs/pending-Spec-<project-slug>
+  Research: [Best practices or industry patterns needed]
+  Questions: [specific questions to answer]
+  Save findings to: ${SPEC_DIR}/research-library/
+```
+
+**Research triggers** (launch research if any apply):
+- [ ] Using a library/framework not yet in the codebase
+- [ ] Implementing a pattern with no existing examples
+- [ ] Integrating with an external service
+- [ ] Unclear on best practices for the domain
+- [ ] Technical approach has multiple valid options
 
 ### Step 5: Identify Relevant Context Documentation
 
@@ -103,29 +156,98 @@ prompt: "command: feature, task: <brief-summary-of-project>"
 
 ### Step 6: Read Suggested Context Documents
 
-Read each context document suggested by the conditional-docs-router sub-agent to understand project patterns and constraints.
+**CRITICAL**: You MUST read each context document returned by the conditional-docs-router.
 
-### Step 7: Conduct External Research (if needed)
+The router returns file paths in the format:
+- `development/architecture-overview.md`
+- `development/shadcn-ui-components.md`
+- etc.
 
-For additional context, use research sub-agents:
-- `subagent_type=perplexity-expert` - For best practices, industry patterns
-- `subagent_type=context7-expert` - For library documentation
+**For each file path returned**, use the Read tool:
+```
+Read tool with file_path: .ai/ai_docs/context-docs/<path-from-router>
+```
 
-### Step 8: Create the Spec Document
+**Example**: If router returns `development/react-query-patterns.md`, read:
+```
+.ai/ai_docs/context-docs/development/react-query-patterns.md
+```
 
-Create the spec in a nested directory structure that will contain all related initiatives, features, and tasks:
+Read ALL suggested files (typically 3-7 files) to understand:
+- Architectural patterns and conventions
+- Component library usage
+- Data fetching strategies
+- Testing approaches
+- Integration patterns
+
+**Do NOT skip this step** - these documents contain critical project-specific guidance.
+
+### Step 7: Conduct Additional External Research (if needed)
+
+After reading context documents, if knowledge gaps remain, conduct additional targeted research:
+
+**Gap Assessment Checklist:**
+- [ ] Do I understand all technical constraints?
+- [ ] Do I know the recommended patterns for this domain?
+- [ ] Do I have documentation for all proposed libraries?
+- [ ] Do I understand integration requirements with external services?
+
+**If gaps remain, launch additional research:**
+
+```
+Task tool with subagent_type=alpha-context7
+prompt: |
+  SPEC_DIR: .ai/alpha/specs/pending-Spec-<project-slug>
+  Research: [Specific library documentation gap]
+  Context: After reading context docs, I still need clarity on [specific topic]
+  Save findings to: ${SPEC_DIR}/research-library/
+```
+
+```
+Task tool with subagent_type=alpha-perplexity
+prompt: |
+  SPEC_DIR: .ai/alpha/specs/pending-Spec-<project-slug>
+  Research: [Specific best practice or pattern gap]
+  Context: After reading context docs, I need industry guidance on [specific topic]
+  Save findings to: ${SPEC_DIR}/research-library/
+```
+
+**Note**: All research from Steps 4.3 and 7 is saved to `${SPEC_DIR}/research-library/` and will be incorporated into the spec in Step 8.
+
+### Step 8: Read Research Library
+
+**CRITICAL**: Before creating the spec, you MUST read all research files saved by the research agents.
 
 ```bash
-# Create spec directory (initially with pending- prefix)
-mkdir -p .ai/alpha/specs/pending-<project-slug>
+# List all research files
+ls -la ${SPEC_DIR}/research-library/
+```
 
-# Create the spec document
-# File: .ai/alpha/specs/pending-<project-slug>/spec.md
+**For each file in research-library/**, use the Read tool:
+```
+Read tool with file_path: ${SPEC_DIR}/research-library/<filename>.md
+```
+
+These files contain valuable external research (Cal.com integration patterns, dashboard design best practices, etc.) that should inform the spec document. Extract key findings and incorporate them into:
+- Section 7 (Technical Context) - integration patterns, API details
+- Section 5 (Solution Overview) - design patterns and best practices
+- Section 11 (Appendices) - reference the research files
+
+**Do NOT skip this step** - the research agents gathered information you need.
+
+### Step 9: Create the Spec Document
+
+Write the spec document to the directory created in Step 4.2:
+
+```bash
+# Spec directory already exists from Step 4.2
+# Write the spec document to:
+# File: .ai/alpha/specs/pending-Spec-<project-slug>/spec.md
 ```
 
 Fill in ALL sections from the template - no placeholders. Ensure decomposition hints provide clear starting points.
 
-### Step 9: Create GitHub Issue
+### Step 10: Create GitHub Issue
 
 Create a GitHub issue for tracking:
 
@@ -133,23 +255,24 @@ Create a GitHub issue for tracking:
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Spec: <project-name>" \
-  --body "$(cat .ai/alpha/specs/pending-<project-slug>/spec.md)" \
+  --body "$(cat .ai/alpha/specs/pending-Spec-<project-slug>/spec.md)" \
   --label "type:spec" \
   --label "status:draft" \
   --label "alpha:spec"
 ```
 
-### Step 10: Rename Spec Directory
+### Step 11: Rename Spec Directory
 
 After issue creation, rename the directory with the issue number:
 ```bash
-mv .ai/alpha/specs/pending-<project-slug> .ai/alpha/specs/<issue-#>-<project-slug>
+mv .ai/alpha/specs/pending-Spec-<project-slug> .ai/alpha/specs/<issue-#>-Spec-<project-slug>
 ```
 
 **Final structure:**
 ```
-.ai/alpha/specs/<issue-#>-<project-slug>/
+.ai/alpha/specs/<issue-#>-Spec-<project-slug>/
 ├── spec.md                    # The spec document
+├── research-library/          # Research artifacts from sub-agents
 └── README.md                  # (Created later) Initiatives overview
 ```
 
@@ -179,14 +302,15 @@ After creating the spec, verify:
 
 ```bash
 # Verify spec directory and file exist
-test -d .ai/alpha/specs/<issue-#>-<project-slug> && echo "✓ Spec directory created"
-test -s .ai/alpha/specs/<issue-#>-<project-slug>/spec.md && echo "✓ Spec file created"
+test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug> && echo "✓ Spec directory created"
+test -s .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec file created"
+test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
 
 # Verify GitHub issue was created
 gh issue view <issue-#> --repo MLorneSmith/2025slideheroes
 
 # Verify all required sections are present in spec
-grep -E "^## [0-9]+\." .ai/alpha/specs/<issue-#>-<project-slug>/spec.md | wc -l
+grep -E "^## [0-9]+\." .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md | wc -l
 # Should return 11 (all 11 sections from template)
 ```
 
@@ -199,8 +323,8 @@ $ARGUMENTS
 When complete, provide:
 
 - **Summary**: Brief overview of the captured specification (2-3 sentences)
-- **Spec Directory**: Path to `.ai/alpha/specs/<issue-#>-<project-slug>/`
-- **Spec File**: Path to `.ai/alpha/specs/<issue-#>-<project-slug>/spec.md`
+- **Spec Directory**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/`
+- **Spec File**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md`
 - **GitHub Issue**: Issue number and URL (e.g., `#123 - https://github.com/...`)
 - **Key Decisions**: Major scope/design decisions made during the interview
 - **Personas Identified**: Primary and secondary user personas

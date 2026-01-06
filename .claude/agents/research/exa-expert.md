@@ -2,7 +2,7 @@
 name: exa-expert
 description: Execute semantic web searches using Exa CLI integration for research, content discovery, and AI-powered answers. Use PROACTIVELY for finding technical content, discovering similar resources, extracting webpage content, or getting cited answers.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/exa-answer:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-get-contents:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-find-similar:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/exa-answer:*), Read
 category: research
 displayName: Exa Search Expert
 color: purple

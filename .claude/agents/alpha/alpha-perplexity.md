@@ -1,8 +1,8 @@
 ---
-name: perplexity-expert
+name: alpha-perplexity
 description: Execute advanced web searches using Perplexity API for real-time information gathering, research synthesis, and fact verification. Use PROACTIVELY for current events, technical research, comparative analysis, or when web search is needed.
-tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read
+tools: Bash, Read, Write, Grep, Glob
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read, Write
 category: research
 displayName: Perplexity Search Expert
 color: blue
@@ -240,17 +240,20 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 
 ## Report Saving
 
-**REQUIRED**: Save all research findings to `.ai/reports/research-reports/YYYY-MM-DD/`:
+**REQUIRED**: Save all research findings to the spec's `research-library/` directory.
 
-**Directory**: `.ai/reports/research-reports/YYYY-MM-DD/` (use today's date)
+**Directory**: `${SPEC_DIR}/research-library/` where `SPEC_DIR` is the spec directory path provided by the caller (e.g., `.ai/alpha/specs/1333-user-dashboard-home/research-library/`)
 **Filename**: `perplexity-<description>.md` where `<description>` is a short kebab-case summary of the research topic
+
+**IMPORTANT**: The caller MUST provide the `SPEC_DIR` path when invoking this agent. If not provided, ask for clarification.
 
 **Report Format**:
 ```markdown
 # Perplexity Research: [Topic]
 
 **Date**: YYYY-MM-DD
-**Agent**: perplexity-expert
+**Agent**: alpha-perplexity
+**Spec Directory**: ${SPEC_DIR}
 **Search Type**: [Chat API / Search API]
 
 ## Query Summary
@@ -270,7 +273,7 @@ Output: "This requires {specialty}. Use {expert-name}. Stopping here."
 [Suggestions for follow-up research if applicable]
 ```
 
-**Example**: `.ai/reports/research-reports/2025-11-27/perplexity-nextjs-15-breaking-changes.md`
+**Example**: `.ai/alpha/specs/1333-user-dashboard-home/research-library/perplexity-nextjs-15-breaking-changes.md`
 
 Save the report BEFORE delivering findings to the parent conversation.
 
@@ -284,4 +287,4 @@ Use this agent automatically for:
 - Time-sensitive research questions
 
 ## Notes
-- **Save all findings** to `.ai/reports/research-reports/YYYY-MM-DD/` directory
+- **Save all findings** to `${SPEC_DIR}/research-library/` directory (caller must provide SPEC_DIR)

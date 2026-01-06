@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://slideheroes.com/schemas/alpha/decomposition-state.schema.json",
+  "title": "Decomposition State",
+  "description": "Tracks progress of task decomposition across multiple features in an initiative",
+  "type": "object",
+  "required": ["initiative_id", "spec_id", "started_at", "features", "status"],
+  "properties": {
+    "initiative_id": {
+      "type": "integer",
+      "description": "GitHub issue number for the initiative"
+    },
+    "spec_id": {
+      "type": "integer",
+      "description": "GitHub issue number for the parent spec"
+    },
+    "initiative_name": {
+      "type": "string",
+      "description": "Human-readable initiative name"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When decomposition started"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["in_progress", "needs_spikes", "completed", "failed"],
+      "description": "Overall decomposition status"
+    },
+    "current_phase": {
+      "type": "string",
+      "enum": ["discovery", "decomposition", "spikes", "finalization"],
+      "description": "Current phase of the decomposition process"
+    },
+    "features": {
+      "type": "object",
+      "description": "Map of feature_id to feature decomposition status",
+      "additionalProperties": {
+        "$ref": "#/definitions/featureStatus"
+      }
+    },
+    "spikes_pending": {
+      "type": "array",
+      "description": "Spikes that need to be run before decomposition can complete",
+      "items": {
+        "$ref": "#/definitions/pendingSpike"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "description": "Aggregate statistics",
+      "properties": {
+        "total_features": { "type": "integer" },
+        "completed_features": { "type": "integer" },
+        "pending_features": { "type": "integer" },
+        "failed_features": { "type": "integer" },
+        "total_tasks": { "type": "integer" },
+        "total_spikes": { "type": "integer" },
+        "total_hours_sequential": { "type": "number" },
+        "total_hours_parallel": { "type": "number" }
+      }
+    }
+  },
+  "definitions": {
+    "featureStatus": {
+      "type": "object",
+      "required": ["feature_id", "status"],
+      "properties": {
+        "feature_id": {
+          "type": "integer",
+          "description": "GitHub issue number for the feature"
+        },
+        "feature_name": {
+          "type": "string",
+          "description": "Feature name"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "needs_spikes", "completed", "failed", "skipped"],
+          "description": "Decomposition status for this feature"
+        },
+        "tasks_file": {
+          "type": ["string", "null"],
+          "description": "Path to tasks.json if created"
+        },
+        "task_count": {
+          "type": "integer",
+          "description": "Number of tasks created"
+        },
+        "spike_count": {
+          "type": "integer",
+          "description": "Number of spikes identified"
+        },
+        "github_issue": {
+          "type": ["integer", "null"],
+          "description": "GitHub issue number for tasks issue"
+        },
+        "validation_verdict": {
+          "type": ["string", "null"],
+          "enum": ["APPROVED", "NEEDS_REVISION", "REJECTED", null],
+          "description": "Validation result"
+        },
+        "sequential_hours": {
+          "type": "number",
+          "description": "Total hours if run sequentially"
+        },
+        "parallel_hours": {
+          "type": "number",
+          "description": "Total hours with parallelization"
+        },
+        "error": {
+          "type": ["string", "null"],
+          "description": "Error message if failed"
+        },
+        "started_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "completed_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "pendingSpike": {
+      "type": "object",
+      "required": ["feature_id", "title", "question"],
+      "properties": {
+        "feature_id": {
+          "type": "integer",
+          "description": "Feature that needs this spike"
+        },
+        "title": {
+          "type": "string",
+          "description": "Spike title"
+        },
+        "question": {
+          "type": "string",
+          "description": "Specific question to answer"
+        },
+        "timebox_hours": {
+          "type": "number",
+          "description": "Maximum hours for spike"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "in_progress", "completed"],
+          "default": "pending"
+        },
+        "report_path": {
+          "type": ["string", "null"],
+          "description": "Path to spike report if completed"
+        }
+      }
+    }
+  }
+}
