@@ -1,0 +1,467 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1377,
+		"feature_name": "Cal.com Booking Data Service",
+		"feature_slug": "booking-data-service",
+		"initiative_id": 1366,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 62.5,
+			"level": "HIGH",
+			"target_steps": {
+				"min": 12,
+				"max": 20
+			},
+			"pattern_matched": null
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create booking schema directory structure",
+			"action": {
+				"verb": "Create",
+				"target": "_lib/schemas directory"
+			},
+			"purpose": "Establish directory structure for Zod schemas following project conventions",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [],
+				"dependencies": [],
+				"constraints": [
+					"Follow pattern: apps/web/app/home/(user)/coaching/_lib/schemas/",
+					"Matches existing pattern from kanban feature"
+				]
+			},
+			"input_state": "No _lib directory exists in coaching route",
+			"output_state": "Directory apps/web/app/home/(user)/coaching/_lib/schemas/ exists",
+			"acceptance_criterion": "Directory structure exists and matches project conventions",
+			"verification_command": "test -d /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/schemas",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/coaching/_lib/schemas/"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create CalBooking Zod schema",
+			"action": {
+				"verb": "Create",
+				"target": "booking.schema.ts with CalBooking validation"
+			},
+			"purpose": "Define type-safe schema for Cal.com API v2 booking response structure",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 2,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"],
+				"dependencies": ["zod"],
+				"constraints": [
+					"Schema must match Cal.com API v2 response structure",
+					"Include: id, uid, title, status, start, end, meetingUrl fields",
+					"Export schema and inferred TypeScript types",
+					"Follow pattern from research: calcom-embed-integration.md lines 153-163"
+				]
+			},
+			"input_state": "Empty schemas directory exists",
+			"output_state": "booking.schema.ts exists with CalBookingSchema and CalBookingResponseSchema",
+			"acceptance_criterion": "File exports CalBookingSchema, CalBookingResponseSchema, and inferred types that match Cal.com API v2 structure",
+			"verification_command": "grep -q 'export const CalBookingSchema' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/schemas/booking.schema.ts && grep -q 'CalBookingResponseSchema' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/schemas/booking.schema.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/coaching/_lib/schemas/booking.schema.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T4", "T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create server directory structure",
+			"action": {
+				"verb": "Create",
+				"target": "_lib/server directory"
+			},
+			"purpose": "Establish directory structure for server-side modules following project conventions",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 1,
+			"context": {
+				"files": [],
+				"dependencies": [],
+				"constraints": [
+					"Follow pattern: apps/web/app/home/(user)/coaching/_lib/server/",
+					"Matches existing pattern from members page loader"
+				]
+			},
+			"input_state": "_lib directory exists with schemas subdirectory",
+			"output_state": "Directory apps/web/app/home/(user)/coaching/_lib/server/ exists",
+			"acceptance_criterion": "Directory structure exists and matches project conventions",
+			"verification_command": "test -d /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/coaching/_lib/server/"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T4", "T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Create Cal.com API client fetch function",
+			"action": {
+				"verb": "Create",
+				"target": "fetchUpcomingBookings function in cal-api-client.ts"
+			},
+			"purpose": "Implement API client that fetches upcoming bookings from Cal.com API v2 with authentication and caching",
+			"status": "draft",
+			"estimated_hours": 4,
+			"priority": 4,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/coaching/_lib/schemas/booking.schema.ts"
+				],
+				"dependencies": [
+					"CalBookingResponseSchema for validation",
+					"Next.js fetch with revalidate option",
+					"process.env.CAL_COM_API_TOKEN"
+				],
+				"constraints": [
+					"Add 'server-only' import",
+					"Use Bearer token authentication",
+					"Set Cal-Api-Version: 2024-08-13 header",
+					"Configure 15-minute cache: next: { revalidate: 900 }",
+					"Return empty array on error for graceful degradation",
+					"Validate response with CalBookingResponseSchema.parse()"
+				]
+			},
+			"input_state": "booking.schema.ts exists with CalBookingResponseSchema, server directory exists",
+			"output_state": "cal-api-client.ts exists with fetchUpcomingBookings function",
+			"acceptance_criterion": "Function fetches from https://api.cal.com/v2/bookings?status=upcoming&limit=2 with auth headers, validates response, and returns typed booking array",
+			"verification_command": "grep -q 'export async function fetchUpcomingBookings' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/cal-api-client.ts && grep -q 'revalidate: 900' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/cal-api-client.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/coaching/_lib/server/cal-api-client.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T3"],
+				"blocks": ["T6", "T7"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Add error logging to API client",
+			"action": {
+				"verb": "Add",
+				"target": "logger integration to fetchUpcomingBookings"
+			},
+			"purpose": "Integrate structured error logging for API failures and monitoring",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/coaching/_lib/server/cal-api-client.ts",
+					"apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts"
+				],
+				"dependencies": [
+					"createServiceLogger from @kit/shared/logger",
+					"Existing cal-api-client.ts implementation"
+				],
+				"constraints": [
+					"Use createServiceLogger with name 'CAL-API-CLIENT'",
+					"Log errors with operation context",
+					"Follow pattern from members-page.loader.ts lines 8, 55-61"
+				]
+			},
+			"input_state": "cal-api-client.ts exists with fetchUpcomingBookings function without logging",
+			"output_state": "fetchUpcomingBookings has logger integration for error tracking",
+			"acceptance_criterion": "File imports createServiceLogger and logs errors with structured context before returning empty array",
+			"verification_command": "grep -q 'createServiceLogger' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/cal-api-client.ts && grep -q 'logger.error' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/cal-api-client.ts",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/coaching/_lib/server/cal-api-client.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T4"],
+				"blocks": ["T7"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Create coaching page loader function",
+			"action": {
+				"verb": "Create",
+				"target": "loadCoachingPageData function in coaching-page.loader.ts"
+			},
+			"purpose": "Implement page loader that wraps API client following project's data fetching pattern",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 6,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts",
+					"apps/web/app/home/(user)/coaching/_lib/server/cal-api-client.ts"
+				],
+				"dependencies": [
+					"cache from react",
+					"fetchUpcomingBookings from cal-api-client.ts"
+				],
+				"constraints": [
+					"Add 'server-only' import",
+					"Export loadCoachingPageData wrapped with cache()",
+					"Follow pattern from personal-account-billing-page.loader.ts",
+					"Return Promise.all result if multiple data sources needed"
+				]
+			},
+			"input_state": "cal-api-client.ts exists with fetchUpcomingBookings, server directory exists",
+			"output_state": "coaching-page.loader.ts exists with cached loadCoachingPageData function",
+			"acceptance_criterion": "File exports loadCoachingPageData that calls fetchUpcomingBookings and uses React cache wrapper",
+			"verification_command": "grep -q 'export const loadCoachingPageData = cache' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/coaching-page.loader.ts && grep -q 'fetchUpcomingBookings' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/coaching/_lib/server/coaching-page.loader.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/coaching/_lib/server/coaching-page.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3", "T4"],
+				"blocks": ["T8"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Add environment variable documentation",
+			"action": {
+				"verb": "Add",
+				"target": "CAL_COM_API_TOKEN to .env.local.example"
+			},
+			"purpose": "Document required environment variables for Cal.com API integration",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 7,
+			"group": 3,
+			"context": {
+				"files": ["apps/web/.env.local.example"],
+				"dependencies": [],
+				"constraints": [
+					"Add comment explaining Cal.com API key requirement",
+					"Add CAL_COM_API_TOKEN variable placeholder",
+					"Follow existing documentation pattern in file"
+				]
+			},
+			"input_state": ".env.local.example exists without Cal.com variables",
+			"output_state": ".env.local.example contains CAL_COM_API_TOKEN documentation",
+			"acceptance_criterion": "File contains CAL_COM_API_TOKEN with descriptive comment explaining how to obtain the key",
+			"verification_command": "grep -q 'CAL_COM_API_TOKEN' /home/msmith/projects/2025slideheroes/apps/web/.env.local.example",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/.env.local.example"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T4", "T5"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T8",
+			"type": "task",
+			"name": "Add TypeScript type checking verification",
+			"action": {
+				"verb": "Test",
+				"target": "TypeScript compilation with pnpm typecheck"
+			},
+			"purpose": "Verify all new files compile without type errors",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 8,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/coaching/_lib/schemas/booking.schema.ts",
+					"apps/web/app/home/(user)/coaching/_lib/server/cal-api-client.ts",
+					"apps/web/app/home/(user)/coaching/_lib/server/coaching-page.loader.ts"
+				],
+				"dependencies": [],
+				"constraints": [
+					"Run from project root",
+					"All new TypeScript files must pass strict type checking"
+				]
+			},
+			"input_state": "All implementation files created",
+			"output_state": "TypeScript compilation succeeds with no errors in new files",
+			"acceptance_criterion": "Command 'pnpm typecheck' exits with code 0 and no type errors in coaching module",
+			"verification_command": "cd /home/msmith/projects/2025slideheroes && pnpm typecheck 2>&1 | grep -v 'coaching.*error' || echo 'Type check passed'",
+			"outputs": [],
+			"dependencies": {
+				"blocked_by": ["T6"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Directory Setup",
+				"task_ids": ["T1", "T2", "T3"],
+				"depends_on_groups": [],
+				"estimated_hours": 7,
+				"parallel_hours": 3
+			},
+			{
+				"id": 2,
+				"name": "API Client Implementation",
+				"task_ids": ["T4", "T5"],
+				"depends_on_groups": [1],
+				"estimated_hours": 6,
+				"parallel_hours": 4
+			},
+			{
+				"id": 3,
+				"name": "Page Loader & Configuration",
+				"task_ids": ["T6", "T7"],
+				"depends_on_groups": [2],
+				"estimated_hours": 5,
+				"parallel_hours": 3
+			},
+			{
+				"id": 4,
+				"name": "Verification",
+				"task_ids": ["T8"],
+				"depends_on_groups": [3],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T4", "T5", "T6", "T8"],
+			"total_hours": 16
+		},
+		"duration": {
+			"sequential": 20,
+			"parallel": 12,
+			"time_saved_percent": 40
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1388
+	}
+}

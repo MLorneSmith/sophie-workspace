@@ -1,0 +1,716 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1368,
+		"feature_name": "Presentation Outline Table",
+		"feature_slug": "presentation-table",
+		"initiative_id": 1363,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 62.5,
+			"level": "HIGH",
+			"target_steps": {
+				"min": 12,
+				"max": 20
+			},
+			"pattern_matched": "dashboard-card"
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create PresentationSummary type definition",
+			"action": {
+				"verb": "Create",
+				"target": "PresentationSummary TypeScript type"
+			},
+			"purpose": "Define the shape of presentation data displayed in the table",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/lib/database.types.ts (building_blocks_submissions Row type)"
+				],
+				"dependencies": ["Database type from ~/lib/database.types"],
+				"constraints": [
+					"Must include: id, title, updated_at",
+					"Optional: status field (if exists in schema)",
+					"Use Pick<> utility type from database schema"
+				]
+			},
+			"input_state": "Database schema defines building_blocks_submissions table structure",
+			"output_state": "PresentationSummary type exists in apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
+			"acceptance_criterion": "Type compiles without errors and includes all required fields for table display",
+			"verification_command": "pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create loadRecentPresentations loader function",
+			"action": {
+				"verb": "Create",
+				"target": "loadRecentPresentations data loader"
+			},
+			"purpose": "Fetch user's 10 most recent presentations from building_blocks_submissions",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/ai/_lib/queries/building-blocks-titles.ts (reference pattern)"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"Database type from ~/lib/database.types",
+					"PresentationSummary type from T1"
+				],
+				"constraints": [
+					"Must use 'server-only' directive",
+					"Return type: Promise<PresentationSummary[]>",
+					"Order by updated_at desc",
+					"Limit to 10 records",
+					"Filter by user_id (RLS handles this automatically)",
+					"Use subquery pattern for auth.uid(): user_id = (select auth.uid())"
+				]
+			},
+			"input_state": "PresentationSummary type is defined, Supabase client available",
+			"output_state": "loadRecentPresentations function exists in apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+			"acceptance_criterion": "Function fetches and returns up to 10 presentations ordered by updated_at descending",
+			"verification_command": "pnpm typecheck && pnpm --filter web test:unit -- dashboard-page.loader",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create PresentationOutlineTable component skeleton",
+			"action": {
+				"verb": "Create",
+				"target": "PresentationOutlineTable component structure"
+			},
+			"purpose": "Setup table component with prop types and basic table structure",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 3,
+			"group": 2,
+			"context": {
+				"files": [
+					"packages/ui/src/shadcn/table.tsx (Table components to import)"
+				],
+				"dependencies": [
+					"Table, TableHeader, TableBody, TableRow, TableHead, TableCell from @kit/ui/table",
+					"PresentationSummary type from T1"
+				],
+				"constraints": [
+					"Props: { presentations: PresentationSummary[] }",
+					"Client component ('use client' directive)",
+					"Define column headers: Title, Status, Slides, Last Updated",
+					"Empty tbody for now (will populate in T5)"
+				]
+			},
+			"input_state": "PresentationSummary type exists, Table UI components available",
+			"output_state": "PresentationOutlineTable component skeleton exists at apps/web/app/home/(user)/_components/presentation-outline-table.tsx",
+			"acceptance_criterion": "Component renders table headers correctly with empty body",
+			"verification_command": "pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T4", "T5", "T6", "T7", "T8", "T9"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Add empty state conditional rendering",
+			"action": {
+				"verb": "Add",
+				"target": "Empty state UI when presentations array is empty"
+			},
+			"purpose": "Display helpful message and CTA when user has no presentations",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": [
+					"If component from @kit/ui/if",
+					"Trans component from @kit/ui/trans",
+					"Card components from @kit/ui/card"
+				],
+				"constraints": [
+					"Check presentations.length === 0",
+					"Show card with: icon, heading, description, CTA button",
+					"CTA links to /home/ai/blocks (presentation creation)",
+					"Use Trans for i18n support"
+				]
+			},
+			"input_state": "PresentationOutlineTable component skeleton exists",
+			"output_state": "Component shows empty state card when presentations array is empty",
+			"acceptance_criterion": "Empty array renders card with 'Create Your First Presentation' CTA linking to /home/ai/blocks",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Add table row rendering with data",
+			"action": {
+				"verb": "Add",
+				"target": "Table rows displaying presentation data"
+			},
+			"purpose": "Render each presentation as a table row with title and placeholder cells",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": [
+					"TableRow, TableCell components from @kit/ui/table",
+					"PresentationSummary type"
+				],
+				"constraints": [
+					"Map over presentations array",
+					"Render TableRow for each presentation",
+					"Show: title, placeholder status, placeholder slides, placeholder date",
+					"Use presentation.id as React key"
+				]
+			},
+			"input_state": "PresentationOutlineTable component skeleton exists with table structure",
+			"output_state": "Component renders table rows with title column populated, other columns show placeholder text",
+			"acceptance_criterion": "Table displays one row per presentation with title visible",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": ["T6", "T7", "T8"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Add status badge rendering logic",
+			"action": {
+				"verb": "Add",
+				"target": "Status badge cell with variant mapping"
+			},
+			"purpose": "Display presentation status as colored badge in status column",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 6,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx",
+					"packages/ui/src/shadcn/badge.tsx (Badge variants)"
+				],
+				"dependencies": ["Badge component from @kit/ui/badge"],
+				"constraints": [
+					"Map status to badge variant: draft→outline, published→success, archived→secondary",
+					"Default to 'outline' if status undefined",
+					"Display status text capitalized"
+				]
+			},
+			"input_state": "Table rows render with placeholder status cells",
+			"output_state": "Status column displays Badge component with appropriate variant based on presentation status",
+			"acceptance_criterion": "Status badges render with correct colors: draft=outline, published=success, archived=secondary",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T5"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Add relative date formatting",
+			"action": {
+				"verb": "Add",
+				"target": "Relative time display in Last Updated column"
+			},
+			"purpose": "Show user-friendly relative time (e.g., '2 hours ago') for updated_at field",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 7,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx",
+					"apps/web/app/(marketing)/blog/_components/date-formatter.tsx (reference)"
+				],
+				"dependencies": ["formatDistanceToNow from date-fns"],
+				"constraints": [
+					"Use formatDistanceToNow(new Date(updated_at), { addSuffix: true })",
+					"Handle null/undefined updated_at gracefully",
+					"Wrap in <time> element with dateTime attribute"
+				]
+			},
+			"input_state": "Table rows render with placeholder date cells",
+			"output_state": "Last Updated column displays relative time (e.g., '3 days ago') formatted with date-fns",
+			"acceptance_criterion": "Dates display as relative time strings with 'ago' suffix and use semantic <time> element",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T5"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T8",
+			"type": "task",
+			"name": "Add slides count display",
+			"action": {
+				"verb": "Add",
+				"target": "Slide count in Slides column"
+			},
+			"purpose": "Display number of slides in presentation (from storyboard.length or outline parsing)",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 8,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": [
+					"PresentationSummary type (may need to extend to include storyboard or slide_count)"
+				],
+				"constraints": [
+					"If storyboard exists: storyboard.length",
+					"Else: parse outline field or show '—'",
+					"Display as number or '—' if unavailable"
+				]
+			},
+			"input_state": "Table rows render with placeholder slides cells",
+			"output_state": "Slides column displays count from storyboard array length or placeholder '—'",
+			"acceptance_criterion": "Slides column shows numeric count when available, otherwise shows '—'",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T5"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T9",
+			"type": "task",
+			"name": "Add row click navigation handler",
+			"action": {
+				"verb": "Add",
+				"target": "onClick handler for table row navigation"
+			},
+			"purpose": "Navigate to presentation canvas page when user clicks a table row",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 9,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": ["useRouter from next/navigation"],
+				"constraints": [
+					"Add onClick to TableRow",
+					"Navigate to /home/ai/canvas?id={presentation.id}",
+					"Add cursor-pointer className to rows",
+					"Add hover effect (already in TableRow styles)"
+				]
+			},
+			"input_state": "Table rows render presentation data without click handling",
+			"output_state": "Clicking a table row navigates to /home/ai/canvas with presentation id as query param",
+			"acceptance_criterion": "Clicking any row navigates to /home/ai/canvas?id={id} using Next.js router",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T10",
+			"type": "task",
+			"name": "Wire table to dashboard page",
+			"action": {
+				"verb": "Add",
+				"target": "PresentationOutlineTable to home page with Suspense"
+			},
+			"purpose": "Integrate table component into user dashboard with loading state",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 10,
+			"group": 5,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": [
+					"Suspense from react",
+					"loadRecentPresentations from T2",
+					"PresentationOutlineTable from T3",
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"getUserWorkspace from @kit/accounts/workspace"
+				],
+				"constraints": [
+					"Page is async Server Component",
+					"Call loadRecentPresentations with client and userId",
+					"Wrap PresentationOutlineTable in <Suspense fallback={<Skeleton />}>",
+					"Add skeleton loader component or import from @kit/ui"
+				]
+			},
+			"input_state": "Dashboard page renders with PageBody, loader function exists, table component complete",
+			"output_state": "Dashboard page at /home/(user)/page.tsx renders PresentationOutlineTable with data from loader inside Suspense boundary",
+			"acceptance_criterion": "Visiting /home shows table with user's presentations, shows skeleton during loading",
+			"verification_command": "pnpm dev && visit http://localhost:3000/home",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				},
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T4", "T6", "T7", "T8", "T9"],
+				"blocks": ["T11"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T11",
+			"type": "task",
+			"name": "Add responsive table wrapper",
+			"action": {
+				"verb": "Add",
+				"target": "Horizontal scroll wrapper for mobile responsiveness"
+			},
+			"purpose": "Enable horizontal scrolling on mobile devices for wide table",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 11,
+			"group": 6,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx",
+					"packages/ui/src/shadcn/table.tsx (already has overflow-auto wrapper)"
+				],
+				"dependencies": [
+					"Table component from @kit/ui/table (already responsive)"
+				],
+				"constraints": [
+					"Table component already wraps in overflow-auto div",
+					"Verify mobile behavior with DevTools responsive mode",
+					"May need min-width on table cells if content compresses"
+				]
+			},
+			"input_state": "Table is integrated and displays on desktop",
+			"output_state": "Table scrolls horizontally on mobile viewports (< 768px) while maintaining readability",
+			"acceptance_criterion": "Table is fully usable on 375px viewport with horizontal scroll, no text truncation",
+			"verification_command": "pnpm dev && test with browser DevTools responsive mode at 375px width",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T10"],
+				"blocks": ["T12"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T12",
+			"type": "task",
+			"name": "Add component unit tests",
+			"action": {
+				"verb": "Add",
+				"target": "Unit tests for PresentationOutlineTable component"
+			},
+			"purpose": "Verify table renders correctly in all states (empty, populated, with various data)",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 12,
+			"group": 6,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outline-table.tsx"
+				],
+				"dependencies": [
+					"@testing-library/react",
+					"@testing-library/user-event",
+					"vitest"
+				],
+				"constraints": [
+					"Test empty state renders CTA",
+					"Test populated state renders rows",
+					"Test status badges render with correct variants",
+					"Test date formatting",
+					"Test row click triggers navigation",
+					"Mock useRouter from next/navigation"
+				]
+			},
+			"input_state": "PresentationOutlineTable component is complete and integrated",
+			"output_state": "Test file exists at apps/web/app/home/(user)/_components/__tests__/presentation-outline-table.test.tsx with 5+ test cases",
+			"acceptance_criterion": "All tests pass with pnpm --filter web test:unit -- presentation-outline-table",
+			"verification_command": "pnpm --filter web test:unit -- presentation-outline-table",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/__tests__/presentation-outline-table.test.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T11"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Types and Data Layer",
+				"task_ids": ["T1", "T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 3,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Component Foundation",
+				"task_ids": ["T3"],
+				"depends_on_groups": [1],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			},
+			{
+				"id": 3,
+				"name": "Component Features",
+				"task_ids": ["T4", "T5", "T6", "T7", "T8"],
+				"depends_on_groups": [2],
+				"estimated_hours": 9,
+				"parallel_hours": 2
+			},
+			{
+				"id": 4,
+				"name": "Interactivity",
+				"task_ids": ["T9"],
+				"depends_on_groups": [2],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 5,
+				"name": "Integration",
+				"task_ids": ["T10"],
+				"depends_on_groups": [3, 4],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 6,
+				"name": "Polish and Testing",
+				"task_ids": ["T11", "T12"],
+				"depends_on_groups": [5],
+				"estimated_hours": 4,
+				"parallel_hours": 3
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T3", "T5", "T6", "T10", "T11", "T12"],
+			"total_hours": 12
+		},
+		"duration": {
+			"sequential": 21,
+			"parallel": 12,
+			"time_saved_percent": 43
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1383
+	}
+}

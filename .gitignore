@@ -132,8 +132,9 @@ node_modules/
 *.sln
 *.sw?
 # OS specific
-# Task files (but not .claude/tasks)
+# Task files (but not .claude/tasks or Alpha workflow tasks)
 tasks.json
+!.ai/alpha/specs/**/tasks.json
 /tasks/
 .vscode/tasks/
 
