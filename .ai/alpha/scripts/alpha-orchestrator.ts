@@ -336,31 +336,25 @@ async function createSandbox(
 			.join("\n")}`,
 	);
 
-	// Install dependencies if needed (check if node_modules exists first)
-	console.log("   Checking dependencies...");
+	// Skip pnpm install - template has pre-installed dependencies
+	// Only verify node_modules exists
+	console.log("   Verifying dependencies...");
 	const checkResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
 		{ timeoutMs: 10000 },
 	);
 
 	if (checkResult.stdout.trim() === "missing") {
-		console.log(
-			"   Installing dependencies (this may take several minutes)...",
+		console.warn(
+			"   ⚠️ WARNING: node_modules missing - template may need rebuilding",
 		);
+		console.log("   Attempting to install dependencies...");
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-			{
-				timeoutMs: 600000, // 10 minutes for fresh install
-			},
+			{ timeoutMs: 600000 },
 		);
 	} else {
-		console.log("   Dependencies already installed, syncing changes...");
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile 2>/dev/null || true`,
-			{
-				timeoutMs: 180000, // 3 minutes for sync
-			},
-		);
+		console.log("   ✓ Dependencies pre-installed in template");
 	}
 
 	// Create feature branch
