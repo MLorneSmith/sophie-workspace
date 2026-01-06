@@ -336,14 +336,32 @@ async function createSandbox(
 			.join("\n")}`,
 	);
 
-	// Install dependencies if needed
-	console.log("   Installing dependencies...");
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-		{
-			timeoutMs: 300000, // 5 minutes for install
-		},
+	// Install dependencies if needed (check if node_modules exists first)
+	console.log("   Checking dependencies...");
+	const checkResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
 	);
+
+	if (checkResult.stdout.trim() === "missing") {
+		console.log(
+			"   Installing dependencies (this may take several minutes)...",
+		);
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+			{
+				timeoutMs: 600000, // 10 minutes for fresh install
+			},
+		);
+	} else {
+		console.log("   Dependencies already installed, syncing changes...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile 2>/dev/null || true`,
+			{
+				timeoutMs: 180000, // 3 minutes for sync
+			},
+		);
+	}
 
 	// Create feature branch
 	console.log(`   Creating branch: ${branchName}`);
