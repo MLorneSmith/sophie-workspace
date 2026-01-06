@@ -118,6 +118,59 @@
 							"parallel_hours": {
 								"type": "number",
 								"description": "Hours if run in parallel (max of tasks)"
+							},
+							"parallel_batches": {
+								"type": "array",
+								"description": "Batches of tasks that can safely run in parallel (no file conflicts)",
+								"items": {
+									"type": "object",
+									"required": ["batch_id", "task_ids", "max_hours"],
+									"properties": {
+										"batch_id": {
+											"type": "integer",
+											"description": "Batch number within this group (1-based)"
+										},
+										"task_ids": {
+											"type": "array",
+											"items": { "type": "string" },
+											"description": "Task IDs that can run simultaneously"
+										},
+										"max_hours": {
+											"type": "number",
+											"description": "Maximum hours (longest task in batch)"
+										},
+										"reason": {
+											"type": "string",
+											"description": "Why these tasks can run in parallel"
+										}
+									}
+								}
+							},
+							"sequential_tasks": {
+								"type": "array",
+								"items": { "type": "string" },
+								"description": "Task IDs that must run sequentially due to file conflicts"
+							},
+							"parallelization_analysis": {
+								"type": "object",
+								"description": "Analysis of task parallelizability within this group",
+								"properties": {
+									"total_tasks": { "type": "integer" },
+									"parallelizable_count": { "type": "integer" },
+									"sequential_count": { "type": "integer" },
+									"file_conflicts": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"task_a": { "type": "string" },
+												"task_b": { "type": "string" },
+												"conflicting_file": { "type": "string" }
+											}
+										}
+									},
+									"speedup_potential": { "type": "number" }
+								}
 							}
 						}
 					}

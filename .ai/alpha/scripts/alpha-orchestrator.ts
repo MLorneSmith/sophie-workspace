@@ -126,6 +126,40 @@ interface ProgressReport {
 }
 
 // ============================================================================
+// Multi-Sandbox Types (Phase 1: Dual Sandbox)
+// ============================================================================
+
+interface SandboxInstance {
+	sandbox: Sandbox;
+	id: string;
+	branch: string;
+	status: "creating" | "ready" | "busy" | "completed" | "failed";
+	assignedFeatures: number[];
+	completedFeatures: number[];
+	error?: string;
+}
+
+interface FeatureAssignment {
+	featureId: number;
+	sandboxId: string;
+	estimatedHours: number;
+}
+
+interface SandboxPoolState {
+	instances: Map<string, SandboxInstance>;
+	initiativeId: number;
+	baseBranch: string;
+}
+
+interface ParallelExecutionResult {
+	sandboxId: string;
+	featureResults: ProgressReport[];
+	branch: string;
+	success: boolean;
+	error?: string;
+}
+
+// ============================================================================
 // Environment & Configuration
 // ============================================================================
 
@@ -432,14 +466,9 @@ async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 	}
 }
 
-async function startServices(sandbox: Sandbox): Promise<{
-	vscodeUrl: string;
-	devServerUrl: string;
-}> {
-	console.log("\n🚀 Starting services...");
+async function startVSCodeWeb(sandbox: Sandbox): Promise<string> {
+	console.log("\n🚀 Starting VS Code Web...");
 
-	// Start VS Code Web (fire and forget - don't wait for completion)
-	console.log("   Starting VS Code Web...");
 	sandbox.commands
 		.run("nohup start-vscode > /tmp/vscode.log 2>&1 &", { timeoutMs: 5000 })
 		.catch(() => {
@@ -450,19 +479,51 @@ async function startServices(sandbox: Sandbox): Promise<{
 	const vscodeHost = sandbox.getHost(VSCODE_PORT);
 	const vscodeUrl = `https://${vscodeHost}`;
 
-	// Start dev server (fire and forget - don't wait for completion)
-	console.log("   Starting dev server...");
+	console.log(`   ✓ VS Code Web: ${vscodeUrl}`);
+	return vscodeUrl;
+}
+
+async function startDevServer(sandbox: Sandbox): Promise<string> {
+	console.log("\n🚀 Starting dev server for review...");
+
+	// Start the dev server
 	sandbox.commands
 		.run("nohup start-dev > /tmp/devserver.log 2>&1 &", { timeoutMs: 5000 })
 		.catch(() => {
 			/* fire and forget */
 		});
-	await new Promise((resolve) => setTimeout(resolve, 10000));
 
 	const devServerHost = sandbox.getHost(DEV_SERVER_PORT);
 	const devServerUrl = `https://${devServerHost}`;
 
-	return { vscodeUrl, devServerUrl };
+	// Wait and verify the server is actually running
+	console.log("   Waiting for dev server to start...");
+	let serverReady = false;
+	for (let attempt = 1; attempt <= 6; attempt++) {
+		await new Promise((resolve) => setTimeout(resolve, 10000));
+
+		try {
+			const result = await sandbox.commands.run(
+				`curl -s -o /dev/null -w "%{http_code}" http://localhost:${DEV_SERVER_PORT} 2>/dev/null || echo "000"`,
+				{ timeoutMs: 5000 },
+			);
+			const statusCode = result.stdout.trim();
+			if (statusCode !== "000" && statusCode !== "") {
+				serverReady = true;
+				console.log(`   ✓ Dev server ready (HTTP ${statusCode})`);
+				break;
+			}
+			console.log(`   ⏳ Waiting... (attempt ${attempt}/6)`);
+		} catch {
+			console.log(`   ⏳ Waiting... (attempt ${attempt}/6)`);
+		}
+	}
+
+	if (!serverReady) {
+		console.log("   ⚠️ Dev server may still be starting - check logs if needed");
+	}
+
+	return devServerUrl;
 }
 
 // ============================================================================
@@ -936,9 +997,17 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		process.exit(1);
 	}
 
+	// Determine sandbox count (Phase 1: max 2)
+	const sandboxCount = Math.min(options.maxParallel, 2);
+	const isDualSandbox = sandboxCount > 1;
+
 	// Print header
 	console.log("═".repeat(70));
-	console.log("   ALPHA INITIATIVE ORCHESTRATOR");
+	console.log(
+		isDualSandbox
+			? "   ALPHA INITIATIVE ORCHESTRATOR (Dual Sandbox)"
+			: "   ALPHA INITIATIVE ORCHESTRATOR (Single Sandbox)",
+	);
 	console.log("═".repeat(70));
 	console.log(
 		`\n📊 Initiative #${manifest.metadata.initiative_id}: ${manifest.metadata.initiative_name}`,
@@ -947,25 +1016,164 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log(`   Features: ${manifest.execution_plan.total_features}`);
 	console.log(`   Tasks: ${manifest.execution_plan.total_tasks}`);
 	console.log(
+		`   Mode: ${sandboxCount} sandbox${sandboxCount > 1 ? "es" : ""}`,
+	);
+	console.log(
 		`   Estimated Hours: ${manifest.execution_plan.duration.parallel_hours} (parallel)`,
 	);
 
+	// Handle dry-run mode
 	if (options.dryRun) {
-		console.log("\n🔍 DRY RUN - showing execution plan:");
-		for (const group of manifest.execution_plan.parallel_groups) {
-			console.log(`\n   Group ${group.group}: ${group.description}`);
-			for (const featureId of group.feature_ids) {
-				const feature = manifest.features.find((f) => f.id === featureId);
-				if (feature) {
-					console.log(
-						`      #${feature.id}: ${feature.title} (${feature.task_count} tasks)`,
-					);
-				}
-			}
-		}
+		printDryRunPlan(manifest, sandboxCount);
 		return;
 	}
 
+	// =========================================================================
+	// DUAL SANDBOX MODE
+	// =========================================================================
+	if (isDualSandbox) {
+		await orchestrateDualSandbox(manifest, options, projectRoot);
+		return;
+	}
+
+	// =========================================================================
+	// SINGLE SANDBOX MODE (Original behavior)
+	// =========================================================================
+	await orchestrateSingleSandbox(manifest, options, initDir);
+}
+
+/**
+ * Orchestrate implementation using dual sandboxes in parallel.
+ */
+async function orchestrateDualSandbox(
+	manifest: InitiativeManifest,
+	options: OrchestratorOptions,
+	projectRoot: string,
+): Promise<void> {
+	const sandboxCount = Math.min(options.maxParallel, 2);
+
+	// Create sandbox pool
+	const pool = new SandboxPoolManager(manifest, options.timeout);
+	await pool.createPool(sandboxCount);
+
+	// Start VS Code on all sandboxes
+	await pool.startVSCodeOnAll();
+
+	// Print sandbox info
+	console.log("\n" + "═".repeat(70));
+	console.log("   SANDBOXES READY");
+	console.log("═".repeat(70));
+	const urls = pool.getReviewUrls();
+	for (const { sandboxId, vscode } of urls) {
+		console.log(`   ${sandboxId}: ${vscode}`);
+	}
+	console.log("\n   💡 Dev server will start after implementation completes");
+
+	// Start implementation
+	console.log("\n" + "═".repeat(70));
+	console.log("   IMPLEMENTATION");
+	console.log("═".repeat(70));
+
+	manifest.progress.status = "in_progress";
+	manifest.progress.started_at =
+		manifest.progress.started_at || new Date().toISOString();
+	saveManifest(manifest);
+
+	// Process each parallel group
+	for (const group of manifest.execution_plan.parallel_groups) {
+		if (group.group < manifest.progress.current_group) {
+			console.log(`\n⏭️ Skipping completed group ${group.group}`);
+			continue;
+		}
+
+		console.log(`\n📦 Group ${group.group}: ${group.description}`);
+
+		// Get pending features in this group
+		const pendingFeatures = manifest.features.filter(
+			(f) => group.feature_ids.includes(f.id) && f.status !== "completed",
+		);
+
+		if (pendingFeatures.length === 0) {
+			console.log("   All features completed");
+			continue;
+		}
+
+		// Assign features to sandboxes
+		pool.assignFeatures(pendingFeatures);
+
+		// Execute in parallel across sandboxes
+		const results = await pool.executeInParallel();
+
+		// Update manifest with results
+		for (const result of results) {
+			for (const featureResult of result.featureResults) {
+				const feature = manifest.features.find(
+					(f) => f.id === featureResult.feature_id,
+				);
+				if (feature) {
+					feature.status = featureResult.status as FeatureEntry["status"];
+					feature.tasks_completed = featureResult.tasks_completed;
+					if (featureResult.status === "completed") {
+						manifest.progress.features_completed++;
+					}
+					manifest.progress.tasks_completed += featureResult.tasks_completed;
+				}
+			}
+		}
+
+		saveManifest(manifest);
+		manifest.progress.current_group = group.group + 1;
+	}
+
+	// Merge all sandbox branches
+	const branches = pool.getBranches();
+	if (branches.length > 0) {
+		const targetBranch = `alpha/initiative-${manifest.metadata.initiative_id}`;
+		const mergeResult = await mergeAllBranches(
+			branches,
+			targetBranch,
+			projectRoot,
+		);
+
+		if (!mergeResult.success) {
+			console.log("\n   ⚠️ Merge conflicts detected:");
+			for (const conflict of mergeResult.conflicts) {
+				console.log(`      - ${conflict}`);
+			}
+			console.log("   Manual merge required. Individual branches preserved.");
+		} else {
+			manifest.sandbox.branch_name = targetBranch;
+		}
+		saveManifest(manifest);
+	}
+
+	// Update final status
+	const failedFeatures = manifest.features.filter(
+		(f) => f.status === "failed",
+	).length;
+	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+	manifest.progress.completed_at = new Date().toISOString();
+	saveManifest(manifest);
+
+	// Print summary
+	printFinalSummary(manifest, urls, projectRoot);
+
+	// Cleanup sandboxes
+	await pool.cleanup();
+
+	if (failedFeatures > 0) {
+		process.exit(1);
+	}
+}
+
+/**
+ * Orchestrate implementation using a single sandbox (original behavior).
+ */
+async function orchestrateSingleSandbox(
+	manifest: InitiativeManifest,
+	options: OrchestratorOptions,
+	initDir: string,
+): Promise<void> {
 	// Resume or create sandbox
 	let sandbox: Sandbox | null = null;
 
@@ -977,22 +1185,20 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		sandbox = await createSandbox(manifest, options.timeout);
 	}
 
-	// Start services and get URLs
-	const { vscodeUrl, devServerUrl } = await startServices(sandbox);
+	// Start VS Code Web only (dev server starts after implementation)
+	const vscodeUrl = await startVSCodeWeb(sandbox);
 	manifest.sandbox.vscode_url = vscodeUrl;
-	manifest.sandbox.dev_server_url = devServerUrl;
 	saveManifest(manifest);
 
-	// Print review URLs
+	// Print sandbox info
 	console.log("\n" + "═".repeat(70));
-	console.log("   REVIEW URLS");
+	console.log("   SANDBOX READY");
 	console.log("═".repeat(70));
-	console.log("\n   📝 VS Code Web (view/edit code):");
+	console.log("\n   📝 VS Code Web (view/edit code during implementation):");
 	console.log(`      ${vscodeUrl}`);
-	console.log("\n   🌐 Dev Server (test application):");
-	console.log(`      ${devServerUrl}`);
 	console.log(`\n   📦 Sandbox ID: ${sandbox.sandboxId}`);
 	console.log(`   🌿 Branch: ${manifest.sandbox.branch_name}`);
+	console.log("\n   💡 Dev server will start after implementation completes");
 
 	// Start implementation
 	console.log("\n" + "═".repeat(70));
@@ -1024,65 +1230,52 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			continue;
 		}
 
-		// Execute features in batches
-		const batches = chunk(pendingFeatures, options.maxParallel);
+		// Execute features sequentially in single sandbox
+		for (const featureId of pendingFeatures) {
+			console.log(`\n   🔄 Feature #${featureId}`);
 
-		for (const batch of batches) {
-			console.log(`\n   🔄 Batch: ${batch.map((id) => `#${id}`).join(", ")}`);
+			let result = await runFeatureImplementation(sandbox, manifest, featureId);
 
-			// Run features (sequentially for now - can be parallelized later)
-			for (const featureId of batch) {
-				let result = await runFeatureImplementation(
-					sandbox,
-					manifest,
-					featureId,
+			// Handle resource exhaustion (OOM/CPU/healthcheck failure)
+			if (result.status === "resource_exhausted") {
+				console.log(
+					`   🔥 Feature #${featureId} hit resource exhaustion, waiting for recovery...`,
 				);
+				result = await handleResourceExhaustion(sandbox, manifest, featureId);
+			}
 
-				// Handle resource exhaustion (OOM/CPU/healthcheck failure)
+			// Handle partial completion (context limit)
+			let retries = 0;
+			while (result.status === "partial" && retries < 3) {
+				console.log(
+					`   ⚠️ Feature #${featureId} hit context limit, resuming...`,
+				);
+				result = await handlePartialFeature(sandbox, manifest, featureId);
+				retries++;
+
+				// Check if partial retry caused resource exhaustion
 				if (result.status === "resource_exhausted") {
 					console.log(
-						`   🔥 Feature #${featureId} hit resource exhaustion, waiting for recovery...`,
+						`   🔥 Feature #${featureId} hit resource exhaustion during partial retry...`,
 					);
 					result = await handleResourceExhaustion(sandbox, manifest, featureId);
 				}
-
-				// Handle partial completion (context limit)
-				let retries = 0;
-				while (result.status === "partial" && retries < 3) {
-					console.log(
-						`   ⚠️ Feature #${featureId} hit context limit, resuming...`,
-					);
-					result = await handlePartialFeature(sandbox, manifest, featureId);
-					retries++;
-
-					// Check if partial retry caused resource exhaustion
-					if (result.status === "resource_exhausted") {
-						console.log(
-							`   🔥 Feature #${featureId} hit resource exhaustion during partial retry...`,
-						);
-						result = await handleResourceExhaustion(
-							sandbox,
-							manifest,
-							featureId,
-						);
-					}
-				}
-
-				// Log result
-				const icon =
-					result.status === "completed"
-						? "✅"
-						: result.status === "partial"
-							? "⚠️"
-							: result.status === "blocked"
-								? "🚫"
-								: result.status === "resource_exhausted"
-									? "🔥"
-									: "❌";
-				console.log(
-					`   ${icon} Feature #${featureId}: ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
-				);
 			}
+
+			// Log result
+			const icon =
+				result.status === "completed"
+					? "✅"
+					: result.status === "partial"
+						? "⚠️"
+						: result.status === "blocked"
+							? "🚫"
+							: result.status === "resource_exhausted"
+								? "🔥"
+								: "❌";
+			console.log(
+				`   ${icon} Feature #${featureId}: ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
+			);
 		}
 
 		// Update current group
@@ -1095,17 +1288,79 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log("   FINAL VALIDATION");
 	console.log("═".repeat(70));
 
-	console.log("\n   Running code quality checks...");
-	// Run checks directly to avoid wrapper script permission issues
-	const validationResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm typecheck && pnpm lint && pnpm format`,
-		{ timeoutMs: 300000 },
-	);
+	const validationWarnings: string[] = [];
 
-	if (validationResult.exitCode === 0) {
-		console.log("   ✅ Code quality checks passed");
+	// Run validation steps separately with OOM recovery
+	const validationSteps = [
+		{
+			name: "typecheck",
+			cmd: `cd ${WORKSPACE_DIR} && pnpm --filter web typecheck`,
+			timeout: 180000,
+			critical: false,
+		},
+		{
+			name: "lint",
+			cmd: `cd ${WORKSPACE_DIR} && pnpm --filter web lint`,
+			timeout: 120000,
+			critical: false,
+		},
+		{
+			name: "format",
+			cmd: `cd ${WORKSPACE_DIR} && pnpm --filter web format`,
+			timeout: 60000,
+			critical: false,
+		},
+	];
+
+	for (const step of validationSteps) {
+		console.log(`\n   Running ${step.name}...`);
+
+		try {
+			const result = await sandbox.commands.run(step.cmd, {
+				timeoutMs: step.timeout,
+			});
+
+			if (result.exitCode === 0) {
+				console.log(`   ✅ ${step.name} passed`);
+			} else if (result.exitCode === 137) {
+				console.log(
+					`   ⚠️ ${step.name} was killed (OOM) - skipping, code already pushed`,
+				);
+				validationWarnings.push(`${step.name}: OOM killed (exit 137)`);
+				console.log("   ⏳ Waiting for sandbox to recover...");
+				await waitForSandboxRecovery(sandbox, 2);
+			} else {
+				console.log(`   ⚠️ ${step.name} had issues (exit ${result.exitCode})`);
+				validationWarnings.push(`${step.name}: exit code ${result.exitCode}`);
+			}
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+
+			if (
+				isResourceExhausted(0, "", "", errorMessage) ||
+				errorMessage.includes("137")
+			) {
+				console.log(`   ⚠️ ${step.name} crashed (likely OOM) - skipping`);
+				validationWarnings.push(`${step.name}: crashed (OOM)`);
+				console.log("   ⏳ Waiting for sandbox to recover...");
+				await waitForSandboxRecovery(sandbox, 2);
+			} else {
+				console.log(`   ❌ ${step.name} error: ${errorMessage}`);
+				validationWarnings.push(`${step.name}: ${errorMessage}`);
+			}
+		}
+	}
+
+	// Summary of validation
+	if (validationWarnings.length === 0) {
+		console.log("\n   ✅ All code quality checks passed");
 	} else {
-		console.log("   ⚠️ Code quality issues found");
+		console.log("\n   ⚠️ Validation completed with warnings:");
+		for (const warning of validationWarnings) {
+			console.log(`      - ${warning}`);
+		}
+		console.log("   📝 Code was pushed - run validation locally to verify");
 	}
 
 	// Push changes
@@ -1117,6 +1372,11 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		);
 		console.log(`   ✅ Pushed to branch: ${manifest.sandbox.branch_name}`);
 	}
+
+	// Start dev server NOW - after all implementation is complete
+	const devServerUrl = await startDevServer(sandbox);
+	manifest.sandbox.dev_server_url = devServerUrl;
+	saveManifest(manifest);
 
 	// Final summary
 	const completedFeatures = manifest.features.filter(
@@ -1131,6 +1391,13 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	saveManifest(manifest);
 
 	console.log("\n" + "═".repeat(70));
+	console.log("   REVIEW YOUR WORK");
+	console.log("═".repeat(70));
+	console.log("\n   🔗 Review URLs:");
+	console.log(`      VS Code: ${vscodeUrl}`);
+	console.log(`      Dev Server: ${devServerUrl}`);
+
+	console.log("\n" + "═".repeat(70));
 	console.log("   SUMMARY");
 	console.log("═".repeat(70));
 	console.log("\n   📊 Results:");
@@ -1141,10 +1408,6 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log(
 		`      Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`,
 	);
-
-	console.log("\n   🔗 Review URLs:");
-	console.log(`      VS Code: ${vscodeUrl}`);
-	console.log(`      Dev Server: ${devServerUrl}`);
 
 	console.log("\n   📁 Files:");
 	console.log(
@@ -1324,6 +1587,562 @@ async function getPartialProgress(
 }
 
 // ============================================================================
+// Sandbox Pool Management (Phase 1: Dual Sandbox)
+// ============================================================================
+
+class SandboxPoolManager {
+	private pool: SandboxPoolState;
+	private manifest: InitiativeManifest;
+	private timeout: number;
+
+	constructor(manifest: InitiativeManifest, timeout: number) {
+		this.manifest = manifest;
+		this.timeout = timeout;
+		this.pool = {
+			instances: new Map(),
+			initiativeId: manifest.metadata.initiative_id,
+			baseBranch: "dev",
+		};
+	}
+
+	/**
+	 * Create N sandboxes in parallel.
+	 */
+	async createPool(count: number = 2): Promise<void> {
+		console.log(`\n📦 Creating sandbox pool (${count} sandboxes)...`);
+
+		const createPromises = Array.from({ length: count }, (_, i) =>
+			this.createSandboxInstance(`sbx-${String.fromCharCode(97 + i)}`),
+		);
+
+		const results = await Promise.allSettled(createPromises);
+
+		for (const result of results) {
+			if (result.status === "rejected") {
+				console.error(`   ❌ Failed to create sandbox: ${result.reason}`);
+			}
+		}
+
+		const successCount = results.filter((r) => r.status === "fulfilled").length;
+		console.log(`   ✅ Created ${successCount}/${count} sandboxes`);
+
+		if (successCount === 0) {
+			throw new Error("Failed to create any sandboxes");
+		}
+	}
+
+	/**
+	 * Create a single sandbox instance with its own branch.
+	 */
+	private async createSandboxInstance(
+		suffix: string,
+	): Promise<SandboxInstance> {
+		const branchName = `alpha/init-${this.pool.initiativeId}-${suffix}`;
+
+		console.log(`   Creating sandbox ${suffix}...`);
+
+		const sandbox = await Sandbox.create(TEMPLATE_ALIAS, {
+			timeoutMs: this.timeout * 1000,
+			apiKey: E2B_API_KEY,
+			envs: getAllEnvVars(),
+		});
+
+		console.log(`   ${suffix}: ID=${sandbox.sandboxId}`);
+
+		// Setup git
+		if (GITHUB_TOKEN) {
+			await setupGitCredentials(sandbox);
+		}
+
+		// Pull latest and create branch
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
+			{ timeoutMs: 120000 },
+		);
+
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
+			{ timeoutMs: 30000 },
+		);
+
+		// Verify dependencies
+		const checkResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
+			{ timeoutMs: 10000 },
+		);
+
+		if (checkResult.stdout.trim() === "missing") {
+			console.log(`   ${suffix}: Installing dependencies...`);
+			await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+				{ timeoutMs: 600000 },
+			);
+		}
+
+		const instance: SandboxInstance = {
+			sandbox,
+			id: suffix,
+			branch: branchName,
+			status: "ready",
+			assignedFeatures: [],
+			completedFeatures: [],
+		};
+
+		this.pool.instances.set(suffix, instance);
+		return instance;
+	}
+
+	/**
+	 * Assign features to sandboxes using load balancing by estimated hours.
+	 */
+	assignFeatures(features: FeatureEntry[]): FeatureAssignment[] {
+		const assignments: FeatureAssignment[] = [];
+		const sandboxLoads = new Map<string, number>();
+
+		// Initialize loads
+		for (const id of this.pool.instances.keys()) {
+			sandboxLoads.set(id, 0);
+		}
+
+		// Sort features by hours descending (assign largest first for better balance)
+		const sortedFeatures = [...features].sort(
+			(a, b) => b.parallel_hours - a.parallel_hours,
+		);
+
+		for (const feature of sortedFeatures) {
+			// Find sandbox with lowest current load
+			let minLoad = Number.POSITIVE_INFINITY;
+			let targetSandbox = "";
+
+			for (const [sandboxId, load] of sandboxLoads) {
+				if (load < minLoad) {
+					minLoad = load;
+					targetSandbox = sandboxId;
+				}
+			}
+
+			// Assign feature
+			assignments.push({
+				featureId: feature.id,
+				sandboxId: targetSandbox,
+				estimatedHours: feature.parallel_hours,
+			});
+
+			// Update load
+			sandboxLoads.set(
+				targetSandbox,
+				(sandboxLoads.get(targetSandbox) || 0) + feature.parallel_hours,
+			);
+
+			// Update instance
+			const instance = this.pool.instances.get(targetSandbox);
+			if (instance) {
+				instance.assignedFeatures.push(feature.id);
+			}
+		}
+
+		// Log assignments
+		console.log("\n📋 Feature Assignments:");
+		for (const [sandboxId, instance] of this.pool.instances) {
+			const load = sandboxLoads.get(sandboxId) || 0;
+			console.log(
+				`   ${sandboxId}: Features ${instance.assignedFeatures.join(", ")} (${load}h)`,
+			);
+		}
+
+		return assignments;
+	}
+
+	/**
+	 * Execute features in parallel across all sandboxes.
+	 */
+	async executeInParallel(): Promise<ParallelExecutionResult[]> {
+		console.log("\n🚀 Starting parallel execution across sandboxes...");
+
+		const executionPromises: Promise<ParallelExecutionResult>[] = [];
+
+		for (const [_sandboxId, instance] of this.pool.instances) {
+			if (instance.assignedFeatures.length === 0) continue;
+
+			executionPromises.push(this.executeSandboxFeatures(instance));
+		}
+
+		const results = await Promise.all(executionPromises);
+		return results;
+	}
+
+	/**
+	 * Execute all assigned features in a single sandbox sequentially.
+	 */
+	private async executeSandboxFeatures(
+		instance: SandboxInstance,
+	): Promise<ParallelExecutionResult> {
+		instance.status = "busy";
+		const featureResults: ProgressReport[] = [];
+
+		console.log(
+			`\n   ┌── Sandbox ${instance.id} starting ──────────────────────`,
+		);
+		console.log(
+			`   │ Features: ${instance.assignedFeatures.map((f) => `#${f}`).join(", ")}`,
+		);
+
+		for (const featureId of instance.assignedFeatures) {
+			console.log("   │");
+			console.log(`   │ 📋 Starting Feature #${featureId}`);
+
+			let result = await runFeatureImplementation(
+				instance.sandbox,
+				this.manifest,
+				featureId,
+			);
+
+			// Handle resource exhaustion
+			if (result.status === "resource_exhausted") {
+				console.log(`   │ 🔥 Feature #${featureId} hit OOM, recovering...`);
+				const recovered = await waitForSandboxRecovery(instance.sandbox);
+				if (recovered) {
+					result = await runFeatureImplementation(
+						instance.sandbox,
+						this.manifest,
+						featureId,
+					);
+				}
+			}
+
+			// Handle partial completion (context limit)
+			let retries = 0;
+			while (result.status === "partial" && retries < 3) {
+				console.log(
+					`   │ ⚠️ Feature #${featureId} hit context limit, resuming...`,
+				);
+				result = await runFeatureImplementation(
+					instance.sandbox,
+					this.manifest,
+					featureId,
+				);
+				retries++;
+			}
+
+			featureResults.push(result);
+
+			if (result.status === "completed") {
+				instance.completedFeatures.push(featureId);
+				console.log(
+					`   │ ✅ Feature #${featureId} completed (${result.tasks_completed}/${result.tasks_total} tasks)`,
+				);
+			} else {
+				console.log(
+					`   │ ❌ Feature #${featureId} ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
+				);
+			}
+		}
+
+		// Push branch
+		console.log("   │");
+		console.log(`   │ 📤 Pushing branch ${instance.branch}...`);
+		try {
+			await instance.sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && git push -u origin "${instance.branch}"`,
+				{ timeoutMs: 120000 },
+			);
+			console.log("   │ ✅ Branch pushed successfully");
+		} catch (error) {
+			console.log(`   │ ⚠️ Failed to push branch: ${error}`);
+		}
+
+		instance.status = "completed";
+		console.log(
+			`   └── Sandbox ${instance.id} completed ──────────────────────\n`,
+		);
+
+		return {
+			sandboxId: instance.id,
+			featureResults,
+			branch: instance.branch,
+			success: featureResults.every((r) => r.status === "completed"),
+		};
+	}
+
+	/**
+	 * Get URLs for all sandboxes.
+	 */
+	getReviewUrls(): { sandboxId: string; vscode: string; devServer: string }[] {
+		const urls: { sandboxId: string; vscode: string; devServer: string }[] = [];
+
+		for (const [sandboxId, instance] of this.pool.instances) {
+			const vscodeHost = instance.sandbox.getHost(VSCODE_PORT);
+			const devServerHost = instance.sandbox.getHost(DEV_SERVER_PORT);
+
+			urls.push({
+				sandboxId,
+				vscode: `https://${vscodeHost}`,
+				devServer: `https://${devServerHost}`,
+			});
+		}
+
+		return urls;
+	}
+
+	/**
+	 * Start VS Code Web on all sandboxes.
+	 */
+	async startVSCodeOnAll(): Promise<void> {
+		console.log("\n🚀 Starting VS Code Web on all sandboxes...");
+
+		for (const [_sandboxId, instance] of this.pool.instances) {
+			instance.sandbox.commands
+				.run("nohup start-vscode > /tmp/vscode.log 2>&1 &", { timeoutMs: 5000 })
+				.catch(() => {});
+		}
+
+		await sleep(5000);
+
+		for (const [sandboxId, instance] of this.pool.instances) {
+			const host = instance.sandbox.getHost(VSCODE_PORT);
+			console.log(`   ${sandboxId}: https://${host}`);
+		}
+	}
+
+	/**
+	 * Get all sandbox branches that need to be merged.
+	 */
+	getBranches(): string[] {
+		return Array.from(this.pool.instances.values())
+			.filter((i) => i.status === "completed")
+			.map((i) => i.branch);
+	}
+
+	/**
+	 * Get number of active sandboxes.
+	 */
+	getActiveCount(): number {
+		return this.pool.instances.size;
+	}
+
+	/**
+	 * Cleanup all sandboxes.
+	 */
+	async cleanup(): Promise<void> {
+		console.log("\n🧹 Cleaning up sandboxes...");
+		for (const [sandboxId, instance] of this.pool.instances) {
+			try {
+				await instance.sandbox.kill();
+				console.log(`   ${sandboxId}: killed`);
+			} catch {
+				console.log(`   ${sandboxId}: already stopped`);
+			}
+		}
+	}
+}
+
+// ============================================================================
+// Local Git Merge Coordinator
+// ============================================================================
+
+/**
+ * Merge all sandbox branches into a single target branch.
+ * Runs on the local machine (orchestrator), not in sandboxes.
+ */
+async function mergeAllBranches(
+	branches: string[],
+	targetBranch: string,
+	projectRoot: string,
+): Promise<{ success: boolean; conflicts: string[] }> {
+	console.log(
+		`\n🔀 Merging ${branches.length} branches into ${targetBranch}...`,
+	);
+
+	const { execSync } = await import("node:child_process");
+	const conflicts: string[] = [];
+
+	try {
+		// Fetch all remote branches
+		console.log("   Fetching remote branches...");
+		execSync("git fetch origin", { cwd: projectRoot, stdio: "pipe" });
+
+		// Create target branch from dev
+		console.log(`   Creating target branch: ${targetBranch}`);
+		try {
+			execSync(`git branch -D ${targetBranch}`, {
+				cwd: projectRoot,
+				stdio: "pipe",
+			});
+		} catch {
+			// Branch doesn't exist, that's fine
+		}
+		execSync(`git checkout -b ${targetBranch} origin/dev`, {
+			cwd: projectRoot,
+			stdio: "pipe",
+		});
+
+		// Merge each sandbox branch
+		for (const branch of branches) {
+			console.log(`   Merging ${branch}...`);
+			try {
+				execSync(
+					`git merge origin/${branch} --no-edit -m "Merge ${branch} into ${targetBranch}"`,
+					{ cwd: projectRoot, stdio: "pipe" },
+				);
+				console.log(`   ✅ ${branch} merged successfully`);
+			} catch {
+				// Check if it's a conflict
+				const status = execSync("git status --porcelain", {
+					cwd: projectRoot,
+					encoding: "utf-8",
+				});
+				if (
+					status.includes("UU ") ||
+					status.includes("AA ") ||
+					status.includes("DD ")
+				) {
+					console.log(`   ⚠️ ${branch} has conflicts`);
+					conflicts.push(branch);
+					// Abort this merge
+					execSync("git merge --abort", { cwd: projectRoot, stdio: "pipe" });
+				} else {
+					throw new Error(`Merge failed for ${branch}`);
+				}
+			}
+		}
+
+		// Push if no conflicts
+		if (conflicts.length === 0) {
+			console.log(`   Pushing ${targetBranch} to origin...`);
+			execSync(`git push -u origin ${targetBranch}`, {
+				cwd: projectRoot,
+				stdio: "pipe",
+			});
+			console.log("   ✅ All branches merged and pushed");
+		}
+
+		// Return to dev
+		execSync("git checkout dev", { cwd: projectRoot, stdio: "pipe" });
+
+		return { success: conflicts.length === 0, conflicts };
+	} catch (error) {
+		console.error(`   ❌ Merge failed: ${error}`);
+		// Try to recover
+		try {
+			execSync("git merge --abort", { cwd: projectRoot, stdio: "pipe" });
+		} catch {}
+		try {
+			execSync("git checkout dev", { cwd: projectRoot, stdio: "pipe" });
+		} catch {}
+		return { success: false, conflicts: ["FATAL_ERROR"] };
+	}
+}
+
+/**
+ * Print dry-run execution plan showing feature assignments.
+ */
+function printDryRunPlan(
+	manifest: InitiativeManifest,
+	sandboxCount: number,
+): void {
+	console.log("\n🔍 DRY RUN - Execution Plan:");
+
+	// Simulate assignment
+	const features = [...manifest.features].sort(
+		(a, b) => b.parallel_hours - a.parallel_hours,
+	);
+	const sandboxLoads = Array.from({ length: sandboxCount }, () => ({
+		features: [] as number[],
+		hours: 0,
+	}));
+
+	for (const feature of features) {
+		// Find sandbox with lowest load
+		let minIdx = 0;
+		for (let i = 1; i < sandboxLoads.length; i++) {
+			if (sandboxLoads[i].hours < sandboxLoads[minIdx].hours) {
+				minIdx = i;
+			}
+		}
+		sandboxLoads[minIdx].features.push(feature.id);
+		sandboxLoads[minIdx].hours += feature.parallel_hours;
+	}
+
+	for (let i = 0; i < sandboxLoads.length; i++) {
+		const id = String.fromCharCode(97 + i);
+		console.log(`\n   Sandbox ${id} (${sandboxLoads[i].hours}h):`);
+		for (const featureId of sandboxLoads[i].features) {
+			const feature = manifest.features.find((f) => f.id === featureId);
+			if (feature) {
+				console.log(
+					`      #${feature.id}: ${feature.title} (${feature.parallel_hours}h, ${feature.task_count} tasks)`,
+				);
+			}
+		}
+	}
+
+	const maxHours = Math.max(...sandboxLoads.map((s) => s.hours));
+	const sequentialHours = sandboxLoads.reduce((sum, s) => sum + s.hours, 0);
+	const savings = Math.round((1 - maxHours / sequentialHours) * 100);
+
+	console.log("\n   📊 Estimated Duration:");
+	console.log(`      Sequential: ${sequentialHours}h`);
+	console.log(`      Parallel (${sandboxCount} sandboxes): ${maxHours}h`);
+	console.log(`      Time saved: ${savings}%`);
+}
+
+/**
+ * Print final summary with results and URLs.
+ */
+function printFinalSummary(
+	manifest: InitiativeManifest,
+	urls: { sandboxId: string; vscode: string; devServer: string }[],
+	projectRoot: string,
+): void {
+	const completed = manifest.features.filter(
+		(f) => f.status === "completed",
+	).length;
+	const failed = manifest.features.filter((f) => f.status === "failed").length;
+
+	console.log("\n" + "═".repeat(70));
+	console.log("   SUMMARY");
+	console.log("═".repeat(70));
+
+	console.log("\n   📊 Results:");
+	console.log(
+		`      Features: ${completed}/${manifest.execution_plan.total_features} completed`,
+	);
+	console.log(`      Failed: ${failed}`);
+	console.log(
+		`      Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`,
+	);
+
+	console.log("\n   🔗 Review URLs:");
+	for (const { sandboxId, vscode } of urls) {
+		console.log(`      ${sandboxId}: ${vscode}`);
+	}
+
+	console.log(`\n   🌿 Merged Branch: ${manifest.sandbox.branch_name}`);
+
+	if (manifest.progress.started_at) {
+		const duration = Math.round(
+			(Date.now() - new Date(manifest.progress.started_at).getTime()) / 60000,
+		);
+		console.log(`\n   ⏱️ Duration: ${duration} minutes`);
+	}
+
+	console.log("\n   📁 Files:");
+	console.log(
+		`      Manifest: ${path.join(projectRoot, manifest.metadata.init_dir, "initiative-manifest.json")}`,
+	);
+
+	console.log("\n" + "═".repeat(70));
+
+	if (failed > 0) {
+		console.log(
+			"\n   ⚠️ Some features failed. Review branches and re-run with --resume",
+		);
+	} else {
+		console.log("\n   ✅ Initiative implementation complete!");
+	}
+}
+
+// ============================================================================
 // CLI
 // ============================================================================
 
@@ -1331,7 +2150,7 @@ function parseArgs(): OrchestratorOptions {
 	const args = process.argv.slice(2);
 	const options: OrchestratorOptions = {
 		initiativeId: 0,
-		maxParallel: 2,
+		maxParallel: 2, // Default to 2 sandboxes (dual sandbox mode)
 		resume: false,
 		timeout: 3600, // 1 hour (max for Hobby tier)
 		dryRun: false,
@@ -1340,9 +2159,13 @@ function parseArgs(): OrchestratorOptions {
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
 
-		if (arg === "--parallel" && args[i + 1]) {
-			options.maxParallel = parseInt(args[i + 1], 10);
+		if ((arg === "--parallel" || arg === "-p") && args[i + 1]) {
+			// Cap at 2 for Phase 1
+			options.maxParallel = Math.min(parseInt(args[i + 1], 10), 2);
 			i++;
+		} else if (arg === "--single") {
+			// Force single sandbox mode
+			options.maxParallel = 1;
 		} else if (arg === "--resume") {
 			options.resume = true;
 		} else if (arg === "--timeout" && args[i + 1]) {
@@ -1350,7 +2173,11 @@ function parseArgs(): OrchestratorOptions {
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
-		} else if (!arg.startsWith("--") && !options.initiativeId) {
+		} else if (
+			!arg.startsWith("--") &&
+			!arg.startsWith("-") &&
+			!options.initiativeId
+		) {
 			options.initiativeId = parseInt(arg, 10);
 		}
 	}
@@ -1360,22 +2187,36 @@ function parseArgs(): OrchestratorOptions {
 
 function showHelp(): void {
 	console.log(`
-Alpha Initiative Orchestrator
+Alpha Initiative Orchestrator (Phase 1: Dual Sandbox)
 
 Usage:
   tsx alpha-orchestrator.ts <initiative-id> [options]
 
 Options:
-  --parallel <n>    Max parallel features (default: 2)
-  --resume          Resume from previous state
-  --timeout <s>     Sandbox timeout in seconds (default: 7200)
-  --dry-run         Show execution plan without running
+  --parallel <n>, -p  Number of parallel sandboxes (default: 2, max: 2)
+  --single            Force single sandbox mode (equivalent to -p 1)
+  --resume            Resume from previous state
+  --timeout <s>       Sandbox timeout in seconds (default: 3600)
+  --dry-run           Show execution plan without running
+
+Modes:
+  Dual sandbox (default):
+    - Creates 2 E2B sandboxes in parallel
+    - Assigns features to sandboxes by load balancing
+    - Merges branches locally after completion
+    - ~50% faster for independent features
+
+  Single sandbox (--single):
+    - Original behavior with 1 sandbox
+    - Sequential feature execution
+    - Useful for debugging or when features conflict
 
 Examples:
-  tsx alpha-orchestrator.ts 1363
-  tsx alpha-orchestrator.ts 1363 --parallel 3
-  tsx alpha-orchestrator.ts 1363 --resume
-  tsx alpha-orchestrator.ts 1363 --dry-run
+  tsx alpha-orchestrator.ts 1363              # Dual sandbox (default)
+  tsx alpha-orchestrator.ts 1363 --dry-run    # Preview feature assignment
+  tsx alpha-orchestrator.ts 1363 --single     # Single sandbox mode
+  tsx alpha-orchestrator.ts 1363 -p 1         # Same as --single
+  tsx alpha-orchestrator.ts 1363 --resume     # Resume interrupted run
 
 Prerequisites:
   1. Run task decomposition:

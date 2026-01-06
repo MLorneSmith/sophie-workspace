@@ -1,8 +1,8 @@
 ---
-description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes sequentially with sub-agents, validates, commits, and reports progress to orchestrator
-argument-hint: <feature-id> [--resume-from=<task-id>]
+description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes with sub-agents (parallel by default), validates, commits, and reports progress.
+argument-hint: <feature-id> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
 model: opus
-allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch]
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 ---
 
 # Alpha Feature Implementation
@@ -12,6 +12,8 @@ Implement ALL tasks for Feature #$ARGUMENTS from the Alpha autonomous coding wor
 **Arguments:**
 - `<feature-id>` - Required. The GitHub issue number for the feature.
 - `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5`).
+- `--sequential` - Optional. Force sequential execution even when parallel batches are available.
+- `--parallel-dry-run` - Optional. Log parallel execution plan without executing. Use to validate analysis.
 
 ## Context
 
@@ -65,7 +67,100 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
    /conditional_docs implement "[feature title from tasks.json]"
    ```
 
+5. **Analyze task parallelism**:
+   - Check if execution groups have `parallel_batches` defined
+   - Log parallelization opportunities (Phase 2 - Dry Run)
+   - In future: execute parallel batches using Task tool (Phase 3)
+
+### Phase 1.5: Parallel Batch Analysis (Dry Run)
+
+**IMPORTANT**: Before executing tasks, analyze parallelization opportunities.
+
+For each execution group, check if `parallel_batches` is defined:
+
+```
+[Parallel Analysis - Group {group.id}: {group.name}]
+Tasks in group: {group.task_ids.length}
+
+IF group.parallel_batches exists AND has batches with >1 task:
+    Log: "⚡ PARALLEL OPPORTUNITY DETECTED"
+    For each batch in parallel_batches:
+        IF batch.task_ids.length > 1:
+            Log: "  Batch {batch.batch_id}: [{batch.task_ids}] can run in parallel"
+            Log: "    Reason: {batch.reason}"
+            Log: "    Max hours: {batch.max_hours}h (vs {sum of task hours}h sequential)"
+        ELSE:
+            Log: "  Batch {batch.batch_id}: [{batch.task_ids}] - single task"
+
+    IF group.parallelization_analysis:
+        Log: "  Speedup potential: {analysis.speedup_potential}x"
+        IF analysis.file_conflicts.length > 0:
+            Log: "  ⚠️ File conflicts detected:"
+            For each conflict:
+                Log: "    - {task_a} ↔ {task_b}: {conflicting_file}"
+
+    Log: "[DRY RUN] Would execute {parallelizable_count} tasks in parallel"
+    Log: "[DRY RUN] Sequential fallback for {sequential_count} tasks"
+
+ELSE:
+    Log: "  No parallel batches defined - running sequentially"
+```
+
+**Example output**:
+```
+[Parallel Analysis - Group 1: Foundation]
+Tasks in group: 2
+
+⚡ PARALLEL OPPORTUNITY DETECTED
+  Batch 1: [T1, T2] can run in parallel
+    Reason: No file overlaps between tasks
+    Max hours: 2h (vs 4h sequential)
+  Speedup potential: 2x
+
+[DRY RUN] Would execute 2 tasks in parallel using Task tool
+[DRY RUN] Estimated time: 2h instead of 4h
+
+[Parallel Analysis - Group 3: Data Loader Functions]
+Tasks in group: 4
+
+  Batch 1: [T5] - single task
+  Batch 2: [T6] - single task
+  Batch 3: [T7] - single task
+  Batch 4: [T8] - single task
+  ⚠️ File conflicts detected:
+    - T5 ↔ T6: dashboard-page.loader.ts
+    - T5 ↔ T7: dashboard-page.loader.ts
+  Speedup potential: 1x (no parallelization possible)
+
+[DRY RUN] All tasks must run sequentially due to file conflicts
+```
+
+**Progress file update** - Include parallelism info:
+```json
+{
+  "feature": { ... },
+  "current_group": {
+    "id": 1,
+    "name": "Foundation",
+    "parallel_batches": [
+      { "batch_id": 1, "task_ids": ["T1", "T2"], "status": "pending" }
+    ],
+    "execution_mode": "parallel_ready"
+  },
+  "parallelism_summary": {
+    "total_parallelizable": 8,
+    "total_sequential": 12,
+    "groups_with_parallel_batches": 3
+  }
+}
+```
+
 ### Phase 2: Execute Tasks
+
+**Arguments affecting execution**:
+- `--resume-from=<task-id>` - Skip completed tasks and resume from specified task
+- `--sequential` - Force sequential execution (disable parallel)
+- `--parallel-dry-run` - Log parallel execution plan without executing (validation mode)
 
 **CRITICAL: Handle --resume-from argument**
 
@@ -75,30 +170,95 @@ If `--resume-from=<task-id>` was provided:
 3. Skip all tasks until reaching the resume task
 4. Continue from that task
 
+**Execution Mode Selection** (Parallel is DEFAULT):
+
+```
+IF --parallel-dry-run flag is set:
+    execution_mode = "dry_run"
+    Log: "🔍 PARALLEL DRY RUN MODE - Logging execution plan only"
+
+ELSE IF --sequential flag is set:
+    execution_mode = "sequential"
+    Log: "📝 SEQUENTIAL MODE - Parallel disabled by flag"
+
+ELSE IF group has parallel_batches with >1 task:
+    execution_mode = "parallel"  # DEFAULT when parallel batches exist
+    Log: "⚡ PARALLEL MODE - Executing batches with Task tool sub-agents"
+
+ELSE:
+    execution_mode = "sequential"
+    Log: "📝 SEQUENTIAL MODE - No parallel batches available"
+```
+
+**Note**: Parallel execution is now the DEFAULT when `parallel_batches` exist in tasks.json. Use `--sequential` to opt-out.
+
 Execute tasks in order, respecting execution groups:
 
 ```
 For each execution_group (sorted by group.id ascending):
-    For each task_id in group.task_ids:
-        # Skip completed tasks if resuming
-        If task_id is in completed_tasks from progress file:
-            Skip to next task
 
-        # PRE-TASK CHECKPOINT (CRITICAL for crash recovery)
-        1. Save checkpoint BEFORE starting task:
-           - Write progress file with status "starting"
-           - This ensures we can resume if process crashes
+    # Determine execution mode for this group
+    group_has_parallel = group.parallel_batches exists AND
+                         any batch has task_ids.length > 1
 
-        2. Mark task as in_progress (in TodoWrite and tasks.json)
-        3. Read task context and constraints
-        4. Implement the task using the action verb
-        5. Run verification_command
-        6. If verification fails:
-           - Fix the issue
-           - Retry (max 3 attempts)
-           - If still failing, mark as blocked
-        7. Mark task as completed
-        8. Update progress file with completed status
+    IF execution_mode == "dry_run":
+        # DRY RUN - see below
+
+    ELSE IF execution_mode == "sequential" OR NOT group_has_parallel:
+        # SEQUENTIAL - see below
+
+    ELSE:
+        # PARALLEL EXECUTION (DEFAULT when parallel batches exist)
+        For each batch in group.parallel_batches:
+            IF batch.task_ids.length > 1:
+                # Execute parallel batch - See "Parallel Batch Execution" section
+                Log: "⚡ Parallel batch ${batch.batch_id}: [${batch.task_ids}]"
+                Execute parallel batch using Task tool
+            ELSE:
+                # Single task - execute normally
+                Execute task sequentially
+
+    # Continue to group completion...
+
+    # --- EXECUTION MODE DETAILS ---
+
+    IF execution_mode == "dry_run":
+        # DRY RUN - Log what would happen
+        For each batch in group.parallel_batches (if exists):
+            IF batch.task_ids.length > 1:
+                Log: "[DRY RUN] Would launch parallel batch: [{batch.task_ids}]"
+                Log: "[DRY RUN] Sub-agent prompts would be:"
+                For each task_id in batch.task_ids:
+                    Log: "  - Task {task_id}: {task.name}"
+            ELSE:
+                Log: "[DRY RUN] Sequential: {batch.task_ids[0]}"
+
+        # Still execute sequentially in dry-run mode
+        For each task_id in group.task_ids:
+            Execute task sequentially (normal flow)
+
+    ELSE:
+        # SEQUENTIAL EXECUTION (Current default)
+        For each task_id in group.task_ids:
+            # Skip completed tasks if resuming
+            If task_id is in completed_tasks from progress file:
+                Skip to next task
+
+            # PRE-TASK CHECKPOINT (CRITICAL for crash recovery)
+            1. Save checkpoint BEFORE starting task:
+               - Write progress file with status "starting"
+               - This ensures we can resume if process crashes
+
+            2. Mark task as in_progress (in TodoWrite and tasks.json)
+            3. Read task context and constraints
+            4. Implement the task using the action verb
+            5. Run verification_command
+            6. If verification fails:
+               - Fix the issue
+               - Retry (max 3 attempts)
+               - If still failing, mark as blocked
+            7. Mark task as completed
+            8. Update progress file with completed status
 
     After completing group:
         - Commit changes with conventional format
@@ -145,6 +305,232 @@ EOF
 - Without pre-task checkpoint, we lose track of where we were
 - With pre-task checkpoint, orchestrator knows which task to resume from
 - Saves significant time by not re-running completed tasks
+
+### Parallel Batch Execution (--enable-parallel)
+
+When `--enable-parallel` flag is set and a batch has multiple tasks, execute them in parallel using the Task tool.
+
+**Step 1: Pre-Batch Checkpoint**
+
+Before launching parallel tasks, save a checkpoint:
+
+```bash
+BATCH_TASKS='["T1", "T2", "T3"]'
+TIMESTAMP=$(date -Iseconds)
+
+cat > .initiative-progress.json << EOF
+{
+  "feature": { "issue_number": ${FEATURE_ID} },
+  "current_group": {
+    "id": ${GROUP_ID},
+    "name": "${GROUP_NAME}",
+    "batch": {
+      "batch_id": ${BATCH_ID},
+      "task_ids": ${BATCH_TASKS},
+      "status": "launching"
+    }
+  },
+  "parallel_execution": {
+    "mode": "parallel",
+    "batch_started_at": "${TIMESTAMP}",
+    "agents": {}
+  },
+  "completed_tasks": [...],
+  "status": "in_progress"
+}
+EOF
+```
+
+**Step 2: Launch Parallel Sub-Agents**
+
+For each task in the batch, launch a Task tool sub-agent with `run_in_background=true`:
+
+```
+Log: "⚡ Launching parallel batch ${batch.batch_id}: [${batch.task_ids}]"
+
+For each task_id in batch.task_ids:
+    Launch Task tool:
+        description: "Implement ${task_id}: ${task.name}"
+        subagent_type: "general-purpose"
+        run_in_background: true
+        prompt: |
+            ## Task: ${task.name}
+
+            **Task ID**: ${task_id}
+            **Feature**: #${feature_id} - ${feature_name}
+            **Action**: ${task.action.verb} ${task.action.target}
+
+            ### Context
+            **Files to reference**:
+            ${task.context.files.join('\n')}
+
+            **Constraints**:
+            ${task.context.constraints.join('\n')}
+
+            **Patterns to follow**:
+            ${task.context.patterns.map(p => p.file + ': ' + p.description).join('\n')}
+
+            ### Expected Outputs
+            ${task.outputs.map(o => o.type + ': ' + o.path).join('\n')}
+
+            ### Acceptance Criterion
+            ${task.acceptance_criterion}
+
+            ### Verification
+            Run this command to verify completion:
+            ```bash
+            ${task.verification_command}
+            ```
+
+            ### Instructions
+            1. Read the context files to understand patterns
+            2. Implement the task following constraints
+            3. Create/modify the output files as specified
+            4. Run the verification command
+            5. If verification fails, fix and retry (max 3 attempts)
+            6. Report SUCCESS or FAILURE with details
+
+            **IMPORTANT**: Do NOT commit changes. Just implement and verify.
+            Return a JSON summary:
+            ```json
+            {
+              "task_id": "${task_id}",
+              "status": "success" | "failed" | "blocked",
+              "files_modified": [...],
+              "verification_passed": true | false,
+              "error_message": null | "description if failed"
+            }
+            ```
+
+    Store agent_id for later retrieval
+```
+
+**CRITICAL**: Launch ALL tasks in the batch in a SINGLE message with multiple Task tool calls. This enables true parallel execution.
+
+Example of launching 3 tasks in parallel (single message with 3 tool calls):
+
+```
+<Task tool call 1>
+  description: "Implement T1: Create types"
+  run_in_background: true
+  prompt: "## Task: Create dashboard types..."
+
+<Task tool call 2>
+  description: "Implement T2: Create loader"
+  run_in_background: true
+  prompt: "## Task: Create data loader..."
+
+<Task tool call 3>
+  description: "Implement T3: Create skeleton"
+  run_in_background: true
+  prompt: "## Task: Create skeleton component..."
+```
+
+**Step 3: Wait for All Agents**
+
+After launching, use TaskOutput to wait for each agent:
+
+```
+Log: "⏳ Waiting for ${batch.task_ids.length} parallel tasks to complete..."
+
+results = []
+For each agent_id from launched agents:
+    Use TaskOutput tool:
+        task_id: agent_id
+        block: true
+        timeout: 300000  # 5 minutes per task
+
+    Parse result JSON from agent output
+    Append to results array
+
+    # Update progress file with partial completion
+    Update .initiative-progress.json with task status
+```
+
+**Step 4: Aggregate Results**
+
+After all agents complete:
+
+```
+Log: "📊 Parallel batch results:"
+
+successful_tasks = []
+failed_tasks = []
+
+For each result in results:
+    If result.status == "success":
+        Log: "  ✅ ${result.task_id}: Success"
+        successful_tasks.push(result.task_id)
+    Else:
+        Log: "  ❌ ${result.task_id}: ${result.error_message}"
+        failed_tasks.push(result.task_id)
+
+# Update progress file
+Update completed_tasks with successful_tasks
+Update failed_tasks with failed_tasks
+```
+
+**Step 5: Handle Failures**
+
+If any tasks in the batch failed:
+
+```
+IF failed_tasks.length > 0:
+    Log: "⚠️ ${failed_tasks.length} tasks failed in parallel batch"
+
+    For each failed_task in failed_tasks:
+        # Option 1: Retry sequentially (recommended)
+        Log: "🔄 Retrying ${failed_task} sequentially..."
+        Execute task sequentially with full error handling
+
+        # Option 2: Mark as blocked and continue
+        # Mark task as blocked
+        # Continue with next batch/group
+```
+
+**Step 6: Verification After Batch**
+
+After parallel batch completes (including retries):
+
+```
+# Run typecheck to ensure all parallel changes integrate correctly
+Log: "🔍 Running post-batch verification..."
+pnpm typecheck
+
+If typecheck fails:
+    Log: "❌ Type errors after parallel batch - fixing..."
+    # Fix type errors
+    # This may happen if parallel tasks had hidden dependencies
+```
+
+**Progress File During Parallel Execution**:
+
+```json
+{
+  "feature": { "issue_number": 1367 },
+  "current_group": {
+    "id": 1,
+    "name": "Foundation",
+    "batch": {
+      "batch_id": 1,
+      "task_ids": ["T1", "T2"],
+      "status": "in_progress"
+    }
+  },
+  "parallel_execution": {
+    "mode": "parallel",
+    "batch_started_at": "2024-01-01T12:00:00Z",
+    "agents": {
+      "T1": { "agent_id": "abc123", "status": "running" },
+      "T2": { "agent_id": "def456", "status": "completed", "result": "success" }
+    },
+    "completed": ["T2"],
+    "pending": ["T1"]
+  },
+  "completed_tasks": [],
+  "status": "in_progress"
+}
+```
 
 ### Task Implementation Guidelines
 
@@ -362,6 +748,82 @@ Context: 58% used
 Commits: 7
 ```
 
+### Example with Parallel Execution (--enable-parallel)
+
+For Feature #1369 with 6 tasks in 3 groups (5 parallelizable):
+
+```
+=== Alpha Feature Implementation ===
+Feature #1369: Quick Actions Panel
+Tasks: 6 | Groups: 3
+Mode: PARALLEL EXECUTION ENABLED
+
+[Loading Context]
+✓ Found feature directory: .ai/alpha/specs/.../1369-Feature-quick-actions-panel/
+✓ Loaded tasks.json (6 tasks, 3 groups)
+✓ Parallel batches detected: 2 groups with parallelizable tasks
+
+[Parallel Analysis]
+⚡ Group 1: Core Components - 3 tasks can run in parallel
+   Batch 1: [T1, T2, T3] - No file overlaps
+   Speedup: 2.67x (8h → 3h)
+⚡ Group 2: Integration - 2 tasks can run in parallel
+   Batch 1: [T4, T5] - No file overlaps
+   Speedup: 2x (4h → 2h)
+📝 Group 3: Testing - sequential (1 task)
+
+[Group 1: Core Components - PARALLEL]
+⚡ Launching parallel batch 1: [T1, T2, T3]
+   → Agent abc123: T1 - Create quick-action.types.ts
+   → Agent def456: T2 - Create quick-action-button.tsx
+   → Agent ghi789: T3 - Create quick-actions-panel.tsx
+
+⏳ Waiting for 3 parallel tasks...
+   ✅ T2: Completed (45s)
+   ✅ T1: Completed (52s)
+   ✅ T3: Completed (58s)
+
+📊 Parallel batch results:
+   ✅ T1: Success - Created types file
+   ✅ T2: Success - Created button component
+   ✅ T3: Success - Created panel component
+
+🔍 Post-batch verification: pnpm typecheck ✅
+✓ Group 1 complete (58s vs ~8min sequential) - Committing...
+✓ Pushed: abc1234
+
+[Group 2: Integration - PARALLEL]
+⚡ Launching parallel batch 1: [T4, T5]
+   → Agent jkl012: T4 - Wire panel to dashboard
+   → Agent mno345: T5 - Add actions to nav
+
+⏳ Waiting for 2 parallel tasks...
+   ✅ T4: Completed (38s)
+   ✅ T5: Completed (42s)
+
+📊 Parallel batch results:
+   ✅ T4: Success
+   ✅ T5: Success
+
+🔍 Post-batch verification: pnpm typecheck ✅
+✓ Group 2 complete - Committing...
+✓ Pushed: def5678
+
+[Group 3: Testing - SEQUENTIAL]
+→ T6: Test quick actions E2E
+  ✓ Verification passed
+✓ Group 3 complete - Committing...
+✓ Pushed: ghi9012
+
+=== Implementation Complete ===
+Status: completed
+Tasks: 6/6 completed
+Parallel batches: 2 (5 tasks parallelized)
+Time saved: ~60% (estimated)
+Context: 42% used
+Commits: 3
+```
+
 ## Important Reminders
 
 1. **CHECKPOINT BEFORE EACH TASK** - Save progress file with "starting" status BEFORE implementing
@@ -372,6 +834,34 @@ Commits: 7
 6. **Preserve context** - Use sub-agents for exploration
 7. **Exit cleanly** - Save state before context limit
 8. **Handle --resume-from** - Skip completed tasks when resuming from crash
+9. **Check parallel batches** - Run Phase 1.5 analysis before execution
+10. **Use --parallel-dry-run** - Validate parallelism analysis before enabling parallel execution
+
+## Parallel Execution Quick Reference
+
+**Parallel is now DEFAULT** when `parallel_batches` exist in tasks.json.
+
+**Normal execution (parallel enabled)**:
+```bash
+/alpha:implement 1367
+```
+
+**Dry run validation**:
+```bash
+/alpha:implement 1367 --parallel-dry-run
+```
+
+**Force sequential execution**:
+```bash
+/alpha:implement 1367 --sequential
+```
+
+**Check if parallelism is available**:
+```
+Look for group.parallel_batches in tasks.json
+If batch.task_ids.length > 1 → Tasks will run in parallel
+If group.parallelization_analysis.speedup_potential > 1 → Worth parallelizing
+```
 
 ## Arguments
 

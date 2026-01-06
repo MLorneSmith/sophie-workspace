@@ -16,6 +16,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { analyzeTasksJson } from "./analyze-task-parallelism";
 
 // Types
 interface TasksJson {
@@ -48,10 +49,24 @@ interface TasksJson {
 			task_ids: string[];
 			parallel_hours: number;
 			estimated_hours: number;
+			parallel_batches?: Array<{
+				batch_id: number;
+				task_ids: string[];
+				max_hours: number;
+				reason: string;
+			}>;
+			sequential_tasks?: string[];
+			parallelization_analysis?: {
+				total_tasks: number;
+				parallelizable_count: number;
+				sequential_count: number;
+				speedup_potential: number;
+			};
 		}>;
 		duration: {
 			sequential: number;
 			parallel: number;
+			time_saved_percent?: number;
 		};
 	};
 	github?: {
@@ -80,6 +95,12 @@ interface FeatureEntry {
 	parallel_hours: number;
 	dependencies: number[];
 	github_issue: number | null;
+	task_parallelism: {
+		parallelizable_tasks: number;
+		sequential_tasks: number;
+		groups_with_parallel_batches: number;
+		estimated_speedup: number;
+	};
 }
 
 interface InitiativeManifest {
@@ -206,14 +227,16 @@ function findFeatureDirectories(initDir: string): string[] {
 	});
 }
 
-// Load and parse tasks.json
+// Load and parse tasks.json, running parallelization analysis
 function loadTasksJson(featureDir: string): TasksJson | null {
 	const tasksFile = path.join(featureDir, "tasks.json");
 	try {
 		const content = fs.readFileSync(tasksFile, "utf-8");
-		return JSON.parse(content) as TasksJson;
-	} catch {
-		console.error(`Failed to load ${tasksFile}`);
+		const tasksJson = JSON.parse(content) as TasksJson;
+		// Run parallelization analysis
+		return analyzeTasksJson(tasksJson);
+	} catch (error) {
+		console.error(`Failed to load ${tasksFile}:`, error);
 		return null;
 	}
 }
@@ -365,6 +388,23 @@ async function main() {
 			(t) => t.status === "completed",
 		).length;
 
+		// Calculate task parallelism metrics from groups
+		const parallelizableTasks = tasksJson.execution.groups.reduce(
+			(sum, g) => sum + (g.parallelization_analysis?.parallelizable_count || 0),
+			0,
+		);
+		const sequentialTasks = tasksJson.execution.groups.reduce(
+			(sum, g) => sum + (g.parallelization_analysis?.sequential_count || 0),
+			0,
+		);
+		const groupsWithParallelBatches = tasksJson.execution.groups.filter(
+			(g) => g.parallel_batches && g.parallel_batches.some((b) => b.task_ids.length > 1),
+		).length;
+		const estimatedSpeedup =
+			tasksJson.execution.duration.sequential > 0
+				? tasksJson.execution.duration.sequential / tasksJson.execution.duration.parallel
+				: 1.0;
+
 		features.push({
 			id: featureId,
 			title: tasksJson.metadata.feature_name,
@@ -380,6 +420,12 @@ async function main() {
 			parallel_hours: tasksJson.execution.duration.parallel,
 			dependencies,
 			github_issue: tasksJson.github?.feature_tasks_issue || null,
+			task_parallelism: {
+				parallelizable_tasks: parallelizableTasks,
+				sequential_tasks: sequentialTasks,
+				groups_with_parallel_batches: groupsWithParallelBatches,
+				estimated_speedup: Math.round(estimatedSpeedup * 100) / 100,
+			},
 		});
 
 		totalTasks += tasksJson.tasks.length;
@@ -460,7 +506,29 @@ async function main() {
 	console.log(`   Sequential Hours: ${totalSequentialHours}`);
 	console.log(`   Parallel Hours: ${groupParallelHours}`);
 	console.log(`   Time Saved: ${timeSavedPercent}%`);
-	console.log("\n📦 Parallel Groups:");
+
+	// Task parallelism summary
+	const totalParallelizable = features.reduce(
+		(sum, f) => sum + f.task_parallelism.parallelizable_tasks,
+		0,
+	);
+	const totalSequentialTasks = features.reduce(
+		(sum, f) => sum + f.task_parallelism.sequential_tasks,
+		0,
+	);
+	console.log("\n⚡ Task-Level Parallelism:");
+	console.log(`   Parallelizable Tasks: ${totalParallelizable}/${totalTasks}`);
+	console.log(`   Sequential Tasks: ${totalSequentialTasks}`);
+	for (const feature of features) {
+		const p = feature.task_parallelism;
+		if (p.groups_with_parallel_batches > 0) {
+			console.log(
+				`   #${feature.id}: ${p.parallelizable_tasks} parallelizable, ${p.groups_with_parallel_batches} groups, ${p.estimated_speedup}x speedup`,
+			);
+		}
+	}
+
+	console.log("\n📦 Feature Parallel Groups:");
 	for (const group of parallelGroups) {
 		console.log(
 			`   Group ${group.group}: ${group.feature_ids.map((id) => `#${id}`).join(", ")}`,
