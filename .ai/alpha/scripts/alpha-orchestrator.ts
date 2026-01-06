@@ -773,8 +773,9 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log("═".repeat(70));
 
 	console.log("\n   Running code quality checks...");
+	// Run checks directly to avoid wrapper script permission issues
 	const validationResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm codecheck`,
+		`cd ${WORKSPACE_DIR} && pnpm typecheck && pnpm lint && pnpm format`,
 		{ timeoutMs: 300000 },
 	);
 
