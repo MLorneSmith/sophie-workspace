@@ -1362,5 +1362,4 @@ export interface Auth {
   [k: string]: unknown;
 }
 
-
 // Module augmentation removed for cross-app compatibility

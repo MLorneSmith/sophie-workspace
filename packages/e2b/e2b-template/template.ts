@@ -338,8 +338,8 @@ export function createTemplate(
 			])
 			// Set working directory
 			.setWorkdir(WORKSPACE_DIR)
-			// Install project dependencies
-			.runCmd(["pnpm install --frozen-lockfile"])
+			// Install project dependencies (no frozen-lockfile to handle patched deps)
+			.runCmd(["pnpm install"])
 			// Install Playwright browsers for E2E testing
 			.runCmd(["pnpm exec playwright install chromium"]);
 	} else {

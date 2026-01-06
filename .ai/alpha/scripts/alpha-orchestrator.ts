@@ -30,8 +30,8 @@ import * as path from "node:path";
 import { Sandbox } from "@e2b/code-interpreter";
 
 // Template constants - canonical values for SlideHeroes E2B template
-// Available templates: slideheroes-claude-agent (4 vCPU, 4GB), slideheroes-claude-agent-dev (2 vCPU, 1GB)
-const TEMPLATE_ALIAS = "slideheroes-claude-agent";
+// Available templates: slideheroes-claude-agent (4 vCPU, 4GB), slideheroes-claude-agent-dev (4 vCPU, 4GB)
+const TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
 const WORKSPACE_DIR = "/home/user/project";
 
 // ============================================================================
