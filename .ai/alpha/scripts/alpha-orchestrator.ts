@@ -172,7 +172,7 @@ const VSCODE_PORT = 8080;
 const DEV_SERVER_PORT = 3000;
 const PROGRESS_FILE = ".initiative-progress.json";
 const PROGRESS_POLL_INTERVAL_MS = 30000; // Poll progress file every 30 seconds
-const STALL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes with no progress = stalled
+const STALL_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes with no progress = stalled (increased from 5min)
 const STALL_CHECK_INTERVAL_MS = 30000; // Check for stalls every 30 seconds
 
 /**
@@ -585,11 +585,13 @@ interface SandboxProgress {
 
 /**
  * Display a structured progress update from the sandbox progress file.
+ * @param sandboxLabel Optional label to identify which sandbox (e.g., "sbx-a", "sbx-b")
  */
 function displayProgressUpdate(
 	progress: SandboxProgress,
 	featureTaskCount: number,
 	lastDisplayed: string,
+	sandboxLabel?: string,
 ): string {
 	const completed = progress.completed_tasks?.length || 0;
 	const total = featureTaskCount;
@@ -609,7 +611,11 @@ function displayProgressUpdate(
 	const progressBar =
 		"█".repeat(filledLength) + "░".repeat(barLength - filledLength);
 
-	console.log(`\n   ┌─ 📊 Progress Update ${"─".repeat(40)}`);
+	// Include sandbox label in header if provided
+	const sandboxInfo = sandboxLabel ? ` [${sandboxLabel}]` : "";
+	console.log(
+		`\n   ┌─ 📊 Progress Update${sandboxInfo} ${"─".repeat(Math.max(0, 40 - sandboxInfo.length))}`,
+	);
 	console.log(
 		`   │ Tasks: [${progressBar}] ${completed}/${total} (${progressPercent}%)`,
 	);
@@ -649,10 +655,12 @@ function displayProgressUpdate(
 /**
  * Start polling the progress file in the sandbox.
  * Returns a cleanup function to stop polling.
+ * @param sandboxLabel Optional label to identify which sandbox (e.g., "sbx-a", "sbx-b")
  */
 function startProgressPolling(
 	sandbox: Sandbox,
 	featureTaskCount: number,
+	sandboxLabel?: string,
 ): { stop: () => void } {
 	let lastDisplayed = "";
 	let isPolling = true;
@@ -671,6 +679,7 @@ function startProgressPolling(
 						progress,
 						featureTaskCount,
 						lastDisplayed,
+						sandboxLabel,
 					);
 				}
 			} catch {
@@ -699,6 +708,7 @@ async function runFeatureImplementation(
 	manifest: InitiativeManifest,
 	featureId: number,
 	resumeFromTask?: string,
+	sandboxLabel?: string,
 ): Promise<ProgressReport> {
 	const feature = manifest.features.find((f) => f.id === featureId);
 
@@ -763,10 +773,15 @@ async function runFeatureImplementation(
 	let capturedStderr = "";
 
 	// Start progress polling (every 30 seconds)
+	const labelInfo = sandboxLabel ? ` for ${sandboxLabel}` : "";
 	console.log(
-		`   │ Starting progress polling (every ${PROGRESS_POLL_INTERVAL_MS / 1000}s)...`,
+		`   │ Starting progress polling${labelInfo} (every ${PROGRESS_POLL_INTERVAL_MS / 1000}s)...`,
 	);
-	const progressPoller = startProgressPolling(sandbox, feature.task_count);
+	const progressPoller = startProgressPolling(
+		sandbox,
+		feature.task_count,
+		sandboxLabel,
+	);
 
 	try {
 		// Run claude with unbuffered output
@@ -1612,11 +1627,13 @@ async function getPartialProgress(
 /**
  * Run feature implementation with stall detection.
  * Monitors progress and kills/restarts if no progress for STALL_TIMEOUT_MS.
+ * @param sandboxLabel Optional label to identify which sandbox (e.g., "sbx-a", "sbx-b")
  */
 async function runFeatureWithStallDetection(
 	sandbox: Sandbox,
 	manifest: InitiativeManifest,
 	featureId: number,
+	sandboxLabel?: string,
 ): Promise<ProgressReport> {
 	let lastProgressSnapshot: {
 		completedTasks: string[];
@@ -1649,8 +1666,9 @@ async function runFeatureWithStallDetection(
 			// Check for stall
 			if (Date.now() - lastChangeTime > STALL_TIMEOUT_MS) {
 				isStalled = true;
+				const labelPrefix = sandboxLabel ? `[${sandboxLabel}] ` : "";
 				console.log(
-					`   ⚠️ Feature #${featureId} stalled - no progress for ${STALL_TIMEOUT_MS / 60000} minutes`,
+					`   ⚠️ ${labelPrefix}Feature #${featureId} stalled - no progress for ${STALL_TIMEOUT_MS / 60000} minutes`,
 				);
 			}
 		} catch {
@@ -1664,6 +1682,8 @@ async function runFeatureWithStallDetection(
 			sandbox,
 			manifest,
 			featureId,
+			undefined, // resumeFromTask
+			sandboxLabel,
 		);
 
 		// Check periodically if we've stalled
@@ -1942,19 +1962,20 @@ class SandboxPoolManager {
 
 		for (const featureId of instance.assignedFeatures) {
 			console.log("   │");
-			console.log(`   │ 📋 Starting Feature #${featureId}`);
+			console.log(`   │ 📋 [${instance.id}] Starting Feature #${featureId}`);
 
 			// Use stall detection wrapper to catch hung Claude sessions
 			let result = await runFeatureWithStallDetection(
 				instance.sandbox,
 				this.manifest,
 				featureId,
+				instance.id, // Pass sandbox label for progress reporting
 			);
 
 			// Handle resource exhaustion (includes stall detection)
 			if (result.status === "resource_exhausted") {
 				console.log(
-					`   │ 🔥 Feature #${featureId} hit OOM/stall, recovering...`,
+					`   │ 🔥 [${instance.id}] Feature #${featureId} hit OOM/stall, recovering...`,
 				);
 				const recovered = await waitForSandboxRecovery(instance.sandbox);
 				if (recovered) {
@@ -1962,6 +1983,7 @@ class SandboxPoolManager {
 						instance.sandbox,
 						this.manifest,
 						featureId,
+						instance.id, // Pass sandbox label for progress reporting
 					);
 				}
 			}
@@ -1970,12 +1992,13 @@ class SandboxPoolManager {
 			let retries = 0;
 			while (result.status === "partial" && retries < 3) {
 				console.log(
-					`   │ ⚠️ Feature #${featureId} hit context limit, resuming...`,
+					`   │ ⚠️ [${instance.id}] Feature #${featureId} hit context limit, resuming...`,
 				);
 				result = await runFeatureWithStallDetection(
 					instance.sandbox,
 					this.manifest,
 					featureId,
+					instance.id, // Pass sandbox label for progress reporting
 				);
 				retries++;
 			}
@@ -1985,11 +2008,11 @@ class SandboxPoolManager {
 			if (result.status === "completed") {
 				instance.completedFeatures.push(featureId);
 				console.log(
-					`   │ ✅ Feature #${featureId} completed (${result.tasks_completed}/${result.tasks_total} tasks)`,
+					`   │ ✅ [${instance.id}] Feature #${featureId} completed (${result.tasks_completed}/${result.tasks_total} tasks)`,
 				);
 			} else {
 				console.log(
-					`   │ ❌ Feature #${featureId} ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
+					`   │ ❌ [${instance.id}] Feature #${featureId} ${result.status} (${result.tasks_completed}/${result.tasks_total} tasks)`,
 				);
 			}
 		}
