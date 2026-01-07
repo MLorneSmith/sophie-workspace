@@ -473,8 +473,9 @@ async function createSandbox(
 
 	if (branchExists) {
 		console.log(`   Checking out existing branch: ${branchName}`);
+		// Use -B to create/reset local branch tracking remote (handles case where remote exists but local doesn't)
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git checkout "${branchName}" && git pull origin "${branchName}"`,
+			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" "origin/${branchName}"`,
 			{ timeoutMs: 60000 },
 		);
 	} else {
@@ -998,7 +999,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 	// Create sandboxes
 	const instances: SandboxInstance[] = [];
-	const STAGGER_DELAY_MS = 90000;
+	const STAGGER_DELAY_MS = 20000;
 
 	for (let i = 0; i < options.sandboxCount; i++) {
 		const label = `sbx-${String.fromCharCode(97 + i)}`;
