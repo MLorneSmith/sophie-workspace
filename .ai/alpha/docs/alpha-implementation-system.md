@@ -166,6 +166,108 @@ These URLs are displayed immediately after sandbox creation and stored in the ma
 └── implement.md                        # Sandbox implementation command
 ```
 
+## Spec-Based Branching
+
+The orchestrator uses **spec-based branching** to enable seamless multi-initiative workflows.
+
+### Why Spec-Based?
+
+A Spec typically contains multiple Initiatives that together deliver a complete feature set:
+
+```
+Spec #1362 (user-dashboard-home)
+├── Initiative #1363 (dashboard-foundation)    ← Run 1
+├── Initiative #1364 (activity-feed)           ← Run 2
+└── Initiative #1365 (coaching-integration)    ← Run 3
+```
+
+With **initiative-based** branching (old approach), each orchestrator run would create a separate branch:
+- `alpha/initiative-1363`
+- `alpha/initiative-1364`
+- `alpha/initiative-1365`
+
+This required manual merging of 3 branches to complete one Spec.
+
+With **spec-based** branching (current approach), all initiatives share one branch:
+- `alpha/spec-1362`
+
+### Branch Naming Convention
+
+| Mode | Branch Pattern | Purpose |
+|------|----------------|---------|
+| Single sandbox | `alpha/spec-{spec_id}` | Main implementation branch |
+| Dual sandbox | `alpha/spec-{spec_id}-sbx-a`, `alpha/spec-{spec_id}-sbx-b` | Parallel work branches |
+| Merge target | `alpha/spec-{spec_id}` | Final merged branch |
+
+### Multi-Initiative Continuity
+
+When running the orchestrator for subsequent initiatives in the same spec:
+
+**First Initiative (#1363):**
+```
+📦 Creating E2B sandbox...
+   Fetching from origin...
+   No existing spec branch found
+   Starting from dev branch...
+   Creating branch: alpha/spec-1362
+
+[Implementation runs...]
+
+   Pushing to origin: alpha/spec-1362
+```
+
+**Second Initiative (#1364):**
+```
+📦 Creating E2B sandbox...
+   Fetching from origin...
+   Found existing branch: alpha/spec-1362
+   Checking out and pulling latest changes...
+   Using existing branch: alpha/spec-1362
+
+[Implementation continues from where #1363 left off...]
+```
+
+### Benefits
+
+1. **Single PR per Spec**: All work for a spec results in one pull request
+2. **Automatic Continuity**: No manual branch management between initiatives
+3. **Cumulative Progress**: Each initiative builds on previous work
+4. **Simpler Review**: Reviewers see the complete spec implementation together
+5. **Clean History**: Logical commit progression across all initiatives
+
+### Workflow Example
+
+```bash
+# Implement first initiative
+tsx alpha-orchestrator.ts 1363
+# Creates alpha/spec-1362, implements dashboard-foundation
+
+# Implement second initiative (days/weeks later)
+tsx alpha-orchestrator.ts 1364
+# Continues on alpha/spec-1362, implements activity-feed
+
+# Implement third initiative
+tsx alpha-orchestrator.ts 1365
+# Continues on alpha/spec-1362, implements coaching-integration
+
+# Create single PR for entire spec
+gh pr create --base dev --head alpha/spec-1362 \
+  --title "Spec #1362: User Dashboard Home" \
+  --body "Implements all 3 initiatives for the user dashboard"
+```
+
+### Dual Sandbox Branch Merging
+
+When using dual sandbox mode (`--parallel 2`), each sandbox works on a sub-branch:
+
+```
+alpha/spec-1362-sbx-a  ──┐
+                        ├──→ alpha/spec-1362 (merged locally)
+alpha/spec-1362-sbx-b  ──┘
+```
+
+The orchestrator automatically merges these sub-branches into the main spec branch after completion.
+
 ## Progress Tracking
 
 ### Initiative Manifest Progress
