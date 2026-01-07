@@ -138,7 +138,8 @@ Tasks in group: 4
 **Progress file update** - Include parallelism info:
 ```json
 {
-  "feature": { ... },
+  "feature": { "issue_number": 1367, "title": "Dashboard Page" },
+  "phase": "analyzing_parallelism",
   "current_group": {
     "id": 1,
     "name": "Foundation",
@@ -151,7 +152,10 @@ Tasks in group: 4
     "total_parallelizable": 8,
     "total_sequential": 12,
     "groups_with_parallel_batches": 3
-  }
+  },
+  "completed_tasks": [],
+  "status": "in_progress",
+  "last_heartbeat": "2024-01-01T12:00:00Z"
 }
 ```
 
@@ -295,7 +299,8 @@ cat > .initiative-progress.json << EOF
   "failed_tasks": [],
   "checkpoint_type": "pre_task",
   "status": "in_progress",
-  "last_checkpoint": "${TIMESTAMP}"
+  "last_checkpoint": "${TIMESTAMP}",
+  "last_heartbeat": "${TIMESTAMP}"
 }
 EOF
 ```
@@ -406,8 +411,9 @@ cat > .initiative-progress.json << EOF
     "batch_started_at": "${TIMESTAMP}",
     "agents": {}
   },
-  "completed_tasks": [...],
-  "status": "in_progress"
+  "completed_tasks": ${COMPLETED_JSON},
+  "status": "in_progress",
+  "last_heartbeat": "${TIMESTAMP}"
 }
 EOF
 ```
@@ -599,7 +605,8 @@ If typecheck fails:
     "pending": ["T1"]
   },
   "completed_tasks": [],
-  "status": "in_progress"
+  "status": "in_progress",
+  "last_heartbeat": "2024-01-01T12:01:30Z"
 }
 ```
 
@@ -698,19 +705,36 @@ After each execution group:
 }
 ```
 
-**Update progress file after each task**:
+**Update progress file after each task** (MUST include `last_heartbeat`):
 ```bash
-# Write progress (use jq or node to update JSON)
-cat > .initiative-progress.json << 'EOF'
+# Write progress - ALWAYS include last_heartbeat with current timestamp
+TIMESTAMP=$(date -Iseconds)
+cat > .initiative-progress.json << EOF
 {
-  "feature": { ... },
-  "current_task": { ... },
-  "completed_tasks": [...],
+  "feature": { "issue_number": ${FEATURE_ID}, "title": "${FEATURE_TITLE}" },
+  "phase": "${PHASE}",
+  "current_task": {
+    "id": "${TASK_ID}",
+    "name": "${TASK_NAME}",
+    "status": "${STATUS}",
+    "started_at": "${TASK_STARTED_AT}"
+  },
+  "current_group": {
+    "id": ${GROUP_ID},
+    "name": "${GROUP_NAME}",
+    "tasks_total": ${GROUP_TOTAL},
+    "tasks_completed": ${GROUP_COMPLETED}
+  },
+  "completed_tasks": ${COMPLETED_JSON},
+  "failed_tasks": ${FAILED_JSON},
+  "context_usage_percent": ${CONTEXT_PERCENT},
   "status": "in_progress",
-  ...
+  "last_heartbeat": "${TIMESTAMP}"
 }
 EOF
 ```
+
+**CRITICAL**: Every progress file write MUST include `last_heartbeat` set to the current timestamp. The orchestrator uses this to detect stalled sessions.
 
 ### Phase 5: Exit Conditions
 

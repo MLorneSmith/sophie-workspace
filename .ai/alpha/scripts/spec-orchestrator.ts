@@ -418,6 +418,20 @@ async function createSandbox(
 			`cd ${WORKSPACE_DIR} && git checkout dev && git pull origin dev && git checkout -b "${branchName}"`,
 			{ timeoutMs: 60000 },
 		);
+		// Push new branch to remote so other sandboxes can pull from it
+		if (GITHUB_TOKEN) {
+			console.log("   Pushing new branch to remote...");
+			try {
+				await sandbox.commands.run(
+					`cd ${WORKSPACE_DIR} && git push -u origin "${branchName}"`,
+					{ timeoutMs: 60000 },
+				);
+			} catch {
+				console.log(
+					"   ⚠ Initial push failed (will retry after first feature)",
+				);
+			}
+		}
 	}
 
 	// Verify dependencies
@@ -653,17 +667,36 @@ async function runFeatureImplementation(
 	instance.status = "busy";
 	saveManifest(manifest);
 
+	// Clear stale progress file from previous runs
+	// This prevents the orchestrator from reading old heartbeat timestamps
+	try {
+		await instance.sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && rm -f ${PROGRESS_FILE}`,
+			{ timeoutMs: 5000 },
+		);
+	} catch {
+		// Ignore - file may not exist
+	}
+
 	// CRITICAL: Pull latest code before starting feature
 	// This ensures we have code from features implemented by OTHER sandboxes
 	// Without this, features with dependencies would fail (missing imports, types, etc.)
-	const isFirstFeature = manifest.progress.features_completed === 0;
-	if (isFirstFeature) {
-		console.log("   │   ℹ️ First feature - no remote branch to pull yet");
+	const branchName = manifest.sandbox.branch_name;
+
+	// Check if remote branch exists before attempting pull
+	const remoteBranchCheck = await instance.sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git ls-remote --heads origin "${branchName}" | wc -l`,
+		{ timeoutMs: 30000 },
+	);
+	const remoteBranchExists = remoteBranchCheck.stdout.trim() === "1";
+
+	if (!remoteBranchExists) {
+		console.log("   │   ℹ️ Remote branch not yet pushed - skipping pull");
 	} else {
 		console.log("   │   Pulling latest code...");
 		try {
 			await instance.sandbox.commands.run(
-				`cd ${WORKSPACE_DIR} && git pull origin "${manifest.sandbox.branch_name}" --rebase`,
+				`cd ${WORKSPACE_DIR} && git pull origin "${branchName}" --rebase`,
 				{ timeoutMs: 60000 },
 			);
 			console.log("   │   ✓ Code synced");
