@@ -503,6 +503,12 @@ async function createSandbox(
 		}
 	}
 
+	// Clear any stale progress file from template or previous runs
+	// This MUST happen before feature implementation to prevent false stall detection
+	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && rm -f ${PROGRESS_FILE}`, {
+		timeoutMs: 5000,
+	});
+
 	// Verify dependencies
 	const checkResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
@@ -624,11 +630,15 @@ function displayProgressUpdate(
 /**
  * Start polling the progress file in the sandbox.
  * Returns a cleanup function to stop polling.
+ *
+ * @param sessionStartTime - When this feature implementation session started.
+ *   Progress with heartbeats before this time is considered stale and ignored.
  */
 function startProgressPolling(
 	sandbox: Sandbox,
 	featureTaskCount: number,
 	sandboxLabel: string,
+	sessionStartTime: Date = new Date(),
 ): { stop: () => void; getLastProgress: () => SandboxProgress | null } {
 	let lastDisplayed = "";
 	let isPolling = true;
@@ -644,6 +654,18 @@ function startProgressPolling(
 
 				if (result.stdout && result.stdout.trim()) {
 					const progress: SandboxProgress = JSON.parse(result.stdout);
+
+					// Skip stale progress data from previous sessions
+					// A heartbeat more than 5 minutes before our session started is definitely stale
+					if (progress.last_heartbeat) {
+						const heartbeatTime = new Date(progress.last_heartbeat).getTime();
+						const sessionStart = sessionStartTime.getTime() - 5 * 60 * 1000; // 5 min grace
+						if (heartbeatTime < sessionStart) {
+							// Stale data from previous run - ignore and wait for fresh data
+							continue;
+						}
+					}
+
 					lastProgress = progress;
 					lastDisplayed = displayProgressUpdate(
 						progress,
@@ -676,8 +698,14 @@ function startProgressPolling(
 
 /**
  * Check if a feature has stalled (no heartbeat or progress for STALL_TIMEOUT_MS).
+ *
+ * @param progress - The last progress data received
+ * @param sessionStartTime - When this session started (to filter stale data)
  */
-function checkForStall(progress: SandboxProgress | null): {
+function checkForStall(
+	progress: SandboxProgress | null,
+	sessionStartTime: Date = new Date(),
+): {
 	stalled: boolean;
 	reason?: string;
 } {
@@ -686,10 +714,18 @@ function checkForStall(progress: SandboxProgress | null): {
 	}
 
 	const now = Date.now();
+	const sessionStart = sessionStartTime.getTime();
 
 	// Check heartbeat age
 	if (progress.last_heartbeat) {
-		const heartbeatAge = now - new Date(progress.last_heartbeat).getTime();
+		const heartbeatTime = new Date(progress.last_heartbeat).getTime();
+
+		// Ignore heartbeats from before this session started (stale data)
+		if (heartbeatTime < sessionStart - 5 * 60 * 1000) {
+			return { stalled: false }; // Don't flag stale data as stalled
+		}
+
+		const heartbeatAge = now - heartbeatTime;
 		if (heartbeatAge > STALL_TIMEOUT_MS) {
 			return {
 				stalled: true,
@@ -703,7 +739,14 @@ function checkForStall(progress: SandboxProgress | null): {
 		progress.current_task?.status === "starting" &&
 		progress.current_task.started_at
 	) {
-		const taskAge = now - new Date(progress.current_task.started_at).getTime();
+		const taskStartTime = new Date(progress.current_task.started_at).getTime();
+
+		// Ignore task start times from before this session
+		if (taskStartTime < sessionStart - 5 * 60 * 1000) {
+			return { stalled: false };
+		}
+
+		const taskAge = now - taskStartTime;
 		if (taskAge > STALL_TIMEOUT_MS) {
 			return {
 				stalled: true,
@@ -783,18 +826,22 @@ async function runFeatureImplementation(
 	let capturedStdout = "";
 	let capturedStderr = "";
 
+	// Track when this session started (for filtering stale progress data)
+	const sessionStartTime = new Date();
+
 	// Start progress polling
 	const progressPoller = startProgressPolling(
 		instance.sandbox,
 		feature.task_count,
 		instance.label,
+		sessionStartTime,
 	);
 
 	// Start stall detection interval
 	let stallDetected = false;
 	const stallCheckInterval = setInterval(() => {
 		const lastProgress = progressPoller.getLastProgress();
-		const stallCheck = checkForStall(lastProgress);
+		const stallCheck = checkForStall(lastProgress, sessionStartTime);
 		if (stallCheck.stalled && !stallDetected) {
 			stallDetected = true;
 			console.log(`   │   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
