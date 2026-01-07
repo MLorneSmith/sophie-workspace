@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": 1362,
 		"spec_name": "user dashboard home",
-		"generated_at": "2026-01-07T18:47:42.386Z",
+		"generated_at": "2026-01-07T20:09:00.628Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/research-library"
 	},
@@ -12,10 +12,10 @@
 			"name": "dashboard foundation",
 			"slug": "dashboard-foundation",
 			"priority": 1,
-			"status": "in_progress",
+			"status": "pending",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation",
 			"feature_count": 4,
-			"features_completed": 1,
+			"features_completed": 0,
 			"dependencies": []
 		},
 		{
@@ -60,11 +60,11 @@
 			"slug": "dashboard-page-grid",
 			"priority": 1,
 			"global_priority": 1,
-			"status": "completed",
+			"status": "pending",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid",
 			"task_count": 20,
-			"tasks_completed": 20,
+			"tasks_completed": 0,
 			"sequential_hours": 41,
 			"parallel_hours": 34,
 			"dependencies": [],
@@ -77,7 +77,7 @@
 			"slug": "presentation-table",
 			"priority": 2,
 			"global_priority": 2,
-			"status": "in_progress",
+			"status": "pending",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1368-Feature-presentation-table/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1368-Feature-presentation-table",
 			"task_count": 12,
@@ -85,8 +85,7 @@
 			"sequential_hours": 21,
 			"parallel_hours": 12,
 			"dependencies": [],
-			"github_issue": 1383,
-			"assigned_sandbox": "sbx-b"
+			"github_issue": 1383
 		},
 		{
 			"id": 1369,
@@ -95,7 +94,7 @@
 			"slug": "quick-actions-panel",
 			"priority": 3,
 			"global_priority": 3,
-			"status": "in_progress",
+			"status": "pending",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1369-Feature-quick-actions-panel/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1369-Feature-quick-actions-panel",
 			"task_count": 6,
@@ -103,8 +102,7 @@
 			"sequential_hours": 15,
 			"parallel_hours": 8,
 			"dependencies": [],
-			"github_issue": 1384,
-			"assigned_sandbox": "sbx-a"
+			"github_issue": 1384
 		},
 		{
 			"id": 1370,
@@ -282,25 +280,22 @@
 		}
 	],
 	"progress": {
-		"status": "in_progress",
+		"status": "pending",
 		"initiatives_completed": 0,
 		"initiatives_total": 4,
-		"features_completed": 1,
+		"features_completed": 0,
 		"features_total": 13,
-		"tasks_completed": 20,
+		"tasks_completed": 0,
 		"tasks_total": 108,
-		"next_feature_id": 1369,
-		"last_completed_feature_id": 1367,
-		"started_at": "2026-01-07T19:12:31.816Z",
+		"next_feature_id": 1367,
+		"last_completed_feature_id": null,
+		"started_at": null,
 		"completed_at": null,
-		"last_checkpoint": "2026-01-07T19:25:47.961Z"
+		"last_checkpoint": null
 	},
 	"sandbox": {
-		"sandbox_ids": [
-			"itci12psncub1bx4lm9lj",
-			"i388tdti4nx8e03zpa9nc"
-		],
-		"branch_name": "alpha/spec-1362",
-		"created_at": "2026-01-07T19:10:36.302Z"
+		"sandbox_ids": [],
+		"branch_name": null,
+		"created_at": null
 	}
 }

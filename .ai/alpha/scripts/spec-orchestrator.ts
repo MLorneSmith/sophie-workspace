@@ -283,7 +283,7 @@ function saveManifest(manifest: SpecManifest): void {
 
 /**
  * Get the next available feature that:
- * 1. Is pending (not in_progress, completed, or failed)
+ * 1. Is pending OR failed (failed features are retried on re-run)
  * 2. Has all dependencies completed
  * 3. Is not assigned to another sandbox
  */
@@ -302,8 +302,9 @@ function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 	);
 
 	for (const feature of manifest.feature_queue) {
-		// Skip if not pending
-		if (feature.status !== "pending") {
+		// Skip if completed or currently in_progress (with active sandbox)
+		// Allow pending AND failed features (failed features are retried)
+		if (feature.status !== "pending" && feature.status !== "failed") {
 			continue;
 		}
 
@@ -339,6 +340,70 @@ function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 function updateNextFeatureId(manifest: SpecManifest): void {
 	const nextFeature = getNextAvailableFeature(manifest);
 	manifest.progress.next_feature_id = nextFeature?.id || null;
+}
+
+/**
+ * Clean up stale state from previous runs.
+ * This handles:
+ * - Features stuck as "in_progress" from crashed/killed sandboxes
+ * - Stale sandbox assignments that no longer exist
+ * - Failed features that need retry (clear error for fresh attempt)
+ */
+function cleanupStaleState(manifest: SpecManifest): number {
+	let cleanedCount = 0;
+
+	for (const feature of manifest.feature_queue) {
+		// Reset in_progress features with stale sandbox assignments
+		// When we restart, the old sandboxes are gone
+		if (feature.status === "in_progress" && feature.assigned_sandbox) {
+			console.log(
+				`   🧹 Resetting stale in_progress: #${feature.id} (was ${feature.assigned_sandbox})`,
+			);
+			feature.status = "pending";
+			feature.assigned_sandbox = undefined;
+			cleanedCount++;
+		}
+
+		// Clear stale sandbox assignments from pending/failed features
+		if (
+			feature.assigned_sandbox &&
+			(feature.status === "pending" || feature.status === "failed")
+		) {
+			feature.assigned_sandbox = undefined;
+			cleanedCount++;
+		}
+
+		// Clear error messages from failed features (they'll be retried fresh)
+		if (feature.status === "failed" && feature.error) {
+			console.log(`   🔄 Marking for retry: #${feature.id} - ${feature.title}`);
+			feature.error = undefined;
+		}
+	}
+
+	// Update initiative statuses based on feature cleanup
+	for (const initiative of manifest.initiatives) {
+		const initFeatures = manifest.feature_queue.filter(
+			(f) => f.initiative_id === initiative.id,
+		);
+		const completedCount = initFeatures.filter(
+			(f) => f.status === "completed",
+		).length;
+		const inProgressCount = initFeatures.filter(
+			(f) => f.status === "in_progress",
+		).length;
+
+		initiative.features_completed = completedCount;
+
+		if (completedCount === initiative.feature_count) {
+			initiative.status = "completed";
+		} else if (inProgressCount > 0 || completedCount > 0) {
+			initiative.status = "in_progress";
+		} else {
+			initiative.status = "pending";
+		}
+	}
+
+	return cleanedCount;
 }
 
 // ============================================================================
@@ -892,6 +957,14 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log("═".repeat(70));
 	console.log("   ALPHA SPEC ORCHESTRATOR");
 	console.log("═".repeat(70));
+
+	// Clean up stale state from previous runs
+	// This resets in_progress features with dead sandboxes and prepares failed features for retry
+	const cleanedCount = cleanupStaleState(manifest);
+	if (cleanedCount > 0) {
+		console.log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
+		saveManifest(manifest);
+	}
 	console.log(
 		`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
 	);
