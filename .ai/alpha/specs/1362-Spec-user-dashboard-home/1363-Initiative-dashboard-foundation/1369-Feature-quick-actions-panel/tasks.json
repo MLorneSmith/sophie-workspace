@@ -51,11 +51,7 @@
 			],
 			"dependencies": {
 				"blocked_by": [],
-				"blocks": [
-					"T2",
-					"T3",
-					"T6"
-				]
+				"blocks": ["T2", "T3", "T6"]
 			},
 			"m1_checks": {
 				"single_verb": true,
@@ -80,9 +76,7 @@
 			"priority": 2,
 			"group": 1,
 			"context": {
-				"files": [
-					"packages/ui/src/makerkit/card-button.tsx"
-				],
+				"files": ["packages/ui/src/makerkit/card-button.tsx"],
 				"dependencies": [
 					"CardButton, CardButtonHeader, CardButtonTitle from @kit/ui/card-button",
 					"Trans from @kit/ui/trans",
@@ -107,12 +101,8 @@
 				}
 			],
 			"dependencies": {
-				"blocked_by": [
-					"T1"
-				],
-				"blocks": [
-					"T3"
-				]
+				"blocked_by": ["T1"],
+				"blocks": ["T3"]
 			},
 			"m1_checks": {
 				"single_verb": true,
@@ -137,9 +127,7 @@
 			"priority": 3,
 			"group": 1,
 			"context": {
-				"files": [
-					"apps/web/app/home/(user)/_components/action-card.tsx"
-				],
+				"files": ["apps/web/app/home/(user)/_components/action-card.tsx"],
 				"dependencies": [
 					"ActionCard component",
 					"QuickActionsStats type from dashboard.types.ts",
@@ -163,13 +151,8 @@
 				}
 			],
 			"dependencies": {
-				"blocked_by": [
-					"T1",
-					"T2"
-				],
-				"blocks": [
-					"T5"
-				]
+				"blocked_by": ["T1", "T2"],
+				"blocks": ["T5"]
 			},
 			"m1_checks": {
 				"single_verb": true,
@@ -194,9 +177,7 @@
 			"priority": 4,
 			"group": 2,
 			"context": {
-				"files": [
-					"apps/web/public/locales/en/common.json"
-				],
+				"files": ["apps/web/public/locales/en/common.json"],
 				"dependencies": [],
 				"constraints": [
 					"Add under 'quickActions' namespace",
@@ -216,9 +197,7 @@
 			],
 			"dependencies": {
 				"blocked_by": [],
-				"blocks": [
-					"T5"
-				]
+				"blocks": ["T5"]
 			},
 			"m1_checks": {
 				"single_verb": true,
@@ -268,13 +247,8 @@
 				}
 			],
 			"dependencies": {
-				"blocked_by": [
-					"T3",
-					"T4"
-				],
-				"blocks": [
-					"T6"
-				]
+				"blocked_by": ["T3", "T4"],
+				"blocks": ["T6"]
 			},
 			"m1_checks": {
 				"single_verb": true,
@@ -302,10 +276,7 @@
 				"files": [
 					"apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
 				],
-				"dependencies": [
-					"@testing-library/react",
-					"QuickActionsStats type"
-				],
+				"dependencies": ["@testing-library/react", "QuickActionsStats type"],
 				"constraints": [
 					"Test: all 4 cards render",
 					"Test: stats display correctly",
@@ -324,10 +295,7 @@
 				}
 			],
 			"dependencies": {
-				"blocked_by": [
-					"T1",
-					"T5"
-				],
+				"blocked_by": ["T1", "T5"],
 				"blocks": []
 			},
 			"m1_checks": {
@@ -345,22 +313,14 @@
 			{
 				"id": 1,
 				"name": "Core Components",
-				"task_ids": [
-					"T1",
-					"T2",
-					"T3"
-				],
+				"task_ids": ["T1", "T2", "T3"],
 				"depends_on_groups": [],
 				"estimated_hours": 8,
 				"parallel_hours": 3,
 				"parallel_batches": [
 					{
 						"batch_id": 1,
-						"task_ids": [
-							"T1",
-							"T2",
-							"T3"
-						],
+						"task_ids": ["T1", "T2", "T3"],
 						"max_hours": 3,
 						"reason": "No file overlaps between tasks"
 					}
@@ -377,22 +337,14 @@
 			{
 				"id": 2,
 				"name": "Integration",
-				"task_ids": [
-					"T4",
-					"T5"
-				],
-				"depends_on_groups": [
-					1
-				],
+				"task_ids": ["T4", "T5"],
+				"depends_on_groups": [1],
 				"estimated_hours": 4,
 				"parallel_hours": 2,
 				"parallel_batches": [
 					{
 						"batch_id": 1,
-						"task_ids": [
-							"T4",
-							"T5"
-						],
+						"task_ids": ["T4", "T5"],
 						"max_hours": 2,
 						"reason": "No file overlaps between tasks"
 					}
@@ -409,20 +361,14 @@
 			{
 				"id": 3,
 				"name": "Testing",
-				"task_ids": [
-					"T6"
-				],
-				"depends_on_groups": [
-					2
-				],
+				"task_ids": ["T6"],
+				"depends_on_groups": [2],
 				"estimated_hours": 3,
 				"parallel_hours": 3,
 				"parallel_batches": [
 					{
 						"batch_id": 1,
-						"task_ids": [
-							"T6"
-						],
+						"task_ids": ["T6"],
 						"max_hours": 3,
 						"reason": "Single task"
 					}
@@ -438,13 +384,7 @@
 			}
 		],
 		"critical_path": {
-			"task_ids": [
-				"T1",
-				"T2",
-				"T3",
-				"T5",
-				"T6"
-			],
+			"task_ids": ["T1", "T2", "T3", "T5", "T6"],
 			"total_hours": 13
 		},
 		"duration": {

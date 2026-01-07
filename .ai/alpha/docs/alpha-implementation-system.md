@@ -258,7 +258,7 @@ $ tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363
 📦 Creating E2B sandbox (timeout: 7200s)...
    Sandbox ID: sbx_abc123
    Configuring git credentials...
-   Creating branch: alpha/initiative-1363
+   Creating branch: alpha/spec-1362
 
 🚀 Starting services...
    Starting VS Code Web...
@@ -275,7 +275,7 @@ $ tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363
       https://sbx-abc123-3000.e2b.dev
 
    📦 Sandbox ID: sbx_abc123
-   🌿 Branch: alpha/initiative-1363
+   🌿 Branch: alpha/spec-1362
 
 ══════════════════════════════════════════════════════════════════════
    IMPLEMENTATION

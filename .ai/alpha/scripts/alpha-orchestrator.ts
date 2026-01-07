@@ -147,6 +147,7 @@ interface FeatureAssignment {
 
 interface SandboxPoolState {
 	instances: Map<string, SandboxInstance>;
+	specId: number;
 	initiativeId: number;
 	baseBranch: string;
 }
@@ -352,13 +353,34 @@ async function createSandbox(
 	}
 
 	// Pull latest code from origin
-	const branchName = `alpha/initiative-${manifest.metadata.initiative_id}`;
+	const branchName = `alpha/spec-${manifest.metadata.spec_id}`;
 	console.log("   Pulling latest code from origin...");
 
-	const pullResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
-		{ timeoutMs: 120000 },
+	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
+		timeoutMs: 120000,
+	});
+
+	// Check if spec branch already exists (for multi-initiative continuity)
+	const branchExistsResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git ls-remote --heads origin "${branchName}" | wc -l`,
+		{ timeoutMs: 30000 },
 	);
+	const branchExists = branchExistsResult.stdout.trim() === "1";
+
+	if (branchExists) {
+		console.log(`   Found existing branch: ${branchName}`);
+		console.log("   Checking out and pulling latest changes...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git checkout "${branchName}" && git pull origin "${branchName}"`,
+			{ timeoutMs: 60000 },
+		);
+	} else {
+		console.log("   Starting from dev branch...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git checkout dev && git pull origin dev`,
+			{ timeoutMs: 60000 },
+		);
+	}
 
 	// Show what was pulled
 	const logResult = await sandbox.commands.run(
@@ -393,12 +415,16 @@ async function createSandbox(
 		console.log("   ✓ Dependencies pre-installed in template");
 	}
 
-	// Create feature branch
-	console.log(`   Creating branch: ${branchName}`);
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
-		{ timeoutMs: 30000 },
-	);
+	// Create spec branch if it doesn't already exist
+	if (!branchExists) {
+		console.log(`   Creating branch: ${branchName}`);
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
+			{ timeoutMs: 30000 },
+		);
+	} else {
+		console.log(`   Using existing branch: ${branchName}`);
+	}
 
 	// Update manifest with sandbox info
 	manifest.sandbox.sandbox_id = sandbox.sandboxId;
@@ -1125,10 +1151,10 @@ async function orchestrateDualSandbox(
 		manifest.progress.current_group = group.group + 1;
 	}
 
-	// Merge all sandbox branches
+	// Merge all sandbox branches into the main spec branch
 	const branches = pool.getBranches();
 	if (branches.length > 0) {
-		const targetBranch = `alpha/initiative-${manifest.metadata.initiative_id}`;
+		const targetBranch = `alpha/spec-${manifest.metadata.spec_id}`;
 		const mergeResult = await mergeAllBranches(
 			branches,
 			targetBranch,
@@ -1600,6 +1626,7 @@ class SandboxPoolManager {
 		this.timeout = timeout;
 		this.pool = {
 			instances: new Map(),
+			specId: manifest.metadata.spec_id,
 			initiativeId: manifest.metadata.initiative_id,
 			baseBranch: "dev",
 		};
@@ -1633,11 +1660,13 @@ class SandboxPoolManager {
 
 	/**
 	 * Create a single sandbox instance with its own branch.
+	 * Uses spec-based branch naming for multi-initiative continuity.
 	 */
 	private async createSandboxInstance(
 		suffix: string,
 	): Promise<SandboxInstance> {
-		const branchName = `alpha/init-${this.pool.initiativeId}-${suffix}`;
+		const branchName = `alpha/spec-${this.pool.specId}-${suffix}`;
+		const mainSpecBranch = `alpha/spec-${this.pool.specId}`;
 
 		console.log(`   Creating sandbox ${suffix}...`);
 
@@ -1654,12 +1683,37 @@ class SandboxPoolManager {
 			await setupGitCredentials(sandbox);
 		}
 
-		// Pull latest and create branch
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git fetch origin && git checkout dev && git pull origin dev`,
-			{ timeoutMs: 120000 },
-		);
+		// Fetch all branches
+		await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
+			timeoutMs: 120000,
+		});
 
+		// Check if main spec branch exists (from previous initiative runs)
+		const mainBranchExistsResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && git ls-remote --heads origin "${mainSpecBranch}" | wc -l`,
+			{ timeoutMs: 30000 },
+		);
+		const mainBranchExists = mainBranchExistsResult.stdout.trim() === "1";
+
+		if (mainBranchExists) {
+			// Branch from existing spec branch (multi-initiative continuity)
+			console.log(
+				`   ${suffix}: Found existing spec branch, branching from ${mainSpecBranch}`,
+			);
+			await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && git checkout "${mainSpecBranch}" && git pull origin "${mainSpecBranch}"`,
+				{ timeoutMs: 60000 },
+			);
+		} else {
+			// Start from dev branch
+			console.log(`   ${suffix}: Starting from dev branch`);
+			await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && git checkout dev && git pull origin dev`,
+				{ timeoutMs: 60000 },
+			);
+		}
+
+		// Create sandbox-specific branch for parallel work
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && git checkout -b "${branchName}"`,
 			{ timeoutMs: 30000 },

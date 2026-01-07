@@ -123,9 +123,7 @@ function hasFileConflict(taskA: Task, taskB: Task): string | null {
 /**
  * Build conflict graph for tasks in a group
  */
-function buildConflictGraph(
-	tasks: Task[],
-): Map<string, Set<string>> {
+function buildConflictGraph(tasks: Task[]): Map<string, Set<string>> {
 	const conflicts = new Map<string, Set<string>>();
 
 	// Initialize empty sets for all tasks
@@ -245,9 +243,7 @@ function createParallelBatches(
 			task_ids: taskIds,
 			max_hours: maxHours,
 			reason:
-				taskIds.length === 1
-					? "Single task"
-					: "No file overlaps between tasks",
+				taskIds.length === 1 ? "Single task" : "No file overlaps between tasks",
 		});
 	}
 
@@ -368,7 +364,9 @@ export function analyzeTasksJson(tasksJson: TasksJson): TasksJson {
 		0,
 	);
 	const totalParallel = updatedGroups.reduce((sum, g) => {
-		const batchHours = g.parallel_batches?.reduce((s, b) => s + b.max_hours, 0) || g.parallel_hours;
+		const batchHours =
+			g.parallel_batches?.reduce((s, b) => s + b.max_hours, 0) ||
+			g.parallel_hours;
 		return sum + batchHours;
 	}, 0);
 
@@ -415,7 +413,7 @@ function printSummary(tasksJson: TasksJson): void {
 		console.log(`   Speedup: ${analysis.speedup_potential}x`);
 
 		if (analysis.file_conflicts.length > 0) {
-			console.log(`   File Conflicts:`);
+			console.log("   File Conflicts:");
 			for (const conflict of analysis.file_conflicts) {
 				console.log(
 					`     - ${conflict.task_a} ↔ ${conflict.task_b}: ${conflict.conflicting_file}`,
@@ -424,7 +422,7 @@ function printSummary(tasksJson: TasksJson): void {
 		}
 
 		if (group.parallel_batches && group.parallel_batches.length > 0) {
-			console.log(`   Parallel Batches:`);
+			console.log("   Parallel Batches:");
 			for (const batch of group.parallel_batches) {
 				const parallel = batch.task_ids.length > 1 ? "⚡" : "  ";
 				console.log(
@@ -458,8 +456,12 @@ async function main() {
 	const tasksPath = args.find((a) => !a.startsWith("--"));
 
 	if (!tasksPath) {
-		console.error("Usage: tsx analyze-task-parallelism.ts <tasks.json> [--update]");
-		console.error("  --update: Update the tasks.json file with analysis results");
+		console.error(
+			"Usage: tsx analyze-task-parallelism.ts <tasks.json> [--update]",
+		);
+		console.error(
+			"  --update: Update the tasks.json file with analysis results",
+		);
 		process.exit(1);
 	}
 
@@ -491,7 +493,7 @@ async function main() {
 		fs.writeFileSync(fullPath, JSON.stringify(analyzed, null, "\t"));
 		console.log(`\n✅ Updated ${fullPath}`);
 	} else {
-		console.log(`\nRun with --update to save analysis to file`);
+		console.log("\nRun with --update to save analysis to file");
 	}
 
 	return analyzed;

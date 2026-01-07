@@ -398,11 +398,14 @@ async function main() {
 			0,
 		);
 		const groupsWithParallelBatches = tasksJson.execution.groups.filter(
-			(g) => g.parallel_batches && g.parallel_batches.some((b) => b.task_ids.length > 1),
+			(g) =>
+				g.parallel_batches &&
+				g.parallel_batches.some((b) => b.task_ids.length > 1),
 		).length;
 		const estimatedSpeedup =
 			tasksJson.execution.duration.sequential > 0
-				? tasksJson.execution.duration.sequential / tasksJson.execution.duration.parallel
+				? tasksJson.execution.duration.sequential /
+					tasksJson.execution.duration.parallel
 				: 1.0;
 
 		features.push({
