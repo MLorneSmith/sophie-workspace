@@ -10,59 +10,113 @@ This system is the final piece of the Alpha Autonomous Coding workflow:
 2. **Initiative Decompose** (`/alpha:initiative-decompose`) - Break into initiatives
 3. **Feature Decompose** (`/alpha:feature-decompose`) - Break into features
 4. **Task Decompose** (`/alpha:task-decompose`) - Break into atomic tasks
-5. **Implement** (`alpha-orchestrator.ts` + `/alpha:implement`) - **Build it all**
+5. **Implement** (`spec-orchestrator.ts` + `/alpha:implement`) - **Build it all**
+
+## Architecture
+
+### Spec-Level Orchestration
+
+The orchestrator runs at the **Spec level**, not Initiative level:
+
+```
+tsx spec-orchestrator.ts 1362   ← Run with Spec ID
+
+Spec #1362 (user-dashboard-home)
+├── Initiative #1363 (dashboard-foundation)
+│   ├── Feature #1367 ← Sandbox A takes this
+│   ├── Feature #1368 ← Sandbox B takes this
+│   ├── Feature #1369 ← Next available sandbox takes this
+│   └── Feature #1370
+├── Initiative #1364 (activity-feed)
+│   ├── Feature #1371 [blocked by #1363]
+│   └── ...
+└── Initiative #1365 (coaching-integration)
+    └── ...
+```
+
+**Key benefits:**
+- **Single command** implements all features across all initiatives
+- **Automatic progress tracking** - stop and restart anytime
+- **Dependency-aware** - features only run when their dependencies complete
+- **Work queue pattern** - sandboxes dynamically pull next available feature
+
+### Work Queue with Dependency Checking
+
+Sandboxes don't get upfront feature assignments. Instead, they pull from a shared queue:
+
+```
+Feature Queue (priority order):
+┌────────────────────────────────────────────────────────────────┐
+│ [F1367] [F1368] [F1369] [F1370] [F1371*] [F1372*] [F1373] ... │
+│    ↑       ↑                      * blocked by #1363          │
+│    │       └── Sandbox B grabs this                           │
+│    └────────── Sandbox A grabs this                           │
+└────────────────────────────────────────────────────────────────┘
+```
+
+When a sandbox finishes a feature:
+1. It asks for the next feature
+2. Queue checks: Is the feature pending? Are all dependencies complete?
+3. If yes → assign it. If no → check next feature in queue.
+
+This means:
+- **No idle sandboxes** - if there's unblocked work, a sandbox will pick it up
+- **Dependencies respected** - blocked features wait until dependencies complete
+- **Load balanced** - faster sandbox takes more work automatically
 
 ## Components
 
-### 1. Initiative Manifest Generator
+### 1. Spec Manifest Generator
 
-**Location**: `.ai/alpha/scripts/generate-initiative-manifest.ts`
+**Location**: `.ai/alpha/scripts/generate-spec-manifest.ts`
 
-Aggregates all tasks.json files from feature directories into a single manifest for orchestration.
+Aggregates all initiatives and features under a spec into a single manifest.
 
 **Usage**:
 ```bash
-tsx .ai/alpha/scripts/generate-initiative-manifest.ts <initiative-id>
+tsx .ai/alpha/scripts/generate-spec-manifest.ts <spec-id>
 ```
 
-**Output**: `initiative-manifest.json` in the initiative directory with:
-- All features and their tasks
-- Parallel execution groups
+**Output**: `spec-manifest.json` in the spec directory with:
+- All initiatives and their status
+- Ordered feature queue (by initiative priority, then feature priority)
+- Feature dependencies
 - Progress tracking state
-- Sandbox information placeholder
 
-### 2. Alpha Orchestrator
+### 2. Spec Orchestrator
 
-**Location**: `.ai/alpha/scripts/alpha-orchestrator.ts`
+**Location**: `.ai/alpha/scripts/spec-orchestrator.ts`
 
 TypeScript script that:
-- Creates/resumes E2B sandboxes
-- Manages Claude Code sessions via sandbox CLI
-- Tracks progress across features
-- Provides review URLs (VS Code Web + Dev Server)
-- Handles session restarts when context limit hit
+- Takes **Spec ID** (not Initiative ID)
+- Creates E2B sandboxes with work queue pattern
+- Sandboxes dynamically pull features when ready
+- Respects feature and initiative dependencies
+- Auto-resumes from where it left off
 
 **Usage**:
 ```bash
-tsx .ai/alpha/scripts/alpha-orchestrator.ts <initiative-id> [options]
+tsx .ai/alpha/scripts/spec-orchestrator.ts <spec-id> [options]
 
 Options:
-  --parallel <n>    Max parallel features (default: 2)
-  --resume          Resume from previous state
-  --timeout <s>     Sandbox timeout in seconds (default: 7200)
-  --dry-run         Show plan without executing
+  --sandboxes <n>, -s   Number of sandboxes (default: 2, max: 2)
+  --timeout <s>         Sandbox timeout in seconds (default: 3600)
+  --dry-run             Show execution plan without running
 ```
 
 **Example**:
 ```bash
-# Start fresh implementation
-tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363
-
-# Resume after interruption
-tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363 --resume
-
 # Preview execution plan
-tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363 --dry-run
+tsx spec-orchestrator.ts 1362 --dry-run
+
+# Run with 2 sandboxes (default)
+tsx spec-orchestrator.ts 1362
+
+# Single sandbox mode
+tsx spec-orchestrator.ts 1362 -s 1
+
+# Re-run to continue (automatic resume)
+tsx spec-orchestrator.ts 1362
 ```
 
 ### 3. Alpha Implement Command
@@ -93,192 +147,138 @@ Slash command run inside E2B sandbox to implement a single feature's tasks.
 │                     ALPHA IMPLEMENTATION                          │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  1. Generate Manifest                                            │
-│     └─→ tsx generate-initiative-manifest.ts 1363                 │
+│  1. Generate Spec Manifest                                       │
+│     └─→ tsx generate-spec-manifest.ts 1362                       │
 │                                                                  │
 │  2. Start Orchestrator                                           │
-│     └─→ tsx alpha-orchestrator.ts 1363                           │
+│     └─→ tsx spec-orchestrator.ts 1362                            │
 │                                                                  │
 │  3. Orchestrator Actions:                                        │
-│     ├─→ Create E2B sandbox                                       │
-│     ├─→ Start VS Code Web (port 8080)                           │
-│     ├─→ Start Dev Server (port 3000)                            │
-│     ├─→ Display review URLs to user                             │
-│     └─→ Execute features via Claude Code sessions               │
+│     ├─→ Create E2B sandboxes (2 by default)                      │
+│     ├─→ Both sandboxes share branch: alpha/spec-1362             │
+│     └─→ Sandboxes pull features from queue                       │
 │                                                                  │
-│  4. For Each Feature:                                            │
-│     ├─→ Run: claude code "/alpha:implement <feature-id>"        │
-│     ├─→ Monitor progress via .initiative-progress.json          │
-│     ├─→ Handle context limit restarts                           │
-│     └─→ Track completion status                                 │
+│  4. Work Queue Loop:                                             │
+│     ├─→ Sandbox asks: "What's next?"                            │
+│     ├─→ Queue finds first pending feature with deps met          │
+│     ├─→ Sandbox runs: /alpha:implement <feature-id>              │
+│     ├─→ On completion: update manifest, ask for next            │
+│     └─→ Repeat until queue empty                                │
 │                                                                  │
-│  5. Final Validation:                                            │
-│     ├─→ Run pnpm codecheck                                      │
-│     └─→ Push changes to GitHub                                  │
+│  5. On Completion or Interrupt:                                  │
+│     ├─→ Progress saved to spec-manifest.json                    │
+│     └─→ Changes pushed to GitHub                                │
 │                                                                  │
-│  6. User Review:                                                 │
-│     ├─→ Visit VS Code Web URL to review code                    │
-│     └─→ Visit Dev Server URL to test application                │
+│  6. Resume (if needed):                                          │
+│     └─→ Re-run same command - auto-continues from checkpoint    │
 │                                                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### Review URLs
+### Automatic Resume
 
-The orchestrator provides two URLs for reviewing work without pulling from GitHub:
+The orchestrator automatically resumes from where it left off:
 
-1. **VS Code Web** (`https://{sandbox-host}:8080`)
-   - Full VS Code IDE in browser
-   - View and edit files
-   - Git integration
-   - Terminal access
+```bash
+# First run - completes features 1-5, then interrupted
+tsx spec-orchestrator.ts 1362
+# Progress: 5/13 features completed
 
-2. **Dev Server** (`https://{sandbox-host}:3000`)
-   - Running Next.js application
-   - Test implemented features
-   - Visual verification
+# Second run - continues from feature 6
+tsx spec-orchestrator.ts 1362
+# Reads spec-manifest.json, sees 5 completed, starts from 6
+```
 
-These URLs are displayed immediately after sandbox creation and stored in the manifest.
+No `--resume` flag needed - the system always reads current progress.
 
 ## File Structure
 
 ```
 .ai/alpha/
 ├── scripts/
-│   ├── generate-initiative-manifest.ts  # Aggregates tasks into manifest
-│   ├── alpha-orchestrator.ts            # Main orchestration script
-│   └── [other existing scripts]
+│   ├── generate-spec-manifest.ts    # Aggregates spec into manifest
+│   ├── spec-orchestrator.ts         # Main orchestration script
+│   ├── generate-initiative-manifest.ts  # (Legacy - per-initiative)
+│   └── alpha-orchestrator.ts        # (Legacy - per-initiative)
 ├── templates/
-│   ├── tasks.schema.json               # Task definition schema
-│   └── initiative-manifest.schema.json  # Manifest schema
+│   └── *.schema.json
 └── specs/
     └── <spec-id>-Spec-<name>/
+        ├── spec-manifest.json       # Spec-level manifest
+        ├── research-library/
         └── <init-id>-Initiative-<name>/
-            ├── initiative-manifest.json  # Generated manifest
+            ├── initiative.md
             └── <feature-id>-Feature-<name>/
-                └── tasks.json           # Feature tasks
+                ├── feature.md
+                └── tasks.json
 
 .claude/commands/alpha/
 ├── spec.md
 ├── initiative-decompose.md
 ├── feature-decompose.md
 ├── task-decompose.md
-└── implement.md                        # Sandbox implementation command
+└── implement.md
 ```
 
-## Spec-Based Branching
+## Dependency Handling
 
-The orchestrator uses **spec-based branching** to enable seamless multi-initiative workflows.
+### Feature Dependencies
 
-### Why Spec-Based?
+Features can depend on other features (tracked in `feature.md`):
 
-A Spec typically contains multiple Initiatives that together deliver a complete feature set:
-
-```
-Spec #1362 (user-dashboard-home)
-├── Initiative #1363 (dashboard-foundation)    ← Run 1
-├── Initiative #1364 (activity-feed)           ← Run 2
-└── Initiative #1365 (coaching-integration)    ← Run 3
+```markdown
+### Blocked By
+- #1367 (Dashboard Page must exist first)
 ```
 
-With **initiative-based** branching (old approach), each orchestrator run would create a separate branch:
-- `alpha/initiative-1363`
-- `alpha/initiative-1364`
-- `alpha/initiative-1365`
+The orchestrator:
+1. Extracts dependencies from `feature.md` files
+2. Won't assign a feature until all dependencies are `completed`
+3. Skips blocked features, assigns next available one
 
-This required manual merging of 3 branches to complete one Spec.
+### Initiative Dependencies
 
-With **spec-based** branching (current approach), all initiatives share one branch:
-- `alpha/spec-1362`
+Features can also depend on entire initiatives:
 
-### Branch Naming Convention
-
-| Mode | Branch Pattern | Purpose |
-|------|----------------|---------|
-| Single sandbox | `alpha/spec-{spec_id}` | Main implementation branch |
-| Dual sandbox | `alpha/spec-{spec_id}-sbx-a`, `alpha/spec-{spec_id}-sbx-b` | Parallel work branches |
-| Merge target | `alpha/spec-{spec_id}` | Final merged branch |
-
-### Multi-Initiative Continuity
-
-When running the orchestrator for subsequent initiatives in the same spec:
-
-**First Initiative (#1363):**
-```
-📦 Creating E2B sandbox...
-   Fetching from origin...
-   No existing spec branch found
-   Starting from dev branch...
-   Creating branch: alpha/spec-1362
-
-[Implementation runs...]
-
-   Pushing to origin: alpha/spec-1362
+```markdown
+### Blocked By
+- #1363 (Requires dashboard foundation initiative complete)
 ```
 
-**Second Initiative (#1364):**
-```
-📦 Creating E2B sandbox...
-   Fetching from origin...
-   Found existing branch: alpha/spec-1362
-   Checking out and pulling latest changes...
-   Using existing branch: alpha/spec-1362
+When initiative #1363 has all features completed, features blocked by it become available.
 
-[Implementation continues from where #1363 left off...]
-```
+## Branch Strategy
 
-### Benefits
-
-1. **Single PR per Spec**: All work for a spec results in one pull request
-2. **Automatic Continuity**: No manual branch management between initiatives
-3. **Cumulative Progress**: Each initiative builds on previous work
-4. **Simpler Review**: Reviewers see the complete spec implementation together
-5. **Clean History**: Logical commit progression across all initiatives
-
-### Workflow Example
-
-```bash
-# Implement first initiative
-tsx alpha-orchestrator.ts 1363
-# Creates alpha/spec-1362, implements dashboard-foundation
-
-# Implement second initiative (days/weeks later)
-tsx alpha-orchestrator.ts 1364
-# Continues on alpha/spec-1362, implements activity-feed
-
-# Implement third initiative
-tsx alpha-orchestrator.ts 1365
-# Continues on alpha/spec-1362, implements coaching-integration
-
-# Create single PR for entire spec
-gh pr create --base dev --head alpha/spec-1362 \
-  --title "Spec #1362: User Dashboard Home" \
-  --body "Implements all 3 initiatives for the user dashboard"
-```
-
-### Dual Sandbox Branch Merging
-
-When using dual sandbox mode (`--parallel 2`), each sandbox works on a sub-branch:
+All sandboxes work on the same spec branch:
 
 ```
-alpha/spec-1362-sbx-a  ──┐
-                        ├──→ alpha/spec-1362 (merged locally)
-alpha/spec-1362-sbx-b  ──┘
+Branch: alpha/spec-1362
+
+Sandbox A ────commit────commit────push────
+                                    │
+Sandbox B ────commit────commit─────push────
+                                    │
+                                    ▼
+                            alpha/spec-1362
+                            (all work combined)
 ```
 
-The orchestrator automatically merges these sub-branches into the main spec branch after completion.
+Sandboxes coordinate via git:
+1. Each sandbox pulls latest before starting a feature
+2. Each sandbox pushes after completing a feature
+3. Sequential pushes avoid merge conflicts
 
 ## Progress Tracking
 
-### Initiative Manifest Progress
+### Spec Manifest Progress
 
-The `initiative-manifest.json` tracks:
-- Overall status (pending/in_progress/completed/failed/partial)
-- Features completed count
-- Tasks completed count
-- Current feature being implemented
-- Sandbox information (ID, URLs, branch)
-- Checkpoints for resume
+The `spec-manifest.json` tracks:
+- Overall spec status
+- Each initiative's status
+- Each feature's status (pending/in_progress/completed/failed)
+- Which sandbox is working on what
+- Next feature to implement
+- Last completed feature
 
 ### Feature Progress File
 
@@ -287,29 +287,28 @@ Inside sandbox, `.initiative-progress.json` tracks:
 - Completed tasks list
 - Failed tasks list
 - Context usage percentage
-- Progress entries with timestamps
 
 ## Error Handling
 
 ### Context Limit
-When a Claude Code session reaches 60% context usage:
-1. Current state saved to progress file
-2. Session exits cleanly with status "context_limit"
-3. Orchestrator starts new session to continue
-4. Tasks resume from checkpoint
+When Claude Code reaches 60% context usage:
+1. Current state saved
+2. Session exits cleanly
+3. Orchestrator marks feature as partial
+4. Re-runs feature from checkpoint
 
-### Task Failure
-When a task fails verification 3 times:
-1. Task marked as "blocked"
-2. Error documented in progress file
-3. Implementation continues with next task
-4. Blocked tasks require manual intervention
+### Feature Failure
+When a feature fails:
+1. Marked as `failed` in manifest
+2. Error message recorded
+3. Sandbox moves to next feature
+4. Failed features can be retried on re-run
 
-### Session Timeout
-E2B sandbox has configurable timeout (default 2 hours):
-1. Manifest saved before timeout
-2. Re-run orchestrator with `--resume` flag
-3. New sandbox created, continues from checkpoint
+### Sandbox Timeout
+E2B sandbox has configurable timeout (default 1 hour):
+1. Manifest saved continuously
+2. Re-run orchestrator to continue
+3. Picks up from next pending feature
 
 ## Environment Variables
 
@@ -318,109 +317,119 @@ Required:
 - `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` - Claude access
 
 Optional:
-- `GITHUB_TOKEN` - For git push and PR creation
+- `GITHUB_TOKEN` - For git push
 
 ## Prerequisites
 
 Before running the orchestrator:
 
-1. Complete task decomposition for all features:
+1. Complete task decomposition for all features in all initiatives:
    ```bash
-   /alpha:task-decompose <initiative-id>
+   /alpha:task-decompose 1363
+   /alpha:task-decompose 1364
+   /alpha:task-decompose 1365
    ```
 
-2. Generate the initiative manifest:
+2. Generate the spec manifest:
    ```bash
-   tsx .ai/alpha/scripts/generate-initiative-manifest.ts <initiative-id>
+   tsx .ai/alpha/scripts/generate-spec-manifest.ts 1362
    ```
 
 3. Set environment variables:
    ```bash
    export E2B_API_KEY=<your-key>
-   export ANTHROPIC_API_KEY=<your-key>
    export GITHUB_TOKEN=<your-token>
+   # Claude auth auto-detected from ~/.claude/.credentials.json
    ```
 
 ## Example Run
 
 ```bash
-# For Initiative #1363 (Dashboard Foundation)
-$ tsx .ai/alpha/scripts/alpha-orchestrator.ts 1363
+$ tsx spec-orchestrator.ts 1362
 
 ══════════════════════════════════════════════════════════════════════
-   ALPHA INITIATIVE ORCHESTRATOR
+   ALPHA SPEC ORCHESTRATOR
 ══════════════════════════════════════════════════════════════════════
 
-📊 Initiative #1363: dashboard foundation
-   Spec: #1362
-   Features: 4
-   Tasks: 43
-   Estimated Hours: 17 (parallel)
+📊 Spec #1362: user dashboard home
+   Initiatives: 4
+   Features: 13
+   Tasks: 108
+   Progress: 0/13 features
+   Sandboxes: 2
 
-📦 Creating E2B sandbox (timeout: 7200s)...
-   Sandbox ID: sbx_abc123
-   Configuring git credentials...
-   Creating branch: alpha/spec-1362
+🎯 Next feature: #1367 - Dashboard Page & Grid Layout
 
-🚀 Starting services...
-   Starting VS Code Web...
-   Starting dev server...
+📦 Creating sandbox sbx-a...
+   ID: sbx_abc123
+   Checking out branch: alpha/spec-1362
+
+   ⏳ Waiting 90s before next sandbox...
+
+📦 Creating sandbox sbx-b...
+   ID: sbx_def456
+   Checking out branch: alpha/spec-1362
 
 ══════════════════════════════════════════════════════════════════════
-   REVIEW URLS
+   SANDBOXES READY
 ══════════════════════════════════════════════════════════════════════
-
-   📝 VS Code Web (view/edit code):
-      https://sbx-abc123-8080.e2b.dev
-
-   🌐 Dev Server (test application):
-      https://sbx-abc123-3000.e2b.dev
-
-   📦 Sandbox ID: sbx_abc123
-   🌿 Branch: alpha/spec-1362
+   sbx-a: sbx_abc123
+   sbx-b: sbx_def456
+   Branch: alpha/spec-1362
 
 ══════════════════════════════════════════════════════════════════════
    IMPLEMENTATION
 ══════════════════════════════════════════════════════════════════════
 
-📦 Executing Group 0: Foundation features - no dependencies
+   ┌── [sbx-a] Feature #1367: Dashboard Page & Grid Layout
+   │   Tasks: 20
+   │   Running: /alpha:implement 1367
+   │   ... [implementation output] ...
+   └── ✅ completed (20/20 tasks)
 
-   🔄 Batch: #1367, #1368
+   ┌── [sbx-b] Feature #1368: Presentation Outline Table
+   │   Tasks: 12
+   │   Running: /alpha:implement 1368
+   │   ... [implementation output] ...
+   └── ✅ completed (12/12 tasks)
 
-📋 Implementing Feature #1367: Dashboard Page & Grid Layout
-   Tasks: 20
-   Estimated hours: 17
-   Running: /alpha:implement 1367
-   ────────────────────────────────────────────────────────────────
-   │ [Loading Context]
-   │ ✓ Loaded tasks.json (20 tasks, 7 groups)
-   │ ✓ Loaded conditional docs (5 files)
-   │
-   │ [Group 1: Foundation]
-   │ → T1: Create dashboard TypeScript types
-   │   ✓ Verification passed
-   │ → T2: Create dashboard data loader skeleton
-   │   ✓ Verification passed
-   │ ✓ Committed: abc1234
-   │ ...
-   ────────────────────────────────────────────────────────────────
-   Exit code: 0
-   ✅ Feature #1367: completed (20/20 tasks)
+   ┌── [sbx-a] Feature #1369: Quick Actions Panel
+   │   Tasks: 6
+   │   ...
+   └── ✅ completed (6/6 tasks)
 
-... [continues for all features] ...
+... [continues until all features done] ...
 
 ══════════════════════════════════════════════════════════════════════
    SUMMARY
 ══════════════════════════════════════════════════════════════════════
 
-   📊 Results:
-      Features: 4/4 completed
-      Failed: 0
-      Tasks: 43/43
+📊 Results:
+   Initiatives: 4/4
+   Features: 13/13
+   Failed: 0
+   Tasks: 108/108
 
-   🔗 Review URLs:
-      VS Code: https://sbx-abc123-8080.e2b.dev
-      Dev Server: https://sbx-abc123-3000.e2b.dev
+🌿 Branch: alpha/spec-1362
+⏱️ Duration: 45 minutes
 
-   ✅ Initiative implementation complete!
+══════════════════════════════════════════════════════════════════════
+
+✅ Spec implementation complete!
 ```
+
+## Migration from Initiative-Level Orchestrator
+
+The old `alpha-orchestrator.ts` still exists for backwards compatibility but is deprecated.
+
+| Old (Initiative-level) | New (Spec-level) |
+|------------------------|------------------|
+| `tsx alpha-orchestrator.ts 1363` | `tsx spec-orchestrator.ts 1362` |
+| Run per initiative | Run once per spec |
+| `initiative-manifest.json` | `spec-manifest.json` |
+| `--resume` flag needed | Auto-resume |
+| Upfront feature assignment | Dynamic work queue |
+
+Migrate by:
+1. Generate spec manifest: `tsx generate-spec-manifest.ts <spec-id>`
+2. Use new orchestrator: `tsx spec-orchestrator.ts <spec-id>`
