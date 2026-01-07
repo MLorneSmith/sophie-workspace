@@ -473,9 +473,12 @@ async function createSandbox(
 
 	if (branchExists) {
 		console.log(`   Checking out existing branch: ${branchName}`);
-		// Use -B to create/reset local branch tracking remote (handles case where remote exists but local doesn't)
+		// Fetch the specific branch and checkout using FETCH_HEAD
+		// Note: We use FETCH_HEAD instead of origin/branchName because:
+		// - git fetch origin "branchName" updates FETCH_HEAD but doesn't create origin/branchName ref
+		// - This happens when the branch was just created by another sandbox and our template doesn't know about it
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" "origin/${branchName}"`,
+			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
 			{ timeoutMs: 60000 },
 		);
 	} else {
