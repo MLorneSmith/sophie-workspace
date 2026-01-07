@@ -306,6 +306,77 @@ EOF
 - With pre-task checkpoint, orchestrator knows which task to resume from
 - Saves significant time by not re-running completed tasks
 
+### Heartbeat Protocol (CRITICAL)
+
+**Purpose**: The orchestrator monitors progress files to detect stalled Claude sessions. A heartbeat timestamp tells the orchestrator "I'm still alive and working" even during long operations.
+
+**When to update heartbeat:**
+1. **Every 60 seconds** during long operations (reading files, complex analysis)
+2. **After every major checkpoint** (task start, task complete, verification attempt)
+3. **Before and after sub-agent calls** (Task tool invocations)
+
+**Heartbeat update command:**
+```bash
+# Update heartbeat timestamp in progress file
+# Run this periodically during long operations
+
+TIMESTAMP=$(date -Iseconds)
+
+# Read current progress, update heartbeat, write back
+jq --arg ts "$TIMESTAMP" '.last_heartbeat = $ts' .initiative-progress.json > .initiative-progress.tmp.json && \
+mv .initiative-progress.tmp.json .initiative-progress.json
+```
+
+**IMPORTANT**: If you cannot run the `jq` command (e.g., not installed), include `last_heartbeat` in every progress file write instead.
+
+**Stall Detection**: The orchestrator considers a session stalled if:
+- No heartbeat update for 10 minutes
+- Current task stuck in "starting" status for 10 minutes
+
+When a stall is detected, the orchestrator logs a warning. This helps identify hung sessions that need manual intervention.
+
+### Granular Progress Checkpoints
+
+**Update the progress file at these checkpoints for maximum visibility:**
+
+| Checkpoint | Phase Value | When |
+|------------|-------------|------|
+| Context loading | `loading_context` | After finding feature directory |
+| Research loaded | `loading_research` | After reading research library |
+| Conditional docs | `loading_docs` | After loading conditional documentation |
+| Task starting | `executing` | Before each task (with task status "starting") |
+| Task in progress | `executing` | During task implementation |
+| Verification | `verifying` | Before running verification_command |
+| Verification retry | `verifying` | After failed verification (include attempt count) |
+| Task complete | `executing` | After task passes verification |
+| Group complete | `committing` | Before git commit |
+| Pushing | `pushing` | Before git push |
+
+**Example progress file with granular checkpoints:**
+```json
+{
+  "feature": { "issue_number": 1367, "title": "Dashboard Page" },
+  "phase": "verifying",
+  "current_task": {
+    "id": "T5",
+    "name": "Create data loader",
+    "status": "in_progress",
+    "started_at": "2024-01-01T12:00:00Z",
+    "verification_attempts": 2
+  },
+  "current_group": {
+    "id": 2,
+    "name": "Data Layer",
+    "tasks_total": 4,
+    "tasks_completed": 1
+  },
+  "completed_tasks": ["T1", "T2", "T3", "T4"],
+  "context_usage_percent": 45,
+  "last_heartbeat": "2024-01-01T12:05:00Z",
+  "status": "in_progress"
+}
+```
+
 ### Parallel Batch Execution (--enable-parallel)
 
 When `--enable-parallel` flag is set and a batch has multiple tasks, execute them in parallel using the Task tool.
@@ -597,17 +668,26 @@ After each execution group:
     "issue_number": $ARGUMENTS,
     "title": "[from tasks.json]"
   },
+  "phase": "executing",
   "current_task": {
     "id": "T5",
     "name": "[task name]",
-    "index": 5,
-    "total": 20
+    "status": "in_progress",
+    "started_at": "2024-01-01T12:00:00Z",
+    "verification_attempts": 1
+  },
+  "current_group": {
+    "id": 2,
+    "name": "[group name]",
+    "tasks_total": 5,
+    "tasks_completed": 4
   },
   "completed_tasks": ["T1", "T2", "T3", "T4"],
   "failed_tasks": [],
   "context_usage_percent": 45,
   "status": "in_progress",
   "last_commit": "[commit hash]",
+  "last_heartbeat": "2024-01-01T12:05:00Z",
   "entries": [
     {
       "timestamp": "2024-01-01T12:00:00Z",

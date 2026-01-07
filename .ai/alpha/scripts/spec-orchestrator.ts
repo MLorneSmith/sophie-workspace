@@ -16,7 +16,7 @@
  *   tsx spec-orchestrator.ts <spec-id> [options]
  *
  * Options:
- *   --sandboxes <n>   Number of sandboxes (default: 2, max: 2)
+ *   --sandboxes <n>   Number of sandboxes (default: 3, max: 3)
  *   --timeout <s>     Sandbox timeout in seconds (default: 3600)
  *   --dry-run         Show plan without executing
  *
@@ -120,6 +120,33 @@ interface SandboxInstance {
 	label: string;
 	status: "ready" | "busy" | "completed" | "failed";
 	currentFeature: number | null;
+}
+
+interface SandboxProgress {
+	feature?: {
+		issue_number: number;
+		title: string;
+	};
+	current_task?: {
+		id: string;
+		name: string;
+		status: string;
+		started_at?: string;
+		verification_attempts?: number;
+	};
+	completed_tasks?: string[];
+	failed_tasks?: string[];
+	current_group?: {
+		id: number;
+		name: string;
+		tasks_total: number;
+		tasks_completed: number;
+	};
+	context_usage_percent?: number;
+	status?: string;
+	last_commit?: string;
+	last_heartbeat?: string;
+	phase?: string;
 }
 
 // ============================================================================
@@ -242,7 +269,10 @@ function loadManifest(specDir: string): SpecManifest | null {
 }
 
 function saveManifest(manifest: SpecManifest): void {
-	const manifestPath = path.join(manifest.metadata.spec_dir, "spec-manifest.json");
+	const manifestPath = path.join(
+		manifest.metadata.spec_dir,
+		"spec-manifest.json",
+	);
 	manifest.progress.last_checkpoint = new Date().toISOString();
 	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, "\t"));
 }
@@ -261,14 +291,14 @@ function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
 			.filter((f) => f.status === "completed")
-			.map((f) => f.id)
+			.map((f) => f.id),
 	);
 
 	// Also consider completed initiatives for initiative-level dependencies
 	const completedInitiativeIds = new Set(
 		manifest.initiatives
 			.filter((i) => i.status === "completed")
-			.map((i) => i.id)
+			.map((i) => i.id),
 	);
 
 	for (const feature of manifest.feature_queue) {
@@ -335,7 +365,7 @@ async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 	try {
 		await sandbox.commands.run(
 			`echo "${GITHUB_TOKEN}" | gh auth login --with-token`,
-			{ timeoutMs: 30000 }
+			{ timeoutMs: 30000 },
 		);
 	} catch {
 		// Non-fatal
@@ -345,7 +375,7 @@ async function setupGitCredentials(sandbox: Sandbox): Promise<void> {
 async function createSandbox(
 	manifest: SpecManifest,
 	label: string,
-	timeout: number
+	timeout: number,
 ): Promise<SandboxInstance> {
 	console.log(`\n📦 Creating sandbox ${label}...`);
 
@@ -372,7 +402,7 @@ async function createSandbox(
 	// Check if spec branch exists
 	const branchExistsResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && git ls-remote --heads origin "${branchName}" | wc -l`,
-		{ timeoutMs: 30000 }
+		{ timeoutMs: 30000 },
 	);
 	const branchExists = branchExistsResult.stdout.trim() === "1";
 
@@ -380,27 +410,27 @@ async function createSandbox(
 		console.log(`   Checking out existing branch: ${branchName}`);
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && git checkout "${branchName}" && git pull origin "${branchName}"`,
-			{ timeoutMs: 60000 }
+			{ timeoutMs: 60000 },
 		);
 	} else {
 		console.log(`   Creating new branch from dev: ${branchName}`);
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && git checkout dev && git pull origin dev && git checkout -b "${branchName}"`,
-			{ timeoutMs: 60000 }
+			{ timeoutMs: 60000 },
 		);
 	}
 
 	// Verify dependencies
 	const checkResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
-		{ timeoutMs: 10000 }
+		{ timeoutMs: 10000 },
 	);
 
 	if (checkResult.stdout.trim() === "missing") {
-		console.log(`   Installing dependencies...`);
+		console.log("   Installing dependencies...");
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-			{ timeoutMs: 600000 }
+			{ timeoutMs: 600000 },
 		);
 	}
 
@@ -409,7 +439,8 @@ async function createSandbox(
 		manifest.sandbox.sandbox_ids.push(sandbox.sandboxId);
 	}
 	manifest.sandbox.branch_name = branchName;
-	manifest.sandbox.created_at = manifest.sandbox.created_at || new Date().toISOString();
+	manifest.sandbox.created_at =
+		manifest.sandbox.created_at || new Date().toISOString();
 
 	return {
 		sandbox,
@@ -421,15 +452,198 @@ async function createSandbox(
 }
 
 // ============================================================================
+// Progress Polling & Display
+// ============================================================================
+
+/**
+ * Display a structured progress update from the sandbox progress file.
+ * Returns a unique key to avoid duplicate displays.
+ */
+function displayProgressUpdate(
+	progress: SandboxProgress,
+	featureTaskCount: number,
+	lastDisplayed: string,
+	sandboxLabel: string,
+): string {
+	const completed = progress.completed_tasks?.length || 0;
+	const total = featureTaskCount;
+	const current = progress.current_task;
+	const contextPercent = progress.context_usage_percent || 0;
+
+	// Create a unique key to avoid duplicate displays
+	const updateKey = `${completed}-${current?.id}-${current?.status}-${progress.phase}`;
+	if (updateKey === lastDisplayed) {
+		return lastDisplayed; // No change
+	}
+
+	// Build progress bar
+	const progressPercent = Math.round((completed / total) * 100);
+	const barLength = 20;
+	const filledLength = Math.round((progressPercent / 100) * barLength);
+	const progressBar =
+		"█".repeat(filledLength) + "░".repeat(barLength - filledLength);
+
+	console.log(`\n   ┌─ 📊 [${sandboxLabel}] Progress Update ${"─".repeat(35)}`);
+	console.log(
+		`   │ Tasks: [${progressBar}] ${completed}/${total} (${progressPercent}%)`,
+	);
+
+	if (progress.phase) {
+		console.log(`   │ Phase: ${progress.phase}`);
+	}
+
+	if (current) {
+		const statusIcon =
+			current.status === "in_progress"
+				? "🔄"
+				: current.status === "completed"
+					? "✅"
+					: current.status === "starting"
+						? "⏳"
+						: "📋";
+		console.log(`   │ Current: ${statusIcon} [${current.id}] ${current.name}`);
+
+		if (current.verification_attempts && current.verification_attempts > 1) {
+			console.log(
+				`   │ Verification: attempt ${current.verification_attempts}`,
+			);
+		}
+	}
+
+	if (progress.current_group) {
+		console.log(
+			`   │ Group: ${progress.current_group.name} (${progress.current_group.tasks_completed}/${progress.current_group.tasks_total})`,
+		);
+	}
+
+	if (contextPercent > 0) {
+		const contextIcon = contextPercent > 50 ? "⚠️" : "📈";
+		console.log(`   │ Context: ${contextIcon} ${contextPercent}%`);
+	}
+
+	if (progress.last_commit) {
+		console.log(`   │ Last commit: ${progress.last_commit.substring(0, 7)}`);
+	}
+
+	if (progress.last_heartbeat) {
+		const heartbeatAge = Math.round(
+			(Date.now() - new Date(progress.last_heartbeat).getTime()) / 1000,
+		);
+		const heartbeatIcon = heartbeatAge > 120 ? "⚠️" : "💓";
+		console.log(`   │ Heartbeat: ${heartbeatIcon} ${heartbeatAge}s ago`);
+	}
+
+	console.log(`   └${"─".repeat(55)}\n`);
+
+	return updateKey;
+}
+
+/**
+ * Start polling the progress file in the sandbox.
+ * Returns a cleanup function to stop polling.
+ */
+function startProgressPolling(
+	sandbox: Sandbox,
+	featureTaskCount: number,
+	sandboxLabel: string,
+): { stop: () => void; getLastProgress: () => SandboxProgress | null } {
+	let lastDisplayed = "";
+	let isPolling = true;
+	let lastProgress: SandboxProgress | null = null;
+
+	const poll = async () => {
+		while (isPolling) {
+			try {
+				const result = await sandbox.commands.run(
+					`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null`,
+					{ timeoutMs: 5000 },
+				);
+
+				if (result.stdout && result.stdout.trim()) {
+					const progress: SandboxProgress = JSON.parse(result.stdout);
+					lastProgress = progress;
+					lastDisplayed = displayProgressUpdate(
+						progress,
+						featureTaskCount,
+						lastDisplayed,
+						sandboxLabel,
+					);
+				}
+			} catch {
+				// Ignore polling errors - sandbox may be busy
+			}
+
+			// Wait for next poll interval
+			if (isPolling) {
+				await sleep(PROGRESS_POLL_INTERVAL_MS);
+			}
+		}
+	};
+
+	// Start polling in background
+	poll();
+
+	return {
+		stop: () => {
+			isPolling = false;
+		},
+		getLastProgress: () => lastProgress,
+	};
+}
+
+/**
+ * Check if a feature has stalled (no heartbeat or progress for STALL_TIMEOUT_MS).
+ */
+function checkForStall(progress: SandboxProgress | null): {
+	stalled: boolean;
+	reason?: string;
+} {
+	if (!progress) {
+		return { stalled: false };
+	}
+
+	const now = Date.now();
+
+	// Check heartbeat age
+	if (progress.last_heartbeat) {
+		const heartbeatAge = now - new Date(progress.last_heartbeat).getTime();
+		if (heartbeatAge > STALL_TIMEOUT_MS) {
+			return {
+				stalled: true,
+				reason: `No heartbeat for ${Math.round(heartbeatAge / 60000)} minutes`,
+			};
+		}
+	}
+
+	// Check if task has been "starting" for too long
+	if (
+		progress.current_task?.status === "starting" &&
+		progress.current_task.started_at
+	) {
+		const taskAge = now - new Date(progress.current_task.started_at).getTime();
+		if (taskAge > STALL_TIMEOUT_MS) {
+			return {
+				stalled: true,
+				reason: `Task ${progress.current_task.id} stuck in "starting" for ${Math.round(taskAge / 60000)} minutes`,
+			};
+		}
+	}
+
+	return { stalled: false };
+}
+
+// ============================================================================
 // Feature Implementation
 // ============================================================================
 
 async function runFeatureImplementation(
 	instance: SandboxInstance,
 	manifest: SpecManifest,
-	feature: FeatureEntry
+	feature: FeatureEntry,
 ): Promise<{ success: boolean; tasksCompleted: number; error?: string }> {
-	console.log(`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`);
+	console.log(
+		`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`,
+	);
 	console.log(`   │   Tasks: ${feature.task_count}`);
 
 	// Mark feature as in_progress
@@ -442,22 +656,48 @@ async function runFeatureImplementation(
 	// CRITICAL: Pull latest code before starting feature
 	// This ensures we have code from features implemented by OTHER sandboxes
 	// Without this, features with dependencies would fail (missing imports, types, etc.)
-	console.log(`   │   Pulling latest code...`);
-	try {
-		await instance.sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git pull origin "${manifest.sandbox.branch_name}" --rebase`,
-			{ timeoutMs: 60000 }
-		);
-		console.log(`   │   ✓ Code synced`);
-	} catch (pullError) {
-		console.log(`   │   ⚠ Pull failed (continuing anyway): ${pullError}`);
+	const isFirstFeature = manifest.progress.features_completed === 0;
+	if (isFirstFeature) {
+		console.log("   │   ℹ️ First feature - no remote branch to pull yet");
+	} else {
+		console.log("   │   Pulling latest code...");
+		try {
+			await instance.sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && git pull origin "${manifest.sandbox.branch_name}" --rebase`,
+				{ timeoutMs: 60000 },
+			);
+			console.log("   │   ✓ Code synced");
+		} catch (pullError) {
+			console.log(`   │   ⚠ Pull failed (continuing anyway): ${pullError}`);
+		}
 	}
 
 	const prompt = `/alpha:implement ${feature.id}`;
 	console.log(`   │   Running: ${prompt}`);
+	console.log(
+		`   │   Progress polling every ${PROGRESS_POLL_INTERVAL_MS / 1000}s...`,
+	);
 
 	let capturedStdout = "";
 	let capturedStderr = "";
+
+	// Start progress polling
+	const progressPoller = startProgressPolling(
+		instance.sandbox,
+		feature.task_count,
+		instance.label,
+	);
+
+	// Start stall detection interval
+	let stallDetected = false;
+	const stallCheckInterval = setInterval(() => {
+		const lastProgress = progressPoller.getLastProgress();
+		const stallCheck = checkForStall(lastProgress);
+		if (stallCheck.stalled && !stallDetected) {
+			stallDetected = true;
+			console.log(`   │   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
+		}
+	}, 60000); // Check every minute
 
 	try {
 		const result = await instance.sandbox.commands.run(
@@ -477,13 +717,17 @@ async function runFeatureImplementation(
 				onStderr: (data) => {
 					capturedStderr += data;
 				},
-			}
+			},
 		);
+
+		// Stop polling and stall detection
+		progressPoller.stop();
+		clearInterval(stallCheckInterval);
 
 		// Read progress file
 		const progressResult = await instance.sandbox.commands.run(
 			`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null || echo '{}'`,
-			{ timeoutMs: 10000 }
+			{ timeoutMs: 10000 },
 		);
 
 		let tasksCompleted = 0;
@@ -517,11 +761,13 @@ async function runFeatureImplementation(
 			manifest.progress.last_completed_feature_id = feature.id;
 
 			// Update initiative status
-			const initiative = manifest.initiatives.find((i) => i.id === feature.initiative_id);
+			const initiative = manifest.initiatives.find(
+				(i) => i.id === feature.initiative_id,
+			);
 			if (initiative) {
 				initiative.features_completed++;
 				const initFeatures = manifest.feature_queue.filter(
-					(f) => f.initiative_id === initiative.id
+					(f) => f.initiative_id === initiative.id,
 				);
 				if (initFeatures.every((f) => f.status === "completed")) {
 					initiative.status = "completed";
@@ -536,7 +782,7 @@ async function runFeatureImplementation(
 			try {
 				await instance.sandbox.commands.run(
 					`cd ${WORKSPACE_DIR} && git push origin "${manifest.sandbox.branch_name}"`,
-					{ timeoutMs: 120000 }
+					{ timeoutMs: 120000 },
 				);
 			} catch (pushError) {
 				console.log(`   │   ⚠ Push failed: ${pushError}`);
@@ -547,8 +793,11 @@ async function runFeatureImplementation(
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 
-		const icon = status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
-		console.log(`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`);
+		const icon =
+			status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
+		console.log(
+			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
+		);
 
 		return {
 			success: status === "completed",
@@ -556,6 +805,10 @@ async function runFeatureImplementation(
 			error: status !== "completed" ? `Feature ${status}` : undefined,
 		};
 	} catch (error) {
+		// Stop polling and stall detection on error
+		progressPoller.stop();
+		clearInterval(stallCheckInterval);
+
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
 		feature.status = "failed";
@@ -596,26 +849,34 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	const manifest = loadManifest(specDir);
 
 	if (!manifest) {
-		console.error("Spec manifest not found. Run generate-spec-manifest.ts first.");
+		console.error(
+			"Spec manifest not found. Run generate-spec-manifest.ts first.",
+		);
 		process.exit(1);
 	}
 
 	// Print header
 	console.log("═".repeat(70));
-	console.log(`   ALPHA SPEC ORCHESTRATOR`);
+	console.log("   ALPHA SPEC ORCHESTRATOR");
 	console.log("═".repeat(70));
-	console.log(`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`);
+	console.log(
+		`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
+	);
 	console.log(`   Initiatives: ${manifest.initiatives.length}`);
 	console.log(`   Features: ${manifest.progress.features_total}`);
 	console.log(`   Tasks: ${manifest.progress.tasks_total}`);
-	console.log(`   Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`);
+	console.log(
+		`   Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`,
+	);
 	console.log(`   Sandboxes: ${options.sandboxCount}`);
 
 	// Check what's next
 	const nextFeature = getNextAvailableFeature(manifest);
 	if (nextFeature) {
 		console.log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
-	} else if (manifest.progress.features_completed === manifest.progress.features_total) {
+	} else if (
+		manifest.progress.features_completed === manifest.progress.features_total
+	) {
 		console.log("\n🎉 All features already completed!");
 		return;
 	} else {
@@ -637,7 +898,9 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		const label = `sbx-${String.fromCharCode(97 + i)}`;
 
 		if (i > 0) {
-			console.log(`\n   ⏳ Waiting ${STAGGER_DELAY_MS / 1000}s before next sandbox...`);
+			console.log(
+				`\n   ⏳ Waiting ${STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+			);
 			await sleep(STAGGER_DELAY_MS);
 		}
 
@@ -662,7 +925,8 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	console.log("═".repeat(70));
 
 	manifest.progress.status = "in_progress";
-	manifest.progress.started_at = manifest.progress.started_at || new Date().toISOString();
+	manifest.progress.started_at =
+		manifest.progress.started_at || new Date().toISOString();
 	saveManifest(manifest);
 
 	// Main work loop
@@ -674,7 +938,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		try {
 			await instances[0].sandbox.commands.run(
 				`cd ${WORKSPACE_DIR} && git push -u origin "${manifest.sandbox.branch_name}"`,
-				{ timeoutMs: 120000 }
+				{ timeoutMs: 120000 },
 			);
 			console.log(`   ✅ Pushed to ${manifest.sandbox.branch_name}`);
 		} catch (error) {
@@ -683,7 +947,9 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	// Final status
-	const failedFeatures = manifest.feature_queue.filter((f) => f.status === "failed").length;
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	).length;
 	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
 	manifest.progress.completed_at = new Date().toISOString();
 	saveManifest(manifest);
@@ -703,7 +969,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		console.log(`   ${reviewInstance.label}: Pulling latest changes...`);
 		await reviewInstance.sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && git pull origin "${manifest.sandbox.branch_name}"`,
-			{ timeoutMs: 60000 }
+			{ timeoutMs: 60000 },
 		);
 		console.log(`   ${reviewInstance.label}: ✅ Has complete code`);
 	} catch (error) {
@@ -722,7 +988,11 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 	// Start dev server on the review sandbox
 	console.log("\n🚀 Starting dev server for review...");
-	const reviewUrls: Array<{ label: string; vscode: string; devServer: string }> = [];
+	const reviewUrls: Array<{
+		label: string;
+		vscode: string;
+		devServer: string;
+	}> = [];
 
 	try {
 		const devServerUrl = await startDevServer(reviewInstance.sandbox);
@@ -758,7 +1028,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
  */
 async function runWorkLoop(
 	instances: SandboxInstance[],
-	manifest: SpecManifest
+	manifest: SpecManifest,
 ): Promise<void> {
 	// Track active work
 	const activeWork = new Map<string, Promise<void>>();
@@ -766,7 +1036,7 @@ async function runWorkLoop(
 	while (true) {
 		// Check if we're done
 		const pendingFeatures = manifest.feature_queue.filter(
-			(f) => f.status === "pending" || f.status === "in_progress"
+			(f) => f.status === "pending" || f.status === "in_progress",
 		);
 
 		if (pendingFeatures.length === 0) {
@@ -801,13 +1071,15 @@ async function runWorkLoop(
 		// If no work is active and no features available, we might be stuck
 		if (activeWork.size === 0) {
 			const blockedFeatures = manifest.feature_queue.filter(
-				(f) => f.status === "pending" && f.dependencies.length > 0
+				(f) => f.status === "pending" && f.dependencies.length > 0,
 			);
 
 			if (blockedFeatures.length > 0) {
 				console.log("\n⚠️ Features blocked by incomplete dependencies:");
 				for (const f of blockedFeatures.slice(0, 5)) {
-					console.log(`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`);
+					console.log(
+						`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
+					);
 				}
 			}
 			break;
@@ -850,10 +1122,14 @@ function printDryRun(manifest: SpecManifest): void {
 	console.log("\n🔍 DRY RUN - Execution Plan:\n");
 
 	const completedIds = new Set(
-		manifest.feature_queue.filter((f) => f.status === "completed").map((f) => f.id)
+		manifest.feature_queue
+			.filter((f) => f.status === "completed")
+			.map((f) => f.id),
 	);
 	const completedInitIds = new Set(
-		manifest.initiatives.filter((i) => i.status === "completed").map((i) => i.id)
+		manifest.initiatives
+			.filter((i) => i.status === "completed")
+			.map((i) => i.id),
 	);
 
 	console.log("Feature Queue (in execution order):");
@@ -866,23 +1142,31 @@ function printDryRun(manifest: SpecManifest): void {
 					: "⏳";
 
 		const depsComplete = feature.dependencies.every(
-			(d) => completedIds.has(d) || completedInitIds.has(d)
+			(d) => completedIds.has(d) || completedInitIds.has(d),
 		);
 		const blockedStr =
 			feature.dependencies.length > 0 && !depsComplete
-				? ` [BLOCKED by: ${feature.dependencies.filter((d) => !completedIds.has(d) && !completedInitIds.has(d)).map((d) => `#${d}`).join(", ")}]`
+				? ` [BLOCKED by: ${feature.dependencies
+						.filter((d) => !completedIds.has(d) && !completedInitIds.has(d))
+						.map((d) => `#${d}`)
+						.join(", ")}]`
 				: "";
 
 		console.log(
-			`   ${statusIcon} #${feature.id}: ${feature.title} (${feature.task_count} tasks)${blockedStr}`
+			`   ${statusIcon} #${feature.id}: ${feature.title} (${feature.task_count} tasks)${blockedStr}`,
 		);
 	}
 
 	// Estimate
-	const pendingFeatures = manifest.feature_queue.filter((f) => f.status === "pending");
-	const totalHours = pendingFeatures.reduce((sum, f) => sum + f.parallel_hours, 0);
+	const pendingFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "pending",
+	);
+	const totalHours = pendingFeatures.reduce(
+		(sum, f) => sum + f.parallel_hours,
+		0,
+	);
 
-	console.log(`\n📊 Remaining Work:`);
+	console.log("\n📊 Remaining Work:");
 	console.log(`   Features: ${pendingFeatures.length}`);
 	console.log(`   Estimated Hours: ${totalHours}`);
 }
@@ -890,26 +1174,34 @@ function printDryRun(manifest: SpecManifest): void {
 function printSummary(
 	manifest: SpecManifest,
 	instances: SandboxInstance[],
-	reviewUrls: Array<{ label: string; vscode: string; devServer: string }>
+	reviewUrls: Array<{ label: string; vscode: string; devServer: string }>,
 ): void {
-	const completed = manifest.feature_queue.filter((f) => f.status === "completed").length;
-	const failed = manifest.feature_queue.filter((f) => f.status === "failed").length;
+	const completed = manifest.feature_queue.filter(
+		(f) => f.status === "completed",
+	).length;
+	const failed = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	).length;
 
 	console.log("\n" + "═".repeat(70));
 	console.log("   SUMMARY");
 	console.log("═".repeat(70));
 
 	console.log("\n📊 Results:");
-	console.log(`   Initiatives: ${manifest.progress.initiatives_completed}/${manifest.progress.initiatives_total}`);
+	console.log(
+		`   Initiatives: ${manifest.progress.initiatives_completed}/${manifest.progress.initiatives_total}`,
+	);
 	console.log(`   Features: ${completed}/${manifest.progress.features_total}`);
 	console.log(`   Failed: ${failed}`);
-	console.log(`   Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`);
+	console.log(
+		`   Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`,
+	);
 
 	console.log(`\n🌿 Branch: ${manifest.sandbox.branch_name}`);
 
 	if (manifest.progress.started_at) {
 		const duration = Math.round(
-			(Date.now() - new Date(manifest.progress.started_at).getTime()) / 60000
+			(Date.now() - new Date(manifest.progress.started_at).getTime()) / 60000,
 		);
 		console.log(`⏱️ Duration: ${duration} minutes`);
 	}
@@ -934,7 +1226,9 @@ function printSummary(
 			console.log(`   npx e2b sandbox kill ${instance.id}`);
 		}
 		console.log("\n   Or kill all at once:");
-		console.log(`   npx e2b sandbox kill ${instances.map((i) => i.id).join(" ")}`);
+		console.log(
+			`   npx e2b sandbox kill ${instances.map((i) => i.id).join(" ")}`,
+		);
 		console.log("─".repeat(70));
 	}
 
@@ -963,7 +1257,7 @@ function parseArgs(): OrchestratorOptions {
 	const args = process.argv.slice(2);
 	const options: OrchestratorOptions = {
 		specId: 0,
-		sandboxCount: 2,
+		sandboxCount: 3,
 		timeout: 3600,
 		dryRun: false,
 	};
@@ -972,14 +1266,18 @@ function parseArgs(): OrchestratorOptions {
 		const arg = args[i];
 
 		if ((arg === "--sandboxes" || arg === "-s") && args[i + 1]) {
-			options.sandboxCount = Math.min(parseInt(args[i + 1], 10), 2);
+			options.sandboxCount = Math.min(parseInt(args[i + 1], 10), 3);
 			i++;
 		} else if (arg === "--timeout" && args[i + 1]) {
 			options.timeout = parseInt(args[i + 1], 10);
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
-		} else if (!arg.startsWith("--") && !arg.startsWith("-") && !options.specId) {
+		} else if (
+			!arg.startsWith("--") &&
+			!arg.startsWith("-") &&
+			!options.specId
+		) {
 			options.specId = parseInt(arg, 10);
 		}
 	}
@@ -995,7 +1293,7 @@ Usage:
   tsx spec-orchestrator.ts <spec-id> [options]
 
 Options:
-  --sandboxes <n>, -s   Number of sandboxes (default: 2, max: 2)
+  --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600)
   --dry-run             Show execution plan without running
 
@@ -1004,11 +1302,14 @@ Features:
   - Work queue: sandboxes dynamically pull next available feature
   - Dependency-aware: respects feature and initiative dependencies
   - Auto-resume: continues from where it left off
+  - Progress polling: real-time visibility during feature execution
+  - Stall detection: auto-detects hung Claude sessions
 
 Examples:
-  tsx spec-orchestrator.ts 1362              # Run with 2 sandboxes
+  tsx spec-orchestrator.ts 1362              # Run with 3 sandboxes
   tsx spec-orchestrator.ts 1362 --dry-run    # Preview execution plan
   tsx spec-orchestrator.ts 1362 -s 1         # Single sandbox mode
+  tsx spec-orchestrator.ts 1362 -s 2         # Two sandbox mode
 
 Prerequisites:
   1. Complete task decomposition for all features

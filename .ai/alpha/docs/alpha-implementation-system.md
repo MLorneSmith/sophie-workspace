@@ -39,6 +39,8 @@ Spec #1362 (user-dashboard-home)
 - **Automatic progress tracking** - stop and restart anytime
 - **Dependency-aware** - features only run when their dependencies complete
 - **Work queue pattern** - sandboxes dynamically pull next available feature
+- **Real-time progress polling** - see task progress during feature execution
+- **Stall detection** - automatically detects hung Claude sessions
 
 ### Work Queue with Dependency Checking
 
@@ -99,7 +101,7 @@ TypeScript script that:
 tsx .ai/alpha/scripts/spec-orchestrator.ts <spec-id> [options]
 
 Options:
-  --sandboxes <n>, -s   Number of sandboxes (default: 2, max: 2)
+  --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600)
   --dry-run             Show execution plan without running
 ```
@@ -109,11 +111,14 @@ Options:
 # Preview execution plan
 tsx spec-orchestrator.ts 1362 --dry-run
 
-# Run with 2 sandboxes (default)
+# Run with 3 sandboxes (default)
 tsx spec-orchestrator.ts 1362
 
 # Single sandbox mode
 tsx spec-orchestrator.ts 1362 -s 1
+
+# Two sandbox mode
+tsx spec-orchestrator.ts 1362 -s 2
 
 # Re-run to continue (automatic resume)
 tsx spec-orchestrator.ts 1362
@@ -154,8 +159,9 @@ Slash command run inside E2B sandbox to implement a single feature's tasks.
 │     └─→ tsx spec-orchestrator.ts 1362                            │
 │                                                                  │
 │  3. Orchestrator Actions:                                        │
-│     ├─→ Create E2B sandboxes (2 by default)                      │
-│     ├─→ Both sandboxes share branch: alpha/spec-1362             │
+│     ├─→ Create E2B sandboxes (3 by default)                      │
+│     ├─→ All sandboxes share branch: alpha/spec-1362              │
+│     ├─→ Progress polling displays real-time task updates         │
 │     └─→ Sandboxes pull features from queue                       │
 │                                                                  │
 │  4. Work Queue Loop:                                             │
@@ -283,10 +289,46 @@ The `spec-manifest.json` tracks:
 ### Feature Progress File
 
 Inside sandbox, `.initiative-progress.json` tracks:
-- Current task being executed
+- Current task being executed (with status and started_at timestamp)
+- Current execution group
 - Completed tasks list
 - Failed tasks list
 - Context usage percentage
+- Heartbeat timestamp (for stall detection)
+- Phase (loading_context, executing, verifying, committing, etc.)
+
+### Progress Polling & Stall Detection
+
+The orchestrator provides real-time visibility into feature execution:
+
+**Progress Polling** (every 30 seconds):
+- Reads `.initiative-progress.json` from sandbox
+- Displays structured progress: task completion, current task, group progress
+- Shows context usage percentage
+- Displays heartbeat age (indicates if session is still active)
+
+**Stall Detection** (every 60 seconds):
+- Checks if heartbeat timestamp is older than 10 minutes
+- Checks if current task stuck in "starting" status for too long
+- Logs warning if stall is detected
+
+**Heartbeat Protocol**:
+- The `/alpha:implement` command updates `last_heartbeat` periodically
+- During long operations (file reads, sub-agent calls), heartbeat is updated
+- Allows orchestrator to distinguish "working" from "stuck"
+
+Example progress display:
+```
+   ┌─ 📊 [sbx-a] Progress Update ───────────────────────────────────
+   │ Tasks: [████████░░░░░░░░░░░░] 8/20 (40%)
+   │ Phase: verifying
+   │ Current: 🔄 [T9] Create data loader
+   │ Verification: attempt 2
+   │ Group: Data Layer (2/4)
+   │ Context: 📈 35%
+   │ Heartbeat: 💓 15s ago
+   └───────────────────────────────────────────────────────────────
+```
 
 ## Error Handling
 
@@ -356,7 +398,7 @@ $ tsx spec-orchestrator.ts 1362
    Features: 13
    Tasks: 108
    Progress: 0/13 features
-   Sandboxes: 2
+   Sandboxes: 3
 
 🎯 Next feature: #1367 - Dashboard Page & Grid Layout
 
@@ -370,11 +412,18 @@ $ tsx spec-orchestrator.ts 1362
    ID: sbx_def456
    Checking out branch: alpha/spec-1362
 
+   ⏳ Waiting 90s before next sandbox...
+
+📦 Creating sandbox sbx-c...
+   ID: sbx_ghi789
+   Checking out branch: alpha/spec-1362
+
 ══════════════════════════════════════════════════════════════════════
    SANDBOXES READY
 ══════════════════════════════════════════════════════════════════════
    sbx-a: sbx_abc123
    sbx-b: sbx_def456
+   sbx-c: sbx_ghi789
    Branch: alpha/spec-1362
 
 ══════════════════════════════════════════════════════════════════════
@@ -383,17 +432,28 @@ $ tsx spec-orchestrator.ts 1362
 
    ┌── [sbx-a] Feature #1367: Dashboard Page & Grid Layout
    │   Tasks: 20
+   │   Progress polling every 30s...
    │   Running: /alpha:implement 1367
-   │   ... [implementation output] ...
+
+   ┌─ 📊 [sbx-a] Progress Update ───────────────────────────────────
+   │ Tasks: [████████░░░░░░░░░░░░] 8/20 (40%)
+   │ Phase: executing
+   │ Current: 🔄 [T9] Create dashboard loader
+   │ Group: Data Layer (2/4)
+   │ Context: 📈 25%
+   │ Heartbeat: 💓 12s ago
+   └───────────────────────────────────────────────────────────────
+
+   │   ... [more progress updates] ...
    └── ✅ completed (20/20 tasks)
 
    ┌── [sbx-b] Feature #1368: Presentation Outline Table
    │   Tasks: 12
    │   Running: /alpha:implement 1368
-   │   ... [implementation output] ...
+   │   ... [implementation output with progress polling] ...
    └── ✅ completed (12/12 tasks)
 
-   ┌── [sbx-a] Feature #1369: Quick Actions Panel
+   ┌── [sbx-c] Feature #1369: Quick Actions Panel
    │   Tasks: 6
    │   ...
    └── ✅ completed (6/6 tasks)
@@ -411,7 +471,7 @@ $ tsx spec-orchestrator.ts 1362
    Tasks: 108/108
 
 🌿 Branch: alpha/spec-1362
-⏱️ Duration: 45 minutes
+⏱️ Duration: 35 minutes
 
 ══════════════════════════════════════════════════════════════════════
 
