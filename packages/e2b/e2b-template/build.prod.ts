@@ -11,7 +11,7 @@ async function main() {
 	const result = await Template.build(template, {
 		alias: TEMPLATE_ALIAS,
 		cpuCount: 4,
-		memoryMB: 4096,
+		memoryMB: 8192, // Increased from 4096 to prevent OOM during Claude Code context loading
 		onBuildLogs: defaultBuildLogger(),
 	});
 

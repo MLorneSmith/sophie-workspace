@@ -172,6 +172,8 @@ const VSCODE_PORT = 8080;
 const DEV_SERVER_PORT = 3000;
 const PROGRESS_FILE = ".initiative-progress.json";
 const PROGRESS_POLL_INTERVAL_MS = 30000; // Poll progress file every 30 seconds
+const STALL_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes with no progress = stalled
+const STALL_CHECK_INTERVAL_MS = 30000; // Check for stalls every 30 seconds
 
 /**
  * Read OAuth token from Claude Code credentials file.
@@ -1082,18 +1084,17 @@ async function orchestrateDualSandbox(
 	const pool = new SandboxPoolManager(manifest, options.timeout);
 	await pool.createPool(sandboxCount);
 
-	// Start VS Code on all sandboxes
-	await pool.startVSCodeOnAll();
+	// VS Code Web disabled to save memory (~200-500MB per sandbox)
+	// Can be started manually if needed for debugging
 
 	// Print sandbox info
 	console.log("\n" + "═".repeat(70));
 	console.log("   SANDBOXES READY");
 	console.log("═".repeat(70));
 	const urls = pool.getReviewUrls();
-	for (const { sandboxId, vscode } of urls) {
-		console.log(`   ${sandboxId}: ${vscode}`);
+	for (const { sandboxId } of urls) {
+		console.log(`   ${sandboxId}: Ready`);
 	}
-	console.log("\n   💡 Dev server will start after implementation completes");
 
 	// Start implementation
 	console.log("\n" + "═".repeat(70));
@@ -1211,20 +1212,16 @@ async function orchestrateSingleSandbox(
 		sandbox = await createSandbox(manifest, options.timeout);
 	}
 
-	// Start VS Code Web only (dev server starts after implementation)
-	const vscodeUrl = await startVSCodeWeb(sandbox);
-	manifest.sandbox.vscode_url = vscodeUrl;
+	// VS Code Web disabled to save memory (~200-500MB)
+	// Can be started manually if needed for debugging
 	saveManifest(manifest);
 
 	// Print sandbox info
 	console.log("\n" + "═".repeat(70));
 	console.log("   SANDBOX READY");
 	console.log("═".repeat(70));
-	console.log("\n   📝 VS Code Web (view/edit code during implementation):");
-	console.log(`      ${vscodeUrl}`);
 	console.log(`\n   📦 Sandbox ID: ${sandbox.sandboxId}`);
 	console.log(`   🌿 Branch: ${manifest.sandbox.branch_name}`);
-	console.log("\n   💡 Dev server will start after implementation completes");
 
 	// Start implementation
 	console.log("\n" + "═".repeat(70));
@@ -1612,6 +1609,95 @@ async function getPartialProgress(
 	}
 }
 
+/**
+ * Run feature implementation with stall detection.
+ * Monitors progress and kills/restarts if no progress for STALL_TIMEOUT_MS.
+ */
+async function runFeatureWithStallDetection(
+	sandbox: Sandbox,
+	manifest: InitiativeManifest,
+	featureId: number,
+): Promise<ProgressReport> {
+	let lastProgressSnapshot: {
+		completedTasks: string[];
+		currentTask: string | null;
+	} | null = null;
+	let lastChangeTime = Date.now();
+	let isStalled = false;
+
+	// Start monitoring in background
+	const monitorInterval = setInterval(async () => {
+		try {
+			const currentProgress = await getPartialProgress(sandbox, featureId);
+
+			if (currentProgress) {
+				const hasProgress =
+					!lastProgressSnapshot ||
+					currentProgress.completedTasks.length >
+						lastProgressSnapshot.completedTasks.length ||
+					currentProgress.currentTask !== lastProgressSnapshot.currentTask;
+
+				if (hasProgress) {
+					lastChangeTime = Date.now();
+					lastProgressSnapshot = {
+						completedTasks: currentProgress.completedTasks,
+						currentTask: currentProgress.currentTask,
+					};
+				}
+			}
+
+			// Check for stall
+			if (Date.now() - lastChangeTime > STALL_TIMEOUT_MS) {
+				isStalled = true;
+				console.log(
+					`   ⚠️ Feature #${featureId} stalled - no progress for ${STALL_TIMEOUT_MS / 60000} minutes`,
+				);
+			}
+		} catch {
+			// Ignore monitoring errors
+		}
+	}, STALL_CHECK_INTERVAL_MS);
+
+	try {
+		// Run the implementation with a race against stall detection
+		const implementationPromise = runFeatureImplementation(
+			sandbox,
+			manifest,
+			featureId,
+		);
+
+		// Check periodically if we've stalled
+		const result = await new Promise<ProgressReport>((resolve, reject) => {
+			implementationPromise.then(resolve).catch(reject);
+
+			// Check stall status every second
+			const stallChecker = setInterval(() => {
+				if (isStalled) {
+					clearInterval(stallChecker);
+					// Don't reject - let it continue but mark as resource_exhausted for retry
+					resolve({
+						feature_id: featureId,
+						status: "resource_exhausted",
+						tasks_completed: lastProgressSnapshot?.completedTasks.length || 0,
+						tasks_total:
+							manifest.features.find((f) => f.id === featureId)?.task_count ||
+							0,
+						context_usage_percent: 0,
+						error: `Stalled - no progress for ${STALL_TIMEOUT_MS / 60000} minutes`,
+					});
+				}
+			}, 1000);
+
+			// Clean up stall checker when implementation completes
+			implementationPromise.finally(() => clearInterval(stallChecker));
+		});
+
+		return result;
+	} finally {
+		clearInterval(monitorInterval);
+	}
+}
+
 // ============================================================================
 // Sandbox Pool Management (Phase 1: Dual Sandbox)
 // ============================================================================
@@ -1633,24 +1719,36 @@ class SandboxPoolManager {
 	}
 
 	/**
-	 * Create N sandboxes in parallel.
+	 * Create N sandboxes with staggered startup to avoid concurrent memory spikes.
+	 * Each sandbox is created sequentially with a 90-second delay between them.
 	 */
 	async createPool(count: number = 2): Promise<void> {
-		console.log(`\n📦 Creating sandbox pool (${count} sandboxes)...`);
-
-		const createPromises = Array.from({ length: count }, (_, i) =>
-			this.createSandboxInstance(`sbx-${String.fromCharCode(97 + i)}`),
+		console.log(
+			`\n📦 Creating sandbox pool (${count} sandboxes, staggered)...`,
 		);
 
-		const results = await Promise.allSettled(createPromises);
+		const STAGGER_DELAY_MS = 90000; // 90 seconds between sandbox startups
+		let successCount = 0;
 
-		for (const result of results) {
-			if (result.status === "rejected") {
-				console.error(`   ❌ Failed to create sandbox: ${result.reason}`);
+		for (let i = 0; i < count; i++) {
+			const suffix = `sbx-${String.fromCharCode(97 + i)}`;
+
+			// Stagger startup to avoid concurrent memory spikes during Claude Code initialization
+			if (i > 0) {
+				console.log(
+					`   ⏳ Waiting ${STAGGER_DELAY_MS / 1000}s before creating next sandbox...`,
+				);
+				await sleep(STAGGER_DELAY_MS);
+			}
+
+			try {
+				await this.createSandboxInstance(suffix);
+				successCount++;
+			} catch (error) {
+				console.error(`   ❌ Failed to create sandbox ${suffix}: ${error}`);
 			}
 		}
 
-		const successCount = results.filter((r) => r.status === "fulfilled").length;
 		console.log(`   ✅ Created ${successCount}/${count} sandboxes`);
 
 		if (successCount === 0) {
@@ -1827,6 +1925,7 @@ class SandboxPoolManager {
 
 	/**
 	 * Execute all assigned features in a single sandbox sequentially.
+	 * Uses stall detection to automatically recover from hung Claude sessions.
 	 */
 	private async executeSandboxFeatures(
 		instance: SandboxInstance,
@@ -1845,18 +1944,21 @@ class SandboxPoolManager {
 			console.log("   │");
 			console.log(`   │ 📋 Starting Feature #${featureId}`);
 
-			let result = await runFeatureImplementation(
+			// Use stall detection wrapper to catch hung Claude sessions
+			let result = await runFeatureWithStallDetection(
 				instance.sandbox,
 				this.manifest,
 				featureId,
 			);
 
-			// Handle resource exhaustion
+			// Handle resource exhaustion (includes stall detection)
 			if (result.status === "resource_exhausted") {
-				console.log(`   │ 🔥 Feature #${featureId} hit OOM, recovering...`);
+				console.log(
+					`   │ 🔥 Feature #${featureId} hit OOM/stall, recovering...`,
+				);
 				const recovered = await waitForSandboxRecovery(instance.sandbox);
 				if (recovered) {
-					result = await runFeatureImplementation(
+					result = await runFeatureWithStallDetection(
 						instance.sandbox,
 						this.manifest,
 						featureId,
@@ -1870,7 +1972,7 @@ class SandboxPoolManager {
 				console.log(
 					`   │ ⚠️ Feature #${featureId} hit context limit, resuming...`,
 				);
-				result = await runFeatureImplementation(
+				result = await runFeatureWithStallDetection(
 					instance.sandbox,
 					this.manifest,
 					featureId,
