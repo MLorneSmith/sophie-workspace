@@ -398,7 +398,73 @@ E2B sandbox has configurable timeout (default 1 hour):
 - `SUPABASE_SANDBOX_DB_URL` - Sandbox database connection URL
 - `SUPABASE_ACCESS_TOKEN` - CLI access token for linking
 
+**Payload CMS Seeding (for test data)**:
+- `PAYLOAD_SECRET` - Payload CMS secret key
+- `SEED_USER_PASSWORD` - Password for seeded test users
+- `R2_ACCESS_KEY_ID` - Cloudflare R2 access key
+- `R2_SECRET_ACCESS_KEY` - Cloudflare R2 secret key
+- `R2_ACCOUNT_ID` - Cloudflare R2 account ID
+- `PAYLOAD_PUBLIC_MEDIA_BASE_URL` - R2 media bucket URL
+- `PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL` - R2 downloads bucket URL
+
 See `supabase-sandbox-integration-plan.md` for detailed setup instructions.
+
+## Database Seeding
+
+### Overview
+
+At orchestration startup, the sandbox database is automatically seeded with Payload CMS data. This provides test users, media files, courses, and other content for development.
+
+### Seeding Flow
+
+```
+1. Database Reset (schema only)
+   └── DROP/CREATE public schema
+   └── Apply Supabase migrations
+
+2. Create First Sandbox
+   └── Clone repo, setup environment
+
+3. Seed Database via First Sandbox
+   └── Run Payload migrations (60+ tables)
+   └── Run Payload seeding (257 records)
+   └── Verify seeded data
+
+4. Create Remaining Sandboxes
+   └── All sandboxes share the seeded database
+```
+
+### Seeded Content
+
+After seeding, the database contains:
+- **1 admin user** - For authentication testing
+- **24 media files** - R2-hosted images with URLs
+- **23 downloads** - R2-hosted documents
+- **8 posts** - Blog content
+- **1 course** with 25 lessons and 20 quizzes
+- **94 quiz questions** - Various question types
+- **3 surveys** with 32 survey questions
+- **19 documentation pages**
+- **5 private posts**
+
+### Skipping Seeding
+
+Use `--skip-db-seed` to skip seeding when resuming:
+```bash
+tsx spec-orchestrator.ts 1362 --skip-db-seed
+```
+
+The orchestrator also auto-detects if the database is already seeded (checks for `payload.users`) and skips seeding automatically on resume.
+
+### Seeding Failures
+
+If seeding fails:
+1. Check `PAYLOAD_SECRET` and `SEED_USER_PASSWORD` are set
+2. Check R2 credentials for media files
+3. Verify `SUPABASE_SANDBOX_DB_URL` is accessible
+4. Check Payload migration logs for errors
+
+Use `--skip-db-reset --skip-db-seed` to skip both reset and seeding when debugging.
 
 ## Database Feature Handling
 

@@ -125,6 +125,7 @@ interface OrchestratorOptions {
 	dryRun: boolean;
 	forceUnlock: boolean;
 	skipDbReset: boolean;
+	skipDbSeed: boolean;
 }
 
 interface OrchestratorLock {
@@ -286,10 +287,48 @@ function getAllEnvVars(): Record<string, string> {
 	if (sandboxDbUrl) {
 		envs.DATABASE_URL = sandboxDbUrl;
 		envs.SUPABASE_SANDBOX_DB_URL = sandboxDbUrl;
+		// Payload uses DATABASE_URI instead of DATABASE_URL
+		// Add sslmode=require for remote Supabase connections
+		const dbUriWithSsl = sandboxDbUrl.includes("?")
+			? `${sandboxDbUrl}&sslmode=require`
+			: `${sandboxDbUrl}?sslmode=require`;
+		envs.DATABASE_URI = dbUriWithSsl;
 	}
 	if (supabaseAccessToken) {
 		envs.SUPABASE_ACCESS_TOKEN = supabaseAccessToken;
 	}
+
+	// Payload CMS credentials for seeding
+	const payloadSecret = process.env.PAYLOAD_SECRET;
+	const seedUserPassword = process.env.SEED_USER_PASSWORD;
+
+	if (payloadSecret) {
+		envs.PAYLOAD_SECRET = payloadSecret;
+	}
+	if (seedUserPassword) {
+		envs.SEED_USER_PASSWORD = seedUserPassword;
+	}
+
+	// R2 Storage credentials for seeding media files
+	// These are needed for the seed engine to reference R2-hosted media URLs
+	const r2AccessKeyId = process.env.R2_ACCESS_KEY_ID;
+	const r2SecretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+	const r2AccountId = process.env.R2_ACCOUNT_ID;
+	const r2MediaBucket = process.env.R2_MEDIA_BUCKET;
+	const r2DownloadsBucket = process.env.R2_DOWNLOADS_BUCKET;
+	const r2Region = process.env.R2_REGION;
+	const mediaBaseUrl = process.env.PAYLOAD_PUBLIC_MEDIA_BASE_URL;
+	const downloadsBaseUrl = process.env.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL;
+
+	if (r2AccessKeyId) envs.R2_ACCESS_KEY_ID = r2AccessKeyId;
+	if (r2SecretAccessKey) envs.R2_SECRET_ACCESS_KEY = r2SecretAccessKey;
+	if (r2AccountId) envs.R2_ACCOUNT_ID = r2AccountId;
+	if (r2MediaBucket) envs.R2_MEDIA_BUCKET = r2MediaBucket;
+	if (r2DownloadsBucket) envs.R2_DOWNLOADS_BUCKET = r2DownloadsBucket;
+	if (r2Region) envs.R2_REGION = r2Region;
+	if (mediaBaseUrl) envs.PAYLOAD_PUBLIC_MEDIA_BASE_URL = mediaBaseUrl;
+	if (downloadsBaseUrl)
+		envs.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL = downloadsBaseUrl;
 
 	return envs;
 }
@@ -510,6 +549,105 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 		updateLockResetState(false);
 		releaseLock();
 		throw error;
+	}
+}
+
+/**
+ * Seed the sandbox database with Payload CMS data.
+ * This runs Payload migrations and seeding via a sandbox instance.
+ *
+ * @param sandbox - The sandbox to use for seeding
+ * @returns Promise<boolean> - true if seeding succeeded
+ */
+async function seedSandboxDatabase(sandbox: Sandbox): Promise<boolean> {
+	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
+	if (!dbUrl) {
+		console.log("   ℹ️ No sandbox database configured, skipping seeding");
+		return true;
+	}
+
+	console.log("🌱 Seeding sandbox database...");
+
+	try {
+		// Step 1: Run Payload migrations
+		console.log("   📦 Running Payload migrations...");
+		const migrateResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR}/apps/payload && ` +
+				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run payload migrate --forceAcceptWarning",
+			{
+				timeoutMs: 300000, // 5 minutes for migrations
+				envs: getAllEnvVars(),
+			},
+		);
+
+		if (migrateResult.exitCode !== 0) {
+			console.error(`   ❌ Payload migration failed: ${migrateResult.stderr}`);
+			return false;
+		}
+		console.log("   ✅ Payload migrations complete");
+
+		// Step 2: Run Payload seeding
+		console.log("   🌱 Running Payload seeding...");
+		const seedResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR}/apps/payload && ` +
+				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run --force",
+			{
+				timeoutMs: 600000, // 10 minutes for seeding
+				envs: getAllEnvVars(),
+			},
+		);
+
+		if (seedResult.exitCode !== 0) {
+			console.error(`   ❌ Payload seeding failed: ${seedResult.stderr}`);
+			return false;
+		}
+		console.log("   ✅ Payload seeding complete");
+
+		// Step 3: Quick verification
+		console.log("   🔍 Verifying seeded data...");
+		const verifyResult = await sandbox.commands.run(
+			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,
+			{ timeoutMs: 30000 },
+		);
+
+		const userCount = parseInt(verifyResult.stdout.trim(), 10);
+		if (userCount > 0) {
+			console.log(`   ✅ Verified: ${userCount} user(s) seeded`);
+		} else {
+			console.warn(
+				"   ⚠️ No users found after seeding (may be normal for some configs)",
+			);
+		}
+
+		return true;
+	} catch (error) {
+		console.error(`   ❌ Seeding failed: ${error}`);
+		return false;
+	}
+}
+
+/**
+ * Verify that the sandbox database has been seeded.
+ * Quick check to avoid re-seeding on resume.
+ *
+ * @returns Promise<boolean> - true if database appears to be seeded
+ */
+async function isDatabaseSeeded(): Promise<boolean> {
+	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
+	if (!dbUrl) {
+		return false;
+	}
+
+	try {
+		// Check if payload.users table exists and has data
+		const result = execSync(
+			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,
+			{ encoding: "utf-8" },
+		);
+		const count = parseInt(result.trim(), 10);
+		return count > 0;
+	} catch {
+		return false;
 	}
 }
 
@@ -1469,15 +1607,42 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	const instances: SandboxInstance[] = [];
 	const STAGGER_DELAY_MS = 20000;
 
-	for (let i = 0; i < options.sandboxCount; i++) {
+	// Create FIRST sandbox (needed for seeding)
+	console.log("\n📦 Creating first sandbox...");
+	const firstInstance = await createSandbox(manifest, "sbx-a", options.timeout);
+	instances.push(firstInstance);
+
+	// Seed database via first sandbox (unless skipped or already seeded)
+	if (
+		!options.skipDbReset &&
+		!options.skipDbSeed &&
+		process.env.SUPABASE_SANDBOX_DB_URL
+	) {
+		// Check if database is already seeded (for resume scenarios)
+		const alreadySeeded = await isDatabaseSeeded();
+		if (alreadySeeded) {
+			console.log("   ℹ️ Database already seeded, skipping seeding step");
+		} else {
+			const seedSuccess = await seedSandboxDatabase(firstInstance.sandbox);
+			if (!seedSuccess) {
+				console.error("❌ Database seeding failed, aborting orchestration");
+				await firstInstance.sandbox.kill();
+				releaseLock();
+				process.exit(1);
+			}
+		}
+	} else if (options.skipDbSeed) {
+		console.log("   ⏭️ Skipping database seeding (--skip-db-seed)");
+	}
+
+	// Create remaining sandboxes
+	for (let i = 1; i < options.sandboxCount; i++) {
 		const label = `sbx-${String.fromCharCode(97 + i)}`;
 
-		if (i > 0) {
-			console.log(
-				`\n   ⏳ Waiting ${STAGGER_DELAY_MS / 1000}s before next sandbox...`,
-			);
-			await sleep(STAGGER_DELAY_MS);
-		}
+		console.log(
+			`\n   ⏳ Waiting ${STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+		);
+		await sleep(STAGGER_DELAY_MS);
 
 		const instance = await createSandbox(manifest, label, options.timeout);
 		instances.push(instance);
@@ -1848,6 +2013,7 @@ function parseArgs(): OrchestratorOptions {
 		dryRun: false,
 		forceUnlock: false,
 		skipDbReset: false,
+		skipDbSeed: false,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -1865,6 +2031,8 @@ function parseArgs(): OrchestratorOptions {
 			options.forceUnlock = true;
 		} else if (arg === "--skip-db-reset") {
 			options.skipDbReset = true;
+		} else if (arg === "--skip-db-seed") {
+			options.skipDbSeed = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -1890,6 +2058,7 @@ Options:
   --dry-run             Show execution plan without running
   --force-unlock        Force release any existing orchestrator lock
   --skip-db-reset       Skip sandbox database reset at startup
+  --skip-db-seed        Skip Payload CMS seeding after reset
 
 Features:
   - Takes Spec ID (not Initiative ID)
@@ -1899,6 +2068,7 @@ Features:
   - Progress polling: real-time visibility during feature execution
   - Stall detection: auto-detects hung Claude sessions
   - Sandbox database: resets dedicated Supabase project per run
+  - Database seeding: auto-seeds Payload CMS with test data
   - Orchestrator lock: prevents concurrent runs
 
 Examples:
@@ -1907,6 +2077,7 @@ Examples:
   tsx spec-orchestrator.ts 1362 -s 1         # Single sandbox mode
   tsx spec-orchestrator.ts 1362 -s 2         # Two sandbox mode
   tsx spec-orchestrator.ts 1362 --force-unlock  # Override stale lock
+  tsx spec-orchestrator.ts 1362 --skip-db-seed  # Resume without re-seeding
 
 Environment Variables (for sandbox database):
   SUPABASE_SANDBOX_PROJECT_REF   Sandbox project reference ID
@@ -1915,6 +2086,15 @@ Environment Variables (for sandbox database):
   SUPABASE_SANDBOX_SERVICE_ROLE_KEY  Sandbox service role key
   SUPABASE_SANDBOX_DB_URL        Sandbox database connection URL
   SUPABASE_ACCESS_TOKEN          CLI access token for linking
+
+Environment Variables (for Payload CMS seeding):
+  PAYLOAD_SECRET                 Payload CMS secret key
+  SEED_USER_PASSWORD             Password for seeded test users
+  R2_ACCESS_KEY_ID               Cloudflare R2 access key
+  R2_SECRET_ACCESS_KEY           Cloudflare R2 secret key
+  R2_ACCOUNT_ID                  Cloudflare R2 account ID
+  PAYLOAD_PUBLIC_MEDIA_BASE_URL  R2 media bucket URL
+  PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL  R2 downloads bucket URL
 
 Prerequisites:
   1. Complete task decomposition for all features
