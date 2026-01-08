@@ -157,28 +157,6 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
 
-  .ai/alpha/scripts/ui:
-    dependencies:
-      ink:
-        specifier: ^5.1.0
-        version: 5.2.1(@types/react@19.2.7)(react@19.2.1)
-      ink-spinner:
-        specifier: ^5.0.0
-        version: 5.0.0(ink@5.2.1(@types/react@19.2.7)(react@19.2.1))(react@19.2.1)
-      react:
-        specifier: 19.2.1
-        version: 19.2.1
-    devDependencies:
-      '@types/node':
-        specifier: ^24.10.1
-        version: 24.10.3
-      '@types/react':
-        specifier: 19.2.7
-        version: 19.2.7
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
   apps/dev-tool:
     dependencies:
       '@ai-sdk/openai':

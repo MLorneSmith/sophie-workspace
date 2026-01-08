@@ -1,10 +1,10 @@
+import { Box, Text, useApp, useInput } from "ink";
 import type React from "react";
-import { Box, Text, useInput, useApp } from "ink";
-import { Header } from "./Header.js";
-import { SandboxGrid } from "./SandboxGrid.js";
-import { OverallProgress } from "./OverallProgress.js";
-import { EventLog } from "./EventLog.js";
 import type { OrchestratorUIProps } from "../types.js";
+import { EventLog } from "./EventLog.js";
+import { Header } from "./Header.js";
+import { OverallProgress } from "./OverallProgress.js";
+import { SandboxGrid } from "./SandboxGrid.js";
 
 /**
  * Root OrchestratorUI component

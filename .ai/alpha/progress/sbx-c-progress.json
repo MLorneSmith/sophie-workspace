@@ -1,0 +1,38 @@
+{
+	"sandbox_id": "i03dem78902e1tb4qvufp",
+	"feature": {
+		"issue_number": 1375,
+		"title": "Activity Feed Component"
+	},
+	"current_task": {
+		"id": "T11",
+		"name": "Add activity feed item component tests",
+		"status": "starting",
+		"started_at": "2026-01-08T22:22:00Z"
+	},
+	"current_group": {
+		"id": 7,
+		"name": "Testing",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5",
+		"T6",
+		"T7",
+		"T8",
+		"T9",
+		"T10"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 45,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-08T22:08:56.016416Z",
+	"last_tool": "Write",
+	"session_id": "i03dem78902e1tb4qvufp"
+}

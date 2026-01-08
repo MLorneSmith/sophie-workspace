@@ -1,6 +1,6 @@
-import type React from "react";
-import { useState, useEffect } from "react";
 import { Box, Text } from "ink";
+import type React from "react";
+import { useEffect, useState } from "react";
 import type { HeaderProps, OverallProgress } from "../types.js";
 
 /**

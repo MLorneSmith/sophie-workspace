@@ -1,0 +1,17 @@
+{
+  "last_heartbeat": "2026-01-08T22:25:23.775106Z",
+  "last_subagent_stop": "2026-01-08T22:25:23.775106Z",
+  "last_agent_type": "unknown",
+  "subagent_count": 13,
+  "subagent_counts": {
+    "unknown": 13
+  },
+  "session_id": "9b5788ab-f110-4e4d-abf2-8b3a6177ffb4",
+  "last_tool": "Bash",
+  "tool_counts": {
+    "Bash": 14,
+    "Read": 2,
+    "Glob": 3
+  },
+  "tool_count": 19
+}

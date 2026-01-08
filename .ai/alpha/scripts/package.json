@@ -1,0 +1,9 @@
+{
+	"name": "alpha-scripts",
+	"type": "module",
+	"private": true,
+	"dependencies": {
+		"ink": "^6.6.0",
+		"react": "^19.0.0"
+	}
+}

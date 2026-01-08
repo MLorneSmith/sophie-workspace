@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
-	UIState,
-	SandboxState,
+	GroupInfo,
 	OrchestratorEvent,
 	OverallProgress,
-	SandboxProgressFile,
 	Phase,
+	SandboxProgressFile,
+	SandboxState,
 	TaskInfo,
-	GroupInfo,
+	UIState,
 } from "../types.js";
-import { POLL_INTERVAL_MS, HEARTBEAT_STALL_THRESHOLD_MS } from "../types.js";
+import { HEARTBEAT_STALL_THRESHOLD_MS, POLL_INTERVAL_MS } from "../types.js";
 
 /**
  * Configuration for the progress poller
@@ -41,6 +41,22 @@ interface ProgressFileResult {
 }
 
 /**
+ * Structure of overall-progress.json file written by orchestrator
+ */
+interface OverallProgressFile {
+	specId: number;
+	specName: string;
+	status: string;
+	initiativesCompleted: number;
+	initiativesTotal: number;
+	featuresCompleted: number;
+	featuresTotal: number;
+	tasksCompleted: number;
+	tasksTotal: number;
+	lastCheckpoint: string;
+}
+
+/**
  * Sandbox progress reader interface (injected for testability)
  */
 export interface ProgressReader {
@@ -48,6 +64,9 @@ export interface ProgressReader {
 		label: string,
 		progressDir: string,
 	) => Promise<ProgressFileResult>;
+	readOverallProgress: (
+		progressDir: string,
+	) => Promise<OverallProgressFile | null>;
 }
 
 /**
@@ -72,6 +91,21 @@ export const createFsProgressReader = (): ProgressReader => {
 			} catch (err) {
 				const error = err instanceof Error ? err.message : String(err);
 				return { label, data: null, error };
+			}
+		},
+		readOverallProgress: async (
+			progressDir: string,
+		): Promise<OverallProgressFile | null> => {
+			try {
+				const fs = await import("node:fs/promises");
+				const path = await import("node:path");
+
+				const filePath = path.join(progressDir, "overall-progress.json");
+				const content = await fs.readFile(filePath, "utf-8");
+				return JSON.parse(content) as OverallProgressFile;
+			} catch {
+				// File may not exist yet
+				return null;
 			}
 		},
 	};
@@ -495,12 +529,13 @@ export function useProgressPoller(
 	 */
 	const pollNow = useCallback(async () => {
 		try {
-			// Read all progress files in parallel
-			const results = await Promise.all(
-				sandboxLabels.map((label) =>
+			// Read all progress files and overall progress in parallel
+			const [overallProgressFile, ...results] = await Promise.all([
+				reader.readOverallProgress(progressDir),
+				...sandboxLabels.map((label) =>
 					reader.readProgressFile(label, progressDir),
 				),
-			);
+			]);
 
 			// Build new sandbox states
 			const newSandboxes = new Map<string, SandboxState>();
@@ -528,13 +563,30 @@ export function useProgressPoller(
 				newSandboxes.set(result.label, sandboxState);
 			}
 
-			// Aggregate overall progress
-			const newProgress = aggregateProgress(
-				specId,
-				specName,
-				newSandboxes,
-				previousStateRef.current?.overallProgress ?? null,
-			);
+			// Use overall progress from file if available (authoritative from manifest),
+			// otherwise fall back to computing from sandbox states
+			let newProgress: OverallProgress;
+			if (overallProgressFile) {
+				newProgress = {
+					specId: overallProgressFile.specId,
+					specName: overallProgressFile.specName,
+					status: overallProgressFile.status as OverallProgress["status"],
+					initiativesCompleted: overallProgressFile.initiativesCompleted,
+					initiativesTotal: overallProgressFile.initiativesTotal,
+					featuresCompleted: overallProgressFile.featuresCompleted,
+					featuresTotal: overallProgressFile.featuresTotal,
+					tasksCompleted: overallProgressFile.tasksCompleted,
+					tasksTotal: overallProgressFile.tasksTotal,
+				};
+			} else {
+				// Fallback: aggregate from sandbox states (less accurate)
+				newProgress = aggregateProgress(
+					specId,
+					specName,
+					newSandboxes,
+					previousStateRef.current?.overallProgress ?? null,
+				);
+			}
 
 			// Generate events from state changes
 			const newEvents = generateEvents(previousStateRef.current, {

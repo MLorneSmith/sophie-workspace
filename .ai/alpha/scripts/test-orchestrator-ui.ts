@@ -1,4 +1,5 @@
 #!/usr/bin/env npx tsx
+
 /**
  * Integration test for the Orchestrator UI
  *
@@ -15,9 +16,9 @@
  *   4. UI state aggregation
  */
 
+import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execSync } from "node:child_process";
 
 // Test configuration
 const PROJECT_ROOT = execSync("git rev-parse --show-toplevel", {

@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+
 /// <reference types="node" />
 
 /**
@@ -27,12 +28,20 @@
  *   tsx spec-orchestrator.ts 1362 --dry-run
  */
 
+import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import process from "node:process";
-import { execSync } from "node:child_process";
 import { Sandbox } from "@e2b/code-interpreter";
+
+// UI module types (dynamically imported to avoid yoga-layout top-level await issue with tsx)
+interface UIManager {
+	start: (onExit?: () => void) => void;
+	stop: () => void;
+	getState: () => unknown;
+	waitForExit: () => Promise<void>;
+}
 
 // ============================================================================
 // Constants
@@ -732,6 +741,9 @@ function saveManifest(manifest: SpecManifest): void {
 	);
 	manifest.progress.last_checkpoint = new Date().toISOString();
 	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, "\t"));
+
+	// Also write overall progress for UI consumption
+	writeOverallProgress(manifest);
 }
 
 // ============================================================================
@@ -1232,6 +1244,35 @@ function clearUIProgress(): void {
 				}
 			}
 		}
+	}
+}
+
+/**
+ * Write overall progress to local file for UI consumption.
+ * This provides authoritative counts from the manifest since sandbox
+ * progress files only contain current feature info.
+ */
+function writeOverallProgress(manifest: SpecManifest): void {
+	const progressDir = ensureUIProgressDir();
+	const filePath = path.join(progressDir, "overall-progress.json");
+
+	const overallProgress = {
+		specId: manifest.metadata.spec_id,
+		specName: manifest.metadata.spec_name,
+		status: manifest.progress.status,
+		initiativesCompleted: manifest.progress.initiatives_completed,
+		initiativesTotal: manifest.progress.initiatives_total,
+		featuresCompleted: manifest.progress.features_completed,
+		featuresTotal: manifest.progress.features_total,
+		tasksCompleted: manifest.progress.tasks_completed,
+		tasksTotal: manifest.progress.tasks_total,
+		lastCheckpoint: new Date().toISOString(),
+	};
+
+	try {
+		fs.writeFileSync(filePath, JSON.stringify(overallProgress, null, "\t"));
+	} catch {
+		// Ignore write errors
 	}
 }
 
@@ -2087,6 +2128,33 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		clearUIProgress();
 	}
 
+	// Start Ink UI dashboard if enabled (dynamically imported to avoid yoga-layout issue)
+	let uiManager: UIManager | null = null;
+	if (options.ui) {
+		try {
+			const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+			// Dynamic import to avoid yoga-layout top-level await issue with tsx
+			const { startOrchestratorUI } = await import("./ui/index.js");
+			uiManager = startOrchestratorUI(
+				{
+					specId: manifest.metadata.spec_id,
+					specName: manifest.metadata.spec_name,
+					progressDir,
+					sandboxLabels: instances.map((i) => i.label),
+					pollInterval: PROGRESS_POLL_INTERVAL_MS,
+					minimal: options.minimalUi,
+				},
+				() => {
+					// onExit callback - user pressed 'q'
+					console.log("\n⚠️ UI closed by user");
+				},
+			);
+		} catch (uiError) {
+			console.error("⚠️ Failed to start UI dashboard:", uiError);
+			console.log("   Continuing without UI...");
+		}
+	}
+
 	// Main work loop
 	await runWorkLoop(instances, manifest, options.ui);
 
@@ -2178,6 +2246,11 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		console.log(
 			`   Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
 		);
+	}
+
+	// Stop the UI if it was running
+	if (uiManager) {
+		uiManager.stop();
 	}
 
 	// Release the orchestrator lock
@@ -2485,7 +2558,7 @@ function parseArgs(): OrchestratorOptions {
 			options.skipDbReset = true;
 		} else if (arg === "--skip-db-seed") {
 			options.skipDbSeed = true;
-		} else if (arg === "--ui") {
+		} else if (arg === "--ui" || arg === "--ui-mode") {
 			options.ui = true;
 		} else if (arg === "--minimal-ui") {
 			options.ui = true;
@@ -2516,7 +2589,7 @@ Options:
   --force-unlock        Force release any existing orchestrator lock
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
-  --ui                  Enable persistent Ink-based dashboard UI
+  --ui, --ui-mode       Enable persistent Ink-based dashboard UI
   --minimal-ui          Use minimal dashboard (for narrow terminals)
 
 Features:

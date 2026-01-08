@@ -1,0 +1,32 @@
+{
+	"sandbox_id": "irux58ee8wu51uj1uv1y6",
+	"feature": {
+		"issue_number": 1379,
+		"title": "Coaching Page Sessions List"
+	},
+	"current_task": {
+		"id": "T5",
+		"name": "Test TypeScript compilation and visual verification",
+		"status": "starting",
+		"started_at": "2026-01-08T22:06:05+00:00"
+	},
+	"current_group": {
+		"id": 4,
+		"name": "Verification",
+		"tasks_total": 1,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 45,
+	"status": "in_progress",
+	"phase": "verifying",
+	"last_heartbeat": "2026-01-08T22:08:37.637441Z",
+	"last_tool": "Bash",
+	"session_id": "irux58ee8wu51uj1uv1y6"
+}

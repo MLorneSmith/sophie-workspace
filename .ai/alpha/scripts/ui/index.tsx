@@ -1,19 +1,19 @@
-import type React from "react";
-import { useState, useEffect, useCallback } from "react";
 import { render } from "ink";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
-	OrchestratorUI,
-	MinimalOrchestratorUI,
-	LoadingUI,
-	ErrorUI,
 	CompletionUI,
+	ErrorUI,
+	LoadingUI,
+	MinimalOrchestratorUI,
+	OrchestratorUI,
 } from "./components/OrchestratorUI.js";
 import {
-	useProgressPoller,
-	createInitialState,
 	createFsProgressReader,
+	createInitialState,
 	type ProgressPollerConfig,
 	type ProgressReader,
+	useProgressPoller,
 } from "./hooks/useProgressPoller.js";
 import type { UIState } from "./types.js";
 

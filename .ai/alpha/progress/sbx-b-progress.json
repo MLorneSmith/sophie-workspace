@@ -1,0 +1,32 @@
+{
+	"sandbox_id": "idd3yzgbbth5icoxwmx94",
+	"feature": {
+		"issue_number": 1370,
+		"title": "Empty State System"
+	},
+	"current_task": {
+		"id": "T5",
+		"name": "Add component unit tests",
+		"status": "starting",
+		"started_at": "2026-01-08T22:08:46+00:00"
+	},
+	"current_group": {
+		"id": 3,
+		"name": "Integration & Testing",
+		"tasks_total": 2,
+		"tasks_completed": 1
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 40,
+	"status": "failed",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-08T22:08:46+00:00",
+	"last_commit": "af732e7",
+	"session_id": "idd3yzgbbth5icoxwmx94"
+}

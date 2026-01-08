@@ -1,7 +1,7 @@
-import type React from "react";
 import { Box, Text } from "ink";
-import { ProgressBar } from "./ProgressBar.js";
+import type React from "react";
 import type { OverallProgressProps } from "../types.js";
+import { ProgressBar } from "./ProgressBar.js";
 
 /**
  * Overall progress component showing spec-level completion

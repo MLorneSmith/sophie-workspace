@@ -1,16 +1,16 @@
-import type React from "react";
 import { Box, Text } from "ink";
 import Spinner from "ink-spinner";
-import { ProgressBar } from "./ProgressBar.js";
+import type React from "react";
 import type {
+	HealthStatus,
 	SandboxColumnProps,
 	SandboxState,
-	HealthStatus,
 } from "../types.js";
 import {
-	HEARTBEAT_WARNING_THRESHOLD_MS,
 	HEARTBEAT_STALL_THRESHOLD_MS,
+	HEARTBEAT_WARNING_THRESHOLD_MS,
 } from "../types.js";
+import { ProgressBar } from "./ProgressBar.js";
 
 /**
  * Status icons for health display
