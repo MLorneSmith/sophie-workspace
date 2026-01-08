@@ -103,7 +103,7 @@ export const SandboxSummaryRow: React.FC<SandboxGridProps> = ({
 
 	for (const label of SANDBOX_LABELS) {
 		const state = sandboxes.get(label);
-		if (state && state.currentFeature) {
+		if (state?.currentFeature) {
 			summaries.push(
 				`${label}: #${state.currentFeature.id} [${state.tasksCompleted}/${state.tasksTotal}]`,
 			);

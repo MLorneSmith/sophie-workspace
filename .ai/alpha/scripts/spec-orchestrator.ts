@@ -1266,7 +1266,7 @@ function startProgressPolling(
 					{ timeoutMs: 5000 },
 				);
 
-				if (result.stdout && result.stdout.trim()) {
+				if (result.stdout?.trim()) {
 					const progress: SandboxProgress = JSON.parse(result.stdout);
 
 					// Skip stale progress data from previous sessions

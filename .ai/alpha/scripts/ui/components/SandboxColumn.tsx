@@ -63,7 +63,7 @@ export function computeHealthStatus(state: SandboxState): HealthStatus {
  */
 function truncate(str: string, maxLen: number): string {
 	if (str.length <= maxLen) return str;
-	return str.substring(0, maxLen - 3) + "...";
+	return `${str.substring(0, maxLen - 3)}...`;
 }
 
 /**

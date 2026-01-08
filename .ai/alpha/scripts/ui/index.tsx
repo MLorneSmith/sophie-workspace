@@ -80,10 +80,7 @@ const OrchestratorApp: React.FC<{
 				setPhase("running");
 			}
 		},
-		onError: (error) => {
-			// Don't fail on polling errors, just log them
-			console.error("Polling error:", error.message);
-		},
+		onError: (_error) => {},
 	};
 
 	const { state, startPolling, error } = useProgressPoller(
@@ -139,8 +136,6 @@ const OrchestratorApp: React.FC<{
 					elapsed={getElapsedTime()}
 				/>
 			);
-
-		case "running":
 		default:
 			if (minimal) {
 				return <MinimalOrchestratorUI state={state} />;

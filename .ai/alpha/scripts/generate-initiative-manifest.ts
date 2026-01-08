@@ -397,10 +397,8 @@ async function main() {
 			(sum, g) => sum + (g.parallelization_analysis?.sequential_count || 0),
 			0,
 		);
-		const groupsWithParallelBatches = tasksJson.execution.groups.filter(
-			(g) =>
-				g.parallel_batches &&
-				g.parallel_batches.some((b) => b.task_ids.length > 1),
+		const groupsWithParallelBatches = tasksJson.execution.groups.filter((g) =>
+			g.parallel_batches?.some((b) => b.task_ids.length > 1),
 		).length;
 		const estimatedSpeedup =
 			tasksJson.execution.duration.sequential > 0

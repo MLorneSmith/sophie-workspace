@@ -93,7 +93,7 @@ const EventRow: React.FC<{ event: OrchestratorEvent }> = ({ event }) => {
  */
 function truncateMessage(message: string, maxLength: number): string {
 	if (message.length <= maxLength) return message;
-	return message.substring(0, maxLength - 3) + "...";
+	return `${message.substring(0, maxLength - 3)}...`;
 }
 
 /**

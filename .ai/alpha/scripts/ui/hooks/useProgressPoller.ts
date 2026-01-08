@@ -61,8 +61,8 @@ export const createFsProgressReader = (): ProgressReader => {
 		): Promise<ProgressFileResult> => {
 			try {
 				// Dynamic import to work in both Node and browser contexts
-				const fs = await import("fs/promises");
-				const path = await import("path");
+				const fs = await import("node:fs/promises");
+				const path = await import("node:path");
 
 				const filePath = path.join(progressDir, `${label}-progress.json`);
 				const content = await fs.readFile(filePath, "utf-8");
