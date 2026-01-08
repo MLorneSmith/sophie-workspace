@@ -230,17 +230,46 @@ No `--resume` flag needed - the system always reads current progress.
 
 ### Feature Dependencies
 
-Features can depend on other features (tracked in `feature.md`):
+Features can depend on other features within the same initiative using **internal F# references**:
+
+```markdown
+### Blocked By
+- F1: Activity Database Schema (needs table to insert into)
+```
+
+Or using **GitHub issue numbers** (optional):
 
 ```markdown
 ### Blocked By
 - #1367 (Dashboard Page must exist first)
 ```
 
+**Dependency Resolution Process:**
+
+The `generate-spec-manifest.ts` script uses a **two-pass process**:
+
+1. **Pass 1 - Collection**: Collects all features and builds a mapping:
+   - Extracts Feature ID from metadata (e.g., `| **Feature ID** | 1365-F1 |`)
+   - Maps `initiative_id-F#` → `feature_id` (e.g., `1365-1` → `1373`)
+
+2. **Pass 2 - Resolution**: Resolves internal references:
+   - `F1` in initiative 1365 → looks up `1365-1` → returns feature #1373
+   - GitHub issue numbers (`#1367`) are used directly
+
+**Important**: The mapping uses **Feature ID** (e.g., `1365-F1`), not **Priority**. This ensures correct resolution even if priorities are duplicated or out of order.
+
+Example output from manifest generation:
+```
+🔗 Pass 2: Resolving dependencies...
+   Activity Recording Service: depends on [1373]
+   Activity Feed Component: depends on [1374]
+```
+
 The orchestrator:
-1. Extracts dependencies from `feature.md` files
-2. Won't assign a feature until all dependencies are `completed`
-3. Skips blocked features, assigns next available one
+1. Extracts dependencies from `feature.md` files (both F# and #issue formats)
+2. Resolves internal F# references to actual feature IDs
+3. Won't assign a feature until all dependencies are `completed`
+4. Skips blocked features, assigns next available one
 
 ### Initiative Dependencies
 
@@ -354,12 +383,85 @@ E2B sandbox has configurable timeout (default 1 hour):
 
 ## Environment Variables
 
-Required:
+**Required**:
 - `E2B_API_KEY` - E2B platform access
 - `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` - Claude access
 
-Optional:
+**Optional**:
 - `GITHUB_TOKEN` - For git push
+
+**Sandbox Database (for features requiring database work)**:
+- `SUPABASE_SANDBOX_PROJECT_REF` - Sandbox project reference ID
+- `SUPABASE_SANDBOX_URL` - Sandbox project URL
+- `SUPABASE_SANDBOX_ANON_KEY` - Sandbox anon key
+- `SUPABASE_SANDBOX_SERVICE_ROLE_KEY` - Sandbox service role key
+- `SUPABASE_SANDBOX_DB_URL` - Sandbox database connection URL
+- `SUPABASE_ACCESS_TOKEN` - CLI access token for linking
+
+See `supabase-sandbox-integration-plan.md` for detailed setup instructions.
+
+## Database Feature Handling
+
+### Overview
+
+Features that include database tasks (schema changes, migrations, RLS policies) require special handling:
+
+1. **Sandbox Supabase Project** - A dedicated Supabase project for E2B sandboxes
+2. **Serialized Execution** - Only one database feature runs at a time
+3. **Type Generation** - TypeScript types generated after schema changes
+
+### Identifying Database Features
+
+The manifest includes database indicators:
+- `requires_database: true` - Feature has database tasks
+- `database_task_count: N` - Number of DB tasks in feature
+
+In feature queue output:
+```
+   ⏳ [1] #1367: Dashboard Page & Grid Layout 🗄️
+                                              ↑ Database indicator
+```
+
+### Serialization Logic
+
+Database features are serialized to prevent migration conflicts:
+
+```
+Feature Queue:
+[F1367 🗄️] [F1368] [F1369 🗄️] [F1370] [F1371 🗄️]
+    ↓
+Sandbox A takes F1367 (DB feature)
+Sandbox B takes F1368 (non-DB feature) - runs in parallel
+Sandbox C waits - cannot take F1369 until F1367 completes
+```
+
+When a database feature is `in_progress`:
+- Other sandboxes can only pick up non-database features
+- Ensures only one sandbox modifies the database at a time
+- Prevents migration filename conflicts
+
+### Task-Level Database Handling
+
+Database tasks in `tasks.json` have:
+```json
+{
+  "id": "T3",
+  "name": "Create user_activities table schema",
+  "requires_database": true,
+  "migration_name_prefix": "1367_T3"
+}
+```
+
+The `migration_name_prefix` ensures unique migration filenames across parallel features.
+
+### Orchestrator Startup
+
+On startup, the orchestrator:
+1. **Checks database capacity** - Warns if sandbox DB is near 500MB limit
+2. **Resets database** (optional) - Clean slate for each run
+3. **Sets up Supabase CLI** - Links each sandbox to the sandbox project
+
+Use `--skip-db-reset` to skip database reset when resuming a partially complete run.
 
 ## Prerequisites
 

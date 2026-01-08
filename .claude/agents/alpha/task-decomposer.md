@@ -400,7 +400,60 @@ For each task, verify:
 □ Under 750 tokens? (context can be described briefly)
 □ Max 3 files? (touches 1-3 files)
 □ Clear outcome? (binary done/not-done state)
+□ Database flag set? (if task requires DB access)
 ```
+
+### Database Task Detection
+
+Tasks that require database access must be flagged with `requires_database: true`. This enables the orchestrator to serialize database operations and avoid migration conflicts.
+
+**Detection Criteria - Mark `requires_database: true` if ANY of these apply:**
+
+| Indicator | Examples |
+|-----------|----------|
+| **Task name mentions** | migration, schema, table, column, RLS, policy, index, constraint, foreign key |
+| **Action verb + target** | Create/Add/Update + "table", "schema", "migration", "policy", "RLS" |
+| **Output files in** | `apps/web/supabase/schemas/`, `apps/web/supabase/migrations/` |
+| **Verification command includes** | `supabase`, `psql`, `pg_`, database type checks |
+| **Task purpose involves** | Database schema changes, RLS policies, type generation |
+
+**Example DB Task:**
+
+```json
+{
+  "id": "T3",
+  "name": "Create user_activities table schema",
+  "requires_database": true,
+  "migration_name_prefix": "1367_T3",
+  "action": { "verb": "Create", "target": "user_activities table" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/supabase/schemas/30-user-activities.sql" }
+  ],
+  "verification_command": "pnpm supabase:web:typegen && grep 'user_activities' apps/web/lib/database.types.ts"
+}
+```
+
+**Migration Name Prefix:**
+
+For tasks with `requires_database: true`, also set `migration_name_prefix` to ensure unique migration names:
+- Format: `{feature_id}_{task_id}` (e.g., `1367_T3`)
+- This prevents migration filename conflicts when features run in parallel
+
+**Aggregating DB Tasks:**
+
+After creating all tasks, update the metadata:
+
+```json
+{
+  "metadata": {
+    "requires_database": true,
+    "database_tasks": ["T3", "T5", "T8"]
+  }
+}
+```
+
+Set `metadata.requires_database = true` if ANY task has `requires_database: true`.
+List all DB task IDs in `metadata.database_tasks` array.
 
 ### Task Context Template
 
@@ -612,7 +665,9 @@ Write to `${FEAT_DIR}/tasks.json`:
       "level": "<LEVEL>",
       "target_steps": { "min": <N>, "max": <M> },
       "pattern_matched": "<pattern or null>"
-    }
+    },
+    "requires_database": <true|false>,
+    "database_tasks": ["<task IDs with requires_database: true>"]
   },
   "tasks": [
     {
@@ -625,6 +680,8 @@ Write to `${FEAT_DIR}/tasks.json`:
       "estimated_hours": <2-8>,
       "priority": <1-N>,
       "group": <1-N>,
+      "requires_database": <true|false>,
+      "migration_name_prefix": "<feature_id>_<task_id> if requires_database",
       "context": {
         "files": ["<relevant files>"],
         "dependencies": ["<available functions/components>"],

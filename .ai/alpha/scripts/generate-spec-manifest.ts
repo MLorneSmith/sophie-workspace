@@ -28,12 +28,15 @@ interface TasksJson {
 		feature_slug?: string;
 		initiative_id: number;
 		spec_id: number;
+		requires_database?: boolean;
+		database_tasks?: string[];
 	};
 	tasks: Array<{
 		id: string;
 		name: string;
 		status: string;
 		estimated_hours: number;
+		requires_database?: boolean;
 	}>;
 	execution: {
 		duration: {
@@ -64,6 +67,8 @@ interface FeatureEntry {
 	github_issue: number | null;
 	assigned_sandbox?: string;
 	error?: string;
+	requires_database: boolean; // True if any task requires DB access
+	database_task_count: number; // Count of tasks requiring DB access
 }
 
 interface InitiativeEntry {
@@ -202,16 +207,25 @@ function loadTasksJson(featureDir: string): TasksJson | null {
 }
 
 /**
- * Extract feature dependencies from feature.md file.
- * Looks for "Blocked By:" section with issue numbers.
+ * Raw dependency reference - can be either a GitHub issue number or internal F# reference.
  */
-function extractFeatureDependencies(featureDir: string): number[] {
+interface RawDependency {
+	type: "issue" | "internal";
+	value: number; // Issue number or F# number (e.g., F1 → 1)
+}
+
+/**
+ * Extract feature dependencies from feature.md file.
+ * Looks for "Blocked By:" section with issue numbers (#123) or internal references (F1, F2).
+ * Returns raw references that need to be resolved after all features are loaded.
+ */
+function extractFeatureDependenciesRaw(featureDir: string): RawDependency[] {
 	const featureFile = path.join(featureDir, "feature.md");
 	if (!fs.existsSync(featureFile)) return [];
 
 	try {
 		const content = fs.readFileSync(featureFile, "utf-8");
-		const deps: number[] = [];
+		const deps: RawDependency[] = [];
 
 		// Look for "Blocked By" section (handle various formats)
 		const patterns = [
@@ -223,12 +237,27 @@ function extractFeatureDependencies(featureDir: string): number[] {
 		for (const pattern of patterns) {
 			const match = content.match(pattern);
 			if (match) {
-				const issueMatches = match[1].match(/#(\d+)/g);
+				const section = match[1];
+
+				// Match GitHub issue numbers: #1234
+				const issueMatches = section.match(/#(\d+)/g);
 				if (issueMatches) {
 					for (const issueMatch of issueMatches) {
 						const issueNum = parseInt(issueMatch.slice(1), 10);
-						if (!deps.includes(issueNum)) {
-							deps.push(issueNum);
+						if (!deps.some((d) => d.type === "issue" && d.value === issueNum)) {
+							deps.push({ type: "issue", value: issueNum });
+						}
+					}
+				}
+
+				// Match internal feature references: F1, F2, F3, etc.
+				// Pattern: F1: or F1 or F1, - captures the number after F
+				const internalMatches = section.match(/\bF(\d+)\b/g);
+				if (internalMatches) {
+					for (const internalMatch of internalMatches) {
+						const fNum = parseInt(internalMatch.slice(1), 10);
+						if (!deps.some((d) => d.type === "internal" && d.value === fNum)) {
+							deps.push({ type: "internal", value: fNum });
 						}
 					}
 				}
@@ -239,6 +268,41 @@ function extractFeatureDependencies(featureDir: string): number[] {
 	} catch {
 		return [];
 	}
+}
+
+/**
+ * Resolve raw dependencies to actual feature IDs.
+ * Internal F# references are resolved within the same initiative based on priority.
+ *
+ * @param rawDeps - Raw dependencies from extractFeatureDependenciesRaw
+ * @param initiativeId - The initiative this feature belongs to
+ * @param featurePriorityMap - Map of initiative_id -> priority -> feature_id
+ */
+function resolveFeatureDependencies(
+	rawDeps: RawDependency[],
+	initiativeId: number,
+	featurePriorityMap: Map<string, number>,
+): number[] {
+	const resolved: number[] = [];
+
+	for (const dep of rawDeps) {
+		if (dep.type === "issue") {
+			// GitHub issue number - use directly
+			if (!resolved.includes(dep.value)) {
+				resolved.push(dep.value);
+			}
+		} else if (dep.type === "internal") {
+			// Internal F# reference - resolve within same initiative
+			// F1 = priority 1, F2 = priority 2, etc.
+			const key = `${initiativeId}-${dep.value}`;
+			const featureId = featurePriorityMap.get(key);
+			if (featureId && !resolved.includes(featureId)) {
+				resolved.push(featureId);
+			}
+		}
+	}
+
+	return resolved;
 }
 
 /**
@@ -324,6 +388,32 @@ function extractFeaturePriority(featureDir: string): number {
 	}
 }
 
+/**
+ * Extract the F# number from Feature ID in feature.md metadata table.
+ * Feature ID format: "1365-F1" -> returns 1
+ * This is used for mapping internal F# references.
+ */
+function extractFeatureFNumber(featureDir: string): number | null {
+	const featureFile = path.join(featureDir, "feature.md");
+	if (!fs.existsSync(featureFile)) return null;
+
+	try {
+		const content = fs.readFileSync(featureFile, "utf-8");
+
+		// Look for Feature ID in metadata table: | **Feature ID** | 1365-F1 |
+		const match = content.match(
+			/\|\s*\*\*Feature ID\*\*\s*\|\s*\d+-F(\d+)\s*\|/i,
+		);
+		if (match) {
+			return parseInt(match[1], 10);
+		}
+
+		return null;
+	} catch {
+		return null;
+	}
+}
+
 // ============================================================================
 // Main Function
 // ============================================================================
@@ -364,11 +454,26 @@ async function main() {
 		process.exit(1);
 	}
 
-	// Process initiatives and features
+	// =========================================================================
+	// Two-pass processing:
+	// Pass 1: Collect all features and build priority map
+	// Pass 2: Resolve internal F# references to actual feature IDs
+	// =========================================================================
+
 	const initiatives: InitiativeEntry[] = [];
 	const featureQueue: FeatureEntry[] = [];
 	let totalTasks = 0;
 	let totalTasksCompleted = 0;
+
+	// Map: "initiative_id-priority" -> feature_id
+	// Used to resolve F1, F2, etc. references within an initiative
+	const featurePriorityMap = new Map<string, number>();
+
+	// Temporary storage for raw dependencies (before resolution)
+	const rawDependenciesMap = new Map<number, RawDependency[]>();
+
+	// Pass 1: Collect all features and build the priority map
+	console.log("\n📦 Pass 1: Collecting features...");
 
 	for (const initDir of initDirs) {
 		const initDirName = path.basename(initDir);
@@ -392,13 +497,24 @@ async function main() {
 			if (!tasksJson) continue;
 
 			const featureId = tasksJson.metadata.feature_id;
-			const featureDirName = path.basename(featureDir);
 			const relativePath = path.relative(
 				specDir,
 				path.join(featureDir, "tasks.json"),
 			);
-			const featureDeps = extractFeatureDependencies(featureDir);
 			const featurePriority = extractFeaturePriority(featureDir);
+
+			// Extract raw dependencies (will resolve in Pass 2)
+			const rawDeps = extractFeatureDependenciesRaw(featureDir);
+			rawDependenciesMap.set(featureId, rawDeps);
+
+			// Build F# map: initiative_id-F# -> feature_id
+			// Uses Feature ID (e.g., "1365-F1") not Priority for correct mapping
+			// This allows us to resolve "F1" -> feature with Feature ID "1365-F1"
+			const fNumber = extractFeatureFNumber(featureDir);
+			if (fNumber !== null) {
+				const fKey = `${initId}-${fNumber}`;
+				featurePriorityMap.set(fKey, featureId);
+			}
 
 			const completedTasks = tasksJson.tasks.filter(
 				(t) => t.status === "completed",
@@ -415,6 +531,14 @@ async function main() {
 						? "in_progress"
 						: "pending";
 
+			// Aggregate database flags from tasks.json
+			const requiresDatabase =
+				tasksJson.metadata.requires_database ||
+				tasksJson.tasks.some((t) => t.requires_database === true);
+			const databaseTaskCount =
+				tasksJson.metadata.database_tasks?.length ||
+				tasksJson.tasks.filter((t) => t.requires_database === true).length;
+
 			initiativeFeatures.push({
 				id: featureId,
 				initiative_id: initId,
@@ -429,8 +553,10 @@ async function main() {
 				tasks_completed: completedTasks,
 				sequential_hours: tasksJson.execution.duration.sequential,
 				parallel_hours: tasksJson.execution.duration.parallel,
-				dependencies: featureDeps,
+				dependencies: [], // Will be resolved in Pass 2
 				github_issue: tasksJson.github?.feature_tasks_issue || null,
+				requires_database: requiresDatabase,
+				database_task_count: databaseTaskCount,
 			});
 		}
 
@@ -462,6 +588,28 @@ async function main() {
 			features_completed: completedFeatures,
 			dependencies: initDeps,
 		});
+	}
+
+	// =========================================================================
+	// Pass 2: Resolve internal F# references to actual feature IDs
+	// =========================================================================
+	console.log("🔗 Pass 2: Resolving dependencies...");
+
+	for (const feature of featureQueue) {
+		const rawDeps = rawDependenciesMap.get(feature.id);
+		if (rawDeps && rawDeps.length > 0) {
+			feature.dependencies = resolveFeatureDependencies(
+				rawDeps,
+				feature.initiative_id,
+				featurePriorityMap,
+			);
+
+			if (feature.dependencies.length > 0) {
+				console.log(
+					`   ${feature.title}: depends on [${feature.dependencies.join(", ")}]`,
+				);
+			}
+		}
 	}
 
 	// Sort initiatives by priority
@@ -594,6 +742,9 @@ async function main() {
 		);
 	}
 
+	// Count DB features
+	const dbFeatureCount = featureQueue.filter((f) => f.requires_database).length;
+
 	console.log("\n📦 Feature Queue:");
 	for (const feature of featureQueue) {
 		const statusIcon =
@@ -606,10 +757,18 @@ async function main() {
 			feature.dependencies.length > 0
 				? ` [blocked by: ${feature.dependencies.map((d) => `#${d}`).join(", ")}]`
 				: "";
+		const dbMarker = feature.requires_database ? " 🗄️" : "";
 		const nextMarker = feature.id === nextFeatureId ? " ← NEXT" : "";
 		console.log(
-			`   ${statusIcon} [${feature.global_priority}] #${feature.id}: ${feature.title}${depsStr}${nextMarker}`,
+			`   ${statusIcon} [${feature.global_priority}] #${feature.id}: ${feature.title}${dbMarker}${depsStr}${nextMarker}`,
 		);
+	}
+
+	if (dbFeatureCount > 0) {
+		console.log(
+			`\n🗄️  Database Features: ${dbFeatureCount} features require database access`,
+		);
+		console.log("   (These will be serialized to prevent migration conflicts)");
 	}
 
 	if (nextFeatureId) {

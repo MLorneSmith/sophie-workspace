@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+/// <reference types="node" />
 
 /**
  * Alpha Spec Orchestrator
@@ -27,7 +28,10 @@
  */
 
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
+import process from "node:process";
+import { execSync } from "node:child_process";
 import { Sandbox } from "@e2b/code-interpreter";
 
 // ============================================================================
@@ -39,6 +43,11 @@ const WORKSPACE_DIR = "/home/user/project";
 const PROGRESS_FILE = ".initiative-progress.json";
 const PROGRESS_POLL_INTERVAL_MS = 30000;
 const STALL_TIMEOUT_MS = 10 * 60 * 1000;
+
+// Lock file for preventing concurrent orchestration runs
+const ORCHESTRATOR_LOCK_FILE = ".ai/alpha/.orchestrator-lock";
+const MAX_LOCK_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_RESET_AGE_MS = 10 * 60 * 1000; // 10 minutes for reset operations
 
 // ============================================================================
 // Types
@@ -62,6 +71,8 @@ interface FeatureEntry {
 	github_issue: number | null;
 	assigned_sandbox?: string;
 	error?: string;
+	requires_database: boolean; // True if any task requires DB access
+	database_task_count: number; // Count of tasks requiring DB access
 }
 
 interface InitiativeEntry {
@@ -112,6 +123,17 @@ interface OrchestratorOptions {
 	sandboxCount: number;
 	timeout: number;
 	dryRun: boolean;
+	forceUnlock: boolean;
+	skipDbReset: boolean;
+}
+
+interface OrchestratorLock {
+	spec_id: number;
+	started_at: string;
+	pid: number;
+	hostname: string;
+	reset_in_progress?: boolean;
+	reset_started_at?: string;
 }
 
 interface SandboxInstance {
@@ -237,7 +259,258 @@ function getAllEnvVars(): Record<string, string> {
 		envs.DATABASE_URL = databaseUrl;
 	}
 
+	// Sandbox Supabase credentials (for DB operations in E2B)
+	// These override the main credentials when sandbox project is configured
+	const sandboxProjectRef = process.env.SUPABASE_SANDBOX_PROJECT_REF;
+	const sandboxUrl = process.env.SUPABASE_SANDBOX_URL;
+	const sandboxAnonKey = process.env.SUPABASE_SANDBOX_ANON_KEY;
+	const sandboxServiceKey = process.env.SUPABASE_SANDBOX_SERVICE_ROLE_KEY;
+	const sandboxDbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
+	const supabaseAccessToken = process.env.SUPABASE_ACCESS_TOKEN;
+
+	if (sandboxProjectRef) {
+		envs.SUPABASE_SANDBOX_PROJECT_REF = sandboxProjectRef;
+	}
+	if (sandboxUrl) {
+		// Override main Supabase URL with sandbox URL
+		envs.NEXT_PUBLIC_SUPABASE_URL = sandboxUrl;
+		envs.SUPABASE_URL = sandboxUrl;
+	}
+	if (sandboxAnonKey) {
+		envs.NEXT_PUBLIC_SUPABASE_ANON_KEY = sandboxAnonKey;
+		envs.SUPABASE_ANON_KEY = sandboxAnonKey;
+	}
+	if (sandboxServiceKey) {
+		envs.SUPABASE_SERVICE_ROLE_KEY = sandboxServiceKey;
+	}
+	if (sandboxDbUrl) {
+		envs.DATABASE_URL = sandboxDbUrl;
+		envs.SUPABASE_SANDBOX_DB_URL = sandboxDbUrl;
+	}
+	if (supabaseAccessToken) {
+		envs.SUPABASE_ACCESS_TOKEN = supabaseAccessToken;
+	}
+
 	return envs;
+}
+
+// ============================================================================
+// Orchestrator Lock Management
+// ============================================================================
+
+let _projectRoot: string | null = null;
+
+function getProjectRoot(): string {
+	if (_projectRoot === null) {
+		let dir = process.cwd();
+		while (dir !== "/") {
+			if (fs.existsSync(path.join(dir, ".git"))) {
+				_projectRoot = dir;
+				return dir;
+			}
+			dir = path.dirname(dir);
+		}
+		_projectRoot = process.cwd();
+	}
+	return _projectRoot ?? process.cwd();
+}
+
+function getLockPath(): string {
+	return path.join(getProjectRoot(), ORCHESTRATOR_LOCK_FILE);
+}
+
+function readLock(): OrchestratorLock | null {
+	const lockPath = getLockPath();
+	if (!fs.existsSync(lockPath)) {
+		return null;
+	}
+	try {
+		const content = fs.readFileSync(lockPath, "utf-8");
+		return JSON.parse(content) as OrchestratorLock;
+	} catch {
+		return null;
+	}
+}
+
+function writeLock(lock: OrchestratorLock): void {
+	const lockPath = getLockPath();
+	const lockDir = path.dirname(lockPath);
+	if (!fs.existsSync(lockDir)) {
+		fs.mkdirSync(lockDir, { recursive: true });
+	}
+	fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2));
+}
+
+function acquireLock(specId: number): boolean {
+	const existingLock = readLock();
+
+	if (existingLock) {
+		const lockAge = Date.now() - new Date(existingLock.started_at).getTime();
+
+		// Check for stale reset operation
+		if (existingLock.reset_in_progress && existingLock.reset_started_at) {
+			const resetAge =
+				Date.now() - new Date(existingLock.reset_started_at).getTime();
+			if (resetAge > MAX_RESET_AGE_MS) {
+				console.log(
+					`⚠️ Stale reset detected (${Math.round(resetAge / 60000)}m old), overriding lock...`,
+				);
+				// Fall through to acquire new lock
+			} else {
+				console.error("❌ Another orchestration run is resetting the database");
+				console.error(`   Started: ${existingLock.reset_started_at}`);
+				console.error("\n   To force override, use: --force-unlock");
+				return false;
+			}
+		} else if (lockAge < MAX_LOCK_AGE_MS) {
+			console.error("❌ Another orchestration run is active:");
+			console.error(`   Spec: #${existingLock.spec_id}`);
+			console.error(`   Started: ${existingLock.started_at}`);
+			console.error(`   Host: ${existingLock.hostname}`);
+			console.error(`   PID: ${existingLock.pid}`);
+			console.error("\n   To force override, use: --force-unlock");
+			return false;
+		} else {
+			console.log(
+				`⚠️ Stale lock detected (${Math.round(lockAge / 3600000)}h old), overriding...`,
+			);
+		}
+	}
+
+	const lock: OrchestratorLock = {
+		spec_id: specId,
+		started_at: new Date().toISOString(),
+		pid: process.pid,
+		hostname: os.hostname(),
+	};
+
+	writeLock(lock);
+	console.log("🔒 Acquired orchestrator lock");
+	return true;
+}
+
+function releaseLock(): void {
+	const lockPath = getLockPath();
+	if (fs.existsSync(lockPath)) {
+		fs.unlinkSync(lockPath);
+		console.log("🔓 Released orchestrator lock");
+	}
+}
+
+function updateLockResetState(inProgress: boolean): void {
+	const lock = readLock();
+	if (lock) {
+		lock.reset_in_progress = inProgress;
+		lock.reset_started_at = inProgress ? new Date().toISOString() : undefined;
+		writeLock(lock);
+	}
+}
+
+// ============================================================================
+// Sandbox Database Management
+// ============================================================================
+
+async function checkDatabaseCapacity(): Promise<boolean> {
+	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
+	if (!dbUrl) {
+		console.log("   ℹ️ No sandbox database configured, skipping capacity check");
+		return true;
+	}
+
+	try {
+		const result = execSync(
+			`psql "${dbUrl}" -t -c "SELECT pg_database_size('postgres')"`,
+			{ encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] },
+		);
+
+		const sizeBytes = parseInt(result.trim(), 10);
+		const sizeMB = sizeBytes / (1024 * 1024);
+		const limitMB = 500;
+		const warningThreshold = 450;
+
+		console.log(
+			`   📊 Sandbox database size: ${sizeMB.toFixed(1)}MB / ${limitMB}MB`,
+		);
+
+		if (sizeMB > warningThreshold) {
+			console.warn(
+				`   ⚠️ Database near capacity (${sizeMB.toFixed(1)}MB / ${limitMB}MB)`,
+			);
+
+			if (sizeMB > limitMB * 0.95) {
+				console.error(
+					"   ❌ Database at capacity. Reset required before orchestration.",
+				);
+				return false;
+			}
+		}
+
+		return true;
+	} catch (error) {
+		// psql might not be installed locally - that's OK, we'll check in sandbox
+		console.log(
+			"   ℹ️ Could not check database size locally (psql not available)",
+		);
+		return true;
+	}
+}
+
+async function resetSandboxDatabase(): Promise<void> {
+	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
+	if (!dbUrl) {
+		console.log("   ℹ️ No sandbox database configured, skipping reset");
+		return;
+	}
+
+	console.log("🔄 Resetting sandbox database...");
+
+	// Mark reset in progress
+	updateLockResetState(true);
+
+	const resetScript = `
+-- Reset public schema (preserves auth, storage managed by Supabase)
+DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+COMMENT ON SCHEMA public IS 'standard public schema';
+`;
+
+	try {
+		// Execute reset via psql
+		execSync(`psql "${dbUrl}" -c "${resetScript.replace(/"/g, '\\"')}"`, {
+			encoding: "utf-8",
+			stdio: ["pipe", "pipe", "pipe"],
+		});
+		console.log("   ✅ Database schema reset");
+
+		// Apply base migrations from local project
+		const projectRoot = getProjectRoot();
+		const webDir = path.join(projectRoot, "apps", "web");
+
+		if (fs.existsSync(path.join(webDir, "supabase", "migrations"))) {
+			console.log("   📦 Applying base migrations...");
+			try {
+				execSync(`supabase db push --db-url "${dbUrl}"`, {
+					cwd: webDir,
+					encoding: "utf-8",
+					stdio: ["pipe", "pipe", "pipe"],
+				});
+				console.log("   ✅ Base migrations applied");
+			} catch (migrationError) {
+				console.warn("   ⚠️ Migration push failed (may be OK if no migrations)");
+			}
+		}
+
+		// Mark reset complete
+		updateLockResetState(false);
+	} catch (error) {
+		// On failure, release lock entirely so next run can retry
+		console.error(`   ❌ Database reset failed: ${error}`);
+		updateLockResetState(false);
+		releaseLock();
+		throw error;
+	}
 }
 
 // ============================================================================
@@ -308,6 +581,7 @@ function saveManifest(manifest: SpecManifest): void {
  * 1. Is pending OR failed (failed features are retried on re-run)
  * 2. Has all dependencies completed
  * 3. Is not assigned to another sandbox
+ * 4. Database features are serialized (only one DB feature at a time)
  */
 function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 	const completedFeatureIds = new Set(
@@ -323,6 +597,15 @@ function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 			.map((i) => i.id),
 	);
 
+	// Check if a database feature is currently running
+	// Database features must be serialized to prevent migration conflicts
+	const dbFeatureRunning = manifest.feature_queue.some(
+		(f) =>
+			f.requires_database &&
+			f.status === "in_progress" &&
+			f.assigned_sandbox !== undefined,
+	);
+
 	for (const feature of manifest.feature_queue) {
 		// Skip if completed or currently in_progress (with active sandbox)
 		// Allow pending AND failed features (failed features are retried)
@@ -332,6 +615,12 @@ function getNextAvailableFeature(manifest: SpecManifest): FeatureEntry | null {
 
 		// Skip if already assigned to a sandbox
 		if (feature.assigned_sandbox) {
+			continue;
+		}
+
+		// Serialize database features: skip DB features if one is already running
+		// This prevents migration conflicts when multiple sandboxes try to modify the schema
+		if (feature.requires_database && dbFeatureRunning) {
 			continue;
 		}
 
@@ -542,6 +831,56 @@ async function createSandbox(
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
 			{ timeoutMs: 600000 },
+		);
+	}
+
+	// Setup Supabase CLI if sandbox project is configured
+	// Note: Supabase CLI is available via project dependencies (pnpm exec supabase)
+	const sandboxProjectRef = process.env.SUPABASE_SANDBOX_PROJECT_REF;
+	const supabaseAccessToken = process.env.SUPABASE_ACCESS_TOKEN;
+
+	if (sandboxProjectRef && supabaseAccessToken) {
+		console.log("   Setting up Supabase CLI...");
+
+		// Verify supabase CLI is available via pnpm
+		const cliCheck = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && pnpm exec supabase --version 2>/dev/null || echo 'not found'`,
+			{ timeoutMs: 30000 },
+		);
+
+		if (cliCheck.stdout.includes("not found") || cliCheck.exitCode !== 0) {
+			console.log(
+				"   ⚠️ Supabase CLI not found in project dependencies, DB features may fail",
+			);
+		} else {
+			console.log(`   Found Supabase CLI: ${cliCheck.stdout.trim()}`);
+
+			// Link to sandbox project (from apps/web which has supabase config)
+			console.log(`   Linking to sandbox project: ${sandboxProjectRef}`);
+			try {
+				const linkResult = await sandbox.commands.run(
+					`cd ${WORKSPACE_DIR}/apps/web && pnpm exec supabase link --project-ref ${sandboxProjectRef}`,
+					{
+						timeoutMs: 60000,
+						envs: { SUPABASE_ACCESS_TOKEN: supabaseAccessToken },
+					},
+				);
+
+				if (linkResult.exitCode === 0) {
+					console.log("   ✅ Supabase CLI linked to sandbox project");
+				} else {
+					console.log(
+						`   ⚠️ Supabase link failed (code ${linkResult.exitCode}): ${linkResult.stderr}`,
+					);
+				}
+			} catch (linkError) {
+				console.log(`   ⚠️ Supabase link failed (non-fatal): ${linkError}`);
+				// Non-fatal - DB features will fail but non-DB features can proceed
+			}
+		}
+	} else if (sandboxProjectRef && !supabaseAccessToken) {
+		console.log(
+			"   ⚠️ SUPABASE_ACCESS_TOKEN not set, skipping Supabase CLI setup",
 		);
 	}
 
@@ -1010,26 +1349,83 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const projectRoot = findProjectRoot();
-	const specDir = findSpecDir(projectRoot, options.specId);
+	const specDirOrNull = findSpecDir(projectRoot, options.specId);
 
-	if (!specDir) {
+	if (!specDirOrNull) {
 		console.error(`Spec #${options.specId} not found`);
 		process.exit(1);
 	}
 
-	const manifest = loadManifest(specDir);
+	const specDir: string = specDirOrNull!;
 
-	if (!manifest) {
+	const manifestOrNull = loadManifest(specDir);
+
+	if (!manifestOrNull) {
 		console.error(
 			"Spec manifest not found. Run generate-spec-manifest.ts first.",
 		);
 		process.exit(1);
 	}
 
+	const manifest: SpecManifest = manifestOrNull!;
+
 	// Print header
 	console.log("═".repeat(70));
 	console.log("   ALPHA SPEC ORCHESTRATOR");
 	console.log("═".repeat(70));
+
+	// Handle force unlock
+	if (options.forceUnlock) {
+		console.log("\n🔓 Force releasing orchestrator lock...");
+		releaseLock();
+	}
+
+	// Acquire orchestrator lock (skip for dry-run)
+	if (!options.dryRun) {
+		if (!acquireLock(options.specId)) {
+			process.exit(1);
+		}
+	}
+
+	// Register cleanup handler for lock release
+	const cleanupAndExit = (code: number) => {
+		if (!options.dryRun) {
+			releaseLock();
+		}
+		process.exit(code);
+	};
+
+	process.on("SIGINT", () => {
+		console.log("\n\n⚠️ Interrupted, releasing lock...");
+		cleanupAndExit(130);
+	});
+
+	process.on("SIGTERM", () => {
+		console.log("\n\n⚠️ Terminated, releasing lock...");
+		cleanupAndExit(143);
+	});
+
+	// Check sandbox database capacity (skip for dry-run)
+	if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
+		console.log("\n📊 Checking sandbox database...");
+		const hasCapacity = await checkDatabaseCapacity();
+		if (!hasCapacity) {
+			releaseLock();
+			process.exit(1);
+		}
+
+		// Reset sandbox database (unless skipped)
+		if (!options.skipDbReset) {
+			try {
+				await resetSandboxDatabase();
+			} catch (error) {
+				console.error("Failed to reset sandbox database:", error);
+				process.exit(1);
+			}
+		} else {
+			console.log("   ⏭️ Skipping database reset (--skip-db-reset)");
+		}
+	}
 
 	// Clean up stale state from previous runs
 	// This resets in_progress features with dead sandboxes and prepares failed features for retry
@@ -1192,6 +1588,17 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 	// Print summary with review URL (single sandbox with complete code)
 	printSummary(manifest, [reviewInstance], reviewUrls);
+
+	// Add sandbox database review URL if configured
+	if (process.env.SUPABASE_SANDBOX_PROJECT_REF) {
+		console.log("\n📊 Database Review:");
+		console.log(
+			`   Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
+		);
+	}
+
+	// Release the orchestrator lock
+	releaseLock();
 
 	// NOTE: Sandboxes are intentionally NOT killed here.
 	// User should manually kill them after reviewing with:
@@ -1439,6 +1846,8 @@ function parseArgs(): OrchestratorOptions {
 		sandboxCount: 3,
 		timeout: 3600,
 		dryRun: false,
+		forceUnlock: false,
+		skipDbReset: false,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -1452,6 +1861,10 @@ function parseArgs(): OrchestratorOptions {
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
+		} else if (arg === "--force-unlock") {
+			options.forceUnlock = true;
+		} else if (arg === "--skip-db-reset") {
+			options.skipDbReset = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -1475,6 +1888,8 @@ Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
   --timeout <s>         Sandbox timeout in seconds (default: 3600)
   --dry-run             Show execution plan without running
+  --force-unlock        Force release any existing orchestrator lock
+  --skip-db-reset       Skip sandbox database reset at startup
 
 Features:
   - Takes Spec ID (not Initiative ID)
@@ -1483,12 +1898,23 @@ Features:
   - Auto-resume: continues from where it left off
   - Progress polling: real-time visibility during feature execution
   - Stall detection: auto-detects hung Claude sessions
+  - Sandbox database: resets dedicated Supabase project per run
+  - Orchestrator lock: prevents concurrent runs
 
 Examples:
   tsx spec-orchestrator.ts 1362              # Run with 3 sandboxes
   tsx spec-orchestrator.ts 1362 --dry-run    # Preview execution plan
   tsx spec-orchestrator.ts 1362 -s 1         # Single sandbox mode
   tsx spec-orchestrator.ts 1362 -s 2         # Two sandbox mode
+  tsx spec-orchestrator.ts 1362 --force-unlock  # Override stale lock
+
+Environment Variables (for sandbox database):
+  SUPABASE_SANDBOX_PROJECT_REF   Sandbox project reference ID
+  SUPABASE_SANDBOX_URL           Sandbox project URL
+  SUPABASE_SANDBOX_ANON_KEY      Sandbox anon key
+  SUPABASE_SANDBOX_SERVICE_ROLE_KEY  Sandbox service role key
+  SUPABASE_SANDBOX_DB_URL        Sandbox database connection URL
+  SUPABASE_ACCESS_TOKEN          CLI access token for linking
 
 Prerequisites:
   1. Complete task decomposition for all features

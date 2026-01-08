@@ -71,6 +71,16 @@
 							"description": "Decomposition pattern used, if any"
 						}
 					}
+				},
+				"requires_database": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if any task in this feature requires database access"
+				},
+				"database_tasks": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of task IDs that require database access (e.g., ['T3', 'T5'])"
 				}
 			}
 		},
@@ -474,6 +484,16 @@
 				"github_issue": {
 					"type": "integer",
 					"description": "GitHub issue number (populated after creation)"
+				},
+				"requires_database": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if task creates/modifies database schema or requires DB access (migrations, tables, RLS policies, etc.)"
+				},
+				"migration_name_prefix": {
+					"type": "string",
+					"pattern": "^\\d+_[A-Za-z0-9]+$",
+					"description": "Prefix for migration filename (e.g., '1367_T3') to ensure uniqueness across parallel features"
 				}
 			}
 		}

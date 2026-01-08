@@ -620,6 +620,87 @@ If typecheck fails:
 5. **Run verification** - Execute verification_command
 6. **Meet acceptance_criterion** - Binary done/not-done
 
+### Database Task Handling
+
+**Identifying Database Tasks**:
+Tasks with `requires_database: true` require special handling. These tasks typically:
+- Create or modify database schema files (in `apps/web/supabase/schemas/`)
+- Create or modify migration files (in `apps/web/supabase/migrations/`)
+- Define RLS policies, indexes, or constraints
+- Require type generation after schema changes
+
+**Database Task Workflow**:
+
+```
+IF task.requires_database == true:
+    Log: "🗄️ Database task detected: ${task.name}"
+
+    1. Check Supabase configuration:
+       - Verify SUPABASE_ACCESS_TOKEN is set (for CLI operations)
+       - Verify DATABASE_URL or SUPABASE_SANDBOX_DB_URL is set
+
+    2. For schema file tasks (outputs contain schemas/*.sql):
+       a. Create/modify schema file
+       b. Generate migration: pnpm --filter web supabase:db:diff -f ${task.migration_name_prefix}
+       c. Push to sandbox: cd apps/web && pnpm exec supabase db push
+       d. Generate types: pnpm supabase:web:typegen
+       e. Verify types exist in database.types.ts
+
+    3. For RLS policy tasks:
+       a. Create/modify policy in schema file
+       b. Run migration diff
+       c. Push and verify
+
+    4. Verification MUST include:
+       - Type generation succeeded
+       - Types exist for new tables/columns
+       - No TypeScript errors referencing DB types
+```
+
+**Migration Name Prefix**:
+Each database task should have a `migration_name_prefix` to ensure unique migration filenames:
+- Format: `{feature_id}_{task_id}` (e.g., `1367_T3`)
+- This prevents conflicts when features run in parallel across sandboxes
+
+**Example Database Task**:
+```json
+{
+  "id": "T3",
+  "name": "Create user_activities table schema",
+  "requires_database": true,
+  "migration_name_prefix": "1367_T3",
+  "action": { "verb": "Create", "target": "user_activities table" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/supabase/schemas/30-user-activities.sql" }
+  ],
+  "verification_command": "pnpm supabase:web:typegen && grep 'user_activities' apps/web/lib/database.types.ts"
+}
+```
+
+**Database Task Verification Commands**:
+```bash
+# After schema changes, verify the full pipeline works:
+cd apps/web
+
+# Generate migration from schema changes
+pnpm exec supabase db diff -f ${MIGRATION_PREFIX}_${TASK_ID}
+
+# Push to sandbox database
+pnpm exec supabase db push
+
+# Generate TypeScript types
+pnpm supabase:web:typegen
+
+# Verify types were generated
+grep 'table_name' ../web/lib/database.types.ts
+```
+
+**Important Notes**:
+- Database tasks are serialized by the orchestrator (only one runs at a time)
+- Always include the migration_name_prefix in generated migration filenames
+- Type generation MUST succeed before marking a DB task complete
+- If typegen fails, check for SQL syntax errors in the schema file
+
 **Action Verbs** (from task.action.verb):
 - `Create` - Create a new file
 - `Add` - Add content to existing file

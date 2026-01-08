@@ -1,413 +1,584 @@
 {
-	"$schema": "../../../../templates/tasks.schema.json",
-	"metadata": {
-		"feature_id": 1374,
-		"feature_name": "Activity Recording Service",
-		"feature_slug": "activity-recording-service",
-		"initiative_id": 1365,
-		"spec_id": 1362,
-		"created_at": "2026-01-01T06:11:56Z",
-		"complexity": {
-			"score": 44,
-			"level": "STANDARD",
-			"target_steps": {
-				"min": 6,
-				"max": 12
-			},
-			"pattern_matched": null
-		}
-	},
-	"tasks": [
-		{
-			"id": "T1",
-			"type": "task",
-			"name": "Create activity validation schemas",
-			"action": {
-				"verb": "Create",
-				"target": "activity.schema.ts with Zod schemas"
-			},
-			"purpose": "Define TypeScript validation schemas for activity recording data to ensure type safety and runtime validation",
-			"status": "draft",
-			"estimated_hours": 2,
-			"priority": 1,
-			"group": 1,
-			"context": {
-				"files": [
-					"apps/web/app/home/(user)/_lib/schema/ (directory exists)",
-					"apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts (pattern reference)"
-				],
-				"dependencies": [
-					"zod library",
-					"ActivityType enum values from F1 database schema",
-					"EntityType enum values from F1 database schema"
-				],
-				"constraints": [
-					"Must export ActivityTypeEnum, EntityTypeEnum, RecordActivitySchema",
-					"RecordActivitySchema must validate: activity_type, entity_type, entity_id (uuid), metadata (object)",
-					"Metadata is optional JSONB object",
-					"Follow existing schema patterns from task.schema.ts"
-				]
-			},
-			"input_state": "Feature requirements define activity_type enum values (lesson_complete, quiz_submit, presentation_create, presentation_update, assessment_complete, coaching_booked) and entity_type enum values (lesson, quiz, presentation, assessment, coaching_session)",
-			"output_state": "File exists at apps/web/app/home/(user)/_lib/schema/activity.schema.ts exporting ActivityTypeEnum, EntityTypeEnum, RecordActivitySchema with proper Zod validation",
-			"acceptance_criterion": "Schema file exists, exports required schemas, and passes TypeScript compilation with no errors",
-			"verification_command": "pnpm typecheck && grep -q 'RecordActivitySchema' apps/web/app/home/(user)/_lib/schema/activity.schema.ts",
-			"outputs": [
-				{
-					"type": "new",
-					"path": "apps/web/app/home/(user)/_lib/schema/activity.schema.ts"
-				}
-			],
-			"dependencies": {
-				"blocked_by": [],
-				"blocks": ["T2", "T5"]
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		},
-		{
-			"id": "T2",
-			"type": "task",
-			"name": "Create recordActivityAction server action",
-			"action": {
-				"verb": "Create",
-				"target": "activity-server-actions.ts with recordActivityAction"
-			},
-			"purpose": "Implement server action for recording user activities with validation, logging, and error handling",
-			"status": "draft",
-			"estimated_hours": 3,
-			"priority": 2,
-			"group": 2,
-			"context": {
-				"files": [
-					"apps/web/app/home/(user)/_lib/server/ (directory exists)",
-					"apps/web/app/home/(user)/kanban/_lib/server/server-actions.ts (pattern reference)",
-					"apps/web/lib/certificates/certificate-service.ts (logger pattern reference)",
-					"apps/web/app/home/(user)/_lib/schema/activity.schema.ts (from T1)"
-				],
-				"dependencies": [
-					"@kit/next/actions enhanceAction",
-					"@kit/supabase/server-client getSupabaseServerClient",
-					"@kit/shared/logger createServiceLogger",
-					"next/cache revalidatePath",
-					"RecordActivitySchema from T1"
-				],
-				"constraints": [
-					"Use 'use server' directive",
-					"Wrap with enhanceAction pattern",
-					"Use createServiceLogger with service name 'ACTIVITY-SERVICE'",
-					"Insert into user_activities table from F1",
-					"Include structured logging with context (name, userId, activityType)",
-					"Call revalidatePath('/home') after successful insert",
-					"Return {success: true, data} on success or {success: false, error} on failure",
-					"Graceful error handling - catch and log errors without throwing"
-				]
-			},
-			"input_state": "RecordActivitySchema exists from T1, user_activities table exists from F1 (#1373)",
-			"output_state": "File exists at apps/web/app/home/(user)/_lib/server/activity-server-actions.ts exporting recordActivityAction function using enhanceAction with schema validation, logging, and revalidation",
-			"acceptance_criterion": "Server action file exists, exports recordActivityAction, compiles without errors, and follows enhanceAction pattern with auth:true",
-			"verification_command": "pnpm typecheck && grep -q 'recordActivityAction' apps/web/app/home/(user)/_lib/server/activity-server-actions.ts",
-			"outputs": [
-				{
-					"type": "new",
-					"path": "apps/web/app/home/(user)/_lib/server/activity-server-actions.ts"
-				}
-			],
-			"dependencies": {
-				"blocked_by": ["T1"],
-				"blocks": ["T3", "T6"]
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		},
-		{
-			"id": "T3",
-			"type": "task",
-			"name": "Add unit tests for recordActivityAction",
-			"action": {
-				"verb": "Add",
-				"target": "unit test file for activity server action"
-			},
-			"purpose": "Verify recordActivityAction validates input, handles errors gracefully, and logs correctly",
-			"status": "draft",
-			"estimated_hours": 2,
-			"priority": 3,
-			"group": 3,
-			"context": {
-				"files": [
-					"apps/web/app/home/(user)/_lib/server/activity-server-actions.ts (from T2)"
-				],
-				"dependencies": [
-					"vitest",
-					"RecordActivitySchema from T1",
-					"recordActivityAction from T2"
-				],
-				"constraints": [
-					"Test schema validation (invalid activity_type, missing entity_id)",
-					"Test successful activity recording",
-					"Test error handling for database errors",
-					"Mock Supabase client and logger",
-					"Verify revalidatePath called on success",
-					"Follow existing test patterns in project"
-				]
-			},
-			"input_state": "recordActivityAction function exists and is functional from T2",
-			"output_state": "Test file exists at apps/web/app/home/(user)/_lib/server/activity-server-actions.test.ts with tests for validation, success, and error cases",
-			"acceptance_criterion": "Test file exists and all tests pass when running pnpm --filter web test:unit",
-			"verification_command": "pnpm --filter web test:unit -- activity-server-actions",
-			"outputs": [
-				{
-					"type": "new",
-					"path": "apps/web/app/home/(user)/_lib/server/activity-server-actions.test.ts"
-				}
-			],
-			"dependencies": {
-				"blocked_by": ["T2"],
-				"blocks": []
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		},
-		{
-			"id": "T4",
-			"type": "task",
-			"name": "Create database trigger function for lesson completion",
-			"action": {
-				"verb": "Create",
-				"target": "PostgreSQL function log_lesson_complete_activity"
-			},
-			"purpose": "Automatically record activity when user_progress table receives lesson completion event",
-			"status": "draft",
-			"estimated_hours": 2,
-			"priority": 4,
-			"group": 2,
-			"context": {
-				"files": [
-					"apps/web/supabase/migrations/ (directory exists)",
-					"apps/web/supabase/migrations/20250917024249_triggers.sql (trigger pattern reference)",
-					"apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql (function pattern reference)"
-				],
-				"dependencies": [
-					"user_activities table from F1",
-					"user_progress table (assumed to exist)",
-					"PostgreSQL AFTER INSERT trigger"
-				],
-				"constraints": [
-					"Use SECURITY INVOKER (inherits RLS, safer than SECURITY DEFINER)",
-					"Trigger fires AFTER INSERT on user_progress when progress_percentage = 100",
-					"Insert into user_activities with activity_type='lesson_complete', entity_type='lesson'",
-					"Extract metadata from user_progress (lesson title, module) if available",
-					"Use TG_OP and NEW record access in trigger function",
-					"Set search_path = '' for SQL injection prevention"
-				]
-			},
-			"input_state": "user_activities table exists from F1, user_progress table exists with lesson completion tracking",
-			"output_state": "PostgreSQL function log_lesson_complete_activity exists and trigger is attached to user_progress table for INSERT operations",
-			"acceptance_criterion": "Function and trigger exist in migration file, and inserting a completed lesson into user_progress automatically creates a user_activities row",
-			"verification_command": "grep -q 'log_lesson_complete_activity' apps/web/supabase/migrations/*_add_activity_triggers.sql",
-			"outputs": [
-				{
-					"type": "new",
-					"path": "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql"
-				}
-			],
-			"dependencies": {
-				"blocked_by": [],
-				"blocks": ["T5"]
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		},
-		{
-			"id": "T5",
-			"type": "task",
-			"name": "Create database trigger function for quiz submission",
-			"action": {
-				"verb": "Create",
-				"target": "PostgreSQL function log_quiz_submit_activity"
-			},
-			"purpose": "Automatically record activity when quiz_submissions table receives quiz submission event",
-			"status": "draft",
-			"estimated_hours": 2,
-			"priority": 5,
-			"group": 2,
-			"context": {
-				"files": [
-					"apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql (from T4)",
-					"apps/web/supabase/migrations/20250917024249_triggers.sql (trigger pattern reference)"
-				],
-				"dependencies": [
-					"user_activities table from F1",
-					"quiz_submissions table (assumed to exist)",
-					"PostgreSQL AFTER INSERT trigger"
-				],
-				"constraints": [
-					"Use SECURITY INVOKER (inherits RLS)",
-					"Trigger fires AFTER INSERT on quiz_submissions",
-					"Insert into user_activities with activity_type='quiz_submit', entity_type='quiz'",
-					"Extract metadata (score, passed status, quiz title) if available",
-					"Follow same pattern as T4 lesson trigger",
-					"Append to same migration file as T4"
-				]
-			},
-			"input_state": "user_activities table exists from F1, quiz_submissions table exists, lesson trigger migration exists from T4",
-			"output_state": "PostgreSQL function log_quiz_submit_activity exists and trigger is attached to quiz_submissions table for INSERT operations in the same migration file",
-			"acceptance_criterion": "Function and trigger exist in migration file, and inserting a quiz submission automatically creates a user_activities row with quiz metadata",
-			"verification_command": "grep -q 'log_quiz_submit_activity' apps/web/supabase/migrations/*_add_activity_triggers.sql",
-			"outputs": [
-				{
-					"type": "modified",
-					"path": "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql"
-				}
-			],
-			"dependencies": {
-				"blocked_by": ["T1", "T4"],
-				"blocks": []
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		},
-		{
-			"id": "T6",
-			"type": "task",
-			"name": "Integrate activity recording into presentation create flow",
-			"action": {
-				"verb": "Add",
-				"target": "activity recording call to createPresentationAction"
-			},
-			"purpose": "Automatically record presentation_create activity when user creates a new presentation via storyboard",
-			"status": "draft",
-			"estimated_hours": 1,
-			"priority": 6,
-			"group": 3,
-			"context": {
-				"files": [
-					"apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts (existing)",
-					"apps/web/app/home/(user)/_lib/server/activity-server-actions.ts (from T2)"
-				],
-				"dependencies": [
-					"recordActivityAction from T2",
-					"createPresentationAction or similar in storyboard server-actions.ts"
-				],
-				"constraints": [
-					"Import recordActivityAction",
-					"Call recordActivityAction after successful presentation creation",
-					"Pass activity_type='presentation_create', entity_type='presentation', entity_id=presentation.id",
-					"Include metadata with presentation title",
-					"Wrap in try-catch to prevent blocking presentation creation on activity recording failure",
-					"Log warning if activity recording fails but don't throw"
-				]
-			},
-			"input_state": "recordActivityAction exists from T2, presentation creation flow exists in storyboard server actions",
-			"output_state": "Presentation creation action calls recordActivityAction on success, gracefully handling failures without blocking the primary operation",
-			"acceptance_criterion": "Modified server action imports and calls recordActivityAction, compiles without errors, and activity is recorded when creating a presentation",
-			"verification_command": "grep -q 'recordActivityAction' apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts && pnpm typecheck",
-			"outputs": [
-				{
-					"type": "modified",
-					"path": "apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts"
-				}
-			],
-			"dependencies": {
-				"blocked_by": ["T2"],
-				"blocks": []
-			},
-			"m1_checks": {
-				"single_verb": true,
-				"no_conjunctions": true,
-				"under_8_hours": true,
-				"under_750_tokens": true,
-				"binary_done_state": true,
-				"max_3_files": true
-			}
-		}
-	],
-	"execution": {
-		"groups": [
-			{
-				"id": 1,
-				"name": "Foundation - Schemas",
-				"task_ids": ["T1"],
-				"depends_on_groups": [],
-				"estimated_hours": 2,
-				"parallel_hours": 2
-			},
-			{
-				"id": 2,
-				"name": "Core Implementation - Server Action & Triggers",
-				"task_ids": ["T2", "T4", "T5"],
-				"depends_on_groups": [1],
-				"estimated_hours": 7,
-				"parallel_hours": 3
-			},
-			{
-				"id": 3,
-				"name": "Integration & Testing",
-				"task_ids": ["T3", "T6"],
-				"depends_on_groups": [2],
-				"estimated_hours": 3,
-				"parallel_hours": 2
-			}
-		],
-		"critical_path": {
-			"task_ids": ["T1", "T2", "T3"],
-			"total_hours": 7
-		},
-		"duration": {
-			"sequential": 12,
-			"parallel": 7,
-			"time_saved_percent": 42
-		}
-	},
-	"validation": {
-		"discriminator_verdict": "APPROVED",
-		"scores": {
-			"completeness": 100,
-			"atomicity": 100,
-			"dependencies": 100,
-			"state_flow": 100,
-			"testability": 100
-		},
-		"dependency_checks": {
-			"no_cycles": true,
-			"all_documented": true,
-			"spikes_first": true,
-			"critical_path_valid": true
-		},
-		"m1_compliance": 100
-	},
-	"github": {
-		"issues_created": true,
-		"feature_tasks_issue": 1387
-	}
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": 1374,
+    "feature_name": "Activity Recording Service",
+    "feature_slug": "activity-recording-service",
+    "initiative_id": 1365,
+    "spec_id": 1362,
+    "created_at": "2026-01-08T00:00:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "type": "task",
+      "name": "Create activity validation schemas",
+      "action": {
+        "verb": "Create",
+        "target": "activity.schema.ts with Zod schemas"
+      },
+      "purpose": "Define TypeScript validation schemas for activity recording data to ensure type safety and runtime validation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/schema/ (directory exists)",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts (pattern reference)"
+        ],
+        "dependencies": [
+          "zod library",
+          "ActivityType enum values from F1 database schema",
+          "EntityType enum values from F1 database schema"
+        ],
+        "constraints": [
+          "Must export ActivityTypeEnum, EntityTypeEnum, RecordActivitySchema",
+          "RecordActivitySchema must validate: activity_type, entity_type, entity_id (uuid), metadata (object)",
+          "Metadata is optional JSONB object",
+          "Follow existing schema patterns from task.schema.ts"
+        ]
+      },
+      "input_state": "Feature requirements define activity_type enum values (lesson_complete, quiz_submit, presentation_create, presentation_update, assessment_complete, coaching_booked) and entity_type enum values (lesson, quiz, presentation, assessment, coaching_session)",
+      "output_state": "File exists at apps/web/app/home/(user)/_lib/schema/activity.schema.ts exporting ActivityTypeEnum, EntityTypeEnum, RecordActivitySchema with proper Zod validation",
+      "acceptance_criterion": "Schema file exists, exports required schemas, and passes TypeScript compilation with no errors",
+      "verification_command": "pnpm typecheck && grep -q 'RecordActivitySchema' apps/web/app/home/(user)/_lib/schema/activity.schema.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/schema/activity.schema.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "T2",
+          "T5",
+          "T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T2",
+      "type": "task",
+      "name": "Create recordActivityAction server action",
+      "action": {
+        "verb": "Create",
+        "target": "activity-server-actions.ts with recordActivityAction"
+      },
+      "purpose": "Implement server action for recording user activities with validation, logging, and error handling",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/ (directory exists)",
+          "apps/web/app/home/(user)/kanban/_lib/server/server-actions.ts (pattern reference)",
+          "apps/web/lib/certificates/certificate-service.ts (logger pattern reference)",
+          "apps/web/app/home/(user)/_lib/schema/activity.schema.ts (from T1)"
+        ],
+        "dependencies": [
+          "@kit/next/actions enhanceAction",
+          "@kit/supabase/server-client getSupabaseServerClient",
+          "@kit/shared/logger createServiceLogger",
+          "next/cache revalidatePath",
+          "RecordActivitySchema from T1"
+        ],
+        "constraints": [
+          "Use 'use server' directive",
+          "Wrap with enhanceAction pattern",
+          "Use createServiceLogger with service name 'ACTIVITY-SERVICE'",
+          "Insert into user_activities table from F1",
+          "Include structured logging with context (name, userId, activityType)",
+          "Call revalidatePath('/home') after successful insert",
+          "Return {success: true, data} on success or {success: false, error} on failure",
+          "Graceful error handling - catch and log errors without throwing"
+        ]
+      },
+      "input_state": "RecordActivitySchema exists from T1, user_activities table exists from F1 (#1373)",
+      "output_state": "File exists at apps/web/app/home/(user)/_lib/server/activity-server-actions.ts exporting recordActivityAction function using enhanceAction with schema validation, logging, and revalidation",
+      "acceptance_criterion": "Server action file exists, exports recordActivityAction, compiles without errors, and follows enhanceAction pattern with auth:true",
+      "verification_command": "pnpm typecheck && grep -q 'recordActivityAction' apps/web/app/home/(user)/_lib/server/activity-server-actions.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-server-actions.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T1"
+        ],
+        "blocks": [
+          "T3",
+          "T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T3",
+      "type": "task",
+      "name": "Add unit tests for recordActivityAction",
+      "action": {
+        "verb": "Add",
+        "target": "unit test file for activity server action"
+      },
+      "purpose": "Verify recordActivityAction validates input, handles errors gracefully, and logs correctly",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/activity-server-actions.ts (from T2)"
+        ],
+        "dependencies": [
+          "vitest",
+          "RecordActivitySchema from T1",
+          "recordActivityAction from T2"
+        ],
+        "constraints": [
+          "Test schema validation (invalid activity_type, missing entity_id)",
+          "Test successful activity recording",
+          "Test error handling for database errors",
+          "Mock Supabase client and logger",
+          "Verify revalidatePath called on success",
+          "Follow existing test patterns in project"
+        ]
+      },
+      "input_state": "recordActivityAction function exists and is functional from T2",
+      "output_state": "Test file exists at apps/web/app/home/(user)/_lib/server/activity-server-actions.test.ts with tests for validation, success, and error cases",
+      "acceptance_criterion": "Test file exists and all tests pass when running pnpm --filter web test:unit",
+      "verification_command": "pnpm --filter web test:unit -- activity-server-actions",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/activity-server-actions.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T4",
+      "type": "task",
+      "name": "Create database trigger function for lesson completion",
+      "action": {
+        "verb": "Create",
+        "target": "PostgreSQL function log_lesson_complete_activity"
+      },
+      "purpose": "Automatically record activity when lesson_progress table receives lesson completion event",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "1374_T4",
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/ (directory exists)",
+          "apps/web/supabase/migrations/20250917024249_triggers.sql (trigger pattern reference)",
+          "apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql (function pattern reference)"
+        ],
+        "dependencies": [
+          "user_activities table from F1",
+          "lesson_progress table (assumed to exist)",
+          "PostgreSQL AFTER INSERT OR UPDATE trigger"
+        ],
+        "constraints": [
+          "Use SECURITY INVOKER (inherits RLS, safer than SECURITY DEFINER)",
+          "Trigger fires AFTER INSERT OR UPDATE on lesson_progress when completed_at changes from NULL to timestamp",
+          "Insert into user_activities with activity_type='lesson_complete', entity_type='lesson'",
+          "Extract metadata from lesson_progress (lesson title, module) if available",
+          "Use TG_OP and NEW record access in trigger function",
+          "Set search_path = '' for SQL injection prevention"
+        ]
+      },
+      "input_state": "user_activities table exists from F1, lesson_progress table exists with lesson completion tracking",
+      "output_state": "PostgreSQL function log_lesson_complete_activity exists and trigger is attached to lesson_progress table for INSERT/UPDATE operations",
+      "acceptance_criterion": "Function and trigger exist in migration file, and inserting or updating a completed lesson in lesson_progress automatically creates a user_activities row",
+      "verification_command": "grep -q 'log_lesson_complete_activity' apps/web/supabase/migrations/*_add_activity_triggers.sql",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T5",
+      "type": "task",
+      "name": "Create database trigger function for quiz submission",
+      "action": {
+        "verb": "Create",
+        "target": "PostgreSQL function log_quiz_submit_activity"
+      },
+      "purpose": "Automatically record activity when quiz_attempts table receives quiz submission event",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "1374_T5",
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql (from T4)",
+          "apps/web/supabase/migrations/20250917024249_triggers.sql (trigger pattern reference)"
+        ],
+        "dependencies": [
+          "user_activities table from F1",
+          "quiz_attempts table (assumed to exist)",
+          "PostgreSQL AFTER INSERT trigger"
+        ],
+        "constraints": [
+          "Use SECURITY INVOKER (inherits RLS)",
+          "Trigger fires AFTER INSERT on quiz_attempts",
+          "Insert into user_activities with activity_type='quiz_submit', entity_type='quiz'",
+          "Extract metadata (score, passed status, quiz title) if available",
+          "Follow same pattern as T4 lesson trigger",
+          "Add to same migration file as T4"
+        ]
+      },
+      "input_state": "user_activities table exists from F1, quiz_attempts table exists, lesson trigger migration exists from T4",
+      "output_state": "PostgreSQL function log_quiz_submit_activity exists and trigger is attached to quiz_attempts table for INSERT operations in the same migration file",
+      "acceptance_criterion": "Function and trigger exist in migration file, and inserting a quiz attempt automatically creates a user_activities row with quiz metadata",
+      "verification_command": "grep -q 'log_quiz_submit_activity' apps/web/supabase/migrations/*_add_activity_triggers.sql",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T1",
+          "T4"
+        ],
+        "blocks": [
+          "T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T6",
+      "type": "task",
+      "name": "Add schema tests for activity validation",
+      "action": {
+        "verb": "Add",
+        "target": "unit test file for activity schema"
+      },
+      "purpose": "Test activity schema validation including valid and invalid inputs for activity types, entity types, and metadata",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.test.ts (pattern reference)",
+          "apps/web/app/home/(user)/_lib/schema/activity.schema.ts (from T1)"
+        ],
+        "dependencies": [
+          "vitest (describe, it, expect)",
+          "ActivityTypeEnum, EntityTypeEnum, RecordActivitySchema from T1"
+        ],
+        "constraints": [
+          "Follow existing test pattern from task.schema.test.ts",
+          "Test all activity types and entity types",
+          "Test invalid inputs (empty strings, wrong types)",
+          "Test optional metadata field",
+          "Test UUID validation for entity_id"
+        ]
+      },
+      "input_state": "activity.schema.ts exists from T1 with schemas defined; no tests exist",
+      "output_state": "Test file exists at apps/web/app/home/(user)/_lib/schema/activity.schema.test.ts with comprehensive test coverage for all schemas and edge cases",
+      "acceptance_criterion": "Tests pass with 100% coverage of schema validation logic",
+      "verification_command": "pnpm --filter web test:unit -- activity.schema.test",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/schema/activity.schema.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T1",
+          "T5"
+        ],
+        "blocks": [
+          "T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T7",
+      "type": "task",
+      "name": "Apply migration with type regeneration",
+      "action": {
+        "verb": "Configure",
+        "target": "database types and migration"
+      },
+      "purpose": "Apply trigger migration to database then regenerate TypeScript types to include new trigger functions",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": true,
+      "migration_name_prefix": "1374_T7",
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/YYYYMMDDHHMMSS_add_activity_triggers.sql (from T4, T5)",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "pnpm --filter web supabase migration up",
+          "pnpm supabase:web:typegen"
+        ],
+        "constraints": [
+          "Must apply migration successfully without errors",
+          "Must regenerate types after migration",
+          "Must verify triggers exist in database",
+          "Migration must be idempotent (safe to run multiple times)"
+        ]
+      },
+      "input_state": "Migration file created with triggers from T4 and T5; database does not have triggers applied; types not regenerated",
+      "output_state": "Migration applied to database; triggers exist and are functional; database.types.ts updated with latest schema",
+      "acceptance_criterion": "Migration applies without errors, triggers are present in database, and typecheck passes",
+      "verification_command": "pnpm --filter web supabase migration up && pnpm supabase:web:typegen && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/lib/database.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T8",
+      "type": "task",
+      "name": "Integrate activity recording into presentation create flow",
+      "action": {
+        "verb": "Add",
+        "target": "activity recording call to createPresentationAction"
+      },
+      "purpose": "Automatically record presentation_create activity when user creates a new presentation via storyboard",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts (existing)",
+          "apps/web/app/home/(user)/_lib/server/activity-server-actions.ts (from T2)"
+        ],
+        "dependencies": [
+          "recordActivityAction from T2",
+          "createPresentationAction or similar in storyboard server-actions.ts"
+        ],
+        "constraints": [
+          "Import recordActivityAction",
+          "Call recordActivityAction after successful presentation creation",
+          "Pass activity_type='presentation_create', entity_type='presentation', entity_id=presentation.id",
+          "Include metadata with presentation title",
+          "Wrap in try-catch to prevent blocking presentation creation on activity recording failure",
+          "Log warning if activity recording fails but don't throw"
+        ]
+      },
+      "input_state": "recordActivityAction exists from T2, presentation creation flow exists in storyboard server actions",
+      "output_state": "Presentation creation action calls recordActivityAction on success, gracefully handling failures without blocking the primary operation",
+      "acceptance_criterion": "Modified server action imports and calls recordActivityAction, compiles without errors, and activity is recorded when creating a presentation",
+      "verification_command": "grep -q 'recordActivityAction' apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/ai/storyboard/_lib/server/server-actions.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Schemas",
+        "task_ids": [
+          "T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Core Implementation - Server Action & Triggers",
+        "task_ids": [
+          "T2",
+          "T4",
+          "T5"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Testing & Migration",
+        "task_ids": [
+          "T3",
+          "T6",
+          "T7"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": [
+          "T8"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "T1",
+        "T2",
+        "T4",
+        "T5",
+        "T6",
+        "T7"
+      ],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 15,
+      "parallel": 8,
+      "time_saved_percent": 47
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": true,
+    "feature_tasks_issue": 1387
+  }
 }
