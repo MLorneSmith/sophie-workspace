@@ -41,13 +41,26 @@ import { Sandbox } from "@e2b/code-interpreter";
 const TEMPLATE_ALIAS = "slideheroes-claude-agent-dev";
 const WORKSPACE_DIR = "/home/user/project";
 const PROGRESS_FILE = ".initiative-progress.json";
-const PROGRESS_POLL_INTERVAL_MS = 30000;
-const STALL_TIMEOUT_MS = 10 * 60 * 1000;
+// Progress polling - reduced from 30s to 15s with tool-based heartbeats
+const PROGRESS_POLL_INTERVAL_MS = 15000;
+// Stall detection - reduced from 10 to 5 minutes with tool-based heartbeats
+const STALL_TIMEOUT_MS = 5 * 60 * 1000;
+// Warning threshold - 2 minutes without heartbeat
+const HEARTBEAT_WARNING_MS = 2 * 60 * 1000;
 
 // Lock file for preventing concurrent orchestration runs
 const ORCHESTRATOR_LOCK_FILE = ".ai/alpha/.orchestrator-lock";
 const MAX_LOCK_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_RESET_AGE_MS = 10 * 60 * 1000; // 10 minutes for reset operations
+
+// UI Progress directory (local files for Ink dashboard)
+const UI_PROGRESS_DIR = ".ai/alpha/progress";
+
+// Health check configuration - reduced from 60s to 30s with tool-based heartbeats
+const HEALTH_CHECK_INTERVAL_MS = 30000; // Check every 30 seconds
+const PROGRESS_FILE_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes to create progress file
+const HEARTBEAT_STALE_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes without heartbeat = stale
+const MAX_SANDBOX_RETRIES = 2; // Max times to restart Claude Code on a sandbox
 
 // ============================================================================
 // Types
@@ -126,6 +139,10 @@ interface OrchestratorOptions {
 	forceUnlock: boolean;
 	skipDbReset: boolean;
 	skipDbSeed: boolean;
+	/** Enable Ink-based dashboard UI */
+	ui: boolean;
+	/** Use minimal UI mode (narrow terminals) */
+	minimalUi: boolean;
 }
 
 interface OrchestratorLock {
@@ -143,6 +160,12 @@ interface SandboxInstance {
 	label: string;
 	status: "ready" | "busy" | "completed" | "failed";
 	currentFeature: number | null;
+	// Health tracking
+	featureStartedAt?: Date;
+	lastProgressSeen?: Date;
+	lastHeartbeat?: Date;
+	retryCount: number;
+	claudeProcessId?: number;
 }
 
 interface SandboxProgress {
@@ -169,6 +192,7 @@ interface SandboxProgress {
 	status?: string;
 	last_commit?: string;
 	last_heartbeat?: string;
+	last_tool?: string;
 	phase?: string;
 }
 
@@ -923,12 +947,11 @@ async function createSandbox(
 	if (branchExists) {
 		console.log(`   Checking out existing branch: ${branchName}`);
 		// Fetch the specific branch and checkout using FETCH_HEAD
-		// Note: We use FETCH_HEAD instead of origin/branchName because:
-		// - git fetch origin "branchName" updates FETCH_HEAD but doesn't create origin/branchName ref
-		// - This happens when the branch was just created by another sandbox and our template doesn't know about it
-		// IMPORTANT: Also set upstream tracking to enable future fetch/reset operations
+		// Note: We use FETCH_HEAD because git fetch origin "branchName" updates FETCH_HEAD
+		// but may not immediately create origin/branchName ref when the branch was just pushed
+		// by another sandbox. Tracking is not critical for this workflow.
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD && git branch --set-upstream-to=origin/"${branchName}"`,
+			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
 			{ timeoutMs: 60000 },
 		);
 	} else {
@@ -1037,6 +1060,7 @@ async function createSandbox(
 		label,
 		status: "ready",
 		currentFeature: null,
+		retryCount: 0,
 	};
 }
 
@@ -1133,18 +1157,102 @@ function displayProgressUpdate(
 	return updateKey;
 }
 
+// ============================================================================
+// UI Progress File Management
+// ============================================================================
+
+/**
+ * Ensure the UI progress directory exists
+ */
+function ensureUIProgressDir(): string {
+	const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+	if (!fs.existsSync(progressDir)) {
+		fs.mkdirSync(progressDir, { recursive: true });
+	}
+	return progressDir;
+}
+
+/**
+ * Write sandbox progress to local file for UI consumption
+ */
+function writeUIProgress(
+	sandboxLabel: string,
+	progress: SandboxProgress | null,
+	instance: SandboxInstance,
+	feature: FeatureEntry | null,
+): void {
+	const progressDir = ensureUIProgressDir();
+	const filePath = path.join(progressDir, `${sandboxLabel}-progress.json`);
+
+	const uiProgress = {
+		sandbox_id: instance.id,
+		feature: feature
+			? {
+					issue_number: feature.id,
+					title: feature.title,
+				}
+			: undefined,
+		current_task: progress?.current_task,
+		current_group: progress?.current_group,
+		completed_tasks: progress?.completed_tasks,
+		failed_tasks: progress?.failed_tasks,
+		context_usage_percent: progress?.context_usage_percent,
+		status:
+			instance.status === "completed"
+				? "completed"
+				: instance.status === "failed"
+					? "failed"
+					: progress?.status || "running",
+		phase: progress?.phase || "executing",
+		last_heartbeat: progress?.last_heartbeat || new Date().toISOString(),
+		last_tool: progress?.last_tool,
+		last_commit: progress?.last_commit,
+		session_id: instance.id,
+	};
+
+	try {
+		fs.writeFileSync(filePath, JSON.stringify(uiProgress, null, "\t"));
+	} catch {
+		// Ignore write errors
+	}
+}
+
+/**
+ * Clear all UI progress files (called at start)
+ */
+function clearUIProgress(): void {
+	const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+	if (fs.existsSync(progressDir)) {
+		for (const file of fs.readdirSync(progressDir)) {
+			if (file.endsWith("-progress.json")) {
+				try {
+					fs.unlinkSync(path.join(progressDir, file));
+				} catch {
+					// Ignore
+				}
+			}
+		}
+	}
+}
+
 /**
  * Start polling the progress file in the sandbox.
  * Returns a cleanup function to stop polling.
  *
  * @param sessionStartTime - When this feature implementation session started.
  *   Progress with heartbeats before this time is considered stale and ignored.
+ * @param uiEnabled - If true, also write progress to local UI files
+ * @param instance - Sandbox instance (needed for UI progress writes)
+ * @param feature - Feature being implemented (needed for UI progress writes)
  */
 function startProgressPolling(
 	sandbox: Sandbox,
 	featureTaskCount: number,
 	sandboxLabel: string,
 	sessionStartTime: Date = new Date(),
+	uiEnabled: boolean = false,
+	instance?: SandboxInstance,
+	feature?: FeatureEntry,
 ): { stop: () => void; getLastProgress: () => SandboxProgress | null } {
 	let lastDisplayed = "";
 	let isPolling = true;
@@ -1173,12 +1281,21 @@ function startProgressPolling(
 					}
 
 					lastProgress = progress;
-					lastDisplayed = displayProgressUpdate(
-						progress,
-						featureTaskCount,
-						lastDisplayed,
-						sandboxLabel,
-					);
+
+					// Write progress to UI files if enabled
+					if (uiEnabled && instance) {
+						writeUIProgress(sandboxLabel, progress, instance, feature ?? null);
+					}
+
+					// Only display console updates if UI is not enabled
+					if (!uiEnabled) {
+						lastDisplayed = displayProgressUpdate(
+							progress,
+							featureTaskCount,
+							lastDisplayed,
+							sandboxLabel,
+						);
+					}
 				}
 			} catch {
 				// Ignore polling errors - sandbox may be busy
@@ -1265,6 +1382,254 @@ function checkForStall(
 }
 
 // ============================================================================
+// Sandbox Health Monitoring
+// ============================================================================
+
+interface HealthCheckResult {
+	healthy: boolean;
+	issue?: "no_progress_file" | "stale_heartbeat" | "high_resource_no_progress";
+	message?: string;
+	timeSinceStart?: number;
+	timeSinceProgress?: number;
+	timeSinceHeartbeat?: number;
+}
+
+/**
+ * Check the health of a sandbox that's working on a feature.
+ * Returns unhealthy if:
+ * - No progress file created within PROGRESS_FILE_TIMEOUT_MS of starting
+ * - Heartbeat is stale (older than HEARTBEAT_STALE_TIMEOUT_MS)
+ */
+async function checkSandboxHealth(
+	instance: SandboxInstance,
+): Promise<HealthCheckResult> {
+	if (instance.status !== "busy" || !instance.featureStartedAt) {
+		return { healthy: true };
+	}
+
+	const now = Date.now();
+	const timeSinceStart = now - instance.featureStartedAt.getTime();
+
+	// Try to read progress file
+	try {
+		const result = await instance.sandbox.commands.run(
+			`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null`,
+			{ timeoutMs: 5000 },
+		);
+
+		if (!result.stdout || !result.stdout.trim()) {
+			// No progress file yet
+			if (timeSinceStart > PROGRESS_FILE_TIMEOUT_MS) {
+				return {
+					healthy: false,
+					issue: "no_progress_file",
+					message: `No progress file after ${Math.round(timeSinceStart / 60000)} minutes`,
+					timeSinceStart,
+				};
+			}
+			// Still within grace period
+			return { healthy: true, timeSinceStart };
+		}
+
+		// Parse progress file
+		const progress: SandboxProgress = JSON.parse(result.stdout);
+		instance.lastProgressSeen = new Date();
+
+		// Check heartbeat
+		if (progress.last_heartbeat) {
+			const heartbeatTime = new Date(progress.last_heartbeat).getTime();
+			const featureStartTime = instance.featureStartedAt?.getTime() || now;
+
+			// CRITICAL: Ignore heartbeats from before this feature session started
+			// This prevents false stall detection when reading stale progress files
+			// from previous runs (e.g., after sandbox recovery or feature reassignment)
+			const graceWindow = 5 * 60 * 1000; // 5 minute grace period
+			if (heartbeatTime < featureStartTime - graceWindow) {
+				// Heartbeat is from a previous session - don't flag as stale
+				// The new Claude session just hasn't written progress yet
+				const heartbeatAgeMin = Math.round((now - heartbeatTime) / 60000);
+				const sessionAgeMin = Math.round(timeSinceStart / 60000);
+				console.log(
+					`   │   ℹ️ [${instance.label}] Ignoring stale heartbeat (${heartbeatAgeMin}m old, session started ${sessionAgeMin}m ago)`,
+				);
+				return { healthy: true, timeSinceStart };
+			}
+
+			instance.lastHeartbeat = new Date(heartbeatTime);
+			const timeSinceHeartbeat = now - heartbeatTime;
+
+			if (timeSinceHeartbeat > HEARTBEAT_STALE_TIMEOUT_MS) {
+				return {
+					healthy: false,
+					issue: "stale_heartbeat",
+					message: `Heartbeat stale for ${Math.round(timeSinceHeartbeat / 60000)} minutes`,
+					timeSinceStart,
+					timeSinceHeartbeat,
+				};
+			}
+		}
+
+		return {
+			healthy: true,
+			timeSinceStart,
+			timeSinceProgress: instance.lastProgressSeen
+				? now - instance.lastProgressSeen.getTime()
+				: undefined,
+			timeSinceHeartbeat: instance.lastHeartbeat
+				? now - instance.lastHeartbeat.getTime()
+				: undefined,
+		};
+	} catch {
+		// Failed to read progress - check if we're past timeout
+		if (timeSinceStart > PROGRESS_FILE_TIMEOUT_MS) {
+			return {
+				healthy: false,
+				issue: "no_progress_file",
+				message: `Cannot read progress file after ${Math.round(timeSinceStart / 60000)} minutes`,
+				timeSinceStart,
+			};
+		}
+		return { healthy: true, timeSinceStart };
+	}
+}
+
+/**
+ * Kill the Claude Code process in a sandbox and prepare for retry.
+ */
+async function killClaudeProcess(instance: SandboxInstance): Promise<boolean> {
+	console.log(`   │   🔪 Killing Claude Code process on ${instance.label}...`);
+
+	let killSucceeded = false;
+	let clearSucceeded = false;
+
+	try {
+		// Kill any running claude processes
+		await instance.sandbox.commands.run(
+			"pkill -f 'claude' || pkill -f 'run-claude' || true",
+			{ timeoutMs: 10000 },
+		);
+		killSucceeded = true;
+	} catch (error) {
+		console.log(
+			`   │   ⚠ Kill command failed: ${error instanceof Error ? error.message : error}`,
+		);
+	}
+
+	// ALWAYS try to clear progress file, even if kill failed
+	// This prevents false stall detection on the next health check
+	try {
+		await instance.sandbox.commands.run(
+			`rm -f ${WORKSPACE_DIR}/${PROGRESS_FILE}`,
+			{ timeoutMs: 5000 },
+		);
+		clearSucceeded = true;
+	} catch (error) {
+		console.log(
+			`   │   ⚠ Failed to clear progress file: ${error instanceof Error ? error.message : error}`,
+		);
+	}
+
+	// Small delay to ensure process is fully terminated
+	await sleep(2000);
+
+	if (killSucceeded && clearSucceeded) {
+		console.log(
+			`   │   ✓ Process killed and progress cleared on ${instance.label}`,
+		);
+		return true;
+	} else if (killSucceeded) {
+		console.log(
+			`   │   ⚠ Process killed but progress file not cleared on ${instance.label}`,
+		);
+		return true; // Still return true since the main goal (kill) succeeded
+	} else {
+		console.log(`   │   ✗ Recovery failed on ${instance.label}`);
+		return false;
+	}
+}
+
+/**
+ * Run health checks on all busy sandboxes and handle unhealthy ones.
+ * Returns list of sandboxes that need feature reassignment.
+ */
+async function runHealthChecks(
+	instances: SandboxInstance[],
+	manifest: SpecManifest,
+): Promise<SandboxInstance[]> {
+	const needsReassignment: SandboxInstance[] = [];
+
+	for (const instance of instances) {
+		if (instance.status !== "busy") {
+			continue;
+		}
+
+		const health = await checkSandboxHealth(instance);
+
+		if (!health.healthy) {
+			console.log(
+				`\n   ⚠️ HEALTH CHECK FAILED [${instance.label}]: ${health.message}`,
+			);
+
+			// Check if we can retry
+			if (instance.retryCount < MAX_SANDBOX_RETRIES) {
+				console.log(
+					`   │   Attempting recovery (retry ${instance.retryCount + 1}/${MAX_SANDBOX_RETRIES})...`,
+				);
+
+				const killed = await killClaudeProcess(instance);
+				if (killed) {
+					instance.retryCount++;
+					instance.featureStartedAt = undefined;
+					instance.lastProgressSeen = undefined;
+					instance.lastHeartbeat = undefined;
+
+					// Reset feature to pending so it can be retried
+					const feature = manifest.feature_queue.find(
+						(f) => f.id === instance.currentFeature,
+					);
+					if (feature) {
+						feature.status = "pending";
+						feature.assigned_sandbox = undefined;
+					}
+
+					instance.currentFeature = null;
+					instance.status = "ready";
+					saveManifest(manifest);
+
+					console.log(`   │   ✓ ${instance.label} ready for retry`);
+				} else {
+					// Kill failed - mark sandbox as failed
+					console.log("   │   ✗ Recovery failed, marking sandbox as failed");
+					instance.status = "failed";
+					needsReassignment.push(instance);
+				}
+			} else {
+				console.log(
+					`   │   ✗ Max retries (${MAX_SANDBOX_RETRIES}) exceeded, marking feature as failed`,
+				);
+
+				// Mark feature as failed
+				const feature = manifest.feature_queue.find(
+					(f) => f.id === instance.currentFeature,
+				);
+				if (feature) {
+					feature.status = "failed";
+					feature.error = `Health check failed: ${health.message}`;
+					feature.assigned_sandbox = undefined;
+				}
+
+				instance.currentFeature = null;
+				instance.status = "ready"; // Allow sandbox to take new work
+				instance.retryCount = 0; // Reset for next feature
+				saveManifest(manifest);
+			}
+		}
+	}
+
+	return needsReassignment;
+}
+
+// ============================================================================
 // Feature Implementation
 // ============================================================================
 
@@ -1272,6 +1637,7 @@ async function runFeatureImplementation(
 	instance: SandboxInstance,
 	manifest: SpecManifest,
 	feature: FeatureEntry,
+	uiEnabled: boolean = false,
 ): Promise<{ success: boolean; tasksCompleted: number; error?: string }> {
 	console.log(
 		`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`,
@@ -1283,6 +1649,9 @@ async function runFeatureImplementation(
 	feature.assigned_sandbox = instance.label;
 	instance.currentFeature = feature.id;
 	instance.status = "busy";
+	instance.featureStartedAt = new Date(); // Track for health monitoring
+	instance.lastProgressSeen = undefined;
+	instance.lastHeartbeat = undefined;
 	saveManifest(manifest);
 
 	// Clear stale progress file from previous runs
@@ -1313,13 +1682,15 @@ async function runFeatureImplementation(
 	} else {
 		console.log("   │   Pulling latest code...");
 		try {
-			// Use fetch + reset instead of pull --rebase to avoid conflicts when branches diverge
+			// Use fetch + reset to FETCH_HEAD instead of origin/branchName
+			// This is necessary because git fetch origin "branchName" updates FETCH_HEAD
+			// but doesn't create a local origin/branchName ref when tracking isn't set up
 			// This is safe because:
 			// 1. Each sandbox commits and pushes after completing a feature
 			// 2. Before starting a new feature, we want to sync with whatever is on remote
 			// 3. Any uncommitted local changes are from a previous failed run and should be discarded
 			await instance.sandbox.commands.run(
-				`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git reset --hard origin/"${branchName}"`,
+				`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git reset --hard FETCH_HEAD`,
 				{ timeoutMs: 60000 },
 			);
 			console.log("   │   ✓ Code synced");
@@ -1346,6 +1717,9 @@ async function runFeatureImplementation(
 		feature.task_count,
 		instance.label,
 		sessionStartTime,
+		uiEnabled,
+		instance,
+		feature,
 	);
 
 	// Start stall detection interval
@@ -1708,8 +2082,13 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		manifest.progress.started_at || new Date().toISOString();
 	saveManifest(manifest);
 
+	// Clear old UI progress files if UI is enabled
+	if (options.ui) {
+		clearUIProgress();
+	}
+
 	// Main work loop
-	await runWorkLoop(instances, manifest);
+	await runWorkLoop(instances, manifest, options.ui);
 
 	// Push final changes
 	if (GITHUB_TOKEN && instances.length > 0) {
@@ -1819,64 +2198,96 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 async function runWorkLoop(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
+	uiEnabled: boolean = false,
 ): Promise<void> {
 	// Track active work
 	const activeWork = new Map<string, Promise<void>>();
 
-	while (true) {
-		// Check if we're done
-		const pendingFeatures = manifest.feature_queue.filter(
-			(f) => f.status === "pending" || f.status === "in_progress",
-		);
+	// Start periodic health checks
+	let healthCheckRunning = false;
+	const healthCheckInterval = setInterval(async () => {
+		if (healthCheckRunning) return; // Prevent overlapping checks
+		healthCheckRunning = true;
 
-		if (pendingFeatures.length === 0) {
-			// Wait for any in-flight work
-			if (activeWork.size > 0) {
-				await Promise.all(activeWork.values());
-			}
-			break;
+		try {
+			await runHealthChecks(instances, manifest);
+		} catch (error) {
+			console.log(
+				`   ⚠️ Health check error: ${error instanceof Error ? error.message : error}`,
+			);
+		} finally {
+			healthCheckRunning = false;
 		}
+	}, HEALTH_CHECK_INTERVAL_MS);
 
-		// Find idle sandboxes and assign work
-		for (const instance of instances) {
-			if (instance.status !== "ready") {
-				continue;
-			}
-
-			const feature = getNextAvailableFeature(manifest);
-			if (!feature) {
-				// No work available - might be waiting for dependencies
-				continue;
-			}
-
-			// Start work on this sandbox
-			const workPromise = (async () => {
-				await runFeatureImplementation(instance, manifest, feature);
-				activeWork.delete(instance.label);
-			})();
-
-			activeWork.set(instance.label, workPromise);
-		}
-
-		// If no work is active and no features available, we might be stuck
-		if (activeWork.size === 0) {
-			const blockedFeatures = manifest.feature_queue.filter(
-				(f) => f.status === "pending" && f.dependencies.length > 0,
+	try {
+		while (true) {
+			// Check if we're done
+			const pendingFeatures = manifest.feature_queue.filter(
+				(f) => f.status === "pending" || f.status === "in_progress",
 			);
 
-			if (blockedFeatures.length > 0) {
-				console.log("\n⚠️ Features blocked by incomplete dependencies:");
-				for (const f of blockedFeatures.slice(0, 5)) {
-					console.log(
-						`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
-					);
+			if (pendingFeatures.length === 0) {
+				// Wait for any in-flight work
+				if (activeWork.size > 0) {
+					await Promise.all(activeWork.values());
 				}
+				break;
 			}
-			break;
-		}
 
-		// Wait for at least one sandbox to finish
-		await Promise.race(activeWork.values());
+			// Find idle sandboxes and assign work
+			for (const instance of instances) {
+				if (instance.status !== "ready") {
+					continue;
+				}
+
+				const feature = getNextAvailableFeature(manifest);
+				if (!feature) {
+					// No work available - might be waiting for dependencies
+					continue;
+				}
+
+				// Start work on this sandbox
+				const workPromise = (async () => {
+					await runFeatureImplementation(
+						instance,
+						manifest,
+						feature,
+						uiEnabled,
+					);
+					activeWork.delete(instance.label);
+				})();
+
+				activeWork.set(instance.label, workPromise);
+			}
+
+			// If no work is active and no features available, we might be stuck
+			if (activeWork.size === 0) {
+				const blockedFeatures = manifest.feature_queue.filter(
+					(f) => f.status === "pending" && f.dependencies.length > 0,
+				);
+
+				if (blockedFeatures.length > 0) {
+					console.log("\n⚠️ Features blocked by incomplete dependencies:");
+					for (const f of blockedFeatures.slice(0, 5)) {
+						console.log(
+							`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
+						);
+					}
+				}
+				break;
+			}
+
+			// Wait for at least one sandbox to finish OR health check to trigger recovery
+			// Using a timeout allows the loop to re-check for recovered sandboxes
+			await Promise.race([
+				...activeWork.values(),
+				sleep(HEALTH_CHECK_INTERVAL_MS),
+			]);
+		}
+	} finally {
+		// Always clear the health check interval
+		clearInterval(healthCheckInterval);
 	}
 }
 
@@ -2053,6 +2464,8 @@ function parseArgs(): OrchestratorOptions {
 		forceUnlock: false,
 		skipDbReset: false,
 		skipDbSeed: false,
+		ui: false,
+		minimalUi: false,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -2072,6 +2485,11 @@ function parseArgs(): OrchestratorOptions {
 			options.skipDbReset = true;
 		} else if (arg === "--skip-db-seed") {
 			options.skipDbSeed = true;
+		} else if (arg === "--ui") {
+			options.ui = true;
+		} else if (arg === "--minimal-ui") {
+			options.ui = true;
+			options.minimalUi = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -2098,6 +2516,8 @@ Options:
   --force-unlock        Force release any existing orchestrator lock
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
+  --ui                  Enable persistent Ink-based dashboard UI
+  --minimal-ui          Use minimal dashboard (for narrow terminals)
 
 Features:
   - Takes Spec ID (not Initiative ID)
