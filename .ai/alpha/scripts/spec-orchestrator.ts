@@ -926,8 +926,9 @@ async function createSandbox(
 		// Note: We use FETCH_HEAD instead of origin/branchName because:
 		// - git fetch origin "branchName" updates FETCH_HEAD but doesn't create origin/branchName ref
 		// - This happens when the branch was just created by another sandbox and our template doesn't know about it
+		// IMPORTANT: Also set upstream tracking to enable future fetch/reset operations
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
+			`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD && git branch --set-upstream-to=origin/"${branchName}"`,
 			{ timeoutMs: 60000 },
 		);
 	} else {
@@ -1104,7 +1105,8 @@ function displayProgressUpdate(
 		);
 	}
 
-	if (contextPercent > 0) {
+	// Always show context usage (even if 0) for visibility
+	if (typeof contextPercent === "number" && !Number.isNaN(contextPercent)) {
 		const contextIcon = contextPercent > 50 ? "⚠️" : "📈";
 		console.log(`   │ Context: ${contextIcon} ${contextPercent}%`);
 	}
@@ -1113,12 +1115,17 @@ function displayProgressUpdate(
 		console.log(`   │ Last commit: ${progress.last_commit.substring(0, 7)}`);
 	}
 
-	if (progress.last_heartbeat) {
-		const heartbeatAge = Math.round(
-			(Date.now() - new Date(progress.last_heartbeat).getTime()) / 1000,
-		);
-		const heartbeatIcon = heartbeatAge > 120 ? "⚠️" : "💓";
-		console.log(`   │ Heartbeat: ${heartbeatIcon} ${heartbeatAge}s ago`);
+	// Validate heartbeat timestamp before calculating age
+	if (progress.last_heartbeat && typeof progress.last_heartbeat === "string") {
+		const heartbeatDate = new Date(progress.last_heartbeat);
+		const heartbeatTime = heartbeatDate.getTime();
+
+		// Only display if we got a valid date (not NaN)
+		if (!Number.isNaN(heartbeatTime)) {
+			const heartbeatAge = Math.round((Date.now() - heartbeatTime) / 1000);
+			const heartbeatIcon = heartbeatAge > 120 ? "⚠️" : "💓";
+			console.log(`   │ Heartbeat: ${heartbeatIcon} ${heartbeatAge}s ago`);
+		}
 	}
 
 	console.log(`   └${"─".repeat(55)}\n`);
@@ -1306,8 +1313,13 @@ async function runFeatureImplementation(
 	} else {
 		console.log("   │   Pulling latest code...");
 		try {
+			// Use fetch + reset instead of pull --rebase to avoid conflicts when branches diverge
+			// This is safe because:
+			// 1. Each sandbox commits and pushes after completing a feature
+			// 2. Before starting a new feature, we want to sync with whatever is on remote
+			// 3. Any uncommitted local changes are from a previous failed run and should be discarded
 			await instance.sandbox.commands.run(
-				`cd ${WORKSPACE_DIR} && git pull origin "${branchName}" --rebase`,
+				`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git reset --hard origin/"${branchName}"`,
 				{ timeoutMs: 60000 },
 			);
 			console.log("   │   ✓ Code synced");
@@ -1372,6 +1384,9 @@ async function runFeatureImplementation(
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
 
+		// Get last progress from poller as a fallback
+		const lastPolledProgress = progressPoller.getLastProgress();
+
 		// Read progress file
 		const progressResult = await instance.sandbox.commands.run(
 			`cat ${WORKSPACE_DIR}/${PROGRESS_FILE} 2>/dev/null || echo '{}'`,
@@ -1394,6 +1409,30 @@ async function runFeatureImplementation(
 			}
 		} catch {
 			status = result.exitCode === 0 ? "completed" : "failed";
+		}
+
+		// Fallback: Use last polled progress if available and more accurate
+		if (tasksCompleted === 0 && lastPolledProgress?.completed_tasks) {
+			tasksCompleted = lastPolledProgress.completed_tasks.length;
+		}
+
+		// Fallback: If status is completed and exit code is 0, but tasksCompleted is still 0,
+		// try to extract from Claude output or assume all tasks completed
+		if (
+			status === "completed" &&
+			result.exitCode === 0 &&
+			tasksCompleted === 0
+		) {
+			// Try to extract task count from captured output (e.g., "Tasks: 8/8 completed")
+			const taskMatch = capturedStdout.match(
+				/Tasks?:?\s*(\d+)\s*\/\s*(\d+)\s*(?:completed|complete|\(100%\))/i,
+			);
+			if (taskMatch) {
+				tasksCompleted = parseInt(taskMatch[1], 10);
+			} else {
+				// Last resort: assume all tasks completed if feature marked as complete
+				tasksCompleted = feature.task_count;
+			}
 		}
 
 		// Update feature

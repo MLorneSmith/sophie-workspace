@@ -404,67 +404,170 @@ E2B sandbox has configurable timeout (default 1 hour):
 - `R2_ACCESS_KEY_ID` - Cloudflare R2 access key
 - `R2_SECRET_ACCESS_KEY` - Cloudflare R2 secret key
 - `R2_ACCOUNT_ID` - Cloudflare R2 account ID
-- `PAYLOAD_PUBLIC_MEDIA_BASE_URL` - R2 media bucket URL
-- `PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL` - R2 downloads bucket URL
+- `R2_MEDIA_BUCKET` - R2 media bucket name
+- `R2_DOWNLOADS_BUCKET` - R2 downloads bucket name
+- `R2_REGION` - R2 region (e.g., `auto`)
+- `PAYLOAD_PUBLIC_MEDIA_BASE_URL` - R2 media bucket CDN URL
+- `PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL` - R2 downloads bucket CDN URL
 
-See `supabase-sandbox-integration-plan.md` for detailed setup instructions.
+**Implementation Reference**: See `supabase-sandbox-integration-plan.md` for the original design document and detailed manual setup instructions.
 
-## Database Seeding
+## Database Seeding (Supabase Sandbox Integration)
 
 ### Overview
 
-At orchestration startup, the sandbox database is automatically seeded with Payload CMS data. This provides test users, media files, courses, and other content for development.
+At orchestration startup, the sandbox database is automatically reset and seeded with Payload CMS data. This provides a clean, reproducible database state with test users, media files, courses, and other content for development.
 
-### Seeding Flow
+The seeding system is based on the `/supabase-reset` slash command but adapted for remote Supabase sandbox projects (since E2B cannot run Docker for local Supabase).
+
+### Architecture
 
 ```
-1. Database Reset (schema only)
-   └── DROP/CREATE public schema
-   └── Apply Supabase migrations
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      SANDBOX DATABASE LIFECYCLE                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Local Machine (orchestrator)         E2B Sandbox                           │
+│  ┌─────────────────────────┐         ┌─────────────────────────┐           │
+│  │ 1. Check DB capacity    │         │                         │           │
+│  │ 2. Reset public schema  │─────────┤ Remote Supabase         │           │
+│  │    (DROP CASCADE)       │  psql   │ Sandbox Project         │           │
+│  │ 3. Apply migrations     │─────────┤                         │           │
+│  └─────────────────────────┘         └─────────────────────────┘           │
+│           │                                     ▲                           │
+│           ▼                                     │                           │
+│  ┌─────────────────────────┐                   │                           │
+│  │ 4. Create First Sandbox │                   │                           │
+│  └─────────────────────────┘                   │                           │
+│           │                                     │                           │
+│           ▼                                     │                           │
+│  ┌─────────────────────────┐                   │                           │
+│  │ 5. Seed via Sandbox     │───────────────────┘                           │
+│  │    - Payload migrate    │    NODE_TLS_REJECT_UNAUTHORIZED=0             │
+│  │    - Payload seed:run   │    (SSL handling for remote DB)               │
+│  └─────────────────────────┘                                               │
+│           │                                                                 │
+│           ▼                                                                 │
+│  ┌─────────────────────────┐                                               │
+│  │ 6. Create Remaining     │  All sandboxes share the seeded database      │
+│  │    Sandboxes            │                                               │
+│  └─────────────────────────┘                                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Seeding Flow (Detailed)
+
+```
+1. Database Reset (orchestrator, local)
+   └── Check database capacity (warn if >450MB of 500MB limit)
+   └── DROP SCHEMA public CASCADE
+   └── CREATE SCHEMA public with grants
+   └── Apply Supabase migrations via `supabase db push`
 
 2. Create First Sandbox
    └── Clone repo, setup environment
+   └── Link Supabase CLI to sandbox project
 
 3. Seed Database via First Sandbox
-   └── Run Payload migrations (60+ tables)
-   └── Run Payload seeding (257 records)
-   └── Verify seeded data
+   └── Run Payload migrations:
+       cd apps/payload && NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run payload migrate --forceAcceptWarning
+   └── Run Payload seeding:
+       cd apps/payload && NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run --force
+   └── Verify seeded data (check payload.users count)
 
 4. Create Remaining Sandboxes
    └── All sandboxes share the seeded database
+   └── No additional seeding required
 ```
+
+### SSL Handling
+
+Remote Supabase connections require SSL. The orchestrator handles this by:
+- Setting `NODE_TLS_REJECT_UNAUTHORIZED=0` for Payload commands (allows self-signed certs)
+- Adding `?sslmode=require` to DATABASE_URI for Payload CMS
+- Using the Supabase pooler connection string (Session mode) for reliability
 
 ### Seeded Content
 
-After seeding, the database contains:
-- **1 admin user** - For authentication testing
-- **24 media files** - R2-hosted images with URLs
-- **23 downloads** - R2-hosted documents
-- **8 posts** - Blog content
-- **1 course** with 25 lessons and 20 quizzes
-- **94 quiz questions** - Various question types
-- **3 surveys** with 32 survey questions
-- **19 documentation pages**
-- **5 private posts**
+After seeding, the database contains (257 records across 12 collections):
 
-### Skipping Seeding
+| Collection | Records | Description |
+|------------|---------|-------------|
+| `users` | 1 | Admin user for authentication testing |
+| `media` | 24 | R2-hosted images with CDN URLs |
+| `downloads` | 20 | R2-hosted documents (PDFs, etc.) |
+| `posts` | 8 | Blog content |
+| `courses` | 1 | Complete course structure |
+| `course_lessons` | 25 | Course lesson content |
+| `course_quizzes` | 20 | Quiz definitions |
+| `quiz_questions` | 94 | Various question types |
+| `surveys` | 3 | Survey definitions |
+| `survey_questions` | 32 | Survey question content |
+| `documentation` | 19 | Documentation pages |
+| `private` | 5 | Private/restricted posts |
 
-Use `--skip-db-seed` to skip seeding when resuming:
-```bash
-tsx spec-orchestrator.ts 1362 --skip-db-seed
+**Note**: Media files are pre-uploaded to Cloudflare R2 buckets. Seeding only inserts database records with R2 URLs - it does not upload files.
+
+### R2 Storage Integration
+
+The seeding process uses production R2 buckets for media files:
+- Media URLs are stored in `payload.media.url` column
+- Download URLs are stored in `payload.downloads.url` column
+- The `PAYLOAD_PUBLIC_MEDIA_BASE_URL` and `PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL` environment variables provide CDN base URLs
+
+This approach avoids file upload complexity while providing realistic test data.
+
+### Auto-Detection of Seeded Database
+
+On resume, the orchestrator automatically detects if seeding has already occurred:
+
+```typescript
+// Checks if payload.users has any records
+const result = psql "${dbUrl}" -c "SELECT COUNT(*) FROM payload.users"
+if (count > 0) {
+  // Skip seeding - database already has data
+}
 ```
 
-The orchestrator also auto-detects if the database is already seeded (checks for `payload.users`) and skips seeding automatically on resume.
+This prevents duplicate records on orchestration restart.
+
+### Skipping Reset and Seeding
+
+Use command-line flags to control database operations:
+
+```bash
+# Skip both reset and seeding (for debugging)
+tsx spec-orchestrator.ts 1362 --skip-db-reset --skip-db-seed
+
+# Skip only seeding (run reset but keep existing data pattern)
+tsx spec-orchestrator.ts 1362 --skip-db-seed
+
+# Normal operation (reset + seed on first run, auto-skip seed on resume)
+tsx spec-orchestrator.ts 1362
+```
 
 ### Seeding Failures
 
-If seeding fails:
-1. Check `PAYLOAD_SECRET` and `SEED_USER_PASSWORD` are set
-2. Check R2 credentials for media files
-3. Verify `SUPABASE_SANDBOX_DB_URL` is accessible
-4. Check Payload migration logs for errors
+If seeding fails, check these common causes:
 
-Use `--skip-db-reset --skip-db-seed` to skip both reset and seeding when debugging.
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Migration failed" | Missing Payload schema | Check Supabase migrations include `create_payload_schema.sql` |
+| "Collection not found" | Migration/config mismatch | Update Payload migrations to match config |
+| "Connection refused" | Wrong DB URL | Verify `SUPABASE_SANDBOX_DB_URL` is correct |
+| "SSL required" | Missing SSL in connection | Orchestrator handles this automatically |
+| "Permission denied" | Wrong credentials | Check `SUPABASE_SANDBOX_SERVICE_ROLE_KEY` |
+| "User already exists" | Duplicate seeding | Use `--force` flag or reset database |
+
+**Debug commands**:
+```bash
+# Check if Payload schema exists
+psql "$SUPABASE_SANDBOX_DB_URL" -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='payload'"
+
+# Check seeded data counts
+psql "$SUPABASE_SANDBOX_DB_URL" -c "SELECT relname, n_live_tup FROM pg_stat_user_tables WHERE schemaname='payload'"
+```
 
 ## Database Feature Handling
 
@@ -561,6 +664,15 @@ $ tsx spec-orchestrator.ts 1362
    ALPHA SPEC ORCHESTRATOR
 ══════════════════════════════════════════════════════════════════════
 
+🔒 Acquired orchestrator lock
+
+📊 Checking sandbox database...
+   📊 Sandbox database size: 45.2MB / 500MB
+🔄 Resetting sandbox database...
+   ✅ Database schema reset
+   📦 Applying base migrations...
+   ✅ Base migrations applied
+
 📊 Spec #1362: user dashboard home
    Initiatives: 4
    Features: 13
@@ -570,21 +682,39 @@ $ tsx spec-orchestrator.ts 1362
 
 🎯 Next feature: #1367 - Dashboard Page & Grid Layout
 
+📦 Creating first sandbox...
+
 📦 Creating sandbox sbx-a...
    ID: sbx_abc123
    Checking out branch: alpha/spec-1362
+   Setting up Supabase CLI...
+   Found Supabase CLI: 2.x.x
+   Linking to sandbox project: abcdefghijklmnop
+   ✅ Supabase CLI linked to sandbox project
+
+🌱 Seeding sandbox database...
+   📦 Running Payload migrations...
+   ✅ Payload migrations complete
+   🌱 Running Payload seeding...
+   ✅ Payload seeding complete
+   🔍 Verifying seeded data...
+   ✅ Verified: 1 user(s) seeded
 
    ⏳ Waiting 20s before next sandbox...
 
 📦 Creating sandbox sbx-b...
    ID: sbx_def456
    Checking out branch: alpha/spec-1362
+   Setting up Supabase CLI...
+   ✅ Supabase CLI linked to sandbox project
 
    ⏳ Waiting 20s before next sandbox...
 
 📦 Creating sandbox sbx-c...
    ID: sbx_ghi789
    Checking out branch: alpha/spec-1362
+   Setting up Supabase CLI...
+   ✅ Supabase CLI linked to sandbox project
 
 ══════════════════════════════════════════════════════════════════════
    SANDBOXES READY
@@ -628,6 +758,16 @@ $ tsx spec-orchestrator.ts 1362
 
 ... [continues until all features done] ...
 
+🔄 Preparing sandbox for complete review...
+   sbx-a: Pulling latest changes...
+   sbx-a: ✅ Has complete code
+   sbx-b: Stopping (partial code only)...
+   sbx-c: Stopping (partial code only)...
+
+🚀 Starting dev server for review...
+   sbx-a: Dev server starting...
+   Waiting for dev server to start (30s)...
+
 ══════════════════════════════════════════════════════════════════════
    SUMMARY
 ══════════════════════════════════════════════════════════════════════
@@ -642,7 +782,29 @@ $ tsx spec-orchestrator.ts 1362
 ⏱️ Duration: 35 minutes
 
 ══════════════════════════════════════════════════════════════════════
+   REVIEW YOUR WORK
+══════════════════════════════════════════════════════════════════════
 
+🔗 Review URLs (sandboxes kept alive for review):
+
+   sbx-a:
+      VS Code:    https://sbx_abc123-8080.e2b.dev
+      Dev Server: https://sbx_abc123-3000.e2b.dev
+
+──────────────────────────────────────────────────────────────────────
+⚠️  IMPORTANT: Sandboxes are still running!
+   When done reviewing, manually kill them with:
+
+   npx e2b sandbox kill sbx_abc123
+
+──────────────────────────────────────────────────────────────────────
+
+📊 Database Review:
+   Supabase Studio: https://supabase.com/dashboard/project/abcdefghijklmnop
+
+══════════════════════════════════════════════════════════════════════
+
+🔓 Released orchestrator lock
 ✅ Spec implementation complete!
 ```
 
