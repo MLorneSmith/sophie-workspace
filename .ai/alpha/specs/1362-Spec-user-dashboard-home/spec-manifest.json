@@ -86,10 +86,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 21,
 			"parallel_hours": 12,
-			"dependencies": [
-				1367,
-				1370
-			],
+			"dependencies": [1367, 1370],
 			"github_issue": 1383,
 			"requires_database": false,
 			"database_task_count": 0
@@ -108,9 +105,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 15,
 			"parallel_hours": 8,
-			"dependencies": [
-				1367
-			],
+			"dependencies": [1367],
 			"github_issue": 1384,
 			"requires_database": false,
 			"database_task_count": 0
@@ -129,9 +124,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 9,
 			"parallel_hours": 6,
-			"dependencies": [
-				1367
-			],
+			"dependencies": [1367],
 			"github_issue": 1385,
 			"requires_database": false,
 			"database_task_count": 0
@@ -150,9 +143,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 10,
 			"parallel_hours": 6,
-			"dependencies": [
-				1363
-			],
+			"dependencies": [1363],
 			"github_issue": 1380,
 			"requires_database": false,
 			"database_task_count": 0
@@ -171,9 +162,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 12,
 			"parallel_hours": 8,
-			"dependencies": [
-				1363
-			],
+			"dependencies": [1363],
 			"github_issue": 1382,
 			"requires_database": false,
 			"database_task_count": 0
@@ -230,9 +219,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 15,
 			"parallel_hours": 8,
-			"dependencies": [
-				1373
-			],
+			"dependencies": [1373],
 			"github_issue": 1387,
 			"requires_database": true,
 			"database_task_count": 3
@@ -251,9 +238,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 17,
 			"parallel_hours": 10,
-			"dependencies": [
-				1374
-			],
+			"dependencies": [1374],
 			"github_issue": 1389,
 			"requires_database": false,
 			"database_task_count": 0
@@ -291,9 +276,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 25,
 			"parallel_hours": 20,
-			"dependencies": [
-				1377
-			],
+			"dependencies": [1377],
 			"github_issue": 1390,
 			"requires_database": false,
 			"database_task_count": 0
@@ -312,9 +295,7 @@
 			"tasks_completed": 0,
 			"sequential_hours": 17,
 			"parallel_hours": 14,
-			"dependencies": [
-				1377
-			],
+			"dependencies": [1377],
 			"github_issue": 1392,
 			"requires_database": false,
 			"database_task_count": 0

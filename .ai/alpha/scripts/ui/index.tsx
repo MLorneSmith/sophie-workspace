@@ -1,206 +1,207 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { render } from 'ink';
+import type React from "react";
+import { useState, useEffect, useCallback } from "react";
+import { render } from "ink";
 import {
-  OrchestratorUI,
-  MinimalOrchestratorUI,
-  LoadingUI,
-  ErrorUI,
-  CompletionUI,
-} from './components/OrchestratorUI.js';
+	OrchestratorUI,
+	MinimalOrchestratorUI,
+	LoadingUI,
+	ErrorUI,
+	CompletionUI,
+} from "./components/OrchestratorUI.js";
 import {
-  useProgressPoller,
-  createInitialState,
-  createFsProgressReader,
-  type ProgressPollerConfig,
-  type ProgressReader,
-} from './hooks/useProgressPoller.js';
-import type { UIState } from './types.js';
+	useProgressPoller,
+	createInitialState,
+	createFsProgressReader,
+	type ProgressPollerConfig,
+	type ProgressReader,
+} from "./hooks/useProgressPoller.js";
+import type { UIState } from "./types.js";
 
 /**
  * UI Manager configuration
  */
 export interface UIManagerConfig {
-  /** Spec ID being orchestrated */
-  specId: number;
-  /** Spec name for display */
-  specName: string;
-  /** Directory containing sandbox progress files */
-  progressDir: string;
-  /** Sandbox labels to monitor (default: ['sbx-a', 'sbx-b', 'sbx-c']) */
-  sandboxLabels?: string[];
-  /** Polling interval in ms (default: 15000) */
-  pollInterval?: number;
-  /** Use minimal UI for narrow terminals */
-  minimal?: boolean;
-  /** Custom progress reader (for testing) */
-  progressReader?: ProgressReader;
+	/** Spec ID being orchestrated */
+	specId: number;
+	/** Spec name for display */
+	specName: string;
+	/** Directory containing sandbox progress files */
+	progressDir: string;
+	/** Sandbox labels to monitor (default: ['sbx-a', 'sbx-b', 'sbx-c']) */
+	sandboxLabels?: string[];
+	/** Polling interval in ms (default: 15000) */
+	pollInterval?: number;
+	/** Use minimal UI for narrow terminals */
+	minimal?: boolean;
+	/** Custom progress reader (for testing) */
+	progressReader?: ProgressReader;
 }
 
 /**
  * UI phase for rendering appropriate screen
  */
-type UIPhase = 'loading' | 'running' | 'completed' | 'error';
+type UIPhase = "loading" | "running" | "completed" | "error";
 
 /**
  * Main orchestrator UI app component
  */
 const OrchestratorApp: React.FC<{
-  config: UIManagerConfig;
+	config: UIManagerConfig;
 }> = ({ config }) => {
-  const {
-    specId,
-    specName,
-    progressDir,
-    sandboxLabels = ['sbx-a', 'sbx-b', 'sbx-c'],
-    pollInterval,
-    minimal = false,
-    progressReader = createFsProgressReader(),
-  } = config;
+	const {
+		specId,
+		specName,
+		progressDir,
+		sandboxLabels = ["sbx-a", "sbx-b", "sbx-c"],
+		pollInterval,
+		minimal = false,
+		progressReader = createFsProgressReader(),
+	} = config;
 
-  const [phase, setPhase] = useState<UIPhase>('loading');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [sessionStart] = useState(() => new Date());
+	const [phase, setPhase] = useState<UIPhase>("loading");
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [sessionStart] = useState(() => new Date());
 
-  // Progress poller configuration
-  const pollerConfig: ProgressPollerConfig = {
-    specId,
-    specName,
-    progressDir,
-    sandboxLabels,
-    pollInterval,
-    onStateChange: (state) => {
-      // Update phase based on state
-      if (state.overallProgress.status === 'completed') {
-        setPhase('completed');
-      } else if (state.overallProgress.status === 'failed') {
-        setPhase('error');
-        setErrorMessage('One or more sandboxes failed');
-      } else if (phase === 'loading') {
-        setPhase('running');
-      }
-    },
-    onError: (error) => {
-      // Don't fail on polling errors, just log them
-      console.error('Polling error:', error.message);
-    },
-  };
+	// Progress poller configuration
+	const pollerConfig: ProgressPollerConfig = {
+		specId,
+		specName,
+		progressDir,
+		sandboxLabels,
+		pollInterval,
+		onStateChange: (state) => {
+			// Update phase based on state
+			if (state.overallProgress.status === "completed") {
+				setPhase("completed");
+			} else if (state.overallProgress.status === "failed") {
+				setPhase("error");
+				setErrorMessage("One or more sandboxes failed");
+			} else if (phase === "loading") {
+				setPhase("running");
+			}
+		},
+		onError: (error) => {
+			// Don't fail on polling errors, just log them
+			console.error("Polling error:", error.message);
+		},
+	};
 
-  const { state, startPolling, error } = useProgressPoller(
-    pollerConfig,
-    progressReader
-  );
+	const { state, startPolling, error } = useProgressPoller(
+		pollerConfig,
+		progressReader,
+	);
 
-  // Start polling on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startPolling();
-      setPhase('running');
-    }, 500); // Brief delay for loading screen
+	// Start polling on mount
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			startPolling();
+			setPhase("running");
+		}, 500); // Brief delay for loading screen
 
-    return () => clearTimeout(timer);
-  }, [startPolling]);
+		return () => clearTimeout(timer);
+	}, [startPolling]);
 
-  // Calculate elapsed time for completion screen
-  const getElapsedTime = useCallback((): string => {
-    const elapsed = Date.now() - sessionStart.getTime();
-    const hours = Math.floor(elapsed / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+	// Calculate elapsed time for completion screen
+	const getElapsedTime = useCallback((): string => {
+		const elapsed = Date.now() - sessionStart.getTime();
+		const hours = Math.floor(elapsed / (1000 * 60 * 60));
+		const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+		const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}m ${seconds}s`;
-    }
-    if (minutes > 0) {
-      return `${minutes}m ${seconds}s`;
-    }
-    return `${seconds}s`;
-  }, [sessionStart]);
+		if (hours > 0) {
+			return `${hours}h ${minutes}m ${seconds}s`;
+		}
+		if (minutes > 0) {
+			return `${minutes}m ${seconds}s`;
+		}
+		return `${seconds}s`;
+	}, [sessionStart]);
 
-  // Render based on phase
-  switch (phase) {
-    case 'loading':
-      return <LoadingUI message="Connecting to sandboxes..." />;
+	// Render based on phase
+	switch (phase) {
+		case "loading":
+			return <LoadingUI message="Connecting to sandboxes..." />;
 
-    case 'error':
-      return (
-        <ErrorUI
-          error={errorMessage ?? 'Unknown error'}
-          details={error?.message}
-        />
-      );
+		case "error":
+			return (
+				<ErrorUI
+					error={errorMessage ?? "Unknown error"}
+					details={error?.message}
+				/>
+			);
 
-    case 'completed':
-      return (
-        <CompletionUI
-          specId={specId}
-          featuresCompleted={state.overallProgress.featuresCompleted}
-          tasksCompleted={state.overallProgress.tasksCompleted}
-          elapsed={getElapsedTime()}
-        />
-      );
+		case "completed":
+			return (
+				<CompletionUI
+					specId={specId}
+					featuresCompleted={state.overallProgress.featuresCompleted}
+					tasksCompleted={state.overallProgress.tasksCompleted}
+					elapsed={getElapsedTime()}
+				/>
+			);
 
-    case 'running':
-    default:
-      if (minimal) {
-        return <MinimalOrchestratorUI state={state} />;
-      }
-      return <OrchestratorUI state={state} />;
-  }
+		case "running":
+		default:
+			if (minimal) {
+				return <MinimalOrchestratorUI state={state} />;
+			}
+			return <OrchestratorUI state={state} />;
+	}
 };
 
 /**
  * UI Manager class for programmatic control
  */
 export class UIManager {
-  private config: UIManagerConfig;
-  private instance: ReturnType<typeof render> | null = null;
-  private state: UIState;
-  private onExit?: () => void;
+	private config: UIManagerConfig;
+	private instance: ReturnType<typeof render> | null = null;
+	private state: UIState;
+	private onExit?: () => void;
 
-  constructor(config: UIManagerConfig) {
-    this.config = config;
-    this.state = createInitialState(config.specId, config.specName);
-  }
+	constructor(config: UIManagerConfig) {
+		this.config = config;
+		this.state = createInitialState(config.specId, config.specName);
+	}
 
-  /**
-   * Start the UI
-   */
-  start(onExit?: () => void): void {
-    this.onExit = onExit;
+	/**
+	 * Start the UI
+	 */
+	start(onExit?: () => void): void {
+		this.onExit = onExit;
 
-    this.instance = render(<OrchestratorApp config={this.config} />);
+		this.instance = render(<OrchestratorApp config={this.config} />);
 
-    // Handle process signals
-    process.on('SIGINT', () => this.stop());
-    process.on('SIGTERM', () => this.stop());
-  }
+		// Handle process signals
+		process.on("SIGINT", () => this.stop());
+		process.on("SIGTERM", () => this.stop());
+	}
 
-  /**
-   * Stop the UI and cleanup
-   */
-  stop(): void {
-    if (this.instance) {
-      this.instance.unmount();
-      this.instance = null;
-    }
-    this.onExit?.();
-  }
+	/**
+	 * Stop the UI and cleanup
+	 */
+	stop(): void {
+		if (this.instance) {
+			this.instance.unmount();
+			this.instance = null;
+		}
+		this.onExit?.();
+	}
 
-  /**
-   * Get current state (for external access)
-   */
-  getState(): UIState {
-    return this.state;
-  }
+	/**
+	 * Get current state (for external access)
+	 */
+	getState(): UIState {
+		return this.state;
+	}
 
-  /**
-   * Wait for the UI to exit
-   */
-  async waitForExit(): Promise<void> {
-    if (this.instance) {
-      await this.instance.waitUntilExit();
-    }
-  }
+	/**
+	 * Wait for the UI to exit
+	 */
+	async waitForExit(): Promise<void> {
+		if (this.instance) {
+			await this.instance.waitUntilExit();
+		}
+	}
 }
 
 /**
@@ -221,12 +222,12 @@ export class UIManager {
  * ```
  */
 export function startOrchestratorUI(
-  config: UIManagerConfig,
-  onExit?: () => void
+	config: UIManagerConfig,
+	onExit?: () => void,
 ): UIManager {
-  const manager = new UIManager(config);
-  manager.start(onExit);
-  return manager;
+	const manager = new UIManager(config);
+	manager.start(onExit);
+	return manager;
 }
 
 /**
@@ -245,17 +246,23 @@ export function startOrchestratorUI(
  * ```
  */
 export async function runOrchestratorUI(
-  config: UIManagerConfig
+	config: UIManagerConfig,
 ): Promise<void> {
-  const manager = new UIManager(config);
+	const manager = new UIManager(config);
 
-  return new Promise<void>((resolve) => {
-    manager.start(() => resolve());
-  });
+	return new Promise<void>((resolve) => {
+		manager.start(() => resolve());
+	});
 }
 
 // Re-export types and components for external use
-export { OrchestratorUI, MinimalOrchestratorUI, LoadingUI, ErrorUI, CompletionUI };
+export {
+	OrchestratorUI,
+	MinimalOrchestratorUI,
+	LoadingUI,
+	ErrorUI,
+	CompletionUI,
+};
 export { useProgressPoller, createFsProgressReader };
 export type { UIState, ProgressPollerConfig, ProgressReader };
-export * from './types.js';
+export * from "./types.js";

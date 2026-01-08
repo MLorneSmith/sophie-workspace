@@ -1,5 +1,5 @@
 import type React from "react";
-import { Component, type ReactNode } from "react"
+import { Component, type ReactNode } from "react";
 import { Box, Text } from "ink";
 
 /**

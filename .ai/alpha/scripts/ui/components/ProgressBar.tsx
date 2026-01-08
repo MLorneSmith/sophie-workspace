@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Text } from 'ink';
-import type { ProgressBarProps } from '../types.js';
+import type React from "react";
+import { Box, Text } from "ink";
+import type { ProgressBarProps } from "../types.js";
 
 /**
  * Reusable progress bar component for displaying completion status
@@ -10,76 +10,76 @@ import type { ProgressBarProps } from '../types.js';
  * // Renders: [██████████░░░░░░░░░░] 5/10 (50%)
  */
 export const ProgressBar: React.FC<ProgressBarProps> = ({
-  current,
-  total,
-  width = 20,
-  showPercentage = true,
-  showCount = true,
-  filledChar = '█',
-  emptyChar = '░',
-  filledColor = 'green',
-  emptyColor = 'gray',
+	current,
+	total,
+	width = 20,
+	showPercentage = true,
+	showCount = true,
+	filledChar = "█",
+	emptyChar = "░",
+	filledColor = "green",
+	emptyColor = "gray",
 }) => {
-  // Handle edge cases
-  const safeCurrent = Math.max(0, current);
-  const safeTotal = Math.max(1, total); // Prevent division by zero
-  const clampedCurrent = Math.min(safeCurrent, safeTotal);
+	// Handle edge cases
+	const safeCurrent = Math.max(0, current);
+	const safeTotal = Math.max(1, total); // Prevent division by zero
+	const clampedCurrent = Math.min(safeCurrent, safeTotal);
 
-  const percent = Math.round((clampedCurrent / safeTotal) * 100);
-  const filledWidth = Math.round((percent / 100) * width);
-  const emptyWidth = width - filledWidth;
+	const percent = Math.round((clampedCurrent / safeTotal) * 100);
+	const filledWidth = Math.round((percent / 100) * width);
+	const emptyWidth = width - filledWidth;
 
-  // Determine color based on progress
-  const getFilledColor = (): string => {
-    if (percent === 100) return 'green';
-    if (percent >= 75) return 'cyan';
-    if (percent >= 50) return 'yellow';
-    return filledColor;
-  };
+	// Determine color based on progress
+	const getFilledColor = (): string => {
+		if (percent === 100) return "green";
+		if (percent >= 75) return "cyan";
+		if (percent >= 50) return "yellow";
+		return filledColor;
+	};
 
-  return (
-    <Box>
-      <Text>[</Text>
-      <Text color={getFilledColor()}>{filledChar.repeat(filledWidth)}</Text>
-      <Text color={emptyColor}>{emptyChar.repeat(emptyWidth)}</Text>
-      <Text>]</Text>
-      {showCount && (
-        <Text>
-          {' '}
-          {clampedCurrent}/{safeTotal}
-        </Text>
-      )}
-      {showPercentage && <Text dimColor> ({percent}%)</Text>}
-    </Box>
-  );
+	return (
+		<Box>
+			<Text>[</Text>
+			<Text color={getFilledColor()}>{filledChar.repeat(filledWidth)}</Text>
+			<Text color={emptyColor}>{emptyChar.repeat(emptyWidth)}</Text>
+			<Text>]</Text>
+			{showCount && (
+				<Text>
+					{" "}
+					{clampedCurrent}/{safeTotal}
+				</Text>
+			)}
+			{showPercentage && <Text dimColor> ({percent}%)</Text>}
+		</Box>
+	);
 };
 
 /**
  * Compact progress bar without count/percentage for tight spaces
  */
 export const CompactProgressBar: React.FC<
-  Omit<ProgressBarProps, 'showCount' | 'showPercentage'>
+	Omit<ProgressBarProps, "showCount" | "showPercentage">
 > = (props) => (
-  <ProgressBar {...props} showCount={false} showPercentage={false} />
+	<ProgressBar {...props} showCount={false} showPercentage={false} />
 );
 
 /**
  * Context usage bar with color thresholds
  */
 export const ContextUsageBar: React.FC<{
-  percent: number;
-  width?: number;
+	percent: number;
+	width?: number;
 }> = ({ percent, width = 15 }) => {
-  const getColor = (): string => {
-    if (percent >= 80) return 'red';
-    if (percent >= 60) return 'yellow';
-    return 'green';
-  };
+	const getColor = (): string => {
+		if (percent >= 80) return "red";
+		if (percent >= 60) return "yellow";
+		return "green";
+	};
 
-  return (
-    <Box>
-      <Text color={getColor()}>{percent}%</Text>
-      <Text dimColor> context</Text>
-    </Box>
-  );
+	return (
+		<Box>
+			<Text color={getColor()}>{percent}%</Text>
+			<Text dimColor> context</Text>
+		</Box>
+	);
 };
