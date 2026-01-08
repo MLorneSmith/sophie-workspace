@@ -259,6 +259,29 @@ function getAllEnvVars(): Record<string, string> {
 	if (GITHUB_TOKEN) {
 		envs.GITHUB_TOKEN = GITHUB_TOKEN;
 	}
+
+	// Supabase credentials for dev server and runtime operations
+	// These are injected at runtime to keep secrets out of the template image
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+	const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+	const databaseUrl = process.env.DATABASE_URL;
+
+	if (supabaseUrl) {
+		envs.NEXT_PUBLIC_SUPABASE_URL = supabaseUrl;
+		envs.SUPABASE_URL = supabaseUrl;
+	}
+	if (supabaseAnonKey) {
+		envs.NEXT_PUBLIC_SUPABASE_ANON_KEY = supabaseAnonKey;
+		envs.SUPABASE_ANON_KEY = supabaseAnonKey;
+	}
+	if (supabaseServiceKey) {
+		envs.SUPABASE_SERVICE_ROLE_KEY = supabaseServiceKey;
+	}
+	if (databaseUrl) {
+		envs.DATABASE_URL = databaseUrl;
+	}
+
 	return envs;
 }
 
