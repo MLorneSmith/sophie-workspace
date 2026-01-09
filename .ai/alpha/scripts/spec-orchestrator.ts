@@ -27,7 +27,50 @@
 * tsx spec-orchestrator.ts 1362 --dry-run
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import process from "node:process";
+
+// ============================================================================
+// Load .env file (before any other imports that use env vars)
+// ============================================================================
+
+function loadEnvFile(): void {
+	// Find project root (where .env is located)
+	let currentDir = import.meta.dirname;
+	while (currentDir !== "/") {
+		const envPath = path.join(currentDir, ".env");
+		if (fs.existsSync(envPath)) {
+			const content = fs.readFileSync(envPath, "utf-8");
+			for (const line of content.split("\n")) {
+				const trimmed = line.trim();
+				// Skip comments and empty lines
+				if (!trimmed || trimmed.startsWith("#")) continue;
+				// Parse KEY=VALUE (handle values with = in them)
+				const eqIndex = trimmed.indexOf("=");
+				if (eqIndex > 0) {
+					const key = trimmed.slice(0, eqIndex).trim();
+					let value = trimmed.slice(eqIndex + 1).trim();
+					// Remove surrounding quotes if present
+					if (
+						(value.startsWith('"') && value.endsWith('"')) ||
+						(value.startsWith("'") && value.endsWith("'"))
+					) {
+						value = value.slice(1, -1);
+					}
+					// Only set if not already defined (env vars take precedence)
+					if (process.env[key] === undefined) {
+						process.env[key] = value;
+					}
+				}
+			}
+			return;
+		}
+		currentDir = path.dirname(currentDir);
+	}
+}
+
+loadEnvFile();
 
 import { parseArgs, showHelp } from "./cli/index.js";
 import { orchestrate } from "./lib/index.js";
