@@ -1,18 +1,19 @@
 #!/usr/bin/env tsx
 
 /**
- * Analyze Task Parallelism
- *
- * Analyzes a tasks.json file to determine which tasks within the same
- * execution group can safely run in parallel (no file conflicts).
- *
- * Usage:
- *   tsx analyze-task-parallelism.ts <tasks.json>
- *   tsx analyze-task-parallelism.ts .ai/alpha/specs/.../tasks.json
- *
- * Output:
- *   - Prints analysis summary to console
- *   - Optionally updates tasks.json with parallel_batches (--update flag)
+
+* Analyze Task Parallelism
+*
+* Analyzes a tasks.json file to determine which tasks within the same
+* execution group can safely run in parallel (no file conflicts).
+*
+* Usage:
+* tsx analyze-task-parallelism.ts <tasks.json>
+* tsx analyze-task-parallelism.ts .ai/alpha/specs/.../tasks.json
+*
+* Output:
+* * Prints analysis summary to console
+* * Optionally updates tasks.json with parallel_batches (--update flag)
  */
 
 import * as fs from "node:fs";
@@ -96,7 +97,8 @@ interface TasksJson {
 }
 
 /**
- * Extract all output file paths from a task
+
+* Extract all output file paths from a task
  */
 function getTaskOutputFiles(task: Task): string[] {
 	if (!task.outputs || task.outputs.length === 0) {
@@ -106,7 +108,8 @@ function getTaskOutputFiles(task: Task): string[] {
 }
 
 /**
- * Check if two tasks have overlapping output files
+
+* Check if two tasks have overlapping output files
  */
 function hasFileConflict(taskA: Task, taskB: Task): string | null {
 	const filesA = new Set(getTaskOutputFiles(taskA));
@@ -121,7 +124,8 @@ function hasFileConflict(taskA: Task, taskB: Task): string | null {
 }
 
 /**
- * Build conflict graph for tasks in a group
+
+* Build conflict graph for tasks in a group
  */
 function buildConflictGraph(tasks: Task[]): Map<string, Set<string>> {
 	const conflicts = new Map<string, Set<string>>();
@@ -134,10 +138,13 @@ function buildConflictGraph(tasks: Task[]): Map<string, Set<string>> {
 	// Find all pairwise conflicts
 	for (let i = 0; i < tasks.length; i++) {
 		for (let j = i + 1; j < tasks.length; j++) {
-			const conflict = hasFileConflict(tasks[i], tasks[j]);
+			const taskI = tasks[i];
+			const taskJ = tasks[j];
+			if (!taskI || !taskJ) continue;
+			const conflict = hasFileConflict(taskI, taskJ);
 			if (conflict) {
-				conflicts.get(tasks[i].id)?.add(tasks[j].id);
-				conflicts.get(tasks[j].id)?.add(tasks[i].id);
+				conflicts.get(taskI.id)?.add(taskJ.id);
+				conflicts.get(taskJ.id)?.add(taskI.id);
 			}
 		}
 	}
@@ -146,18 +153,22 @@ function buildConflictGraph(tasks: Task[]): Map<string, Set<string>> {
 }
 
 /**
- * Get all file conflicts as an array
+
+* Get all file conflicts as an array
  */
 function getFileConflicts(tasks: Task[]): FileConflict[] {
 	const conflicts: FileConflict[] = [];
 
 	for (let i = 0; i < tasks.length; i++) {
 		for (let j = i + 1; j < tasks.length; j++) {
-			const conflictingFile = hasFileConflict(tasks[i], tasks[j]);
+			const taskI = tasks[i];
+			const taskJ = tasks[j];
+			if (!taskI || !taskJ) continue;
+			const conflictingFile = hasFileConflict(taskI, taskJ);
 			if (conflictingFile) {
 				conflicts.push({
-					task_a: tasks[i].id,
-					task_b: tasks[j].id,
+					task_a: taskI.id,
+					task_b: taskJ.id,
 					conflicting_file: conflictingFile,
 				});
 			}
@@ -168,15 +179,15 @@ function getFileConflicts(tasks: Task[]): FileConflict[] {
 }
 
 /**
- * Graph coloring algorithm to find parallel batches
- * Tasks with the same color can run in parallel
+
+* Graph coloring algorithm to find parallel batches
+* Tasks with the same color can run in parallel
  */
 function colorGraph(
 	tasks: Task[],
 	conflicts: Map<string, Set<string>>,
 ): Map<string, number> {
 	const colors = new Map<string, number>();
-	const taskMap = new Map(tasks.map((t) => [t.id, t]));
 
 	// Sort tasks by number of conflicts (most constrained first)
 	const sortedIds = [...tasks]
@@ -211,7 +222,8 @@ function colorGraph(
 }
 
 /**
- * Create parallel batches from graph coloring
+
+* Create parallel batches from graph coloring
  */
 function createParallelBatches(
 	tasks: Task[],
@@ -251,7 +263,8 @@ function createParallelBatches(
 }
 
 /**
- * Analyze parallelization for a single execution group
+
+* Analyze parallelization for a single execution group
  */
 export function analyzeGroup(
 	group: ExecutionGroup,
@@ -339,7 +352,8 @@ export function analyzeGroup(
 }
 
 /**
- * Analyze all execution groups in a tasks.json
+
+* Analyze all execution groups in a tasks.json
  */
 export function analyzeTasksJson(tasksJson: TasksJson): TasksJson {
 	const updatedGroups: ExecutionGroup[] = [];
@@ -389,7 +403,8 @@ export function analyzeTasksJson(tasksJson: TasksJson): TasksJson {
 }
 
 /**
- * Print analysis summary
+
+* Print analysis summary
  */
 function printSummary(tasksJson: TasksJson): void {
 	console.log("\n📊 Task Parallelization Analysis");
@@ -438,14 +453,14 @@ function printSummary(tasksJson: TasksJson): void {
 
 	console.log("\n" + "=".repeat(50));
 	console.log("📈 Overall Summary");
-	console.log(`   Total Parallelizable Tasks: ${totalParallelizable}`);
-	console.log(`   Total Sequential Tasks: ${totalSequential}`);
-	console.log(`   File Conflicts Found: ${totalConflicts}`);
+	console.log(`Total Parallelizable Tasks: ${totalParallelizable}`);
+	console.log(`Total Sequential Tasks: ${totalSequential}`);
+	console.log(`File Conflicts Found: ${totalConflicts}`);
 	console.log(
-		`   Duration: ${tasksJson.execution.duration.sequential}h → ${tasksJson.execution.duration.parallel}h`,
+		`Duration: ${tasksJson.execution.duration.sequential}h → ${tasksJson.execution.duration.parallel}h`,
 	);
 	console.log(
-		`   Time Saved: ${tasksJson.execution.duration.time_saved_percent}%`,
+		`Time Saved: ${tasksJson.execution.duration.time_saved_percent}%`,
 	);
 }
 

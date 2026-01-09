@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"types": ["node"]
+	},
+	"include": [
+		"*.ts",
+		"types/**/*.ts",
+		"config/**/*.ts",
+		"lib/**/*.ts",
+		"cli/**/*.ts"
+	],
+	"exclude": ["node_modules", "node_modules.bak", "ui", "*copy*.ts"]
+}
