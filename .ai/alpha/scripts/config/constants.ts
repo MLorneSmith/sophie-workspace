@@ -89,3 +89,6 @@ export const SANDBOX_TIMEOUT_MULTIPLIER = 1000;
 
 /** Stagger delay between sandbox creation (ms) */
 export const SANDBOX_STAGGER_DELAY_MS = 20000;
+
+/** Interval for extending sandbox timeouts (keepalive) - 30 minutes */
+export const SANDBOX_KEEPALIVE_INTERVAL_MS = 30 * 60 * 1000;

@@ -11,6 +11,7 @@ import process from "node:process";
 
 import {
 	HEALTH_CHECK_INTERVAL_MS,
+	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_STAGGER_DELAY_MS,
 	UI_PROGRESS_DIR,
 } from "../config/index.js";
@@ -37,7 +38,13 @@ import {
 	loadManifest,
 	saveManifest,
 } from "./manifest.js";
-import { createSandbox, getVSCodeUrl, startDevServer } from "./sandbox.js";
+import {
+	createSandbox,
+	getVSCodeUrl,
+	isSandboxAlive,
+	keepAliveSandboxes,
+	startDevServer,
+} from "./sandbox.js";
 import { sleep } from "./utils.js";
 import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
 
@@ -223,6 +230,7 @@ export async function runWorkLoop(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
+	timeoutSeconds: number = 7200,
 ): Promise<void> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -246,6 +254,45 @@ export async function runWorkLoop(
 			healthCheckRunning = false;
 		}
 	}, HEALTH_CHECK_INTERVAL_MS);
+
+	// Start periodic sandbox keepalive to prevent timeout expiration
+	let keepaliveRunning = false;
+	const keepaliveInterval = setInterval(async () => {
+		if (keepaliveRunning) return;
+		keepaliveRunning = true;
+
+		try {
+			// Extend each sandbox's timeout by the full timeout duration
+			const timeoutMs = timeoutSeconds * 1000;
+			const failed = await keepAliveSandboxes(instances, timeoutMs, uiEnabled);
+
+			// Mark failed sandboxes
+			for (const label of failed) {
+				const instance = instances.find((i) => i.label === label);
+				if (instance && instance.status !== "failed") {
+					log(`   ⚠️ Sandbox ${label} expired, marking as failed`);
+					instance.status = "failed";
+
+					// Reset any in-progress feature assigned to this sandbox
+					const feature = manifest.feature_queue.find(
+						(f) => f.assigned_sandbox === label && f.status === "in_progress",
+					);
+					if (feature) {
+						feature.status = "pending";
+						feature.assigned_sandbox = undefined;
+						feature.error = "Sandbox expired";
+						saveManifest(manifest);
+					}
+				}
+			}
+		} catch (error) {
+			log(
+				`   ⚠️ Keepalive error: ${error instanceof Error ? error.message : error}`,
+			);
+		} finally {
+			keepaliveRunning = false;
+		}
+	}, SANDBOX_KEEPALIVE_INTERVAL_MS);
 
 	try {
 		while (true) {
@@ -311,6 +358,7 @@ export async function runWorkLoop(
 		}
 	} finally {
 		clearInterval(healthCheckInterval);
+		clearInterval(keepaliveInterval);
 	}
 }
 
@@ -571,7 +619,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	saveManifest(manifest);
 
 	// Main work loop
-	await runWorkLoop(instances, manifest, options.ui);
+	await runWorkLoop(instances, manifest, options.ui, options.timeout);
 
 	// Push final changes
 	const pushInstance = instances[0];

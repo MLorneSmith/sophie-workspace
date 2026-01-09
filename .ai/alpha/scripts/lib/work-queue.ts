@@ -49,6 +49,17 @@ export function getNextAvailableFeature(
 	);
 
 	for (const feature of manifest.feature_queue) {
+		// Handle inconsistent state: in_progress with error
+		// This happens when a feature fails (signal: terminated) but manifest wasn't fully updated
+		if (feature.status === "in_progress" && feature.error) {
+			// Reset to failed so it can be retried
+			console.log(
+				`🔧 Fixing inconsistent state: #${feature.id} was in_progress with error "${feature.error}", resetting to failed`,
+			);
+			feature.status = "failed";
+			feature.assigned_sandbox = undefined;
+		}
+
 		// Skip if completed or currently in_progress (with active sandbox)
 		// Allow pending AND failed features (failed features are retried)
 		if (feature.status !== "pending" && feature.status !== "failed") {

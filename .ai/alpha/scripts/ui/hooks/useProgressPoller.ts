@@ -661,15 +661,22 @@ export function useProgressPoller(
 			}
 
 			// Use overall progress from file for manifest-level data (features, initiatives),
-			// but aggregate tasksCompleted from live sandbox data for real-time updates
+			// but add live in-progress tasks from active sandboxes for real-time updates
 			let newProgress: OverallProgress;
 			if (overallProgressFile) {
-				// Aggregate tasks from live sandbox progress files
-				// The manifest only updates tasks on feature completion, so we need
-				// to sum from sandbox files for real-time task progress
-				let aggregatedTasksCompleted = 0;
+				// The manifest's tasksCompleted includes all tasks from COMPLETED features.
+				// For real-time progress, we need to add tasks from IN-PROGRESS features
+				// that sandboxes are currently working on.
+				const baseTasksCompleted = overallProgressFile.tasksCompleted;
+
+				// Sum tasks from in-progress features (sandboxes actively working)
+				let inProgressTasks = 0;
 				for (const sandbox of newSandboxes.values()) {
-					aggregatedTasksCompleted += sandbox.tasksCompleted;
+					// Only count if sandbox is busy (actively working on a feature)
+					// SandboxStatus is: "ready" | "busy" | "completed" | "failed"
+					if (sandbox.status === "busy") {
+						inProgressTasks += sandbox.tasksCompleted;
+					}
 				}
 
 				newProgress = {
@@ -680,8 +687,8 @@ export function useProgressPoller(
 					initiativesTotal: overallProgressFile.initiativesTotal,
 					featuresCompleted: overallProgressFile.featuresCompleted,
 					featuresTotal: overallProgressFile.featuresTotal,
-					// Use aggregated live count, not stale manifest value
-					tasksCompleted: aggregatedTasksCompleted,
+					// Base (completed features) + in-progress tasks from active sandboxes
+					tasksCompleted: baseTasksCompleted + inProgressTasks,
 					tasksTotal: overallProgressFile.tasksTotal,
 				};
 			} else {

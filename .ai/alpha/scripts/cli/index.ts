@@ -24,7 +24,7 @@ export function parseArgs(): OrchestratorOptions {
 	const options: OrchestratorOptions = {
 		specId: 0,
 		sandboxCount: 3,
-		timeout: 3600,
+		timeout: 3600, // 1 hour (E2B maximum)
 		dryRun: false,
 		forceUnlock: false,
 		skipDbReset: false,
@@ -42,7 +42,8 @@ export function parseArgs(): OrchestratorOptions {
 			options.sandboxCount = Math.min(parseInt(nextArg, 10), 3);
 			i++;
 		} else if (arg === "--timeout" && nextArg) {
-			options.timeout = parseInt(nextArg, 10);
+			// E2B enforces 1 hour (3600s) maximum
+			options.timeout = Math.min(parseInt(nextArg, 10), 3600);
 			i++;
 		} else if (arg === "--dry-run") {
 			options.dryRun = true;
@@ -88,7 +89,7 @@ Usage:
 
 Options:
   --sandboxes <n>, -s   Number of sandboxes (default: 3, max: 3)
-  --timeout <s>         Sandbox timeout in seconds (default: 3600)
+  --timeout <s>         Sandbox timeout in seconds (default: 3600, max: 3600)
   --dry-run             Show execution plan without running
   --force-unlock        Force release any existing orchestrator lock
   --skip-db-reset       Skip sandbox database reset at startup

@@ -265,3 +265,73 @@ export function getVSCodeUrl(sandbox: Sandbox): string {
 	const vscodeHost = sandbox.getHost(VSCODE_PORT);
 	return `https://${vscodeHost}`;
 }
+
+// ============================================================================
+// Sandbox Keepalive & Health
+// ============================================================================
+
+/**
+ * Extend sandbox timeout to prevent expiration.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param timeoutMs - New timeout in milliseconds
+ * @returns true if successful, false if sandbox is dead
+ */
+export async function extendSandboxTimeout(
+	sandbox: Sandbox,
+	timeoutMs: number,
+): Promise<boolean> {
+	try {
+		await sandbox.setTimeout(timeoutMs);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Check if a sandbox is still running.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @returns true if running, false if dead/expired
+ */
+export async function isSandboxAlive(sandbox: Sandbox): Promise<boolean> {
+	try {
+		// Try to run a simple command to check if sandbox is responsive
+		const result = await sandbox.commands.run("echo alive", {
+			timeoutMs: 5000,
+		});
+		return result.exitCode === 0;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Extend timeouts for all sandboxes (keepalive).
+ *
+ * @param instances - Array of sandbox instances
+ * @param timeoutMs - New timeout in milliseconds
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Array of sandbox labels that failed (expired)
+ */
+export async function keepAliveSandboxes(
+	instances: SandboxInstance[],
+	timeoutMs: number,
+	uiEnabled: boolean = false,
+): Promise<string[]> {
+	const { log } = createLogger(uiEnabled);
+	const failed: string[] = [];
+
+	for (const instance of instances) {
+		if (instance.status === "failed") continue;
+
+		const alive = await extendSandboxTimeout(instance.sandbox, timeoutMs);
+		if (!alive) {
+			log(`   ⚠️ Sandbox ${instance.label} failed to extend timeout (expired?)`);
+			failed.push(instance.label);
+		}
+	}
+
+	return failed;
+}
