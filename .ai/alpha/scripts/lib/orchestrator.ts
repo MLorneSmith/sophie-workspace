@@ -45,17 +45,23 @@ import {
 	keepAliveSandboxes,
 	startDevServer,
 } from "./sandbox.js";
+import { writeIdleProgress } from "./progress.js";
 import { sleep } from "./utils.js";
-import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
+import {
+	cleanupStaleState,
+	getBlockedFeatures,
+	getNextAvailableFeature,
+} from "./work-queue.js";
 
 // ============================================================================
 // Logging Helper
 // ============================================================================
 
 /**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
+
+* Create a conditional logger that only outputs when UI is disabled.
+* When UI is enabled, all console output is suppressed to avoid interfering
+* with the Ink-based dashboard.
  */
 function createLogger(uiEnabled: boolean) {
 	return {
@@ -245,7 +251,41 @@ export async function runWorkLoop(
 		healthCheckRunning = true;
 
 		try {
-			await runHealthChecks(instances, manifest);
+			const needsRestart = await runHealthChecks(instances, manifest);
+
+			// Attempt to restart sandboxes that failed health checks
+			for (const instance of needsRestart) {
+				if (instance.status === "failed") {
+					log(
+						`   🔄 Attempting to restart failed sandbox ${instance.label}...`,
+					);
+					try {
+						const newInstance = await createSandbox(
+							manifest,
+							instance.label,
+							timeoutSeconds,
+							uiEnabled,
+						);
+
+						// Replace the old sandbox with the new one
+						instance.sandbox = newInstance.sandbox;
+						instance.id = newInstance.id;
+						instance.status = "ready";
+						instance.currentFeature = null;
+						instance.retryCount = 0;
+						instance.featureStartedAt = undefined;
+						instance.lastProgressSeen = undefined;
+						instance.lastHeartbeat = undefined;
+
+						saveManifest(manifest);
+						log(`   ✅ Sandbox ${instance.label} restarted successfully`);
+					} catch (restartError) {
+						log(
+							`   ❌ Failed to restart sandbox ${instance.label}: ${restartError instanceof Error ? restartError.message : restartError}`,
+						);
+					}
+				}
+			}
 		} catch (error) {
 			log(
 				`   ⚠️ Health check error: ${error instanceof Error ? error.message : error}`,
@@ -266,12 +306,11 @@ export async function runWorkLoop(
 			const timeoutMs = timeoutSeconds * 1000;
 			const failed = await keepAliveSandboxes(instances, timeoutMs, uiEnabled);
 
-			// Mark failed sandboxes
+			// Handle failed sandboxes - attempt restart
 			for (const label of failed) {
 				const instance = instances.find((i) => i.label === label);
 				if (instance && instance.status !== "failed") {
-					log(`   ⚠️ Sandbox ${label} expired, marking as failed`);
-					instance.status = "failed";
+					log(`   ⚠️ Sandbox ${label} expired, attempting restart...`);
 
 					// Reset any in-progress feature assigned to this sandbox
 					const feature = manifest.feature_queue.find(
@@ -280,8 +319,47 @@ export async function runWorkLoop(
 					if (feature) {
 						feature.status = "pending";
 						feature.assigned_sandbox = undefined;
-						feature.error = "Sandbox expired";
+						feature.error = "Sandbox expired - restarting";
 						saveManifest(manifest);
+					}
+
+					// Attempt to restart the sandbox
+					try {
+						log(`   🔄 Restarting sandbox ${label}...`);
+						const newInstance = await createSandbox(
+							manifest,
+							label,
+							timeoutSeconds,
+							uiEnabled,
+						);
+
+						// Replace the old sandbox with the new one
+						instance.sandbox = newInstance.sandbox;
+						instance.id = newInstance.id;
+						instance.status = "ready";
+						instance.currentFeature = null;
+						instance.retryCount = 0;
+						instance.featureStartedAt = undefined;
+						instance.lastProgressSeen = undefined;
+						instance.lastHeartbeat = undefined;
+
+						// Update manifest with new sandbox ID
+						const sandboxIndex = manifest.sandbox.sandbox_ids.indexOf(
+							instance.id,
+						);
+						if (sandboxIndex === -1) {
+							manifest.sandbox.sandbox_ids.push(newInstance.id);
+						}
+						saveManifest(manifest);
+
+						log(
+							`   ✅ Sandbox ${label} restarted successfully (${newInstance.id})`,
+						);
+					} catch (restartError) {
+						log(
+							`   ❌ Failed to restart sandbox ${label}: ${restartError instanceof Error ? restartError.message : restartError}`,
+						);
+						instance.status = "failed";
 					}
 				}
 			}
@@ -320,6 +398,23 @@ export async function runWorkLoop(
 
 				const feature = getNextAvailableFeature(manifest);
 				if (!feature) {
+					// No work available - write idle status for this sandbox
+					if (uiEnabled) {
+						const blockedFeatures = getBlockedFeatures(manifest);
+						const blockedIds = blockedFeatures
+							.slice(0, 3)
+							.map((bf) => bf.feature.id);
+						const waitingReason =
+							blockedFeatures.length > 0
+								? `Waiting for dependencies (${blockedFeatures.length} features blocked)`
+								: "No available features";
+						writeIdleProgress(
+							instance.label,
+							instance,
+							waitingReason,
+							blockedIds,
+						);
+					}
 					continue;
 				}
 

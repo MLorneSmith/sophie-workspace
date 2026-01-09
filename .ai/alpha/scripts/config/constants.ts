@@ -51,6 +51,12 @@ export const MAX_RESET_AGE_MS = 10 * 60 * 1000;
 /** Directory for UI progress files (relative to project root) */
 export const UI_PROGRESS_DIR = ".ai/alpha/progress";
 
+/** Directory for sandbox output logs (relative to project root) */
+export const LOGS_DIR = ".ai/alpha/logs";
+
+/** Number of recent output lines to include in UI progress */
+export const RECENT_OUTPUT_LINES = 20;
+
 // ============================================================================
 // Health Check Configuration
 // ============================================================================

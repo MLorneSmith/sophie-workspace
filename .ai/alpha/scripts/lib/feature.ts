@@ -6,11 +6,15 @@
 * Manages progress polling, git operations, and result tracking.
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import process from "node:process";
 
 import {
 	FEATURE_TIMEOUT_MS,
+	LOGS_DIR,
 	PROGRESS_FILE,
+	RECENT_OUTPUT_LINES,
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type {
@@ -20,8 +24,14 @@ import type {
 	SpecManifest,
 } from "../types/index.js";
 import { getAllEnvVars } from "./environment.js";
+import { killClaudeProcess } from "./health.js";
+import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
-import { checkForStall, startProgressPolling } from "./progress.js";
+import {
+	checkForStall,
+	type OutputTracker,
+	startProgressPolling,
+} from "./progress.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
 // ============================================================================
@@ -29,7 +39,8 @@ import { updateNextFeatureId } from "./work-queue.js";
 // ============================================================================
 
 /**
- * Create a conditional logger that only outputs when UI is disabled.
+
+* Create a conditional logger that only outputs when UI is disabled.
  */
 function createLogger(uiEnabled: boolean) {
 	return {
@@ -37,6 +48,38 @@ function createLogger(uiEnabled: boolean) {
 			if (!uiEnabled) console.log(...args);
 		},
 	};
+}
+
+// ============================================================================
+// Log File Management
+// ============================================================================
+
+/**
+
+* Ensure the logs directory exists and return the path.
+ */
+function ensureLogsDir(): string {
+	const logsDir = path.join(getProjectRoot(), LOGS_DIR);
+	if (!fs.existsSync(logsDir)) {
+		fs.mkdirSync(logsDir, { recursive: true });
+	}
+	return logsDir;
+}
+
+/**
+
+* Create a write stream for sandbox output logs.
+* Returns the stream and file path.
+ */
+function createLogStream(sandboxLabel: string): {
+	stream: fs.WriteStream;
+	filePath: string;
+} {
+	const logsDir = ensureLogsDir();
+	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const filePath = path.join(logsDir, `${sandboxLabel}-${timestamp}.log`);
+	const stream = fs.createWriteStream(filePath, { flags: "a" });
+	return { stream, filePath };
 }
 
 // ============================================================================
@@ -117,11 +160,21 @@ export async function runFeatureImplementation(
 
 	let capturedStdout = "";
 	let capturedStderr = "";
+	const recentOutput: string[] = []; // Track last N lines for UI
+
+	// Create log file for this feature run
+	const { stream: logStream, filePath: logFilePath } = createLogStream(
+		instance.label,
+	);
+	log(`│   Log file: ${logFilePath}`);
 
 	// Track when this session started
 	const sessionStartTime = new Date();
 
-	// Start progress polling
+	// Create output tracker for sharing between callback and polling
+	const outputTracker: OutputTracker = { recentOutput };
+
+	// Start progress polling with output tracker for UI
 	const progressPoller = startProgressPolling(
 		instance.sandbox,
 		feature.task_count,
@@ -130,16 +183,25 @@ export async function runFeatureImplementation(
 		uiEnabled,
 		instance,
 		feature,
+		outputTracker,
 	);
 
-	// Start stall detection interval
+	// Start stall detection interval with ACTIONABLE recovery
 	let stallDetected = false;
-	const stallCheckInterval = setInterval(() => {
+	let stallRecoveryInProgress = false;
+	const stallCheckInterval = setInterval(async () => {
+		if (stallRecoveryInProgress) return;
+
 		const lastProgress = progressPoller.getLastProgress();
 		const stallCheck = checkForStall(lastProgress, sessionStartTime);
 		if (stallCheck.stalled && !stallDetected) {
 			stallDetected = true;
+			stallRecoveryInProgress = true;
 			log(`│   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
+			log("│   🔪 Killing Claude process for recovery...");
+
+			// Kill the Claude process to trigger early exit
+			await killClaudeProcess(instance);
 		}
 	}, 60000);
 
@@ -151,9 +213,24 @@ export async function runFeatureImplementation(
 				envs: getAllEnvVars(),
 				onStdout: (data) => {
 					capturedStdout += data;
+
+					// Always write to log file (persisted on orchestrator machine)
+					logStream.write(data);
+
+					// Track recent output lines for UI
+					const lines = data.split("\n");
+					for (const line of lines) {
+						if (line.trim()) {
+							recentOutput.push(line);
+							// Keep only last N lines
+							if (recentOutput.length > RECENT_OUTPUT_LINES) {
+								recentOutput.shift();
+							}
+						}
+					}
+
 					// Only output to console when UI is disabled
 					if (!uiEnabled) {
-						const lines = data.split("\n");
 						for (const line of lines) {
 							if (line.trim()) {
 								process.stdout.write(`│   ${line}\n`);
@@ -163,6 +240,8 @@ export async function runFeatureImplementation(
 				},
 				onStderr: (data) => {
 					capturedStderr += data;
+					// Also write stderr to log file
+					logStream.write(`[STDERR] ${data}`);
 				},
 			},
 		);
@@ -170,6 +249,9 @@ export async function runFeatureImplementation(
 		// Stop polling and stall detection
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
+
+		// Close the log stream
+		logStream.end();
 
 		// Get last progress from poller as a fallback
 		const lastPolledProgress = progressPoller.getLastProgress();
@@ -280,22 +362,34 @@ export async function runFeatureImplementation(
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
 
+		// Close the log stream
+		logStream.end();
+
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
+		// Check if this was a stall-triggered kill
+		const wasStallRecovery = stallDetected;
+		const finalError = wasStallRecovery
+			? `Stall detected and recovered: ${errorMessage}`
+			: errorMessage;
+
 		feature.status = "failed";
-		feature.error = errorMessage;
+		feature.error = finalError;
 		feature.assigned_sandbox = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 
-		log(`   └── ❌ Error: ${errorMessage}`);
+		log(`   └── ❌ Error: ${finalError}`);
+		if (wasStallRecovery) {
+			log("   │   Feature will be retried by another sandbox");
+		}
 
 		return {
 			success: false,
 			tasksCompleted: 0,
-			error: errorMessage,
+			error: finalError,
 		};
 	}
 }

@@ -12,7 +12,8 @@ import type {
 import { HEARTBEAT_STALL_THRESHOLD_MS, POLL_INTERVAL_MS } from "../types.js";
 
 /**
- * Deep equality check for SandboxState to prevent unnecessary re-renders
+
+* Deep equality check for SandboxState to prevent unnecessary re-renders
  */
 function sandboxStateEqual(a: SandboxState, b: SandboxState): boolean {
 	if (a.status !== b.status) return false;
@@ -68,7 +69,8 @@ function sandboxStateEqual(a: SandboxState, b: SandboxState): boolean {
 }
 
 /**
- * Check if sandbox maps have changed meaningfully
+
+* Check if sandbox maps have changed meaningfully
  */
 function sandboxMapsEqual(
 	a: Map<string, SandboxState>,
@@ -85,7 +87,8 @@ function sandboxMapsEqual(
 }
 
 /**
- * Check if overall progress has changed
+
+* Check if overall progress has changed
  */
 function progressEqual(a: OverallProgress, b: OverallProgress): boolean {
 	return (
@@ -134,7 +137,8 @@ interface ProgressFileResult {
 }
 
 /**
- * Review URL from overall progress file
+
+* Review URL from overall progress file
  */
 interface ReviewUrlFile {
 	label: string;
@@ -280,7 +284,10 @@ function progressToSandboxState(
 
 	// Determine status from progress data
 	let status: SandboxState["status"] = "busy";
-	if (progress.status === "completed") {
+	if (progress.status === "idle") {
+		// Explicitly idle - waiting for work
+		status = "ready";
+	} else if (progress.status === "completed") {
 		status = "completed";
 	} else if (progress.status === "failed") {
 		status = "failed";
@@ -345,6 +352,8 @@ function progressToSandboxState(
 		retryCount: previousState?.retryCount ?? 0,
 		error: undefined,
 		lastCommit: progress.last_commit,
+		waitingReason: progress.waiting_reason,
+		blockedBy: progress.blocked_by,
 	};
 }
 
@@ -523,6 +532,39 @@ function generateEvents(
 				sandboxLabel: label,
 				message: `Feature completed on ${label}`,
 				details: { featureId: sandbox.currentFeature?.id },
+			});
+		}
+
+		// Sandbox became idle (had feature, now doesn't, and not completed)
+		if (
+			prevSandbox.currentFeature &&
+			!sandbox.currentFeature &&
+			sandbox.status === "ready" &&
+			sandbox.waitingReason
+		) {
+			events.push({
+				id: `sandbox-idle-${label}-${now.getTime()}`,
+				timestamp: now,
+				type: "sandbox_idle",
+				sandboxLabel: label,
+				message: `Idle: ${sandbox.waitingReason}`,
+				details: { blockedBy: sandbox.blockedBy },
+			});
+		}
+
+		// Sandbox unblocked (was idle with waiting reason, now has feature)
+		if (
+			!prevSandbox.currentFeature &&
+			prevSandbox.waitingReason &&
+			sandbox.currentFeature
+		) {
+			events.push({
+				id: `sandbox-unblocked-${label}-${now.getTime()}`,
+				timestamp: now,
+				type: "sandbox_unblocked",
+				sandboxLabel: label,
+				message: `Unblocked: starting #${sandbox.currentFeature.id}`,
+				details: { featureId: sandbox.currentFeature.id },
 			});
 		}
 

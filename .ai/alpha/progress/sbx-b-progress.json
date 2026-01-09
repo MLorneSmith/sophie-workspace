@@ -1,0 +1,12 @@
+{
+	"sandbox_id": "i5bqr3lgt5gdzxxldukcr",
+	"feature": {
+		"issue_number": 1372,
+		"title": "Assessment Spider Card"
+	},
+	"status": "running",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-09T21:10:24.871593Z",
+	"last_tool": "Bash",
+	"session_id": "i5bqr3lgt5gdzxxldukcr"
+}

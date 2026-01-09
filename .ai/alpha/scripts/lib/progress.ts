@@ -132,18 +132,28 @@ export function displayProgressUpdate(
 
 /**
 
+* Output tracker interface for sharing recent output between callback and polling.
+ */
+export interface OutputTracker {
+	recentOutput: string[];
+}
+
+/**
+
 * Write sandbox progress to local file for UI consumption.
 *
 * @param sandboxLabel - Label of the sandbox
 * @param progress - Progress data from sandbox
 * @param instance - Sandbox instance
 * @param feature - Feature being implemented
+* @param outputTracker - Optional output tracker with recent stdout lines
  */
 export function writeUIProgress(
 	sandboxLabel: string,
 	progress: SandboxProgress | null,
 	instance: SandboxInstance,
 	feature: FeatureEntry | null,
+	outputTracker?: OutputTracker,
 ): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, `${sandboxLabel}-progress.json`);
@@ -172,10 +182,56 @@ export function writeUIProgress(
 		last_tool: progress?.last_tool,
 		last_commit: progress?.last_commit,
 		session_id: instance.id,
+		// Include recent output for UI visibility
+		recent_output: outputTracker?.recentOutput?.slice(-20) || [],
 	};
 
 	try {
 		fs.writeFileSync(filePath, JSON.stringify(uiProgress, null, "\t"));
+	} catch {
+		// Ignore write errors
+	}
+}
+
+/**
+
+* Write idle/waiting status to UI progress file.
+* Called when sandbox has no work assigned (waiting for dependencies).
+*
+* @param sandboxLabel - Label of the sandbox
+* @param instance - Sandbox instance
+* @param waitingReason - Human-readable reason for waiting
+* @param blockedBy - Feature IDs that are blocking
+ */
+export function writeIdleProgress(
+	sandboxLabel: string,
+	instance: SandboxInstance,
+	waitingReason?: string,
+	blockedBy?: number[],
+): void {
+	const progressDir = ensureUIProgressDir();
+	const filePath = path.join(progressDir, `${sandboxLabel}-progress.json`);
+
+	const idleProgress = {
+		sandbox_id: instance.id,
+		feature: undefined,
+		current_task: undefined,
+		current_group: undefined,
+		completed_tasks: [],
+		failed_tasks: [],
+		context_usage_percent: 0,
+		status: "idle",
+		phase: "waiting",
+		last_heartbeat: new Date().toISOString(),
+		last_tool: undefined,
+		last_commit: undefined,
+		session_id: instance.id,
+		waiting_reason: waitingReason,
+		blocked_by: blockedBy,
+	};
+
+	try {
+		fs.writeFileSync(filePath, JSON.stringify(idleProgress, null, "\t"));
 	} catch {
 		// Ignore write errors
 	}
@@ -222,6 +278,7 @@ export interface ProgressPoller {
 * @param uiEnabled - Whether to write progress to UI files
 * @param instance - Sandbox instance (needed for UI progress)
 * @param feature - Feature being implemented (needed for UI progress)
+* @param outputTracker - Optional output tracker for recent stdout lines
 * @returns Object with stop function and getLastProgress function
  */
 export function startProgressPolling(
@@ -232,6 +289,7 @@ export function startProgressPolling(
 	uiEnabled: boolean = false,
 	instance?: SandboxInstance,
 	feature?: FeatureEntry,
+	outputTracker?: OutputTracker,
 ): ProgressPoller {
 	let lastDisplayed = "";
 	let isPolling = true;
@@ -259,9 +317,15 @@ export function startProgressPolling(
 
 					lastProgress = progress;
 
-					// Write progress to UI files if enabled
+					// Write progress to UI files if enabled (includes recent output)
 					if (uiEnabled && instance) {
-						writeUIProgress(sandboxLabel, progress, instance, feature ?? null);
+						writeUIProgress(
+							sandboxLabel,
+							progress,
+							instance,
+							feature ?? null,
+							outputTracker,
+						);
 					}
 
 					// Only display console updates if UI is not enabled

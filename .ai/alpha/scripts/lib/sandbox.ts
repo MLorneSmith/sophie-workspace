@@ -23,7 +23,8 @@ import { E2B_API_KEY, GITHUB_TOKEN, getAllEnvVars } from "./environment.js";
 // ============================================================================
 
 /**
- * Create a conditional logger that only outputs when UI is disabled.
+
+* Create a conditional logger that only outputs when UI is disabled.
  */
 function createLogger(uiEnabled: boolean) {
 	return {
@@ -271,11 +272,12 @@ export function getVSCodeUrl(sandbox: Sandbox): string {
 // ============================================================================
 
 /**
- * Extend sandbox timeout to prevent expiration.
- *
- * @param sandbox - The E2B sandbox instance
- * @param timeoutMs - New timeout in milliseconds
- * @returns true if successful, false if sandbox is dead
+
+* Extend sandbox timeout to prevent expiration.
+*
+* @param sandbox - The E2B sandbox instance
+* @param timeoutMs - New timeout in milliseconds
+* @returns true if successful, false if sandbox is dead
  */
 export async function extendSandboxTimeout(
 	sandbox: Sandbox,
@@ -290,10 +292,11 @@ export async function extendSandboxTimeout(
 }
 
 /**
- * Check if a sandbox is still running.
- *
- * @param sandbox - The E2B sandbox instance
- * @returns true if running, false if dead/expired
+
+* Check if a sandbox is still running.
+*
+* @param sandbox - The E2B sandbox instance
+* @returns true if running, false if dead/expired
  */
 export async function isSandboxAlive(sandbox: Sandbox): Promise<boolean> {
 	try {
@@ -308,12 +311,13 @@ export async function isSandboxAlive(sandbox: Sandbox): Promise<boolean> {
 }
 
 /**
- * Extend timeouts for all sandboxes (keepalive).
- *
- * @param instances - Array of sandbox instances
- * @param timeoutMs - New timeout in milliseconds
- * @param uiEnabled - Whether UI mode is enabled
- * @returns Array of sandbox labels that failed (expired)
+
+* Extend timeouts for all sandboxes (keepalive).
+*
+* @param instances - Array of sandbox instances
+* @param timeoutMs - New timeout in milliseconds
+* @param uiEnabled - Whether UI mode is enabled
+* @returns Array of sandbox labels that failed (expired)
  */
 export async function keepAliveSandboxes(
 	instances: SandboxInstance[],

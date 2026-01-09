@@ -1,0 +1,23 @@
+{
+	"sandbox_id": "iiztr67tjio6ncboqpli9",
+	"feature": {
+		"issue_number": 1371,
+		"title": "Course Progress Card"
+	},
+	"current_task": null,
+	"current_group": null,
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5"
+	],
+	"failed_tasks": [],
+	"status": "completed",
+	"phase": "completed",
+	"last_heartbeat": "2026-01-09T21:00:38.782028Z",
+	"last_tool": "Bash",
+	"last_commit": "d6ac84c",
+	"session_id": "iiztr67tjio6ncboqpli9"
+}

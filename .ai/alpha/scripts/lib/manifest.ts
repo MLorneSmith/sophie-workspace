@@ -112,7 +112,8 @@ export function ensureUIProgressDir(): string {
 }
 
 /**
- * Review URL for UI display
+
+* Review URL for UI display
  */
 export interface ReviewUrlForUI {
 	label: string;

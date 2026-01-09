@@ -44,8 +44,12 @@ export function computeHealthStatus(state: SandboxState): HealthStatus {
 	if (state.status === "completed") return "completed";
 	if (state.status === "failed") return "failed";
 
-	// If no feature assigned, it's idle
-	if (!state.currentFeature) return "idle";
+	// If no feature assigned and explicitly waiting, it's idle (not warning)
+	if (!state.currentFeature) {
+		// If we have a waiting reason, this is expected idle - not a warning
+		if (state.waitingReason) return "idle";
+		return "idle";
+	}
 
 	// Check heartbeat
 	if (!state.lastHeartbeat) return "warning";
@@ -201,12 +205,24 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 					/>
 				</Box>
 			) : (
-				<Box marginTop={1}>
+				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>
 						{state.status === "completed"
 							? "All work complete"
 							: "Waiting for work..."}
 					</Text>
+					{/* Show waiting reason if available */}
+					{state.waitingReason && (
+						<Text dimColor italic>
+							{truncate(state.waitingReason, 28)}
+						</Text>
+					)}
+					{/* Show blocked by features */}
+					{state.blockedBy && state.blockedBy.length > 0 && (
+						<Text dimColor>
+							Blocked: {state.blockedBy.map((id) => `#${id}`).join(", ")}
+						</Text>
+					)}
 				</Box>
 			)}
 
@@ -249,13 +265,18 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 				</Box>
 			)}
 
-			{/* Heartbeat */}
+			{/* Heartbeat - dim for idle sandboxes since stale is expected */}
 			{heartbeatAge !== null && (
 				<Box>
 					<Text dimColor>💓 </Text>
-					<Text color={getHeartbeatColor(heartbeatAge)}>
-						{formatHeartbeatAge(heartbeatAge)}
-					</Text>
+					{/* Don't show stale warning colors for idle sandboxes */}
+					{!state.currentFeature && state.waitingReason ? (
+						<Text dimColor>{formatHeartbeatAge(heartbeatAge)}</Text>
+					) : (
+						<Text color={getHeartbeatColor(heartbeatAge)}>
+							{formatHeartbeatAge(heartbeatAge)}
+						</Text>
+					)}
 				</Box>
 			)}
 

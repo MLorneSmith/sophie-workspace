@@ -24,6 +24,8 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	stall_detected: "🔴",
 	sandbox_restart: "🔄",
 	context_limit: "📊",
+	sandbox_idle: "⏸️",
+	sandbox_unblocked: "🔓",
 };
 
 /**
@@ -43,6 +45,8 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	stall_detected: "red",
 	sandbox_restart: "yellow",
 	context_limit: "yellow",
+	sandbox_idle: "gray",
+	sandbox_unblocked: "green",
 };
 
 /**

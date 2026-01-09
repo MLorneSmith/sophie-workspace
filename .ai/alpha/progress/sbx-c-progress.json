@@ -1,0 +1,31 @@
+{
+	"sandbox_id": "idjs7vuzpvainr1z4349t",
+	"feature": {
+		"issue_number": 1368,
+		"title": "Presentation Outline Table"
+	},
+	"current_task": null,
+	"current_group": null,
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5",
+		"T6",
+		"T7",
+		"T8",
+		"T9",
+		"T10",
+		"T11",
+		"T12"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 50,
+	"status": "completed",
+	"phase": "completed",
+	"last_heartbeat": "2026-01-09T20:56:19.299156Z",
+	"last_tool": "Bash",
+	"last_commit": "45c94c06dee8da8ed129ed38880fff71dc273900",
+	"session_id": "idjs7vuzpvainr1z4349t"
+}

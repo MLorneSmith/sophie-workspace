@@ -133,6 +133,10 @@ export interface SandboxState {
 	error?: string;
 	/** Last git commit hash */
 	lastCommit?: string;
+	/** Reason why sandbox is waiting for work */
+	waitingReason?: string;
+	/** Feature IDs blocking this sandbox from getting work */
+	blockedBy?: number[];
 }
 
 // =============================================================================
@@ -140,14 +144,15 @@ export interface SandboxState {
 // =============================================================================
 
 /**
- * Review URL for accessing sandbox after completion
+
+* Review URL for accessing sandbox after completion
  */
 export interface ReviewUrl {
-	/** Sandbox label (e.g., "sbx-a") */
+	/**Sandbox label (e.g., "sbx-a") */
 	label: string;
 	/** VS Code server URL */
 	vscode: string;
-	/** Dev server URL */
+	/**Dev server URL*/
 	devServer: string;
 }
 
@@ -176,7 +181,7 @@ export interface OverallProgress {
 	status: "pending" | "in_progress" | "completed" | "partial" | "failed";
 	/** Git branch name for the spec */
 	branchName?: string;
-	/** Review URLs for accessing completed sandboxes */
+	/** Review URLs for accessing completed sandboxes*/
 	reviewUrls?: ReviewUrl[];
 }
 
@@ -201,7 +206,9 @@ export type OrchestratorEventType =
 	| "health_warning"
 	| "stall_detected"
 	| "sandbox_restart"
-	| "context_limit";
+	| "context_limit"
+	| "sandbox_idle"
+	| "sandbox_unblocked";
 
 /**
 
@@ -307,6 +314,10 @@ export interface SandboxProgressFile {
 	last_commit?: string;
 	/** Session ID (from Claude Code) */
 	session_id?: string;
+	/** Reason why sandbox is waiting (when idle) */
+	waiting_reason?: string;
+	/** Feature IDs blocking this sandbox from getting work */
+	blocked_by?: number[];
 	/**Subagent completion count */
 	subagent_count?: number;
 	/** Last subagent stop timestamp */

@@ -70,6 +70,7 @@ export {
 	checkForStall,
 	displayProgressUpdate,
 	startProgressPolling,
+	writeIdleProgress,
 	writeUIProgress,
 } from "./progress.js";
 
