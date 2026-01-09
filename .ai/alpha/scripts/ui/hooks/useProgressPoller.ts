@@ -483,21 +483,20 @@ function generateEvents(
 			});
 		}
 
-		// Task completed
-		if (
-			prevSandbox.currentTask &&
-			sandbox.currentTask &&
-			prevSandbox.currentTask.id === sandbox.currentTask.id &&
-			prevSandbox.currentTask.status === "in_progress" &&
-			sandbox.currentTask.status === "completed"
-		) {
+		// Task completed - detect by tasksCompleted count increasing
+		// When a task completes, it moves from currentTask to completed_tasks array,
+		// so we can't rely on currentTask.status changing to "completed"
+		if (sandbox.tasksCompleted > prevSandbox.tasksCompleted) {
+			// A task was completed - use the previous currentTask if available
+			const completedTaskId = prevSandbox.currentTask?.id ?? "unknown";
+			const completedTaskName = prevSandbox.currentTask?.name ?? "Task";
 			events.push({
-				id: `task-done-${sandbox.currentTask.id}-${now.getTime()}`,
+				id: `task-done-${completedTaskId}-${now.getTime()}`,
 				timestamp: now,
 				type: "task_complete",
 				sandboxLabel: label,
-				message: `Task ${sandbox.currentTask.id} completed`,
-				details: { taskId: sandbox.currentTask.id },
+				message: `${completedTaskName} completed`,
+				details: { taskId: completedTaskId },
 			});
 		}
 
