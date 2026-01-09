@@ -78,7 +78,12 @@ fi
 
 echo "Running Claude Code with prompt: $1"
 # --setting-sources user,project enables custom slash commands from .claude/commands/
-echo "$1" | claude -p --setting-sources user,project --dangerously-skip-permissions
+# Use script -qfc to force PTY allocation, which triggers line-buffered output
+# This ensures stdout streams in real-time instead of buffering until process exit
+# (stdbuf doesn't work on Node.js processes like Claude CLI because Node uses libuv, not libc)
+# Escape single quotes in prompt for safe embedding in single-quoted string
+SAFE_PROMPT=\$(printf '%s' "\$1" | sed "s/'/'\\\\''/g")
+script -qfc "echo '\${SAFE_PROMPT}' | claude -p --setting-sources user,project --dangerously-skip-permissions" /dev/null
 `;
 
 const RUN_TESTS_SCRIPT = `#!/bin/bash
