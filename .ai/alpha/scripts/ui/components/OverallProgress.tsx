@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import type React from "react";
+import React from "react";
 import type { OverallProgressProps } from "../types.js";
 import { ProgressBar } from "./ProgressBar.js";
 

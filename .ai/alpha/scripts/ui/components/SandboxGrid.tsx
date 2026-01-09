@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import type React from "react";
+import React from "react";
 import type { SandboxGridProps, SandboxState } from "../types.js";
 import { CompactSandboxColumn, SandboxColumn } from "./SandboxColumn.js";
 
