@@ -46,6 +46,9 @@ e2b-sandbox.zip
 # Sandbox session logs
 .ai/logs/sandbox-logs/
 
+# Sandbox progress tracking files (written by Claude Code hooks)
+.initiative-progress.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

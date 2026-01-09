@@ -5,23 +5,26 @@
 		"title": "Quick Actions Panel"
 	},
 	"current_group": {
-		"id": 1,
-		"name": "Core Components",
+		"id": 2,
+		"name": "Integration",
 		"batch": {
 			"batch_id": 1,
 			"task_ids": [
-				"T1",
-				"T2",
-				"T3"
+				"T4",
+				"T5"
 			],
 			"status": "launching"
 		}
 	},
-	"completed_tasks": [],
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3"
+	],
 	"failed_tasks": [],
 	"status": "in_progress",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-09T16:01:03.404176Z",
-	"last_tool": "Bash",
+	"last_heartbeat": "2026-01-09T16:05:49.317014Z",
+	"last_tool": "Read",
 	"session_id": "ifbhji473c2y7o96c9sb0"
 }
