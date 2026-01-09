@@ -716,15 +716,20 @@ export function useProgressPoller(
 				!prevState || !progressEqual(newProgress, prevState.overallProgress);
 			const hasNewEvents = newEvents.length > 0;
 
+			// Only update state when something meaningful changed to prevent flickering
 			if (sandboxesChanged || progressChanged || hasNewEvents) {
 				setState(newState);
+				setLastPollTime(new Date());
 				onStateChange?.(newState);
 			}
 
-			// Always update refs and timestamp
+			// Always update ref for next comparison
 			previousStateRef.current = newState;
-			setLastPollTime(new Date());
-			setError(null);
+
+			// Only clear error if it was previously set
+			if (error !== null) {
+				setError(null);
+			}
 		} catch (err) {
 			const pollError = err instanceof Error ? err : new Error(String(err));
 			setError(pollError);

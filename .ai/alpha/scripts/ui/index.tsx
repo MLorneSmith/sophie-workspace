@@ -1,5 +1,5 @@
 import { render } from "ink";
-import type React from "react";
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	CompletionUI,
