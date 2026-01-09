@@ -1,0 +1,28 @@
+{
+	"sandbox_id": "imyhot2uw1crmo2xbwawf",
+	"feature": {
+		"issue_number": 1370,
+		"title": "Empty State System"
+	},
+	"current_task": null,
+	"current_group": {
+		"id": 3,
+		"name": "Integration & Testing",
+		"tasks_total": 2,
+		"tasks_completed": 2
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 35,
+	"status": "completed",
+	"phase": "committing",
+	"last_heartbeat": "2026-01-09T16:38:42.099363Z",
+	"last_tool": "Read",
+	"session_id": "imyhot2uw1crmo2xbwawf"
+}

@@ -521,9 +521,9 @@ export interface UIHandle {
 
 /**
 
-* Polling interval for progress checks (ms)
+* Polling interval for progress checks (ms) - reduced from 15s to 5s for more responsive updates
  */
-export const POLL_INTERVAL_MS = 15000;
+export const POLL_INTERVAL_MS = 5000;
 
 /**
 

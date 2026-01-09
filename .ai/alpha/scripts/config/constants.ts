@@ -22,8 +22,8 @@ export const PROGRESS_FILE = ".initiative-progress.json";
 // Progress Polling & Stall Detection
 // ============================================================================
 
-/** Interval for polling progress file from sandbox (ms) */
-export const PROGRESS_POLL_INTERVAL_MS = 15000;
+/** Interval for polling progress file from sandbox (ms) - reduced from 15s to 5s for more responsive updates */
+export const PROGRESS_POLL_INTERVAL_MS = 5000;
 
 /** Time without heartbeat before marking as stalled (ms) */
 export const STALL_TIMEOUT_MS = 5* 60 * 1000;

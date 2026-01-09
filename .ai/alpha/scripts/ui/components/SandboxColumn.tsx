@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
 import Spinner from "ink-spinner";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type {
 	HealthStatus,
 	SandboxColumnProps,
@@ -107,6 +107,45 @@ function formatHeartbeatAge(ageSeconds: number): string {
 }
 
 /**
+ * Custom hook for real-time heartbeat age tracking.
+ * Updates every second independent of the polling cycle.
+ *
+ * @param lastHeartbeat - The last heartbeat timestamp from sandbox state
+ * @returns Current heartbeat age in seconds, updated every second
+ */
+function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
+	const [heartbeatAge, setHeartbeatAge] = useState<number | null>(() =>
+		lastHeartbeat
+			? Math.round((Date.now() - lastHeartbeat.getTime()) / 1000)
+			: null,
+	);
+
+	useEffect(() => {
+		// Update immediately when lastHeartbeat changes
+		if (lastHeartbeat) {
+			setHeartbeatAge(
+				Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
+			);
+		} else {
+			setHeartbeatAge(null);
+		}
+
+		// Set up interval to tick every second
+		const ticker = setInterval(() => {
+			if (lastHeartbeat) {
+				setHeartbeatAge(
+					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
+				);
+			}
+		}, 1000);
+
+		return () => clearInterval(ticker);
+	}, [lastHeartbeat]);
+
+	return heartbeatAge;
+}
+
+/**
  * SandboxColumn component - displays all metrics for a single sandbox
  *
  * Shows:
@@ -115,14 +154,13 @@ function formatHeartbeatAge(ageSeconds: number): string {
  * - Current task with spinner (when in progress)
  * - Phase indicator
  * - Context usage percentage
- * - Heartbeat age with color coding
+ * - Heartbeat age with color coding (real-time ticking)
  * - Error message if any
  */
 export const SandboxColumn: React.FC<SandboxColumnProps> = ({ state }) => {
 	const healthStatus = computeHealthStatus(state);
-	const heartbeatAge = state.lastHeartbeat
-		? Math.round((Date.now() - state.lastHeartbeat.getTime()) / 1000)
-		: null;
+	// Use real-time heartbeat ticker that updates every second
+	const heartbeatAge = useRealtimeHeartbeat(state.lastHeartbeat);
 
 	return (
 		<Box

@@ -1,0 +1,12 @@
+{
+	"sandbox_id": "itr9qg2erpetjd4tai4mb",
+	"feature": {
+		"issue_number": 1378,
+		"title": "Dashboard Coaching Card"
+	},
+	"status": "running",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-09T16:38:56.602912Z",
+	"last_tool": "Bash",
+	"session_id": "itr9qg2erpetjd4tai4mb"
+}

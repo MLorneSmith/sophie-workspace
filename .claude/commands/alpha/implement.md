@@ -3,6 +3,25 @@ description: Implement all tasks for a feature from Alpha workflow. Reads tasks.
 argument-hint: <feature-id> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
+hooks:
+  PostToolUse:
+    - matcher: "TodoWrite"
+      hooks:
+        - type: command
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/task_progress.py || true"
+          timeout: 3
+  SubagentStop:
+    - matcher: ""
+      hooks:
+        - type: command
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_complete.py || true"
+          timeout: 3
+  Stop:
+    - matcher: ""
+      hooks:
+        - type: command
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/feature_complete.py || true"
+          timeout: 5
 ---
 
 # Alpha Feature Implementation
