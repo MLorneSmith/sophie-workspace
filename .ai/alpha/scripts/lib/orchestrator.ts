@@ -41,7 +41,6 @@ import {
 import {
 	createSandbox,
 	getVSCodeUrl,
-	isSandboxAlive,
 	keepAliveSandboxes,
 	startDevServer,
 } from "./sandbox.js";
@@ -297,11 +296,15 @@ export async function runWorkLoop(
 	try {
 		while (true) {
 			// Check if we're done
-			const pendingFeatures = manifest.feature_queue.filter(
-				(f) => f.status === "pending" || f.status === "in_progress",
+			// Include "failed" features since they should be retried
+			const workableFeatures = manifest.feature_queue.filter(
+				(f) =>
+					f.status === "pending" ||
+					f.status === "in_progress" ||
+					f.status === "failed",
 			);
 
-			if (pendingFeatures.length === 0) {
+			if (workableFeatures.length === 0) {
 				if (activeWork.size > 0) {
 					await Promise.all(activeWork.values());
 				}
@@ -336,7 +339,9 @@ export async function runWorkLoop(
 			// If no work is active and no features available, we might be stuck
 			if (activeWork.size === 0) {
 				const blockedFeatures = manifest.feature_queue.filter(
-					(f) => f.status === "pending" && f.dependencies.length > 0,
+					(f) =>
+						(f.status === "pending" || f.status === "failed") &&
+						f.dependencies.length > 0,
 				);
 
 				if (blockedFeatures.length > 0) {
