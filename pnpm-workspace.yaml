@@ -4,6 +4,8 @@ packages:
   - '!packages/mcp-server'
   - tooling/*
   - .claude/scripts
+  - .ai/alpha/scripts
+  - .ai/alpha/scripts/ui
   - scripts
 
 catalog:

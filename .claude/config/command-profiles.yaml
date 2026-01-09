@@ -726,6 +726,78 @@ profiles:
         - "infrastructure/vercel-deployment.md"
 
 # ============================================================================
+  # /refactor - Analyze code for refactoring opportunities
+  # ============================================================================
+  refactor:
+    description: "Analyze code for refactoring opportunities and create detailed plans"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Server Actions Refactoring
+      - keywords: ["server action", "enhanceAction", "mutation", "action", "server-actions"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # Component Refactoring
+      - keywords: ["component", "react", "hook", "useState", "useEffect", "client component"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Database/Schema Refactoring
+      - keywords: ["database", "schema", "query", "RLS", "migration", "zod"]
+        files:
+          - "development/database-patterns.md"
+        priority: high
+
+      # Service Layer Refactoring
+      - keywords: ["service", "business logic", "extract", "layer", "service layer"]
+        files:
+          - "development/server-actions.md"
+          - "development/architecture-overview.md"
+        priority: high
+
+      # Data Fetching Refactoring
+      - keywords: ["loader", "data fetching", "react query", "tanstack", "parallel"]
+        files:
+          - "development/react-query-patterns.md"
+          - "development/react-query-advanced.md"
+        priority: medium
+
+      # Test Refactoring
+      - keywords: ["test", "coverage", "mock", "vitest", "testing"]
+        files:
+          - "testing+quality/fundamentals.md"
+        priority: medium
+
+      # Type System Refactoring
+      - keywords: ["type", "interface", "generic", "any", "unknown", "typescript"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Package/Monorepo Refactoring
+      - keywords: ["package", "monorepo", "import", "barrel", "export"]
+        files:
+          - "development/architecture-overview.md"
+          - "development/makerkit-integration.md"
+        priority: low
+
+    categories:
+      server_side:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
+      client_side:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      testing:
+        - "testing+quality/fundamentals.md"
+
+# ============================================================================
 # Routing Configuration
 # ============================================================================
 routing:
