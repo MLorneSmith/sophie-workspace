@@ -661,10 +661,18 @@ export function useProgressPoller(
 				newSandboxes.set(result.label, sandboxState);
 			}
 
-			// Use overall progress from file if available (authoritative from manifest),
-			// otherwise fall back to computing from sandbox states
+			// Use overall progress from file for manifest-level data (features, initiatives),
+			// but aggregate tasksCompleted from live sandbox data for real-time updates
 			let newProgress: OverallProgress;
 			if (overallProgressFile) {
+				// Aggregate tasks from live sandbox progress files
+				// The manifest only updates tasks on feature completion, so we need
+				// to sum from sandbox files for real-time task progress
+				let aggregatedTasksCompleted = 0;
+				for (const sandbox of newSandboxes.values()) {
+					aggregatedTasksCompleted += sandbox.tasksCompleted;
+				}
+
 				newProgress = {
 					specId: overallProgressFile.specId,
 					specName: overallProgressFile.specName,
@@ -673,7 +681,8 @@ export function useProgressPoller(
 					initiativesTotal: overallProgressFile.initiativesTotal,
 					featuresCompleted: overallProgressFile.featuresCompleted,
 					featuresTotal: overallProgressFile.featuresTotal,
-					tasksCompleted: overallProgressFile.tasksCompleted,
+					// Use aggregated live count, not stale manifest value
+					tasksCompleted: aggregatedTasksCompleted,
 					tasksTotal: overallProgressFile.tasksTotal,
 				};
 			} else {
@@ -744,6 +753,7 @@ export function useProgressPoller(
 		state.sessionStartTime,
 		onStateChange,
 		onError,
+		error,
 	]);
 
 	/**
