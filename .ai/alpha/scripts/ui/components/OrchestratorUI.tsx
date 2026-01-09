@@ -1,5 +1,5 @@
 import { Box, Text, useApp, useInput } from "ink";
-import type React from "react";
+import type { FC } from "react";
 import type { OrchestratorUIProps } from "../types.js";
 import { EventLog } from "./EventLog.js";
 import { Header } from "./Header.js";
@@ -19,7 +19,7 @@ import { SandboxGrid } from "./SandboxGrid.js";
  * Handles keyboard input for:
  * - 'q' or Ctrl+C: Exit the UI
  */
-export const OrchestratorUI: React.FC<OrchestratorUIProps> = ({ state }) => {
+export const OrchestratorUI: FC<OrchestratorUIProps> = ({ state }) => {
 	const { exit } = useApp();
 
 	// Handle keyboard input
@@ -60,9 +60,7 @@ export const OrchestratorUI: React.FC<OrchestratorUIProps> = ({ state }) => {
 /**
  * Minimal UI showing just essential info
  */
-export const MinimalOrchestratorUI: React.FC<OrchestratorUIProps> = ({
-	state,
-}) => {
+export const MinimalOrchestratorUI: FC<OrchestratorUIProps> = ({ state }) => {
 	const { exit } = useApp();
 
 	useInput((input, key) => {
@@ -91,7 +89,7 @@ export const MinimalOrchestratorUI: React.FC<OrchestratorUIProps> = ({
 /**
  * Loading screen while initializing
  */
-export const LoadingUI: React.FC<{ message?: string }> = ({
+export const LoadingUI: FC<{ message?: string }> = ({
 	message = "Initializing...",
 }) => {
 	return (
@@ -109,7 +107,7 @@ export const LoadingUI: React.FC<{ message?: string }> = ({
 /**
  * Error screen for fatal errors
  */
-export const ErrorUI: React.FC<{
+export const ErrorUI: FC<{
 	error: string;
 	details?: string;
 }> = ({ error, details }) => {
@@ -149,7 +147,7 @@ export const ErrorUI: React.FC<{
 /**
  * Completion screen when all work is done
  */
-export const CompletionUI: React.FC<{
+export const CompletionUI: FC<{
 	specId: number;
 	featuresCompleted: number;
 	tasksCompleted: number;

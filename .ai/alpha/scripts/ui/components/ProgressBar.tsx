@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import React from "react";
+import type { FC } from "react";
 import type { ProgressBarProps } from "../types.js";
 
 /**
@@ -9,7 +9,7 @@ import type { ProgressBarProps } from "../types.js";
  * <ProgressBar current={5} total={10} width={20} />
  * // Renders: [██████████░░░░░░░░░░] 5/10 (50%)
  */
-export const ProgressBar: React.FC<ProgressBarProps> = ({
+export const ProgressBar: FC<ProgressBarProps> = ({
 	current,
 	total,
 	width = 20,
@@ -57,7 +57,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 /**
  * Compact progress bar without count/percentage for tight spaces
  */
-export const CompactProgressBar: React.FC<
+export const CompactProgressBar: FC<
 	Omit<ProgressBarProps, "showCount" | "showPercentage">
 > = (props) => (
 	<ProgressBar {...props} showCount={false} showPercentage={false} />
@@ -66,7 +66,7 @@ export const CompactProgressBar: React.FC<
 /**
  * Context usage bar with color thresholds
  */
-export const ContextUsageBar: React.FC<{
+export const ContextUsageBar: FC<{
 	percent: number;
 	width?: number;
 }> = ({ percent }) => {
