@@ -11,6 +11,7 @@ import process from "node:process";
 
 import {
 	HEALTH_CHECK_INTERVAL_MS,
+	LOGS_DIR,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_STAGGER_DELAY_MS,
 	UI_PROGRESS_DIR,
@@ -418,6 +419,12 @@ export async function runWorkLoop(
 					continue;
 				}
 
+				// CRITICAL: Mark feature as assigned BEFORE starting async work
+				// This prevents race condition where multiple sandboxes get the same feature
+				feature.status = "in_progress";
+				feature.assigned_sandbox = instance.label;
+				saveManifest(manifest);
+
 				// Start work on this sandbox
 				const workPromise = (async () => {
 					await runFeatureImplementation(
@@ -517,12 +524,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		try {
 			const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+			const logsDir = path.join(getProjectRoot(), LOGS_DIR);
 			const { startOrchestratorUI } = await import("../ui/index.js");
 			uiManager = startOrchestratorUI(
 				{
 					specId: manifest.metadata.spec_id,
 					specName: manifest.metadata.spec_name,
 					progressDir,
+					logsDir,
 					sandboxLabels,
 					pollInterval: HEALTH_CHECK_INTERVAL_MS,
 					minimal: options.minimalUi,

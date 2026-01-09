@@ -280,11 +280,15 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 				</Box>
 			)}
 
-			{/* Last Tool (from hooks) */}
-			{state.lastTool && (
-				<Box>
-					<Text dimColor>Tool: </Text>
-					<Text>{state.lastTool}</Text>
+			{/* Recent Output Lines (from log file) */}
+			{state.recentOutput && state.recentOutput.length > 0 && (
+				<Box flexDirection="column" marginTop={1}>
+					<Text dimColor>Output:</Text>
+					{state.recentOutput.map((line, idx) => (
+						<Text key={idx} dimColor>
+							{truncate(line, 28)}
+						</Text>
+					))}
 				</Box>
 			)}
 

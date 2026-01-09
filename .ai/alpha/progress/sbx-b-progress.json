@@ -1,12 +1,26 @@
 {
-	"sandbox_id": "i5bqr3lgt5gdzxxldukcr",
+	"sandbox_id": "iuq8suoshuczuqtrp10h8",
 	"feature": {
 		"issue_number": 1372,
 		"title": "Assessment Spider Card"
 	},
-	"status": "running",
-	"phase": "executing",
-	"last_heartbeat": "2026-01-09T21:10:24.871593Z",
+	"current_task": null,
+	"current_group": {
+		"id": 1,
+		"name": "Data Layer",
+		"tasks_total": 1,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 5,
+	"status": "in_progress",
+	"phase": "loading_context",
+	"last_heartbeat": "2026-01-09T22:39:04.140009Z",
 	"last_tool": "Bash",
-	"session_id": "i5bqr3lgt5gdzxxldukcr"
+	"session_id": "iuq8suoshuczuqtrp10h8",
+	"recent_output": [
+		"Using OAuth authentication (Max plan)",
+		"Running Claude Code with prompt: /alpha:implement 1372"
+	]
 }

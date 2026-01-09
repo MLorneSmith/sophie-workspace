@@ -108,15 +108,19 @@ export async function runFeatureImplementation(
 	log(`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`);
 	log(`│   Tasks: ${feature.task_count}`);
 
-	// Mark feature as in_progress
-	feature.status = "in_progress";
-	feature.assigned_sandbox = instance.label;
+	// Mark feature as in_progress (may already be set by orchestrator to prevent race condition)
+	if (feature.status !== "in_progress" || feature.assigned_sandbox !== instance.label) {
+		feature.status = "in_progress";
+		feature.assigned_sandbox = instance.label;
+		saveManifest(manifest);
+	}
+
+	// Update instance state
 	instance.currentFeature = feature.id;
 	instance.status = "busy";
 	instance.featureStartedAt = new Date();
 	instance.lastProgressSeen = undefined;
 	instance.lastHeartbeat = undefined;
-	saveManifest(manifest);
 
 	// CRITICAL: Pull latest code before starting feature
 	const branchName = manifest.sandbox.branch_name;

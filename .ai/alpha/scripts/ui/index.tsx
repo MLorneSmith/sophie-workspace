@@ -1,5 +1,5 @@
 import { render } from "ink";
-import type * as React from "react";
+import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	CompletionUI,
@@ -27,6 +27,8 @@ export interface UIManagerConfig {
 	specName: string;
 	/** Directory containing sandbox progress files */
 	progressDir: string;
+	/** Directory containing sandbox log files */
+	logsDir: string;
 	/** Sandbox labels to monitor (default: ['sbx-a', 'sbx-b', 'sbx-c']) */
 	sandboxLabels?: string[];
 	/** Polling interval in ms (default: 15000) */
@@ -52,6 +54,7 @@ const OrchestratorApp: React.FC<{
 		specId,
 		specName,
 		progressDir,
+		logsDir,
 		sandboxLabels = ["sbx-a", "sbx-b", "sbx-c"],
 		pollInterval,
 		minimal = false,
@@ -67,6 +70,7 @@ const OrchestratorApp: React.FC<{
 		specId,
 		specName,
 		progressDir,
+		logsDir,
 		sandboxLabels,
 		pollInterval,
 		onStateChange: (state) => {

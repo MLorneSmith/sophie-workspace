@@ -137,6 +137,8 @@ export interface SandboxState {
 	waitingReason?: string;
 	/** Feature IDs blocking this sandbox from getting work */
 	blockedBy?: number[];
+	/** Recent output lines from sandbox log (last 3 lines) */
+	recentOutput?: string[];
 }
 
 // =============================================================================

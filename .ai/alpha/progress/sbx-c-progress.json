@@ -1,31 +1,37 @@
 {
-	"sandbox_id": "idjs7vuzpvainr1z4349t",
+	"sandbox_id": "ir1626w5spljgh30xh3ly",
 	"feature": {
-		"issue_number": 1368,
-		"title": "Presentation Outline Table"
+		"issue_number": 1372,
+		"title": "Assessment Spider Card"
 	},
-	"current_task": null,
-	"current_group": null,
+	"current_task": {
+		"id": "T6",
+		"name": "Add E2E test for dashboard assessment card",
+		"status": "starting",
+		"started_at": "2026-01-09T22:37:04+00:00"
+	},
+	"current_group": {
+		"id": 4,
+		"name": "Testing Layer",
+		"tasks_total": 3,
+		"tasks_completed": 2
+	},
 	"completed_tasks": [
 		"T1",
 		"T2",
 		"T3",
 		"T4",
-		"T5",
-		"T6",
-		"T7",
-		"T8",
-		"T9",
-		"T10",
-		"T11",
-		"T12"
+		"T5"
 	],
 	"failed_tasks": [],
-	"context_usage_percent": 50,
-	"status": "completed",
-	"phase": "completed",
-	"last_heartbeat": "2026-01-09T20:56:19.299156Z",
+	"context_usage_percent": 35,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-09T22:40:02.575330Z",
 	"last_tool": "Bash",
-	"last_commit": "45c94c06dee8da8ed129ed38880fff71dc273900",
-	"session_id": "idjs7vuzpvainr1z4349t"
+	"session_id": "ir1626w5spljgh30xh3ly",
+	"recent_output": [
+		"Using OAuth authentication (Max plan)",
+		"Running Claude Code with prompt: /alpha:implement 1372"
+	]
 }

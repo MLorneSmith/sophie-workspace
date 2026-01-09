@@ -1,23 +1,16 @@
 {
-	"sandbox_id": "iiztr67tjio6ncboqpli9",
+	"sandbox_id": "i85jj5vcphsettcfjzkuz",
 	"feature": {
-		"issue_number": 1371,
-		"title": "Course Progress Card"
+		"issue_number": 1372,
+		"title": "Assessment Spider Card"
 	},
-	"current_task": null,
-	"current_group": null,
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5"
-	],
-	"failed_tasks": [],
-	"status": "completed",
-	"phase": "completed",
-	"last_heartbeat": "2026-01-09T21:00:38.782028Z",
-	"last_tool": "Bash",
-	"last_commit": "d6ac84c",
-	"session_id": "iiztr67tjio6ncboqpli9"
+	"status": "running",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-09T22:39:41.659884Z",
+	"last_tool": "Write",
+	"session_id": "i85jj5vcphsettcfjzkuz",
+	"recent_output": [
+		"Using OAuth authentication (Max plan)",
+		"Running Claude Code with prompt: /alpha:implement 1372"
+	]
 }

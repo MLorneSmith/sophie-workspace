@@ -65,6 +65,14 @@ function sandboxStateEqual(a: SandboxState, b: SandboxState): boolean {
 	const bHb = b.lastHeartbeat?.getTime() ?? 0;
 	if (Math.abs(aHb - bHb) > 1000) return false;
 
+	// Compare recent output
+	const aOutput = a.recentOutput ?? [];
+	const bOutput = b.recentOutput ?? [];
+	if (aOutput.length !== bOutput.length) return false;
+	for (let i = 0; i < aOutput.length; i++) {
+		if (aOutput[i] !== bOutput[i]) return false;
+	}
+
 	return true;
 }
 
@@ -116,6 +124,8 @@ export interface ProgressPollerConfig {
 	specName: string;
 	/**Directory containing sandbox progress files */
 	progressDir: string;
+	/** Directory containing sandbox log files */
+	logsDir: string;
 	/** Sandbox labels to monitor */
 	sandboxLabels: string[];
 	/**Polling interval in ms (default: 15000) */
@@ -177,6 +187,11 @@ export interface ProgressReader {
 	readOverallProgress: (
 		progressDir: string,
 	) => Promise<OverallProgressFile | null>;
+	readRecentLogs: (
+		label: string,
+		logsDir: string,
+		lineCount?: number,
+	) => Promise<string[]>;
 }
 
 /**
@@ -219,6 +234,43 @@ export const createFsProgressReader = (): ProgressReader => {
 				return null;
 			}
 		},
+		readRecentLogs: async (
+			label: string,
+			logsDir: string,
+			lineCount = 3,
+		): Promise<string[]> => {
+			try {
+				const fs = await import("node:fs/promises");
+				const path = await import("node:path");
+
+				// List all log files for this sandbox
+				const files = await fs.readdir(logsDir);
+				const logFiles = files
+					.filter((f) => f.startsWith(`${label}-`) && f.endsWith(".log"))
+					.sort()
+					.reverse(); // Most recent first (timestamp in filename)
+
+				const latestFile = logFiles[0];
+				if (!latestFile) {
+					return [];
+				}
+
+				// Read the most recent log file
+				const latestLog = path.join(logsDir, latestFile);
+				const content = await fs.readFile(latestLog, "utf-8");
+
+				// Get last N non-empty lines
+				const lines = content
+					.split("\n")
+					.filter((line) => line.trim().length > 0)
+					.slice(-lineCount);
+
+				return lines;
+			} catch {
+				// Log file may not exist yet
+				return [];
+			}
+		},
 	};
 };
 
@@ -254,6 +306,7 @@ function progressToSandboxState(
 	sandboxId: string,
 	progress: SandboxProgressFile | null,
 	previousState: SandboxState | undefined,
+	recentOutput?: string[],
 ): SandboxState {
 	if (!progress) {
 		// No progress file yet - sandbox may be initializing
@@ -273,6 +326,7 @@ function progressToSandboxState(
 			toolCount: 0,
 			retryCount: 0,
 			error: undefined,
+			recentOutput,
 		};
 	}
 
@@ -354,6 +408,7 @@ function progressToSandboxState(
 		lastCommit: progress.last_commit,
 		waitingReason: progress.waiting_reason,
 		blockedBy: progress.blocked_by,
+		recentOutput,
 	};
 }
 
@@ -643,6 +698,7 @@ export function useProgressPoller(
 		specId,
 		specName,
 		progressDir,
+		logsDir,
 		sandboxLabels,
 		pollInterval = POLL_INTERVAL_MS,
 		onStateChange,
@@ -682,7 +738,7 @@ export function useProgressPoller(
 	 */
 	const pollNow = useCallback(async () => {
 		try {
-			// Read all progress files and overall progress in parallel
+			// Read all progress files, logs, and overall progress in parallel
 			const [overallProgressFile, ...results] = await Promise.all([
 				reader.readOverallProgress(progressDir),
 				...sandboxLabels.map((label) =>
@@ -690,10 +746,20 @@ export function useProgressPoller(
 				),
 			]);
 
+			// Read logs for each sandbox in parallel
+			const logsResults = await Promise.all(
+				sandboxLabels.map((label) => reader.readRecentLogs(label, logsDir, 3)),
+			);
+
 			// Build new sandbox states
 			const newSandboxes = new Map<string, SandboxState>();
 
-			for (const result of results) {
+			for (let i = 0; i < results.length; i++) {
+				const result = results[i];
+				if (!result) continue;
+
+				const recentOutput = logsResults[i] ?? [];
+
 				// Get or generate sandbox ID
 				let sandboxId = sandboxIdsRef.current.get(result.label);
 				if (!sandboxId) {
@@ -711,6 +777,7 @@ export function useProgressPoller(
 					sandboxId,
 					result.data,
 					previousSandbox,
+					recentOutput,
 				);
 
 				newSandboxes.set(result.label, sandboxState);
@@ -811,6 +878,7 @@ export function useProgressPoller(
 	}, [
 		sandboxLabels,
 		progressDir,
+		logsDir,
 		reader,
 		specId,
 		specName,
