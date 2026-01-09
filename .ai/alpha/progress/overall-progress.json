@@ -2,11 +2,11 @@
 	"specId": 1362,
 	"specName": "user dashboard home",
 	"status": "in_progress",
-	"initiativesCompleted": 1,
+	"initiativesCompleted": 0,
 	"initiativesTotal": 4,
-	"featuresCompleted": 8,
+	"featuresCompleted": 3,
 	"featuresTotal": 13,
-	"tasksCompleted": 69,
+	"tasksCompleted": 34,
 	"tasksTotal": 110,
-	"lastCheckpoint": "2026-01-08T22:08:59.447Z"
+	"lastCheckpoint": "2026-01-09T16:00:17.663Z"
 }

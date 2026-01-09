@@ -73,7 +73,7 @@
 			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint; fi'"
 		],
 		"*.{js,jsx,ts,tsx,json,css}": [
-			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
+			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]] && [[ \"$0\" != */.ai/alpha/progress/* ]] && [[ \"$0\" != */.initiative-progress.json ]] && [[ \"$0\" != */spec-manifest.json ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
 		],
 		"**/*.{md,mdx}": [
 			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
