@@ -1,4 +1,4 @@
-import { Box, Static, Text } from "ink";
+import { Box, Text } from "ink";
 import React, { useMemo } from "react";
 import type {
 	EventLogProps,
@@ -114,24 +114,11 @@ const EventLogImpl: React.FC<EventLogProps> = ({
 	events,
 	maxEvents = MAX_DISPLAY_EVENTS,
 }) => {
-	// Split events into static (older) and dynamic (most recent)
-	// Static events are rendered once and never re-rendered by ink
-	const recentEvents = events.slice(-maxEvents);
-
-	// Use useMemo to stabilize the static events array reference
-	const { staticEvents, dynamicEvent } = useMemo(() => {
-		if (recentEvents.length <= 1) {
-			return {
-				staticEvents: [] as OrchestratorEvent[],
-				dynamicEvent: recentEvents[0] ?? null,
-			};
-		}
-		// All but the last event go to Static
-		return {
-			staticEvents: recentEvents.slice(0, -1),
-			dynamicEvent: recentEvents[recentEvents.length - 1] ?? null,
-		};
-	}, [recentEvents]);
+	// Get the most recent events to display
+	const recentEvents = useMemo(
+		() => events.slice(-maxEvents),
+		[events, maxEvents],
+	);
 
 	return (
 		<Box
@@ -145,17 +132,11 @@ const EventLogImpl: React.FC<EventLogProps> = ({
 			{recentEvents.length === 0 ? (
 				<Text dimColor>No events yet...</Text>
 			) : (
-				<>
-					{/* Static events - rendered once, never re-rendered */}
-					<Static items={staticEvents}>
-						{(event) => <EventRow key={event.id} event={event} />}
-					</Static>
-
-					{/* Dynamic event - the most recent one that may still update */}
-					{dynamicEvent && (
-						<EventRow key={dynamicEvent.id} event={dynamicEvent} />
-					)}
-				</>
+				<Box flexDirection="column">
+					{recentEvents.map((event) => (
+						<EventRow key={event.id} event={event} />
+					))}
+				</Box>
 			)}
 
 			{events.length > maxEvents && (
