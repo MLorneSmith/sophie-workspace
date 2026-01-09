@@ -107,11 +107,11 @@ function formatHeartbeatAge(ageSeconds: number): string {
 }
 
 /**
- * Custom hook for real-time heartbeat age tracking.
- * Updates every second independent of the polling cycle.
+ * Custom hook for heartbeat age tracking.
+ * Updates every 5 seconds to balance real-time feel with performance.
  *
  * @param lastHeartbeat - The last heartbeat timestamp from sandbox state
- * @returns Current heartbeat age in seconds, updated every second
+ * @returns Current heartbeat age in seconds, updated periodically
  */
 function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 	const [heartbeatAge, setHeartbeatAge] = useState<number | null>(() =>
@@ -130,14 +130,15 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 			setHeartbeatAge(null);
 		}
 
-		// Set up interval to tick every second
+		// Update every 5 seconds instead of 1 second to reduce flicker
+		// Heartbeat age display doesn't require second-level precision
 		const ticker = setInterval(() => {
 			if (lastHeartbeat) {
 				setHeartbeatAge(
 					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
 				);
 			}
-		}, 1000);
+		}, 5000);
 
 		return () => clearInterval(ticker);
 	}, [lastHeartbeat]);
@@ -156,8 +157,10 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
  * - Context usage percentage
  * - Heartbeat age with color coding (real-time ticking)
  * - Error message if any
+ *
+ * Memoized to prevent re-renders when other sandboxes change
  */
-export const SandboxColumn: React.FC<SandboxColumnProps> = ({ state }) => {
+const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 	const healthStatus = computeHealthStatus(state);
 	// Use real-time heartbeat ticker that updates every second
 	const heartbeatAge = useRealtimeHeartbeat(state.lastHeartbeat);
@@ -273,6 +276,8 @@ export const SandboxColumn: React.FC<SandboxColumnProps> = ({ state }) => {
 		</Box>
 	);
 };
+
+export const SandboxColumn = React.memo(SandboxColumnImpl);
 
 /**
  * Compact sandbox column for narrow terminals

@@ -10,10 +10,10 @@ import { ProgressBar } from "./ProgressBar.js";
  * - Initiatives (magenta)
  * - Features (cyan)
  * - Tasks (green)
+ *
+ * Memoized to prevent re-renders when unrelated state changes
  */
-export const OverallProgress: React.FC<OverallProgressProps> = ({
-	progress,
-}) => {
+const OverallProgressImpl: React.FC<OverallProgressProps> = ({ progress }) => {
 	// Calculate overall percentage
 	const overallPercent =
 		progress.tasksTotal > 0
@@ -81,6 +81,8 @@ export const OverallProgress: React.FC<OverallProgressProps> = ({
 		</Box>
 	);
 };
+
+export const OverallProgress = React.memo(OverallProgressImpl);
 
 /**
  * Compact overall progress for tight spaces

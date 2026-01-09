@@ -1,5 +1,5 @@
-import { Box, Text } from "ink";
-import React from "react";
+import { Box, Static, Text } from "ink";
+import React, { useMemo } from "react";
 import type {
 	EventLogProps,
 	OrchestratorEvent,
@@ -99,18 +99,39 @@ function truncateMessage(message: string, maxLength: number): string {
 /**
  * Event log component showing recent orchestrator events
  *
+ * Uses ink's Static component for older events to prevent re-renders.
+ * Only the most recent event is rendered dynamically.
+ *
  * Displays a scrollable feed of events with:
  * - Timestamp
  * - Sandbox label (color-coded)
  * - Event icon
  * - Message (color-coded by type)
+ *
+ * Memoized to prevent re-renders when unrelated state changes
  */
-export const EventLog: React.FC<EventLogProps> = ({
+const EventLogImpl: React.FC<EventLogProps> = ({
 	events,
 	maxEvents = MAX_DISPLAY_EVENTS,
 }) => {
-	// Get most recent events
+	// Split events into static (older) and dynamic (most recent)
+	// Static events are rendered once and never re-rendered by ink
 	const recentEvents = events.slice(-maxEvents);
+
+	// Use useMemo to stabilize the static events array reference
+	const { staticEvents, dynamicEvent } = useMemo(() => {
+		if (recentEvents.length <= 1) {
+			return {
+				staticEvents: [] as OrchestratorEvent[],
+				dynamicEvent: recentEvents[0] ?? null,
+			};
+		}
+		// All but the last event go to Static
+		return {
+			staticEvents: recentEvents.slice(0, -1),
+			dynamicEvent: recentEvents[recentEvents.length - 1] ?? null,
+		};
+	}, [recentEvents]);
 
 	return (
 		<Box
@@ -124,7 +145,17 @@ export const EventLog: React.FC<EventLogProps> = ({
 			{recentEvents.length === 0 ? (
 				<Text dimColor>No events yet...</Text>
 			) : (
-				recentEvents.map((event) => <EventRow key={event.id} event={event} />)
+				<>
+					{/* Static events - rendered once, never re-rendered */}
+					<Static items={staticEvents}>
+						{(event) => <EventRow key={event.id} event={event} />}
+					</Static>
+
+					{/* Dynamic event - the most recent one that may still update */}
+					{dynamicEvent && (
+						<EventRow key={dynamicEvent.id} event={dynamicEvent} />
+					)}
+				</>
 			)}
 
 			{events.length > maxEvents && (
@@ -135,6 +166,8 @@ export const EventLog: React.FC<EventLogProps> = ({
 		</Box>
 	);
 };
+
+export const EventLog = React.memo(EventLogImpl);
 
 /**
  * Compact event log showing only last few events

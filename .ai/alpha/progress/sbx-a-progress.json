@@ -1,12 +1,12 @@
 {
-	"sandbox_id": "itr9qg2erpetjd4tai4mb",
+	"sandbox_id": "ifxdunazs5ehbwjl6mjlu",
 	"feature": {
-		"issue_number": 1378,
-		"title": "Dashboard Coaching Card"
+		"issue_number": 1367,
+		"title": "Dashboard Page & Grid Layout"
 	},
 	"status": "running",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-09T16:38:56.602912Z",
+	"last_heartbeat": "2026-01-09T16:47:32.402106Z",
 	"last_tool": "Bash",
-	"session_id": "itr9qg2erpetjd4tai4mb"
+	"session_id": "ifxdunazs5ehbwjl6mjlu"
 }

@@ -1,34 +1,27 @@
 {
-	"sandbox_id": "ithjqqjbchcnrasufhg5i",
+	"sandbox_id": "io9wjqb4lsvqb9lfxg9ps",
 	"feature": {
 		"issue_number": 1374,
 		"title": "Activity Recording Service"
 	},
 	"current_task": {
-		"id": "T7",
-		"name": "Apply migration with type regeneration",
+		"id": "T1",
+		"name": "Create activity validation schemas",
 		"status": "starting",
-		"started_at": "2026-01-09T16:55:00Z"
+		"started_at": "2026-01-09T16:51:19+00:00"
 	},
 	"current_group": {
-		"id": 3,
-		"name": "Testing & Migration",
-		"tasks_total": 3,
-		"tasks_completed": 2
+		"id": 1,
+		"name": "Foundation - Schemas",
+		"tasks_total": 1,
+		"tasks_completed": 0
 	},
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5",
-		"T6"
-	],
+	"completed_tasks": [],
 	"failed_tasks": [],
-	"context_usage_percent": 50,
+	"context_usage_percent": 15,
 	"status": "in_progress",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-09T16:38:54.703491Z",
+	"last_heartbeat": "2026-01-09T16:51:57.555339Z",
 	"last_tool": "Bash",
-	"session_id": "ithjqqjbchcnrasufhg5i"
+	"session_id": "io9wjqb4lsvqb9lfxg9ps"
 }

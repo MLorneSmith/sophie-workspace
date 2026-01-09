@@ -1,5 +1,5 @@
 import { Box, Text, useApp, useInput } from "ink";
-import React from "react";
+import type React from "react";
 import type { OrchestratorUIProps } from "../types.js";
 import { EventLog } from "./EventLog.js";
 import { Header } from "./Header.js";

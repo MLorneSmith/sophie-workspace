@@ -1,6 +1,5 @@
 import { Box, Text } from "ink";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { HeaderProps, OverallProgress } from "../types.js";
 
 /**
@@ -59,20 +58,21 @@ function getStatusIcon(status: OverallProgress["status"]): string {
  * - Spec ID and name
  * - Current status with icon
  * - Elapsed time (auto-updates every second)
+ *
+ * Memoized to prevent re-renders when other parts of state change
  */
-export const Header: React.FC<HeaderProps> = ({
-	progress,
-	sessionStartTime,
-}) => {
+const HeaderImpl: React.FC<HeaderProps> = ({ progress, sessionStartTime }) => {
 	// Auto-update elapsed time every second
 	const [elapsed, setElapsed] = useState(() =>
 		formatElapsedTime(sessionStartTime),
 	);
 
 	useEffect(() => {
+		// Update every 5 seconds instead of 1 second to reduce re-renders
+		// Elapsed time doesn't need second-level precision for UI display
 		const interval = setInterval(() => {
 			setElapsed(formatElapsedTime(sessionStartTime));
-		}, 1000);
+		}, 5000);
 
 		return () => clearInterval(interval);
 	}, [sessionStartTime]);
@@ -117,6 +117,8 @@ export const Header: React.FC<HeaderProps> = ({
 	);
 };
 
+export const Header = React.memo(HeaderImpl);
+
 /**
  * Truncate text with ellipsis if too long
  */
@@ -137,9 +139,10 @@ export const CompactHeader: React.FC<HeaderProps> = ({
 	);
 
 	useEffect(() => {
+		// Update every 5 seconds to reduce re-renders
 		const interval = setInterval(() => {
 			setElapsed(formatElapsedTime(sessionStartTime));
-		}, 1000);
+		}, 5000);
 		return () => clearInterval(interval);
 	}, [sessionStartTime]);
 

@@ -1,15 +1,20 @@
 {
-	"sandbox_id": "imyhot2uw1crmo2xbwawf",
+	"sandbox_id": "itnmwfym82pd7ojsegjuv",
 	"feature": {
-		"issue_number": 1370,
-		"title": "Empty State System"
+		"issue_number": 1376,
+		"title": "Kanban Summary Card"
 	},
-	"current_task": null,
+	"current_task": {
+		"id": "T6",
+		"name": "Test kanban summary card rendering",
+		"status": "in_progress",
+		"started_at": "2026-01-09T16:51:50+00:00"
+	},
 	"current_group": {
 		"id": 3,
-		"name": "Integration & Testing",
-		"tasks_total": 2,
-		"tasks_completed": 2
+		"name": "Testing",
+		"tasks_total": 1,
+		"tasks_completed": 0
 	},
 	"completed_tasks": [
 		"T1",
@@ -19,10 +24,11 @@
 		"T5"
 	],
 	"failed_tasks": [],
-	"context_usage_percent": 35,
-	"status": "completed",
-	"phase": "committing",
-	"last_heartbeat": "2026-01-09T16:38:42.099363Z",
-	"last_tool": "Read",
-	"session_id": "imyhot2uw1crmo2xbwawf"
+	"context_usage_percent": 40,
+	"status": "in_progress",
+	"phase": "testing",
+	"last_heartbeat": "2026-01-09T16:52:12.890926Z",
+	"last_tool": "Bash",
+	"last_commit": "cd23a04",
+	"session_id": "itnmwfym82pd7ojsegjuv"
 }

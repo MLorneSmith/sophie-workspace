@@ -14,8 +14,10 @@ const SANDBOX_LABELS = ["sbx-a", "sbx-b", "sbx-c"] as const;
  * Displays sandboxes in a horizontal row layout using flexbox.
  * Each sandbox gets equal width (33% for 3 sandboxes).
  * Handles gracefully when fewer than 3 sandboxes are present.
+ *
+ * Memoized to prevent re-renders when unrelated state changes
  */
-export const SandboxGrid: React.FC<SandboxGridProps> = ({ sandboxes }) => {
+const SandboxGridImpl: React.FC<SandboxGridProps> = ({ sandboxes }) => {
 	// Get sandboxes in order
 	const orderedSandboxes: Array<[string, SandboxState]> = [];
 
@@ -42,6 +44,8 @@ export const SandboxGrid: React.FC<SandboxGridProps> = ({ sandboxes }) => {
 		</Box>
 	);
 };
+
+export const SandboxGrid = React.memo(SandboxGridImpl);
 
 /**
  * Compact grid for narrow terminals

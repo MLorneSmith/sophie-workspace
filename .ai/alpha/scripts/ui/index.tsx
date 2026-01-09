@@ -1,5 +1,5 @@
 import { render } from "ink";
-import React from "react";
+import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	CompletionUI,
@@ -164,7 +164,10 @@ export class UIManager {
 	start(onExit?: () => void): void {
 		this.onExit = onExit;
 
-		this.instance = render(<OrchestratorApp config={this.config} />);
+		// Use maxFps to throttle terminal redraws and reduce flicker
+		this.instance = render(<OrchestratorApp config={this.config} />, {
+			patchConsole: false,
+		});
 
 		// Handle process signals
 		process.on("SIGINT", () => this.stop());
