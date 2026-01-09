@@ -1,5 +1,5 @@
 import { render } from "ink";
-// biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler
+// biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler JSX transform
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
