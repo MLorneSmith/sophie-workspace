@@ -140,6 +140,18 @@ export interface SandboxState {
 // =============================================================================
 
 /**
+ * Review URL for accessing sandbox after completion
+ */
+export interface ReviewUrl {
+	/** Sandbox label (e.g., "sbx-a") */
+	label: string;
+	/** VS Code server URL */
+	vscode: string;
+	/** Dev server URL */
+	devServer: string;
+}
+
+/**
 
 * Overall spec-level progress
  */
@@ -162,6 +174,10 @@ export interface OverallProgress {
 	tasksTotal: number;
 	/**Overall status*/
 	status: "pending" | "in_progress" | "completed" | "partial" | "failed";
+	/** Git branch name for the spec */
+	branchName?: string;
+	/** Review URLs for accessing completed sandboxes */
+	reviewUrls?: ReviewUrl[];
 }
 
 // =============================================================================

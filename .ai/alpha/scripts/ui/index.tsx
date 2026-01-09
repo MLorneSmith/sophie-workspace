@@ -134,6 +134,8 @@ const OrchestratorApp: React.FC<{
 					featuresCompleted={state.overallProgress.featuresCompleted}
 					tasksCompleted={state.overallProgress.tasksCompleted}
 					elapsed={getElapsedTime()}
+					branchName={state.overallProgress.branchName}
+					reviewUrls={state.overallProgress.reviewUrls}
 				/>
 			);
 		default:

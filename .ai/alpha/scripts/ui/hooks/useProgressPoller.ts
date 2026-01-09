@@ -95,7 +95,10 @@ function progressEqual(a: OverallProgress, b: OverallProgress): boolean {
 		a.tasksCompleted === b.tasksCompleted &&
 		a.tasksTotal === b.tasksTotal &&
 		a.initiativesCompleted === b.initiativesCompleted &&
-		a.initiativesTotal === b.initiativesTotal
+		a.initiativesTotal === b.initiativesTotal &&
+		a.branchName === b.branchName &&
+		// Review URLs changing triggers update
+		(a.reviewUrls?.length ?? 0) === (b.reviewUrls?.length ?? 0)
 	);
 }
 
@@ -131,6 +134,15 @@ interface ProgressFileResult {
 }
 
 /**
+ * Review URL from overall progress file
+ */
+interface ReviewUrlFile {
+	label: string;
+	vscode: string;
+	devServer: string;
+}
+
+/**
 
 * Structure of overall-progress.json file written by orchestrator
  */
@@ -145,6 +157,8 @@ interface OverallProgressFile {
 	tasksCompleted: number;
 	tasksTotal: number;
 	lastCheckpoint: string;
+	branchName?: string;
+	reviewUrls?: ReviewUrlFile[];
 }
 
 /**
@@ -690,6 +704,8 @@ export function useProgressPoller(
 					// Base (completed features) + in-progress tasks from active sandboxes
 					tasksCompleted: baseTasksCompleted + inProgressTasks,
 					tasksTotal: overallProgressFile.tasksTotal,
+					branchName: overallProgressFile.branchName,
+					reviewUrls: overallProgressFile.reviewUrls,
 				};
 			} else {
 				// Fallback: aggregate from sandbox states (less accurate)

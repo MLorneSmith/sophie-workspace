@@ -2,7 +2,7 @@ import { Box, Text, useApp, useInput } from "ink";
 import type { FC } from "react";
 // biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler
 import React from "react";
-import type { OrchestratorUIProps } from "../types.js";
+import type { OrchestratorUIProps, ReviewUrl } from "../types.js";
 import { EventLog } from "./EventLog.js";
 import { Header } from "./Header.js";
 import { OverallProgress } from "./OverallProgress.js";
@@ -154,7 +154,16 @@ export const CompletionUI: FC<{
 	featuresCompleted: number;
 	tasksCompleted: number;
 	elapsed: string;
-}> = ({ specId, featuresCompleted, tasksCompleted, elapsed }) => {
+	branchName?: string;
+	reviewUrls?: ReviewUrl[];
+}> = ({
+	specId,
+	featuresCompleted,
+	tasksCompleted,
+	elapsed,
+	branchName,
+	reviewUrls,
+}) => {
 	const { exit } = useApp();
 
 	useInput((input) => {
@@ -183,6 +192,40 @@ export const CompletionUI: FC<{
 				</Text>
 				<Text dimColor>Elapsed: {elapsed}</Text>
 			</Box>
+
+			{branchName && (
+				<Box marginTop={1}>
+					<Text>
+						Branch: <Text color="yellow">{branchName}</Text>
+					</Text>
+				</Box>
+			)}
+
+			{reviewUrls && reviewUrls.length > 0 && (
+				<Box marginTop={1} flexDirection="column" alignItems="center">
+					<Text bold color="cyan">
+						🔗 Review URLs:
+					</Text>
+					{reviewUrls.map((url) => (
+						<Box key={url.label} flexDirection="column" marginTop={1}>
+							<Text bold>{url.label}:</Text>
+							<Text>
+								VS Code:{" "}
+								<Text color="blue" underline>
+									{url.vscode}
+								</Text>
+							</Text>
+							<Text>
+								Dev Server:{" "}
+								<Text color="blue" underline>
+									{url.devServer}
+								</Text>
+							</Text>
+						</Box>
+					))}
+				</Box>
+			)}
+
 			<Box marginTop={2}>
 				<Text dimColor>Press Enter or 'q' to exit</Text>
 			</Box>

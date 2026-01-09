@@ -37,6 +37,7 @@ import {
 	findSpecDir,
 	loadManifest,
 	saveManifest,
+	writeOverallProgress,
 } from "./manifest.js";
 import {
 	createSandbox,
@@ -698,6 +699,13 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		} catch (error) {
 			log(`   Failed to start dev server: ${error}`);
 		}
+	}
+
+	// Write review URLs to progress file for UI to display
+	if (reviewUrls.length > 0) {
+		writeOverallProgress(manifest, reviewUrls);
+		// Give UI time to pick up the updated progress file
+		await sleep(1000);
 	}
 
 	// Print summary (always shown - handles its own output)

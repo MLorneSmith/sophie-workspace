@@ -112,18 +112,31 @@ export function ensureUIProgressDir(): string {
 }
 
 /**
+ * Review URL for UI display
+ */
+export interface ReviewUrlForUI {
+	label: string;
+	vscode: string;
+	devServer: string;
+}
+
+/**
 
 * Write overall progress to local file for UI consumption.
 * This provides authoritative counts from the manifest since sandbox
 * progress files only contain current feature info.
 *
 * @param manifest - The manifest to extract progress from
+* @param reviewUrls - Optional review URLs to include (for completion screen)
  */
-export function writeOverallProgress(manifest: SpecManifest): void {
+export function writeOverallProgress(
+	manifest: SpecManifest,
+	reviewUrls?: ReviewUrlForUI[],
+): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, "overall-progress.json");
 
-	const overallProgress = {
+	const overallProgress: Record<string, unknown> = {
 		specId: manifest.metadata.spec_id,
 		specName: manifest.metadata.spec_name,
 		status: manifest.progress.status,
@@ -134,7 +147,13 @@ export function writeOverallProgress(manifest: SpecManifest): void {
 		tasksCompleted: manifest.progress.tasks_completed,
 		tasksTotal: manifest.progress.tasks_total,
 		lastCheckpoint: new Date().toISOString(),
+		branchName: manifest.sandbox.branch_name,
 	};
+
+	// Include review URLs if provided
+	if (reviewUrls && reviewUrls.length > 0) {
+		overallProgress.reviewUrls = reviewUrls;
+	}
 
 	try {
 		fs.writeFileSync(filePath, JSON.stringify(overallProgress, null, "\t"));
