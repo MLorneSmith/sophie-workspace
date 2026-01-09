@@ -1,27 +1,12 @@
 {
-	"sandbox_id": "io9wjqb4lsvqb9lfxg9ps",
+	"sandbox_id": "iqvo8syuwl1xcn0vkvn9y",
 	"feature": {
 		"issue_number": 1374,
 		"title": "Activity Recording Service"
 	},
-	"current_task": {
-		"id": "T1",
-		"name": "Create activity validation schemas",
-		"status": "starting",
-		"started_at": "2026-01-09T16:51:19+00:00"
-	},
-	"current_group": {
-		"id": 1,
-		"name": "Foundation - Schemas",
-		"tasks_total": 1,
-		"tasks_completed": 0
-	},
-	"completed_tasks": [],
-	"failed_tasks": [],
-	"context_usage_percent": 15,
-	"status": "in_progress",
+	"status": "running",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-09T16:51:57.555339Z",
-	"last_tool": "Bash",
-	"session_id": "io9wjqb4lsvqb9lfxg9ps"
+	"last_heartbeat": "2026-01-09T17:56:53.489884Z",
+	"last_tool": "TodoWrite",
+	"session_id": "iqvo8syuwl1xcn0vkvn9y"
 }

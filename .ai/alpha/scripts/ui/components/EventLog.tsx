@@ -114,9 +114,9 @@ const EventLogImpl: React.FC<EventLogProps> = ({
 	events,
 	maxEvents = MAX_DISPLAY_EVENTS,
 }) => {
-	// Get the most recent events to display
+	// Get the most recent events to display (events array has newest first)
 	const recentEvents = useMemo(
-		() => events.slice(-maxEvents),
+		() => events.slice(0, maxEvents),
 		[events, maxEvents],
 	);
 
@@ -157,7 +157,8 @@ export const CompactEventLog: React.FC<EventLogProps> = ({
 	events,
 	maxEvents = 3,
 }) => {
-	const recentEvents = events.slice(-maxEvents);
+	// Events array has newest first, so slice from the beginning
+	const recentEvents = events.slice(0, maxEvents);
 
 	return (
 		<Box flexDirection="column" paddingX={1}>

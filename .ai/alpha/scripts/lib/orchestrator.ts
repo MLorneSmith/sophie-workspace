@@ -10,36 +10,57 @@ import * as path from "node:path";
 import process from "node:process";
 
 import {
- HEALTH_CHECK_INTERVAL_MS,
- SANDBOX_STAGGER_DELAY_MS,
- UI_PROGRESS_DIR,
+	HEALTH_CHECK_INTERVAL_MS,
+	SANDBOX_STAGGER_DELAY_MS,
+	UI_PROGRESS_DIR,
 } from "../config/index.js";
 import type {
- OrchestratorOptions,
- ReviewUrl,
- SandboxInstance,
- SpecManifest,
- UIManager,
+	OrchestratorOptions,
+	ReviewUrl,
+	SandboxInstance,
+	SpecManifest,
+	UIManager,
 } from "../types/index.js";
 import {
- checkDatabaseCapacity,
- isDatabaseSeeded,
- resetSandboxDatabase,
- seedSandboxDatabase,
+	checkDatabaseCapacity,
+	isDatabaseSeeded,
+	resetSandboxDatabase,
+	seedSandboxDatabase,
 } from "./database.js";
 import { checkEnvironment, GITHUB_TOKEN } from "./environment.js";
 import { runFeatureImplementation } from "./feature.js";
 import { runHealthChecks } from "./health.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
 import {
- clearUIProgress,
- findSpecDir,
- loadManifest,
- saveManifest,
+	clearUIProgress,
+	findSpecDir,
+	loadManifest,
+	saveManifest,
 } from "./manifest.js";
 import { createSandbox, getVSCodeUrl, startDevServer } from "./sandbox.js";
 import { sleep } from "./utils.js";
 import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
+
+// ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+		error: (...args: unknown[]) => {
+			// Always log errors, even in UI mode
+			console.error(...args);
+		},
+	};
+}
 
 // ============================================================================
 // Dry Run Output
@@ -52,56 +73,56 @@ import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
 * @param manifest - The spec manifest
  */
 export function printDryRun(manifest: SpecManifest): void {
- console.log("\n🔍 DRY RUN - Execution Plan:\n");
+	console.log("\n🔍 DRY RUN - Execution Plan:\n");
 
- const completedIds = new Set(
-  manifest.feature_queue
-   .filter((f) => f.status === "completed")
-   .map((f) => f.id),
- );
- const completedInitIds = new Set(
-  manifest.initiatives
-   .filter((i) => i.status === "completed")
-   .map((i) => i.id),
- );
+	const completedIds = new Set(
+		manifest.feature_queue
+			.filter((f) => f.status === "completed")
+			.map((f) => f.id),
+	);
+	const completedInitIds = new Set(
+		manifest.initiatives
+			.filter((i) => i.status === "completed")
+			.map((i) => i.id),
+	);
 
- console.log("Feature Queue (in execution order):");
- for (const feature of manifest.feature_queue) {
-  const statusIcon =
-   feature.status === "completed"
-    ? "✅"
-    : feature.status === "in_progress"
-     ? "🔄"
-     : "⏳";
+	console.log("Feature Queue (in execution order):");
+	for (const feature of manifest.feature_queue) {
+		const statusIcon =
+			feature.status === "completed"
+				? "✅"
+				: feature.status === "in_progress"
+					? "🔄"
+					: "⏳";
 
-  const depsComplete = feature.dependencies.every(
-   (d) => completedIds.has(d) || completedInitIds.has(d),
-  );
-  const blockedStr =
-   feature.dependencies.length > 0 && !depsComplete
-    ? ` [BLOCKED by: ${feature.dependencies
-      .filter((d) => !completedIds.has(d) && !completedInitIds.has(d))
-      .map((d) => `#${d}`)
-      .join(", ")}]`
-    : "";
+		const depsComplete = feature.dependencies.every(
+			(d) => completedIds.has(d) || completedInitIds.has(d),
+		);
+		const blockedStr =
+			feature.dependencies.length > 0 && !depsComplete
+				? ` [BLOCKED by: ${feature.dependencies
+						.filter((d) => !completedIds.has(d) && !completedInitIds.has(d))
+						.map((d) => `#${d}`)
+						.join(", ")}]`
+				: "";
 
-  console.log(
-   `   ${statusIcon} #${feature.id}: ${feature.title} (${feature.task_count} tasks)${blockedStr}`,
-  );
- }
+		console.log(
+			`   ${statusIcon} #${feature.id}: ${feature.title} (${feature.task_count} tasks)${blockedStr}`,
+		);
+	}
 
- // Estimate
- const pendingFeatures = manifest.feature_queue.filter(
-  (f) => f.status === "pending",
- );
- const totalHours = pendingFeatures.reduce(
-  (sum, f) => sum + f.parallel_hours,
-  0,
- );
+	// Estimate
+	const pendingFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "pending",
+	);
+	const totalHours = pendingFeatures.reduce(
+		(sum, f) => sum + f.parallel_hours,
+		0,
+	);
 
- console.log("\n📊 Remaining Work:");
- console.log(`Features: ${pendingFeatures.length}`);
- console.log(`Estimated Hours: ${totalHours}`);
+	console.log("\n📊 Remaining Work:");
+	console.log(`Features: ${pendingFeatures.length}`);
+	console.log(`Estimated Hours: ${totalHours}`);
 }
 
 // ============================================================================
@@ -117,73 +138,73 @@ export function printDryRun(manifest: SpecManifest): void {
 * @param reviewUrls - Review URLs for sandboxes
  */
 export function printSummary(
- manifest: SpecManifest,
- instances: SandboxInstance[],
- reviewUrls: ReviewUrl[],
+	manifest: SpecManifest,
+	instances: SandboxInstance[],
+	reviewUrls: ReviewUrl[],
 ): void {
- const completed = manifest.feature_queue.filter(
-  (f) => f.status === "completed",
- ).length;
- const failed = manifest.feature_queue.filter(
-  (f) => f.status === "failed",
- ).length;
+	const completed = manifest.feature_queue.filter(
+		(f) => f.status === "completed",
+	).length;
+	const failed = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	).length;
 
- console.log("\n" + "═".repeat(70));
- console.log("   SUMMARY");
- console.log("═".repeat(70));
+	console.log("\n" + "═".repeat(70));
+	console.log("   SUMMARY");
+	console.log("═".repeat(70));
 
- console.log("\n📊 Results:");
- console.log(
-  `Initiatives: ${manifest.progress.initiatives_completed}/${manifest.progress.initiatives_total}`,
- );
- console.log(`Features: ${completed}/${manifest.progress.features_total}`);
- console.log(`Failed: ${failed}`);
- console.log(
-  `Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`,
- );
+	console.log("\n📊 Results:");
+	console.log(
+		`Initiatives: ${manifest.progress.initiatives_completed}/${manifest.progress.initiatives_total}`,
+	);
+	console.log(`Features: ${completed}/${manifest.progress.features_total}`);
+	console.log(`Failed: ${failed}`);
+	console.log(
+		`Tasks: ${manifest.progress.tasks_completed}/${manifest.progress.tasks_total}`,
+	);
 
- console.log(`\n🌿 Branch: ${manifest.sandbox.branch_name}`);
+	console.log(`\n🌿 Branch: ${manifest.sandbox.branch_name}`);
 
- if (manifest.progress.started_at) {
-  const duration = Math.round(
-   (Date.now() - new Date(manifest.progress.started_at).getTime()) / 60000,
-  );
-  console.log(`⏱️ Duration: ${duration} minutes`);
- }
+	if (manifest.progress.started_at) {
+		const duration = Math.round(
+			(Date.now() - new Date(manifest.progress.started_at).getTime()) / 60000,
+		);
+		console.log(`⏱️ Duration: ${duration} minutes`);
+	}
 
- // Print review URLs
- if (reviewUrls.length > 0) {
-  console.log("\n" + "═".repeat(70));
-  console.log("   REVIEW YOUR WORK");
-  console.log("═".repeat(70));
-  console.log("\n🔗 Review URLs (sandboxes kept alive for review):\n");
+	// Print review URLs
+	if (reviewUrls.length > 0) {
+		console.log("\n" + "═".repeat(70));
+		console.log("   REVIEW YOUR WORK");
+		console.log("═".repeat(70));
+		console.log("\n🔗 Review URLs (sandboxes kept alive for review):\n");
 
-  for (const { label, vscode, devServer } of reviewUrls) {
-   console.log(`   ${label}:`);
-   console.log(`      VS Code:    ${vscode}`);
-   console.log(`      Dev Server: ${devServer}`);
-  }
+		for (const { label, vscode, devServer } of reviewUrls) {
+			console.log(`   ${label}:`);
+			console.log(`      VS Code:    ${vscode}`);
+			console.log(`      Dev Server: ${devServer}`);
+		}
 
-  console.log("\n" + "─".repeat(70));
-  console.log("⚠️  IMPORTANT: Sandboxes are still running!");
-  console.log("   When done reviewing, manually kill them with:\n");
-  for (const instance of instances) {
-   console.log(`   npx e2b sandbox kill ${instance.id}`);
-  }
-  console.log("\n   Or kill all at once:");
-  console.log(
-   `   npx e2b sandbox kill ${instances.map((i) => i.id).join(" ")}`,
-  );
-  console.log("─".repeat(70));
- }
+		console.log("\n" + "─".repeat(70));
+		console.log("⚠️  IMPORTANT: Sandboxes are still running!");
+		console.log("   When done reviewing, manually kill them with:\n");
+		for (const instance of instances) {
+			console.log(`   npx e2b sandbox kill ${instance.id}`);
+		}
+		console.log("\n   Or kill all at once:");
+		console.log(
+			`   npx e2b sandbox kill ${instances.map((i) => i.id).join(" ")}`,
+		);
+		console.log("─".repeat(70));
+	}
 
- console.log("\n" + "═".repeat(70));
+	console.log("\n" + "═".repeat(70));
 
- if (failed > 0) {
-  console.log("\n⚠️ Some features failed. Re-run to continue.");
- } else {
-  console.log("\n✅ Spec implementation complete!");
- }
+	if (failed > 0) {
+		console.log("\n⚠️ Some features failed. Re-run to continue.");
+	} else {
+		console.log("\n✅ Spec implementation complete!");
+	}
 }
 
 // ============================================================================
@@ -199,95 +220,98 @@ export function printSummary(
 * @param uiEnabled - Whether UI mode is enabled
  */
 export async function runWorkLoop(
- instances: SandboxInstance[],
- manifest: SpecManifest,
- uiEnabled: boolean = false,
+	instances: SandboxInstance[],
+	manifest: SpecManifest,
+	uiEnabled: boolean = false,
 ): Promise<void> {
- // Track active work
- const activeWork = new Map<string, Promise<void>>();
+	// Create conditional logger
+	const { log } = createLogger(uiEnabled);
 
- // Start periodic health checks
- let healthCheckRunning = false;
- const healthCheckInterval = setInterval(async () => {
-  if (healthCheckRunning) return;
-  healthCheckRunning = true;
+	// Track active work
+	const activeWork = new Map<string, Promise<void>>();
 
-  try {
-   await runHealthChecks(instances, manifest);
-  } catch (error) {
-   console.log(
-    `   ⚠️ Health check error: ${error instanceof Error ? error.message : error}`,
-   );
-  } finally {
-   healthCheckRunning = false;
-  }
- }, HEALTH_CHECK_INTERVAL_MS);
+	// Start periodic health checks
+	let healthCheckRunning = false;
+	const healthCheckInterval = setInterval(async () => {
+		if (healthCheckRunning) return;
+		healthCheckRunning = true;
 
- try {
-  while (true) {
-   // Check if we're done
-   const pendingFeatures = manifest.feature_queue.filter(
-    (f) => f.status === "pending" || f.status === "in_progress",
-   );
+		try {
+			await runHealthChecks(instances, manifest);
+		} catch (error) {
+			log(
+				`   ⚠️ Health check error: ${error instanceof Error ? error.message : error}`,
+			);
+		} finally {
+			healthCheckRunning = false;
+		}
+	}, HEALTH_CHECK_INTERVAL_MS);
 
-   if (pendingFeatures.length === 0) {
-    if (activeWork.size > 0) {
-     await Promise.all(activeWork.values());
-    }
-    break;
-   }
+	try {
+		while (true) {
+			// Check if we're done
+			const pendingFeatures = manifest.feature_queue.filter(
+				(f) => f.status === "pending" || f.status === "in_progress",
+			);
 
-   // Find idle sandboxes and assign work
-   for (const instance of instances) {
-    if (instance.status !== "ready") {
-     continue;
-    }
+			if (pendingFeatures.length === 0) {
+				if (activeWork.size > 0) {
+					await Promise.all(activeWork.values());
+				}
+				break;
+			}
 
-    const feature = getNextAvailableFeature(manifest);
-    if (!feature) {
-     continue;
-    }
+			// Find idle sandboxes and assign work
+			for (const instance of instances) {
+				if (instance.status !== "ready") {
+					continue;
+				}
 
-    // Start work on this sandbox
-    const workPromise = (async () => {
-     await runFeatureImplementation(
-      instance,
-      manifest,
-      feature,
-      uiEnabled,
-     );
-     activeWork.delete(instance.label);
-    })();
+				const feature = getNextAvailableFeature(manifest);
+				if (!feature) {
+					continue;
+				}
 
-    activeWork.set(instance.label, workPromise);
-   }
+				// Start work on this sandbox
+				const workPromise = (async () => {
+					await runFeatureImplementation(
+						instance,
+						manifest,
+						feature,
+						uiEnabled,
+					);
+					activeWork.delete(instance.label);
+				})();
 
-   // If no work is active and no features available, we might be stuck
-   if (activeWork.size === 0) {
-    const blockedFeatures = manifest.feature_queue.filter(
-     (f) => f.status === "pending" && f.dependencies.length > 0,
-    );
+				activeWork.set(instance.label, workPromise);
+			}
 
-    if (blockedFeatures.length > 0) {
-     console.log("\n⚠️ Features blocked by incomplete dependencies:");
-     for (const f of blockedFeatures.slice(0, 5)) {
-      console.log(
-       `   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
-      );
-     }
-    }
-    break;
-   }
+			// If no work is active and no features available, we might be stuck
+			if (activeWork.size === 0) {
+				const blockedFeatures = manifest.feature_queue.filter(
+					(f) => f.status === "pending" && f.dependencies.length > 0,
+				);
 
-   // Wait for at least one sandbox to finish OR health check interval
-   await Promise.race([
-    ...activeWork.values(),
-    sleep(HEALTH_CHECK_INTERVAL_MS),
-   ]);
-  }
- } finally {
-  clearInterval(healthCheckInterval);
- }
+				if (blockedFeatures.length > 0) {
+					log("\n⚠️ Features blocked by incomplete dependencies:");
+					for (const f of blockedFeatures.slice(0, 5)) {
+						log(
+							`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
+						);
+					}
+				}
+				break;
+			}
+
+			// Wait for at least one sandbox to finish OR health check interval
+			await Promise.race([
+				...activeWork.values(),
+				sleep(HEALTH_CHECK_INTERVAL_MS),
+			]);
+		}
+	} finally {
+		clearInterval(healthCheckInterval);
+	}
 }
 
 // ============================================================================
@@ -301,318 +325,351 @@ export async function runWorkLoop(
 * @param options - Orchestrator options
  */
 export async function orchestrate(options: OrchestratorOptions): Promise<void> {
- if (!options.dryRun) {
-  checkEnvironment();
- }
+	// Create conditional logger - suppresses output when UI is enabled
+	const { log } = createLogger(options.ui);
 
- const projectRoot = getProjectRoot();
- const specDirOrNull = findSpecDir(projectRoot, options.specId);
+	if (!options.dryRun) {
+		checkEnvironment();
+	}
 
- if (!specDirOrNull) {
-  console.error(`Spec #${options.specId} not found`);
-  process.exit(1);
- }
+	const projectRoot = getProjectRoot();
+	const specDirOrNull = findSpecDir(projectRoot, options.specId);
 
- const specDir = specDirOrNull as string;
- const manifestOrNull = loadManifest(specDir);
+	if (!specDirOrNull) {
+		console.error(`Spec #${options.specId} not found`);
+		process.exit(1);
+	}
 
- if (!manifestOrNull) {
-  console.error(
-   "Spec manifest not found. Run generate-spec-manifest.ts first.",
-  );
-  process.exit(1);
- }
+	const specDir = specDirOrNull as string;
+	const manifestOrNull = loadManifest(specDir);
 
- const manifest = manifestOrNull as SpecManifest;
+	if (!manifestOrNull) {
+		console.error(
+			"Spec manifest not found. Run generate-spec-manifest.ts first.",
+		);
+		process.exit(1);
+	}
 
- // Print header
- console.log("═".repeat(70));
- console.log("   ALPHA SPEC ORCHESTRATOR");
- console.log("═".repeat(70));
+	const manifest = manifestOrNull as SpecManifest;
 
- // Handle force unlock
- if (options.forceUnlock) {
-  console.log("\n🔓 Force releasing orchestrator lock...");
-  releaseLock();
- }
+	// =========================================================================
+	// Start UI EARLY - before any console output
+	// =========================================================================
+	let uiManager: UIManager | null = null;
+	if (options.ui && !options.dryRun) {
+		// Clear old UI progress files before starting UI
+		clearUIProgress();
 
- // Acquire orchestrator lock
- if (!options.dryRun) {
-  if (!acquireLock(options.specId)) {
-   process.exit(1);
-  }
- }
+		// Generate sandbox labels for UI
+		const sandboxLabels = Array.from(
+			{ length: options.sandboxCount },
+			(_, i) => `sbx-${String.fromCharCode(97 + i)}`,
+		);
 
- // Register cleanup handler
- const cleanupAndExit = (code: number) => {
-  if (!options.dryRun) {
-   releaseLock();
-  }
-  process.exit(code);
- };
+		try {
+			const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+			const { startOrchestratorUI } = await import("../ui/index.js");
+			uiManager = startOrchestratorUI(
+				{
+					specId: manifest.metadata.spec_id,
+					specName: manifest.metadata.spec_name,
+					progressDir,
+					sandboxLabels,
+					pollInterval: HEALTH_CHECK_INTERVAL_MS,
+					minimal: options.minimalUi,
+				},
+				() => {
+					// UI closed callback - only log if not in UI mode
+					if (!options.ui) {
+						console.log("\n⚠️ UI closed by user");
+					}
+				},
+			);
+		} catch (uiError) {
+			console.error("⚠️ Failed to start UI dashboard:", uiError);
+			console.log("   Continuing without UI...");
+			// Disable UI mode since it failed
+			options.ui = false;
+		}
+	}
 
- process.on("SIGINT", () => {
-  console.log("\n\n⚠️ Interrupted, releasing lock...");
-  cleanupAndExit(130);
- });
+	// Print header (only when UI is disabled)
+	log("═".repeat(70));
+	log("   ALPHA SPEC ORCHESTRATOR");
+	log("═".repeat(70));
 
- process.on("SIGTERM", () => {
-  console.log("\n\n⚠️ Terminated, releasing lock...");
-  cleanupAndExit(143);
- });
+	// Handle force unlock
+	if (options.forceUnlock) {
+		log("\n🔓 Force releasing orchestrator lock...");
+		releaseLock();
+	}
 
- // Check sandbox database capacity
- if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
-  console.log("\n📊 Checking sandbox database...");
-  const hasCapacity = await checkDatabaseCapacity();
-  if (!hasCapacity) {
-   releaseLock();
-   process.exit(1);
-  }
+	// Acquire orchestrator lock
+	if (!options.dryRun) {
+		if (!acquireLock(options.specId)) {
+			if (uiManager) uiManager.stop();
+			process.exit(1);
+		}
+	}
 
-  // Reset sandbox database
-  if (!options.skipDbReset) {
-   try {
-    await resetSandboxDatabase();
-   } catch (error) {
-    console.error("Failed to reset sandbox database:", error);
-    process.exit(1);
-   }
-  } else {
-   console.log("   ⏭️ Skipping database reset (--skip-db-reset)");
-  }
- }
+	// Register cleanup handler
+	const cleanupAndExit = (code: number) => {
+		if (uiManager) uiManager.stop();
+		if (!options.dryRun) {
+			releaseLock();
+		}
+		process.exit(code);
+	};
 
- // Clean up stale state
- const cleanedCount = cleanupStaleState(manifest);
- if (cleanedCount > 0) {
-  console.log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
-  saveManifest(manifest);
- }
+	process.on("SIGINT", () => {
+		log("\n\n⚠️ Interrupted, releasing lock...");
+		cleanupAndExit(130);
+	});
 
- console.log(
-  `\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
- );
- console.log(`Initiatives: ${manifest.initiatives.length}`);
- console.log(`Features: ${manifest.progress.features_total}`);
- console.log(`Tasks: ${manifest.progress.tasks_total}`);
- console.log(
-  `Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`,
- );
- console.log(`Sandboxes: ${options.sandboxCount}`);
+	process.on("SIGTERM", () => {
+		log("\n\n⚠️ Terminated, releasing lock...");
+		cleanupAndExit(143);
+	});
 
- // Check what's next
- const nextFeature = getNextAvailableFeature(manifest);
- if (nextFeature) {
-  console.log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
- } else if (
-  manifest.progress.features_completed === manifest.progress.features_total
- ) {
-  console.log("\n🎉 All features already completed!");
-  return;
- } else {
-  console.log("\n⚠️ No features available (check dependencies)");
-  return;
- }
+	// Check sandbox database capacity
+	if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
+		log("\n📊 Checking sandbox database...");
+		const hasCapacity = await checkDatabaseCapacity();
+		if (!hasCapacity) {
+			if (uiManager) uiManager.stop();
+			releaseLock();
+			process.exit(1);
+		}
 
- // Handle dry-run
- if (options.dryRun) {
-  printDryRun(manifest);
-  return;
- }
+		// Reset sandbox database
+		if (!options.skipDbReset) {
+			try {
+				await resetSandboxDatabase();
+			} catch (error) {
+				console.error("Failed to reset sandbox database:", error);
+				if (uiManager) uiManager.stop();
+				process.exit(1);
+			}
+		} else {
+			log("   ⏭️ Skipping database reset (--skip-db-reset)");
+		}
+	}
 
- // Create sandboxes
- const instances: SandboxInstance[] = [];
+	// Clean up stale state
+	const cleanedCount = cleanupStaleState(manifest);
+	if (cleanedCount > 0) {
+		log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
+		saveManifest(manifest);
+	}
 
- // Create FIRST sandbox (needed for seeding)
- console.log("\n📦 Creating first sandbox...");
- const firstInstance = await createSandbox(manifest, "sbx-a", options.timeout);
- instances.push(firstInstance);
+	log(
+		`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
+	);
+	log(`Initiatives: ${manifest.initiatives.length}`);
+	log(`Features: ${manifest.progress.features_total}`);
+	log(`Tasks: ${manifest.progress.tasks_total}`);
+	log(
+		`Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`,
+	);
+	log(`Sandboxes: ${options.sandboxCount}`);
 
- // Seed database via first sandbox
- if (
-  !options.skipDbReset &&
-  !options.skipDbSeed &&
-  process.env.SUPABASE_SANDBOX_DB_URL
- ) {
-  const alreadySeeded = await isDatabaseSeeded();
-  if (alreadySeeded) {
-   console.log("   ℹ️ Database already seeded, skipping seeding step");
-  } else {
-   const seedSuccess = await seedSandboxDatabase(firstInstance.sandbox);
-   if (!seedSuccess) {
-    console.error("❌ Database seeding failed, aborting orchestration");
-    await firstInstance.sandbox.kill();
-    releaseLock();
-    process.exit(1);
-   }
-  }
- } else if (options.skipDbSeed) {
-  console.log("   ⏭️ Skipping database seeding (--skip-db-seed)");
- }
+	// Check what's next
+	const nextFeature = getNextAvailableFeature(manifest);
+	if (nextFeature) {
+		log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
+	} else if (
+		manifest.progress.features_completed === manifest.progress.features_total
+	) {
+		log("\n🎉 All features already completed!");
+		if (uiManager) uiManager.stop();
+		return;
+	} else {
+		log("\n⚠️ No features available (check dependencies)");
+		if (uiManager) uiManager.stop();
+		return;
+	}
 
- // Create remaining sandboxes
- for (let i = 1; i < options.sandboxCount; i++) {
-  const label = `sbx-${String.fromCharCode(97 + i)}`;
+	// Handle dry-run
+	if (options.dryRun) {
+		printDryRun(manifest);
+		return;
+	}
 
-  console.log(
-   `\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
-  );
-  await sleep(SANDBOX_STAGGER_DELAY_MS);
+	// Create sandboxes
+	const instances: SandboxInstance[] = [];
 
-  const instance = await createSandbox(manifest, label, options.timeout);
-  instances.push(instance);
- }
+	// Create FIRST sandbox (needed for seeding)
+	log("\n📦 Creating first sandbox...");
+	const firstInstance = await createSandbox(
+		manifest,
+		"sbx-a",
+		options.timeout,
+		options.ui,
+	);
+	instances.push(firstInstance);
 
- saveManifest(manifest);
+	// Seed database via first sandbox
+	if (
+		!options.skipDbReset &&
+		!options.skipDbSeed &&
+		process.env.SUPABASE_SANDBOX_DB_URL
+	) {
+		const alreadySeeded = await isDatabaseSeeded();
+		if (alreadySeeded) {
+			log("   ℹ️ Database already seeded, skipping seeding step");
+		} else {
+			const seedSuccess = await seedSandboxDatabase(firstInstance.sandbox);
+			if (!seedSuccess) {
+				console.error("❌ Database seeding failed, aborting orchestration");
+				await firstInstance.sandbox.kill();
+				if (uiManager) uiManager.stop();
+				releaseLock();
+				process.exit(1);
+			}
+		}
+	} else if (options.skipDbSeed) {
+		log("   ⏭️ Skipping database seeding (--skip-db-seed)");
+	}
 
- // Print sandbox info
- console.log("\n" + "═".repeat(70));
- console.log("   SANDBOXES READY");
- console.log("═".repeat(70));
- for (const instance of instances) {
-  console.log(`${instance.label}: ${instance.id}`);
- }
- console.log(`Branch: ${manifest.sandbox.branch_name}`);
+	// Create remaining sandboxes
+	for (let i = 1; i < options.sandboxCount; i++) {
+		const label = `sbx-${String.fromCharCode(97 + i)}`;
 
- // Start implementation
- console.log("\n" + "═".repeat(70));
- console.log("   IMPLEMENTATION");
- console.log("═".repeat(70));
+		log(
+			`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+		);
+		await sleep(SANDBOX_STAGGER_DELAY_MS);
 
- manifest.progress.status = "in_progress";
- manifest.progress.started_at =
-  manifest.progress.started_at || new Date().toISOString();
- saveManifest(manifest);
+		const instance = await createSandbox(
+			manifest,
+			label,
+			options.timeout,
+			options.ui,
+		);
+		instances.push(instance);
+	}
 
- // Clear old UI progress files if UI is enabled
- if (options.ui) {
-  clearUIProgress();
- }
+	saveManifest(manifest);
 
- // Start Ink UI dashboard if enabled
- let uiManager: UIManager | null = null;
- if (options.ui) {
-  try {
-   const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
-   const { startOrchestratorUI } = await import("../ui/index.js");
-   uiManager = startOrchestratorUI(
-    {
-     specId: manifest.metadata.spec_id,
-     specName: manifest.metadata.spec_name,
-     progressDir,
-     sandboxLabels: instances.map((i) => i.label),
-     pollInterval: HEALTH_CHECK_INTERVAL_MS,
-     minimal: options.minimalUi,
-    },
-    () => {
-     console.log("\n⚠️ UI closed by user");
-    },
-   );
-  } catch (uiError) {
-   console.error("⚠️ Failed to start UI dashboard:", uiError);
-   console.log("   Continuing without UI...");
-  }
- }
+	// Print sandbox info
+	log("\n" + "═".repeat(70));
+	log("   SANDBOXES READY");
+	log("═".repeat(70));
+	for (const instance of instances) {
+		log(`${instance.label}: ${instance.id}`);
+	}
+	log(`Branch: ${manifest.sandbox.branch_name}`);
 
- // Main work loop
- await runWorkLoop(instances, manifest, options.ui);
+	// Start implementation
+	log("\n" + "═".repeat(70));
+	log("   IMPLEMENTATION");
+	log("═".repeat(70));
 
- // Push final changes
- const pushInstance = instances[0];
- if (GITHUB_TOKEN && pushInstance) {
-  console.log("\n📤 Pushing final changes...");
-  try {
-   await pushInstance.sandbox.commands.run(
-    `cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
-    { timeoutMs: 120000 },
-   );
-   console.log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
-  } catch (error) {
-   console.log(`⚠️ Push failed: ${error}`);
-  }
- }
+	manifest.progress.status = "in_progress";
+	manifest.progress.started_at =
+		manifest.progress.started_at || new Date().toISOString();
+	saveManifest(manifest);
 
- // Final status
- const failedFeatures = manifest.feature_queue.filter(
-  (f) => f.status === "failed",
- ).length;
- manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
- manifest.progress.completed_at = new Date().toISOString();
- saveManifest(manifest);
+	// Main work loop
+	await runWorkLoop(instances, manifest, options.ui);
 
- // Prepare one sandbox for complete review
- console.log("\n🔄 Preparing sandbox for complete review...");
- const reviewInstance = instances[0];
- const otherInstances = instances.slice(1);
+	// Push final changes
+	const pushInstance = instances[0];
+	if (GITHUB_TOKEN && pushInstance) {
+		log("\n📤 Pushing final changes...");
+		try {
+			await pushInstance.sandbox.commands.run(
+				`cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
+				{ timeoutMs: 120000 },
+			);
+			log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
+		} catch (error) {
+			log(`⚠️ Push failed: ${error}`);
+		}
+	}
 
- // Pull latest to get all changes
- if (reviewInstance) {
-  try {
-   console.log(`${reviewInstance.label}: Pulling latest changes...`);
-   await reviewInstance.sandbox.commands.run(
-    `cd /home/user/project && git pull origin "${manifest.sandbox.branch_name}"`,
-    { timeoutMs: 60000 },
-   );
-   console.log(`${reviewInstance.label}: ✅ Has complete code`);
-  } catch (error) {
-   console.log(`${reviewInstance.label}: ⚠️ Pull failed: ${error}`);
-  }
- }
+	// Final status
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	).length;
+	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+	manifest.progress.completed_at = new Date().toISOString();
+	saveManifest(manifest);
 
- // Kill other sandboxes
- for (const instance of otherInstances) {
-  try {
-   console.log(`${instance.label}: Stopping (partial code only)...`);
-   await instance.sandbox.kill();
-  } catch {
-   // Ignore
-  }
- }
+	// Prepare one sandbox for complete review
+	log("\n🔄 Preparing sandbox for complete review...");
+	const reviewInstance = instances[0];
+	const otherInstances = instances.slice(1);
 
- // Start dev server on review sandbox
- console.log("\n🚀 Starting dev server for review...");
- const reviewUrls: ReviewUrl[] = [];
+	// Pull latest to get all changes
+	if (reviewInstance) {
+		try {
+			log(`${reviewInstance.label}: Pulling latest changes...`);
+			await reviewInstance.sandbox.commands.run(
+				`cd /home/user/project && git pull origin "${manifest.sandbox.branch_name}"`,
+				{ timeoutMs: 60000 },
+			);
+			log(`${reviewInstance.label}: ✅ Has complete code`);
+		} catch (error) {
+			log(`${reviewInstance.label}: ⚠️ Pull failed: ${error}`);
+		}
+	}
 
- if (reviewInstance) {
-  try {
-   const devServerUrl = await startDevServer(reviewInstance.sandbox);
-   const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
-   reviewUrls.push({
-    label: reviewInstance.label,
-    vscode: vscodeUrl,
-    devServer: devServerUrl,
-   });
-   console.log(`${reviewInstance.label}: Dev server starting...`);
+	// Kill other sandboxes
+	for (const instance of otherInstances) {
+		try {
+			log(`${instance.label}: Stopping (partial code only)...`);
+			await instance.sandbox.kill();
+		} catch {
+			// Ignore
+		}
+	}
 
-   console.log("   Waiting for dev server to start (30s)...");
-   await sleep(30000);
-  } catch (error) {
-   console.log(`   Failed to start dev server: ${error}`);
-  }
- }
+	// Start dev server on review sandbox
+	log("\n🚀 Starting dev server for review...");
+	const reviewUrls: ReviewUrl[] = [];
 
- // Print summary
- const reviewInstancesForSummary = reviewInstance ? [reviewInstance] : [];
- printSummary(manifest, reviewInstancesForSummary, reviewUrls);
+	if (reviewInstance) {
+		try {
+			const devServerUrl = await startDevServer(reviewInstance.sandbox);
+			const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
+			reviewUrls.push({
+				label: reviewInstance.label,
+				vscode: vscodeUrl,
+				devServer: devServerUrl,
+			});
+			log(`${reviewInstance.label}: Dev server starting...`);
 
- // Add sandbox database review URL
- if (process.env.SUPABASE_SANDBOX_PROJECT_REF) {
-  console.log("\n📊 Database Review:");
-  console.log(
-   `Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
-  );
- }
+			log("   Waiting for dev server to start (30s)...");
+			await sleep(30000);
+		} catch (error) {
+			log(`   Failed to start dev server: ${error}`);
+		}
+	}
 
- // Stop the UI
- if (uiManager) {
-  uiManager.stop();
- }
+	// Print summary (always shown - handles its own output)
+	if (!options.ui) {
+		const reviewInstancesForSummary = reviewInstance ? [reviewInstance] : [];
+		printSummary(manifest, reviewInstancesForSummary, reviewUrls);
+	}
 
- // Release lock
- releaseLock();
+	// Add sandbox database review URL
+	if (process.env.SUPABASE_SANDBOX_PROJECT_REF) {
+		log("\n📊 Database Review:");
+		log(
+			`Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
+		);
+	}
 
- if (failedFeatures > 0) {
-  process.exit(1);
- }
+	// Stop the UI
+	if (uiManager) {
+		uiManager.stop();
+	}
+
+	// Release lock
+	releaseLock();
+
+	if (failedFeatures > 0) {
+		process.exit(1);
+	}
 }

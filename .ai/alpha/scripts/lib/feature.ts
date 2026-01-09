@@ -25,6 +25,21 @@ import { checkForStall, startProgressPolling } from "./progress.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Feature Implementation
 // ============================================================================
 
@@ -44,10 +59,11 @@ export async function runFeatureImplementation(
 	feature: FeatureEntry,
 	uiEnabled: boolean = false,
 ): Promise<FeatureImplementationResult> {
-	console.log(
-		`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`,
-	);
-	console.log(`│   Tasks: ${feature.task_count}`);
+	// Create conditional logger
+	const { log } = createLogger(uiEnabled);
+
+	log(`\n   ┌── [${instance.label}] Feature #${feature.id}: ${feature.title}`);
+	log(`│   Tasks: ${feature.task_count}`);
 
 	// Mark feature as in_progress
 	feature.status = "in_progress";
@@ -70,17 +86,17 @@ export async function runFeatureImplementation(
 	const remoteBranchExists = remoteBranchCheck.stdout.trim() === "1";
 
 	if (!remoteBranchExists) {
-		console.log("   │   ℹ️ Remote branch not yet pushed - skipping pull");
+		log("   │   ℹ️ Remote branch not yet pushed - skipping pull");
 	} else {
-		console.log("   │   Pulling latest code...");
+		log("   │   Pulling latest code...");
 		try {
 			await instance.sandbox.commands.run(
 				`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git reset --hard FETCH_HEAD`,
 				{ timeoutMs: 60000 },
 			);
-			console.log("   │   ✓ Code synced");
+			log("   │   ✓ Code synced");
 		} catch (pullError) {
-			console.log(`│   ⚠ Pull failed (continuing anyway): ${pullError}`);
+			log(`│   ⚠ Pull failed (continuing anyway): ${pullError}`);
 		}
 	}
 
@@ -97,7 +113,7 @@ export async function runFeatureImplementation(
 	}
 
 	const prompt = `/alpha:implement ${feature.id}`;
-	console.log(`│   Running: ${prompt}`);
+	log(`│   Running: ${prompt}`);
 
 	let capturedStdout = "";
 	let capturedStderr = "";
@@ -123,7 +139,7 @@ export async function runFeatureImplementation(
 		const stallCheck = checkForStall(lastProgress, sessionStartTime);
 		if (stallCheck.stalled && !stallDetected) {
 			stallDetected = true;
-			console.log(`│   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
+			log(`│   ⚠️ STALL DETECTED: ${stallCheck.reason}`);
 		}
 	}, 60000);
 
@@ -135,10 +151,13 @@ export async function runFeatureImplementation(
 				envs: getAllEnvVars(),
 				onStdout: (data) => {
 					capturedStdout += data;
-					const lines = data.split("\n");
-					for (const line of lines) {
-						if (line.trim()) {
-							process.stdout.write(`│   ${line}\n`);
+					// Only output to console when UI is disabled
+					if (!uiEnabled) {
+						const lines = data.split("\n");
+						for (const line of lines) {
+							if (line.trim()) {
+								process.stdout.write(`│   ${line}\n`);
+							}
 						}
 					}
 				},
@@ -237,7 +256,7 @@ export async function runFeatureImplementation(
 					{ timeoutMs: 120000 },
 				);
 			} catch (pushError) {
-				console.log(`   │   ⚠ Push failed: ${pushError}`);
+				log(`   │   ⚠ Push failed: ${pushError}`);
 			}
 		}
 
@@ -247,7 +266,7 @@ export async function runFeatureImplementation(
 
 		const icon =
 			status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
-		console.log(
+		log(
 			`   └── ${icon} ${status} (${tasksCompleted}/${feature.task_count} tasks)`,
 		);
 
@@ -271,7 +290,7 @@ export async function runFeatureImplementation(
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 
-		console.log(`   └── ❌ Error: ${errorMessage}`);
+		log(`   └── ❌ Error: ${errorMessage}`);
 
 		return {
 			success: false,

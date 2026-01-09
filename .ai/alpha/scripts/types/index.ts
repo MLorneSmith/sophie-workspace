@@ -6,15 +6,15 @@
  */
 
 export type {
- FeatureEntry,
- FeatureImplementationResult,
- HealthCheckResult,
- InitiativeEntry,
- OrchestratorLock,
- OrchestratorOptions,
- ReviewUrl,
- SandboxInstance,
- SandboxProgress,
- SpecManifest,
- UIManager,
+	FeatureEntry,
+	FeatureImplementationResult,
+	HealthCheckResult,
+	InitiativeEntry,
+	OrchestratorLock,
+	OrchestratorOptions,
+	ReviewUrl,
+	SandboxInstance,
+	SandboxProgress,
+	SpecManifest,
+	UIManager,
 } from "./orchestrator.types.js";

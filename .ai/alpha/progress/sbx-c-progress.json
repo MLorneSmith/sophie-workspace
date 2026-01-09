@@ -1,34 +1,26 @@
 {
-	"sandbox_id": "itnmwfym82pd7ojsegjuv",
+	"sandbox_id": "ic00izob0g8sh965v959n",
 	"feature": {
-		"issue_number": 1376,
-		"title": "Kanban Summary Card"
+		"issue_number": 1377,
+		"title": "Cal.com Booking Data Service"
 	},
 	"current_task": {
-		"id": "T6",
-		"name": "Test kanban summary card rendering",
-		"status": "in_progress",
-		"started_at": "2026-01-09T16:51:50+00:00"
+		"id": "T1",
+		"name": "Create booking schema directory structure",
+		"status": "starting",
+		"started_at": "2026-01-09T18:00:00Z"
 	},
 	"current_group": {
-		"id": 3,
-		"name": "Testing",
-		"tasks_total": 1,
+		"id": 1,
+		"name": "Directory Setup",
+		"tasks_total": 3,
 		"tasks_completed": 0
 	},
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5"
-	],
+	"completed_tasks": [],
 	"failed_tasks": [],
-	"context_usage_percent": 40,
 	"status": "in_progress",
-	"phase": "testing",
-	"last_heartbeat": "2026-01-09T16:52:12.890926Z",
-	"last_tool": "Bash",
-	"last_commit": "cd23a04",
-	"session_id": "itnmwfym82pd7ojsegjuv"
+	"phase": "executing",
+	"last_heartbeat": "2026-01-09T17:56:54.237424Z",
+	"last_tool": "TodoWrite",
+	"session_id": "ic00izob0g8sh965v959n"
 }

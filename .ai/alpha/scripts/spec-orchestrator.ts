@@ -37,17 +37,17 @@ import { orchestrate } from "./lib/index.js";
 // ============================================================================
 
 async function main(): Promise<void> {
- const options = parseArgs();
+	const options = parseArgs();
 
- if (!options.specId) {
-  showHelp();
-  process.exit(1);
- }
+	if (!options.specId) {
+		showHelp();
+		process.exit(1);
+	}
 
- await orchestrate(options);
+	await orchestrate(options);
 }
 
 main().catch((error) => {
- console.error("\n❌ Orchestrator error:", error);
- process.exit(1);
+	console.error("\n❌ Orchestrator error:", error);
+	process.exit(1);
 });

@@ -1,7 +1,7 @@
 import { Box, Text } from "ink";
+import type { FC } from "react";
 // biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler
 import React from "react";
-import type { FC } from "react";
 import type { ProgressBarProps } from "../types.js";
 
 /**

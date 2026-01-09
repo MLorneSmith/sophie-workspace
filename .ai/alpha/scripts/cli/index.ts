@@ -20,53 +20,55 @@ import type { OrchestratorOptions } from "../types/index.js";
 * @returns Parsed options
  */
 export function parseArgs(): OrchestratorOptions {
- const args = process.argv.slice(2);
- const options: OrchestratorOptions = {
-  specId: 0,
-  sandboxCount: 3,
-  timeout: 3600,
-  dryRun: false,
-  forceUnlock: false,
-  skipDbReset: false,
-  skipDbSeed: false,
-  ui: false,
-  minimalUi: false,
- };
+	const args = process.argv.slice(2);
+	const options: OrchestratorOptions = {
+		specId: 0,
+		sandboxCount: 3,
+		timeout: 3600,
+		dryRun: false,
+		forceUnlock: false,
+		skipDbReset: false,
+		skipDbSeed: false,
+		ui: true,
+		minimalUi: false,
+	};
 
- for (let i = 0; i < args.length; i++) {
-  const arg = args[i];
-  if (!arg) continue;
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (!arg) continue;
 
-  const nextArg = args[i + 1];
-  if ((arg === "--sandboxes" || arg === "-s") && nextArg) {
-   options.sandboxCount = Math.min(parseInt(nextArg, 10), 3);
-   i++;
-  } else if (arg === "--timeout" && nextArg) {
-   options.timeout = parseInt(nextArg, 10);
-   i++;
-  } else if (arg === "--dry-run") {
-   options.dryRun = true;
-  } else if (arg === "--force-unlock") {
-   options.forceUnlock = true;
-  } else if (arg === "--skip-db-reset") {
-   options.skipDbReset = true;
-  } else if (arg === "--skip-db-seed") {
-   options.skipDbSeed = true;
-  } else if (arg === "--ui" || arg === "--ui-mode") {
-   options.ui = true;
-  } else if (arg === "--minimal-ui") {
-   options.ui = true;
-   options.minimalUi = true;
-  } else if (
-   !arg.startsWith("--") &&
-   !arg.startsWith("-") &&
-   !options.specId
-  ) {
-   options.specId = parseInt(arg, 10);
-  }
- }
+		const nextArg = args[i + 1];
+		if ((arg === "--sandboxes" || arg === "-s") && nextArg) {
+			options.sandboxCount = Math.min(parseInt(nextArg, 10), 3);
+			i++;
+		} else if (arg === "--timeout" && nextArg) {
+			options.timeout = parseInt(nextArg, 10);
+			i++;
+		} else if (arg === "--dry-run") {
+			options.dryRun = true;
+		} else if (arg === "--force-unlock") {
+			options.forceUnlock = true;
+		} else if (arg === "--skip-db-reset") {
+			options.skipDbReset = true;
+		} else if (arg === "--skip-db-seed") {
+			options.skipDbSeed = true;
+		} else if (arg === "--ui" || arg === "--ui-mode") {
+			options.ui = true;
+		} else if (arg === "--no-ui") {
+			options.ui = false;
+		} else if (arg === "--minimal-ui") {
+			options.ui = true;
+			options.minimalUi = true;
+		} else if (
+			!arg.startsWith("--") &&
+			!arg.startsWith("-") &&
+			!options.specId
+		) {
+			options.specId = parseInt(arg, 10);
+		}
+	}
 
- return options;
+	return options;
 }
 
 // ============================================================================
@@ -78,7 +80,7 @@ export function parseArgs(): OrchestratorOptions {
 * Print help message.
  */
 export function showHelp(): void {
- console.log(`
+	console.log(`
 Alpha Spec Orchestrator
 
 Usage:
@@ -91,7 +93,7 @@ Options:
   --force-unlock        Force release any existing orchestrator lock
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
-  --ui, --ui-mode       Enable persistent Ink-based dashboard UI
+  --no-ui               Disable Ink dashboard UI (uses console output)
   --minimal-ui          Use minimal dashboard (for narrow terminals)
 
 Features:
