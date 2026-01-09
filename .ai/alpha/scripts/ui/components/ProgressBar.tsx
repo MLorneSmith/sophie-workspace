@@ -69,7 +69,7 @@ export const CompactProgressBar: React.FC<
 export const ContextUsageBar: React.FC<{
 	percent: number;
 	width?: number;
-}> = ({ percent, width = 15 }) => {
+}> = ({ percent }) => {
 	const getColor = (): string => {
 		if (percent >= 80) return "red";
 		if (percent >= 60) return "yellow";

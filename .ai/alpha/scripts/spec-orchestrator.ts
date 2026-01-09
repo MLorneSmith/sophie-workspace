@@ -1948,7 +1948,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		process.exit(1);
 	}
 
-	const specDir: string = specDirOrNull!;
+	const specDir = specDirOrNull as string;
 
 	const manifestOrNull = loadManifest(specDir);
 
@@ -1959,7 +1959,7 @@ async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		process.exit(1);
 	}
 
-	const manifest: SpecManifest = manifestOrNull!;
+	const manifest = manifestOrNull as SpecManifest;
 
 	// Print header
 	console.log("═".repeat(70));
