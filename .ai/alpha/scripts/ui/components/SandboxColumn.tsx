@@ -284,8 +284,8 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 			{state.recentOutput && state.recentOutput.length > 0 && (
 				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>Output:</Text>
-					{state.recentOutput.map((line, idx) => (
-						<Text key={idx} dimColor>
+					{state.recentOutput.map((line) => (
+						<Text key={line} dimColor>
 							{truncate(line, 28)}
 						</Text>
 					))}

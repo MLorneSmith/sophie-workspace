@@ -109,7 +109,10 @@ export async function runFeatureImplementation(
 	log(`│   Tasks: ${feature.task_count}`);
 
 	// Mark feature as in_progress (may already be set by orchestrator to prevent race condition)
-	if (feature.status !== "in_progress" || feature.assigned_sandbox !== instance.label) {
+	if (
+		feature.status !== "in_progress" ||
+		feature.assigned_sandbox !== instance.label
+	) {
 		feature.status = "in_progress";
 		feature.assigned_sandbox = instance.label;
 		saveManifest(manifest);

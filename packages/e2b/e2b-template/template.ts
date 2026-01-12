@@ -82,7 +82,7 @@ echo "Running Claude Code with prompt: $1"
 # This ensures stdout streams in real-time instead of buffering until process exit
 # (stdbuf doesn't work on Node.js processes like Claude CLI because Node uses libuv, not libc)
 # unbuffer is more reliable than 'script -qfc' for this purpose
-unbuffer bash -c "echo \\"\$1\\" | claude -p --setting-sources user,project --dangerously-skip-permissions"
+unbuffer bash -c "echo \\"$1\\" | claude -p --setting-sources user,project --dangerously-skip-permissions"
 `;
 
 const RUN_TESTS_SCRIPT = `#!/bin/bash
