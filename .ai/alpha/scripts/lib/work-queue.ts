@@ -7,6 +7,7 @@
  */
 
 import type { FeatureEntry, SpecManifest } from "../types/index.js";
+import { saveManifest } from "./manifest.js";
 
 // ============================================================================
 // Constants
@@ -131,13 +132,19 @@ export function getNextAvailableFeature(
  * Atomically assign a feature to a sandbox with timestamp tracking.
  * This implements optimistic locking to prevent race conditions.
  *
+ * IMPORTANT: This function saves the manifest immediately after assignment
+ * to make the operation atomic and prevent race conditions where multiple
+ * sandboxes could get assigned the same feature.
+ *
  * @param feature - The feature to assign
  * @param sandboxLabel - The label of the sandbox claiming the feature
+ * @param manifest - The spec manifest (saved atomically with assignment)
  * @returns true if assignment succeeded, false if another sandbox claimed it first
  */
 export function assignFeatureToSandbox(
 	feature: FeatureEntry,
 	sandboxLabel: string,
+	manifest: SpecManifest,
 ): boolean {
 	const now = Date.now();
 
@@ -167,6 +174,10 @@ export function assignFeatureToSandbox(
 	feature.status = "in_progress";
 	feature.assigned_sandbox = sandboxLabel;
 	feature.assigned_at = now;
+
+	// CRITICAL: Save manifest immediately to make assignment atomic
+	// This prevents race conditions where multiple sandboxes check-then-assign
+	saveManifest(manifest);
 
 	console.log(
 		`✅ Feature #${feature.id} assigned to ${sandboxLabel} at ${now}`,

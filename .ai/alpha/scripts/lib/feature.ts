@@ -31,6 +31,7 @@ import {
 	checkForStall,
 	type OutputTracker,
 	startProgressPolling,
+	writeUIProgress,
 } from "./progress.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
@@ -195,6 +196,21 @@ export async function runFeatureImplementation(
 		outputTracker,
 	);
 
+	// Write UI progress at regular intervals to show real-time output
+	// This ensures the UI stays updated even when progress polling is slow or fails
+	let uiProgressInterval: ReturnType<typeof setInterval> | null = null;
+	if (uiEnabled) {
+		uiProgressInterval = setInterval(() => {
+			writeUIProgress(
+				instance.label,
+				progressPoller.getLastProgress(),
+				instance,
+				feature,
+				outputTracker,
+			);
+		}, 2000); // Every 2 seconds
+	}
+
 	// Start stall detection interval with ACTIONABLE recovery
 	let stallDetected = false;
 	let stallRecoveryInProgress = false;
@@ -264,9 +280,10 @@ export async function runFeatureImplementation(
 			},
 		);
 
-		// Stop polling and stall detection
+		// Stop polling, stall detection, and UI progress updates
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
+		if (uiProgressInterval) clearInterval(uiProgressInterval);
 
 		// Close the log stream
 		logStream.end();
@@ -332,7 +349,8 @@ export async function runFeatureImplementation(
 
 		// Update progress
 		if (status === "completed") {
-			manifest.progress.features_completed++;
+			// NOTE: features_completed is now calculated from manifest state in writeOverallProgress()
+			// This prevents counts from exceeding totals when features are retried
 			manifest.progress.last_completed_feature_id = feature.id;
 
 			// Update initiative status
@@ -340,13 +358,18 @@ export async function runFeatureImplementation(
 				(i) => i.id === feature.initiative_id,
 			);
 			if (initiative) {
-				initiative.features_completed++;
+				// Calculate features_completed from state instead of incrementing
+				// This prevents counts from exceeding totals when features are retried
 				const initFeatures = manifest.feature_queue.filter(
 					(f) => f.initiative_id === initiative.id,
 				);
+				initiative.features_completed = initFeatures.filter(
+					(f) => f.status === "completed",
+				).length;
+
 				if (initFeatures.every((f) => f.status === "completed")) {
 					initiative.status = "completed";
-					manifest.progress.initiatives_completed++;
+					// NOTE: initiatives_completed is calculated from manifest state in writeOverallProgress()
 				} else {
 					initiative.status = "in_progress";
 				}
@@ -363,7 +386,8 @@ export async function runFeatureImplementation(
 			}
 		}
 
-		manifest.progress.tasks_completed += tasksCompleted;
+		// NOTE: tasks_completed is now calculated from manifest state in writeOverallProgress()
+		// This prevents counts from exceeding totals when features are retried
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 
@@ -379,9 +403,10 @@ export async function runFeatureImplementation(
 			error: status !== "completed" ? `Feature ${status}` : undefined,
 		};
 	} catch (error) {
-		// Stop polling and stall detection on error
+		// Stop polling, stall detection, and UI progress updates on error
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
+		if (uiProgressInterval) clearInterval(uiProgressInterval);
 
 		// Close the log stream
 		logStream.end();

@@ -265,6 +265,9 @@ export async function runWorkLoop(
 						`   🔄 Attempting to restart failed sandbox ${instance.label}...`,
 					);
 					try {
+						// Capture old ID before reassignment for cleanup
+						const oldSandboxId = instance.id;
+
 						const newInstance = await createSandbox(
 							manifest,
 							instance.label,
@@ -282,6 +285,16 @@ export async function runWorkLoop(
 						instance.lastProgressSeen = undefined;
 						instance.lastHeartbeat = undefined;
 
+						// Clean up old sandbox ID before adding new one
+						// This prevents sandbox_ids from accumulating beyond the sandbox count
+						const oldIdIndex =
+							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
+						if (oldIdIndex !== -1) {
+							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
+						}
+						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
+							manifest.sandbox.sandbox_ids.push(newInstance.id);
+						}
 						saveManifest(manifest);
 						log(`   ✅ Sandbox ${instance.label} restarted successfully`);
 					} catch (restartError) {
@@ -346,6 +359,9 @@ export async function runWorkLoop(
 
 					// Create a fresh sandbox
 					try {
+						// Capture old ID before reassignment for cleanup
+						const oldSandboxId = instance.id;
+
 						const newInstance = await createSandbox(
 							manifest,
 							label,
@@ -367,6 +383,13 @@ export async function runWorkLoop(
 						instance.createdAt = newInstance.createdAt;
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
 
+						// Clean up old sandbox ID before adding new one
+						// This prevents sandbox_ids from accumulating beyond the sandbox count
+						const oldIdIndex =
+							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
+						if (oldIdIndex !== -1) {
+							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
+						}
 						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
@@ -415,6 +438,10 @@ export async function runWorkLoop(
 					// Attempt to restart the sandbox
 					try {
 						log(`   🔄 Restarting sandbox ${label}...`);
+
+						// Capture old ID before reassignment for cleanup
+						const oldSandboxId = instance.id;
+
 						const newInstance = await createSandbox(
 							manifest,
 							label,
@@ -436,11 +463,14 @@ export async function runWorkLoop(
 						instance.createdAt = newInstance.createdAt;
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
 
-						// Update manifest with new sandbox ID
-						const sandboxIndex = manifest.sandbox.sandbox_ids.indexOf(
-							instance.id,
-						);
-						if (sandboxIndex === -1) {
+						// Clean up old sandbox ID before adding new one
+						// This prevents sandbox_ids from accumulating beyond the sandbox count
+						const oldIdIndex =
+							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
+						if (oldIdIndex !== -1) {
+							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
+						}
+						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
 						saveManifest(manifest);
@@ -513,7 +543,12 @@ export async function runWorkLoop(
 
 				// CRITICAL: Use atomic assignment with timestamp-based conflict detection
 				// This prevents race conditions where multiple sandboxes get the same feature
-				const assigned = assignFeatureToSandbox(feature, instance.label);
+				// The assignment function now saves the manifest atomically to prevent races
+				const assigned = assignFeatureToSandbox(
+					feature,
+					instance.label,
+					manifest,
+				);
 				if (!assigned) {
 					// Lost the race - another sandbox claimed this feature, try again
 					log(
@@ -521,7 +556,7 @@ export async function runWorkLoop(
 					);
 					continue;
 				}
-				saveManifest(manifest);
+				// NOTE: saveManifest is now called inside assignFeatureToSandbox for atomicity
 
 				// Start work on this sandbox
 				const workPromise = (async () => {

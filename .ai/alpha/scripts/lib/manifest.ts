@@ -127,6 +127,10 @@ export interface ReviewUrlForUI {
 * This provides authoritative counts from the manifest since sandbox
 * progress files only contain current feature info.
 *
+* IMPORTANT: Counts are now calculated from manifest state instead of using
+* stored increment values. This prevents counts from exceeding totals when
+* features are retried or fail and restart.
+*
 * @param manifest - The manifest to extract progress from
 * @param reviewUrls - Optional review URLs to include (for completion screen)
  */
@@ -137,15 +141,50 @@ export function writeOverallProgress(
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, "overall-progress.json");
 
+	// Calculate features completed by counting status from manifest state
+	// This prevents counts from exceeding totals when features are retried
+	const featuresCompleted = manifest.feature_queue.filter(
+		(f) => f.status === "completed",
+	).length;
+
+	// Calculate tasks completed by summing from all completed features
+	const tasksCompleted = manifest.feature_queue
+		.filter((f) => f.status === "completed")
+		.reduce((sum, f) => sum + (f.tasks_completed || 0), 0);
+
+	// Calculate initiatives completed by counting status from manifest state
+	const initiativesCompleted = manifest.initiatives.filter(
+		(i) => i.status === "completed",
+	).length;
+
+	// Cap at totals to prevent > 100% display in case of any edge cases
+	const cappedFeaturesCompleted = Math.min(
+		featuresCompleted,
+		manifest.progress.features_total,
+	);
+	const cappedTasksCompleted = Math.min(
+		tasksCompleted,
+		manifest.progress.tasks_total,
+	);
+	const cappedInitiativesCompleted = Math.min(
+		initiativesCompleted,
+		manifest.progress.initiatives_total,
+	);
+
+	// Update manifest.progress with calculated values for consistency
+	manifest.progress.features_completed = cappedFeaturesCompleted;
+	manifest.progress.tasks_completed = cappedTasksCompleted;
+	manifest.progress.initiatives_completed = cappedInitiativesCompleted;
+
 	const overallProgress: Record<string, unknown> = {
 		specId: manifest.metadata.spec_id,
 		specName: manifest.metadata.spec_name,
 		status: manifest.progress.status,
-		initiativesCompleted: manifest.progress.initiatives_completed,
+		initiativesCompleted: cappedInitiativesCompleted,
 		initiativesTotal: manifest.progress.initiatives_total,
-		featuresCompleted: manifest.progress.features_completed,
+		featuresCompleted: cappedFeaturesCompleted,
 		featuresTotal: manifest.progress.features_total,
-		tasksCompleted: manifest.progress.tasks_completed,
+		tasksCompleted: cappedTasksCompleted,
 		tasksTotal: manifest.progress.tasks_total,
 		lastCheckpoint: new Date().toISOString(),
 		branchName: manifest.sandbox.branch_name,
