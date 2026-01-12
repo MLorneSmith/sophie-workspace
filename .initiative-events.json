@@ -1,23 +1,5 @@
 [
 	{
-		"timestamp": "2026-01-09T17:41:24.253379Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "ac0e471"
-	},
-	{
-		"timestamp": "2026-01-09T17:48:20.705799Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "a1528b9"
-	},
-	{
-		"timestamp": "2026-01-09T17:48:28.831757Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "aceca9a"
-	},
-	{
 		"timestamp": "2026-01-09T17:57:10.072526Z",
 		"type": "subagent_complete",
 		"agent_type": "unknown",
@@ -298,5 +280,23 @@
 		"type": "subagent_complete",
 		"agent_type": "unknown",
 		"agent_id": "a83765a"
+	},
+	{
+		"timestamp": "2026-01-12T14:35:43.555221Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a55a6b2"
+	},
+	{
+		"timestamp": "2026-01-12T14:36:21.168440Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "acbde22"
+	},
+	{
+		"timestamp": "2026-01-12T14:37:06.920652Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a35e8a6"
 	}
 ]
