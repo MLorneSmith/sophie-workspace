@@ -64,13 +64,21 @@ export function getNextAvailableFeature(
 		// Handle inconsistent state: in_progress with error
 		// This happens when a feature fails (signal: terminated) but manifest wasn't fully updated
 		if (feature.status === "in_progress" && feature.error) {
-			// Reset to failed so it can be retried
-			console.log(
-				`🔧 Fixing inconsistent state: #${feature.id} was in_progress with error "${feature.error}", resetting to failed`,
-			);
-			feature.status = "failed";
-			feature.assigned_sandbox = undefined;
-			feature.assigned_at = undefined;
+			// Only reset if this state has persisted for >60 seconds
+			// Recent assignments may legitimately have stale error field momentarily
+			// (defense-in-depth: error should be cleared on assignment, but this prevents premature resets)
+			const timeSinceAssignment = feature.assigned_at
+				? now - feature.assigned_at
+				: Number.POSITIVE_INFINITY;
+			if (timeSinceAssignment > 60_000) {
+				// Reset to failed so it can be retried
+				console.log(
+					`🔧 Fixing inconsistent state: #${feature.id} was in_progress with error "${feature.error}" for ${Math.round(timeSinceAssignment / 1000)}s, resetting to failed`,
+				);
+				feature.status = "failed";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+			}
 		}
 
 		// Skip if completed or currently in_progress (with active sandbox)
@@ -174,6 +182,8 @@ export function assignFeatureToSandbox(
 	feature.status = "in_progress";
 	feature.assigned_sandbox = sandboxLabel;
 	feature.assigned_at = now;
+	// Clear any previous error - this is a fresh assignment
+	feature.error = undefined;
 
 	// CRITICAL: Save manifest immediately to make assignment atomic
 	// This prevents race conditions where multiple sandboxes check-then-assign
