@@ -78,12 +78,11 @@ fi
 
 echo "Running Claude Code with prompt: $1"
 # --setting-sources user,project enables custom slash commands from .claude/commands/
-# Use script -qfc to force PTY allocation, which triggers line-buffered output
+# Use unbuffer to force PTY allocation, which triggers line-buffered output
 # This ensures stdout streams in real-time instead of buffering until process exit
 # (stdbuf doesn't work on Node.js processes like Claude CLI because Node uses libuv, not libc)
-# Escape single quotes in prompt for safe embedding in single-quoted string
-SAFE_PROMPT=\$(printf '%s' "\$1" | sed "s/'/'\\\\''/g")
-script -qfc "echo '\${SAFE_PROMPT}' | claude -p --setting-sources user,project --dangerously-skip-permissions" /dev/null
+# unbuffer is more reliable than 'script -qfc' for this purpose
+unbuffer bash -c "echo \\"\$1\\" | claude -p --setting-sources user,project --dangerously-skip-permissions"
 `;
 
 const RUN_TESTS_SCRIPT = `#!/bin/bash
@@ -203,6 +202,8 @@ export function createTemplate(
 			// Additional Playwright deps
 			"libcairo2",
 			"libpango-1.0-0",
+			// expect package provides unbuffer for PTY allocation
+			"expect",
 		])
 
 		// ========================================

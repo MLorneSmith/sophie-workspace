@@ -1,16 +1,12 @@
 {
-	"sandbox_id": "i85jj5vcphsettcfjzkuz",
-	"feature": {
-		"issue_number": 1372,
-		"title": "Assessment Spider Card"
-	},
-	"status": "running",
-	"phase": "executing",
-	"last_heartbeat": "2026-01-09T22:39:41.659884Z",
-	"last_tool": "Write",
-	"session_id": "i85jj5vcphsettcfjzkuz",
-	"recent_output": [
-		"Using OAuth authentication (Max plan)",
-		"Running Claude Code with prompt: /alpha:implement 1372"
-	]
+	"sandbox_id": "inhv1bdovkqidfpa0f0tq",
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 0,
+	"status": "idle",
+	"phase": "waiting",
+	"last_heartbeat": "2026-01-10T01:03:16.652Z",
+	"session_id": "inhv1bdovkqidfpa0f0tq",
+	"waiting_reason": "No available features",
+	"blocked_by": []
 }

@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": 1362,
 		"spec_name": "user dashboard home",
-		"generated_at": "2026-01-09T22:40:52.215Z",
+		"generated_at": "2026-01-09T23:07:18.326Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/research-library"
 	},
@@ -12,10 +12,10 @@
 			"name": "dashboard foundation",
 			"slug": "dashboard-foundation",
 			"priority": 1,
-			"status": "pending",
+			"status": "completed",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation",
 			"feature_count": 4,
-			"features_completed": 0,
+			"features_completed": 4,
 			"dependencies": []
 		},
 		{
@@ -23,10 +23,10 @@
 			"name": "progress visualization",
 			"slug": "progress-visualization",
 			"priority": 2,
-			"status": "pending",
+			"status": "in_progress",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1364-Initiative-progress-visualization",
 			"feature_count": 2,
-			"features_completed": 0,
+			"features_completed": 1,
 			"dependencies": []
 		},
 		{
@@ -34,10 +34,10 @@
 			"name": "activity task tracking",
 			"slug": "activity-task-tracking",
 			"priority": 3,
-			"status": "pending",
+			"status": "completed",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking",
 			"feature_count": 4,
-			"features_completed": 0,
+			"features_completed": 4,
 			"dependencies": []
 		},
 		{
@@ -45,10 +45,10 @@
 			"name": "calcom coaching",
 			"slug": "calcom-coaching",
 			"priority": 4,
-			"status": "pending",
+			"status": "completed",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1366-Initiative-calcom-coaching",
 			"feature_count": 3,
-			"features_completed": 0,
+			"features_completed": 3,
 			"dependencies": []
 		}
 	],
@@ -60,17 +60,18 @@
 			"slug": "dashboard-page-grid",
 			"priority": 1,
 			"global_priority": 1,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid",
 			"task_count": 20,
-			"tasks_completed": 0,
+			"tasks_completed": 20,
 			"sequential_hours": 41,
 			"parallel_hours": 34,
 			"dependencies": [],
 			"github_issue": 1381,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"error": "exit status 1"
 		},
 		{
 			"id": 1368,
@@ -79,11 +80,11 @@
 			"slug": "presentation-table",
 			"priority": 2,
 			"global_priority": 2,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1368-Feature-presentation-table/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1368-Feature-presentation-table",
 			"task_count": 12,
-			"tasks_completed": 0,
+			"tasks_completed": 12,
 			"sequential_hours": 21,
 			"parallel_hours": 12,
 			"dependencies": [
@@ -101,11 +102,11 @@
 			"slug": "quick-actions-panel",
 			"priority": 3,
 			"global_priority": 3,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1369-Feature-quick-actions-panel/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1369-Feature-quick-actions-panel",
 			"task_count": 6,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 15,
 			"parallel_hours": 8,
 			"dependencies": [
@@ -122,11 +123,11 @@
 			"slug": "empty-state-system",
 			"priority": 4,
 			"global_priority": 4,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1370-Feature-empty-state-system/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1370-Feature-empty-state-system",
 			"task_count": 5,
-			"tasks_completed": 0,
+			"tasks_completed": 5,
 			"sequential_hours": 9,
 			"parallel_hours": 6,
 			"dependencies": [
@@ -134,7 +135,8 @@
 			],
 			"github_issue": 1385,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"error": "Stall detected and recovered: signal: terminated"
 		},
 		{
 			"id": 1371,
@@ -143,11 +145,11 @@
 			"slug": "course-progress-card",
 			"priority": 1,
 			"global_priority": 5,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1364-Initiative-progress-visualization/1371-Feature-course-progress-card/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1364-Initiative-progress-visualization/1371-Feature-course-progress-card",
 			"task_count": 5,
-			"tasks_completed": 0,
+			"tasks_completed": 5,
 			"sequential_hours": 10,
 			"parallel_hours": 6,
 			"dependencies": [
@@ -164,7 +166,7 @@
 			"slug": "assessment-spider-card",
 			"priority": 2,
 			"global_priority": 6,
-			"status": "pending",
+			"status": "in_progress",
 			"tasks_file": "1364-Initiative-progress-visualization/1372-Feature-assessment-spider-card/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1364-Initiative-progress-visualization/1372-Feature-assessment-spider-card",
 			"task_count": 6,
@@ -176,7 +178,9 @@
 			],
 			"github_issue": 1382,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-b",
+			"error": "2: [unknown] terminated"
 		},
 		{
 			"id": 1373,
@@ -185,11 +189,11 @@
 			"slug": "activity-database-schema",
 			"priority": 1,
 			"global_priority": 7,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1373-Feature-activity-database-schema/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1373-Feature-activity-database-schema",
 			"task_count": 8,
-			"tasks_completed": 0,
+			"tasks_completed": 8,
 			"sequential_hours": 10,
 			"parallel_hours": 5,
 			"dependencies": [],
@@ -204,11 +208,11 @@
 			"slug": "kanban-summary-card",
 			"priority": 1,
 			"global_priority": 8,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1376-Feature-kanban-summary-card/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1376-Feature-kanban-summary-card",
 			"task_count": 6,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 16,
 			"parallel_hours": 12,
 			"dependencies": [],
@@ -223,11 +227,11 @@
 			"slug": "activity-recording-service",
 			"priority": 2,
 			"global_priority": 9,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1374-Feature-activity-recording-service/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1374-Feature-activity-recording-service",
 			"task_count": 8,
-			"tasks_completed": 0,
+			"tasks_completed": 8,
 			"sequential_hours": 15,
 			"parallel_hours": 8,
 			"dependencies": [
@@ -244,11 +248,11 @@
 			"slug": "activity-feed-component",
 			"priority": 3,
 			"global_priority": 10,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1375-Feature-activity-feed-component/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1375-Feature-activity-feed-component",
 			"task_count": 12,
-			"tasks_completed": 0,
+			"tasks_completed": 12,
 			"sequential_hours": 17,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -256,7 +260,8 @@
 			],
 			"github_issue": 1389,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"error": "Stall detected and recovered: signal: terminated"
 		},
 		{
 			"id": 1377,
@@ -265,11 +270,11 @@
 			"slug": "booking-data-service",
 			"priority": 1,
 			"global_priority": 11,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1366-Initiative-calcom-coaching/1377-Feature-booking-data-service/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1366-Initiative-calcom-coaching/1377-Feature-booking-data-service",
 			"task_count": 8,
-			"tasks_completed": 0,
+			"tasks_completed": 8,
 			"sequential_hours": 20,
 			"parallel_hours": 12,
 			"dependencies": [],
@@ -284,11 +289,11 @@
 			"slug": "dashboard-coaching-card",
 			"priority": 2,
 			"global_priority": 12,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1366-Initiative-calcom-coaching/1378-Feature-dashboard-coaching-card/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1366-Initiative-calcom-coaching/1378-Feature-dashboard-coaching-card",
 			"task_count": 9,
-			"tasks_completed": 0,
+			"tasks_completed": 9,
 			"sequential_hours": 25,
 			"parallel_hours": 20,
 			"dependencies": [
@@ -305,11 +310,11 @@
 			"slug": "coaching-page-sessions",
 			"priority": 3,
 			"global_priority": 13,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "1366-Initiative-calcom-coaching/1379-Feature-coaching-page-sessions/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1366-Initiative-calcom-coaching/1379-Feature-coaching-page-sessions",
 			"task_count": 5,
-			"tasks_completed": 0,
+			"tasks_completed": 5,
 			"sequential_hours": 17,
 			"parallel_hours": 14,
 			"dependencies": [
@@ -321,22 +326,26 @@
 		}
 	],
 	"progress": {
-		"status": "pending",
-		"initiatives_completed": 0,
+		"status": "in_progress",
+		"initiatives_completed": 3,
 		"initiatives_total": 4,
-		"features_completed": 0,
+		"features_completed": 12,
 		"features_total": 13,
-		"tasks_completed": 0,
+		"tasks_completed": 104,
 		"tasks_total": 110,
-		"next_feature_id": 1367,
-		"last_completed_feature_id": null,
-		"started_at": null,
+		"next_feature_id": 1372,
+		"last_completed_feature_id": 1375,
+		"started_at": "2026-01-10T00:04:10.503Z",
 		"completed_at": null,
-		"last_checkpoint": null
+		"last_checkpoint": "2026-01-10T01:03:23.538Z"
 	},
 	"sandbox": {
-		"sandbox_ids": [],
-		"branch_name": null,
-		"created_at": null
+		"sandbox_ids": [
+			"inhv1bdovkqidfpa0f0tq",
+			"i3yi7tu4175re9xz88j4d",
+			"iasithq4cwnur1otmjwr2"
+		],
+		"branch_name": "alpha/spec-1362",
+		"created_at": "2026-01-10T00:03:01.671Z"
 	}
 }

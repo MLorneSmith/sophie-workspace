@@ -210,8 +210,10 @@ export async function runFeatureImplementation(
 	}, 60000);
 
 	try {
+		// run-claude script uses unbuffer internally for PTY allocation
+		// (stdbuf doesn't work on Node.js processes like Claude CLI)
 		const result = await instance.sandbox.commands.run(
-			`stdbuf -oL -eL run-claude "${prompt.replace(/"/g, '\\"')}"`,
+			`run-claude "${prompt.replace(/"/g, '\\"')}"`,
 			{
 				timeoutMs: FEATURE_TIMEOUT_MS,
 				envs: getAllEnvVars(),
