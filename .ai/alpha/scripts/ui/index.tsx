@@ -1,5 +1,6 @@
 import { render } from "ink";
-import type * as React from "react";
+// biome-ignore lint/style/useImportType: React must be in scope at runtime for Ink/react-reconciler JSX transform
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
 	CompletionUI,
