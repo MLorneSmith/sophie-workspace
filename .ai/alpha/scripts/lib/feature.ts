@@ -124,6 +124,8 @@ export async function runFeatureImplementation(
 	instance.featureStartedAt = new Date();
 	instance.lastProgressSeen = undefined;
 	instance.lastHeartbeat = undefined;
+	instance.outputLineCount = 0;
+	instance.hasReceivedOutput = false;
 
 	// CRITICAL: Pull latest code before starting feature
 	const branchName = manifest.sandbox.branch_name;
@@ -235,6 +237,13 @@ export async function runFeatureImplementation(
 							if (recentOutput.length > RECENT_OUTPUT_LINES) {
 								recentOutput.shift();
 							}
+							// Track output for startup hung detection
+							instance.outputLineCount = (instance.outputLineCount ?? 0) + 1;
+							// Mark as having received meaningful output
+							// (more than just startup banner)
+							if ((instance.outputLineCount ?? 0) >= 5) {
+								instance.hasReceivedOutput = true;
+							}
 						}
 					}
 
@@ -315,8 +324,11 @@ export async function runFeatureImplementation(
 		feature.status = status;
 		feature.tasks_completed = tasksCompleted;
 		feature.assigned_sandbox = undefined;
+		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
+		instance.outputLineCount = 0;
+		instance.hasReceivedOutput = false;
 
 		// Update progress
 		if (status === "completed") {
@@ -385,8 +397,11 @@ export async function runFeatureImplementation(
 		feature.status = "failed";
 		feature.error = finalError;
 		feature.assigned_sandbox = undefined;
+		feature.assigned_at = undefined;
 		instance.currentFeature = null;
 		instance.status = "ready";
+		instance.outputLineCount = 0;
+		instance.hasReceivedOutput = false;
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 

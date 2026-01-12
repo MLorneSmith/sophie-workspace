@@ -9,6 +9,16 @@
 import type { FeatureEntry, SpecManifest } from "../types/index.js";
 
 // ============================================================================
+// Constants
+// ============================================================================
+
+/**
+ * Time window in ms to consider a feature assignment as "recent"
+ * Used to prevent race conditions where multiple sandboxes try to claim the same feature
+ */
+const ASSIGNMENT_CONFLICT_WINDOW_MS = 30_000; // 30 seconds
+
+// ============================================================================
 // Feature Selection
 // ============================================================================
 
@@ -17,7 +27,7 @@ import type { FeatureEntry, SpecManifest } from "../types/index.js";
 * Get the next available feature that:
 * 1. Is pending OR failed (failed features are retried on re-run)
 * 1. Has all dependencies completed
-* 1. Is not assigned to another sandbox
+* 1. Is not assigned to another sandbox (with timestamp-based conflict detection)
 * 1. Database features are serialized (only one DB feature at a time)
 *
 * @param manifest - The spec manifest containing the feature queue
@@ -26,6 +36,7 @@ import type { FeatureEntry, SpecManifest } from "../types/index.js";
 export function getNextAvailableFeature(
 	manifest: SpecManifest,
 ): FeatureEntry | null {
+	const now = Date.now();
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
 			.filter((f) => f.status === "completed")
@@ -58,6 +69,7 @@ export function getNextAvailableFeature(
 			);
 			feature.status = "failed";
 			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
 		}
 
 		// Skip if completed or currently in_progress (with active sandbox)
@@ -69,6 +81,19 @@ export function getNextAvailableFeature(
 		// Skip if already assigned to a sandbox
 		if (feature.assigned_sandbox) {
 			continue;
+		}
+
+		// Race condition prevention: Skip features recently assigned
+		// Even if assigned_sandbox is undefined, check if assigned_at is recent
+		// This prevents races where two sandboxes both check before either writes
+		if (feature.assigned_at) {
+			const timeSinceAssignment = now - feature.assigned_at;
+			if (timeSinceAssignment < ASSIGNMENT_CONFLICT_WINDOW_MS) {
+				console.log(
+					`⏳ Feature #${feature.id} was recently assigned (${Math.round(timeSinceAssignment / 1000)}s ago), skipping to avoid race`,
+				);
+				continue;
+			}
 		}
 
 		// Serialize database features: skip DB features if one is already running
@@ -96,6 +121,57 @@ export function getNextAvailableFeature(
 	}
 
 	return null;
+}
+
+// ============================================================================
+// Atomic Feature Assignment
+// ============================================================================
+
+/**
+ * Atomically assign a feature to a sandbox with timestamp tracking.
+ * This implements optimistic locking to prevent race conditions.
+ *
+ * @param feature - The feature to assign
+ * @param sandboxLabel - The label of the sandbox claiming the feature
+ * @returns true if assignment succeeded, false if another sandbox claimed it first
+ */
+export function assignFeatureToSandbox(
+	feature: FeatureEntry,
+	sandboxLabel: string,
+): boolean {
+	const now = Date.now();
+
+	// Double-check: if feature was assigned in the meantime, we lost the race
+	if (feature.assigned_sandbox && feature.assigned_sandbox !== sandboxLabel) {
+		console.log(
+			`🏃 Race lost: #${feature.id} was claimed by ${feature.assigned_sandbox} while we were checking`,
+		);
+		return false;
+	}
+
+	// Check if assignment is too recent (another sandbox might be claiming it)
+	if (feature.assigned_at) {
+		const timeSinceAssignment = now - feature.assigned_at;
+		if (
+			timeSinceAssignment < ASSIGNMENT_CONFLICT_WINDOW_MS &&
+			feature.assigned_sandbox !== sandboxLabel
+		) {
+			console.log(
+				`🏃 Race detected: #${feature.id} was assigned ${Math.round(timeSinceAssignment / 1000)}s ago`,
+			);
+			return false;
+		}
+	}
+
+	// Claim the feature
+	feature.status = "in_progress";
+	feature.assigned_sandbox = sandboxLabel;
+	feature.assigned_at = now;
+
+	console.log(
+		`✅ Feature #${feature.id} assigned to ${sandboxLabel} at ${now}`,
+	);
+	return true;
 }
 
 // ============================================================================
@@ -140,6 +216,7 @@ export function cleanupStaleState(manifest: SpecManifest): number {
 			);
 			feature.status = "pending";
 			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
 			cleanedCount++;
 		}
 
@@ -149,7 +226,14 @@ export function cleanupStaleState(manifest: SpecManifest): number {
 			(feature.status === "pending" || feature.status === "failed")
 		) {
 			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
 			cleanedCount++;
+		}
+
+		// Clear stale assignment timestamps without active assignments
+		// This handles race condition cleanup
+		if (feature.assigned_at && !feature.assigned_sandbox) {
+			feature.assigned_at = undefined;
 		}
 
 		// Clear error messages from failed features (they'll be retried fresh)

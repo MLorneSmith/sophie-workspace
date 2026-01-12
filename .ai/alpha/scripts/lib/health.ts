@@ -23,6 +23,22 @@ import { saveManifest } from "./manifest.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
+// Startup Timeout Constants
+// ============================================================================
+
+/**
+ * Minimum lines of output expected within startup timeout.
+ * If sandbox produces fewer than this, it's considered hung on startup.
+ */
+const MIN_STARTUP_OUTPUT_LINES = 5;
+
+/**
+ * Time to wait for Claude process to start producing meaningful output (ms).
+ * This is shorter than PROGRESS_FILE_TIMEOUT_MS to catch hung startups early.
+ */
+const STARTUP_OUTPUT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+
+// ============================================================================
 // Health Check
 // ============================================================================
 
@@ -30,6 +46,7 @@ import { sleep } from "./utils.js";
 
 * Check the health of a sandbox that's working on a feature.
 * Returns unhealthy if:
+* * No meaningful output within STARTUP_OUTPUT_TIMEOUT_MS (startup hung)
 * * No progress file created within PROGRESS_FILE_TIMEOUT_MS of starting
 * * Heartbeat is stale (older than HEARTBEAT_STALE_TIMEOUT_MS)
 *
@@ -45,6 +62,20 @@ export async function checkSandboxHealth(
 
 	const now = Date.now();
 	const timeSinceStart = now - instance.featureStartedAt.getTime();
+
+	// Early startup hung detection: check if we've received meaningful output
+	// This catches the case where Claude CLI starts but doesn't do anything useful
+	if (timeSinceStart > STARTUP_OUTPUT_TIMEOUT_MS) {
+		const outputLines = instance.outputLineCount ?? 0;
+		if (outputLines < MIN_STARTUP_OUTPUT_LINES && !instance.hasReceivedOutput) {
+			return {
+				healthy: false,
+				issue: "no_progress_file", // Using existing issue type
+				message: `Startup hung: only ${outputLines} output lines after ${Math.round(timeSinceStart / 60000)} minutes`,
+				timeSinceStart,
+			};
+		}
+	}
 
 	// Try to read progress file
 	try {
@@ -241,10 +272,13 @@ export async function runHealthChecks(
 					if (feature) {
 						feature.status = "pending";
 						feature.assigned_sandbox = undefined;
+						feature.assigned_at = undefined;
 					}
 
 					instance.currentFeature = null;
 					instance.status = "ready";
+					instance.outputLineCount = 0;
+					instance.hasReceivedOutput = false;
 					saveManifest(manifest);
 
 					console.log(`   │   ✓ ${instance.label} ready for retry`);
@@ -267,11 +301,14 @@ export async function runHealthChecks(
 					feature.status = "failed";
 					feature.error = `Health check failed: ${health.message}`;
 					feature.assigned_sandbox = undefined;
+					feature.assigned_at = undefined;
 				}
 
 				instance.currentFeature = null;
 				instance.status = "ready"; // Allow sandbox to take new work
 				instance.retryCount = 0; // Reset for next feature
+				instance.outputLineCount = 0;
+				instance.hasReceivedOutput = false;
 				saveManifest(manifest);
 			}
 		}

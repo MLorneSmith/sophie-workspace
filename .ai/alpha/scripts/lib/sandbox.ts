@@ -222,6 +222,7 @@ export async function createSandbox(
 	manifest.sandbox.created_at =
 		manifest.sandbox.created_at || new Date().toISOString();
 
+	const now = new Date();
 	return {
 		sandbox,
 		id: sandbox.sandboxId,
@@ -229,6 +230,8 @@ export async function createSandbox(
 		status: "ready",
 		currentFeature: null,
 		retryCount: 0,
+		createdAt: now,
+		lastKeepaliveAt: now,
 	};
 }
 
@@ -312,30 +315,79 @@ export async function isSandboxAlive(sandbox: Sandbox): Promise<boolean> {
 
 /**
 
-* Extend timeouts for all sandboxes (keepalive).
+* Extend timeouts for all sandboxes (keepalive) with staggering and verification.
 *
 * @param instances - Array of sandbox instances
 * @param timeoutMs - New timeout in milliseconds
 * @param uiEnabled - Whether UI mode is enabled
+* @param staggerMs - Delay between keepalive calls (default: 0)
 * @returns Array of sandbox labels that failed (expired)
  */
 export async function keepAliveSandboxes(
 	instances: SandboxInstance[],
 	timeoutMs: number,
 	uiEnabled: boolean = false,
+	staggerMs: number = 0,
 ): Promise<string[]> {
 	const { log } = createLogger(uiEnabled);
 	const failed: string[] = [];
 
-	for (const instance of instances) {
-		if (instance.status === "failed") continue;
+	for (let i = 0; i < instances.length; i++) {
+		const instance = instances[i];
+		if (!instance || instance.status === "failed") continue;
 
-		const alive = await extendSandboxTimeout(instance.sandbox, timeoutMs);
+		// Apply stagger delay for subsequent sandboxes
+		if (staggerMs > 0 && i > 0) {
+			await new Promise((resolve) => setTimeout(resolve, staggerMs));
+		}
+
+		// Step 1: Verify sandbox is still responsive before extending timeout
+		const alive = await isSandboxAlive(instance.sandbox);
 		if (!alive) {
+			log(
+				`   ⚠️ Sandbox ${instance.label} not responding to health check (expired?)`,
+			);
+			failed.push(instance.label);
+			continue;
+		}
+
+		// Step 2: Extend the timeout
+		const extended = await extendSandboxTimeout(instance.sandbox, timeoutMs);
+		if (!extended) {
 			log(`   ⚠️ Sandbox ${instance.label} failed to extend timeout (expired?)`);
 			failed.push(instance.label);
+			continue;
 		}
+
+		// Success - update last keepalive timestamp
+		instance.lastKeepaliveAt = new Date();
 	}
 
 	return failed;
+}
+
+/**
+ * Check if any sandbox is approaching max age and needs preemptive restart.
+ *
+ * @param instances - Array of sandbox instances
+ * @param maxAgeMs - Maximum sandbox age before restart (default: 50 min)
+ * @returns Array of sandbox labels that need restart due to age
+ */
+export function getSandboxesNeedingRestart(
+	instances: SandboxInstance[],
+	maxAgeMs: number,
+): string[] {
+	const now = Date.now();
+	const needsRestart: string[] = [];
+
+	for (const instance of instances) {
+		if (instance.status === "failed") continue;
+
+		const age = now - instance.createdAt.getTime();
+		if (age >= maxAgeMs) {
+			needsRestart.push(instance.label);
+		}
+	}
+
+	return needsRestart;
 }

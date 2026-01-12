@@ -96,5 +96,15 @@ export const SANDBOX_TIMEOUT_MULTIPLIER = 1000;
 /** Stagger delay between sandbox creation (ms) */
 export const SANDBOX_STAGGER_DELAY_MS = 20000;
 
-/** Interval for extending sandbox timeouts (keepalive) - 30 minutes */
-export const SANDBOX_KEEPALIVE_INTERVAL_MS = 30 * 60 * 1000;
+/** Interval for extending sandbox timeouts (keepalive) - 15 minutes
+ * Reduced from 30 minutes to provide better overlap with 1-hour sandbox lifetime
+ */
+export const SANDBOX_KEEPALIVE_INTERVAL_MS = 15 * 60 * 1000;
+
+/** Stagger delay between sandbox keepalive calls (ms) - 2 minutes per sandbox */
+export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
+
+/** Maximum sandbox age before forced restart (ms) - 50 minutes
+ * This triggers a preemptive restart 10 minutes before the 1-hour E2B timeout
+ */
+export const SANDBOX_MAX_AGE_MS = 50 * 60 * 1000;

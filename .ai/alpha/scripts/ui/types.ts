@@ -349,6 +349,8 @@ export interface SandboxProgressFile {
 		type: string;
 		message: string;
 	}>;
+	/** Recent output lines from Claude Code execution (real-time from JSON) */
+	recent_output?: string[];
 }
 
 // =============================================================================

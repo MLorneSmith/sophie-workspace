@@ -746,19 +746,30 @@ export function useProgressPoller(
 				),
 			]);
 
-			// Read logs for each sandbox in parallel
-			const logsResults = await Promise.all(
-				sandboxLabels.map((label) => reader.readRecentLogs(label, logsDir, 3)),
-			);
-
 			// Build new sandbox states
 			const newSandboxes = new Map<string, SandboxState>();
+
+			// Track which sandboxes need log file fallback (no recent_output in JSON)
+			const needsLogFallback: { index: number; label: string }[] = [];
 
 			for (let i = 0; i < results.length; i++) {
 				const result = results[i];
 				if (!result) continue;
 
-				const recentOutput = logsResults[i] ?? [];
+				// Prefer recent_output from JSON progress file (real-time)
+				// Fall back to log files only if JSON doesn't have recent_output
+				let recentOutput: string[] = [];
+				if (
+					result.data?.recent_output &&
+					Array.isArray(result.data.recent_output) &&
+					result.data.recent_output.length > 0
+				) {
+					// Use real-time output from JSON (last 3 lines for display)
+					recentOutput = result.data.recent_output.slice(-3);
+				} else {
+					// Mark for log file fallback
+					needsLogFallback.push({ index: i, label: result.label });
+				}
 
 				// Get or generate sandbox ID
 				let sandboxId = sandboxIdsRef.current.get(result.label);
@@ -781,6 +792,32 @@ export function useProgressPoller(
 				);
 
 				newSandboxes.set(result.label, sandboxState);
+			}
+
+			// Fallback: Read logs for sandboxes without recent_output in JSON
+			// This maintains backward compatibility during transition
+			if (needsLogFallback.length > 0) {
+				const logsResults = await Promise.all(
+					needsLogFallback.map(({ label }) =>
+						reader.readRecentLogs(label, logsDir, 3),
+					),
+				);
+
+				// Update sandbox states with log-based output
+				for (let i = 0; i < needsLogFallback.length; i++) {
+					const fallbackEntry = needsLogFallback[i];
+					if (!fallbackEntry) continue;
+					const { label } = fallbackEntry;
+					const logOutput = logsResults[i] ?? [];
+					const existingState = newSandboxes.get(label);
+					if (existingState && logOutput.length > 0) {
+						// Create updated state with log-based output
+						newSandboxes.set(label, {
+							...existingState,
+							recentOutput: logOutput,
+						});
+					}
+				}
 			}
 
 			// Use overall progress from file for manifest-level data (features, initiatives),

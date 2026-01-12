@@ -13,6 +13,8 @@ import {
 	HEALTH_CHECK_INTERVAL_MS,
 	LOGS_DIR,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
+	SANDBOX_KEEPALIVE_STAGGER_MS,
+	SANDBOX_MAX_AGE_MS,
 	SANDBOX_STAGGER_DELAY_MS,
 	UI_PROGRESS_DIR,
 } from "../config/index.js";
@@ -42,6 +44,7 @@ import {
 } from "./manifest.js";
 import {
 	createSandbox,
+	getSandboxesNeedingRestart,
 	getVSCodeUrl,
 	keepAliveSandboxes,
 	startDevServer,
@@ -49,6 +52,7 @@ import {
 import { writeIdleProgress } from "./progress.js";
 import { sleep } from "./utils.js";
 import {
+	assignFeatureToSandbox,
 	cleanupStaleState,
 	getBlockedFeatures,
 	getNextAvailableFeature,
@@ -297,15 +301,98 @@ export async function runWorkLoop(
 	}, HEALTH_CHECK_INTERVAL_MS);
 
 	// Start periodic sandbox keepalive to prevent timeout expiration
+	// Uses staggered timing to prevent simultaneous expirations
 	let keepaliveRunning = false;
 	const keepaliveInterval = setInterval(async () => {
 		if (keepaliveRunning) return;
 		keepaliveRunning = true;
 
 		try {
-			// Extend each sandbox's timeout by the full timeout duration
+			// First, check for sandboxes approaching max age (50 min = preemptive restart)
+			// This prevents the edge case where keepalive and expiration happen simultaneously
+			const needsPreemptiveRestart = getSandboxesNeedingRestart(
+				instances,
+				SANDBOX_MAX_AGE_MS,
+			);
+
+			for (const label of needsPreemptiveRestart) {
+				const instance = instances.find((i) => i.label === label);
+				if (instance && instance.status !== "failed") {
+					const ageMinutes = Math.round(
+						(Date.now() - instance.createdAt.getTime()) / 60000,
+					);
+					log(
+						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, performing preemptive restart...`,
+					);
+
+					// Reset any in-progress feature assigned to this sandbox
+					const feature = manifest.feature_queue.find(
+						(f) => f.assigned_sandbox === label && f.status === "in_progress",
+					);
+					if (feature) {
+						feature.status = "pending";
+						feature.assigned_sandbox = undefined;
+						feature.assigned_at = undefined;
+						feature.error = "Preemptive restart before expiration";
+						saveManifest(manifest);
+					}
+
+					try {
+						// Kill the old sandbox first
+						await instance.sandbox.kill();
+					} catch {
+						// Ignore kill errors - sandbox may already be dead
+					}
+
+					// Create a fresh sandbox
+					try {
+						const newInstance = await createSandbox(
+							manifest,
+							label,
+							timeoutSeconds,
+							uiEnabled,
+						);
+
+						// Replace the old sandbox with the new one
+						instance.sandbox = newInstance.sandbox;
+						instance.id = newInstance.id;
+						instance.status = "ready";
+						instance.currentFeature = null;
+						instance.retryCount = 0;
+						instance.featureStartedAt = undefined;
+						instance.lastProgressSeen = undefined;
+						instance.lastHeartbeat = undefined;
+						instance.outputLineCount = 0;
+						instance.hasReceivedOutput = false;
+						instance.createdAt = newInstance.createdAt;
+						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
+
+						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
+							manifest.sandbox.sandbox_ids.push(newInstance.id);
+						}
+						saveManifest(manifest);
+
+						log(
+							`   ✅ Sandbox ${label} preemptively restarted (${newInstance.id})`,
+						);
+					} catch (restartError) {
+						log(
+							`   ❌ Failed to restart sandbox ${label}: ${restartError instanceof Error ? restartError.message : restartError}`,
+						);
+						instance.status = "failed";
+					}
+				}
+			}
+
+			// Now do regular keepalive with staggered timing
+			// Stagger prevents all sandboxes from extending timeout at the exact same time
 			const timeoutMs = timeoutSeconds * 1000;
-			const failed = await keepAliveSandboxes(instances, timeoutMs, uiEnabled);
+			const failed = await keepAliveSandboxes(
+				instances,
+				timeoutMs,
+				uiEnabled,
+				SANDBOX_KEEPALIVE_STAGGER_MS,
+			);
 
 			// Handle failed sandboxes - attempt restart
 			for (const label of failed) {
@@ -320,6 +407,7 @@ export async function runWorkLoop(
 					if (feature) {
 						feature.status = "pending";
 						feature.assigned_sandbox = undefined;
+						feature.assigned_at = undefined;
 						feature.error = "Sandbox expired - restarting";
 						saveManifest(manifest);
 					}
@@ -343,6 +431,10 @@ export async function runWorkLoop(
 						instance.featureStartedAt = undefined;
 						instance.lastProgressSeen = undefined;
 						instance.lastHeartbeat = undefined;
+						instance.outputLineCount = 0;
+						instance.hasReceivedOutput = false;
+						instance.createdAt = newInstance.createdAt;
+						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
 
 						// Update manifest with new sandbox ID
 						const sandboxIndex = manifest.sandbox.sandbox_ids.indexOf(
@@ -419,10 +511,16 @@ export async function runWorkLoop(
 					continue;
 				}
 
-				// CRITICAL: Mark feature as assigned BEFORE starting async work
-				// This prevents race condition where multiple sandboxes get the same feature
-				feature.status = "in_progress";
-				feature.assigned_sandbox = instance.label;
+				// CRITICAL: Use atomic assignment with timestamp-based conflict detection
+				// This prevents race conditions where multiple sandboxes get the same feature
+				const assigned = assignFeatureToSandbox(feature, instance.label);
+				if (!assigned) {
+					// Lost the race - another sandbox claimed this feature, try again
+					log(
+						`   ⚠️ ${instance.label}: Lost race for #${feature.id}, will retry`,
+					);
+					continue;
+				}
 				saveManifest(manifest);
 
 				// Start work on this sandbox

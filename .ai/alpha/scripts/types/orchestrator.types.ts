@@ -29,6 +29,8 @@ export interface FeatureEntry {
 	dependencies: number[];
 	github_issue: number | null;
 	assigned_sandbox?: string;
+	/** Timestamp when feature was assigned to a sandbox (for race condition detection) */
+	assigned_at?: number;
 	error?: string;
 	requires_database: boolean;
 	database_task_count: number;
@@ -121,6 +123,14 @@ export interface SandboxInstance {
 	lastHeartbeat?: Date;
 	retryCount: number;
 	claudeProcessId?: number;
+	/** Count of output lines received since feature started (for startup detection) */
+	outputLineCount?: number;
+	/** Whether meaningful output has been received (for startup hang detection) */
+	hasReceivedOutput?: boolean;
+	/** When the sandbox was created (for max age tracking) */
+	createdAt: Date;
+	/** Last successful keepalive timestamp */
+	lastKeepaliveAt?: Date;
 }
 
 export interface SandboxProgress {
