@@ -9,6 +9,7 @@
 import {
 	HEARTBEAT_STALE_TIMEOUT_MS,
 	MAX_SANDBOX_RETRIES,
+	MIN_STARTUP_OUTPUT_LINES,
 	PROGRESS_FILE,
 	PROGRESS_FILE_TIMEOUT_MS,
 	WORKSPACE_DIR,
@@ -23,18 +24,18 @@ import { saveManifest } from "./manifest.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
-// Startup Timeout Constants
+// Startup Timeout Configuration
 // ============================================================================
-
-/**
- * Minimum lines of output expected within startup timeout.
- * If sandbox produces fewer than this, it's considered hung on startup.
- */
-const MIN_STARTUP_OUTPUT_LINES = 5;
+// Uses centralized constants from config/index.ts:
+// - STARTUP_TIMEOUT_MS: Initial startup timeout (60s for early detection)
+// - MIN_STARTUP_OUTPUT_LINES: Minimum output lines to consider startup successful
+// - MIN_STARTUP_OUTPUT_BYTES: Minimum output bytes to consider startup successful
 
 /**
  * Time to wait for Claude process to start producing meaningful output (ms).
- * This is shorter than PROGRESS_FILE_TIMEOUT_MS to catch hung startups early.
+ * This is longer than STARTUP_TIMEOUT_MS to allow for slower startups while
+ * still catching complete hangs. Uses 3 minutes for health check (vs 60s for
+ * early detection in feature.ts).
  */
 const STARTUP_OUTPUT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
 

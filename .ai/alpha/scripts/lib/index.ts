@@ -82,6 +82,21 @@ export {
 	startDevServer,
 } from "./sandbox.js";
 
+// Startup monitoring
+export {
+	checkStartupStatus,
+	createStartupOutputTracker,
+	DEFAULT_STARTUP_CONFIG,
+	detectStartupHang,
+	formatStartupAttemptLog,
+	formatStartupFailureLog,
+	formatStartupSuccessLog,
+	getElapsedTime,
+	getRetryDelay,
+	shouldRetry,
+	updateOutputTracker,
+} from "./startup-monitor.js";
+
 // Utilities
 export { sleep } from "./utils.js";
 

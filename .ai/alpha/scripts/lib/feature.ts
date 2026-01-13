@@ -13,8 +13,10 @@ import process from "node:process";
 import {
 	FEATURE_TIMEOUT_MS,
 	LOGS_DIR,
+	MAX_STARTUP_RETRIES,
 	PROGRESS_FILE,
 	RECENT_OUTPUT_LINES,
+	STARTUP_TIMEOUT_MS,
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type {
@@ -22,6 +24,7 @@ import type {
 	FeatureImplementationResult,
 	SandboxInstance,
 	SpecManifest,
+	StartupAttemptRecord,
 } from "../types/index.js";
 import { getAllEnvVars } from "./environment.js";
 import { killClaudeProcess } from "./health.js";
@@ -33,6 +36,13 @@ import {
 	startProgressPolling,
 	writeUIProgress,
 } from "./progress.js";
+import {
+	createStartupOutputTracker,
+	formatStartupFailureLog,
+	formatStartupSuccessLog,
+	getRetryDelay,
+	updateOutputTracker,
+} from "./startup-monitor.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
 // ============================================================================
@@ -230,6 +240,67 @@ export async function runFeatureImplementation(
 		}
 	}, 60000);
 
+	// Track startup attempts for this feature (for diagnostics and retry logic)
+	const startupAttemptRecord: StartupAttemptRecord = {
+		totalAttempts: 1,
+		succeededOnAttempt: null,
+		attemptTimestamps: [new Date().toISOString()],
+		totalStartupTimeMs: 0,
+	};
+
+	// Create startup output tracker for early hang detection
+	const startupTracker = createStartupOutputTracker();
+	let startupHangDetected = false;
+	let startupRecoveryInProgress = false;
+
+	// Startup hang detection - checks in the first 60 seconds if we're receiving output
+	// This is separate from the general stall detection which kicks in after 5 minutes
+	const startupCheckInterval = setInterval(async () => {
+		if (startupRecoveryInProgress || startupHangDetected) return;
+
+		const elapsedMs = Date.now() - startupTracker.startTime.getTime();
+
+		// Only check during startup window (first 60 seconds)
+		if (elapsedMs > STARTUP_TIMEOUT_MS) {
+			// If we've passed the startup window and have meaningful output, we're good
+			if (startupTracker.lineCount >= 5 || startupTracker.byteCount >= 100) {
+				clearInterval(startupCheckInterval);
+				startupAttemptRecord.succeededOnAttempt =
+					startupAttemptRecord.totalAttempts;
+				startupAttemptRecord.totalStartupTimeMs = elapsedMs;
+				log(
+					`   │   ${formatStartupSuccessLog(instance.label, { success: true, outputLines: startupTracker.lineCount, outputBytes: startupTracker.byteCount, elapsedMs }, startupAttemptRecord.totalAttempts)}`,
+				);
+				return;
+			}
+
+			// Startup hung - not enough output within timeout
+			startupHangDetected = true;
+			startupRecoveryInProgress = true;
+
+			log(
+				`   │   ${formatStartupFailureLog(instance.label, { success: false, outputLines: startupTracker.lineCount, outputBytes: startupTracker.byteCount, elapsedMs, error: `No meaningful output after ${Math.round(elapsedMs / 1000)}s` }, startupAttemptRecord.totalAttempts)}`,
+			);
+
+			// Check if we should retry
+			if (startupAttemptRecord.totalAttempts < MAX_STARTUP_RETRIES) {
+				const retryDelay = getRetryDelay(startupAttemptRecord.totalAttempts);
+				if (retryDelay !== null) {
+					log(
+						`   │   🔄 Will retry startup (attempt ${startupAttemptRecord.totalAttempts + 1}/${MAX_STARTUP_RETRIES}) after ${retryDelay / 1000}s delay`,
+					);
+				}
+			} else {
+				log(
+					`   │   ❌ Max startup retries (${MAX_STARTUP_RETRIES}) exceeded - marking feature as failed`,
+				);
+			}
+
+			// Kill the Claude process to trigger retry
+			await killClaudeProcess(instance);
+		}
+	}, 10000); // Check every 10 seconds during startup
+
 	try {
 		// run-claude script uses unbuffer internally for PTY allocation
 		// (stdbuf doesn't work on Node.js processes like Claude CLI)
@@ -243,6 +314,9 @@ export async function runFeatureImplementation(
 
 					// Always write to log file (persisted on orchestrator machine)
 					logStream.write(data);
+
+					// Track output in startup tracker for early hang detection
+					updateOutputTracker(startupTracker, data);
 
 					// Track recent output lines for UI
 					const lines = data.split("\n");
@@ -280,9 +354,10 @@ export async function runFeatureImplementation(
 			},
 		);
 
-		// Stop polling, stall detection, and UI progress updates
+		// Stop polling, stall detection, startup monitoring, and UI progress updates
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
+		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);
 
 		// Close the log stream
@@ -403,9 +478,10 @@ export async function runFeatureImplementation(
 			error: status !== "completed" ? `Feature ${status}` : undefined,
 		};
 	} catch (error) {
-		// Stop polling, stall detection, and UI progress updates on error
+		// Stop polling, stall detection, startup monitoring, and UI progress updates on error
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
+		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);
 
 		// Close the log stream
@@ -413,11 +489,14 @@ export async function runFeatureImplementation(
 
 		const errorMessage = error instanceof Error ? error.message : String(error);
 
-		// Check if this was a stall-triggered kill
+		// Check if this was a stall-triggered kill or startup hang recovery
 		const wasStallRecovery = stallDetected;
-		const finalError = wasStallRecovery
-			? `Stall detected and recovered: ${errorMessage}`
-			: errorMessage;
+		const wasStartupHang = startupHangDetected;
+		const finalError = wasStartupHang
+			? `Startup hang detected: ${errorMessage}`
+			: wasStallRecovery
+				? `Stall detected and recovered: ${errorMessage}`
+				: errorMessage;
 
 		feature.status = "failed";
 		feature.error = finalError;
@@ -431,7 +510,7 @@ export async function runFeatureImplementation(
 		saveManifest(manifest);
 
 		log(`   └── ❌ Error: ${finalError}`);
-		if (wasStallRecovery) {
+		if (wasStallRecovery || wasStartupHang) {
 			log("   │   Feature will be retried by another sandbox");
 		}
 

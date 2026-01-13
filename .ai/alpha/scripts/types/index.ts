@@ -16,5 +16,8 @@ export type {
 	SandboxInstance,
 	SandboxProgress,
 	SpecManifest,
+	StartupAttemptRecord,
+	StartupConfig,
+	StartupMonitorResult,
 	UIManager,
 } from "./orchestrator.types.js";

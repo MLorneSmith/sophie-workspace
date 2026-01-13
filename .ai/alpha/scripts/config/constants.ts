@@ -96,8 +96,11 @@ export const FEATURE_TIMEOUT_MS = 1800000;
 /** Sandbox creation timeout (multiplier for options.timeout) */
 export const SANDBOX_TIMEOUT_MULTIPLIER = 1000;
 
-/** Stagger delay between sandbox creation (ms) */
-export const SANDBOX_STAGGER_DELAY_MS = 20000;
+/** Stagger delay between sandbox creation (ms)
+ * Increased to 30 seconds to prevent API thundering herd problem
+ * where multiple Claude CLI instances start simultaneously.
+ */
+export const SANDBOX_STAGGER_DELAY_MS = 30000;
 
 /** Interval for extending sandbox timeouts (keepalive) - 15 minutes
  * Reduced from 30 minutes to provide better overlap with 1-hour sandbox lifetime
@@ -111,3 +114,32 @@ export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
  * This triggers a preemptive restart 10 minutes before the 1-hour E2B timeout
  */
 export const SANDBOX_MAX_AGE_MS = 50 * 60 * 1000;
+
+// ============================================================================
+// Startup Retry Configuration
+// ============================================================================
+
+/** Timeout for Claude CLI startup (ms) - 60 seconds
+ * If no meaningful output is received within this time, consider startup hung.
+ */
+export const STARTUP_TIMEOUT_MS = 60 * 1000;
+
+/** Retry delays for startup failures (ms) - exponential backoff: 5s, 10s, 30s
+ * These delays are applied between retry attempts after startup timeouts.
+ */
+export const STARTUP_RETRY_DELAYS_MS = [5 * 1000, 10 * 1000, 30 * 1000];
+
+/** Maximum startup retry attempts
+ * After this many attempts, the feature is marked as failed.
+ */
+export const MAX_STARTUP_RETRIES = 3;
+
+/** Minimum output bytes to consider startup successful
+ * Successful Claude CLI runs produce >500 bytes immediately.
+ */
+export const MIN_STARTUP_OUTPUT_BYTES = 100;
+
+/** Minimum output lines expected within startup timeout
+ * If fewer than this, startup may be hung.
+ */
+export const MIN_STARTUP_OUTPUT_LINES = 5;

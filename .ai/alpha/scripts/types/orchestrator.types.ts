@@ -205,3 +205,53 @@ export interface ReviewUrl {
 	vscode: string;
 	devServer: string;
 }
+
+// ============================================================================
+// Startup Monitoring Types
+// ============================================================================
+
+/**
+ * Result of a startup monitoring check.
+ */
+export interface StartupMonitorResult {
+	/** Whether startup is considered successful */
+	success: boolean;
+	/** Number of bytes of output received */
+	outputBytes: number;
+	/** Number of lines of output received */
+	outputLines: number;
+	/** Time elapsed since startup began (ms) */
+	elapsedMs: number;
+	/** Error message if startup failed */
+	error?: string;
+}
+
+/**
+ * Configuration for startup timeout and retry behavior.
+ */
+export interface StartupConfig {
+	/** Timeout for startup (ms) */
+	timeoutMs: number;
+	/** Delays between retry attempts (ms) */
+	retryDelays: number[];
+	/** Maximum number of retry attempts */
+	maxRetries: number;
+	/** Minimum bytes of output to consider startup successful */
+	minOutputBytes: number;
+	/** Minimum lines of output to consider startup successful */
+	minOutputLines: number;
+}
+
+/**
+ * Tracks startup attempts for a feature implementation.
+ */
+export interface StartupAttemptRecord {
+	/** Total number of startup attempts made */
+	totalAttempts: number;
+	/** Which attempt succeeded (null if all failed) */
+	succeededOnAttempt: number | null;
+	/** Timestamps of each attempt */
+	attemptTimestamps: string[];
+	/** Total time spent on startup attempts (ms) */
+	totalStartupTimeMs: number;
+}
