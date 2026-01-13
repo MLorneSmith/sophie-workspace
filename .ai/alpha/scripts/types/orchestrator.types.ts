@@ -159,6 +159,7 @@ export interface SandboxProgress {
 	last_heartbeat?: string;
 	last_tool?: string;
 	phase?: string;
+	recent_output?: string[];
 }
 
 // ============================================================================

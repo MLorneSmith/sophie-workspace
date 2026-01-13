@@ -183,7 +183,11 @@ export function writeUIProgress(
 		last_commit: progress?.last_commit,
 		session_id: instance.id,
 		// Include recent output for UI visibility
-		recent_output: outputTracker?.recentOutput?.slice(-20) || [],
+		// Prefer hook-generated tool events from sandbox file, fallback to stdout capture
+		recent_output:
+			progress?.recent_output?.slice(-20) ||
+			outputTracker?.recentOutput?.slice(-20) ||
+			[],
 	};
 
 	try {
