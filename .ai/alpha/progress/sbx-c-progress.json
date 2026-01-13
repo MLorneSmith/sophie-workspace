@@ -1,16 +1,16 @@
 {
-	"sandbox_id": "iasithq4cwnur1otmjwr2",
-	"feature": {
-		"issue_number": 1375,
-		"title": "Activity Feed Component"
-	},
-	"status": "running",
-	"phase": "executing",
-	"last_heartbeat": "2026-01-10T01:03:19.849637Z",
-	"last_tool": "Edit",
-	"session_id": "iasithq4cwnur1otmjwr2",
-	"recent_output": [
-		"Using OAuth authentication (Max plan)",
-		"Running Claude Code with prompt: /alpha:implement 1375"
+	"sandbox_id": "i8w6ut5no0fl21ltdtiyx",
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 0,
+	"status": "idle",
+	"phase": "waiting",
+	"last_heartbeat": "2026-01-12T17:00:00.017Z",
+	"session_id": "i8w6ut5no0fl21ltdtiyx",
+	"waiting_reason": "Waiting for dependencies (3 features blocked)",
+	"blocked_by": [
+		1371,
+		1372,
+		1375
 	]
 }
