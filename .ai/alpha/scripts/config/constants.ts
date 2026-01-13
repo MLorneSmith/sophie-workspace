@@ -97,10 +97,13 @@ export const FEATURE_TIMEOUT_MS = 1800000;
 export const SANDBOX_TIMEOUT_MULTIPLIER = 1000;
 
 /** Stagger delay between sandbox creation (ms)
- * Increased to 30 seconds to prevent API thundering herd problem
+ * Increased to 60 seconds to prevent API thundering herd problem
  * where multiple Claude CLI instances start simultaneously.
+ * This longer delay reduces concurrent API connections and helps
+ * avoid OAuth session limits and rate limiting issues.
+ * See bug fix #1449 for details.
  */
-export const SANDBOX_STAGGER_DELAY_MS = 30000;
+export const SANDBOX_STAGGER_DELAY_MS = 60000;
 
 /** Interval for extending sandbox timeouts (keepalive) - 15 minutes
  * Reduced from 30 minutes to provide better overlap with 1-hour sandbox lifetime

@@ -26,7 +26,7 @@ import type {
 	SpecManifest,
 	StartupAttemptRecord,
 } from "../types/index.js";
-import { getAllEnvVars } from "./environment.js";
+import { getAllEnvVars, getAuthMethod } from "./environment.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
 import { saveManifest } from "./manifest.js";
@@ -176,7 +176,11 @@ export async function runFeatureImplementation(
 	}
 
 	const prompt = `/alpha:implement ${feature.id}`;
+	const authMethod = getAuthMethod();
 	log(`│   Running: ${prompt}`);
+	log(
+		`│   Auth: ${authMethod === "api_key" ? "API key (preferred)" : authMethod === "oauth" ? "OAuth" : "none"}`,
+	);
 
 	let capturedStdout = "";
 	let capturedStderr = "";

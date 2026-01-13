@@ -121,15 +121,34 @@ export function checkEnvironment(): void {
 * Get all environment variables to inject into E2B sandboxes.
 * Includes Claude auth, GitHub, Supabase, Payload CMS, and R2 credentials.
  */
+/**
+ * Get the authentication method being used for Claude CLI.
+ * Returns "api_key" if ANTHROPIC_API_KEY is set, "oauth" if only OAuth token available, or "none".
+ */
+export function getAuthMethod(): "api_key" | "oauth" | "none" {
+	if (ANTHROPIC_API_KEY) {
+		return "api_key";
+	}
+	const oauthToken = getCachedOAuthToken();
+	if (oauthToken) {
+		return "oauth";
+	}
+	return "none";
+}
+
 export function getAllEnvVars(): Record<string, string> {
 	const envs: Record<string, string> = {};
 
-	// Claude authentication
+	// Claude authentication - Prefer API key over OAuth for automated systems
+	// API key is simpler, more reliable, and avoids OAuth session limits.
+	// See bug fix #1449 for details.
+	if (ANTHROPIC_API_KEY) {
+		envs.ANTHROPIC_API_KEY = ANTHROPIC_API_KEY;
+	}
+	// Also inject OAuth token as fallback if API key is not set
 	const oauthToken = getCachedOAuthToken();
 	if (oauthToken) {
 		envs.CLAUDE_CODE_OAUTH_TOKEN = oauthToken;
-	} else if (ANTHROPIC_API_KEY) {
-		envs.ANTHROPIC_API_KEY = ANTHROPIC_API_KEY;
 	}
 
 	// GitHub

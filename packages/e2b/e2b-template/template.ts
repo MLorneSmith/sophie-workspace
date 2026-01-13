@@ -52,10 +52,12 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# Check authentication
-if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ] && [ -z "$ANTHROPIC_API_KEY" ]; then
+# Check authentication - Prefer API key over OAuth for reliability
+# API key is simpler and avoids OAuth session limits in automated environments
+# See bug fix #1449 for details
+if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
     echo "ERROR: No Claude authentication found"
-    echo "Set CLAUDE_CODE_OAUTH_TOKEN (for Max plan) or ANTHROPIC_API_KEY"
+    echo "Set ANTHROPIC_API_KEY (preferred) or CLAUDE_CODE_OAUTH_TOKEN (for Max plan)"
     exit 1
 fi
 
@@ -70,10 +72,18 @@ if ! command -v claude &> /dev/null; then
     exit 1
 fi
 
-if [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+# Set environment variables for reliable terminal handling in containers
+# TERM=dumb prevents ANSI escape sequences that may confuse output parsing
+# NO_COLOR=1 prevents color codes in output
+# CI=true signals non-interactive mode (already set in template envs)
+export TERM=dumb
+export NO_COLOR=1
+
+# Report which authentication method is being used (API key preferred)
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+    echo "Using API key authentication (preferred)"
+elif [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
     echo "Using OAuth authentication (Max plan)"
-else
-    echo "Using API key authentication"
 fi
 
 echo "Running Claude Code with prompt: $1"
