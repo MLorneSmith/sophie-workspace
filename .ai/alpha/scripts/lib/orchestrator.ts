@@ -42,6 +42,7 @@ import {
 	saveManifest,
 	writeOverallProgress,
 } from "./manifest.js";
+import { writeIdleProgress } from "./progress.js";
 import {
 	createSandbox,
 	getSandboxesNeedingRestart,
@@ -49,7 +50,6 @@ import {
 	keepAliveSandboxes,
 	startDevServer,
 } from "./sandbox.js";
-import { writeIdleProgress } from "./progress.js";
 import { sleep } from "./utils.js";
 import {
 	assignFeatureToSandbox,

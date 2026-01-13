@@ -23,11 +23,11 @@ import { defaultBuildLogger, Template } from "e2b";
 // Note: This import path assumes the script is run from the project root
 // or that the module resolution can find the package
 import {
-	template,
-	TEMPLATE_ALIAS,
 	DEV_TEMPLATE_ALIAS,
-	WORKSPACE_DIR,
 	REPO_BRANCH,
+	TEMPLATE_ALIAS,
+	template,
+	WORKSPACE_DIR,
 } from "../../../../packages/e2b/e2b-template/template";
 
 async function buildTemplate(isDev: boolean = false): Promise<void> {
