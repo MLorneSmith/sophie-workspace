@@ -1,5 +1,5 @@
-import { expect, test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
+import { expect, test } from "../utils/base-test";
 
 test.describe("JWT Debug Test", () => {
 	test("test bootstrapUser JWT", async ({ page }) => {

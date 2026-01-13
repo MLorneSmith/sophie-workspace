@@ -5,20 +5,19 @@ import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { config as dotenvConfig } from "dotenv";
 import { TOTP } from "totp-generator";
-
+import {
+	logCookieDetails,
+	verifyCookieAttributes,
+	verifyCookiesPresent,
+} from "./tests/helpers/cookie-verification";
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
 import {
-	checkSupabaseHealth,
 	checkNextJsHealth,
 	checkPayloadHealth,
+	checkSupabaseHealth,
 	logHealthCheckResults,
 } from "./tests/utils/server-health-check";
-import {
-	verifyCookiesPresent,
-	logCookieDetails,
-	verifyCookieAttributes,
-} from "./tests/helpers/cookie-verification";
 
 // Ensure environment variables are loaded
 dotenvConfig({

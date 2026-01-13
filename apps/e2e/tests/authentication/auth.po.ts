@@ -1,7 +1,6 @@
-import { test, expect, type Page } from "../utils/base-test";
 import { createClient } from "@supabase/supabase-js";
-
 import type { AUTH_STATES } from "../utils/auth-state";
+import { expect, type Page, test } from "../utils/base-test";
 import { Mailbox } from "../utils/mailbox";
 import { testConfig } from "../utils/test-config";
 

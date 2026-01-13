@@ -1,7 +1,7 @@
 import { expect, test } from "../utils/base-test";
+import { unlockPayloadUser } from "../utils/database-utilities";
 import { TEST_USERS } from "./helpers/test-data";
 import { PayloadLoginPage } from "./pages/PayloadLoginPage";
-import { unlockPayloadUser } from "../utils/database-utilities";
 
 /**
  * NOTE: This test file intentionally uses UI-based login rather than storage state.

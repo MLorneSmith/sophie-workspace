@@ -2,9 +2,9 @@
 
 import type { SurveyQuestion } from "@kit/cms-types";
 import { Button } from "@kit/ui/button";
-import { cn } from "@kit/ui/utils";
 import { RadioGroup, RadioGroupItem } from "@kit/ui/radio-group";
 import { Trans } from "@kit/ui/trans";
+import { cn } from "@kit/ui/utils";
 import { useState } from "react";
 
 type ScaleQuestionProps = {

@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { defaultBuildLogger, Template } from "e2b";
-import { template, TEMPLATE_ALIAS } from "./template";
+import { TEMPLATE_ALIAS, template } from "./template";
 
 async function main() {
 	// biome-ignore lint/suspicious/noConsole: CLI build script requires console output

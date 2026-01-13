@@ -26,6 +26,7 @@ import { toast } from "sonner";
 
 // Dynamically import the Confetti component to avoid SSR issues
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
+
 // Import database types
 import type { Database } from "~/lib/database.types";
 import {

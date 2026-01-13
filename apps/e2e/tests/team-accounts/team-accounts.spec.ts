@@ -1,7 +1,7 @@
-import { expect, type Page, test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { InvitationsPageObject } from "../invitations/invitations.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { expect, type Page, test } from "../utils/base-test";
 import {
 	CI_TIMEOUTS,
 	navigateAndWaitForHydration,

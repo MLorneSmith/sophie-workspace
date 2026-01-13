@@ -1,6 +1,6 @@
-import { test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { TEST_USERS } from "../helpers/test-users";
+import { test } from "../utils/base-test";
 
 /**
  * Debug test to identify what elements are actually available on the settings page

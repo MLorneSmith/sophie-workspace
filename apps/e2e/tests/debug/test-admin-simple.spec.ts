@@ -1,5 +1,5 @@
-import { expect, test } from "../utils/base-test";
 import { TOTP } from "totp-generator";
+import { expect, test } from "../utils/base-test";
 
 const ADMIN_EMAIL = "michael@slideheroes.com";
 const ADMIN_PASSWORD = "aiesec1992";

@@ -1,7 +1,6 @@
-import { expect, test } from "../utils/base-test";
-
 import { AuthPageObject } from "../authentication/auth.po";
 import { InvitationsPageObject } from "../invitations/invitations.po";
+import { expect, test } from "../utils/base-test";
 import { TeamAccountsPageObject } from "./team-accounts.po";
 
 test.describe("Team Invitation with MFA Flow", () => {

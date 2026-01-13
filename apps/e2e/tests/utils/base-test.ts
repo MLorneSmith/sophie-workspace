@@ -94,4 +94,4 @@ export const test = baseTest.extend({
 
 // Re-export expect and types for convenience
 export { expect };
-export type { Page, BrowserContext, Request, Response } from "@playwright/test";
+export type { BrowserContext, Page, Request, Response } from "@playwright/test";

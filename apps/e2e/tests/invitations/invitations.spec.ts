@@ -1,6 +1,6 @@
-import { expect, test } from "../utils/base-test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { expect, test } from "../utils/base-test";
 import { unbanUser } from "../utils/database-utilities";
 import { InvitationsPageObject } from "./invitations.po";
 

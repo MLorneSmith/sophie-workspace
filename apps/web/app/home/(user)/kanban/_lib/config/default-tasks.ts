@@ -5,9 +5,9 @@
  * Uses the comprehensive 69-task presentation development workflow.
  */
 
-export { PRESENTATION_TASKS as DEFAULT_TASKS } from "./presentation-tasks";
 export {
 	PRESENTATION_PHASES,
+	PRESENTATION_TASKS as DEFAULT_TASKS,
 	PRESENTATION_TASKS_SUMMARY,
 	type PresentationPhase,
 } from "./presentation-tasks";
