@@ -5,7 +5,7 @@
  * These tests verify the fixes for GitHub issue #1431.
  */
 
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FeatureEntry, SpecManifest } from "../../types/index.js";
 
 // Mock the manifest module before importing work-queue
