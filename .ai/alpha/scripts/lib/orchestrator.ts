@@ -6,7 +6,7 @@
 * Manages the work loop, dry run output, and summary generation.
  */
 
-import { spawn, type ChildProcess } from "node:child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import * as path from "node:path";
 import process from "node:process";
 
@@ -372,6 +372,13 @@ export async function runWorkLoop(
 						`   🔄 Attempting to restart failed sandbox ${instance.label}...`,
 					);
 					try {
+						// CRITICAL: Kill the old sandbox before creating new one
+						try {
+							await instance.sandbox.kill();
+						} catch {
+							// Ignore kill errors - sandbox may already be dead
+						}
+
 						// Capture old ID before reassignment for cleanup
 						const oldSandboxId = instance.id;
 
@@ -545,6 +552,13 @@ export async function runWorkLoop(
 					// Attempt to restart the sandbox
 					try {
 						log(`   🔄 Restarting sandbox ${label}...`);
+
+						// CRITICAL: Kill the old sandbox before creating new one
+						try {
+							await instance.sandbox.kill();
+						} catch {
+							// Ignore kill errors - sandbox may already be dead
+						}
 
 						// Capture old ID before reassignment for cleanup
 						const oldSandboxId = instance.id;
