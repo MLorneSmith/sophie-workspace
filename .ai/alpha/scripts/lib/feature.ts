@@ -249,7 +249,8 @@ export async function runFeatureImplementation(
 	};
 
 	// Create startup output tracker for early hang detection
-	const startupTracker = createStartupOutputTracker();
+	// NOTE: This tracker is reset at the start of each retry attempt
+	let startupTracker = createStartupOutputTracker();
 	let startupHangDetected = false;
 	let startupRecoveryInProgress = false;
 
@@ -301,59 +302,136 @@ export async function runFeatureImplementation(
 		}
 	}, 10000); // Check every 10 seconds during startup
 
-	try {
-		// run-claude script uses unbuffer internally for PTY allocation
-		// (stdbuf doesn't work on Node.js processes like Claude CLI)
-		const result = await instance.sandbox.commands.run(
-			`run-claude "${prompt.replace(/"/g, '\\"')}"`,
-			{
-				timeoutMs: FEATURE_TIMEOUT_MS,
-				envs: getAllEnvVars(),
-				onStdout: (data) => {
-					capturedStdout += data;
+	// ============================================================================
+	// Retry Loop for Startup Hang Recovery
+	// ============================================================================
+	// When Claude CLI hangs during startup (no output within 60s), the startup
+	// check interval detects it, sets startupHangDetected=true, and kills the process.
+	// This retry loop catches that error and retries with exponential backoff.
+	let executionResult: Awaited<
+		ReturnType<typeof instance.sandbox.commands.run>
+	> | null = null;
 
-					// Always write to log file (persisted on orchestrator machine)
-					logStream.write(data);
+	for (
+		let attemptNumber = 1;
+		attemptNumber <= MAX_STARTUP_RETRIES;
+		attemptNumber++
+	) {
+		// Track this attempt in the startup record
+		startupAttemptRecord.totalAttempts = attemptNumber;
+		if (attemptNumber > 1) {
+			startupAttemptRecord.attemptTimestamps.push(new Date().toISOString());
+		}
 
-					// Track output in startup tracker for early hang detection
-					updateOutputTracker(startupTracker, data);
+		// CRITICAL: Reset startup tracking state for this attempt
+		// This ensures fresh tracking for each retry
+		startupTracker = createStartupOutputTracker();
+		startupHangDetected = false;
+		startupRecoveryInProgress = false;
 
-					// Track recent output lines for UI
-					const lines = data.split("\n");
-					for (const line of lines) {
-						if (line.trim()) {
-							recentOutput.push(line);
-							// Keep only last N lines
-							if (recentOutput.length > RECENT_OUTPUT_LINES) {
-								recentOutput.shift();
-							}
-							// Track output for startup hung detection
-							instance.outputLineCount = (instance.outputLineCount ?? 0) + 1;
-							// Mark as having received meaningful output
-							// (more than just startup banner)
-							if ((instance.outputLineCount ?? 0) >= 5) {
-								instance.hasReceivedOutput = true;
-							}
-						}
-					}
+		// Reset output tracking on retry (but keep log file stream open)
+		if (attemptNumber > 1) {
+			capturedStdout = "";
+			capturedStderr = "";
+			recentOutput.length = 0;
+			instance.outputLineCount = 0;
+			instance.hasReceivedOutput = false;
+			log(
+				`   │   🔄 [STARTUP_ATTEMPT_${attemptNumber}] ${instance.label}: Retrying Claude CLI (attempt ${attemptNumber}/${MAX_STARTUP_RETRIES})`,
+			);
+			logStream.write(
+				`\n=== RETRY ATTEMPT ${attemptNumber}/${MAX_STARTUP_RETRIES} ===\n`,
+			);
+		}
 
-					// Only output to console when UI is disabled
-					if (!uiEnabled) {
+		try {
+			// run-claude script uses unbuffer internally for PTY allocation
+			// (stdbuf doesn't work on Node.js processes like Claude CLI)
+			executionResult = await instance.sandbox.commands.run(
+				`run-claude "${prompt.replace(/"/g, '\\"')}"`,
+				{
+					timeoutMs: FEATURE_TIMEOUT_MS,
+					envs: getAllEnvVars(),
+					onStdout: (data) => {
+						capturedStdout += data;
+
+						// Always write to log file (persisted on orchestrator machine)
+						logStream.write(data);
+
+						// Track output in startup tracker for early hang detection
+						updateOutputTracker(startupTracker, data);
+
+						// Track recent output lines for UI
+						const lines = data.split("\n");
 						for (const line of lines) {
 							if (line.trim()) {
-								process.stdout.write(`│   ${line}\n`);
+								recentOutput.push(line);
+								// Keep only last N lines
+								if (recentOutput.length > RECENT_OUTPUT_LINES) {
+									recentOutput.shift();
+								}
+								// Track output for startup hung detection
+								instance.outputLineCount = (instance.outputLineCount ?? 0) + 1;
+								// Mark as having received meaningful output
+								// (more than just startup banner)
+								if ((instance.outputLineCount ?? 0) >= 5) {
+									instance.hasReceivedOutput = true;
+								}
 							}
 						}
-					}
-				},
-				onStderr: (data) => {
-					capturedStderr += data;
-					// Also write stderr to log file
-					logStream.write(`[STDERR] ${data}`);
-				},
-			},
-		);
 
+						// Only output to console when UI is disabled
+						if (!uiEnabled) {
+							for (const line of lines) {
+								if (line.trim()) {
+									process.stdout.write(`│   ${line}\n`);
+								}
+							}
+						}
+					},
+					onStderr: (data) => {
+						capturedStderr += data;
+						// Also write stderr to log file
+						logStream.write(`[STDERR] ${data}`);
+					},
+				},
+			);
+
+			// Success - record which attempt succeeded and break out of retry loop
+			startupAttemptRecord.succeededOnAttempt = attemptNumber;
+			if (attemptNumber > 1) {
+				log(
+					`   │   ✅ [STARTUP_SUCCESS] ${instance.label}: Claude CLI started successfully on attempt ${attemptNumber}`,
+				);
+			}
+			break; // Exit retry loop on success
+		} catch (retryError) {
+			// Check if this was a startup hang that we should retry
+			if (startupHangDetected && attemptNumber < MAX_STARTUP_RETRIES) {
+				// Startup hang detected - wait with exponential backoff then retry
+				const retryDelay = getRetryDelay(attemptNumber);
+				if (retryDelay !== null) {
+					log(
+						`   │   ⏳ Waiting ${retryDelay / 1000}s before retry attempt ${attemptNumber + 1}/${MAX_STARTUP_RETRIES}...`,
+					);
+					logStream.write(
+						`\n=== WAITING ${retryDelay / 1000}s BEFORE RETRY ===\n`,
+					);
+					await new Promise((resolve) => setTimeout(resolve, retryDelay));
+				}
+				continue; // Retry
+			}
+
+			// Max retries exceeded OR different error - propagate to outer catch
+			throw retryError;
+		}
+	}
+
+	// At this point, executionResult should be set from successful attempt
+	// If all retries failed, we would have thrown in the catch block above
+	const result = executionResult!;
+
+	try {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates
 		progressPoller.stop();
 		clearInterval(stallCheckInterval);
@@ -492,11 +570,21 @@ export async function runFeatureImplementation(
 		// Check if this was a stall-triggered kill or startup hang recovery
 		const wasStallRecovery = stallDetected;
 		const wasStartupHang = startupHangDetected;
-		const finalError = wasStartupHang
-			? `Startup hang detected: ${errorMessage}`
-			: wasStallRecovery
-				? `Stall detected and recovered: ${errorMessage}`
-				: errorMessage;
+		const maxRetriesExhausted =
+			wasStartupHang &&
+			startupAttemptRecord.totalAttempts >= MAX_STARTUP_RETRIES;
+
+		// Construct error message with retry information
+		let finalError: string;
+		if (wasStartupHang && maxRetriesExhausted) {
+			finalError = `Startup hang detected after ${MAX_STARTUP_RETRIES} retries: ${errorMessage}`;
+		} else if (wasStartupHang) {
+			finalError = `Startup hang detected: ${errorMessage}`;
+		} else if (wasStallRecovery) {
+			finalError = `Stall detected and recovered: ${errorMessage}`;
+		} else {
+			finalError = errorMessage;
+		}
 
 		feature.status = "failed";
 		feature.error = finalError;
@@ -510,7 +598,18 @@ export async function runFeatureImplementation(
 		saveManifest(manifest);
 
 		log(`   └── ❌ Error: ${finalError}`);
-		if (wasStallRecovery || wasStartupHang) {
+
+		// Log additional diagnostic information for startup failures
+		if (wasStartupHang) {
+			log(
+				`   │   📊 Startup attempts: ${startupAttemptRecord.totalAttempts}/${MAX_STARTUP_RETRIES}`,
+			);
+			log(
+				`   │   ⏱️  Attempt timestamps: ${startupAttemptRecord.attemptTimestamps.join(", ")}`,
+			);
+		}
+
+		if (wasStallRecovery || (wasStartupHang && !maxRetriesExhausted)) {
 			log("   │   Feature will be retried by another sandbox");
 		}
 
