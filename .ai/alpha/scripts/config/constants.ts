@@ -83,6 +83,9 @@ export const VSCODE_PORT = 8080;
 /** Dev server port in sandbox */
 export const DEV_SERVER_PORT = 3000;
 
+/** Event server port for WebSocket streaming (local orchestrator) */
+export const EVENT_SERVER_PORT = 9000;
+
 // ============================================================================
 // Timeouts
 // ============================================================================

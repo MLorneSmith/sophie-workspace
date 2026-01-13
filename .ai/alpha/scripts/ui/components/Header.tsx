@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 import React, { useEffect, useState } from "react";
 import type { HeaderProps, OverallProgress } from "../types.js";
+import { EventStreamStatus } from "./EventStreamStatus.js";
 
 /**
  * Format elapsed time as human-readable string
@@ -61,7 +62,12 @@ function getStatusIcon(status: OverallProgress["status"]): string {
  *
  * Memoized to prevent re-renders when other parts of state change
  */
-const HeaderImpl: React.FC<HeaderProps> = ({ progress, sessionStartTime }) => {
+const HeaderImpl: React.FC<HeaderProps> = ({
+	progress,
+	sessionStartTime,
+	eventStreamStatus,
+	eventStreamCount,
+}) => {
 	// Auto-update elapsed time every second
 	const [elapsed, setElapsed] = useState(() =>
 		formatElapsedTime(sessionStartTime),
@@ -105,12 +111,22 @@ const HeaderImpl: React.FC<HeaderProps> = ({ progress, sessionStartTime }) => {
 				</Box>
 			</Box>
 
-			{/* Bottom row: Spec name and Elapsed time */}
+			{/* Bottom row: Spec name, Event Stream Status, and Elapsed time */}
 			<Box justifyContent="space-between" marginTop={1}>
-				<Text>{truncateText(progress.specName, 60)}</Text>
+				<Text>{truncateText(progress.specName, 50)}</Text>
 				<Box>
-					<Text dimColor>Elapsed: </Text>
-					<Text color="white">{elapsed}</Text>
+					{eventStreamStatus && (
+						<Box marginRight={2}>
+							<EventStreamStatus
+								status={eventStreamStatus}
+								eventCount={eventStreamCount}
+							/>
+						</Box>
+					)}
+					<Box>
+						<Text dimColor>Elapsed: </Text>
+						<Text color="white">{elapsed}</Text>
+					</Box>
 				</Box>
 			</Box>
 		</Box>

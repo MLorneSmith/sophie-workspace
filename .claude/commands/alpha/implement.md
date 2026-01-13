@@ -5,22 +5,27 @@ model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 hooks:
   PostToolUse:
+    - matcher: ""
+      hooks:
+        - type: command
+          command: "HOOK_EVENT_TYPE=post_tool_use python3 $CLAUDE_PROJECT_DIR/.claude/hooks/event_reporter.py || true"
+          timeout: 3
     - matcher: "TodoWrite"
       hooks:
         - type: command
-          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/task_progress.py || true"
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/task_progress_stream.py || true"
           timeout: 3
   SubagentStop:
     - matcher: ""
       hooks:
         - type: command
-          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_complete.py || true"
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_complete_stream.py || true"
           timeout: 3
   Stop:
     - matcher: ""
       hooks:
         - type: command
-          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/feature_complete.py || true"
+          command: "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/feature_complete_stream.py || true"
           timeout: 5
 ---
 

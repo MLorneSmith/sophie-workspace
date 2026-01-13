@@ -1,29 +1,5 @@
 [
 	{
-		"timestamp": "2026-01-09T21:27:19.477994Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "a7dc18e"
-	},
-	{
-		"timestamp": "2026-01-09T21:41:19.409396Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "abc6a9c"
-	},
-	{
-		"timestamp": "2026-01-09T21:43:32.712732Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "aab4a7f"
-	},
-	{
-		"timestamp": "2026-01-09T21:46:27.910039Z",
-		"type": "subagent_complete",
-		"agent_type": "unknown",
-		"agent_id": "a152881"
-	},
-	{
 		"timestamp": "2026-01-09T21:46:33.956722Z",
 		"type": "subagent_complete",
 		"agent_type": "unknown",
@@ -298,5 +274,29 @@
 		"type": "subagent_complete",
 		"agent_type": "unknown",
 		"agent_id": "aae54dc"
+	},
+	{
+		"timestamp": "2026-01-13T18:36:16.690782Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a0bd456"
+	},
+	{
+		"timestamp": "2026-01-13T18:40:41.619335Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a5f3f1d"
+	},
+	{
+		"timestamp": "2026-01-13T18:42:36.568182Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "aeeb310"
+	},
+	{
+		"timestamp": "2026-01-13T18:45:05.075923Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a379383"
 	}
 ]

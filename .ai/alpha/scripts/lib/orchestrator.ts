@@ -6,10 +6,12 @@
 * Manages the work loop, dry run output, and summary generation.
  */
 
+import { spawn, type ChildProcess } from "node:child_process";
 import * as path from "node:path";
 import process from "node:process";
 
 import {
+	EVENT_SERVER_PORT,
 	HEALTH_CHECK_INTERVAL_MS,
 	LOGS_DIR,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
@@ -31,7 +33,11 @@ import {
 	resetSandboxDatabase,
 	seedSandboxDatabase,
 } from "./database.js";
-import { checkEnvironment, GITHUB_TOKEN } from "./environment.js";
+import {
+	checkEnvironment,
+	GITHUB_TOKEN,
+	setOrchestratorUrl,
+} from "./environment.js";
 import { runFeatureImplementation } from "./feature.js";
 import { runHealthChecks } from "./health.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
@@ -78,6 +84,107 @@ function createLogger(uiEnabled: boolean) {
 			console.error(...args);
 		},
 	};
+}
+
+// ============================================================================
+// Event Server Management
+// ============================================================================
+
+let eventServerProcess: ChildProcess | null = null;
+
+/**
+ * Start the event server for WebSocket streaming.
+ *
+ * @param projectRoot - Project root directory
+ * @param log - Logger function
+ * @returns The orchestrator URL to pass to sandboxes, or null if startup fails
+ */
+async function startEventServer(
+	projectRoot: string,
+	log: (...args: unknown[]) => void,
+): Promise<string | null> {
+	const scriptPath = path.join(
+		projectRoot,
+		".ai/alpha/scripts/event-server.py",
+	);
+
+	try {
+		// Check if port is already in use (previous server still running)
+		const { execSync } = await import("node:child_process");
+		try {
+			// Try to kill any existing process on the port
+			execSync(`lsof -ti:${EVENT_SERVER_PORT} | xargs kill -9 2>/dev/null`, {
+				stdio: "ignore",
+			});
+			// Wait a bit for port to be released
+			await sleep(500);
+		} catch {
+			// No existing process, that's fine
+		}
+
+		// Start the event server
+		eventServerProcess = spawn("python3", [scriptPath], {
+			cwd: projectRoot,
+			stdio: ["ignore", "pipe", "pipe"],
+			detached: false,
+		});
+
+		// Wait for server to start
+		await new Promise<void>((resolve, reject) => {
+			const timeout = setTimeout(() => {
+				reject(new Error("Event server startup timeout"));
+			}, 10000);
+
+			eventServerProcess?.stdout?.on("data", (data: Buffer) => {
+				const output = data.toString();
+				if (output.includes("Starting Alpha Event Server")) {
+					clearTimeout(timeout);
+					resolve();
+				}
+			});
+
+			eventServerProcess?.stderr?.on("data", (data: Buffer) => {
+				const output = data.toString();
+				// FastAPI/uvicorn often logs to stderr
+				if (
+					output.includes("Uvicorn running") ||
+					output.includes("Started server")
+				) {
+					clearTimeout(timeout);
+					resolve();
+				}
+			});
+
+			eventServerProcess?.on("error", (err) => {
+				clearTimeout(timeout);
+				reject(err);
+			});
+
+			eventServerProcess?.on("exit", (code) => {
+				if (code !== 0 && code !== null) {
+					clearTimeout(timeout);
+					reject(new Error(`Event server exited with code ${code}`));
+				}
+			});
+		});
+
+		log(`   Started event server on port ${EVENT_SERVER_PORT}`);
+		return `http://localhost:${EVENT_SERVER_PORT}`;
+	} catch (error) {
+		log(`   ⚠️ Failed to start event server: ${error}`);
+		return null;
+	}
+}
+
+/**
+ * Stop the event server if running.
+ */
+function stopEventServer(log: (...args: unknown[]) => void): void {
+	if (eventServerProcess) {
+		log("   Stopping event server...");
+		eventServerProcess.kill("SIGTERM");
+		eventServerProcess = null;
+	}
 }
 
 // ============================================================================
@@ -642,6 +749,16 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	const manifest = manifestOrNull as SpecManifest;
 
 	// =========================================================================
+	// Start Event Server for real-time streaming (before UI)
+	// =========================================================================
+	let orchestratorUrl: string | null = null;
+	if (options.ui && !options.dryRun) {
+		orchestratorUrl = await startEventServer(projectRoot, log);
+		// Set orchestrator URL for sandbox environment injection
+		setOrchestratorUrl(orchestratorUrl ?? undefined);
+	}
+
+	// =========================================================================
 	// Start UI EARLY - before any console output
 	// =========================================================================
 	let uiManager: UIManager | null = null;
@@ -668,6 +785,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					sandboxLabels,
 					pollInterval: HEALTH_CHECK_INTERVAL_MS,
 					minimal: options.minimalUi,
+					// Enable event streaming if server started successfully
+					eventServerUrl: orchestratorUrl
+						? `ws://localhost:${EVENT_SERVER_PORT}/ws`
+						: undefined,
+					eventStreamEnabled: !!orchestratorUrl,
 				},
 				() => {
 					// UI closed callback - only log if not in UI mode
@@ -963,6 +1085,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	if (uiManager) {
 		uiManager.stop();
 	}
+
+	// Stop the event server
+	stopEventServer(log);
 
 	// Release lock
 	releaseLock();

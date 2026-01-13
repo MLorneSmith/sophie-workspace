@@ -391,6 +391,10 @@ export interface HeaderProps {
 	progress: OverallProgress;
 	/** Session start time for elapsed calculation */
 	sessionStartTime: Date;
+	/** Event stream connection status (optional) */
+	eventStreamStatus?: EventServerStatus;
+	/** Event stream event count (optional) */
+	eventStreamCount?: number;
 }
 
 /**
@@ -438,6 +442,10 @@ export interface EventLogProps {
 export interface OrchestratorUIProps {
 	/**Complete UI state*/
 	state: UIState;
+	/** Event stream connection status (optional) */
+	eventStreamStatus?: EventServerStatus;
+	/** Event stream event count (optional) */
+	eventStreamCount?: number;
 }
 
 // =============================================================================
@@ -591,3 +599,157 @@ export const MAX_EVENTS = 100;
 * Maximum events to display in UI
  */
 export const MAX_DISPLAY_EVENTS = 8;
+
+// =============================================================================
+// Event Streaming Types
+// =============================================================================
+
+/**
+ * Status of the WebSocket connection to the event server
+ */
+export type EventServerStatus =
+	| "connected"
+	| "connecting"
+	| "disconnected"
+	| "error";
+
+/**
+ * Event received from the WebSocket stream
+ */
+export interface WebSocketEvent {
+	/** Unique event ID */
+	id: string;
+	/** Sandbox that generated this event */
+	sandbox_id: string;
+	/** Type of event (post_tool_use, subagent_stop, session_stop, task_progress, heartbeat) */
+	event_type: string;
+	/** ISO timestamp when event occurred */
+	timestamp: string;
+	/** ISO timestamp when server received the event */
+	server_received_at?: string;
+	/** Claude Code session ID */
+	session_id?: string;
+	/** Tool name (for post_tool_use events) */
+	tool_name?: string;
+	/** File path (for file operations) */
+	file_path?: string;
+	/** Todo summary (for task_progress events) */
+	todo_summary?: {
+		completed: number;
+		in_progress: number;
+		pending: number;
+		total: number;
+	};
+	/** Subagent info (for subagent_stop events) */
+	subagent_id?: string;
+	subagent_type?: string;
+	/** Stop reason (for session_stop events) */
+	exit_reason?: string;
+	exit_code?: number;
+	/** Result info */
+	result_success?: boolean;
+	result_error?: string;
+}
+
+/**
+ * Message types received from WebSocket
+ */
+export type WebSocketMessageType =
+	| "connected"
+	| "initial_events"
+	| "event"
+	| "ping"
+	| "pong";
+
+/**
+ * WebSocket message structure
+ */
+export interface WebSocketMessage {
+	type: WebSocketMessageType;
+	timestamp?: string;
+	events_available?: number;
+	data?: WebSocketEvent | WebSocketEvent[];
+}
+
+/**
+ * State for the event stream hook
+ */
+export interface EventStreamState {
+	/** Connection status */
+	status: EventServerStatus;
+	/** Recent events from the stream */
+	events: WebSocketEvent[];
+	/** Last error message */
+	error: string | null;
+	/** When connection was last established */
+	connectedAt: Date | null;
+	/** Number of events received this session */
+	eventCount: number;
+	/** Reconnection attempt count */
+	reconnectAttempts: number;
+}
+
+/**
+ * Options for the useEventStream hook
+ */
+export interface UseEventStreamOptions {
+	/** WebSocket server URL (e.g., ws://localhost:9000/ws) */
+	url: string;
+	/** Whether streaming is enabled */
+	enabled?: boolean;
+	/** Callback when an event is received */
+	onEvent?: (event: WebSocketEvent) => void;
+	/** Callback when connection status changes */
+	onStatusChange?: (status: EventServerStatus) => void;
+	/** Maximum events to keep in memory */
+	maxEvents?: number;
+	/** Reconnect delay in ms (default: 3000) */
+	reconnectDelay?: number;
+	/** Max reconnect attempts before giving up (default: 10) */
+	maxReconnectAttempts?: number;
+}
+
+/**
+ * Return type for useEventStream hook
+ */
+export interface UseEventStreamResult {
+	/** Current connection status */
+	status: EventServerStatus;
+	/** Recent events */
+	events: WebSocketEvent[];
+	/** Last error */
+	error: string | null;
+	/** Total events received this session */
+	eventCount: number;
+	/** Manually reconnect */
+	reconnect: () => void;
+	/** Manually disconnect */
+	disconnect: () => void;
+}
+
+/**
+ * Props for EventStreamStatus component
+ */
+export interface EventStreamStatusProps {
+	/** Current connection status */
+	status: EventServerStatus;
+	/** Events received count */
+	eventCount?: number;
+	/** Last event timestamp */
+	lastEventAt?: Date | null;
+}
+
+/**
+ * Event server port
+ */
+export const EVENT_SERVER_PORT = 9000;
+
+/**
+ * Default WebSocket reconnect delay
+ */
+export const WEBSOCKET_RECONNECT_DELAY_MS = 3000;
+
+/**
+ * Maximum reconnect attempts
+ */
+export const WEBSOCKET_MAX_RECONNECT_ATTEMPTS = 10;

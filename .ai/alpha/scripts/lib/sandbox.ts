@@ -104,6 +104,12 @@ export async function createSandbox(
 
 	log(`ID: ${sandbox.sandboxId}`);
 
+	// Set E2B_SANDBOX_ID environment variable for event streaming hooks
+	await sandbox.commands.run(
+		`echo 'export E2B_SANDBOX_ID="${sandbox.sandboxId}"' >> ~/.bashrc`,
+		{ timeoutMs: 5000 },
+	);
+
 	// Setup git
 	if (GITHUB_TOKEN) {
 		await setupGitCredentials(sandbox);

@@ -18,6 +18,24 @@ export const E2B_API_KEY = process.env.E2B_API_KEY;
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 export const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
+// Dynamic runtime environment (set by orchestrator)
+let _orchestratorUrl: string | undefined;
+
+/**
+ * Set the orchestrator URL for event streaming.
+ * This is set by the orchestrator after starting the event server.
+ */
+export function setOrchestratorUrl(url: string | undefined): void {
+	_orchestratorUrl = url;
+}
+
+/**
+ * Get the orchestrator URL for event streaming.
+ */
+export function getOrchestratorUrl(): string | undefined {
+	return _orchestratorUrl;
+}
+
 // ============================================================================
 // OAuth Token Management
 // ============================================================================
@@ -205,6 +223,11 @@ export function getAllEnvVars(): Record<string, string> {
 	if (mediaBaseUrl) envs.PAYLOAD_PUBLIC_MEDIA_BASE_URL = mediaBaseUrl;
 	if (downloadsBaseUrl)
 		envs.PAYLOAD_PUBLIC_DOWNLOADS_BASE_URL = downloadsBaseUrl;
+
+	// Orchestrator URL for event streaming (set dynamically by orchestrator)
+	if (_orchestratorUrl) {
+		envs.ORCHESTRATOR_URL = _orchestratorUrl;
+	}
 
 	return envs;
 }

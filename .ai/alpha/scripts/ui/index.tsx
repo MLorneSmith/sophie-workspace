@@ -15,7 +15,9 @@ import {
 	type ProgressReader,
 	useProgressPoller,
 } from "./hooks/useProgressPoller.js";
+import { useEventStream } from "./hooks/useEventStream.js";
 import type { UIState } from "./types.js";
+import { EVENT_SERVER_PORT } from "./types.js";
 
 /**
  * UI Manager configuration
@@ -37,6 +39,10 @@ export interface UIManagerConfig {
 	minimal?: boolean;
 	/** Custom progress reader (for testing) */
 	progressReader?: ProgressReader;
+	/** Event server URL for WebSocket streaming (optional) */
+	eventServerUrl?: string;
+	/** Whether event streaming is enabled (default: true if eventServerUrl provided) */
+	eventStreamEnabled?: boolean;
 }
 
 /**
@@ -59,11 +65,26 @@ const OrchestratorApp: React.FC<{
 		pollInterval,
 		minimal = false,
 		progressReader = createFsProgressReader(),
+		eventServerUrl,
+		eventStreamEnabled = !!eventServerUrl,
 	} = config;
 
 	const [phase, setPhase] = useState<UIPhase>("loading");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [sessionStart] = useState(() => new Date());
+
+	// Event streaming hook
+	const wsUrl = eventServerUrl || `ws://localhost:${EVENT_SERVER_PORT}/ws`;
+	const eventStream = useEventStream({
+		url: wsUrl,
+		enabled: eventStreamEnabled,
+		onEvent: (event) => {
+			// Events are processed by the hook internally
+			// We could use this to trigger immediate state updates
+			// For now, we rely on file polling for state consistency
+			void event;
+		},
+	});
 
 	// Progress poller configuration
 	const pollerConfig: ProgressPollerConfig = {
@@ -146,7 +167,13 @@ const OrchestratorApp: React.FC<{
 			if (minimal) {
 				return <MinimalOrchestratorUI state={state} />;
 			}
-			return <OrchestratorUI state={state} />;
+			return (
+				<OrchestratorUI
+					state={state}
+					eventStreamStatus={eventStream.status}
+					eventStreamCount={eventStream.eventCount}
+				/>
+			);
 	}
 };
 

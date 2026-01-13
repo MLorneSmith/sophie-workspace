@@ -21,7 +21,11 @@ import { SandboxGrid } from "./SandboxGrid.js";
  * Handles keyboard input for:
  * - 'q' or Ctrl+C: Exit the UI
  */
-export const OrchestratorUI: FC<OrchestratorUIProps> = ({ state }) => {
+export const OrchestratorUI: FC<OrchestratorUIProps> = ({
+	state,
+	eventStreamStatus,
+	eventStreamCount,
+}) => {
 	const { exit } = useApp();
 
 	// Handle keyboard input
@@ -38,6 +42,8 @@ export const OrchestratorUI: FC<OrchestratorUIProps> = ({ state }) => {
 			<Header
 				progress={state.overallProgress}
 				sessionStartTime={state.sessionStartTime}
+				eventStreamStatus={eventStreamStatus}
+				eventStreamCount={eventStreamCount}
 			/>
 
 			{/* Sandbox Grid */}
