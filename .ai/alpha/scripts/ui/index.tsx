@@ -1,6 +1,6 @@
 import { render } from "ink";
 // biome-ignore lint/style/useImportType: React must be in scope at runtime for Ink/react-reconciler JSX transform
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
 	CompletionUI,
 	ErrorUI,
@@ -16,7 +16,7 @@ import {
 	useProgressPoller,
 } from "./hooks/useProgressPoller.js";
 import { useEventStream } from "./hooks/useEventStream.js";
-import type { UIState } from "./types.js";
+import type { UIState, WebSocketEvent } from "./types.js";
 import { EVENT_SERVER_PORT } from "./types.js";
 
 /**
@@ -73,17 +73,88 @@ const OrchestratorApp: React.FC<{
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [sessionStart] = useState(() => new Date());
 
+	// Real-time output from WebSocket events (keyed by sandbox_id)
+	const [realtimeOutput, setRealtimeOutput] = useState<Map<string, string[]>>(
+		() => new Map(),
+	);
+
+	// Map sandbox_id to label for event routing
+	const sandboxIdToLabelRef = useRef<Map<string, string>>(new Map());
+
+	// Format WebSocket event for display (similar to update_recent_output.py)
+	const formatEventForDisplay = useCallback(
+		(event: WebSocketEvent): string | null => {
+			const toolName = event.tool_name;
+			if (!toolName) return null;
+
+			// Tool name display mapping with emoji
+			const TOOL_DISPLAY_NAMES: Record<string, string> = {
+				Read: "📖 Read",
+				Write: "📝 Write",
+				Edit: "✏️ Edit",
+				Bash: "💻 Bash",
+				Grep: "🔍 Grep",
+				Glob: "📁 Glob",
+				TodoWrite: "📋 Todo",
+				Task: "🤖 Task",
+				WebFetch: "🌐 WebFetch",
+				WebSearch: "🔎 Search",
+				AskUserQuestion: "❓ AskUser",
+				LSP: "🔧 LSP",
+			};
+
+			const displayName = TOOL_DISPLAY_NAMES[toolName] || `🔧 ${toolName}`;
+
+			// Add file path or other context if available
+			if (event.file_path) {
+				// Shorten path for display
+				const path = event.file_path;
+				const shortPath =
+					path.length > 40 ? path.split("/").pop() || path : path;
+				return `${displayName}: ${shortPath}`;
+			}
+
+			// Show todo summary for TodoWrite events
+			if (event.todo_summary) {
+				const { completed, total, in_progress } = event.todo_summary;
+				return `${displayName}: ${completed}/${total} done, ${in_progress} active`;
+			}
+
+			return displayName;
+		},
+		[],
+	);
+
+	// Handle incoming WebSocket event - update real-time output
+	const handleWebSocketEvent = useCallback(
+		(event: WebSocketEvent) => {
+			const sandboxId = event.sandbox_id;
+			if (!sandboxId) return;
+
+			// Skip non-tool events (heartbeats, etc.)
+			if (event.event_type !== "post_tool_use") return;
+
+			const displayText = formatEventForDisplay(event);
+			if (!displayText) return;
+
+			setRealtimeOutput((prev) => {
+				const newMap = new Map(prev);
+				const existing = newMap.get(sandboxId) || [];
+				// Keep last 10 items for rolling buffer
+				const updated = [...existing, displayText].slice(-10);
+				newMap.set(sandboxId, updated);
+				return newMap;
+			});
+		},
+		[formatEventForDisplay],
+	);
+
 	// Event streaming hook
 	const wsUrl = eventServerUrl || `ws://localhost:${EVENT_SERVER_PORT}/ws`;
 	const eventStream = useEventStream({
 		url: wsUrl,
 		enabled: eventStreamEnabled,
-		onEvent: (event) => {
-			// Events are processed by the hook internally
-			// We could use this to trigger immediate state updates
-			// For now, we rely on file polling for state consistency
-			void event;
-		},
+		onEvent: handleWebSocketEvent,
 	});
 
 	// Progress poller configuration
@@ -123,6 +194,48 @@ const OrchestratorApp: React.FC<{
 		return () => clearTimeout(timer);
 	}, [startPolling]);
 
+	// Track sandbox_id to label mapping when progress files are read
+	// This allows us to route WebSocket events to the correct sandbox column
+	useEffect(() => {
+		for (const [label, sandbox] of state.sandboxes) {
+			if (sandbox.sandboxId) {
+				sandboxIdToLabelRef.current.set(sandbox.sandboxId, label);
+			}
+		}
+	}, [state.sandboxes]);
+
+	// Create enhanced state with real-time output overlay
+	// This merges WebSocket events with the polled state for display
+	const enhancedState = React.useMemo((): UIState => {
+		// If no real-time output yet, return original state
+		if (realtimeOutput.size === 0) {
+			return state;
+		}
+
+		// Create new sandboxes map with real-time output
+		const enhancedSandboxes = new Map(state.sandboxes);
+
+		for (const [sandboxId, output] of realtimeOutput) {
+			// Find the label for this sandbox ID
+			const label = sandboxIdToLabelRef.current.get(sandboxId);
+			if (!label) continue;
+
+			const existingSandbox = enhancedSandboxes.get(label);
+			if (!existingSandbox) continue;
+
+			// Overlay real-time output (last 3 lines for display)
+			enhancedSandboxes.set(label, {
+				...existingSandbox,
+				recentOutput: output.slice(-3),
+			});
+		}
+
+		return {
+			...state,
+			sandboxes: enhancedSandboxes,
+		};
+	}, [state, realtimeOutput]);
+
 	// Calculate elapsed time for completion screen
 	const getElapsedTime = useCallback((): string => {
 		const elapsed = Date.now() - sessionStart.getTime();
@@ -156,20 +269,20 @@ const OrchestratorApp: React.FC<{
 			return (
 				<CompletionUI
 					specId={specId}
-					featuresCompleted={state.overallProgress.featuresCompleted}
-					tasksCompleted={state.overallProgress.tasksCompleted}
+					featuresCompleted={enhancedState.overallProgress.featuresCompleted}
+					tasksCompleted={enhancedState.overallProgress.tasksCompleted}
 					elapsed={getElapsedTime()}
-					branchName={state.overallProgress.branchName}
-					reviewUrls={state.overallProgress.reviewUrls}
+					branchName={enhancedState.overallProgress.branchName}
+					reviewUrls={enhancedState.overallProgress.reviewUrls}
 				/>
 			);
 		default:
 			if (minimal) {
-				return <MinimalOrchestratorUI state={state} />;
+				return <MinimalOrchestratorUI state={enhancedState} />;
 			}
 			return (
 				<OrchestratorUI
-					state={state}
+					state={enhancedState}
 					eventStreamStatus={eventStream.status}
 					eventStreamCount={eventStream.eventCount}
 				/>

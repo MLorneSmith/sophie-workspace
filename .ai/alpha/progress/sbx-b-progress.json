@@ -1,16 +1,16 @@
 {
-	"sandbox_id": "iisnui8kwt365ra5q7vgr",
-	"completed_tasks": [],
-	"failed_tasks": [],
-	"context_usage_percent": 0,
-	"status": "idle",
-	"phase": "waiting",
-	"last_heartbeat": "2026-01-12T17:00:00.016Z",
-	"session_id": "iisnui8kwt365ra5q7vgr",
-	"waiting_reason": "Waiting for dependencies (3 features blocked)",
-	"blocked_by": [
-		1371,
-		1372,
-		1375
+	"sandbox_id": "iv8zxcksab4vgyz25dur0",
+	"feature": {
+		"issue_number": 1373,
+		"title": "Activity Database Schema"
+	},
+	"status": "running",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-13T19:22:50.384648Z",
+	"last_tool": "Read",
+	"session_id": "iv8zxcksab4vgyz25dur0",
+	"recent_output": [
+		"Using OAuth authentication (Max plan)",
+		"Running Claude Code with prompt: /alpha:implement 1373"
 	]
 }

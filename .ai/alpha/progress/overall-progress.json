@@ -1,13 +1,13 @@
 {
 	"specId": 1362,
 	"specName": "user dashboard home",
-	"status": "completed",
-	"initiativesCompleted": 2,
+	"status": "in_progress",
+	"initiativesCompleted": 0,
 	"initiativesTotal": 4,
-	"featuresCompleted": 10,
+	"featuresCompleted": 0,
 	"featuresTotal": 13,
-	"tasksCompleted": 83,
+	"tasksCompleted": 0,
 	"tasksTotal": 110,
-	"lastCheckpoint": "2026-01-12T17:12:30.650Z",
+	"lastCheckpoint": "2026-01-13T19:22:56.102Z",
 	"branchName": "alpha/spec-1362"
 }

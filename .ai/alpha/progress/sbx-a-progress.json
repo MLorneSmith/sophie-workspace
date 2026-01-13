@@ -1,34 +1,16 @@
 {
-	"sandbox_id": "i6g4uf1lnsndn5r62kgch",
+	"sandbox_id": "i975y9v4u20fhgbdbtb9n",
 	"feature": {
-		"issue_number": 1368,
-		"title": "Presentation Outline Table"
+		"issue_number": 1367,
+		"title": "Dashboard Page & Grid Layout"
 	},
 	"status": "running",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-12T17:12:20.832789Z",
-	"last_tool": "Bash",
-	"session_id": "i6g4uf1lnsndn5r62kgch",
+	"last_heartbeat": "2026-01-13T19:22:50.867033Z",
+	"last_tool": "Grep",
+	"session_id": "i975y9v4u20fhgbdbtb9n",
 	"recent_output": [
-		"**Summary:**",
-		"- **Total Tasks:** 12/12 completed",
-		"- **Files Created:** 4",
-		"- **Files Modified:** 3",
-		"- **Tests Added:** 20 test cases (all passing)",
-		"- **Commit:** e74255a",
-		"**Implemented Features:**",
-		"1. **PresentationSummary type** - Derived from database schema using `Pick<>` utility type",
-		"2. **loadRecentPresentations loader** - Fetches 10 most recent presentations with storyboard data",
-		"3. **PresentationOutlineTable component** - Full-featured table with:",
-		"   - Empty state using DashboardEmptyState component (links to /home/ai/blocks)",
-		"   - Status badges (draft=outline, published=success, archived=secondary)",
-		"   - Relative date formatting (e.g., \"2 hours ago\") with semantic `<time>` element",
-		"   - Slide count from storyboard array",
-		"   - Row click navigation to canvas page",
-		"   - Responsive design with min-width constraints for mobile horizontal scroll",
-		"4. **Loading skeleton** - Matching table structure skeleton component",
-		"5. **Dashboard integration** - Table wrapped in Suspense with skeleton fallback",
-		"6. **Comprehensive unit tests** - 20 test cases covering all functionality",
-		"\u001b[<u\u001b[<u\u001b[<u"
+		"Using OAuth authentication (Max plan)",
+		"Running Claude Code with prompt: /alpha:implement 1367"
 	]
 }

@@ -56,11 +56,6 @@
 						"type": "command",
 						"command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/task_progress_stream.py || true",
 						"timeout": 3
-					},
-					{
-						"type": "command",
-						"command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/update_recent_output.py || true",
-						"timeout": 3
 					}
 				]
 			}
