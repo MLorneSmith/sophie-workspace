@@ -27,6 +27,23 @@ import { ensureUIProgressDir } from "./manifest.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Progress Display
 // ============================================================================
 
@@ -46,7 +63,9 @@ export function displayProgressUpdate(
 	featureTaskCount: number,
 	lastDisplayed: string,
 	sandboxLabel: string,
+	uiEnabled: boolean = false,
 ): string {
+	const { log } = createLogger(uiEnabled);
 	const completed = progress.completed_tasks?.length || 0;
 	const total = featureTaskCount;
 	const current = progress.current_task;
@@ -65,13 +84,11 @@ export function displayProgressUpdate(
 	const progressBar =
 		"█".repeat(filledLength) + "░".repeat(barLength - filledLength);
 
-	console.log(`\n   ┌─ 📊 [${sandboxLabel}] Progress Update ${"─".repeat(35)}`);
-	console.log(
-		`│ Tasks: [${progressBar}] ${completed}/${total} (${progressPercent}%)`,
-	);
+	log(`\n   ┌─ 📊 [${sandboxLabel}] Progress Update ${"─".repeat(35)}`);
+	log(`│ Tasks: [${progressBar}] ${completed}/${total} (${progressPercent}%)`);
 
 	if (progress.phase) {
-		console.log(`│ Phase: ${progress.phase}`);
+		log(`│ Phase: ${progress.phase}`);
 	}
 
 	if (current) {
@@ -83,17 +100,15 @@ export function displayProgressUpdate(
 					: current.status === "starting"
 						? "⏳"
 						: "📋";
-		console.log(`│ Current: ${statusIcon} [${current.id}] ${current.name}`);
+		log(`│ Current: ${statusIcon} [${current.id}] ${current.name}`);
 
 		if (current.verification_attempts && current.verification_attempts > 1) {
-			console.log(
-				`   │ Verification: attempt ${current.verification_attempts}`,
-			);
+			log(`   │ Verification: attempt ${current.verification_attempts}`);
 		}
 	}
 
 	if (progress.current_group) {
-		console.log(
+		log(
 			`│ Group: ${progress.current_group.name} (${progress.current_group.tasks_completed}/${progress.current_group.tasks_total})`,
 		);
 	}
@@ -101,11 +116,11 @@ export function displayProgressUpdate(
 	// Always show context usage (even if 0) for visibility
 	if (typeof contextPercent === "number" && !Number.isNaN(contextPercent)) {
 		const contextIcon = contextPercent > 50 ? "⚠️" : "📈";
-		console.log(`│ Context: ${contextIcon} ${contextPercent}%`);
+		log(`│ Context: ${contextIcon} ${contextPercent}%`);
 	}
 
 	if (progress.last_commit) {
-		console.log(`│ Last commit: ${progress.last_commit.substring(0, 7)}`);
+		log(`│ Last commit: ${progress.last_commit.substring(0, 7)}`);
 	}
 
 	// Validate heartbeat timestamp before calculating age
@@ -117,11 +132,11 @@ export function displayProgressUpdate(
 		if (!Number.isNaN(heartbeatTime)) {
 			const heartbeatAge = Math.round((Date.now() - heartbeatTime) / 1000);
 			const heartbeatIcon = heartbeatAge > 120 ? "⚠️" : "💓";
-			console.log(`   │ Heartbeat: ${heartbeatIcon} ${heartbeatAge}s ago`);
+			log(`   │ Heartbeat: ${heartbeatIcon} ${heartbeatAge}s ago`);
 		}
 	}
 
-	console.log(`└${"─".repeat(55)}\n`);
+	log(`└${"─".repeat(55)}\n`);
 
 	return updateKey;
 }

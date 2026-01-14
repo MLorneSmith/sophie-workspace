@@ -240,7 +240,7 @@ export async function runFeatureImplementation(
 			log("│   🔪 Killing Claude process for recovery...");
 
 			// Kill the Claude process to trigger early exit
-			await killClaudeProcess(instance);
+			await killClaudeProcess(instance, uiEnabled);
 		}
 	}, 60000);
 
@@ -302,7 +302,7 @@ export async function runFeatureImplementation(
 			}
 
 			// Kill the Claude process to trigger retry
-			await killClaudeProcess(instance);
+			await killClaudeProcess(instance, uiEnabled);
 		}
 	}, 10000); // Check every 10 seconds during startup
 

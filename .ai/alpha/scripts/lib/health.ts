@@ -24,6 +24,23 @@ import { saveManifest } from "./manifest.js";
 import { sleep } from "./utils.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Startup Timeout Configuration
 // ============================================================================
 // Uses centralized constants from config/index.ts:
@@ -56,7 +73,11 @@ const STARTUP_OUTPUT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
  */
 export async function checkSandboxHealth(
 	instance: SandboxInstance,
+	_manifest: SpecManifest,
+	uiEnabled: boolean = false,
 ): Promise<HealthCheckResult> {
+	const { log } = createLogger(uiEnabled);
+
 	if (instance.status !== "busy" || !instance.featureStartedAt) {
 		return { healthy: true };
 	}
@@ -114,7 +135,7 @@ export async function checkSandboxHealth(
 				// Heartbeat is from a previous session - don't flag as stale
 				const heartbeatAgeMin = Math.round((now - heartbeatTime) / 60000);
 				const sessionAgeMin = Math.round(timeSinceStart / 60000);
-				console.log(
+				log(
 					`   │   ℹ️ [${instance.label}] Ignoring stale heartbeat (${heartbeatAgeMin}m old, session started ${sessionAgeMin}m ago)`,
 				);
 				return { healthy: true, timeSinceStart };
@@ -171,8 +192,10 @@ export async function checkSandboxHealth(
  */
 export async function killClaudeProcess(
 	instance: SandboxInstance,
+	uiEnabled: boolean = false,
 ): Promise<boolean> {
-	console.log(`│   🔪 Killing Claude Code process on ${instance.label}...`);
+	const { log } = createLogger(uiEnabled);
+	log(`│   🔪 Killing Claude Code process on ${instance.label}...`);
 
 	let killSucceeded = false;
 	let clearSucceeded = false;
@@ -185,7 +208,7 @@ export async function killClaudeProcess(
 		);
 		killSucceeded = true;
 	} catch (error) {
-		console.log(
+		log(
 			`│   ⚠ Kill command failed: ${error instanceof Error ? error.message : error}`,
 		);
 	}
@@ -198,7 +221,7 @@ export async function killClaudeProcess(
 		);
 		clearSucceeded = true;
 	} catch (error) {
-		console.log(
+		log(
 			`│   ⚠ Failed to clear progress file: ${error instanceof Error ? error.message : error}`,
 		);
 	}
@@ -207,17 +230,15 @@ export async function killClaudeProcess(
 	await sleep(2000);
 
 	if (killSucceeded && clearSucceeded) {
-		console.log(
-			`│   ✓ Process killed and progress cleared on ${instance.label}`,
-		);
+		log(`│   ✓ Process killed and progress cleared on ${instance.label}`);
 		return true;
 	} else if (killSucceeded) {
-		console.log(
+		log(
 			`│   ⚠ Process killed but progress file not cleared on ${instance.label}`,
 		);
 		return true;
 	} else {
-		console.log(`│   ✗ Recovery failed on ${instance.label}`);
+		log(`│   ✗ Recovery failed on ${instance.label}`);
 		return false;
 	}
 }
@@ -238,7 +259,9 @@ export async function killClaudeProcess(
 export async function runHealthChecks(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
+	uiEnabled: boolean = false,
 ): Promise<SandboxInstance[]> {
+	const { log } = createLogger(uiEnabled);
 	const needsReassignment: SandboxInstance[] = [];
 
 	for (const instance of instances) {
@@ -246,20 +269,18 @@ export async function runHealthChecks(
 			continue;
 		}
 
-		const health = await checkSandboxHealth(instance);
+		const health = await checkSandboxHealth(instance, manifest, uiEnabled);
 
 		if (!health.healthy) {
-			console.log(
-				`\n   ⚠️ HEALTH CHECK FAILED [${instance.label}]: ${health.message}`,
-			);
+			log(`\n   ⚠️ HEALTH CHECK FAILED [${instance.label}]: ${health.message}`);
 
 			// Check if we can retry
 			if (instance.retryCount < MAX_SANDBOX_RETRIES) {
-				console.log(
+				log(
 					`   │   Attempting recovery (retry ${instance.retryCount + 1}/${MAX_SANDBOX_RETRIES})...`,
 				);
 
-				const killed = await killClaudeProcess(instance);
+				const killed = await killClaudeProcess(instance, uiEnabled);
 				if (killed) {
 					instance.retryCount++;
 					instance.featureStartedAt = undefined;
@@ -282,15 +303,15 @@ export async function runHealthChecks(
 					instance.hasReceivedOutput = false;
 					saveManifest(manifest);
 
-					console.log(`   │   ✓ ${instance.label} ready for retry`);
+					log(`   │   ✓ ${instance.label} ready for retry`);
 				} else {
 					// Kill failed - mark sandbox as failed
-					console.log("   │   ✗ Recovery failed, marking sandbox as failed");
+					log("   │   ✗ Recovery failed, marking sandbox as failed");
 					instance.status = "failed";
 					needsReassignment.push(instance);
 				}
 			} else {
-				console.log(
+				log(
 					`   │   ✗ Max retries (${MAX_SANDBOX_RETRIES}) exceeded, marking feature as failed`,
 				);
 

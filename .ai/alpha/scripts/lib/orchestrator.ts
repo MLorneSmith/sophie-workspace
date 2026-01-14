@@ -363,7 +363,11 @@ export async function runWorkLoop(
 		healthCheckRunning = true;
 
 		try {
-			const needsRestart = await runHealthChecks(instances, manifest);
+			const needsRestart = await runHealthChecks(
+				instances,
+				manifest,
+				uiEnabled,
+			);
 
 			// Attempt to restart sandboxes that failed health checks
 			for (const instance of needsRestart) {
@@ -862,7 +866,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Check sandbox database capacity
 	if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
 		log("\n📊 Checking sandbox database...");
-		const hasCapacity = await checkDatabaseCapacity();
+		const hasCapacity = await checkDatabaseCapacity(options.ui);
 		if (!hasCapacity) {
 			if (uiManager) uiManager.stop();
 			releaseLock(options.ui);
@@ -872,7 +876,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		// Reset sandbox database
 		if (!options.skipDbReset) {
 			try {
-				await resetSandboxDatabase();
+				await resetSandboxDatabase(options.ui);
 			} catch (error) {
 				console.error("Failed to reset sandbox database:", error);
 				if (uiManager) uiManager.stop();
@@ -946,7 +950,10 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		if (alreadySeeded) {
 			log("   ℹ️ Database already seeded, skipping seeding step");
 		} else {
-			const seedSuccess = await seedSandboxDatabase(firstInstance.sandbox);
+			const seedSuccess = await seedSandboxDatabase(
+				firstInstance.sandbox,
+				options.ui,
+			);
 			if (!seedSuccess) {
 				console.error("❌ Database seeding failed, aborting orchestration");
 				await firstInstance.sandbox.kill();

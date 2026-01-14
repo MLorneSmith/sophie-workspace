@@ -17,6 +17,30 @@ import { getAllEnvVars } from "./environment.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+		warn: (...args: unknown[]) => {
+			if (!uiEnabled) console.warn(...args);
+		},
+		error: (...args: unknown[]) => {
+			// Always log errors, even in UI mode
+			console.error(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Database Capacity
 // ============================================================================
 
@@ -27,10 +51,13 @@ import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 *
 * @returns true if database has capacity or check failed (non-blocking)
  */
-export async function checkDatabaseCapacity(): Promise<boolean> {
+export async function checkDatabaseCapacity(
+	uiEnabled: boolean = false,
+): Promise<boolean> {
+	const { log, warn, error } = createLogger(uiEnabled);
 	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
 	if (!dbUrl) {
-		console.log("   ℹ️ No sandbox database configured, skipping capacity check");
+		log("   ℹ️ No sandbox database configured, skipping capacity check");
 		return true;
 	}
 
@@ -45,17 +72,15 @@ export async function checkDatabaseCapacity(): Promise<boolean> {
 		const limitMB = 500;
 		const warningThreshold = 450;
 
-		console.log(
-			`   📊 Sandbox database size: ${sizeMB.toFixed(1)}MB / ${limitMB}MB`,
-		);
+		log(`   📊 Sandbox database size: ${sizeMB.toFixed(1)}MB / ${limitMB}MB`);
 
 		if (sizeMB > warningThreshold) {
-			console.warn(
+			warn(
 				`   ⚠️ Database near capacity (${sizeMB.toFixed(1)}MB / ${limitMB}MB)`,
 			);
 
 			if (sizeMB > limitMB * 0.95) {
-				console.error(
+				error(
 					"   ❌ Database at capacity. Reset required before orchestration.",
 				);
 				return false;
@@ -65,9 +90,7 @@ export async function checkDatabaseCapacity(): Promise<boolean> {
 		return true;
 	} catch {
 		// psql might not be installed locally - that's OK, we'll check in sandbox
-		console.log(
-			"   ℹ️ Could not check database size locally (psql not available)",
-		);
+		log("   ℹ️ Could not check database size locally (psql not available)");
 		return true;
 	}
 }
@@ -83,14 +106,17 @@ export async function checkDatabaseCapacity(): Promise<boolean> {
 *
 * @throws Error if reset fails
  */
-export async function resetSandboxDatabase(): Promise<void> {
+export async function resetSandboxDatabase(
+	uiEnabled: boolean = false,
+): Promise<void> {
+	const { log, warn, error } = createLogger(uiEnabled);
 	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
 	if (!dbUrl) {
-		console.log("   ℹ️ No sandbox database configured, skipping reset");
+		log("   ℹ️ No sandbox database configured, skipping reset");
 		return;
 	}
 
-	console.log("🔄 Resetting sandbox database...");
+	log("🔄 Resetting sandbox database...");
 
 	// Mark reset in progress
 	updateLockResetState(true);
@@ -110,34 +136,34 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 			encoding: "utf-8",
 			stdio: ["pipe", "pipe", "pipe"],
 		});
-		console.log("   ✅ Database schema reset");
+		log("   ✅ Database schema reset");
 
 		// Apply base migrations from local project
 		const projectRoot = getProjectRoot();
 		const webDir = path.join(projectRoot, "apps", "web");
 
 		if (fs.existsSync(path.join(webDir, "supabase", "migrations"))) {
-			console.log("   📦 Applying base migrations...");
+			log("   📦 Applying base migrations...");
 			try {
 				execSync(`supabase db push --db-url "${dbUrl}"`, {
 					cwd: webDir,
 					encoding: "utf-8",
 					stdio: ["pipe", "pipe", "pipe"],
 				});
-				console.log("   ✅ Base migrations applied");
+				log("   ✅ Base migrations applied");
 			} catch {
-				console.warn("   ⚠️ Migration push failed (may be OK if no migrations)");
+				warn("   ⚠️ Migration push failed (may be OK if no migrations)");
 			}
 		}
 
 		// Mark reset complete
 		updateLockResetState(false);
-	} catch (error) {
+	} catch (err) {
 		// On failure, release lock entirely so next run can retry
-		console.error(`❌ Database reset failed: ${error}`);
+		error(`❌ Database reset failed: ${err}`);
 		updateLockResetState(false);
 		releaseLock();
-		throw error;
+		throw err;
 	}
 }
 
@@ -153,18 +179,22 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 * @param sandbox - The sandbox to use for seeding
 * @returns true if seeding succeeded
  */
-export async function seedSandboxDatabase(sandbox: Sandbox): Promise<boolean> {
+export async function seedSandboxDatabase(
+	sandbox: Sandbox,
+	uiEnabled: boolean = false,
+): Promise<boolean> {
+	const { log, warn, error } = createLogger(uiEnabled);
 	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
 	if (!dbUrl) {
-		console.log("   ℹ️ No sandbox database configured, skipping seeding");
+		log("   ℹ️ No sandbox database configured, skipping seeding");
 		return true;
 	}
 
-	console.log("🌱 Seeding sandbox database...");
+	log("🌱 Seeding sandbox database...");
 
 	try {
 		// Step 1: Run Payload migrations
-		console.log("   📦 Running Payload migrations...");
+		log("   📦 Running Payload migrations...");
 		const migrateResult = await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR}/apps/payload &&` +
 				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run payload migrate --forceAcceptWarning",
@@ -175,13 +205,13 @@ export async function seedSandboxDatabase(sandbox: Sandbox): Promise<boolean> {
 		);
 
 		if (migrateResult.exitCode !== 0) {
-			console.error(`   ❌ Payload migration failed: ${migrateResult.stderr}`);
+			error(`   ❌ Payload migration failed: ${migrateResult.stderr}`);
 			return false;
 		}
-		console.log("   ✅ Payload migrations complete");
+		log("   ✅ Payload migrations complete");
 
 		// Step 2: Run Payload seeding
-		console.log("   🌱 Running Payload seeding...");
+		log("   🌱 Running Payload seeding...");
 		const seedResult = await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR}/apps/payload && ` +
 				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run --force",
@@ -192,13 +222,13 @@ export async function seedSandboxDatabase(sandbox: Sandbox): Promise<boolean> {
 		);
 
 		if (seedResult.exitCode !== 0) {
-			console.error(`   ❌ Payload seeding failed: ${seedResult.stderr}`);
+			error(`   ❌ Payload seeding failed: ${seedResult.stderr}`);
 			return false;
 		}
-		console.log("   ✅ Payload seeding complete");
+		log("   ✅ Payload seeding complete");
 
 		// Step 3: Quick verification
-		console.log("   🔍 Verifying seeded data...");
+		log("   🔍 Verifying seeded data...");
 		const verifyResult = await sandbox.commands.run(
 			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,
 			{ timeoutMs: 30000 },
@@ -206,16 +236,16 @@ export async function seedSandboxDatabase(sandbox: Sandbox): Promise<boolean> {
 
 		const userCount = parseInt(verifyResult.stdout.trim(), 10);
 		if (userCount > 0) {
-			console.log(`   ✅ Verified: ${userCount} user(s) seeded`);
+			log(`   ✅ Verified: ${userCount} user(s) seeded`);
 		} else {
-			console.warn(
+			warn(
 				"   ⚠️ No users found after seeding (may be normal for some configs)",
 			);
 		}
 
 		return true;
-	} catch (error) {
-		console.error(`❌ Seeding failed: ${error}`);
+	} catch (err) {
+		error(`❌ Seeding failed: ${err}`);
 		return false;
 	}
 }
