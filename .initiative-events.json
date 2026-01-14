@@ -1,305 +1,316 @@
 [
-  {
-    "timestamp": "2026-01-13T18:34:31.972684Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "aae54dc"
-  },
-  {
-    "timestamp": "2026-01-13T18:36:16.690782Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a0bd456"
-  },
-  {
-    "timestamp": "2026-01-13T18:40:41.619335Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a5f3f1d"
-  },
-  {
-    "timestamp": "2026-01-13T18:42:36.568182Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "aeeb310"
-  },
-  {
-    "timestamp": "2026-01-13T18:45:05.075923Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a379383"
-  },
-  {
-    "timestamp": "2026-01-13T18:57:14.566240Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "afc8a9a"
-  },
-  {
-    "timestamp": "2026-01-13T18:57:19.668803Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a58b1e3"
-  },
-  {
-    "timestamp": "2026-01-13T18:58:03.960400Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a59ac00"
-  },
-  {
-    "timestamp": "2026-01-13T19:09:59.134397Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a46eb65"
-  },
-  {
-    "timestamp": "2026-01-13T19:12:45.807336Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a36fea1"
-  },
-  {
-    "timestamp": "2026-01-13T19:16:15.163166Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a4980e5"
-  },
-  {
-    "timestamp": "2026-01-13T19:17:00.439964Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a54e4ac"
-  },
-  {
-    "timestamp": "2026-01-13T19:17:15.375958Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a609c81"
-  },
-  {
-    "timestamp": "2026-01-13T19:24:36.734820Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a637ac6"
-  },
-  {
-    "timestamp": "2026-01-13T19:26:42.223902Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a26b9f8"
-  },
-  {
-    "timestamp": "2026-01-13T19:29:25.388389Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ab36452"
-  },
-  {
-    "timestamp": "2026-01-13T19:35:30.967928Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "afd71d5"
-  },
-  {
-    "timestamp": "2026-01-13T19:41:16.347002Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ac434f3"
-  },
-  {
-    "timestamp": "2026-01-13T19:44:58.236456Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ab12e77"
-  },
-  {
-    "timestamp": "2026-01-13T19:48:15.473469Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ad42bbb"
-  },
-  {
-    "timestamp": "2026-01-13T19:55:11.759343Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "afd9a85"
-  },
-  {
-    "timestamp": "2026-01-13T20:04:22.456906Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a45db20"
-  },
-  {
-    "timestamp": "2026-01-13T20:07:50.323659Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "adcb339"
-  },
-  {
-    "timestamp": "2026-01-13T20:10:55.180277Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a09bf8a"
-  },
-  {
-    "timestamp": "2026-01-13T20:13:26.618236Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "afab7e8"
-  },
-  {
-    "timestamp": "2026-01-13T20:26:16.064488Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a04ccb1"
-  },
-  {
-    "timestamp": "2026-01-13T20:29:06.762951Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a200450"
-  },
-  {
-    "timestamp": "2026-01-13T20:30:44.310762Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a3d07f7"
-  },
-  {
-    "timestamp": "2026-01-13T20:31:23.075700Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "abe88ea"
-  },
-  {
-    "timestamp": "2026-01-13T20:40:05.085808Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a7ca67d"
-  },
-  {
-    "timestamp": "2026-01-13T20:44:33.118743Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "acee8fb"
-  },
-  {
-    "timestamp": "2026-01-13T20:46:11.231771Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "abbe623"
-  },
-  {
-    "timestamp": "2026-01-13T20:48:28.255479Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a601801"
-  },
-  {
-    "timestamp": "2026-01-13T20:57:40.184179Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a8dffdd"
-  },
-  {
-    "timestamp": "2026-01-13T21:12:23.265613Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a0ca292"
-  },
-  {
-    "timestamp": "2026-01-13T21:13:10.295433Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ab44f89"
-  },
-  {
-    "timestamp": "2026-01-13T21:15:58.547637Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a743609"
-  },
-  {
-    "timestamp": "2026-01-13T21:20:22.831832Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a69b89a"
-  },
-  {
-    "timestamp": "2026-01-13T21:30:03.596578Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a757e97"
-  },
-  {
-    "timestamp": "2026-01-13T21:34:43.848614Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a18037c"
-  },
-  {
-    "timestamp": "2026-01-13T21:37:07.713995Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "af60ba4"
-  },
-  {
-    "timestamp": "2026-01-13T21:41:16.753747Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a3fa15c"
-  },
-  {
-    "timestamp": "2026-01-13T21:43:35.577674Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a04665b"
-  },
-  {
-    "timestamp": "2026-01-13T21:47:48.585262Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a5d0844"
-  },
-  {
-    "timestamp": "2026-01-13T22:05:06.501327Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a1b2246"
-  },
-  {
-    "timestamp": "2026-01-13T22:10:17.321528Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "ad10e82"
-  },
-  {
-    "timestamp": "2026-01-14T14:30:35.819037Z",
-    "type": "todo_update",
-    "completed": 0,
-    "in_progress": 1,
-    "pending": 3
-  },
-  {
-    "timestamp": "2026-01-14T14:30:47.123013Z",
-    "type": "todo_update",
-    "completed": 1,
-    "in_progress": 1,
-    "pending": 2
-  },
-  {
-    "timestamp": "2026-01-14T14:31:27.604483Z",
-    "type": "todo_update",
-    "completed": 4,
-    "in_progress": 0,
-    "pending": 0
-  },
-  {
-    "timestamp": "2026-01-14T14:31:42.117394Z",
-    "type": "subagent_complete",
-    "agent_type": "unknown",
-    "agent_id": "a559ad4"
-  }
+	{
+		"timestamp": "2026-01-13T19:35:30.967928Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "afd71d5"
+	},
+	{
+		"timestamp": "2026-01-13T19:41:16.347002Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "ac434f3"
+	},
+	{
+		"timestamp": "2026-01-13T19:44:58.236456Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "ab12e77"
+	},
+	{
+		"timestamp": "2026-01-13T19:48:15.473469Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "ad42bbb"
+	},
+	{
+		"timestamp": "2026-01-13T19:55:11.759343Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "afd9a85"
+	},
+	{
+		"timestamp": "2026-01-13T20:04:22.456906Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a45db20"
+	},
+	{
+		"timestamp": "2026-01-13T20:07:50.323659Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "adcb339"
+	},
+	{
+		"timestamp": "2026-01-13T20:10:55.180277Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a09bf8a"
+	},
+	{
+		"timestamp": "2026-01-13T20:13:26.618236Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "afab7e8"
+	},
+	{
+		"timestamp": "2026-01-13T20:26:16.064488Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a04ccb1"
+	},
+	{
+		"timestamp": "2026-01-13T20:29:06.762951Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a200450"
+	},
+	{
+		"timestamp": "2026-01-13T20:30:44.310762Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a3d07f7"
+	},
+	{
+		"timestamp": "2026-01-13T20:31:23.075700Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "abe88ea"
+	},
+	{
+		"timestamp": "2026-01-13T20:40:05.085808Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a7ca67d"
+	},
+	{
+		"timestamp": "2026-01-13T20:44:33.118743Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "acee8fb"
+	},
+	{
+		"timestamp": "2026-01-13T20:46:11.231771Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "abbe623"
+	},
+	{
+		"timestamp": "2026-01-13T20:48:28.255479Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a601801"
+	},
+	{
+		"timestamp": "2026-01-13T20:57:40.184179Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a8dffdd"
+	},
+	{
+		"timestamp": "2026-01-13T21:12:23.265613Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a0ca292"
+	},
+	{
+		"timestamp": "2026-01-13T21:13:10.295433Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "ab44f89"
+	},
+	{
+		"timestamp": "2026-01-13T21:15:58.547637Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a743609"
+	},
+	{
+		"timestamp": "2026-01-13T21:20:22.831832Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a69b89a"
+	},
+	{
+		"timestamp": "2026-01-13T21:30:03.596578Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a757e97"
+	},
+	{
+		"timestamp": "2026-01-13T21:34:43.848614Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a18037c"
+	},
+	{
+		"timestamp": "2026-01-13T21:37:07.713995Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "af60ba4"
+	},
+	{
+		"timestamp": "2026-01-13T21:41:16.753747Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a3fa15c"
+	},
+	{
+		"timestamp": "2026-01-13T21:43:35.577674Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a04665b"
+	},
+	{
+		"timestamp": "2026-01-13T21:47:48.585262Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a5d0844"
+	},
+	{
+		"timestamp": "2026-01-13T22:05:06.501327Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a1b2246"
+	},
+	{
+		"timestamp": "2026-01-13T22:10:17.321528Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "ad10e82"
+	},
+	{
+		"timestamp": "2026-01-14T14:30:35.819037Z",
+		"type": "todo_update",
+		"completed": 0,
+		"in_progress": 1,
+		"pending": 3
+	},
+	{
+		"timestamp": "2026-01-14T14:30:47.123013Z",
+		"type": "todo_update",
+		"completed": 1,
+		"in_progress": 1,
+		"pending": 2
+	},
+	{
+		"timestamp": "2026-01-14T14:31:27.604483Z",
+		"type": "todo_update",
+		"completed": 4,
+		"in_progress": 0,
+		"pending": 0
+	},
+	{
+		"timestamp": "2026-01-14T14:31:42.117394Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a559ad4"
+	},
+	{
+		"timestamp": "2026-01-14T14:32:04.156493Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a7cdc0c"
+	},
+	{
+		"timestamp": "2026-01-14T14:32:24.798308Z",
+		"type": "todo_update",
+		"completed": 0,
+		"in_progress": 1,
+		"pending": 3
+	},
+	{
+		"timestamp": "2026-01-14T14:32:34.261620Z",
+		"type": "todo_update",
+		"completed": 1,
+		"in_progress": 1,
+		"pending": 2
+	},
+	{
+		"timestamp": "2026-01-14T14:32:59.057574Z",
+		"type": "todo_update",
+		"completed": 3,
+		"in_progress": 1,
+		"pending": 0
+	},
+	{
+		"timestamp": "2026-01-14T14:33:19.447881Z",
+		"type": "todo_update",
+		"completed": 4,
+		"in_progress": 0,
+		"pending": 0
+	},
+	{
+		"timestamp": "2026-01-14T14:33:30.692401Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "abf3319"
+	},
+	{
+		"timestamp": "2026-01-14T14:33:40.151674Z",
+		"type": "todo_update",
+		"completed": 0,
+		"in_progress": 1,
+		"pending": 3
+	},
+	{
+		"timestamp": "2026-01-14T14:33:55.808557Z",
+		"type": "todo_update",
+		"completed": 0,
+		"in_progress": 1,
+		"pending": 4
+	},
+	{
+		"timestamp": "2026-01-14T14:33:56.116854Z",
+		"type": "todo_update",
+		"completed": 1,
+		"in_progress": 1,
+		"pending": 2
+	},
+	{
+		"timestamp": "2026-01-14T14:34:24.836812Z",
+		"type": "todo_update",
+		"completed": 5,
+		"in_progress": 0,
+		"pending": 0
+	},
+	{
+		"timestamp": "2026-01-14T14:34:34.691004Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "af3fabe"
+	},
+	{
+		"timestamp": "2026-01-14T14:34:39.323121Z",
+		"type": "todo_update",
+		"completed": 4,
+		"in_progress": 0,
+		"pending": 0
+	},
+	{
+		"timestamp": "2026-01-14T14:34:50.089766Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "a426d41"
+	},
+	{
+		"timestamp": "2026-01-14T14:35:22.865601Z",
+		"type": "subagent_complete",
+		"agent_type": "unknown",
+		"agent_id": "af52585"
+	},
+	{
+		"timestamp": "2026-01-14T14:35:32.589674Z",
+		"type": "todo_update",
+		"completed": 0,
+		"in_progress": 1,
+		"pending": 3
+	},
+	{
+		"timestamp": "2026-01-14T14:35:39.201138Z",
+		"type": "todo_update",
+		"completed": 1,
+		"in_progress": 1,
+		"pending": 2
+	}
 ]
