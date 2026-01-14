@@ -708,14 +708,22 @@ export async function runWorkLoop(
 				activeWork.set(instance.label, workPromise);
 			}
 
-			// If no work is active and no features available, we might be stuck
+			// If no work is active, check if we should exit or continue waiting
 			if (activeWork.size === 0) {
-				const blockedFeatures = manifest.feature_queue.filter(
-					(f) =>
-						(f.status === "pending" || f.status === "failed") &&
-						f.dependencies.length > 0,
+				// Check for ANY retryable features (pending or failed), regardless of dependencies
+				const retryableFeatures = manifest.feature_queue.filter(
+					(f) => f.status === "pending" || f.status === "failed",
 				);
 
+				// Exit only if no retryable features exist
+				if (retryableFeatures.length === 0) {
+					break;
+				}
+
+				// Log blocked features for visibility (features with unmet dependencies)
+				const blockedFeatures = retryableFeatures.filter(
+					(f) => f.dependencies.length > 0,
+				);
 				if (blockedFeatures.length > 0) {
 					log("\n⚠️ Features blocked by incomplete dependencies:");
 					for (const f of blockedFeatures.slice(0, 5)) {
@@ -724,7 +732,9 @@ export async function runWorkLoop(
 						);
 					}
 				}
-				break;
+
+				// Continue loop to retry features when sandboxes become available
+				continue;
 			}
 
 			// Wait for at least one sandbox to finish OR health check interval
