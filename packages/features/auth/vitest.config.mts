@@ -18,6 +18,13 @@ export default defineProject({
 				__dirname,
 				"src/test/__mocks__/server-only.ts",
 			),
+			// @kit/shared subpath exports - resolve to source files
+			// This avoids requiring packages to be built before running tests in CI
+			"@kit/shared/registry": path.resolve(__dirname, "../../shared/src/registry/index.ts"),
+			"@kit/shared/logger": path.resolve(__dirname, "../../shared/src/logger/index.ts"),
+			"@kit/shared/utils": path.resolve(__dirname, "../../shared/src/utils.ts"),
+			"@kit/shared/hooks": path.resolve(__dirname, "../../shared/src/hooks/index.ts"),
+			"@kit/shared/events": path.resolve(__dirname, "../../shared/src/events/index.tsx"),
 		},
 	},
 	test: {
