@@ -51,10 +51,15 @@ function createLogger(uiEnabled: boolean) {
 /**
  * Time to wait for Claude process to start producing meaningful output (ms).
  * This is longer than STARTUP_TIMEOUT_MS to allow for slower startups while
- * still catching complete hangs. Uses 3 minutes for health check (vs 60s for
+ * still catching complete hangs. Uses 5 minutes for health check (vs 60s for
  * early detection in feature.ts).
+ *
+ * IMPORTANT: This timeout must be longer than the startup retry loop in feature.ts
+ * (~4 minutes total: 60s timeout × 3 retries + delays). Setting it to 5 minutes
+ * ensures the health check doesn't kill processes while feature.ts is still
+ * handling retry logic. See issue #1465 for the race condition this fixes.
  */
-const STARTUP_OUTPUT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutes
+const STARTUP_OUTPUT_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
 // ============================================================================
 // Health Check
