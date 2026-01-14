@@ -640,7 +640,7 @@ export async function runWorkLoop(
 					continue;
 				}
 
-				const feature = getNextAvailableFeature(manifest);
+				const feature = getNextAvailableFeature(manifest, uiEnabled);
 				if (!feature) {
 					// No work available - write idle status for this sandbox
 					if (uiEnabled) {
@@ -669,6 +669,7 @@ export async function runWorkLoop(
 					feature,
 					instance.label,
 					manifest,
+					uiEnabled,
 				);
 				if (!assigned) {
 					// Lost the race - another sandbox claimed this feature, try again
@@ -828,12 +829,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Handle force unlock
 	if (options.forceUnlock) {
 		log("\n🔓 Force releasing orchestrator lock...");
-		releaseLock();
+		releaseLock(options.ui);
 	}
 
 	// Acquire orchestrator lock
 	if (!options.dryRun) {
-		if (!acquireLock(options.specId)) {
+		if (!acquireLock(options.specId, options.ui)) {
 			if (uiManager) uiManager.stop();
 			process.exit(1);
 		}
@@ -843,7 +844,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	const cleanupAndExit = (code: number) => {
 		if (uiManager) uiManager.stop();
 		if (!options.dryRun) {
-			releaseLock();
+			releaseLock(options.ui);
 		}
 		process.exit(code);
 	};
@@ -864,7 +865,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		const hasCapacity = await checkDatabaseCapacity();
 		if (!hasCapacity) {
 			if (uiManager) uiManager.stop();
-			releaseLock();
+			releaseLock(options.ui);
 			process.exit(1);
 		}
 
@@ -883,7 +884,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	// Clean up stale state
-	const cleanedCount = cleanupStaleState(manifest);
+	const cleanedCount = cleanupStaleState(manifest, options.ui);
 	if (cleanedCount > 0) {
 		log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
 		saveManifest(manifest);
@@ -901,7 +902,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	log(`Sandboxes: ${options.sandboxCount}`);
 
 	// Check what's next
-	const nextFeature = getNextAvailableFeature(manifest);
+	const nextFeature = getNextAvailableFeature(manifest, options.ui);
 	if (nextFeature) {
 		log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
 	} else if (
@@ -950,7 +951,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				console.error("❌ Database seeding failed, aborting orchestration");
 				await firstInstance.sandbox.kill();
 				if (uiManager) uiManager.stop();
-				releaseLock();
+				releaseLock(options.ui);
 				process.exit(1);
 			}
 		}
@@ -1104,7 +1105,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	stopEventServer(log);
 
 	// Release lock
-	releaseLock();
+	releaseLock(options.ui);
 
 	if (failedFeatures > 0) {
 		process.exit(1);

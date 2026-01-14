@@ -10,6 +10,27 @@ import type { FeatureEntry, SpecManifest } from "../types/index.js";
 import { saveManifest } from "./manifest.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+		error: (...args: unknown[]) => {
+			// Always log errors, even in UI mode
+			console.error(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Constants
 // ============================================================================
 
@@ -32,11 +53,14 @@ const ASSIGNMENT_CONFLICT_WINDOW_MS = 30_000; // 30 seconds
 * 1. Database features are serialized (only one DB feature at a time)
 *
 * @param manifest - The spec manifest containing the feature queue
+* @param uiEnabled - Whether UI mode is enabled (suppresses console output)
 * @returns The next available feature, or null if none available
  */
 export function getNextAvailableFeature(
 	manifest: SpecManifest,
+	uiEnabled = false,
 ): FeatureEntry | null {
+	const { log } = createLogger(uiEnabled);
 	const now = Date.now();
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
@@ -72,7 +96,7 @@ export function getNextAvailableFeature(
 				: Number.POSITIVE_INFINITY;
 			if (timeSinceAssignment > 60_000) {
 				// Reset to failed so it can be retried
-				console.log(
+				log(
 					`🔧 Fixing inconsistent state: #${feature.id} was in_progress with error "${feature.error}" for ${Math.round(timeSinceAssignment / 1000)}s, resetting to failed`,
 				);
 				feature.status = "failed";
@@ -98,7 +122,7 @@ export function getNextAvailableFeature(
 		if (feature.assigned_at) {
 			const timeSinceAssignment = now - feature.assigned_at;
 			if (timeSinceAssignment < ASSIGNMENT_CONFLICT_WINDOW_MS) {
-				console.log(
+				log(
 					`⏳ Feature #${feature.id} was recently assigned (${Math.round(timeSinceAssignment / 1000)}s ago), skipping to avoid race`,
 				);
 				continue;
@@ -147,18 +171,21 @@ export function getNextAvailableFeature(
  * @param feature - The feature to assign
  * @param sandboxLabel - The label of the sandbox claiming the feature
  * @param manifest - The spec manifest (saved atomically with assignment)
+ * @param uiEnabled - Whether UI mode is enabled (suppresses console output)
  * @returns true if assignment succeeded, false if another sandbox claimed it first
  */
 export function assignFeatureToSandbox(
 	feature: FeatureEntry,
 	sandboxLabel: string,
 	manifest: SpecManifest,
+	uiEnabled = false,
 ): boolean {
+	const { log } = createLogger(uiEnabled);
 	const now = Date.now();
 
 	// Double-check: if feature was assigned in the meantime, we lost the race
 	if (feature.assigned_sandbox && feature.assigned_sandbox !== sandboxLabel) {
-		console.log(
+		log(
 			`🏃 Race lost: #${feature.id} was claimed by ${feature.assigned_sandbox} while we were checking`,
 		);
 		return false;
@@ -171,7 +198,7 @@ export function assignFeatureToSandbox(
 			timeSinceAssignment < ASSIGNMENT_CONFLICT_WINDOW_MS &&
 			feature.assigned_sandbox !== sandboxLabel
 		) {
-			console.log(
+			log(
 				`🏃 Race detected: #${feature.id} was assigned ${Math.round(timeSinceAssignment / 1000)}s ago`,
 			);
 			return false;
@@ -189,9 +216,7 @@ export function assignFeatureToSandbox(
 	// This prevents race conditions where multiple sandboxes check-then-assign
 	saveManifest(manifest);
 
-	console.log(
-		`✅ Feature #${feature.id} assigned to ${sandboxLabel} at ${now}`,
-	);
+	log(`✅ Feature #${feature.id} assigned to ${sandboxLabel} at ${now}`);
 	return true;
 }
 
@@ -223,16 +248,21 @@ export function updateNextFeatureId(manifest: SpecManifest): void {
 * * Failed features that need retry (clear error for fresh attempt)
 *
 * @param manifest - The manifest to clean up
+* @param uiEnabled - Whether UI mode is enabled (suppresses console output)
 * @returns Number of features that were cleaned up
  */
-export function cleanupStaleState(manifest: SpecManifest): number {
+export function cleanupStaleState(
+	manifest: SpecManifest,
+	uiEnabled = false,
+): number {
+	const { log } = createLogger(uiEnabled);
 	let cleanedCount = 0;
 
 	for (const feature of manifest.feature_queue) {
 		// Reset in_progress features with stale sandbox assignments
 		// When we restart, the old sandboxes are gone
 		if (feature.status === "in_progress" && feature.assigned_sandbox) {
-			console.log(
+			log(
 				`🧹 Resetting stale in_progress: #${feature.id} (was ${feature.assigned_sandbox})`,
 			);
 			feature.status = "pending";
@@ -259,7 +289,7 @@ export function cleanupStaleState(manifest: SpecManifest): number {
 
 		// Clear error messages from failed features (they'll be retried fresh)
 		if (feature.status === "failed" && feature.error) {
-			console.log(`   🔄 Marking for retry: #${feature.id} - ${feature.title}`);
+			log(`   🔄 Marking for retry: #${feature.id} - ${feature.title}`);
 			feature.error = undefined;
 		}
 	}

@@ -19,6 +19,27 @@ import {
 import type { OrchestratorLock } from "../types/index.js";
 
 // ============================================================================
+// Logging Helper
+// ============================================================================
+
+/**
+ * Create a conditional logger that only outputs when UI is disabled.
+ * When UI is enabled, all console output is suppressed to avoid interfering
+ * with the Ink-based dashboard.
+ */
+function createLogger(uiEnabled: boolean) {
+	return {
+		log: (...args: unknown[]) => {
+			if (!uiEnabled) console.log(...args);
+		},
+		error: (...args: unknown[]) => {
+			// Always log errors, even in UI mode
+			console.error(...args);
+		},
+	};
+}
+
+// ============================================================================
 // Project Root Detection
 // ============================================================================
 
@@ -102,8 +123,12 @@ export function writeLock(lock: OrchestratorLock): void {
 * Returns true if lock was acquired, false if another orchestration is running.
 *
 * Will override stale locks (>24h old) and stale reset operations (>10m old).
+*
+* @param specId - The spec ID being orchestrated
+* @param uiEnabled - Whether UI mode is enabled (suppresses console output)
  */
-export function acquireLock(specId: number): boolean {
+export function acquireLock(specId: number, uiEnabled = false): boolean {
+	const { log, error } = createLogger(uiEnabled);
 	const existingLock = readLock();
 
 	if (existingLock) {
@@ -114,26 +139,26 @@ export function acquireLock(specId: number): boolean {
 			const resetAge =
 				Date.now() - new Date(existingLock.reset_started_at).getTime();
 			if (resetAge > MAX_RESET_AGE_MS) {
-				console.log(
+				log(
 					`⚠️ Stale reset detected (${Math.round(resetAge / 60000)}m old), overriding lock...`,
 				);
 				// Fall through to acquire new lock
 			} else {
-				console.error("❌ Another orchestration run is resetting the database");
-				console.error(`   Started: ${existingLock.reset_started_at}`);
-				console.error("\n   To force override, use: --force-unlock");
+				error("❌ Another orchestration run is resetting the database");
+				error(`   Started: ${existingLock.reset_started_at}`);
+				error("\n   To force override, use: --force-unlock");
 				return false;
 			}
 		} else if (lockAge < MAX_LOCK_AGE_MS) {
-			console.error("❌ Another orchestration run is active:");
-			console.error(`   Spec: #${existingLock.spec_id}`);
-			console.error(`   Started: ${existingLock.started_at}`);
-			console.error(`   Host: ${existingLock.hostname}`);
-			console.error(`   PID: ${existingLock.pid}`);
-			console.error("\n   To force override, use: --force-unlock");
+			error("❌ Another orchestration run is active:");
+			error(`   Spec: #${existingLock.spec_id}`);
+			error(`   Started: ${existingLock.started_at}`);
+			error(`   Host: ${existingLock.hostname}`);
+			error(`   PID: ${existingLock.pid}`);
+			error("\n   To force override, use: --force-unlock");
 			return false;
 		} else {
-			console.log(
+			log(
 				`⚠️ Stale lock detected (${Math.round(lockAge / 3600000)}h old), overriding...`,
 			);
 		}
@@ -147,19 +172,22 @@ export function acquireLock(specId: number): boolean {
 	};
 
 	writeLock(lock);
-	console.log("🔒 Acquired orchestrator lock");
+	log("🔒 Acquired orchestrator lock");
 	return true;
 }
 
 /**
 
 * Release the orchestrator lock.
+*
+* @param uiEnabled - Whether UI mode is enabled (suppresses console output)
  */
-export function releaseLock(): void {
+export function releaseLock(uiEnabled = false): void {
+	const { log } = createLogger(uiEnabled);
 	const lockPath = getLockPath();
 	if (fs.existsSync(lockPath)) {
 		fs.unlinkSync(lockPath);
-		console.log("🔓 Released orchestrator lock");
+		log("🔓 Released orchestrator lock");
 	}
 }
 
