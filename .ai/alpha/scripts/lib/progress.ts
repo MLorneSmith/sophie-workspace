@@ -245,6 +245,7 @@ export function writeIdleProgress(
 
 * Clear all UI progress files.
 * Called at orchestration start to clean up stale data.
+* NOTE: The canonical implementation is in manifest.ts which also clears log files.
  */
 export function clearUIProgress(): void {
 	const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);

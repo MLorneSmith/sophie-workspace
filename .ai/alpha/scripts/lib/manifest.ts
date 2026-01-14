@@ -9,7 +9,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { UI_PROGRESS_DIR } from "../config/index.js";
+import { LOGS_DIR, UI_PROGRESS_DIR } from "../config/index.js";
 import type { SpecManifest } from "../types/index.js";
 import { getProjectRoot } from "./lock.js";
 
@@ -204,18 +204,35 @@ export function writeOverallProgress(
 
 /**
 
-* Clear all UI progress files.
+* Clear all UI progress files and log files.
 * Called at orchestration start to clean up stale data.
  */
 export function clearUIProgress(): void {
-	const progressDir = path.join(getProjectRoot(), UI_PROGRESS_DIR);
+	const projectRoot = getProjectRoot();
+
+	// Clear JSON progress files
+	const progressDir = path.join(projectRoot, UI_PROGRESS_DIR);
 	if (fs.existsSync(progressDir)) {
 		for (const file of fs.readdirSync(progressDir)) {
 			if (file.endsWith("-progress.json")) {
 				try {
 					fs.unlinkSync(path.join(progressDir, file));
 				} catch {
-					// Ignore
+					// Ignore deletion errors
+				}
+			}
+		}
+	}
+
+	// Clear log files from previous runs to prevent stale data display
+	const logsDir = path.join(projectRoot, LOGS_DIR);
+	if (fs.existsSync(logsDir)) {
+		for (const file of fs.readdirSync(logsDir)) {
+			if (file.startsWith("sbx-") && file.endsWith(".log")) {
+				try {
+					fs.unlinkSync(path.join(logsDir, file));
+				} catch {
+					// Ignore deletion errors
 				}
 			}
 		}
