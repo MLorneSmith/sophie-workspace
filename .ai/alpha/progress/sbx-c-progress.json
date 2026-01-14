@@ -5,18 +5,34 @@
 		"issue_number": 1376,
 		"title": "Kanban Summary Card"
 	},
-	"current_task": null,
-	"completed_tasks": [],
+	"current_task": {
+		"id": "T2",
+		"name": "Create KanbanSummaryCard server component",
+		"status": "starting",
+		"started_at": "2026-01-14T18:02:05+00:00"
+	},
+	"current_group": {
+		"id": 1,
+		"name": "UI Components",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [
+		"T1",
+		"T4"
+	],
 	"failed_tasks": [],
-	"context_usage_percent": 10,
+	"context_usage_percent": 15,
 	"status": "in_progress",
-	"phase": "loading_context",
-	"last_heartbeat": "2026-01-14T17:59:36.477446Z",
-	"last_tool": "Read",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-14T18:02:21.853063Z",
+	"last_tool": "Grep",
 	"session_id": "ia5i3b675mzaxiezagkze",
 	"recent_output": [
 		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca...",
-		"📖 Read: common.json",
-		"📖 Read: load-user-workspace.ts"
+		"📖 Read: load-user-workspace.ts",
+		"💻 Bash: grep -r \"import.*from.*@kit/ui...",
+		"📖 Read: improvement-card.tsx",
+		"🔍 Grep: database.types.ts"
 	]
 }

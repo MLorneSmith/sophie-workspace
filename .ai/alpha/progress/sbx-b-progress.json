@@ -5,23 +5,32 @@
 		"issue_number": 1373,
 		"title": "Activity Database Schema"
 	},
-	"current_task": null,
+	"current_task": {
+		"id": "T3",
+		"name": "T3: Add RLS policies for user_activities",
+		"status": "in_progress",
+		"started_at": "2026-01-14T18:02:16.299157Z"
+	},
 	"current_group": {
 		"id": 1,
 		"name": "Schema Definition",
 		"tasks_total": 5,
-		"tasks_completed": 0
+		"tasks_completed": 1
 	},
-	"completed_tasks": [],
+	"completed_tasks": [
+		"T1"
+	],
 	"failed_tasks": [],
 	"context_usage_percent": 10,
 	"status": "in_progress",
-	"phase": "loading_context",
-	"last_heartbeat": "2026-01-14T17:59:39.561903Z",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-14T18:02:16.299157Z",
 	"last_tool": "TodoWrite",
 	"session_id": "iw2rck7sqheplocrc96a7",
 	"recent_output": [
 		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca...",
-		"📋 Todo: 0/8 done"
+		"✏️ Edit: 18-user-activities.sql",
+		"💻 Bash: grep -A 15 'create table.*user...",
+		"📋 Todo: 2/8 done"
 	]
 }
