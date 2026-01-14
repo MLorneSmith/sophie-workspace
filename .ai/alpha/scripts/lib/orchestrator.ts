@@ -42,13 +42,14 @@ import { runFeatureImplementation } from "./feature.js";
 import { runHealthChecks } from "./health.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
 import {
-	clearUIProgress,
+	archiveAndClearPreviousRun,
 	findSpecDir,
 	loadManifest,
 	saveManifest,
 	writeOverallProgress,
 } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
+import { generateRunId } from "./run-id.js";
 import {
 	createSandbox,
 	getSandboxesNeedingRestart,
@@ -343,12 +344,15 @@ export function printSummary(
 * @param instances - All sandbox instances
 * @param manifest - The spec manifest
 * @param uiEnabled - Whether UI mode is enabled
+* @param timeoutSeconds - Sandbox timeout in seconds
+* @param runId - Run ID for this orchestrator session
  */
 export async function runWorkLoop(
 	instances: SandboxInstance[],
 	manifest: SpecManifest,
 	uiEnabled: boolean = false,
 	timeoutSeconds: number = 7200,
+	runId?: string,
 ): Promise<void> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -391,6 +395,7 @@ export async function runWorkLoop(
 							instance.label,
 							timeoutSeconds,
 							uiEnabled,
+							runId,
 						);
 
 						// Replace the old sandbox with the new one
@@ -401,6 +406,7 @@ export async function runWorkLoop(
 						instance.retryCount = 0;
 						instance.featureStartedAt = undefined;
 						instance.lastProgressSeen = undefined;
+						instance.runId = runId;
 						instance.lastHeartbeat = undefined;
 
 						// Clean up old sandbox ID before adding new one
@@ -485,6 +491,7 @@ export async function runWorkLoop(
 							label,
 							timeoutSeconds,
 							uiEnabled,
+							runId,
 						);
 
 						// Replace the old sandbox with the new one
@@ -500,6 +507,7 @@ export async function runWorkLoop(
 						instance.hasReceivedOutput = false;
 						instance.createdAt = newInstance.createdAt;
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
+						instance.runId = runId;
 
 						// Clean up old sandbox ID before adding new one
 						// This prevents sandbox_ids from accumulating beyond the sandbox count
@@ -572,6 +580,7 @@ export async function runWorkLoop(
 							label,
 							timeoutSeconds,
 							uiEnabled,
+							runId,
 						);
 
 						// Replace the old sandbox with the new one
@@ -584,6 +593,7 @@ export async function runWorkLoop(
 						instance.lastProgressSeen = undefined;
 						instance.lastHeartbeat = undefined;
 						instance.outputLineCount = 0;
+						instance.runId = runId;
 						instance.hasReceivedOutput = false;
 						instance.createdAt = newInstance.createdAt;
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
@@ -743,6 +753,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Create conditional logger - suppresses output when UI is enabled
 	const { log } = createLogger(options.ui);
 
+	// =========================================================================
+	// Generate Run ID - unique identifier for this orchestrator session
+	// =========================================================================
+	const runId = generateRunId();
+
 	if (!options.dryRun) {
 		checkEnvironment();
 	}
@@ -782,8 +797,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// =========================================================================
 	let uiManager: UIManager | null = null;
 	if (options.ui && !options.dryRun) {
-		// Clear old UI progress files before starting UI
-		clearUIProgress();
+		// Archive old progress/log files and clear for new run
+		archiveAndClearPreviousRun(runId);
 
 		// Generate sandbox labels for UI
 		const sandboxLabels = Array.from(
@@ -828,6 +843,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Print header (only when UI is disabled)
 	log("═".repeat(70));
 	log("   ALPHA SPEC ORCHESTRATOR");
+	log(`   Run ID: ${runId}`);
 	log("═".repeat(70));
 
 	// Handle force unlock
@@ -937,6 +953,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		"sbx-a",
 		options.timeout,
 		options.ui,
+		runId,
 	);
 	instances.push(firstInstance);
 
@@ -980,6 +997,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			label,
 			options.timeout,
 			options.ui,
+			runId,
 		);
 		instances.push(instance);
 	}
@@ -1006,7 +1024,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	saveManifest(manifest);
 
 	// Main work loop
-	await runWorkLoop(instances, manifest, options.ui, options.timeout);
+	await runWorkLoop(instances, manifest, options.ui, options.timeout, runId);
 
 	// Push final changes
 	const pushInstance = instances[0];
@@ -1084,7 +1102,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 	// Write review URLs to progress file for UI to display
 	if (reviewUrls.length > 0) {
-		writeOverallProgress(manifest, reviewUrls);
+		writeOverallProgress(manifest, reviewUrls, runId);
 		// Give UI time to pick up the updated progress file
 		await sleep(1000);
 	}

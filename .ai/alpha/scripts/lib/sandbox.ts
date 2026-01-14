@@ -90,6 +90,7 @@ export async function createSandbox(
 	label: string,
 	timeout: number,
 	uiEnabled: boolean = false,
+	runId?: string,
 ): Promise<SandboxInstance> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
@@ -238,6 +239,7 @@ export async function createSandbox(
 		retryCount: 0,
 		createdAt: now,
 		lastKeepaliveAt: now,
+		runId,
 	};
 }
 

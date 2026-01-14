@@ -9,7 +9,12 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { LOGS_DIR, UI_PROGRESS_DIR } from "../config/index.js";
+import {
+	ARCHIVE_DIR,
+	LOGS_DIR,
+	MAX_ARCHIVED_RUNS,
+	UI_PROGRESS_DIR,
+} from "../config/index.js";
 import type { SpecManifest } from "../types/index.js";
 import { getProjectRoot } from "./lock.js";
 
@@ -133,10 +138,12 @@ export interface ReviewUrlForUI {
 *
 * @param manifest - The manifest to extract progress from
 * @param reviewUrls - Optional review URLs to include (for completion screen)
+* @param runId - Optional run ID for this orchestrator session
  */
 export function writeOverallProgress(
 	manifest: SpecManifest,
 	reviewUrls?: ReviewUrlForUI[],
+	runId?: string,
 ): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, "overall-progress.json");
@@ -188,6 +195,7 @@ export function writeOverallProgress(
 		tasksTotal: manifest.progress.tasks_total,
 		lastCheckpoint: new Date().toISOString(),
 		branchName: manifest.sandbox.branch_name,
+		runId,
 	};
 
 	// Include review URLs if provided
@@ -203,15 +211,101 @@ export function writeOverallProgress(
 }
 
 /**
-
-* Clear all UI progress files and log files.
-* Called at orchestration start to clean up stale data.
+ * Archive and clear previous run data.
+ * Moves old progress files and logs to timestamped archive directory
+ * instead of deleting them, then cleans up archives beyond MAX_ARCHIVED_RUNS.
+ *
+ * @param runId - The new run ID (for logging purposes)
  */
-export function clearUIProgress(): void {
+export function archiveAndClearPreviousRun(_runId: string): void {
 	const projectRoot = getProjectRoot();
+	const archiveDir = path.join(projectRoot, ARCHIVE_DIR);
+	const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+	const archivePath = path.join(archiveDir, timestamp);
 
-	// Clear JSON progress files
 	const progressDir = path.join(projectRoot, UI_PROGRESS_DIR);
+	const logsDir = path.join(projectRoot, LOGS_DIR);
+
+	// Check if there's anything to archive
+	const hasProgressFiles =
+		fs.existsSync(progressDir) &&
+		fs.readdirSync(progressDir).some((f) => f.endsWith("-progress.json"));
+	const hasLogFiles =
+		fs.existsSync(logsDir) &&
+		fs
+			.readdirSync(logsDir)
+			.some(
+				(f) =>
+					(f.startsWith("sbx-") && f.endsWith(".log")) || f.startsWith("run-"),
+			);
+
+	if (!hasProgressFiles && !hasLogFiles) {
+		// Nothing to archive
+		return;
+	}
+
+	// Create archive directory
+	try {
+		fs.mkdirSync(archivePath, { recursive: true });
+	} catch {
+		// If we can't create archive, fall back to clearing files
+		clearProgressAndLogs(progressDir, logsDir);
+		return;
+	}
+
+	// Archive progress files
+	if (fs.existsSync(progressDir)) {
+		const progressArchive = path.join(archivePath, "progress");
+		fs.mkdirSync(progressArchive, { recursive: true });
+
+		for (const file of fs.readdirSync(progressDir)) {
+			if (file.endsWith("-progress.json")) {
+				try {
+					const src = path.join(progressDir, file);
+					const dest = path.join(progressArchive, file);
+					fs.copyFileSync(src, dest);
+					fs.unlinkSync(src);
+				} catch {
+					// Ignore individual file errors
+				}
+			}
+		}
+	}
+
+	// Archive log files/directories
+	if (fs.existsSync(logsDir)) {
+		const logsArchive = path.join(archivePath, "logs");
+		fs.mkdirSync(logsArchive, { recursive: true });
+
+		for (const entry of fs.readdirSync(logsDir)) {
+			const srcPath = path.join(logsDir, entry);
+			const destPath = path.join(logsArchive, entry);
+
+			try {
+				const stat = fs.statSync(srcPath);
+				if (stat.isDirectory()) {
+					// Copy directory recursively (run-specific log directories)
+					copyDirRecursive(srcPath, destPath);
+					removeDirRecursive(srcPath);
+				} else if (entry.startsWith("sbx-") && entry.endsWith(".log")) {
+					// Copy individual log files (legacy format)
+					fs.copyFileSync(srcPath, destPath);
+					fs.unlinkSync(srcPath);
+				}
+			} catch {
+				// Ignore individual file errors
+			}
+		}
+	}
+
+	// Clean up old archives if exceeding MAX_ARCHIVED_RUNS
+	cleanupOldArchives(archiveDir);
+}
+
+/**
+ * Clear progress and log files without archiving (fallback).
+ */
+function clearProgressAndLogs(progressDir: string, logsDir: string): void {
 	if (fs.existsSync(progressDir)) {
 		for (const file of fs.readdirSync(progressDir)) {
 			if (file.endsWith("-progress.json")) {
@@ -224,17 +318,96 @@ export function clearUIProgress(): void {
 		}
 	}
 
-	// Clear log files from previous runs to prevent stale data display
-	const logsDir = path.join(projectRoot, LOGS_DIR);
 	if (fs.existsSync(logsDir)) {
-		for (const file of fs.readdirSync(logsDir)) {
-			if (file.startsWith("sbx-") && file.endsWith(".log")) {
-				try {
-					fs.unlinkSync(path.join(logsDir, file));
-				} catch {
-					// Ignore deletion errors
+		for (const entry of fs.readdirSync(logsDir)) {
+			const entryPath = path.join(logsDir, entry);
+			try {
+				const stat = fs.statSync(entryPath);
+				if (stat.isDirectory()) {
+					removeDirRecursive(entryPath);
+				} else if (entry.startsWith("sbx-") && entry.endsWith(".log")) {
+					fs.unlinkSync(entryPath);
 				}
+			} catch {
+				// Ignore deletion errors
 			}
 		}
 	}
+}
+
+/**
+ * Copy a directory recursively.
+ */
+function copyDirRecursive(src: string, dest: string): void {
+	fs.mkdirSync(dest, { recursive: true });
+	for (const entry of fs.readdirSync(src)) {
+		const srcPath = path.join(src, entry);
+		const destPath = path.join(dest, entry);
+		const stat = fs.statSync(srcPath);
+		if (stat.isDirectory()) {
+			copyDirRecursive(srcPath, destPath);
+		} else {
+			fs.copyFileSync(srcPath, destPath);
+		}
+	}
+}
+
+/**
+ * Remove a directory recursively.
+ */
+function removeDirRecursive(dir: string): void {
+	if (fs.existsSync(dir)) {
+		for (const entry of fs.readdirSync(dir)) {
+			const entryPath = path.join(dir, entry);
+			const stat = fs.statSync(entryPath);
+			if (stat.isDirectory()) {
+				removeDirRecursive(entryPath);
+			} else {
+				fs.unlinkSync(entryPath);
+			}
+		}
+		fs.rmdirSync(dir);
+	}
+}
+
+/**
+ * Clean up old archives beyond MAX_ARCHIVED_RUNS.
+ */
+function cleanupOldArchives(archiveDir: string): void {
+	if (!fs.existsSync(archiveDir)) {
+		return;
+	}
+
+	const archives = fs
+		.readdirSync(archiveDir)
+		.filter((d) => {
+			const fullPath = path.join(archiveDir, d);
+			return fs.statSync(fullPath).isDirectory();
+		})
+		.sort()
+		.reverse(); // Most recent first
+
+	// Remove archives beyond the limit
+	for (let i = MAX_ARCHIVED_RUNS; i < archives.length; i++) {
+		const archiveName = archives[i];
+		if (!archiveName) continue;
+		const archivePath = path.join(archiveDir, archiveName);
+		try {
+			removeDirRecursive(archivePath);
+		} catch {
+			// Ignore cleanup errors
+		}
+	}
+}
+
+/**
+ * @deprecated Use archiveAndClearPreviousRun instead.
+ * Clear all UI progress files and log files.
+ * Called at orchestration start to clean up stale data.
+ */
+export function clearUIProgress(): void {
+	const projectRoot = getProjectRoot();
+	const progressDir = path.join(projectRoot, UI_PROGRESS_DIR);
+	const logsDir = path.join(projectRoot, LOGS_DIR);
+	clearProgressAndLogs(progressDir, logsDir);
 }

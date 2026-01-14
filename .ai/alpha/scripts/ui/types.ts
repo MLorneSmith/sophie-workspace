@@ -185,6 +185,8 @@ export interface OverallProgress {
 	branchName?: string;
 	/** Review URLs for accessing completed sandboxes*/
 	reviewUrls?: ReviewUrl[];
+	/** Run ID for this orchestrator session */
+	runId?: string;
 }
 
 // =============================================================================
@@ -351,6 +353,8 @@ export interface SandboxProgressFile {
 	}>;
 	/** Recent output lines from Claude Code execution (real-time from JSON) */
 	recent_output?: string[];
+	/** Run ID for this orchestrator session */
+	runId?: string;
 }
 
 // =============================================================================
@@ -395,6 +399,8 @@ export interface HeaderProps {
 	eventStreamStatus?: EventServerStatus;
 	/** Event stream event count (optional) */
 	eventStreamCount?: number;
+	/** Run ID for this orchestrator session (optional) */
+	runId?: string;
 }
 
 /**

@@ -49,6 +49,7 @@ export {
 
 // Manifest management
 export {
+	archiveAndClearPreviousRun,
 	clearUIProgress,
 	ensureUIProgressDir,
 	findSpecDir,
@@ -73,6 +74,15 @@ export {
 	writeIdleProgress,
 	writeUIProgress,
 } from "./progress.js";
+export type { RunMetadata } from "./run-id.js";
+// Run ID generation
+export {
+	createSessionHeader,
+	formatArchiveDirectory,
+	generateRunId,
+	isValidRunId,
+	parseRunIdTimestamp,
+} from "./run-id.js";
 
 // Sandbox management
 export {

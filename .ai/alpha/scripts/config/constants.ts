@@ -57,6 +57,12 @@ export const LOGS_DIR = ".ai/alpha/logs";
 /** Number of recent output lines to include in UI progress */
 export const RECENT_OUTPUT_LINES = 20;
 
+/** Directory for archived runs (relative to project root) */
+export const ARCHIVE_DIR = ".ai/alpha/archive";
+
+/** Maximum number of archived runs to keep */
+export const MAX_ARCHIVED_RUNS = 10;
+
 // ============================================================================
 // Health Check Configuration
 // ============================================================================

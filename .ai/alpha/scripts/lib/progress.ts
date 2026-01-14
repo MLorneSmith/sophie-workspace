@@ -175,6 +175,7 @@ export function writeUIProgress(
 
 	const uiProgress = {
 		sandbox_id: instance.id,
+		runId: instance.runId,
 		feature: feature
 			? {
 					issue_number: feature.id,
@@ -233,6 +234,7 @@ export function writeIdleProgress(
 
 	const idleProgress = {
 		sandbox_id: instance.id,
+		runId: instance.runId,
 		feature: undefined,
 		current_task: undefined,
 		current_group: undefined,

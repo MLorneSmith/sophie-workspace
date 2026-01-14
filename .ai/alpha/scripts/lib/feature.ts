@@ -66,11 +66,14 @@ function createLogger(uiEnabled: boolean) {
 // ============================================================================
 
 /**
-
-* Ensure the logs directory exists and return the path.
+ * Ensure the logs directory exists for a specific run.
+ *
+ * @param runId - Optional run ID for run-specific directory
+ * @returns The logs directory path
  */
-function ensureLogsDir(): string {
-	const logsDir = path.join(getProjectRoot(), LOGS_DIR);
+function ensureLogsDir(runId?: string): string {
+	const baseLogsDir = path.join(getProjectRoot(), LOGS_DIR);
+	const logsDir = runId ? path.join(baseLogsDir, runId) : baseLogsDir;
 	if (!fs.existsSync(logsDir)) {
 		fs.mkdirSync(logsDir, { recursive: true });
 	}
@@ -78,18 +81,48 @@ function ensureLogsDir(): string {
 }
 
 /**
-
-* Create a write stream for sandbox output logs.
-* Returns the stream and file path.
+ * Create a write stream for sandbox output logs.
+ * Returns the stream and file path.
+ *
+ * @param sandboxLabel - The sandbox label (e.g., "sbx-a")
+ * @param runId - Optional run ID for organizing logs by run
+ * @param specId - Optional spec ID for session header
+ * @returns Object with stream and file path
  */
-function createLogStream(sandboxLabel: string): {
+function createLogStream(
+	sandboxLabel: string,
+	runId?: string,
+	specId?: number,
+): {
 	stream: fs.WriteStream;
 	filePath: string;
 } {
-	const logsDir = ensureLogsDir();
-	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-	const filePath = path.join(logsDir, `${sandboxLabel}-${timestamp}.log`);
+	const logsDir = ensureLogsDir(runId);
+
+	// Use simple filename when run ID is provided (logs are already in run-specific dir)
+	// Fall back to timestamp format for backward compatibility
+	const filename = runId
+		? `${sandboxLabel}.log`
+		: `${sandboxLabel}-${new Date().toISOString().replace(/[:.]/g, "-")}.log`;
+
+	const filePath = path.join(logsDir, filename);
 	const stream = fs.createWriteStream(filePath, { flags: "a" });
+
+	// Write session header if we have run ID and spec ID
+	if (runId && specId !== undefined) {
+		const separator = "=".repeat(80);
+		const now = new Date().toISOString();
+		const header = `${separator}
+Alpha Orchestrator Log
+Run ID: ${runId}
+Spec ID: ${specId}
+Sandbox: ${sandboxLabel}
+Started: ${now}
+${separator}
+`;
+		stream.write(header);
+	}
+
 	return { stream, filePath };
 }
 
@@ -187,8 +220,11 @@ export async function runFeatureImplementation(
 	const recentOutput: string[] = []; // Track last N lines for UI
 
 	// Create log file for this feature run
+	// Use run ID to organize logs in run-specific directory
 	const { stream: logStream, filePath: logFilePath } = createLogStream(
 		instance.label,
+		instance.runId,
+		manifest.metadata.spec_id,
 	);
 	log(`│   Log file: ${logFilePath}`);
 

@@ -131,6 +131,8 @@ export interface SandboxInstance {
 	createdAt: Date;
 	/** Last successful keepalive timestamp */
 	lastKeepaliveAt?: Date;
+	/** Run ID for this orchestrator session (for log correlation) */
+	runId?: string;
 }
 
 export interface SandboxProgress {

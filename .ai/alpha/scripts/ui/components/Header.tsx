@@ -67,6 +67,7 @@ const HeaderImpl: React.FC<HeaderProps> = ({
 	sessionStartTime,
 	eventStreamStatus,
 	eventStreamCount,
+	runId,
 }) => {
 	// Auto-update elapsed time every second
 	const [elapsed, setElapsed] = useState(() =>
@@ -102,6 +103,12 @@ const HeaderImpl: React.FC<HeaderProps> = ({
 					</Text>
 					<Text color="gray"> - </Text>
 					<Text bold>Spec #{progress.specId}</Text>
+					{runId && (
+						<>
+							<Text color="gray"> - </Text>
+							<Text dimColor>{runId}</Text>
+						</>
+					)}
 				</Box>
 				<Box>
 					<Text>{statusIcon} </Text>
