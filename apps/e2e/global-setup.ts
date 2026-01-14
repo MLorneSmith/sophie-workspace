@@ -230,6 +230,81 @@ async function loginToPayloadWithRetry(
 }
 
 /**
+ * Clean up billing test data before test suite execution.
+ * This prevents duplicate subscription records from accumulating across test runs.
+ *
+ * Deletes: subscription_items → subscriptions → billing_customers (respecting foreign keys)
+ * Scope: Only test accounts (emails ending with @slideheroes.com or @makerkit.dev)
+ *
+ * @see Issue #1461 - E2E Shard 10 Duplicate Subscription Records
+ */
+async function cleanupBillingTestData() {
+	// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+	console.log("🧹 Cleaning up billing test data...");
+
+	try {
+		const { Client } = await import("pg");
+		const client = new Client({
+			host: "127.0.0.1",
+			port: 54522,
+			user: "postgres",
+			password: "postgres",
+			database: "postgres",
+		});
+
+		await client.connect();
+
+		// Delete in order: subscription_items → subscriptions → billing_customers
+		// This respects foreign key constraints
+		// Scope to test accounts only (safety check)
+		const queries = [
+			{
+				name: "subscription_items",
+				sql: `DELETE FROM subscription_items WHERE subscription_id IN (
+					SELECT s.id FROM subscriptions s
+					JOIN accounts a ON s.account_id = a.id
+					WHERE a.email LIKE '%@slideheroes.com' OR a.email LIKE '%@makerkit.dev'
+				)`,
+			},
+			{
+				name: "subscriptions",
+				sql: `DELETE FROM subscriptions WHERE account_id IN (
+					SELECT id FROM accounts
+					WHERE email LIKE '%@slideheroes.com' OR email LIKE '%@makerkit.dev'
+				)`,
+			},
+			{
+				name: "billing_customers",
+				sql: `DELETE FROM billing_customers WHERE account_id IN (
+					SELECT id FROM accounts
+					WHERE email LIKE '%@slideheroes.com' OR email LIKE '%@makerkit.dev'
+				)`,
+			},
+		];
+
+		for (const query of queries) {
+			const result = await client.query(query.sql);
+			if (result.rowCount && result.rowCount > 0) {
+				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+				console.log(`   Cleaned ${result.rowCount} ${query.name} record(s)`);
+			}
+		}
+
+		await client.end();
+
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log("✅ Billing test data cleanup complete\n");
+	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+		console.warn(
+			`⚠️  Failed to cleanup billing test data: ${(error as Error).message}`,
+		);
+		// Don't fail test suite on cleanup errors - log and continue
+		// This allows tests to run even if database cleanup fails
+	}
+}
+
+/**
  * Log global setup debug info for E2E auth troubleshooting.
  * Only logs when DEBUG_E2E_AUTH=true.
  */
@@ -268,6 +343,11 @@ async function globalSetup(config: FullConfig) {
 			"❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.",
 		);
 	}
+
+	// Clean up billing test data before creating auth states
+	// This prevents duplicate subscription records from accumulating across test runs
+	// See: Issue #1461 - E2E Shard 10 Duplicate Subscription Records
+	await cleanupBillingTestData();
 
 	// PHASE 2 FIX: Run health checks before auth setup
 	// This provides early warning if services are unhealthy
