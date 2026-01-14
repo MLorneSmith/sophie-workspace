@@ -510,6 +510,30 @@ function generateEvents(
 			sandboxLabel: firstLabel,
 			message: `Spec #${newState.overallProgress.specId} started`,
 		});
+
+		// Generate initial events for all sandboxes on startup
+		for (const [label, sandbox] of newState.sandboxes) {
+			events.push({
+				id: `sandbox-init-${label}-${now.getTime()}`,
+				timestamp: now,
+				type: "feature_start",
+				sandboxLabel: label,
+				message: `Sandbox ${label} initializing`,
+			});
+
+			// If sandbox already has a feature assigned, emit feature_start
+			if (sandbox.currentFeature) {
+				events.push({
+					id: `feature-start-${sandbox.currentFeature.id}-${now.getTime()}`,
+					timestamp: now,
+					type: "feature_start",
+					sandboxLabel: label,
+					message: `Feature #${sandbox.currentFeature.id} started on ${label}`,
+					details: { featureId: sandbox.currentFeature.id },
+				});
+			}
+		}
+
 		return events;
 	}
 
@@ -545,9 +569,9 @@ function generateEvents(
 			});
 		}
 
-		// Task started
+		// Task started - only emit if task has a valid ID
 		if (
-			sandbox.currentTask &&
+			sandbox.currentTask?.id &&
 			(!prevSandbox.currentTask ||
 				sandbox.currentTask.id !== prevSandbox.currentTask.id)
 		) {

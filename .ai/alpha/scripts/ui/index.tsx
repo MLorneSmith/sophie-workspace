@@ -1,5 +1,4 @@
 import { render } from "ink";
-// biome-ignore lint/style/useImportType: React must be in scope at runtime for Ink/react-reconciler JSX transform
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
 	CompletionUI,
@@ -310,9 +309,9 @@ export class UIManager {
 	start(onExit?: () => void): void {
 		this.onExit = onExit;
 
-		// Use maxFps to throttle terminal redraws and reduce flicker
+		// Use patchConsole to capture stderr and prevent it from escaping the TUI
 		this.instance = render(<OrchestratorApp config={this.config} />, {
-			patchConsole: false,
+			patchConsole: true,
 		});
 
 		// Handle process signals
