@@ -109,7 +109,7 @@ def main():
 
     try:
         temp_events = EVENTS_FILE.with_suffix('.tmp')
-        temp_events.write_text(json.dumps(events, indent="\t"))
+        temp_events.write_text(json.dumps(events, indent="\t") + "\n")
         temp_events.rename(EVENTS_FILE)
     except Exception:
         try:
