@@ -216,7 +216,7 @@ export async function runFeatureImplementation(
 	);
 
 	let capturedStdout = "";
-	let capturedStderr = "";
+	// Note: PTY combines stdout/stderr through the terminal, so we don't track stderr separately
 	const recentOutput: string[] = []; // Track last N lines for UI
 
 	// Create log file for this feature run
@@ -348,9 +348,13 @@ export async function runFeatureImplementation(
 	// When Claude CLI hangs during startup (no output within 60s), the startup
 	// check interval detects it, sets startupHangDetected=true, and kills the process.
 	// This retry loop catches that error and retries with exponential backoff.
-	let executionResult: Awaited<
-		ReturnType<typeof instance.sandbox.commands.run>
-	> | null = null;
+	// CommandResult type from E2B SDK - compatible with both commands.run() and pty.wait()
+	let executionResult: {
+		exitCode: number;
+		error?: string;
+		stdout: string;
+		stderr: string;
+	} | null = null;
 
 	for (
 		let attemptNumber = 1;
@@ -372,7 +376,6 @@ export async function runFeatureImplementation(
 		// Reset output tracking on retry (but keep log file stream open)
 		if (attemptNumber > 1) {
 			capturedStdout = "";
-			capturedStderr = "";
 			recentOutput.length = 0;
 			instance.outputLineCount = 0;
 			instance.hasReceivedOutput = false;
@@ -385,56 +388,100 @@ export async function runFeatureImplementation(
 		}
 
 		try {
-			// run-claude script uses unbuffer internally for PTY allocation
-			// (stdbuf doesn't work on Node.js processes like Claude CLI)
-			executionResult = await instance.sandbox.commands.run(
-				`run-claude "${prompt.replace(/"/g, '\\"')}"`,
-				{
-					timeoutMs: FEATURE_TIMEOUT_MS,
-					envs: getAllEnvVars(),
-					onStdout: (data) => {
-						capturedStdout += data;
+			// Use PTY (pseudo-terminal) instead of commands.run() to fix buffering issue
+			// PTY allocates a real TTY, forcing Node.js CLI tools to use line-buffering
+			// instead of block-buffering, enabling real-time output streaming.
+			// See: #1472, #1469 for diagnosis and fix details
+			log(
+				`   │   🖥️  [PTY_CREATE] ${instance.label}: Creating PTY (cols=120, rows=40, timeout=${FEATURE_TIMEOUT_MS}ms)`,
+			);
+			logStream.write(
+				`[PTY] Creating PTY session at ${new Date().toISOString()}\n`,
+			);
 
-						// Always write to log file (persisted on orchestrator machine)
-						logStream.write(data);
+			const ptyHandle = await instance.sandbox.pty.create({
+				cols: 120,
+				rows: 40,
+				onData: (output: Uint8Array) => {
+					// Decode output data from Uint8Array to string
+					const data = new TextDecoder().decode(output);
 
-						// Track output in startup tracker for early hang detection
-						updateOutputTracker(startupTracker, data);
+					capturedStdout += data;
 
-						// Track recent output lines for UI
-						const lines = data.split("\n");
+					// Always write to log file (persisted on orchestrator machine)
+					logStream.write(data);
+
+					// Track output in startup tracker for early hang detection
+					updateOutputTracker(startupTracker, data);
+
+					// Track recent output lines for UI
+					const lines = data.split("\n");
+					for (const line of lines) {
+						if (line.trim()) {
+							recentOutput.push(line);
+							// Keep only last N lines
+							if (recentOutput.length > RECENT_OUTPUT_LINES) {
+								recentOutput.shift();
+							}
+							// Track output for startup hung detection
+							instance.outputLineCount = (instance.outputLineCount ?? 0) + 1;
+							// Mark as having received meaningful output
+							// (more than just startup banner)
+							if ((instance.outputLineCount ?? 0) >= 5) {
+								instance.hasReceivedOutput = true;
+							}
+						}
+					}
+
+					// Only output to console when UI is disabled
+					if (!uiEnabled) {
 						for (const line of lines) {
 							if (line.trim()) {
-								recentOutput.push(line);
-								// Keep only last N lines
-								if (recentOutput.length > RECENT_OUTPUT_LINES) {
-									recentOutput.shift();
-								}
-								// Track output for startup hung detection
-								instance.outputLineCount = (instance.outputLineCount ?? 0) + 1;
-								// Mark as having received meaningful output
-								// (more than just startup banner)
-								if ((instance.outputLineCount ?? 0) >= 5) {
-									instance.hasReceivedOutput = true;
-								}
+								process.stdout.write(`│   ${line}\n`);
 							}
 						}
-
-						// Only output to console when UI is disabled
-						if (!uiEnabled) {
-							for (const line of lines) {
-								if (line.trim()) {
-									process.stdout.write(`│   ${line}\n`);
-								}
-							}
-						}
-					},
-					onStderr: (data) => {
-						capturedStderr += data;
-						// Also write stderr to log file
-						logStream.write(`[STDERR] ${data}`);
-					},
+					}
 				},
+				cwd: WORKSPACE_DIR,
+				envs: {
+					...getAllEnvVars(),
+					// PTY environment variables for proper terminal behavior
+					TERM: "xterm-256color",
+					FORCE_COLOR: "1",
+					CI: "false",
+				},
+				timeoutMs: FEATURE_TIMEOUT_MS,
+			});
+
+			log(
+				`   │   🖥️  [PTY_READY] ${instance.label}: PTY created (PID=${ptyHandle.pid})`,
+			);
+			logStream.write(`[PTY] PTY created with PID ${ptyHandle.pid}\n`);
+
+			// Send the command to the PTY shell
+			// PTY creates an interactive shell, so we send the command followed by exit
+			// to ensure the shell exits when the command completes (preserving exit code)
+			const command = `run-claude "${prompt.replace(/"/g, '\\"')}"\nexit $?\n`;
+
+			log(`   │   📤 [PTY_INPUT] ${instance.label}: Sending command to PTY`);
+			logStream.write(`[PTY] Sending command: ${command.split("\n")[0]}\n`);
+
+			await instance.sandbox.pty.sendInput(
+				ptyHandle.pid,
+				new TextEncoder().encode(command),
+			);
+
+			// Wait for PTY command to complete
+			log(
+				`   │   ⏳ [PTY_WAIT] ${instance.label}: Waiting for PTY to complete...`,
+			);
+			executionResult = await ptyHandle.wait();
+
+			log(
+				`   │   ✅ [PTY_DONE] ${instance.label}: PTY completed (exitCode=${executionResult.exitCode})`,
+			);
+			logStream.write(
+				`[PTY] PTY completed with exit code ${executionResult.exitCode}\n`,
 			);
 
 			// Success - record which attempt succeeded and break out of retry loop
