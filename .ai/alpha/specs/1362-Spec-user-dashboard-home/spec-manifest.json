@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": 1362,
 		"spec_name": "user dashboard home",
-		"generated_at": "2026-01-13T19:30:13.337Z",
+		"generated_at": "2026-01-13T21:43:48.832Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/research-library"
 	},
@@ -60,7 +60,7 @@
 			"slug": "dashboard-page-grid",
 			"priority": 1,
 			"global_priority": 1,
-			"status": "pending",
+			"status": "in_progress",
 			"tasks_file": "1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1363-Initiative-dashboard-foundation/1367-Feature-dashboard-page-grid",
 			"task_count": 20,
@@ -70,7 +70,9 @@
 			"dependencies": [],
 			"github_issue": 1381,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-a",
+			"assigned_at": 1768341374697
 		},
 		{
 			"id": 1368,
@@ -185,7 +187,7 @@
 			"slug": "activity-database-schema",
 			"priority": 1,
 			"global_priority": 7,
-			"status": "pending",
+			"status": "in_progress",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1373-Feature-activity-database-schema/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1373-Feature-activity-database-schema",
 			"task_count": 8,
@@ -195,7 +197,9 @@
 			"dependencies": [],
 			"github_issue": 1386,
 			"requires_database": true,
-			"database_task_count": 8
+			"database_task_count": 8,
+			"assigned_sandbox": "sbx-b",
+			"assigned_at": 1768341374700
 		},
 		{
 			"id": 1376,
@@ -204,7 +208,7 @@
 			"slug": "kanban-summary-card",
 			"priority": 1,
 			"global_priority": 8,
-			"status": "pending",
+			"status": "in_progress",
 			"tasks_file": "1365-Initiative-activity-task-tracking/1376-Feature-kanban-summary-card/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/1365-Initiative-activity-task-tracking/1376-Feature-kanban-summary-card",
 			"task_count": 6,
@@ -214,7 +218,9 @@
 			"dependencies": [],
 			"github_issue": 1391,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"assigned_sandbox": "sbx-c",
+			"assigned_at": 1768341374701
 		},
 		{
 			"id": 1374,
@@ -321,7 +327,7 @@
 		}
 	],
 	"progress": {
-		"status": "pending",
+		"status": "in_progress",
 		"initiatives_completed": 0,
 		"initiatives_total": 4,
 		"features_completed": 0,
@@ -330,13 +336,17 @@
 		"tasks_total": 110,
 		"next_feature_id": 1367,
 		"last_completed_feature_id": null,
-		"started_at": null,
+		"started_at": "2026-01-13T21:56:14.687Z",
 		"completed_at": null,
-		"last_checkpoint": null
+		"last_checkpoint": "2026-01-13T21:56:14.701Z"
 	},
 	"sandbox": {
-		"sandbox_ids": [],
-		"branch_name": null,
-		"created_at": null
+		"sandbox_ids": [
+			"ipdbrbgeuuozvuxrz5w6n",
+			"iytigbugxtjffqzfbi3wx",
+			"igi95euybfad35nsgzgl2"
+		],
+		"branch_name": "alpha/spec-1362",
+		"created_at": "2026-01-13T21:53:38.111Z"
 	}
 }

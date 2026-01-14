@@ -1,16 +1,25 @@
 {
-	"sandbox_id": "iuxbehgpa5hsvihkv36ea",
+	"sandbox_id": "igi95euybfad35nsgzgl2",
 	"feature": {
 		"issue_number": 1376,
 		"title": "Kanban Summary Card"
 	},
-	"status": "failed",
-	"phase": "executing",
-	"last_heartbeat": "2026-01-13T19:22:53.258322Z",
-	"last_tool": "Read",
-	"session_id": "iuxbehgpa5hsvihkv36ea",
+	"current_task": null,
+	"current_group": {
+		"id": 0,
+		"name": "Foundation",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 15,
+	"status": "in_progress",
+	"phase": "loading_context",
+	"last_heartbeat": "2026-01-13T21:59:30.549156Z",
+	"last_tool": "Bash",
+	"session_id": "igi95euybfad35nsgzgl2",
 	"recent_output": [
-		"Using OAuth authentication (Max plan)",
-		"Running Claude Code with prompt: /alpha:implement 1376"
+		"💻 Bash: cat > /home/user/project/.init..."
 	]
 }
