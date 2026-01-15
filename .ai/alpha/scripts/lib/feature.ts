@@ -519,7 +519,10 @@ export async function runFeatureImplementation(
 
 	// At this point, executionResult should be set from successful attempt
 	// If all retries failed, we would have thrown in the catch block above
-	const result = executionResult!;
+	if (!executionResult) {
+		throw new Error("Execution result not set - this should never happen");
+	}
+	const result = executionResult;
 
 	try {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates

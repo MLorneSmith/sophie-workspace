@@ -125,7 +125,8 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 
 		const manifest = createTestManifest([{ id: 1367, status: "pending" }]);
 		const instance = createTestInstance("sbx-a");
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 
 		// Initial state: instance is ready
 		expect(instance.status).toBe("ready");
@@ -186,17 +187,14 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 		// First iteration: assign feature
 		const feature1 = getNextAvailableFeature(manifest);
 		expect(feature1).not.toBeNull();
+		if (!feature1) throw new Error("No feature available");
 
-		const assigned = assignFeatureToSandbox(
-			feature1!,
-			instance.label,
-			manifest,
-		);
+		const assigned = assignFeatureToSandbox(feature1, instance.label, manifest);
 		expect(assigned).toBe(true);
 
 		// CRITICAL FIX: Set status synchronously BEFORE any async code
 		instance.status = "busy";
-		instance.currentFeature = feature1!.id;
+		instance.currentFeature = feature1.id;
 		instance.featureStartedAt = new Date();
 
 		// Second iteration: work loop sees sandbox as busy
@@ -339,8 +337,11 @@ describe("Race Condition Prevention - Full Work Loop Simulation", () => {
 
 		// No additional features should have been assigned
 		// (both sandboxes were seen as busy)
-		expect(instances[0]!.currentFeature).toBe(1367);
-		expect(instances[1]!.currentFeature).toBe(1368);
+		const instance0 = instances[0];
+		const instance1 = instances[1];
+		if (!instance0 || !instance1) throw new Error("Missing instances");
+		expect(instance0.currentFeature).toBe(1367);
+		expect(instance1.currentFeature).toBe(1368);
 	});
 
 	it("activeWork map correctly tracks all assignments", () => {

@@ -45,8 +45,9 @@ describe("generateRunId", () => {
 
 		expect(timestamp).toBeInstanceOf(Date);
 		expect(timestamp).not.toBeNull();
+		if (!timestamp) throw new Error("Timestamp is null");
 		// Timestamp should be within last second
-		expect(Date.now() - timestamp!.getTime()).toBeLessThan(1000);
+		expect(Date.now() - timestamp.getTime()).toBeLessThan(1000);
 	});
 });
 
@@ -130,7 +131,8 @@ describe("parseRunIdTimestamp", () => {
 		const result = parseRunIdTimestamp(runId);
 
 		expect(result).toBeInstanceOf(Date);
-		expect(result!.getTime()).toBe(timestamp);
+		if (!result) throw new Error("Result is null");
+		expect(result.getTime()).toBe(timestamp);
 	});
 
 	it("returns null for invalid format - missing prefix", () => {
@@ -176,8 +178,9 @@ describe("parseRunIdTimestamp", () => {
 		const parsed = parseRunIdTimestamp(runId);
 
 		expect(parsed).not.toBeNull();
-		expect(parsed!.getTime()).toBeGreaterThanOrEqual(before);
-		expect(parsed!.getTime()).toBeLessThanOrEqual(after);
+		if (!parsed) throw new Error("Parsed timestamp is null");
+		expect(parsed.getTime()).toBeGreaterThanOrEqual(before);
+		expect(parsed.getTime()).toBeLessThanOrEqual(after);
 	});
 });
 

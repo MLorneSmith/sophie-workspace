@@ -146,7 +146,8 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 				status: "pending",
 			},
 		]);
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 		const instance = createMockSandboxInstance("sbx-a");
 
 		// Simulate the orchestrator error handler behavior
@@ -182,7 +183,8 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 				assigned_at: Date.now() - 5000,
 			},
 		]);
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 		const instance = createMockSandboxInstance("sbx-b");
 
 		const error = new Error("Sandbox timeout expired");
@@ -206,7 +208,8 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 				status: "pending",
 			},
 		]);
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 		const instance = createMockSandboxInstance("sbx-c");
 
 		// Test with non-Error object
@@ -236,7 +239,8 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 				assigned_at: undefined,
 			},
 		]);
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 		const instance = createMockSandboxInstance("sbx-a");
 
 		const error = new Error("Some error");
@@ -275,7 +279,8 @@ describe("Orchestrator Error Handler - Stall Prevention", () => {
 			},
 		]);
 
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 
 		// Verify the feature state is correct for retry
 		expect(feature.status).toBe("failed");

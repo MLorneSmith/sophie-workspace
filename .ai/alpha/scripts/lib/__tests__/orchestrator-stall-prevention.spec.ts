@@ -140,7 +140,8 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 				status: "pending",
 			},
 		]);
-		const feature = manifest.feature_queue[0]!;
+		const feature = manifest.feature_queue[0];
+		if (!feature) throw new Error("No feature in queue");
 
 		// Step 1: Assign to sandbox
 		const assigned = assignFeatureToSandbox(feature, "sbx-a", manifest);
@@ -180,7 +181,8 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		// Assign all features
 		for (let i = 0; i < 3; i++) {
-			const feature = manifest.feature_queue[i]!;
+			const feature = manifest.feature_queue[i];
+			if (!feature) throw new Error(`No feature at index ${i}`);
 			const label = `sbx-${String.fromCharCode(97 + i)}`;
 			assignFeatureToSandbox(feature, label, manifest);
 		}
@@ -196,15 +198,17 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		// All three features should be available for retry
 		const available1 = getNextAvailableFeature(manifest);
 		expect(available1).not.toBeNull();
+		if (!available1) throw new Error("No available feature 1");
 
 		// Assign first one
-		assignFeatureToSandbox(available1!, "sbx-a", manifest);
+		assignFeatureToSandbox(available1, "sbx-a", manifest);
 
 		const available2 = getNextAvailableFeature(manifest);
 		expect(available2).not.toBeNull();
-		expect(available2?.id).not.toBe(available1?.id);
+		expect(available2?.id).not.toBe(available1.id);
+		if (!available2) throw new Error("No available feature 2");
 
-		assignFeatureToSandbox(available2!, "sbx-b", manifest);
+		assignFeatureToSandbox(available2, "sbx-b", manifest);
 
 		const available3 = getNextAvailableFeature(manifest);
 		expect(available3).not.toBeNull();
@@ -277,7 +281,8 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 
 		// The failed feature with assigned_sandbox would be stuck forever
 		// This is the bug that the fix prevents
-		const failedFeature = manifest.feature_queue[0]!;
+		const failedFeature = manifest.feature_queue[0];
+		if (!failedFeature) throw new Error("No failed feature in queue");
 		expect(failedFeature.assigned_sandbox).toBe("sbx-a"); // Still set!
 	});
 

@@ -260,8 +260,11 @@ describe("saveManifest", () => {
 		const after = new Date().toISOString();
 
 		expect(manifest.progress.last_checkpoint).toBeDefined();
-		expect(manifest.progress.last_checkpoint! >= before).toBe(true);
-		expect(manifest.progress.last_checkpoint! <= after).toBe(true);
+		const checkpoint = manifest.progress.last_checkpoint;
+		if (checkpoint) {
+			expect(checkpoint >= before).toBe(true);
+			expect(checkpoint <= after).toBe(true);
+		}
 	});
 
 	it("writes overall progress file for UI", () => {
@@ -566,7 +569,9 @@ describe("archiveAndClearPreviousRun", () => {
 		expect(archives.length).toBe(1);
 
 		// Archived file should exist
-		const archivePath = path.join(archiveDir, archives[0]!, "progress");
+		const firstArchive = archives[0];
+		if (!firstArchive) throw new Error("No archive found");
+		const archivePath = path.join(archiveDir, firstArchive, "progress");
 		expect(fs.existsSync(path.join(archivePath, "sbx-a-progress.json"))).toBe(
 			true,
 		);

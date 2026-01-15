@@ -161,7 +161,9 @@ export async function terminateProcess(
 	}
 
 	// Wait for graceful shutdown
-	log(`   Waiting up to ${GRACEFUL_SHUTDOWN_TIMEOUT_MS / 1000}s for graceful shutdown...`);
+	log(
+		`   Waiting up to ${GRACEFUL_SHUTDOWN_TIMEOUT_MS / 1000}s for graceful shutdown...`,
+	);
 
 	const startTime = Date.now();
 	while (Date.now() - startTime < GRACEFUL_SHUTDOWN_TIMEOUT_MS) {
@@ -277,22 +279,34 @@ export async function acquireLock(
 
 		// Handle force unlock - terminate existing process before acquiring lock
 		if (forceUnlock) {
-			log(`\n🔓 Force unlock requested, terminating existing orchestrator...`);
-			log(`   Existing lock: Spec #${existingLock.spec_id}, PID ${existingLock.pid}`);
-			log(`   Hostname: ${existingLock.hostname}, Started: ${existingLock.started_at}`);
+			log("\n🔓 Force unlock requested, terminating existing orchestrator...");
+			log(
+				`   Existing lock: Spec #${existingLock.spec_id}, PID ${existingLock.pid}`,
+			);
+			log(
+				`   Hostname: ${existingLock.hostname}, Started: ${existingLock.started_at}`,
+			);
 
 			// Only terminate if running on same host (can't kill remote processes)
 			if (existingLock.hostname !== os.hostname()) {
-				log(`\n   ⚠️ WARNING: Lock held by different host (${existingLock.hostname})`);
-				log(`   Cannot terminate remote process, proceeding with lock override only`);
+				log(
+					`\n   ⚠️ WARNING: Lock held by different host (${existingLock.hostname})`,
+				);
+				log(
+					"   Cannot terminate remote process, proceeding with lock override only",
+				);
 			} else {
 				// Attempt to terminate the existing process
 				const terminated = await terminateProcess(existingLock.pid, uiEnabled);
 				if (terminated) {
-					log(`   ✅ Existing orchestrator process terminated`);
+					log("   ✅ Existing orchestrator process terminated");
 				} else {
-					error(`   ❌ Failed to terminate existing process (PID ${existingLock.pid})`);
-					error(`   Manual intervention may be required: kill ${existingLock.pid}`);
+					error(
+						`   ❌ Failed to terminate existing process (PID ${existingLock.pid})`,
+					);
+					error(
+						`   Manual intervention may be required: kill ${existingLock.pid}`,
+					);
 					// Continue anyway - the lock will be overwritten
 				}
 			}
