@@ -458,8 +458,85 @@ async function globalSetup(config: FullConfig) {
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
 	// Log the Supabase URL being used for debugging
+	// CRITICAL: The cookie name is derived from this URL's hostname
+	// It MUST match NEXT_PUBLIC_SUPABASE_URL used by the deployed middleware
+	// See: Issue #1507 - Cookie name mismatch causes auth failures in CI
+	const expectedCookieName = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
-	console.log(`🔗 Using Supabase URL: ${supabaseUrl} (auth + cookie naming)`);
+	console.log(`🔗 Using Supabase URL: ${supabaseUrl}`);
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(`🍪 Expected cookie name: ${expectedCookieName}`);
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(
+		"⚠️  IMPORTANT: This must match NEXT_PUBLIC_SUPABASE_URL in the deployed app!",
+	);
+
+	// DIAGNOSTIC: Fetch deployed app's healthcheck to verify Supabase URL alignment
+	// See: Issue #1507 - Cookie name mismatch causes auth failures in CI
+	if (process.env.CI === "true" && !baseURL?.includes("localhost")) {
+		try {
+			const healthUrl = `${baseURL}/healthcheck`;
+			const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+
+			const headers: Record<string, string> = {};
+			if (bypassSecret) {
+				headers["x-vercel-protection-bypass"] = bypassSecret;
+			}
+
+			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+			console.log(
+				"\n🔍 Fetching deployed app healthcheck for configuration validation...",
+			);
+
+			const response = await fetch(healthUrl, {
+				headers,
+				signal: AbortSignal.timeout(15000),
+			});
+
+			if (response.ok) {
+				const healthData = (await response.json()) as Record<string, unknown>;
+				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+				console.log("✅ Healthcheck response received");
+
+				// The healthcheck should return Supabase project info if available
+				if (healthData.supabaseProjectRef) {
+					const deployedProjectRef = healthData.supabaseProjectRef as string;
+					const e2eProjectRef = new URL(supabaseUrl).hostname.split(".")[0];
+
+					if (deployedProjectRef !== e2eProjectRef) {
+						// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+						console.error(`
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  ❌ CRITICAL: SUPABASE PROJECT REF MISMATCH DETECTED                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  E2E Setup uses:    ${e2eProjectRef.padEnd(50)}║
+║  Deployed app uses: ${deployedProjectRef.padEnd(50)}║
+║                                                                              ║
+║  This WILL cause authentication failures!                                    ║
+║  Cookie names will not match between E2E setup and deployed middleware.      ║
+║                                                                              ║
+║  FIX: Ensure E2E_SUPABASE_URL matches NEXT_PUBLIC_SUPABASE_URL in Vercel.    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+`);
+					} else {
+						// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+						console.log(`✅ Supabase project ref matches: ${e2eProjectRef}`);
+					}
+				}
+			} else {
+				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+				console.log(
+					`⚠️  Healthcheck returned ${response.status} - skipping config validation`,
+				);
+			}
+		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+			console.log(
+				`⚠️  Could not fetch healthcheck: ${(error as Error).message}`,
+			);
+			// Don't fail setup on healthcheck errors - this is just diagnostic
+		}
+	}
 
 	// Create auth state directory if it doesn't exist
 	const authDir = join(cwd(), ".auth");

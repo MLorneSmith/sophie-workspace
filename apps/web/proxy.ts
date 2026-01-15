@@ -20,36 +20,115 @@ function debugLog(context: string, data: Record<string, unknown>) {
 }
 
 /**
+ * Decode and extract basic info from a JWT without verification.
+ * Used for debugging to see what's in the token.
+ * Returns null if the value is not a valid JWT format.
+ */
+function decodeJwtPayload(jwt: string): Record<string, unknown> | null {
+	try {
+		// JWT format: header.payload.signature
+		const parts = jwt.split(".");
+		if (parts.length !== 3) return null;
+
+		// Decode the payload (middle part)
+		const payload = parts[1];
+		if (!payload) return null;
+
+		// Base64url decode
+		const decoded = Buffer.from(payload, "base64url").toString("utf-8");
+		return JSON.parse(decoded) as Record<string, unknown>;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Get the expected Supabase cookie name based on the configured URL.
+ * Cookie name format: sb-{project-ref}-auth-token
+ * where project-ref is the first part of the Supabase URL hostname.
+ */
+function getExpectedCookieName(): string {
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+	try {
+		const hostname = new URL(supabaseUrl).hostname;
+		const projectRef = hostname.split(".")[0];
+		return `sb-${projectRef}-auth-token`;
+	} catch {
+		return "sb-unknown-auth-token";
+	}
+}
+
+/**
  * Log cookies from request for debugging.
  * Truncates cookie values to avoid exposing sensitive data.
+ * Enhanced for Issue #1507 - shows expected vs actual cookie names.
  */
 function logRequestCookies(request: NextRequest, context: string) {
 	if (!DEBUG_E2E_AUTH) return;
 
 	const allCookies = request.cookies.getAll();
-	const supabaseCookies = allCookies.filter(
+	const expectedCookieName = getExpectedCookieName();
+
+	// Find the auth cookie (exact match or chunked versions)
+	const authCookies = allCookies.filter(
 		(c) =>
-			c.name.includes("sb-") ||
-			c.name.includes("supabase") ||
-			c.name.includes("auth"),
+			c.name === expectedCookieName ||
+			c.name.startsWith(`${expectedCookieName}.`),
 	);
 
-	const cookieSummary = supabaseCookies.map((c) => ({
-		name: c.name,
-		valueLength: c.value?.length ?? 0,
-		valuePreview: c.value
-			? `${c.value.slice(0, 20)}...${c.value.slice(-10)}`
-			: "empty",
-		isChunked: /\.\d+$/.test(c.name),
-	}));
+	// Also find any other Supabase-looking cookies for comparison
+	const otherSupabaseCookies = allCookies.filter(
+		(c) =>
+			(c.name.includes("sb-") || c.name.includes("auth-token")) &&
+			c.name !== expectedCookieName &&
+			!c.name.startsWith(`${expectedCookieName}.`),
+	);
+
+	const cookieSummary = authCookies.map((c) => {
+		// Try to decode JWT payload for debugging
+		const jwtPayload = decodeJwtPayload(c.value);
+
+		return {
+			name: c.name,
+			valueLength: c.value?.length ?? 0,
+			valuePreview: c.value
+				? `${c.value.slice(0, 30)}...${c.value.slice(-10)}`
+				: "empty",
+			isChunked: /\.\d+$/.test(c.name),
+			isValidJwt: jwtPayload !== null,
+			jwtIssuer: jwtPayload?.iss ?? null,
+			jwtSubject: jwtPayload?.sub
+				? `${String(jwtPayload.sub).slice(0, 8)}...`
+				: null,
+			jwtExpiry: jwtPayload?.exp
+				? new Date(Number(jwtPayload.exp) * 1000).toISOString()
+				: null,
+			jwtIsExpired: jwtPayload?.exp
+				? Number(jwtPayload.exp) * 1000 < Date.now()
+				: null,
+		};
+	});
 
 	debugLog(context, {
 		path: request.nextUrl.pathname,
+		supabaseUrl:
+			process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 50) ?? "not set",
+		expectedCookieName,
+		expectedCookieFound: authCookies.length > 0,
+		authCookieCount: authCookies.length,
+		otherSupabaseCookieNames: otherSupabaseCookies.map((c) => c.name),
 		totalCookies: allCookies.length,
-		supabaseCookies: cookieSummary.length,
-		cookies: cookieSummary,
+		authCookies: cookieSummary,
 		allCookieNames: allCookies.map((c) => c.name),
 	});
+
+	// Log a clear warning if expected cookie is not found but other auth cookies exist
+	if (authCookies.length === 0 && otherSupabaseCookies.length > 0) {
+		// biome-ignore lint/suspicious/noConsole: Critical diagnostic for auth debugging
+		console.warn(
+			`[DEBUG_E2E_AUTH:COOKIE_NAME_MISMATCH] Expected cookie '${expectedCookieName}' not found, but found: ${otherSupabaseCookies.map((c) => c.name).join(", ")}`,
+		);
+	}
 }
 
 // URLPattern is now available globally via polyfill
