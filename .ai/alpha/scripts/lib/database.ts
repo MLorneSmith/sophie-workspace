@@ -15,7 +15,7 @@ import type { Sandbox } from "@e2b/code-interpreter";
 import { WORKSPACE_DIR } from "../config/index.js";
 import {
 	getAllEnvVars,
-	SUPABASE_ACCESS_TOKEN,
+	getSupabaseAccessToken,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
@@ -332,7 +332,7 @@ export async function syncFeatureMigrations(
 			{
 				timeoutMs: 300000, // 5 minutes for complex migrations
 				envs: {
-					SUPABASE_ACCESS_TOKEN: SUPABASE_ACCESS_TOKEN || "",
+					SUPABASE_ACCESS_TOKEN: getSupabaseAccessToken() || "",
 				},
 			},
 		);

@@ -40,10 +40,10 @@ export {
 	WORKSPACE_DIR,
 } from "./constants.js";
 
-// Re-export environment variables and utilities for database operations
+// Re-export environment getters and utilities for database operations
 export {
-	SUPABASE_ACCESS_TOKEN,
-	SUPABASE_SANDBOX_PROJECT_REF,
+	getSupabaseAccessToken,
+	getSupabaseProjectRef,
 	hasSupabaseAuth,
 	validateSupabaseConfig,
 } from "../lib/environment.js";

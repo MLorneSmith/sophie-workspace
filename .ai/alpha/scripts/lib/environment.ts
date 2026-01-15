@@ -94,9 +94,28 @@ export function clearOAuthTokenCache(): void {
 // Supabase Token Management
 // ============================================================================
 
-export const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
-export const SUPABASE_SANDBOX_PROJECT_REF =
-	process.env.SUPABASE_SANDBOX_PROJECT_REF;
+/**
+ * Get the Supabase access token.
+ *
+ * IMPORTANT: We use a getter function instead of a const export to avoid
+ * ESM import hoisting issues. When this module is imported, ES modules
+ * execute all imports BEFORE top-level code like `loadEnvFile()`.
+ * A const would capture `undefined` at import time. A getter reads
+ * `process.env` at call time, after the environment is properly loaded.
+ */
+export function getSupabaseAccessToken(): string | undefined {
+	return process.env.SUPABASE_ACCESS_TOKEN;
+}
+
+/**
+ * Get the Supabase sandbox project reference.
+ *
+ * IMPORTANT: We use a getter function to avoid ESM import hoisting issues.
+ * See `getSupabaseAccessToken()` for detailed explanation.
+ */
+export function getSupabaseProjectRef(): string | undefined {
+	return process.env.SUPABASE_SANDBOX_PROJECT_REF;
+}
 
 /**
  * Check if Supabase authentication is configured for database operations.
@@ -104,7 +123,7 @@ export const SUPABASE_SANDBOX_PROJECT_REF =
  * Does not fail - database operations are optional.
  */
 export function hasSupabaseAuth(): boolean {
-	return !!(SUPABASE_ACCESS_TOKEN && SUPABASE_SANDBOX_PROJECT_REF);
+	return !!(getSupabaseAccessToken() && getSupabaseProjectRef());
 }
 
 /**
@@ -117,8 +136,8 @@ export function validateSupabaseConfig(): {
 	hasProjectRef: boolean;
 	message: string;
 } {
-	const hasToken = !!SUPABASE_ACCESS_TOKEN;
-	const hasProjectRef = !!SUPABASE_SANDBOX_PROJECT_REF;
+	const hasToken = !!getSupabaseAccessToken();
+	const hasProjectRef = !!getSupabaseProjectRef();
 	const valid = hasToken && hasProjectRef;
 
 	let message: string;
@@ -149,8 +168,8 @@ export function validateSupabaseTokensRequired(): {
 	isValid: boolean;
 	message: string;
 } {
-	const token = SUPABASE_ACCESS_TOKEN;
-	const projectRef = SUPABASE_SANDBOX_PROJECT_REF;
+	const token = getSupabaseAccessToken();
+	const projectRef = getSupabaseProjectRef();
 
 	if (!token || !projectRef) {
 		const missing: string[] = [];

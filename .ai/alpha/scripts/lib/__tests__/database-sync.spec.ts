@@ -12,15 +12,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // Mock environment module before importing database module
 const mockHasSupabaseAuth = vi.fn();
 const mockValidateSupabaseConfig = vi.fn();
-const mockSupabaseAccessToken = vi.fn().mockReturnValue("sbp_test_token");
+const mockGetSupabaseAccessToken = vi.fn().mockReturnValue("sbp_test_token");
+const mockValidateSupabaseTokensRequired = vi.fn();
 
 vi.mock("../environment.js", () => ({
 	getAllEnvVars: vi.fn().mockReturnValue({}),
 	hasSupabaseAuth: () => mockHasSupabaseAuth(),
 	validateSupabaseConfig: () => mockValidateSupabaseConfig(),
-	get SUPABASE_ACCESS_TOKEN() {
-		return mockSupabaseAccessToken();
-	},
+	getSupabaseAccessToken: () => mockGetSupabaseAccessToken(),
+	validateSupabaseTokensRequired: () => mockValidateSupabaseTokensRequired(),
 }));
 
 // Mock lock module
@@ -79,6 +79,11 @@ describe("syncFeatureMigrations", () => {
 			hasProjectRef: true,
 			message: "Supabase CLI authentication configured",
 		});
+		// Default to valid tokens (validation passes)
+		mockValidateSupabaseTokensRequired.mockReturnValue({
+			isValid: true,
+			message: "",
+		});
 	});
 
 	afterEach(() => {
@@ -86,7 +91,7 @@ describe("syncFeatureMigrations", () => {
 	});
 
 	describe("when Supabase auth is not configured", () => {
-		it("skips sync and returns true (non-blocking)", async () => {
+		it("throws error when tokens are missing (fail-fast validation)", async () => {
 			mockHasSupabaseAuth.mockReturnValue(false);
 			mockValidateSupabaseConfig.mockReturnValue({
 				valid: false,
@@ -94,17 +99,24 @@ describe("syncFeatureMigrations", () => {
 				hasProjectRef: false,
 				message: "Supabase CLI not configured",
 			});
+			mockValidateSupabaseTokensRequired.mockReturnValue({
+				isValid: false,
+				message:
+					"Missing required Supabase configuration: SUPABASE_ACCESS_TOKEN, SUPABASE_SANDBOX_PROJECT_REF",
+			});
 
 			const sandbox = createMockSandbox();
 
-			const result = await syncFeatureMigrations(sandbox, "feature #1", true);
+			// syncFeatureMigrations now throws on missing tokens (fail-fast)
+			await expect(
+				syncFeatureMigrations(sandbox, "feature #1", true),
+			).rejects.toThrow("Migration sync failed");
 
-			expect(result).toBe(true);
 			// Should not have run any commands
 			expect(sandbox.commands.run).not.toHaveBeenCalled();
 		});
 
-		it("returns true when only token is missing", async () => {
+		it("throws error when only token is missing", async () => {
 			mockHasSupabaseAuth.mockReturnValue(false);
 			mockValidateSupabaseConfig.mockReturnValue({
 				valid: false,
@@ -112,12 +124,16 @@ describe("syncFeatureMigrations", () => {
 				hasProjectRef: true,
 				message: "Missing SUPABASE_ACCESS_TOKEN",
 			});
+			mockValidateSupabaseTokensRequired.mockReturnValue({
+				isValid: false,
+				message: "Missing required Supabase configuration: SUPABASE_ACCESS_TOKEN",
+			});
 
 			const sandbox = createMockSandbox();
 
-			const result = await syncFeatureMigrations(sandbox, "feature #1", true);
-
-			expect(result).toBe(true);
+			await expect(
+				syncFeatureMigrations(sandbox, "feature #1", true),
+			).rejects.toThrow("Migration sync failed");
 		});
 	});
 
