@@ -716,6 +716,10 @@ export async function runWorkLoop(
 						feature.status = "failed";
 						feature.error =
 							error instanceof Error ? error.message : String(error);
+						// Clear sandbox assignment to prevent stall when features fail with errors
+						// that bypass feature.ts handler (e.g., PTY SIGTERM). Mirrors feature.ts:678-679.
+						feature.assigned_sandbox = undefined;
+						feature.assigned_at = undefined;
 						saveManifest(manifest);
 					} finally {
 						activeWork.delete(instance.label);
