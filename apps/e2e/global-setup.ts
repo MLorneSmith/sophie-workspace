@@ -841,8 +841,18 @@ async function globalSetup(config: FullConfig) {
 					// Only use url property for Vercel preview deployments
 					// This is required because Vercel preview URLs are dynamic and
 					// we cannot set an explicit domain
+					// When using url, we must omit path to avoid Playwright cookie API conflicts
+					// See: Issue #1485 - Vercel Bypass Cookie Missing URL Property
 					if (cookieConfig.isVercelPreview) {
-						return { ...cookieBase, url: baseURL };
+						return {
+							name: cookieBase.name,
+							value: cookieBase.value,
+							url: baseURL,
+							expires: cookieBase.expires,
+							httpOnly: cookieBase.httpOnly,
+							secure: cookieBase.secure,
+							sameSite: cookieBase.sameSite,
+						};
 					}
 
 					// Fallback: If domain is undefined but NOT Vercel preview,
@@ -870,7 +880,7 @@ async function globalSetup(config: FullConfig) {
 					valueLength: c.value.length,
 					valuePreview: `${c.value.substring(0, 30)}...`,
 					domain: "domain" in c ? c.domain : "(browser default)",
-					path: c.path,
+					path: "path" in c ? c.path : "(derived from url)",
 					expires: c.expires,
 					secure: c.secure,
 				})),
