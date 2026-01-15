@@ -9,8 +9,5 @@
 	"last_heartbeat": "2026-01-15T17:46:58.473Z",
 	"session_id": "iltp3mrk64jl3i4fdmul3",
 	"waiting_reason": "Waiting for dependencies (2 features blocked)",
-	"blocked_by": [
-		1371,
-		1372
-	]
+	"blocked_by": [1371, 1372]
 }
