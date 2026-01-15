@@ -395,8 +395,10 @@ E2B sandbox has configurable timeout (default 1 hour):
 - `SUPABASE_SANDBOX_URL` - Sandbox project URL
 - `SUPABASE_SANDBOX_ANON_KEY` - Sandbox anon key
 - `SUPABASE_SANDBOX_SERVICE_ROLE_KEY` - Sandbox service role key
-- `SUPABASE_SANDBOX_DB_URL` - Sandbox database connection URL
+- `SUPABASE_SANDBOX_DB_URL` - Sandbox database connection URL (**IMPORTANT**: Must be kept current - see Troubleshooting below)
 - `SUPABASE_ACCESS_TOKEN` - CLI access token for linking
+
+**⚠️ Credential Maintenance**: The `SUPABASE_SANDBOX_DB_URL` contains the database password which may need periodic updates. If you see "password authentication failed" errors, obtain the current password from Supabase Dashboard > Project Settings > Database and update the `.env` file.
 
 **Payload CMS Seeding (for test data)**:
 - `PAYLOAD_SECRET` - Payload CMS secret key
@@ -559,6 +561,7 @@ If seeding fails, check these common causes:
 | "SSL required" | Missing SSL in connection | Orchestrator handles this automatically |
 | "Permission denied" | Wrong credentials | Check `SUPABASE_SANDBOX_SERVICE_ROLE_KEY` |
 | "User already exists" | Duplicate seeding | Use `--force` flag or reset database |
+| "password authentication failed" | Expired or incorrect DB password | Get current password from Supabase Dashboard > Project Settings > Database and update `SUPABASE_SANDBOX_DB_URL` in `.env` |
 
 **Debug commands**:
 ```bash

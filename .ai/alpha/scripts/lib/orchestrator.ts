@@ -46,7 +46,6 @@ import {
 	findSpecDir,
 	loadManifest,
 	saveManifest,
-	writeOverallProgress,
 } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
 import { generateRunId } from "./run-id.js";
@@ -1051,15 +1050,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		}
 	}
 
-	// Final status
-	const failedFeatures = manifest.feature_queue.filter(
-		(f) => f.status === "failed",
-	).length;
-	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
-	manifest.progress.completed_at = new Date().toISOString();
-	saveManifest(manifest);
-
 	// Prepare one sandbox for complete review
+	// NOTE: We prepare review URLs BEFORE setting final status to avoid race condition
+	// where UI sees "completed" status before reviewUrls are available
 	log("\n🔄 Preparing sandbox for complete review...");
 	const reviewInstance = instances[0];
 	const otherInstances = instances.slice(1);
@@ -1110,12 +1103,18 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		}
 	}
 
-	// Write review URLs to progress file for UI to display
-	if (reviewUrls.length > 0) {
-		writeOverallProgress(manifest, reviewUrls, runId);
-		// Give UI time to pick up the updated progress file
-		await sleep(1000);
-	}
+	// Final status - set AFTER reviewUrls are ready to avoid race condition
+	// This ensures UI never sees "completed" status without reviewUrls available
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	).length;
+	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+	manifest.progress.completed_at = new Date().toISOString();
+
+	// Save manifest with reviewUrls - this writes both the manifest file and
+	// overall-progress.json atomically with reviewUrls included, preventing
+	// the race condition where UI sees "completed" before reviewUrls are available
+	saveManifest(manifest, reviewUrls, runId);
 
 	// Print summary (always shown - handles its own output)
 	if (!options.ui) {

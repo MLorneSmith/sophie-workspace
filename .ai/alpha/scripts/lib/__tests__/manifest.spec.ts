@@ -285,6 +285,103 @@ describe("saveManifest", () => {
 		);
 		expect(fs.existsSync(progressFile)).toBe(true);
 	});
+
+	it("passes reviewUrls through to writeOverallProgress", () => {
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"1362-Spec-test",
+		);
+		fs.mkdirSync(specDir, { recursive: true });
+		const manifest = createTestManifest();
+		manifest.metadata.spec_dir = specDir;
+		manifest.progress.status = "completed";
+
+		const reviewUrls = [
+			{
+				label: "sbx-a",
+				vscode: "https://vscode.dev/test",
+				devServer: "https://e2b-sandbox.dev:3000",
+			},
+		];
+
+		saveManifest(manifest, reviewUrls);
+
+		const progressFile = path.join(
+			tempDir,
+			UI_PROGRESS_DIR,
+			"overall-progress.json",
+		);
+		const progress = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
+
+		expect(progress.reviewUrls).toEqual(reviewUrls);
+		expect(progress.status).toBe("completed");
+	});
+
+	it("passes runId through to writeOverallProgress", () => {
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"1362-Spec-test",
+		);
+		fs.mkdirSync(specDir, { recursive: true });
+		const manifest = createTestManifest();
+		manifest.metadata.spec_dir = specDir;
+
+		saveManifest(manifest, undefined, "run-test-abc123");
+
+		const progressFile = path.join(
+			tempDir,
+			UI_PROGRESS_DIR,
+			"overall-progress.json",
+		);
+		const progress = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
+
+		expect(progress.runId).toBe("run-test-abc123");
+	});
+
+	it("writes status and reviewUrls atomically for completion", () => {
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"1362-Spec-test",
+		);
+		fs.mkdirSync(specDir, { recursive: true });
+		const manifest = createTestManifest();
+		manifest.metadata.spec_dir = specDir;
+		manifest.progress.status = "completed";
+		manifest.progress.completed_at = new Date().toISOString();
+
+		const reviewUrls = [
+			{
+				label: "sbx-a",
+				vscode: "https://vscode.dev/test",
+				devServer: "https://e2b-sandbox.dev:3000",
+			},
+		];
+
+		// This simulates the completion sequence fix:
+		// Status and reviewUrls should be written together
+		saveManifest(manifest, reviewUrls, "run-completion-test");
+
+		const progressFile = path.join(
+			tempDir,
+			UI_PROGRESS_DIR,
+			"overall-progress.json",
+		);
+		const progress = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
+
+		// Both should be present in the same write - this prevents race condition
+		expect(progress.status).toBe("completed");
+		expect(progress.reviewUrls).toEqual(reviewUrls);
+		expect(progress.runId).toBe("run-completion-test");
+	});
 });
 
 describe("ensureUIProgressDir", () => {

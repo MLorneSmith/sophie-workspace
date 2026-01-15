@@ -87,8 +87,14 @@ export function loadManifest(specDir: string): SpecManifest | null {
 * Updates the last_checkpoint timestamp and writes overall progress for UI.
 *
 * @param manifest - The manifest to save
+* @param reviewUrls - Optional review URLs to include in progress (for completion)
+* @param runId - Optional run ID for this orchestrator session
  */
-export function saveManifest(manifest: SpecManifest): void {
+export function saveManifest(
+	manifest: SpecManifest,
+	reviewUrls?: ReviewUrlForUI[],
+	runId?: string,
+): void {
 	const manifestPath = path.join(
 		manifest.metadata.spec_dir,
 		"spec-manifest.json",
@@ -97,7 +103,8 @@ export function saveManifest(manifest: SpecManifest): void {
 	fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, "\t"));
 
 	// Also write overall progress for UI consumption
-	writeOverallProgress(manifest);
+	// Pass through reviewUrls and runId to ensure they're written atomically with status
+	writeOverallProgress(manifest, reviewUrls, runId);
 }
 
 // ============================================================================
