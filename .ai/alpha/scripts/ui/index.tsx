@@ -187,7 +187,8 @@ const OrchestratorApp: React.FC<{
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			startPolling();
-			setPhase("running");
+			// Only transition to running if currently loading - preserve terminal states
+			setPhase((prev) => (prev === "loading" ? "running" : prev));
 		}, 500); // Brief delay for loading screen
 
 		return () => clearTimeout(timer);
