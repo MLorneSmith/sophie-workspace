@@ -35,13 +35,13 @@ const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
  * Determine the appropriate cookie domain for a given base URL.
  * Handles Vercel preview deployments, localhost, and custom domains.
  *
- * IMPORTANT: For Vercel preview deployments, we do NOT set an explicit domain.
- * This allows the browser to use its default behavior (current host), which is
- * compatible with how Vercel handles cookies. Setting an explicit domain can
- * prevent cookies from being transmitted to the server-side middleware.
+ * For Vercel preview deployments, we set an EXPLICIT domain (the hostname).
+ * This ensures Playwright's cookie API properly associates cookies with the
+ * preview URL hostname, which is required for cookies to be sent with requests.
  *
- * See: Issue #1096 - Auth session lost in Vercel preview deployments
- * Research: Vercel best practices recommend domain-less cookies for preview URLs
+ * See: Issue #1494 - Team accounts tests fail in CI due to cookie domain mismatch
+ * Note: This changes the approach from Issue #1096 which used domain: undefined.
+ * The explicit domain works correctly with Playwright's addCookies() API.
  *
  * @param baseURL - The base URL of the application
  * @returns Object with optional domain and isVercelPreview flag
@@ -56,17 +56,17 @@ function getCookieDomainConfig(baseURL: string): {
 		const hostname = url.hostname;
 
 		// Vercel preview deployments: *.vercel.app
-		// Do NOT set an explicit domain - let browser use default (current host)
-		// This fixes cookies not being transmitted to server-side middleware
-		// See: Issue #1096 for diagnosis details
+		// Set EXPLICIT domain for Playwright's cookie API to properly associate cookies
+		// This ensures cookies are sent with requests in CI environment
+		// See: Issue #1494 - Team accounts tests fail due to cookie domain mismatch
 		if (hostname.endsWith(".vercel.app")) {
 			debugLog("cookie:vercel_preview_detected", {
 				hostname,
 				baseURL,
-				domain: "(browser default - no explicit domain)",
+				domain: hostname,
 			});
 			return {
-				domain: undefined, // Browser uses current host automatically
+				domain: hostname, // Explicit domain for Playwright cookie API
 				isVercelPreview: true,
 				sameSite: "Lax", // Vercel protection bypass handles cross-origin
 			};
