@@ -694,14 +694,32 @@ export async function runWorkLoop(
 				// NOTE: saveManifest is now called inside assignFeatureToSandbox for atomicity
 
 				// Start work on this sandbox
+				// Wrapped in try-catch to prevent unhandled rejections from breaking Promise.race()
 				const workPromise = (async () => {
-					await runFeatureImplementation(
-						instance,
-						manifest,
-						feature,
-						uiEnabled,
-					);
-					activeWork.delete(instance.label);
+					try {
+						await runFeatureImplementation(
+							instance,
+							manifest,
+							feature,
+							uiEnabled,
+						);
+					} catch (error) {
+						// Log error but don't rethrow - let main error handler deal with it
+						// This prevents Promise.race() from immediately rejecting
+						log(
+							`│   ❌ Feature #${feature.id} implementation error: ${error instanceof Error ? error.message : String(error)}`,
+						);
+						// Mark sandbox as ready for next feature
+						instance.status = "ready";
+						instance.currentFeature = null;
+						// Mark feature as failed so it can be retried
+						feature.status = "failed";
+						feature.error =
+							error instanceof Error ? error.message : String(error);
+						saveManifest(manifest);
+					} finally {
+						activeWork.delete(instance.label);
+					}
 				})();
 
 				activeWork.set(instance.label, workPromise);
@@ -869,10 +887,13 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		}
 	}
 
+	// Track if lock was acquired (for finally block)
+	const lockAcquired = !options.dryRun;
+
 	// Register cleanup handler
 	const cleanupAndExit = (code: number) => {
 		if (uiManager) uiManager.stop();
-		if (!options.dryRun) {
+		if (lockAcquired) {
 			releaseLock(options.ui);
 		}
 		process.exit(code);
@@ -888,260 +909,279 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		cleanupAndExit(143);
 	});
 
-	// Check sandbox database capacity
-	if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
-		log("\n📊 Checking sandbox database...");
-		const hasCapacity = await checkDatabaseCapacity(options.ui);
-		if (!hasCapacity) {
-			if (uiManager) uiManager.stop();
-			releaseLock(options.ui);
-			process.exit(1);
-		}
-
-		// Reset sandbox database
-		if (!options.skipDbReset) {
-			try {
-				await resetSandboxDatabase(options.ui);
-			} catch (error) {
-				console.error("Failed to reset sandbox database:", error);
-				if (uiManager) uiManager.stop();
-				process.exit(1);
-			}
-		} else {
-			log("   ⏭️ Skipping database reset (--skip-db-reset)");
-		}
-	}
-
-	// Clean up stale state
-	const cleanedCount = cleanupStaleState(manifest, options.ui);
-	if (cleanedCount > 0) {
-		log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
-		saveManifest(manifest);
-	}
-
-	log(
-		`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
-	);
-	log(`Initiatives: ${manifest.initiatives.length}`);
-	log(`Features: ${manifest.progress.features_total}`);
-	log(`Tasks: ${manifest.progress.tasks_total}`);
-	log(
-		`Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`,
-	);
-	log(`Sandboxes: ${options.sandboxCount}`);
-
-	// Check what's next
-	const nextFeature = getNextAvailableFeature(manifest, options.ui);
-	if (nextFeature) {
-		log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
-	} else if (
-		manifest.progress.features_completed === manifest.progress.features_total
-	) {
-		log("\n🎉 All features already completed!");
-		if (uiManager) uiManager.stop();
-		return;
-	} else {
-		log("\n⚠️ No features available (check dependencies)");
-		if (uiManager) uiManager.stop();
-		return;
-	}
-
-	// Handle dry-run
-	if (options.dryRun) {
-		printDryRun(manifest);
-		return;
-	}
-
-	// Create sandboxes
-	const instances: SandboxInstance[] = [];
-
-	// Create FIRST sandbox (needed for seeding)
-	log("\n📦 Creating first sandbox...");
-	const firstInstance = await createSandbox(
-		manifest,
-		"sbx-a",
-		options.timeout,
-		options.ui,
-		runId,
-	);
-	instances.push(firstInstance);
-
-	// Seed database via first sandbox
-	if (
-		!options.skipDbReset &&
-		!options.skipDbSeed &&
-		process.env.SUPABASE_SANDBOX_DB_URL
-	) {
-		const alreadySeeded = await isDatabaseSeeded();
-		if (alreadySeeded) {
-			log("   ℹ️ Database already seeded, skipping seeding step");
-		} else {
-			const seedSuccess = await seedSandboxDatabase(
-				firstInstance.sandbox,
-				options.ui,
-			);
-			if (!seedSuccess) {
-				console.error("❌ Database seeding failed, aborting orchestration");
-				await firstInstance.sandbox.kill();
+	// =========================================================================
+	// Main Orchestration Logic - wrapped in try-finally for guaranteed cleanup
+	// =========================================================================
+	try {
+		// Check sandbox database capacity
+		if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
+			log("\n📊 Checking sandbox database...");
+			const hasCapacity = await checkDatabaseCapacity(options.ui);
+			if (!hasCapacity) {
 				if (uiManager) uiManager.stop();
 				releaseLock(options.ui);
 				process.exit(1);
 			}
-		}
-	} else if (options.skipDbSeed) {
-		log("   ⏭️ Skipping database seeding (--skip-db-seed)");
-	}
 
-	// Create remaining sandboxes
-	for (let i = 1; i < options.sandboxCount; i++) {
-		const label = `sbx-${String.fromCharCode(97 + i)}`;
+			// Reset sandbox database
+			if (!options.skipDbReset) {
+				try {
+					await resetSandboxDatabase(options.ui);
+				} catch (error) {
+					console.error("Failed to reset sandbox database:", error);
+					if (uiManager) uiManager.stop();
+					process.exit(1);
+				}
+			} else {
+				log("   ⏭️ Skipping database reset (--skip-db-reset)");
+			}
+		}
+
+		// Clean up stale state
+		const cleanedCount = cleanupStaleState(manifest, options.ui);
+		if (cleanedCount > 0) {
+			log(`\n🧹 Cleaned up ${cleanedCount} stale feature(s)`);
+			saveManifest(manifest);
+		}
 
 		log(
-			`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+			`\n📊 Spec #${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`,
 		);
-		await sleep(SANDBOX_STAGGER_DELAY_MS);
+		log(`Initiatives: ${manifest.initiatives.length}`);
+		log(`Features: ${manifest.progress.features_total}`);
+		log(`Tasks: ${manifest.progress.tasks_total}`);
+		log(
+			`Progress: ${manifest.progress.features_completed}/${manifest.progress.features_total} features`,
+		);
+		log(`Sandboxes: ${options.sandboxCount}`);
 
-		const instance = await createSandbox(
+		// Check what's next
+		const nextFeature = getNextAvailableFeature(manifest, options.ui);
+		if (nextFeature) {
+			log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
+		} else if (
+			manifest.progress.features_completed === manifest.progress.features_total
+		) {
+			log("\n🎉 All features already completed!");
+			if (uiManager) uiManager.stop();
+			return;
+		} else {
+			log("\n⚠️ No features available (check dependencies)");
+			if (uiManager) uiManager.stop();
+			return;
+		}
+
+		// Handle dry-run
+		if (options.dryRun) {
+			printDryRun(manifest);
+			return;
+		}
+
+		// Create sandboxes
+		const instances: SandboxInstance[] = [];
+
+		// Create FIRST sandbox (needed for seeding)
+		log("\n📦 Creating first sandbox...");
+		const firstInstance = await createSandbox(
 			manifest,
-			label,
+			"sbx-a",
 			options.timeout,
 			options.ui,
 			runId,
 		);
-		instances.push(instance);
-	}
+		instances.push(firstInstance);
 
-	saveManifest(manifest);
+		// Seed database via first sandbox
+		if (
+			!options.skipDbReset &&
+			!options.skipDbSeed &&
+			process.env.SUPABASE_SANDBOX_DB_URL
+		) {
+			const alreadySeeded = await isDatabaseSeeded();
+			if (alreadySeeded) {
+				log("   ℹ️ Database already seeded, skipping seeding step");
+			} else {
+				const seedSuccess = await seedSandboxDatabase(
+					firstInstance.sandbox,
+					options.ui,
+				);
+				if (!seedSuccess) {
+					console.error("❌ Database seeding failed, aborting orchestration");
+					await firstInstance.sandbox.kill();
+					if (uiManager) uiManager.stop();
+					releaseLock(options.ui);
+					process.exit(1);
+				}
+			}
+		} else if (options.skipDbSeed) {
+			log("   ⏭️ Skipping database seeding (--skip-db-seed)");
+		}
 
-	// Print sandbox info
-	log("\n" + "═".repeat(70));
-	log("   SANDBOXES READY");
-	log("═".repeat(70));
-	for (const instance of instances) {
-		log(`${instance.label}: ${instance.id}`);
-	}
-	log(`Branch: ${manifest.sandbox.branch_name}`);
+		// Create remaining sandboxes
+		for (let i = 1; i < options.sandboxCount; i++) {
+			const label = `sbx-${String.fromCharCode(97 + i)}`;
 
-	// Start implementation
-	log("\n" + "═".repeat(70));
-	log("   IMPLEMENTATION");
-	log("═".repeat(70));
-
-	manifest.progress.status = "in_progress";
-	manifest.progress.started_at =
-		manifest.progress.started_at || new Date().toISOString();
-	saveManifest(manifest);
-
-	// Main work loop
-	await runWorkLoop(instances, manifest, options.ui, options.timeout, runId);
-
-	// Push final changes
-	const pushInstance = instances[0];
-	if (GITHUB_TOKEN && pushInstance) {
-		log("\n📤 Pushing final changes...");
-		try {
-			await pushInstance.sandbox.commands.run(
-				`cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
-				{ timeoutMs: 120000 },
+			log(
+				`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
 			);
-			log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
-		} catch (error) {
-			log(`⚠️ Push failed: ${error}`);
-		}
-	}
+			await sleep(SANDBOX_STAGGER_DELAY_MS);
 
-	// Prepare one sandbox for complete review
-	// NOTE: We prepare review URLs BEFORE setting final status to avoid race condition
-	// where UI sees "completed" status before reviewUrls are available
-	log("\n🔄 Preparing sandbox for complete review...");
-	const reviewInstance = instances[0];
-	const otherInstances = instances.slice(1);
-
-	// Pull latest to get all changes
-	if (reviewInstance) {
-		try {
-			log(`${reviewInstance.label}: Pulling latest changes...`);
-			await reviewInstance.sandbox.commands.run(
-				`cd /home/user/project && git pull origin "${manifest.sandbox.branch_name}"`,
-				{ timeoutMs: 60000 },
+			const instance = await createSandbox(
+				manifest,
+				label,
+				options.timeout,
+				options.ui,
+				runId,
 			);
-			log(`${reviewInstance.label}: ✅ Has complete code`);
-		} catch (error) {
-			log(`${reviewInstance.label}: ⚠️ Pull failed: ${error}`);
+			instances.push(instance);
 		}
-	}
 
-	// Kill other sandboxes
-	for (const instance of otherInstances) {
-		try {
-			log(`${instance.label}: Stopping (partial code only)...`);
-			await instance.sandbox.kill();
-		} catch {
-			// Ignore
+		saveManifest(manifest);
+
+		// Print sandbox info
+		log("\n" + "═".repeat(70));
+		log("   SANDBOXES READY");
+		log("═".repeat(70));
+		for (const instance of instances) {
+			log(`${instance.label}: ${instance.id}`);
 		}
-	}
+		log(`Branch: ${manifest.sandbox.branch_name}`);
 
-	// Start dev server on review sandbox
-	log("\n🚀 Starting dev server for review...");
-	const reviewUrls: ReviewUrl[] = [];
+		// Start implementation
+		log("\n" + "═".repeat(70));
+		log("   IMPLEMENTATION");
+		log("═".repeat(70));
 
-	if (reviewInstance) {
-		try {
-			const devServerUrl = await startDevServer(reviewInstance.sandbox);
-			const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
-			reviewUrls.push({
-				label: reviewInstance.label,
-				vscode: vscodeUrl,
-				devServer: devServerUrl,
-			});
-			log(`${reviewInstance.label}: Dev server starting...`);
+		manifest.progress.status = "in_progress";
+		manifest.progress.started_at =
+			manifest.progress.started_at || new Date().toISOString();
+		saveManifest(manifest);
 
-			log("   Waiting for dev server to start (30s)...");
-			await sleep(30000);
-		} catch (error) {
-			log(`   Failed to start dev server: ${error}`);
+		// Main work loop
+		await runWorkLoop(instances, manifest, options.ui, options.timeout, runId);
+
+		// Push final changes
+		const pushInstance = instances[0];
+		if (GITHUB_TOKEN && pushInstance) {
+			log("\n📤 Pushing final changes...");
+			try {
+				await pushInstance.sandbox.commands.run(
+					`cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
+					{ timeoutMs: 120000 },
+				);
+				log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
+			} catch (error) {
+				log(`⚠️ Push failed: ${error}`);
+			}
 		}
-	}
 
-	// Final status - set AFTER reviewUrls are ready to avoid race condition
-	// This ensures UI never sees "completed" status without reviewUrls available
-	const failedFeatures = manifest.feature_queue.filter(
-		(f) => f.status === "failed",
-	).length;
-	manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
-	manifest.progress.completed_at = new Date().toISOString();
+		// Prepare one sandbox for complete review
+		// NOTE: We prepare review URLs BEFORE setting final status to avoid race condition
+		// where UI sees "completed" status before reviewUrls are available
+		log("\n🔄 Preparing sandbox for complete review...");
+		const reviewInstance = instances[0];
+		const otherInstances = instances.slice(1);
 
-	// Save manifest with reviewUrls - this writes both the manifest file and
-	// overall-progress.json atomically with reviewUrls included, preventing
-	// the race condition where UI sees "completed" before reviewUrls are available
-	saveManifest(manifest, reviewUrls, runId);
+		// Pull latest to get all changes
+		if (reviewInstance) {
+			try {
+				log(`${reviewInstance.label}: Pulling latest changes...`);
+				await reviewInstance.sandbox.commands.run(
+					`cd /home/user/project && git pull origin "${manifest.sandbox.branch_name}"`,
+					{ timeoutMs: 60000 },
+				);
+				log(`${reviewInstance.label}: ✅ Has complete code`);
+			} catch (error) {
+				log(`${reviewInstance.label}: ⚠️ Pull failed: ${error}`);
+			}
+		}
 
-	// Print summary (always shown - handles its own output)
-	if (!options.ui) {
-		const reviewInstancesForSummary = reviewInstance ? [reviewInstance] : [];
-		printSummary(manifest, reviewInstancesForSummary, reviewUrls);
-	}
+		// Kill other sandboxes
+		for (const instance of otherInstances) {
+			try {
+				log(`${instance.label}: Stopping (partial code only)...`);
+				await instance.sandbox.kill();
+			} catch {
+				// Ignore
+			}
+		}
 
-	// Add sandbox database review URL
-	if (process.env.SUPABASE_SANDBOX_PROJECT_REF) {
-		log("\n📊 Database Review:");
-		log(
-			`Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
-		);
-	}
+		// Start dev server on review sandbox
+		log("\n🚀 Starting dev server for review...");
+		const reviewUrls: ReviewUrl[] = [];
 
-	// Stop the UI
-	if (uiManager) {
-		uiManager.stop();
-	}
+		if (reviewInstance) {
+			try {
+				const devServerUrl = await startDevServer(reviewInstance.sandbox);
+				const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
+				reviewUrls.push({
+					label: reviewInstance.label,
+					vscode: vscodeUrl,
+					devServer: devServerUrl,
+				});
+				log(`${reviewInstance.label}: Dev server starting...`);
 
-	// Stop the event server
-	stopEventServer(log);
+				log("   Waiting for dev server to start (30s)...");
+				await sleep(30000);
+			} catch (error) {
+				log(`   Failed to start dev server: ${error}`);
+			}
+		}
 
-	// Release lock
-	releaseLock(options.ui);
+		// Final status - set AFTER reviewUrls are ready to avoid race condition
+		// This ensures UI never sees "completed" status without reviewUrls available
+		const failedFeatures = manifest.feature_queue.filter(
+			(f) => f.status === "failed",
+		).length;
+		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+		manifest.progress.completed_at = new Date().toISOString();
 
-	if (failedFeatures > 0) {
-		process.exit(1);
+		// Save manifest with reviewUrls - this writes both the manifest file and
+		// overall-progress.json atomically with reviewUrls included, preventing
+		// the race condition where UI sees "completed" before reviewUrls are available
+		saveManifest(manifest, reviewUrls, runId);
+
+		// Print summary (always shown - handles its own output)
+		if (!options.ui) {
+			const reviewInstancesForSummary = reviewInstance ? [reviewInstance] : [];
+			printSummary(manifest, reviewInstancesForSummary, reviewUrls);
+		}
+
+		// Add sandbox database review URL
+		if (process.env.SUPABASE_SANDBOX_PROJECT_REF) {
+			log("\n📊 Database Review:");
+			log(
+				`Supabase Studio: https://supabase.com/dashboard/project/${process.env.SUPABASE_SANDBOX_PROJECT_REF}`,
+			);
+		}
+
+		// Stop the UI
+		if (uiManager) {
+			uiManager.stop();
+		}
+
+		// Stop the event server
+		stopEventServer(log);
+
+		// Note: Lock release moved to finally block for guaranteed cleanup
+
+		if (failedFeatures > 0) {
+			process.exit(1);
+		}
+	} finally {
+		// =========================================================================
+		// Guaranteed Cleanup - always releases lock, even on error
+		// =========================================================================
+		if (lockAcquired) {
+			log("🔓 Releasing orchestrator lock (finally block)...");
+			try {
+				releaseLock(options.ui);
+			} catch (releaseError) {
+				// Log but don't rethrow - we don't want to mask the original error
+				console.error(
+					`⚠️ Error releasing lock: ${releaseError instanceof Error ? releaseError.message : releaseError}`,
+				);
+			}
+		}
 	}
 }

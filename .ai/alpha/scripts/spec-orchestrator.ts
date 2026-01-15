@@ -74,6 +74,29 @@ loadEnvFile();
 
 import { parseArgs, showHelp } from "./cli/index.js";
 import { orchestrate } from "./lib/index.js";
+import { releaseLock } from "./lib/lock.js";
+
+// ============================================================================
+// Global Error Handler
+// ============================================================================
+
+/**
+ * Handle unhandled promise rejections.
+ * Ensures lock is released even if an async error escapes all error boundaries.
+ */
+process.on("unhandledRejection", (reason, promise) => {
+	console.error("\n❌ Unhandled promise rejection:", reason);
+	if (reason instanceof Error && reason.stack) {
+		console.error("Stack trace:", reason.stack);
+	}
+	console.error("Promise:", promise);
+
+	// Release lock before exiting to prevent stale locks
+	console.error("🔓 Releasing orchestrator lock due to unhandled rejection...");
+	releaseLock(false);
+
+	process.exit(1);
+});
 
 // ============================================================================
 // Main Entry Point
@@ -92,5 +115,6 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
 	console.error("\n❌ Orchestrator error:", error);
+	// Lock release is handled by try-finally in orchestrate() or signal handlers
 	process.exit(1);
 });
