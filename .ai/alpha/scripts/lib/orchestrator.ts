@@ -693,6 +693,17 @@ export async function runWorkLoop(
 				}
 				// NOTE: saveManifest is now called inside assignFeatureToSandbox for atomicity
 
+				// RACE CONDITION FIX: Set sandbox status to "busy" SYNCHRONOUSLY before async Promise
+				// This prevents the work loop from seeing the sandbox as "ready" on the next iteration
+				// and calling writeIdleProgress() before runFeatureImplementation() sets status.
+				// NOTE: feature.ts:166-169 will redundantly set these again when it runs.
+				// That's intentional - this synchronous set prevents the race condition
+				// by ensuring status is "busy" before async code executes. The feature.ts
+				// code provides defensive duplication in case of unusual error paths.
+				instance.status = "busy";
+				instance.currentFeature = feature.id;
+				instance.featureStartedAt = new Date();
+
 				// Start work on this sandbox
 				// Wrapped in try-catch to prevent unhandled rejections from breaking Promise.race()
 				const workPromise = (async () => {

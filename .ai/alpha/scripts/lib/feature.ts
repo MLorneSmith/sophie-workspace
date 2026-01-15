@@ -163,6 +163,9 @@ export async function runFeatureImplementation(
 	}
 
 	// Update instance state
+	// Defensive: set these here as well in case orchestrator didn't (rare edge case).
+	// Orchestrator now sets status/currentFeature/featureStartedAt synchronously before
+	// calling this function, but this defensive code handles unusual error paths.
 	instance.currentFeature = feature.id;
 	instance.status = "busy";
 	instance.featureStartedAt = new Date();
