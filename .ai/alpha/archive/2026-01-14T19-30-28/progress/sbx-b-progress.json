@@ -17,9 +17,7 @@
 		"tasks_total": 5,
 		"tasks_completed": 1
 	},
-	"completed_tasks": [
-		"T1"
-	],
+	"completed_tasks": ["T1"],
 	"failed_tasks": [],
 	"context_usage_percent": 10,
 	"status": "in_progress",

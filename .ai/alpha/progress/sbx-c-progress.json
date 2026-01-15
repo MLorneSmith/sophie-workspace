@@ -1,46 +1,13 @@
 {
 	"sandbox_id": "it7axmng2rxkx5gaq1t5x",
 	"runId": "run-mkef12uw-ya7t",
-	"feature": {
-		"issue_number": 1377,
-		"title": "Cal.com Booking Data Service"
-	},
-	"current_task": {
-		"id": "T8",
-		"name": "Add TypeScript type checking verification",
-		"status": "starting",
-		"started_at": "2026-01-14T19:42:32+00:00"
-	},
-	"current_group": {
-		"id": 4,
-		"name": "Verification",
-		"tasks_total": 1,
-		"tasks_completed": 0
-	},
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5",
-		"T6",
-		"T7"
-	],
+	"completed_tasks": [],
 	"failed_tasks": [],
-	"context_usage_percent": 36,
-	"status": "in_progress",
-	"phase": "verifying",
-	"last_heartbeat": "2026-01-14T19:43:30.823545Z",
-	"last_tool": "Bash",
+	"context_usage_percent": 0,
+	"status": "idle",
+	"phase": "waiting",
+	"last_heartbeat": "2026-01-14T20:18:48.066Z",
 	"session_id": "it7axmng2rxkx5gaq1t5x",
-	"recent_output": [
-		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca...",
-		"💻 Bash: pnpm typecheck 2>&1 | head -10...",
-		"💻 Bash: pnpm typecheck 2>&1 | tail -30",
-		"💻 Bash: pnpm typecheck 2>&1 | grep -i ...",
-		"📋 Todo: 8/8 done",
-		"💻 Bash: pnpm lint:fix 2>&1 | tail -20",
-		"💻 Bash: pnpm format:fix 2>&1 | tail -1...",
-		"💻 Bash: git status --porcelain"
-	]
+	"waiting_reason": "No available features",
+	"blocked_by": []
 }
