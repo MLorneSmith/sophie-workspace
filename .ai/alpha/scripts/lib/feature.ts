@@ -637,6 +637,28 @@ export async function runFeatureImplementation(
 		updateNextFeatureId(manifest);
 		saveManifest(manifest);
 
+		// Write final UI progress to ensure UI reflects completion status
+		// This fixes stale UI after session recovery (see #1499, #1495)
+		if (uiEnabled) {
+			writeUIProgress(
+				instance.label,
+				{
+					status,
+					phase: status === "completed" ? "completed" : "finished",
+					completed_tasks: Array.from(
+						{ length: tasksCompleted },
+						(_, i) => `task-${i + 1}`,
+					),
+					failed_tasks: [],
+					last_heartbeat: new Date().toISOString(),
+					context_usage_percent: 0,
+				},
+				instance,
+				feature,
+				outputTracker,
+			);
+		}
+
 		const icon =
 			status === "completed" ? "✅" : status === "blocked" ? "🚫" : "❌";
 		log(

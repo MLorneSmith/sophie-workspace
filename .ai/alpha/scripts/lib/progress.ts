@@ -328,11 +328,27 @@ export function startProgressPolling(
 				if (result.stdout?.trim()) {
 					const progress: SandboxProgress = JSON.parse(result.stdout);
 
-					// Skip stale progress data from previous sessions
+					// Handle stale progress data from previous sessions
 					if (progress.last_heartbeat) {
 						const heartbeatTime = new Date(progress.last_heartbeat).getTime();
 						const sessionStart = sessionStartTime.getTime() - 5 * 60 * 1000;
 						if (heartbeatTime < sessionStart) {
+							// Write recovery status to UI before skipping stale data
+							// This prevents UI from showing permanently stale information
+							if (uiEnabled && instance) {
+								writeUIProgress(
+									sandboxLabel,
+									{
+										...progress,
+										status: "recovering",
+										phase: "recovering",
+										last_heartbeat: new Date().toISOString(),
+									},
+									instance,
+									feature ?? null,
+									outputTracker,
+								);
+							}
 							continue;
 						}
 					}
