@@ -888,15 +888,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	log(`   Run ID: ${runId}`);
 	log("═".repeat(70));
 
-	// Handle force unlock
-	if (options.forceUnlock) {
-		log("\n🔓 Force releasing orchestrator lock...");
-		releaseLock(options.ui);
-	}
-
-	// Acquire orchestrator lock
+	// Acquire orchestrator lock (handles force unlock with process termination if needed)
 	if (!options.dryRun) {
-		if (!acquireLock(options.specId, options.ui)) {
+		const lockAcquired = await acquireLock(
+			options.specId,
+			options.ui,
+			options.forceUnlock,
+		);
+		if (!lockAcquired) {
 			if (uiManager) uiManager.stop();
 			process.exit(1);
 		}

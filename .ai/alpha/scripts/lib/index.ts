@@ -41,8 +41,10 @@ export {
 	clearProjectRootCache,
 	getLockPath,
 	getProjectRoot,
+	isProcessRunning,
 	readLock,
 	releaseLock,
+	terminateProcess,
 	updateLockResetState,
 	writeLock,
 } from "./lock.js";

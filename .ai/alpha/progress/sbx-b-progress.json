@@ -1,16 +1,21 @@
 {
-	"sandbox_id": "igj2udk1sp2rroxwxox22",
-	"runId": "run-mkef12uw-ya7t",
+	"sandbox_id": "iq6iii8efsxp6x4m11btg",
+	"runId": "run-mkfqru6m-gaxb",
 	"feature": {
-		"issue_number": 1372,
-		"title": "Assessment Spider Card"
+		"issue_number": 1374,
+		"title": "Activity Recording Service"
 	},
-	"current_task": null,
+	"current_task": {
+		"id": "T7",
+		"name": "Apply migration with type regeneration",
+		"status": "in_progress",
+		"started_at": "2026-01-15T18:08:40+00:00"
+	},
 	"current_group": {
-		"id": 4,
-		"name": "Testing Layer",
+		"id": 3,
+		"name": "Testing & Migration",
 		"tasks_total": 3,
-		"tasks_completed": 3
+		"tasks_completed": 2
 	},
 	"completed_tasks": [
 		"T1",
@@ -21,14 +26,13 @@
 		"T6"
 	],
 	"failed_tasks": [],
-	"context_usage_percent": 50,
-	"status": "completed",
-	"phase": "completed",
-	"last_heartbeat": "2026-01-14T20:19:12.412660Z",
+	"context_usage_percent": 35,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-15T18:08:40.265810Z",
 	"last_tool": "Bash",
-	"last_commit": "23f8dcf",
-	"session_id": "igj2udk1sp2rroxwxox22",
+	"session_id": "iq6iii8efsxp6x4m11btg",
 	"recent_output": [
-		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nCO..."
+		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca..."
 	]
 }

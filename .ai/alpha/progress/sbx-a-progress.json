@@ -1,13 +1,44 @@
 {
-	"sandbox_id": "ixx0sz39s8q1wrwsw3qbd",
-	"runId": "run-mkef12uw-ya7t",
-	"completed_tasks": [],
+	"sandbox_id": "i01arklt2wxsub2dsx11t",
+	"runId": "run-mkfqru6m-gaxb",
+	"feature": {
+		"issue_number": 1378,
+		"title": "Dashboard Coaching Card"
+	},
+	"current_task": {
+		"id": "T8",
+		"name": "Update components to use i18n translations",
+		"status": "starting",
+		"started_at": "2026-01-15T12:08:00Z"
+	},
+	"current_group": {
+		"id": 4,
+		"name": "Internationalization",
+		"tasks_total": 2,
+		"tasks_completed": 1
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5",
+		"T6",
+		"T7"
+	],
 	"failed_tasks": [],
-	"context_usage_percent": 0,
-	"status": "idle",
-	"phase": "waiting",
-	"last_heartbeat": "2026-01-14T20:18:48.066Z",
-	"session_id": "ixx0sz39s8q1wrwsw3qbd",
-	"waiting_reason": "No available features",
-	"blocked_by": []
+	"context_usage_percent": 32,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-15T18:11:06.875102Z",
+	"last_tool": "Edit",
+	"session_id": "i01arklt2wxsub2dsx11t",
+	"recent_output": [
+		"💻 Bash: cat > .initiative-progress.jso...",
+		"📖 Read: coaching-sessions-card.tsx",
+		"✏️ Edit: coaching-sessions-card.tsx",
+		"📖 Read: session-list-item.tsx",
+		"✏️ Edit: session-list-item.tsx",
+		"✏️ Edit: session-list-item.tsx"
+	]
 }

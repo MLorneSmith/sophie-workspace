@@ -1,0 +1,33 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Team Accounts",
+		"files": [
+			"tests/team-accounts/team-accounts.spec.ts",
+			"tests/team-accounts/team-invitation-mfa.spec.ts"
+		],
+		"expectedTests": 8,
+		"shardCommand": "test:shard13"
+	},
+	"execution": {
+		"startTime": "2026-01-15T18:07:06.569Z",
+		"endTime": "2026-01-15T18:08:02.569Z",
+		"duration": "56s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 7,
+		"passed": 2,
+		"failed": 0,
+		"skipped": 5,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values."
+	],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard13 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0\n\n\n🔧 Global Setup: Creating authenticated browser states via API...\n\n\n🔍 Running E2E Environment Pre-flight Validations...\n\n📋 Environment Diagnostics:\n   NODE_ENV: test\n   CI: 1\n   PLAYWRIGHT_BASE_URL: http://localhost:3001\n   E2E_SUPABASE_URL: http://host.docker.internal:54521\n   Platform: linux\n   Node version: v22.16.0\n\n✅ NODE_ENV: NODE_ENV is correctly set to 'test'\n✅ CLI Path: Payload CLI path configured: apps/payload/src/seed/seed-engine/index.ts\n✅ Supabase: Supabase connection validated successfully\n✅ Stripe Webhook Secret: Stripe webhook secret configured\n✅ Stripe Webhook Endpoint: Webhook endpoint accessible at http://localhost:3001/api/billing/webhook\n\n✅ All validations passed\n\n🧹 Cleaning up billing test data...\n✅ Billing test data cleanup complete\n\n\n🏥 Running server health checks...\n\n\n📋 Server Health Check Results:\n  ✅ Supabase: Supabase healthy (7ms)\n  ✅ Next.js: Next.js healthy (388ms)\n  ✅ Payload: Payload healthy (22ms)\n\n🌐 Using BASE_URL: http://localhost:3001\n🔗 Using Supabase URL: http://host.docker.internal:54521 (auth + cookie naming)\n🔐 Authenticating test user via Supabase API...\n✅ API authentication successful for test user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for test user\n✅ test user auth state saved successfully\n\n🔐 Authenticating owner user via Supabase API...\n✅ API authentication successful for owner user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for owner user\n✅ owner user auth state saved successfully\n\n🔐 Authenticating super-admin user via Supabase API...\n✅ API authentication successful for super-admin user\n✅ MFA verified (AAL2) for super-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token.0:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n   🍪 sb-host-auth-token.1:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for super-admin user\n✅ super-admin user auth state saved successfully\n\n🔐 Authenticating payload-admin user via Supabase API...\n✅ API authentication successful for payload-admin user\n🍪 Cookie domain config: localhost (isVercelPreview: false)\n   🍪 sb-host-auth-token.0:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n   🍪 sb-host-auth-token.1:\n      Domain: localhost\n      SameSite: Lax\n      Secure: false\n      HttpOnly: false\n✅ Session injected into cookies and localStorage for payload-admin user\n🔄 Authenticating to Payload CMS via API for payload-admin user...\n   Payload login attempt 1/3...\n✅ Payload API login successful, payload-token cookie injected for payload-admin user\n✅ Payload admin panel loaded for payload-admin user\n✅ payload-admin user auth state saved successfully\n\n✅ Global Setup Complete: All auth states created via API\n\n\nRunning 7 tests using 1 worker\n··°°°°°\n  5 skipped\n  2 passed (50.2s)\n"
+}

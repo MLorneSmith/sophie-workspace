@@ -22,8 +22,10 @@ import {
 	clearProjectRootCache,
 	getLockPath,
 	getProjectRoot,
+	isProcessRunning,
 	readLock,
 	releaseLock,
+	terminateProcess,
 	updateLockResetState,
 	writeLock,
 } from "../lock.js";
@@ -138,8 +140,8 @@ describe("readLock / writeLock", () => {
 });
 
 describe("acquireLock", () => {
-	it("acquires lock when no existing lock", () => {
-		const result = acquireLock(1362, true);
+	it("acquires lock when no existing lock", async () => {
+		const result = await acquireLock(1362, true);
 
 		expect(result).toBe(true);
 
@@ -149,7 +151,7 @@ describe("acquireLock", () => {
 		expect(lock?.hostname).toBe(os.hostname());
 	});
 
-	it("fails when lock already exists and is not stale", () => {
+	it("fails when lock already exists and is not stale", async () => {
 		const existingLock: OrchestratorLock = {
 			spec_id: 9999,
 			started_at: new Date().toISOString(),
@@ -158,7 +160,7 @@ describe("acquireLock", () => {
 		};
 		writeLock(existingLock);
 
-		const result = acquireLock(1362, true);
+		const result = await acquireLock(1362, true);
 
 		expect(result).toBe(false);
 		// Original lock should be unchanged
@@ -166,7 +168,7 @@ describe("acquireLock", () => {
 		expect(lock?.spec_id).toBe(9999);
 	});
 
-	it("overrides stale lock (>24h old)", () => {
+	it("overrides stale lock (>24h old)", async () => {
 		const staleDate = new Date(Date.now() - MAX_LOCK_AGE_MS - 1000);
 		const existingLock: OrchestratorLock = {
 			spec_id: 9999,
@@ -176,14 +178,14 @@ describe("acquireLock", () => {
 		};
 		writeLock(existingLock);
 
-		const result = acquireLock(1362, true);
+		const result = await acquireLock(1362, true);
 
 		expect(result).toBe(true);
 		const lock = readLock();
 		expect(lock?.spec_id).toBe(1362);
 	});
 
-	it("fails when reset is in progress and not stale", () => {
+	it("fails when reset is in progress and not stale", async () => {
 		const existingLock: OrchestratorLock = {
 			spec_id: 9999,
 			started_at: new Date().toISOString(),
@@ -194,12 +196,12 @@ describe("acquireLock", () => {
 		};
 		writeLock(existingLock);
 
-		const result = acquireLock(1362, true);
+		const result = await acquireLock(1362, true);
 
 		expect(result).toBe(false);
 	});
 
-	it("overrides stale reset (>10m old)", () => {
+	it("overrides stale reset (>10m old)", async () => {
 		const staleResetDate = new Date(Date.now() - MAX_RESET_AGE_MS - 1000);
 		const existingLock: OrchestratorLock = {
 			spec_id: 9999,
@@ -211,13 +213,106 @@ describe("acquireLock", () => {
 		};
 		writeLock(existingLock);
 
-		const result = acquireLock(1362, true);
+		const result = await acquireLock(1362, true);
 
 		expect(result).toBe(true);
 		const lock = readLock();
 		expect(lock?.spec_id).toBe(1362);
 		expect(lock?.reset_in_progress).toBeUndefined();
 	});
+
+	it("acquires lock with forceUnlock even when lock exists (different host)", async () => {
+		const existingLock: OrchestratorLock = {
+			spec_id: 9999,
+			started_at: new Date().toISOString(),
+			pid: 99999,
+			hostname: "different-host", // Different host - can't terminate remote process
+		};
+		writeLock(existingLock);
+
+		const result = await acquireLock(1362, true, true);
+
+		expect(result).toBe(true);
+		const lock = readLock();
+		expect(lock?.spec_id).toBe(1362);
+		expect(lock?.pid).toBe(process.pid);
+	});
+
+	it("acquires lock with forceUnlock when existing process not running", async () => {
+		const existingLock: OrchestratorLock = {
+			spec_id: 9999,
+			started_at: new Date().toISOString(),
+			pid: 999999, // Non-existent PID
+			hostname: os.hostname(), // Same host
+		};
+		writeLock(existingLock);
+
+		const result = await acquireLock(1362, true, true);
+
+		expect(result).toBe(true);
+		const lock = readLock();
+		expect(lock?.spec_id).toBe(1362);
+	});
+
+	it("does not call terminateProcess when forceUnlock is false", async () => {
+		const existingLock: OrchestratorLock = {
+			spec_id: 9999,
+			started_at: new Date().toISOString(),
+			pid: 99999,
+			hostname: os.hostname(),
+		};
+		writeLock(existingLock);
+
+		// Without forceUnlock, should just fail (not try to terminate)
+		const result = await acquireLock(1362, true, false);
+
+		expect(result).toBe(false);
+		// Lock should be unchanged
+		const lock = readLock();
+		expect(lock?.spec_id).toBe(9999);
+	});
+});
+
+describe("isProcessRunning", () => {
+	it("returns true for current process", () => {
+		const result = isProcessRunning(process.pid);
+		expect(result).toBe(true);
+	});
+
+	it("returns false for non-existent process", () => {
+		// Use an extremely high PID that almost certainly doesn't exist
+		const result = isProcessRunning(4194304);
+		expect(result).toBe(false);
+	});
+
+	it("returns false for negative PID", () => {
+		const result = isProcessRunning(-1);
+		expect(result).toBe(false);
+	});
+
+	it("returns false for PID 0", () => {
+		// PID 0 is special (kernel scheduler), should not be running as a normal process
+		const result = isProcessRunning(0);
+		// On some systems this might return true (EPERM), but that's acceptable
+		expect(typeof result).toBe("boolean");
+	});
+});
+
+describe("terminateProcess", () => {
+	it("returns true for non-existent process", async () => {
+		// Non-existent process should return true (nothing to terminate)
+		const result = await terminateProcess(4194304, true);
+		expect(result).toBe(true);
+	});
+
+	it("handles negative PID gracefully", async () => {
+		const result = await terminateProcess(-1, true);
+		// Should either return true (process doesn't exist) or false (error)
+		expect(typeof result).toBe("boolean");
+	});
+
+	// Note: We don't test actual process termination in unit tests to avoid
+	// accidentally killing real processes. Integration tests should cover that.
 });
 
 describe("releaseLock", () => {

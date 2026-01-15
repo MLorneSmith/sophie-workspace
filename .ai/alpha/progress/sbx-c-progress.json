@@ -1,13 +1,39 @@
 {
-	"sandbox_id": "it7axmng2rxkx5gaq1t5x",
-	"runId": "run-mkef12uw-ya7t",
-	"completed_tasks": [],
+	"sandbox_id": "icijku5hxzt7e6abqfcx9",
+	"runId": "run-mkfqru6m-gaxb",
+	"feature": {
+		"issue_number": 1368,
+		"title": "Presentation Outline Table"
+	},
+	"current_task": {
+		"id": "T",
+		"name": "Create PresentationOutlineTable component skeleton (T3)",
+		"status": "in_progress",
+		"started_at": "2026-01-15T18:11:02.914247Z"
+	},
+	"current_group": {
+		"id": 1,
+		"name": "Types and Data Layer",
+		"tasks_total": 2,
+		"tasks_completed": 1
+	},
+	"completed_tasks": [
+		"T1"
+	],
 	"failed_tasks": [],
-	"context_usage_percent": 0,
-	"status": "idle",
-	"phase": "waiting",
-	"last_heartbeat": "2026-01-14T20:18:48.066Z",
-	"session_id": "it7axmng2rxkx5gaq1t5x",
-	"waiting_reason": "No available features",
-	"blocked_by": []
+	"context_usage_percent": 10,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-15T18:11:02.914247Z",
+	"last_tool": "TodoWrite",
+	"session_id": "icijku5hxzt7e6abqfcx9",
+	"recent_output": [
+		"💻 Bash: cat > .initiative-progress.jso...",
+		"✏️ Edit: dashboard-page.loader.ts",
+		"✏️ Edit: dashboard-page.loader.ts",
+		"📖 Read: dashboard-page.loader.ts",
+		"✏️ Edit: dashboard-page.loader.ts",
+		"💻 Bash: pnpm typecheck 2>&1 | tail -15",
+		"📋 Todo: 2/12 done"
+	]
 }

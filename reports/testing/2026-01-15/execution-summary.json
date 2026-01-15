@@ -1,0 +1,29 @@
+{
+	"executionDate": "2026-01-15",
+	"lastUpdated": "2026-01-15T18:08:02.805Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 7,
+		"passed": 2,
+		"failed": 0,
+		"skipped": 5,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Team Accounts",
+			"success": true,
+			"duration": "56s",
+			"tests": 7,
+			"passed": 2,
+			"failures": 0,
+			"skipped": 5,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}
