@@ -1169,9 +1169,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			);
 		}
 
-		// Stop the UI
+		// Wait for user to exit the UI (allows time to view preview URLs)
 		if (uiManager) {
-			uiManager.stop();
+			await uiManager.waitForExit();
 		}
 
 		// Stop the event server
