@@ -36,31 +36,36 @@ import process from "node:process";
 // ============================================================================
 
 function loadEnvFile(): void {
-	// Find project root (where .env is located)
+	// Find project root by looking for .git directory (the actual repo root)
+	// This ensures we load from the main project root, not subdirectories with their own package.json
 	let currentDir = import.meta.dirname;
 	while (currentDir !== "/") {
-		const envPath = path.join(currentDir, ".env");
-		if (fs.existsSync(envPath)) {
-			const content = fs.readFileSync(envPath, "utf-8");
-			for (const line of content.split("\n")) {
-				const trimmed = line.trim();
-				// Skip comments and empty lines
-				if (!trimmed || trimmed.startsWith("#")) continue;
-				// Parse KEY=VALUE (handle values with = in them)
-				const eqIndex = trimmed.indexOf("=");
-				if (eqIndex > 0) {
-					const key = trimmed.slice(0, eqIndex).trim();
-					let value = trimmed.slice(eqIndex + 1).trim();
-					// Remove surrounding quotes if present
-					if (
-						(value.startsWith('"') && value.endsWith('"')) ||
-						(value.startsWith("'") && value.endsWith("'"))
-					) {
-						value = value.slice(1, -1);
-					}
-					// Only set if not already defined (env vars take precedence)
-					if (process.env[key] === undefined) {
-						process.env[key] = value;
+		// Look for .git to identify the actual project root
+		const gitPath = path.join(currentDir, ".git");
+		if (fs.existsSync(gitPath)) {
+			const envPath = path.join(currentDir, ".env");
+			if (fs.existsSync(envPath)) {
+				const content = fs.readFileSync(envPath, "utf-8");
+				for (const line of content.split("\n")) {
+					const trimmed = line.trim();
+					// Skip comments and empty lines
+					if (!trimmed || trimmed.startsWith("#")) continue;
+					// Parse KEY=VALUE (handle values with = in them)
+					const eqIndex = trimmed.indexOf("=");
+					if (eqIndex > 0) {
+						const key = trimmed.slice(0, eqIndex).trim();
+						let value = trimmed.slice(eqIndex + 1).trim();
+						// Remove surrounding quotes if present
+						if (
+							(value.startsWith('"') && value.endsWith('"')) ||
+							(value.startsWith("'") && value.endsWith("'"))
+						) {
+							value = value.slice(1, -1);
+						}
+						// Only set if not already defined (env vars take precedence)
+						if (process.env[key] === undefined) {
+							process.env[key] = value;
+						}
 					}
 				}
 			}
