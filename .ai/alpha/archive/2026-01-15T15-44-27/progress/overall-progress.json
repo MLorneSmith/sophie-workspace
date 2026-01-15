@@ -1,0 +1,21 @@
+{
+	"specId": 1362,
+	"specName": "user dashboard home",
+	"status": "completed",
+	"initiativesCompleted": 4,
+	"initiativesTotal": 4,
+	"featuresCompleted": 13,
+	"featuresTotal": 13,
+	"tasksCompleted": 110,
+	"tasksTotal": 110,
+	"lastCheckpoint": "2026-01-14T20:19:47.804Z",
+	"branchName": "alpha/spec-1362",
+	"runId": "run-mkef12uw-ya7t",
+	"reviewUrls": [
+		{
+			"label": "sbx-a",
+			"vscode": "https://8080-ixx0sz39s8q1wrwsw3qbd.e2b.app",
+			"devServer": "https://3000-ixx0sz39s8q1wrwsw3qbd.e2b.app"
+		}
+	]
+}

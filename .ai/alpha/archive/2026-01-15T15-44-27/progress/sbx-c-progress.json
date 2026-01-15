@@ -1,0 +1,13 @@
+{
+	"sandbox_id": "it7axmng2rxkx5gaq1t5x",
+	"runId": "run-mkef12uw-ya7t",
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 0,
+	"status": "idle",
+	"phase": "waiting",
+	"last_heartbeat": "2026-01-14T20:18:48.066Z",
+	"session_id": "it7axmng2rxkx5gaq1t5x",
+	"waiting_reason": "No available features",
+	"blocked_by": []
+}
