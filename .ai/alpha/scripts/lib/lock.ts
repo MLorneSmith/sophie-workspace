@@ -90,10 +90,16 @@ export function clearProjectRootCache(): void {
 /**
  * Check if a process with the given PID is currently running.
  *
- * @param pid - Process ID to check
+ * @param pid - Process ID to check (must be positive)
  * @returns true if process exists and is running, false otherwise
  */
 export function isProcessRunning(pid: number): boolean {
+	// Validate PID is positive - negative PIDs have special meaning in Unix
+	// (e.g., -1 means all processes) and would be dangerous to use
+	if (pid <= 0) {
+		return false;
+	}
+
 	try {
 		// process.kill(pid, 0) checks if process exists without sending a signal
 		// On Unix, signal 0 is used to check process existence
@@ -135,6 +141,13 @@ export async function terminateProcess(
 	uiEnabled = false,
 ): Promise<boolean> {
 	const { log, error } = createLogger(uiEnabled);
+
+	// Validate PID is positive - negative PIDs have special meaning in Unix
+	// (e.g., -1 means all processes) and would be dangerous to terminate
+	if (pid <= 0) {
+		log(`   Invalid PID ${pid} (must be positive)`);
+		return false;
+	}
 
 	// Check if process is running
 	if (!isProcessRunning(pid)) {

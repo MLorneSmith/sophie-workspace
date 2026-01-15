@@ -140,6 +140,17 @@ describe("readLock / writeLock", () => {
 });
 
 describe("acquireLock", () => {
+	// Mock console.error to prevent test output from being interpreted as real errors
+	let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeEach(() => {
+		consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		consoleErrorSpy.mockRestore();
+	});
+
 	it("acquires lock when no existing lock", async () => {
 		const result = await acquireLock(1362, true);
 
