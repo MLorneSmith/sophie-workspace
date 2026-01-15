@@ -138,6 +138,39 @@ export function validateSupabaseConfig(): {
 	return { valid, hasToken, hasProjectRef, message };
 }
 
+/**
+ * Validate that required Supabase tokens are present for database operations.
+ * Use this for fail-fast validation when Supabase operations are required.
+ *
+ * Unlike hasSupabaseAuth() which returns a boolean, this provides detailed
+ * error messages with actionable instructions for fixing configuration issues.
+ */
+export function validateSupabaseTokensRequired(): {
+	isValid: boolean;
+	message: string;
+} {
+	const token = SUPABASE_ACCESS_TOKEN;
+	const projectRef = SUPABASE_SANDBOX_PROJECT_REF;
+
+	if (!token || !projectRef) {
+		const missing: string[] = [];
+		if (!token) missing.push("SUPABASE_ACCESS_TOKEN");
+		if (!projectRef) missing.push("SUPABASE_SANDBOX_PROJECT_REF");
+
+		return {
+			isValid: false,
+			message:
+				`Missing required Supabase configuration: ${missing.join(", ")}.\n` +
+				"   To fix:\n" +
+				"   1. Get SUPABASE_ACCESS_TOKEN from https://supabase.com/dashboard/account/tokens\n" +
+				"   2. Get SUPABASE_SANDBOX_PROJECT_REF from your Supabase project settings\n" +
+				"   3. Add both to your .env file or environment",
+		};
+	}
+
+	return { isValid: true, message: "" };
+}
+
 // ============================================================================
 // Environment Validation
 // ============================================================================

@@ -16,7 +16,12 @@ import {
 	WORKSPACE_DIR,
 } from "../config/index.js";
 import type { SandboxInstance, SpecManifest } from "../types/index.js";
-import { E2B_API_KEY, GITHUB_TOKEN, getAllEnvVars } from "./environment.js";
+import {
+	E2B_API_KEY,
+	getAllEnvVars,
+	GITHUB_TOKEN,
+	validateSupabaseTokensRequired,
+} from "./environment.js";
 
 // ============================================================================
 // Logging Helper
@@ -94,6 +99,16 @@ export async function createSandbox(
 ): Promise<SandboxInstance> {
 	// Create conditional logger
 	const { log } = createLogger(uiEnabled);
+
+	// Validate Supabase tokens are configured (fail-fast)
+	// This prevents mysterious downstream errors when migrations can't be synced
+	const supabaseValidation = validateSupabaseTokensRequired();
+	if (!supabaseValidation.isValid) {
+		throw new Error(
+			`Cannot create sandbox: ${supabaseValidation.message}\n` +
+				"   Database operations require valid Supabase credentials.",
+		);
+	}
 
 	log(`\n📦 Creating sandbox ${label}...`);
 

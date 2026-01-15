@@ -15,9 +15,8 @@ import type { Sandbox } from "@e2b/code-interpreter";
 import { WORKSPACE_DIR } from "../config/index.js";
 import {
 	getAllEnvVars,
-	hasSupabaseAuth,
 	SUPABASE_ACCESS_TOKEN,
-	validateSupabaseConfig,
+	validateSupabaseTokensRequired,
 } from "./environment.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 
@@ -293,11 +292,15 @@ export async function syncFeatureMigrations(
 ): Promise<boolean> {
 	const { log, warn, error } = createLogger(uiEnabled);
 
-	// Check if Supabase auth is configured
-	if (!hasSupabaseAuth()) {
-		const config = validateSupabaseConfig();
-		log(`   ℹ️ ${config.message} - skipping migration sync`);
-		return true; // Non-blocking - allow orchestrator to continue
+	// Validate Supabase tokens are configured (fail-fast)
+	// Migration sync is critical - silent failures cause mysterious downstream errors
+	const validation = validateSupabaseTokensRequired();
+	if (!validation.isValid) {
+		error(`   ❌ Cannot sync migrations: ${validation.message}`);
+		throw new Error(
+			`Migration sync failed: ${validation.message}\n` +
+				"   Feature migrations cannot be applied without valid Supabase credentials.",
+		);
 	}
 
 	log(`   🔄 Syncing migrations after ${featureLabel}...`);
