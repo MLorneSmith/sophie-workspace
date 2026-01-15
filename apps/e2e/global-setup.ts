@@ -672,9 +672,19 @@ async function globalSetup(config: FullConfig) {
 				// For Vercel preview deployments, use url property instead of domain
 				// to satisfy Playwright's cookie API validation requirements
 				// Playwright's addCookies() requires: url OR (domain AND path)
+				// When using url, we omit path to avoid conflicts
 				// See: Issue #1485 - Vercel Bypass Cookie Missing URL Property
 				if (isVercelPreview) {
-					await context.addCookies([{ ...vercelCookie, url: baseURL }]);
+					await context.addCookies([
+						{
+							name: vercelCookie.name,
+							value: vercelCookie.value,
+							url: baseURL,
+							httpOnly: vercelCookie.httpOnly,
+							secure: vercelCookie.secure,
+							sameSite: vercelCookie.sameSite,
+						},
+					]);
 				} else {
 					await context.addCookies([vercelCookie]);
 				}
