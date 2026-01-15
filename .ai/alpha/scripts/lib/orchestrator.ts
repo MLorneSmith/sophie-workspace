@@ -842,6 +842,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		// Archive old progress/log files and clear for new run
 		archiveAndClearPreviousRun(runId);
 
+		// CRITICAL: Write initial manifest progress BEFORE starting UI
+		// This ensures the UI poller finds overall-progress.json with correct totals
+		// instead of falling back to hardcoded defaults (0/1 instead of actual values)
+		saveManifest(manifest);
+
 		// Generate sandbox labels for UI
 		const sandboxLabels = Array.from(
 			{ length: options.sandboxCount },
