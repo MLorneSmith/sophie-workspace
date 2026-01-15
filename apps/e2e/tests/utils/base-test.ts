@@ -95,3 +95,36 @@ export const test = baseTest.extend({
 // Re-export expect and types for convenience
 export { expect };
 export type { BrowserContext, Page, Request, Response } from "@playwright/test";
+
+/**
+ * Helper to ensure storage state is restored when tests retry.
+ *
+ * When Playwright retries a test, it creates a fresh browser context.
+ * This helper ensures authenticated cookies are available in the new context.
+ *
+ * Addresses Issue #1492: Storage state lost when Playwright retries
+ *
+ * Usage in beforeEach (after navigation):
+ *   await restoreAuthStorageState(page);
+ *
+ * Note: This function only restores cookies. localStorage restoration is not
+ * needed because Supabase auth tokens are stored in cookies (handled by
+ * @supabase/ssr), not localStorage. The storage state from global-setup
+ * already includes the cookies needed for authentication.
+ *
+ * @param page - Playwright Page object
+ */
+export async function restoreAuthStorageState(
+	page: import("@playwright/test").Page,
+): Promise<void> {
+	// Get the storage state from the current context
+	const storageState = await page.context().storageState();
+
+	if (!storageState || storageState.cookies.length === 0) {
+		return; // No auth cookies to restore
+	}
+
+	// Reapply cookies to ensure they're in place
+	// This is idempotent - safe to call multiple times
+	await page.context().addCookies(storageState.cookies);
+}

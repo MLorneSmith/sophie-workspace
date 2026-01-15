@@ -1,7 +1,12 @@
 import { AuthPageObject } from "../authentication/auth.po";
 import { InvitationsPageObject } from "../invitations/invitations.po";
 import { AUTH_STATES } from "../utils/auth-state";
-import { expect, type Page, test } from "../utils/base-test";
+import {
+	expect,
+	type Page,
+	test,
+	restoreAuthStorageState,
+} from "../utils/base-test";
 import {
 	CI_TIMEOUTS,
 	navigateAndWaitForHydration,
@@ -82,6 +87,10 @@ test.describe("Team Accounts @team @integration", () => {
 
 	test.beforeEach(async ({ page }) => {
 		teamAccounts = new TeamAccountsPageObject(page);
+
+		// Restore auth storage state in case this is a retry
+		// Addresses Issue #1492: Storage state lost when Playwright retries
+		await restoreAuthStorageState(page);
 
 		// Navigate to home first with hydration wait - required because Playwright
 		// starts with blank page even when using pre-authenticated storage state
