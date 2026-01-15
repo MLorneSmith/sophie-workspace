@@ -433,6 +433,7 @@ jobs:
             apps/e2e
             packages
             tooling
+            patches
             package.json
             pnpm-lock.yaml
             pnpm-workspace.yaml
