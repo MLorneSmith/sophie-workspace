@@ -1,4 +1,4 @@
 {
 	"buildCommand": "pnpm turbo run build --filter=payload",
-	"installCommand": "corepack enable && pnpm install"
+	"installCommand": "pnpm install --frozen-lockfile"
 }
