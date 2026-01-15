@@ -88,7 +88,20 @@ export async function checkDatabaseCapacity(
 		}
 
 		return true;
-	} catch {
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+
+		// Check for authentication failures - these should fail loudly
+		if (
+			errorMessage.includes("password authentication failed") ||
+			errorMessage.includes("FATAL:") ||
+			errorMessage.includes("authentication failed")
+		) {
+			error(`   ❌ Database connection failed: ${errorMessage}`);
+			error("   ⚠️ Check SUPABASE_SANDBOX_DB_URL credentials in .env");
+			return false;
+		}
+
 		// psql might not be installed locally - that's OK, we'll check in sandbox
 		log("   ℹ️ Could not check database size locally (psql not available)");
 		return true;
