@@ -91,6 +91,54 @@ export function clearOAuthTokenCache(): void {
 }
 
 // ============================================================================
+// Supabase Token Management
+// ============================================================================
+
+export const SUPABASE_ACCESS_TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
+export const SUPABASE_SANDBOX_PROJECT_REF =
+	process.env.SUPABASE_SANDBOX_PROJECT_REF;
+
+/**
+ * Check if Supabase authentication is configured for database operations.
+ * Returns true if token and project ref are set, false otherwise.
+ * Does not fail - database operations are optional.
+ */
+export function hasSupabaseAuth(): boolean {
+	return !!(SUPABASE_ACCESS_TOKEN && SUPABASE_SANDBOX_PROJECT_REF);
+}
+
+/**
+ * Validate Supabase configuration and return status.
+ * Provides clear feedback about what's missing.
+ */
+export function validateSupabaseConfig(): {
+	valid: boolean;
+	hasToken: boolean;
+	hasProjectRef: boolean;
+	message: string;
+} {
+	const hasToken = !!SUPABASE_ACCESS_TOKEN;
+	const hasProjectRef = !!SUPABASE_SANDBOX_PROJECT_REF;
+	const valid = hasToken && hasProjectRef;
+
+	let message: string;
+	if (valid) {
+		message = "Supabase CLI authentication configured";
+	} else if (!hasToken && !hasProjectRef) {
+		message =
+			"Supabase CLI not configured (missing SUPABASE_ACCESS_TOKEN and SUPABASE_SANDBOX_PROJECT_REF)";
+	} else if (!hasToken) {
+		message =
+			"Supabase CLI partially configured (missing SUPABASE_ACCESS_TOKEN - get from https://supabase.com/dashboard/account/tokens)";
+	} else {
+		message =
+			"Supabase CLI partially configured (missing SUPABASE_SANDBOX_PROJECT_REF)";
+	}
+
+	return { valid, hasToken, hasProjectRef, message };
+}
+
+// ============================================================================
 // Environment Validation
 // ============================================================================
 
@@ -109,6 +157,13 @@ export function checkEnvironment(): void {
 	if (!ANTHROPIC_API_KEY && !oauthToken) {
 		console.error("ERROR: No Claude authentication found");
 		process.exit(1);
+	}
+
+	// Check Supabase config (non-fatal - just informational)
+	const supabaseStatus = validateSupabaseConfig();
+	if (!supabaseStatus.valid) {
+		console.warn(`⚠️ ${supabaseStatus.message}`);
+		console.warn("   Database migration sync after features will be skipped");
 	}
 }
 

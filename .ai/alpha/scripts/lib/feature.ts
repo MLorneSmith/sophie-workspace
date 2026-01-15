@@ -26,6 +26,7 @@ import type {
 	SpecManifest,
 	StartupAttemptRecord,
 } from "../types/index.js";
+import { syncFeatureMigrations } from "./database.js";
 import { getAllEnvVars, getAuthMethod } from "./environment.js";
 import { killClaudeProcess } from "./health.js";
 import { getProjectRoot } from "./lock.js";
@@ -629,6 +630,19 @@ export async function runFeatureImplementation(
 				);
 			} catch (pushError) {
 				log(`   │   ⚠ Push failed: ${pushError}`);
+			}
+
+			// Sync migrations to remote database after feature completes
+			// This captures any database migrations created by the feature
+			// See bug fix #1506 for details
+			try {
+				await syncFeatureMigrations(
+					instance.sandbox,
+					`feature #${feature.id}`,
+					uiEnabled,
+				);
+			} catch (syncError) {
+				log(`   │   ⚠ Migration sync failed (non-blocking): ${syncError}`);
 			}
 		}
 

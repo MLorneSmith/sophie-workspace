@@ -39,3 +39,11 @@ export {
 	VSCODE_PORT,
 	WORKSPACE_DIR,
 } from "./constants.js";
+
+// Re-export environment variables and utilities for database operations
+export {
+	SUPABASE_ACCESS_TOKEN,
+	SUPABASE_SANDBOX_PROJECT_REF,
+	hasSupabaseAuth,
+	validateSupabaseConfig,
+} from "../lib/environment.js";

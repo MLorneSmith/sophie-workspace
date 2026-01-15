@@ -13,7 +13,12 @@ import process from "node:process";
 import type { Sandbox } from "@e2b/code-interpreter";
 
 import { WORKSPACE_DIR } from "../config/index.js";
-import { getAllEnvVars } from "./environment.js";
+import {
+	getAllEnvVars,
+	hasSupabaseAuth,
+	SUPABASE_ACCESS_TOKEN,
+	validateSupabaseConfig,
+} from "./environment.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 
 // ============================================================================
@@ -260,6 +265,126 @@ export async function seedSandboxDatabase(
 	} catch (err) {
 		error(`❌ Seeding failed: ${err}`);
 		return false;
+	}
+}
+
+// ============================================================================
+// Migration Sync (Post-Feature)
+// ============================================================================
+
+/**
+ * Sync feature-generated migrations to the remote sandbox database.
+ * This function is called after each feature completes to push any new
+ * migrations created by the feature to the remote database.
+ *
+ * The key issue this solves: `resetSandboxDatabase()` runs at startup BEFORE
+ * features create migrations. This function ensures migrations created during
+ * feature implementation are applied to the remote database.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param featureLabel - Human-readable feature label for logging
+ * @param uiEnabled - Whether UI mode is enabled (suppresses console output)
+ * @returns true if sync succeeded or was skipped (non-blocking), false on error
+ */
+export async function syncFeatureMigrations(
+	sandbox: Sandbox,
+	featureLabel: string,
+	uiEnabled: boolean = false,
+): Promise<boolean> {
+	const { log, warn, error } = createLogger(uiEnabled);
+
+	// Check if Supabase auth is configured
+	if (!hasSupabaseAuth()) {
+		const config = validateSupabaseConfig();
+		log(`   ℹ️ ${config.message} - skipping migration sync`);
+		return true; // Non-blocking - allow orchestrator to continue
+	}
+
+	log(`   🔄 Syncing migrations after ${featureLabel}...`);
+
+	try {
+		// Step 1: Check if there are any pending migrations in the sandbox
+		const migrationCheckResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR}/apps/web && ls -la supabase/migrations/*.sql 2>/dev/null | wc -l`,
+			{ timeoutMs: 10000 },
+		);
+
+		const migrationCount = parseInt(
+			migrationCheckResult.stdout.trim() || "0",
+			10,
+		);
+		if (migrationCount === 0) {
+			log("   ℹ️ No migrations found - skipping sync");
+			return true;
+		}
+
+		log(
+			`   📦 Found ${migrationCount} migration file(s), pushing to remote...`,
+		);
+
+		// Step 2: Push migrations to remote database using Supabase CLI
+		// Note: The sandbox was linked to the project during createSandbox()
+		const pushResult = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR}/apps/web && pnpm exec supabase db push --linked`,
+			{
+				timeoutMs: 300000, // 5 minutes for complex migrations
+				envs: {
+					SUPABASE_ACCESS_TOKEN: SUPABASE_ACCESS_TOKEN || "",
+				},
+			},
+		);
+
+		if (pushResult.exitCode !== 0) {
+			// Check for specific error types
+			const stderr = pushResult.stderr || "";
+			const stdout = pushResult.stdout || "";
+
+			if (
+				stderr.includes("authentication failed") ||
+				stderr.includes("Tenant or user not found")
+			) {
+				error(`   ❌ Migration sync auth failed: ${stderr}`);
+				error(
+					"   ⚠️ Check SUPABASE_ACCESS_TOKEN - get from https://supabase.com/dashboard/account/tokens",
+				);
+				return false;
+			}
+
+			if (
+				stderr.includes("no new migrations") ||
+				stdout.includes("no new migrations")
+			) {
+				log("   ℹ️ No new migrations to apply");
+				return true;
+			}
+
+			warn(`   ⚠️ Migration push returned exit code ${pushResult.exitCode}`);
+			warn(`   stderr: ${stderr}`);
+			// Non-blocking - feature may have succeeded without DB changes
+			return true;
+		}
+
+		log("   ✅ Migrations synced to remote database");
+
+		// Step 3: Verify migrations were applied by checking table count
+		const verifyResult = await sandbox.commands.run(
+			`psql "${process.env.SUPABASE_SANDBOX_DB_URL}" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'" 2>/dev/null || echo "0"`,
+			{ timeoutMs: 30000 },
+		);
+
+		const tableCount = parseInt(verifyResult.stdout.trim() || "0", 10);
+		if (tableCount > 0) {
+			log(`   ✅ Verified: ${tableCount} public table(s) in database`);
+		} else {
+			log("   ℹ️ Could not verify table count (psql may not be available)");
+		}
+
+		return true;
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		warn(`   ⚠️ Migration sync failed (non-blocking): ${errorMessage}`);
+		// Non-blocking - allow orchestrator to continue
+		return true;
 	}
 }
 
