@@ -1,39 +1,19 @@
 {
-	"sandbox_id": "icijku5hxzt7e6abqfcx9",
-	"runId": "run-mkfqru6m-gaxb",
+	"sandbox_id": "irbdrwa0c1ugzss3yey1j",
+	"runId": "run-mkg17kgg-lvch",
 	"feature": {
-		"issue_number": 1368,
-		"title": "Presentation Outline Table"
+		"issue_number": 1376,
+		"title": "Kanban Summary Card"
 	},
-	"current_task": {
-		"id": "T",
-		"name": "Create PresentationOutlineTable component skeleton (T3)",
-		"status": "in_progress",
-		"started_at": "2026-01-15T18:11:02.914247Z"
-	},
-	"current_group": {
-		"id": 1,
-		"name": "Types and Data Layer",
-		"tasks_total": 2,
-		"tasks_completed": 1
-	},
-	"completed_tasks": [
-		"T1"
-	],
-	"failed_tasks": [],
-	"context_usage_percent": 10,
-	"status": "in_progress",
+	"status": "running",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-15T18:11:02.914247Z",
-	"last_tool": "TodoWrite",
-	"session_id": "icijku5hxzt7e6abqfcx9",
+	"last_heartbeat": "2026-01-15T22:42:02.778Z",
+	"session_id": "irbdrwa0c1ugzss3yey1j",
 	"recent_output": [
-		"💻 Bash: cat > .initiative-progress.jso...",
-		"✏️ Edit: dashboard-page.loader.ts",
-		"✏️ Edit: dashboard-page.loader.ts",
-		"📖 Read: dashboard-page.loader.ts",
-		"✏️ Edit: dashboard-page.loader.ts",
-		"💻 Bash: pnpm typecheck 2>&1 | tail -15",
-		"📋 Todo: 2/12 done"
+		"\u001b[?2004h\u001b]0;user@e2b: ~/project\u0007\u001b[01;32muser@e2b\u001b[00m:\u001b[01;34m~/project\u001b[00m$ ",
+		"run-claude \"/alpha:implement 1376\"\r",
+		"\u001b[?2004l\r",
+		"Using OAuth authentication (Max plan)\r",
+		"Running Claude Code with prompt: /alpha:implement 1376\r"
 	]
 }

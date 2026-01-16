@@ -1,38 +1,19 @@
 {
-	"sandbox_id": "iq6iii8efsxp6x4m11btg",
-	"runId": "run-mkfqru6m-gaxb",
+	"sandbox_id": "igd2xa9874fv6ksnvxsn5",
+	"runId": "run-mkg17kgg-lvch",
 	"feature": {
-		"issue_number": 1374,
-		"title": "Activity Recording Service"
+		"issue_number": 1373,
+		"title": "Activity Database Schema"
 	},
-	"current_task": {
-		"id": "T7",
-		"name": "Apply migration with type regeneration",
-		"status": "in_progress",
-		"started_at": "2026-01-15T18:08:40+00:00"
-	},
-	"current_group": {
-		"id": 3,
-		"name": "Testing & Migration",
-		"tasks_total": 3,
-		"tasks_completed": 2
-	},
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5",
-		"T6"
-	],
-	"failed_tasks": [],
-	"context_usage_percent": 35,
-	"status": "in_progress",
+	"status": "running",
 	"phase": "executing",
-	"last_heartbeat": "2026-01-15T18:08:40.265810Z",
-	"last_tool": "Bash",
-	"session_id": "iq6iii8efsxp6x4m11btg",
+	"last_heartbeat": "2026-01-15T22:42:02.872Z",
+	"session_id": "igd2xa9874fv6ksnvxsn5",
 	"recent_output": [
-		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca..."
+		"\u001b[?2004h\u001b]0;user@e2b: ~/project\u0007\u001b[01;32muser@e2b\u001b[00m:\u001b[01;34m~/project\u001b[00m$ ",
+		"run-claude \"/alpha:implement 1373\"",
+		"\u001b[?2004l\r",
+		"Using OAuth authentication (Max plan)\r",
+		"Running Claude Code with prompt: /alpha:implement 1373\r"
 	]
 }
