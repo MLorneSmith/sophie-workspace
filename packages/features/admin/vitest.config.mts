@@ -29,6 +29,7 @@ export default defineProject({
 				"src/__mocks__/next/navigation.ts",
 			),
 			"next/cache": path.resolve(__dirname, "src/__mocks__/next/cache.ts"),
+<<<<<<< HEAD
 			// @kit/shared subpath exports - resolve to source files
 			// This avoids requiring packages to be built before running tests in CI
 			"@kit/shared/registry": path.resolve(
@@ -48,6 +49,8 @@ export default defineProject({
 				__dirname,
 				"../../shared/src/events/index.tsx",
 			),
+=======
+>>>>>>> origin/staging
 		},
 	},
 	esbuild: {

@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": 1362,
 		"spec_name": "user dashboard home",
-		"generated_at": "2026-01-16T16:43:39.153Z",
+		"generated_at": "2026-01-16T19:14:30.363Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/1362-Spec-user-dashboard-home/research-library"
 	},
@@ -332,7 +332,7 @@
 		"last_completed_feature_id": null,
 		"started_at": null,
 		"completed_at": null,
-		"last_checkpoint": "2026-01-16T17:08:07.994Z"
+		"last_checkpoint": null
 	},
 	"sandbox": {
 		"sandbox_ids": [],
