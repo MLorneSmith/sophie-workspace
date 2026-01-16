@@ -195,7 +195,7 @@ TRUNCATE supabase_migrations.schema_migrations;
 				"Applying base migrations...",
 			);
 			try {
-				execSync(`supabase db push --db-url "${dbUrl}"`, {
+				execSync(`supabase db push --yes --db-url "${dbUrl}"`, {
 					cwd: webDir,
 					encoding: "utf-8",
 					stdio: ["pipe", "pipe", "pipe"],
