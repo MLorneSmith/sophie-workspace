@@ -76,8 +76,8 @@ jobs:
 
       - name: Build application
         run: |
-          # Build with Turbo cache
-          pnpm build --cache-dir=.turbo
+          # Build with Turbo cache (cache-dir already configured in package.json)
+          pnpm build
 
       - name: Cache build and server state
         uses: actions/cache@v4

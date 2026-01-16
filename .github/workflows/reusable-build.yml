@@ -35,6 +35,12 @@ jobs:
 
       - uses: ./.github/actions/setup-deps
 
+      - name: Fix script permissions
+        run: |
+          # Ensure shell scripts are executable (git may strip execute bit)
+          chmod +x .claude/statusline/*.sh 2>/dev/null || true
+          chmod +x fix-build-permissions.sh 2>/dev/null || true
+
       - name: Cache turbo build
         uses: actions/cache@v4
         id: turbo-cache

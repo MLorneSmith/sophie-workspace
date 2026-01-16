@@ -46,7 +46,8 @@
 			"!**/.ai/alpha/scripts/node_modules.bak",
 			"!**/.ai/alpha/progress/*.json",
 			"!**/.initiative-progress.json",
-			"!**/.ai/alpha/specs/**/spec-manifest.json"
+			"!**/.ai/alpha/specs/**/spec-manifest.json",
+			"!**/.ai/alpha/archive/**/*.json"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },

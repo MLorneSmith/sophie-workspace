@@ -12,6 +12,7 @@ permissions:
   packages: write
   contents: read
   security-events: write  # For Trivy SARIF upload
+  pull-requests: read  # For CodeQL action context access
 
 jobs:
   build-scan-push:
