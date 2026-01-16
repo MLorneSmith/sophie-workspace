@@ -952,11 +952,15 @@ async function globalSetup(config: FullConfig) {
 						// IMPORTANT: Vercel deployments require secure: true
 						secure: baseURL.startsWith("https"),
 						// Use domain-specific sameSite default (important for Vercel preview deployments)
-						// Vercel requires Lax or None, we default to Lax for security
-						sameSite: normalizeSameSite(
-							c.options.sameSite as string,
-							cookieConfig.sameSite,
-						),
+						// CRITICAL: Force None for Vercel preview to ensure cross-site cookie transmission
+						// @supabase/ssr always sets sameSite='lax', so normalizeSameSite() never applies our default
+						// See: Issue #1528 - E2E Cookie sameSite Override Ignored
+						sameSite: cookieConfig.isVercelPreview
+							? "None" // Force None for Vercel preview cross-site compatibility
+							: normalizeSameSite(
+									c.options.sameSite as string,
+									cookieConfig.sameSite,
+								),
 					};
 
 					// Cookie domain strategy:
