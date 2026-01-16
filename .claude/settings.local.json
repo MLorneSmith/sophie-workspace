@@ -15,7 +15,9 @@
 			"SlashCommand(/initiative-feature-set:*)",
 			"SlashCommand(/initiative-feature:*)",
 			"Skill(skillcreator)",
-			"Skill(slashcommand-writer)"
+			"Skill(slashcommand-writer)",
+			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*)",
+			"Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*)"
 		]
 	},
 	"enabledMcpjsonServers": ["playwright"],

@@ -126,7 +126,8 @@ describe("syncFeatureMigrations", () => {
 			});
 			mockValidateSupabaseTokensRequired.mockReturnValue({
 				isValid: false,
-				message: "Missing required Supabase configuration: SUPABASE_ACCESS_TOKEN",
+				message:
+					"Missing required Supabase configuration: SUPABASE_ACCESS_TOKEN",
 			});
 
 			const sandbox = createMockSandbox();

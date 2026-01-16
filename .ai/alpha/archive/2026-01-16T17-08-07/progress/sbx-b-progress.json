@@ -1,0 +1,38 @@
+{
+	"sandbox_id": "ibjyz54r4e6pnuoesk20y",
+	"runId": "run-mkh3m28f-ldu1",
+	"feature": {
+		"issue_number": 1373,
+		"title": "Activity Database Schema"
+	},
+	"current_task": {
+		"id": "T6",
+		"name": "Generate migration from schema",
+		"status": "starting",
+		"started_at": "2026-01-16T16:39:57+00:00"
+	},
+	"current_group": {
+		"id": 2,
+		"name": "Migration and Type Generation",
+		"tasks_total": 3,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [
+		"T1",
+		"T2",
+		"T3",
+		"T4",
+		"T5"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 30,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T16:39:57.522720Z",
+	"last_tool": "Bash",
+	"last_commit": "58b47de",
+	"session_id": "ibjyz54r4e6pnuoesk20y",
+	"recent_output": [
+		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca..."
+	]
+}

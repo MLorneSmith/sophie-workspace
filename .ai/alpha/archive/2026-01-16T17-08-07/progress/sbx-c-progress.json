@@ -1,0 +1,34 @@
+{
+	"sandbox_id": "irtowk6nse0xan4qo3884",
+	"runId": "run-mkh3m28f-ldu1",
+	"feature": {
+		"issue_number": 1376,
+		"title": "Kanban Summary Card"
+	},
+	"current_task": {
+		"id": "T2-T4",
+		"name": "Create UI components and translations (parallel)",
+		"status": "starting",
+		"started_at": "2026-01-16T16:39:52+00:00"
+	},
+	"current_group": {
+		"id": 0,
+		"name": "Foundation + UI Components",
+		"tasks_total": 4,
+		"tasks_completed": 1
+	},
+	"completed_tasks": [
+		"T1"
+	],
+	"failed_tasks": [],
+	"context_usage_percent": 25,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T16:39:57.028715Z",
+	"last_tool": "Read",
+	"session_id": "irtowk6nse0xan4qo3884",
+	"recent_output": [
+		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca...",
+		"📖 Read: common.json"
+	]
+}
