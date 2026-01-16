@@ -676,7 +676,9 @@ export type WebSocketMessageType =
 	| "initial_events"
 	| "event"
 	| "ping"
-	| "pong";
+	| "pong"
+	| "ui_ready_confirmed"
+	| "ui_status";
 
 /**
  * WebSocket message structure

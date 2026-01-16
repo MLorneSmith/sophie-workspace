@@ -69,6 +69,9 @@ class EventStore:
         self.events: deque = deque(maxlen=max_events)
         self.websocket_clients: set[WebSocket] = set()
         self._lock = asyncio.Lock()
+        # UI ready tracking - set when UI sends ready signal after connection
+        self.ui_ready: bool = False
+        self.ui_ready_at: Optional[str] = None
 
     async def add_event(self, event: dict) -> None:
         """Add an event and broadcast to all connected clients."""
@@ -137,6 +140,21 @@ class EventStore:
         """Get the number of connected clients."""
         return len(self.websocket_clients)
 
+    def set_ui_ready(self) -> None:
+        """Mark UI as ready (received ready signal from UI client)."""
+        self.ui_ready = True
+        self.ui_ready_at = datetime.now(timezone.utc).isoformat()
+
+    def reset_ui_ready(self) -> None:
+        """Reset UI ready status (e.g., when all clients disconnect)."""
+        self.ui_ready = False
+        self.ui_ready_at = None
+
+    @property
+    def is_ui_ready(self) -> bool:
+        """Check if UI is ready."""
+        return self.ui_ready
+
 
 # Global event store
 event_store = EventStore()
@@ -155,6 +173,23 @@ async def health_check():
         "uptime_seconds": int(uptime_seconds),
         "events_stored": len(event_store.events),
         "websocket_clients": event_store.client_count,
+        "ui_ready": event_store.is_ui_ready,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+
+
+@app.get("/api/ui-status")
+async def ui_status():
+    """
+    Check if UI is ready to receive events.
+
+    Used by orchestrator to coordinate event timing - waits for UI to be ready
+    before emitting critical database events.
+    """
+    return JSONResponse({
+        "ui_ready": event_store.is_ui_ready,
+        "ui_ready_at": event_store.ui_ready_at,
+        "connected_clients": event_store.client_count,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
 
@@ -248,12 +283,42 @@ async def websocket_endpoint(websocket: WebSocket):
                     timeout=PING_INTERVAL,
                 )
 
-                # Handle ping messages
+                # Handle ping messages (plain text for backward compatibility)
                 if message == "ping":
                     await websocket.send_text(json.dumps({
                         "type": "pong",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                     }))
+                    continue
+
+                # Try to parse as JSON message
+                try:
+                    msg_data = json.loads(message)
+                    msg_type = msg_data.get("type")
+
+                    # Handle ui_ready signal from UI client
+                    if msg_type == "ui_ready":
+                        event_store.set_ui_ready()
+                        print(f"UI ready signal received from client", file=sys.stderr)
+                        # Send confirmation back to UI
+                        await websocket.send_text(json.dumps({
+                            "type": "ui_ready_confirmed",
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        }))
+                        # Broadcast ui_ready status to all clients
+                        await event_store.broadcast({
+                            "type": "ui_status",
+                            "ui_ready": True,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        })
+
+                    # Handle JSON pong messages
+                    elif msg_type == "pong":
+                        pass  # Response to our ping, connection is alive
+
+                except json.JSONDecodeError:
+                    # Not JSON, ignore unknown message
+                    pass
 
             except asyncio.TimeoutError:
                 # Send ping to keep connection alive
@@ -271,6 +336,10 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"WebSocket error: {e}", file=sys.stderr)
     finally:
         event_store.remove_client(websocket)
+        # Reset UI ready status if no clients remain
+        if event_store.client_count == 0:
+            event_store.reset_ui_ready()
+            print("All WebSocket clients disconnected, UI ready status reset", file=sys.stderr)
 
 
 def main():

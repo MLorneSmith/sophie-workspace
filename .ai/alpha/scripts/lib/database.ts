@@ -199,8 +199,59 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 					"db_migration_complete",
 					"Base migrations applied",
 				);
-			} catch {
-				warn("   ⚠️ Migration push failed (may be OK if no migrations)");
+
+				// Verify tables were created (pattern from /supabase-reset)
+				log("   🔍 Verifying database tables...");
+				emitOrchestratorEvent("db_verify", "Verifying database tables...");
+
+				const verification = verifyTablesExist(dbUrl, undefined, uiEnabled);
+				if (verification.success) {
+					emitOrchestratorEvent(
+						"db_verify",
+						`Verified: ${verification.tableCount} table(s) created`,
+						{ tableCount: verification.tableCount },
+					);
+				} else {
+					// Don't block - log warning and continue
+					warn(
+						`   ⚠️ Table verification warning: found ${verification.tableCount} tables`,
+					);
+					emitOrchestratorEvent(
+						"db_verify",
+						`Warning: Only ${verification.tableCount} table(s) found after migrations`,
+						{ tableCount: verification.tableCount, success: false },
+					);
+				}
+			} catch (migrationErr) {
+				// Verbose error logging instead of silent catch
+				const errorMessage =
+					migrationErr instanceof Error
+						? migrationErr.message
+						: String(migrationErr);
+				const errorStack =
+					migrationErr instanceof Error ? migrationErr.stack : undefined;
+
+				warn(`   ⚠️ Migration push failed: ${errorMessage}`);
+				if (errorStack) {
+					log(`   Stack trace: ${errorStack}`);
+				}
+
+				// Emit error event for UI visibility
+				emitOrchestratorEvent(
+					"db_migration_complete",
+					`Migration warning: ${errorMessage}`,
+					{ error: errorMessage, success: false },
+				);
+
+				// Check if this is a critical error or just "no migrations"
+				if (
+					errorMessage.includes("no new migrations") ||
+					errorMessage.includes("Already up to date")
+				) {
+					log("   ℹ️ No new migrations to apply");
+				} else {
+					warn("   ⚠️ Migration may have failed - continuing anyway");
+				}
 			}
 		}
 
@@ -451,6 +502,116 @@ export async function syncFeatureMigrations(
 }
 
 // ============================================================================
+// Database Verification
+// ============================================================================
+
+/**
+ * Verify that expected tables exist in the database after migrations.
+ * Used to detect silent migration failures.
+ *
+ * @param dbUrl - Database connection URL
+ * @param tableNames - Optional list of table names to verify. If not provided, checks for any public tables.
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Object with success status and table count
+ */
+export function verifyTablesExist(
+	dbUrl: string,
+	tableNames?: string[],
+	uiEnabled: boolean = false,
+): { success: boolean; tableCount: number; missingTables?: string[] } {
+	const { log, error } = createLogger(uiEnabled);
+
+	try {
+		// Query to count tables in public schema
+		const query = tableNames
+			? `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = ANY(ARRAY[${tableNames.map((t) => `'${t}'`).join(",")}])`
+			: `SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = 'public'`;
+
+		const result = execSync(`psql "${dbUrl}" -t -c "${query}"`, {
+			encoding: "utf-8",
+			stdio: ["pipe", "pipe", "pipe"],
+		});
+
+		if (tableNames) {
+			// Check which tables were found
+			const foundTables = result
+				.split("\n")
+				.map((line) => line.trim())
+				.filter((line) => line.length > 0);
+			const missingTables = tableNames.filter((t) => !foundTables.includes(t));
+			const success = missingTables.length === 0;
+
+			if (success) {
+				log(`   ✅ Verified: ${foundTables.length} table(s) exist`);
+			} else {
+				error(`   ❌ Missing tables: ${missingTables.join(", ")}`);
+			}
+
+			return {
+				success,
+				tableCount: foundTables.length,
+				missingTables: missingTables.length > 0 ? missingTables : undefined,
+			};
+		}
+
+		// Parse count result
+		const tableCount = parseInt(result.trim(), 10);
+		const success = tableCount > 0;
+
+		if (success) {
+			log(`   ✅ Verified: ${tableCount} public table(s) exist`);
+		} else {
+			error("   ❌ No public tables found after migrations");
+		}
+
+		return { success, tableCount };
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		error(`   ❌ Table verification failed: ${errorMessage}`);
+		return { success: false, tableCount: 0 };
+	}
+}
+
+/**
+ * Verify that seed data exists in the database after seeding.
+ * Checks the payload.users table for at least one user.
+ *
+ * @param dbUrl - Database connection URL
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Object with success status and user count
+ */
+export function verifySeededData(
+	dbUrl: string,
+	uiEnabled: boolean = false,
+): { success: boolean; userCount: number } {
+	const { log, warn, error } = createLogger(uiEnabled);
+
+	try {
+		const result = execSync(
+			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,
+			{ encoding: "utf-8" },
+		);
+
+		const userCount = parseInt(result.trim(), 10);
+		const success = userCount > 0;
+
+		if (success) {
+			log(`   ✅ Verified: ${userCount} user(s) seeded`);
+		} else {
+			warn(
+				"   ⚠️ No users found after seeding (may be normal for some configs)",
+			);
+		}
+
+		return { success, userCount };
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		error(`   ❌ Seed verification failed: ${errorMessage}`);
+		return { success: false, userCount: 0 };
+	}
+}
+
+// ============================================================================
 // Database Status
 // ============================================================================
 
@@ -461,7 +622,10 @@ export async function syncFeatureMigrations(
 *
 * @returns true if database appears to be seeded
  */
-export async function isDatabaseSeeded(): Promise<boolean> {
+export async function isDatabaseSeeded(
+	uiEnabled: boolean = false,
+): Promise<boolean> {
+	const { log, warn } = createLogger(uiEnabled);
 	const dbUrl = process.env.SUPABASE_SANDBOX_DB_URL;
 	if (!dbUrl) {
 		return false;
@@ -474,8 +638,14 @@ export async function isDatabaseSeeded(): Promise<boolean> {
 			{ encoding: "utf-8" },
 		);
 		const count = parseInt(result.trim(), 10);
+		if (count > 0) {
+			log(`   ℹ️ Database already seeded (${count} user(s) found)`);
+		}
 		return count > 0;
-	} catch {
+	} catch (err) {
+		// Verbose error logging instead of silent catch
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		warn(`   ⚠️ Could not check if database is seeded: ${errorMessage}`);
 		return false;
 	}
 }

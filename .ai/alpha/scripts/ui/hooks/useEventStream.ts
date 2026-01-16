@@ -126,6 +126,14 @@ export function useEventStream(
 				updateStatus("connected");
 				reconnectAttemptsRef.current = 0;
 
+				// Send UI ready signal to event server
+				// This tells the orchestrator that UI is connected and ready to receive events
+				try {
+					ws.send(JSON.stringify({ type: "ui_ready" }));
+				} catch (sendError) {
+					console.error("Failed to send ui_ready signal:", sendError);
+				}
+
 				// Start ping interval to keep connection alive
 				if (pingIntervalRef.current) {
 					clearInterval(pingIntervalRef.current);
@@ -160,6 +168,15 @@ export function useEventStream(
 							if (message.data && !Array.isArray(message.data)) {
 								addEvent(message.data);
 							}
+							break;
+
+						case "ui_ready_confirmed":
+							// Server acknowledged our ui_ready signal
+							// Orchestrator can now proceed with database operations
+							break;
+
+						case "ui_status":
+							// Broadcast of UI status change (informational)
 							break;
 
 						case "ping":

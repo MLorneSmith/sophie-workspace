@@ -187,6 +187,50 @@ function stopEventServer(log: (...args: unknown[]) => void): void {
 	}
 }
 
+/**
+ * Wait for UI to be ready to receive events.
+ *
+ * Polls the event server's /api/ui-status endpoint to check if UI has
+ * connected and sent its ready signal. This prevents events from being
+ * emitted before the UI can receive them.
+ *
+ * @param maxWait - Maximum time to wait in ms (default: 30000)
+ * @param pollInterval - How often to poll in ms (default: 500)
+ * @param log - Logger function
+ * @returns true if UI became ready, false if timeout
+ */
+async function waitForUIReady(
+	maxWait: number = 30000,
+	pollInterval: number = 500,
+	log: (...args: unknown[]) => void = console.log,
+): Promise<boolean> {
+	const startTime = Date.now();
+	const statusUrl = `http://localhost:${EVENT_SERVER_PORT}/api/ui-status`;
+
+	log("   ⏳ Waiting for UI to connect...");
+
+	while (Date.now() - startTime < maxWait) {
+		try {
+			const response = await fetch(statusUrl);
+			if (response.ok) {
+				const data = (await response.json()) as { ui_ready?: boolean };
+				if (data.ui_ready === true) {
+					log("   ✅ UI ready, proceeding with database operations");
+					return true;
+				}
+			}
+		} catch {
+			// Event server not ready yet, continue polling
+		}
+
+		await sleep(pollInterval);
+	}
+
+	// Timeout reached - proceed anyway (non-blocking)
+	log("   ⚠️ UI ready timeout, proceeding without confirmation");
+	return false;
+}
+
 // ============================================================================
 // Dry Run Output
 // ============================================================================
@@ -932,6 +976,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Main Orchestration Logic - wrapped in try-finally for guaranteed cleanup
 	// =========================================================================
 	try {
+		// Wait for UI to be ready before emitting database events
+		// This prevents timing race conditions where events are emitted before UI connects
+		if (options.ui && orchestratorUrl) {
+			await waitForUIReady(30000, 500, log);
+		}
+
 		// Check sandbox database capacity
 		if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
 			log("\n📊 Checking sandbox database...");
@@ -1016,7 +1066,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			!options.skipDbSeed &&
 			process.env.SUPABASE_SANDBOX_DB_URL
 		) {
-			const alreadySeeded = await isDatabaseSeeded();
+			const alreadySeeded = await isDatabaseSeeded(options.ui);
 			if (alreadySeeded) {
 				log("   ℹ️ Database already seeded, skipping seeding step");
 			} else {
