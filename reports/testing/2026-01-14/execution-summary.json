@@ -1,0 +1,29 @@
+{
+	"executionDate": "2026-01-14",
+	"lastUpdated": "2026-01-14T16:29:03.163Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 14,
+		"passed": 14,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Payload Seeding Perf",
+			"success": true,
+			"duration": "57s",
+			"tests": 14,
+			"passed": 14,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

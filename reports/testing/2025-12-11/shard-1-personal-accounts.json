@@ -1,0 +1,37 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Personal Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/account/account-simple.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-12-11T16:27:03.447Z",
+		"endTime": "2025-12-11T16:39:23.447Z",
+		"duration": "740s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 6,
+		"passed": 2,
+		"failed": 3,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 4,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 8740 bytes)...\n  3) [chromium] › tests/account/account.spec.ts:64:6 › Account Settings › user can update their password \n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      67 | \t\tconst request = account.updatePassword(password);\n      68 |\n    > 69 | \t\tconst response = page.waitForResponse((resp) => {\n         | \t\t                      ^\n      70 | \t\t\treturn resp.url().includes(\"auth/v1/user\");\n      71 | \t\t});\n      72 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:69:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      67 | \t\tconst request = account.updatePassword(password);\n      68 |\n    > 69 | \t\tconst response = page.waitForResponse((resp) => {\n         | \t\t                      ^\n      70 | \t\t\treturn resp.url().includes(\"auth/v1/user\");\n      71 | \t\t});\n      72 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:69:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  4) [chromium] › tests/account/account-simple.spec.ts:22:6 › Account Settings - Simple @account @integration › settings page loads successfully \n\n    TimeoutError: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"update-account-name-form\"]') to be visible\u001b[22m\n    \u001b[2m    3 × locator resolved to hidden <form class=\"flex flex-col space-y-4\" data-testid=\"update-account-name-form\">…</form>\u001b[22m\n    \u001b[2m    - waiting for\" http://localhost:3001/\" navigation to finish...\u001b[22m\n    \u001b[2m    - navigated to \"http://localhost:3001/\"\u001b[22m\n\n\n       at utils/wait-for-hydration.ts:82\n\n      80 |\n      81 | \t// Wait for the target element to be visible\n    > 82 | \tawait page.waitForSelector(selector, { state: \"visible\", timeout });\n         | \t           ^\n      83 |\n      84 | \t// Check for React hydration markers\n      85 | \t// React attaches event listeners and sets up state during hydration\n        at waitForHydration (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/wait-for-hydration.ts:82:13)\n        at navigateAndWaitForHydration (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/wait-for-hydration.ts:196:2)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account-simple.spec.ts:25:3\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-simple-Acc-b5905-ngs-page-loads-successfully-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-simple-Acc-b5905-ngs-page-loads-successfully-chromium/error-context.md\n\n  3 failed\n    [chromium] › tests/account/account-simple.spec.ts:66:6 › Account Settings - Simple @account @integration › user can update display name \n    [chromium] › tests/account/account.spec.ts:43:6 › Account Settings › user can update their profile name \n    [chromium] › tests/account/account.spec.ts:64:6 › Account Settings › user can update their password \n  1 flaky\n    [chromium] › tests/account/account-simple.spec.ts:22:6 › Account Settings - Simple @account @integration › settings page loads successfully \n  2 skipped\n  6 did not run\n  1 passed (11.3m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

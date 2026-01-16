@@ -5,7 +5,7 @@ import { LessonViewClient } from "./LessonViewClient";
 
 // Mock next/dynamic to render Confetti directly
 vi.mock("next/dynamic", () => ({
-	default: (importFn: () => Promise<{ default: React.ComponentType }>) => {
+	default: (_importFn: () => Promise<{ default: React.ComponentType }>) => {
 		// Return a simple component that marks confetti rendering
 		const MockConfetti = (props: {
 			numberOfPieces?: number;
@@ -70,7 +70,7 @@ vi.mock("@kit/ui/button", () => ({
 		asChild?: boolean;
 	}>) =>
 		asChild ? (
-			<>{children}</>
+			children
 		) : (
 			<button
 				onClick={onClick}

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./utils/base-test";
 
 // Simple healthcheck test to verify the API is up and the database responds
 

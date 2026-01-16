@@ -1,0 +1,39 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Payload Auth",
+		"files": ["tests/payload/payload-auth.spec.ts"],
+		"expectedTests": 9,
+		"shardCommand": "test:shard7"
+	},
+	"execution": {
+		"startTime": "2025-12-19T14:57:21.882Z",
+		"endTime": "2025-12-19T15:05:28.882Z",
+		"duration": "487s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 9,
+		"passed": 2,
+		"failed": 8,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/bash ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 27346 bytes)...\n://localhost:3021/admin/login\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3021/admin/login\", waiting until \"load\"\u001b[22m\n\n\n       at payload/pages/PayloadLoginPage.ts:37\n\n      35 |\n      36 | \tasync navigateToLogin() {\n    > 37 | \t\tawait this.page.goto(`${this.baseURL}/admin/login`);\n         | \t\t                ^\n      38 | \t\tawait this.waitForPageLoad();\n      39 | \t}\n      40 |\n        at PayloadLoginPage.navigateToLogin (/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/pages/PayloadLoginPage.ts:37:19)\n        at PayloadLoginPage.login (/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/pages/PayloadLoginPage.ts:42:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/payload-auth.spec.ts:201:15\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-auth-Paylo-67246-e-concurrent-login-attempts-payload-retry1/test-failed-2.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-auth-Paylo-67246-e-concurrent-login-attempts-payload-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/payload-payload-auth-Paylo-67246-e-concurrent-login-attempts-payload-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/payload-payload-auth-Paylo-67246-e-concurrent-login-attempts-payload-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  9) [payload] › tests/payload/payload-auth.spec.ts:43:6 › Payload CMS - Authentication & First User Creation › should create first user successfully \n\n    TimeoutError: page.waitForLoadState: Timeout 90000ms exceeded.\n\n       at payload/pages/PayloadBasePage.ts:32\n\n      30 |\n      31 | \tasync waitForPageLoad() {\n    > 32 | \t\tawait this.page.waitForLoadState(\"networkidle\");\n         | \t\t                ^\n      33 | \t\tawait this.loadingIndicator\n      34 | \t\t\t.waitFor({ state: \"hidden\", timeout: 30000 })\n      35 | \t\t\t.catch(() => {});\n        at PayloadLoginPage.waitForPageLoad (/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/pages/PayloadBasePage.ts:32:19)\n        at PayloadLoginPage.navigateToLogin (/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/pages/PayloadLoginPage.ts:38:14)\n        at PayloadLoginPage.isFirstUserSetupNeeded (/home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/pages/PayloadLoginPage.ts:110:3)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/payload/payload-auth.spec.ts:45:26\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/payload-payload-auth-Paylo-92b74-ate-first-user-successfully-payload/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/payload-payload-auth-Paylo-92b74-ate-first-user-successfully-payload/error-context.md\n\n  8 failed\n    [payload] › tests/payload/payload-auth.spec.ts:30:6 › Payload CMS - Authentication & First User Creation › should be able to access the login page without errors \n    [payload] › tests/payload/payload-auth.spec.ts:70:6 › Payload CMS - Authentication & First User Creation › should handle pre-seeded admin user correctly \n    [payload] › tests/payload/payload-auth.spec.ts:92:6 › Payload CMS - Authentication & First User Creation › should handle database connection errors gracefully \n    [payload] › tests/payload/payload-auth.spec.ts:121:6 › Payload CMS - Authentication & First User Creation › should login with existing user \n    [payload] › tests/payload/payload-auth.spec.ts:143:6 › Payload CMS - Authentication & First User Creation › should handle invalid credentials \n    [payload] › tests/payload/payload-auth.spec.ts:151:6 › Payload CMS - Authentication & First User Creation › should logout successfully \n    [payload] › tests/payload/payload-auth.spec.ts:169:6 › Payload CMS - Authentication & First User Creation › should maintain session across page refreshes \n    [payload] › tests/payload/payload-auth.spec.ts:188:6 › Payload CMS - Authentication & First User Creation › should handle concurrent login attempts \n  1 flaky\n    [payload] › tests/payload/payload-auth.spec.ts:43:6 › Payload CMS - Authentication & First User Creation › should create first user successfully \n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard7: `PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-auth.spec.ts --project=payload -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

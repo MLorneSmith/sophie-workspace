@@ -8,6 +8,38 @@ input=$(cat)
 # Extract model display name and convert to lowercase
 model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
+# ============================================================================
+# Context Window Usage
+# ============================================================================
+
+context_status=""
+if [ -n "$input" ]; then
+    # Single jq call for efficiency - extract context metrics
+    context_data=$(echo "$input" | jq -r '
+        (.context_window.context_window_size // 200000) as $size |
+        (.context_window.current_usage.input_tokens // 0) as $input |
+        (.context_window.current_usage.cache_creation_input_tokens // 0) as $cache_create |
+        (.context_window.current_usage.cache_read_input_tokens // 0) as $cache_read |
+        (($input + $cache_create + $cache_read) * 100 / $size) as $percent |
+        "\($percent | floor)"
+    ' 2>/dev/null)
+
+    if [ -n "$context_data" ] && [ "$context_data" != "null" ] && [[ "$context_data" =~ ^[0-9]+$ ]]; then
+        percent="$context_data"
+
+        # Color based on usage thresholds
+        if [ "$percent" -lt 50 ]; then
+            context_status="🟢 ctx:${percent}%"
+        elif [ "$percent" -lt 75 ]; then
+            context_status="🟡 ctx:${percent}%"
+        elif [ "$percent" -lt 90 ]; then
+            context_status="🟠 ctx:${percent}%"
+        else
+            context_status="🔴 ctx:${percent}%"
+        fi
+    fi
+fi
+
 # Status indicators using symbols
 # 🟢 = Success, fresh (< 4h for dev tools, varies for CI)
 # 🟡 = Success, but old OR running/pending
@@ -445,6 +477,9 @@ fi
 # ============================================================================
 
 output="$model | ⎇ $branch"
+
+# Add context usage (prominent position after branch)
+[ -n "$context_status" ] && output="$output | $context_status"
 
 # Add status indicators in order
 [ -n "$build_status" ] && output="$output | $build_status"

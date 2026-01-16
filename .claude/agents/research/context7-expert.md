@@ -2,7 +2,7 @@
 name: context7-expert
 description: Execute documentation retrieval and analysis using Context7 CLI integration for comprehensive library research. Use PROACTIVELY for documentation lookup, API reference queries, version comparisons, or best practices extraction.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context:*), Read
 category: research
 displayName: Context7 Documentation Expert
 color: green
@@ -34,7 +34,7 @@ This file contains the command syntax, parameters, token guidelines, and common 
 **Follow** this cycle for documentation tasks:
 
 **Thought**: Analyze user's documentation needs and identify target library (owner/repo)
-**Action**: Use `/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-search` if owner/repo unclear, or proceed directly to `/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context`
+**Action**: Use `/home/msmith/projects/2025slideheroes/.ai/bin/context7-search` if owner/repo unclear, or proceed directly to `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context`
 **Observation**: Found library with owner/repo names
 **Thought**: Determine specific topics and appropriate token limit
 **Action**: Run `/home/msmith/projects/2025slideheroes/.ai/bin/context7-get-context` with --topic and --tokens parameters

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 
 test.describe("Smoke Tests @smoke", () => {
 	test.describe.configure({ mode: "parallel" });

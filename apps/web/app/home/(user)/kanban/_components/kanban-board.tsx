@@ -1,13 +1,15 @@
 "use client";
 
 import {
-	closestCenter,
+	type CollisionDetection,
 	DndContext,
 	type DragEndEvent,
 	DragOverlay,
 	type DragStartEvent,
 	KeyboardSensor,
 	PointerSensor,
+	pointerWithin,
+	rectIntersection,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -34,7 +36,7 @@ import {
 	_useUpdateTaskStatus,
 	useTasks,
 } from "../_lib/hooks/use-tasks";
-import type { Task, TaskStatus } from "../_lib/schema/task.schema";
+import type { TaskStatus } from "../_lib/schema/task.schema";
 import { Column } from "./column";
 import { TaskCard } from "./task-card";
 
@@ -55,6 +57,41 @@ const COLUMNS = [
 	{ id: "doing", title: "In Progress" },
 	{ id: "done", title: "Done" },
 ] as const;
+
+const COLUMN_IDS = COLUMNS.map((col) => col.id) as readonly TaskStatus[];
+
+// Custom collision detection that prioritizes columns over cards
+// This ensures drops register on the target column, not cards from the source column
+const columnPriorityCollision: CollisionDetection = (args) => {
+	// First, get all collisions using pointerWithin (most accurate for determining "where am I dropping")
+	const pointerCollisions = pointerWithin(args);
+
+	// Check if any collision is a column - if so, prioritize it
+	const columnCollision = pointerCollisions.find((collision) => {
+		const data = collision.data?.droppableContainer?.data?.current;
+		return data?.type === "column";
+	});
+
+	if (columnCollision) {
+		return [columnCollision];
+	}
+
+	// Fall back to rectIntersection for card-to-card interactions
+	const rectCollisions = rectIntersection(args);
+
+	// Again prioritize columns if found
+	const rectColumnCollision = rectCollisions.find((collision) => {
+		const data = collision.data?.droppableContainer?.data?.current;
+		return data?.type === "column";
+	});
+
+	if (rectColumnCollision) {
+		return [rectColumnCollision];
+	}
+
+	// Return whatever we found (cards for reordering within column)
+	return pointerCollisions.length > 0 ? pointerCollisions : rectCollisions;
+};
 
 export function KanbanBoard() {
 	const { data: tasks, isLoading, isError, refetch } = useTasks();
@@ -85,25 +122,50 @@ export function KanbanBoard() {
 		async (event: DragEndEvent) => {
 			const { active, over } = event;
 
-			if (!over || !tasks) return;
+			if (!over || !tasks) {
+				setActiveId(null);
+				return;
+			}
 
-			const activeTask = tasks.find((t) => t.id === active.id);
-			const overId = over.id as Task["status"];
+			const activeTaskItem = tasks.find((t) => t.id === active.id);
 
-			// If dragging to a column
-			if (COLUMNS.some((col) => col.id === overId)) {
-				if (activeTask && activeTask.status !== overId) {
-					setUpdatingTaskId(activeTask.id);
-					try {
-						await updateStatus.mutateAsync({
-							id: activeTask.id,
-							status: overId as TaskStatus,
-						});
-					} catch (_error) {
-						logger.error("Failed to update task status:", _error);
-					} finally {
-						setUpdatingTaskId(null);
-					}
+			// Use dnd-kit's data property pattern to identify target container
+			// This handles both direct column drops and drops onto cards
+			let targetStatus: TaskStatus | null = null;
+			const overData = over.data.current as
+				| { type: "column" }
+				| { type: "card"; containerId: TaskStatus }
+				| undefined;
+
+			if (overData?.type === "column") {
+				// Dropped on a column directly
+				targetStatus = over.id as TaskStatus;
+			} else if (overData?.type === "card") {
+				// Dropped on a card - use the card's parent container
+				targetStatus = overData.containerId;
+			}
+
+			// Fallback: check if over.id is a valid column ID (for cases where metadata is undefined)
+			if (!targetStatus && COLUMN_IDS.includes(over.id as TaskStatus)) {
+				targetStatus = over.id as TaskStatus;
+			}
+
+			// Update status if we have a valid target and it's different from current
+			if (
+				targetStatus &&
+				activeTaskItem &&
+				activeTaskItem.status !== targetStatus
+			) {
+				setUpdatingTaskId(activeTaskItem.id);
+				try {
+					await updateStatus.mutateAsync({
+						id: activeTaskItem.id,
+						status: targetStatus,
+					});
+				} catch (_error) {
+					logger.error("Failed to update task status:", _error);
+				} finally {
+					setUpdatingTaskId(null);
 				}
 			}
 
@@ -184,7 +246,7 @@ export function KanbanBoard() {
 
 			<DndContext
 				sensors={sensors}
-				collisionDetection={closestCenter}
+				collisionDetection={columnPriorityCollision}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
 			>

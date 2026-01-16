@@ -1,0 +1,30 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "User Billing",
+		"files": ["tests/user-billing/user-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard9"
+	},
+	"execution": {
+		"startTime": "2025-12-11T16:30:31.590Z",
+		"endTime": "2025-12-11T16:31:31.590Z",
+		"duration": "60s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 1,
+		"passed": 0,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 5,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 4512 bytes)...\nm failed\n\n    Locator: locator('h3:has-text(\"Your Plan\")').or(locator('[data-test-plan]').first()).first()\n    Expected: visible\n    Timeout: 15000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n    \u001b[2m  - waiting for locator('h3:has-text(\"Your Plan\")').or(locator('[data-test-plan]').first()).first()\u001b[22m\n\n\n       at utils/billing.po.ts:90\n\n      88 | \t\tawait expect(\n      89 | \t\t\tsubscriptionIndicator.or(planSelectionIndicator).first(),\n    > 90 | \t\t).toBeVisible({\n         | \t\t  ^\n      91 | \t\t\ttimeout: 15000,\n      92 | \t\t});\n      93 | \t}\n        at BillingPageObject.waitForBillingPageReady (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/billing.po.ts:90:5)\n        at BillingPageObject.hasActiveSubscription (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/billing.po.ts:101:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:32:52\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.goto: net::ERR_ABORTED at http://localhost:3001/home/billing\n    Call log:\n    \u001b[2m  - navigating to \"http://localhost:3001/home/billing\", waiting until \"networkidle\"\u001b[22m\n\n\n      22 | \t\t// Now navigate to billing\n      23 | \t\tconsole.log(\"Navigating to /home/billing...\");\n    > 24 | \t\tawait page.goto(\"/home/billing\", {\n         | \t\t           ^\n      25 | \t\t\twaitUntil: \"networkidle\", // Wait for full page load including API calls\n      26 | \t\t\ttimeout: 30000,\n      27 | \t\t});\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:24:14\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('h3:has-text(\"Your Plan\")').or(locator('[data-test-plan]').first()).first()\n    Expected: visible\n    Timeout: 15000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n    \u001b[2m  - waiting for locator('h3:has-text(\"Your Plan\")').or(locator('[data-test-plan]').first()).first()\u001b[22m\n\n\n       at utils/billing.po.ts:90\n\n      88 | \t\tawait expect(\n      89 | \t\t\tsubscriptionIndicator.or(planSelectionIndicator).first(),\n    > 90 | \t\t).toBeVisible({\n         | \t\t  ^\n      91 | \t\t\ttimeout: 15000,\n      92 | \t\t});\n      93 | \t}\n        at BillingPageObject.waitForBillingPageReady (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/billing.po.ts:90:5)\n        at BillingPageObject.hasActiveSubscription (/home/msmith/projects/2025slideheroes/apps/e2e/tests/utils/billing.po.ts:101:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/user-billing/user-billing.spec.ts:32:52\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry2/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/user-billing-user-billing--9159e-ser-can-subscribe-to-a-plan-chromium-retry2/error-context.md\n\n  1 failed\n    [chromium] › tests/user-billing/user-billing.spec.ts:11:6 › User Billing @billing @integration › user can subscribe to a plan \n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard9: `playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0`\nExit status 1\n"
+}

@@ -12,8 +12,7 @@
 	},
 	"scripts": {
 		"turbo": "turbo",
-		"preinstall": "pnpm run --filter scripts requirements",
-		"postinstall": "manypkg fix",
+		"postinstall": "pnpm run --filter scripts requirements && manypkg fix",
 		"prebuild": "[ -f ./fix-build-permissions.sh ] && ./fix-build-permissions.sh || true",
 		"build": "./.claude/statusline/build-wrapper.sh turbo build --cache-dir=.turbo",
 		"clean": "git clean -xdf node_modules dist .next",
@@ -73,7 +72,7 @@
 			"bash -c 'package_dir=$(dirname \"$0\" | cut -d/ -f1-2); if [ -f \"$package_dir/package.json\" ] && grep -q \"\\\"lint\\\"\" \"$package_dir/package.json\"; then cd \"$package_dir\" && pnpm lint; fi'"
 		],
 		"*.{js,jsx,ts,tsx,json,css}": [
-			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
+			"bash -c 'if [[ \"$0\" != */apps/payload/* ]] && [[ \"$0\" != */packages/* ]] && [[ \"$0\" != */.ai/alpha/progress/* ]] && [[ \"$0\" != */.initiative-progress.json ]] && [[ \"$0\" != */spec-manifest.json ]]; then biome format --write \"$0\" && biome lint --write \"$0\"; fi'"
 		],
 		"**/*.{md,mdx}": [
 			"bash -c 'if ! echo \"$0\" | grep -qE \"(\\.claude|\\.mcp-servers|\\.roo|\\.ai)/\"; then markdownlint-cli2 --fix \"$0\"; fi'"
@@ -118,6 +117,9 @@
 			"@lexical/utils": "0.35.0",
 			"@lexical/yjs": "0.35.0",
 			"nodemailer": "^7.0.11"
+		},
+		"patchedDependencies": {
+			"payload@3.70.0": "patches/payload@3.70.0.patch"
 		}
 	},
 	"devDependencies": {
@@ -125,6 +127,7 @@
 		"@biomejs/biome": "2.3.8",
 		"@commitlint/cli": "^20.2.0",
 		"@commitlint/config-conventional": "^20.2.0",
+		"@e2b/code-interpreter": "^2.3.1",
 		"@manypkg/cli": "^0.25.1",
 		"@playwright/test": "^1.57.0",
 		"@turbo/gen": "^2.6.3",
@@ -136,10 +139,13 @@
 		"fuse.js": "^7.1.0",
 		"graph-data-structure": "^4.5.0",
 		"husky": "^9.1.7",
+		"ink": "^6.6.0",
+		"ink-spinner": "^5.0.0",
 		"js-yaml": "^4.1.1",
 		"knip": "^5.72.0",
 		"lint-staged": "^16.2.7",
 		"markdownlint-cli2": "^0.20.0",
+		"patch-package": "^8.0.0",
 		"react": "19.2.1",
 		"react-dom": "19.2.1",
 		"tailwind-merge": "^3.4.0",

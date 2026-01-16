@@ -1,0 +1,347 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1371,
+		"feature_name": "Course Progress Card",
+		"feature_slug": "course-progress-card",
+		"initiative_id": 1364,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00.000Z",
+		"complexity": {
+			"score": 43.75,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": "crud-server-action"
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create course progress loader function",
+			"action": {
+				"verb": "Create",
+				"target": "load-course-progress.ts loader with Supabase query"
+			},
+			"purpose": "Fetch user's course progress data from database",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/supabase/migrations/20250319104726_web_course_system.sql",
+					"apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"cache from react",
+					"course_progress table",
+					"lesson_progress table"
+				],
+				"constraints": [
+					"Must use 'server-only' import",
+					"Must use cache() wrapper for request deduplication",
+					"Must query completion_percentage from course_progress",
+					"Must count completed lessons from lesson_progress where completed_at IS NOT NULL",
+					"RLS automatically enforces user_id = auth.uid()",
+					"Return null if no progress exists (for empty state)"
+				]
+			},
+			"input_state": "Database tables exist with RLS policies",
+			"output_state": "loadCourseProgress function exists at apps/web/app/home/(user)/_lib/server/load-course-progress.ts, returns { progressPercentage: number, completedLessons: number, totalLessons: number } | null",
+			"acceptance_criterion": "Function returns valid progress data or null when called with valid user ID",
+			"verification_command": "pnpm typecheck && grep -q 'loadCourseProgress' apps/web/app/home/(user)/_lib/server/load-course-progress.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/load-course-progress.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create CourseProgressCard component skeleton",
+			"action": {
+				"verb": "Create",
+				"target": "course-progress-card.tsx component file"
+			},
+			"purpose": "Establish component structure with TypeScript interface and basic layout",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/course/_components/RadialProgress.tsx",
+					"packages/ui/src/makerkit/empty-state.tsx"
+				],
+				"dependencies": [
+					"Card, CardContent, CardHeader, CardTitle from @kit/ui/card",
+					"RadialProgress from ../course/_components/RadialProgress",
+					"EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/empty-state"
+				],
+				"constraints": [
+					"Server Component (no 'use client' directive)",
+					"Accept progressData prop with type { progressPercentage: number, completedLessons: number, totalLessons: number } | null",
+					"Card wrapper with CardHeader and CardContent",
+					"Show empty state when progressData is null",
+					"RadialProgress uses size=120, strokeWidth=8"
+				]
+			},
+			"input_state": "Loader function exists, RadialProgress and EmptyState components available",
+			"output_state": "Component file exists with TypeScript interface, renders Card with conditional empty state or RadialProgress placeholder",
+			"acceptance_criterion": "Component renders without TypeScript errors and accepts progressData prop",
+			"verification_command": "pnpm typecheck && grep -q 'CourseProgressCard' apps/web/app/home/(user)/_components/course-progress-card.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/course-progress-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T3", "T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Add RadialProgress chart to card",
+			"action": {
+				"verb": "Add",
+				"target": "RadialProgress integration with progress data"
+			},
+			"purpose": "Display completion percentage as radial chart",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/course-progress-card.tsx",
+					"apps/web/app/home/(user)/course/_components/RadialProgress.tsx"
+				],
+				"dependencies": ["RadialProgress component"],
+				"constraints": [
+					"Pass progressPercentage to RadialProgress value prop",
+					"Use size=120 and strokeWidth=8",
+					"Include lesson count text below chart: 'X of Y lessons complete'",
+					"Only render when progressData is not null"
+				]
+			},
+			"input_state": "Component skeleton exists with progressData prop",
+			"output_state": "RadialProgress renders with correct percentage, lesson count displays below",
+			"acceptance_criterion": "RadialProgress displays with value from progressData.progressPercentage",
+			"verification_command": "grep -q 'RadialProgress' apps/web/app/home/(user)/_components/course-progress-card.tsx && grep -q 'size={120}' apps/web/app/home/(user)/_components/course-progress-card.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/course-progress-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1", "T2"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Add empty state with Start Course CTA",
+			"action": {
+				"verb": "Add",
+				"target": "EmptyState component when no progress exists"
+			},
+			"purpose": "Guide users who haven't started the course",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/course-progress-card.tsx",
+					"packages/ui/src/makerkit/empty-state.tsx"
+				],
+				"dependencies": [
+					"EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/empty-state",
+					"Link from next/link"
+				],
+				"constraints": [
+					"Render when progressData is null",
+					"EmptyStateHeading: 'Start Your Learning Journey'",
+					"EmptyStateText: 'Begin the course to track your progress'",
+					"EmptyStateButton links to /home/course",
+					"Button text: 'Start Course'"
+				]
+			},
+			"input_state": "Component skeleton exists with conditional rendering logic",
+			"output_state": "EmptyState displays when progressData is null with working link to /home/course",
+			"acceptance_criterion": "EmptyState renders with correct text and link when progressData is null",
+			"verification_command": "grep -q 'EmptyState' apps/web/app/home/(user)/_components/course-progress-card.tsx && grep -q '/home/course' apps/web/app/home/(user)/_components/course-progress-card.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/course-progress-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Wire component to dashboard page",
+			"action": {
+				"verb": "Wire",
+				"target": "CourseProgressCard to user dashboard page"
+			},
+			"purpose": "Display course progress card on user home page",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_components/course-progress-card.tsx",
+					"apps/web/app/home/(user)/_lib/server/load-course-progress.ts"
+				],
+				"dependencies": [
+					"loadCourseProgress from ./_lib/server/load-course-progress",
+					"CourseProgressCard from ./_components/course-progress-card",
+					"getSupabaseServerClient from @kit/supabase/server-client"
+				],
+				"constraints": [
+					"Make page async function",
+					"Call loadCourseProgress in page component",
+					"Pass data to CourseProgressCard as prop",
+					"Add card inside PageBody wrapper",
+					"Get user ID from Supabase auth"
+				]
+			},
+			"input_state": "Component and loader exist, dashboard page has PageBody wrapper",
+			"output_state": "Dashboard page displays CourseProgressCard with live data from database",
+			"acceptance_criterion": "Dashboard page renders CourseProgressCard without errors",
+			"verification_command": "pnpm typecheck && grep -q 'CourseProgressCard' apps/web/app/home/(user)/page.tsx && grep -q 'loadCourseProgress' apps/web/app/home/(user)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3", "T4"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Data Layer",
+				"task_ids": ["T1"],
+				"depends_on_groups": [],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Component Layer",
+				"task_ids": ["T2", "T3", "T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 6,
+				"parallel_hours": 2
+			},
+			{
+				"id": 3,
+				"name": "Integration",
+				"task_ids": ["T5"],
+				"depends_on_groups": [2],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T3", "T5"],
+			"total_hours": 8
+		},
+		"duration": {
+			"sequential": 10,
+			"parallel": 6,
+			"time_saved_percent": 40
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 95,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 95,
+			"testability": 85
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1380
+	}
+}

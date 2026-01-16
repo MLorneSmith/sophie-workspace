@@ -1,0 +1,42 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-12-11T16:39:23.491Z",
+		"endTime": "2025-12-11T16:44:11.491Z",
+		"duration": "288s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 11,
+		"passed": 2,
+		"failed": 5,
+		"skipped": 4,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 17141 bytes)...\nt-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  5) [chromium] › tests/invitations/invitations.spec.ts:98:6 › Invitations › user cannot invite a member of the team again \n\n    Error: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"team-selector\"]') to be visible\u001b[22m\n    \u001b[2m    - waiting for\" http://localhost:3001/\" navigation to finish...\u001b[22m\n    \u001b[2m    - navigated to \"http://localhost:3001/\"\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:44:34\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"team-selector\"]') to be visible\u001b[22m\n    \u001b[2m    - waiting for\" http://localhost:3001/\" navigation to finish...\u001b[22m\n    \u001b[2m    - navigated to \"http://localhost:3001/\"\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:44:34\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  5 failed\n    [chromium] › tests/admin/admin.spec.ts:59:7 › Admin › Admin Dashboard › displays all stat cards \n    [chromium] › tests/admin/admin.spec.ts:123:7 › Admin › Personal Account Management › displays personal account details \n    [chromium] › tests/invitations/invitations.spec.ts:50:6 › Invitations › users can delete invites \n    [chromium] › tests/invitations/invitations.spec.ts:72:6 › Invitations › users can update invites \n    [chromium] › tests/invitations/invitations.spec.ts:98:6 › Invitations › user cannot invite a member of the team again \n  4 skipped\n  2 did not run\n  2 passed (4.4m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

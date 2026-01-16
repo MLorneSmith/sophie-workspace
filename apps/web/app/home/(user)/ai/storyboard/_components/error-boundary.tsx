@@ -1,11 +1,20 @@
 "use client";
 
-import { getLogger, type Logger } from "@kit/shared/logger";
 import { Component, type ReactNode } from "react";
+
+// Client-safe logger wrapper
+const logger = {
+	error: (...args: unknown[]) => {
+		if (process.env.NODE_ENV === "development") {
+			// biome-ignore lint/suspicious/noConsole: Development logging is allowed
+			console.error(...args);
+		}
+	},
+};
 
 interface Props {
 	children: ReactNode;
-	fallback: (error: Error | null) => ReactNode;
+	fallback: ReactNode;
 }
 
 interface State {
@@ -23,15 +32,13 @@ export class ErrorBoundary extends Component<Props, State> {
 		return { hasError: true, error };
 	}
 
-	componentDidCatch(error: Error) {
-		getLogger().then((logger: Logger) => {
-			logger.error(error, "Error caught by boundary");
-		});
+	componentDidCatch(_error: Error) {
+		logger.error("Error caught by boundary:", _error);
 	}
 
 	render() {
 		if (this.state.hasError) {
-			return this.props.fallback(this.state.error);
+			return this.props.fallback;
 		}
 
 		return this.props.children;

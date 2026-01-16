@@ -159,7 +159,7 @@ describe("Task Schema Validation", () => {
 						is_completed: false,
 					},
 				],
-				image_url: "https://example.com/image.jpg",
+				phase: "The Start",
 			};
 
 			const result = CreateTaskSchema.parse(task);
@@ -212,151 +212,6 @@ describe("Task Schema Validation", () => {
 			expect(
 				CreateTaskSchema.parse(taskWithoutDescription).description,
 			).toBeUndefined();
-		});
-	});
-
-	describe("File Validation", () => {
-		const createMockFile = (size: number): File => {
-			return {
-				size,
-				name: "test.jpg",
-				type: "image/jpeg",
-				lastModified: Date.now(),
-			} as File;
-		};
-
-		it("should accept file under size limit", () => {
-			const task = {
-				title: "Task with image",
-				image: createMockFile(500000), // 500KB
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-		});
-
-		it("should accept file at exact size limit", () => {
-			const task = {
-				title: "Task with max size image",
-				image: createMockFile(1024 * 1024), // Exactly 1MB
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-		});
-
-		it("should reject file over size limit", () => {
-			const task = {
-				title: "Task with oversized image",
-				image: createMockFile(1024 * 1024 + 1), // 1MB + 1 byte
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).toThrow(
-				"Image must be less than 1MB",
-			);
-		});
-
-		it("should accept task without image", () => {
-			const task = {
-				title: "Task without image",
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-		});
-
-		it("should reject file significantly over limit", () => {
-			const task = {
-				title: "Task with huge image",
-				image: createMockFile(5 * 1024 * 1024), // 5MB
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).toThrow(
-				"Image must be less than 1MB",
-			);
-		});
-	});
-
-	describe("URL Validation", () => {
-		it("should accept valid full URLs", () => {
-			const validUrls = [
-				"https://example.com/image.jpg",
-				"http://test.com/photo.png",
-				"https://cdn.example.com/assets/image.webp",
-			];
-
-			for (const url of validUrls) {
-				const task = {
-					title: "Task with image URL",
-					image_url: url,
-				};
-				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			}
-		});
-
-		it("should accept valid relative paths", () => {
-			const validPaths = [
-				"/images/test.jpg",
-				"/assets/photos/image.png",
-				"/static/placeholder.svg",
-			];
-
-			for (const path of validPaths) {
-				const task = {
-					title: "Task with image path",
-					image_url: path,
-				};
-				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			}
-		});
-
-		it("should reject invalid URL formats", () => {
-			const invalidUrls = [
-				"invalid-url", // Not URL and doesn't start with /
-				"not-a-url", // Not URL and doesn't start with /
-				"relative-path", // Not URL and doesn't start with /
-				"../relative", // Not URL and doesn't start with /
-			];
-
-			for (const url of invalidUrls) {
-				const task = {
-					title: "Task with invalid URL",
-					image_url: url,
-				};
-				expect(() => CreateTaskSchema.parse(task)).toThrow();
-			}
-		});
-
-		it("should accept FTP URLs as valid URLs", () => {
-			// The z.string().url() validation accepts any valid URL format
-			const validUrls = [
-				"ftp://example.com",
-				"file://localhost/path",
-				"data:image/png;base64,iVBORw0K...",
-			];
-
-			for (const url of validUrls) {
-				const task = {
-					title: "Task with URL",
-					image_url: url,
-				};
-				expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-			}
-		});
-
-		it("should accept null image_url", () => {
-			const task = {
-				title: "Task with null image URL",
-				image_url: null,
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).not.toThrow();
-		});
-
-		it("should reject empty string image_url", () => {
-			const task = {
-				title: "Task with empty image URL",
-				image_url: "",
-			};
-
-			expect(() => CreateTaskSchema.parse(task)).toThrow();
 		});
 	});
 
@@ -535,36 +390,11 @@ describe("Task Schema Validation", () => {
 			}
 		});
 
-		it("should handle boundary file size conditions", () => {
-			const exactLimit = 1024 * 1024; // 1MB exactly
-			const justUnder = exactLimit - 1;
-			const justOver = exactLimit + 1;
-
-			const taskAtLimit = {
-				title: "Task at limit",
-				image: { size: exactLimit } as File,
-			};
-
-			const taskUnderLimit = {
-				title: "Task under limit",
-				image: { size: justUnder } as File,
-			};
-
-			const taskOverLimit = {
-				title: "Task over limit",
-				image: { size: justOver } as File,
-			};
-
-			expect(() => CreateTaskSchema.parse(taskAtLimit)).not.toThrow();
-			expect(() => CreateTaskSchema.parse(taskUnderLimit)).not.toThrow();
-			expect(() => CreateTaskSchema.parse(taskOverLimit)).toThrow();
-		});
-
 		it("should handle null and undefined values appropriately", () => {
 			const taskWithNulls = {
 				title: "Task with nulls",
 				description: undefined, // Optional field
-				image_url: null, // Nullable field
+				phase: undefined, // Optional field
 				subtasks: undefined, // Optional array
 			};
 

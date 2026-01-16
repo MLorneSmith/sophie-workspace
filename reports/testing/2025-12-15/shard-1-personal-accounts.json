@@ -1,0 +1,36 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Personal Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/account/account-simple.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-12-15T17:49:31.146Z",
+		"endTime": "2025-12-15T17:54:56.146Z",
+		"duration": "325s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 7,
+		"passed": 3,
+		"failed": 2,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 2,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 4094 bytes)...\n───────────────────────────\n    test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 30000ms exceeded.\u001b[39m\n\n    Error: expect.toHaveValue: Target page, context or browser has been closed\n\n      133 | \t\t\t} catch {\n      134 | \t\t\t\t// If no success indicator, just verify the input still has our value\n    > 135 | \t\t\t\tawait expect(displayNameInput).toHaveValue(newName);\n          | \t\t\t\t                               ^\n      136 | \t\t\t}\n      137 | \t\t}\n      138 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account-simple.spec.ts:135:36\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-simple-Acc-d3a51-ser-can-update-display-name-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2) [chromium] › tests/account/account.spec.ts:72:6 › Account Settings › user can update their password \n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      75 |\n      76 | \t\t// Set up response listener BEFORE triggering the action\n    > 77 | \t\tconst responsePromise = page.waitForResponse((resp) => {\n         | \t\t                             ^\n      78 | \t\t\treturn (\n      79 | \t\t\t\tresp.url().includes(\"auth/v1/user\") && resp.request().method() === \"PUT\"\n      80 | \t\t\t);\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:77:32\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    \u001b[31mTest timeout of 120000ms exceeded.\u001b[39m\n\n    Error: page.waitForResponse: Test timeout of 120000ms exceeded.\n\n      75 |\n      76 | \t\t// Set up response listener BEFORE triggering the action\n    > 77 | \t\tconst responsePromise = page.waitForResponse((resp) => {\n         | \t\t                             ^\n      78 | \t\t\treturn (\n      79 | \t\t\t\tresp.url().includes(\"auth/v1/user\") && resp.request().method() === \"PUT\"\n      80 | \t\t\t);\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:77:32\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2 failed\n    [chromium] › tests/account/account-simple.spec.ts:66:6 › Account Settings - Simple @account @integration › user can update display name \n    [chromium] › tests/account/account.spec.ts:72:6 › Account Settings › user can update their password \n  2 skipped\n  6 did not run\n  3 passed (5.4m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

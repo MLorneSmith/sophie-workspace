@@ -112,24 +112,13 @@ You have full authority over quality checks and auto-fixes, with veto power on r
 
 ```javascript
 todos = [
-  {content: "Pre-check validation", status: "in_progress", activeForm: "Validating environment"},
-  {content: "TypeScript checking", status: "pending", activeForm: "Checking TypeScript"},
+  {content: "TypeScript checking", status: "in_progress", activeForm: "Checking TypeScript"},
   {content: "Lint and format checking", status: "pending", activeForm: "Running lint and format"},
   {content: "Apply fixes and verify", status: "pending", activeForm: "Applying fixes"}
 ]
 ```
 
-#### Step 2: Pre-Check Validation
-
-**Verify** environment and tools availability:
-
-- Confirm script exists at `.ai/ai_scripts/codecheck-direct.sh`
-- Check pnpm is available
-- Validate TypeScript and lint configurations present
-
-**Update** progress: Mark "Pre-check validation" as completed
-
-#### Step 3: Execute Quality Checks
+#### Step 2: Execute Quality Checks
 
 **Run** the comprehensive check script:
 
@@ -147,7 +136,7 @@ bash .ai/ai_scripts/codecheck-direct.sh
 
 **Update** progress: Mark phases as they complete
 
-#### Step 4: Analyze Failures (Conditional)
+#### Step 3: Analyze Failures (Conditional)
 
 **Branch** based on check results:
 
@@ -168,7 +157,7 @@ ELSE:
   → THEN **Complete** workflow
 ```
 
-#### Step 5: Apply Targeted Fixes
+#### Step 4: Apply Targeted Fixes
 
 **Execute** safe auto-fixes when applicable:
 
@@ -181,7 +170,7 @@ pnpm biome format --write .
 pnpm typecheck:raw --force
 ```
 
-#### Step 6: Agent Delegation (Optional - Complex Issues)
+#### Step 5: Agent Delegation (Optional - Complex Issues)
 
 **Delegate** to specialized agents for issues that can't be auto-fixed:
 
@@ -224,7 +213,7 @@ IF format_disagreement:
   → THEN **Verify** consistency
 ```
 
-#### Step 7: Generate Comprehensive Report
+#### Step 6: Generate Comprehensive Report
 
 **Compile** results and metrics:
 

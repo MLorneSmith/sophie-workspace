@@ -101,7 +101,7 @@ class E2ETestRunner {
 
 	/**
 	 * Set specific shards to run (filter out others)
-	 * @param {number[]} shardNumbers - Array of shard numbers to run (1-12)
+	 * @param {number[]} shardNumbers - Array of shard numbers to run (1-15)
 	 */
 	setShardFilter(shardNumbers) {
 		if (!shardNumbers || shardNumbers.length === 0) {
@@ -126,11 +126,11 @@ class E2ETestRunner {
 	}
 
 	/**
-	 * Check if billing tests are requested (shards 9, 10)
+	 * Check if billing tests are requested (shards 10, 11)
 	 * @returns {boolean} True if billing shards will run
 	 */
 	isBillingTestsRequested() {
-		const billingShards = [9, 10];
+		const billingShards = [10, 11];
 
 		// If no filter is set, all shards will run (including billing)
 		if (!this.shardFilter || this.shardFilter.length === 0) {
@@ -149,7 +149,7 @@ class E2ETestRunner {
 		const COMPOSE_FILE = "docker-compose.test.yml";
 		const ENV_FILE = "apps/web/.env.test";
 
-		log("🔧 Billing tests requested (shards: 9, 10)");
+		log("🔧 Billing tests requested (shards: 10, 11)");
 		log("🔧 Starting docker-compose with profiles: billing");
 
 		try {
@@ -477,67 +477,76 @@ class E2ETestRunner {
 			},
 			{
 				id: 6,
-				name: "Config & Health",
+				name: "Healthcheck",
 				shardCommand: "test:shard6",
-				files: [
-					"tests/test-configuration-verification.spec.ts",
-					"tests/healthcheck.spec.ts",
-				],
-				expectedTests: 12,
+				files: ["tests/healthcheck.spec.ts"],
+				expectedTests: 1,
 			},
 			{
 				id: 7,
-				name: "Payload CMS",
+				name: "Payload Auth",
 				shardCommand: "test:shard7",
-				files: [
-					"tests/payload/payload-auth.spec.ts",
-					"tests/payload/payload-collections.spec.ts",
-					"tests/payload/payload-database.spec.ts",
-				],
-				expectedTests: 42,
+				files: ["tests/payload/payload-auth.spec.ts"],
+				expectedTests: 9,
 			},
 			{
 				id: 8,
-				name: "Seeding Tests",
+				name: "Payload Collections",
 				shardCommand: "test:shard8",
-				files: [
-					// NOTE: Seeding tests only - Payload core tests run in Shard 7
-					// Duplicates removed to reduce test execution time by ~10 minutes
-					"tests/payload/seeding.spec.ts",
-					"tests/payload/seeding-performance.spec.ts",
-				],
-				expectedTests: 25, // Seeding tests only (was duplicating Shard 7's 42 tests)
+				files: ["tests/payload/payload-collections.spec.ts"],
+				expectedTests: 22,
 			},
 			{
 				id: 9,
-				name: "User Billing",
+				name: "Payload Database",
 				shardCommand: "test:shard9",
+				files: ["tests/payload/payload-database.spec.ts"],
+				expectedTests: 12,
+			},
+			{
+				id: 10,
+				name: "User Billing",
+				shardCommand: "test:shard10",
 				files: ["tests/user-billing/user-billing.spec.ts"],
 				expectedTests: null,
 			},
 			{
-				id: 10,
+				id: 11,
 				name: "Team Billing",
-				shardCommand: "test:shard10",
+				shardCommand: "test:shard11",
 				files: ["tests/team-billing/team-billing.spec.ts"],
 				expectedTests: null,
 			},
 			{
-				id: 11,
+				id: 12,
 				name: "Config Verification",
-				shardCommand: "test:shard11",
+				shardCommand: "test:shard12",
 				files: ["tests/test-configuration-verification.spec.ts"],
 				expectedTests: null,
 			},
 			{
-				id: 12,
+				id: 13,
 				name: "Team Accounts",
-				shardCommand: "test:shard12",
+				shardCommand: "test:shard13",
 				files: [
 					"tests/team-accounts/team-accounts.spec.ts",
 					"tests/team-accounts/team-invitation-mfa.spec.ts",
 				],
 				expectedTests: 8,
+			},
+			{
+				id: 14,
+				name: "Payload Seeding",
+				shardCommand: "test:shard14",
+				files: ["tests/payload/seeding.spec.ts"],
+				expectedTests: 12,
+			},
+			{
+				id: 15,
+				name: "Payload Seeding Perf",
+				shardCommand: "test:shard15",
+				files: ["tests/payload/seeding-performance.spec.ts"],
+				expectedTests: 14,
 			},
 		];
 

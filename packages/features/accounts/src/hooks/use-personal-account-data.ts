@@ -65,6 +65,7 @@ export function useRevalidatePersonalAccountDataQuery() {
 		(userId: string) =>
 			queryClient.invalidateQueries({
 				queryKey: ["account:data", userId],
+				refetchType: "all",
 			}),
 		[queryClient],
 	);

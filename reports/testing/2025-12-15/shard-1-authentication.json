@@ -1,0 +1,32 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Authentication",
+		"files": [
+			"tests/authentication/auth-simple.spec.ts",
+			"tests/authentication/auth.spec.ts",
+			"tests/authentication/password-reset.spec.ts"
+		],
+		"expectedTests": 21,
+		"shardCommand": "test:shard2"
+	},
+	"execution": {
+		"startTime": "2025-12-15T17:49:16.064Z",
+		"endTime": "2025-12-15T17:49:31.064Z",
+		"duration": "15s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 11,
+		"passed": 10,
+		"failed": 0,
+		"skipped": 1,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard2 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/authentication/auth-simple.spec.ts tests/authentication/auth.spec.ts tests/authentication/password-reset.spec.ts --config=playwright.auth.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0\n\n\nRunning 11 tests using 2 workers\n°··[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Waiting for DOM content loaded to ensure page is ready...\n[loginAsUser] 150ms safety timeout for React hydration...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Auth API response: 200\n[loginAsUser] Auth API responded with 200 (1115ms)\n[loginAsUser] ✅ Login complete (1274ms). Final URL: http://localhost:3001/home\n·[Sign-in Phase 1] Waiting for React hydration...\n[Sign-in Phase 1.5] Waiting for React Query client initialization...\n[Sign-in Phase 2] Waiting for form inputs to be interactive...\n[Sign-in Phase 3] Filling credentials for: invalid@example.com\n[Sign-in Phase 3] Email field filled successfully\n[Sign-in Phase 3] Password field filled successfully\n[Sign-in Phase 4] Waiting for form validation...\n[Sign-in Phase 5] Form ready. Submitting authentication request...\n[Sign-in Phase 5] Form submitted. Waiting for navigation...\n·[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Waiting for DOM content loaded to ensure page is ready...\n[loginAsUser] 150ms safety timeout for React hydration...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Auth API response: 200\n[loginAsUser] Auth API responded with 200 (684ms)\n[loginAsUser] ✅ Login complete (1295ms). Final URL: http://localhost:3001/home\n·····[loginAsUser] Starting login for test1@slideheroes.com, target: /home\n[loginAsUser] Waiting for DOM content loaded to ensure page is ready...\n[loginAsUser] 150ms safety timeout for React hydration...\n[loginAsUser] Form submitted, waiting for auth API...\n[loginAsUser] Auth API response: 200\n[loginAsUser] Auth API responded with 200 (600ms)\n[loginAsUser] ✅ Login complete (742ms). Final URL: http://localhost:3001/home\n·\n  1 skipped\n  10 passed (13.7s)\n"
+}

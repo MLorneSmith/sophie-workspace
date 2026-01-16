@@ -13,7 +13,6 @@ import {
 	TaskStatusEnum,
 	UpdateTaskStatusSchema,
 } from "../schema/task.schema";
-import { deleteTaskImageAction, uploadTaskImageAction } from "./image-actions";
 
 const logger = pino({
 	browser: {
@@ -31,13 +30,12 @@ const CreateTaskSchema = z.object({
 	description: z.string().optional(),
 	status: TaskStatusEnum,
 	priority: TaskPriorityEnum,
-	image: z.any().optional(),
+	phase: z.string().optional(),
 	subtasks: z.array(SubtaskSchema).optional(),
 });
 
 const UpdateTaskSchema = CreateTaskSchema.extend({
 	id: z.string().uuid(),
-	image_url: z.string().nullable().optional(),
 });
 
 const createTaskAction = enhanceAction(
@@ -50,25 +48,13 @@ const createTaskAction = enhanceAction(
 		logger.info({ ...ctx }, "Creating new task...");
 
 		const client = getSupabaseServerClient();
-		const { subtasks, image, ...taskData } = data;
+		const { subtasks, ...taskData } = data;
 
 		try {
-			// Upload image if provided
-			let imageUrl: string | undefined;
-			if (image) {
-				const { data: uploadResult, success } = await uploadTaskImageAction({
-					file: image,
-				});
-				if (success && uploadResult) {
-					imageUrl = uploadResult.url;
-				}
-			}
-
 			const { data: task, error: taskError } = await client
 				.from("tasks")
 				.insert({
 					...taskData,
-					image_url: imageUrl,
 					account_id: user.id,
 				})
 				.select()
@@ -113,41 +99,12 @@ const updateTaskAction = enhanceAction(
 		logger.info({ ...ctx }, "Updating task...");
 
 		const client = getSupabaseServerClient();
-		const { subtasks, image, ...taskData } = data;
+		const { subtasks, ...taskData } = data;
 
 		try {
-			// Handle image upload/deletion
-			let imageUrl = taskData.image_url;
-
-			// If new image is provided, upload it
-			if (image) {
-				const { data: uploadResult, success } = await uploadTaskImageAction({
-					file: image,
-				});
-				if (success && uploadResult) {
-					imageUrl = uploadResult.url;
-				}
-			}
-
-			// If image is being removed, delete the old one
-			if (imageUrl === null) {
-				const { data: existingTask } = await client
-					.from("tasks")
-					.select("image_url")
-					.eq("id", data.id)
-					.single();
-
-				if (existingTask?.image_url) {
-					await deleteTaskImageAction({ url: existingTask.image_url });
-				}
-			}
-
 			const { error: taskError } = await client
 				.from("tasks")
-				.update({
-					...taskData,
-					image_url: imageUrl,
-				})
+				.update(taskData)
 				.eq("id", data.id)
 				.eq("account_id", user.id);
 
@@ -234,14 +191,6 @@ const deleteTaskAction = enhanceAction(
 		const client = getSupabaseServerClient();
 
 		try {
-			// Get the task's image URL before deleting
-			const { data: task } = await client
-				.from("tasks")
-				.select("image_url")
-				.eq("id", data.id)
-				.single();
-
-			// Delete the task
 			const { error } = await client
 				.from("tasks")
 				.delete()
@@ -249,11 +198,6 @@ const deleteTaskAction = enhanceAction(
 				.eq("account_id", user.id);
 
 			if (error) throw error;
-
-			// If task had an image, delete it from Vercel Blob
-			if (task?.image_url) {
-				await deleteTaskImageAction({ url: task.image_url });
-			}
 
 			logger.info({ ...ctx }, "Task deleted successfully");
 			revalidatePath("/home/kanban");
@@ -343,13 +287,6 @@ const resetTasksAction = enhanceAction(
 		const client = getSupabaseServerClient();
 
 		try {
-			// Get all tasks with images before deleting
-			const { data: tasksWithImages } = await client
-				.from("tasks")
-				.select("image_url")
-				.eq("account_id", user.id)
-				.not("image_url", "is", null);
-
 			// Delete all existing tasks (this will cascade to subtasks)
 			const { error: deleteError } = await client
 				.from("tasks")
@@ -358,24 +295,13 @@ const resetTasksAction = enhanceAction(
 
 			if (deleteError) throw deleteError;
 
-			// Delete all images from Vercel Blob
-			if (tasksWithImages) {
-				await Promise.all(
-					tasksWithImages
-						.filter((task) => task.image_url)
-						.map((task) =>
-							deleteTaskImageAction({ url: task.image_url as string }),
-						),
-				);
-			}
-
 			// Batch insert all default tasks at once for optimal performance
 			const tasksToInsert = DEFAULT_TASKS.map((task) => ({
 				title: task.title,
 				description: task.description ?? null,
 				status: task.status,
 				priority: task.priority,
-				image_url: task.image_url ?? null,
+				phase: task.phase ?? null,
 				account_id: user.id,
 			}));
 
@@ -430,7 +356,7 @@ const resetTasksAction = enhanceAction(
 
 /**
  * Seed default tasks for new users.
- * Uses batch insert for optimal performance with 69 presentation tasks.
+ * Uses batch insert for optimal performance with 14 presentation tasks.
  */
 const seedDefaultTasksAction = enhanceAction(
 	async (_, user) => {
@@ -450,7 +376,7 @@ const seedDefaultTasksAction = enhanceAction(
 				description: task.description ?? null,
 				status: task.status,
 				priority: task.priority,
-				image_url: task.image_url ?? null,
+				phase: task.phase ?? null,
 				account_id: user.id,
 			}));
 

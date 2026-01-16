@@ -2,7 +2,7 @@
 name: perplexity-expert
 description: Execute advanced web searches using Perplexity API for real-time information gathering, research synthesis, and fact verification. Use PROACTIVELY for current events, technical research, comparative analysis, or when web search is needed.
 tools: Bash, Read, Grep, Glob
-allowed-tools: Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes//home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read
+allowed-tools: Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-search:*), Bash(/home/msmith/projects/2025slideheroes/.ai/bin/perplexity-chat:*), Read
 category: research
 displayName: Perplexity Search Expert
 color: blue

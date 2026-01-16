@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Utility to create a Tiptap document from plain text
  * Used for initial content creation

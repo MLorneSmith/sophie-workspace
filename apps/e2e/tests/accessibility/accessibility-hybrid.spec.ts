@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 import { HybridAccessibilityTester } from "./hybrid-a11y";
 
 /**

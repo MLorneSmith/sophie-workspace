@@ -164,6 +164,94 @@ e2b sandbox spawn <template-id>
 
 ---
 
+## Rebuilding the SlideHeroes Template
+
+**IMPORTANT**: The SlideHeroes repository is private. The template MUST be built with `GITHUB_TOKEN` set, otherwise the repo clone will fail during template build.
+
+### Why This Matters
+
+The template definition in `packages/e2b/e2b-template/template.ts` uses conditional URL construction:
+
+```typescript
+const REPO_URL = GITHUB_TOKEN
+  ? `https://${GITHUB_TOKEN}@github.com/MLorneSmith/2025slideheroes.git`  // ← Authenticated
+  : "https://github.com/MLorneSmith/2025slideheroes.git";  // ← Fails for private repos
+```
+
+If `GITHUB_TOKEN` is not set during build, the unauthenticated URL is baked into the template, causing "fatal: not a git repository" errors when sandboxes are created.
+
+### Prerequisites
+
+1. **E2B API Key**: Get from https://e2b.dev/dashboard
+2. **GitHub Token**: Create at https://github.com/settings/tokens
+   - Needs `repo` scope for private repository access
+   - Can use a fine-grained token scoped to MLorneSmith/2025slideheroes
+
+### Rebuild Steps
+
+```bash
+# 1. Set required environment variables
+export E2B_API_KEY="e2b_***"
+export GITHUB_TOKEN="ghp_***"  # or GH_TOKEN
+
+# 2. Navigate to project root
+cd /home/msmith/projects/2025slideheroes
+
+# 3. Build production template
+pnpm e2b:build:prod
+
+# Or build development template
+pnpm e2b:build:dev
+
+# Alternative: Use the script directly
+.claude/skills/e2b-sandbox/scripts/build-template.ts
+.claude/skills/e2b-sandbox/scripts/build-template.ts --dev
+```
+
+### Verification
+
+After rebuilding, verify the template works:
+
+```bash
+# Create a test sandbox
+.claude/skills/e2b-sandbox/scripts/sandbox create
+
+# Check the output for:
+# ✓ GitHub auth: Configured
+# ✓ Repository: /home/user/project exists
+
+# Verify repo is present
+.claude/skills/e2b-sandbox/scripts/sandbox run-claude "git status"
+
+# Kill the test sandbox
+.claude/skills/e2b-sandbox/scripts/sandbox list
+.claude/skills/e2b-sandbox/scripts/sandbox kill <sandbox-id>
+```
+
+### Template Aliases
+
+| Environment | Alias | pnpm Command |
+|-------------|-------|--------------|
+| Production | `slideheroes-claude-agent` | `pnpm e2b:build:prod` |
+| Development | `slideheroes-claude-agent-dev` | `pnpm e2b:build:dev` |
+
+### Troubleshooting
+
+**"fatal: not a git repository" in sandbox**
+- Template was built without GITHUB_TOKEN
+- Rebuild with GITHUB_TOKEN set
+
+**"GitHub auth: Not set" when creating sandbox**
+- Add GITHUB_TOKEN to `.env` or export it
+- The sandbox wrapper now loads from .env automatically
+
+**Template build fails**
+- Verify GITHUB_TOKEN has `repo` scope
+- Check E2B_API_KEY is valid
+- Ensure token hasn't expired
+
+---
+
 ## Using Templates with Claude Code
 
 ### Pre-built Claude Code Template

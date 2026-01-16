@@ -33,6 +33,13 @@ load_env_var() {
 load_env_var "E2B_API_KEY"
 load_env_var "CLAUDE_CODE_OAUTH_TOKEN"
 load_env_var "ANTHROPIC_API_KEY"
+load_env_var "GITHUB_TOKEN"
+load_env_var "GH_TOKEN"
+
+# If GH_TOKEN is set but GITHUB_TOKEN is not, use GH_TOKEN
+if [ -z "$GITHUB_TOKEN" ] && [ -n "$GH_TOKEN" ]; then
+    export GITHUB_TOKEN="$GH_TOKEN"
+fi
 
 if [ ! -f "$TSX" ]; then
     echo "Error: tsx not found. Run: pnpm --filter @kit/e2b install"

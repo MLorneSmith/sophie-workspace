@@ -1,0 +1,34 @@
+{
+	"sandbox_id": "ipxmtnnj0p23htdbc97g0",
+	"runId": "run-mkh4tnhc-cast",
+	"feature": {
+		"issue_number": 1373,
+		"title": "Activity Database Schema"
+	},
+	"current_task": {
+		"id": "T1",
+		"name": "Create activity enums in schema file",
+		"status": "starting",
+		"started_at": "2026-01-16T17:12:44+00:00"
+	},
+	"current_group": {
+		"id": 1,
+		"name": "Schema Definition",
+		"tasks_total": 5,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 10,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T17:12:44+00:00",
+	"session_id": "ipxmtnnj0p23htdbc97g0",
+	"recent_output": [
+		"\u001b[?2004h\u001b]0;user@e2b: ~/project\u0007\u001b[01;32muser@e2b\u001b[00m:\u001b[01;34m~/project\u001b[00m$ ",
+		"run-claude \"/alpha:implement 1373\"\r",
+		"\u001b[?2004l\r",
+		"Using OAuth authentication (Max plan)\r",
+		"Running Claude Code with prompt: /alpha:implement 1373\r"
+	]
+}

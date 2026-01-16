@@ -1,0 +1,29 @@
+{
+	"executionDate": "2025-12-16",
+	"lastUpdated": "2025-12-16T16:02:27.414Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 1,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 12,
+		"passed": 10,
+		"failed": 1,
+		"skipped": 2,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Personal Accounts",
+			"success": false,
+			"duration": "620s",
+			"tests": 12,
+			"passed": 10,
+			"failures": 1,
+			"skipped": 2,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

@@ -1,0 +1,29 @@
+{
+	"executionDate": "2025-12-18",
+	"lastUpdated": "2025-12-18T20:08:53.403Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 0,
+		"passed": 0,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Payload Auth",
+			"success": true,
+			"duration": "1262s",
+			"tests": 0,
+			"passed": 0,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

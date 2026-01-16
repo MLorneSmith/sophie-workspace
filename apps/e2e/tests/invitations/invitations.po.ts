@@ -42,11 +42,23 @@ export class InvitationsPageObject {
 				invite.email,
 			);
 
-			await this.page.click(
-				`[data-testid="invite-member-form-item"]:nth-child(${nth}) [data-testid="role-selector-trigger"]`,
-			);
+			// Click role selector and wait for options to appear
+			// Note: This may fail if the browser client cannot authenticate with Supabase
+			// due to cookie name mismatch or host.docker.internal DNS resolution issues
+			await expect(async () => {
+				await this.page.click(
+					`[data-testid="invite-member-form-item"]:nth-child(${nth}) [data-testid="role-selector-trigger"]`,
+				);
 
-			await this.page.click(`[data-testid="role-option-${invite.role}"]`);
+				const roleOption = this.page.locator(
+					`[data-testid="role-option-${invite.role}"]`,
+				);
+				await expect(roleOption).toBeVisible({ timeout: 5000 });
+				await roleOption.click();
+			}).toPass({
+				timeout: 30000,
+				intervals: [1000, 2000, 5000],
+			});
 
 			if (index < invites.length - 1) {
 				await form.locator('[data-testid="add-new-invite-button"]').click();
@@ -89,9 +101,20 @@ export class InvitationsPageObject {
 			.locator('[data-testid="remove-invitation-trigger"]')
 			.click();
 
+		// Wait for dialog to be visible
+		await this.page.waitForSelector('[data-testid="delete-invitation-form"]', {
+			state: "visible",
+		});
+
 		await this.page.click(
 			'[data-testid="delete-invitation-form"] button[type="submit"]',
 		);
+
+		// Wait for dialog to close (indicates action completed)
+		await this.page.waitForSelector('[data-testid="delete-invitation-form"]', {
+			state: "hidden",
+			timeout: 30000,
+		});
 	}
 
 	getInvitationRow(email: string) {
@@ -108,12 +131,23 @@ export class InvitationsPageObject {
 			.locator('[data-testid="update-invitation-trigger"]')
 			.click();
 
+		// Wait for dialog to be visible
+		await this.page.waitForSelector('[data-testid="update-invitation-form"]', {
+			state: "visible",
+		});
+
 		await this.page.click(`[data-testid="role-selector-trigger"]`);
 		await this.page.click(`[data-testid="role-option-${role}"]`);
 
 		await this.page.click(
 			'[data-testid="update-invitation-form"] button[type="submit"]',
 		);
+
+		// Wait for dialog to close (indicates action completed)
+		await this.page.waitForSelector('[data-testid="update-invitation-form"]', {
+			state: "hidden",
+			timeout: 30000,
+		});
 	}
 
 	async acceptInvitation() {

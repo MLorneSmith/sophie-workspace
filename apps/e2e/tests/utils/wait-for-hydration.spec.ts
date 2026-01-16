@@ -1,12 +1,12 @@
-import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "./auth-state";
+import { expect, test } from "./base-test";
 import {
 	AGGRESSIVE_RETRY_INTERVALS,
 	CI_TIMEOUTS,
-	RETRY_INTERVALS,
 	clickWithRetry,
 	navigateAndWaitForHydration,
+	RETRY_INTERVALS,
 	waitForContentReady,
 	waitForElementReady,
 	waitForHydration,

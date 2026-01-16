@@ -26,6 +26,7 @@ import { toast } from "sonner";
 
 // Dynamically import the Confetti component to avoid SSR issues
 const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
+
 // Import database types
 import type { Database } from "~/lib/database.types";
 import {
@@ -92,6 +93,7 @@ interface PayloadLesson {
 	bunny_library_id?: string | null;
 	video_source_type?: string | null;
 	youtube_video_id?: string | null;
+	lesson_image?: { url?: string } | string | null;
 	todo?: PayloadContent;
 	todo_complete_quiz?: boolean | null;
 	todo_watch_content?: PayloadContent;
@@ -534,6 +536,24 @@ export function LessonViewClient({
 									</div>
 								</div>
 							)}
+
+							{/* Render Lesson Image if available and no video */}
+							{lesson.lesson_image &&
+								!lesson.bunny_video_id &&
+								!lesson.youtube_video_id && (
+									<div className="my-8">
+										<img
+											src={
+												typeof lesson.lesson_image === "string"
+													? lesson.lesson_image
+													: lesson.lesson_image.url || ""
+											}
+											alt={lesson.title}
+											className="w-full rounded-lg shadow-md"
+											loading="lazy"
+										/>
+									</div>
+								)}
 
 							{/* Render To-Do Items if any exist */}
 							{(lesson.todo ||

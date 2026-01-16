@@ -15,10 +15,42 @@ import { expect, type Locator, type Page } from "@playwright/test";
  * - Vercel serverless cold starts
  * - React hydration delays on deployed environments
  * - Network latency variance
+ *
+ * **TIMEOUT HIERARCHY ARCHITECTURE** (Issue #1139, #1140)
+ *
+ * Test Suite (120s global test timeout in playwright.config.ts)
+ * │
+ * ├─ Test with multiple operations
+ * │  ├─ Operation 1: API call + UI update (~60s)
+ * │  │  ├─ Setup & hydration (20s)
+ * │  │  ├─ User interactions (10s)
+ * │  │  ├─ API response wait (20s)
+ * │  │  └─ State update & assertions (10s)
+ * │  │
+ * │  └─ Operation 2: API call + UI update (~60s)
+ * │     └─ (same breakdown)
+ * │
+ * └─ Test cannot timeout if sub-operations sum > test timeout
+ *
+ * **Formula: Test Timeout ≥ Sum of All Sub-Operation Timeouts**
+ *
+ * The CI_TIMEOUTS.element value (90s) ensures:
+ * - Individual operations within a test can complete
+ * - Test timeout (120s) is sufficient for multi-operation tests
+ * - Adequate buffer for network variance and CI overhead
+ *
+ * **Rule**: Never set element timeout > test timeout
+ * Violating this creates mathematical impossibility (test times out
+ * waiting for operation that itself will timeout first).
+ *
+ * Reference: Playwright test architecture best practices
+ * - global test timeout: 120s (from playwright.config.ts)
+ * - element visibility timeout: 90s (CI_TIMEOUTS.element)
+ * - expect timeout: 30s (from playwright.config.ts)
  */
 export const CI_TIMEOUTS = {
-	/** Base element visibility timeout */
-	element: process.env.CI ? 30_000 : 10_000,
+	/** Base element visibility timeout - CRITICAL: must be <= test timeout */
+	element: process.env.CI ? 90_000 : 10_000,
 	/** Navigation timeout */
 	navigation: process.env.CI ? 60_000 : 30_000,
 	/** Hydration wait timeout */

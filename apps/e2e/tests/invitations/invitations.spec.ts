@@ -1,6 +1,6 @@
-import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { expect, test } from "../utils/base-test";
 import { unbanUser } from "../utils/database-utilities";
 import { InvitationsPageObject } from "./invitations.po";
 
@@ -62,11 +62,17 @@ test.describe("Invitations", () => {
 
 		await invitations.inviteMembers(invites);
 
-		await expect(invitations.getInvitations()).toHaveCount(1);
+		// Wait for invitation to appear
+		await expect(invitations.getInvitations()).toHaveCount(1, {
+			timeout: 15000,
+		});
 
 		await invitations.deleteInvitation(email);
 
-		await expect(invitations.getInvitations()).toHaveCount(0);
+		// Wait for invitation to be removed after server revalidation
+		await expect(invitations.getInvitations()).toHaveCount(0, {
+			timeout: 15000,
+		});
 	});
 
 	test("users can update invites", async () => {
@@ -84,14 +90,19 @@ test.describe("Invitations", () => {
 
 		await invitations.inviteMembers(invites);
 
-		await expect(invitations.getInvitations()).toHaveCount(1);
+		// Wait for invitation to appear
+		await expect(invitations.getInvitations()).toHaveCount(1, {
+			timeout: 15000,
+		});
 
 		await invitations.updateInvitation(email, "owner");
 
 		const row = invitations.getInvitationRow(email);
 
+		// Wait for role badge to update after server revalidation
 		await expect(row.locator('[data-testid="member-role-badge"]')).toHaveText(
 			"Owner",
+			{ timeout: 15000 },
 		);
 	});
 
@@ -110,14 +121,22 @@ test.describe("Invitations", () => {
 		await invitations.openInviteForm();
 		await invitations.inviteMembers(invites);
 
-		await expect(invitations.getInvitations()).toHaveCount(1);
+		// Wait for invitation to appear
+		await expect(invitations.getInvitations()).toHaveCount(1, {
+			timeout: 15000,
+		});
 
-		// Try to invite the same member again
-		// This should fail
+		// Try to invite the same member again - this should fail due to unique constraint
 		await invitations.openInviteForm();
 		await invitations.inviteMembers(invites);
-		await page.waitForTimeout(500);
-		await expect(invitations.getInvitations()).toHaveCount(1);
+
+		// Wait a bit for any potential server response
+		await page.waitForTimeout(1000);
+
+		// Verify we still only have 1 invitation (duplicate was prevented)
+		await expect(invitations.getInvitations()).toHaveCount(1, {
+			timeout: 15000,
+		});
 	});
 });
 

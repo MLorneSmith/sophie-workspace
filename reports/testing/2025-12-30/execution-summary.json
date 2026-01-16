@@ -1,0 +1,29 @@
+{
+	"executionDate": "2025-12-30",
+	"lastUpdated": "2025-12-30T23:05:52.712Z",
+	"totalShards": 0,
+	"completedShards": 1,
+	"failedShards": 0,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 1,
+		"passed": 1,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Healthcheck",
+			"success": true,
+			"duration": "11s",
+			"tests": 1,
+			"passed": 1,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

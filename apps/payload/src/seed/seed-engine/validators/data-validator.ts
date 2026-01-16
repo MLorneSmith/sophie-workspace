@@ -8,7 +8,7 @@
  */
 
 import type { ReferenceValidation, SeedRecord } from '../types';
-import { REFERENCE_PATTERN } from '../config';
+import { CIRCULAR_REFERENCES, REFERENCE_PATTERN } from '../config';
 
 /**
  * Validates reference patterns in seed data
@@ -46,6 +46,9 @@ export function validateReferences(
   // Pattern to detect malformed {ref:...} patterns (missing parts)
   const malformedPattern = /\{ref:[^}]*\}/g;
 
+  // Get circular reference fields for this collection (if any)
+  const circularRefFields = CIRCULAR_REFERENCES[collectionName]?.fields ?? [];
+
   for (const record of records) {
     const recordStr = JSON.stringify(record);
 
@@ -73,6 +76,19 @@ export function validateReferences(
       const fullPattern = match[0]; // e.g., "{ref:courses:ddm}"
       const referencedCollection = match[1]; // e.g., "courses"
       const identifier = match[2]; // e.g., "ddm"
+
+      // Skip validation for known circular reference fields
+      // Check if this reference pattern exists in any circular reference field
+      const isCircularRef = circularRefFields.some((field) => {
+        const fieldValue = record[field];
+        return fieldValue !== undefined &&
+               typeof fieldValue === 'string' &&
+               fieldValue.includes(fullPattern);
+      });
+
+      if (isCircularRef) {
+        continue;
+      }
 
       // Check if reference pattern is syntactically valid
       if (!referencedCollection || !identifier) {

@@ -51,6 +51,7 @@ export type Database = {
 					version_created_at: string | null;
 					version_description: string | null;
 					version_estimated_duration: number | null;
+					version_lesson_image_id: string | null;
 					version_lesson_number: number | null;
 					version_published_at: string | null;
 					version_quiz_id_id: string | null;
@@ -85,6 +86,7 @@ export type Database = {
 					version_created_at?: string | null;
 					version_description?: string | null;
 					version_estimated_duration?: number | null;
+					version_lesson_image_id?: string | null;
 					version_lesson_number?: number | null;
 					version_published_at?: string | null;
 					version_quiz_id_id?: string | null;
@@ -119,6 +121,7 @@ export type Database = {
 					version_created_at?: string | null;
 					version_description?: string | null;
 					version_estimated_duration?: number | null;
+					version_lesson_image_id?: string | null;
 					version_lesson_number?: number | null;
 					version_published_at?: string | null;
 					version_quiz_id_id?: string | null;
@@ -150,6 +153,13 @@ export type Database = {
 						columns: ["version_course_id_id"];
 						isOneToOne: false;
 						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "_course_lessons_v_version_lesson_image_id_media_id_fk";
+						columns: ["version_lesson_image_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
 						referencedColumns: ["id"];
 					},
 					{
@@ -848,7 +858,7 @@ export type Database = {
 					},
 				];
 			};
-			_private_v: {
+			_private_posts_v: {
 				Row: {
 					created_at: string;
 					id: string;
@@ -856,7 +866,7 @@ export type Database = {
 					parent_id: string | null;
 					updated_at: string;
 					version__status:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_content: Json | null;
 					version_created_at: string | null;
@@ -866,7 +876,7 @@ export type Database = {
 					version_published_at: string | null;
 					version_slug: string | null;
 					version_status:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_title: string | null;
 					version_updated_at: string | null;
@@ -878,7 +888,7 @@ export type Database = {
 					parent_id?: string | null;
 					updated_at?: string;
 					version__status?:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_content?: Json | null;
 					version_created_at?: string | null;
@@ -888,7 +898,7 @@ export type Database = {
 					version_published_at?: string | null;
 					version_slug?: string | null;
 					version_status?:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_title?: string | null;
 					version_updated_at?: string | null;
@@ -900,7 +910,7 @@ export type Database = {
 					parent_id?: string | null;
 					updated_at?: string;
 					version__status?:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_content?: Json | null;
 					version_created_at?: string | null;
@@ -910,28 +920,28 @@ export type Database = {
 					version_published_at?: string | null;
 					version_slug?: string | null;
 					version_status?:
-						| Database["payload"]["Enums"]["enum__private_v_version_status"]
+						| Database["payload"]["Enums"]["enum__private_posts_v_version_status"]
 						| null;
 					version_title?: string | null;
 					version_updated_at?: string | null;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "_private_v_parent_id_private_id_fk";
+						foreignKeyName: "_private_posts_v_parent_id_private_posts_id_fk";
 						columns: ["parent_id"];
 						isOneToOne: false;
-						referencedRelation: "private";
+						referencedRelation: "private_posts";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "_private_v_version_featured_image_id_id_downloads_id_fk";
+						foreignKeyName: "_private_posts_v_version_featured_image_id_id_downloads_id_fk";
 						columns: ["version_featured_image_id_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "_private_v_version_image_id_id_downloads_id_fk";
+						foreignKeyName: "_private_posts_v_version_image_id_id_downloads_id_fk";
 						columns: ["version_image_id_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
@@ -939,7 +949,7 @@ export type Database = {
 					},
 				];
 			};
-			_private_v_rels: {
+			_private_posts_v_rels: {
 				Row: {
 					downloads_id: string | null;
 					id: number;
@@ -963,22 +973,22 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "_private_v_rels_downloads_fk";
+						foreignKeyName: "_private_posts_v_rels_downloads_fk";
 						columns: ["downloads_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "_private_v_rels_parent_fk";
+						foreignKeyName: "_private_posts_v_rels_parent_fk";
 						columns: ["parent_id"];
 						isOneToOne: false;
-						referencedRelation: "_private_v";
+						referencedRelation: "_private_posts_v";
 						referencedColumns: ["id"];
 					},
 				];
 			};
-			_private_v_version_categories: {
+			_private_posts_v_version_categories: {
 				Row: {
 					_order: number;
 					_parent_id: string;
@@ -1002,15 +1012,15 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "_private_v_version_categories_parent_id_fk";
+						foreignKeyName: "_private_posts_v_version_categories_parent_id_fk";
 						columns: ["_parent_id"];
 						isOneToOne: false;
-						referencedRelation: "_private_v";
+						referencedRelation: "_private_posts_v";
 						referencedColumns: ["id"];
 					},
 				];
 			};
-			_private_v_version_tags: {
+			_private_posts_v_version_tags: {
 				Row: {
 					_order: number;
 					_parent_id: string;
@@ -1034,10 +1044,10 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "_private_v_version_tags_parent_id_fk";
+						foreignKeyName: "_private_posts_v_version_tags_parent_id_fk";
 						columns: ["_parent_id"];
 						isOneToOne: false;
-						referencedRelation: "_private_v";
+						referencedRelation: "_private_posts_v";
 						referencedColumns: ["id"];
 					},
 				];
@@ -1268,6 +1278,7 @@ export type Database = {
 					description: string | null;
 					estimated_duration: number | null;
 					id: string;
+					lesson_image_id: string | null;
 					lesson_number: number | null;
 					published_at: string | null;
 					quiz_id_id: string | null;
@@ -1298,6 +1309,7 @@ export type Database = {
 					description?: string | null;
 					estimated_duration?: number | null;
 					id?: string;
+					lesson_image_id?: string | null;
 					lesson_number?: number | null;
 					published_at?: string | null;
 					quiz_id_id?: string | null;
@@ -1328,6 +1340,7 @@ export type Database = {
 					description?: string | null;
 					estimated_duration?: number | null;
 					id?: string;
+					lesson_image_id?: string | null;
 					lesson_number?: number | null;
 					published_at?: string | null;
 					quiz_id_id?: string | null;
@@ -1352,6 +1365,13 @@ export type Database = {
 						columns: ["course_id_id"];
 						isOneToOne: false;
 						referencedRelation: "courses";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "course_lessons_lesson_image_id_media_id_fk";
+						columns: ["lesson_image_id"];
+						isOneToOne: false;
+						referencedRelation: "media";
 						referencedColumns: ["id"];
 					},
 					{
@@ -2026,7 +2046,7 @@ export type Database = {
 					parent_id: string;
 					path: string;
 					posts_id: string | null;
-					private_id: string | null;
+					private_posts_id: string | null;
 					quiz_questions_id: string | null;
 					survey_questions_id: string | null;
 					surveys_id: string | null;
@@ -2044,7 +2064,7 @@ export type Database = {
 					parent_id: string;
 					path: string;
 					posts_id?: string | null;
-					private_id?: string | null;
+					private_posts_id?: string | null;
 					quiz_questions_id?: string | null;
 					survey_questions_id?: string | null;
 					surveys_id?: string | null;
@@ -2062,7 +2082,7 @@ export type Database = {
 					parent_id?: string;
 					path?: string;
 					posts_id?: string | null;
-					private_id?: string | null;
+					private_posts_id?: string | null;
 					quiz_questions_id?: string | null;
 					survey_questions_id?: string | null;
 					surveys_id?: string | null;
@@ -2126,10 +2146,10 @@ export type Database = {
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "payload_locked_documents_rels_private_fk";
-						columns: ["private_id"];
+						foreignKeyName: "payload_locked_documents_rels_private_posts_fk";
+						columns: ["private_posts_id"];
 						isOneToOne: false;
-						referencedRelation: "private";
+						referencedRelation: "private_posts";
 						referencedColumns: ["id"];
 					},
 					{
@@ -2396,9 +2416,11 @@ export type Database = {
 					},
 				];
 			};
-			private: {
+			private_posts: {
 				Row: {
-					_status: Database["payload"]["Enums"]["enum_private_status"] | null;
+					_status:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					content: Json | null;
 					created_at: string;
 					description: string | null;
@@ -2407,12 +2429,16 @@ export type Database = {
 					image_id_id: string | null;
 					published_at: string | null;
 					slug: string | null;
-					status: Database["payload"]["Enums"]["enum_private_status"] | null;
+					status:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					title: string | null;
 					updated_at: string;
 				};
 				Insert: {
-					_status?: Database["payload"]["Enums"]["enum_private_status"] | null;
+					_status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					content?: Json | null;
 					created_at?: string;
 					description?: string | null;
@@ -2421,12 +2447,16 @@ export type Database = {
 					image_id_id?: string | null;
 					published_at?: string | null;
 					slug?: string | null;
-					status?: Database["payload"]["Enums"]["enum_private_status"] | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					title?: string | null;
 					updated_at?: string;
 				};
 				Update: {
-					_status?: Database["payload"]["Enums"]["enum_private_status"] | null;
+					_status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					content?: Json | null;
 					created_at?: string;
 					description?: string | null;
@@ -2435,20 +2465,22 @@ export type Database = {
 					image_id_id?: string | null;
 					published_at?: string | null;
 					slug?: string | null;
-					status?: Database["payload"]["Enums"]["enum_private_status"] | null;
+					status?:
+						| Database["payload"]["Enums"]["enum_private_posts_status"]
+						| null;
 					title?: string | null;
 					updated_at?: string;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "private_featured_image_id_id_downloads_id_fk";
+						foreignKeyName: "private_posts_featured_image_id_id_downloads_id_fk";
 						columns: ["featured_image_id_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "private_image_id_id_downloads_id_fk";
+						foreignKeyName: "private_posts_image_id_id_downloads_id_fk";
 						columns: ["image_id_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
@@ -2456,7 +2488,7 @@ export type Database = {
 					},
 				];
 			};
-			private_categories: {
+			private_posts_categories: {
 				Row: {
 					_order: number;
 					_parent_id: string;
@@ -2477,15 +2509,15 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "private_categories_parent_id_fk";
+						foreignKeyName: "private_posts_categories_parent_id_fk";
 						columns: ["_parent_id"];
 						isOneToOne: false;
-						referencedRelation: "private";
+						referencedRelation: "private_posts";
 						referencedColumns: ["id"];
 					},
 				];
 			};
-			private_rels: {
+			private_posts_rels: {
 				Row: {
 					downloads_id: string | null;
 					id: number;
@@ -2509,22 +2541,22 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "private_rels_downloads_fk";
+						foreignKeyName: "private_posts_rels_downloads_fk";
 						columns: ["downloads_id"];
 						isOneToOne: false;
 						referencedRelation: "downloads";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "private_rels_parent_fk";
+						foreignKeyName: "private_posts_rels_parent_fk";
 						columns: ["parent_id"];
 						isOneToOne: false;
-						referencedRelation: "private";
+						referencedRelation: "private_posts";
 						referencedColumns: ["id"];
 					},
 				];
 			};
-			private_tags: {
+			private_posts_tags: {
 				Row: {
 					_order: number;
 					_parent_id: string;
@@ -2545,10 +2577,10 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "private_tags_parent_id_fk";
+						foreignKeyName: "private_posts_tags_parent_id_fk";
 						columns: ["_parent_id"];
 						isOneToOne: false;
-						referencedRelation: "private";
+						referencedRelation: "private_posts";
 						referencedColumns: ["id"];
 					},
 				];
@@ -2873,7 +2905,38 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			[_ in never]: never;
+			collection_has_download: {
+				Args: {
+					collection_id: string;
+					collection_type: string;
+					download_id: string;
+				};
+				Returns: boolean;
+			};
+			ensure_downloads_id_column: {
+				Args: { table_name: string };
+				Returns: undefined;
+			};
+			ensure_downloads_id_column_exists: {
+				Args: { table_name: string };
+				Returns: boolean;
+			};
+			ensure_relationship_columns: {
+				Args: { table_name: string };
+				Returns: undefined;
+			};
+			fix_dynamic_table: { Args: { table_name: string }; Returns: boolean };
+			get_downloads_for_collection: {
+				Args: { collection_id: string; collection_type: string };
+				Returns: {
+					download_id: string;
+				}[];
+			};
+			get_relationship_data: {
+				Args: { fallback_column?: string; id: string; table_name: string };
+				Returns: string;
+			};
+			safe_uuid_conversion: { Args: { text_value: string }; Returns: string };
 		};
 		Enums: {
 			enum__course_lessons_v_version_status: "draft" | "published";
@@ -2882,7 +2945,7 @@ export type Database = {
 			enum__courses_v_version_status: "draft" | "published";
 			enum__documentation_v_version_status: "draft" | "published";
 			enum__posts_v_version_status: "draft" | "published";
-			enum__private_v_version_status: "draft" | "published";
+			enum__private_posts_v_version_status: "draft" | "published";
 			enum__survey_questions_v_version_questionspin: "Positive" | "Negative";
 			enum__survey_questions_v_version_status: "draft" | "published";
 			enum__survey_questions_v_version_type:
@@ -2907,7 +2970,7 @@ export type Database = {
 				| "other";
 			enum_media_type: "image" | "video" | "document";
 			enum_posts_status: "draft" | "published";
-			enum_private_status: "draft" | "published";
+			enum_private_posts_status: "draft" | "published";
 			enum_quiz_questions_questiontype: "single-answer" | "multi-answer";
 			enum_quiz_questions_type: "multiple_choice";
 			enum_survey_questions_questionspin: "Positive" | "Negative";
@@ -4245,7 +4308,7 @@ export type Database = {
 					created_at: string;
 					description: string | null;
 					id: string;
-					image_url: string | null;
+					phase: string | null;
 					priority: Database["public"]["Enums"]["task_priority"];
 					status: Database["public"]["Enums"]["task_status"];
 					title: string;
@@ -4256,7 +4319,7 @@ export type Database = {
 					created_at?: string;
 					description?: string | null;
 					id?: string;
-					image_url?: string | null;
+					phase?: string | null;
 					priority?: Database["public"]["Enums"]["task_priority"];
 					status?: Database["public"]["Enums"]["task_status"];
 					title: string;
@@ -4267,7 +4330,7 @@ export type Database = {
 					created_at?: string;
 					description?: string | null;
 					id?: string;
-					image_url?: string | null;
+					phase?: string | null;
 					priority?: Database["public"]["Enums"]["task_priority"];
 					status?: Database["public"]["Enums"]["task_status"];
 					title?: string;
@@ -5350,7 +5413,7 @@ export const Constants = {
 			enum__courses_v_version_status: ["draft", "published"],
 			enum__documentation_v_version_status: ["draft", "published"],
 			enum__posts_v_version_status: ["draft", "published"],
-			enum__private_v_version_status: ["draft", "published"],
+			enum__private_posts_v_version_status: ["draft", "published"],
 			enum__survey_questions_v_version_questionspin: ["Positive", "Negative"],
 			enum__survey_questions_v_version_status: ["draft", "published"],
 			enum__survey_questions_v_version_type: [
@@ -5377,7 +5440,7 @@ export const Constants = {
 			],
 			enum_media_type: ["image", "video", "document"],
 			enum_posts_status: ["draft", "published"],
-			enum_private_status: ["draft", "published"],
+			enum_private_posts_status: ["draft", "published"],
 			enum_quiz_questions_questiontype: ["single-answer", "multi-answer"],
 			enum_quiz_questions_type: ["multiple_choice"],
 			enum_survey_questions_questionspin: ["Positive", "Negative"],

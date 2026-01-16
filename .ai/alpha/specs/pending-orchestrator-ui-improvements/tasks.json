@@ -1,0 +1,765 @@
+{
+	"metadata": {
+		"feature_id": "pending",
+		"feature_title": "Orchestrator UI & Progress Reporting Improvements",
+		"spec_id": "pending",
+		"initiative_id": "pending",
+		"total_tasks": 21,
+		"total_hours_sequential": 22,
+		"total_hours_parallel": 16,
+		"generated_at": "2026-01-08T00:00:00Z",
+		"decomposition_version": "1.0.0"
+	},
+	"execution_groups": [
+		{
+			"id": 1,
+			"name": "Foundation Setup",
+			"description": "Create UI package structure and type definitions",
+			"task_ids": ["T1", "T2"],
+			"estimated_hours": 2,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T1", "T2"],
+					"reason": "T2 depends on T1 package setup"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"name": "Core Components",
+			"description": "Build Ink UI components",
+			"task_ids": ["T3", "T4", "T5", "T6", "T7", "T8", "T9"],
+			"estimated_hours": 6,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T3", "T4", "T7", "T8"],
+					"reason": "Independent leaf components with no dependencies on each other",
+					"max_hours": 2
+				},
+				{
+					"batch_id": 2,
+					"task_ids": ["T5"],
+					"reason": "SandboxColumn depends on ProgressBar (T3)"
+				},
+				{
+					"batch_id": 3,
+					"task_ids": ["T6"],
+					"reason": "SandboxGrid depends on SandboxColumn (T5)"
+				},
+				{
+					"batch_id": 4,
+					"task_ids": ["T9"],
+					"reason": "OrchestratorUI depends on all other components"
+				}
+			],
+			"parallelization_analysis": {
+				"parallelizable_tasks": 4,
+				"sequential_tasks": 3,
+				"speedup_potential": 1.5
+			}
+		},
+		{
+			"id": 3,
+			"name": "State Management",
+			"description": "Create polling hook and UI manager",
+			"task_ids": ["T10", "T11"],
+			"estimated_hours": 4,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T10"],
+					"reason": "Polling hook is independent"
+				},
+				{
+					"batch_id": 2,
+					"task_ids": ["T11"],
+					"reason": "UI Manager depends on T10 and T9"
+				}
+			]
+		},
+		{
+			"id": 4,
+			"name": "Orchestrator Integration",
+			"description": "Integrate UI with spec-orchestrator.ts",
+			"task_ids": ["T12", "T13"],
+			"estimated_hours": 3,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T12"],
+					"reason": "CLI flag parsing first"
+				},
+				{
+					"batch_id": 2,
+					"task_ids": ["T13"],
+					"reason": "Main loop integration depends on T12"
+				}
+			]
+		},
+		{
+			"id": 5,
+			"name": "Progress Reporting Hooks",
+			"description": "Create Claude Code hooks for heartbeats",
+			"task_ids": ["T14", "T15", "T16", "T17"],
+			"estimated_hours": 3,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T14", "T15"],
+					"reason": "Both hook scripts are independent",
+					"max_hours": 1
+				},
+				{
+					"batch_id": 2,
+					"task_ids": ["T16"],
+					"reason": "Settings config depends on T14, T15"
+				},
+				{
+					"batch_id": 3,
+					"task_ids": ["T17"],
+					"reason": "E2B template update depends on T16"
+				}
+			],
+			"can_run_parallel_to_groups": [2, 3, 4],
+			"parallelization_analysis": {
+				"parallelizable_tasks": 2,
+				"sequential_tasks": 2,
+				"speedup_potential": 1.3
+			}
+		},
+		{
+			"id": 6,
+			"name": "Health Check Updates",
+			"description": "Update orchestrator health check logic",
+			"task_ids": ["T18"],
+			"estimated_hours": 1
+		},
+		{
+			"id": 7,
+			"name": "Testing & Polish",
+			"description": "Error boundaries, exports, and integration testing",
+			"task_ids": ["T19", "T20", "T21"],
+			"estimated_hours": 3,
+			"parallel_batches": [
+				{
+					"batch_id": 1,
+					"task_ids": ["T19", "T20"],
+					"reason": "Error boundary and index file are independent",
+					"max_hours": 0.5
+				},
+				{
+					"batch_id": 2,
+					"task_ids": ["T21"],
+					"reason": "Integration testing depends on all previous work"
+				}
+			]
+		}
+	],
+	"tasks": [
+		{
+			"id": "T1",
+			"name": "Add Ink Dependencies and Project Structure",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Create",
+				"target": "UI package structure with Ink dependencies"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/spec-orchestrator.ts"],
+				"constraints": [
+					"Use Ink v5.x with React 19",
+					"Add ink-spinner for loading states",
+					"Configure ESM module type",
+					"Extend root tsconfig.json"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{ "type": "new", "path": ".ai/alpha/scripts/ui/package.json" },
+				{ "type": "new", "path": ".ai/alpha/scripts/ui/tsconfig.json" }
+			],
+			"acceptance_criterion": "Dependencies install and TypeScript compiles without errors",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm install && pnpm tsc --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T2",
+			"name": "Define UI Type System",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Create",
+				"target": "Comprehensive TypeScript types for UI state"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/specs/pending-orchestrator-ui-improvements/implementation-plan.md"
+				],
+				"constraints": [
+					"Define HealthStatus, Phase, FeatureInfo, TaskInfo, GroupInfo types",
+					"Define SandboxState interface with all metrics",
+					"Define OverallProgress interface",
+					"Define OrchestratorEvent interface",
+					"Define SandboxProgressFile interface matching progress file format"
+				],
+				"patterns": []
+			},
+			"outputs": [{ "type": "new", "path": ".ai/alpha/scripts/ui/types.ts" }],
+			"acceptance_criterion": "Types compile without errors and cover all UI state requirements",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc types.ts --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T3",
+			"name": "Create ProgressBar Component",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Reusable progress bar component"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/ui/types.ts"],
+				"constraints": [
+					"Accept current, total, width props",
+					"Support customizable filled/empty characters",
+					"Support customizable colors",
+					"Show percentage and count optionally"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/ProgressBar.tsx"
+				}
+			],
+			"acceptance_criterion": "Component renders progress bar with correct proportions",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/ProgressBar.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T4",
+			"name": "Create Header Component",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Header showing spec info and elapsed time"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/ui/types.ts"],
+				"constraints": [
+					"Display spec ID and name",
+					"Show elapsed time (dynamically calculated)",
+					"Show status with color coding",
+					"Use double border style"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{ "type": "new", "path": ".ai/alpha/scripts/ui/components/Header.tsx" }
+			],
+			"acceptance_criterion": "Header displays spec info and dynamically updates elapsed time",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/Header.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T5",
+			"name": "Create SandboxColumn Component",
+			"estimated_hours": 2,
+			"action": {
+				"verb": "Create",
+				"target": "Per-sandbox column showing all metrics"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/ui/components/ProgressBar.tsx"
+				],
+				"constraints": [
+					"Show sandbox ID and label",
+					"Show current feature with progress bar",
+					"Show current task with spinner when in_progress",
+					"Show phase, context usage, heartbeat age",
+					"Compute and display health status icon",
+					"Color border based on health status"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/SandboxColumn.tsx"
+				}
+			],
+			"acceptance_criterion": "Column displays all sandbox metrics with correct health status computation",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/SandboxColumn.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T6",
+			"name": "Create SandboxGrid Component",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "3-column layout manager"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/ui/components/SandboxColumn.tsx"
+				],
+				"constraints": [
+					"Render 1-3 columns based on sandbox count",
+					"Use flexbox row layout",
+					"Space columns evenly"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/SandboxGrid.tsx"
+				}
+			],
+			"acceptance_criterion": "Grid renders 1-3 columns based on sandbox count",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/SandboxGrid.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T7",
+			"name": "Create OverallProgress Component",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Overall spec progress display"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/ui/components/ProgressBar.tsx"
+				],
+				"constraints": [
+					"Show initiatives progress bar",
+					"Show features progress bar",
+					"Show tasks progress bar",
+					"Use different colors for each level"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/OverallProgress.tsx"
+				}
+			],
+			"acceptance_criterion": "Component displays 3 progress bars for initiatives, features, and tasks",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/OverallProgress.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T8",
+			"name": "Create EventLog Component",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Create",
+				"target": "Scrollable event log feed"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/ui/types.ts"],
+				"constraints": [
+					"Show recent N events (default 8)",
+					"Display timestamp, sandbox label, icon, and message",
+					"Color-code events by type",
+					"Use emoji icons for event types"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/EventLog.tsx"
+				}
+			],
+			"acceptance_criterion": "Event log shows recent events with proper color-coding",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/EventLog.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T9",
+			"name": "Create Root OrchestratorUI Component",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Create",
+				"target": "Root UI component combining all sections"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/ui/components/Header.tsx",
+					".ai/alpha/scripts/ui/components/SandboxGrid.tsx",
+					".ai/alpha/scripts/ui/components/OverallProgress.tsx",
+					".ai/alpha/scripts/ui/components/EventLog.tsx"
+				],
+				"constraints": [
+					"Compose Header, SandboxGrid, OverallProgress, EventLog",
+					"Handle keyboard input for quit (q)",
+					"Use useInput and useApp hooks from Ink"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/OrchestratorUI.tsx"
+				}
+			],
+			"acceptance_criterion": "Root component renders all sections in correct layout",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/OrchestratorUI.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T10",
+			"name": "Create Progress Polling Hook",
+			"estimated_hours": 2,
+			"action": {
+				"verb": "Create",
+				"target": "Reusable React hook for progress polling"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/spec-orchestrator.ts"
+				],
+				"constraints": [
+					"Poll every 15 seconds (reduced from 30)",
+					"Filter stale data from previous sessions",
+					"Transform SandboxProgressFile to SandboxState",
+					"Handle errors gracefully"
+				],
+				"patterns": [
+					{
+						"file": ".ai/alpha/scripts/spec-orchestrator.ts",
+						"description": "Existing progress polling logic around lines 1155-1215"
+					}
+				]
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/hooks/useProgressPoller.ts"
+				}
+			],
+			"acceptance_criterion": "Hook polls sandbox and transforms progress data correctly",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc hooks/useProgressPoller.ts --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T11",
+			"name": "Create UI Manager with State",
+			"estimated_hours": 2,
+			"action": {
+				"verb": "Create",
+				"target": "Main UI entry point with centralized state"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/ui/types.ts",
+					".ai/alpha/scripts/ui/components/OrchestratorUI.tsx",
+					".ai/alpha/scripts/ui/hooks/useProgressPoller.ts"
+				],
+				"constraints": [
+					"Export startUI function for orchestrator",
+					"Manage sandboxStates Map, overallProgress, events in state",
+					"Setup polling for each sandbox instance",
+					"Expose updateOverallProgress and addEvent for external use"
+				],
+				"patterns": []
+			},
+			"outputs": [{ "type": "new", "path": ".ai/alpha/scripts/ui/index.tsx" }],
+			"acceptance_criterion": "UI manager initializes state and sets up polling for all sandboxes",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc index.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T12",
+			"name": "Add CLI Flag for UI Mode",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Update",
+				"target": "spec-orchestrator.ts CLI argument parsing"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/spec-orchestrator.ts"],
+				"constraints": [
+					"Add uiMode to OrchestratorOptions interface",
+					"Parse --ui-mode=dashboard and --ui-mode=streaming flags",
+					"Default to dashboard mode",
+					"Update showHelp() with new options"
+				],
+				"patterns": [
+					{
+						"file": ".ai/alpha/scripts/spec-orchestrator.ts",
+						"description": "Existing parseArgs() function"
+					}
+				]
+			},
+			"outputs": [
+				{ "type": "modified", "path": ".ai/alpha/scripts/spec-orchestrator.ts" }
+			],
+			"acceptance_criterion": "--ui-mode flag is recognized and defaults to dashboard",
+			"verification_command": "tsx .ai/alpha/scripts/spec-orchestrator.ts --help | grep ui-mode",
+			"requires_database": false
+		},
+		{
+			"id": "T13",
+			"name": "Integrate UI with Orchestrator Main Loop",
+			"estimated_hours": 2,
+			"action": {
+				"verb": "Update",
+				"target": "spec-orchestrator.ts orchestrate() function"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/spec-orchestrator.ts",
+					".ai/alpha/scripts/ui/index.tsx"
+				],
+				"constraints": [
+					"Import startUI from ui/index.tsx",
+					"In dashboard mode, call startUI after sandbox creation",
+					"Pass UI reference to runWorkLoop",
+					"Update UI on feature/task completion",
+					"In streaming mode, preserve existing behavior"
+				],
+				"patterns": [
+					{
+						"file": ".ai/alpha/scripts/spec-orchestrator.ts",
+						"description": "Existing orchestrate() function"
+					}
+				]
+			},
+			"outputs": [
+				{ "type": "modified", "path": ".ai/alpha/scripts/spec-orchestrator.ts" }
+			],
+			"acceptance_criterion": "Dashboard UI renders and shows spec info in dry-run mode",
+			"verification_command": "tsx .ai/alpha/scripts/spec-orchestrator.ts 1362 --dry-run --ui-mode=dashboard",
+			"requires_database": false
+		},
+		{
+			"id": "T14",
+			"name": "Create PostToolUse Heartbeat Hook",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Create",
+				"target": "Python hook for tool-based heartbeats"
+			},
+			"context": {
+				"files": [".claude/commands/alpha/implement.md"],
+				"constraints": [
+					"Read hook input from stdin as JSON",
+					"Update last_heartbeat in progress file",
+					"Track last_tool and tool_counts",
+					"Write atomically using temp file rename",
+					"Fail silently on errors"
+				],
+				"patterns": []
+			},
+			"outputs": [{ "type": "new", "path": ".claude/hooks/heartbeat.py" }],
+			"acceptance_criterion": "Hook writes heartbeat timestamp on each invocation",
+			"verification_command": "echo '{\"tool_name\": \"Read\", \"session_id\": \"test123\"}' | python3 .claude/hooks/heartbeat.py && cat .initiative-progress.json | jq .last_heartbeat",
+			"requires_database": false
+		},
+		{
+			"id": "T15",
+			"name": "Create SubagentStop Hook",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Hook for tracking subagent completion"
+			},
+			"context": {
+				"files": [".claude/hooks/heartbeat.py"],
+				"constraints": [
+					"Read hook input from stdin",
+					"Update last_heartbeat and last_subagent_stop",
+					"Track subagent_count",
+					"Output approval decision"
+				],
+				"patterns": [
+					{
+						"file": ".claude/hooks/heartbeat.py",
+						"description": "Same atomic write pattern"
+					}
+				]
+			},
+			"outputs": [
+				{ "type": "new", "path": ".claude/hooks/subagent_complete.py" }
+			],
+			"acceptance_criterion": "Hook tracks subagent completions",
+			"verification_command": "echo '{\"session_id\": \"test123\"}' | python3 .claude/hooks/subagent_complete.py",
+			"requires_database": false
+		},
+		{
+			"id": "T16",
+			"name": "Configure Hooks in Settings",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Update",
+				"target": ".claude/settings.json with hook configuration"
+			},
+			"context": {
+				"files": [
+					".claude/settings.json",
+					".claude/hooks/heartbeat.py",
+					".claude/hooks/subagent_complete.py"
+				],
+				"constraints": [
+					"Add PostToolUse hook with empty matcher (all tools)",
+					"Add SubagentStop hook with empty matcher",
+					"Set 3-second timeout for heartbeat",
+					"Set 5-second timeout for subagent hook"
+				],
+				"patterns": []
+			},
+			"outputs": [{ "type": "modified", "path": ".claude/settings.json" }],
+			"acceptance_criterion": "Hooks are configured and will fire on tool usage",
+			"verification_command": "cat .claude/settings.json | jq '.hooks.PostToolUse'",
+			"requires_database": false
+		},
+		{
+			"id": "T17",
+			"name": "Update E2B Template with Hooks",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Update",
+				"target": "E2B sandbox template to include hooks"
+			},
+			"context": {
+				"files": [
+					".claude/hooks/heartbeat.py",
+					".claude/hooks/subagent_complete.py",
+					".claude/settings.json"
+				],
+				"constraints": [
+					"Copy hooks to template",
+					"Copy settings.json to template",
+					"Rebuild E2B template"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "E2B template slideheroes-claude-agent-dev"
+				}
+			],
+			"acceptance_criterion": "New sandboxes include heartbeat hooks",
+			"verification_command": "npx e2b sandbox create slideheroes-claude-agent-dev --cmd 'ls .claude/hooks'",
+			"requires_database": false
+		},
+		{
+			"id": "T18",
+			"name": "Update Health Check Logic",
+			"estimated_hours": 1,
+			"action": {
+				"verb": "Update",
+				"target": "spec-orchestrator.ts health check logic"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/spec-orchestrator.ts"],
+				"constraints": [
+					"Reduce HEALTH_CHECK_INTERVAL_MS to 30000",
+					"Reduce HEARTBEAT_STALE_TIMEOUT_MS to 2 minutes",
+					"Reduce STALL_TIMEOUT_MS to 5 minutes",
+					"Check last_tool in addition to last_heartbeat"
+				],
+				"patterns": [
+					{
+						"file": ".ai/alpha/scripts/spec-orchestrator.ts",
+						"description": "Existing checkSandboxHealth() function"
+					}
+				]
+			},
+			"outputs": [
+				{ "type": "modified", "path": ".ai/alpha/scripts/spec-orchestrator.ts" }
+			],
+			"acceptance_criterion": "Health checks use reduced timeouts and detect stalls faster",
+			"verification_command": "pnpm typecheck",
+			"requires_database": false
+		},
+		{
+			"id": "T19",
+			"name": "Add Error Boundaries",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Error boundary component for UI resilience"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/ui/types.ts"],
+				"constraints": [
+					"Catch component errors using getDerivedStateFromError",
+					"Display error message without crashing UI",
+					"Support custom fallback prop"
+				],
+				"patterns": []
+			},
+			"outputs": [
+				{
+					"type": "new",
+					"path": ".ai/alpha/scripts/ui/components/ErrorBoundary.tsx"
+				}
+			],
+			"acceptance_criterion": "Error boundary catches and displays component errors gracefully",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/ErrorBoundary.tsx --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T20",
+			"name": "Create Component Index File",
+			"estimated_hours": 0.5,
+			"action": {
+				"verb": "Create",
+				"target": "Barrel export for all components"
+			},
+			"context": {
+				"files": [".ai/alpha/scripts/ui/components/"],
+				"constraints": ["Export all components from single entry point"],
+				"patterns": []
+			},
+			"outputs": [
+				{ "type": "new", "path": ".ai/alpha/scripts/ui/components/index.ts" }
+			],
+			"acceptance_criterion": "All components exportable from single entry point",
+			"verification_command": "cd .ai/alpha/scripts/ui && pnpm tsc components/index.ts --noEmit",
+			"requires_database": false
+		},
+		{
+			"id": "T21",
+			"name": "Integration Testing",
+			"estimated_hours": 2,
+			"action": {
+				"verb": "Test",
+				"target": "Complete integration with real sandboxes"
+			},
+			"context": {
+				"files": [
+					".ai/alpha/scripts/spec-orchestrator.ts",
+					".ai/alpha/scripts/ui/index.tsx"
+				],
+				"constraints": [
+					"Test single sandbox mode",
+					"Test three sandbox mode",
+					"Test streaming mode for backward compatibility",
+					"Test stall detection",
+					"Test hook integration"
+				],
+				"patterns": []
+			},
+			"outputs": [],
+			"acceptance_criterion": "All test scenarios pass, UI updates correctly, stalls detected",
+			"verification_command": "tsx .ai/alpha/scripts/spec-orchestrator.ts 1362 -s 1 --ui-mode=dashboard",
+			"requires_database": false
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Smoke Tests",
+		"files": ["tests/smoke/smoke.spec.ts"],
+		"expectedTests": 9,
+		"shardCommand": "test:shard1"
+	},
+	"execution": {
+		"startTime": "2025-12-12T20:16:11.163Z",
+		"endTime": "2025-12-12T20:16:18.163Z",
+		"duration": "7s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 9,
+		"passed": 9,
+		"failed": 0,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": true
+	},
+	"failures": [],
+	"errors": [],
+	"rawOutput": "\n> web-e2e@1.0.0 test:shard1 /home/msmith/projects/2025slideheroes/apps/e2e\n> playwright test tests/smoke/smoke.spec.ts --config=playwright.smoke.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0\n\n\nRunning 9 tests using 8 workers\n·····Available security headers in dev: \u001b[33m0\u001b[39m []\n····\n  9 passed (6.6s)\n"
+}

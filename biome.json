@@ -41,7 +41,12 @@
 			"!**/styles/globals.css",
 			"!**/supabase/templates/**/*.html",
 			"!**/apps/e2e/.auth",
-			"!**/.ai/tools/context7/.cache"
+			"!**/.ai/tools/context7/.cache",
+			"!**/temp",
+			"!**/.ai/alpha/scripts/node_modules.bak",
+			"!**/.ai/alpha/progress/*.json",
+			"!**/.initiative-progress.json",
+			"!**/.ai/alpha/specs/**/spec-manifest.json"
 		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },

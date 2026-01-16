@@ -252,7 +252,7 @@ const baseEmail = process.env.CI ? `ci.${Date.now()}@test.com` : 'local.test@exa
 
 ### Parallel Test Execution (Sharding)
 
-Tests are organized into 12 shards for parallel CI execution:
+Tests are organized into 15 shards for parallel CI execution:
 
 ```json
 {
@@ -263,12 +263,15 @@ Tests are organized into 12 shards for parallel CI execution:
     "test:shard4": "playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts",
     "test:shard5": "playwright test tests/accessibility/accessibility-hybrid.spec.ts tests/accessibility/accessibility-hybrid-simple.spec.ts",
     "test:shard6": "playwright test tests/healthcheck.spec.ts",
-    "test:shard7": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-auth.spec.ts tests/payload/payload-collections.spec.ts tests/payload/payload-database.spec.ts",
-    "test:shard8": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/seeding.spec.ts tests/payload/seeding-performance.spec.ts",
-    "test:shard9": "playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts",
-    "test:shard10": "playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts",
-    "test:shard11": "playwright test tests/test-configuration-verification.spec.ts",
-    "test:shard12": "playwright test tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts"
+    "test:shard7": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-auth.spec.ts --project=payload",
+    "test:shard8": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-collections.spec.ts --project=payload",
+    "test:shard9": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/payload-database.spec.ts --project=payload",
+    "test:shard10": "playwright test tests/user-billing/user-billing.spec.ts --config=playwright.billing.config.ts",
+    "test:shard11": "playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts",
+    "test:shard12": "playwright test tests/test-configuration-verification.spec.ts",
+    "test:shard13": "playwright test tests/team-accounts/team-accounts.spec.ts tests/team-accounts/team-invitation-mfa.spec.ts",
+    "test:shard14": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/seeding.spec.ts --project=payload",
+    "test:shard15": "PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3021 playwright test tests/payload/seeding-performance.spec.ts --project=payload"
   }
 }
 ```
@@ -277,13 +280,13 @@ Tests are organized into 12 shards for parallel CI execution:
 
 | Group | Shards | Tests |
 |-------|--------|-------|
-| Smoke & Config | 1, 6, 11 | Basic health checks, configuration verification |
+| Smoke & Config | 1, 6, 12 | Basic health checks, configuration verification |
 | Authentication | 2 | Sign-in, sign-up, password reset, MFA |
-| Accounts | 3, 12 | Personal accounts, team accounts |
+| Accounts | 3, 13 | Personal accounts, team accounts |
 | Admin & Invitations | 4 | Admin panel, team invitations |
 | Accessibility | 5 | A11y compliance (axe-core) |
-| Payload CMS | 7, 8 | CMS auth, collections, seeding |
-| Billing | 9, 10 | User billing, team billing (requires Stripe) |
+| Payload CMS | 7, 8, 9, 14, 15 | CMS auth, collections, database, seeding |
+| Billing | 10, 11 | User billing, team billing (requires Stripe) |
 
 ## Related Files
 

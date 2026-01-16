@@ -1,0 +1,164 @@
+# Feature Plan: Course Progress Card
+
+**Issue**: #1297
+**Parent**: #1295
+**Research Manifest**: #1294
+**Phase**: 2
+**Effort**: S (Small)
+**Dependencies**: #1296 (Dashboard Data Loader)
+
+---
+
+## Overview
+
+Create a client component displaying course completion percentage using the existing `RadialProgress` component. Shows completed lessons count and total lessons. This component is part of the dashboard's top row of metric cards.
+
+## Solution Approach
+
+**Component Pattern**: Client Component with Radial Progress Visualization
+
+- Reuse existing `RadialProgress` component from `apps/web/app/home/(user)/course/_components/`
+- Receive `CourseProgress` data from parent via props (from dashboard loader)
+- Display progress as radial chart with percentage and lesson counts
+- Add link to full course view for users to continue
+
+**Key Design Decisions**:
+- Client component for smooth animations when progress updates
+- Reuse existing RadialProgress to maintain design consistency
+- Fixed height container prevents layout shift in grid
+- Empty state when no courses exist
+
+## Research Applied
+
+### From Manifest
+- Reuse existing `RadialProgress` component pattern
+- Course progress comes from parallel dashboard loader
+- Handle empty state when no courses exist
+- Fixed-height skeleton loader prevents layout jank
+
+### From Skills
+- Client component wrapping existing shadcn components
+- Props-based data flow from server parent
+- Tailwind CSS for responsive layout
+
+## Files to Create/Modify
+
+### New Files
+| File | Purpose |
+|------|---------|
+| `apps/web/app/home/(user)/_components/course-progress-card.tsx` | Course progress card component |
+
+### Modified Files
+| File | Changes |
+|------|---------|
+| `apps/web/app/home/(user)/page.tsx` | Import and render CourseProgressCard in dashboard |
+
+## Implementation Tasks
+
+### Task 1: Create Course Progress Card Component
+- [ ] Import `RadialProgress` component
+- [ ] Accept `CourseProgress` data as props
+- [ ] Display radial progress chart
+- [ ] Show completion percentage text
+- [ ] Show lesson counts (e.g., "12 of 24 lessons")
+- [ ] Add link to continue course
+- [ ] Style with shadcn Card component
+- [ ] Add hover effect for interactivity
+
+**File**: `apps/web/app/home/(user)/_components/course-progress-card.tsx`
+
+```typescript
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Button } from '@kit/ui/button';
+import { ArrowRight } from 'lucide-react';
+import type { CourseProgress } from '../_lib/types/dashboard.types';
+import { RadialProgress } from '../course/_components/RadialProgress';
+
+interface CourseProgressCardProps {
+  data: CourseProgress;
+}
+
+export function CourseProgressCard({ data }: CourseProgressCardProps) {
+  if (data.completedLessons === 0 && data.totalLessons === 0) {
+    return (
+      <Card className="h-[320px] flex items-center justify-center">
+        <CardContent>
+          <p className="text-muted-foreground text-center">
+            No courses started yet
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="h-[320px] flex flex-col">
+      <CardHeader>
+        <CardTitle>Course Progress</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col items-center justify-center gap-4">
+        <RadialProgress
+          value={data.completionPercentage}
+          size="lg"
+        />
+        <div className="text-center">
+          <p className="text-2xl font-bold">
+            {data.completionPercentage}%
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {data.completedLessons} of {data.totalLessons} lessons
+          </p>
+        </div>
+        <Button variant="outline" className="w-full gap-2">
+          Continue Course
+          <ArrowRight className="w-4 h-4" />
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+### Task 2: Handle Empty States and Loading
+- [ ] Create skeleton loader for course progress card
+- [ ] Display skeleton while data loads
+- [ ] Handle null/undefined data gracefully
+- [ ] Test with empty database
+
+### Task 3: Type Safety
+- [ ] Ensure `CourseProgress` type is correctly imported
+- [ ] Add proper TypeScript interfaces for props
+- [ ] No `any` types
+
+### Task 4: Integration Testing
+- [ ] Verify component renders with valid data
+- [ ] Test empty state rendering
+- [ ] Test button click navigation
+
+## Validation Commands
+
+```bash
+pnpm typecheck
+pnpm lint:fix
+pnpm format:fix
+pnpm build
+```
+
+## Acceptance Criteria
+
+- [ ] Component exists at `apps/web/app/home/(user)/_components/course-progress-card.tsx`
+- [ ] Displays radial progress chart using existing component
+- [ ] Shows completion percentage and lesson counts
+- [ ] Includes link to continue course
+- [ ] Empty state displayed when no course data
+- [ ] Component receives data from dashboard loader via props
+- [ ] TypeScript strict mode passes
+- [ ] All validation commands pass
+- [ ] Fixed height prevents layout jank
+
+---
+*Plan generated by initiative-planning agent*
+*Skills used: frontend-design*
+*Research conducted: no*

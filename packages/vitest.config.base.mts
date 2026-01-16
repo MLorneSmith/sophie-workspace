@@ -63,6 +63,28 @@ export const createPackageConfig = (packageDir: string) => {
 				// Common kit packages
 				"@kit/shared": resolve(packageDir, "../shared/src"),
 				"@kit/ui": resolve(packageDir, "../ui/src"),
+<<<<<<< HEAD
+				// @kit/shared subpath exports - resolve to source files
+				// This avoids requiring packages to be built before running tests in CI
+				"@kit/shared/registry": resolve(
+					packageDir,
+					"../shared/src/registry/index.ts",
+				),
+				"@kit/shared/logger": resolve(
+					packageDir,
+					"../shared/src/logger/index.ts",
+				),
+				"@kit/shared/utils": resolve(packageDir, "../shared/src/utils.ts"),
+				"@kit/shared/hooks": resolve(
+					packageDir,
+					"../shared/src/hooks/index.ts",
+				),
+				"@kit/shared/events": resolve(
+					packageDir,
+					"../shared/src/events/index.tsx",
+				),
+=======
+>>>>>>> origin/staging
 			},
 		},
 

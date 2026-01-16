@@ -1,0 +1,14 @@
+diff --git a/dist/utilities/createLocalReq.js b/dist/utilities/createLocalReq.js
+index 1234567..abcdefg 100644
+--- a/dist/utilities/createLocalReq.js
++++ b/dist/utilities/createLocalReq.js
+@@ -31,7 +31,8 @@ const attachFakeURLProperties = (req, urlSuffix)=>{
+             return urlObject;
+         }
+         const fallbackURL = `http://${req.host || 'localhost'}${urlSuffix || ''}`;
+-        const urlToUse = req?.url || req.payload?.config?.serverURL ? `${req.payload?.config.serverURL}${urlSuffix || ''}` : fallbackURL;
++        // Fix operator precedence bug - prioritize req.url if it exists
++        const urlToUse = req?.url || (req.payload?.config?.serverURL ? `${req.payload?.config.serverURL}${urlSuffix || ''}` : fallbackURL);
+         try {
+             urlObject = new URL(urlToUse);
+         } catch (_err) {
