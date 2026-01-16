@@ -164,6 +164,12 @@ CREATE SCHEMA public;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO public;
 COMMENT ON SCHEMA public IS 'standard public schema';
+
+-- Reset migration history to allow fresh migration push
+-- This is critical: without it, supabase db push fails with
+-- "Remote migration versions not found in local migrations directory"
+-- because the schema_migrations table retains orphan records after schema drop
+TRUNCATE supabase_migrations.schema_migrations;
 `;
 
 	try {
@@ -172,7 +178,7 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 			encoding: "utf-8",
 			stdio: ["pipe", "pipe", "pipe"],
 		});
-		log("   ✅ Database schema reset");
+		log("   ✅ Database schema reset (including migration history)");
 		emitOrchestratorEvent(
 			"db_reset_complete",
 			"Database schema reset complete",
