@@ -37,6 +37,7 @@ import {
 	checkEnvironment,
 	GITHUB_TOKEN,
 	setOrchestratorUrl,
+	validatePythonDependencies,
 } from "./environment.js";
 import { runFeatureImplementation } from "./feature.js";
 import { runHealthChecks } from "./health.js";
@@ -867,6 +868,23 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const manifest = manifestOrNull as SpecManifest;
+
+	// =========================================================================
+	// Validate Python Dependencies (before event server)
+	// =========================================================================
+	if (options.ui && !options.dryRun) {
+		log("\n🔍 Validating Python dependencies...");
+		const depsOk = await validatePythonDependencies(log);
+		if (!depsOk) {
+			console.error(
+				"❌ Python dependencies are required for the event server.",
+			);
+			console.error(
+				"   Install with: pip install -r .ai/alpha/scripts/python-requirements.txt",
+			);
+			process.exit(1);
+		}
+	}
 
 	// =========================================================================
 	// Start Event Server for real-time streaming (before UI)

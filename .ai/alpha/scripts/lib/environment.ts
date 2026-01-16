@@ -191,6 +191,79 @@ export function validateSupabaseTokensRequired(): {
 }
 
 // ============================================================================
+// Python Dependency Validation
+// ============================================================================
+
+/**
+ * Validate that required Python packages are installed.
+ * Attempts to install them if missing.
+ *
+ * @param log - Logger function
+ * @returns true if packages are available (either already installed or just installed)
+ */
+export async function validatePythonDependencies(
+	log: (...args: unknown[]) => void,
+): Promise<boolean> {
+	const { execSync } = await import("node:child_process");
+
+	const packages = ["fastapi", "uvicorn", "websockets"];
+	const missingPackages: string[] = [];
+
+	// Check which packages are missing
+	for (const pkg of packages) {
+		try {
+			execSync(`python3 -c "import ${pkg}"`, { stdio: "ignore" });
+		} catch {
+			missingPackages.push(pkg);
+		}
+	}
+
+	// If all packages present, we're good
+	if (missingPackages.length === 0) {
+		log("   ✅ Python dependencies verified");
+		return true;
+	}
+
+	// Try to install missing packages
+	log(`   ⚠️ Missing Python packages: ${missingPackages.join(", ")}`);
+	log("   📦 Attempting to install via pip...");
+
+	try {
+		// Get project root to locate requirements file
+		const projectRoot =
+			process.env.PROJECT_ROOT ||
+			path.resolve(
+				path.dirname(new URL(import.meta.url).pathname),
+				"../../../..",
+			);
+		const requirementsPath = path.join(
+			projectRoot,
+			".ai/alpha/scripts/python-requirements.txt",
+		);
+
+		// Check if requirements file exists
+		if (!fs.existsSync(requirementsPath)) {
+			log(`   ❌ Requirements file not found: ${requirementsPath}`);
+			log("   📖 Manual installation:");
+			log("      pip install fastapi uvicorn websockets");
+			return false;
+		}
+
+		execSync(`pip install -q -r "${requirementsPath}"`, {
+			stdio: ["pipe", "pipe", "pipe"],
+		});
+		log("   ✅ Python dependencies installed successfully");
+		return true;
+	} catch (err) {
+		const errorMessage = err instanceof Error ? err.message : String(err);
+		log(`   ❌ Failed to install Python dependencies: ${errorMessage}`);
+		log("   📖 Manual installation:");
+		log("      pip install -r .ai/alpha/scripts/python-requirements.txt");
+		return false;
+	}
+}
+
+// ============================================================================
 // Environment Validation
 // ============================================================================
 

@@ -83,16 +83,21 @@ export function emitOrchestratorEvent(
 	};
 
 	// Fire-and-forget: send event without blocking
-	// Using fetch with .catch() to swallow any errors silently
+	// Using fetch with .catch() to handle errors gracefully
 	fetch(EVENT_SERVER_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(event),
-	}).catch(() => {
-		// Silently ignore errors - event server may not be running
-		// Orchestrator should never be blocked by event delivery failures
+	}).catch((err) => {
+		// In non-UI mode (ORCHESTRATOR_UI_ENABLED not set), log the error to help with debugging
+		// In UI mode, silently ignore - orchestrator continues regardless of event delivery
+		if (!process.env.ORCHESTRATOR_UI_ENABLED) {
+			console.error(
+				`⚠️ Failed to emit event to event server: ${err instanceof Error ? err.message : String(err)}`,
+			);
+		}
 	});
 }
 
