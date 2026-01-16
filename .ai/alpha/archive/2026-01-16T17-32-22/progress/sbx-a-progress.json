@@ -1,0 +1,39 @@
+{
+	"sandbox_id": "i8qvhjndlmziuoj5t7brx",
+	"runId": "run-mkh4tnhc-cast",
+	"feature": {
+		"issue_number": 1367,
+		"title": "Dashboard Page & Grid Layout"
+	},
+	"current_task": {
+		"id": "T4",
+		"name": "T4: Create dashboard page component skeleton",
+		"status": "in_progress",
+		"started_at": "2026-01-16T17:15:10.389272Z"
+	},
+	"current_group": {
+		"id": 1,
+		"name": "Foundation (Types & Loader Skeleton)",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T17:15:13.823996Z",
+	"last_tool": "Read",
+	"session_id": "i8qvhjndlmziuoj5t7brx",
+	"recent_output": [
+		"💻 Bash: cat > .initiative-progress.jso...",
+		"📋 Todo: 1/20 done",
+		"📝 Write: dashboard-page.loader.ts",
+		"💻 Bash: test -f \"apps/web/app/home/(us...",
+		"📋 Todo: 2/20 done",
+		"💻 Bash: mkdir -p \"apps/web/app/home/(u...",
+		"📝 Write: dashboard-skeleton.tsx",
+		"💻 Bash: test -f \"apps/web/app/home/(us...",
+		"📋 Todo: 3/20 done",
+		"📖 Read: page.tsx"
+	]
+}

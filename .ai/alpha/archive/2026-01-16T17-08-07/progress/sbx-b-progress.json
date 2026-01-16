@@ -17,13 +17,7 @@
 		"tasks_total": 3,
 		"tasks_completed": 0
 	},
-	"completed_tasks": [
-		"T1",
-		"T2",
-		"T3",
-		"T4",
-		"T5"
-	],
+	"completed_tasks": ["T1", "T2", "T3", "T4", "T5"],
 	"failed_tasks": [],
 	"context_usage_percent": 30,
 	"status": "in_progress",
@@ -32,7 +26,5 @@
 	"last_tool": "Bash",
 	"last_commit": "58b47de",
 	"session_id": "ibjyz54r4e6pnuoesk20y",
-	"recent_output": [
-		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca..."
-	]
+	"recent_output": ["💻 Bash: TIMESTAMP=$(date -Iseconds)\nca..."]
 }

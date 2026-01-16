@@ -1,0 +1,34 @@
+{
+	"sandbox_id": "i6ep03ceilwzxgc1lek2f",
+	"runId": "run-mkh5ows2-3sx5",
+	"feature": {
+		"issue_number": 1367,
+		"title": "Dashboard Page & Grid Layout"
+	},
+	"current_task": {
+		"id": "T1",
+		"name": "Create dashboard TypeScript types",
+		"status": "starting",
+		"started_at": "2026-01-16T17:36:20+00:00"
+	},
+	"current_group": {
+		"id": 1,
+		"name": "Foundation (Types & Loader Skeleton)",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"context_usage_percent": 10,
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T17:37:51.882972Z",
+	"last_tool": "Bash",
+	"session_id": "i6ep03ceilwzxgc1lek2f",
+	"recent_output": [
+		"💻 Bash: TIMESTAMP=$(date -Iseconds)\nca...",
+		"💻 Bash: mkdir -p apps/web/app/home/\\(u...",
+		"📝 Write: dashboard.types.ts",
+		"💻 Bash: test -f apps/web/app/home/\\(us..."
+	]
+}
