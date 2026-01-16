@@ -59,16 +59,18 @@ function getCookieDomainConfig(baseURL: string): {
 		// Set EXPLICIT domain for Playwright's cookie API to properly associate cookies
 		// This ensures cookies are sent with requests in CI environment
 		// See: Issue #1494 - Team accounts tests fail due to cookie domain mismatch
+		// See: Issue #1524 - sameSite=None required for cross-site cookie compatibility
 		if (hostname.endsWith(".vercel.app")) {
 			debugLog("cookie:vercel_preview_detected", {
 				hostname,
 				baseURL,
 				domain: hostname,
+				sameSite: "None",
 			});
 			return {
 				domain: hostname, // Explicit domain for Playwright cookie API
 				isVercelPreview: true,
-				sameSite: "Lax", // Vercel protection bypass handles cross-origin
+				sameSite: "None", // Required for cross-site cookie compatibility in CI
 			};
 		}
 
@@ -957,64 +959,45 @@ async function globalSetup(config: FullConfig) {
 						),
 					};
 
-					// Cookie domain/url strategy based on environment:
-					// - Local/Docker: Use explicit domain (e.g., "localhost")
-					// - Vercel preview: Use url property (domain is undefined)
+					// Cookie domain strategy:
+					// - All environments now use explicit domain (localhost, hostname, etc.)
+					// - Vercel preview uses sameSite=None for cross-site cookie compatibility
 					//
 					// Playwright's addCookies() API requires: url OR (domain AND path)
-					// See: Issue #1109 - E2E Local Test Regression After Vercel Preview Cookie Fixes
-					//
-					// IMPORTANT: We explicitly check isVercelPreview to ensure local tests
-					// NEVER accidentally get the url property, which can cause cookie
-					// transmission issues with Docker-based test infrastructure.
+					// We always use domain for reliability across all environments
+					// See: Issue #1494 - Fixed to use explicit domain for Vercel preview
+					// See: Issue #1524 - Changed to sameSite=None for cross-site compatibility
 					if (domain) {
-						// Local development, Docker tests, or production with explicit domain
+						// All environments: use explicit domain for reliable cookie transmission
 						return { ...cookieBase, domain };
 					}
 
-					// Only use url property for Vercel preview deployments
-					// This is required because Vercel preview URLs are dynamic and
-					// we cannot set an explicit domain
-					// When using url, we must omit path to avoid Playwright cookie API conflicts
-					// See: Issue #1485 - Vercel Bypass Cookie Missing URL Property
-					if (cookieConfig.isVercelPreview) {
-						return {
-							name: cookieBase.name,
-							value: cookieBase.value,
-							url: baseURL,
-							expires: cookieBase.expires,
-							httpOnly: cookieBase.httpOnly,
-							secure: cookieBase.secure,
-							sameSite: cookieBase.sameSite,
-						};
-					}
-
-					// Fallback: If domain is undefined but NOT Vercel preview,
-					// default to localhost for safety (prevents test failures)
+					// Fallback: If domain is unexpectedly undefined, use localhost
+					// This should never happen with current getCookieDomainConfig implementation
+					// but provides a safety net for edge cases
 					debugLog("cookie:fallback_domain", {
 						name: c.name,
-						reason: "domain undefined but not Vercel preview",
+						reason: "domain undefined (unexpected)",
 						fallback: "localhost",
 					});
 					return { ...cookieBase, domain: "localhost" };
 				});
 
 			// Log cookie details for debugging
-			// Note: domain may be undefined for Vercel preview deployments (browser uses default)
+			// Note: All cookies now use explicit domain (localhost, hostname, or Vercel preview hostname)
 			debugLog("cookies:setting", {
 				user: authState.name,
 				totalCookies: cookiesToSet.length,
 				cookieExpires,
 				expiresDate: new Date(cookieExpires * 1000).toISOString(),
-				domainStrategy: domain
-					? `explicit: ${domain}`
-					: "browser default (Vercel preview)",
+				domainStrategy: `explicit: ${domain ?? "localhost"}`,
+				sameSiteStrategy: cookieConfig.sameSite,
 				cookies: cookiesToSet.map((c) => ({
 					name: c.name,
 					valueLength: c.value.length,
 					valuePreview: `${c.value.substring(0, 30)}...`,
-					domain: "domain" in c ? c.domain : "(browser default)",
-					path: "path" in c ? c.path : "(derived from url)",
+					domain: "domain" in c ? c.domain : "localhost",
+					path: "path" in c ? c.path : "/",
 					expires: c.expires,
 					secure: c.secure,
 				})),
