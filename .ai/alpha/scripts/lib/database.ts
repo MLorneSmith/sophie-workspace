@@ -262,7 +262,20 @@ export async function seedSandboxDatabase(
 
 		return true;
 	} catch (err) {
-		error(`❌ Seeding failed: ${err}`);
+		// Extract detailed error information from E2B CommandExitError or standard Error
+		let errorMessage: string;
+		if (err && typeof err === "object" && "stderr" in err) {
+			// E2B CommandExitError has stderr property with actual error details
+			const stderr = (err as { stderr: string }).stderr;
+			const exitCode =
+				"exitCode" in err ? (err as { exitCode: number }).exitCode : "unknown";
+			errorMessage = `exit code ${exitCode}, stderr: ${stderr}`;
+		} else if (err instanceof Error) {
+			errorMessage = err.message;
+		} else {
+			errorMessage = String(err);
+		}
+		error(`❌ Seeding failed: ${errorMessage}`);
 		return false;
 	}
 }
