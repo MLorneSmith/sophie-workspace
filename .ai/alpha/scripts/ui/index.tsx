@@ -15,8 +15,13 @@ import {
 	useProgressPoller,
 } from "./hooks/useProgressPoller.js";
 import { useEventStream } from "./hooks/useEventStream.js";
-import type { UIState, WebSocketEvent } from "./types.js";
-import { EVENT_SERVER_PORT } from "./types.js";
+import type {
+	OrchestratorEvent,
+	OrchestratorEventType,
+	UIState,
+	WebSocketEvent,
+} from "./types.js";
+import { EVENT_SERVER_PORT, MAX_EVENTS } from "./types.js";
 
 /**
  * UI Manager configuration
@@ -77,6 +82,11 @@ const OrchestratorApp: React.FC<{
 		() => new Map(),
 	);
 
+	// Orchestrator events from WebSocket (for EventLog display)
+	const [orchestratorEvents, setOrchestratorEvents] = useState<
+		OrchestratorEvent[]
+	>([]);
+
 	// Map sandbox_id to label for event routing
 	const sandboxIdToLabelRef = useRef<Map<string, string>>(new Map());
 
@@ -124,11 +134,128 @@ const OrchestratorApp: React.FC<{
 		[],
 	);
 
-	// Handle incoming WebSocket event - update real-time output
+	// Map WebSocket event types to OrchestratorEventType
+	// Returns the event_type if it's a valid OrchestratorEventType, otherwise 'error'
+	const mapWebSocketToOrchestratorEventType = useCallback(
+		(eventType: string): OrchestratorEventType => {
+			const validTypes: OrchestratorEventType[] = [
+				"task_start",
+				"task_complete",
+				"task_failed",
+				"feature_start",
+				"feature_complete",
+				"group_complete",
+				"commit",
+				"push",
+				"error",
+				"health_warning",
+				"stall_detected",
+				"sandbox_restart",
+				"context_limit",
+				"sandbox_idle",
+				"sandbox_unblocked",
+				"db_capacity_check",
+				"db_capacity_ok",
+				"db_capacity_warning",
+				"db_reset_start",
+				"db_reset_complete",
+				"db_migration_start",
+				"db_migration_complete",
+				"db_seed_start",
+				"db_seed_complete",
+				"db_verify",
+			];
+
+			if (validTypes.includes(eventType as OrchestratorEventType)) {
+				return eventType as OrchestratorEventType;
+			}
+
+			// Unknown event types are mapped to 'error' type for graceful handling
+			return "error";
+		},
+		[],
+	);
+
+	// Generate default message for orchestrator events based on type
+	const getOrchestratorEventMessage = useCallback(
+		(eventType: OrchestratorEventType): string => {
+			const messages: Record<OrchestratorEventType, string> = {
+				task_start: "Task started",
+				task_complete: "Task completed",
+				task_failed: "Task failed",
+				feature_start: "Feature started",
+				feature_complete: "Feature completed",
+				group_complete: "Group completed",
+				commit: "Changes committed",
+				push: "Changes pushed",
+				error: "Error occurred",
+				health_warning: "Health warning",
+				stall_detected: "Stall detected",
+				sandbox_restart: "Sandbox restarted",
+				context_limit: "Context limit reached",
+				sandbox_idle: "Sandbox idle",
+				sandbox_unblocked: "Sandbox unblocked",
+				db_capacity_check: "Checking database capacity...",
+				db_capacity_ok: "Database capacity OK",
+				db_capacity_warning: "Database capacity warning",
+				db_reset_start: "Resetting sandbox database...",
+				db_reset_complete: "Database schema reset complete",
+				db_migration_start: "Running migrations...",
+				db_migration_complete: "Migrations complete",
+				db_seed_start: "Running database seeding...",
+				db_seed_complete: "Database seeding complete",
+				db_verify: "Verified database state",
+			};
+			return messages[eventType] || "Unknown event";
+		},
+		[],
+	);
+
+	// Handle orchestrator-specific WebSocket events
+	// These are events with sandbox_id === "orchestrator" (database operations, etc.)
+	const handleOrchestratorEvent = useCallback(
+		(event: WebSocketEvent) => {
+			// Only process orchestrator events (not sandbox tool events)
+			if (event.sandbox_id !== "orchestrator") return;
+
+			const eventType = mapWebSocketToOrchestratorEventType(event.event_type);
+			const timestamp = event.timestamp
+				? new Date(event.timestamp)
+				: new Date();
+
+			// Extract message from event or use default based on type
+			// WebSocket events may include a message in the data, or we generate one
+			const message =
+				(event as WebSocketEvent & { message?: string }).message ||
+				getOrchestratorEventMessage(eventType);
+
+			const orchestratorEvent: OrchestratorEvent = {
+				id: `orchestrator-${event.event_type}-${timestamp.getTime()}`,
+				timestamp,
+				type: eventType,
+				sandboxLabel: "orchestrator",
+				message,
+			};
+
+			setOrchestratorEvents((prev) => {
+				// Add new event at the beginning (newest first)
+				// Keep last MAX_EVENTS events
+				return [orchestratorEvent, ...prev].slice(0, MAX_EVENTS);
+			});
+		},
+		[mapWebSocketToOrchestratorEventType, getOrchestratorEventMessage],
+	);
+
+	// Handle incoming WebSocket event - update real-time output for sandbox tools
+	// Note: Orchestrator events (sandbox_id === "orchestrator") are handled by handleOrchestratorEvent
 	const handleWebSocketEvent = useCallback(
 		(event: WebSocketEvent) => {
 			const sandboxId = event.sandbox_id;
 			if (!sandboxId) return;
+
+			// Skip orchestrator events - they are handled separately by handleOrchestratorEvent
+			// This ensures clean separation between sandbox tool events and orchestrator operation events
+			if (sandboxId === "orchestrator") return;
 
 			// Skip non-tool events (heartbeats, etc.)
 			if (event.event_type !== "post_tool_use") return;
@@ -148,12 +275,25 @@ const OrchestratorApp: React.FC<{
 		[formatEventForDisplay],
 	);
 
+	// Combined event handler that routes events to appropriate handlers
+	// - Orchestrator events (sandbox_id === "orchestrator") go to handleOrchestratorEvent
+	// - Sandbox tool events go to handleWebSocketEvent
+	const handleIncomingEvent = useCallback(
+		(event: WebSocketEvent) => {
+			// Route to appropriate handler based on sandbox_id
+			// Both handlers have their own filtering, so we call both
+			handleOrchestratorEvent(event);
+			handleWebSocketEvent(event);
+		},
+		[handleOrchestratorEvent, handleWebSocketEvent],
+	);
+
 	// Event streaming hook
 	const wsUrl = eventServerUrl || `ws://localhost:${EVENT_SERVER_PORT}/ws`;
 	const eventStream = useEventStream({
 		url: wsUrl,
 		enabled: eventStreamEnabled,
-		onEvent: handleWebSocketEvent,
+		onEvent: handleIncomingEvent,
 	});
 
 	// Progress poller configuration
@@ -204,37 +344,45 @@ const OrchestratorApp: React.FC<{
 		}
 	}, [state.sandboxes]);
 
-	// Create enhanced state with real-time output overlay
-	// This merges WebSocket events with the polled state for display
+	// Create enhanced state with real-time output overlay and merged events
+	// This merges:
+	// - WebSocket sandbox tool events with the polled sandbox state for display
+	// - WebSocket orchestrator events with the polled event log for display
 	const enhancedState = React.useMemo((): UIState => {
-		// If no real-time output yet, return original state
-		if (realtimeOutput.size === 0) {
-			return state;
-		}
-
 		// Create new sandboxes map with real-time output
 		const enhancedSandboxes = new Map(state.sandboxes);
 
-		for (const [sandboxId, output] of realtimeOutput) {
-			// Find the label for this sandbox ID
-			const label = sandboxIdToLabelRef.current.get(sandboxId);
-			if (!label) continue;
+		if (realtimeOutput.size > 0) {
+			for (const [sandboxId, output] of realtimeOutput) {
+				// Find the label for this sandbox ID
+				const label = sandboxIdToLabelRef.current.get(sandboxId);
+				if (!label) continue;
 
-			const existingSandbox = enhancedSandboxes.get(label);
-			if (!existingSandbox) continue;
+				const existingSandbox = enhancedSandboxes.get(label);
+				if (!existingSandbox) continue;
 
-			// Overlay real-time output (last 3 lines for display)
-			enhancedSandboxes.set(label, {
-				...existingSandbox,
-				recentOutput: output.slice(-3),
-			});
+				// Overlay real-time output (last 3 lines for display)
+				enhancedSandboxes.set(label, {
+					...existingSandbox,
+					recentOutput: output.slice(-3),
+				});
+			}
 		}
+
+		// Merge orchestrator events with state.events
+		// - state.events comes from progress file polling (sandbox state events)
+		// - orchestratorEvents comes from WebSocket (database operations, etc.)
+		// Sort by timestamp (newest first) and limit to MAX_EVENTS
+		const mergedEvents = [...orchestratorEvents, ...state.events]
+			.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+			.slice(0, MAX_EVENTS);
 
 		return {
 			...state,
 			sandboxes: enhancedSandboxes,
+			events: mergedEvents,
 		};
-	}, [state, realtimeOutput]);
+	}, [state, realtimeOutput, orchestratorEvents]);
 
 	// Calculate elapsed time for completion screen
 	const getElapsedTime = useCallback((): string => {
