@@ -1,0 +1,33 @@
+{
+	"sandbox_id": "ish9r26p22h9ytcdfwema",
+	"runId": "run-mkh932z7-cdfr",
+	"feature": {
+		"issue_number": 1376,
+		"title": "Kanban Summary Card"
+	},
+	"current_task": {
+		"id": "T1",
+		"name": "Create kanban-summary.loader.ts with parallel task queries",
+		"status": "starting",
+		"started_at": "2026-01-16T19:30:00Z"
+	},
+	"current_group": {
+		"id": 0,
+		"name": "Foundation",
+		"tasks_total": 2,
+		"tasks_completed": 0
+	},
+	"completed_tasks": [],
+	"failed_tasks": [],
+	"status": "in_progress",
+	"phase": "executing",
+	"last_heartbeat": "2026-01-16T19:13:20.300073Z",
+	"last_tool": "Bash",
+	"session_id": "ish9r26p22h9ytcdfwema",
+	"recent_output": [
+		"💻 Bash: cat > .initiative-progress.jso...",
+		"💻 Bash: mkdir -p apps/web/app/home/\\(u...",
+		"📝 Write: kanban-summary.loader.ts",
+		"💻 Bash: pnpm typecheck 2>&1 | head -50"
+	]
+}
