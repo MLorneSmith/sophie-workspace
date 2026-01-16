@@ -826,3 +826,99 @@ The old `alpha-orchestrator.ts` still exists for backwards compatibility but is 
 Migrate by:
 1. Generate spec manifest: `tsx generate-spec-manifest.ts <spec-id>`
 2. Use new orchestrator: `tsx spec-orchestrator.ts <spec-id>`
+
+## Orchestrator Event Streaming
+
+### Overview
+
+The orchestrator emits real-time events for database operations and other setup tasks to the event server. These events are displayed in the UI dashboard, providing visibility into orchestrator-side operations that were previously hidden when running in UI mode (where console output is suppressed).
+
+### Event Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      ORCHESTRATOR EVENT STREAMING                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  Orchestrator (local)                     Event Server (local)              │
+│  ┌─────────────────────────┐             ┌─────────────────────────┐       │
+│  │ Database Operations     │             │                         │       │
+│  │ - Capacity check        │  HTTP POST  │ FastAPI Server          │       │
+│  │ - Schema reset          │────────────►│ - /api/events endpoint  │       │
+│  │ - Migration apply       │             │ - Event storage         │       │
+│  │ - Payload seeding       │             │ - WebSocket broadcast   │       │
+│  └─────────────────────────┘             └──────────┬──────────────┘       │
+│                                                      │                      │
+│                                                      │ WebSocket            │
+│                                                      ▼                      │
+│                                          ┌─────────────────────────┐       │
+│                                          │ UI Dashboard (Ink)      │       │
+│                                          │ - EventLog component    │       │
+│                                          │ - Real-time display     │       │
+│                                          └─────────────────────────┘       │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Event Types
+
+Database operation events emitted by the orchestrator:
+
+| Event Type | Icon | Color | Description |
+|------------|------|-------|-------------|
+| `db_capacity_check` | 📊 | cyan | Database capacity check started |
+| `db_capacity_ok` | ✅ | green | Capacity within limits |
+| `db_capacity_warning` | ⚠️ | yellow | Approaching capacity limit |
+| `db_reset_start` | 🔄 | yellow | Database reset initiated |
+| `db_reset_complete` | ✅ | green | Database reset finished |
+| `db_migration_start` | 📦 | cyan | Migration application started |
+| `db_migration_complete` | ✅ | green | Migrations applied successfully |
+| `db_seed_start` | 🌱 | green | Database seeding started |
+| `db_seed_complete` | ✅ | green | Seeding finished |
+| `db_verify` | 🔍 | cyan | Verification of seeded data |
+
+### Implementation
+
+The event emitter uses a fire-and-forget pattern:
+
+```typescript
+// Fire event without blocking
+emitOrchestratorEvent("db_reset_start", "Resetting sandbox database...");
+
+// With optional details
+emitOrchestratorEvent("db_capacity_ok", "Capacity OK: 45MB / 500MB", {
+  sizeMB: 45,
+  limitMB: 500
+});
+```
+
+**Key characteristics:**
+- Non-blocking: Uses `fetch()` without awaiting
+- Graceful degradation: Silently catches errors if event server is unavailable
+- Special `sandbox_id`: Uses "orchestrator" to distinguish from sandbox events
+- Timestamps: ISO 8601 format generated at emission time
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `.ai/alpha/scripts/lib/event-emitter.ts` | Event emission utility |
+| `.ai/alpha/scripts/lib/database.ts` | Integration point for DB events |
+| `.ai/alpha/scripts/ui/types.ts` | Event type definitions |
+| `.ai/alpha/scripts/ui/components/EventLog.tsx` | Event display (icons, colors) |
+| `.ai/alpha/scripts/event-server.py` | Event server (receives and broadcasts) |
+
+### Troubleshooting
+
+If database events don't appear in the UI:
+
+1. **Event server not running**: The orchestrator starts the event server automatically. Check logs for startup errors.
+
+2. **Port conflict**: Event server uses port 9000. Ensure no other process is using it:
+   ```bash
+   lsof -ti:9000
+   ```
+
+3. **WebSocket connection**: Check UI status indicator shows "connected" to event server.
+
+4. **Graceful degradation**: If event server is unavailable, the orchestrator continues normally - events are simply not displayed. This is by design to prevent blocking.

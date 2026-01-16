@@ -18,6 +18,7 @@ import {
 	getSupabaseAccessToken,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
+import { emitOrchestratorEvent } from "./event-emitter.js";
 import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 
 // ============================================================================
@@ -65,6 +66,9 @@ export async function checkDatabaseCapacity(
 		return true;
 	}
 
+	// Emit start event
+	emitOrchestratorEvent("db_capacity_check", "Checking database capacity...");
+
 	try {
 		const result = execSync(
 			`psql "${dbUrl}" -t -c "SELECT pg_database_size('postgres')"`,
@@ -83,12 +87,26 @@ export async function checkDatabaseCapacity(
 				`   ⚠️ Database near capacity (${sizeMB.toFixed(1)}MB / ${limitMB}MB)`,
 			);
 
+			// Emit warning event
+			emitOrchestratorEvent(
+				"db_capacity_warning",
+				`Database near capacity: ${sizeMB.toFixed(1)}MB / ${limitMB}MB`,
+				{ sizeMB, limitMB, warningThreshold },
+			);
+
 			if (sizeMB > limitMB * 0.95) {
 				error(
 					"   ❌ Database at capacity. Reset required before orchestration.",
 				);
 				return false;
 			}
+		} else {
+			// Emit success event
+			emitOrchestratorEvent(
+				"db_capacity_ok",
+				`Database capacity OK: ${sizeMB.toFixed(1)}MB / ${limitMB}MB`,
+				{ sizeMB, limitMB },
+			);
 		}
 
 		return true;
@@ -134,6 +152,7 @@ export async function resetSandboxDatabase(
 	}
 
 	log("🔄 Resetting sandbox database...");
+	emitOrchestratorEvent("db_reset_start", "Resetting sandbox database...");
 
 	// Mark reset in progress
 	updateLockResetState(true);
@@ -154,6 +173,10 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 			stdio: ["pipe", "pipe", "pipe"],
 		});
 		log("   ✅ Database schema reset");
+		emitOrchestratorEvent(
+			"db_reset_complete",
+			"Database schema reset complete",
+		);
 
 		// Apply base migrations from local project
 		const projectRoot = getProjectRoot();
@@ -161,6 +184,10 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 
 		if (fs.existsSync(path.join(webDir, "supabase", "migrations"))) {
 			log("   📦 Applying base migrations...");
+			emitOrchestratorEvent(
+				"db_migration_start",
+				"Applying base migrations...",
+			);
 			try {
 				execSync(`supabase db push --db-url "${dbUrl}"`, {
 					cwd: webDir,
@@ -168,6 +195,10 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 					stdio: ["pipe", "pipe", "pipe"],
 				});
 				log("   ✅ Base migrations applied");
+				emitOrchestratorEvent(
+					"db_migration_complete",
+					"Base migrations applied",
+				);
 			} catch {
 				warn("   ⚠️ Migration push failed (may be OK if no migrations)");
 			}
@@ -212,6 +243,10 @@ export async function seedSandboxDatabase(
 	try {
 		// Step 1: Run Payload migrations
 		log("   📦 Running Payload migrations...");
+		emitOrchestratorEvent(
+			"db_migration_start",
+			"Running Payload migrations...",
+		);
 		const migrateResult = await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR}/apps/payload &&` +
 				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run payload migrate --forceAcceptWarning",
@@ -226,9 +261,14 @@ export async function seedSandboxDatabase(
 			return false;
 		}
 		log("   ✅ Payload migrations complete");
+		emitOrchestratorEvent(
+			"db_migration_complete",
+			"Payload migrations complete",
+		);
 
 		// Step 2: Run Payload seeding
 		log("   🌱 Running Payload seeding...");
+		emitOrchestratorEvent("db_seed_start", "Running Payload seeding...");
 		const seedResult = await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR}/apps/payload && ` +
 				"NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm run seed:run --force",
@@ -243,6 +283,7 @@ export async function seedSandboxDatabase(
 			return false;
 		}
 		log("   ✅ Payload seeding complete");
+		emitOrchestratorEvent("db_seed_complete", "Payload seeding complete");
 
 		// Step 3: Quick verification
 		log("   🔍 Verifying seeded data...");
@@ -254,6 +295,11 @@ export async function seedSandboxDatabase(
 		const userCount = parseInt(verifyResult.stdout.trim(), 10);
 		if (userCount > 0) {
 			log(`   ✅ Verified: ${userCount} user(s) seeded`);
+			emitOrchestratorEvent(
+				"db_verify",
+				`Verified: ${userCount} user(s) seeded`,
+				{ userCount },
+			);
 		} else {
 			warn(
 				"   ⚠️ No users found after seeding (may be normal for some configs)",

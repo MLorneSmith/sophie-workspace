@@ -212,7 +212,18 @@ export type OrchestratorEventType =
 	| "sandbox_restart"
 	| "context_limit"
 	| "sandbox_idle"
-	| "sandbox_unblocked";
+	| "sandbox_unblocked"
+	// Database operation event types (from orchestrator)
+	| "db_capacity_check"
+	| "db_capacity_ok"
+	| "db_capacity_warning"
+	| "db_reset_start"
+	| "db_reset_complete"
+	| "db_migration_start"
+	| "db_migration_complete"
+	| "db_seed_start"
+	| "db_seed_complete"
+	| "db_verify";
 
 /**
 

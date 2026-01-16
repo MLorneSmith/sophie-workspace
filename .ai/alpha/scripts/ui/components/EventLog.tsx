@@ -26,6 +26,17 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	context_limit: "📊",
 	sandbox_idle: "⏸️",
 	sandbox_unblocked: "🔓",
+	// Database operation icons
+	db_capacity_check: "📊",
+	db_capacity_ok: "✅",
+	db_capacity_warning: "⚠️",
+	db_reset_start: "🔄",
+	db_reset_complete: "✅",
+	db_migration_start: "📦",
+	db_migration_complete: "✅",
+	db_seed_start: "🌱",
+	db_seed_complete: "✅",
+	db_verify: "🔍",
 };
 
 /**
@@ -47,6 +58,17 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	context_limit: "yellow",
 	sandbox_idle: "gray",
 	sandbox_unblocked: "green",
+	// Database operation colors
+	db_capacity_check: "cyan",
+	db_capacity_ok: "green",
+	db_capacity_warning: "yellow",
+	db_reset_start: "yellow",
+	db_reset_complete: "green",
+	db_migration_start: "cyan",
+	db_migration_complete: "green",
+	db_seed_start: "green",
+	db_seed_complete: "green",
+	db_verify: "cyan",
 };
 
 /**
@@ -69,6 +91,7 @@ function getSandboxColor(label: string): string {
 		"sbx-a": "cyan",
 		"sbx-b": "magenta",
 		"sbx-c": "yellow",
+		orchestrator: "blue",
 	};
 	return colors[label] || "white";
 }
