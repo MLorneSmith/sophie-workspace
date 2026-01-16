@@ -112,6 +112,9 @@ export {
 // Utilities
 export { sleep } from "./utils.js";
 
+// Port health checks
+export { isPortOpen, waitForDevServer, waitForPort } from "./port-health.js";
+
 // Work queue
 export {
 	cleanupStaleState,

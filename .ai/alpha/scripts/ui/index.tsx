@@ -266,8 +266,13 @@ const OrchestratorApp: React.FC<{
 			setRealtimeOutput((prev) => {
 				const newMap = new Map(prev);
 				const existing = newMap.get(sandboxId) || [];
-				// Keep last 10 items for rolling buffer
-				const updated = [...existing, displayText].slice(-10);
+
+				// Deduplicate: filter out existing entries with same text
+				// Then add new item and keep last 10 unique items
+				const updated = [...existing, displayText]
+					.filter((item, idx, arr) => arr.indexOf(item) === idx) // Remove duplicates
+					.slice(-10); // Keep last 10 unique items
+
 				newMap.set(sandboxId, updated);
 				return newMap;
 			});
@@ -336,10 +341,23 @@ const OrchestratorApp: React.FC<{
 
 	// Track sandbox_id to label mapping when progress files are read
 	// This allows us to route WebSocket events to the correct sandbox column
+	// Also clean up stale IDs when sandbox changes (restart/recovery)
 	useEffect(() => {
+		// Collect current sandbox IDs
+		const currentIds = new Set<string>();
 		for (const [label, sandbox] of state.sandboxes) {
 			if (sandbox.sandboxId) {
+				currentIds.add(sandbox.sandboxId);
 				sandboxIdToLabelRef.current.set(sandbox.sandboxId, label);
+			}
+		}
+
+		// Remove stale IDs that are no longer in current sandboxes
+		// This ensures restarted sandboxes don't keep stale mapping entries
+		// that could cause WebSocket events to be misrouted
+		for (const [existingId] of sandboxIdToLabelRef.current) {
+			if (!currentIds.has(existingId)) {
+				sandboxIdToLabelRef.current.delete(existingId);
 			}
 		}
 	}, [state.sandboxes]);

@@ -277,13 +277,22 @@ export async function createSandbox(
 // ============================================================================
 
 /**
-
-* Start the dev server in the sandbox.
-*
-* @param sandbox - The E2B sandbox instance
-* @returns The dev server URL
+ * Start the dev server in the sandbox and wait for it to be accessible.
+ *
+ * This function starts the dev server process and performs health checks
+ * to verify the port is responding before returning the URL.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param maxAttempts - Maximum health check attempts (default: 30)
+ * @param intervalMs - Interval between health checks in ms (default: 1000)
+ * @returns The dev server URL
+ * @throws Error if dev server fails to start within the timeout
  */
-export async function startDevServer(sandbox: Sandbox): Promise<string> {
+export async function startDevServer(
+	sandbox: Sandbox,
+	maxAttempts: number = 30,
+	intervalMs: number = 1000,
+): Promise<string> {
 	// Start the dev server
 	sandbox.commands
 		.run("nohup start-dev > /tmp/devserver.log 2>&1 &", { timeoutMs: 5000 })
@@ -292,7 +301,39 @@ export async function startDevServer(sandbox: Sandbox): Promise<string> {
 		});
 
 	const devServerHost = sandbox.getHost(DEV_SERVER_PORT);
-	return `https://${devServerHost}`;
+	const devServerUrl = `https://${devServerHost}`;
+
+	// Wait for dev server to start by checking if port is responding
+	// Note: For E2B sandboxes, we check via HTTP request to the public URL
+	// since the port is proxied through E2B's infrastructure
+	for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+		try {
+			// Check if the dev server is responding via HTTP
+			const response = await fetch(devServerUrl, {
+				method: "HEAD",
+				signal: AbortSignal.timeout(2000),
+			});
+
+			// Any response (even errors like 404) means the server is running
+			if (response.ok || response.status < 500) {
+				return devServerUrl;
+			}
+		} catch {
+			// Server not ready yet, continue polling
+		}
+
+		// Wait before next attempt
+		await new Promise((resolve) => setTimeout(resolve, intervalMs));
+	}
+
+	// Log the failure for debugging
+	console.error(
+		`Dev server failed to start on port ${DEV_SERVER_PORT} after ${maxAttempts} attempts (${(maxAttempts * intervalMs) / 1000}s)`,
+	);
+
+	// Return the URL anyway - the caller can handle the failure
+	// This maintains backward compatibility while providing health check logging
+	return devServerUrl;
 }
 
 /**

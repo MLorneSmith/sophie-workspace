@@ -383,11 +383,20 @@ function progressToSandboxState(
 	}
 
 	// Calculate tasks completed/total
+	// Stabilize tasksTotal to prevent flicker during updates
+	// The total should only increase (when new tasks discovered), never decrease
 	const tasksCompleted = progress.completed_tasks?.length ?? 0;
+	const failedCount = progress.failed_tasks?.length ?? 0;
+	const calculatedTotal =
+		tasksCompleted + failedCount + (progress.current_task ? 1 : 0);
+
+	// Preserve previous tasksTotal if it was higher (prevents flicker when currentTask toggles)
+	// Only update if the calculated value is higher (new task discovered)
+	const previousTotal = previousState?.tasksTotal ?? 0;
 	const tasksTotal =
-		tasksCompleted +
-		(progress.failed_tasks?.length ?? 0) +
-		(progress.current_task ? 1 : 0);
+		calculatedTotal > 0
+			? Math.max(calculatedTotal, previousTotal)
+			: previousTotal;
 
 	return {
 		sandboxId,
@@ -397,7 +406,7 @@ function progressToSandboxState(
 		currentTask,
 		currentGroup,
 		tasksCompleted,
-		tasksTotal: tasksTotal > 0 ? tasksTotal : (previousState?.tasksTotal ?? 0),
+		tasksTotal,
 		phase: (progress.phase as Phase) ?? "idle",
 		contextUsage: progress.context_usage_percent ?? 0,
 		lastHeartbeat,

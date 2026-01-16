@@ -112,7 +112,8 @@ function formatHeartbeatAge(ageSeconds: number): string {
 
 /**
  * Custom hook for heartbeat age tracking.
- * Updates every 5 seconds to balance real-time feel with performance.
+ * Updates every 10 seconds to balance real-time feel with performance.
+ * Uses debouncing to prevent rapid state updates causing flicker.
  *
  * @param lastHeartbeat - The last heartbeat timestamp from sandbox state
  * @returns Current heartbeat age in seconds, updated periodically
@@ -125,16 +126,18 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 	);
 
 	useEffect(() => {
-		// Update immediately when lastHeartbeat changes
-		if (lastHeartbeat) {
-			setHeartbeatAge(
-				Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
-			);
-		} else {
-			setHeartbeatAge(null);
-		}
+		// Debounce immediate updates by 500ms to prevent rapid state changes
+		const debounceTimer = setTimeout(() => {
+			if (lastHeartbeat) {
+				setHeartbeatAge(
+					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
+				);
+			} else {
+				setHeartbeatAge(null);
+			}
+		}, 500);
 
-		// Update every 5 seconds instead of 1 second to reduce flicker
+		// Update every 10 seconds instead of 5 seconds to further reduce flicker
 		// Heartbeat age display doesn't require second-level precision
 		const ticker = setInterval(() => {
 			if (lastHeartbeat) {
@@ -142,9 +145,12 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
 				);
 			}
-		}, 5000);
+		}, 10000);
 
-		return () => clearInterval(ticker);
+		return () => {
+			clearTimeout(debounceTimer);
+			clearInterval(ticker);
+		};
 	}, [lastHeartbeat]);
 
 	return heartbeatAge;
@@ -280,11 +286,11 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 				</Box>
 			)}
 
-			{/* Recent Output Lines (from log file) */}
+			{/* Recent Output Lines (from log file) - capped to 3 items for UI space */}
 			{state.recentOutput && state.recentOutput.length > 0 && (
 				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>Output:</Text>
-					{state.recentOutput.map((line) => (
+					{state.recentOutput.slice(0, 3).map((line) => (
 						<Text key={line} dimColor>
 							{truncate(line, 28)}
 						</Text>

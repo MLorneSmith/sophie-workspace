@@ -80,6 +80,8 @@ export interface SpecManifest {
 		sandbox_ids: string[];
 		branch_name: string | null;
 		created_at: string | null;
+		/** Count of sandbox restarts during orchestration (for diagnostics) */
+		restart_count?: number;
 	};
 }
 

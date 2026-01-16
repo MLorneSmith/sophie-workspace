@@ -453,6 +453,11 @@ export async function runWorkLoop(
 						instance.runId = runId;
 						instance.lastHeartbeat = undefined;
 
+						// Track restart count for diagnostics
+						// Diagnosis #1567: This helps track sandbox recovery patterns
+						manifest.sandbox.restart_count =
+							(manifest.sandbox.restart_count ?? 0) + 1;
+
 						// Clean up old sandbox ID before adding new one
 						// This prevents sandbox_ids from accumulating beyond the sandbox count
 						const oldIdIndex =
@@ -464,7 +469,7 @@ export async function runWorkLoop(
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
 						saveManifest(manifest);
-						log(`   ✅ Sandbox ${instance.label} restarted successfully`);
+						log(`   ✅ Sandbox ${instance.label} restarted successfully (restart #${manifest.sandbox.restart_count})`);
 					} catch (restartError) {
 						log(
 							`   ❌ Failed to restart sandbox ${instance.label}: ${restartError instanceof Error ? restartError.message : restartError}`,
@@ -489,7 +494,7 @@ export async function runWorkLoop(
 		keepaliveRunning = true;
 
 		try {
-			// First, check for sandboxes approaching max age (50 min = preemptive restart)
+			// First, check for sandboxes approaching max age (60 min = preemptive restart)
 			// This prevents the edge case where keepalive and expiration happen simultaneously
 			const needsPreemptiveRestart = getSandboxesNeedingRestart(
 				instances,
@@ -502,15 +507,48 @@ export async function runWorkLoop(
 					const ageMinutes = Math.round(
 						(Date.now() - instance.createdAt.getTime()) / 60000,
 					);
+
+					// Find the in-progress feature assigned to this sandbox
+					const feature = manifest.feature_queue.find(
+						(f) => f.assigned_sandbox === label && f.status === "in_progress",
+					);
+
+					// Check if feature is almost done (80%+ tasks completed)
+					// If so, skip preemptive restart to avoid feature cycling (diagnosis #1567)
+					if (feature && feature.task_count > 0) {
+						const tasksCompleted = feature.tasks_completed;
+						const totalTasks = feature.task_count;
+						const percentDone =
+							totalTasks > 0 ? (tasksCompleted / totalTasks) * 100 : 0;
+
+						if (percentDone >= 80) {
+							log(
+								`   ⏰ Sandbox ${label} is ${ageMinutes}min old, but feature #${feature.id} is ${Math.round(percentDone)}% done - skipping preemptive restart`,
+							);
+							continue; // Skip restart for this feature
+						}
+					}
+
 					log(
 						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, performing preemptive restart...`,
 					);
 
 					// Reset any in-progress feature assigned to this sandbox
-					const feature = manifest.feature_queue.find(
-						(f) => f.assigned_sandbox === label && f.status === "in_progress",
-					);
 					if (feature) {
+						// Try graceful shutdown first before force-killing
+						// This gives Claude Code a chance to save state
+						try {
+							log("   🔄 Attempting graceful shutdown of Claude Code...");
+							await instance.sandbox.commands.run(
+								"pkill -TERM run-claude 2>/dev/null || true",
+								{ timeoutMs: 5000 },
+							);
+							await sleep(2000); // Wait for graceful shutdown
+						} catch {
+							// Graceful shutdown failed, proceed with force restart
+							log("   ⚠️ Graceful shutdown failed, proceeding with force restart");
+						}
+
 						feature.status = "pending";
 						feature.assigned_sandbox = undefined;
 						feature.assigned_at = undefined;
@@ -519,7 +557,7 @@ export async function runWorkLoop(
 					}
 
 					try {
-						// Kill the old sandbox first
+						// Kill the old sandbox
 						await instance.sandbox.kill();
 					} catch {
 						// Ignore kill errors - sandbox may already be dead
@@ -553,6 +591,11 @@ export async function runWorkLoop(
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
 						instance.runId = runId;
 
+						// Track restart count for diagnostics
+						// Diagnosis #1567: This helps track sandbox recovery patterns
+						manifest.sandbox.restart_count =
+							(manifest.sandbox.restart_count ?? 0) + 1;
+
 						// Clean up old sandbox ID before adding new one
 						// This prevents sandbox_ids from accumulating beyond the sandbox count
 						const oldIdIndex =
@@ -566,7 +609,7 @@ export async function runWorkLoop(
 						saveManifest(manifest);
 
 						log(
-							`   ✅ Sandbox ${label} preemptively restarted (${newInstance.id})`,
+							`   ✅ Sandbox ${label} preemptively restarted (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
 						);
 					} catch (restartError) {
 						log(
@@ -642,6 +685,11 @@ export async function runWorkLoop(
 						instance.createdAt = newInstance.createdAt;
 						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
 
+						// Track restart count for diagnostics
+						// Diagnosis #1567: This helps track sandbox recovery patterns
+						manifest.sandbox.restart_count =
+							(manifest.sandbox.restart_count ?? 0) + 1;
+
 						// Clean up old sandbox ID before adding new one
 						// This prevents sandbox_ids from accumulating beyond the sandbox count
 						const oldIdIndex =
@@ -655,7 +703,7 @@ export async function runWorkLoop(
 						saveManifest(manifest);
 
 						log(
-							`   ✅ Sandbox ${label} restarted successfully (${newInstance.id})`,
+							`   ✅ Sandbox ${label} restarted successfully (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
 						);
 					} catch (restartError) {
 						log(
