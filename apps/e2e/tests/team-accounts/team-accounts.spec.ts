@@ -88,9 +88,9 @@ test.describe("Team Accounts @team @integration", () => {
 	test.beforeEach(async ({ page }) => {
 		teamAccounts = new TeamAccountsPageObject(page);
 
-		// Restore auth storage state in case this is a retry
-		// Addresses Issue #1492: Storage state lost when Playwright retries
-		await restoreAuthStorageState(page);
+		// Restore auth storage state from file in case this is a retry or storage state transition
+		// Addresses Issues #1492, #1531, #1532: Storage state lost when Playwright retries or transitions
+		await restoreAuthStorageState(page, AUTH_STATES.TEST_USER);
 
 		// Navigate to home first with hydration wait - required because Playwright
 		// starts with blank page even when using pre-authenticated storage state

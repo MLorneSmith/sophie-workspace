@@ -20,6 +20,7 @@
  * @see Issue #1134 - Bug fix implementation
  */
 
+import { readFileSync } from "node:fs";
 import { test as baseTest, expect } from "@playwright/test";
 
 /**
@@ -97,34 +98,57 @@ export { expect };
 export type { BrowserContext, Page, Request, Response } from "@playwright/test";
 
 /**
- * Helper to ensure storage state is restored when tests retry.
+ * Helper to ensure storage state is restored when tests retry or when
+ * Playwright transitions between storage states.
  *
- * When Playwright retries a test, it creates a fresh browser context.
- * This helper ensures authenticated cookies are available in the new context.
+ * When Playwright retries a test or transitions between test files with
+ * different storage states, it may clear cookies. This helper reads cookies
+ * directly from the storage state file (source of truth) rather than the
+ * current context, ensuring authenticated cookies are always available.
  *
- * Addresses Issue #1492: Storage state lost when Playwright retries
+ * Addresses:
+ * - Issue #1492: Storage state lost when Playwright retries
+ * - Issue #1531/#1532: Storage state lost during state transitions
  *
  * Usage in beforeEach (after navigation):
- *   await restoreAuthStorageState(page);
+ *   await restoreAuthStorageState(page, AUTH_STATES.TEST_USER);
  *
  * Note: This function only restores cookies. localStorage restoration is not
  * needed because Supabase auth tokens are stored in cookies (handled by
- * @supabase/ssr), not localStorage. The storage state from global-setup
- * already includes the cookies needed for authentication.
+ * @supabase/ssr), not localStorage.
  *
  * @param page - Playwright Page object
+ * @param storageStatePath - Path to the storage state JSON file (e.g., AUTH_STATES.TEST_USER)
  */
 export async function restoreAuthStorageState(
 	page: import("@playwright/test").Page,
+	storageStatePath: string,
 ): Promise<void> {
-	// Get the storage state from the current context
-	const storageState = await page.context().storageState();
+	try {
+		const storageStateContent = readFileSync(storageStatePath, "utf-8");
+		const storageState = JSON.parse(storageStateContent) as {
+			cookies?: Array<{
+				name: string;
+				value: string;
+				domain: string;
+				path: string;
+				expires: number;
+				httpOnly: boolean;
+				secure: boolean;
+				sameSite: "Strict" | "Lax" | "None";
+			}>;
+		};
 
-	if (!storageState || storageState.cookies.length === 0) {
-		return; // No auth cookies to restore
+		if (!storageState.cookies || storageState.cookies.length === 0) {
+			return; // No auth cookies to restore
+		}
+
+		// Add cookies from the storage state file
+		await page.context().addCookies(storageState.cookies);
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		throw new Error(
+			`Failed to restore auth storage state from ${storageStatePath}: ${errorMessage}`,
+		);
 	}
-
-	// Reapply cookies to ensure they're in place
-	// This is idempotent - safe to call multiple times
-	await page.context().addCookies(storageState.cookies);
 }
