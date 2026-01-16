@@ -153,8 +153,9 @@ export async function createSandbox(
 		);
 	} else {
 		log(`Creating new branch from dev: ${branchName}`);
+		// Force reset local dev to match remote state (template may have stale/diverged dev branch)
 		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && git checkout dev && git pull origin dev && git checkout -b "${branchName}"`,
+			`cd ${WORKSPACE_DIR} && git fetch origin dev && git reset --hard origin/dev && git checkout -b "${branchName}"`,
 			{ timeoutMs: 60000 },
 		);
 		// Push new branch to remote so other sandboxes can pull from it
