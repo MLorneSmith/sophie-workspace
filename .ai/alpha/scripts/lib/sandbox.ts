@@ -190,6 +190,19 @@ export async function createSandbox(
 		);
 	}
 
+	// Build workspace packages to ensure dist directories exist
+	// Required for Payload commands that import @kit/shared/logger
+	log("   Building workspace packages...");
+	const buildResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm --filter @kit/shared build`,
+		{ timeoutMs: 120000 },
+	);
+	if (buildResult.exitCode !== 0) {
+		throw new Error(
+			`Failed to build workspace packages: ${buildResult.stderr || buildResult.stdout}`,
+		);
+	}
+
 	// Setup Supabase CLI if sandbox project is configured
 	const sandboxProjectRef = process.env.SUPABASE_SANDBOX_PROJECT_REF;
 	const supabaseAccessToken = process.env.SUPABASE_ACCESS_TOKEN;
