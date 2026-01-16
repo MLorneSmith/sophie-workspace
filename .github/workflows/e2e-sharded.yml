@@ -129,8 +129,9 @@ jobs:
       STRIPE_SECRET_KEY: 'sk_test_dummy'
       STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       DO_NOT_TRACK: 1
-      PLAYWRIGHT_WEB_COMMAND: 'pnpm --filter=web dev:test'
-      PLAYWRIGHT_PAYLOAD_COMMAND: 'pnpm --filter=payload dev:test'
+      # Note: PLAYWRIGHT_WEB_COMMAND and PLAYWRIGHT_PAYLOAD_COMMAND are no longer needed
+      # Server startup is now handled by Playwright's webServer config in each config file
+      # See: apps/e2e/playwright.config.ts (and other config files)
       
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'

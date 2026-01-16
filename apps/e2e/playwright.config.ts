@@ -189,14 +189,26 @@ export default defineConfig({
 	],
 
 	/*Run your local dev server before starting the tests*/
-	webServer: process.env.PLAYWRIGHT_SERVER_COMMAND
-		? {
-				cwd: "../../",
-				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
-				url: "http://localhost:3001",
-				reuseExistingServer: !process.env.CI,
-				stdout: "pipe",
-				stderr: "pipe",
-			}
-		: undefined,
+	// Start both web and Payload servers since this config is used for both projects
+	// Web tests use port 3001, Payload tests use port 3021
+	webServer: [
+		{
+			cwd: "../../",
+			command: "pnpm --filter web dev:test",
+			url: "http://localhost:3001",
+			reuseExistingServer: !process.env.CI,
+			timeout: 120 * 1000, // 2 minutes for build compilation
+			stdout: "ignore", // Reduce noise in logs
+			stderr: "pipe", // Still capture errors
+		},
+		{
+			cwd: "../../",
+			command: "pnpm --filter payload dev:test",
+			url: "http://localhost:3021",
+			reuseExistingServer: !process.env.CI,
+			timeout: 120 * 1000, // 2 minutes for build compilation
+			stdout: "ignore", // Reduce noise in logs
+			stderr: "pipe", // Still capture errors
+		},
+	],
 });

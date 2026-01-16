@@ -45,4 +45,15 @@ export default defineConfig({
 			// NO storageState - auth tests validate authentication flows
 		},
 	],
+
+	/*Run your local dev server before starting the tests*/
+	webServer: {
+		cwd: "../../",
+		command: "pnpm --filter web dev:test",
+		url: "http://localhost:3001",
+		reuseExistingServer: !process.env.CI,
+		timeout: 120 * 1000, // 2 minutes for build compilation
+		stdout: "pipe",
+		stderr: "pipe",
+	},
 });
