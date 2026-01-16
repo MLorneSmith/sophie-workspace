@@ -156,7 +156,7 @@ const getUser = async (request: NextRequest, response: NextResponse) => {
 	const result = await supabase.auth.getClaims();
 
 	// Log claims and session validation result (only when DEBUG_E2E_AUTH=true)
-	// Enhanced logging for Issue #1062, #1063 debugging
+	// Enhanced logging for Issue #1062, #1063, #1518 debugging
 	if (DEBUG_E2E_AUTH) {
 		const session = sessionResult.data?.session;
 		const now = Math.floor(Date.now() / 1000);
@@ -182,6 +182,46 @@ const getUser = async (request: NextRequest, response: NextResponse) => {
 				? `${String(result.data.claims.sub).slice(0, 8)}...`
 				: null,
 		});
+
+		// Issue #1518: Log JWT issuer validation for debugging URL mismatches
+		// The JWT iss claim must match the Supabase URL for validation to succeed
+		const jwtIssuer = result.data?.claims?.iss;
+		const expectedSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+		if (jwtIssuer && expectedSupabaseUrl) {
+			// JWT issuer format is typically: https://xxx.supabase.co/auth/v1
+			// Extract the base URL for comparison
+			const jwtBaseUrl = String(jwtIssuer).replace("/auth/v1", "");
+			const expectedBaseUrl = expectedSupabaseUrl.replace(/\/+$/, "");
+			const issuerMatches =
+				jwtBaseUrl === expectedBaseUrl || jwtBaseUrl === `${expectedBaseUrl}/`;
+
+			debugLog("getUser:jwt_issuer_validation", {
+				path: request.nextUrl.pathname,
+				jwtIssuer,
+				jwtBaseUrl,
+				expectedSupabaseUrl: expectedBaseUrl,
+				issuerMatches,
+			});
+
+			// Log warning if issuer doesn't match (likely cause of auth failures)
+			if (!issuerMatches && !result.data?.claims) {
+				// biome-ignore lint/suspicious/noConsole: Critical diagnostic for JWT issuer mismatch
+				console.warn(
+					`[DEBUG_E2E_AUTH:JWT_ISSUER_MISMATCH] JWT issuer '${jwtBaseUrl}' does not match expected '${expectedBaseUrl}'. This may cause session validation failure.`,
+				);
+			}
+		} else if (!result.data?.claims && sessionResult.data?.session) {
+			// We have a session but no claims - this suggests JWT validation failed
+			debugLog("getUser:jwt_validation_failure", {
+				path: request.nextUrl.pathname,
+				hasSession: true,
+				hasClaims: false,
+				expectedSupabaseUrl,
+				possibleCause:
+					"JWT validation may have failed due to issuer URL mismatch",
+			});
+		}
 	}
 
 	return result;

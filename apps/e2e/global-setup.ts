@@ -471,70 +471,127 @@ async function globalSetup(config: FullConfig) {
 		"⚠️  IMPORTANT: This must match NEXT_PUBLIC_SUPABASE_URL in the deployed app!",
 	);
 
-	// DIAGNOSTIC: Fetch deployed app's healthcheck to verify Supabase URL alignment
+	// VALIDATION: Fetch deployed app's healthcheck to verify Supabase URL alignment
+	// This uses the enhanced healthcheck endpoint with URL validation (Issue #1518)
 	// See: Issue #1507 - Cookie name mismatch causes auth failures in CI
+	// See: Issue #1518 - Dev Integration Tests Fail - Cookies Not Recognized
 	if (process.env.CI === "true" && !baseURL?.includes("localhost")) {
+		const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+
+		const headers: Record<string, string> = {};
+		if (bypassSecret) {
+			headers["x-vercel-protection-bypass"] = bypassSecret;
+		}
+
+		// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+		console.log(
+			"\n🔍 Validating Supabase URL configuration with deployed app...",
+		);
+
+		// Use the new URL validation query parameter for comprehensive validation
+		const healthUrl = `${baseURL}/healthcheck?e2e_supabase_url=${encodeURIComponent(supabaseUrl)}`;
+
 		try {
-			const healthUrl = `${baseURL}/healthcheck`;
-			const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-
-			const headers: Record<string, string> = {};
-			if (bypassSecret) {
-				headers["x-vercel-protection-bypass"] = bypassSecret;
-			}
-
-			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
-			console.log(
-				"\n🔍 Fetching deployed app healthcheck for configuration validation...",
-			);
-
 			const response = await fetch(healthUrl, {
 				headers,
 				signal: AbortSignal.timeout(15000),
 			});
 
+			const healthData = (await response.json()) as Record<string, unknown>;
+
 			if (response.ok) {
-				const healthData = (await response.json()) as Record<string, unknown>;
 				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
-				console.log("✅ Healthcheck response received");
+				console.log("✅ Supabase URL validation passed");
 
-				// The healthcheck should return Supabase project info if available
-				if (healthData.supabaseProjectRef) {
-					const deployedProjectRef = healthData.supabaseProjectRef as string;
-					const e2eProjectRef = new URL(supabaseUrl).hostname.split(".")[0];
+				const urlValidation = healthData.urlValidation as
+					| Record<string, unknown>
+					| undefined;
+				if (urlValidation) {
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   E2E URL: ${urlValidation.e2eUrl}`);
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   App URL: ${urlValidation.appUrl}`);
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   Project Ref: ${urlValidation.projectRef}`);
+				}
 
-					if (deployedProjectRef !== e2eProjectRef) {
-						// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
-						console.error(`
+				if (healthData.expectedCookieName) {
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   Expected Cookie: ${healthData.expectedCookieName}\n`);
+				}
+			} else if (response.status === 400) {
+				// URL validation failed - extract detailed error info
+				const errorDetails = healthData.details as
+					| Record<string, unknown>
+					| undefined;
+				const reason =
+					errorDetails?.reason ||
+					healthData.error ||
+					"Unknown validation failure";
+
+				// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+				console.error(`
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║  ❌ CRITICAL: SUPABASE PROJECT REF MISMATCH DETECTED                         ║
+║  ❌ CRITICAL: SUPABASE URL VALIDATION FAILED                                  ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║  E2E Setup uses:    ${e2eProjectRef.padEnd(50)}║
-║  Deployed app uses: ${deployedProjectRef.padEnd(50)}║
 ║                                                                              ║
+║  ${String(reason).padEnd(70)} ║
+║                                                                              ║`);
+
+				if (errorDetails) {
+					const e2eInfo = errorDetails.e2e as Record<string, unknown>;
+					const appInfo = errorDetails.app as Record<string, unknown>;
+
+					// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+					console.error(`║  E2E Configuration:                                                          ║
+║    URL:        ${String(e2eInfo?.url || "unknown").padEnd(59)} ║
+║    Project:    ${String(e2eInfo?.projectRef || "unknown").padEnd(59)} ║
+║    Cookie:     ${String(e2eInfo?.cookieName || "unknown").padEnd(59)} ║
+║                                                                              ║
+║  App Configuration:                                                          ║
+║    URL:        ${String(appInfo?.url || "unknown").padEnd(59)} ║
+║    Project:    ${String(appInfo?.projectRef || "unknown").padEnd(59)} ║
+║    Cookie:     ${String(appInfo?.cookieName || "unknown").padEnd(59)} ║`);
+				}
+
+				// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+				console.error(`║                                                                              ║
 ║  This WILL cause authentication failures!                                    ║
-║  Cookie names will not match between E2E setup and deployed middleware.      ║
+║  JWT issuer and cookie names will not match between E2E setup and            ║
+║  deployed middleware.                                                        ║
 ║                                                                              ║
-║  FIX: Ensure E2E_SUPABASE_URL matches NEXT_PUBLIC_SUPABASE_URL in Vercel.    ║
+║  FIX: Ensure E2E_SUPABASE_URL in CI matches NEXT_PUBLIC_SUPABASE_URL         ║
+║       in the Vercel deployment environment.                                  ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 `);
-					} else {
-						// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
-						console.log(`✅ Supabase project ref matches: ${e2eProjectRef}`);
-					}
-				}
+
+				// Fail fast - this mismatch WILL cause auth failures
+				throw new Error(
+					`Supabase URL validation failed: ${reason}. E2E tests cannot proceed with mismatched URLs.`,
+				);
 			} else {
 				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
 				console.log(
-					`⚠️  Healthcheck returned ${response.status} - skipping config validation`,
+					`⚠️  Healthcheck returned ${response.status} - continuing without URL validation`,
 				);
 			}
 		} catch (error) {
+			// Re-throw validation errors (from the 400 handler above)
+			if (
+				(error as Error).message?.includes("Supabase URL validation failed")
+			) {
+				throw error;
+			}
+
+			// Network errors - log but don't fail (healthcheck might not be deployed yet)
 			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
 			console.log(
-				`⚠️  Could not fetch healthcheck: ${(error as Error).message}`,
+				`⚠️  Could not validate Supabase URL: ${(error as Error).message}`,
 			);
-			// Don't fail setup on healthcheck errors - this is just diagnostic
+			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+			console.log(
+				"   Continuing with setup - if auth fails, check URL configuration.\n",
+			);
 		}
 	}
 
