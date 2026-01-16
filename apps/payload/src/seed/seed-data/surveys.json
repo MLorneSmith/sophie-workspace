@@ -1,5 +1,6 @@
 [
   {
+    "_ref": "feedback",
     "id": "feedback",
     "slug": "feedback",
     "title": "Course Feedback",
@@ -20,6 +21,7 @@
     "lesson": "{ref:course-lessons:before-you-go}"
   },
   {
+    "_ref": "self-assessment",
     "id": "self-assessment",
     "slug": "self-assessment",
     "title": "High-Stakes Presentations Self-Assessment",
@@ -61,6 +63,7 @@
     "lesson": "{ref:course-lessons:before-we-begin}"
   },
   {
+    "_ref": "three-quick-questions",
     "id": "three-quick-questions",
     "slug": "three-quick-questions",
     "title": "Three Quick Questions",

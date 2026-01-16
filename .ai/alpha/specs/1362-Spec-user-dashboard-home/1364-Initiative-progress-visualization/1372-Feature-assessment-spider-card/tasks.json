@@ -1,0 +1,413 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1372,
+		"feature_name": "Assessment Spider Card",
+		"feature_slug": "assessment-spider-card",
+		"initiative_id": 1364,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 43.75,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": "dashboard-card"
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create loader for latest assessment scores",
+			"action": {
+				"verb": "Create",
+				"target": "load-latest-assessment-scores.ts loader function"
+			},
+			"purpose": "Fetch latest survey_responses.category_scores for the authenticated user",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/supabase/migrations/20250319104724_web_survey_system.sql",
+					"apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts"
+				],
+				"dependencies": [
+					"getSupabaseServerClient",
+					"createServiceLogger",
+					"Database types"
+				],
+				"constraints": [
+					"Must use 'server-only' import",
+					"Must query survey_responses table with RLS (user_id = auth.uid())",
+					"Must order by created_at DESC and limit 1",
+					"Must extract category_scores JSONB field",
+					"Must handle null/no results gracefully",
+					"Must use structured logging with createServiceLogger"
+				]
+			},
+			"input_state": "survey_responses table exists with category_scores JSONB field and RLS policies",
+			"output_state": "Loader function exists at apps/web/app/home/(user)/_lib/server/load-latest-assessment-scores.ts returning CategoryScores | null",
+			"acceptance_criterion": "Function successfully queries survey_responses and returns category_scores for the authenticated user",
+			"verification_command": "pnpm typecheck && grep -q 'export async function loadLatestAssessmentScores' apps/web/app/home/\\(user\\)/_lib/server/load-latest-assessment-scores.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/load-latest-assessment-scores.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create AssessmentSpiderCard component",
+			"action": {
+				"verb": "Create",
+				"target": "assessment-spider-card.tsx component"
+			},
+			"purpose": "Dashboard card component that loads assessment data and renders RadarChart or empty state",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 2,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+					"packages/ui/src/makerkit/empty-state.tsx",
+					"apps/web/app/home/(user)/_lib/server/load-latest-assessment-scores.ts"
+				],
+				"dependencies": [
+					"RadarChart component",
+					"EmptyState component",
+					"loadLatestAssessmentScores loader",
+					"Link from next/link",
+					"Button from @kit/ui/button"
+				],
+				"constraints": [
+					"Must be async Server Component",
+					"Must call loadLatestAssessmentScores()",
+					"Must render RadarChart when data exists",
+					"Must render EmptyState with 'Take Assessment' CTA when data is null",
+					"CTA button must link to /home/assessment",
+					"Must handle errors gracefully",
+					"Must use Suspense for loading state"
+				]
+			},
+			"input_state": "Loader function exists and RadarChart component exists",
+			"output_state": "AssessmentSpiderCard component exists at apps/web/app/home/(user)/_components/assessment-spider-card.tsx",
+			"acceptance_criterion": "Component renders RadarChart with data or EmptyState with CTA button linking to /home/assessment",
+			"verification_command": "pnpm typecheck && grep -q 'export async function AssessmentSpiderCard' apps/web/app/home/\\(user\\)/_components/assessment-spider-card.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/assessment-spider-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Wire AssessmentSpiderCard to dashboard page",
+			"action": {
+				"verb": "Add",
+				"target": "AssessmentSpiderCard to user home page"
+			},
+			"purpose": "Integrate the assessment spider card into the dashboard grid layout",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 3,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_components/assessment-spider-card.tsx"
+				],
+				"dependencies": [
+					"AssessmentSpiderCard component",
+					"Suspense from react",
+					"PageBody component",
+					"Skeleton component (if needed)"
+				],
+				"constraints": [
+					"Must wrap AssessmentSpiderCard in Suspense boundary",
+					"Must add to PageBody section",
+					"Must provide appropriate fallback skeleton",
+					"Must maintain existing page structure"
+				]
+			},
+			"input_state": "AssessmentSpiderCard component exists and page.tsx has empty PageBody",
+			"output_state": "Dashboard page includes AssessmentSpiderCard with Suspense boundary",
+			"acceptance_criterion": "AssessmentSpiderCard is visible on /home user dashboard page",
+			"verification_command": "pnpm typecheck && grep -q 'AssessmentSpiderCard' apps/web/app/home/\\(user\\)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2"],
+				"blocks": ["T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Add unit tests for loader function",
+			"action": {
+				"verb": "Test",
+				"target": "loadLatestAssessmentScores loader function"
+			},
+			"purpose": "Verify loader correctly fetches and returns assessment scores",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/load-latest-assessment-scores.ts"
+				],
+				"dependencies": [
+					"Vitest",
+					"Supabase test helpers",
+					"Mock Supabase client"
+				],
+				"constraints": [
+					"Must test successful data fetch",
+					"Must test empty/no results case",
+					"Must test error handling",
+					"Must mock Supabase client",
+					"Must verify RLS query parameters"
+				]
+			},
+			"input_state": "Loader function is integrated and working on dashboard",
+			"output_state": "Unit tests exist covering all loader cases",
+			"acceptance_criterion": "Tests pass with 100% coverage of loader function",
+			"verification_command": "pnpm --filter web test:unit -- load-latest-assessment-scores",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/__tests__/load-latest-assessment-scores.test.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Add component tests for AssessmentSpiderCard",
+			"action": {
+				"verb": "Test",
+				"target": "AssessmentSpiderCard component rendering"
+			},
+			"purpose": "Verify card renders correctly with data and empty state",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/assessment-spider-card.tsx"
+				],
+				"dependencies": [
+					"React Testing Library",
+					"Vitest",
+					"Mock loader function"
+				],
+				"constraints": [
+					"Must test populated state (with data)",
+					"Must test empty state (no data, shows CTA)",
+					"Must test error state",
+					"Must verify RadarChart receives correct props",
+					"Must verify CTA link points to /home/assessment"
+				]
+			},
+			"input_state": "Component is integrated and working on dashboard",
+			"output_state": "Unit tests exist covering all component states",
+			"acceptance_criterion": "Tests pass with coverage of all component states (populated, empty, error)",
+			"verification_command": "pnpm --filter web test:unit -- assessment-spider-card",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/__tests__/assessment-spider-card.test.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Add E2E test for dashboard assessment card",
+			"action": {
+				"verb": "Test",
+				"target": "Assessment card on dashboard via E2E"
+			},
+			"purpose": "Verify end-to-end user flow of viewing assessment on dashboard",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 6,
+			"group": 4,
+			"context": {
+				"files": ["apps/web/app/home/(user)/page.tsx"],
+				"dependencies": [
+					"Playwright",
+					"Test user with assessment data",
+					"Test user without assessment data"
+				],
+				"constraints": [
+					"Must test card visibility with assessment data",
+					"Must test empty state with no data",
+					"Must test CTA button click navigates to /home/assessment",
+					"Must test RadarChart rendering with data",
+					"Must seed test data in before hook"
+				]
+			},
+			"input_state": "Dashboard integration is complete and unit tests pass",
+			"output_state": "E2E test exists verifying dashboard assessment card flow",
+			"acceptance_criterion": "E2E test passes verifying card displays and CTA navigation works",
+			"verification_command": "pnpm --filter web-e2e test -- dashboard-assessment",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/e2e/tests/dashboard-assessment-card.spec.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Data Layer",
+				"task_ids": ["T1"],
+				"depends_on_groups": [],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Component Layer",
+				"task_ids": ["T2"],
+				"depends_on_groups": [1],
+				"estimated_hours": 3,
+				"parallel_hours": 3
+			},
+			{
+				"id": 3,
+				"name": "Integration Layer",
+				"task_ids": ["T3"],
+				"depends_on_groups": [2],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			},
+			{
+				"id": 4,
+				"name": "Testing Layer",
+				"task_ids": ["T4", "T5", "T6"],
+				"depends_on_groups": [3],
+				"estimated_hours": 6,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T3", "T4"],
+			"total_hours": 8
+		},
+		"duration": {
+			"sequential": 12,
+			"parallel": 8,
+			"time_saved_percent": 33.33
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1382
+	}
+}

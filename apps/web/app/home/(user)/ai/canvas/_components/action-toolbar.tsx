@@ -7,7 +7,12 @@ import type {
 	SimplifiedContent,
 } from "@kit/ai-gateway";
 import { Button } from "@kit/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@kit/ui/tooltip";
 import { FileText, LayoutTemplate, Lightbulb, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -260,65 +265,68 @@ export function ActionToolbar({
 	}, [editorRef, canvasId, user, sectionType, onGenerateImprovements]);
 
 	return (
-		<div className="flex gap-2">
-			{/* Reset Outline - Only for outline tab */}
-			{sectionType === "outline" && onResetOutline && (
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button variant="outline" size="sm" onClick={onResetOutline}>
-							<RotateCcw className="mr-2 h-4 w-4" />
-							Reset Outline
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>
-						Regenerate outline from current situation, complication, and answer
-					</TooltipContent>
-				</Tooltip>
-			)}
+		<TooltipProvider>
+			<div className="flex gap-2">
+				{/* Reset Outline - Only for outline tab */}
+				{sectionType === "outline" && onResetOutline && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button variant="outline" size="sm" onClick={onResetOutline}>
+								<RotateCcw className="mr-2 h-4 w-4" />
+								Reset Outline
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							Regenerate outline from current situation, complication, and
+							answer
+						</TooltipContent>
+					</Tooltip>
+				)}
 
-			{/* Simplify Text - For all tabs except outline */}
-			{sectionType !== "outline" && (
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={handleSimplifyText}
-							disabled={isSimplifying}
-						>
-							<FileText className="mr-2 h-4 w-4" />
-							Simplify Text
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Make the text clearer and simpler</TooltipContent>
-				</Tooltip>
-			)}
+				{/* Simplify Text - For all tabs except outline */}
+				{sectionType !== "outline" && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleSimplifyText}
+								disabled={isSimplifying}
+							>
+								<FileText className="mr-2 h-4 w-4" />
+								Simplify Text
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Make the text clearer and simpler</TooltipContent>
+					</Tooltip>
+				)}
 
-			{/* Add Ideas - For all tabs except outline */}
-			{sectionType !== "outline" && (
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button variant="outline" size="sm" onClick={handleGenerateIdeas}>
-							<Lightbulb className="mr-2 h-4 w-4" />
-							Add Ideas
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Generate additional ideas</TooltipContent>
-				</Tooltip>
-			)}
+				{/* Add Ideas - For all tabs except outline */}
+				{sectionType !== "outline" && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button variant="outline" size="sm" onClick={handleGenerateIdeas}>
+								<Lightbulb className="mr-2 h-4 w-4" />
+								Add Ideas
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Generate additional ideas</TooltipContent>
+					</Tooltip>
+				)}
 
-			{/* Improve Structure - Only for answer tab */}
-			{sectionType === "answer" && onImproveStructure && (
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button variant="outline" size="sm" onClick={onImproveStructure}>
-							<LayoutTemplate className="mr-2 h-4 w-4" />
-							Improve Structure
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Enhance document structure</TooltipContent>
-				</Tooltip>
-			)}
-		</div>
+				{/* Improve Structure - Only for answer tab */}
+				{sectionType === "answer" && onImproveStructure && (
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button variant="outline" size="sm" onClick={onImproveStructure}>
+								<LayoutTemplate className="mr-2 h-4 w-4" />
+								Improve Structure
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Enhance document structure</TooltipContent>
+					</Tooltip>
+				)}
+			</div>
+		</TooltipProvider>
 	);
 }

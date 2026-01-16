@@ -141,6 +141,15 @@ export const CourseLessons: CollectionConfig = {
 			},
 		},
 		{
+			name: "lesson_image",
+			type: "upload",
+			relationTo: "media",
+			admin: {
+				description:
+					"Image to display on the lesson page (for lessons without videos)",
+			},
+		},
+		{
 			name: "content",
 			type: "richText",
 			editor: lexicalEditor({

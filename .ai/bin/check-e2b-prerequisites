@@ -1,0 +1,183 @@
+#!/bin/bash
+# check-e2b-prerequisites - Verify E2B sandbox prerequisites are met
+#
+# Usage: .ai/bin/check-e2b-prerequisites [--json] [--quiet]
+#
+# Options:
+#   --json   Output results as JSON
+#   --quiet  Suppress output, only return exit code
+#
+# Exit codes:
+#   0 - All prerequisites met
+#   1 - One or more prerequisites missing
+
+set -e
+
+# Parse arguments
+JSON_OUTPUT=false
+QUIET=false
+for arg in "$@"; do
+  case $arg in
+    --json) JSON_OUTPUT=true ;;
+    --quiet) QUIET=true ;;
+  esac
+done
+
+# Initialize results
+E2B_API_KEY_SET=false
+GITHUB_TOKEN_SET=false
+ANTHROPIC_KEY_SET=false
+OAUTH_TOKEN_SET=false
+SANDBOX_CLI_EXISTS=false
+TEMPLATE_EXISTS=false
+
+# Check E2B API key
+if [ -n "$E2B_API_KEY" ]; then
+  E2B_API_KEY_SET=true
+fi
+
+# Check GitHub token (either GITHUB_TOKEN or GH_TOKEN)
+if [ -n "$GITHUB_TOKEN" ] || [ -n "$GH_TOKEN" ]; then
+  GITHUB_TOKEN_SET=true
+fi
+
+# Check Claude Code authentication (either API key, OAuth token, or credentials file)
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+  ANTHROPIC_KEY_SET=true
+fi
+
+if [ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+  OAUTH_TOKEN_SET=true
+fi
+
+# Also check for Claude Code credentials file (created by 'claude setup-token')
+CLAUDE_CREDS_FILE="$HOME/.claude/.credentials.json"
+if [ -f "$CLAUDE_CREDS_FILE" ] && [ -s "$CLAUDE_CREDS_FILE" ]; then
+  OAUTH_TOKEN_SET=true
+fi
+
+# Check sandbox CLI exists
+SANDBOX_CLI=".claude/skills/e2b-sandbox/scripts/sandbox"
+if [ -f "$SANDBOX_CLI" ] && [ -x "$SANDBOX_CLI" ]; then
+  SANDBOX_CLI_EXISTS=true
+fi
+
+# Check template exists (only if E2B_API_KEY is set)
+if [ "$E2B_API_KEY_SET" = true ]; then
+  if $SANDBOX_CLI templates 2>/dev/null | grep -q "slideheroes-claude-agent"; then
+    TEMPLATE_EXISTS=true
+  fi
+fi
+
+# Determine overall status
+CLAUDE_AUTH_OK=false
+if [ "$ANTHROPIC_KEY_SET" = true ] || [ "$OAUTH_TOKEN_SET" = true ]; then
+  CLAUDE_AUTH_OK=true
+fi
+
+ALL_OK=true
+if [ "$E2B_API_KEY_SET" = false ] || [ "$GITHUB_TOKEN_SET" = false ] || [ "$CLAUDE_AUTH_OK" = false ] || [ "$SANDBOX_CLI_EXISTS" = false ]; then
+  ALL_OK=false
+fi
+
+# Output results
+if [ "$JSON_OUTPUT" = true ]; then
+  # Build missing array properly
+  MISSING_ITEMS=""
+  [ "$E2B_API_KEY_SET" = false ] && MISSING_ITEMS="${MISSING_ITEMS}\"E2B_API_KEY\","
+  [ "$GITHUB_TOKEN_SET" = false ] && MISSING_ITEMS="${MISSING_ITEMS}\"GITHUB_TOKEN or GH_TOKEN\","
+  [ "$CLAUDE_AUTH_OK" = false ] && MISSING_ITEMS="${MISSING_ITEMS}\"ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN\","
+  [ "$SANDBOX_CLI_EXISTS" = false ] && MISSING_ITEMS="${MISSING_ITEMS}\"sandbox CLI script\","
+  [ "$TEMPLATE_EXISTS" = false ] && [ "$E2B_API_KEY_SET" = true ] && MISSING_ITEMS="${MISSING_ITEMS}\"slideheroes-claude-agent template\","
+  # Remove trailing comma
+  MISSING_ITEMS="${MISSING_ITEMS%,}"
+
+  cat <<EOF
+{
+  "success": $ALL_OK,
+  "checks": {
+    "e2b_api_key": $E2B_API_KEY_SET,
+    "github_token": $GITHUB_TOKEN_SET,
+    "claude_auth": $CLAUDE_AUTH_OK,
+    "anthropic_api_key": $ANTHROPIC_KEY_SET,
+    "oauth_token": $OAUTH_TOKEN_SET,
+    "sandbox_cli": $SANDBOX_CLI_EXISTS,
+    "template_exists": $TEMPLATE_EXISTS
+  },
+  "missing": [${MISSING_ITEMS}],
+  "fix_instructions": {
+    "e2b_api_key": "Export E2B_API_KEY in your shell profile (~/.bashrc or ~/.zshrc). Get key from https://e2b.dev/dashboard",
+    "github_token": "Export GITHUB_TOKEN with 'repo' scope in your shell profile",
+    "claude_auth": "Export ANTHROPIC_API_KEY or run 'claude setup-token' for OAuth",
+    "template": "Run 'pnpm e2b:build:prod' to create the sandbox template"
+  }
+}
+EOF
+elif [ "$QUIET" = false ]; then
+  echo "E2B Sandbox Prerequisites Check"
+  echo "================================"
+  echo ""
+
+  # E2B API Key
+  if [ "$E2B_API_KEY_SET" = true ]; then
+    echo "[OK] E2B_API_KEY is set"
+  else
+    echo "[MISSING] E2B_API_KEY not set"
+    echo "    Fix: Export E2B_API_KEY in your shell profile (~/.bashrc or ~/.zshrc)"
+    echo "    Get key from: https://e2b.dev/dashboard"
+  fi
+
+  # GitHub Token
+  if [ "$GITHUB_TOKEN_SET" = true ]; then
+    echo "[OK] GitHub token is set"
+  else
+    echo "[MISSING] GITHUB_TOKEN or GH_TOKEN not set"
+    echo "    Fix: Export GITHUB_TOKEN with 'repo' scope in your shell profile"
+  fi
+
+  # Claude Auth
+  if [ "$CLAUDE_AUTH_OK" = true ]; then
+    if [ "$OAUTH_TOKEN_SET" = true ]; then
+      echo "[OK] Claude Code OAuth token is set"
+    else
+      echo "[OK] ANTHROPIC_API_KEY is set"
+    fi
+  else
+    echo "[MISSING] Claude Code authentication not configured"
+    echo "    Fix: Export ANTHROPIC_API_KEY or run 'claude setup-token' for OAuth"
+  fi
+
+  # Sandbox CLI
+  if [ "$SANDBOX_CLI_EXISTS" = true ]; then
+    echo "[OK] Sandbox CLI exists at $SANDBOX_CLI"
+  else
+    echo "[MISSING] Sandbox CLI not found or not executable"
+    echo "    Expected: $SANDBOX_CLI"
+  fi
+
+  # Template
+  if [ "$E2B_API_KEY_SET" = true ]; then
+    if [ "$TEMPLATE_EXISTS" = true ]; then
+      echo "[OK] slideheroes-claude-agent template exists"
+    else
+      echo "[MISSING] slideheroes-claude-agent template not found"
+      echo "    Fix: Run 'pnpm e2b:build:prod' to create the template"
+    fi
+  else
+    echo "[SKIP] Template check skipped (E2B_API_KEY required)"
+  fi
+
+  echo ""
+  if [ "$ALL_OK" = true ]; then
+    echo "All prerequisites met. Ready for E2B sandbox operations."
+  else
+    echo "Some prerequisites are missing. Please fix the issues above."
+  fi
+fi
+
+# Exit with appropriate code
+if [ "$ALL_OK" = true ]; then
+  exit 0
+else
+  exit 1
+fi

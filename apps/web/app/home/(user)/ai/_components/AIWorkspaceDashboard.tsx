@@ -59,7 +59,7 @@ export default function AIWorkspaceDashboard() {
 							Start by creating a new presentation outline and storyboard.
 						</p>
 						<Link
-							href="/home/ai/storyboard"
+							href="/home/ai/blocks"
 							className={buttonVariants({
 								variant: "outline",
 								className: "w-full",

@@ -1,0 +1,30 @@
+{
+	"shard": {
+		"id": 2,
+		"name": "Team Billing",
+		"files": ["tests/team-billing/team-billing.spec.ts"],
+		"expectedTests": null,
+		"shardCommand": "test:shard10"
+	},
+	"execution": {
+		"startTime": "2025-12-11T16:31:32.021Z",
+		"endTime": "2025-12-11T16:33:30.021Z",
+		"duration": "118s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 1,
+		"passed": 0,
+		"failed": 1,
+		"skipped": 0,
+		"intentionalFailures": 0,
+		"integrationTests": 5,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 5480 bytes)...\n.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:19:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:19:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: page.waitForSelector: Timeout 20000ms exceeded.\n    Call log:\n    \u001b[2m  - waiting for locator('[data-testid=\"team-selector\"]') to be visible\u001b[22m\n    \u001b[2m    3 × locator resolved to hidden <button type=\"button\" data-state=\"closed\" aria-expanded=\"false\" aria-haspopup=\"listbox\" data-testid=\"team-selector\" aria-controls=\"radix-_R_apknebn5lb_\" class=\"focus-visible:ring-ring inline-flex items-center rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 dark:shadow-primary/10 group w-full min-w-0 lg:max-w-fit m-auto justify-center px-…>…</button>\u001b[22m\n    \u001b[2m    - waiting for\" http://localhost:3001/\" navigation to finish...\u001b[22m\n    \u001b[2m    - navigated to \"http://localhost:3001/\"\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at team-accounts/team-accounts.po.ts:105\n\n      103 | \t\t\t\tthis.page.locator('[data-testid=\"account-selector-content\"]'),\n      104 | \t\t\t).toBeVisible({ timeout: CI_TIMEOUTS.element });\n    > 105 | \t\t}).toPass({\n          | \t\t   ^\n      106 | \t\t\ttimeout: CI_TIMEOUTS.element,\n      107 | \t\t\tintervals: RETRY_INTERVALS as unknown as number[],\n      108 | \t\t});\n        at TeamAccountsPageObject.openAccountsSelector (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:105:6)\n        at TeamAccountsPageObject.createTeam (/home/msmith/projects/2025slideheroes/apps/e2e/tests/team-accounts/team-accounts.po.ts:125:14)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/team-billing/team-billing.spec.ts:19:25\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry2/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/team-billing-team-billing--fb572-eam-can-subscribe-to-a-plan-chromium-retry2/error-context.md\n\n  1 failed\n    [chromium] › tests/team-billing/team-billing.spec.ts:11:6 › Team Billing @billing @integration › a team can subscribe to a plan \n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard10: `playwright test tests/team-billing/team-billing.spec.ts --config=playwright.billing.config.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-2.json --retries=0`\nExit status 1\n"
+}

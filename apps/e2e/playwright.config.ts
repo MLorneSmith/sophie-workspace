@@ -21,11 +21,20 @@ dotenvConfig({
 
 /**
  * Number of workers to use for test execution.
- * CI: 3 workers for 4-core runners (1 core reserved for OS/overhead)
+ *
+ * CI: 1 worker (serial execution) to eliminate authentication race conditions.
+ * When multiple workers authenticate simultaneously via global-setup, cookies can
+ * conflict causing session validation failures in Supabase middleware. This is
+ * especially problematic on Vercel preview deployments where cookie domain/SameSite
+ * attributes need careful handling.
+ *
  * Local: 4 workers with updated .wslconfig (24GB RAM, 16 processors)
  * Each worker spawns a browser instance (~300-500MB RAM each)
+ *
+ * See Issue #1062, #1063 for diagnosis and fix details.
+ * Future improvement: Implement proper worker isolation to re-enable parallel execution.
  */
-const CI_WORKERS = 3;
+const CI_WORKERS = 1;
 const LOCAL_WORKERS = 4;
 
 const enableBillingTests = process.env.ENABLE_BILLING_TESTS === "true";
@@ -79,16 +88,34 @@ export default defineConfig({
 			process.env.BASE_URL ||
 			"http://localhost:3001",
 
-		// Add Vercel protection bypass headers for deployed environments
-		// x-vercel-protection-bypass: For direct API/HTTP requests
-		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows
-		extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-			? {
-					"x-vercel-protection-bypass":
-						process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-					"x-vercel-set-bypass-cookie": "samesitenone",
-				}
-			: {},
+		// Add Vercel bypass and configuration headers for E2E tests
+		// x-vercel-protection-bypass: For direct API/HTTP requests (deployed environments)
+		// x-vercel-set-bypass-cookie: Sets browser cookie for navigation/auth flows (deployed environments)
+		// x-vercel-skip-toolbar: Disable Vercel Live toolbar to prevent cross-origin cookie interference (Issue #1078)
+		extraHTTPHeaders: {
+			// Always disable Vercel Live toolbar - it causes cross-origin cookie issues in Playwright
+			"x-vercel-skip-toolbar": "1",
+			// Add bypass headers only when secret is configured (deployed environments)
+			...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET && {
+				"x-vercel-protection-bypass":
+					process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+				"x-vercel-set-bypass-cookie": "samesitenone",
+			}),
+		},
+
+		// Enable request/response interception for debugging cookie transmission
+		// This helps diagnose if cookies created in global setup are being sent to the server
+		// HAR files include HTTP headers, showing if cookies are being transmitted to server
+		// See Issue #1083, #1096 for cookie verification patterns
+		...(process.env.RECORD_HAR_LOGS === "true" && {
+			recordHar: {
+				path: "./test-results/requests.har",
+				// Include all content for comprehensive debugging
+				omitContent: false,
+				// 'minimal' mode excludes bodies to reduce file size
+				mode: "minimal" as const,
+			},
+		}),
 
 		// take a screenshot when a test fails
 		screenshot: "only-on-failure",
@@ -99,9 +126,14 @@ export default defineConfig({
 		// Accounts for: Vercel cold starts, network latency, edge function initialization
 		navigationTimeout: process.env.CI ? 90 * 1000 : 45 * 1000,
 	},
-	// Test timeout - reduced for faster failure detection
-	// CI needs more time for deployed environment latency
-	timeout: process.env.CI ? 120 * 1000 : 90 * 1000, // 2 min in CI, 90s local (reduced from 3min/2min)
+	// Test timeout - accounts for complex multi-operation tests
+	// CI needs significantly more time for deployed environment latency and sub-operation timeouts
+	// With CI_TIMEOUTS.element = 90s, individual operations can take that long
+	// Multi-operation tests (like account settings updates) need sum of all operations + buffer
+	// Formula: test timeout >= (num_operations * element_timeout) + overhead
+	// For account tests: 2 operations * 60s per operation + 30s overhead = 150s recommended
+	// Fixed at 180s (3 min) to handle worst-case scenarios (Issue #1139, #1140)
+	timeout: process.env.CI ? 180 * 1000 : 90 * 1000, // 3 min in CI, 90s local
 	expect: {
 		// Expect timeout for assertions
 		// Increased for CI to handle Vercel cold starts and React hydration delays (Issue #1051)

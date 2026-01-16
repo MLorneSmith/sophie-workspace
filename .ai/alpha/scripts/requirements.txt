@@ -1,0 +1,7 @@
+# Python dependencies for Alpha Orchestrator scripts
+# Install with: pip install -r .ai/alpha/scripts/requirements.txt
+
+# Event Server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+websockets>=12.0

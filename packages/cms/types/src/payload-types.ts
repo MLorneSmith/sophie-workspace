@@ -618,6 +618,10 @@ export interface CourseLesson {
    * Thumbnail image for this lesson
    */
   thumbnail?: (string | null) | Media;
+  /**
+   * Image to display on the lesson page (for lessons without videos)
+   */
+  lesson_image?: (string | null) | Media;
   content?: {
     root: {
       type: string;
@@ -1137,6 +1141,7 @@ export interface CourseLessonsSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   thumbnail?: T;
+  lesson_image?: T;
   content?: T;
   lesson_number?: T;
   estimated_duration?: T;
@@ -1356,6 +1361,5 @@ export interface YouTubeVideoBlock {
 export interface Auth {
   [k: string]: unknown;
 }
-
 
 // Module augmentation removed for cross-app compatibility

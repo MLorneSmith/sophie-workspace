@@ -22,6 +22,12 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { Sandbox } from "@e2b/code-interpreter";
 
+// Import constants from canonical template definition
+import {
+	TEMPLATE_ALIAS,
+	WORKSPACE_DIR,
+} from "../../../../packages/e2b/e2b-template/template";
+
 // ============================================================================
 // Sandbox Logger - Comprehensive session logging
 // ============================================================================
@@ -273,13 +279,13 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 // GitHub authentication for git operations
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-// Default template for SlideHeroes project
-const DEFAULT_TEMPLATE = "slideheroes-claude-agent";
+// Default template - imported from canonical template definition
+const DEFAULT_TEMPLATE = TEMPLATE_ALIAS;
 
 // Repository configuration
-const REPO_OWNER = "slideheroes";
+const REPO_OWNER = "MLorneSmith";
 const REPO_NAME = "2025slideheroes";
-const WORKSPACE_DIR = "/home/user/project";
+// WORKSPACE_DIR is imported from canonical template definition
 
 function checkApiKey(): void {
 	if (!API_KEY) {
@@ -335,10 +341,37 @@ function getGitEnvVars(): Record<string, string> {
 	return envs;
 }
 
+function getSupabaseEnvVars(): Record<string, string> {
+	const envs: Record<string, string> = {};
+
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+	const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+	const databaseUrl = process.env.DATABASE_URL;
+
+	if (supabaseUrl) {
+		envs.NEXT_PUBLIC_SUPABASE_URL = supabaseUrl;
+		envs.SUPABASE_URL = supabaseUrl;
+	}
+	if (supabaseAnonKey) {
+		envs.NEXT_PUBLIC_SUPABASE_ANON_KEY = supabaseAnonKey;
+		envs.SUPABASE_ANON_KEY = supabaseAnonKey;
+	}
+	if (supabaseServiceKey) {
+		envs.SUPABASE_SERVICE_ROLE_KEY = supabaseServiceKey;
+	}
+	if (databaseUrl) {
+		envs.DATABASE_URL = databaseUrl;
+	}
+
+	return envs;
+}
+
 function getAllEnvVars(): Record<string, string> {
 	return {
 		...getClaudeEnvVars(),
 		...getGitEnvVars(),
+		...getSupabaseEnvVars(),
 	};
 }
 
@@ -389,23 +422,39 @@ async function setupGitHubCLI(sandbox: Sandbox): Promise<void> {
 	console.log("Setting up GitHub CLI authentication...");
 
 	// Export token and authenticate with gh CLI
-	await sandbox.commands.run(
-		`export GITHUB_TOKEN="${GITHUB_TOKEN}" && gh auth login --with-token < <(echo "${GITHUB_TOKEN}")`,
-		{ timeoutMs: 30000 },
-	);
+	// Use echo with pipe (more portable than bash process substitution)
+	try {
+		const loginResult = await sandbox.commands.run(
+			`echo "${GITHUB_TOKEN}" | gh auth login --with-token`,
+			{ timeoutMs: 30000 },
+		);
+
+		if (loginResult.exitCode !== 0) {
+			console.warn(
+				"gh auth login warning:",
+				loginResult.stderr || loginResult.stdout,
+			);
+		}
+	} catch (loginError) {
+		console.warn("gh auth login error (non-fatal):", loginError);
+	}
 
 	// Verify authentication
-	const authResult = await sandbox.commands.run("gh auth status", {
-		timeoutMs: 10000,
-	});
+	try {
+		const authResult = await sandbox.commands.run("gh auth status", {
+			timeoutMs: 10000,
+		});
 
-	if (authResult.exitCode === 0) {
-		console.log("GitHub CLI authenticated successfully");
-	} else {
-		console.warn(
-			"GitHub CLI authentication may have failed:",
-			authResult.stderr,
-		);
+		if (authResult.exitCode === 0) {
+			console.log("GitHub CLI authenticated successfully");
+		} else {
+			console.warn(
+				"GitHub CLI authentication may have failed:",
+				authResult.stderr,
+			);
+		}
+	} catch (authError) {
+		console.warn("gh auth status check failed (non-fatal):", authError);
 	}
 }
 
@@ -1852,6 +1901,156 @@ async function rejectChanges(
 	}
 }
 
+// ============================================================================
+// Utility Commands: exec, url
+// ============================================================================
+
+/**
+ * Execute an arbitrary shell command in a sandbox
+ */
+async function execCommand(
+	sandboxId: string,
+	command: string,
+	timeout: number = 120000,
+): Promise<void> {
+	checkApiKey();
+
+	try {
+		console.log(`Connecting to sandbox ${sandboxId}...`);
+		const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+
+		console.log(`Executing: ${command}\n`);
+
+		const result = await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && ${command}`,
+			{
+				timeoutMs: timeout,
+				envs: getAllEnvVars(),
+				onStdout: (data) => process.stdout.write(data),
+				onStderr: (data) => process.stderr.write(data),
+			},
+		);
+
+		if (result.exitCode !== 0) {
+			process.exit(result.exitCode);
+		}
+	} catch (error) {
+		console.error(
+			"Failed to execute command:",
+			error instanceof Error ? error.message : error,
+		);
+		process.exit(1);
+	}
+}
+
+/**
+ * Get the public URL for a port in a sandbox
+ */
+async function getPortUrl(sandboxId: string, port: number): Promise<void> {
+	checkApiKey();
+
+	try {
+		const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+		const host = sandbox.getHost(port);
+		console.log(`https://${host}`);
+	} catch (error) {
+		console.error(
+			"Failed to get port URL:",
+			error instanceof Error ? error.message : error,
+		);
+		process.exit(1);
+	}
+}
+
+/**
+ * Get implementation progress from sandbox (P3 Fix)
+ * Reads the progress file written by /sandbox/initiative-implement
+ */
+async function getProgress(
+	sandboxId: string,
+	jsonOutput: boolean = false,
+): Promise<void> {
+	checkApiKey();
+
+	const PROGRESS_FILE = "/home/user/project/.initiative-progress.json";
+
+	try {
+		const sandbox = await Sandbox.connect(sandboxId, { apiKey: API_KEY });
+
+		// Read progress file
+		const result = await sandbox.commands.run(
+			`cat ${PROGRESS_FILE} 2>/dev/null || echo '{"entries":[]}'`,
+			{
+				timeoutMs: 10000,
+			},
+		);
+
+		const output = result.stdout.trim();
+
+		if (jsonOutput) {
+			console.log(output);
+		} else {
+			try {
+				const progress = JSON.parse(output) as {
+					feature?: { issue_number: number; title: string };
+					current_task?: { name: string; index: number; total: number };
+					entries: Array<{ timestamp: string; type: string; message: string }>;
+					status?: string;
+				};
+
+				if (progress.feature) {
+					console.log(
+						`\n📋 Feature #${progress.feature.issue_number}: ${progress.feature.title}`,
+					);
+				}
+
+				if (progress.current_task) {
+					console.log(
+						`\n🔄 Current Task: ${progress.current_task.name} (${progress.current_task.index}/${progress.current_task.total})`,
+					);
+				}
+
+				if (progress.status) {
+					console.log(`\n📊 Status: ${progress.status}`);
+				}
+
+				// Show last 5 progress entries
+				const entries = progress.entries || [];
+				if (entries.length > 0) {
+					console.log("\n📝 Recent Progress:");
+					const recent = entries.slice(-5);
+					for (const entry of recent) {
+						const time = new Date(entry.timestamp).toLocaleTimeString();
+						const icon =
+							entry.type === "task_start"
+								? "🔄"
+								: entry.type === "task_complete"
+									? "✅"
+									: entry.type === "file"
+										? "📁"
+										: entry.type === "validation"
+											? "🧪"
+											: "📍";
+						console.log(`  ${icon} [${time}] ${entry.message}`);
+					}
+				} else {
+					console.log(
+						"\n⏳ No progress entries yet (implementation may be starting)",
+					);
+				}
+			} catch {
+				console.log("📍 Progress file not yet created or invalid format");
+			}
+		}
+	} catch (error) {
+		console.error(
+			"Failed to get progress:",
+			error instanceof Error ? error.message : error,
+		);
+		process.exit(1);
+	}
+}
+
 function showHelp(): void {
 	console.log(`
 E2B Sandbox Manager - Commands:
@@ -1863,6 +2062,12 @@ E2B Sandbox Manager - Commands:
   status <sandbox-id>                       Check sandbox status
   kill <sandbox-id>                         Kill a specific sandbox
   kill-all                                  Kill all sandboxes
+
+  UTILITY COMMANDS:
+  exec <sandbox-id> "<command>"             Execute shell command in sandbox
+              [--timeout 120000]
+  url <sandbox-id> [port]                   Get public URL for a port (default: 3000)
+  progress <sandbox-id> [--json]            Get implementation progress (P3 Fix)
 
   CLAUDE CODE:
   run-claude "<prompt>" [--sandbox ID]      Run Claude Code with a prompt
@@ -1893,6 +2098,12 @@ Examples:
   /sandbox create                           Create sandbox with slideheroes template
   /sandbox list                             List running sandboxes
   /sandbox kill abc123                      Kill sandbox abc123
+
+  # Utility commands
+  /sandbox exec abc123 "git status"         Run git status in sandbox
+  /sandbox exec abc123 "pnpm dev" --timeout 300000
+  /sandbox url abc123                       Get dev server URL (port 3000)
+  /sandbox url abc123 8080                  Get VS Code Web URL (port 8080)
 
   # Run Claude Code
   /sandbox run-claude "/test 1"             Run /test 1 in new sandbox
@@ -1988,6 +2199,66 @@ async function main(): Promise<void> {
 		case "kill-all":
 			await killAllSandboxes();
 			break;
+
+		// Utility Commands
+		case "exec": {
+			const sandboxId = args[1];
+			let command: string | undefined;
+			let timeout = 120000;
+
+			for (let i = 2; i < args.length; i++) {
+				if (args[i] === "--timeout" && args[i + 1]) {
+					timeout = parseInt(args[i + 1], 10);
+					i++;
+				} else if (!args[i].startsWith("--") && !command) {
+					command = args[i];
+				}
+			}
+
+			if (!sandboxId || !command) {
+				console.error(
+					'Usage: sandbox exec <sandbox-id> "<command>" [--timeout 120000]',
+				);
+				console.error('Example: sandbox exec abc123 "git status"');
+				console.error(
+					'Example: sandbox exec abc123 "pnpm dev" --timeout 300000',
+				);
+				process.exit(1);
+			}
+
+			await execCommand(sandboxId, command, timeout);
+			break;
+		}
+
+		case "url": {
+			const sandboxId = args[1];
+			const port = parseInt(args[2] || "3000", 10);
+
+			if (!sandboxId) {
+				console.error("Usage: sandbox url <sandbox-id> [port]");
+				console.error("Example: sandbox url abc123        (default port 3000)");
+				console.error("Example: sandbox url abc123 8080   (VS Code Web)");
+				process.exit(1);
+			}
+
+			await getPortUrl(sandboxId, port);
+			break;
+		}
+
+		case "progress": {
+			const sandboxId = args[1];
+			const jsonOutput = args.includes("--json");
+
+			if (!sandboxId) {
+				console.error("Usage: sandbox progress <sandbox-id> [--json]");
+				console.error("Example: sandbox progress abc123");
+				console.error("Example: sandbox progress abc123 --json");
+				process.exit(1);
+			}
+
+			await getProgress(sandboxId, jsonOutput);
+			break;
+		}
 
 		case "run-claude": {
 			let prompt: string | undefined;

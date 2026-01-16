@@ -1,0 +1,154 @@
+{
+	"id": "crud-server-action",
+	"type": "crud",
+	"name": "CRUD with Server Actions",
+	"description": "Full CRUD implementation using Next.js server actions, Supabase RPC, and Zod validation. Follows MakerKit patterns for data fetching and mutations.",
+	"keywords": [
+		"crud",
+		"create",
+		"read",
+		"update",
+		"delete",
+		"form",
+		"list",
+		"table",
+		"server action",
+		"supabase",
+		"database"
+	],
+	"applicable_to": {
+		"technologies": ["next.js", "supabase", "react", "zod"],
+		"contexts": ["dashboard", "admin", "management", "settings"]
+	},
+	"steps": [
+		{
+			"step_number": 1,
+			"name": "Create Zod schema",
+			"action_template": "Create {{resource_name}} validation schema with Zod",
+			"input_template": "Feature requirements define {{resource_name}} fields",
+			"output_template": "Schema file at {{schemas_path}}/{{resource_name}}.schema.ts exports Create{{ResourceName}}Schema and Update{{ResourceName}}Schema",
+			"critical": false,
+			"parallel_group": "A",
+			"estimated_hours": 1,
+			"variables": ["resource_name", "ResourceName", "schemas_path"]
+		},
+		{
+			"step_number": 2,
+			"name": "Create Supabase RPC functions",
+			"action_template": "Create database RPC functions for {{resource_name}} CRUD operations",
+			"input_template": "Schema definition exists for {{resource_name}}",
+			"output_template": "Migration file with get_{{resource_plural}}, create_{{resource_name}}, update_{{resource_name}}, delete_{{resource_name}} RPC functions",
+			"critical": true,
+			"parallel_group": "A",
+			"estimated_hours": 2,
+			"variables": ["resource_name", "resource_plural"]
+		},
+		{
+			"step_number": 3,
+			"name": "Create loader function",
+			"action_template": "Create {{resource_name}}-page.loader.ts with load{{ResourcePlural}} function",
+			"input_template": "RPC functions exist for {{resource_name}}",
+			"output_template": "Loader file at {{loaders_path}}/{{resource_name}}-page.loader.ts exports load{{ResourcePlural}} function",
+			"critical": false,
+			"parallel_group": "B",
+			"estimated_hours": 1,
+			"variables": ["resource_name", "ResourcePlural", "loaders_path"]
+		},
+		{
+			"step_number": 4,
+			"name": "Create server actions",
+			"action_template": "Create {{resource_name}}-server-actions.ts with create, update, delete actions",
+			"input_template": "Zod schemas and RPC functions exist",
+			"output_template": "Server actions file at {{actions_path}}/{{resource_name}}-server-actions.ts using enhanceAction",
+			"critical": false,
+			"parallel_group": "B",
+			"estimated_hours": 2,
+			"variables": ["resource_name", "actions_path"]
+		},
+		{
+			"step_number": 5,
+			"name": "Create list component",
+			"action_template": "Create {{ResourceName}}List component displaying {{resource_plural}}",
+			"input_template": "Loader function returns {{resource_name}} data",
+			"output_template": "Component at {{components_path}}/{{resource_name}}-list.tsx with table or card layout",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 2,
+			"variables": [
+				"ResourceName",
+				"resource_plural",
+				"resource_name",
+				"components_path"
+			]
+		},
+		{
+			"step_number": 6,
+			"name": "Create form component",
+			"action_template": "Create {{ResourceName}}Form component for create/edit",
+			"input_template": "Zod schema and server actions exist",
+			"output_template": "Component at {{components_path}}/{{resource_name}}-form.tsx using react-hook-form with Zod resolver",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 2,
+			"variables": ["ResourceName", "resource_name", "components_path"]
+		},
+		{
+			"step_number": 7,
+			"name": "Create page component",
+			"action_template": "Create page.tsx integrating list and form components",
+			"input_template": "List and form components exist",
+			"output_template": "Page at {{pages_path}}/page.tsx with loader data fetching and CRUD UI",
+			"critical": false,
+			"parallel_group": "D",
+			"estimated_hours": 2,
+			"variables": ["pages_path"]
+		},
+		{
+			"step_number": 8,
+			"name": "Add E2E tests",
+			"action_template": "Create E2E tests for {{resource_name}} CRUD operations",
+			"input_template": "Page component is functional",
+			"output_template": "Test file at {{tests_path}}/{{resource_name}}.spec.ts covering create, read, update, delete flows",
+			"critical": false,
+			"parallel_group": "E",
+			"estimated_hours": 3,
+			"variables": ["resource_name", "tests_path"]
+		}
+	],
+	"dependency_graph": {
+		"1": [],
+		"2": [],
+		"3": [2],
+		"4": [1, 2],
+		"5": [3],
+		"6": [1, 4],
+		"7": [5, 6],
+		"8": [7]
+	},
+	"parallel_groups": {
+		"A": [1, 2],
+		"B": [3, 4],
+		"C": [5, 6],
+		"D": [7],
+		"E": [8]
+	},
+	"adaptation_notes": [
+		"Adjust {{schemas_path}} based on route structure (typically _lib/schemas/)",
+		"Adjust {{loaders_path}} based on route structure (typically _lib/server/)",
+		"Adjust {{actions_path}} based on route structure (typically _lib/server/)",
+		"Adjust {{components_path}} based on route structure (typically _components/)",
+		"Replace {{ResourceName}} with PascalCase entity name",
+		"Replace {{resource_name}} with kebab-case entity name",
+		"Replace {{resource_plural}} with plural form",
+		"For simple entities, steps 5-6 can be merged"
+	],
+	"metadata": {
+		"created_at": "2025-12-31T00:00:00Z",
+		"created_by": "alpha-workflow",
+		"last_used": null,
+		"usage_count": 0,
+		"success_count": 0,
+		"failure_count": 0,
+		"avg_execution_hours": 0
+	}
+}

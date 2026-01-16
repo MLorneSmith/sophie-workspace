@@ -16,7 +16,7 @@
 import { exec } from "node:child_process";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../utils/base-test";
 
 const execAsync = promisify(exec);
 
@@ -172,7 +172,7 @@ test.describe("Seeding Performance Benchmarks", () => {
 	test("should handle large collections efficiently", async () => {
 		test.setTimeout(PERF_TIMEOUT);
 
-		// Run all collections to test with full dataset (255 records)
+		// Run all collections to test with full dataset (257 records)
 		const startTime = Date.now();
 
 		const { stdout } = await execAsync(
@@ -190,7 +190,7 @@ test.describe("Seeding Performance Benchmarks", () => {
 
 		// Verify records processed
 		expect(stdout).toContain("course-lessons");
-		expect(stdout).toContain("255 records");
+		expect(stdout).toContain("257 records");
 	});
 
 	test("should process all collections within benchmark", async () => {

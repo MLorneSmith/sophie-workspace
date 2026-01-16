@@ -22,11 +22,11 @@
 			"descriptionPlaceholder": "Enter task description",
 			"status": "Status",
 			"priority": "Priority",
+			"phase": "Phase",
+			"phasePlaceholder": "Select phase",
 			"subtasks": "Subtasks",
 			"addSubtask": "Add Subtask",
-			"subtaskPlaceholder": "Enter subtask",
-			"image": "Image",
-			"imagePlaceholder": "Click or drag to upload image (max 1MB)"
+			"subtaskPlaceholder": "Enter subtask"
 		},
 		"dropHint": "Drop tasks here",
 		"actions": {

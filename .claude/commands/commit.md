@@ -64,7 +64,8 @@ This format:
 
 **Good messages:**
 - Present tense: "add", "fix", "update" (not "added", "fixed", "updated")
-- 50-72 characters for description
+- 50-72 characters for subject line (first line)
+- **Body lines must not exceed 100 characters** (commitlint enforces this)
 - Start with lowercase after colon
 - Descriptive of actual changes
 - No period at the end
@@ -82,6 +83,7 @@ refactor(ui): extract modal components for reusability [agent: ui_engineer]
 - Generic messages: "fix stuff", "updates", "wip"
 - Past tense: "added", "fixed", "updated"
 - Too verbose or too short
+- Body lines longer than 100 characters (wrap long lines)
 
 ### 4. Pre-commit Hooks Awareness
 
@@ -229,6 +231,7 @@ Return a brief summary:
 If commit failed, explain the error and suggest fixes:
 - **TruffleHog blocked**: Remove hardcoded secrets, use environment variables
 - **Commitlint failed**: Check type/scope are valid, verify format
+- **body-max-line-length**: Wrap body lines to stay under 100 characters
 - **Biome failed**: Review specific lint rule violations
 - **Other error**: Include error message and suggest next steps
 

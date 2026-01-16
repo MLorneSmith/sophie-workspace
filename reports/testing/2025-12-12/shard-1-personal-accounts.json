@@ -1,0 +1,37 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Personal Accounts",
+		"files": [
+			"tests/account/account.spec.ts",
+			"tests/account/account-simple.spec.ts"
+		],
+		"expectedTests": 12,
+		"shardCommand": "test:shard3"
+	},
+	"execution": {
+		"startTime": "2025-12-12T20:16:45.666Z",
+		"endTime": "2025-12-12T20:21:51.666Z",
+		"duration": "306s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 7,
+		"passed": 2,
+		"failed": 3,
+		"skipped": 2,
+		"intentionalFailures": 0,
+		"integrationTests": 2,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 7879 bytes)...\nount-Se-97096-n-update-their-profile-name-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n    Locator:  locator('[data-testid=\"account-dropdown-display-name\"]')\n    Expected: \u001b[32m\"John Doe\"\u001b[39m\n    Received: \u001b[31m\"test1\"\u001b[39m\n    Timeout:  10000ms\n\n    Call log:\n    \u001b[2m  - Expect \"toHaveText\" with timeout 10000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"account-dropdown-display-name\"]')\u001b[22m\n    \u001b[2m    14 × locator resolved to <span class=\"truncate text-sm\" data-testid=\"account-dropdown-display-name\">test1</span>\u001b[22m\n    \u001b[2m       - unexpected value \"test1\"\u001b[22m\n\n\n      55 |\n      56 | \t\t// Wait for the dropdown to update with the new name\n    > 57 | \t\tawait expect(account.getProfileName()).toHaveText(name, { timeout: 10000 });\n         | \t\t                                       ^\n      58 | \t});\n      59 |\n      60 | \ttest.skip(\"user can update their email\", async ({ page: _page }) => {\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:57:42\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-97096-n-update-their-profile-name-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3) [chromium] › tests/account/account.spec.ts:67:6 › Account Settings › user can update their password \n\n    Error: Timeout 30000ms exceeded while waiting on the predicate\n\n      77 |\n      78 | \t\t\tawait Promise.all([request, response]);\n    > 79 | \t\t}).toPass({ timeout: 30000 });\n         | \t\t   ^\n      80 |\n      81 | \t\tawait page.context().clearCookies();\n      82 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:79:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: Timeout 30000ms exceeded while waiting on the predicate\n\n      77 |\n      78 | \t\t\tawait Promise.all([request, response]);\n    > 79 | \t\t}).toPass({ timeout: 30000 });\n         | \t\t   ^\n      80 |\n      81 | \t\tawait page.context().clearCookies();\n      82 |\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/account/account.spec.ts:79:6\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/account-account-Account-Se-91ea2-r-can-update-their-password-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3 failed\n    [chromium] › tests/account/account-simple.spec.ts:66:6 › Account Settings - Simple @account @integration › user can update display name \n    [chromium] › tests/account/account.spec.ts:43:6 › Account Settings › user can update their profile name \n    [chromium] › tests/account/account.spec.ts:67:6 › Account Settings › user can update their password \n  2 skipped\n  6 did not run\n  2 passed (4.7m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard3: `playwright test tests/account/account.spec.ts tests/account/account-simple.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

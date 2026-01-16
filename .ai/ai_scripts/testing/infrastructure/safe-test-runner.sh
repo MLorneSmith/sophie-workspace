@@ -129,6 +129,11 @@ echo ""
 export TEST_OUTPUT_MODE=file
 export TEST_OUTPUT_FILE="$LOG_FILE"
 
+# CRITICAL: Set NODE_ENV=test for E2E tests
+# This is required for Playwright global-setup.ts pre-flight validation
+# Without this, the validation fails with "NODE_ENV should be 'test' but is 'development'"
+export NODE_ENV=test
+
 # Run test controller with intelligent filtering
 echo -e "${BLUE}Starting test execution...${NC}"
 echo ""

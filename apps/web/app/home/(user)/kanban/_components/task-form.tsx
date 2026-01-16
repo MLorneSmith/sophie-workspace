@@ -24,6 +24,7 @@ import { PlusIcon, XIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
+import { PRESENTATION_PHASES } from "../_lib/config/presentation-tasks";
 import type { CreateTaskInput } from "../_lib/schema/task.schema";
 import {
 	CreateTaskSchema,
@@ -50,6 +51,7 @@ export function TaskForm({
 			status: "do",
 			priority: "medium",
 			subtasks: [],
+			phase: "",
 			...defaultValues,
 		},
 	});
@@ -166,6 +168,31 @@ export function TaskForm({
 						)}
 					/>
 				</div>
+
+				<FormField
+					control={form.control}
+					name="phase"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Phase</FormLabel>
+							<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<FormControl>
+									<SelectTrigger>
+										<SelectValue placeholder="Select phase" />
+									</SelectTrigger>
+								</FormControl>
+								<SelectContent>
+									{PRESENTATION_PHASES.map((phase) => (
+										<SelectItem key={phase.id} value={phase.name}>
+											{phase.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 
 				<div className="space-y-4">
 					<FormField

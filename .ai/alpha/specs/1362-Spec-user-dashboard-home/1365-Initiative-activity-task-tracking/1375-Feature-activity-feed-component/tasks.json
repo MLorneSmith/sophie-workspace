@@ -1,0 +1,703 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1375,
+		"feature_name": "Activity Feed Component",
+		"feature_slug": "activity-feed-component",
+		"initiative_id": 1365,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 69,
+			"level": "HIGH",
+			"target_steps": {
+				"min": 12,
+				"max": 20
+			},
+			"pattern_matched": "dashboard-card"
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create activity feed types",
+			"action": {
+				"verb": "Create",
+				"target": "TypeScript interfaces for Activity and ActivityFeedProps"
+			},
+			"purpose": "Define type-safe contracts for activity data structure and component props",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/lib/database.types.ts"],
+				"dependencies": ["Database type from Supabase typegen"],
+				"constraints": [
+					"Must match user_activities table schema from Feature F2"
+				]
+			},
+			"input_state": "user_activities table exists in database (created by F2)",
+			"output_state": "Activity and ActivityFeedProps types defined inline in activity-feed-card.tsx",
+			"acceptance_criterion": "Types compile without errors and match expected activity properties (id, user_id, activity_type, entity_type, entity_id, metadata, created_at)",
+			"verification_command": "pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create activity feed loader",
+			"action": {
+				"verb": "Create",
+				"target": "loadActivityFeed loader function with React.cache"
+			},
+			"purpose": "Fetch 10 most recent user activities from database with proper error handling",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"cache from react",
+					"createServiceLogger from @kit/shared/logger"
+				],
+				"constraints": [
+					"Must use 'server-only' directive",
+					"Wrap with React.cache for deduplication",
+					"Query user_activities table filtering by auth.uid()",
+					"Order by created_at DESC LIMIT 10",
+					"RLS enforces user can only see own activities"
+				]
+			},
+			"input_state": "Activity types exist, user_activities table has RLS policies",
+			"output_state": "Loader function at apps/web/app/home/(user)/_lib/server/activity-feed.loader.ts returns Activity[]",
+			"acceptance_criterion": "Loader fetches activities successfully and logs errors via logger service",
+			"verification_command": "pnpm typecheck && pnpm --filter web test:unit -- activity-feed.loader",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/activity-feed.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create activity icon mapping utility",
+			"action": {
+				"verb": "Create",
+				"target": "getActivityIcon function mapping activity types to Lucide icons"
+			},
+			"purpose": "Centralize icon selection logic for different activity types",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 3,
+			"group": 2,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Lucide React icons (FileText, Video, CheckCircle, etc.)"
+				],
+				"constraints": [
+					"Return icon component based on activity_type and entity_type",
+					"Support types: lesson_completed, presentation_created, quiz_submitted, etc.",
+					"Default fallback icon for unknown types"
+				]
+			},
+			"input_state": "Activity types defined, Lucide icons available",
+			"output_state": "getActivityIcon utility function returns appropriate icon component",
+			"acceptance_criterion": "Function returns correct icon for each activity type with fallback for unknowns",
+			"verification_command": "pnpm --filter web test:unit -- activity-feed-item.test",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-item.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Create entity link mapping utility",
+			"action": {
+				"verb": "Create",
+				"target": "getEntityLink function generating URLs from entity type and ID"
+			},
+			"purpose": "Generate proper navigation links for different entity types (lessons, presentations, etc.)",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 4,
+			"group": 2,
+			"context": {
+				"files": ["config/paths.config.ts"],
+				"dependencies": ["pathsConfig from config"],
+				"constraints": [
+					"Support entity types: lesson, presentation, quiz",
+					"Generate absolute paths using pathsConfig",
+					"Return null for unsupported entity types"
+				]
+			},
+			"input_state": "pathsConfig exists with routes defined",
+			"output_state": "getEntityLink utility returns path string or null",
+			"acceptance_criterion": "Function generates correct URLs for all supported entity types",
+			"verification_command": "pnpm --filter web test:unit -- activity-feed-item.test",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-item.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Create activity feed item component",
+			"action": {
+				"verb": "Create",
+				"target": "ActivityFeedItem client component with icon, title, link, and relative time"
+			},
+			"purpose": "Render individual activity with interactive hover effects and relative timestamp",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 3,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"getActivityIcon utility",
+					"getEntityLink utility",
+					"formatDistanceToNow from date-fns",
+					"Link from next/link"
+				],
+				"constraints": [
+					"Use 'use client' directive for hover effects",
+					"Display icon, activity title, relative time",
+					"Link to entity if getEntityLink returns path",
+					"Hover effect changes background color",
+					"Show tooltip with exact timestamp on hover"
+				]
+			},
+			"input_state": "Icon and link utilities exist, Activity type defined",
+			"output_state": "ActivityFeedItem component at apps/web/app/home/(user)/_components/activity-feed-item.tsx",
+			"acceptance_criterion": "Component renders activity with clickable link and shows relative time (e.g., '2 hours ago')",
+			"verification_command": "pnpm --filter web test:unit -- activity-feed-item.test",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-item.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3", "T4"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Create activity feed card component",
+			"action": {
+				"verb": "Create",
+				"target": "ActivityFeedCard async server component with populated state"
+			},
+			"purpose": "Server component that loads activities and displays list in scrollable card",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 6,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx"
+				],
+				"dependencies": [
+					"loadActivityFeed loader",
+					"ActivityFeedItem component",
+					"Card components from @kit/ui/card",
+					"ScrollArea from @kit/ui/scroll-area",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Async server component",
+					"Call loadActivityFeed() to fetch data",
+					"Wrap items in ScrollArea with 400px max height",
+					"Use Card, CardHeader, CardTitle, CardContent structure",
+					"Pass activities to ActivityFeedItem components"
+				]
+			},
+			"input_state": "Loader and ActivityFeedItem exist",
+			"output_state": "ActivityFeedCard displays list of activities in scrollable card",
+			"acceptance_criterion": "Card renders with header 'Recent Activity' and scrollable list of ActivityFeedItem components",
+			"verification_command": "pnpm dev && navigate to /home/(user) to verify card renders",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T5"],
+				"blocks": ["T7", "T8"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Add empty state to activity feed card",
+			"action": {
+				"verb": "Add",
+				"target": "Empty state UI when no activities exist"
+			},
+			"purpose": "Provide helpful message and guidance when user has no activity history",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 7,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/activity-feed-card.tsx"
+				],
+				"dependencies": [
+					"Trans component for i18n",
+					"Lucide icons (Activity icon for empty state)"
+				],
+				"constraints": [
+					"Check if activities array is empty",
+					"Display icon, heading, and description",
+					"Use i18n keys for text",
+					"Center content vertically and horizontally"
+				]
+			},
+			"input_state": "ActivityFeedCard exists with populated state",
+			"output_state": "Card shows empty state with icon and message when activities.length === 0",
+			"acceptance_criterion": "Empty state renders with 'No recent activity' message when no activities exist",
+			"verification_command": "Test with empty user_activities table and verify empty state shows",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-card.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T6"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T8",
+			"type": "task",
+			"name": "Create activity feed skeleton component",
+			"action": {
+				"verb": "Create",
+				"target": "ActivityFeedSkeleton loading state component"
+			},
+			"purpose": "Show placeholder UI while activities are loading for better UX",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 8,
+			"group": 4,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Skeleton from @kit/ui/skeleton",
+					"Card components from @kit/ui/card"
+				],
+				"constraints": [
+					"Match ActivityFeedCard layout structure",
+					"Show 5 skeleton items (circles for icons, rectangles for text)",
+					"Use same Card, CardHeader, CardContent structure"
+				]
+			},
+			"input_state": "ActivityFeedCard structure defined",
+			"output_state": "ActivityFeedSkeleton component at apps/web/app/home/(user)/_components/activity-feed-skeleton.tsx",
+			"acceptance_criterion": "Skeleton renders with card header and 5 placeholder items matching feed layout",
+			"verification_command": "pnpm dev and verify skeleton shows briefly before data loads",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-skeleton.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T6"],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T9",
+			"type": "task",
+			"name": "Add activity feed translations",
+			"action": {
+				"verb": "Add",
+				"target": "i18n translation keys for activity feed text"
+			},
+			"purpose": "Internationalize all user-facing text in activity feed",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 9,
+			"group": 5,
+			"context": {
+				"files": ["apps/web/public/locales/en/common.json"],
+				"dependencies": [],
+				"constraints": [
+					"Add keys under 'activityFeed' namespace",
+					"Include: title, empty state heading/description, activity type labels",
+					"Follow existing translation key naming conventions"
+				]
+			},
+			"input_state": "common.json translation file exists",
+			"output_state": "Translation keys added to apps/web/public/locales/en/common.json",
+			"acceptance_criterion": "Keys exist for 'activityFeed.title', 'activityFeed.emptyHeading', 'activityFeed.emptyDescription', and activity type labels",
+			"verification_command": "pnpm lint:fix && verify JSON is valid",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/public/locales/en/common.json"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T10",
+			"type": "task",
+			"name": "Wire activity feed card to dashboard page",
+			"action": {
+				"verb": "Add",
+				"target": "ActivityFeedCard to user dashboard page with Suspense boundary"
+			},
+			"purpose": "Integrate activity feed into user home dashboard with progressive rendering",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 10,
+			"group": 6,
+			"context": {
+				"files": ["apps/web/app/home/(user)/page.tsx"],
+				"dependencies": [
+					"ActivityFeedCard component",
+					"ActivityFeedSkeleton component",
+					"Suspense from react",
+					"PageBody from @kit/ui/page"
+				],
+				"constraints": [
+					"Wrap ActivityFeedCard in Suspense with ActivityFeedSkeleton fallback",
+					"Place in PageBody component",
+					"Use grid layout for dashboard cards"
+				]
+			},
+			"input_state": "ActivityFeedCard, skeleton, empty state, and translations exist",
+			"output_state": "ActivityFeedCard renders on /home/(user) page with Suspense boundary",
+			"acceptance_criterion": "Dashboard shows activity feed card with skeleton loader during fetch",
+			"verification_command": "pnpm dev && navigate to /home/(user) and verify card renders",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T7", "T8", "T9"],
+				"blocks": ["T11"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T11",
+			"type": "task",
+			"name": "Add activity feed item component tests",
+			"action": {
+				"verb": "Add",
+				"target": "Unit tests for ActivityFeedItem component"
+			},
+			"purpose": "Verify icon mapping, link generation, and relative time formatting work correctly",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 11,
+			"group": 7,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Vitest test framework",
+					"@testing-library/react",
+					"ActivityFeedItem component"
+				],
+				"constraints": [
+					"Test icon renders for different activity types",
+					"Test link generation for different entity types",
+					"Test relative time formatting",
+					"Test hover effects trigger",
+					"Test null entity link handling"
+				]
+			},
+			"input_state": "ActivityFeedItem component is integrated and functional",
+			"output_state": "Tests at apps/web/app/home/(user)/_components/activity-feed-item.test.tsx pass all scenarios",
+			"acceptance_criterion": "All tests pass covering icon mapping, links, relative time, and edge cases",
+			"verification_command": "pnpm --filter web test:unit -- activity-feed-item.test",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/activity-feed-item.test.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T10"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T12",
+			"type": "task",
+			"name": "Add activity feed loader tests",
+			"action": {
+				"verb": "Add",
+				"target": "Unit tests for loadActivityFeed loader function"
+			},
+			"purpose": "Verify loader fetches correct data, handles errors, and respects RLS",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 12,
+			"group": 7,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Vitest test framework",
+					"Mock Supabase client",
+					"loadActivityFeed loader"
+				],
+				"constraints": [
+					"Mock Supabase client responses",
+					"Test successful data fetch",
+					"Test error handling and logging",
+					"Test limit of 10 activities",
+					"Test ordering by created_at DESC"
+				]
+			},
+			"input_state": "Loader function is integrated and functional",
+			"output_state": "Tests at apps/web/app/home/(user)/_lib/server/activity-feed.loader.test.ts pass all scenarios",
+			"acceptance_criterion": "All tests pass covering successful fetch, errors, limits, and ordering",
+			"verification_command": "pnpm --filter web test:unit -- activity-feed.loader.test",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/activity-feed.loader.test.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T10"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Foundation - Types and Loader",
+				"task_ids": ["T1", "T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 3,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Utilities - Icon and Link Mapping",
+				"task_ids": ["T3", "T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 2,
+				"parallel_hours": 1
+			},
+			{
+				"id": 3,
+				"name": "Core Components - Item and Card",
+				"task_ids": ["T5", "T6"],
+				"depends_on_groups": [2],
+				"estimated_hours": 4,
+				"parallel_hours": 2
+			},
+			{
+				"id": 4,
+				"name": "States - Empty and Loading",
+				"task_ids": ["T7", "T8"],
+				"depends_on_groups": [3],
+				"estimated_hours": 2,
+				"parallel_hours": 1
+			},
+			{
+				"id": 5,
+				"name": "Translations",
+				"task_ids": ["T9"],
+				"depends_on_groups": [],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			},
+			{
+				"id": 6,
+				"name": "Integration",
+				"task_ids": ["T10"],
+				"depends_on_groups": [4, 5],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			},
+			{
+				"id": 7,
+				"name": "Testing",
+				"task_ids": ["T11", "T12"],
+				"depends_on_groups": [6],
+				"estimated_hours": 4,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T5", "T6", "T7", "T10", "T11"],
+			"total_hours": 10
+		},
+		"duration": {
+			"sequential": 17,
+			"parallel": 10,
+			"time_saved_percent": 41
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1389
+	}
+}

@@ -57,6 +57,8 @@ interface FormContextType {
 	errors: Record<string, string>;
 	setErrors: (errors: Record<string, string>) => void;
 	validateField: (field: keyof FormData) => boolean;
+	touchedFieldsOnBlur: Set<keyof FormData>;
+	markFieldAsTouchedOnBlur: (field: keyof FormData) => void;
 }
 
 const SetupFormContext = createContext<FormContextType | undefined>(undefined);
@@ -77,6 +79,9 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 		"presentation_type",
 	]);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [touchedFieldsOnBlur, setTouchedFieldsOnBlur] = useState<
+		Set<keyof FormData>
+	>(new Set());
 
 	// Initialize with default path and update when presentation type changes
 	useEffect(() => {
@@ -111,6 +116,7 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				error: "Field is required",
 			});
 		} else {
+			// Optimistic error clearing - clear error when value becomes non-empty
 			delete newErrors[field];
 			logger.info("Field validation passed", {
 				field,
@@ -120,6 +126,11 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 
 		setErrors(newErrors);
 		return isValid;
+	};
+
+	const markFieldAsTouchedOnBlur = (field: keyof FormData) => {
+		setTouchedFieldsOnBlur(new Set(touchedFieldsOnBlur).add(field));
+		logger.info("Field marked as touched on blur", { field });
 	};
 
 	const handleNext = () => {
@@ -198,6 +209,8 @@ export function SetupFormProvider({ children }: { children: React.ReactNode }) {
 				errors,
 				setErrors,
 				validateField,
+				touchedFieldsOnBlur,
+				markFieldAsTouchedOnBlur,
 			}}
 		>
 			{children}

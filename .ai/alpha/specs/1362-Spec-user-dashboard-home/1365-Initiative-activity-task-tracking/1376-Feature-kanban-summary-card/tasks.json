@@ -1,0 +1,417 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1376,
+		"feature_name": "Kanban Summary Card",
+		"feature_slug": "kanban-summary-card",
+		"initiative_id": 1365,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 50,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": null
+		}
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create kanban-summary.loader.ts with parallel task queries",
+			"action": {
+				"verb": "Create",
+				"target": "kanban-summary.loader.ts"
+			},
+			"purpose": "Fetch current 'doing' task and next highest-priority 'do' task in parallel for dashboard display",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": [
+					"apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"React.cache for request deduplication"
+				],
+				"constraints": [
+					"Use Promise.all for parallel queries",
+					"Query status='doing' LIMIT 1 for current task",
+					"Query status='do' ORDER BY priority DESC LIMIT 1 for next task",
+					"Add 'server-only' import at top"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/[account]/_lib/server/team-account-workspace.loader.ts",
+						"description": "React.cache wrapper pattern and Promise.all parallel fetching"
+					}
+				]
+			},
+			"input_state": "Tasks table exists with status and priority columns; no loader exists yet",
+			"output_state": "Loader function exported and cached, returns { currentTask, nextTask } with null for missing tasks",
+			"acceptance_criterion": "Loader exports cached function that returns object with currentTask (status='doing') and nextTask (status='do', highest priority)",
+			"verification_command": "pnpm typecheck && grep -q \"export const loadKanbanSummary = cache\" apps/web/app/home/\\(user\\)/_lib/server/kanban-summary.loader.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/kanban-summary.loader.ts",
+					"description": "Server-side data loader with parallel queries"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2", "T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create KanbanSummaryCard server component",
+			"action": {
+				"verb": "Create",
+				"target": "KanbanSummaryCard component"
+			},
+			"purpose": "Display current and next tasks in dashboard card format with visual hierarchy",
+			"status": "draft",
+			"estimated_hours": 4,
+			"priority": 2,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/kanban-summary.loader.ts"
+				],
+				"dependencies": [
+					"Card, CardContent, CardHeader, CardTitle, CardFooter from @kit/ui/card",
+					"Trans from @kit/ui/trans",
+					"Button from @kit/ui/button",
+					"Badge from @kit/ui/badge",
+					"Link from next/link"
+				],
+				"constraints": [
+					"Server component (async function)",
+					"Call loadKanbanSummary() to fetch data",
+					"Current task highlighted with primary background",
+					"Priority badge with color coding: low=gray, medium=blue, high=red",
+					"Link to /home/[account]/kanban in footer",
+					"Show KanbanSummaryEmpty if both tasks are null",
+					"Task description with line-clamp-2 CSS class"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/(user)/assessment/survey/_components/question-card.tsx",
+						"description": "Card component structure and styling patterns"
+					}
+				]
+			},
+			"input_state": "Loader function exists and returns task data",
+			"output_state": "Server component renders card with current task (highlighted), next task, priority badges, and link to kanban board",
+			"acceptance_criterion": "Component renders async, calls loader, displays tasks with priority badges, shows empty state when no tasks",
+			"verification_command": "grep -q \"export async function KanbanSummaryCard\" apps/web/app/home/\\(user\\)/_components/kanban-summary-card.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx",
+					"description": "Main dashboard card component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create KanbanSummaryEmpty component",
+			"action": {
+				"verb": "Create",
+				"target": "KanbanSummaryEmpty component"
+			},
+			"purpose": "Show friendly empty state with call-to-action when user has no tasks",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 2,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Card, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans",
+					"Button from @kit/ui/button",
+					"Link from next/link"
+				],
+				"constraints": [
+					"Display empty state message with i18n key 'common:kanbanSummary.emptyState'",
+					"Include button linking to /home/[account]/kanban with text 'common:kanbanSummary.createFirstTask'",
+					"Use Card component for consistent styling"
+				]
+			},
+			"input_state": "No tasks exist for user (currentTask and nextTask are null)",
+			"output_state": "Empty state component displayed with message and CTA button",
+			"acceptance_criterion": "Component renders card with empty message and link to create first task",
+			"verification_command": "grep -q \"export function KanbanSummaryEmpty\" apps/web/app/home/\\(user\\)/_components/kanban-summary-empty.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/kanban-summary-empty.tsx",
+					"description": "Empty state component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Add kanban summary i18n translations",
+			"action": {
+				"verb": "Add",
+				"target": "kanban summary translations to common.json"
+			},
+			"purpose": "Provide translated text for kanban summary card, empty state, and actions",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 3,
+			"context": {
+				"files": ["apps/web/public/locales/en/common.json"],
+				"dependencies": [],
+				"constraints": [
+					"Add kanbanSummary object with keys: cardTitle, currentTask, nextTask, emptyState, createFirstTask, viewAllTasks",
+					"Follow existing JSON structure in common.json",
+					"Use sentence case for labels"
+				]
+			},
+			"input_state": "common.json exists with routes.kanban defined",
+			"output_state": "common.json contains kanbanSummary translations for all card text",
+			"acceptance_criterion": "common.json has kanbanSummary.cardTitle, .currentTask, .nextTask, .emptyState, .createFirstTask, .viewAllTasks keys",
+			"verification_command": "jq '.kanbanSummary.cardTitle' apps/web/public/locales/en/common.json | grep -q 'Kanban Summary'",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/public/locales/en/common.json",
+					"description": "Added kanbanSummary translation keys"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Wire KanbanSummaryCard into dashboard page",
+			"action": {
+				"verb": "Wire",
+				"target": "KanbanSummaryCard to user dashboard"
+			},
+			"purpose": "Integrate kanban summary card into main dashboard with Suspense boundary",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_components/kanban-summary-card.tsx"
+				],
+				"dependencies": [
+					"Suspense from react",
+					"PageBody from @kit/ui/page",
+					"KanbanSummaryCard component"
+				],
+				"constraints": [
+					"Import KanbanSummaryCard",
+					"Wrap in Suspense with fallback skeleton (optional - can use basic loading state)",
+					"Add to PageBody section",
+					"Maintain existing page structure"
+				]
+			},
+			"input_state": "Dashboard page exists with empty PageBody; KanbanSummaryCard component is ready",
+			"output_state": "Dashboard renders KanbanSummaryCard within PageBody with Suspense",
+			"acceptance_criterion": "Dashboard page imports and renders KanbanSummaryCard component",
+			"verification_command": "grep -q \"KanbanSummaryCard\" apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx",
+					"description": "Added KanbanSummaryCard to dashboard"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2", "T3", "T4"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Test kanban summary card rendering",
+			"action": {
+				"verb": "Test",
+				"target": "kanban summary card display states"
+			},
+			"purpose": "Verify card renders correctly with tasks, without tasks, and with different priorities",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 6,
+			"group": 5,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/kanban-summary-card.tsx",
+					"apps/web/app/home/(user)/_lib/server/kanban-summary.loader.ts"
+				],
+				"dependencies": [
+					"pnpm dev for manual testing",
+					"Supabase local instance with tasks table"
+				],
+				"constraints": [
+					"Test with no tasks (empty state shown)",
+					"Test with doing task only",
+					"Test with do task only",
+					"Test with both tasks (full card display)",
+					"Test priority badge colors (low=gray, medium=blue, high=red)",
+					"Test link to kanban board works",
+					"Verify typecheck passes"
+				]
+			},
+			"input_state": "Card integrated into dashboard; Supabase running locally",
+			"output_state": "All rendering states verified working; typecheck passes",
+			"acceptance_criterion": "Manual test confirms: empty state works, tasks display with correct priority colors, link navigates to kanban board, typecheck passes",
+			"verification_command": "pnpm dev && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/kanban-summary-card.tsx",
+					"description": "Any fixes from testing"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T5"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 0,
+				"name": "Foundation",
+				"task_ids": ["T1", "T4"],
+				"depends_on_groups": [],
+				"estimated_hours": 5,
+				"parallel_hours": 3
+			},
+			{
+				"id": 1,
+				"name": "UI Components",
+				"task_ids": ["T2", "T3"],
+				"depends_on_groups": [0],
+				"estimated_hours": 6,
+				"parallel_hours": 4
+			},
+			{
+				"id": 2,
+				"name": "Integration",
+				"task_ids": ["T5"],
+				"depends_on_groups": [0, 1],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			},
+			{
+				"id": 3,
+				"name": "Testing",
+				"task_ids": ["T6"],
+				"depends_on_groups": [0, 1, 2],
+				"estimated_hours": 3,
+				"parallel_hours": 3
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T5", "T6"],
+			"total_hours": 12
+		},
+		"duration": {
+			"sequential": 16,
+			"parallel": 12,
+			"time_saved_percent": 25
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1391
+	}
+}

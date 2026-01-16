@@ -1,0 +1,37 @@
+{
+	"initiative_id": 1364,
+	"spec_id": 1362,
+	"status": "completed",
+	"current_phase": "finalization",
+	"started_at": "2026-01-01T00:00:00Z",
+	"completed_at": "2026-01-01T01:00:00Z",
+	"features": {
+		"1371": {
+			"title": "Course Progress Card",
+			"status": "completed",
+			"task_count": 5,
+			"hours_sequential": 10,
+			"hours_parallel": 6,
+			"github_issue": 1380,
+			"spikes": []
+		},
+		"1372": {
+			"title": "Assessment Spider Card",
+			"status": "completed",
+			"task_count": 6,
+			"hours_sequential": 12,
+			"hours_parallel": 8,
+			"github_issue": 1382,
+			"spikes": []
+		}
+	},
+	"totals": {
+		"features": 2,
+		"tasks": 11,
+		"spikes_pending": 0,
+		"spikes_resolved": 0,
+		"hours_sequential": 22,
+		"hours_parallel": 14
+	},
+	"spikes_pending": []
+}

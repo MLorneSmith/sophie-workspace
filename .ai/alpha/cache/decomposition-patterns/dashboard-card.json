@@ -1,0 +1,159 @@
+{
+	"id": "dashboard-card",
+	"type": "component",
+	"name": "Dashboard Card Component",
+	"description": "Dashboard card with loader, multiple states (empty, loading, populated, error), and data display. Follows state-based decomposition pattern.",
+	"keywords": [
+		"card",
+		"dashboard",
+		"component",
+		"widget",
+		"display",
+		"stats",
+		"metrics",
+		"empty state",
+		"loading",
+		"skeleton"
+	],
+	"applicable_to": {
+		"technologies": ["next.js", "react", "tailwind"],
+		"contexts": ["dashboard", "home", "overview", "profile"]
+	},
+	"steps": [
+		{
+			"step_number": 1,
+			"name": "Create TypeScript types",
+			"action_template": "Create {{CardName}}Props and {{DataName}} types",
+			"input_template": "Feature requirements define card data structure",
+			"output_template": "Types defined in {{types_path}} or inline in component file",
+			"critical": false,
+			"parallel_group": "A",
+			"estimated_hours": 1,
+			"variables": ["CardName", "DataName", "types_path"]
+		},
+		{
+			"step_number": 2,
+			"name": "Create loader function",
+			"action_template": "Create load{{DataName}} function fetching card data",
+			"input_template": "Data source (RPC, API) is available",
+			"output_template": "Loader at {{loaders_path}}/{{card_name}}.loader.ts",
+			"critical": false,
+			"parallel_group": "A",
+			"estimated_hours": 1,
+			"variables": ["DataName", "loaders_path", "card_name"]
+		},
+		{
+			"step_number": 3,
+			"name": "Create card skeleton",
+			"action_template": "Create {{CardName}} component skeleton with prop types",
+			"input_template": "Types are defined",
+			"output_template": "Component file at {{components_path}}/{{card_name}}.tsx with basic structure",
+			"critical": false,
+			"parallel_group": "B",
+			"estimated_hours": 1,
+			"variables": ["CardName", "components_path", "card_name"]
+		},
+		{
+			"step_number": 4,
+			"name": "Implement empty state",
+			"action_template": "Add empty state UI when no data exists",
+			"input_template": "Card skeleton exists",
+			"output_template": "Card shows empty state with CTA when data is null/empty",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 1,
+			"variables": []
+		},
+		{
+			"step_number": 5,
+			"name": "Implement loading state",
+			"action_template": "Add loading skeleton UI using Suspense",
+			"input_template": "Card skeleton exists",
+			"output_template": "Card shows skeleton loader during data fetch",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 1,
+			"variables": []
+		},
+		{
+			"step_number": 6,
+			"name": "Implement populated state",
+			"action_template": "Add main data display UI",
+			"input_template": "Card skeleton and loader exist",
+			"output_template": "Card displays {{data_fields}} with proper formatting",
+			"critical": false,
+			"parallel_group": "C",
+			"estimated_hours": 2,
+			"variables": ["data_fields"]
+		},
+		{
+			"step_number": 7,
+			"name": "Implement error state",
+			"action_template": "Add error handling with retry capability",
+			"input_template": "Card has populated state",
+			"output_template": "Card shows error message with retry button on fetch failure",
+			"critical": false,
+			"parallel_group": "D",
+			"estimated_hours": 1,
+			"variables": []
+		},
+		{
+			"step_number": 8,
+			"name": "Wire to dashboard page",
+			"action_template": "Add {{CardName}} to dashboard with Suspense boundary",
+			"input_template": "Card component is complete",
+			"output_template": "Card integrated at {{page_path}} with loader data",
+			"critical": false,
+			"parallel_group": "E",
+			"estimated_hours": 1,
+			"variables": ["CardName", "page_path"]
+		},
+		{
+			"step_number": 9,
+			"name": "Add component tests",
+			"action_template": "Add unit tests for {{CardName}} states",
+			"input_template": "Card is integrated and functional",
+			"output_template": "Tests at {{tests_path}}/{{card_name}}.test.tsx covering all states",
+			"critical": false,
+			"parallel_group": "F",
+			"estimated_hours": 2,
+			"variables": ["CardName", "tests_path", "card_name"]
+		}
+	],
+	"dependency_graph": {
+		"1": [],
+		"2": [],
+		"3": [1],
+		"4": [3],
+		"5": [3],
+		"6": [3, 2],
+		"7": [6],
+		"8": [4, 5, 6, 7],
+		"9": [8]
+	},
+	"parallel_groups": {
+		"A": [1, 2],
+		"B": [3],
+		"C": [4, 5, 6],
+		"D": [7],
+		"E": [8],
+		"F": [9]
+	},
+	"adaptation_notes": [
+		"Replace {{CardName}} with PascalCase component name (e.g., CoachingSessionsCard)",
+		"Replace {{card_name}} with kebab-case name (e.g., coaching-sessions-card)",
+		"Replace {{DataName}} with the data type name (e.g., CoachingSession)",
+		"Adjust {{data_fields}} based on what the card displays",
+		"For simple cards without external data, skip step 2",
+		"Steps 4, 5, 6 can run in parallel as they're independent UI variants"
+	],
+	"metadata": {
+		"created_at": "2025-12-31T00:00:00Z",
+		"created_by": "alpha-workflow",
+		"last_used": null,
+		"usage_count": 0,
+		"success_count": 0,
+		"failure_count": 0,
+		"avg_execution_hours": 0
+	}
+}

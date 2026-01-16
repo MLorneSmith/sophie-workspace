@@ -5,13 +5,17 @@ import { type CookieOptions, createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { config as dotenvConfig } from "dotenv";
 import { TOTP } from "totp-generator";
-
+import {
+	logCookieDetails,
+	verifyCookieAttributes,
+	verifyCookiesPresent,
+} from "./tests/helpers/cookie-verification";
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
 import {
-	checkSupabaseHealth,
 	checkNextJsHealth,
 	checkPayloadHealth,
+	checkSupabaseHealth,
 	logHealthCheckResults,
 } from "./tests/utils/server-health-check";
 
@@ -26,6 +30,78 @@ const DEBUG_E2E_AUTH = process.env.DEBUG_E2E_AUTH === "true";
 
 // MFA TOTP key for super admin verification (matches AuthPageObject)
 const MFA_KEY = "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE";
+
+/**
+ * Determine the appropriate cookie domain for a given base URL.
+ * Handles Vercel preview deployments, localhost, and custom domains.
+ *
+ * For Vercel preview deployments, we set an EXPLICIT domain (the hostname).
+ * This ensures Playwright's cookie API properly associates cookies with the
+ * preview URL hostname, which is required for cookies to be sent with requests.
+ *
+ * See: Issue #1494 - Team accounts tests fail in CI due to cookie domain mismatch
+ * Note: This changes the approach from Issue #1096 which used domain: undefined.
+ * The explicit domain works correctly with Playwright's addCookies() API.
+ *
+ * @param baseURL - The base URL of the application
+ * @returns Object with optional domain and isVercelPreview flag
+ */
+function getCookieDomainConfig(baseURL: string): {
+	domain: string | undefined;
+	isVercelPreview: boolean;
+	sameSite: "Lax" | "None";
+} {
+	try {
+		const url = new URL(baseURL);
+		const hostname = url.hostname;
+
+		// Vercel preview deployments: *.vercel.app
+		// Set EXPLICIT domain for Playwright's cookie API to properly associate cookies
+		// This ensures cookies are sent with requests in CI environment
+		// See: Issue #1494 - Team accounts tests fail due to cookie domain mismatch
+		// See: Issue #1524 - sameSite=None required for cross-site cookie compatibility
+		if (hostname.endsWith(".vercel.app")) {
+			debugLog("cookie:vercel_preview_detected", {
+				hostname,
+				baseURL,
+				domain: hostname,
+				sameSite: "None",
+			});
+			return {
+				domain: hostname, // Explicit domain for Playwright cookie API
+				isVercelPreview: true,
+				sameSite: "None", // Required for cross-site cookie compatibility in CI
+			};
+		}
+
+		// Localhost: Use explicit hostname for consistency
+		if (hostname === "localhost" || hostname === "127.0.0.1") {
+			return {
+				domain: hostname,
+				isVercelPreview: false,
+				sameSite: "Lax",
+			};
+		}
+
+		// Custom domains: Use the hostname directly
+		return {
+			domain: hostname,
+			isVercelPreview: false,
+			sameSite: "Lax",
+		};
+	} catch (error) {
+		debugLog("cookie:domain_parse_error", {
+			baseURL,
+			error: (error as Error).message,
+		});
+		// Fallback to localhost behavior
+		return {
+			domain: "localhost",
+			isVercelPreview: false,
+			sameSite: "Lax",
+		};
+	}
+}
 
 /**
  * Payload login response type from /api/users/login endpoint
@@ -156,6 +232,81 @@ async function loginToPayloadWithRetry(
 }
 
 /**
+ * Clean up billing test data before test suite execution.
+ * This prevents duplicate subscription records from accumulating across test runs.
+ *
+ * Deletes: subscription_items → subscriptions → billing_customers (respecting foreign keys)
+ * Scope: Only test accounts (emails ending with @slideheroes.com or @makerkit.dev)
+ *
+ * @see Issue #1461 - E2E Shard 10 Duplicate Subscription Records
+ */
+async function cleanupBillingTestData() {
+	// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+	console.log("🧹 Cleaning up billing test data...");
+
+	try {
+		const { Client } = await import("pg");
+		const client = new Client({
+			host: "127.0.0.1",
+			port: 54522,
+			user: "postgres",
+			password: "postgres",
+			database: "postgres",
+		});
+
+		await client.connect();
+
+		// Delete in order: subscription_items → subscriptions → billing_customers
+		// This respects foreign key constraints
+		// Scope to test accounts only (safety check)
+		const queries = [
+			{
+				name: "subscription_items",
+				sql: `DELETE FROM subscription_items WHERE subscription_id IN (
+					SELECT s.id FROM subscriptions s
+					JOIN accounts a ON s.account_id = a.id
+					WHERE a.email LIKE '%@slideheroes.com' OR a.email LIKE '%@makerkit.dev'
+				)`,
+			},
+			{
+				name: "subscriptions",
+				sql: `DELETE FROM subscriptions WHERE account_id IN (
+					SELECT id FROM accounts
+					WHERE email LIKE '%@slideheroes.com' OR email LIKE '%@makerkit.dev'
+				)`,
+			},
+			{
+				name: "billing_customers",
+				sql: `DELETE FROM billing_customers WHERE account_id IN (
+					SELECT id FROM accounts
+					WHERE email LIKE '%@slideheroes.com' OR email LIKE '%@makerkit.dev'
+				)`,
+			},
+		];
+
+		for (const query of queries) {
+			const result = await client.query(query.sql);
+			if (result.rowCount && result.rowCount > 0) {
+				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+				console.log(`   Cleaned ${result.rowCount} ${query.name} record(s)`);
+			}
+		}
+
+		await client.end();
+
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log("✅ Billing test data cleanup complete\n");
+	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+		console.warn(
+			`⚠️  Failed to cleanup billing test data: ${(error as Error).message}`,
+		);
+		// Don't fail test suite on cleanup errors - log and continue
+		// This allows tests to run even if database cleanup fails
+	}
+}
+
+/**
  * Log global setup debug info for E2E auth troubleshooting.
  * Only logs when DEBUG_E2E_AUTH=true.
  */
@@ -194,6 +345,11 @@ async function globalSetup(config: FullConfig) {
 			"❌ Pre-flight validation failed. See details above. Please ensure Supabase is running and environment variables are configured correctly.",
 		);
 	}
+
+	// Clean up billing test data before creating auth states
+	// This prevents duplicate subscription records from accumulating across test runs
+	// See: Issue #1461 - E2E Shard 10 Duplicate Subscription Records
+	await cleanupBillingTestData();
 
 	// PHASE 2 FIX: Run health checks before auth setup
 	// This provides early warning if services are unhealthy
@@ -277,42 +433,169 @@ async function globalSetup(config: FullConfig) {
 	}
 
 	// Initialize Supabase client
-	// CRITICAL: Cookie names are derived from the Supabase URL hostname
-	// e.g., http://127.0.0.1:54521 -> sb-127-auth-token
-	//       http://host.docker.internal:54521 -> sb-host-auth-token
+	// CRITICAL: JWT issuer URL and cookie names are derived from the Supabase URL hostname
+	// e.g., http://127.0.0.1:54521 -> JWT iss: http://127.0.0.1:54521/auth/v1, cookie: sb-127-auth-token
+	//       http://host.docker.internal:54521 -> JWT iss: http://host.docker.internal:54521/auth/v1, cookie: sb-host-auth-token
 	//
 	// When running tests against a Docker server:
 	// - The server uses host.docker.internal (required for Docker to reach host)
-	// - E2E setup runs on host and can use 127.0.0.1 for authentication
-	// - But cookies must use the SAME name the server expects
+	// - E2E global setup MUST also use host.docker.internal for authentication
+	// - This ensures JWT tokens have matching issuer URLs (required for session validation)
+	// - See: Issue #1143 - E2E Password Update Test Fails - Supabase URL Mismatch
 	//
-	// Solution: Use two URLs:
-	// - supabaseAuthUrl: For authentication (127.0.0.1 works on host)
-	// - supabaseCookieUrl: For cookie naming (must match server's URL)
-	const supabaseAuthUrl =
-		process.env.E2E_SUPABASE_URL || "http://127.0.0.1:54521";
-	// For cookie naming, we need the URL the SERVER uses (not the E2E setup)
-	// Three-tier fallback:
-	// 1. E2E_SERVER_SUPABASE_URL - explicit override for any environment
-	// 2. CI environment (GitHub Actions) - use auth URL (same Supabase instance)
-	// 3. Local Docker - use host.docker.internal (for Docker-to-host communication)
-	const supabaseCookieUrl =
-		process.env.E2E_SERVER_SUPABASE_URL ||
+	// Solution: Use the SAME URL for both authentication and cookie naming:
+	// - Local Docker tests: host.docker.internal (resolves to host from containers AND host system)
+	// - CI environment: 127.0.0.1 (GitHub Actions runs Supabase locally without Docker networking)
+	const supabaseUrl =
+		process.env.E2E_SUPABASE_URL ||
 		(process.env.CI === "true"
-			? supabaseAuthUrl
+			? "http://127.0.0.1:54521"
 			: "http://host.docker.internal:54521");
+	// supabaseAuthUrl and supabaseCookieUrl use the same URL to ensure JWT issuer matches
+	const supabaseAuthUrl = supabaseUrl;
+	const supabaseCookieUrl = supabaseUrl;
 	const supabaseAnonKey =
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
 		process.env.E2E_SUPABASE_ANON_KEY ||
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
-	// Log the Supabase URLs being used for debugging
+	// Log the Supabase URL being used for debugging
+	// CRITICAL: The cookie name is derived from this URL's hostname
+	// It MUST match NEXT_PUBLIC_SUPABASE_URL used by the deployed middleware
+	// See: Issue #1507 - Cookie name mismatch causes auth failures in CI
+	const expectedCookieName = `sb-${new URL(supabaseUrl).hostname.split(".")[0]}-auth-token`;
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
-	console.log(`🔗 Using Supabase Auth URL: ${supabaseAuthUrl}`);
+	console.log(`🔗 Using Supabase URL: ${supabaseUrl}`);
+	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+	console.log(`🍪 Expected cookie name: ${expectedCookieName}`);
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
 	console.log(
-		`🍪 Using Supabase Cookie URL: ${supabaseCookieUrl} (for cookie naming)`,
+		"⚠️  IMPORTANT: This must match NEXT_PUBLIC_SUPABASE_URL in the deployed app!",
 	);
+
+	// VALIDATION: Fetch deployed app's healthcheck to verify Supabase URL alignment
+	// This uses the enhanced healthcheck endpoint with URL validation (Issue #1518)
+	// See: Issue #1507 - Cookie name mismatch causes auth failures in CI
+	// See: Issue #1518 - Dev Integration Tests Fail - Cookies Not Recognized
+	if (process.env.CI === "true" && !baseURL?.includes("localhost")) {
+		const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+
+		const headers: Record<string, string> = {};
+		if (bypassSecret) {
+			headers["x-vercel-protection-bypass"] = bypassSecret;
+		}
+
+		// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+		console.log(
+			"\n🔍 Validating Supabase URL configuration with deployed app...",
+		);
+
+		// Use the new URL validation query parameter for comprehensive validation
+		const healthUrl = `${baseURL}/healthcheck?e2e_supabase_url=${encodeURIComponent(supabaseUrl)}`;
+
+		try {
+			const response = await fetch(healthUrl, {
+				headers,
+				signal: AbortSignal.timeout(15000),
+			});
+
+			const healthData = (await response.json()) as Record<string, unknown>;
+
+			if (response.ok) {
+				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+				console.log("✅ Supabase URL validation passed");
+
+				const urlValidation = healthData.urlValidation as
+					| Record<string, unknown>
+					| undefined;
+				if (urlValidation) {
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   E2E URL: ${urlValidation.e2eUrl}`);
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   App URL: ${urlValidation.appUrl}`);
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   Project Ref: ${urlValidation.projectRef}`);
+				}
+
+				if (healthData.expectedCookieName) {
+					// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+					console.log(`   Expected Cookie: ${healthData.expectedCookieName}\n`);
+				}
+			} else if (response.status === 400) {
+				// URL validation failed - extract detailed error info
+				const errorDetails = healthData.details as
+					| Record<string, unknown>
+					| undefined;
+				const reason =
+					errorDetails?.reason ||
+					healthData.error ||
+					"Unknown validation failure";
+
+				// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+				console.error(`
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  ❌ CRITICAL: SUPABASE URL VALIDATION FAILED                                  ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ${String(reason).padEnd(70)} ║
+║                                                                              ║`);
+
+				if (errorDetails) {
+					const e2eInfo = errorDetails.e2e as Record<string, unknown>;
+					const appInfo = errorDetails.app as Record<string, unknown>;
+
+					// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+					console.error(`║  E2E Configuration:                                                          ║
+║    URL:        ${String(e2eInfo?.url || "unknown").padEnd(59)} ║
+║    Project:    ${String(e2eInfo?.projectRef || "unknown").padEnd(59)} ║
+║    Cookie:     ${String(e2eInfo?.cookieName || "unknown").padEnd(59)} ║
+║                                                                              ║
+║  App Configuration:                                                          ║
+║    URL:        ${String(appInfo?.url || "unknown").padEnd(59)} ║
+║    Project:    ${String(appInfo?.projectRef || "unknown").padEnd(59)} ║
+║    Cookie:     ${String(appInfo?.cookieName || "unknown").padEnd(59)} ║`);
+				}
+
+				// biome-ignore lint/suspicious/noConsole: Critical configuration mismatch warning
+				console.error(`║                                                                              ║
+║  This WILL cause authentication failures!                                    ║
+║  JWT issuer and cookie names will not match between E2E setup and            ║
+║  deployed middleware.                                                        ║
+║                                                                              ║
+║  FIX: Ensure E2E_SUPABASE_URL in CI matches NEXT_PUBLIC_SUPABASE_URL         ║
+║       in the Vercel deployment environment.                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+`);
+
+				// Fail fast - this mismatch WILL cause auth failures
+				throw new Error(
+					`Supabase URL validation failed: ${reason}. E2E tests cannot proceed with mismatched URLs.`,
+				);
+			} else {
+				// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+				console.log(
+					`⚠️  Healthcheck returned ${response.status} - continuing without URL validation`,
+				);
+			}
+		} catch (error) {
+			// Re-throw validation errors (from the 400 handler above)
+			if (
+				(error as Error).message?.includes("Supabase URL validation failed")
+			) {
+				throw error;
+			}
+
+			// Network errors - log but don't fail (healthcheck might not be deployed yet)
+			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+			console.log(
+				`⚠️  Could not validate Supabase URL: ${(error as Error).message}`,
+			);
+			// biome-ignore lint/suspicious/noConsole: Required for diagnostic visibility
+			console.log(
+				"   Continuing with setup - if auth fails, check URL configuration.\n",
+			);
+		}
+	}
 
 	// Create auth state directory if it doesn't exist
 	const authDir = join(cwd(), ".auth");
@@ -355,384 +638,608 @@ async function globalSetup(config: FullConfig) {
 
 	// Authenticate all users sequentially via API (happens once, so performance is acceptable)
 	for (const authState of authStates) {
-		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-		console.log(`🔐 Authenticating ${authState.name} via Supabase API...`);
+		try {
+			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+			console.log(`🔐 Authenticating ${authState.name} via Supabase API...`);
 
-		const credentials = CredentialValidator.validateAndGet(authState.role);
+			const credentials = CredentialValidator.validateAndGet(authState.role);
 
-		// Create a fresh Supabase client for each user (uses auth URL for actual auth)
-		const supabase = createClient(supabaseAuthUrl, supabaseAnonKey);
+			// Create a fresh Supabase client for each user (uses auth URL for actual auth)
+			const supabase = createClient(supabaseAuthUrl, supabaseAnonKey);
 
-		// Sign in via API
-		const { data, error } = await supabase.auth.signInWithPassword({
-			email: credentials.email,
-			password: credentials.password,
-		});
-
-		if (error || !data.session) {
-			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
-			console.error(
-				`❌ Failed to authenticate ${authState.name}: ${error?.message || "No session returned"}`,
-			);
-			throw error || new Error("No session returned from Supabase");
-		}
-
-		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-		console.log(`✅ API authentication successful for ${authState.name}`);
-
-		// For super admin user, verify MFA to get AAL2 session
-		if (authState.role === "admin") {
-			debugLog("mfa:challenge_start", {
-				user: authState.name,
-				userId: data.session?.user?.id?.slice(0, 8),
+			// Sign in via API
+			const { data, error } = await supabase.auth.signInWithPassword({
+				email: credentials.email,
+				password: credentials.password,
 			});
 
-			// Get MFA factors for this user
-			const { data: factorsData, error: factorsError } =
-				await supabase.auth.mfa.listFactors();
-
-			if (factorsError) {
+			if (error || !data.session) {
 				// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
 				console.error(
-					`⚠️  MFA factor retrieval failed for ${authState.name}: ${factorsError.message}`,
+					`❌ Failed to authenticate ${authState.name}: ${error?.message || "No session returned"}`,
 				);
-				// Don't throw - continue without AAL2 (non-admin users don't need MFA)
-			} else if (factorsData?.totp && factorsData.totp.length > 0) {
-				const totpFactor = factorsData.totp[0];
 
-				debugLog("mfa:factor_found", {
+				// Provide detailed diagnostics for debugging
+				// biome-ignore lint/suspicious/noConsole: Required for error diagnostics
+				console.error(`
+📋 Authentication Failure Diagnostics:
+  User: ${authState.name}
+  Role: ${authState.role}
+  Email: ${credentials.email}
+  Supabase URL: ${supabaseAuthUrl}
+  Error: ${error?.message || "No error message"}
+  Error Code: ${error?.code || "unknown"}
+  Has Session: ${!!data?.session}
+
+🔧 Troubleshooting:
+  1. Verify Supabase is running: curl ${supabaseAuthUrl}/api/health
+  2. Check credentials are correct in credential-validator.ts
+  3. Verify user exists in Supabase auth_users table
+  4. Check Supabase logs for auth errors
+  5. Run: DEBUG_E2E_AUTH=true pnpm --filter e2e test for more details
+				`);
+
+				throw error || new Error("No session returned from Supabase");
+			}
+
+			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+			console.log(`✅ API authentication successful for ${authState.name}`);
+
+			// For super admin user, verify MFA to get AAL2 session
+			if (authState.role === "admin") {
+				debugLog("mfa:challenge_start", {
 					user: authState.name,
-					factorId: totpFactor.id,
-					factorStatus: totpFactor.status,
+					userId: data.session?.user?.id?.slice(0, 8),
 				});
 
-				// Generate TOTP code
-				const { otp } = await TOTP.generate(MFA_KEY, { period: 30 });
+				// Get MFA factors for this user
+				const { data: factorsData, error: factorsError } =
+					await supabase.auth.mfa.listFactors();
 
-				debugLog("mfa:otp_generated", { user: authState.name, otpLength: 6 });
-
-				// Challenge and verify MFA in one step
-				const { data: verifyData, error: verifyError } =
-					await supabase.auth.mfa.challengeAndVerify({
-						factorId: totpFactor.id,
-						code: otp,
-					});
-
-				if (verifyError) {
+				if (factorsError) {
 					// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
 					console.error(
-						`⚠️  MFA verification failed for ${authState.name}: ${verifyError.message}`,
+						`⚠️  MFA factor retrieval failed for ${authState.name}: ${factorsError.message}`,
 					);
-				} else if (verifyData) {
-					// Get the updated session with AAL2
-					const { data: sessionData } = await supabase.auth.getSession();
-					if (sessionData?.session) {
-						data.session = sessionData.session;
+					// Don't throw - continue without AAL2 (non-admin users don't need MFA)
+				} else if (factorsData?.totp && factorsData.totp.length > 0) {
+					const totpFactor = factorsData.totp[0];
 
-						debugLog("mfa:verified_success", {
-							user: authState.name,
-							newAal: sessionData.session.user.app_metadata?.aal || "unknown",
-							userId: data.session?.user?.id?.slice(0, 8),
+					debugLog("mfa:factor_found", {
+						user: authState.name,
+						factorId: totpFactor.id,
+						factorStatus: totpFactor.status,
+					});
+
+					// Generate TOTP code
+					const { otp } = await TOTP.generate(MFA_KEY, { period: 30 });
+
+					debugLog("mfa:otp_generated", { user: authState.name, otpLength: 6 });
+
+					// Challenge and verify MFA in one step
+					const { data: verifyData, error: verifyError } =
+						await supabase.auth.mfa.challengeAndVerify({
+							factorId: totpFactor.id,
+							code: otp,
 						});
 
-						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-						console.log(`✅ MFA verified (AAL2) for ${authState.name}`);
+					if (verifyError) {
+						// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+						console.error(
+							`⚠️  MFA verification failed for ${authState.name}: ${verifyError.message}`,
+						);
+					} else if (verifyData) {
+						// Get the updated session with AAL2
+						const { data: sessionData } = await supabase.auth.getSession();
+						if (sessionData?.session) {
+							data.session = sessionData.session;
+
+							debugLog("mfa:verified_success", {
+								user: authState.name,
+								newAal: sessionData.session.user.app_metadata?.aal || "unknown",
+								userId: data.session?.user?.id?.slice(0, 8),
+							});
+
+							// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+							console.log(`✅ MFA verified (AAL2) for ${authState.name}`);
+						}
 					}
+				} else {
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(
+						`ℹ️  No TOTP factors found for ${authState.name}, skipping MFA`,
+					);
 				}
-			} else {
-				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-				console.log(
-					`ℹ️  No TOTP factors found for ${authState.name}, skipping MFA`,
-				);
 			}
-		}
 
-		// Create browser context with Vercel bypass headers and inject the session
-		const context = await browser.newContext({
-			baseURL,
-			extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-				? {
-						"x-vercel-protection-bypass":
-							process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-						"x-vercel-set-bypass-cookie": "samesitenone",
-					}
-				: {},
-		});
-		const page = await context.newPage();
+			// Create browser context with Vercel bypass headers and inject the session
+			const context = await browser.newContext({
+				baseURL,
+				extraHTTPHeaders: process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+					? {
+							"x-vercel-protection-bypass":
+								process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+							"x-vercel-set-bypass-cookie": "samesitenone",
+						}
+					: {},
+			});
+			const page = await context.newPage();
 
-		// Navigate to the app with Vercel bypass query parameters to avoid redirect
-		// The query parameters set the bypass cookie, allowing subsequent navigations to work
-		// Use domcontentloaded for reliable setup with analytics scripts
-		const initialUrl = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
-			? `/?x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone`
-			: "/";
+			// Navigate to the app with Vercel bypass query parameters to avoid redirect
+			// The query parameters set the bypass cookie, allowing subsequent navigations to work
+			// Use domcontentloaded for reliable setup with analytics scripts
+			const initialUrl = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+				? `/?x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone`
+				: "/";
 
-		await page.goto(initialUrl, { waitUntil: "domcontentloaded" });
+			await page.goto(initialUrl, { waitUntil: "domcontentloaded" });
 
-		// Explicitly set Vercel bypass cookie if secret is available
-		// This ensures the bypass persists in the saved storage state
-		if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
-			const domain = new URL(baseURL).hostname;
-			await context.addCookies([
-				{
+			// Explicitly set Vercel bypass cookie if secret is available
+			// This ensures the bypass persists in the saved storage state
+			if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+				const hostname = new URL(baseURL).hostname;
+				const isVercelPreview = hostname.endsWith(".vercel.app");
+
+				// For Vercel preview deployments, don't set explicit domain
+				// to match auth cookie behavior and ensure proper transmission
+				// See: Issue #1096 - consistent domain handling for all cookies
+				const vercelCookie: {
+					name: string;
+					value: string;
+					path: string;
+					httpOnly: boolean;
+					secure: boolean;
+					sameSite: "Lax" | "Strict" | "None";
+					domain?: string;
+				} = {
 					name: "_vercel_jwt",
 					value: process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-					domain,
 					path: "/",
 					httpOnly: true,
 					secure: true,
 					sameSite: "Lax",
-				},
-			]);
+				};
 
-			// Reload page to ensure bypass cookie is active
-			await page.reload({ waitUntil: "domcontentloaded" });
-		}
+				// Only set domain for non-Vercel preview deployments
+				if (!isVercelPreview) {
+					vercelCookie.domain = hostname;
+				}
 
-		// Inject Supabase session into cookies using @supabase/ssr for proper encoding
-		// CRITICAL: We use @supabase/ssr's createServerClient to set cookies in the exact
-		// format the middleware expects. This avoids encoding mismatches.
-		// See: https://github.com/supabase/ssr/issues/36
-		const domain = new URL(baseURL).hostname;
-
-		// Cookie store that captures what @supabase/ssr wants to set
-		// Use the same getAll/setAll pattern as the middleware for consistency
-		interface StoredCookie {
-			name: string;
-			value: string;
-			options: CookieOptions;
-		}
-		const cookieStore: StoredCookie[] = [];
-
-		// Create an @supabase/ssr client with a custom cookie store
-		// IMPORTANT: Use supabaseCookieUrl here - this determines the cookie name
-		// The cookie name is derived from the URL (e.g., host.docker.internal -> sb-host-auth-token)
-		// This must match what the server expects
-		const ssrClient = createServerClient(supabaseCookieUrl, supabaseAnonKey, {
-			cookies: {
-				getAll() {
-					// Return all captured cookies in the format expected by @supabase/ssr
-					return cookieStore.map((c) => ({ name: c.name, value: c.value }));
-				},
-				setAll(cookiesToSet) {
-					// Clear and replace with new cookies
-					cookieStore.length = 0;
-					for (const cookie of cookiesToSet) {
-						cookieStore.push({
-							name: cookie.name,
-							value: cookie.value,
-							options: cookie.options,
-						});
-					}
-				},
-			},
-		});
-
-		// Set the session using @supabase/ssr's internal encoding
-		// This will call our cookie store's setAll() method with the properly encoded cookies
-		const { error: setSessionError } = await ssrClient.auth.setSession({
-			access_token: data.session.access_token,
-			refresh_token: data.session.refresh_token,
-		});
-
-		if (setSessionError) {
-			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
-			console.error(
-				`❌ Failed to set session for ${authState.name}: ${setSessionError.message}`,
-			);
-			throw setSessionError;
-		}
-
-		// Log session info for debugging
-		const projectRef = new URL(supabaseCookieUrl).hostname.split(".")[0];
-		const cookieName = `sb-${projectRef}-auth-token`;
-		debugLog("session:created", {
-			user: authState.name,
-			projectRef,
-			cookieName,
-			domain,
-			userId: data.session?.user?.id
-				? `${data.session.user.id.slice(0, 8)}...`
-				: null,
-			accessTokenLength: data.session?.access_token?.length ?? 0,
-			refreshTokenLength: data.session?.refresh_token?.length ?? 0,
-			cookiesCreated: cookieStore.length,
-		});
-
-		// Set cookie expiration - use session's expires_at or default to 1 hour
-		const cookieExpires =
-			data.session.expires_at ?? Math.floor(Date.now() / 1000) + 3600;
-
-		// Convert captured cookies to Playwright's cookie format
-		// Note: Playwright expects sameSite to be capitalized (Lax, Strict, None)
-		// but @supabase/ssr returns lowercase (lax, strict, none)
-		const normalizeSameSite = (value?: string): "Lax" | "Strict" | "None" => {
-			if (!value) return "Lax";
-			const lower = value.toLowerCase();
-			if (lower === "strict") return "Strict";
-			if (lower === "none") return "None";
-			return "Lax";
-		};
-
-		const cookiesToSet = cookieStore
-			.filter((c) => c.value) // Skip removal cookies (empty values)
-			.map((c) => ({
-				name: c.name,
-				value: c.value,
-				domain,
-				path: c.options.path || "/",
-				expires: cookieExpires, // Unix timestamp in seconds
-				httpOnly: c.options.httpOnly ?? false,
-				secure: baseURL.startsWith("https"),
-				sameSite: normalizeSameSite(c.options.sameSite as string),
-			}));
-
-		// Log cookie details for debugging
-		debugLog("cookies:setting", {
-			user: authState.name,
-			totalCookies: cookiesToSet.length,
-			cookieExpires,
-			expiresDate: new Date(cookieExpires * 1000).toISOString(),
-			cookies: cookiesToSet.map((c) => ({
-				name: c.name,
-				valueLength: c.value.length,
-				valuePreview: `${c.value.substring(0, 30)}...`,
-				domain: c.domain,
-				path: c.path,
-				expires: c.expires,
-				secure: c.secure,
-			})),
-		});
-
-		await context.addCookies(cookiesToSet);
-
-		// Also set in localStorage for any client-side code that might read from there
-		await page.evaluate(
-			({ session, key }) => {
-				localStorage.setItem(key, JSON.stringify(session));
-			},
-			{ session: data.session, key: cookieName },
-		);
-
-		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-		console.log(
-			`✅ Session injected into cookies and localStorage for ${authState.name}`,
-		);
-
-		// Reload page to activate the injected session
-		// The Supabase client needs to reinitialize with the new session from localStorage
-		await page.reload({ waitUntil: "domcontentloaded" });
-
-		// For Payload admin users, authenticate via Payload's API and inject the token cookie
-		// Payload CMS uses its own independent authentication system with payload-token cookies
-		// PHASE 2 FIX: Skip Payload auth if health check failed (prevents cascade failures)
-		// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
-		if (authState.navigateToPayload) {
-			if (skipPayloadAuth) {
-				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-				console.log(
-					`⏭️  Skipping Payload auth for ${authState.name} (Payload server unhealthy)`,
-				);
-				// Still save the Supabase auth state - Payload tests will be skipped at runtime
-			} else {
-				const payloadUrl =
-					process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
-				// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-				console.log(
-					`🔄 Authenticating to Payload CMS via API for ${authState.name}...`,
-				);
-
-				try {
-					// Use Payload's login API with retry logic to handle transient failures
-					// This throws an error after 3 failed attempts for clear failure visibility
-					const payloadToken = await loginToPayloadWithRetry(
-						payloadUrl,
-						credentials.email,
-						credentials.password,
-					);
-
-					// Inject the payload-token cookie into the browser context
-					const payloadDomain = new URL(payloadUrl).hostname;
+				// For Vercel preview deployments, use url property instead of domain
+				// to satisfy Playwright's cookie API validation requirements
+				// Playwright's addCookies() requires: url OR (domain AND path)
+				// When using url, we omit path to avoid conflicts
+				// See: Issue #1485 - Vercel Bypass Cookie Missing URL Property
+				if (isVercelPreview) {
 					await context.addCookies([
 						{
-							name: "payload-token",
-							value: payloadToken,
-							domain: payloadDomain,
-							path: "/",
-							httpOnly: true,
-							secure: payloadUrl.startsWith("https"),
-							sameSite: "Lax",
-							// Token expires in 2 hours (standard Payload JWT lifetime)
-							expires: Math.floor(Date.now() / 1000) + 7200,
+							name: vercelCookie.name,
+							value: vercelCookie.value,
+							url: baseURL,
+							httpOnly: vercelCookie.httpOnly,
+							secure: vercelCookie.secure,
+							sameSite: vercelCookie.sameSite,
 						},
 					]);
+				} else {
+					await context.addCookies([vercelCookie]);
+				}
 
+				// Reload page to ensure bypass cookie is active
+				await page.reload({ waitUntil: "domcontentloaded" });
+			}
+
+			// Inject Supabase session into cookies using @supabase/ssr for proper encoding
+			// CRITICAL: We use @supabase/ssr's createServerClient to set cookies in the exact
+			// format the middleware expects. This avoids encoding mismatches.
+			// See: https://github.com/supabase/ssr/issues/36
+			//
+			// Get domain configuration for cookies based on deployment type
+			// Handles Vercel preview URLs, localhost, and custom domains appropriately
+			// See Issue #1062, #1063 for context on cookie domain handling
+			const cookieConfig = getCookieDomainConfig(baseURL);
+			const domain = cookieConfig.domain;
+
+			// Log cookie domain configuration for visibility
+			// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
+			console.log(
+				`🍪 Cookie domain config: ${domain || "(browser default)"} (isVercelPreview: ${cookieConfig.isVercelPreview})`,
+			);
+
+			// Cookie store that captures what @supabase/ssr wants to set
+			// Use the same getAll/setAll pattern as the middleware for consistency
+			interface StoredCookie {
+				name: string;
+				value: string;
+				options: CookieOptions;
+			}
+			const cookieStore: StoredCookie[] = [];
+
+			// Create an @supabase/ssr client with a custom cookie store
+			// IMPORTANT: Use supabaseCookieUrl here - this determines the cookie name
+			// The cookie name is derived from the URL (e.g., host.docker.internal -> sb-host-auth-token)
+			// This must match what the server expects
+			const ssrClient = createServerClient(supabaseCookieUrl, supabaseAnonKey, {
+				cookies: {
+					getAll() {
+						// Return all captured cookies in the format expected by @supabase/ssr
+						return cookieStore.map((c) => ({ name: c.name, value: c.value }));
+					},
+					setAll(cookiesToSet) {
+						// Clear and replace with new cookies
+						cookieStore.length = 0;
+						for (const cookie of cookiesToSet) {
+							cookieStore.push({
+								name: cookie.name,
+								value: cookie.value,
+								options: cookie.options,
+							});
+						}
+					},
+				},
+			});
+
+			// Set the session using @supabase/ssr's internal encoding
+			// This will call our cookie store's setAll() method with the properly encoded cookies
+			const { error: setSessionError } = await ssrClient.auth.setSession({
+				access_token: data.session.access_token,
+				refresh_token: data.session.refresh_token,
+			});
+
+			if (setSessionError) {
+				// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+				console.error(
+					`❌ Failed to set session for ${authState.name}: ${setSessionError.message}`,
+				);
+				throw setSessionError;
+			}
+
+			// Log session info for debugging
+			const projectRef = new URL(supabaseCookieUrl).hostname.split(".")[0];
+			const cookieName = `sb-${projectRef}-auth-token`;
+			debugLog("session:created", {
+				user: authState.name,
+				projectRef,
+				cookieName,
+				domain,
+				userId: data.session?.user?.id
+					? `${data.session.user.id.slice(0, 8)}...`
+					: null,
+				accessTokenLength: data.session?.access_token?.length ?? 0,
+				refreshTokenLength: data.session?.refresh_token?.length ?? 0,
+				cookiesCreated: cookieStore.length,
+			});
+
+			// Set cookie expiration - use session's expires_at or default to 1 hour
+			const cookieExpires =
+				data.session.expires_at ?? Math.floor(Date.now() / 1000) + 3600;
+
+			// Convert captured cookies to Playwright's cookie format
+			// Note: Playwright expects sameSite to be capitalized (Lax, Strict, None)
+			// but @supabase/ssr returns lowercase (lax, strict, none)
+			const normalizeSameSite = (
+				value?: string,
+				defaultValue: "Lax" | "Strict" | "None" = "Lax",
+			): "Lax" | "Strict" | "None" => {
+				if (!value) return defaultValue;
+				const lower = value.toLowerCase();
+				if (lower === "strict") return "Strict";
+				if (lower === "none") return "None";
+				return "Lax";
+			};
+
+			const cookiesToSet = cookieStore
+				.filter((c) => c.value) // Skip removal cookies (empty values)
+				.map((c) => {
+					const isVercelCookie = c.name === "_vercel_jwt";
+
+					// Build cookie object, conditionally including domain
+					// For Vercel preview deployments, domain is undefined to let browser use defaults
+					// See: Issue #1096 - domain-less cookies fix server-side middleware cookie reception
+					const cookieBase = {
+						name: c.name,
+						value: c.value,
+						path: c.options.path || "/",
+						expires: cookieExpires, // Unix timestamp in seconds
+						// CRITICAL: Do NOT force httpOnly for auth cookies!
+						// The @supabase/ssr browser client reads cookies via document.cookie
+						// If cookies are httpOnly, JavaScript can't read them and getSession() returns null
+						// See: Issue #1143 - E2E Password Update Test Fails - Supabase URL Mismatch
+						// The Supabase SSR library sets httpOnly appropriately - trust its defaults
+						// Only force httpOnly for Vercel bypass cookie which is truly server-only
+						httpOnly: isVercelCookie ? true : (c.options.httpOnly ?? false),
+						// Use HTTPS requirement based on deployment type
+						// IMPORTANT: Vercel deployments require secure: true
+						secure: baseURL.startsWith("https"),
+						// Use domain-specific sameSite default (important for Vercel preview deployments)
+						// CRITICAL: Force None for Vercel preview to ensure cross-site cookie transmission
+						// @supabase/ssr always sets sameSite='lax', so normalizeSameSite() never applies our default
+						// See: Issue #1528 - E2E Cookie sameSite Override Ignored
+						sameSite: cookieConfig.isVercelPreview
+							? "None" // Force None for Vercel preview cross-site compatibility
+							: normalizeSameSite(
+									c.options.sameSite as string,
+									cookieConfig.sameSite,
+								),
+					};
+
+					// Cookie domain strategy:
+					// - All environments now use explicit domain (localhost, hostname, etc.)
+					// - Vercel preview uses sameSite=None for cross-site cookie compatibility
+					//
+					// Playwright's addCookies() API requires: url OR (domain AND path)
+					// We always use domain for reliability across all environments
+					// See: Issue #1494 - Fixed to use explicit domain for Vercel preview
+					// See: Issue #1524 - Changed to sameSite=None for cross-site compatibility
+					if (domain) {
+						// All environments: use explicit domain for reliable cookie transmission
+						return { ...cookieBase, domain };
+					}
+
+					// Fallback: If domain is unexpectedly undefined, use localhost
+					// This should never happen with current getCookieDomainConfig implementation
+					// but provides a safety net for edge cases
+					debugLog("cookie:fallback_domain", {
+						name: c.name,
+						reason: "domain undefined (unexpected)",
+						fallback: "localhost",
+					});
+					return { ...cookieBase, domain: "localhost" };
+				});
+
+			// Log cookie details for debugging
+			// Note: All cookies now use explicit domain (localhost, hostname, or Vercel preview hostname)
+			debugLog("cookies:setting", {
+				user: authState.name,
+				totalCookies: cookiesToSet.length,
+				cookieExpires,
+				expiresDate: new Date(cookieExpires * 1000).toISOString(),
+				domainStrategy: `explicit: ${domain ?? "localhost"}`,
+				sameSiteStrategy: cookieConfig.sameSite,
+				cookies: cookiesToSet.map((c) => ({
+					name: c.name,
+					valueLength: c.value.length,
+					valuePreview: `${c.value.substring(0, 30)}...`,
+					domain: "domain" in c ? c.domain : "localhost",
+					path: "path" in c ? c.path : "/",
+					expires: c.expires,
+					secure: c.secure,
+				})),
+			});
+
+			await context.addCookies(cookiesToSet);
+
+			// Log cookie summary for visibility (especially useful for Vercel preview debugging)
+			// This helps diagnose Issue #1096 - Auth session lost in Vercel preview deployments
+			for (const cookie of cookiesToSet) {
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`   🍪 ${cookie.name}:`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(
+					`      Domain: ${"domain" in cookie ? cookie.domain : "(browser default)"}`,
+				);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      SameSite: ${cookie.sameSite}`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      Secure: ${cookie.secure}`);
+				// biome-ignore lint/suspicious/noConsole: Required for test setup visibility
+				console.log(`      HttpOnly: ${cookie.httpOnly}`);
+			}
+
+			// Also set in localStorage for any client-side code that might read from there
+			await page.evaluate(
+				({ session, key }) => {
+					localStorage.setItem(key, JSON.stringify(session));
+				},
+				{ session: data.session, key: cookieName },
+			);
+
+			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+			console.log(
+				`✅ Session injected into cookies and localStorage for ${authState.name}`,
+			);
+
+			// Verify cookies were actually set and have correct attributes
+			// This diagnostic is crucial for debugging Vercel preview deployment issues
+			try {
+				const cookieVerification = await verifyCookiesPresent(
+					context,
+					cookieName,
+				);
+
+				if (!cookieVerification.success) {
+					// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+					console.warn(
+						`⚠️  Cookie verification warning for ${authState.name}: ${cookieVerification.message}`,
+					);
+					// Log all cookies for debugging
+					await logCookieDetails(context, `Cookies for ${authState.name}`);
+				} else {
+					debugLog("cookies:verified", {
+						user: authState.name,
+						cookieCount: cookieVerification.cookieCount,
+						cookieName,
+					});
+				}
+
+				// Verify cookie attributes are correct
+				// Note: We do NOT require httpOnly for Supabase auth cookies because
+				// the @supabase/ssr browser client needs to read them via document.cookie
+				// See: Issue #1143 - E2E Password Update Test Fails
+				const attributeVerification = await verifyCookieAttributes(context, {
+					requireHttpOnly: false,
+					expectedSameSite: cookieConfig.sameSite,
+				});
+
+				if (!attributeVerification.success) {
+					// biome-ignore lint/suspicious/noConsole: Required for warning visibility
+					console.warn(
+						`⚠️  Cookie attribute verification warning for ${authState.name}: ${attributeVerification.message}`,
+					);
+				} else {
+					debugLog("cookies:attributes_valid", {
+						user: authState.name,
+						sameSite: cookieConfig.sameSite,
+					});
+				}
+			} catch (verificationError) {
+				// biome-ignore lint/suspicious/noConsole: Required for warning visibility
+				console.warn(
+					`⚠️  Cookie verification encountered an error for ${authState.name}: ${(verificationError as Error).message}`,
+				);
+				// Continue anyway - verification is diagnostic, not blocking
+			}
+
+			// Reload page to activate the injected session
+			// The Supabase client needs to reinitialize with the new session from localStorage
+			await page.reload({ waitUntil: "domcontentloaded" });
+
+			// For Payload admin users, authenticate via Payload's API and inject the token cookie
+			// Payload CMS uses its own independent authentication system with payload-token cookies
+			// PHASE 2 FIX: Skip Payload auth if health check failed (prevents cascade failures)
+			// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+			if (authState.navigateToPayload) {
+				if (skipPayloadAuth) {
 					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 					console.log(
-						`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
+						`⏭️  Skipping Payload auth for ${authState.name} (Payload server unhealthy)`,
+					);
+					// Still save the Supabase auth state - Payload tests will be skipped at runtime
+				} else {
+					const payloadUrl =
+						process.env.PAYLOAD_PUBLIC_SERVER_URL || "http://localhost:3021";
+					// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+					console.log(
+						`🔄 Authenticating to Payload CMS via API for ${authState.name}...`,
 					);
 
-					debugLog("payload:cookie_injected", {
-						user: authState.name,
-						domain: payloadDomain,
-						tokenLength: payloadToken.length,
-						expires: Math.floor(Date.now() / 1000) + 7200,
-					});
+					try {
+						// Use Payload's login API with retry logic to handle transient failures
+						// This throws an error after 3 failed attempts for clear failure visibility
+						const payloadToken = await loginToPayloadWithRetry(
+							payloadUrl,
+							credentials.email,
+							credentials.password,
+						);
 
-					// Navigate to Payload admin to verify authentication works
-					await page.goto(`${payloadUrl}/admin`, {
-						waitUntil: "domcontentloaded",
-						timeout: 30000,
-					});
+						// Inject the payload-token cookie into the browser context
+						const payloadDomain = new URL(payloadUrl).hostname;
+						await context.addCookies([
+							{
+								name: "payload-token",
+								value: payloadToken,
+								domain: payloadDomain,
+								path: "/",
+								httpOnly: true,
+								secure: payloadUrl.startsWith("https"),
+								sameSite: "Lax",
+								// Token expires in 2 hours (standard Payload JWT lifetime)
+								expires: Math.floor(Date.now() / 1000) + 7200,
+							},
+						]);
 
-					// Give it a moment for the page to settle
-					await page.waitForTimeout(1000);
-
-					// Final verification: ensure we're authenticated (not on login page)
-					const adminNav = await page
-						.locator(".nav, .sidebar, .template-default")
-						.first()
-						.isVisible({ timeout: 5000 })
-						.catch(() => false);
-
-					if (adminNav) {
-						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-						console.log(`✅ Payload admin panel loaded for ${authState.name}`);
-					} else {
 						// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
 						console.log(
-							`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
+							`✅ Payload API login successful, payload-token cookie injected for ${authState.name}`,
+						);
+
+						debugLog("payload:cookie_injected", {
+							user: authState.name,
+							domain: payloadDomain,
+							tokenLength: payloadToken.length,
+							expires: Math.floor(Date.now() / 1000) + 7200,
+						});
+
+						// Navigate to Payload admin to verify authentication works
+						await page.goto(`${payloadUrl}/admin`, {
+							waitUntil: "domcontentloaded",
+							timeout: 30000,
+						});
+
+						// Give it a moment for the page to settle
+						await page.waitForTimeout(1000);
+
+						// Final verification: ensure we're authenticated (not on login page)
+						const adminNav = await page
+							.locator(".nav, .sidebar, .template-default")
+							.first()
+							.isVisible({ timeout: 5000 })
+							.catch(() => false);
+
+						if (adminNav) {
+							// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+							console.log(
+								`✅ Payload admin panel loaded for ${authState.name}`,
+							);
+						} else {
+							// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+							console.log(
+								`⚠️  Could not verify Payload admin access for ${authState.name} (token was set)`,
+							);
+						}
+					} catch (error) {
+						// Payload authentication is optional - only needed for Payload-specific test shards (7-8)
+						// When Payload server isn't running (batches 1, 3, etc.), we log a warning and continue
+						// This allows non-Payload test batches to run successfully without the Payload server
+						// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
+						console.warn(
+							`⚠️  Payload authentication skipped for ${authState.name}: ${(error as Error).message}`,
+						);
+						// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
+						console.warn(
+							"   (This is expected if Payload server is not running - Payload tests will start it when needed)",
 						);
 					}
-				} catch (error) {
-					// Payload authentication is optional - only needed for Payload-specific test shards (7-8)
-					// When Payload server isn't running (batches 1, 3, etc.), we log a warning and continue
-					// This allows non-Payload test batches to run successfully without the Payload server
-					// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
-					console.warn(
-						`⚠️  Payload authentication skipped for ${authState.name}: ${(error as Error).message}`,
-					);
-					// biome-ignore lint/suspicious/noConsole: Required for warning visibility in test setup
-					console.warn(
-						"   (This is expected if Payload server is not running - Payload tests will start it when needed)",
-					);
 				}
 			}
+
+			// Save authenticated state
+			await context.storageState({ path: authState.filePath });
+			// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+			console.log(`✅ ${authState.name} auth state saved successfully\n`);
+
+			// Log saved state summary for debugging
+			debugLog("state:saved", {
+				user: authState.name,
+				filePath: authState.filePath,
+				cookieName,
+			});
+
+			await context.close();
+		} catch (setupError) {
+			// Comprehensive error handling for entire auth setup flow
+			const error = setupError as Error;
+
+			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+			console.error(`
+❌ Global Setup Failed for ${authState.name}
+
+Error Details:
+  Message: ${error.message}
+  Stack: ${error.stack}
+
+🔧 Troubleshooting:
+  1. Check Supabase health: curl http://127.0.0.1:54521/api/health
+  2. Verify credentials in credential-validator.ts
+  3. Check environment variables (E2E_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  4. Run with DEBUG_E2E_AUTH=true for verbose logging
+  5. Check that all required services are running:
+     - Supabase (port 54521)
+     - Next.js dev server (port 3001 for Docker, 3000 for local)
+     - Payload CMS (port 3021, optional)
+
+📝 Common Issues:
+  - Network connectivity to Supabase
+  - Cookie domain/hostname mismatch (check Supabase URL config)
+  - Stale browser context or session
+  - Port conflicts with existing services
+			`);
+
+			// Re-throw after providing diagnostics
+			throw new Error(
+				`Global setup failed for ${authState.name}: ${error.message}`,
+			);
 		}
-
-		// Save authenticated state
-		await context.storageState({ path: authState.filePath });
-		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
-		console.log(`✅ ${authState.name} auth state saved successfully\n`);
-
-		// Log saved state summary for debugging
-		debugLog("state:saved", {
-			user: authState.name,
-			filePath: authState.filePath,
-			cookieName,
-		});
-
-		await context.close();
 	}
 
 	await browser.close();

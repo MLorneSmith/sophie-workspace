@@ -11,25 +11,13 @@ export const SubtaskSchema = z.object({
 	is_completed: z.boolean().default(false),
 });
 
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
-
 export const CreateTaskSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	description: z.string().optional(),
 	status: TaskStatusEnum.default("do"),
 	priority: TaskPriorityEnum.default("medium"),
 	subtasks: z.array(SubtaskSchema).optional(),
-	image: z
-		.custom<File>()
-		.optional()
-		.refine(
-			(file) => !file || file.size <= MAX_FILE_SIZE,
-			"Image must be less than 1MB",
-		),
-	image_url: z
-		.union([z.string().url(), z.string().startsWith("/")])
-		.nullable()
-		.optional(),
+	phase: z.string().optional(),
 });
 
 export const UpdateTaskSchema = CreateTaskSchema.extend({
@@ -46,7 +34,7 @@ export type Task = z.infer<typeof CreateTaskSchema> & {
 	created_at: string;
 	updated_at: string;
 	account_id: string;
-	image_url: string | null;
+	phase: string | null;
 };
 
 export type Subtask = z.infer<typeof SubtaskSchema> & {

@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "../utils/base-test";
 
 /**
  * Debug test to identify what selectors are actually available on the sign-in page

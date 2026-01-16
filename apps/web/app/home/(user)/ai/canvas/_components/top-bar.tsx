@@ -2,7 +2,12 @@
 
 import { Button } from "@kit/ui/button";
 import { Input } from "@kit/ui/input";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@kit/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@kit/ui/tooltip";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Maximize2, Minimize2, Save } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -63,45 +68,47 @@ export function TopBar() {
 			<div className="flex items-center gap-2">
 				{/* Cost badge */}
 				<CostBadge className="mr-1" />
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button
-							variant="ghost"
-							size="icon"
-							onClick={manualSave}
-							disabled={saveStatus === "saving"}
-							className="relative"
-						>
-							{saveStatus === "saved" ? (
-								<Check className="h-4 w-4 text-green-500" />
-							) : (
-								<Save className="h-4 w-4" />
-							)}
-							{saveStatus === "saving" && (
-								<span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500" />
-							)}
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>
-						{saveStatus === "saving"
-							? "Saving..."
-							: saveStatus === "saved"
-								? "Saved"
-								: "Save"}
-					</TooltipContent>
-				</Tooltip>
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button variant="ghost" size="icon" onClick={toggleFullscreen}>
-							{isFullscreen ? (
-								<Minimize2 className="h-4 w-4" />
-							) : (
-								<Maximize2 className="h-4 w-4" />
-							)}
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>Fullscreen</TooltipContent>
-				</Tooltip>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={manualSave}
+								disabled={saveStatus === "saving"}
+								className="relative"
+							>
+								{saveStatus === "saved" ? (
+									<Check className="h-4 w-4 text-green-500" />
+								) : (
+									<Save className="h-4 w-4" />
+								)}
+								{saveStatus === "saving" && (
+									<span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-blue-500" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							{saveStatus === "saving"
+								? "Saving..."
+								: saveStatus === "saved"
+									? "Saved"
+									: "Save"}
+						</TooltipContent>
+					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+								{isFullscreen ? (
+									<Minimize2 className="h-4 w-4" />
+								) : (
+									<Maximize2 className="h-4 w-4" />
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>Fullscreen</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
 			</div>
 		</div>
 	);

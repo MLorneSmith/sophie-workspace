@@ -47,7 +47,7 @@ async function getTasks(client: TypedSupabaseClient, userId: string) {
       description,
       status,
       priority,
-      image_url,
+      phase,
       created_at,
       updated_at,
       account_id,

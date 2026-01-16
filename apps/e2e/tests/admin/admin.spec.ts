@@ -1,8 +1,7 @@
-import { expect, type Page, test } from "@playwright/test";
-
 import { AuthPageObject } from "../authentication/auth.po";
 import { TeamAccountsPageObject } from "../team-accounts/team-accounts.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { expect, type Page, test } from "../utils/base-test";
 import { unbanUser } from "../utils/database-utilities";
 import { testConfig } from "../utils/test-config";
 

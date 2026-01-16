@@ -28,13 +28,13 @@ import {
 import { Textarea } from "@kit/ui/textarea";
 import { Trans } from "@kit/ui/trans";
 import { cn } from "@kit/ui/utils";
-import { ImageIcon, Loader2Icon, TrashIcon } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useId, useState } from "react";
+import { Loader2Icon, TrashIcon } from "lucide-react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import type { z } from "zod";
 
+import { PRESENTATION_PHASES } from "../_lib/config/presentation-tasks";
 import { _useCreateTask, _useUpdateTask } from "../_lib/hooks/use-tasks";
 import type { Task } from "../_lib/schema/task.schema";
 import {
@@ -63,10 +63,6 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 	const { t } = useTranslation();
 	const createTask = _useCreateTask();
 	const updateTask = _useUpdateTask();
-	const [imagePreview, setImagePreview] = useState<string | null>(
-		task?.image_url ?? null,
-	);
-	const imageUploadId = useId();
 
 	const form = useForm({
 		resolver: zodResolver(CreateTaskSchema),
@@ -76,8 +72,7 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 			status: task?.status ?? "do",
 			priority: task?.priority ?? "medium",
 			subtasks: task?.subtasks ?? [],
-			image: undefined,
-			image_url: task?.image_url,
+			phase: task?.phase ?? "",
 		},
 	});
 
@@ -90,7 +85,6 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 					await createTask.mutateAsync(data);
 				}
 				form.reset();
-				setImagePreview(null);
 				onOpenChange(false);
 			} catch (_error) {
 				logger.error("Failed to save task:", _error);
@@ -98,37 +92,6 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 		},
 		[createTask, updateTask, task, form, onOpenChange],
 	);
-
-	const handleImageChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const file = e.target.files?.[0];
-			if (!file) return;
-
-			// Check file size (1MB)
-			if (file.size > 1024 * 1024) {
-				form.setError("image", {
-					message: "Image must be less than 1MB",
-				});
-				return;
-			}
-
-			// Create preview
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setImagePreview(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-
-			form.setValue("image", file);
-		},
-		[form],
-	);
-
-	const handleRemoveImage = useCallback(() => {
-		form.setValue("image", undefined as File | undefined);
-		form.setValue("image_url", undefined);
-		setImagePreview(null);
-	}, [form]);
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -258,62 +221,32 @@ export function TaskDialog({ open, onOpenChange, task }: TaskDialogProps) {
 
 						<FormField
 							control={form.control}
-							name="image"
-							render={({
-								field: { value: _value, onChange: _onChange, ...field },
-							}) => (
+							name="phase"
+							render={({ field }) => (
 								<FormItem>
 									<FormLabel>
-										<Trans i18nKey="kanban:task.form.image" />
+										<Trans i18nKey="kanban:task.form.phase" />
 									</FormLabel>
-									<FormControl>
-										<div className="space-y-2">
-											{imagePreview ? (
-												<div className="relative">
-													<Image
-														src={imagePreview}
-														alt="Task attachment preview"
-														className="h-40 w-full rounded-lg object-cover"
-														width={400}
-														height={160}
-													/>
-													<Button
-														type="button"
-														variant="destructive"
-														size="icon"
-														className="absolute top-2 right-2"
-														onClick={handleRemoveImage}
-													>
-														<TrashIcon className="h-4 w-4" />
-													</Button>
-												</div>
-											) : (
-												<label
-													htmlFor="image-upload"
-													className={cn(
-														"bg-muted hover:bg-muted/80 flex h-40 cursor-pointer items-center justify-center rounded-lg border border-dashed transition-colors",
-														form.formState.errors.image && "border-destructive",
-													)}
-												>
-													<div className="text-muted-foreground flex flex-col items-center gap-2">
-														<ImageIcon className="h-8 w-8" />
-														<span>
-															<Trans i18nKey="kanban:task.form.imagePlaceholder" />
-														</span>
-													</div>
-													<input
-														id={imageUploadId}
-														type="file"
-														accept="image/*"
-														className="hidden"
-														onChange={handleImageChange}
-														{...field}
-													/>
-												</label>
-											)}
-											<FormMessage />
-										</div>
-									</FormControl>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger>
+												<SelectValue
+													placeholder={t("kanban:task.form.phasePlaceholder")}
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{PRESENTATION_PHASES.map((phase) => (
+												<SelectItem key={phase.id} value={phase.name}>
+													{phase.name}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>

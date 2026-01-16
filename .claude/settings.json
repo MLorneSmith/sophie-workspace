@@ -46,6 +46,16 @@
 						"type": "command",
 						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/post_tool_use.py || true",
 						"timeout": 5
+					},
+					{
+						"type": "command",
+						"command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/heartbeat.py || true",
+						"timeout": 3
+					},
+					{
+						"type": "command",
+						"command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/task_progress_stream.py || true",
+						"timeout": 3
 					}
 				]
 			}
@@ -82,6 +92,11 @@
 						"type": "command",
 						"command": "uv run $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_stop.py || true",
 						"timeout": 5
+					},
+					{
+						"type": "command",
+						"command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/subagent_complete.py || true",
+						"timeout": 3
 					}
 				]
 			}
@@ -91,5 +106,8 @@
 		"type": "command",
 		"command": ".claude/statusline/statusline.sh",
 		"padding": 0
+	},
+	"enabledPlugins": {
+		"example-skills@anthropic-agent-skills": true
 	}
 }

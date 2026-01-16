@@ -1,0 +1,161 @@
+{
+	"executionDate": "2025-12-11",
+	"lastUpdated": "2025-12-11T16:46:33.836Z",
+	"totalShards": 0,
+	"completedShards": 12,
+	"failedShards": 5,
+	"timedOutShards": 0,
+	"overallResults": {
+		"total": 144,
+		"passed": 112,
+		"failed": 12,
+		"skipped": 21,
+		"intentionalFailures": 0
+	},
+	"shards": [
+		{
+			"id": 1,
+			"name": "Smoke Tests",
+			"success": true,
+			"duration": "8s",
+			"tests": 9,
+			"passed": 9,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Authentication",
+			"success": true,
+			"duration": "16s",
+			"tests": 11,
+			"passed": 10,
+			"failures": 0,
+			"skipped": 1,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Personal Accounts",
+			"success": false,
+			"duration": "740s",
+			"tests": 6,
+			"passed": 2,
+			"failures": 3,
+			"skipped": 2,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Admin & Invitations",
+			"success": false,
+			"duration": "288s",
+			"tests": 11,
+			"passed": 2,
+			"failures": 5,
+			"skipped": 4,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Accessibility",
+			"success": true,
+			"duration": "126s",
+			"tests": 17,
+			"passed": 16,
+			"failures": 0,
+			"skipped": 1,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 1,
+			"name": "Config & Health",
+			"success": true,
+			"duration": "16s",
+			"tests": 1,
+			"passed": 1,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Payload CMS",
+			"success": true,
+			"duration": "163s",
+			"tests": 43,
+			"passed": 41,
+			"failures": 0,
+			"skipped": 2,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Seeding Tests",
+			"success": true,
+			"duration": "69s",
+			"tests": 26,
+			"passed": 20,
+			"failures": 0,
+			"skipped": 6,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "User Billing",
+			"success": false,
+			"duration": "60s",
+			"tests": 1,
+			"passed": 0,
+			"failures": 1,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Billing",
+			"success": false,
+			"duration": "118s",
+			"tests": 1,
+			"passed": 0,
+			"failures": 1,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Config Verification",
+			"success": true,
+			"duration": "18s",
+			"tests": 11,
+			"passed": 11,
+			"failures": 0,
+			"skipped": 0,
+			"intentionalFailures": 0,
+			"timedOut": false
+		},
+		{
+			"id": 2,
+			"name": "Team Accounts",
+			"success": false,
+			"duration": "161s",
+			"tests": 7,
+			"passed": 0,
+			"failures": 2,
+			"skipped": 5,
+			"intentionalFailures": 0,
+			"timedOut": false
+		}
+	]
+}

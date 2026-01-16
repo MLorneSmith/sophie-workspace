@@ -1,0 +1,476 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": 1373,
+		"feature_name": "Activity Database Schema",
+		"feature_slug": "activity-database-schema",
+		"initiative_id": 1365,
+		"spec_id": 1362,
+		"created_at": "2026-01-01T00:00:00Z",
+		"complexity": {
+			"score": 25,
+			"level": "LOW",
+			"target_steps": {
+				"min": 3,
+				"max": 6
+			},
+			"pattern_matched": null
+		},
+		"requires_database": true,
+		"database_tasks": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"]
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create activity enums in schema file",
+			"action": {
+				"verb": "Create",
+				"target": "activity_type and entity_type enums"
+			},
+			"purpose": "Define PostgreSQL enums for type-safe activity and entity types",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 1,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/supabase/schemas/18-user-activities.sql"],
+				"dependencies": [
+					"PostgreSQL enum syntax",
+					"Existing enum patterns from 01-enums.sql"
+				],
+				"constraints": [
+					"Must include all 6 activity types from spec",
+					"Must include all 5 entity types from spec"
+				]
+			},
+			"input_state": "No schema file exists. Existing enum patterns found in apps/web/supabase/schemas/01-enums.sql.",
+			"output_state": "Schema file exists with activity_type enum (lesson_complete, quiz_submit, presentation_create, presentation_update, assessment_complete, coaching_booked) and entity_type enum (lesson, quiz, presentation, assessment, coaching_session).",
+			"acceptance_criterion": "Schema file contains both enums with correct values and SQL comments documenting their purpose.",
+			"verification_command": "grep -E '(activity_type|entity_type)' /home/msmith/projects/2025slideheroes/apps/web/supabase/schemas/18-user-activities.sql",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/supabase/schemas/18-user-activities.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T2"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T1"
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create user_activities table with columns",
+			"action": {
+				"verb": "Create",
+				"target": "user_activities table structure"
+			},
+			"purpose": "Define table schema for storing user activity events with proper constraints and relationships",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/supabase/schemas/18-user-activities.sql"],
+				"dependencies": [
+					"T1 enums",
+					"Existing table patterns from 03-accounts.sql",
+					"tasks table from migrations/20250221144500"
+				],
+				"constraints": [
+					"Must use account_id referencing public.accounts",
+					"Must use user_id referencing auth.users",
+					"Must use JSONB for metadata",
+					"Must include created_at with default"
+				]
+			},
+			"input_state": "Schema file exists with enums defined. Table creation patterns available in apps/web/supabase/schemas/03-accounts.sql.",
+			"output_state": "user_activities table defined with 8 columns (id, account_id, user_id, activity_type, entity_type, entity_id, metadata, created_at) and proper foreign key constraints.",
+			"acceptance_criterion": "Table definition includes all columns with correct types, foreign keys to accounts and auth.users, and JSONB metadata field with default empty object.",
+			"verification_command": "grep -A 15 'create table.*user_activities' /home/msmith/projects/2025slideheroes/apps/web/supabase/schemas/18-user-activities.sql | grep -E '(account_id|user_id|activity_type|entity_type|metadata)'",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/supabase/schemas/18-user-activities.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1"],
+				"blocks": ["T3", "T4", "T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T2"
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Add RLS policies for user_activities",
+			"action": {
+				"verb": "Add",
+				"target": "RLS policies for SELECT and INSERT"
+			},
+			"purpose": "Implement row-level security to ensure users can only view and record their own activities",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/supabase/schemas/18-user-activities.sql"],
+				"dependencies": [
+					"T2 table",
+					"RLS patterns from tasks migration",
+					"Subquery performance pattern: user_id = (select auth.uid())"
+				],
+				"constraints": [
+					"Must use subquery pattern for performance",
+					"Must enable RLS first",
+					"Must create separate policies for SELECT and INSERT",
+					"No UPDATE or DELETE policies (immutable audit trail)"
+				]
+			},
+			"input_state": "user_activities table defined. RLS patterns available in apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql and feature spec.",
+			"output_state": "RLS enabled on user_activities table with two policies: users_view_own_activities (SELECT) and users_record_own_activities (INSERT), both using subquery pattern.",
+			"acceptance_criterion": "RLS is enabled and two policies exist allowing users to SELECT where user_id = (select auth.uid()) and INSERT with same check, no UPDATE or DELETE policies.",
+			"verification_command": "grep -E '(enable row level security|create policy.*user_activities)' /home/msmith/projects/2025slideheroes/apps/web/supabase/schemas/18-user-activities.sql",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/supabase/schemas/18-user-activities.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T3"
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Add performance indexes",
+			"action": {
+				"verb": "Add",
+				"target": "indexes for query optimization"
+			},
+			"purpose": "Create indexes on frequently queried columns to ensure fast activity feed and dashboard queries",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 4,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/supabase/schemas/18-user-activities.sql"],
+				"dependencies": ["T2 table", "Index patterns from tasks migration"],
+				"constraints": [
+					"Must include indexes on account_id, user_id, created_at DESC",
+					"Must include composite index on (account_id, created_at DESC)",
+					"Must include index on (entity_type, entity_id)"
+				]
+			},
+			"input_state": "user_activities table defined. Index patterns available in apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql.",
+			"output_state": "Five indexes created: idx_user_activities_account (account_id), idx_user_activities_user (user_id), idx_user_activities_created (created_at DESC), idx_user_activities_account_created (account_id, created_at DESC), idx_user_activities_entity (entity_type, entity_id).",
+			"acceptance_criterion": "All five indexes are defined with appropriate naming convention (idx_user_activities_*) and correct column specifications.",
+			"verification_command": "grep 'create index.*user_activities' /home/msmith/projects/2025slideheroes/apps/web/supabase/schemas/18-user-activities.sql | wc -l | grep -q 5",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/supabase/schemas/18-user-activities.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T4"
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Add grants and permissions",
+			"action": {
+				"verb": "Add",
+				"target": "database grants for authenticated users"
+			},
+			"purpose": "Configure table permissions to allow authenticated users to query and insert activity records",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 5,
+			"group": 1,
+			"context": {
+				"files": ["apps/web/supabase/schemas/18-user-activities.sql"],
+				"dependencies": [
+					"T2 table",
+					"Grant patterns from 03-accounts.sql and tasks migration"
+				],
+				"constraints": [
+					"Must revoke all default permissions",
+					"Must grant SELECT and INSERT to authenticated",
+					"No UPDATE or DELETE grants (immutable audit trail)"
+				]
+			},
+			"input_state": "user_activities table defined. Grant patterns available in apps/web/supabase/schemas/03-accounts.sql.",
+			"output_state": "Permissions configured: all revoked from authenticated and service_role, then SELECT and INSERT granted to authenticated role.",
+			"acceptance_criterion": "Schema includes revoke statement removing all permissions, followed by grant statement allowing only SELECT and INSERT to authenticated users.",
+			"verification_command": "grep -E '(revoke all|grant.*(select|insert)).*user_activities' /home/msmith/projects/2025slideheroes/apps/web/supabase/schemas/18-user-activities.sql",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/supabase/schemas/18-user-activities.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T2"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T5"
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Generate migration from schema",
+			"action": {
+				"verb": "Generate",
+				"target": "migration file using supabase:db:diff"
+			},
+			"purpose": "Create migration file that can be version controlled and applied to other environments",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 6,
+			"group": 2,
+			"context": {
+				"files": [
+					"apps/web/supabase/schemas/18-user-activities.sql",
+					"apps/web/supabase/migrations/"
+				],
+				"dependencies": [
+					"Complete schema from T1-T5",
+					"pnpm workspace commands",
+					"Supabase CLI"
+				],
+				"constraints": [
+					"Must use pnpm --filter web supabase:db:diff",
+					"Migration name must be create_user_activities_table",
+					"Must verify migration file created"
+				]
+			},
+			"input_state": "Complete schema file exists at apps/web/supabase/schemas/18-user-activities.sql. Existing migrations directory with other migration files.",
+			"output_state": "New migration file created in apps/web/supabase/migrations/ with timestamp prefix and name create_user_activities_table.sql containing the schema changes.",
+			"acceptance_criterion": "Migration file exists in migrations directory with correct naming pattern and contains user_activities table definition.",
+			"verification_command": "ls -t /home/msmith/projects/2025slideheroes/apps/web/supabase/migrations/ | head -n1 | grep -q create_user_activities_table",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/supabase/migrations/[timestamp]_create_user_activities_table.sql"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1", "T2", "T3", "T4", "T5"],
+				"blocks": ["T7"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T6"
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Apply migration to database",
+			"action": {
+				"verb": "Apply",
+				"target": "migration to local Supabase instance"
+			},
+			"purpose": "Execute migration to create user_activities table in the database",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 7,
+			"group": 2,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"T6 migration file",
+					"pnpm workspace commands",
+					"Running Supabase instance"
+				],
+				"constraints": [
+					"Must use pnpm --filter web supabase migration up",
+					"Must verify Supabase is running first",
+					"Must handle migration errors"
+				]
+			},
+			"input_state": "Migration file created. Local Supabase instance running. Database does not have user_activities table.",
+			"output_state": "Migration applied successfully. user_activities table exists in public schema with all columns, RLS policies, and indexes.",
+			"acceptance_criterion": "Migration command succeeds and table query returns structure showing all expected columns and constraints.",
+			"verification_command": "pnpm --filter web supabase db dump --schema public | grep -A 20 'CREATE TABLE.*user_activities'",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "database:public.user_activities"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T6"],
+				"blocks": ["T8"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T7"
+		},
+		{
+			"id": "T8",
+			"type": "task",
+			"name": "Generate TypeScript types",
+			"action": {
+				"verb": "Generate",
+				"target": "TypeScript types from database schema"
+			},
+			"purpose": "Create type-safe TypeScript interfaces for user_activities table to use in application code",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 8,
+			"group": 2,
+			"context": {
+				"files": ["apps/web/lib/database.types.ts"],
+				"dependencies": ["T7 applied migration", "Supabase typegen CLI"],
+				"constraints": [
+					"Must use pnpm supabase:web:typegen",
+					"Must verify types include user_activities",
+					"Must verify enums are typed correctly"
+				]
+			},
+			"input_state": "user_activities table exists in database. database.types.ts exists but does not include user_activities types.",
+			"output_state": "database.types.ts updated with UserActivities table type, activity_type enum, and entity_type enum.",
+			"acceptance_criterion": "database.types.ts contains user_activities in Database['public']['Tables'] and both enums in Database['public']['Enums'].",
+			"verification_command": "grep -E '(user_activities|activity_type|entity_type)' /home/msmith/projects/2025slideheroes/apps/web/lib/database.types.ts",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/lib/database.types.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T7"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_database": true,
+			"migration_name_prefix": "1373_T8"
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Schema Definition",
+				"task_ids": ["T1", "T2", "T3", "T4", "T5"],
+				"depends_on_groups": [],
+				"estimated_hours": 7,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Migration and Type Generation",
+				"task_ids": ["T6", "T7", "T8"],
+				"depends_on_groups": [1],
+				"estimated_hours": 3,
+				"parallel_hours": 3
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T1", "T2", "T3", "T6", "T7", "T8"],
+			"total_hours": 8
+		},
+		"duration": {
+			"sequential": 10,
+			"parallel": 5,
+			"time_saved_percent": 50
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1386
+	}
+}

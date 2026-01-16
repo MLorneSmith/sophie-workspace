@@ -291,6 +291,11 @@ export async function generateCertificate({
 	const certificateBuffer = await certificateResponse.arrayBuffer();
 
 	// 5. Store the certificate in Supabase Storage
+	// Note: The "certificates" bucket is created via migration (20250407140654_create_certificates_bucket.sql)
+	// We don't check if it exists because:
+	// 1. listBuckets() requires admin privileges that regular users don't have
+	// 2. Attempting to create a bucket that exists fails with RLS errors
+	// 3. The migration ensures the bucket always exists in properly set up environments
 	logger.info("Storing certificate in Supabase Storage", {
 		operation: "store_certificate",
 		userId,
@@ -298,102 +303,6 @@ export async function generateCertificate({
 	});
 
 	const supabase = getSupabaseServerClient();
-	const { data: buckets, error: bucketsError } =
-		await supabase.storage.listBuckets();
-
-	if (bucketsError) {
-		logger.error("Failed to list storage buckets", {
-			operation: "list_buckets",
-			error: bucketsError,
-		});
-		throw new Error(`Failed to list buckets: ${bucketsError.message}`);
-	}
-
-	logger.info("Listed storage buckets", {
-		operation: "list_buckets",
-		bucketCount: buckets?.length || 0,
-	});
-
-	// Log all bucket names for debugging
-	if (buckets && buckets.length > 0) {
-		logger.debug("Available buckets", {
-			operation: "list_buckets",
-			buckets: buckets.map((b) => b.name),
-		});
-		for (const _bucket of buckets) {
-			// Bucket processing would go here if needed
-		}
-	}
-
-	const certificatesBucket = buckets?.find(
-		(bucket) => bucket.name === "certificates",
-	);
-
-	if (!certificatesBucket) {
-		logger.info("Certificates bucket not found, creating new bucket", {
-			operation: "create_bucket",
-		});
-
-		// Try to create the bucket with multiple attempts if needed
-		let createBucketError = null;
-		let retryCount = 0;
-		const maxRetries = 3;
-
-		while (retryCount < maxRetries) {
-			try {
-				const { error } = await supabase.storage.createBucket("certificates", {
-					public: true, // Make it public so we can access the files
-					allowedMimeTypes: ["application/pdf"],
-					fileSizeLimit: 10485760, // 10MB
-				});
-
-				if (error) {
-					createBucketError = error;
-					logger.error("Failed to create certificates bucket", {
-						operation: "create_bucket",
-						error,
-						retryCount,
-						maxRetries,
-					});
-					retryCount++;
-					// Wait a bit before retrying
-					await new Promise((resolve) => setTimeout(resolve, 1000));
-				} else {
-					logger.info("Certificates bucket created successfully", {
-						operation: "create_bucket",
-					});
-					createBucketError = null;
-					break;
-				}
-			} catch (error) {
-				createBucketError = error;
-				logger.error("Exception creating certificates bucket", {
-					operation: "create_bucket",
-					error,
-					retryCount,
-					maxRetries,
-				});
-				retryCount++;
-				// Wait a bit before retrying
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-			}
-		}
-
-		if (createBucketError) {
-			logger.error("Failed to create certificates bucket after retries", {
-				operation: "create_bucket",
-				error: createBucketError,
-				retries: maxRetries,
-			});
-			throw new Error(
-				`Failed to create certificates bucket: ${(createBucketError as Error)?.message || String(createBucketError)}`,
-			);
-		}
-	} else {
-		logger.info("Using existing certificates bucket", {
-			operation: "use_bucket",
-		});
-	}
 
 	// Create a unique filename for the certificate
 	const timestamp = Date.now();

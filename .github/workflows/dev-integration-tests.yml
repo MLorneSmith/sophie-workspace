@@ -433,6 +433,7 @@ jobs:
             apps/e2e
             packages
             tooling
+            patches
             package.json
             pnpm-lock.yaml
             pnpm-workspace.yaml
@@ -455,29 +456,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm --filter web-e2e exec playwright install --with-deps chromium
 
-      - name: Configure E2E Supabase environment
+      - name: Validate Supabase configuration
         id: e2e-config
         run: |
-          echo "📋 Configuring E2E tests to use deployed Supabase instance..."
+          echo "📋 Validating E2E Supabase configuration..."
+          echo ""
+          echo "🔑 CRITICAL: E2E_SUPABASE_URL must match NEXT_PUBLIC_SUPABASE_URL"
+          echo "   This ensures cookie names match between E2E setup and deployed middleware."
+          echo "   Fix for #1067: Auth session regression caused by cookie name mismatch"
+          echo ""
 
-          # Use the same Supabase credentials as the deployed environment
-          # This ensures session keys match between test injection and app consumption
+          # Validate required secrets are configured
           SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           SUPABASE_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
 
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
-            echo "⚠️ NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
-            echo "ℹ️ Falling back to E2E_SUPABASE_URL and E2E_SUPABASE_ANON_KEY if available"
-            echo "configured=false" >> $GITHUB_OUTPUT
-          else
-            echo "✅ Using deployed Supabase instance for E2E tests"
-            echo "✅ URL: ${SUPABASE_URL:0:30}..."
-            echo "configured=true" >> $GITHUB_OUTPUT
-
-            # Export for use in subsequent steps
-            echo "SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
-            echo "SUPABASE_KEY=$SUPABASE_KEY" >> $GITHUB_ENV
+            echo "❌ CRITICAL: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY not configured in GitHub Secrets"
+            echo "   These secrets are REQUIRED for E2E tests to authenticate correctly."
+            echo "   Please configure them in the repository settings."
+            exit 1
           fi
+
+          echo "✅ Supabase URL configured: ${SUPABASE_URL:0:40}..."
+          echo "✅ Supabase anon key configured (${#SUPABASE_KEY} chars)"
+          echo "configured=true" >> $GITHUB_OUTPUT
 
       - name: Run integration test suite
         env:
@@ -505,18 +507,26 @@ jobs:
           E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
           E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
           # Supabase configuration for E2E tests
-          # Use deployed environment's Supabase instance to match session key derivation
-          # This resolves authentication state persistence issues in dev integration tests
-          E2E_SUPABASE_URL: ${{ env.SUPABASE_URL || secrets.E2E_SUPABASE_URL }}
-          E2E_SUPABASE_ANON_KEY: ${{ env.SUPABASE_KEY || secrets.E2E_SUPABASE_ANON_KEY }}
+          # CRITICAL: E2E_SUPABASE_URL MUST match NEXT_PUBLIC_SUPABASE_URL used by deployed app
+          # This ensures cookie names (derived from URL) match between E2E setup and middleware
+          # Fix for #1067: Auth session regression caused by cookie name mismatch
+          E2E_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Enable debug logging for auth session troubleshooting
+          DEBUG_E2E_AUTH: true
           # Add debug logging for Playwright
           DEBUG: pw:api
+          # Enable HAR recording for debugging cookie transmission issues
+          # HAR files capture HTTP headers including cookies sent to server
+          # See: Issue #1096 - Auth session lost in Vercel preview deployments
+          RECORD_HAR_LOGS: true
         run: |
           echo "🧪 Running integration tests..."
           echo "⚠️ Email verification will be SKIPPED (testing against deployed environment)"
           echo "ℹ️ Note: Tests may fail if Vercel protection bypass is not properly configured"
           echo "ℹ️ Ensure VERCEL_AUTOMATION_BYPASS_SECRET is set in GitHub Secrets"
-          
+          echo "ℹ️ HAR recording enabled for debugging (RECORD_HAR_LOGS=true)"
+
           # Run integration tests (not just smoke tests)
           pnpm --filter web-e2e test:integration || {
             EXIT_CODE=$?
@@ -525,9 +535,18 @@ jobs:
             echo "  - Vercel protection blocking test automation"
             echo "  - Missing or incorrect VERCEL_AUTOMATION_BYPASS_SECRET"
             echo "  - Dev deployment not fully ready"
-            echo "📝 Check test artifacts for screenshots and traces"
+            echo "📝 Check test artifacts for screenshots, traces, and HAR files"
             exit $EXIT_CODE
           }
+
+      - name: Upload HAR files on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: har-logs-${{ github.run_id }}
+          path: apps/e2e/test-results/*.har
+          retention-days: 7
+          if-no-files-found: ignore
 
   # Security Quick Scan
   security-scan:

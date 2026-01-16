@@ -7,7 +7,7 @@ export function useSignOut() {
 
 	return useMutation({
 		mutationFn: () => {
-			return client.auth.signOut();
+			return client.auth.signOut({ scope: "local" });
 		},
 	});
 }

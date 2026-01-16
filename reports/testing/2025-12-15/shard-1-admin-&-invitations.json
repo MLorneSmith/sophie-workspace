@@ -1,0 +1,42 @@
+{
+	"shard": {
+		"id": 1,
+		"name": "Admin & Invitations",
+		"files": [
+			"tests/admin/admin.spec.ts",
+			"tests/invitations/invitations.spec.ts"
+		],
+		"expectedTests": 13,
+		"shardCommand": "test:shard4"
+	},
+	"execution": {
+		"startTime": "2025-12-15T17:54:56.119Z",
+		"endTime": "2025-12-15T17:58:50.119Z",
+		"duration": "234s",
+		"exitCode": 0,
+		"timedOut": false
+	},
+	"results": {
+		"total": 13,
+		"passed": 6,
+		"failed": 3,
+		"skipped": 4,
+		"intentionalFailures": 0,
+		"integrationTests": 0,
+		"success": false
+	},
+	"failures": [],
+	"errors": [
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values.",
+		"[supabase-config-loader] Failed to fetch config: spawnSync /bin/sh ENOENT. Using fallback values."
+	],
+	"rawOutput": "...(truncated 11200 bytes)...\n (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/invitations-invitations-Invitations-users-can-update-invites-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3) [chromium] › tests/invitations/invitations.spec.ts:109:6 › Invitations › user cannot invite a member of the team again \n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('[data-testid=\"role-option-member\"]')\n    Expected: visible\n    Timeout: 5000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"role-option-member\"]')\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at invitations/invitations.po.ts:58\n\n      56 | \t\t\t\tawait expect(roleOption).toBeVisible({ timeout: 5000 });\n      57 | \t\t\t\tawait roleOption.click();\n    > 58 | \t\t\t}).toPass({\n         | \t\t\t   ^\n      59 | \t\t\t\ttimeout: 30000,\n      60 | \t\t\t\tintervals: [1000, 2000, 5000],\n      61 | \t\t\t});\n        at InvitationsPageObject.inviteMembers (/home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.po.ts:58:7)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:122:3\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium/error-context.md\n\n    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────\n\n    Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\n    Locator: locator('[data-testid=\"role-option-member\"]')\n    Expected: visible\n    Timeout: 5000ms\n    Error: element(s) not found\n\n    Call log:\n    \u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n    \u001b[2m  - waiting for locator('[data-testid=\"role-option-member\"]')\u001b[22m\n\n\n    Call Log:\n    - Timeout 30000ms exceeded while waiting on the predicate\n\n       at invitations/invitations.po.ts:58\n\n      56 | \t\t\t\tawait expect(roleOption).toBeVisible({ timeout: 5000 });\n      57 | \t\t\t\tawait roleOption.click();\n    > 58 | \t\t\t}).toPass({\n         | \t\t\t   ^\n      59 | \t\t\t\ttimeout: 30000,\n      60 | \t\t\t\tintervals: [1000, 2000, 5000],\n      61 | \t\t\t});\n        at InvitationsPageObject.inviteMembers (/home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.po.ts:58:7)\n        at /home/msmith/projects/2025slideheroes/apps/e2e/tests/invitations/invitations.spec.ts:122:3\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/invitations-invitations-In-a7d4c--a-member-of-the-team-again-chromium-retry1/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3 failed\n    [chromium] › tests/invitations/invitations.spec.ts:50:6 › Invitations › users can delete invites \n    [chromium] › tests/invitations/invitations.spec.ts:78:6 › Invitations › users can update invites \n    [chromium] › tests/invitations/invitations.spec.ts:109:6 › Invitations › user cannot invite a member of the team again \n  4 skipped\n  6 passed (3.9m)\n/home/msmith/projects/2025slideheroes/apps/e2e:\n ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  web-e2e@1.0.0 test:shard4: `playwright test tests/admin/admin.spec.ts tests/invitations/invitations.spec.ts -- --reporter=json,dot --output-file=/home/msmith/projects/2025slideheroes/apps/e2e/.playwright-results-shard-1.json --retries=0`\nExit status 1\n"
+}

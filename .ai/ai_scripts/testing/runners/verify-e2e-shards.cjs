@@ -30,9 +30,15 @@ function verifyShards() {
 		},
 		{ id: 5, name: "Accessibility", command: "test:shard5", expectedFiles: 2 },
 		{
-			id: 6,
-			name: "Config & Health",
-			command: "test:shard6",
+			id: "6a",
+			name: "Healthcheck",
+			command: "test:shard6a",
+			expectedFiles: 1,
+		},
+		{
+			id: "6b",
+			name: "Payload Auth",
+			command: "test:shard6b",
 			expectedFiles: 1,
 		},
 		{ id: 7, name: "Payload CMS", command: "test:shard7", expectedFiles: 3 },

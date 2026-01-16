@@ -12,9 +12,10 @@ import { Input } from "@kit/ui/input";
 import { Progress } from "@kit/ui/progress";
 import { Spinner } from "@kit/ui/spinner";
 import { Textarea } from "@kit/ui/textarea";
+import { useQueryClient } from "@tanstack/react-query";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSuggestions } from "../_actions/ai-suggestions-action";
 import { submitBuildingBlocksAction } from "../_actions/submitBuildingBlocksAction";
 import {
@@ -62,46 +63,51 @@ function useSuggestions(_userId: string) {
 	const [suggestions, setSuggestions] = useState<string[]>([]);
 	const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-	// Create a debounced function outside of useCallback
-	const debouncedFetchSuggestions = debounce(
-		async (
-			field: "title" | "audience" | "situation" | "complication" | "answer",
-			presentationType?: string,
-			title?: string,
-			setIsLoadingSuggestions?: (loading: boolean) => void,
-			setSuggestions?: (suggestions: string[]) => void,
-		) => {
-			// Only require title for non-title suggestions
-			if (field !== "title" && !title) return;
+	// Create a debounced function with useMemo for stable reference
+	const debouncedFetchSuggestions = useMemo(
+		() =>
+			debounce(
+				async (
+					field: "title" | "audience" | "situation" | "complication" | "answer",
+					presentationType?: string,
+					title?: string,
+					setIsLoadingSuggestions?: (loading: boolean) => void,
+					setSuggestions?: (suggestions: string[]) => void,
+				) => {
+					// Only require title for non-title suggestions
+					if (field !== "title" && !title) return;
 
-			if (setIsLoadingSuggestions) setIsLoadingSuggestions(true);
-			try {
-				const result = await getSuggestions({
-					title: title || "",
-					field,
-					presentationType,
-				});
+					if (setIsLoadingSuggestions) setIsLoadingSuggestions(true);
+					try {
+						const result = await getSuggestions({
+							title: title || "",
+							field,
+							presentationType,
+						});
 
-				if (result.success && result.data && setSuggestions) {
-					setSuggestions(result.data);
-				} else if (setSuggestions) {
-					setSuggestions([
-						`Error: ${result.error || "Failed to get suggestions"}`,
-					]);
-				}
-			} catch (_error) {
-				logger.error("Error getting suggestions:", {
-					field,
-					presentationType,
-					title,
-					error: _error,
-				});
-				if (setSuggestions) setSuggestions(["An unexpected error occurred"]);
-			} finally {
-				if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
-			}
-		},
-		300,
+						if (result.success && result.data && setSuggestions) {
+							setSuggestions(result.data);
+						} else if (setSuggestions) {
+							setSuggestions([
+								`Error: ${result.error || "Failed to get suggestions"}`,
+							]);
+						}
+					} catch (_error) {
+						logger.error("Error getting suggestions:", {
+							field,
+							presentationType,
+							title,
+							error: _error,
+						});
+						if (setSuggestions)
+							setSuggestions(["An unexpected error occurred"]);
+					} finally {
+						if (setIsLoadingSuggestions) setIsLoadingSuggestions(false);
+					}
+				},
+				300,
+			),
+		[],
 	);
 
 	// Use the debounced function inside useCallback
@@ -166,11 +172,13 @@ const SuggestionsList = ({
 const MultipleChoiceQuestion = ({
 	value,
 	onChange,
+	onBlur,
 	options,
 	error,
 }: {
 	value: string;
 	onChange: (value: string) => void;
+	onBlur?: () => void;
 	options: QuestionOption[];
 	error?: string;
 }) => (
@@ -180,6 +188,7 @@ const MultipleChoiceQuestion = ({
 				key={option.id}
 				type="button"
 				onClick={() => onChange(option.id)}
+				onBlur={onBlur}
 				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
 					value === option.id
 						? "bg-primary text-white"
@@ -203,10 +212,12 @@ const MultipleChoiceQuestion = ({
 const PresentationTypeQuestion = ({
 	value,
 	onChange,
+	onBlur,
 	error,
 }: {
 	value: string;
 	onChange: (value: string) => void;
+	onBlur?: () => void;
 	error?: string;
 }) => (
 	<div className="space-y-2">
@@ -215,6 +226,7 @@ const PresentationTypeQuestion = ({
 				key={type.id}
 				type="button"
 				onClick={() => onChange(type.id)}
+				onBlur={onBlur}
 				className={`focus:ring-primary w-full rounded-lg p-4 text-left transition-colors duration-200 ease-in-out focus:ring-2 focus:outline-none ${
 					value === type.id
 						? "bg-primary text-white"
@@ -247,6 +259,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 		errors,
 		setErrors,
 		validateField,
+		touchedFieldsOnBlur,
+		markFieldAsTouchedOnBlur,
 	} = useSetupForm();
 
 	const [isValidating, setIsValidating] = useState(false);
@@ -264,6 +278,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	} = useSuggestions(_userId);
 
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		logger.info("BlocksForm component initialized", {
@@ -360,7 +375,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 	};
 
 	const handleBlur = (field: keyof FormData) => () => {
-		setTouchedFields(new Set(touchedFields).add(field));
+		markFieldAsTouchedOnBlur(field);
 		validateField(field);
 	};
 
@@ -389,7 +404,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				complication,
 				answer,
 			} = formData;
-			await submitBuildingBlocksAction({
+			const response = await submitBuildingBlocksAction({
 				title,
 				audience,
 				presentation_type: getPresentationTypeLabel(presentation_type),
@@ -398,12 +413,37 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 				complication,
 				answer,
 			});
+
+			if (!response.success) {
+				logger.error("Form submission failed:", {
+					error: response.error,
+					formData: {
+						title,
+						presentation_type: getPresentationTypeLabel(presentation_type),
+						question_type: getQuestionTypeLabel(question_type),
+					},
+				});
+				setErrors({
+					answer: response.error || "Failed to submit form. Please try again.",
+				});
+				return;
+			}
+
+			// Invalidate cache to ensure new presentation appears in dropdown
+			await queryClient.invalidateQueries({
+				queryKey: ["building-blocks-titles"],
+			});
+			logger.info("Cache invalidated for building-blocks-titles");
+
 			// Navigate back to AI home page
 			router.push("/home/ai");
 		} catch (_error) {
 			logger.error("Form submission error:", {
 				formData,
 				error: _error,
+			});
+			setErrors({
+				answer: "An unexpected error occurred. Please try again.",
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -480,7 +520,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 			onChange: handleInputChange(field),
 			onBlur: handleBlur(field),
 			className: `${
-				touchedFields.has(field) && errors[field] ? "border-red-500" : ""
+				touchedFieldsOnBlur.has(field) && errors[field] ? "border-red-500" : ""
 			} ${question.type === "textarea" ? "min-h-[100px] resize-none overflow-y-auto" : ""}`,
 		};
 
@@ -492,7 +532,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 							{...commonProps}
 							placeholder={`Enter the ${question.label.toLowerCase()}`}
 						/>
-						{touchedFields.has(field) && errors[field] && (
+						{touchedFieldsOnBlur.has(field) && errors[field] && (
 							<p className="mt-1 text-sm text-red-500">{errors[field]}</p>
 						)}
 					</>
@@ -504,7 +544,7 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 							{...commonProps}
 							placeholder={`Describe the ${question.label.toLowerCase()}`}
 						/>
-						{touchedFields.has(field) && errors[field] && (
+						{touchedFieldsOnBlur.has(field) && errors[field] && (
 							<p className="mt-1 text-sm text-red-500">{errors[field]}</p>
 						)}
 					</>
@@ -514,7 +554,8 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 					<PresentationTypeQuestion
 						value={formData.presentation_type}
 						onChange={handleSelectChange}
-						error={touchedFields.has(field) ? errors[field] : undefined}
+						onBlur={handleBlur(field)}
+						error={touchedFieldsOnBlur.has(field) ? errors[field] : undefined}
 					/>
 				);
 			case "multiple_choice":
@@ -526,8 +567,9 @@ export function SetupForm({ userId: _userId }: SetupFormProps) {
 							setTouchedFields(new Set(touchedFields).add(field));
 							validateField(field);
 						}}
+						onBlur={handleBlur(field)}
 						options={question.options || []}
-						error={touchedFields.has(field) ? errors[field] : undefined}
+						error={touchedFieldsOnBlur.has(field) ? errors[field] : undefined}
 					/>
 				);
 			default:

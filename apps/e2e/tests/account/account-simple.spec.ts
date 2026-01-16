@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
 import { AuthPageObject } from "../authentication/auth.po";
 import { AUTH_STATES } from "../utils/auth-state";
+import { expect, test } from "../utils/base-test";
 import {
 	CI_TIMEOUTS,
-	RETRY_INTERVALS,
 	navigateAndWaitForHydration,
+	RETRY_INTERVALS,
 	waitForContentReady,
 } from "../utils/wait-for-hydration";
 
@@ -13,8 +13,11 @@ import {
  * Uses domcontentloaded + explicit waits for reliable testing with analytics scripts
  */
 test.describe("Account Settings - Simple @account @integration", () => {
-	// Use CI-aware timeout configuration (Issue #1051)
-	test.describe.configure({ mode: "serial", timeout: CI_TIMEOUTS.element });
+	// Use serial mode for account tests (must run sequentially)
+	// Note: timeout configuration removed - uses global playwright.config.ts timeout (180s for CI)
+	// This ensures consistency across all test suites and handles multi-operation tests
+	// Reference: Issue #1139 (timeout diagnosis), Issue #1140 (timeout architecture)
+	test.describe.configure({ mode: "serial" });
 
 	// Use pre-authenticated state from global setup
 	AuthPageObject.setupSession(AUTH_STATES.TEST_USER);
@@ -135,6 +138,14 @@ test.describe("Account Settings - Simple @account @integration", () => {
 				await expect(displayNameInput).toHaveValue(newName);
 			}
 		}
+
+		// Verify the account dropdown now shows the updated name
+		const accountDropdownName = page.locator(
+			'[data-testid="account-dropdown-display-name"]',
+		);
+		await expect(accountDropdownName).toHaveText(newName, {
+			timeout: CI_TIMEOUTS.element,
+		});
 	});
 
 	test("team settings link is accessible", async ({ page }) => {
