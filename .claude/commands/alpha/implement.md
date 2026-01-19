@@ -5,11 +5,6 @@ model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 hooks:
   PostToolUse:
-    - matcher: ""
-      hooks:
-        - type: command
-          command: "HOOK_EVENT_TYPE=post_tool_use python3 $CLAUDE_PROJECT_DIR/.claude/hooks/event_reporter.py || true"
-          timeout: 3
     - matcher: "TodoWrite"
       hooks:
         - type: command

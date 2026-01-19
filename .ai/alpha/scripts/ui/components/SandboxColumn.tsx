@@ -286,11 +286,11 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 				</Box>
 			)}
 
-			{/* Recent Output Lines (from log file) - capped to 3 items for UI space */}
+			{/* Recent Output Lines (from log file) - capped to 6 items for UI space */}
 			{state.recentOutput && state.recentOutput.length > 0 && (
 				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>Output:</Text>
-					{state.recentOutput.slice(0, 3).map((line) => (
+					{state.recentOutput.slice(0, 6).map((line) => (
 						<Text key={line} dimColor>
 							{truncate(line, 28)}
 						</Text>

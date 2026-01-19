@@ -222,17 +222,29 @@ describe("SandboxColumn component", () => {
 		expect(lastFrame()).toContain("Line 3");
 	});
 
-	it("limits recent output to 3 lines", () => {
+	it("limits recent output to 6 lines", () => {
 		const state = createSandboxState({
-			recentOutput: ["Line 1", "Line 2", "Line 3", "Line 4", "Line 5"],
+			recentOutput: [
+				"Line 1",
+				"Line 2",
+				"Line 3",
+				"Line 4",
+				"Line 5",
+				"Line 6",
+				"Line 7",
+				"Line 8",
+			],
 		});
 		const { lastFrame } = render(React.createElement(SandboxColumn, { state }));
 
 		expect(lastFrame()).toContain("Line 1");
 		expect(lastFrame()).toContain("Line 2");
 		expect(lastFrame()).toContain("Line 3");
-		expect(lastFrame()).not.toContain("Line 4");
-		expect(lastFrame()).not.toContain("Line 5");
+		expect(lastFrame()).toContain("Line 4");
+		expect(lastFrame()).toContain("Line 5");
+		expect(lastFrame()).toContain("Line 6");
+		expect(lastFrame()).not.toContain("Line 7");
+		expect(lastFrame()).not.toContain("Line 8");
 	});
 });
 
