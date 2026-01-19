@@ -190,17 +190,47 @@ jobs:
         run: |
           cd apps/e2e
           # Start Supabase (will reuse existing if setup-server ran on same runner)
-          supabase start --ignore-health-check || true
-          
-          # Quick health check (uses "Project URL" as of Supabase CLI v1+ table format)
-          for i in {1..10}; do
-            if supabase status 2>/dev/null | grep -q "Project URL"; then
-              echo "✓ Supabase ready after $i checks"
+          # No error masking - fail fast if Supabase cannot start
+          supabase start --ignore-health-check
+
+          # Wait for Supabase API to be responsive
+          echo "⏳ Waiting for Supabase API to become responsive..."
+          for i in {1..30}; do
+            if curl -sf http://127.0.0.1:54521/rest/v1/ \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" > /dev/null 2>&1; then
+              echo "✅ Supabase API responding (attempt $i/30)"
               break
             fi
+
+            if [ $i -eq 30 ]; then
+              echo "❌ Supabase API failed to respond after 30 attempts (60 seconds)"
+              echo "Last status output:"
+              supabase status || true
+              echo "Docker containers:"
+              docker ps -a | grep supabase || true
+              exit 1
+            fi
+
+            echo "⏳ Waiting for Supabase API... (attempt $i/30)"
             sleep 2
           done
-          
+
+          # Verify database is also accessible
+          echo "⏳ Verifying PostgreSQL database connectivity..."
+          if command -v pg_isready > /dev/null 2>&1; then
+            if pg_isready -h localhost -p 54522 -U postgres -t 10; then
+              echo "✅ PostgreSQL database is ready"
+            else
+              echo "❌ PostgreSQL database is not responding"
+              exit 1
+            fi
+          else
+            echo "⚠️  pg_isready not available, skipping database connectivity check"
+          fi
+
+          echo "✅ Supabase stack is fully operational"
+
           # Run migrations
           supabase db reset --no-seed || true
 
