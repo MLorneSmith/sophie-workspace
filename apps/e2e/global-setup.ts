@@ -10,6 +10,7 @@ import {
 	verifyCookieAttributes,
 	verifyCookiesPresent,
 } from "./tests/helpers/cookie-verification";
+import { setupTestUsers } from "./tests/helpers/test-users";
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
 import {
@@ -388,6 +389,19 @@ async function globalSetup(config: FullConfig) {
 		// biome-ignore lint/suspicious/noConsole: Required for warning visibility
 		console.warn(
 			"⚠️  Payload is unhealthy - Payload auth will be skipped. Payload tests may fail.",
+		);
+	}
+
+	// Create test users in Supabase before authentication
+	// This ensures test users exist even after database reset with --no-seed
+	// See: Issue #1602, #1603 - E2E tests fail due to missing test users
+	try {
+		await setupTestUsers();
+	} catch (error) {
+		// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+		console.error(`❌ Failed to setup test users: ${(error as Error).message}`);
+		throw new Error(
+			`Test user setup failed: ${(error as Error).message}. Cannot proceed with E2E tests.`,
 		);
 	}
 
