@@ -55,7 +55,9 @@ export default defineConfig({
 		cwd: "../../",
 		command: "pnpm --filter web start:test",
 		url: "http://localhost:3001",
-		reuseExistingServer: !process.env.CI,
+		// Use GITHUB_ACTIONS instead of CI because local test controller sets CI=1
+		// but we want to reuse existing Docker server locally
+		reuseExistingServer: !process.env.GITHUB_ACTIONS,
 		timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
 		stdout: "pipe",
 		stderr: "pipe",
