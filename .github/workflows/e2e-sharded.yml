@@ -59,19 +59,20 @@ jobs:
           path: |
             ~/.docker
             ~/Library/Containers/com.docker.docker/Data
-          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/e2e/supabase/config.toml') }}-${{ github.run_id }}
+          key: ${{ runner.os }}-supabase-docker-${{ hashFiles('apps/web/supabase/config.toml') }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-supabase-docker-
 
       - name: Start E2E Supabase
         run: |
-          cd apps/e2e
+          # Start Supabase from apps/web where config.toml defines ports 54521/54522
+          cd apps/web
           echo "Starting Supabase for E2E tests..."
           supabase start --ignore-health-check
-          
+
           # Verify it's running
           supabase status
-          
+
           echo "✅ Supabase E2E environment ready"
 
       - name: Build application
@@ -98,7 +99,7 @@ jobs:
             apps/payload/dist
             packages/*/dist
             .turbo
-            apps/e2e/supabase/.tmp
+            apps/web/supabase/.tmp
           key: e2e-build-${{ github.sha }}-${{ github.run_id }}
 
   # Sharded E2E test execution with matrix
@@ -177,7 +178,7 @@ jobs:
             apps/payload/dist
             packages/*/dist
             .turbo
-            apps/e2e/supabase/.tmp
+            apps/web/supabase/.tmp
           key: e2e-build-${{ github.sha }}-${{ github.run_id }}
           restore-keys: |
             e2e-build-${{ github.sha }}-
@@ -188,8 +189,8 @@ jobs:
 
       - name: Start local Supabase
         run: |
-          cd apps/e2e
-          # Start Supabase (will reuse existing if setup-server ran on same runner)
+          # Start Supabase from apps/web where config.toml defines ports 54521/54522
+          cd apps/web
           # No error masking - fail fast if Supabase cannot start
           supabase start --ignore-health-check
 
