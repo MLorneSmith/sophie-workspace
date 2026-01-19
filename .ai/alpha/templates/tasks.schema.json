@@ -84,6 +84,16 @@
 					"type": "array",
 					"items": { "type": "string" },
 					"description": "List of task IDs that require database access (e.g., ['T3', 'T5'])"
+				},
+				"requires_ui": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if any task in this feature creates/modifies UI components"
+				},
+				"ui_tasks": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of task IDs that require UI verification (e.g., ['T4', 'T5', 'T8'])"
 				}
 			}
 		},
@@ -497,6 +507,74 @@
 					"type": "string",
 					"pattern": "^\\d+_[A-Za-z0-9]+$",
 					"description": "Prefix for migration filename (e.g., '1367_T3') to ensure uniqueness across parallel features"
+				},
+				"requires_ui": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if task creates/modifies UI components that should be visually verified"
+				},
+				"visual_verification": {
+					"$ref": "#/definitions/visual_verification",
+					"description": "Configuration for visual verification using agent-browser"
+				}
+			}
+		},
+		"visual_verification": {
+			"type": "object",
+			"description": "Configuration for visual verification of UI tasks using agent-browser",
+			"required": ["route"],
+			"properties": {
+				"enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether visual verification is enabled for this task"
+				},
+				"route": {
+					"type": "string",
+					"description": "Route to navigate to for verification (e.g., '/home/dashboard')",
+					"pattern": "^/"
+				},
+				"wait_ms": {
+					"type": "integer",
+					"default": 3000,
+					"minimum": 0,
+					"maximum": 30000,
+					"description": "Milliseconds to wait after page load before running checks"
+				},
+				"checks": {
+					"type": "array",
+					"description": "Visual checks to perform on the page",
+					"items": {
+						"type": "object",
+						"required": ["command"],
+						"properties": {
+							"command": {
+								"type": "string",
+								"enum": ["is visible", "find role", "find label", "find text", "snapshot"],
+								"description": "The type of check to perform"
+							},
+							"target": {
+								"type": "string",
+								"description": "Target element text, role name, or label to find"
+							},
+							"flags": {
+								"type": "string",
+								"description": "Additional flags to pass to the agent-browser command"
+							}
+						}
+					}
+				},
+				"expected_elements": {
+					"type": "array",
+					"description": "List of element texts that should be visible on the page",
+					"items": {
+						"type": "string"
+					}
+				},
+				"screenshot": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to capture a screenshot after verification"
 				}
 			}
 		}

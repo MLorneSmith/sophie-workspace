@@ -604,6 +604,28 @@ Please use the Task tool to delegate suitable tasks to specialized sub-agents fo
 - `export PROJECT_ROOT=$(git rev-parse --show-toplevel)` - Set project root
 - `cp apps/web/.env.example apps/web/.env.test` - Copy environment file
 
+### agent-browser (Visual Validation)
+
+agent-browser is used in the Alpha workflow for visual validation of UI implementations.
+
+- `agent-browser --version` - Check agent-browser version
+- `agent-browser open <url>` - Navigate to URL
+- `agent-browser wait <ms>` - Wait for specified milliseconds
+- `agent-browser snapshot -i -c` - Capture accessibility tree snapshot
+- `agent-browser screenshot <path>` - Capture screenshot to file
+- `agent-browser is visible "<text>"` - Check if text is visible on page
+- `agent-browser find role <role>` - Find element by ARIA role
+- `agent-browser find label "<label>"` - Find element by label
+
+**When to use:**
+
+- Validating UI component renders correctly during Alpha workflow
+- Quick visual verification without full E2E test suite
+- Capturing screenshots for documentation
+- Debugging accessibility issues
+
+**Note:** agent-browser complements, not replaces, Playwright E2E tests.
+
 ## Code Quality & Testing
 
 ### Code Standards

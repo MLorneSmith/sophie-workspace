@@ -759,6 +759,124 @@ grep 'table_name' ../web/lib/database.types.ts
 - `Test` - Write or run tests
 - `Spike` - Research and document findings
 
+### Visual Verification (UI Tasks)
+
+**Identifying UI Tasks**:
+Tasks are considered UI tasks when ANY of these conditions are met:
+- Task has `visual_verification` field defined in tasks.json
+- Task has `requires_ui: true` field
+- Task outputs include `*.tsx` files in app routes (e.g., `apps/web/app/**/*.tsx`)
+- Task name contains: "component", "page", "layout", "form", "modal", "dialog"
+- Task action verb is `Create` or `Wire` with target containing UI terms
+
+**Visual Verification Workflow**:
+
+```
+IF task has visual_verification OR task is identified as UI task:
+    Log: "🖥️ UI task detected: ${task.name}"
+
+    1. Ensure dev server is running:
+       - Check if port 3000 is responding
+       - If not, start dev server: pnpm dev (in background)
+       - Wait for server to be ready (max 30s)
+
+    2. Run visual verification (if visual_verification defined):
+       ```bash
+       # Navigate to the route
+       agent-browser open ${baseUrl}${visual_verification.route}
+
+       # Wait for page to load
+       agent-browser wait ${visual_verification.wait_ms || 3000}
+
+       # Run each check
+       FOR each check in visual_verification.checks:
+           IF check.command == "is visible":
+               agent-browser is visible "${check.target}"
+           ELIF check.command == "find role":
+               agent-browser find role ${check.target}
+           ELIF check.command == "find label":
+               agent-browser find label "${check.target}"
+           ELIF check.command == "snapshot":
+               agent-browser snapshot -i -c
+       ```
+
+    3. Capture screenshot for documentation:
+       ```bash
+       # Create output directory
+       mkdir -p .ai/alpha/validation/${FEATURE_ID}/
+
+       # Capture screenshot
+       agent-browser screenshot .ai/alpha/validation/${FEATURE_ID}/${TASK_ID}-screenshot.png
+       ```
+
+    4. Handle verification result:
+       IF all checks pass:
+           Log: "✅ Visual verification passed"
+           Continue to next task
+       ELSE:
+           Log: "❌ Visual verification failed"
+           Log errors for each failed check
+           IF failure is critical (e.g., page doesn't load):
+               Mark task as blocked
+           ELSE:
+               Log warning and continue (non-blocking)
+```
+
+**Visual Verification Schema** (in tasks.json):
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" },
+      { "command": "find role", "target": "navigation" }
+    ],
+    "screenshot": true
+  }
+}
+```
+
+**Timeout and Fallback**:
+- Visual verification timeout: 30 seconds per task
+- If agent-browser is not available, log warning and skip (non-blocking)
+- If dev server is not running and cannot be started, skip visual verification
+- Screenshots are optional documentation - failure to capture doesn't block task
+
+**Screenshot Storage**:
+- Directory: `.ai/alpha/validation/${FEATURE_ID}/`
+- Naming: `${TASK_ID}-screenshot.png`, `${TASK_ID}-snapshot.txt`
+- These directories should be in `.gitignore` (large binary files)
+
+**Quick Reference - agent-browser Commands**:
+```bash
+# Open a page
+agent-browser open http://localhost:3000/home/dashboard
+
+# Wait for page to load (milliseconds)
+agent-browser wait 3000
+
+# Check if element is visible
+agent-browser is visible "Dashboard"
+
+# Find by ARIA role
+agent-browser find role button "Submit"
+agent-browser find role heading
+
+# Find by label
+agent-browser find label "Email"
+
+# Get accessibility snapshot
+agent-browser snapshot -i -c
+
+# Capture screenshot
+agent-browser screenshot ./path/to/screenshot.png
+```
+
 ### Phase 3: Validation & Commit
 
 After each execution group:

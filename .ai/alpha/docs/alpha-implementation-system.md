@@ -850,6 +850,154 @@ Migrate by:
 
 **Note:** The system supports both legacy numeric IDs (e.g., `1367`) and new semantic IDs (e.g., `S1362.I1.F1`) for backward compatibility.
 
+## Visual Verification with agent-browser
+
+### Overview
+
+The Alpha workflow integrates `agent-browser` CLI for visual validation of UI implementations. This enables automated verification that UI components render correctly during task execution.
+
+### What is agent-browser?
+
+agent-browser is an AI-optimized headless browser CLI that uses accessibility-first semantic selectors (ARIA roles, labels) instead of fragile CSS selectors. This makes it ideal for automated UI validation in AI-driven workflows.
+
+**Key Differences from Playwright:**
+
+| Aspect | agent-browser | Playwright |
+|--------|---------------|------------|
+| **Use Case** | Quick AI-driven validation | Full E2E test suites |
+| **Interface** | CLI (shell commands) | Node.js/Python API |
+| **Selectors** | Accessibility-first (roles, labels) | CSS/XPath/role hybrid |
+| **Integration** | Alpha workflow automation | CI/CD pipelines |
+| **Maintenance** | Low - semantic selectors | Higher - DOM-dependent |
+
+**agent-browser complements, not replaces, Playwright E2E tests.**
+
+### Integration Points
+
+1. **Task Schema** (`tasks.json`) - `requires_ui` and `visual_verification` fields
+2. **`/alpha:implement` command** - Visual verification step after UI task completion
+3. **`alpha-task-decomposer` agent** - Generates visual verification specs for UI tasks
+
+### Task Schema Fields
+
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" }
+    ],
+    "screenshot": true
+  }
+}
+```
+
+**Fields:**
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `requires_ui` | No | false | Flag indicating this is a UI task |
+| `visual_verification.route` | Yes | - | Route to navigate to for verification |
+| `visual_verification.wait_ms` | No | 3000 | Milliseconds to wait after page load |
+| `visual_verification.checks` | No | [] | Array of visual checks to perform |
+| `visual_verification.screenshot` | No | true | Whether to capture a screenshot |
+
+### Visual Check Commands
+
+| Command | Target | Example |
+|---------|--------|---------|
+| `is visible` | Text content | `{ "command": "is visible", "target": "Dashboard" }` |
+| `find role` | ARIA role | `{ "command": "find role", "target": "heading" }` |
+| `find label` | Form label | `{ "command": "find label", "target": "Email" }` |
+| `find text` | Any text | `{ "command": "find text", "target": "Submit" }` |
+| `snapshot` | - | `{ "command": "snapshot" }` |
+
+### Verification Workflow
+
+When a UI task completes in `/alpha:implement`:
+
+```
+1. Check if task has visual_verification OR requires_ui
+2. Ensure dev server is running on port 3000
+3. Run agent-browser commands:
+   - Open the route
+   - Wait for page load
+   - Execute each check
+   - Capture screenshot (if enabled)
+4. Determine pass/fail:
+   - All checks pass → Continue
+   - Critical failure (page doesn't load) → Block task
+   - Non-critical failure → Log warning, continue
+```
+
+### Screenshot Storage
+
+- **Directory**: `.ai/alpha/validation/${FEATURE_ID}/`
+- **Naming**: `${TASK_ID}-screenshot.png`, `${TASK_ID}-snapshot.txt`
+- **Cleanup**: Screenshots are gitignored (large binary files)
+
+### agent-browser Commands Reference
+
+```bash
+# Open a page
+agent-browser open http://localhost:3000/home/dashboard
+
+# Wait for page to load (milliseconds)
+agent-browser wait 3000
+
+# Check if element is visible
+agent-browser is visible "Dashboard"
+
+# Find by ARIA role
+agent-browser find role button "Submit"
+agent-browser find role heading
+
+# Find by label
+agent-browser find label "Email"
+
+# Get accessibility snapshot
+agent-browser snapshot -i -c
+
+# Capture screenshot
+agent-browser screenshot ./path/to/screenshot.png
+```
+
+### Timeout and Fallback
+
+- **Verification timeout**: 30 seconds per task
+- **If agent-browser unavailable**: Log warning and skip (non-blocking)
+- **If dev server not running**: Skip visual verification
+- **If screenshot capture fails**: Log warning, continue (non-blocking)
+
+### Installation
+
+```bash
+# Install globally via pnpm
+pnpm add -g agent-browser
+
+# Download Chromium browser
+agent-browser install
+
+# Linux: Also install system dependencies if browser fails to launch
+agent-browser install --with-deps
+```
+
+### Related Files
+
+| File | Purpose |
+|------|---------|
+| `.ai/alpha/scripts/lib/visual-validation.ts` | TypeScript utilities for visual verification |
+| `.ai/alpha/templates/visual-verification.schema.json` | JSON schema for visual verification config |
+| `.ai/alpha/templates/tasks.schema.json` | Task schema with visual_verification field |
+| `.claude/commands/alpha/implement.md` | Implementation command with visual verification phase |
+| `.claude/agents/alpha/task-decomposer.md` | Task decomposer with UI task detection |
+| `.ai/ai_docs/tool-docs/agent-browser.md` | Complete agent-browser reference |
+
 ## Orchestrator Event Streaming
 
 ### Overview
