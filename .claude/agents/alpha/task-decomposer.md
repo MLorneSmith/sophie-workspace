@@ -455,6 +455,113 @@ After creating all tasks, update the metadata:
 Set `metadata.requires_database = true` if ANY task has `requires_database: true`.
 List all DB task IDs in `metadata.database_tasks` array.
 
+### UI Task Detection & Visual Verification
+
+Tasks that create or modify UI components should be flagged with `requires_ui: true` and include a `visual_verification` configuration. This enables agent-browser to validate the UI renders correctly during implementation.
+
+**Detection Criteria - Mark `requires_ui: true` if ANY of these apply:**
+
+| Indicator | Examples |
+|-----------|----------|
+| **Task outputs include** | `*.tsx` files in `apps/web/app/` routes |
+| **Task name mentions** | component, page, layout, form, modal, dialog, card, button, header, footer |
+| **Action verb + target** | Create/Add/Wire + "component", "page", "layout", "form" |
+| **Task type is** | UI component creation or modification |
+
+**Adding Visual Verification:**
+
+For tasks with `requires_ui: true`, also add a `visual_verification` configuration:
+
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" }
+    ],
+    "screenshot": true
+  },
+  "action": { "verb": "Create", "target": "dashboard page layout" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/[account]/dashboard/page.tsx" }
+  ]
+}
+```
+
+**Visual Verification Fields:**
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `route` | Yes | - | Route to navigate to (e.g., `/home/dashboard`) |
+| `wait_ms` | No | 3000 | Milliseconds to wait after page load |
+| `checks` | No | [] | Array of visual checks to perform |
+| `screenshot` | No | true | Whether to capture a screenshot |
+
+**Check Commands:**
+
+| Command | Target | Example Use Case |
+|---------|--------|------------------|
+| `is visible` | Text content | Verify heading or label appears |
+| `find role` | ARIA role | Verify interactive elements exist |
+| `find label` | Form label | Verify form fields are accessible |
+| `snapshot` | - | Capture accessibility tree for debugging |
+
+**Route Derivation:**
+
+Derive the route from the task's output file paths:
+- `apps/web/app/home/[account]/dashboard/page.tsx` → `/home/dashboard` (use placeholder for dynamic segments)
+- `apps/web/app/auth/login/page.tsx` → `/auth/login`
+- For components not directly routable, use the parent page route
+
+**Common Check Patterns:**
+
+```json
+// For page tasks
+"checks": [
+  { "command": "is visible", "target": "Page Title" },
+  { "command": "find role", "target": "main" }
+]
+
+// For form tasks
+"checks": [
+  { "command": "find role", "target": "textbox" },
+  { "command": "find role", "target": "button" }
+]
+
+// For navigation tasks
+"checks": [
+  { "command": "find role", "target": "navigation" },
+  { "command": "find role", "target": "link" }
+]
+
+// For data display tasks
+"checks": [
+  { "command": "find role", "target": "grid" },
+  { "command": "find role", "target": "row" }
+]
+```
+
+**Aggregating UI Tasks:**
+
+After creating all tasks, update the metadata:
+
+```json
+{
+  "metadata": {
+    "requires_ui": true,
+    "ui_tasks": ["T4", "T5", "T8"]
+  }
+}
+```
+
+Set `metadata.requires_ui = true` if ANY task has `requires_ui: true`.
+List all UI task IDs in `metadata.ui_tasks` array.
+
 ### Task Context Template
 
 For each task, define the minimal context needed (≤750 tokens total):
