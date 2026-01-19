@@ -195,6 +195,10 @@ export default defineConfig({
 	// This prevents "Process from config.webServer exited early" errors in CI workflows
 	// that test against deployed Vercel environments (e.g., dev-integration-tests)
 	// See Issue #1571, #1579 for diagnosis and fix details
+	// Use production server (next start) instead of dev server (next dev) in CI.
+	// The Setup Test Server job builds the application, so we can simply run the production build.
+	// Production server starts in 1-2 seconds vs dev server which may hang with cached build artifacts.
+	// See Issue #1583, #1584 for diagnosis and fix details.
 	webServer:
 		process.env.PLAYWRIGHT_BASE_URL?.startsWith("https://") ||
 		process.env.TEST_BASE_URL?.startsWith("https://") ||
@@ -203,19 +207,19 @@ export default defineConfig({
 			: [
 					{
 						cwd: "../../",
-						command: "pnpm --filter web dev:test",
+						command: "pnpm --filter web start:test",
 						url: "http://localhost:3001",
 						reuseExistingServer: !process.env.CI,
-						timeout: 120 * 1000, // 2 minutes for build compilation
+						timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
 						stdout: "ignore", // Reduce noise in logs
 						stderr: "pipe", // Still capture errors
 					},
 					{
 						cwd: "../../",
-						command: "pnpm --filter payload dev:test",
+						command: "pnpm --filter payload start:test",
 						url: "http://localhost:3021",
 						reuseExistingServer: !process.env.CI,
-						timeout: 120 * 1000, // 2 minutes for build compilation
+						timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
 						stdout: "ignore", // Reduce noise in logs
 						stderr: "pipe", // Still capture errors
 					},

@@ -47,13 +47,16 @@ export default defineConfig({
 		},
 	],
 
-	/*Run your local dev server before starting the tests*/
+	// Use production server (next start) instead of dev server (next dev) in CI.
+	// The Setup Test Server job builds the application, so we can simply run the production build.
+	// Production server starts in 1-2 seconds vs dev server which may hang with cached build artifacts.
+	// See Issue #1583, #1584 for diagnosis and fix details.
 	webServer: {
 		cwd: "../../",
-		command: "pnpm --filter web dev:test",
+		command: "pnpm --filter web start:test",
 		url: "http://localhost:3001",
 		reuseExistingServer: !process.env.CI,
-		timeout: 120 * 1000, // 2 minutes for build compilation
+		timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
 		stdout: "pipe",
 		stderr: "pipe",
 	},

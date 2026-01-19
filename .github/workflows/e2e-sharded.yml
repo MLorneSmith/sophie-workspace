@@ -131,6 +131,10 @@ jobs:
       DO_NOT_TRACK: 1
       # Note: PLAYWRIGHT_WEB_COMMAND and PLAYWRIGHT_PAYLOAD_COMMAND are no longer needed
       # Server startup is now handled by Playwright's webServer config in each config file
+      # The webServer uses production server (next start) instead of dev server (next dev)
+      # to avoid conflicts with cached production build artifacts from Setup Test Server job.
+      # Production server starts instantly (1-2s) vs dev server which may hang indefinitely.
+      # See Issue #1583 (diagnosis), #1584 (fix) for details.
       # See: apps/e2e/playwright.config.ts (and other config files)
       
       # Required for app to start
