@@ -531,19 +531,14 @@ export async function createReviewSandbox(
 
 	log("   ✅ Branch checked out");
 
-	// Verify dependencies
-	const checkResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
-		{ timeoutMs: 10000 },
+	// Sync dependencies with branch lockfile
+	// Always run pnpm install after branch checkout to ensure dependencies match
+	// the branch's lockfile. When deps are already synced, pnpm completes in <1s.
+	log("   Syncing dependencies with branch lockfile...");
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+		{ timeoutMs: 600000 },
 	);
-
-	if (checkResult.stdout.trim() === "missing") {
-		log("   Installing dependencies...");
-		await sandbox.commands.run(
-			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-			{ timeoutMs: 600000 },
-		);
-	}
 
 	// Build workspace packages (required for dev server)
 	log("   Building workspace packages...");
