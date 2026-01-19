@@ -612,10 +612,10 @@ export const PROGRESS_FILE = ".initiative-progress.json";
 export const MAX_EVENTS = 100;
 
 /**
-
-* Maximum events to display in UI
+ * Maximum events to display in UI
+ * Kept intentionally small to prevent visual clutter in sandbox columns
  */
-export const MAX_DISPLAY_EVENTS = 8;
+export const MAX_DISPLAY_EVENTS = 6;
 
 // =============================================================================
 // Event Streaming Types

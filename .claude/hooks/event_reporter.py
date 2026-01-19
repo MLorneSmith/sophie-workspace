@@ -33,7 +33,7 @@ from urllib.error import URLError, HTTPError
 # Configuration
 TIMEOUT_SECONDS = 2  # Short timeout to avoid blocking Claude
 DEFAULT_PORT = 9000
-MAX_RECENT_OUTPUT = 20  # Keep only last N output lines
+MAX_RECENT_OUTPUT = 10  # Keep only last N output lines (reduced from 20 to minimize memory footprint)
 
 
 # =============================================================================
@@ -155,6 +155,10 @@ def update_progress_file(new_output: str) -> bool:
         # Initialize recent_output if missing
         if "recent_output" not in progress:
             progress["recent_output"] = []
+
+        # Deduplicate: skip if identical to last entry (prevents consecutive duplicates)
+        if progress["recent_output"] and progress["recent_output"][-1] == new_output:
+            return True  # Already present, skip append
 
         # Append new output
         progress["recent_output"].append(new_output)

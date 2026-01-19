@@ -346,5 +346,97 @@ class TestHookBehavior:
 
     def test_max_recent_output_constant(self):
         """MAX_RECENT_OUTPUT is set to reasonable value."""
-        assert MAX_RECENT_OUTPUT == 20
+        assert MAX_RECENT_OUTPUT == 10  # Reduced from 20 to minimize memory footprint
         assert isinstance(MAX_RECENT_OUTPUT, int)
+
+
+class TestDeduplication:
+    """Tests for consecutive duplicate event deduplication."""
+
+    def test_deduplicates_consecutive_identical_events(self):
+        """Skips appending when identical to last entry."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            progress_file = os.path.join(tmpdir, ".initiative-progress.json")
+            initial_progress = {
+                "recent_output": ["📖 Read: file1.ts", "📝 Write: file2.ts"],
+            }
+            with open(progress_file, "w") as f:
+                json.dump(initial_progress, f)
+
+            # Try to add duplicate of last entry
+            with patch("event_reporter.find_progress_file", return_value=progress_file):
+                result = update_progress_file("📝 Write: file2.ts")
+
+            assert result is True  # Returns True (success) but doesn't duplicate
+
+            with open(progress_file, "r") as f:
+                updated = json.load(f)
+
+            # Should still have only 2 entries (duplicate not added)
+            assert len(updated["recent_output"]) == 2
+            assert updated["recent_output"] == ["📖 Read: file1.ts", "📝 Write: file2.ts"]
+
+    def test_allows_different_events_after_same_tool(self):
+        """Allows different events even from same tool."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            progress_file = os.path.join(tmpdir, ".initiative-progress.json")
+            initial_progress = {
+                "recent_output": ["📖 Read: file1.ts"],
+            }
+            with open(progress_file, "w") as f:
+                json.dump(initial_progress, f)
+
+            # Add different file with same tool
+            with patch("event_reporter.find_progress_file", return_value=progress_file):
+                result = update_progress_file("📖 Read: file2.ts")
+
+            assert result is True
+
+            with open(progress_file, "r") as f:
+                updated = json.load(f)
+
+            # Should have both entries (different content)
+            assert len(updated["recent_output"]) == 2
+            assert updated["recent_output"] == ["📖 Read: file1.ts", "📖 Read: file2.ts"]
+
+    def test_allows_non_consecutive_duplicates(self):
+        """Allows duplicates that are not consecutive."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            progress_file = os.path.join(tmpdir, ".initiative-progress.json")
+            initial_progress = {
+                "recent_output": ["📖 Read: file1.ts", "📝 Write: file2.ts"],
+            }
+            with open(progress_file, "w") as f:
+                json.dump(initial_progress, f)
+
+            # Add same as first entry (not consecutive duplicate)
+            with patch("event_reporter.find_progress_file", return_value=progress_file):
+                result = update_progress_file("📖 Read: file1.ts")
+
+            assert result is True
+
+            with open(progress_file, "r") as f:
+                updated = json.load(f)
+
+            # Should have 3 entries (non-consecutive duplicate allowed)
+            assert len(updated["recent_output"]) == 3
+            assert updated["recent_output"][-1] == "📖 Read: file1.ts"
+
+    def test_dedup_on_empty_list_appends(self):
+        """Appends to empty list without error."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            progress_file = os.path.join(tmpdir, ".initiative-progress.json")
+            initial_progress = {"recent_output": []}
+            with open(progress_file, "w") as f:
+                json.dump(initial_progress, f)
+
+            with patch("event_reporter.find_progress_file", return_value=progress_file):
+                result = update_progress_file("📖 Read: first.ts")
+
+            assert result is True
+
+            with open(progress_file, "r") as f:
+                updated = json.load(f)
+
+            assert len(updated["recent_output"]) == 1
+            assert updated["recent_output"] == ["📖 Read: first.ts"]
