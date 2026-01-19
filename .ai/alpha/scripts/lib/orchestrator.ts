@@ -1046,6 +1046,10 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	// Main Orchestration Logic - wrapped in try-finally for guaranteed cleanup
 	// =========================================================================
 	try {
+		// Set flag for event-emitter to know if UI mode is enabled
+		// This prevents error logging when event server is not running (non-UI mode)
+		if (options.ui) process.env.ORCHESTRATOR_UI_ENABLED = "true";
+
 		// Wait for UI to be ready before emitting database events
 		// This prevents timing race conditions where events are emitted before UI connects
 		if (options.ui && orchestratorUrl) {
