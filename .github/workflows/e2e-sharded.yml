@@ -85,6 +85,10 @@ jobs:
           DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
           PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
           NODE_ENV: 'production'
+          # Supabase env vars must be present at build time for Next.js production builds
+          # NEXT_PUBLIC_* vars are baked into the client bundle at build time
+          NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
 
       - name: Cache build and server state
         uses: actions/cache@v4
