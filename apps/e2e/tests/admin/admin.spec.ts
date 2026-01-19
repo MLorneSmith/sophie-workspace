@@ -214,7 +214,15 @@ test.describe("Admin", () => {
 			// First ban the user
 			await page.getByTestId("admin-ban-account-button").click();
 			await page.fill('[placeholder="Type CONFIRM to confirm"]', "CONFIRM");
-			await page.getByRole("button", { name: "Ban User" }).click();
+
+			await Promise.all([
+				page.getByRole("button", { name: "Ban User" }).click(),
+				page.waitForResponse(
+					(response) =>
+						response.url().includes("/admin/accounts") &&
+						response.request().method() === "POST",
+				),
+			]);
 
 			await expect(page.getByText("Banned").first()).toBeVisible();
 
