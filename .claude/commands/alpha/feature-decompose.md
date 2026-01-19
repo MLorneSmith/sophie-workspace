@@ -331,6 +331,82 @@ Before diving into architecture, formally assess and document the initiative's c
 - **MEDIUM complexity** → Standard workflow (single agent per feature)
 - **HIGH complexity** → Full workflow (multi-agent comparison for complex features)
 
+#### Step 4.5: Discover Available Components
+
+Before designing architecture, explore shadcn/ui and configured registries for components that match feature requirements.
+
+**4.5.1: Search Official shadcn/ui Components**
+
+From the packages/ui directory, search for components matching feature needs:
+
+```bash
+cd packages/ui
+
+# Search for feature-relevant terms
+npx shadcn@latest search -q "[feature-keyword]"
+
+# Examples for common feature types:
+# Dashboard: npx shadcn@latest search -q "card"
+# Forms: npx shadcn@latest search -q "form"
+# Data display: npx shadcn@latest search -q "table"
+```
+
+**4.5.2: Explore Configured Community Registries**
+
+For enhanced UI features (animations, effects, specialized components), search configured registries:
+
+```bash
+# MagicUI - Animated components with Framer Motion
+npx shadcn@latest search @magicui -q "[keyword]"
+
+# Aceternity - Modern UI with 3D effects
+npx shadcn@latest search @aceternity -q "[keyword]"
+
+# Kibo UI - Component library
+npx shadcn@latest search @kibo-ui -q "[keyword]"
+
+# Additional configured registries
+npx shadcn@latest search @reui -q "[keyword]"
+npx shadcn@latest search @scrollxui -q "[keyword]"
+npx shadcn@latest search @moleculeui -q "[keyword]"
+npx shadcn@latest search @gaia -q "[keyword]"
+npx shadcn@latest search @phucbm -q "[keyword]"
+```
+
+**4.5.3: Preview Promising Components**
+
+Before including in architecture, preview implementation details:
+
+```bash
+# View official component code
+npx shadcn@latest view [component-name]
+
+# View registry component code
+npx shadcn@latest view @magicui/[component-name]
+```
+
+**4.5.4: Document Component Selections**
+
+Add a **Component Strategy** section to feature.md after "Architecture Decision":
+
+```markdown
+### Component Strategy
+
+| UI Element | Component | Source | Rationale |
+|------------|-----------|--------|-----------|
+| [element] | [component] | shadcn/ui | [why this choice] |
+| [element] | @magicui/[name] | @magicui | [why this choice] |
+
+**Components to Install** (if not already in packages/ui):
+- [ ] `npx shadcn@latest add [component]`
+- [ ] `npx shadcn@latest add @registry/[component]`
+```
+
+**Decision Criteria**:
+- **Official shadcn/ui first** - For standard UI patterns (forms, dialogs, cards, tables)
+- **Community registry** - When feature needs animations, effects, or specialized behavior
+- **Custom component** - Only when no suitable component exists in any registry
+
 #### Step 5: Design Architecture (Adaptive)
 
 Based on complexity assessment:
@@ -488,6 +564,7 @@ Then use the Write tool to create `feature.md` in each directory.
 - Acceptance Criteria (Must Have + Nice to Have)
 - Vertical Slice Components table
 - Architecture Decision (approach + rationale)
+- Component Strategy (from Step 4.5)
 - Dependencies (blocks, blocked by, parallel with) - **Use S#.I#.F# or shorthand F# format**
 - Files to Create/Modify
 - Task Hints (for next decomposition phase)

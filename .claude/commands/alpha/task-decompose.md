@@ -245,6 +245,58 @@ Enables:
 
 ---
 
+## UI Component Task Handling
+
+**Identifying Component Tasks**:
+Tasks that create or integrate UI components should check shadcn availability before creating custom implementations.
+
+**Before Creating a UI Component Task**:
+1. Check if component exists in `packages/ui/src/shadcn/`
+2. Search shadcn CLI: `npx shadcn@latest search -q "[component]"`
+3. Search configured registries if official component not found
+4. If found, create installation task as prerequisite
+
+**Component Installation Task Template**:
+```json
+{
+  "id": "T2",
+  "name": "Install [component] from shadcn",
+  "requires_ui_component": true,
+  "component_source": "shadcn/ui | @magicui | @aceternity | etc",
+  "installation_command": "cd packages/ui && npx shadcn@latest add [component] -y",
+  "action": { "verb": "Install", "target": "[component] component" },
+  "outputs": [
+    { "type": "new", "path": "packages/ui/src/shadcn/[component].tsx" }
+  ],
+  "verification_command": "test -f packages/ui/src/shadcn/[component].tsx && grep -q './[component]' packages/ui/package.json",
+  "post_install_steps": [
+    "Update packages/ui/package.json exports if not auto-added",
+    "Run pnpm typecheck to verify"
+  ]
+}
+```
+
+**Component Task Best Practices**:
+- Always install components before tasks that use them
+- Verify exports are added to packages/ui/package.json
+- Run typecheck after installation to catch import issues
+- Document component choice rationale in task context
+
+**Configured Registries Reference**:
+| Registry | Namespace | Specialty |
+|----------|-----------|-----------|
+| Official | (none) | Core UI components |
+| MagicUI | @magicui | Animated components |
+| Aceternity | @aceternity | Modern UI effects |
+| Kibo UI | @kibo-ui | Component library |
+| ReUI | @reui | Component library |
+| ScrollX UI | @scrollxui | Scroll effects |
+| Molecule UI | @moleculeui | Component library |
+| Gaia | @gaia | Component library |
+| PhucBM | @phucbm | Component library |
+
+---
+
 ## Report
 
 ### Single Feature (Mode A)
