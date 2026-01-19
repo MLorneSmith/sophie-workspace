@@ -191,24 +191,33 @@ export default defineConfig({
 	/*Run your local dev server before starting the tests*/
 	// Start both web and Payload servers since this config is used for both projects
 	// Web tests use port 3001, Payload tests use port 3021
-	webServer: [
-		{
-			cwd: "../../",
-			command: "pnpm --filter web dev:test",
-			url: "http://localhost:3001",
-			reuseExistingServer: !process.env.CI,
-			timeout: 120 * 1000, // 2 minutes for build compilation
-			stdout: "ignore", // Reduce noise in logs
-			stderr: "pipe", // Still capture errors
-		},
-		{
-			cwd: "../../",
-			command: "pnpm --filter payload dev:test",
-			url: "http://localhost:3021",
-			reuseExistingServer: !process.env.CI,
-			timeout: 120 * 1000, // 2 minutes for build compilation
-			stdout: "ignore", // Reduce noise in logs
-			stderr: "pipe", // Still capture errors
-		},
-	],
+	// CONDITIONAL: Skip webServer when running against deployed environments (HTTPS URLs)
+	// This prevents "Process from config.webServer exited early" errors in CI workflows
+	// that test against deployed Vercel environments (e.g., dev-integration-tests)
+	// See Issue #1571, #1579 for diagnosis and fix details
+	webServer:
+		process.env.PLAYWRIGHT_BASE_URL?.startsWith("https://") ||
+		process.env.TEST_BASE_URL?.startsWith("https://") ||
+		process.env.BASE_URL?.startsWith("https://")
+			? undefined
+			: [
+					{
+						cwd: "../../",
+						command: "pnpm --filter web dev:test",
+						url: "http://localhost:3001",
+						reuseExistingServer: !process.env.CI,
+						timeout: 120 * 1000, // 2 minutes for build compilation
+						stdout: "ignore", // Reduce noise in logs
+						stderr: "pipe", // Still capture errors
+					},
+					{
+						cwd: "../../",
+						command: "pnpm --filter payload dev:test",
+						url: "http://localhost:3021",
+						reuseExistingServer: !process.env.CI,
+						timeout: 120 * 1000, // 2 minutes for build compilation
+						stdout: "ignore", // Reduce noise in logs
+						stderr: "pipe", // Still capture errors
+					},
+				],
 });
