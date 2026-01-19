@@ -465,3 +465,98 @@ export function getSandboxesNeedingRestart(
 
 	return needsRestart;
 }
+
+// ============================================================================
+// Review Sandbox Creation
+// ============================================================================
+
+/**
+ * Create a lightweight review sandbox optimized for dev server startup.
+ *
+ * Unlike the full `createSandbox()`, this function creates a minimal sandbox
+ * that just needs to clone the branch and start the dev server. It skips:
+ * - Supabase CLI setup (not needed for review)
+ * - Full workspace package build (only builds @kit/shared)
+ * - Progress file cleanup (no implementation happening)
+ *
+ * This provides a clean environment for the dev server without resource
+ * contention from prior implementation work.
+ *
+ * Bug fix #1590: Fresh sandbox for review after spec implementation.
+ *
+ * @param branchName - The branch to checkout (e.g., "alpha/spec-1362")
+ * @param timeout - Sandbox timeout in seconds
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns The review sandbox instance (Sandbox object, not SandboxInstance)
+ */
+export async function createReviewSandbox(
+	branchName: string,
+	timeout: number,
+	uiEnabled: boolean = false,
+): Promise<Sandbox> {
+	const { log } = createLogger(uiEnabled);
+
+	log("\n📦 Creating fresh review sandbox...");
+
+	const sandbox = await Sandbox.create(TEMPLATE_ALIAS, {
+		timeoutMs: timeout * 1000,
+		apiKey: E2B_API_KEY,
+		envs: getAllEnvVars(),
+	});
+
+	log(`   Review sandbox ID: ${sandbox.sandboxId}`);
+
+	// Setup git credentials
+	if (GITHUB_TOKEN) {
+		await setupGitCredentials(sandbox);
+	}
+
+	// Fetch and checkout the branch
+	log(`   Checking out branch: ${branchName}`);
+	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && git fetch origin`, {
+		timeoutMs: 120000,
+	});
+
+	// Checkout the branch - force reset to match remote
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git fetch origin "${branchName}" && git checkout -B "${branchName}" FETCH_HEAD`,
+		{ timeoutMs: 60000 },
+	);
+
+	// Pull latest to ensure we have all commits
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git pull origin "${branchName}"`,
+		{ timeoutMs: 60000 },
+	);
+
+	log("   ✅ Branch checked out");
+
+	// Verify dependencies
+	const checkResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
+	);
+
+	if (checkResult.stdout.trim() === "missing") {
+		log("   Installing dependencies...");
+		await sandbox.commands.run(
+			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+			{ timeoutMs: 600000 },
+		);
+	}
+
+	// Build workspace packages (required for dev server)
+	log("   Building workspace packages...");
+	const buildResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm --filter @kit/shared build`,
+		{ timeoutMs: 120000 },
+	);
+	if (buildResult.exitCode !== 0) {
+		throw new Error(
+			`Failed to build workspace packages: ${buildResult.stderr || buildResult.stdout}`,
+		);
+	}
+
+	log("   ✅ Review sandbox ready");
+	return sandbox;
+}

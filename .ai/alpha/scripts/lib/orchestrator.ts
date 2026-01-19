@@ -10,6 +10,8 @@ import { type ChildProcess, spawn } from "node:child_process";
 import * as path from "node:path";
 import process from "node:process";
 
+import type { Sandbox } from "@e2b/code-interpreter";
+
 import {
 	EVENT_SERVER_PORT,
 	HEALTH_CHECK_INTERVAL_MS,
@@ -51,6 +53,7 @@ import {
 import { writeIdleProgress } from "./progress.js";
 import { generateRunId } from "./run-id.js";
 import {
+	createReviewSandbox,
 	createSandbox,
 	getSandboxesNeedingRestart,
 	getVSCodeUrl,
@@ -1218,28 +1221,22 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			}
 		}
 
-		// Prepare one sandbox for complete review
+		// Prepare review sandbox for complete review
 		// NOTE: We prepare review URLs BEFORE setting final status to avoid race condition
 		// where UI sees "completed" status before reviewUrls are available
-		log("\n🔄 Preparing sandbox for complete review...");
-		const reviewInstance = instances[0];
+		//
+		// Bug fix #1590: Create a fresh review sandbox instead of reusing implementation sandbox.
+		// The implementation sandbox has accumulated resource pressure from running 110+ tasks,
+		// causing the dev server to fail to start within 30 seconds. A fresh sandbox provides
+		// a clean environment where the dev server can start in 10-20 seconds.
+		log("\n🔄 Creating fresh review sandbox...");
+		const reviewUrls: ReviewUrl[] = [];
+
+		// Keep implementation sandbox (sbx-a) available for code inspection via VS Code
+		const implementationInstance = instances[0];
 		const otherInstances = instances.slice(1);
 
-		// Pull latest to get all changes
-		if (reviewInstance) {
-			try {
-				log(`${reviewInstance.label}: Pulling latest changes...`);
-				await reviewInstance.sandbox.commands.run(
-					`cd /home/user/project && git pull origin "${manifest.sandbox.branch_name}"`,
-					{ timeoutMs: 60000 },
-				);
-				log(`${reviewInstance.label}: ✅ Has complete code`);
-			} catch (error) {
-				log(`${reviewInstance.label}: ⚠️ Pull failed: ${error}`);
-			}
-		}
-
-		// Kill other sandboxes
+		// Kill non-primary implementation sandboxes (sbx-b, sbx-c, etc.)
 		for (const instance of otherInstances) {
 			try {
 				log(`${instance.label}: Stopping (partial code only)...`);
@@ -1249,32 +1246,67 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			}
 		}
 
-		// Start dev server on review sandbox
-		log("\n🚀 Starting dev server for review...");
-		const reviewUrls: ReviewUrl[] = [];
+		// Create a fresh review sandbox for the dev server
+		let reviewSandbox: Sandbox | null = null;
+		const branchName = manifest.sandbox.branch_name;
 
-		if (reviewInstance) {
-			const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
-
+		if (branchName) {
 			try {
-				const devServerUrl = await startDevServer(reviewInstance.sandbox);
-				reviewUrls.push({
-					label: reviewInstance.label,
-					vscode: vscodeUrl,
-					devServer: devServerUrl,
-				});
-				log(`${reviewInstance.label}: ✅ Dev server ready`);
+				log("   Creating dedicated review sandbox for dev server...");
+				reviewSandbox = await createReviewSandbox(
+					branchName,
+					options.timeout,
+					options.ui,
+				);
+				log("   ✅ Review sandbox created successfully");
 			} catch (error) {
 				log(
-					`${reviewInstance.label}: ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
+					`   ⚠️ Failed to create review sandbox: ${error instanceof Error ? error.message : error}`,
+				);
+				log("   Falling back to implementation sandbox...");
+			}
+		}
+
+		// Start dev server on review sandbox (preferred) or implementation sandbox (fallback)
+		log("\n🚀 Starting dev server for review...");
+		const devServerSandbox = reviewSandbox ?? implementationInstance?.sandbox;
+
+		if (devServerSandbox) {
+			const devServerVscodeUrl = getVSCodeUrl(devServerSandbox);
+
+			try {
+				// Use longer timeout (60 attempts = 60s) for review sandbox
+				// Review sandbox should be cleaner, but give extra time just in case
+				const devServerUrl = await startDevServer(devServerSandbox, 60, 1000);
+				reviewUrls.push({
+					label: reviewSandbox ? "sbx-review" : (implementationInstance?.label ?? "sbx-a"),
+					vscode: devServerVscodeUrl,
+					devServer: devServerUrl,
+				});
+				log(`   ✅ Dev server ready on ${reviewSandbox ? "review" : "implementation"} sandbox`);
+			} catch (error) {
+				log(
+					`   ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
 				);
 				// Still add VS Code URL for code review even if dev server fails
 				reviewUrls.push({
-					label: reviewInstance.label,
-					vscode: vscodeUrl,
+					label: reviewSandbox ? "sbx-review" : (implementationInstance?.label ?? "sbx-a"),
+					vscode: devServerVscodeUrl,
 					devServer: "(failed to start)",
 				});
 			}
+		}
+
+		// Add implementation sandbox VS Code URL separately for code inspection
+		// This gives users access to both: dev server (review sandbox) and code editor (impl sandbox)
+		if (implementationInstance && reviewSandbox) {
+			const implVscodeUrl = getVSCodeUrl(implementationInstance.sandbox);
+			reviewUrls.push({
+				label: `${implementationInstance.label} (code)`,
+				vscode: implVscodeUrl,
+				devServer: "(use sbx-review for dev server)",
+			});
+			log(`   ${implementationInstance.label}: VS Code available for code inspection`);
 		}
 
 		// Final status - set AFTER reviewUrls are ready to avoid race condition
@@ -1292,7 +1324,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// Print summary (always shown - handles its own output)
 		if (!options.ui) {
-			const reviewInstancesForSummary = reviewInstance ? [reviewInstance] : [];
+			const reviewInstancesForSummary = implementationInstance ? [implementationInstance] : [];
 			printSummary(manifest, reviewInstancesForSummary, reviewUrls);
 		}
 
