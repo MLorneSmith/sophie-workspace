@@ -297,6 +297,83 @@ Tasks that create or integrate UI components should check shadcn availability be
 
 ---
 
+## UI Task Flagging
+
+**Purpose**: Flag tasks that create UI components so the `/alpha:implement` command can invoke specialized frontend skills for improved code quality.
+
+**When to Flag a Task as UI**:
+Add `ui_task: true` when the task:
+- Creates or modifies React components (`.tsx` files)
+- Works with pages, layouts, panels, cards, forms, modals, or dialogs
+- Involves styling, design, or visual presentation
+- Outputs files in `_components/` directories
+
+**Metadata Fields**:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `ui_task` | `boolean` | True if task creates/modifies UI components |
+| `skill_hints` | `string[]` | Suggested skills: `frontend-design`, `react-best-practices` |
+
+**Skill Hint Selection Guide**:
+
+| Task Pattern | Recommended Skill Hints |
+|--------------|------------------------|
+| Create new visual component | `["frontend-design"]` |
+| Create page layout | `["frontend-design"]` |
+| Create data-fetching component | `["react-best-practices"]` |
+| Create form with validation | `["frontend-design", "react-best-practices"]` |
+| Create dashboard/visualization | `["frontend-design", "react-best-practices"]` |
+| Optimize component performance | `["react-best-practices"]` |
+| Style existing component | `["frontend-design"]` |
+
+**Example Task with UI Flagging**:
+```json
+{
+  "id": "T4",
+  "name": "Create project card component",
+  "type": "task",
+  "ui_task": true,
+  "skill_hints": ["frontend-design"],
+  "action": { "verb": "Create", "target": "project card component" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/(user)/_components/project-card.tsx" }
+  ],
+  "acceptance_criterion": "ProjectCard component renders with title, description, and status badge",
+  "verification_command": "pnpm typecheck && test -f apps/web/app/home/(user)/_components/project-card.tsx"
+}
+```
+
+**Example with Multiple Skills**:
+```json
+{
+  "id": "T6",
+  "name": "Create analytics dashboard panel",
+  "type": "task",
+  "ui_task": true,
+  "skill_hints": ["frontend-design", "react-best-practices"],
+  "action": { "verb": "Create", "target": "analytics dashboard panel" },
+  "purpose": "Display real-time analytics with charts and metrics",
+  "context": {
+    "patterns": [
+      { "file": "apps/web/app/home/(user)/_components/metrics-card.tsx", "description": "Card layout pattern" }
+    ],
+    "constraints": [
+      "Must use Server Components where possible",
+      "Implement loading skeleton for data fetching"
+    ]
+  }
+}
+```
+
+**Important Notes**:
+- `ui_task` and `skill_hints` are optional fields - tasks work without them
+- If not specified, the implement command can still detect frontend tasks from output paths
+- Explicit hints provide better guidance than auto-detection
+- Adding hints during decomposition saves time during implementation
+
+---
+
 ## Report
 
 ### Single Feature (Mode A)

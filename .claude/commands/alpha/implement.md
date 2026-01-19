@@ -759,6 +759,79 @@ grep 'table_name' ../web/lib/database.types.ts
 - `Test` - Write or run tests
 - `Spike` - Research and document findings
 
+### Frontend Task Skill Invocation
+
+**Purpose**: When implementing frontend tasks, invoke specialized skills to improve code quality and ensure adherence to React and design best practices.
+
+**Identifying Frontend Tasks**:
+A task is considered a frontend task when ANY of these conditions are met:
+- Task outputs include `.tsx` files in `_components/` directories
+- Task action involves: "Create component", "Build UI", "Design interface"
+- Task touches: pages, layouts, panels, cards, forms, modals, dialogs
+- Task has `ui_task: true` in its metadata
+- Task has `skill_hints` array containing frontend skills
+
+**Available Frontend Skills**:
+- `/frontend-design` - Create distinctive, production-grade frontend interfaces with high design quality
+- `/react-best-practices` - React and Next.js performance optimization guidelines
+
+**Skill Selection Heuristics**:
+
+| Task Type | Skill to Invoke | Trigger Signal |
+|-----------|----------------|----------------|
+| New UI component | `/frontend-design` | Creates new `.tsx` in `_components/` |
+| Page layout | `/frontend-design` | Creates `page.tsx` or layout file |
+| Complex component design | `/frontend-design` | Task mentions "design", "styled", "aesthetic" |
+| Data-fetching component | `/react-best-practices` | Uses loader, suspense, or RSC patterns |
+| Performance-critical component | `/react-best-practices` | Task constraints mention performance |
+| Interactive form | Both skills | Creates form with validation/state |
+| Dashboard/data visualization | Both skills | Complex UI with data binding |
+
+**Skill Invocation Workflow**:
+
+```
+IF task is identified as frontend task:
+    Log: "🎨 Frontend task detected: ${task.name}"
+
+    IF task.skill_hints exists:
+        # Use explicit hints from task decomposition
+        For each skill in task.skill_hints:
+            Invoke: /${skill}
+    ELSE:
+        # Infer skills from task characteristics
+        IF task creates component in _components/ OR page layout:
+            Invoke: /frontend-design
+
+        IF task involves data fetching OR RSC OR performance:
+            Invoke: /react-best-practices
+
+        IF task creates form with validation:
+            Invoke: /frontend-design
+            Invoke: /react-best-practices
+
+    # Continue with task implementation using skill guidance
+```
+
+**Example Task with Skill Hints**:
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard metrics panel",
+  "ui_task": true,
+  "skill_hints": ["frontend-design", "react-best-practices"],
+  "action": { "verb": "Create", "target": "metrics panel component" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/(user)/_components/metrics-panel.tsx" }
+  ]
+}
+```
+
+**Important Notes**:
+- Skills are advisory and enhance implementation quality - they don't replace verification
+- Skill invocation adds context but should not significantly impact task duration
+- If skill invocation fails (e.g., skill unavailable), continue with standard implementation
+- Document skill usage in task progress for traceability
+
 ### Visual Verification (UI Tasks)
 
 **Identifying UI Tasks**:

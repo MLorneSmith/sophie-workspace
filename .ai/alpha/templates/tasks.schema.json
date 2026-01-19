@@ -513,6 +513,19 @@
 					"default": false,
 					"description": "True if task creates/modifies UI components that should be visually verified"
 				},
+				"ui_task": {
+					"type": "boolean",
+					"default": false,
+					"description": "Alias for requires_ui. True if task creates/modifies UI components that benefit from frontend skill invocation"
+				},
+				"skill_hints": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": ["frontend-design", "react-best-practices"]
+					},
+					"description": "Suggested skills to invoke during implementation: 'frontend-design' for visual components, 'react-best-practices' for performance/patterns"
+				},
 				"visual_verification": {
 					"$ref": "#/definitions/visual_verification",
 					"description": "Configuration for visual verification using agent-browser"
@@ -550,7 +563,13 @@
 						"properties": {
 							"command": {
 								"type": "string",
-								"enum": ["is visible", "find role", "find label", "find text", "snapshot"],
+								"enum": [
+									"is visible",
+									"find role",
+									"find label",
+									"find text",
+									"snapshot"
+								],
 								"description": "The type of check to perform"
 							},
 							"target": {
