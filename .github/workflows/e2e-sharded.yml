@@ -96,6 +96,7 @@ jobs:
         with:
           path: |
             apps/web/.next
+            apps/payload/.next
             apps/payload/dist
             packages/*/dist
             .turbo
@@ -175,6 +176,7 @@ jobs:
         with:
           path: |
             apps/web/.next
+            apps/payload/.next
             apps/payload/dist
             packages/*/dist
             .turbo
