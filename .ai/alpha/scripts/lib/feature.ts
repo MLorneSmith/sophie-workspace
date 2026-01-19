@@ -87,13 +87,13 @@ function ensureLogsDir(runId?: string): string {
  *
  * @param sandboxLabel - The sandbox label (e.g., "sbx-a")
  * @param runId - Optional run ID for organizing logs by run
- * @param specId - Optional spec ID for session header
+ * @param specId - Optional spec ID for session header (semantic or legacy string format)
  * @returns Object with stream and file path
  */
 function createLogStream(
 	sandboxLabel: string,
 	runId?: string,
-	specId?: number,
+	specId?: string,
 ): {
 	stream: fs.WriteStream;
 	filePath: string;

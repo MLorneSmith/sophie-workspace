@@ -1,6 +1,6 @@
 ---
 description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes with sub-agents (parallel by default), validates, commits, and reports progress.
-argument-hint: <feature-id> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
+argument-hint: <S#.I#.F#|feature-#> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 hooks:
@@ -26,13 +26,17 @@ hooks:
 
 # Alpha Feature Implementation
 
-Implement ALL tasks for Feature #$ARGUMENTS from the Alpha autonomous coding workflow.
+Implement ALL tasks for Feature $ARGUMENTS from the Alpha autonomous coding workflow.
 
 **Arguments:**
-- `<feature-id>` - Required. The GitHub issue number for the feature.
-- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5`).
+- `<feature-id>` - Required. Semantic ID (e.g., `S1362.I1.F1`) or legacy GitHub issue number.
+- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5` or `--resume-from=S1362.I1.F1.T5`).
 - `--sequential` - Optional. Force sequential execution even when parallel batches are available.
 - `--parallel-dry-run` - Optional. Log parallel execution plan without executing. Use to validate analysis.
+
+**Accepted ID Formats:**
+- `S1362.I1.F1` - Semantic feature ID (preferred)
+- `1367` - Legacy GitHub issue number
 
 ## Context
 
@@ -65,9 +69,31 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 
 ### Phase 1: Load Context
 
-1. **Find feature directory**:
+1. **Parse input and find feature directory**:
+
+   **For semantic IDs (S#.I#.F#):**
+   ```typescript
+   const input = '$ARGUMENTS'.split(' ')[0]; // Extract feature ID
+   if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
+     // Semantic ID: S1362.I1.F1
+     const match = input.match(/S(\d+)\.I(\d+)\.F(\d+)/);
+     const specNum = match[1];
+     const initPriority = match[2];
+     const featPriority = match[3];
+     // Use Glob to find: .ai/alpha/specs/**/S${specNum}.I${initPriority}.F${featPriority}-Feature-*
+   }
+   ```
+
+   Use Glob tool to find the feature directory:
+   ```
+   Glob tool:
+     pattern: .ai/alpha/specs/**/S*.I*.F*-Feature-*
+     # Or for specific ID: .ai/alpha/specs/**/S1362.I1.F1-Feature-*
+   ```
+
+   **For legacy issue numbers:**
    ```bash
-   # Search for feature directory by ID
+   # Search for feature directory by legacy ID
    find .ai/alpha/specs -name "$ARGUMENTS-Feature-*" -type d
    ```
 

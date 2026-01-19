@@ -325,15 +325,14 @@ export function cleanupStaleState(
 // ============================================================================
 
 /**
-
-* Get features that are blocked by incomplete dependencies.
-*
-* @param manifest - The manifest to check
-* @returns Array of blocked features with their blocking dependency IDs
+ * Get features that are blocked by incomplete dependencies.
+ *
+ * @param manifest - The manifest to check
+ * @returns Array of blocked features with their blocking dependency IDs (string format)
  */
 export function getBlockedFeatures(
 	manifest: SpecManifest,
-): Array<{ feature: FeatureEntry; blockingDeps: number[] }> {
+): Array<{ feature: FeatureEntry; blockingDeps: string[] }> {
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
 			.filter((f) => f.status === "completed")
@@ -346,7 +345,7 @@ export function getBlockedFeatures(
 			.map((i) => i.id),
 	);
 
-	const blocked: Array<{ feature: FeatureEntry; blockingDeps: number[] }> = [];
+	const blocked: Array<{ feature: FeatureEntry; blockingDeps: string[] }> = [];
 
 	for (const feature of manifest.feature_queue) {
 		if (feature.status !== "pending") continue;

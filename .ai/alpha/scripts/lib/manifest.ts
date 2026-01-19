@@ -23,13 +23,13 @@ import { getProjectRoot } from "./lock.js";
 // ============================================================================
 
 /**
-
-* Find the spec directory for a given spec ID.
-* Searches .ai/alpha/specs/ for directories matching the pattern `{id}-Spec-*`
-*
-* @param projectRoot - The project root directory
-* @param specId - The spec ID to find
-* @returns The spec directory path, or null if not found
+ * Find the spec directory for a given spec ID.
+ * Searches .ai/alpha/specs/ for directories matching the pattern `{id}-Spec-*`
+ * Supports both old (1362-Spec-) and new (S1362-Spec-) naming conventions.
+ *
+ * @param projectRoot - The project root directory
+ * @param specId - The spec ID to find (numeric)
+ * @returns The spec directory path, or null if not found
  */
 export function findSpecDir(
 	projectRoot: string,
@@ -44,7 +44,8 @@ export function findSpecDir(
 	const specDirs = fs.readdirSync(specsDir);
 
 	for (const specDir of specDirs) {
-		const match = specDir.match(/^(\d+)-Spec-/);
+		// Match both: S1362-Spec- (new) and 1362-Spec- (old)
+		const match = specDir.match(/^S?(\d+)-Spec-/);
 		const idStr = match?.[1];
 		if (idStr && parseInt(idStr, 10) === specId) {
 			return path.join(specsDir, specDir);

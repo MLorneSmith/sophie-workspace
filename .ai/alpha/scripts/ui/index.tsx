@@ -27,8 +27,8 @@ import { EVENT_SERVER_PORT, MAX_EVENTS } from "./types.js";
  * UI Manager configuration
  */
 export interface UIManagerConfig {
-	/** Spec ID being orchestrated */
-	specId: number;
+	/** Spec ID being orchestrated (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name for display */
 	specName: string;
 	/** Directory containing sandbox progress files */

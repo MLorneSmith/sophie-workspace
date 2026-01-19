@@ -54,8 +54,8 @@ export type SandboxStatus = "ready" | "busy" | "completed" | "failed";
 * Information about the feature being implemented
  */
 export interface FeatureInfo {
-	/**GitHub issue number */
-	id: number;
+	/** Feature ID (semantic: S1362.I1.F1 or legacy: 1367) */
+	id: string;
 	/** Feature title */
 	title: string;
 }
@@ -159,12 +159,11 @@ export interface ReviewUrl {
 }
 
 /**
-
-* Overall spec-level progress
+ * Overall spec-level progress
  */
 export interface OverallProgress {
-	/**Spec ID (GitHub issue number) */
-	specId: number;
+	/**Spec ID (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name/title */
 	specName: string;
 	/**Completed initiatives count */
@@ -283,7 +282,7 @@ export interface UIState {
 export interface SandboxProgressFile {
 	/**Feature being implemented */
 	feature?: {
-		issue_number: number;
+		issue_number: string;
 		title: string;
 	};
 	/** Current task information */
@@ -542,12 +541,11 @@ export interface SandboxInstance {
 }
 
 /**
-
-* Options for starting the UI
+ * Options for starting the UI
  */
 export interface StartUIOptions {
-	/**Spec ID */
-	specId: number;
+	/**Spec ID (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name */
 	specName: string;
 	/**Sandbox instances to monitor */

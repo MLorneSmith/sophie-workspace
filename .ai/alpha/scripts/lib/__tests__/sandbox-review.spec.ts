@@ -34,7 +34,7 @@ describe("createReviewSandbox function", () => {
 		commands: {
 			run: (
 				cmd: string,
-				opts?: { timeoutMs?: number }
+				opts?: { timeoutMs?: number },
 			) => Promise<MockSandboxCommandResult>;
 		};
 		getHost: (port: number) => string;
@@ -90,7 +90,7 @@ describe("createReviewSandbox function", () => {
 		}
 
 		const buildResult = await sandbox.commands.run(
-			"pnpm --filter @kit/shared build"
+			"pnpm --filter @kit/shared build",
 		); // Step 6
 
 		if (buildResult.exitCode !== 0) {
@@ -127,7 +127,7 @@ describe("createReviewSandbox function", () => {
 	it("should install dependencies if node_modules is missing", async () => {
 		const { steps } = await simulateReviewSandboxCreation(
 			"alpha/spec-123",
-			false // deps missing
+			false, // deps missing
 		);
 
 		expect(steps).toContain("pnpm install --frozen-lockfile");
@@ -136,7 +136,7 @@ describe("createReviewSandbox function", () => {
 	it("should skip dependency install if node_modules exists", async () => {
 		const { steps } = await simulateReviewSandboxCreation(
 			"alpha/spec-123",
-			true // deps exist
+			true, // deps exist
 		);
 
 		expect(steps).not.toContain("pnpm install --frozen-lockfile");
@@ -147,8 +147,8 @@ describe("createReviewSandbox function", () => {
 			simulateReviewSandboxCreation(
 				"alpha/spec-123",
 				true, // deps exist
-				false // build fails
-			)
+				false, // build fails
+			),
 		).rejects.toThrow("Build failed");
 	});
 
@@ -215,7 +215,7 @@ describe("dev server startup on review sandbox", () => {
 
 		// All attempts failed
 		throw new Error(
-			`Dev server failed to start after ${maxAttempts} attempts (${(maxAttempts * intervalMs) / 1000}s)`
+			`Dev server failed to start after ${maxAttempts} attempts (${(maxAttempts * intervalMs) / 1000}s)`,
 		);
 	}
 
@@ -253,7 +253,7 @@ describe("dev server startup on review sandbox", () => {
 			Array(60).fill("error");
 
 		await expect(
-			simulateDevServerHealthCheck(responses, 60, 1000)
+			simulateDevServerHealthCheck(responses, 60, 1000),
 		).rejects.toThrow("Dev server failed to start after 60 attempts (60s)");
 	});
 

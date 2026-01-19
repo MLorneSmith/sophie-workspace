@@ -261,20 +261,29 @@ gh issue create \
   --label "alpha:spec"
 ```
 
-### Step 11: Rename Spec Directory
+### Step 11: Rename Spec Directory with S# Format
 
-After issue creation, rename the directory with the issue number:
+After issue creation, rename the directory using the semantic ID format `S<issue-#>`:
 ```bash
-mv .ai/alpha/specs/pending-Spec-<project-slug> .ai/alpha/specs/<issue-#>-Spec-<project-slug>
+mv .ai/alpha/specs/pending-Spec-<project-slug> .ai/alpha/specs/S<issue-#>-Spec-<project-slug>
 ```
+
+**Semantic ID Format:**
+- Spec ID: `S<issue-#>` (e.g., `S1362`)
+- This is the **only level** that creates a GitHub issue
+- Initiatives will use `S<issue-#>.I<priority>` format (e.g., `S1362.I1`)
+- Features will use `S<issue-#>.I<priority>.F<priority>` format (e.g., `S1362.I1.F1`)
+- Tasks will use `S<issue-#>.I<priority>.F<priority>.T<priority>` format (e.g., `S1362.I1.F1.T1`)
 
 **Final structure:**
 ```
-.ai/alpha/specs/<issue-#>-Spec-<project-slug>/
+.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/
 ├── spec.md                    # The spec document
 ├── research-library/          # Research artifacts from sub-agents
 └── README.md                  # (Created later) Initiatives overview
 ```
+
+See `.ai/alpha/docs/hierarchical-ids.md` for the complete ID system documentation.
 
 ## Pre-Spec Checklist
 
@@ -301,16 +310,16 @@ Before finalizing, verify:
 After creating the spec, verify:
 
 ```bash
-# Verify spec directory and file exist
-test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug> && echo "✓ Spec directory created"
-test -s .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec file created"
-test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
+# Verify spec directory and file exist (using S# format)
+test -d .ai/alpha/specs/S<issue-#>-Spec-<project-slug> && echo "✓ Spec directory created"
+test -s .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec file created"
+test -d .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
 
 # Verify GitHub issue was created
 gh issue view <issue-#> --repo MLorneSmith/2025slideheroes
 
 # Verify all required sections are present in spec
-grep -E "^## [0-9]+\." .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md | wc -l
+grep -E "^## [0-9]+\." .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md | wc -l
 # Should return 11 (all 11 sections from template)
 ```
 
@@ -323,11 +332,12 @@ $ARGUMENTS
 When complete, provide:
 
 - **Summary**: Brief overview of the captured specification (2-3 sentences)
-- **Spec Directory**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/`
-- **Spec File**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md`
-- **GitHub Issue**: Issue number and URL (e.g., `#123 - https://github.com/...`)
+- **Spec ID**: `S<issue-#>` (e.g., `S1362`)
+- **Spec Directory**: Path to `.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/`
+- **Spec File**: Path to `.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md`
+- **GitHub Issue**: Issue number and URL (e.g., `#1362 - https://github.com/...`)
 - **Key Decisions**: Major scope/design decisions made during the interview
 - **Personas Identified**: Primary and secondary user personas
 - **Risk Highlights**: Top 2-3 risks identified
 - **Open Questions**: Unresolved items requiring follow-up
-- **Next Step**: Command to run next: `/alpha:initiative-decompose <issue-#>`
+- **Next Step**: Command to run next: `/alpha:initiative-decompose S<issue-#>` (e.g., `/alpha:initiative-decompose S1362`)

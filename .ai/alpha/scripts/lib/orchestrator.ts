@@ -1279,18 +1279,24 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				// Review sandbox should be cleaner, but give extra time just in case
 				const devServerUrl = await startDevServer(devServerSandbox, 60, 1000);
 				reviewUrls.push({
-					label: reviewSandbox ? "sbx-review" : (implementationInstance?.label ?? "sbx-a"),
+					label: reviewSandbox
+						? "sbx-review"
+						: (implementationInstance?.label ?? "sbx-a"),
 					vscode: devServerVscodeUrl,
 					devServer: devServerUrl,
 				});
-				log(`   ✅ Dev server ready on ${reviewSandbox ? "review" : "implementation"} sandbox`);
+				log(
+					`   ✅ Dev server ready on ${reviewSandbox ? "review" : "implementation"} sandbox`,
+				);
 			} catch (error) {
 				log(
 					`   ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
 				);
 				// Still add VS Code URL for code review even if dev server fails
 				reviewUrls.push({
-					label: reviewSandbox ? "sbx-review" : (implementationInstance?.label ?? "sbx-a"),
+					label: reviewSandbox
+						? "sbx-review"
+						: (implementationInstance?.label ?? "sbx-a"),
 					vscode: devServerVscodeUrl,
 					devServer: "(failed to start)",
 				});
@@ -1306,7 +1312,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				vscode: implVscodeUrl,
 				devServer: "(use sbx-review for dev server)",
 			});
-			log(`   ${implementationInstance.label}: VS Code available for code inspection`);
+			log(
+				`   ${implementationInstance.label}: VS Code available for code inspection`,
+			);
 		}
 
 		// Final status - set AFTER reviewUrls are ready to avoid race condition
@@ -1324,7 +1332,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// Print summary (always shown - handles its own output)
 		if (!options.ui) {
-			const reviewInstancesForSummary = implementationInstance ? [implementationInstance] : [];
+			const reviewInstancesForSummary = implementationInstance
+				? [implementationInstance]
+				: [];
 			printSummary(manifest, reviewInstancesForSummary, reviewUrls);
 		}
 

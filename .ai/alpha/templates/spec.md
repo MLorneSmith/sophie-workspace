@@ -4,6 +4,8 @@
   ## Metadata
   | Field | Value |
   |-------|-------|
+  | **Spec ID** | S[spec-#] |
+  | **GitHub Issue** | #[spec-#] |
   | **Document Owner** | [Name] |
   | **Created** | [Date] |
   | **Status** | Draft |

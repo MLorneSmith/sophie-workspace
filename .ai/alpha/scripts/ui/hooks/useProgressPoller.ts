@@ -118,8 +118,8 @@ function progressEqual(a: OverallProgress, b: OverallProgress): boolean {
 * Configuration for the progress poller
  */
 export interface ProgressPollerConfig {
-	/**Spec ID being orchestrated */
-	specId: number;
+	/**Spec ID being orchestrated (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name for display */
 	specName: string;
 	/**Directory containing sandbox progress files */
@@ -157,11 +157,10 @@ interface ReviewUrlFile {
 }
 
 /**
-
-* Structure of overall-progress.json file written by orchestrator
+ * Structure of overall-progress.json file written by orchestrator
  */
 interface OverallProgressFile {
-	specId: number;
+	specId: string;
 	specName: string;
 	status: string;
 	initiativesCompleted: number;
@@ -426,7 +425,7 @@ function progressToSandboxState(
 * Aggregate sandbox states into overall progress
  */
 function aggregateProgress(
-	specId: number,
+	specId: string,
 	specName: string,
 	sandboxes: Map<string, SandboxState>,
 	previousProgress: OverallProgress | null,
@@ -438,7 +437,7 @@ function aggregateProgress(
 	let activeFeatures = 0;
 
 	// Count unique features across all sandboxes
-	const seenFeatures = new Set<number>();
+	const seenFeatures = new Set<string>();
 
 	for (const sandbox of sandboxes.values()) {
 		if (
@@ -1007,7 +1006,7 @@ export function useProgressPoller(
 
 * Create initial UI state
  */
-export function createInitialState(specId: number, specName: string): UIState {
+export function createInitialState(specId: string, specName: string): UIState {
 	return {
 		sandboxes: new Map(),
 		overallProgress: {

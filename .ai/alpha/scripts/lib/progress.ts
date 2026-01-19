@@ -221,13 +221,13 @@ export function writeUIProgress(
 * @param sandboxLabel - Label of the sandbox
 * @param instance - Sandbox instance
 * @param waitingReason - Human-readable reason for waiting
-* @param blockedBy - Feature IDs that are blocking
+* @param blockedBy - Feature IDs that are blocking (semantic or legacy string format)
  */
 export function writeIdleProgress(
 	sandboxLabel: string,
 	instance: SandboxInstance,
 	waitingReason?: string,
-	blockedBy?: number[],
+	blockedBy?: string[],
 ): void {
 	const progressDir = ensureUIProgressDir();
 	const filePath = path.join(progressDir, `${sandboxLabel}-progress.json`);

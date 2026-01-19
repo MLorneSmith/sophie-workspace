@@ -13,8 +13,8 @@ import type { Sandbox } from "@e2b/code-interpreter";
 // ============================================================================
 
 export interface FeatureEntry {
-	id: number;
-	initiative_id: number;
+	id: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
+	initiative_id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	title: string;
 	slug?: string;
 	priority: number;
@@ -26,7 +26,7 @@ export interface FeatureEntry {
 	tasks_completed: number;
 	sequential_hours: number;
 	parallel_hours: number;
-	dependencies: number[];
+	dependencies: string[]; // Feature IDs this is blocked by (semantic or legacy)
 	github_issue: number | null;
 	assigned_sandbox?: string;
 	/** Timestamp when feature was assigned to a sandbox (for race condition detection) */
@@ -37,7 +37,7 @@ export interface FeatureEntry {
 }
 
 export interface InitiativeEntry {
-	id: number;
+	id: string; // Semantic ID: S1362.I1 or legacy: 1365
 	name: string;
 	slug: string;
 	priority: number;
@@ -45,7 +45,7 @@ export interface InitiativeEntry {
 	initiative_dir: string;
 	feature_count: number;
 	features_completed: number;
-	dependencies: number[];
+	dependencies: string[]; // Initiative IDs this is blocked by (semantic or legacy)
 }
 
 // ============================================================================
@@ -54,7 +54,7 @@ export interface InitiativeEntry {
 
 export interface SpecManifest {
 	metadata: {
-		spec_id: number;
+		spec_id: string; // Semantic ID: S1362 or legacy: 1362
 		spec_name: string;
 		generated_at: string;
 		spec_dir: string;
@@ -70,8 +70,8 @@ export interface SpecManifest {
 		features_total: number;
 		tasks_completed: number;
 		tasks_total: number;
-		next_feature_id: number | null;
-		last_completed_feature_id: number | null;
+		next_feature_id: string | null; // Semantic ID: S1362.I1.F1 or legacy: 1367
+		last_completed_feature_id: string | null;
 		started_at: string | null;
 		completed_at: string | null;
 		last_checkpoint: string | null;
@@ -119,7 +119,7 @@ export interface SandboxInstance {
 	id: string;
 	label: string;
 	status: "ready" | "busy" | "completed" | "failed";
-	currentFeature: number | null;
+	currentFeature: string | null; // Semantic ID: S1362.I1.F1 or legacy: 1367
 	featureStartedAt?: Date;
 	lastProgressSeen?: Date;
 	lastHeartbeat?: Date;
@@ -139,7 +139,7 @@ export interface SandboxInstance {
 
 export interface SandboxProgress {
 	feature?: {
-		issue_number: number;
+		issue_number: string; // Semantic ID: S1362.I1.F1 or legacy: 1367
 		title: string;
 	};
 	current_task?: {

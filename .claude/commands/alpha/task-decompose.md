@@ -1,6 +1,6 @@
 ---
-description: Decompose features into atomic tasks using MAKER framework. Accepts initiative-# (all features) or feature-# (single feature). Fourth step in Alpha autonomous coding process.
-argument-hint: [initiative-# or feature-#]
+description: Decompose features into atomic tasks using MAKER framework. Accepts semantic IDs (S#.I# or S#.I#.F#) or legacy issue numbers. Fourth step in Alpha autonomous coding process.
+argument-hint: <S#.I#.F#|S#.I#|feature-#|initiative-#> (e.g., S1362.I1.F1, S1362.I1, 1367)
 model: opus
 allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
@@ -8,6 +8,18 @@ allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 # Alpha: Task Decomposition Orchestrator
 
 Orchestrate the decomposition of features into MAKER-compliant atomic tasks.
+
+## Quick Reference
+
+```
+ID Formats:
+- S1362.I1.F1 - Single feature (semantic)
+- S1362.I1    - All features in initiative (semantic)
+- 1367        - Single feature (legacy issue number)
+- 1363        - Initiative (legacy issue number)
+
+Task IDs: S1362.I1.F1.T1, S1362.I1.F1.T2, etc.
+```
 
 ## Overview
 
@@ -54,10 +66,41 @@ Alpha Workflow: 1. Spec → 2. Initiatives → 3. Features → 4. Tasks (this) �
 
 ## Instructions
 
-### Step 1: Detect Input Type
+### Step 1: Parse Input and Detect Type
 
-Fetch the issue to determine if it's an initiative or single feature:
+**Accepted formats:**
+- `S1362.I1.F1` - Semantic feature ID → **Mode A** (single feature)
+- `S1362.I1` - Semantic initiative ID → **Mode B** (all features in initiative)
+- `1367` - Legacy feature issue number → **Mode A** (requires GitHub lookup)
+- `1363` - Legacy initiative issue number → **Mode B** (requires GitHub lookup)
 
+**Parse the input:**
+```typescript
+const input = '$ARGUMENTS';
+let mode, specNum, initPriority, featPriority, semanticId;
+
+if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
+  // Semantic feature: S1362.I1.F1
+  mode = 'A';
+  const match = input.match(/S(\d+)\.I(\d+)\.F(\d+)/);
+  specNum = match[1];
+  initPriority = match[2];
+  featPriority = match[3];
+  semanticId = input;
+} else if (input.match(/^S\d+\.I\d+$/)) {
+  // Semantic initiative: S1362.I1
+  mode = 'B';
+  const match = input.match(/S(\d+)\.I(\d+)/);
+  specNum = match[1];
+  initPriority = match[2];
+  semanticId = input;
+} else {
+  // Legacy issue number - need GitHub lookup
+  // (See legacy detection below)
+}
+```
+
+**For legacy issue numbers**, fetch from GitHub to determine type:
 ```bash
 gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json labels,title
 ```
@@ -69,11 +112,19 @@ gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json labels,title
 
 #### 2A.1: Resolve Paths
 
+**For semantic IDs (S#.I#.F#):**
+Use Glob to find the feature directory:
+```
+Glob tool:
+  pattern: .ai/alpha/specs/**/S[specNum].I[initPriority].F[featPriority]-Feature-*
+```
+
+**For legacy IDs:**
 ```bash
 PATHS=$(.ai/alpha/scripts/resolve-feature-paths.sh $ARGUMENTS)
 ```
 
-Extract from JSON: `FEATURE_ID`, `INITIATIVE_ID`, `SPEC_ID`, `SPEC_DIR`, `INIT_DIR`, `FEAT_DIR`, `RESEARCH_DIR`
+Extract from result: `FEATURE_ID` (semantic), `INITIATIVE_ID` (semantic), `SPEC_ID`, `SPEC_DIR`, `INIT_DIR`, `FEAT_DIR`, `RESEARCH_DIR`
 
 #### 2A.2: Delegate to Task Decomposer
 
@@ -81,17 +132,18 @@ Extract from JSON: `FEATURE_ID`, `INITIATIVE_ID`, `SPEC_ID`, `SPEC_DIR`, `INIT_D
 
 ```
 subagent_type: alpha-task-decomposer
-description: "Decompose feature #<FEATURE_ID>"
+description: "Decompose feature <FEATURE_ID>"
 prompt: |
-  FEATURE_ID: <value>
-  INITIATIVE_ID: <value>
-  SPEC_ID: <value>
+  FEATURE_ID: <semantic ID, e.g., S1362.I1.F1>
+  INITIATIVE_ID: <semantic ID, e.g., S1362.I1>
+  SPEC_ID: <spec number, e.g., 1362>
   SPEC_DIR: <path>
   INIT_DIR: <path>
   FEAT_DIR: <path>
   RESEARCH_DIR: <path>
 
   Decompose this feature into MAKER-compliant atomic tasks.
+  Tasks should use semantic IDs: S1362.I1.F1.T1, S1362.I1.F1.T2, etc.
   Return a structured JSON summary when complete.
 ```
 
@@ -109,15 +161,30 @@ Handle based on returned `status` field:
 
 #### 2B.1: Resolve Initiative Paths
 
-```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes
-INIT_DIR=$(find .ai/alpha/specs -type d -name "$ARGUMENTS-*" | head -1)
+**For semantic IDs (S#.I#):**
+Use Glob to find the initiative directory:
+```
+Glob tool:
+  pattern: .ai/alpha/specs/**/S[specNum].I[initPriority]-Initiative-*
 ```
 
-Record: `INITIATIVE_ID`, `SPEC_DIR`, `RESEARCH_DIR`, `STATE_FILE=${INIT_DIR}/decomposition-state.json`
+**For legacy IDs:**
+```bash
+gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes
+INIT_DIR=$(find .ai/alpha/specs -type d -name "$ARGUMENTS-*" -o -name "S*.I*-*" | head -1)
+```
+
+Record: `INITIATIVE_ID` (semantic, e.g., S1362.I1), `SPEC_DIR`, `RESEARCH_DIR`, `STATE_FILE=${INIT_DIR}/decomposition-state.json`
 
 #### 2B.2: List Features
 
+For semantic IDs, use Glob to find feature directories:
+```
+Glob tool:
+  pattern: [INIT_DIR]/S*.I*.F*-Feature-*
+```
+
+For legacy IDs:
 ```bash
 FEATURES=$(.ai/alpha/scripts/list-initiative-features.sh $INITIATIVE_ID --paths)
 ```
@@ -185,10 +252,13 @@ Enables:
 ```markdown
 ## Feature Decomposition Complete
 
-**Feature**: #<ID> - <Name>
+**Feature**: <FEATURE_ID> - <Name>  (e.g., S1362.I1.F1 - Dashboard Page)
 **Tasks**: <count>
+**Task IDs**: <FEATURE_ID>.T1 through <FEATURE_ID>.T<count>
 **Estimated Hours**: <sequential>h (parallel: <parallel>h)
-**GitHub Issue**: #<task-issue>
+
+### tasks.json Location
+`<FEAT_DIR>/tasks.json`
 
 ### Next Step
 Run `/alpha:implement <FEATURE_ID>` to begin implementation.
@@ -199,14 +269,14 @@ Run `/alpha:implement <FEATURE_ID>` to begin implementation.
 ```markdown
 ## Initiative Decomposition Complete
 
-**Initiative**: #<ID> - <Name>
+**Initiative**: <INITIATIVE_ID> - <Name>  (e.g., S1362.I1 - Dashboard Foundation)
 
 ### Features Decomposed
 
-| Feature | Status | Tasks | Spikes | Issue | Hours |
-|---------|--------|-------|--------|-------|-------|
-| #1354 Dashboard Page | ✅ | 5 | 0 | #1357 | 8h |
-| #1355 Data Loading | ✅ | 8 | 1 | #1360 | 12h |
+| Feature ID | Name | Status | Tasks | Spikes | Hours |
+|------------|------|--------|-------|--------|-------|
+| S1362.I1.F1 | Dashboard Page | ✅ | 5 | 0 | 8h |
+| S1362.I1.F2 | Data Loading | ✅ | 8 | 1 | 12h |
 
 ### Summary
 
@@ -220,7 +290,7 @@ Run `/alpha:implement <FEATURE_ID>` to begin implementation.
 `${INIT_DIR}/decomposition-state.json`
 
 ### Next Step
-Run `/alpha:implement <INITIATIVE_ID>` to begin implementation.
+Run `/alpha:implement <INITIATIVE_ID>` to begin implementation (e.g., `/alpha:implement S1362.I1`).
 ```
 
 ---

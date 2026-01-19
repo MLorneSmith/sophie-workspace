@@ -3,8 +3,8 @@
 ## Metadata
 | Field | Value |
 |-------|-------|
-| **Parent Initiative** | #{{INITIATIVE_NUM}} |
-| **Feature ID** | {{INITIATIVE_NUM}}-F{{FEATURE_NUM}} |
+| **Parent Initiative** | S{{SPEC_NUM}}.I{{INIT_PRIORITY}} |
+| **Feature ID** | S{{SPEC_NUM}}.I{{INIT_PRIORITY}}.F{{PRIORITY}} |
 | **Status** | Draft |
 | **Estimated Days** | {{EST_DAYS}} |
 | **Priority** | {{PRIORITY}} |
@@ -51,10 +51,10 @@
 ## Dependencies
 
 ### Blocks
-- {{BLOCKS}}
+- {{BLOCKS}} <!-- Use S#.I#.F# format for cross-initiative, F# for same initiative -->
 
 ### Blocked By
-- {{BLOCKED_BY}}
+- {{BLOCKED_BY}} <!-- Use S#.I#.F# format for cross-initiative, F# for same initiative -->
 
 ### Parallel With
 - {{PARALLEL_WITH}}

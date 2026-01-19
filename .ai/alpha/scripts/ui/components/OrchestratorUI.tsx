@@ -156,7 +156,7 @@ export const ErrorUI: FC<{
  * Completion screen when all work is done
  */
 export const CompletionUI: FC<{
-	specId: number;
+	specId: string;
 	featuresCompleted: number;
 	tasksCompleted: number;
 	elapsed: string;

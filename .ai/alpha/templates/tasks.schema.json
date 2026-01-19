@@ -19,8 +19,9 @@
 			],
 			"properties": {
 				"feature_id": {
-					"type": "integer",
-					"description": "GitHub issue number for the feature"
+					"type": "string",
+					"pattern": "^S\\d+\\.I\\d+\\.F\\d+$",
+					"description": "Semantic feature ID (e.g., S1362.I1.F1)"
 				},
 				"feature_name": {
 					"type": "string",
@@ -32,12 +33,14 @@
 					"description": "URL-safe feature identifier"
 				},
 				"initiative_id": {
-					"type": "integer",
-					"description": "GitHub issue number for parent initiative"
+					"type": "string",
+					"pattern": "^S\\d+\\.I\\d+$",
+					"description": "Semantic initiative ID (e.g., S1362.I1)"
 				},
 				"spec_id": {
-					"type": "integer",
-					"description": "GitHub issue number for parent spec"
+					"type": "string",
+					"pattern": "^S?\\d+$",
+					"description": "Spec ID with optional S prefix (e.g., S1362 or 1362)"
 				},
 				"created_at": {
 					"type": "string",
@@ -292,8 +295,8 @@
 			"properties": {
 				"id": {
 					"type": "string",
-					"pattern": "^(S|T)\\d+$",
-					"description": "Task ID: S1, S2 for spikes; T1, T2, etc. for tasks"
+					"pattern": "^(S\\d+\\.I\\d+\\.F\\d+\\.)?(S|T)\\d+$",
+					"description": "Task ID: Fully qualified (S1362.I1.F1.T1) or shorthand (T1) within feature context"
 				},
 				"type": {
 					"type": "string",
@@ -482,8 +485,8 @@
 					}
 				},
 				"github_issue": {
-					"type": "integer",
-					"description": "GitHub issue number (populated after creation)"
+					"type": ["integer", "null"],
+					"description": "GitHub issue number (deprecated - only Spec has GitHub issue)"
 				},
 				"requires_database": {
 					"type": "boolean",
