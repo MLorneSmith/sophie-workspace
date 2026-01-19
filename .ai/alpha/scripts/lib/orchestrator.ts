@@ -469,7 +469,9 @@ export async function runWorkLoop(
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
 						saveManifest(manifest);
-						log(`   ✅ Sandbox ${instance.label} restarted successfully (restart #${manifest.sandbox.restart_count})`);
+						log(
+							`   ✅ Sandbox ${instance.label} restarted successfully (restart #${manifest.sandbox.restart_count})`,
+						);
 					} catch (restartError) {
 						log(
 							`   ❌ Failed to restart sandbox ${instance.label}: ${restartError instanceof Error ? restartError.message : restartError}`,
@@ -546,7 +548,9 @@ export async function runWorkLoop(
 							await sleep(2000); // Wait for graceful shutdown
 						} catch {
 							// Graceful shutdown failed, proceed with force restart
-							log("   ⚠️ Graceful shutdown failed, proceeding with force restart");
+							log(
+								"   ⚠️ Graceful shutdown failed, proceeding with force restart",
+							);
 						}
 
 						feature.status = "pending";
@@ -1246,20 +1250,26 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		const reviewUrls: ReviewUrl[] = [];
 
 		if (reviewInstance) {
+			const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
+
 			try {
 				const devServerUrl = await startDevServer(reviewInstance.sandbox);
-				const vscodeUrl = getVSCodeUrl(reviewInstance.sandbox);
 				reviewUrls.push({
 					label: reviewInstance.label,
 					vscode: vscodeUrl,
 					devServer: devServerUrl,
 				});
-				log(`${reviewInstance.label}: Dev server starting...`);
-
-				log("   Waiting for dev server to start (30s)...");
-				await sleep(30000);
+				log(`${reviewInstance.label}: ✅ Dev server ready`);
 			} catch (error) {
-				log(`   Failed to start dev server: ${error}`);
+				log(
+					`${reviewInstance.label}: ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
+				);
+				// Still add VS Code URL for code review even if dev server fails
+				reviewUrls.push({
+					label: reviewInstance.label,
+					vscode: vscodeUrl,
+					devServer: "(failed to start)",
+				});
 			}
 		}
 

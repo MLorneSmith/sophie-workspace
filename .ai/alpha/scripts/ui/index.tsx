@@ -267,11 +267,14 @@ const OrchestratorApp: React.FC<{
 				const newMap = new Map(prev);
 				const existing = newMap.get(sandboxId) || [];
 
-				// Deduplicate: filter out existing entries with same text
-				// Then add new item and keep last 10 unique items
-				const updated = [...existing, displayText]
-					.filter((item, idx, arr) => arr.indexOf(item) === idx) // Remove duplicates
-					.slice(-10); // Keep last 10 unique items
+				// Prepend new event to maintain newest-first ordering
+				// Skip if duplicate of most recent event
+				if (existing.length > 0 && existing[0] === displayText) {
+					return prev;
+				}
+
+				// Prepend new event and keep first 10 items (newest first)
+				const updated = [displayText, ...existing].slice(0, 10);
 
 				newMap.set(sandboxId, updated);
 				return newMap;

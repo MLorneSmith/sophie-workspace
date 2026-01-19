@@ -326,14 +326,10 @@ export async function startDevServer(
 		await new Promise((resolve) => setTimeout(resolve, intervalMs));
 	}
 
-	// Log the failure for debugging
-	console.error(
+	// Throw error on timeout so caller can handle the failure appropriately
+	throw new Error(
 		`Dev server failed to start on port ${DEV_SERVER_PORT} after ${maxAttempts} attempts (${(maxAttempts * intervalMs) / 1000}s)`,
 	);
-
-	// Return the URL anyway - the caller can handle the failure
-	// This maintains backward compatibility while providing health check logging
-	return devServerUrl;
 }
 
 /**
