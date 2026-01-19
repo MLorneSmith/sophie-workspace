@@ -38,7 +38,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: path.join(tempDir, ".ai", "alpha", "specs", "1362-Spec-test"),
@@ -410,8 +410,8 @@ describe("writeOverallProgress", () => {
 		const manifest = createTestManifest({
 			feature_queue: [
 				{
-					id: 1,
-					initiative_id: 1,
+					id: "1",
+					initiative_id: "1",
 					title: "Feature 1",
 					priority: 1,
 					global_priority: 1,
@@ -428,8 +428,8 @@ describe("writeOverallProgress", () => {
 					database_task_count: 0,
 				},
 				{
-					id: 2,
-					initiative_id: 1,
+					id: "2",
+					initiative_id: "1",
 					title: "Feature 2",
 					priority: 2,
 					global_priority: 2,

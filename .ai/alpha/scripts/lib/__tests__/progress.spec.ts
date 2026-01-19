@@ -52,8 +52,8 @@ function createTestFeature(
 	overrides: Partial<FeatureEntry> = {},
 ): FeatureEntry {
 	return {
-		id: 1367,
-		initiative_id: 1363,
+		id: "1367",
+		initiative_id: "1363",
 		title: "Test Feature",
 		priority: 1,
 		global_priority: 1,
@@ -302,7 +302,7 @@ describe("writeUIProgress", () => {
 
 	it("includes feature information in progress", () => {
 		const instance = createTestInstance();
-		const feature = createTestFeature({ id: 1367, title: "Test Feature" });
+		const feature = createTestFeature({ id: "1367", title: "Test Feature" });
 		const progress = createTestProgress();
 
 		writeUIProgress("sbx-a", progress, instance, feature);
@@ -449,12 +449,10 @@ describe("writeIdleProgress", () => {
 	it("includes blocked_by feature IDs when provided", () => {
 		const instance = createTestInstance();
 
-		writeIdleProgress(
-			"sbx-a",
-			instance,
-			"Blocked by dependencies",
-			[1367, 1368],
-		);
+		writeIdleProgress("sbx-a", instance, "Blocked by dependencies", [
+			"1367",
+			"1368",
+		]);
 
 		const progressFile = path.join(
 			tempDir,
@@ -463,7 +461,7 @@ describe("writeIdleProgress", () => {
 		);
 		const saved = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
-		expect(saved.blocked_by).toEqual([1367, 1368]);
+		expect(saved.blocked_by).toEqual(["1367", "1368"]);
 	});
 
 	it("clears feature and task information", () => {

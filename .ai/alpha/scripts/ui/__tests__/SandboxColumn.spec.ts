@@ -81,7 +81,7 @@ describe("computeHealthStatus", () => {
 	it("returns 'warning' when has feature but no heartbeat", () => {
 		const state = createSandboxState({
 			status: "busy",
-			currentFeature: { id: 1, title: "Test Feature" },
+			currentFeature: { id: "1", title: "Test Feature" },
 			lastHeartbeat: null,
 		});
 		expect(computeHealthStatus(state)).toBe("warning");
@@ -90,7 +90,7 @@ describe("computeHealthStatus", () => {
 	it("returns 'running' when heartbeat is recent", () => {
 		const state = createSandboxState({
 			status: "busy",
-			currentFeature: { id: 1, title: "Test Feature" },
+			currentFeature: { id: "1", title: "Test Feature" },
 			lastHeartbeat: new Date(), // Just now
 		});
 		expect(computeHealthStatus(state)).toBe("running");
@@ -99,7 +99,7 @@ describe("computeHealthStatus", () => {
 	it("returns 'warning' when heartbeat exceeds warning threshold", () => {
 		const state = createSandboxState({
 			status: "busy",
-			currentFeature: { id: 1, title: "Test Feature" },
+			currentFeature: { id: "1", title: "Test Feature" },
 			lastHeartbeat: new Date(
 				Date.now() - HEARTBEAT_WARNING_THRESHOLD_MS - 1000,
 			),
@@ -110,7 +110,7 @@ describe("computeHealthStatus", () => {
 	it("returns 'stalled' when heartbeat exceeds stall threshold", () => {
 		const state = createSandboxState({
 			status: "busy",
-			currentFeature: { id: 1, title: "Test Feature" },
+			currentFeature: { id: "1", title: "Test Feature" },
 			lastHeartbeat: new Date(Date.now() - HEARTBEAT_STALL_THRESHOLD_MS - 1000),
 		});
 		expect(computeHealthStatus(state)).toBe("stalled");
@@ -154,7 +154,7 @@ describe("SandboxColumn component", () => {
 
 	it("renders current feature ID and title", () => {
 		const state = createSandboxState({
-			currentFeature: { id: 42, title: "Test Feature" },
+			currentFeature: { id: "42", title: "Test Feature" },
 			tasksCompleted: 3,
 			tasksTotal: 5,
 		});
@@ -200,7 +200,7 @@ describe("SandboxColumn component", () => {
 
 	it("renders context usage when greater than 0", () => {
 		const state = createSandboxState({
-			currentFeature: { id: 1, title: "Test" },
+			currentFeature: { id: "1", title: "Test" },
 			contextUsage: 75,
 			lastHeartbeat: new Date(),
 		});
@@ -260,7 +260,7 @@ describe("CompactSandboxColumn component", () => {
 
 	it("renders feature progress when feature assigned", () => {
 		const state = createSandboxState({
-			currentFeature: { id: 99, title: "Test" },
+			currentFeature: { id: "99", title: "Test" },
 			tasksCompleted: 5,
 			tasksTotal: 10,
 		});
@@ -307,7 +307,7 @@ describe("SandboxStatusLine component", () => {
 
 	it("shows feature progress when feature assigned", () => {
 		const state = createSandboxState({
-			currentFeature: { id: 77, title: "Test" },
+			currentFeature: { id: "77", title: "Test" },
 			tasksCompleted: 2,
 			tasksTotal: 8,
 		});

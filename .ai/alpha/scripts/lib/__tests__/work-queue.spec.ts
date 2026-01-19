@@ -38,7 +38,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: "/test/spec",
@@ -46,8 +46,8 @@ function createTestManifest(
 		},
 		initiatives: [],
 		feature_queue: features.map((f, i) => ({
-			id: f.id ?? 1000 + i,
-			initiative_id: f.initiative_id ?? 1,
+			id: f.id ?? String(1000 + i),
+			initiative_id: f.initiative_id ?? "1",
 			title: f.title ?? `Test Feature ${i}`,
 			priority: f.priority ?? 1,
 			global_priority: f.global_priority ?? 1,
@@ -96,7 +96,7 @@ describe("assignFeatureToSandbox", () => {
 	it("clears previous error when assigning feature", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 				error: "Previous error message from failed attempt",
 			},
@@ -113,7 +113,7 @@ describe("assignFeatureToSandbox", () => {
 
 	it("sets assigned_at timestamp on assignment", () => {
 		const beforeAssignment = Date.now();
-		const manifest = createTestManifest([{ id: 1367, status: "pending" }]);
+		const manifest = createTestManifest([{ id: "1367", status: "pending" }]);
 		const feature = getFeatureAt(manifest, 0);
 
 		assignFeatureToSandbox(feature, "sbx-a", manifest);
@@ -126,7 +126,7 @@ describe("assignFeatureToSandbox", () => {
 	it("prevents race when feature was recently assigned", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 				assigned_at: Date.now() - 10_000, // 10 seconds ago
 			},
@@ -141,7 +141,7 @@ describe("assignFeatureToSandbox", () => {
 	it("allows assignment when previous assignment is stale", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 				assigned_at: Date.now() - 60_000, // 60 seconds ago (stale)
 			},
@@ -157,7 +157,7 @@ describe("assignFeatureToSandbox", () => {
 	it("prevents race when feature already claimed by another sandbox", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "in_progress",
 				assigned_sandbox: "sbx-a",
 				assigned_at: Date.now() - 5_000,
@@ -176,7 +176,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 	it("does NOT reset inconsistent state if assignment is recent (<60s)", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "in_progress",
 				error: "Some error from previous run",
 				assigned_sandbox: "sbx-a",
@@ -197,7 +197,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 	it("resets inconsistent state if assignment is old (>60s)", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "in_progress",
 				error: "Some error from previous run",
 				assigned_sandbox: "sbx-a",
@@ -218,7 +218,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 	it("resets inconsistent state immediately if no assigned_at", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "in_progress",
 				error: "Some error from previous run",
 				// No assigned_at - legacy state
@@ -235,8 +235,8 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 	it("returns pending features normally", () => {
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 
 		const feature = getNextAvailableFeature(manifest);
@@ -248,12 +248,12 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 	it("skips features already assigned to another sandbox", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "in_progress",
 				assigned_sandbox: "sbx-a",
 				assigned_at: Date.now() - 5_000,
 			},
-			{ id: 1368, status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 
 		const feature = getNextAvailableFeature(manifest);
@@ -264,11 +264,11 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 	it("skips features recently assigned (race window)", () => {
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 				assigned_at: Date.now() - 10_000, // 10 seconds ago (within race window)
 			},
-			{ id: 1368, status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 
 		const feature = getNextAvailableFeature(manifest);
@@ -279,7 +279,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 describe("race condition regression tests", () => {
 	it("prevents multiple sandboxes from claiming same feature", () => {
-		const manifest = createTestManifest([{ id: 1367, status: "pending" }]);
+		const manifest = createTestManifest([{ id: "1367", status: "pending" }]);
 		const feature = getFeatureAt(manifest, 0);
 
 		// First sandbox claims feature
@@ -300,7 +300,7 @@ describe("race condition regression tests", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "failed",
 				error: "Previous sandbox expired",
 			},

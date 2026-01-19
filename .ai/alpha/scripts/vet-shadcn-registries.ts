@@ -1290,7 +1290,7 @@ async function main(): Promise<void> {
 				args.verbose,
 			);
 			if (urlStatus === "unreachable") {
-				console.log(`  ⚠️  URL appears unreachable`);
+				console.log("  ⚠️  URL appears unreachable");
 				deadCount++;
 			}
 		}
@@ -1306,7 +1306,7 @@ async function main(): Promise<void> {
 		}
 
 		if (data.componentCount === 0) {
-			console.log(`  ⚠️  No components found`);
+			console.log("  ⚠️  No components found");
 			failedList.push({
 				name: registry.name,
 				error: "No components found in search results",

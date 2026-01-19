@@ -40,7 +40,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: "/test/spec",
@@ -48,8 +48,8 @@ function createTestManifest(
 		},
 		initiatives: [],
 		feature_queue: features.map((f, i) => ({
-			id: f.id ?? 1000 + i,
-			initiative_id: f.initiative_id ?? 1,
+			id: f.id ?? String(1000 + i),
+			initiative_id: f.initiative_id ?? "1",
 			title: f.title ?? `Test Feature ${i}`,
 			priority: f.priority ?? 1,
 			global_priority: f.global_priority ?? 1,
@@ -123,7 +123,7 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 		// After assignFeatureToSandbox() succeeds, the orchestrator code
 		// sets instance.status = "busy" SYNCHRONOUSLY before the async Promise
 
-		const manifest = createTestManifest([{ id: 1367, status: "pending" }]);
+		const manifest = createTestManifest([{ id: "1367", status: "pending" }]);
 		const instance = createTestInstance("sbx-a");
 		const feature = manifest.feature_queue[0];
 		if (!feature) throw new Error("No feature in queue");
@@ -179,8 +179,8 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 		// 3. Sandbox should be seen as "busy", not "ready"
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 		const instance = createTestInstance("sbx-a");
 
@@ -217,7 +217,7 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 
 		// Orchestrator sets status first (synchronously)
 		instance.status = "busy";
-		instance.currentFeature = 1367;
+		instance.currentFeature = "1367";
 		instance.featureStartedAt = new Date();
 		const firstStartedAt = instance.featureStartedAt;
 
@@ -226,7 +226,7 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 
 		// feature.ts sets status again (defensively)
 		instance.status = "busy"; // Same value - safe
-		instance.currentFeature = 1367; // Same value - safe
+		instance.currentFeature = "1367"; // Same value - safe
 		instance.featureStartedAt = secondDate; // Slightly different - but that's fine
 
 		// Final state is still valid
@@ -246,9 +246,9 @@ describe("Race Condition Prevention - Full Work Loop Simulation", () => {
 		// ALL sandboxes get their status set synchronously
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
-			{ id: 1369, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
+			{ id: "1369", status: "pending" },
 		]);
 
 		const instances = [
@@ -291,8 +291,8 @@ describe("Race Condition Prevention - Full Work Loop Simulation", () => {
 		// before async code executes, it sees all sandboxes as busy
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 
 		const instances = [
@@ -348,8 +348,8 @@ describe("Race Condition Prevention - Full Work Loop Simulation", () => {
 		// Test that the activeWork map pattern works with synchronous status updates
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "pending" },
-			{ id: 1368, status: "pending" },
+			{ id: "1367", status: "pending" },
+			{ id: "1368", status: "pending" },
 		]);
 
 		const instances = [
@@ -410,7 +410,7 @@ describe("Race Condition Prevention - Regression Tests", () => {
 		// FIXED PATTERN:
 		// Set status SYNCHRONOUSLY before creating Promise
 		instance.status = "busy";
-		instance.currentFeature = 1367;
+		instance.currentFeature = "1367";
 		instance.featureStartedAt = new Date();
 
 		// Then create the Promise (status already set)
@@ -433,14 +433,14 @@ describe("Race Condition Prevention - Regression Tests", () => {
 		// overwriting their progress with "idle" status
 
 		const manifest = createTestManifest([
-			{ id: 1367, status: "in_progress", assigned_sandbox: "sbx-a" },
+			{ id: "1367", status: "in_progress", assigned_sandbox: "sbx-a" },
 		]);
 
 		const instance = createTestInstance("sbx-a");
 
 		// After assignment (with the fix), instance is immediately busy
 		instance.status = "busy";
-		instance.currentFeature = 1367;
+		instance.currentFeature = "1367";
 
 		// Work loop should NOT call writeIdleProgress for this sandbox
 		// Use type assertion to avoid "no overlap" error
