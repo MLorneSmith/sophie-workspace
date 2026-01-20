@@ -1,0 +1,743 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1607.I1.F3",
+    "feature_name": "Unified Data Loader",
+    "feature_slug": "unified-data-loader",
+    "initiative_id": "S1607.I1",
+    "spec_id": "S1607",
+    "created_at": "2026-01-20T10:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S1607.I1.F3.T1",
+      "type": "task",
+      "name": "Create dashboard types file with DashboardData interface",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard types file"
+      },
+      "purpose": "Define TypeScript interfaces for all 7 widget data structures and aggregate DashboardData type",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "TypeScript utility types (Partial, Pick, Omit)",
+          "Type inference from mock data specifications"
+        ],
+        "constraints": [
+          "Types must match mock data structure in feature.md",
+          "Use semantic naming (RecentActivity, QuickStats, etc.)",
+          "Export all individual types and aggregate DashboardData"
+        ]
+      },
+      "input_state": "No dashboard types exist",
+      "output_state": "File apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with 7 widget interfaces and DashboardData aggregate type",
+      "acceptance_criterion": "File exists with exported DashboardData type containing all 7 widget data structures",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export type DashboardData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I1.F3.T2",
+          "S1607.I1.F3.T3",
+          "S1607.I1.F3.T4",
+          "S1607.I1.F3.T5",
+          "S1607.I1.F3.T6",
+          "S1607.I1.F3.T7",
+          "S1607.I1.F3.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T2",
+      "type": "task",
+      "name": "Create loader file skeleton with cache wrapper",
+      "action": {
+        "verb": "Create",
+        "target": "loader file skeleton"
+      },
+      "purpose": "Set up the loader file structure with React cache(), imports, and exported function",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/app/home/(user)/billing/_lib/server/personal-account-billing-page.loader.ts"
+        ],
+        "dependencies": [
+          "React cache() from 'react'",
+          "getSupabaseServerClient from '@kit/supabase/server-client'",
+          "DashboardData type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Must include 'server-only' import at top",
+          "Export loadDashboardData as cached function",
+          "Internal dashboardLoader function with Promise.all structure"
+        ]
+      },
+      "input_state": "Types file exists with DashboardData interface",
+      "output_state": "Loader file exists with cache wrapper, imports, and skeleton dashboardLoader function",
+      "acceptance_criterion": "Loader file exists with loadDashboardData export using cache() wrapper and dashboardLoader skeleton",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q \"export const loadDashboardData = cache\" apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q \"'server-only'\" apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T1"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T3",
+          "S1607.I1.F3.T4",
+          "S1607.I1.F3.T5",
+          "S1607.I1.F3.T6",
+          "S1607.I1.F3.T7",
+          "S1607.I1.F3.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T3",
+      "type": "task",
+      "name": "Add loadRecentActivity mock function",
+      "action": {
+        "verb": "Add",
+        "target": "loadRecentActivity function"
+      },
+      "purpose": "Create mock loader returning 5 sample activity items",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "RecentActivity type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Return 5 sample activity items as per feature.md",
+          "Include error handling returning null on failure",
+          "Use async function signature with SupabaseClient param"
+        ]
+      },
+      "input_state": "Loader skeleton exists with cache wrapper",
+      "output_state": "loadRecentActivity function exists returning typed mock data",
+      "acceptance_criterion": "Function exists and returns array of 5 activity items matching RecentActivity type",
+      "verification_command": "grep -q 'async function loadRecentActivity' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T4",
+      "type": "task",
+      "name": "Add loadQuickStats mock function",
+      "action": {
+        "verb": "Add",
+        "target": "loadQuickStats function"
+      },
+      "purpose": "Create mock loader returning static counts (10, 25, 5)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "QuickStats type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Return static counts as per feature.md",
+          "Include error handling returning null on failure",
+          "Use async function signature with SupabaseClient param"
+        ]
+      },
+      "input_state": "Loader skeleton exists with cache wrapper",
+      "output_state": "loadQuickStats function exists returning typed mock data",
+      "acceptance_criterion": "Function exists and returns object with static counts matching QuickStats type",
+      "verification_command": "grep -q 'async function loadQuickStats' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T5",
+      "type": "task",
+      "name": "Add loadProgressOverview mock function",
+      "action": {
+        "verb": "Add",
+        "target": "loadProgressOverview function"
+      },
+      "purpose": "Create mock loader returning 75% completion",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "ProgressOverview type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Return 75% completion as per feature.md",
+          "Include error handling returning null on failure",
+          "Use async function signature with SupabaseClient param"
+        ]
+      },
+      "input_state": "Loader skeleton exists with cache wrapper",
+      "output_state": "loadProgressOverview function exists returning typed mock data",
+      "acceptance_criterion": "Function exists and returns object with 75% progress matching ProgressOverview type",
+      "verification_command": "grep -q 'async function loadProgressOverview' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T6",
+      "type": "task",
+      "name": "Add loadUpcomingEvents mock function",
+      "action": {
+        "verb": "Add",
+        "target": "loadUpcomingEvents function"
+      },
+      "purpose": "Create mock loader returning 3 sample events",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "UpcomingEvents type from dashboard.types.ts"
+        ],
+        "constraints": [
+          "Return 3 sample events as per feature.md",
+          "Include error handling returning null on failure",
+          "Use async function signature with SupabaseClient param"
+        ]
+      },
+      "input_state": "Loader skeleton exists with cache wrapper",
+      "output_state": "loadUpcomingEvents function exists returning typed mock data",
+      "acceptance_criterion": "Function exists and returns array of 3 events matching UpcomingEvents type",
+      "verification_command": "grep -q 'async function loadUpcomingEvents' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T7",
+      "type": "task",
+      "name": "Add loadTeamStatus, loadResourceUsage, loadActivityFeed mock functions",
+      "action": {
+        "verb": "Add",
+        "target": "3 remaining mock loader functions"
+      },
+      "purpose": "Create final 3 mock loaders for team status, resource usage, and activity feed",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "TeamStatus, ResourceUsage, ActivityFeed types from dashboard.types.ts"
+        ],
+        "constraints": [
+          "TeamStatus: Online 3, Away 2, Offline 5",
+          "ResourceUsage: 65% storage used",
+          "ActivityFeed: 10 sample feed items",
+          "Include error handling returning null on failure for each",
+          "Use async function signatures with SupabaseClient param"
+        ]
+      },
+      "input_state": "Loader skeleton exists with cache wrapper",
+      "output_state": "Three functions exist returning typed mock data",
+      "acceptance_criterion": "All 3 functions exist and return typed mock data matching specifications",
+      "verification_command": "grep -q 'async function loadTeamStatus' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'async function loadResourceUsage' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'async function loadActivityFeed' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T2"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T8",
+      "type": "task",
+      "name": "Add directory creation task",
+      "action": {
+        "verb": "Create",
+        "target": "directory structure"
+      },
+      "purpose": "Ensure _lib/server and _lib/types directories exist before creating files",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Create apps/web/app/home/(user)/_lib/server/ if not exists",
+          "Create apps/web/app/home/(user)/_lib/types/ if not exists"
+        ]
+      },
+      "input_state": "No _lib directory structure exists",
+      "output_state": "Directory structure apps/web/app/home/(user)/_lib/server/ and _lib/types/ exists",
+      "acceptance_criterion": "Both directories exist",
+      "verification_command": "test -d apps/web/app/home/\\(user\\)/_lib/server && test -d apps/web/app/home/\\(user\\)/_lib/types",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/"
+        },
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I1.F3.T1",
+          "S1607.I1.F3.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T9",
+      "type": "task",
+      "name": "Wire Promise.all orchestration in dashboardLoader",
+      "action": {
+        "verb": "Wire",
+        "target": "Promise.all orchestration"
+      },
+      "purpose": "Connect all 7 individual loaders using Promise.all for parallel execution",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "All 7 individual loader functions (T3-T7)",
+          "DashboardData return type"
+        ],
+        "constraints": [
+          "Use Promise.all to execute all loaders in parallel",
+          "Destructure results in order: recentActivity, quickStats, progressOverview, upcomingEvents, teamStatus, resourceUsage, activityFeed",
+          "Return object matching DashboardData interface"
+        ]
+      },
+      "input_state": "All 7 individual loader functions exist",
+      "output_state": "dashboardLoader function orchestrates all loaders with Promise.all and returns DashboardData",
+      "acceptance_criterion": "dashboardLoader uses Promise.all with all 7 loaders and returns correctly typed object",
+      "verification_command": "grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T3",
+          "S1607.I1.F3.T4",
+          "S1607.I1.F3.T5",
+          "S1607.I1.F3.T6",
+          "S1607.I1.F3.T7"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T10"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T10",
+      "type": "task",
+      "name": "Update page.tsx to call loadDashboardData",
+      "action": {
+        "verb": "Update",
+        "target": "page.tsx to integrate loader"
+      },
+      "purpose": "Import and call the loader in the page component to fetch dashboard data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadDashboardData from dashboard-page.loader.ts",
+          "DashboardGrid component (from F1)"
+        ],
+        "constraints": [
+          "Call loadDashboardData() in async component body",
+          "Pass data to DashboardGrid component",
+          "Maintain existing page structure (PageHeader, PageBody)"
+        ]
+      },
+      "input_state": "page.tsx exists with minimal structure, loader exists and is complete",
+      "output_state": "page.tsx calls loadDashboardData and passes data to grid",
+      "acceptance_criterion": "page.tsx imports and calls loadDashboardData, passes result to DashboardGrid",
+      "verification_command": "grep -q 'loadDashboardData' apps/web/app/home/\\(user\\)/page.tsx && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T9"
+        ],
+        "blocks": [
+          "S1607.I1.F3.T11"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I1.F3.T11",
+      "type": "task",
+      "name": "Update dashboard-grid to accept data prop",
+      "action": {
+        "verb": "Update",
+        "target": "dashboard-grid component"
+      },
+      "purpose": "Modify DashboardGrid to accept DashboardData prop and pass to widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 10,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "DashboardData type",
+          "Widget card components (from F2)"
+        ],
+        "constraints": [
+          "Add data prop with DashboardData type",
+          "Distribute individual data props to each widget card",
+          "Handle null/undefined data gracefully"
+        ]
+      },
+      "input_state": "dashboard-grid exists with layout only, page passes data",
+      "output_state": "dashboard-grid accepts data prop and distributes to widgets",
+      "acceptance_criterion": "DashboardGrid component accepts DashboardData prop and passes individual data to widgets",
+      "verification_command": "grep -q 'DashboardData' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm --filter web typecheck 2>&1 | grep -q 'no errors'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I1.F3.T10"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Setup and Types",
+        "task_ids": [
+          "S1607.I1.F3.T8",
+          "S1607.I1.F3.T1",
+          "S1607.I1.F3.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 2,
+        "name": "Individual Mock Loaders",
+        "task_ids": [
+          "S1607.I1.F3.T3",
+          "S1607.I1.F3.T4",
+          "S1607.I1.F3.T5",
+          "S1607.I1.F3.T6",
+          "S1607.I1.F3.T7"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 11,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Orchestration",
+        "task_ids": [
+          "S1607.I1.F3.T9"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": [
+          "S1607.I1.F3.T10",
+          "S1607.I1.F3.T11"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1607.I1.F3.T8",
+        "S1607.I1.F3.T1",
+        "S1607.I1.F3.T2",
+        "S1607.I1.F3.T7",
+        "S1607.I1.F3.T9",
+        "S1607.I1.F3.T10",
+        "S1607.I1.F3.T11"
+      ],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 22,
+      "parallel": 12,
+      "time_saved_percent": 45
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": true,
+    "feature_tasks_issue": 1622
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1607.I5.F2",
+    "feature_name": "Session Booking CTA",
+    "feature_slug": "session-booking-cta",
+    "initiative_id": "S1607.I5",
+    "spec_id": "1607",
+    "created_at": "2026-01-20T18:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1607.I5.F2.T3",
+      "S1607.I5.F2.T4"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1607.I5.F2.T1",
+      "type": "task",
+      "name": "Create Cal.com config module",
+      "action": {
+        "verb": "Create",
+        "target": "Cal.com configuration file"
+      },
+      "purpose": "Centralize Cal.com booking URL configuration for reuse across components",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "process.env.CALCOM_BOOKING_URL"
+        ],
+        "constraints": [
+          "Must handle missing environment variable gracefully",
+          "Must export booking URL and event type configuration"
+        ]
+      },
+      "input_state": "No Cal.com configuration exists",
+      "output_state": "Cal.com config module exists at apps/web/lib/calcom/config.ts with booking URL export",
+      "acceptance_criterion": "Config file exports getCalcomBookingUrl() function that returns configured booking URL or fallback",
+      "verification_command": "grep -q 'getCalcomBookingUrl' apps/web/lib/calcom/config.ts && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/lib/calcom/config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I5.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F2.T2",
+      "type": "task",
+      "name": "Add Cal.com environment variables",
+      "action": {
+        "verb": "Add",
+        "target": "Environment variable documentation"
+      },
+      "purpose": "Document CALCOM_BOOKING_URL configuration for development and production environments",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/.env.example",
+          "apps/web/.env.development"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Follow existing environment variable naming conventions",
+          "Add comments explaining the variable purpose",
+          "Include example value"
+        ]
+      },
+      "input_state": "No Cal.com environment variables documented",
+      "output_state": "CALCOM_BOOKING_URL documented in .env.example and set in .env.development",
+      "acceptance_criterion": "Both .env.example and .env.development contain CALCOM_BOOKING_URL with comments and example values",
+      "verification_command": "grep -q 'CALCOM_BOOKING_URL' apps/web/.env.example && grep -q 'CALCOM_BOOKING_URL' apps/web/.env.development",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.example"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/.env.development"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I5.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F2.T3",
+      "type": "task",
+      "name": "Create BookSessionButton component",
+      "action": {
+        "verb": "Create",
+        "target": "Booking CTA button component"
+      },
+      "purpose": "Provide reusable booking action button that opens Cal.com booking page",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book a Session"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/lib/calcom/config.ts"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "CalendarPlus icon from lucide-react",
+          "ExternalLink icon from lucide-react",
+          "Link from next/link",
+          "getCalcomBookingUrl from lib/calcom/config"
+        ],
+        "constraints": [
+          "Must support variant prop (default, outline) for different placements",
+          "Must open link in new tab with security attributes",
+          "Must show ExternalLink icon to indicate new window",
+          "Must handle missing booking URL gracefully with disabled state"
+        ]
+      },
+      "input_state": "Cal.com config exists with booking URL function",
+      "output_state": "BookSessionButton component exists that renders a button linking to Cal.com booking page",
+      "acceptance_criterion": "Button component renders with CalendarPlus icon, opens Cal.com URL in new tab when clicked, and supports variant prop",
+      "verification_command": "grep -q 'BookSessionButton' apps/web/app/home/(user)/_components/book-session-button.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F2.T1"
+        ],
+        "blocks": [
+          "S1607.I5.F2.T4",
+          "S1607.I5.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F2.T4",
+      "type": "task",
+      "name": "Update empty state with booking CTA",
+      "action": {
+        "verb": "Update",
+        "target": "Empty state component"
+      },
+      "purpose": "Replace placeholder CTA with real BookSessionButton in coaching sessions empty state",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book a Session"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          },
+          {
+            "command": "is visible",
+            "target": "No coaching sessions scheduled yet"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx",
+          "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        ],
+        "dependencies": [
+          "BookSessionButton component",
+          "EmptyState components from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Use variant='default' for primary CTA in empty state",
+          "Maintain existing empty state styling and layout",
+          "Keep empty state messaging consistent"
+        ]
+      },
+      "input_state": "Empty state has placeholder button text, BookSessionButton component exists",
+      "output_state": "Empty state renders BookSessionButton with primary styling as the call-to-action",
+      "acceptance_criterion": "Empty state displays BookSessionButton instead of placeholder, button is visually prominent with default variant",
+      "verification_command": "grep -q 'BookSessionButton' apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F2.T3"
+        ],
+        "blocks": [
+          "S1607.I5.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F2.T5",
+      "type": "task",
+      "name": "Add unit tests for BookSessionButton",
+      "action": {
+        "verb": "Add",
+        "target": "Component unit tests"
+      },
+      "purpose": "Verify BookSessionButton renders correctly and handles variant prop",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        ],
+        "dependencies": [
+          "@testing-library/react",
+          "vitest"
+        ],
+        "constraints": [
+          "Test default variant renders",
+          "Test outline variant renders",
+          "Test link has correct href attribute",
+          "Test link has security attributes (target, rel)",
+          "Test disabled state when URL missing"
+        ]
+      },
+      "input_state": "BookSessionButton component exists and is integrated into empty state",
+      "output_state": "Unit tests exist that verify button rendering, variants, link attributes, and disabled state",
+      "acceptance_criterion": "Test file exists with 5+ test cases covering rendering, variants, href, security, and disabled state. All tests pass.",
+      "verification_command": "test -f apps/web/app/home/(user)/_components/book-session-button.test.tsx && pnpm --filter web test:unit -- book-session-button.test.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/book-session-button.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F2.T3",
+          "S1607.I5.F2.T4"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Configuration",
+        "task_ids": [
+          "S1607.I5.F2.T1",
+          "S1607.I5.F2.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Creation",
+        "task_ids": [
+          "S1607.I5.F2.T3"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": [
+          "S1607.I5.F2.T4"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Testing",
+        "task_ids": [
+          "S1607.I5.F2.T5"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1607.I5.F2.T1",
+        "S1607.I5.F2.T3",
+        "S1607.I5.F2.T4",
+        "S1607.I5.F2.T5"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 10,
+      "time_saved_percent": 16.7
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": true,
+    "feature_tasks_issue": 1617
+  }
+}

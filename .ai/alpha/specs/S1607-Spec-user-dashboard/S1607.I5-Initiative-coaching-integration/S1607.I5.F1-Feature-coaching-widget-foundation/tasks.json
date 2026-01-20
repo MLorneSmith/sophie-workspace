@@ -1,0 +1,569 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1607.I5.F1",
+    "feature_name": "Coaching Widget Foundation",
+    "feature_slug": "coaching-widget-foundation",
+    "initiative_id": "S1607.I5",
+    "spec_id": "S1607",
+    "created_at": "2026-01-20T12:00:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1607.I5.F1.T3",
+      "S1607.I5.F1.T4",
+      "S1607.I5.F1.T5",
+      "S1607.I5.F1.T6"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1607.I5.F1.T1",
+      "type": "task",
+      "name": "Create TypeScript types for coaching session data",
+      "action": {
+        "verb": "Create",
+        "target": "coaching.types.ts file with Cal.com API types"
+      },
+      "purpose": "Define TypeScript interfaces matching Cal.com API v2 booking response structure to establish the data contract for coaching sessions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "Cal.com API v2 documentation (from research)",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts (pattern reference)"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Types must match Cal.com API v2 booking response structure",
+          "Use nullable fields for optional API data",
+          "Export all types for use in components"
+        ]
+      },
+      "input_state": "No coaching types exist in codebase",
+      "output_state": "apps/web/app/home/(user)/_lib/types/coaching.types.ts exists with CoachingSession, BookingStatus, EventType interfaces exported",
+      "acceptance_criterion": "File exists with exported TypeScript interfaces for CoachingSession, BookingStatus, and EventType that match Cal.com API structure",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'export interface CoachingSession' apps/web/app/home/(user)/_lib/types/coaching.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/coaching.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I5.F1.T2",
+          "S1607.I5.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T2",
+      "type": "task",
+      "name": "Create Zod validation schemas for coaching data",
+      "action": {
+        "verb": "Create",
+        "target": "coaching.schema.ts file with Zod schemas"
+      },
+      "purpose": "Define runtime validation schemas for coaching session data to ensure type safety at API boundaries",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/coaching.types.ts (T1 output)",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts (pattern reference)",
+          "apps/web/app/home/(user)/billing/_lib/schema/personal-account-checkout.schema.ts (pattern reference)"
+        ],
+        "dependencies": [
+          "zod package"
+        ],
+        "constraints": [
+          "Schemas must match TypeScript types from T1",
+          "Export schemas for use in server actions",
+          "Use z.infer<> for type derivation"
+        ]
+      },
+      "input_state": "TypeScript types exist from T1, no Zod schemas for coaching data",
+      "output_state": "apps/web/app/home/(user)/_lib/schemas/coaching.schema.ts exists with CoachingSessionSchema and related Zod schemas exported",
+      "acceptance_criterion": "File exists with exported Zod schemas that validate coaching session data matching T1 types",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'export const CoachingSessionSchema' apps/web/app/home/(user)/_lib/schemas/coaching.schema.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/schemas/coaching.schema.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F1.T1"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T3",
+      "type": "task",
+      "name": "Create CoachingSessionsSkeleton loading component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-skeleton.tsx component"
+      },
+      "purpose": "Build loading skeleton UI component to display while coaching session data is being fetched",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx (empty state pattern)",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx (Card usage pattern)"
+        ],
+        "dependencies": [
+          "@kit/ui/skeleton",
+          "@kit/ui/card"
+        ],
+        "constraints": [
+          "Use Skeleton from @kit/ui/skeleton",
+          "Match CoachingSessionsCard layout structure",
+          "Include shapes for 3 session items"
+        ]
+      },
+      "input_state": "No loading skeleton component exists for coaching sessions",
+      "output_state": "apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx exists with exported CoachingSessionsSkeleton component",
+      "acceptance_criterion": "Component renders Card with Skeleton elements arranged in coaching session list pattern (header + 3 item skeletons)",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'export function CoachingSessionsSkeleton' apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I5.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T4",
+      "type": "task",
+      "name": "Create CoachingSessionsEmptyState component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-empty-state.tsx component"
+      },
+      "purpose": "Build empty state UI component to display when user has no coaching sessions scheduled",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No coaching sessions scheduled"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx (EmptyState pattern)",
+          "Research: perplexity-dashboard-patterns.md (coaching widget guidance)"
+        ],
+        "dependencies": [
+          "@kit/ui/empty-state",
+          "lucide-react (Calendar icon)"
+        ],
+        "constraints": [
+          "Use EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/empty-state",
+          "Include Calendar icon from lucide-react",
+          "Button is placeholder CTA (no navigation yet)"
+        ]
+      },
+      "input_state": "No empty state component exists for coaching sessions",
+      "output_state": "apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx exists with exported CoachingSessionsEmptyState component",
+      "acceptance_criterion": "Component renders EmptyState with icon, heading, description text, and placeholder booking button",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'export function CoachingSessionsEmptyState' apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1607.I5.F1.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T5",
+      "type": "task",
+      "name": "Create CoachingSessionsCard container component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-card.tsx component"
+      },
+      "purpose": "Build main container component that orchestrates loading, empty, and content states for coaching sessions widget",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "article"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx (T3 output)",
+          "apps/web/app/home/(user)/_components/coaching-sessions-empty-state.tsx (T4 output)",
+          "apps/web/app/home/(user)/_lib/types/coaching.types.ts (T1 output)",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx (Card pattern)"
+        ],
+        "dependencies": [
+          "@kit/ui/card",
+          "CoachingSessionsSkeleton component",
+          "CoachingSessionsEmptyState component"
+        ],
+        "constraints": [
+          "Accept sessions prop (CoachingSession[] | null)",
+          "Show skeleton when sessions is null",
+          "Show empty state when sessions is empty array",
+          "Use Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "Content area shows placeholder text for populated state"
+        ]
+      },
+      "input_state": "Skeleton and empty state components exist, no container component",
+      "output_state": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx exists with exported CoachingSessionsCard component that handles all three states",
+      "acceptance_criterion": "Component renders Card with correct state (skeleton/empty/content) based on sessions prop value",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'export function CoachingSessionsCard' apps/web/app/home/(user)/_components/coaching-sessions-card.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F1.T1",
+          "S1607.I5.F1.T3",
+          "S1607.I5.F1.T4"
+        ],
+        "blocks": [
+          "S1607.I5.F1.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T6",
+      "type": "task",
+      "name": "Add CoachingSessionsCard to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "CoachingSessionsCard to user home page"
+      },
+      "purpose": "Integrate coaching sessions widget into user dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx (dashboard page)",
+          "apps/web/app/home/(user)/_components/coaching-sessions-card.tsx (T5 output)"
+        ],
+        "dependencies": [
+          "CoachingSessionsCard component",
+          "@kit/ui/page"
+        ],
+        "constraints": [
+          "Add card to PageBody",
+          "Pass null as sessions prop to show loading skeleton initially",
+          "Maintain existing page structure"
+        ]
+      },
+      "input_state": "Dashboard page exists with PageBody, CoachingSessionsCard component exists",
+      "output_state": "Dashboard page renders CoachingSessionsCard within PageBody in grid layout",
+      "acceptance_criterion": "CoachingSessionsCard appears on dashboard page at /home route with skeleton state visible",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'CoachingSessionsCard' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F1.T5"
+        ],
+        "blocks": [
+          "S1607.I5.F1.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1607.I5.F1.T7",
+      "type": "task",
+      "name": "Add coaching data placeholder to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "coaching sessions placeholder to load-user-workspace.ts"
+      },
+      "purpose": "Extend user workspace loader to include coaching sessions data structure for future data fetching",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts (existing loader)",
+          "apps/web/app/home/(user)/_lib/types/coaching.types.ts (T1 output)"
+        ],
+        "dependencies": [
+          "CoachingSession type"
+        ],
+        "constraints": [
+          "Add coachingSessions field to return type",
+          "Return empty array as placeholder (no API integration yet)",
+          "Add TODO comment for F2 integration",
+          "Maintain cache wrapper pattern"
+        ]
+      },
+      "input_state": "load-user-workspace.ts exists without coaching sessions field",
+      "output_state": "load-user-workspace.ts returns coachingSessions: [] in workspace data",
+      "acceptance_criterion": "Loader function returns coachingSessions field as empty array with CoachingSession[] type",
+      "verification_command": "pnpm --filter web typecheck && grep -q 'coachingSessions' apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1607.I5.F1.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Type Definitions",
+        "task_ids": [
+          "S1607.I5.F1.T1",
+          "S1607.I5.F1.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "UI Components (Skeleton & Empty State)",
+        "task_ids": [
+          "S1607.I5.F1.T3",
+          "S1607.I5.F1.T4"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Container Component",
+        "task_ids": [
+          "S1607.I5.F1.T5"
+        ],
+        "depends_on_groups": [
+          1,
+          2
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Dashboard Integration",
+        "task_ids": [
+          "S1607.I5.F1.T6",
+          "S1607.I5.F1.T7"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1607.I5.F1.T1",
+        "S1607.I5.F1.T3",
+        "S1607.I5.F1.T5",
+        "S1607.I5.F1.T6",
+        "S1607.I5.F1.T7"
+      ],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 11,
+      "time_saved_percent": 39
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": true,
+    "feature_tasks_issue": 1613
+  }
+}
