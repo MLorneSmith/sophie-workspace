@@ -28,6 +28,20 @@ $ARGUMENTS
 
 ---
 
+## Quick Reference
+
+Once parsed, these variables are used throughout the command:
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `SPEC_NUM` | `1362` | Numeric spec ID (for directory lookups) |
+| `SPEC_ID` | `S1362` | Semantic spec ID (for artifact creation) |
+| `SPEC_DIR` | `.ai/alpha/specs/S1362-Spec-user-dashboard` | Full path to spec directory |
+
+**Set these once in Phase 0 and reference throughout.**
+
+---
+
 ## Phase 0: Pre-Flight Checks
 
 **CRITICAL**: Before starting, verify prerequisites are met.
@@ -65,10 +79,46 @@ If the issue doesn't exist or lacks `alpha:spec` label, stop and inform the user
 
 ### 0.3 Verify Local Spec Directory
 
+**IMPORTANT**: Set `SPEC_DIR` once here and use it throughout all phases.
+
 ```bash
-# Find the spec directory (supports both old and new naming conventions)
-SPEC_DIR=$(ls -d .ai/alpha/specs/S<spec-num>-Spec-* .ai/alpha/specs/<spec-num>-Spec-* 2>/dev/null | head -1)
-test -d "${SPEC_DIR}" && echo "✓ Spec directory exists: ${SPEC_DIR}"
+# Find spec directory (zsh-safe - checks each pattern separately)
+SPEC_DIR=""
+
+# Try new naming convention first: S1362-Spec-*
+for dir in .ai/alpha/specs/S<spec-num>-Spec-*/; do
+  if [[ -d "$dir" ]]; then
+    SPEC_DIR="${dir%/}"  # Remove trailing slash
+    break
+  fi
+done
+
+# Fall back to old naming convention: 1362-Spec-*
+if [[ -z "$SPEC_DIR" ]]; then
+  for dir in .ai/alpha/specs/<spec-num>-Spec-*/; do
+    if [[ -d "$dir" ]]; then
+      SPEC_DIR="${dir%/}"
+      break
+    fi
+  done
+fi
+
+# Verify found
+if [[ -z "$SPEC_DIR" ]]; then
+  echo "❌ Spec directory not found for S<spec-num>"
+  echo "   Run /alpha:spec first to create the specification."
+  exit 1
+fi
+
+echo "✓ SPEC_DIR=${SPEC_DIR}"
+```
+
+**Alternative (simpler)**: Use `ls` with error suppression and check result:
+```bash
+SPEC_DIR=$(ls -d .ai/alpha/specs/S<spec-num>-Spec-* 2>/dev/null | head -1)
+[[ -z "$SPEC_DIR" ]] && SPEC_DIR=$(ls -d .ai/alpha/specs/<spec-num>-Spec-* 2>/dev/null | head -1)
+[[ -z "$SPEC_DIR" ]] && echo "❌ Spec directory not found. Run /alpha:spec first." && exit 1
+echo "✓ SPEC_DIR=${SPEC_DIR}"
 ```
 
 If directory doesn't exist, inform user to run `/alpha:spec` first.
@@ -106,7 +156,10 @@ Use TodoWrite immediately to create a tracking list:
 
 ### 1.2 Read the Spec
 
-Use the Read tool to read the local spec file (authoritative source):
+Use the Read tool to read the local spec file (authoritative source).
+
+**Note**: `${SPEC_DIR}` was set in Phase 0.3.
+
 ```
 ${SPEC_DIR}/spec.md
 ```
@@ -119,21 +172,17 @@ Extract from the spec:
 
 ### 1.3 Read Previous Research
 
-Read all research artifacts from the spec phase to leverage existing knowledge:
+Read all research artifacts from the spec phase to leverage existing knowledge.
 
+**Step 1**: List available research files:
 ```bash
-# List available research files
 ls -la ${SPEC_DIR}/research-library/
-
-# Read each research file
-for file in ${SPEC_DIR}/research-library/*.md; do
-  echo "=== Reading: $file ==="
-done
 ```
 
-Use the Read tool to read each file in `${SPEC_DIR}/research-library/`:
+**Step 2**: Use the Read tool to read each `.md` file found. Common patterns:
 - `context7-*.md` - Library/framework documentation findings
 - `perplexity-*.md` - Best practices and industry pattern research
+- `exa-*.md` - Semantic web search results
 
 **Extract from research:**
 1. **Technology decisions** - Libraries, frameworks, APIs already researched
@@ -145,15 +194,45 @@ This research informs initiative sizing and dependency identification.
 
 ### 1.4 Explore Codebase (Parallel)
 
-Launch 2-3 Task agents with `subagent_type=code-explorer` in parallel:
+Launch **exactly 3** Task agents with `subagent_type=code-explorer` in parallel. Use these specific prompt templates:
 
+**Agent 1 - Page & Layout Patterns**:
 ```
-Task 1: "Explore existing patterns for [primary capability]. Find: components, data loaders, database tables, reusable code."
+Explore existing page and layout patterns in this codebase. Find:
+1. How pages are structured in apps/web/app/home/
+2. Page layout components (PageBody, Page, headers)
+3. Data loader patterns (*-page.loader.ts files)
+4. Responsive grid layouts used
+5. Similar dashboard or listing pages as reference
 
-Task 2: "Explore [secondary capability] implementation. Find: similar features, integration points, external dependencies."
-
-Task 3: "Explore [infrastructure area]. Find: shared utilities, data models, API patterns."
+Return: Key file paths, code snippets, and patterns to follow.
 ```
+
+**Agent 2 - Reusable Components**:
+```
+Explore reusable UI components relevant to [primary capability from spec]. Find:
+1. Chart/visualization components (if needed)
+2. Card and Table components
+3. EmptyState and loading patterns
+4. Form components (if needed)
+5. Any existing components that match spec requirements
+
+Return: Component locations, usage examples, and reuse recommendations.
+```
+
+**Agent 3 - Data Layer & Schemas**:
+```
+Explore database schemas and data access patterns for [spec domain]. Find:
+1. Relevant table structures in migrations/
+2. RLS policies on those tables
+3. Existing data loader functions
+4. TypeScript types for the domain
+5. Query patterns used elsewhere
+
+Return: Table schemas, query examples, and type definitions.
+```
+
+**Customization**: Replace bracketed placeholders with actual capabilities from the spec's Section 5 (Key Capabilities).
 
 ---
 
@@ -363,16 +442,18 @@ IF ANY FAIL → Resolve before proceeding to Phase 3
 
 ### 3.1 Create Initiative Directories with Semantic IDs
 
-Directories use the semantic ID format `S#.I#` where the number after `I` is the **priority**:
+Directories use the semantic ID format `S#.I#` where the number after `I` is the **priority**.
+
+**Note**: `SPEC_DIR` was already set in Phase 0.3 - reuse it here.
 
 ```bash
-SPEC_DIR=$(ls -d .ai/alpha/specs/S<spec-num>-Spec-* .ai/alpha/specs/<spec-num>-Spec-* 2>/dev/null | head -1)
-
-# Create directories with semantic IDs
+# Create directories with semantic IDs (SPEC_DIR already set in Phase 0)
 # S1362.I1 = Priority 1 initiative
 # S1362.I2 = Priority 2 initiative, etc.
 mkdir -p ${SPEC_DIR}/S<spec-num>.I1-Initiative-<initiative-slug>
 mkdir -p ${SPEC_DIR}/S<spec-num>.I2-Initiative-<initiative-slug>
+mkdir -p ${SPEC_DIR}/S<spec-num>.I3-Initiative-<initiative-slug>
+# ... etc for each initiative
 ```
 
 **Example directory names:**
@@ -477,19 +558,32 @@ Verify all items before reporting completion:
 
 ### 5.2 Verification Commands
 
+Use simple `ls` commands instead of complex `find` pipelines:
+
 ```bash
-# Count initiatives (should be 3-9) - supports both old and new naming
-find ${SPEC_DIR} -maxdepth 1 -type d -name "S*.I*-Initiative-*" -o -name "[0-9]*-Initiative-*" | wc -l
+# List all initiative directories (visual check)
+ls -la ${SPEC_DIR}/ | grep Initiative
+
+# Count initiatives (should be 3-9)
+ls -1d ${SPEC_DIR}/S*.I*-Initiative-*/ 2>/dev/null | wc -l
 
 # Verify each initiative has initiative.md
-find ${SPEC_DIR} -name "initiative.md" | wc -l
+for dir in ${SPEC_DIR}/S*.I*-Initiative-*/; do
+  if [[ -f "${dir}initiative.md" ]]; then
+    echo "✓ ${dir}"
+  else
+    echo "❌ Missing initiative.md: ${dir}"
+  fi
+done
 
 # Verify README.md exists
-test -f ${SPEC_DIR}/README.md && echo "✓ README.md exists"
-
-# Verify semantic ID format in initiative directories
-ls -d ${SPEC_DIR}/S*.I*-Initiative-* 2>/dev/null && echo "✓ Directories use S#.I# format"
+[[ -f "${SPEC_DIR}/README.md" ]] && echo "✓ README.md exists" || echo "❌ README.md missing"
 ```
+
+**Expected Results**:
+- 3-9 initiative directories with `S#.I#-Initiative-` naming
+- Each directory contains `initiative.md`
+- `README.md` exists in spec root with overview
 
 ---
 
@@ -543,6 +637,43 @@ When complete, provide this structured report:
 ### Next Step
 Run `/alpha:feature-decompose S<spec-num>.I1` for Priority 1 / Group 0 initiative.
 ```
+
+---
+
+## Troubleshooting
+
+### Common Failures
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Spec directory not found" | Spec hasn't been created yet | Run `/alpha:spec <spec-num>` first |
+| "GitHub issue missing alpha:spec label" | Issue exists but wasn't created by /alpha:spec | Add `alpha:spec` label manually via `gh issue edit` |
+| "no matches found" (zsh) | Glob pattern has no matches | Use the zsh-safe pattern from 0.3 |
+| Initiative too small (<2 weeks) | Scope is feature-sized, not initiative-sized | Merge with a related initiative |
+| Initiative too large (>8 weeks) | Scope is epic-sized | Apply SPIDR splitting (see 2.4) |
+| Circular dependency detected | A → B → C → A chain exists | Break the cycle by redefining scope or extracting shared component |
+
+### Error Recovery
+
+**If Phase 0 fails** (pre-flight):
+- Verify GitHub CLI is authenticated: `gh auth status`
+- Verify spec exists: `gh issue view <num> --json labels`
+- Check directory manually: `ls -la .ai/alpha/specs/`
+
+**If exploration agents fail**:
+- Reduce to 2 agents if 3 is too much
+- Use more specific paths in prompts
+- Fall back to manual Glob/Grep if agents time out
+
+**If artifact creation fails**:
+- Check SPEC_DIR is set: `echo ${SPEC_DIR}`
+- Verify write permissions: `touch ${SPEC_DIR}/test && rm ${SPEC_DIR}/test`
+- Create directories one at a time to isolate the issue
+
+**If GitHub comment fails**:
+- Verify repo access: `gh repo view MLorneSmith/2025slideheroes`
+- Check issue exists and is open
+- Try posting a simpler comment first to test permissions
 
 ---
 

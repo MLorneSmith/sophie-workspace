@@ -47,6 +47,7 @@ import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
 import {
 	archiveAndClearPreviousRun,
 	findSpecDir,
+	generateSpecManifest,
 	loadManifest,
 	saveManifest,
 } from "./manifest.js";
@@ -913,13 +914,25 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const specDir = specDirOrNull as string;
-	const manifestOrNull = loadManifest(specDir);
+	let manifestOrNull = loadManifest(specDir);
 
+	// Auto-generate manifest if missing
 	if (!manifestOrNull) {
-		console.error(
-			"Spec manifest not found. Run generate-spec-manifest.ts first.",
+		log("\n📋 Spec manifest not found, generating automatically...");
+		manifestOrNull = generateSpecManifest(
+			projectRoot,
+			options.specId,
+			specDir,
+			options.ui, // silent when UI is enabled
 		);
-		process.exit(1);
+
+		if (!manifestOrNull) {
+			console.error(
+				"❌ Failed to generate spec manifest. Ensure initiatives and features are decomposed.",
+			);
+			process.exit(1);
+		}
+		log("   ✅ Manifest generated successfully");
 	}
 
 	const manifest = manifestOrNull as SpecManifest;

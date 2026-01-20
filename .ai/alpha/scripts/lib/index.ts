@@ -55,6 +55,7 @@ export {
 	clearUIProgress,
 	ensureUIProgressDir,
 	findSpecDir,
+	generateSpecManifest,
 	loadManifest,
 	saveManifest,
 	writeOverallProgress,
