@@ -153,7 +153,7 @@ Handle based on returned `status` field:
 
 | Status | Action |
 |--------|--------|
-| `completed` | Report success with task count, hours, GitHub issue |
+| `completed` | Report success with task count and hours |
 | `needs_spikes` | Delegate each spike to `spike-researcher`, then re-invoke decomposer |
 | `rejected` | Report failure with `rejection_reason`, suggest manual review |
 
@@ -203,7 +203,7 @@ Check if `decomposition-state.json` exists:
 2. **Update state** - Set `features[ID].status = "in_progress"`
 3. **Invoke Task tool** with `subagent_type=alpha-task-decomposer` (same prompt as Step 2A.2)
 4. **Process result**:
-   - `completed`: Update state, increment counters, record `task_count`, `github_issue`
+   - `completed`: Update state, increment counters, record `task_count`
    - `needs_spikes`: Append to `spikes_pending`, increment `total_spikes`
    - `rejected`: Mark as `failed`, record error
 5. **Save state** after each feature
@@ -390,7 +390,10 @@ Add `ui_task: true` when the task:
 `<FEAT_DIR>/tasks.json`
 
 ### Next Step
-Run `/alpha:implement <FEATURE_ID>` to begin implementation.
+After decomposing ALL features in the initiative, run the spec orchestrator from the command line:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
+```
 ```
 
 ### Initiative (Mode B)
@@ -419,7 +422,15 @@ Run `/alpha:implement <FEATURE_ID>` to begin implementation.
 `${INIT_DIR}/decomposition-state.json`
 
 ### Next Step
-Run `/alpha:implement <INITIATIVE_ID>` to begin implementation (e.g., `/alpha:implement S1362.I1`).
+After decomposing ALL features in ALL initiatives, run the spec orchestrator from the command line:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
+```
+
+Example:
+```bash
+tsx .ai/alpha/scripts/spec-orchestrator.ts 1362
+```
 ```
 
 ---
