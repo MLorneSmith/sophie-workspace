@@ -1,48 +1,48 @@
 {
-  "initiative_id": "S1607.I5",
-  "initiative_name": "Coaching Integration",
-  "spec_id": "S1607",
-  "status": "completed",
-  "current_phase": "finalization",
-  "started_at": "2026-01-20T00:00:00Z",
-  "completed_at": "2026-01-20T00:00:00Z",
-  "features": {
-    "S1607.I5.F1": {
-      "name": "Coaching Widget Foundation",
-      "status": "completed",
-      "task_count": 7,
-      "github_issue": 1613,
-      "sequential_hours": 18,
-      "parallel_hours": 11,
-      "tasks_file": "S1607.I5.F1-Feature-coaching-widget-foundation/tasks.json"
-    },
-    "S1607.I5.F2": {
-      "name": "Session Booking CTA",
-      "status": "completed",
-      "task_count": 5,
-      "github_issue": 1617,
-      "sequential_hours": 12,
-      "parallel_hours": 10,
-      "tasks_file": "S1607.I5.F2-Feature-session-booking-cta/tasks.json"
-    },
-    "S1607.I5.F3": {
-      "name": "Upcoming Sessions Display",
-      "status": "completed",
-      "task_count": 22,
-      "github_issue": 1623,
-      "sequential_hours": 62,
-      "parallel_hours": 29,
-      "tasks_file": "S1607.I5.F3-Feature-upcoming-sessions-display/tasks.json"
-    }
-  },
-  "totals": {
-    "features_total": 3,
-    "features_completed": 3,
-    "features_failed": 0,
-    "tasks_total": 34,
-    "spikes_total": 0,
-    "sequential_hours": 92,
-    "parallel_hours": 50
-  },
-  "spikes_pending": []
+	"initiative_id": "S1607.I5",
+	"initiative_name": "Coaching Integration",
+	"spec_id": "S1607",
+	"status": "completed",
+	"current_phase": "finalization",
+	"started_at": "2026-01-20T00:00:00Z",
+	"completed_at": "2026-01-20T00:00:00Z",
+	"features": {
+		"S1607.I5.F1": {
+			"name": "Coaching Widget Foundation",
+			"status": "completed",
+			"task_count": 7,
+			"github_issue": 1613,
+			"sequential_hours": 18,
+			"parallel_hours": 11,
+			"tasks_file": "S1607.I5.F1-Feature-coaching-widget-foundation/tasks.json"
+		},
+		"S1607.I5.F2": {
+			"name": "Session Booking CTA",
+			"status": "completed",
+			"task_count": 5,
+			"github_issue": 1617,
+			"sequential_hours": 12,
+			"parallel_hours": 10,
+			"tasks_file": "S1607.I5.F2-Feature-session-booking-cta/tasks.json"
+		},
+		"S1607.I5.F3": {
+			"name": "Upcoming Sessions Display",
+			"status": "completed",
+			"task_count": 22,
+			"github_issue": 1623,
+			"sequential_hours": 62,
+			"parallel_hours": 29,
+			"tasks_file": "S1607.I5.F3-Feature-upcoming-sessions-display/tasks.json"
+		}
+	},
+	"totals": {
+		"features_total": 3,
+		"features_completed": 3,
+		"features_failed": 0,
+		"tasks_total": 34,
+		"spikes_total": 0,
+		"sequential_hours": 92,
+		"parallel_hours": 50
+	},
+	"spikes_pending": []
 }

@@ -1,383 +1,349 @@
 {
-  "$schema": "../../../../templates/tasks.schema.json",
-  "metadata": {
-    "feature_id": "S1607.I2.F3",
-    "feature_name": "Spider Diagram Widget",
-    "feature_slug": "spider-diagram",
-    "initiative_id": "S1607.I2",
-    "spec_id": "1607",
-    "created_at": "2026-01-20T12:00:00Z",
-    "complexity": {
-      "score": 44,
-      "level": "STANDARD",
-      "target_steps": {
-        "min": 6,
-        "max": 12
-      },
-      "pattern_matched": "dashboard-card"
-    },
-    "requires_database": false,
-    "database_tasks": [],
-    "requires_ui": true,
-    "ui_tasks": [
-      "S1607.I2.F3.T1",
-      "S1607.I2.F3.T2",
-      "S1607.I2.F3.T3"
-    ]
-  },
-  "tasks": [
-    {
-      "id": "S1607.I2.F3.T1",
-      "type": "task",
-      "name": "Create AssessmentScoresWidget component wrapper",
-      "action": {
-        "verb": "Create",
-        "target": "AssessmentScoresWidget component wrapper"
-      },
-      "purpose": "Wrap the existing RadarChart in a Card component with proper header, title, and loading states for dashboard display",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 1,
-      "group": 1,
-      "ui_task": true,
-      "skill_hints": [
-        "frontend-design",
-        "react-best-practices"
-      ],
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
-        ],
-        "types": [
-          "CategoryScores (from RadarChart)",
-          "CardProps (from @kit/ui/card)"
-        ],
-        "dependencies": [
-          "RadarChart (existing component)",
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Button from @kit/ui/button",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Must accept categoryScores prop (Record<string, number>)",
-          "Must show loading skeleton while data loads",
-          "Must handle null/undefined data gracefully",
-          "Must include link to assessment page",
-          "Must be responsive within dashboard grid"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
-            "description": "Existing RadarChart component to import and use"
-          }
-        ]
-      },
-      "acceptance_criterion": "AssessmentScoresWidget component renders RadarChart within Card with proper header and CTA button",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'export function AssessmentScoresWidget' apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx",
-          "description": "Widget wrapper component"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I2.F3.T3"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      },
-      "requires_ui": true,
-      "visual_verification": {
-        "enabled": true,
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Assessment Scores"
-          },
-          {
-            "command": "find role",
-            "target": "heading"
-          }
-        ],
-        "screenshot": true
-      }
-    },
-    {
-      "id": "S1607.I2.F3.T2",
-      "type": "task",
-      "name": "Create AssessmentScoresEmpty empty state component",
-      "action": {
-        "verb": "Create",
-        "target": "AssessmentScoresEmpty empty state component"
-      },
-      "purpose": "Display a friendly message with CTA when user has not completed the self-assessment survey",
-      "status": "draft",
-      "estimated_hours": 1,
-      "priority": 2,
-      "group": 1,
-      "ui_task": true,
-      "skill_hints": [
-        "frontend-design"
-      ],
-      "context": {
-        "files": [],
-        "types": [],
-        "dependencies": [
-          "EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/makerkit",
-          "Button from @kit/ui/button",
-          "Trans from @kit/ui/trans",
-          "Link from next/link"
-        ],
-        "constraints": [
-          "Must encourage user to take assessment",
-          "Must link to /home/assessment/survey",
-          "Must use EmptyState component from UI library",
-          "Message should be friendly and motivational"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/makerkit/empty-state.tsx",
-            "description": "EmptyState component pattern to follow"
-          }
-        ]
-      },
-      "acceptance_criterion": "AssessmentScoresEmpty component displays message and CTA button linking to assessment page",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'export function AssessmentScoresEmpty' apps/web/app/home/(user)/_components/dashboard/assessment-scores-empty.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/dashboard/assessment-scores-empty.tsx",
-          "description": "Empty state component"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I2.F3.T1"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      },
-      "requires_ui": true,
-      "visual_verification": {
-        "enabled": true,
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Take Assessment"
-          },
-          {
-            "command": "find role",
-            "target": "button"
-          }
-        ],
-        "screenshot": true
-      }
-    },
-    {
-      "id": "S1607.I2.F3.T3",
-      "type": "task",
-      "name": "Wire AssessmentScoresWidget to dashboard page",
-      "action": {
-        "verb": "Wire",
-        "target": "AssessmentScoresWidget to dashboard page"
-      },
-      "purpose": "Integrate the spider diagram widget into the user dashboard page layout with proper data flow from F1 loader",
-      "status": "draft",
-      "estimated_hours": 1,
-      "priority": 3,
-      "group": 2,
-      "ui_task": true,
-      "skill_hints": [
-        "react-best-practices"
-      ],
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/page.tsx",
-          "apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx"
-        ],
-        "types": [
-          "CategoryScores from dashboard types"
-        ],
-        "dependencies": [
-          "AssessmentScoresWidget (created in T1)",
-          "Dashboard loader from F1 (provides categoryScores)",
-          "PageBody from @kit/ui/page"
-        ],
-        "constraints": [
-          "Must pass categoryScores from F1 loader to widget",
-          "Must add to dashboard grid layout",
-          "Must handle Suspense boundaries for loading",
-          "Must position appropriately in grid"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/app/home/(user)/page.tsx",
-            "description": "Current dashboard page structure to extend"
-          }
-        ]
-      },
-      "acceptance_criterion": "AssessmentScoresWidget renders in dashboard page with category scores from F1 data layer",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'AssessmentScoresWidget' apps/web/app/home/(user)/page.tsx",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/page.tsx",
-          "description": "Import and render widget in dashboard"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I2.F3.T1"
-        ],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      },
-      "requires_ui": true,
-      "visual_verification": {
-        "enabled": true,
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Assessment Scores"
-          },
-          {
-            "command": "find role",
-            "target": "img"
-          },
-          {
-            "command": "snapshot",
-            "flags": "-i -c"
-          }
-        ],
-        "screenshot": true
-      }
-    }
-  ],
-  "execution": {
-    "groups": [
-      {
-        "id": 1,
-        "name": "Component Creation",
-        "task_ids": [
-          "S1607.I2.F3.T1",
-          "S1607.I2.F3.T2"
-        ],
-        "depends_on_groups": [],
-        "estimated_hours": 3,
-        "parallel_hours": 2,
-        "parallel_batches": [
-          {
-            "batch_id": 1,
-            "task_ids": [
-              "S1607.I2.F3.T1",
-              "S1607.I2.F3.T2"
-            ],
-            "max_hours": 2,
-            "reason": "Both create independent component files with no conflicts"
-          }
-        ],
-        "sequential_tasks": [],
-        "parallelization_analysis": {
-          "total_tasks": 2,
-          "parallelizable_count": 2,
-          "sequential_count": 0,
-          "file_conflicts": [],
-          "speedup_potential": 1.5
-        }
-      },
-      {
-        "id": 2,
-        "name": "Page Integration",
-        "task_ids": [
-          "S1607.I2.F3.T3"
-        ],
-        "depends_on_groups": [
-          1
-        ],
-        "estimated_hours": 1,
-        "parallel_hours": 1,
-        "parallel_batches": [
-          {
-            "batch_id": 1,
-            "task_ids": [
-              "S1607.I2.F3.T3"
-            ],
-            "max_hours": 1,
-            "reason": "Single task in group"
-          }
-        ],
-        "sequential_tasks": [],
-        "parallelization_analysis": {
-          "total_tasks": 1,
-          "parallelizable_count": 1,
-          "sequential_count": 0,
-          "file_conflicts": [],
-          "speedup_potential": 1
-        }
-      }
-    ],
-    "critical_path": {
-      "task_ids": [
-        "S1607.I2.F3.T1",
-        "S1607.I2.F3.T3"
-      ],
-      "total_hours": 3
-    },
-    "duration": {
-      "sequential": 4,
-      "parallel": 3,
-      "time_saved_percent": 25
-    }
-  },
-  "validation": {
-    "discriminator_verdict": "APPROVED",
-    "scores": {
-      "completeness": 100,
-      "atomicity": 100,
-      "dependencies": 100,
-      "state_flow": 100,
-      "testability": 100
-    },
-    "dependency_checks": {
-      "no_cycles": true,
-      "all_documented": true,
-      "spikes_first": true,
-      "critical_path_valid": true
-    },
-    "m1_compliance": 100
-  },
-  "github": {
-    "issues_created": true,
-    "issue_map": {},
-    "feature_tasks_issue": 1620
-  }
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1607.I2.F3",
+		"feature_name": "Spider Diagram Widget",
+		"feature_slug": "spider-diagram",
+		"initiative_id": "S1607.I2",
+		"spec_id": "1607",
+		"created_at": "2026-01-20T12:00:00Z",
+		"complexity": {
+			"score": 44,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": "dashboard-card"
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": true,
+		"ui_tasks": ["S1607.I2.F3.T1", "S1607.I2.F3.T2", "S1607.I2.F3.T3"]
+	},
+	"tasks": [
+		{
+			"id": "S1607.I2.F3.T1",
+			"type": "task",
+			"name": "Create AssessmentScoresWidget component wrapper",
+			"action": {
+				"verb": "Create",
+				"target": "AssessmentScoresWidget component wrapper"
+			},
+			"purpose": "Wrap the existing RadarChart in a Card component with proper header, title, and loading states for dashboard display",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"ui_task": true,
+			"skill_hints": ["frontend-design", "react-best-practices"],
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx"
+				],
+				"types": [
+					"CategoryScores (from RadarChart)",
+					"CardProps (from @kit/ui/card)"
+				],
+				"dependencies": [
+					"RadarChart (existing component)",
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Button from @kit/ui/button",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Must accept categoryScores prop (Record<string, number>)",
+					"Must show loading skeleton while data loads",
+					"Must handle null/undefined data gracefully",
+					"Must include link to assessment page",
+					"Must be responsive within dashboard grid"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+						"description": "Existing RadarChart component to import and use"
+					}
+				]
+			},
+			"acceptance_criterion": "AssessmentScoresWidget component renders RadarChart within Card with proper header and CTA button",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'export function AssessmentScoresWidget' apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx",
+					"description": "Widget wrapper component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S1607.I2.F3.T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_ui": true,
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Assessment Scores"
+					},
+					{
+						"command": "find role",
+						"target": "heading"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "S1607.I2.F3.T2",
+			"type": "task",
+			"name": "Create AssessmentScoresEmpty empty state component",
+			"action": {
+				"verb": "Create",
+				"target": "AssessmentScoresEmpty empty state component"
+			},
+			"purpose": "Display a friendly message with CTA when user has not completed the self-assessment survey",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 2,
+			"group": 1,
+			"ui_task": true,
+			"skill_hints": ["frontend-design"],
+			"context": {
+				"files": [],
+				"types": [],
+				"dependencies": [
+					"EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/makerkit",
+					"Button from @kit/ui/button",
+					"Trans from @kit/ui/trans",
+					"Link from next/link"
+				],
+				"constraints": [
+					"Must encourage user to take assessment",
+					"Must link to /home/assessment/survey",
+					"Must use EmptyState component from UI library",
+					"Message should be friendly and motivational"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/makerkit/empty-state.tsx",
+						"description": "EmptyState component pattern to follow"
+					}
+				]
+			},
+			"acceptance_criterion": "AssessmentScoresEmpty component displays message and CTA button linking to assessment page",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'export function AssessmentScoresEmpty' apps/web/app/home/(user)/_components/dashboard/assessment-scores-empty.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/dashboard/assessment-scores-empty.tsx",
+					"description": "Empty state component"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S1607.I2.F3.T1"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_ui": true,
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Take Assessment"
+					},
+					{
+						"command": "find role",
+						"target": "button"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "S1607.I2.F3.T3",
+			"type": "task",
+			"name": "Wire AssessmentScoresWidget to dashboard page",
+			"action": {
+				"verb": "Wire",
+				"target": "AssessmentScoresWidget to dashboard page"
+			},
+			"purpose": "Integrate the spider diagram widget into the user dashboard page layout with proper data flow from F1 loader",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 3,
+			"group": 2,
+			"ui_task": true,
+			"skill_hints": ["react-best-practices"],
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_components/dashboard/assessment-scores-widget.tsx"
+				],
+				"types": ["CategoryScores from dashboard types"],
+				"dependencies": [
+					"AssessmentScoresWidget (created in T1)",
+					"Dashboard loader from F1 (provides categoryScores)",
+					"PageBody from @kit/ui/page"
+				],
+				"constraints": [
+					"Must pass categoryScores from F1 loader to widget",
+					"Must add to dashboard grid layout",
+					"Must handle Suspense boundaries for loading",
+					"Must position appropriately in grid"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/(user)/page.tsx",
+						"description": "Current dashboard page structure to extend"
+					}
+				]
+			},
+			"acceptance_criterion": "AssessmentScoresWidget renders in dashboard page with category scores from F1 data layer",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'AssessmentScoresWidget' apps/web/app/home/(user)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx",
+					"description": "Import and render widget in dashboard"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I2.F3.T1"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"requires_ui": true,
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Assessment Scores"
+					},
+					{
+						"command": "find role",
+						"target": "img"
+					},
+					{
+						"command": "snapshot",
+						"flags": "-i -c"
+					}
+				],
+				"screenshot": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Component Creation",
+				"task_ids": ["S1607.I2.F3.T1", "S1607.I2.F3.T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 3,
+				"parallel_hours": 2,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["S1607.I2.F3.T1", "S1607.I2.F3.T2"],
+						"max_hours": 2,
+						"reason": "Both create independent component files with no conflicts"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 2,
+					"parallelizable_count": 2,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1.5
+				}
+			},
+			{
+				"id": 2,
+				"name": "Page Integration",
+				"task_ids": ["S1607.I2.F3.T3"],
+				"depends_on_groups": [1],
+				"estimated_hours": 1,
+				"parallel_hours": 1,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["S1607.I2.F3.T3"],
+						"max_hours": 1,
+						"reason": "Single task in group"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 1,
+					"parallelizable_count": 1,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1
+				}
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S1607.I2.F3.T1", "S1607.I2.F3.T3"],
+			"total_hours": 3
+		},
+		"duration": {
+			"sequential": 4,
+			"parallel": 3,
+			"time_saved_percent": 25
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"issue_map": {},
+		"feature_tasks_issue": 1620
+	}
 }

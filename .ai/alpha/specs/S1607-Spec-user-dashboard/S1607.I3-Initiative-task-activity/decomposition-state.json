@@ -1,34 +1,34 @@
 {
-  "initiative_id": "S1607.I3",
-  "initiative_name": "Task & Activity Awareness",
-  "spec_id": "S1607",
-  "status": "completed",
-  "current_phase": "finalization",
-  "started_at": "2026-01-20T10:45:00Z",
-  "features": {
-    "S1607.I3.F1": {
-      "name": "Kanban Summary Widget",
-      "status": "completed",
-      "task_count": 8,
-      "hours_estimated": 20,
-      "hours_parallel": 9,
-      "github_issue": 1614
-    },
-    "S1607.I3.F2": {
-      "name": "Activity Feed Widget",
-      "status": "completed",
-      "task_count": 14,
-      "hours_estimated": 23,
-      "hours_parallel": 10,
-      "github_issue": 1624
-    }
-  },
-  "spikes_pending": [],
-  "total_features": 2,
-  "completed_features": 2,
-  "total_tasks": 22,
-  "total_spikes": 0,
-  "total_hours_sequential": 43,
-  "total_hours_parallel": 19,
-  "completed_at": "2026-01-20T10:55:00Z"
+	"initiative_id": "S1607.I3",
+	"initiative_name": "Task & Activity Awareness",
+	"spec_id": "S1607",
+	"status": "completed",
+	"current_phase": "finalization",
+	"started_at": "2026-01-20T10:45:00Z",
+	"features": {
+		"S1607.I3.F1": {
+			"name": "Kanban Summary Widget",
+			"status": "completed",
+			"task_count": 8,
+			"hours_estimated": 20,
+			"hours_parallel": 9,
+			"github_issue": 1614
+		},
+		"S1607.I3.F2": {
+			"name": "Activity Feed Widget",
+			"status": "completed",
+			"task_count": 14,
+			"hours_estimated": 23,
+			"hours_parallel": 10,
+			"github_issue": 1624
+		}
+	},
+	"spikes_pending": [],
+	"total_features": 2,
+	"completed_features": 2,
+	"total_tasks": 22,
+	"total_spikes": 0,
+	"total_hours_sequential": 43,
+	"total_hours_parallel": 19,
+	"completed_at": "2026-01-20T10:55:00Z"
 }

@@ -1,567 +1,519 @@
 {
-  "$schema": "../../../../../templates/tasks.schema.json",
-  "metadata": {
-    "feature_id": "S1607.I4.F2",
-    "feature_name": "Presentation Outlines Table",
-    "feature_slug": "presentation-outlines-table",
-    "initiative_id": "S1607.I4",
-    "spec_id": "S1607",
-    "created_at": "2026-01-20T10:00:00Z",
-    "complexity": {
-      "score": 43.75,
-      "level": "STANDARD",
-      "target_steps": {
-        "min": 6,
-        "max": 12
-      },
-      "pattern_matched": null
-    },
-    "requires_database": false,
-    "database_tasks": [],
-    "requires_ui": true,
-    "ui_tasks": [
-      "S1607.I4.F2.T6"
-    ]
-  },
-  "tasks": [
-    {
-      "id": "S1607.I4.F2.T1",
-      "type": "task",
-      "name": "Create TypeScript types for presentation outline data",
-      "action": {
-        "verb": "Create",
-        "target": "TypeScript types file"
-      },
-      "purpose": "Define type-safe interfaces for presentation outline table data to ensure type consistency across components",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 1,
-      "group": 1,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "apps/web/lib/database.types.ts (existing Database types)",
-          "apps/web/app/home/(user)/ai/_lib/queries/building-blocks-titles.ts (reference query pattern)"
-        ],
-        "dependencies": [
-          "Database['public']['Tables']['building_blocks_submissions']['Row']",
-          "SupabaseClient"
-        ],
-        "constraints": [
-          "Use Database types from generated schema",
-          "Pick only needed fields: id, title, audience, presentation_type, updated_at",
-          "Create type for formatted table row with date as string"
-        ]
-      },
-      "input_state": "Database types exist in apps/web/lib/database.types.ts",
-      "output_state": "New file apps/web/app/home/(user)/_lib/types/presentation-outline.ts exists with PresentationOutlineRow type",
-      "acceptance_criterion": "TypeScript compiles without errors and type exports PresentationOutlineRow with id, title, audience, presentation_type, updated_at fields",
-      "verification_command": "pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_lib/types/presentation-outline.ts"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I4.F2.T2",
-          "S1607.I4.F2.T3"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T2",
-      "type": "task",
-      "name": "Create server-side query function for presentation outlines",
-      "action": {
-        "verb": "Create",
-        "target": "query function"
-      },
-      "purpose": "Fetch user's presentation outlines from database with RLS protection for table display",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 2,
-      "group": 1,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/ai/_lib/queries/building-blocks-titles.ts (reference pattern)",
-          "apps/web/app/home/(user)/_lib/types/presentation-outline.ts (types from T1)"
-        ],
-        "dependencies": [
-          "getSupabaseServerClient from @kit/supabase/server-client",
-          "Database types",
-          "PresentationOutlineRow type"
-        ],
-        "constraints": [
-          "Query building_blocks_submissions table",
-          "Select: id, title, audience, presentation_type, updated_at",
-          "Filter by user_id (RLS handles this)",
-          "Order by updated_at desc",
-          "Return formatted rows with dates as strings"
-        ]
-      },
-      "input_state": "PresentationOutlineRow type exists, building_blocks_submissions table exists with RLS policies",
-      "output_state": "New file apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts exports getPresentationOutlines function",
-      "acceptance_criterion": "Function successfully queries database and returns PresentationOutlineRow[] with proper typing",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'getPresentationOutlines' apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T1"
-        ],
-        "blocks": [
-          "S1607.I4.F2.T6"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T3",
-      "type": "task",
-      "name": "Create column definitions for table",
-      "action": {
-        "verb": "Create",
-        "target": "column definitions function"
-      },
-      "purpose": "Define DataTable columns with proper typing, sorting, and rendering for Title, Audience, Type, Updated, and Actions",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 3,
-      "group": 2,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "packages/features/team-accounts/src/components/members/account-members-table.tsx (reference for column structure)",
-          "apps/web/app/home/(user)/_lib/types/presentation-outline.ts (row type)"
-        ],
-        "dependencies": [
-          "ColumnDef from @tanstack/react-table",
-          "PresentationOutlineRow type",
-          "useMemo from react"
-        ],
-        "constraints": [
-          "Define 5 columns: Title, Audience, Type, Updated, Actions",
-          "Title: left-aligned text",
-          "Audience: text or '-' if null",
-          "Type: text or '-' if null",
-          "Updated: formatted date (toLocaleDateString)",
-          "Actions: render Edit button (disabled initially)",
-          "Wrap in useMemo for performance",
-          "Enable sorting on all columns except Actions"
-        ]
-      },
-      "input_state": "PresentationOutlineRow type exists",
-      "output_state": "Function useGetColumns exists that returns ColumnDef<PresentationOutlineRow>[] with all 5 columns",
-      "acceptance_criterion": "Column definitions compile with correct types and include all required columns with proper accessors",
-      "verification_command": "pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T1"
-        ],
-        "blocks": [
-          "S1607.I4.F2.T4"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T4",
-      "type": "task",
-      "name": "Create table component with DataTable integration",
-      "action": {
-        "verb": "Create",
-        "target": "PresentationOutlinesTable component"
-      },
-      "purpose": "Render client-side DataTable with presentation outlines data, sorting, and empty state handling",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 4,
-      "group": 2,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "packages/ui/src/makerkit/data-table.tsx (DataTable component)",
-          "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx (columns from T3)"
-        ],
-        "dependencies": [
-          "DataTable from @kit/ui/data-table",
-          "useGetColumns from presentation-outlines-table-columns.tsx",
-          "PresentationOutlineRow type"
-        ],
-        "constraints": [
-          "Mark as 'use client'",
-          "Accept data prop: PresentationOutlineRow[]",
-          "Use DataTable with manualSorting=false for client-side sorting",
-          "Use columns from useGetColumns",
-          "Provide empty state message via noResultsMessage prop",
-          "No pagination needed (pageCount undefined)"
-        ]
-      },
-      "input_state": "useGetColumns function exists, DataTable component available",
-      "output_state": "PresentationOutlinesTable component exists rendering DataTable with proper props",
-      "acceptance_criterion": "Component renders without errors and accepts PresentationOutlineRow[] prop",
-      "verification_command": "pnpm --filter web typecheck && grep -q \"'use client'\" apps/web/app/home/(user)/_components/presentation-outlines-table.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/presentation-outlines-table.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T3"
-        ],
-        "blocks": [
-          "S1607.I4.F2.T5",
-          "S1607.I4.F2.T6"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T5",
-      "type": "task",
-      "name": "Add Edit button navigation logic",
-      "action": {
-        "verb": "Add",
-        "target": "navigation handler to Edit button"
-      },
-      "purpose": "Enable Edit button to navigate to outline editor when clicked",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 5,
-      "group": 3,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx (column definitions)"
-        ],
-        "dependencies": [
-          "useRouter from next/navigation",
-          "Button from @kit/ui/button",
-          "Pencil from lucide-react"
-        ],
-        "constraints": [
-          "Add onClick handler to Edit button in Actions column",
-          "Navigate to: /home/ai/canvas?id={row.original.id}",
-          "Use router.push for navigation",
-          "Keep button variant='ghost' and size='icon'"
-        ]
-      },
-      "input_state": "PresentationOutlinesTable component exists with disabled Edit button",
-      "output_state": "Edit button navigates to outline editor with presentation ID",
-      "acceptance_criterion": "Clicking Edit button navigates to /home/ai/canvas with correct id parameter",
-      "verification_command": "grep -q 'router.push' apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T4"
-        ],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T6",
-      "type": "task",
-      "name": "Integrate table into user dashboard page",
-      "action": {
-        "verb": "Add",
-        "target": "table to user dashboard page"
-      },
-      "purpose": "Fetch presentation outlines server-side and render table component on user dashboard",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 6,
-      "group": 3,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Title"
-          },
-          {
-            "command": "is visible",
-            "target": "Audience"
-          },
-          {
-            "command": "is visible",
-            "target": "Type"
-          },
-          {
-            "command": "is visible",
-            "target": "Updated"
-          },
-          {
-            "command": "is visible",
-            "target": "Actions"
-          },
-          {
-            "command": "find role",
-            "target": "table"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/page.tsx (current dashboard page)",
-          "apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts (query from T2)",
-          "apps/web/app/home/(user)/_components/presentation-outlines-table.tsx (table component from T4)"
-        ],
-        "dependencies": [
-          "getSupabaseServerClient from @kit/supabase/server-client",
-          "getPresentationOutlines function",
-          "PresentationOutlinesTable component",
-          "Suspense from react"
-        ],
-        "constraints": [
-          "Make page async",
-          "Call getPresentationOutlines with user ID",
-          "Wrap table in Suspense with Skeleton fallback",
-          "Add section with heading 'Your Presentations'",
-          "Place table in PageBody after header"
-        ]
-      },
-      "input_state": "User dashboard page exists with minimal content, getPresentationOutlines and PresentationOutlinesTable exist",
-      "output_state": "User dashboard page displays presentation outlines table with data or empty state",
-      "acceptance_criterion": "Table renders on /home page with user's presentations or empty state message",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'getPresentationOutlines' apps/web/app/home/(user)/page.tsx",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/page.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T2",
-          "S1607.I4.F2.T4"
-        ],
-        "blocks": [
-          "S1607.I4.F2.T7"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I4.F2.T7",
-      "type": "task",
-      "name": "Add loading skeleton component",
-      "action": {
-        "verb": "Create",
-        "target": "loading skeleton"
-      },
-      "purpose": "Display skeleton UI during table data loading for better UX",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 7,
-      "group": 4,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/page.tsx (page with Suspense)"
-        ],
-        "dependencies": [
-          "Skeleton from @kit/ui/skeleton"
-        ],
-        "constraints": [
-          "Create PresentationOutlinesTableSkeleton component",
-          "Render 5 skeleton rows",
-          "Each row: 5 skeleton cells matching column widths",
-          "Use Skeleton component for each cell",
-          "Match table structure visually"
-        ]
-      },
-      "input_state": "Table integrated into page with generic Suspense fallback",
-      "output_state": "Custom skeleton component exists and is used as Suspense fallback",
-      "acceptance_criterion": "Skeleton displays during loading with structure matching actual table",
-      "verification_command": "grep -q 'PresentationOutlinesTableSkeleton' apps/web/app/home/(user)/page.tsx",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/presentation-outlines-table-skeleton.tsx"
-        },
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/page.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I4.F2.T6"
-        ],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    }
-  ],
-  "execution": {
-    "groups": [
-      {
-        "id": 1,
-        "name": "Foundation - Types and Query",
-        "task_ids": [
-          "S1607.I4.F2.T1",
-          "S1607.I4.F2.T2"
-        ],
-        "depends_on_groups": [],
-        "estimated_hours": 4,
-        "parallel_hours": 2
-      },
-      {
-        "id": 2,
-        "name": "Component Structure",
-        "task_ids": [
-          "S1607.I4.F2.T3",
-          "S1607.I4.F2.T4"
-        ],
-        "depends_on_groups": [
-          1
-        ],
-        "estimated_hours": 6,
-        "parallel_hours": 3
-      },
-      {
-        "id": 3,
-        "name": "Integration and Navigation",
-        "task_ids": [
-          "S1607.I4.F2.T5",
-          "S1607.I4.F2.T6"
-        ],
-        "depends_on_groups": [
-          2
-        ],
-        "estimated_hours": 5,
-        "parallel_hours": 3
-      },
-      {
-        "id": 4,
-        "name": "Polish - Loading State",
-        "task_ids": [
-          "S1607.I4.F2.T7"
-        ],
-        "depends_on_groups": [
-          3
-        ],
-        "estimated_hours": 2,
-        "parallel_hours": 2
-      }
-    ],
-    "critical_path": {
-      "task_ids": [
-        "S1607.I4.F2.T1",
-        "S1607.I4.F2.T3",
-        "S1607.I4.F2.T4",
-        "S1607.I4.F2.T6",
-        "S1607.I4.F2.T7"
-      ],
-      "total_hours": 13
-    },
-    "duration": {
-      "sequential": 17,
-      "parallel": 13,
-      "time_saved_percent": 23.5
-    }
-  },
-  "validation": {
-    "discriminator_verdict": "APPROVED",
-    "scores": {
-      "completeness": 100,
-      "atomicity": 100,
-      "dependencies": 100,
-      "state_flow": 100,
-      "testability": 95
-    },
-    "dependency_checks": {
-      "no_cycles": true,
-      "all_documented": true,
-      "spikes_first": true,
-      "critical_path_valid": true
-    },
-    "m1_compliance": 100
-  },
-  "github": {
-    "issues_created": true,
-    "feature_tasks_issue": 1619
-  }
+	"$schema": "../../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1607.I4.F2",
+		"feature_name": "Presentation Outlines Table",
+		"feature_slug": "presentation-outlines-table",
+		"initiative_id": "S1607.I4",
+		"spec_id": "S1607",
+		"created_at": "2026-01-20T10:00:00Z",
+		"complexity": {
+			"score": 43.75,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": null
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": true,
+		"ui_tasks": ["S1607.I4.F2.T6"]
+	},
+	"tasks": [
+		{
+			"id": "S1607.I4.F2.T1",
+			"type": "task",
+			"name": "Create TypeScript types for presentation outline data",
+			"action": {
+				"verb": "Create",
+				"target": "TypeScript types file"
+			},
+			"purpose": "Define type-safe interfaces for presentation outline table data to ensure type consistency across components",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"apps/web/lib/database.types.ts (existing Database types)",
+					"apps/web/app/home/(user)/ai/_lib/queries/building-blocks-titles.ts (reference query pattern)"
+				],
+				"dependencies": [
+					"Database['public']['Tables']['building_blocks_submissions']['Row']",
+					"SupabaseClient"
+				],
+				"constraints": [
+					"Use Database types from generated schema",
+					"Pick only needed fields: id, title, audience, presentation_type, updated_at",
+					"Create type for formatted table row with date as string"
+				]
+			},
+			"input_state": "Database types exist in apps/web/lib/database.types.ts",
+			"output_state": "New file apps/web/app/home/(user)/_lib/types/presentation-outline.ts exists with PresentationOutlineRow type",
+			"acceptance_criterion": "TypeScript compiles without errors and type exports PresentationOutlineRow with id, title, audience, presentation_type, updated_at fields",
+			"verification_command": "pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/types/presentation-outline.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S1607.I4.F2.T2", "S1607.I4.F2.T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T2",
+			"type": "task",
+			"name": "Create server-side query function for presentation outlines",
+			"action": {
+				"verb": "Create",
+				"target": "query function"
+			},
+			"purpose": "Fetch user's presentation outlines from database with RLS protection for table display",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/ai/_lib/queries/building-blocks-titles.ts (reference pattern)",
+					"apps/web/app/home/(user)/_lib/types/presentation-outline.ts (types from T1)"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"Database types",
+					"PresentationOutlineRow type"
+				],
+				"constraints": [
+					"Query building_blocks_submissions table",
+					"Select: id, title, audience, presentation_type, updated_at",
+					"Filter by user_id (RLS handles this)",
+					"Order by updated_at desc",
+					"Return formatted rows with dates as strings"
+				]
+			},
+			"input_state": "PresentationOutlineRow type exists, building_blocks_submissions table exists with RLS policies",
+			"output_state": "New file apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts exports getPresentationOutlines function",
+			"acceptance_criterion": "Function successfully queries database and returns PresentationOutlineRow[] with proper typing",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'getPresentationOutlines' apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T1"],
+				"blocks": ["S1607.I4.F2.T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T3",
+			"type": "task",
+			"name": "Create column definitions for table",
+			"action": {
+				"verb": "Create",
+				"target": "column definitions function"
+			},
+			"purpose": "Define DataTable columns with proper typing, sorting, and rendering for Title, Audience, Type, Updated, and Actions",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 3,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"packages/features/team-accounts/src/components/members/account-members-table.tsx (reference for column structure)",
+					"apps/web/app/home/(user)/_lib/types/presentation-outline.ts (row type)"
+				],
+				"dependencies": [
+					"ColumnDef from @tanstack/react-table",
+					"PresentationOutlineRow type",
+					"useMemo from react"
+				],
+				"constraints": [
+					"Define 5 columns: Title, Audience, Type, Updated, Actions",
+					"Title: left-aligned text",
+					"Audience: text or '-' if null",
+					"Type: text or '-' if null",
+					"Updated: formatted date (toLocaleDateString)",
+					"Actions: render Edit button (disabled initially)",
+					"Wrap in useMemo for performance",
+					"Enable sorting on all columns except Actions"
+				]
+			},
+			"input_state": "PresentationOutlineRow type exists",
+			"output_state": "Function useGetColumns exists that returns ColumnDef<PresentationOutlineRow>[] with all 5 columns",
+			"acceptance_criterion": "Column definitions compile with correct types and include all required columns with proper accessors",
+			"verification_command": "pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T1"],
+				"blocks": ["S1607.I4.F2.T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T4",
+			"type": "task",
+			"name": "Create table component with DataTable integration",
+			"action": {
+				"verb": "Create",
+				"target": "PresentationOutlinesTable component"
+			},
+			"purpose": "Render client-side DataTable with presentation outlines data, sorting, and empty state handling",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 4,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"packages/ui/src/makerkit/data-table.tsx (DataTable component)",
+					"apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx (columns from T3)"
+				],
+				"dependencies": [
+					"DataTable from @kit/ui/data-table",
+					"useGetColumns from presentation-outlines-table-columns.tsx",
+					"PresentationOutlineRow type"
+				],
+				"constraints": [
+					"Mark as 'use client'",
+					"Accept data prop: PresentationOutlineRow[]",
+					"Use DataTable with manualSorting=false for client-side sorting",
+					"Use columns from useGetColumns",
+					"Provide empty state message via noResultsMessage prop",
+					"No pagination needed (pageCount undefined)"
+				]
+			},
+			"input_state": "useGetColumns function exists, DataTable component available",
+			"output_state": "PresentationOutlinesTable component exists rendering DataTable with proper props",
+			"acceptance_criterion": "Component renders without errors and accepts PresentationOutlineRow[] prop",
+			"verification_command": "pnpm --filter web typecheck && grep -q \"'use client'\" apps/web/app/home/(user)/_components/presentation-outlines-table.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/presentation-outlines-table.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T3"],
+				"blocks": ["S1607.I4.F2.T5", "S1607.I4.F2.T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T5",
+			"type": "task",
+			"name": "Add Edit button navigation logic",
+			"action": {
+				"verb": "Add",
+				"target": "navigation handler to Edit button"
+			},
+			"purpose": "Enable Edit button to navigate to outline editor when clicked",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx (column definitions)"
+				],
+				"dependencies": [
+					"useRouter from next/navigation",
+					"Button from @kit/ui/button",
+					"Pencil from lucide-react"
+				],
+				"constraints": [
+					"Add onClick handler to Edit button in Actions column",
+					"Navigate to: /home/ai/canvas?id={row.original.id}",
+					"Use router.push for navigation",
+					"Keep button variant='ghost' and size='icon'"
+				]
+			},
+			"input_state": "PresentationOutlinesTable component exists with disabled Edit button",
+			"output_state": "Edit button navigates to outline editor with presentation ID",
+			"acceptance_criterion": "Clicking Edit button navigates to /home/ai/canvas with correct id parameter",
+			"verification_command": "grep -q 'router.push' apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/presentation-outlines-table-columns.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T4"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T6",
+			"type": "task",
+			"name": "Integrate table into user dashboard page",
+			"action": {
+				"verb": "Add",
+				"target": "table to user dashboard page"
+			},
+			"purpose": "Fetch presentation outlines server-side and render table component on user dashboard",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 6,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Title"
+					},
+					{
+						"command": "is visible",
+						"target": "Audience"
+					},
+					{
+						"command": "is visible",
+						"target": "Type"
+					},
+					{
+						"command": "is visible",
+						"target": "Updated"
+					},
+					{
+						"command": "is visible",
+						"target": "Actions"
+					},
+					{
+						"command": "find role",
+						"target": "table"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx (current dashboard page)",
+					"apps/web/app/home/(user)/_lib/queries/presentation-outlines.ts (query from T2)",
+					"apps/web/app/home/(user)/_components/presentation-outlines-table.tsx (table component from T4)"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"getPresentationOutlines function",
+					"PresentationOutlinesTable component",
+					"Suspense from react"
+				],
+				"constraints": [
+					"Make page async",
+					"Call getPresentationOutlines with user ID",
+					"Wrap table in Suspense with Skeleton fallback",
+					"Add section with heading 'Your Presentations'",
+					"Place table in PageBody after header"
+				]
+			},
+			"input_state": "User dashboard page exists with minimal content, getPresentationOutlines and PresentationOutlinesTable exist",
+			"output_state": "User dashboard page displays presentation outlines table with data or empty state",
+			"acceptance_criterion": "Table renders on /home page with user's presentations or empty state message",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'getPresentationOutlines' apps/web/app/home/(user)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T2", "S1607.I4.F2.T4"],
+				"blocks": ["S1607.I4.F2.T7"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I4.F2.T7",
+			"type": "task",
+			"name": "Add loading skeleton component",
+			"action": {
+				"verb": "Create",
+				"target": "loading skeleton"
+			},
+			"purpose": "Display skeleton UI during table data loading for better UX",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 7,
+			"group": 4,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": ["apps/web/app/home/(user)/page.tsx (page with Suspense)"],
+				"dependencies": ["Skeleton from @kit/ui/skeleton"],
+				"constraints": [
+					"Create PresentationOutlinesTableSkeleton component",
+					"Render 5 skeleton rows",
+					"Each row: 5 skeleton cells matching column widths",
+					"Use Skeleton component for each cell",
+					"Match table structure visually"
+				]
+			},
+			"input_state": "Table integrated into page with generic Suspense fallback",
+			"output_state": "Custom skeleton component exists and is used as Suspense fallback",
+			"acceptance_criterion": "Skeleton displays during loading with structure matching actual table",
+			"verification_command": "grep -q 'PresentationOutlinesTableSkeleton' apps/web/app/home/(user)/page.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/presentation-outlines-table-skeleton.tsx"
+				},
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I4.F2.T6"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Foundation - Types and Query",
+				"task_ids": ["S1607.I4.F2.T1", "S1607.I4.F2.T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 4,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Component Structure",
+				"task_ids": ["S1607.I4.F2.T3", "S1607.I4.F2.T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 6,
+				"parallel_hours": 3
+			},
+			{
+				"id": 3,
+				"name": "Integration and Navigation",
+				"task_ids": ["S1607.I4.F2.T5", "S1607.I4.F2.T6"],
+				"depends_on_groups": [2],
+				"estimated_hours": 5,
+				"parallel_hours": 3
+			},
+			{
+				"id": 4,
+				"name": "Polish - Loading State",
+				"task_ids": ["S1607.I4.F2.T7"],
+				"depends_on_groups": [3],
+				"estimated_hours": 2,
+				"parallel_hours": 2
+			}
+		],
+		"critical_path": {
+			"task_ids": [
+				"S1607.I4.F2.T1",
+				"S1607.I4.F2.T3",
+				"S1607.I4.F2.T4",
+				"S1607.I4.F2.T6",
+				"S1607.I4.F2.T7"
+			],
+			"total_hours": 13
+		},
+		"duration": {
+			"sequential": 17,
+			"parallel": 13,
+			"time_saved_percent": 23.5
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 95
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1619
+	}
 }

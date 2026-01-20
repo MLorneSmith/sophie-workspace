@@ -1,243 +1,225 @@
 {
-  "$schema": "../../../../templates/tasks.schema.json",
-  "metadata": {
-    "feature_id": "S1607.I2.F1",
-    "feature_name": "Progress Data Layer & Types",
-    "feature_slug": "progress-data-layer",
-    "initiative_id": "S1607.I2",
-    "spec_id": 1607,
-    "created_at": "2026-01-20T10:00:00Z",
-    "complexity": {
-      "score": 31,
-      "level": "LOW",
-      "target_steps": {
-        "min": 3,
-        "max": 6
-      },
-      "pattern_matched": null
-    },
-    "requires_database": false,
-    "database_tasks": [],
-    "requires_ui": false,
-    "ui_tasks": []
-  },
-  "tasks": [
-    {
-      "id": "S1607.I2.F1.T1",
-      "type": "task",
-      "name": "Create TypeScript types for dashboard progress data",
-      "action": {
-        "verb": "Create",
-        "target": "dashboard.types.ts with CourseProgressData and AssessmentScoresData interfaces"
-      },
-      "purpose": "Define type-safe contracts for course progress and assessment scores data structures",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 1,
-      "group": 1,
-      "requires_database": false,
-      "context": {
-        "files": [
-          "packages/supabase/src/database.types.ts"
-        ],
-        "dependencies": [
-          "Database['public']['Tables']['course_progress']['Row']",
-          "Database['public']['Tables']['survey_responses']['Row']"
-        ],
-        "constraints": [
-          "Must export interfaces for reuse by widgets",
-          "Must handle null/undefined for users without data",
-          "Must match database schema structure"
-        ]
-      },
-      "input_state": "Database types exist in packages/supabase/src/database.types.ts with course_progress and survey_responses tables defined",
-      "output_state": "File apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with exported TypeScript interfaces: CourseProgressData (completion_percentage, current_lesson_id, course_id, started_at, completed_at) and AssessmentScoresData (category_scores as Record<string, number>, completed, created_at)",
-      "acceptance_criterion": "File exists at apps/web/app/home/(user)/_lib/types/dashboard.types.ts and exports CourseProgressData and AssessmentScoresData interfaces that compile without errors",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'export interface CourseProgressData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export interface AssessmentScoresData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I2.F1.T2"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I2.F1.T2",
-      "type": "task",
-      "name": "Create loader function for dashboard progress data",
-      "action": {
-        "verb": "Create",
-        "target": "dashboard-progress.loader.ts with loadDashboardProgressData function"
-      },
-      "purpose": "Fetch course progress and survey response data using parallel Promise.all() pattern",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 2,
-      "group": 1,
-      "requires_database": false,
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
-          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
-        ],
-        "dependencies": [
-          "getSupabaseServerClient from @kit/supabase/server-client",
-          "cache from react",
-          "CourseProgressData and AssessmentScoresData types"
-        ],
-        "constraints": [
-          "Must use Promise.all() for parallel fetching",
-          "Must use React cache() wrapper for per-request caching",
-          "Must handle empty data gracefully (return null/undefined)",
-          "Must follow existing loader pattern from load-user-workspace.ts",
-          "Must use performant RLS pattern with (select auth.uid())"
-        ]
-      },
-      "input_state": "Types exist in dashboard.types.ts; course_progress and survey_responses tables exist with RLS policies; load-user-workspace.ts provides loader pattern reference",
-      "output_state": "File apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts exists with exported loadDashboardProgressData function that returns { courseProgress: CourseProgressData | null, assessmentScores: AssessmentScoresData | null } using parallel Promise.all() fetching",
-      "acceptance_criterion": "Loader function exists, compiles without errors, uses Promise.all() for parallel queries, and returns correct type structure with null handling for missing data",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'export const loadDashboardProgressData' apps/web/app/home/\\(user\\)/_lib/server/dashboard-progress.loader.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard-progress.loader.ts",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I2.F1.T1"
-        ],
-        "blocks": [
-          "S1607.I2.F1.T3"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I2.F1.T3",
-      "type": "task",
-      "name": "Wire loader to dashboard page component",
-      "action": {
-        "verb": "Update",
-        "target": "page.tsx to import and call loadDashboardProgressData"
-      },
-      "purpose": "Integrate loader function into existing page component to provide data to future widgets",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 3,
-      "group": 1,
-      "requires_database": false,
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/page.tsx",
-          "apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts"
-        ],
-        "dependencies": [
-          "loadDashboardProgressData function",
-          "HomeLayoutPageHeader component",
-          "PageBody component from @kit/ui/page"
-        ],
-        "constraints": [
-          "Must call loader in async component body before JSX return",
-          "Must not break existing page structure (header, body)",
-          "Page component must remain async server component"
-        ]
-      },
-      "input_state": "Page component exists at apps/web/app/home/(user)/page.tsx with empty PageBody; loader function exists and is ready to call",
-      "output_state": "Page component imports and calls loadDashboardProgressData, stores result in variable (currently unused but ready for widgets); page compiles and renders without errors",
-      "acceptance_criterion": "Page component successfully imports loadDashboardProgressData, calls it before JSX return, and page loads without errors when navigating to /home",
-      "verification_command": "pnpm --filter web typecheck && grep -q 'loadDashboardProgressData' apps/web/app/home/\\(user\\)/page.tsx",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/page.tsx"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I2.F1.T2"
-        ],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    }
-  ],
-  "execution": {
-    "groups": [
-      {
-        "id": 1,
-        "name": "Foundation",
-        "task_ids": [
-          "S1607.I2.F1.T1",
-          "S1607.I2.F1.T2",
-          "S1607.I2.F1.T3"
-        ],
-        "depends_on_groups": [],
-        "estimated_hours": 7,
-        "parallel_hours": 7
-      }
-    ],
-    "critical_path": {
-      "task_ids": [
-        "S1607.I2.F1.T1",
-        "S1607.I2.F1.T2",
-        "S1607.I2.F1.T3"
-      ],
-      "total_hours": 7
-    },
-    "duration": {
-      "sequential": 7,
-      "parallel": 7,
-      "time_saved_percent": 0
-    }
-  },
-  "validation": {
-    "discriminator_verdict": "APPROVED",
-    "scores": {
-      "completeness": 100,
-      "atomicity": 100,
-      "dependencies": 100,
-      "state_flow": 100,
-      "testability": 100
-    },
-    "dependency_checks": {
-      "no_cycles": true,
-      "all_documented": true,
-      "spikes_first": true,
-      "critical_path_valid": true
-    },
-    "m1_compliance": 100
-  },
-  "github": {
-    "issues_created": true,
-    "feature_tasks_issue": 1610
-  }
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1607.I2.F1",
+		"feature_name": "Progress Data Layer & Types",
+		"feature_slug": "progress-data-layer",
+		"initiative_id": "S1607.I2",
+		"spec_id": 1607,
+		"created_at": "2026-01-20T10:00:00Z",
+		"complexity": {
+			"score": 31,
+			"level": "LOW",
+			"target_steps": {
+				"min": 3,
+				"max": 6
+			},
+			"pattern_matched": null
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": false,
+		"ui_tasks": []
+	},
+	"tasks": [
+		{
+			"id": "S1607.I2.F1.T1",
+			"type": "task",
+			"name": "Create TypeScript types for dashboard progress data",
+			"action": {
+				"verb": "Create",
+				"target": "dashboard.types.ts with CourseProgressData and AssessmentScoresData interfaces"
+			},
+			"purpose": "Define type-safe contracts for course progress and assessment scores data structures",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"requires_database": false,
+			"context": {
+				"files": ["packages/supabase/src/database.types.ts"],
+				"dependencies": [
+					"Database['public']['Tables']['course_progress']['Row']",
+					"Database['public']['Tables']['survey_responses']['Row']"
+				],
+				"constraints": [
+					"Must export interfaces for reuse by widgets",
+					"Must handle null/undefined for users without data",
+					"Must match database schema structure"
+				]
+			},
+			"input_state": "Database types exist in packages/supabase/src/database.types.ts with course_progress and survey_responses tables defined",
+			"output_state": "File apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with exported TypeScript interfaces: CourseProgressData (completion_percentage, current_lesson_id, course_id, started_at, completed_at) and AssessmentScoresData (category_scores as Record<string, number>, completed, created_at)",
+			"acceptance_criterion": "File exists at apps/web/app/home/(user)/_lib/types/dashboard.types.ts and exports CourseProgressData and AssessmentScoresData interfaces that compile without errors",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'export interface CourseProgressData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export interface AssessmentScoresData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S1607.I2.F1.T2"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I2.F1.T2",
+			"type": "task",
+			"name": "Create loader function for dashboard progress data",
+			"action": {
+				"verb": "Create",
+				"target": "dashboard-progress.loader.ts with loadDashboardProgressData function"
+			},
+			"purpose": "Fetch course progress and survey response data using parallel Promise.all() pattern",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 2,
+			"group": 1,
+			"requires_database": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+					"apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"cache from react",
+					"CourseProgressData and AssessmentScoresData types"
+				],
+				"constraints": [
+					"Must use Promise.all() for parallel fetching",
+					"Must use React cache() wrapper for per-request caching",
+					"Must handle empty data gracefully (return null/undefined)",
+					"Must follow existing loader pattern from load-user-workspace.ts",
+					"Must use performant RLS pattern with (select auth.uid())"
+				]
+			},
+			"input_state": "Types exist in dashboard.types.ts; course_progress and survey_responses tables exist with RLS policies; load-user-workspace.ts provides loader pattern reference",
+			"output_state": "File apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts exists with exported loadDashboardProgressData function that returns { courseProgress: CourseProgressData | null, assessmentScores: AssessmentScoresData | null } using parallel Promise.all() fetching",
+			"acceptance_criterion": "Loader function exists, compiles without errors, uses Promise.all() for parallel queries, and returns correct type structure with null handling for missing data",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'export const loadDashboardProgressData' apps/web/app/home/\\(user\\)/_lib/server/dashboard-progress.loader.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard-progress.loader.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I2.F1.T1"],
+				"blocks": ["S1607.I2.F1.T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I2.F1.T3",
+			"type": "task",
+			"name": "Wire loader to dashboard page component",
+			"action": {
+				"verb": "Update",
+				"target": "page.tsx to import and call loadDashboardProgressData"
+			},
+			"purpose": "Integrate loader function into existing page component to provide data to future widgets",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 3,
+			"group": 1,
+			"requires_database": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts"
+				],
+				"dependencies": [
+					"loadDashboardProgressData function",
+					"HomeLayoutPageHeader component",
+					"PageBody component from @kit/ui/page"
+				],
+				"constraints": [
+					"Must call loader in async component body before JSX return",
+					"Must not break existing page structure (header, body)",
+					"Page component must remain async server component"
+				]
+			},
+			"input_state": "Page component exists at apps/web/app/home/(user)/page.tsx with empty PageBody; loader function exists and is ready to call",
+			"output_state": "Page component imports and calls loadDashboardProgressData, stores result in variable (currently unused but ready for widgets); page compiles and renders without errors",
+			"acceptance_criterion": "Page component successfully imports loadDashboardProgressData, calls it before JSX return, and page loads without errors when navigating to /home",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'loadDashboardProgressData' apps/web/app/home/\\(user\\)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I2.F1.T2"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Foundation",
+				"task_ids": ["S1607.I2.F1.T1", "S1607.I2.F1.T2", "S1607.I2.F1.T3"],
+				"depends_on_groups": [],
+				"estimated_hours": 7,
+				"parallel_hours": 7
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S1607.I2.F1.T1", "S1607.I2.F1.T2", "S1607.I2.F1.T3"],
+			"total_hours": 7
+		},
+		"duration": {
+			"sequential": 7,
+			"parallel": 7,
+			"time_saved_percent": 0
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1610
+	}
 }

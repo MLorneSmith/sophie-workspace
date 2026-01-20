@@ -1,999 +1,906 @@
 {
-  "$schema": "../../../../templates/tasks.schema.json",
-  "metadata": {
-    "feature_id": "S1607.I1.F2",
-    "feature_name": "Widget Card Shells",
-    "feature_slug": "widget-card-shells",
-    "initiative_id": "S1607.I1",
-    "spec_id": "1607",
-    "created_at": "2026-01-20T15:00:00Z",
-    "complexity": {
-      "score": 62.5,
-      "level": "HIGH",
-      "target_steps": {
-        "min": 12,
-        "max": 20
-      },
-      "pattern_matched": "layer-decomposition"
-    },
-    "requires_database": false,
-    "database_tasks": [],
-    "requires_ui": true,
-    "ui_tasks": [
-      "S1607.I1.F2.T3",
-      "S1607.I1.F2.T4",
-      "S1607.I1.F2.T5",
-      "S1607.I1.F2.T6",
-      "S1607.I1.F2.T7",
-      "S1607.I1.F2.T8",
-      "S1607.I1.F2.T9",
-      "S1607.I1.F2.T10"
-    ]
-  },
-  "tasks": [
-    {
-      "id": "S1607.I1.F2.T1",
-      "type": "task",
-      "name": "Create dashboard.types.ts with widget interfaces",
-      "action": {
-        "verb": "Create",
-        "target": "TypeScript interfaces for all 7 widget data types"
-      },
-      "purpose": "Define type-safe data contracts for widget components",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 1,
-      "group": 1,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [],
-        "types": [],
-        "dependencies": [],
-        "constraints": [
-          "Export all 7 widget interfaces: RecentActivityData, QuickStatsData, ProgressOverviewData, UpcomingEventData, TeamStatusData, ResourceUsageData, ActivityFeedData",
-          "Export composite DashboardData interface",
-          "Use proper TypeScript typing (no any)",
-          "Follow existing type conventions in codebase"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/app/home/(user)/_lib/types/",
-            "description": "Location for route-specific types"
-          }
-        ]
-      },
-      "input_state": "No dashboard types exist",
-      "output_state": "dashboard.types.ts exists with 7 widget interfaces plus DashboardData composite",
-      "acceptance_criterion": "File exports RecentActivityData, QuickStatsData, ProgressOverviewData, UpcomingEventData, TeamStatusData, ResourceUsageData, ActivityFeedData, and DashboardData interfaces without TypeScript errors",
-      "verification_command": "grep -q 'export interface RecentActivityData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export interface DashboardData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
-          "description": "Widget data type definitions"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I1.F2.T3",
-          "S1607.I1.F2.T4",
-          "S1607.I1.F2.T5",
-          "S1607.I1.F2.T6",
-          "S1607.I1.F2.T7",
-          "S1607.I1.F2.T8",
-          "S1607.I1.F2.T9"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T2",
-      "type": "task",
-      "name": "Add widget i18n keys to common.json",
-      "action": {
-        "verb": "Add",
-        "target": "i18n keys for widget titles and empty states"
-      },
-      "purpose": "Provide localized text for widget cards",
-      "status": "draft",
-      "estimated_hours": 2,
-      "priority": 2,
-      "group": 1,
-      "requires_database": false,
-      "requires_ui": false,
-      "context": {
-        "files": [
-          "apps/web/public/locales/en/common.json"
-        ],
-        "types": [],
-        "dependencies": [],
-        "constraints": [
-          "Add keys for 7 widget titles: recentActivity, quickStats, progressOverview, upcomingEvents, teamStatus, resourceUsage, activityFeed",
-          "Add empty state keys for each widget",
-          "Follow existing i18n key naming conventions"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/public/locales/en/common.json",
-            "description": "Existing i18n structure"
-          }
-        ]
-      },
-      "input_state": "common.json lacks widget i18n keys",
-      "output_state": "common.json contains widget title and empty state keys",
-      "acceptance_criterion": "Keys for all 7 widget titles and empty states exist in common.json under widgets namespace",
-      "verification_command": "jq '.widgets.recentActivity' apps/web/public/locales/en/common.json && jq '.widgets.activityFeed' apps/web/public/locales/en/common.json && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/public/locales/en/common.json",
-          "description": "Added widget i18n keys"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [],
-        "blocks": [
-          "S1607.I1.F2.T3",
-          "S1607.I1.F2.T4",
-          "S1607.I1.F2.T5",
-          "S1607.I1.F2.T6",
-          "S1607.I1.F2.T7",
-          "S1607.I1.F2.T8",
-          "S1607.I1.F2.T9"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T3",
-      "type": "task",
-      "name": "Create recent-activity-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Recent Activity widget card component"
-      },
-      "purpose": "Provide shell for displaying last 5 user actions",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 3,
-      "group": 2,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Recent Activity"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "RecentActivityData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: RecentActivityData[] | null",
-          "Handle null data with empty state",
-          "Add data-testid='recent-activity-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "recent-activity-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts RecentActivityData[] prop",
-      "verification_command": "grep -q 'RecentActivityCard' apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/recent-activity-card.tsx",
-          "description": "Recent Activity widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T4",
-      "type": "task",
-      "name": "Create quick-stats-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Quick Stats widget card component"
-      },
-      "purpose": "Provide shell for displaying key metrics summary",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 4,
-      "group": 2,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Quick Stats"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "QuickStatsData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: QuickStatsData | null",
-          "Handle null data with empty state",
-          "Add data-testid='quick-stats-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "quick-stats-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts QuickStatsData prop",
-      "verification_command": "grep -q 'QuickStatsCard' apps/web/app/home/\\(user\\)/_components/widgets/quick-stats-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/quick-stats-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/quick-stats-card.tsx",
-          "description": "Quick Stats widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T5",
-      "type": "task",
-      "name": "Create progress-overview-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Progress Overview widget card component"
-      },
-      "purpose": "Provide shell for displaying task completion percentage",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 5,
-      "group": 2,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Progress Overview"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "ProgressOverviewData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: ProgressOverviewData | null",
-          "Handle null data with empty state",
-          "Add data-testid='progress-overview-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "progress-overview-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ProgressOverviewData prop",
-      "verification_command": "grep -q 'ProgressOverviewCard' apps/web/app/home/\\(user\\)/_components/widgets/progress-overview-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/progress-overview-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/progress-overview-card.tsx",
-          "description": "Progress Overview widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T6",
-      "type": "task",
-      "name": "Create upcoming-events-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Upcoming Events widget card component"
-      },
-      "purpose": "Provide shell for displaying next 3 scheduled items",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 6,
-      "group": 3,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Upcoming Events"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "UpcomingEventData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: UpcomingEventData[] | null",
-          "Handle null data with empty state",
-          "Add data-testid='upcoming-events-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "upcoming-events-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts UpcomingEventData[] prop",
-      "verification_command": "grep -q 'UpcomingEventsCard' apps/web/app/home/\\(user\\)/_components/widgets/upcoming-events-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/upcoming-events-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/upcoming-events-card.tsx",
-          "description": "Upcoming Events widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T7",
-      "type": "task",
-      "name": "Create team-status-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Team Status widget card component"
-      },
-      "purpose": "Provide shell for displaying team availability counts",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 7,
-      "group": 3,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Team Status"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "TeamStatusData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: TeamStatusData | null",
-          "Handle null data with empty state",
-          "Add data-testid='team-status-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "team-status-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts TeamStatusData prop",
-      "verification_command": "grep -q 'TeamStatusCard' apps/web/app/home/\\(user\\)/_components/widgets/team-status-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/team-status-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/team-status-card.tsx",
-          "description": "Team Status widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T8",
-      "type": "task",
-      "name": "Create resource-usage-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Resource Usage widget card component"
-      },
-      "purpose": "Provide shell for displaying storage percentage used",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 8,
-      "group": 3,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Resource Usage"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "ResourceUsageData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: ResourceUsageData | null",
-          "Handle null data with empty state",
-          "Add data-testid='resource-usage-card'",
-          "Use Card component structure"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "resource-usage-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ResourceUsageData prop",
-      "verification_command": "grep -q 'ResourceUsageCard' apps/web/app/home/\\(user\\)/_components/widgets/resource-usage-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/resource-usage-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/resource-usage-card.tsx",
-          "description": "Resource Usage widget card"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T9",
-      "type": "task",
-      "name": "Create activity-feed-card.tsx component",
-      "action": {
-        "verb": "Create",
-        "target": "Activity Feed widget card component"
-      },
-      "purpose": "Provide shell for displaying scrollable activity timeline",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 9,
-      "group": 4,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Activity Feed"
-          },
-          {
-            "command": "find role",
-            "target": "region"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [],
-        "types": [
-          "ActivityFeedData from ../_lib/types/dashboard.types"
-        ],
-        "dependencies": [
-          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
-          "Trans from @kit/ui/trans"
-        ],
-        "constraints": [
-          "Server Component (no 'use client')",
-          "Accept optional data prop: ActivityFeedData[] | null",
-          "Handle null data with empty state",
-          "Add data-testid='activity-feed-card'",
-          "Use Card component structure",
-          "Full-width card (spans xl:col-span-3 in grid)"
-        ],
-        "patterns": [
-          {
-            "file": "packages/ui/src/shadcn/card.tsx",
-            "description": "Card component structure"
-          }
-        ]
-      },
-      "input_state": "Types and i18n keys exist, no component file",
-      "output_state": "activity-feed-card.tsx exists with Card structure and type-safe props",
-      "acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ActivityFeedData[] prop",
-      "verification_command": "grep -q 'ActivityFeedCard' apps/web/app/home/\\(user\\)/_components/widgets/activity-feed-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/activity-feed-card.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "new",
-          "path": "apps/web/app/home/(user)/_components/widgets/activity-feed-card.tsx",
-          "description": "Activity Feed widget card (full-width)"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "blocks": [
-          "S1607.I1.F2.T10"
-        ]
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    },
-    {
-      "id": "S1607.I1.F2.T10",
-      "type": "task",
-      "name": "Update dashboard-grid.tsx to render widget cards",
-      "action": {
-        "verb": "Update",
-        "target": "dashboard-grid.tsx to import and render 7 widget cards"
-      },
-      "purpose": "Integrate widget card components into dashboard layout",
-      "status": "draft",
-      "estimated_hours": 3,
-      "priority": 10,
-      "group": 5,
-      "requires_database": false,
-      "requires_ui": true,
-      "visual_verification": {
-        "route": "/home",
-        "wait_ms": 3000,
-        "checks": [
-          {
-            "command": "is visible",
-            "target": "Recent Activity"
-          },
-          {
-            "command": "is visible",
-            "target": "Quick Stats"
-          },
-          {
-            "command": "is visible",
-            "target": "Activity Feed"
-          },
-          {
-            "command": "find role",
-            "target": "main"
-          }
-        ],
-        "screenshot": true
-      },
-      "context": {
-        "files": [
-          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
-        ],
-        "types": [],
-        "dependencies": [
-          "RecentActivityCard from ./widgets/recent-activity-card",
-          "QuickStatsCard from ./widgets/quick-stats-card",
-          "ProgressOverviewCard from ./widgets/progress-overview-card",
-          "UpcomingEventsCard from ./widgets/upcoming-events-card",
-          "TeamStatusCard from ./widgets/team-status-card",
-          "ResourceUsageCard from ./widgets/resource-usage-card",
-          "ActivityFeedCard from ./widgets/activity-feed-card"
-        ],
-        "constraints": [
-          "Replace children prop usage with direct widget component rendering",
-          "Maintain 3-3-1 grid layout structure",
-          "Pass null data to all widgets (placeholder state)",
-          "Maintain responsive grid classes",
-          "Ensure activity-feed-card spans full width (xl:col-span-3)"
-        ],
-        "patterns": [
-          {
-            "file": "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
-            "description": "Current grid structure created in F1"
-          }
-        ]
-      },
-      "input_state": "dashboard-grid.tsx exists with children prop placeholder",
-      "output_state": "dashboard-grid.tsx renders all 7 widget cards in 3-3-1 layout",
-      "acceptance_criterion": "All 7 widget cards render in correct grid positions with null data, page loads without errors",
-      "verification_command": "grep -q 'RecentActivityCard' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q 'ActivityFeedCard' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm --filter web typecheck",
-      "outputs": [
-        {
-          "type": "modified",
-          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
-          "description": "Integrated 7 widget cards into grid layout"
-        }
-      ],
-      "dependencies": {
-        "blocked_by": [
-          "S1607.I1.F2.T3",
-          "S1607.I1.F2.T4",
-          "S1607.I1.F2.T5",
-          "S1607.I1.F2.T6",
-          "S1607.I1.F2.T7",
-          "S1607.I1.F2.T8",
-          "S1607.I1.F2.T9"
-        ],
-        "blocks": []
-      },
-      "m1_checks": {
-        "single_verb": true,
-        "no_conjunctions": true,
-        "under_8_hours": true,
-        "under_750_tokens": true,
-        "binary_done_state": true,
-        "max_3_files": true
-      }
-    }
-  ],
-  "execution": {
-    "groups": [
-      {
-        "id": 1,
-        "name": "Foundation (Types & i18n)",
-        "task_ids": [
-          "S1607.I1.F2.T1",
-          "S1607.I1.F2.T2"
-        ],
-        "depends_on_groups": [],
-        "estimated_hours": 5,
-        "parallel_hours": 3,
-        "parallel_batches": [
-          {
-            "batch_id": 1,
-            "task_ids": [
-              "S1607.I1.F2.T1",
-              "S1607.I1.F2.T2"
-            ],
-            "max_hours": 3,
-            "reason": "T1 creates new types file, T2 modifies common.json - no file conflicts"
-          }
-        ],
-        "sequential_tasks": [],
-        "parallelization_analysis": {
-          "total_tasks": 2,
-          "parallelizable_count": 2,
-          "sequential_count": 0,
-          "file_conflicts": [],
-          "speedup_potential": 1.67
-        }
-      },
-      {
-        "id": 2,
-        "name": "Widget Cards Row 1 (Metric Cards)",
-        "task_ids": [
-          "S1607.I1.F2.T3",
-          "S1607.I1.F2.T4",
-          "S1607.I1.F2.T5"
-        ],
-        "depends_on_groups": [
-          1
-        ],
-        "estimated_hours": 9,
-        "parallel_hours": 3,
-        "parallel_batches": [
-          {
-            "batch_id": 1,
-            "task_ids": [
-              "S1607.I1.F2.T3",
-              "S1607.I1.F2.T4",
-              "S1607.I1.F2.T5"
-            ],
-            "max_hours": 3,
-            "reason": "All create new widget files - no file conflicts"
-          }
-        ],
-        "sequential_tasks": [],
-        "parallelization_analysis": {
-          "total_tasks": 3,
-          "parallelizable_count": 3,
-          "sequential_count": 0,
-          "file_conflicts": [],
-          "speedup_potential": 3
-        }
-      },
-      {
-        "id": 3,
-        "name": "Widget Cards Row 2 (Info Cards)",
-        "task_ids": [
-          "S1607.I1.F2.T6",
-          "S1607.I1.F2.T7",
-          "S1607.I1.F2.T8"
-        ],
-        "depends_on_groups": [
-          1
-        ],
-        "estimated_hours": 9,
-        "parallel_hours": 3,
-        "parallel_batches": [
-          {
-            "batch_id": 1,
-            "task_ids": [
-              "S1607.I1.F2.T6",
-              "S1607.I1.F2.T7",
-              "S1607.I1.F2.T8"
-            ],
-            "max_hours": 3,
-            "reason": "All create new widget files - no file conflicts"
-          }
-        ],
-        "sequential_tasks": [],
-        "parallelization_analysis": {
-          "total_tasks": 3,
-          "parallelizable_count": 3,
-          "sequential_count": 0,
-          "file_conflicts": [],
-          "speedup_potential": 3
-        }
-      },
-      {
-        "id": 4,
-        "name": "Widget Card Row 3 (Full-Width Feed)",
-        "task_ids": [
-          "S1607.I1.F2.T9"
-        ],
-        "depends_on_groups": [
-          1
-        ],
-        "estimated_hours": 3,
-        "parallel_hours": 3
-      },
-      {
-        "id": 5,
-        "name": "Grid Integration",
-        "task_ids": [
-          "S1607.I1.F2.T10"
-        ],
-        "depends_on_groups": [
-          2,
-          3,
-          4
-        ],
-        "estimated_hours": 3,
-        "parallel_hours": 3
-      }
-    ],
-    "critical_path": {
-      "task_ids": [
-        "S1607.I1.F2.T1",
-        "S1607.I1.F2.T3",
-        "S1607.I1.F2.T10"
-      ],
-      "total_hours": 9
-    },
-    "duration": {
-      "sequential": 29,
-      "parallel": 15,
-      "time_saved_percent": 48
-    }
-  },
-  "validation": {
-    "discriminator_verdict": "APPROVED",
-    "scores": {
-      "completeness": 100,
-      "atomicity": 100,
-      "dependencies": 100,
-      "state_flow": 100,
-      "testability": 100
-    },
-    "dependency_checks": {
-      "no_cycles": true,
-      "all_documented": true,
-      "spikes_first": true,
-      "critical_path_valid": true
-    },
-    "m1_compliance": 100
-  },
-  "github": {
-    "issues_created": true,
-    "feature_tasks_issue": 1618
-  }
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1607.I1.F2",
+		"feature_name": "Widget Card Shells",
+		"feature_slug": "widget-card-shells",
+		"initiative_id": "S1607.I1",
+		"spec_id": "1607",
+		"created_at": "2026-01-20T15:00:00Z",
+		"complexity": {
+			"score": 62.5,
+			"level": "HIGH",
+			"target_steps": {
+				"min": 12,
+				"max": 20
+			},
+			"pattern_matched": "layer-decomposition"
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": true,
+		"ui_tasks": [
+			"S1607.I1.F2.T3",
+			"S1607.I1.F2.T4",
+			"S1607.I1.F2.T5",
+			"S1607.I1.F2.T6",
+			"S1607.I1.F2.T7",
+			"S1607.I1.F2.T8",
+			"S1607.I1.F2.T9",
+			"S1607.I1.F2.T10"
+		]
+	},
+	"tasks": [
+		{
+			"id": "S1607.I1.F2.T1",
+			"type": "task",
+			"name": "Create dashboard.types.ts with widget interfaces",
+			"action": {
+				"verb": "Create",
+				"target": "TypeScript interfaces for all 7 widget data types"
+			},
+			"purpose": "Define type-safe data contracts for widget components",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 1,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": [],
+				"types": [],
+				"dependencies": [],
+				"constraints": [
+					"Export all 7 widget interfaces: RecentActivityData, QuickStatsData, ProgressOverviewData, UpcomingEventData, TeamStatusData, ResourceUsageData, ActivityFeedData",
+					"Export composite DashboardData interface",
+					"Use proper TypeScript typing (no any)",
+					"Follow existing type conventions in codebase"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/(user)/_lib/types/",
+						"description": "Location for route-specific types"
+					}
+				]
+			},
+			"input_state": "No dashboard types exist",
+			"output_state": "dashboard.types.ts exists with 7 widget interfaces plus DashboardData composite",
+			"acceptance_criterion": "File exports RecentActivityData, QuickStatsData, ProgressOverviewData, UpcomingEventData, TeamStatusData, ResourceUsageData, ActivityFeedData, and DashboardData interfaces without TypeScript errors",
+			"verification_command": "grep -q 'export interface RecentActivityData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && grep -q 'export interface DashboardData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
+					"description": "Widget data type definitions"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": [
+					"S1607.I1.F2.T3",
+					"S1607.I1.F2.T4",
+					"S1607.I1.F2.T5",
+					"S1607.I1.F2.T6",
+					"S1607.I1.F2.T7",
+					"S1607.I1.F2.T8",
+					"S1607.I1.F2.T9"
+				]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T2",
+			"type": "task",
+			"name": "Add widget i18n keys to common.json",
+			"action": {
+				"verb": "Add",
+				"target": "i18n keys for widget titles and empty states"
+			},
+			"purpose": "Provide localized text for widget cards",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"requires_database": false,
+			"requires_ui": false,
+			"context": {
+				"files": ["apps/web/public/locales/en/common.json"],
+				"types": [],
+				"dependencies": [],
+				"constraints": [
+					"Add keys for 7 widget titles: recentActivity, quickStats, progressOverview, upcomingEvents, teamStatus, resourceUsage, activityFeed",
+					"Add empty state keys for each widget",
+					"Follow existing i18n key naming conventions"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/public/locales/en/common.json",
+						"description": "Existing i18n structure"
+					}
+				]
+			},
+			"input_state": "common.json lacks widget i18n keys",
+			"output_state": "common.json contains widget title and empty state keys",
+			"acceptance_criterion": "Keys for all 7 widget titles and empty states exist in common.json under widgets namespace",
+			"verification_command": "jq '.widgets.recentActivity' apps/web/public/locales/en/common.json && jq '.widgets.activityFeed' apps/web/public/locales/en/common.json && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/public/locales/en/common.json",
+					"description": "Added widget i18n keys"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": [
+					"S1607.I1.F2.T3",
+					"S1607.I1.F2.T4",
+					"S1607.I1.F2.T5",
+					"S1607.I1.F2.T6",
+					"S1607.I1.F2.T7",
+					"S1607.I1.F2.T8",
+					"S1607.I1.F2.T9"
+				]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T3",
+			"type": "task",
+			"name": "Create recent-activity-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Recent Activity widget card component"
+			},
+			"purpose": "Provide shell for displaying last 5 user actions",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 3,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Recent Activity"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["RecentActivityData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: RecentActivityData[] | null",
+					"Handle null data with empty state",
+					"Add data-testid='recent-activity-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "recent-activity-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts RecentActivityData[] prop",
+			"verification_command": "grep -q 'RecentActivityCard' apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/recent-activity-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/recent-activity-card.tsx",
+					"description": "Recent Activity widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T4",
+			"type": "task",
+			"name": "Create quick-stats-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Quick Stats widget card component"
+			},
+			"purpose": "Provide shell for displaying key metrics summary",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 4,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Quick Stats"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["QuickStatsData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: QuickStatsData | null",
+					"Handle null data with empty state",
+					"Add data-testid='quick-stats-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "quick-stats-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts QuickStatsData prop",
+			"verification_command": "grep -q 'QuickStatsCard' apps/web/app/home/\\(user\\)/_components/widgets/quick-stats-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/quick-stats-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/quick-stats-card.tsx",
+					"description": "Quick Stats widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T5",
+			"type": "task",
+			"name": "Create progress-overview-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Progress Overview widget card component"
+			},
+			"purpose": "Provide shell for displaying task completion percentage",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 5,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Progress Overview"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["ProgressOverviewData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: ProgressOverviewData | null",
+					"Handle null data with empty state",
+					"Add data-testid='progress-overview-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "progress-overview-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ProgressOverviewData prop",
+			"verification_command": "grep -q 'ProgressOverviewCard' apps/web/app/home/\\(user\\)/_components/widgets/progress-overview-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/progress-overview-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/progress-overview-card.tsx",
+					"description": "Progress Overview widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T6",
+			"type": "task",
+			"name": "Create upcoming-events-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Upcoming Events widget card component"
+			},
+			"purpose": "Provide shell for displaying next 3 scheduled items",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 6,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Upcoming Events"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["UpcomingEventData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: UpcomingEventData[] | null",
+					"Handle null data with empty state",
+					"Add data-testid='upcoming-events-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "upcoming-events-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts UpcomingEventData[] prop",
+			"verification_command": "grep -q 'UpcomingEventsCard' apps/web/app/home/\\(user\\)/_components/widgets/upcoming-events-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/upcoming-events-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/upcoming-events-card.tsx",
+					"description": "Upcoming Events widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T7",
+			"type": "task",
+			"name": "Create team-status-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Team Status widget card component"
+			},
+			"purpose": "Provide shell for displaying team availability counts",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 7,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Team Status"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["TeamStatusData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: TeamStatusData | null",
+					"Handle null data with empty state",
+					"Add data-testid='team-status-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "team-status-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts TeamStatusData prop",
+			"verification_command": "grep -q 'TeamStatusCard' apps/web/app/home/\\(user\\)/_components/widgets/team-status-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/team-status-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/team-status-card.tsx",
+					"description": "Team Status widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T8",
+			"type": "task",
+			"name": "Create resource-usage-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Resource Usage widget card component"
+			},
+			"purpose": "Provide shell for displaying storage percentage used",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 8,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Resource Usage"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["ResourceUsageData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: ResourceUsageData | null",
+					"Handle null data with empty state",
+					"Add data-testid='resource-usage-card'",
+					"Use Card component structure"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "resource-usage-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ResourceUsageData prop",
+			"verification_command": "grep -q 'ResourceUsageCard' apps/web/app/home/\\(user\\)/_components/widgets/resource-usage-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/resource-usage-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/resource-usage-card.tsx",
+					"description": "Resource Usage widget card"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T9",
+			"type": "task",
+			"name": "Create activity-feed-card.tsx component",
+			"action": {
+				"verb": "Create",
+				"target": "Activity Feed widget card component"
+			},
+			"purpose": "Provide shell for displaying scrollable activity timeline",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 9,
+			"group": 4,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Activity Feed"
+					},
+					{
+						"command": "find role",
+						"target": "region"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [],
+				"types": ["ActivityFeedData from ../_lib/types/dashboard.types"],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Trans from @kit/ui/trans"
+				],
+				"constraints": [
+					"Server Component (no 'use client')",
+					"Accept optional data prop: ActivityFeedData[] | null",
+					"Handle null data with empty state",
+					"Add data-testid='activity-feed-card'",
+					"Use Card component structure",
+					"Full-width card (spans xl:col-span-3 in grid)"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure"
+					}
+				]
+			},
+			"input_state": "Types and i18n keys exist, no component file",
+			"output_state": "activity-feed-card.tsx exists with Card structure and type-safe props",
+			"acceptance_criterion": "Component renders with CardHeader showing title, CardContent with placeholder or empty state, and accepts ActivityFeedData[] prop",
+			"verification_command": "grep -q 'ActivityFeedCard' apps/web/app/home/\\(user\\)/_components/widgets/activity-feed-card.tsx && grep -q 'data-testid' apps/web/app/home/\\(user\\)/_components/widgets/activity-feed-card.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/activity-feed-card.tsx",
+					"description": "Activity Feed widget card (full-width)"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"blocks": ["S1607.I1.F2.T10"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1607.I1.F2.T10",
+			"type": "task",
+			"name": "Update dashboard-grid.tsx to render widget cards",
+			"action": {
+				"verb": "Update",
+				"target": "dashboard-grid.tsx to import and render 7 widget cards"
+			},
+			"purpose": "Integrate widget card components into dashboard layout",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 10,
+			"group": 5,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Recent Activity"
+					},
+					{
+						"command": "is visible",
+						"target": "Quick Stats"
+					},
+					{
+						"command": "is visible",
+						"target": "Activity Feed"
+					},
+					{
+						"command": "find role",
+						"target": "main"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": ["apps/web/app/home/(user)/_components/dashboard-grid.tsx"],
+				"types": [],
+				"dependencies": [
+					"RecentActivityCard from ./widgets/recent-activity-card",
+					"QuickStatsCard from ./widgets/quick-stats-card",
+					"ProgressOverviewCard from ./widgets/progress-overview-card",
+					"UpcomingEventsCard from ./widgets/upcoming-events-card",
+					"TeamStatusCard from ./widgets/team-status-card",
+					"ResourceUsageCard from ./widgets/resource-usage-card",
+					"ActivityFeedCard from ./widgets/activity-feed-card"
+				],
+				"constraints": [
+					"Replace children prop usage with direct widget component rendering",
+					"Maintain 3-3-1 grid layout structure",
+					"Pass null data to all widgets (placeholder state)",
+					"Maintain responsive grid classes",
+					"Ensure activity-feed-card spans full width (xl:col-span-3)"
+				],
+				"patterns": [
+					{
+						"file": "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+						"description": "Current grid structure created in F1"
+					}
+				]
+			},
+			"input_state": "dashboard-grid.tsx exists with children prop placeholder",
+			"output_state": "dashboard-grid.tsx renders all 7 widget cards in 3-3-1 layout",
+			"acceptance_criterion": "All 7 widget cards render in correct grid positions with null data, page loads without errors",
+			"verification_command": "grep -q 'RecentActivityCard' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q 'ActivityFeedCard' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && pnpm --filter web typecheck",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+					"description": "Integrated 7 widget cards into grid layout"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [
+					"S1607.I1.F2.T3",
+					"S1607.I1.F2.T4",
+					"S1607.I1.F2.T5",
+					"S1607.I1.F2.T6",
+					"S1607.I1.F2.T7",
+					"S1607.I1.F2.T8",
+					"S1607.I1.F2.T9"
+				],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Foundation (Types & i18n)",
+				"task_ids": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 5,
+				"parallel_hours": 3,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["S1607.I1.F2.T1", "S1607.I1.F2.T2"],
+						"max_hours": 3,
+						"reason": "T1 creates new types file, T2 modifies common.json - no file conflicts"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 2,
+					"parallelizable_count": 2,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1.67
+				}
+			},
+			{
+				"id": 2,
+				"name": "Widget Cards Row 1 (Metric Cards)",
+				"task_ids": ["S1607.I1.F2.T3", "S1607.I1.F2.T4", "S1607.I1.F2.T5"],
+				"depends_on_groups": [1],
+				"estimated_hours": 9,
+				"parallel_hours": 3,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["S1607.I1.F2.T3", "S1607.I1.F2.T4", "S1607.I1.F2.T5"],
+						"max_hours": 3,
+						"reason": "All create new widget files - no file conflicts"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 3,
+					"parallelizable_count": 3,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 3
+				}
+			},
+			{
+				"id": 3,
+				"name": "Widget Cards Row 2 (Info Cards)",
+				"task_ids": ["S1607.I1.F2.T6", "S1607.I1.F2.T7", "S1607.I1.F2.T8"],
+				"depends_on_groups": [1],
+				"estimated_hours": 9,
+				"parallel_hours": 3,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["S1607.I1.F2.T6", "S1607.I1.F2.T7", "S1607.I1.F2.T8"],
+						"max_hours": 3,
+						"reason": "All create new widget files - no file conflicts"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 3,
+					"parallelizable_count": 3,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 3
+				}
+			},
+			{
+				"id": 4,
+				"name": "Widget Card Row 3 (Full-Width Feed)",
+				"task_ids": ["S1607.I1.F2.T9"],
+				"depends_on_groups": [1],
+				"estimated_hours": 3,
+				"parallel_hours": 3
+			},
+			{
+				"id": 5,
+				"name": "Grid Integration",
+				"task_ids": ["S1607.I1.F2.T10"],
+				"depends_on_groups": [2, 3, 4],
+				"estimated_hours": 3,
+				"parallel_hours": 3
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S1607.I1.F2.T1", "S1607.I1.F2.T3", "S1607.I1.F2.T10"],
+			"total_hours": 9
+		},
+		"duration": {
+			"sequential": 29,
+			"parallel": 15,
+			"time_saved_percent": 48
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 100
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": true,
+		"feature_tasks_issue": 1618
+	}
 }
