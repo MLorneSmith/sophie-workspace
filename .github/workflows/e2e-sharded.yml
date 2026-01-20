@@ -75,6 +75,29 @@ jobs:
 
           echo "✅ Supabase E2E environment ready"
 
+      - name: Extract Supabase JWT keys
+        id: supabase-keys
+        run: |
+          cd apps/web
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
+
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
+
+          # Export for subsequent steps
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
+
       - name: Build application
         run: |
           # Build with Turbo cache (cache-dir already configured in package.json)
@@ -88,8 +111,9 @@ jobs:
           NODE_ENV: 'production'
           # Supabase env vars must be present at build time for Next.js production builds
           # NEXT_PUBLIC_* vars are baked into the client bundle at build time
+          # NEXT_PUBLIC_SUPABASE_ANON_KEY is set by the "Extract Supabase JWT keys" step above
+          # which exports it to $GITHUB_ENV, making it available here
           NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
 
       - name: Cache build and server state
         uses: actions/cache@v4
@@ -124,9 +148,10 @@ jobs:
       # E2E Database Configuration - Local Supabase instance (ports 54521/54522)
       SUPABASE_URL: 'http://127.0.0.1:54521'
       NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
-      SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+      # JWT keys (SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY)
+      # are extracted dynamically from Supabase after startup in the "Extract Supabase JWT keys" step.
+      # This ensures we use the actual ES256 keys that Supabase generates, not hardcoded HS256 keys.
+      # See: Issue #1615 (diagnosis), Issue #1621 (fix) for details.
       DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
       DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
       
@@ -236,6 +261,28 @@ jobs:
 
           # Run migrations
           supabase db reset --no-seed || true
+
+      - name: Extract Supabase JWT keys
+        run: |
+          cd apps/web
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
+
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
+
+          # Export for E2E tests
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |
