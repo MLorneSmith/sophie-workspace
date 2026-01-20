@@ -22,6 +22,7 @@ import {
 	archiveAndClearPreviousRun,
 	ensureUIProgressDir,
 	findSpecDir,
+	generateSpecManifest,
 	loadManifest,
 	saveManifest,
 	writeOverallProgress,
@@ -601,5 +602,325 @@ describe("archiveAndClearPreviousRun", () => {
 		// Should have at most MAX_ARCHIVED_RUNS + 1 (new archive) directories
 		const remainingArchives = fs.readdirSync(archiveDir);
 		expect(remainingArchives.length).toBeLessThanOrEqual(MAX_ARCHIVED_RUNS + 1);
+	});
+});
+
+describe("generateSpecManifest - Initiative Dependency Propagation", () => {
+	/**
+	 * Helper to create a tasks.json file for testing
+	 */
+	function createTasksJson(
+		featureDir: string,
+		featureId: string,
+		initiativeId: string,
+		specId: string,
+	): void {
+		const tasksJson = {
+			metadata: {
+				feature_id: featureId,
+				feature_name: "Test Feature",
+				feature_slug: "test-feature",
+				initiative_id: initiativeId,
+				spec_id: specId,
+			},
+			tasks: [
+				{
+					id: "T1",
+					name: "Task 1",
+					status: "pending",
+					estimated_hours: 1,
+				},
+			],
+			execution: {
+				duration: {
+					sequential: 1,
+					parallel: 1,
+				},
+			},
+		};
+		fs.writeFileSync(
+			path.join(featureDir, "tasks.json"),
+			JSON.stringify(tasksJson, null, 2),
+		);
+	}
+
+	/**
+	 * Helper to create a feature.md file with metadata
+	 */
+	function createFeatureMd(
+		featureDir: string,
+		featureId: string,
+		priority: number,
+		blockedBy?: string[],
+	): void {
+		const blockedBySection = blockedBy?.length
+			? `\n### Blocked By\n${blockedBy.join(", ")}`
+			: "";
+
+		const content = `# Feature: Test Feature
+
+| Field | Value |
+|-------|-------|
+| **Feature ID** | ${featureId} |
+| **Priority** | ${priority} |
+${blockedBySection}
+`;
+		fs.writeFileSync(path.join(featureDir, "feature.md"), content);
+	}
+
+	/**
+	 * Helper to create an initiative.md file with dependencies
+	 */
+	function createInitiativeMd(
+		initDir: string,
+		priority: number,
+		blockedBy?: string[],
+	): void {
+		const blockedBySection = blockedBy?.length
+			? `\n### Blocked By\n${blockedBy.join(", ")}`
+			: "";
+
+		const content = `# Initiative: Test Initiative
+
+| Field | Value |
+|-------|-------|
+| **Priority** | ${priority} |
+${blockedBySection}
+`;
+		fs.writeFileSync(path.join(initDir, "initiative.md"), content);
+	}
+
+	it("propagates single initiative dependency to features", () => {
+		// Setup: Create spec with 2 initiatives, I2 depends on I1
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9999-Spec-test",
+		);
+
+		// Create I1 with F1 (no initiative dependencies)
+		const i1Dir = path.join(specDir, "S9999.I1-Initiative-foundation");
+		const f1Dir = path.join(i1Dir, "S9999.I1.F1-Feature-core");
+		fs.mkdirSync(f1Dir, { recursive: true });
+		createInitiativeMd(i1Dir, 1);
+		createTasksJson(f1Dir, "S9999.I1.F1", "S9999.I1", "S9999");
+		createFeatureMd(f1Dir, "S9999.I1.F1", 1);
+
+		// Create I2 with F1, I2 is blocked by I1
+		const i2Dir = path.join(specDir, "S9999.I2-Initiative-dependent");
+		const f2Dir = path.join(i2Dir, "S9999.I2.F1-Feature-secondary");
+		fs.mkdirSync(f2Dir, { recursive: true });
+		createInitiativeMd(i2Dir, 2, ["S9999.I1"]);
+		createTasksJson(f2Dir, "S9999.I2.F1", "S9999.I2", "S9999");
+		createFeatureMd(f2Dir, "S9999.I2.F1", 1);
+
+		// Generate manifest
+		const manifest = generateSpecManifest(tempDir, 9999, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		// F1 in I1 should have no dependencies
+		const f1 = manifest.feature_queue.find((f) => f.id === "S9999.I1.F1");
+		expect(f1?.dependencies).toEqual([]);
+
+		// F1 in I2 should inherit I1 dependency from its initiative
+		const f2 = manifest.feature_queue.find((f) => f.id === "S9999.I2.F1");
+		expect(f2?.dependencies).toEqual(["S9999.I1"]);
+	});
+
+	it("propagates multiple initiative dependencies to features", () => {
+		// Setup: Create spec with I3 depending on both I1 and I2
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9998-Spec-multi",
+		);
+
+		// Create I1, I2, and I3
+		for (let i = 1; i <= 3; i++) {
+			const initDir = path.join(specDir, `S9998.I${i}-Initiative-part${i}`);
+			const featureDir = path.join(initDir, `S9998.I${i}.F1-Feature-main`);
+			fs.mkdirSync(featureDir, { recursive: true });
+
+			const blockedBy = i === 3 ? ["S9998.I1", "S9998.I2"] : undefined;
+			createInitiativeMd(initDir, i, blockedBy);
+			createTasksJson(featureDir, `S9998.I${i}.F1`, `S9998.I${i}`, "S9998");
+			createFeatureMd(featureDir, `S9998.I${i}.F1`, 1);
+		}
+
+		// Generate manifest
+		const manifest = generateSpecManifest(tempDir, 9998, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		// F1 in I3 should inherit both I1 and I2 dependencies
+		const f3 = manifest.feature_queue.find((f) => f.id === "S9998.I3.F1");
+		expect(f3?.dependencies).toContain("S9998.I1");
+		expect(f3?.dependencies).toContain("S9998.I2");
+		expect(f3?.dependencies.length).toBe(2);
+	});
+
+	it("combines initiative dependencies with feature dependencies", () => {
+		// Setup: Feature has own dependency F1, plus initiative depends on I1
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9997-Spec-combined",
+		);
+
+		// Create I1 with F1
+		const i1Dir = path.join(specDir, "S9997.I1-Initiative-base");
+		const f1Dir = path.join(i1Dir, "S9997.I1.F1-Feature-first");
+		fs.mkdirSync(f1Dir, { recursive: true });
+		createInitiativeMd(i1Dir, 1);
+		createTasksJson(f1Dir, "S9997.I1.F1", "S9997.I1", "S9997");
+		createFeatureMd(f1Dir, "S9997.I1.F1", 1);
+
+		// Create I2 (blocked by I1) with F1 and F2 (F2 blocked by F1)
+		const i2Dir = path.join(specDir, "S9997.I2-Initiative-dependent");
+		fs.mkdirSync(i2Dir, { recursive: true });
+		createInitiativeMd(i2Dir, 2, ["S9997.I1"]);
+
+		const f2_1Dir = path.join(i2Dir, "S9997.I2.F1-Feature-setup");
+		fs.mkdirSync(f2_1Dir, { recursive: true });
+		createTasksJson(f2_1Dir, "S9997.I2.F1", "S9997.I2", "S9997");
+		createFeatureMd(f2_1Dir, "S9997.I2.F1", 1);
+
+		const f2_2Dir = path.join(i2Dir, "S9997.I2.F2-Feature-build");
+		fs.mkdirSync(f2_2Dir, { recursive: true });
+		createTasksJson(f2_2Dir, "S9997.I2.F2", "S9997.I2", "S9997");
+		// F2 blocked by F1 within same initiative
+		createFeatureMd(f2_2Dir, "S9997.I2.F2", 2, ["F1"]);
+
+		// Generate manifest
+		const manifest = generateSpecManifest(tempDir, 9997, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		// F1 in I2 should inherit I1 dependency
+		const f2_1 = manifest.feature_queue.find((f) => f.id === "S9997.I2.F1");
+		expect(f2_1?.dependencies).toEqual(["S9997.I1"]);
+
+		// F2 in I2 should have both initiative dep (I1) and feature dep (F1)
+		const f2_2 = manifest.feature_queue.find((f) => f.id === "S9997.I2.F2");
+		expect(f2_2?.dependencies).toContain("S9997.I1");
+		expect(f2_2?.dependencies).toContain("S9997.I2.F1");
+		expect(f2_2?.dependencies.length).toBe(2);
+	});
+
+	it("maintains correct dependency order (initiative deps first)", () => {
+		// Setup: Feature has own dep, initiative also has dep
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9996-Spec-order",
+		);
+
+		// Create I1 with F1
+		const i1Dir = path.join(specDir, "S9996.I1-Initiative-first");
+		const f1Dir = path.join(i1Dir, "S9996.I1.F1-Feature-one");
+		fs.mkdirSync(f1Dir, { recursive: true });
+		createInitiativeMd(i1Dir, 1);
+		createTasksJson(f1Dir, "S9996.I1.F1", "S9996.I1", "S9996");
+		createFeatureMd(f1Dir, "S9996.I1.F1", 1);
+
+		// Create I2 (blocked by I1) with F1 and F2
+		const i2Dir = path.join(specDir, "S9996.I2-Initiative-second");
+		fs.mkdirSync(i2Dir, { recursive: true });
+		createInitiativeMd(i2Dir, 2, ["S9996.I1"]);
+
+		const f2_1Dir = path.join(i2Dir, "S9996.I2.F1-Feature-setup");
+		fs.mkdirSync(f2_1Dir, { recursive: true });
+		createTasksJson(f2_1Dir, "S9996.I2.F1", "S9996.I2", "S9996");
+		createFeatureMd(f2_1Dir, "S9996.I2.F1", 1);
+
+		const f2_2Dir = path.join(i2Dir, "S9996.I2.F2-Feature-build");
+		fs.mkdirSync(f2_2Dir, { recursive: true });
+		createTasksJson(f2_2Dir, "S9996.I2.F2", "S9996.I2", "S9996");
+		createFeatureMd(f2_2Dir, "S9996.I2.F2", 2, ["S9996.I2.F1"]);
+
+		const manifest = generateSpecManifest(tempDir, 9996, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		const f2_2 = manifest.feature_queue.find((f) => f.id === "S9996.I2.F2");
+		// Initiative deps come first (using Set preserves insertion order)
+		expect(f2_2?.dependencies[0]).toBe("S9996.I1");
+	});
+
+	it("avoids duplicate dependencies", () => {
+		// Edge case: Feature explicitly depends on same ID as initiative
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9995-Spec-dedup",
+		);
+
+		// Create I1 with F1
+		const i1Dir = path.join(specDir, "S9995.I1-Initiative-base");
+		const f1Dir = path.join(i1Dir, "S9995.I1.F1-Feature-core");
+		fs.mkdirSync(f1Dir, { recursive: true });
+		createInitiativeMd(i1Dir, 1);
+		createTasksJson(f1Dir, "S9995.I1.F1", "S9995.I1", "S9995");
+		createFeatureMd(f1Dir, "S9995.I1.F1", 1);
+
+		// Create I2 (blocked by I1), with F1 that also explicitly blocks on I1
+		const i2Dir = path.join(specDir, "S9995.I2-Initiative-dependent");
+		const f2Dir = path.join(i2Dir, "S9995.I2.F1-Feature-explicit");
+		fs.mkdirSync(f2Dir, { recursive: true });
+		createInitiativeMd(i2Dir, 2, ["S9995.I1"]);
+		createTasksJson(f2Dir, "S9995.I2.F1", "S9995.I2", "S9995");
+		// Feature explicitly depends on I1 (same as initiative)
+		createFeatureMd(f2Dir, "S9995.I2.F1", 1, ["S9995.I1"]);
+
+		const manifest = generateSpecManifest(tempDir, 9995, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		const f2 = manifest.feature_queue.find((f) => f.id === "S9995.I2.F1");
+		// Should only have one S9995.I1, not duplicated
+		expect(f2?.dependencies).toEqual(["S9995.I1"]);
+		expect(f2?.dependencies.length).toBe(1);
+	});
+
+	it("handles empty initiative dependencies correctly", () => {
+		// Initiative with no dependencies should not affect features
+		const specDir = path.join(
+			tempDir,
+			".ai",
+			"alpha",
+			"specs",
+			"S9994-Spec-empty",
+		);
+
+		const i1Dir = path.join(specDir, "S9994.I1-Initiative-standalone");
+		const f1Dir = path.join(i1Dir, "S9994.I1.F1-Feature-solo");
+		fs.mkdirSync(f1Dir, { recursive: true });
+		createInitiativeMd(i1Dir, 1); // No blockedBy
+		createTasksJson(f1Dir, "S9994.I1.F1", "S9994.I1", "S9994");
+		createFeatureMd(f1Dir, "S9994.I1.F1", 1);
+
+		const manifest = generateSpecManifest(tempDir, 9994, specDir, true);
+
+		expect(manifest).not.toBeNull();
+		if (!manifest) return;
+
+		const f1 = manifest.feature_queue.find((f) => f.id === "S9994.I1.F1");
+		expect(f1?.dependencies).toEqual([]);
 	});
 });

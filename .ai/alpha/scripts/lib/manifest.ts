@@ -597,6 +597,26 @@ export function generateSpecManifest(
 		}
 	}
 
+	// Pass 3: Propagate initiative-level dependencies to features
+	// This ensures the work queue respects initiative dependency hierarchy
+	log("   Pass 3: Propagating initiative dependencies to features...");
+
+	for (const initiative of initiatives) {
+		if (initiative.dependencies.length > 0) {
+			for (const feature of featureQueue) {
+				if (feature.initiative_id === initiative.id) {
+					// Prepend initiative dependencies, then existing feature dependencies
+					// Use Set to avoid duplicates
+					const combinedDeps = new Set([
+						...initiative.dependencies,
+						...feature.dependencies,
+					]);
+					feature.dependencies = [...combinedDeps];
+				}
+			}
+		}
+	}
+
 	// Sort initiatives by priority
 	initiatives.sort((a, b) => a.priority - b.priority);
 
