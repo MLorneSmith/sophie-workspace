@@ -182,6 +182,16 @@ jobs:
       
       # Enable Playwright parallelism
       PLAYWRIGHT_PARALLEL: 'true'
+
+      # E2E test user credentials (from GitHub Secrets)
+      # These are required for authentication tests in shards 2-12
+      # See: Issue #1636 (diagnosis), Issue #1637 (fix)
+      E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
+      E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
+      E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
+      E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
     steps:
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
