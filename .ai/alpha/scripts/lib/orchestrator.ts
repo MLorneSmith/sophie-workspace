@@ -54,11 +54,15 @@ import {
 import { writeIdleProgress } from "./progress.js";
 import { generateRunId } from "./run-id.js";
 import {
+	clearStaleSandboxData,
 	createReviewSandbox,
 	createSandbox,
+	getSandboxAgeMinutes,
 	getSandboxesNeedingRestart,
 	getVSCodeUrl,
+	isSandboxExpired,
 	keepAliveSandboxes,
+	reconnectToStoredSandboxes,
 	startDevServer,
 } from "./sandbox.js";
 import { sleep } from "./utils.js";
@@ -1136,21 +1140,106 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			return;
 		}
 
-		// Create sandboxes
+		// =========================================================================
+		// Sandbox Initialization with Reconnection Support
+		// =========================================================================
+		// Bug fix #1634: Handle expired E2B sandboxes on restart
+		//
+		// When the orchestrator restarts, it attempts to reconnect to stored
+		// sandbox IDs from the manifest. This prevents the hang that occurred
+		// when trying to reconnect to expired sandboxes (1-hour E2B limit).
+		//
+		// The reconnection logic:
+		// 1. Checks if stored sandboxes are too old (>55 minutes)
+		// 2. Attempts connection with a 30-second timeout
+		// 3. Verifies liveness with a health check command
+		// 4. Falls back to creating fresh sandboxes if reconnection fails
+		// =========================================================================
+
 		const instances: SandboxInstance[] = [];
+		let reconnectedCount = 0;
 
-		// Create FIRST sandbox (needed for seeding)
-		log("\n📦 Creating first sandbox...");
-		const firstInstance = await createSandbox(
-			manifest,
-			"sbx-a",
-			options.timeout,
-			options.ui,
-			runId,
-		);
-		instances.push(firstInstance);
+		// Step 1: Check for stored sandbox IDs and attempt reconnection
+		if (manifest.sandbox.sandbox_ids.length > 0) {
+			log("\n🔄 Found stored sandbox IDs, checking if reusable...");
 
-		// Seed database via first sandbox
+			// Check expiration first (avoids hanging on connection)
+			if (isSandboxExpired(manifest.sandbox.created_at)) {
+				const age = getSandboxAgeMinutes(manifest.sandbox.created_at);
+				log(
+					`   ⚠️ Stored sandboxes are ${age ?? "unknown"} minutes old (max: 55 min)`,
+				);
+				log("   Clearing stale sandbox data and creating fresh sandboxes...");
+				clearStaleSandboxData(manifest);
+				saveManifest(manifest);
+			} else {
+				// Attempt reconnection with timeout and liveness verification
+				log(
+					`   Sandboxes are ${getSandboxAgeMinutes(manifest.sandbox.created_at) ?? "?"} minutes old, attempting reconnection...`,
+				);
+				const reconnected = await reconnectToStoredSandboxes(
+					manifest,
+					options.ui,
+				);
+
+				// Add successfully reconnected sandboxes
+				for (const instance of reconnected) {
+					// Update runId for this session
+					instance.runId = runId;
+					instances.push(instance);
+					reconnectedCount++;
+				}
+
+				if (reconnected.length > 0) {
+					log(
+						`   ✅ Reconnected to ${reconnected.length} existing sandbox(es)`,
+					);
+					saveManifest(manifest);
+				} else {
+					log("   ⚠️ Could not reconnect to any stored sandboxes");
+					clearStaleSandboxData(manifest);
+					saveManifest(manifest);
+				}
+			}
+		}
+
+		// Step 2: Create any additional sandboxes needed
+		const sandboxesNeeded = options.sandboxCount - instances.length;
+
+		if (sandboxesNeeded > 0) {
+			log(
+				`\n📦 ${reconnectedCount > 0 ? "Creating" : "Creating"} ${sandboxesNeeded} sandbox(es)...`,
+			);
+
+			// Create first new sandbox (may be needed for seeding if no reconnection)
+			const startIndex = instances.length;
+			for (let i = 0; i < sandboxesNeeded; i++) {
+				const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
+
+				// Stagger delay for sandboxes after the first
+				if (i > 0 || startIndex > 0) {
+					log(
+						`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+					);
+					await sleep(SANDBOX_STAGGER_DELAY_MS);
+				}
+
+				const instance = await createSandbox(
+					manifest,
+					label,
+					options.timeout,
+					options.ui,
+					runId,
+				);
+				instances.push(instance);
+			}
+		}
+
+		// Get the first instance for seeding (either reconnected or newly created)
+		const firstInstance = instances[0];
+
+		// Seed database via first sandbox (only if we didn't reconnect)
+		// When reconnecting, the database should already be seeded from the previous run
 		if (
 			!options.skipDbReset &&
 			!options.skipDbSeed &&
@@ -1159,7 +1248,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			const alreadySeeded = await isDatabaseSeeded(options.ui);
 			if (alreadySeeded) {
 				log("   ℹ️ Database already seeded, skipping seeding step");
-			} else {
+			} else if (firstInstance) {
 				const seedSuccess = await seedSandboxDatabase(
 					firstInstance.sandbox,
 					options.ui,
@@ -1174,25 +1263,6 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			}
 		} else if (options.skipDbSeed) {
 			log("   ⏭️ Skipping database seeding (--skip-db-seed)");
-		}
-
-		// Create remaining sandboxes
-		for (let i = 1; i < options.sandboxCount; i++) {
-			const label = `sbx-${String.fromCharCode(97 + i)}`;
-
-			log(
-				`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
-			);
-			await sleep(SANDBOX_STAGGER_DELAY_MS);
-
-			const instance = await createSandbox(
-				manifest,
-				label,
-				options.timeout,
-				options.ui,
-				runId,
-			);
-			instances.push(instance);
 		}
 
 		saveManifest(manifest);

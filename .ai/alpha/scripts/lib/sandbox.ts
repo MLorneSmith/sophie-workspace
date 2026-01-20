@@ -11,6 +11,7 @@ import { Sandbox } from "@e2b/code-interpreter";
 import {
 	DEV_SERVER_PORT,
 	PROGRESS_FILE,
+	SANDBOX_MAX_AGE_MS,
 	TEMPLATE_ALIAS,
 	VSCODE_PORT,
 	WORKSPACE_DIR,
@@ -22,6 +23,22 @@ import {
 	GITHUB_TOKEN,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
+
+// ============================================================================
+// Timeout Configuration
+// ============================================================================
+
+/** Timeout for sandbox connection attempts (ms) - 30 seconds */
+const SANDBOX_CONNECT_TIMEOUT_MS = 30 * 1000;
+
+/** Timeout for sandbox liveness health check (ms) - 5 seconds */
+const SANDBOX_LIVENESS_CHECK_TIMEOUT_MS = 5 * 1000;
+
+/** Safety buffer before sandbox expiration (ms) - 5 minutes
+ * If a sandbox is older than (MAX_AGE - BUFFER), consider it expired
+ * to avoid race conditions where we connect just before expiration
+ */
+const SANDBOX_EXPIRATION_BUFFER_MS = 5 * 60 * 1000;
 
 // ============================================================================
 // Logging Helper
@@ -37,6 +54,258 @@ function createLogger(uiEnabled: boolean) {
 			if (!uiEnabled) console.log(...args);
 		},
 	};
+}
+
+// ============================================================================
+// Timeout Wrapper Utilities
+// ============================================================================
+
+/**
+ * Wraps a promise with a timeout.
+ *
+ * @param promise - The promise to wrap
+ * @param timeoutMs - Timeout in milliseconds
+ * @param errorMessage - Error message to throw on timeout
+ * @returns The result of the promise, or throws on timeout
+ */
+async function withTimeout<T>(
+	promise: Promise<T>,
+	timeoutMs: number,
+	errorMessage: string,
+): Promise<T> {
+	let timeoutId: ReturnType<typeof setTimeout>;
+
+	const timeoutPromise = new Promise<never>((_, reject) => {
+		timeoutId = setTimeout(() => {
+			reject(new Error(errorMessage));
+		}, timeoutMs);
+	});
+
+	try {
+		const result = await Promise.race([promise, timeoutPromise]);
+		clearTimeout(timeoutId!);
+		return result;
+	} catch (error) {
+		clearTimeout(timeoutId!);
+		throw error;
+	}
+}
+
+// ============================================================================
+// Sandbox Expiration Checks
+// ============================================================================
+
+/**
+ * Check if a sandbox is too old (approaching or past expiration).
+ *
+ * E2B sandboxes have a 1-hour lifetime limit. This function checks if a
+ * sandbox's created_at timestamp indicates it's too old to be usable.
+ *
+ * @param createdAt - ISO timestamp when the sandbox was created
+ * @returns true if the sandbox is expired or approaching expiration
+ */
+export function isSandboxExpired(createdAt: string | null): boolean {
+	if (!createdAt) return true; // No timestamp = consider expired
+
+	const createdTime = new Date(createdAt).getTime();
+	const now = Date.now();
+	const age = now - createdTime;
+
+	// Use MAX_AGE - BUFFER to catch sandboxes that are about to expire
+	const maxUsableAge = SANDBOX_MAX_AGE_MS - SANDBOX_EXPIRATION_BUFFER_MS;
+	return age >= maxUsableAge;
+}
+
+/**
+ * Get the age of a sandbox in minutes.
+ *
+ * @param createdAt - ISO timestamp when the sandbox was created
+ * @returns Age in minutes, or null if no timestamp
+ */
+export function getSandboxAgeMinutes(createdAt: string | null): number | null {
+	if (!createdAt) return null;
+
+	const createdTime = new Date(createdAt).getTime();
+	const now = Date.now();
+	return Math.round((now - createdTime) / 60000);
+}
+
+// ============================================================================
+// Sandbox Connection with Liveness Check
+// ============================================================================
+
+/**
+ * Attempt to connect to an existing sandbox by ID with timeout and liveness verification.
+ *
+ * This function:
+ * 1. Connects to the sandbox with a 30-second timeout (prevents hanging)
+ * 2. Runs a liveness health check (echo command with 5-second timeout)
+ * 3. Returns the sandbox only if both checks pass
+ *
+ * @param sandboxId - The E2B sandbox ID to connect to
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns The connected Sandbox instance, or null if connection fails
+ */
+export async function connectToSandboxWithVerification(
+	sandboxId: string,
+	uiEnabled: boolean = false,
+): Promise<Sandbox | null> {
+	const { log } = createLogger(uiEnabled);
+
+	try {
+		// Step 1: Connect with timeout
+		log(`   Connecting to sandbox ${sandboxId}...`);
+		const sandbox = await withTimeout(
+			Sandbox.connect(sandboxId, { apiKey: E2B_API_KEY }),
+			SANDBOX_CONNECT_TIMEOUT_MS,
+			`Sandbox.connect() timed out after ${SANDBOX_CONNECT_TIMEOUT_MS / 1000}s (sandbox may be expired)`,
+		);
+
+		// Step 2: Verify liveness with a simple command
+		log(`   Verifying sandbox ${sandboxId} is alive...`);
+		const alive = await isSandboxAliveWithTimeout(
+			sandbox,
+			SANDBOX_LIVENESS_CHECK_TIMEOUT_MS,
+		);
+
+		if (!alive) {
+			log(`   ⚠️ Sandbox ${sandboxId} failed liveness check (not responding)`);
+			return null;
+		}
+
+		log(`   ✅ Sandbox ${sandboxId} connected and verified`);
+		return sandbox;
+	} catch (error) {
+		log(
+			`   ⚠️ Failed to connect to sandbox ${sandboxId}: ${error instanceof Error ? error.message : error}`,
+		);
+		return null;
+	}
+}
+
+/**
+ * Check if a sandbox is alive with a specific timeout.
+ *
+ * @param sandbox - The E2B sandbox instance
+ * @param timeoutMs - Timeout for the liveness check
+ * @returns true if sandbox responds within timeout, false otherwise
+ */
+async function isSandboxAliveWithTimeout(
+	sandbox: Sandbox,
+	timeoutMs: number,
+): Promise<boolean> {
+	try {
+		const result = await withTimeout(
+			sandbox.commands.run("echo alive", { timeoutMs }),
+			timeoutMs + 1000, // Extra buffer for the outer timeout
+			"Liveness check timed out",
+		);
+		return result.exitCode === 0;
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Attempt to reconnect to stored sandbox IDs from the manifest.
+ *
+ * This function validates stored sandbox IDs and attempts to reconnect:
+ * 1. Checks if sandbox.created_at is too old (>55 minutes)
+ * 2. Attempts to connect to each stored ID with timeout and liveness check
+ * 3. Returns successfully connected sandboxes
+ *
+ * Use this when restarting the orchestrator to resume with existing sandboxes.
+ *
+ * @param manifest - The spec manifest containing sandbox IDs
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Array of reconnected SandboxInstance objects (may be empty if all expired)
+ */
+export async function reconnectToStoredSandboxes(
+	manifest: SpecManifest,
+	uiEnabled: boolean = false,
+): Promise<SandboxInstance[]> {
+	const { log } = createLogger(uiEnabled);
+	const reconnectedInstances: SandboxInstance[] = [];
+
+	const { sandbox_ids, created_at } = manifest.sandbox;
+
+	// Check if any stored sandboxes exist
+	if (!sandbox_ids || sandbox_ids.length === 0) {
+		log("   No stored sandbox IDs to reconnect");
+		return [];
+	}
+
+	// Check expiration before attempting connection
+	if (isSandboxExpired(created_at)) {
+		const age = getSandboxAgeMinutes(created_at);
+		log(
+			`   ⚠️ Stored sandboxes are too old (${age ?? "unknown"} minutes) - will create fresh sandboxes`,
+		);
+
+		// Clear stale sandbox IDs from manifest
+		manifest.sandbox.sandbox_ids = [];
+		manifest.sandbox.created_at = null;
+		return [];
+	}
+
+	log(
+		`   Attempting to reconnect to ${sandbox_ids.length} stored sandbox(es)...`,
+	);
+
+	// Attempt to reconnect to each sandbox
+	for (let i = 0; i < sandbox_ids.length; i++) {
+		const sandboxId = sandbox_ids[i];
+		if (!sandboxId) continue;
+
+		const label = `sbx-${String.fromCharCode(97 + i)}`;
+		const sandbox = await connectToSandboxWithVerification(
+			sandboxId,
+			uiEnabled,
+		);
+
+		if (sandbox) {
+			reconnectedInstances.push({
+				sandbox,
+				id: sandboxId,
+				label,
+				status: "ready",
+				currentFeature: null,
+				retryCount: 0,
+				createdAt: new Date(created_at ?? Date.now()),
+				lastKeepaliveAt: new Date(),
+			});
+		} else {
+			log(`   ⚠️ Could not reconnect to sandbox ${sandboxId} (${label})`);
+		}
+	}
+
+	// Update manifest with only the successfully reconnected sandboxes
+	if (reconnectedInstances.length < sandbox_ids.length) {
+		manifest.sandbox.sandbox_ids = reconnectedInstances.map((i) => i.id);
+		log(
+			`   Reconnected to ${reconnectedInstances.length}/${sandbox_ids.length} sandboxes`,
+		);
+	} else {
+		log(
+			`   ✅ Successfully reconnected to all ${sandbox_ids.length} sandboxes`,
+		);
+	}
+
+	return reconnectedInstances;
+}
+
+/**
+ * Clear all stale sandbox data from manifest.
+ *
+ * Call this when stored sandboxes are detected as expired or unreachable.
+ * This prevents the orchestrator from repeatedly trying to connect to dead sandboxes.
+ *
+ * @param manifest - The spec manifest to clear
+ */
+export function clearStaleSandboxData(manifest: SpecManifest): void {
+	manifest.sandbox.sandbox_ids = [];
+	manifest.sandbox.created_at = null;
+	// Keep branch_name - it's still valid for new sandboxes
 }
 
 // ============================================================================
