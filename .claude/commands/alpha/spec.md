@@ -79,7 +79,7 @@ Use AskUserQuestion to gather missing information. Ask **5-8 questions** coverin
 
 ### Step 4: Conduct Research
 
-#### Step 4.1: Explore the Codebase
+#### Step 4.1: Explore the Codebase (CRITICAL)
 
 Use the Task tool with `subagent_type=code-explorer` to understand existing patterns and data structures:
 
@@ -87,11 +87,21 @@ Use the Task tool with `subagent_type=code-explorer` to understand existing patt
 2. **Domain exploration**: Find existing implementations similar to the project scope
 3. **Data model exploration**: Identify relevant database tables, schemas, and relationships
 4. **Integration points**: Discover APIs, services, and external dependencies
+5. **Reusable components**: Identify SPECIFIC files that can be reused (exact paths!)
 
 Launch multiple code-explorer agents in parallel for efficiency:
 ```
-Task tool with subagent_type=code-xplorer
-prompt: "Explore the <domain-area> implementation patterns in this codebase"
+Task tool with subagent_type=code-explorer
+prompt: "Explore the <domain-area> implementation patterns in this codebase.
+Return SPECIFIC FILE PATHS for any reusable components found."
+```
+
+**⚠️ MANDATORY OUTPUT**: Document all reusable components with exact file paths:
+```markdown
+| Component Found | File Path | Reusable? |
+|-----------------|-----------|-----------|
+| RadialProgress  | apps/web/app/.../RadialProgress.tsx | Yes |
+| DataLoader      | apps/web/app/.../_lib/server/loader.ts | Pattern only |
 ```
 
 #### Step 4.2: Create Spec Directory Structure
@@ -214,7 +224,7 @@ prompt: |
 
 **Note**: All research from Steps 4.3 and 7 is saved to `${SPEC_DIR}/research-library/` and will be incorporated into the spec in Step 8.
 
-### Step 8: Read Research Library
+### Step 8: Read Research Library (MANDATORY)
 
 **CRITICAL**: Before creating the spec, you MUST read all research files saved by the research agents.
 
@@ -228,12 +238,23 @@ ls -la ${SPEC_DIR}/research-library/
 Read tool with file_path: ${SPEC_DIR}/research-library/<filename>.md
 ```
 
-These files contain valuable external research (Cal.com integration patterns, dashboard design best practices, etc.) that should inform the spec document. Extract key findings and incorporate them into:
-- Section 7 (Technical Context) - integration patterns, API details
-- Section 5 (Solution Overview) - design patterns and best practices
-- Section 11 (Appendices) - reference the research files
+These files contain valuable external research (Cal.com integration patterns, dashboard design best practices, etc.) that should inform the spec document.
+
+**⚠️ MANDATORY**: For EACH research file, extract and document:
+1. **3-5 key findings** that affect the spec
+2. **Which spec section(s)** each finding influences
+3. **How the finding changes** the approach
+
+Create a research integration table to include in the spec:
+```markdown
+| Research File | Key Findings | Spec Section(s) Affected |
+|--------------|--------------|-------------------------|
+| context7-calcom.md | Cal.com v2 API supports X, Y, Z | Section 7 Technical Context |
+| perplexity-dashboards.md | Best practice is 3-column grid | Section 5 Solution Overview |
+```
 
 **Do NOT skip this step** - the research agents gathered information you need.
+**Do NOT proceed** until you have documented research integration.
 
 ### Step 9: Create the Spec Document
 
@@ -289,6 +310,7 @@ See `.ai/alpha/docs/hierarchical-ids.md` for the complete ID system documentatio
 
 Before finalizing, verify:
 
+### Core Content
 - [ ] Problem statement is specific and quantified
 - [ ] Success metrics are SMART (Specific, Measurable, Achievable, Relevant, Time-bound)
 - [ ] Scope boundaries are explicit (in AND out)
@@ -297,6 +319,23 @@ Before finalizing, verify:
 - [ ] Key risks identified with owners
 - [ ] Open questions captured for follow-up
 - [ ] Decomposition hints provide clear initiative candidates
+
+### Research Quality (NEW)
+- [ ] At least one research file exists in `research-library/`
+- [ ] Research integration table completed with findings → spec section mapping
+- [ ] All reusable components documented with EXACT file paths (no placeholders)
+- [ ] Codebase exploration results include specific table/schema names
+
+### Technical Rigor (NEW)
+- [ ] **NO TBD items** in Technical Context - all unknowns are either researched or listed as Open Questions
+- [ ] All integration points specify exact table/file names
+- [ ] Goals have **specific percentage targets** (e.g., "+25%" not "increase")
+- [ ] Responsive breakpoints documented in Solution Overview (if UI feature)
+
+### Decomposition Readiness (NEW)
+- [ ] "Data Layer" considered as potential initiative (loaders, caching, parallel fetching)
+- [ ] "Foundation/Layout" identified as P0 if applicable
+- [ ] Complexity indicators have rationale based on actual codebase findings
 
 ## Relevant Files
 
