@@ -356,11 +356,15 @@ function progressToSandboxState(
 			}
 		: null;
 
-	// Map current task
+	// Map current task with fallback ID handling
 	let currentTask: TaskInfo | null = null;
 	if (progress.current_task) {
+		// Fallback: generate placeholder ID if missing (based on completed task count)
+		const completedCount = progress.completed_tasks?.length ?? 0;
+		const taskId = progress.current_task.id || `T${completedCount + 1}`;
+
 		currentTask = {
-			id: progress.current_task.id,
+			id: taskId,
 			name: progress.current_task.name,
 			status: mapTaskStatus(progress.current_task.status),
 			verificationAttempts: progress.current_task.verification_attempts,

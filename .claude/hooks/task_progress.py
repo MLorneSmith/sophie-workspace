@@ -27,6 +27,39 @@ PROGRESS_FILE = Path('.initiative-progress.json')
 EVENTS_FILE = Path('.initiative-events.json')
 
 
+def extract_task_id(text: str) -> str | None:
+    """Extract task ID from text using pattern matching.
+
+    Matches patterns like:
+    - "T1: Task name"
+    - "[T1] Task name"
+    - "T1 Task name"
+
+    Returns the task ID (e.g., "T1") or None if no match.
+    """
+    if not text:
+        return None
+
+    for prefix in ['T', '[T']:
+        if prefix in text:
+            try:
+                start = text.index(prefix)
+                end = start + 1
+                while end < len(text) and (text[end].isdigit() or text[end] in ':]'):
+                    end += 1
+                task_id = text[start:end].strip(':] ')
+                if task_id.startswith('['):
+                    task_id = task_id[1:]
+                if task_id.endswith(']'):
+                    task_id = task_id[:-1]
+                # Validate: must be T followed by digits
+                if task_id and task_id.startswith('T') and task_id[1:].isdigit():
+                    return task_id
+            except ValueError:
+                continue
+    return None
+
+
 def main():
     """Process PostToolUse hook for TodoWrite calls."""
     try:
@@ -73,23 +106,16 @@ def main():
         content = current_todo.get('content', '')
         active_form = current_todo.get('activeForm', content)
 
-        # Try to extract task ID from content (e.g., "T1: Task name" or "[T1] Task name")
-        task_id = None
-        for prefix in ['T', '[T']:
-            if prefix in content:
-                try:
-                    start = content.index(prefix)
-                    end = start + 1
-                    while end < len(content) and (content[end].isdigit() or content[end] in ':]'):
-                        end += 1
-                    task_id = content[start:end].strip(':] ')
-                    if task_id.startswith('['):
-                        task_id = task_id[1:]
-                    if task_id.endswith(']'):
-                        task_id = task_id[:-1]
+        # Try to extract task ID from content or activeForm
+        task_id = extract_task_id(content) or extract_task_id(active_form)
+
+        # Fallback: Generate placeholder ID from todo index if no pattern match
+        if not task_id:
+            # Find this todo's position among all todos
+            for idx, todo in enumerate(todos):
+                if todo.get('status') == 'in_progress':
+                    task_id = f"T{idx + 1}"
                     break
-                except ValueError:
-                    continue
 
         if 'current_task' not in progress:
             progress['current_task'] = {}
@@ -97,8 +123,8 @@ def main():
         progress['current_task']['name'] = content[:100]
         progress['current_task']['status'] = 'in_progress'
         progress['current_task']['started_at'] = now
-        if task_id:
-            progress['current_task']['id'] = task_id
+        # Always set task ID (never leave undefined)
+        progress['current_task']['id'] = task_id or 'T1'
 
     # Store todo counts for reference
     progress['todo_summary'] = {

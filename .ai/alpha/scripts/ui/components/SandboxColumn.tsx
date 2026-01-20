@@ -241,7 +241,8 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 								<Spinner type="dots" />{" "}
 							</Text>
 						)}
-						<Text color="yellow">{state.currentTask.id}</Text>
+						{/* Defensive rendering: show ID if available, fallback to "Working..." */}
+						<Text color="yellow">{state.currentTask.id || "Working..."}</Text>
 					</Box>
 					<Text>{truncate(state.currentTask.name, 24)}</Text>
 					{state.currentTask.verificationAttempts &&

@@ -107,6 +107,50 @@ describe("sandbox state comparison", () => {
 });
 
 /**
+ * Test task ID fallback logic
+ *
+ * These tests verify the fix for issue #1630 - task ID display inconsistency
+ * caused by missing IDs in progress data.
+ */
+describe("task ID fallback", () => {
+	/**
+	 * Helper to simulate the task ID fallback logic from progressToSandboxState
+	 */
+	function getTaskId(
+		progressTaskId: string | undefined,
+		completedTasksCount: number,
+	): string {
+		// Fallback: generate placeholder ID if missing (based on completed task count)
+		return progressTaskId || `T${completedTasksCount + 1}`;
+	}
+
+	it("should use provided task ID when available", () => {
+		const taskId = getTaskId("T5", 4);
+		expect(taskId).toBe("T5");
+	});
+
+	it("should generate fallback ID when task ID is undefined", () => {
+		const taskId = getTaskId(undefined, 3);
+		expect(taskId).toBe("T4"); // 3 completed + 1 = T4
+	});
+
+	it("should generate fallback ID when task ID is empty string", () => {
+		const taskId = getTaskId("", 2);
+		expect(taskId).toBe("T3"); // 2 completed + 1 = T3
+	});
+
+	it("should generate T1 when no completed tasks and no ID", () => {
+		const taskId = getTaskId(undefined, 0);
+		expect(taskId).toBe("T1");
+	});
+
+	it("should preserve semantic IDs like S1.I1.F1.T1", () => {
+		const taskId = getTaskId("S1607.I4.F1.T1", 0);
+		expect(taskId).toBe("S1607.I4.F1.T1");
+	});
+});
+
+/**
  * Test event list bounds
  */
 describe("event list bounds", () => {

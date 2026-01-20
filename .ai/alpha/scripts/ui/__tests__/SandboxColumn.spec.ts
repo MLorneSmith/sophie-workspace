@@ -198,6 +198,55 @@ describe("SandboxColumn component", () => {
 		expect(lastFrame()).toContain("Something went wrong");
 	});
 
+	it("renders task ID when currentTask has id", () => {
+		const state = createSandboxState({
+			currentFeature: { id: "1", title: "Test Feature" },
+			currentTask: {
+				id: "T5",
+				name: "Implement feature",
+				status: "in_progress",
+			},
+			lastHeartbeat: new Date(),
+		});
+		const { lastFrame } = render(React.createElement(SandboxColumn, { state }));
+
+		expect(lastFrame()).toContain("T5");
+		expect(lastFrame()).toContain("Implement feature");
+	});
+
+	it("renders 'Working...' fallback when currentTask has empty id", () => {
+		const state = createSandboxState({
+			currentFeature: { id: "1", title: "Test Feature" },
+			currentTask: {
+				id: "", // Empty ID should trigger fallback
+				name: "Loading context",
+				status: "in_progress",
+			},
+			lastHeartbeat: new Date(),
+		});
+		const { lastFrame } = render(React.createElement(SandboxColumn, { state }));
+
+		expect(lastFrame()).toContain("Working...");
+		expect(lastFrame()).toContain("Loading context");
+	});
+
+	it("renders task verification retry count when greater than 1", () => {
+		const state = createSandboxState({
+			currentFeature: { id: "1", title: "Test Feature" },
+			currentTask: {
+				id: "T3",
+				name: "Run tests",
+				status: "in_progress",
+				verificationAttempts: 3,
+			},
+			lastHeartbeat: new Date(),
+		});
+		const { lastFrame } = render(React.createElement(SandboxColumn, { state }));
+
+		expect(lastFrame()).toContain("T3");
+		expect(lastFrame()).toContain("Retry 3");
+	});
+
 	it("renders context usage when greater than 0", () => {
 		const state = createSandboxState({
 			currentFeature: { id: "1", title: "Test" },
