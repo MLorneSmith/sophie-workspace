@@ -97,9 +97,9 @@ jobs:
         run: |
           echo "🏥 Running enhanced Supabase health checks with exponential backoff..."
           echo "See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes"
-          # Use ts-node to run the TypeScript health check script
+          # Use tsx to run the TypeScript health check script (faster than ts-node, no tsconfig needed)
           # This provides multi-stage verification: PostgreSQL -> PostgREST -> Kong API
-          npx ts-node --project apps/e2e/tsconfig.json apps/e2e/tests/setup/supabase-health.ts
+          npx tsx apps/e2e/tests/setup/supabase-health.ts
         timeout-minutes: 3
         env:
           E2E_SUPABASE_URL: 'http://127.0.0.1:54521'
