@@ -527,7 +527,8 @@ export async function runFeatureImplementation(
 
 	try {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates
-		progressPoller.stop();
+		// Await stop() to ensure no stale poll writes occur after new features start
+		await progressPoller.stop();
 		clearInterval(stallCheckInterval);
 		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);
@@ -686,7 +687,8 @@ export async function runFeatureImplementation(
 		};
 	} catch (error) {
 		// Stop polling, stall detection, startup monitoring, and UI progress updates on error
-		progressPoller.stop();
+		// Await stop() to ensure no stale poll writes occur after new features start
+		await progressPoller.stop();
 		clearInterval(stallCheckInterval);
 		clearInterval(startupCheckInterval);
 		if (uiProgressInterval) clearInterval(uiProgressInterval);
