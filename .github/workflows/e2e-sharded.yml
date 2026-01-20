@@ -1,3 +1,21 @@
+# E2E Tests (Sharded) Workflow
+#
+# This workflow runs E2E tests across multiple parallel shards for faster feedback.
+#
+# IMPORTANT: RunsOn Configuration
+# ================================
+# We use standard RunsOn labels: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+#
+# The github.run_id ensures runners launched for this workflow aren't stolen by
+# other jobs targeting a subset of these labels (RunsOn docs: "runner stealing").
+#
+# DO NOT USE the pattern: runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/...
+# This dynamic job-index pattern causes silent matrix job scheduling failures where
+# matrix jobs never get created. Only github.run_id should be used for job isolation.
+#
+# See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes
+# See: https://runs-on.com/configuration/job-labels/ for official RunsOn docs
+
 name: E2E Tests (Sharded)
 
 on:
@@ -39,7 +57,7 @@ jobs:
   # Single server setup job that runs once
   setup-server:
     name: Setup Test Server
-    runs-on: "runs-on/runner=2cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
     steps:
@@ -74,6 +92,20 @@ jobs:
           supabase status
 
           echo "✅ Supabase E2E environment ready"
+
+      - name: Wait for Supabase health
+        run: |
+          echo "🏥 Running enhanced Supabase health checks with exponential backoff..."
+          echo "See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes"
+          # Use ts-node to run the TypeScript health check script
+          # This provides multi-stage verification: PostgreSQL -> PostgREST -> Kong API
+          npx ts-node --project apps/e2e/tsconfig.json apps/e2e/tests/setup/supabase-health.ts
+        timeout-minutes: 3
+        env:
+          E2E_SUPABASE_URL: 'http://127.0.0.1:54521'
+          E2E_POSTGRES_HOST: 'localhost'
+          E2E_POSTGRES_PORT: '54522'
+          DEBUG: 'supabase:*'
 
       - name: Extract Supabase JWT keys
         id: supabase-keys
@@ -142,8 +174,11 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
-    # Use slash-separated format with unique run_id+job-index to prevent runner stealing (RunsOn docs)
-    runs-on: "runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/runner=2cpu-linux-x64"
+    # Use github.run_id for runner isolation, but NOT job-index which causes scheduling failures
+    # The run_id ensures runners aren't stolen by other jobs in the same workflow
+    # The job-index pattern was causing silent matrix job scheduling failures
+    # See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
@@ -348,7 +383,7 @@ jobs:
     name: E2E Test Report
     needs: e2e-shards
     if: always()
-    runs-on: "runs-on/runner=2cpu-linux-x64"
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v6
 

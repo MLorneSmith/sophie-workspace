@@ -19,6 +19,11 @@ import {
 	checkSupabaseHealth,
 	logHealthCheckResults,
 } from "./tests/utils/server-health-check";
+import {
+	waitForSupabaseHealth,
+	checkPostgresHealth,
+	checkPostgRESTHealth,
+} from "./tests/setup/supabase-health";
 
 // Ensure environment variables are loaded
 dotenvConfig({
@@ -355,8 +360,48 @@ async function globalSetup(config: FullConfig) {
 	// PHASE 2 FIX: Run health checks before auth setup
 	// This provides early warning if services are unhealthy
 	// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+	// See: Issue #1641, #1642 - Enhanced health checks with exponential backoff
 	// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
 	console.log("\n🏥 Running server health checks...\n");
+
+	// Run enhanced Supabase health checks with multi-stage verification
+	// This uses exponential backoff to handle Kong API startup delays in CI
+	// See: Issue #1642 - E2E Sharded Workflow Dual Failure Modes
+	try {
+		// Use enhanced health checks in CI environment for better reliability
+		if (process.env.CI === "true") {
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log("🔄 Using enhanced Supabase health checks (CI mode)...");
+			await waitForSupabaseHealth();
+		} else {
+			// For local development, use quick health checks
+			const [postgresResult, postgrestResult] = await Promise.all([
+				checkPostgresHealth(5000),
+				checkPostgRESTHealth(5000),
+			]);
+
+			if (!postgresResult.healthy) {
+				throw new Error(
+					`PostgreSQL health check failed: ${postgresResult.message}`,
+				);
+			}
+			if (!postgrestResult.healthy) {
+				throw new Error(
+					`PostgREST health check failed: ${postgrestResult.message}`,
+				);
+			}
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log("✅ Supabase health checks passed (local mode)");
+		}
+	} catch (error) {
+		const errorMessage =
+			error instanceof Error ? error.message : "Unknown error";
+		throw new Error(
+			`❌ Supabase health check failed: ${errorMessage}. Cannot proceed with auth setup.`,
+		);
+	}
+
+	// Run remaining health checks for Next.js and Payload
 	const [supabaseHealth, nextJsHealth, payloadHealth] = await Promise.all([
 		checkSupabaseHealth(),
 		checkNextJsHealth(),
@@ -369,10 +414,10 @@ async function globalSetup(config: FullConfig) {
 		payload: payloadHealth,
 	});
 
-	// Supabase and Next.js are required for tests
+	// Next.js is required for tests (Supabase was already checked above)
 	if (!supabaseHealth.healthy) {
 		throw new Error(
-			`❌ Supabase health check failed: ${supabaseHealth.message}. Cannot proceed with auth setup.`,
+			`❌ Supabase basic health check failed: ${supabaseHealth.message}. Cannot proceed with auth setup.`,
 		);
 	}
 
