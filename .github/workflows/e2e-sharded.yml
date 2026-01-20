@@ -227,12 +227,24 @@ jobs:
           # No error masking - fail fast if Supabase cannot start
           supabase start --ignore-health-check
 
+          # Extract JWT keys IMMEDIATELY after start for health check
+          # This MUST happen before the health check curl command below
+          # See: Issue #1631, #1632 - Health check was using undefined SUPABASE_ANON_KEY
+          echo "📋 Extracting JWT keys for health check..."
+          eval "$(supabase status -o env)"
+          if [ -z "$ANON_KEY" ]; then
+            echo "❌ Failed to extract ANON_KEY from Supabase"
+            supabase status
+            exit 1
+          fi
+          echo "✅ ANON_KEY extracted for health check"
+
           # Wait for Supabase API to be responsive
           echo "⏳ Waiting for Supabase API to become responsive..."
           for i in {1..30}; do
             if curl -sf http://127.0.0.1:54521/rest/v1/ \
-              -H "apikey: ${SUPABASE_ANON_KEY}" \
-              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" > /dev/null 2>&1; then
+              -H "apikey: ${ANON_KEY}" \
+              -H "Authorization: Bearer ${ANON_KEY}" > /dev/null 2>&1; then
               echo "✅ Supabase API responding (attempt $i/30)"
               break
             fi
@@ -273,6 +285,8 @@ jobs:
           cd apps/web
           # Extract actual JWT keys from running Supabase instance
           # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          # NOTE: Keys are also extracted inline in "Start local Supabase" step for health check
+          # This step exports them to $GITHUB_ENV for use in subsequent steps (E2E tests)
           echo "📋 Extracting JWT keys from Supabase..."
           eval "$(supabase status -o env)"
 
