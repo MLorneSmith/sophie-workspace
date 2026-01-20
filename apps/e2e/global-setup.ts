@@ -411,7 +411,15 @@ async function globalSetup(config: FullConfig) {
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
 	console.log(`🌐 Using BASE_URL: ${baseURL}`);
 
-	if (baseURL?.includes("localhost") && process.env.CI === "true") {
+	// Validate localhost in CI - skip when E2E_LOCAL_SUPABASE is set (sharded workflow with local Supabase)
+	// The sharded workflow intentionally runs Supabase locally and sets E2E_LOCAL_SUPABASE=true
+	// See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+	// See: Issue #1518 - Added localhost validation to prevent CI testing against wrong URLs
+	if (
+		baseURL?.includes("localhost") &&
+		process.env.CI === "true" &&
+		process.env.E2E_LOCAL_SUPABASE !== "true"
+	) {
 		throw new Error(
 			"❌ CI environment detected but BASE_URL points to localhost! Check PLAYWRIGHT_BASE_URL environment variable.",
 		);

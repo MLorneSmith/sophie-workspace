@@ -92,9 +92,15 @@ jobs:
           fi
 
           # Export for subsequent steps
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
           echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
 
           echo "✅ JWT keys extracted successfully"
 
@@ -278,9 +284,18 @@ jobs:
           fi
 
           # Export for E2E tests
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
           echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
           echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
+          # See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
 
           echo "✅ JWT keys extracted successfully"
 
