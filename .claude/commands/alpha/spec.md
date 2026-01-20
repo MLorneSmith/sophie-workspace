@@ -256,6 +256,47 @@ Create a research integration table to include in the spec:
 **Do NOT skip this step** - the research agents gathered information you need.
 **Do NOT proceed** until you have documented research integration.
 
+### Step 8.5: Create Visual Mockup (UI Features Only)
+
+**⚠️ MANDATORY for UI features**: If this spec involves UI (dashboard, page, form, component), create an ASCII layout mockup.
+
+**Why this matters**: Decomposition teams need to understand spatial relationships between components. An ASCII mockup provides immediate visual context without requiring external tools.
+
+**ASCII Mockup Requirements:**
+1. Show the overall structure (grid layout, rows, columns)
+2. Label each component/widget with names from Key Capabilities
+3. Include sample content to clarify purpose
+4. Match the responsive breakpoints documented in Section 5
+
+**ASCII Mockup Template:**
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        [Page Title]                            │
+├─────────────────┬─────────────────┬────────────────────────────┤
+│ [Component 1]   │ [Component 2]   │ [Component 3]              │
+│ - Sample data   │ - Sample data   │ - Sample data              │
+│ - Details       │ - Details       │ - Details                  │
+├─────────────────┼─────────────────┼────────────────────────────┤
+│ [Component 4]   │ [Component 5]   │ [Component 6]              │
+│ - Sample data   │ - Sample data   │ - Sample data              │
+├─────────────────┴─────────────────┴────────────────────────────┤
+│ [Full-width Component]                                         │
+│ ┌────────────┬────────────┬────────────┬─────────────────────┐ │
+│ │ Column 1   │ Column 2   │ Column 3   │ Actions             │ │
+│ ├────────────┼────────────┼────────────┼─────────────────────┤ │
+│ │ Row data   │ Row data   │ Row data   │ [Button]            │ │
+│ └────────────┴────────────┴────────────┴─────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Checklist before proceeding:**
+- [ ] Component names in mockup match Key Capabilities (Section 5)
+- [ ] Layout matches grid description (e.g., "3-3-1 grid")
+- [ ] Sample content shows what each component displays
+- [ ] Tables/lists show column structure if applicable
+
+Include this mockup in **Section 11.E (Visual Assets)** of the spec.
+
 ### Step 9: Create the Spec Document
 
 Write the spec document to the directory created in Step 4.2:
@@ -337,6 +378,15 @@ Before finalizing, verify:
 - [ ] "Foundation/Layout" identified as P0 if applicable
 - [ ] Complexity indicators have rationale based on actual codebase findings
 
+### Visual Documentation (UI Features)
+- [ ] ASCII layout mockup created showing component arrangement (Section 11.E)
+- [ ] Component labels in mockup match Key Capabilities names (Section 5)
+- [ ] Grid/layout structure documented (e.g., "3-3-1 grid", "2-column sidebar")
+- [ ] Sample content in mockup clarifies each component's purpose
+- [ ] Tables/lists show column headers if applicable
+
+> **Skip this section** for backend-only features (APIs, database migrations, CLI tools).
+
 ## Relevant Files
 
 - `.ai/alpha/templates/spec.md` - Spec template (required)
@@ -360,6 +410,12 @@ gh issue view <issue-#> --repo MLorneSmith/2025slideheroes
 # Verify all required sections are present in spec
 grep -E "^## [0-9]+\." .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md | wc -l
 # Should return 11 (all 11 sections from template)
+
+# Verify ASCII mockup exists (for UI features)
+grep -q "┌─" .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ ASCII mockup present" || echo "⚠ No ASCII mockup (OK for backend-only specs)"
+
+# Verify research integration table exists
+grep -q "Research File.*Key Findings.*Spec Section" .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Research integration table present"
 ```
 
 ## Project Description

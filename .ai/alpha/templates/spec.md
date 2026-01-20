@@ -284,7 +284,31 @@
   [Links to user research, competitor analysis, external API docs]
 
   ### E. Visual Assets
-  [Mockups, diagrams, flowcharts - reference paths]
+
+  > **⚠️ REQUIRED for UI features**: Include ASCII layout mockup showing component arrangement.
+  > Skip this section for backend-only features.
+
+  **ASCII Layout Mockup:**
+  ```
+  ┌──────────────────────────────────────────────────────────────┐
+  │                        [Page Title]                            │
+  ├─────────────────┬─────────────────┬────────────────────────────┤
+  │ [Component 1]   │ [Component 2]   │ [Component 3]              │
+  │ - Sample data   │ - Sample data   │ - Sample data              │
+  ├─────────────────┴─────────────────┴────────────────────────────┤
+  │ [Full-width Component]                                         │
+  └──────────────────────────────────────────────────────────────┘
+  ```
+
+  **Mockup Requirements:**
+  - Component names MUST match Key Capabilities (Section 5)
+  - Sample content shows what each component displays
+  - Tables show column structure
+  - Layout matches grid description
+
+  **Additional Assets:**
+  - [Link to Figma/design files if available]
+  - [Link to wireframes if available]
 
   ### F. Decision Log
   | Date | Decision | Rationale | Decided By |
