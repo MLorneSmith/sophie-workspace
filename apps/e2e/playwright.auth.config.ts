@@ -13,6 +13,7 @@ dotenvConfig({
  */
 export default defineConfig({
 	testDir: "./tests",
+	globalSetup: "./global-setup.ts",
 	fullyParallel: false, // Auth tests should run sequentially for reliability
 	forbidOnly: !!process.env.CI,
 	retries: 3,
