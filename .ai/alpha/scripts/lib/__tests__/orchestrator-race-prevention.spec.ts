@@ -231,7 +231,7 @@ describe("Race Condition Prevention - Synchronous Status Update", () => {
 
 		// Final state is still valid
 		expect(instance.status).toBe("busy");
-		expect(instance.currentFeature).toBe(1367);
+		expect(instance.currentFeature).toBe("1367");
 		expect(instance.featureStartedAt).toEqual(secondDate);
 	});
 });
@@ -340,8 +340,8 @@ describe("Race Condition Prevention - Full Work Loop Simulation", () => {
 		const instance0 = instances[0];
 		const instance1 = instances[1];
 		if (!instance0 || !instance1) throw new Error("Missing instances");
-		expect(instance0.currentFeature).toBe(1367);
-		expect(instance1.currentFeature).toBe(1368);
+		expect(instance0.currentFeature).toBe("1367");
+		expect(instance1.currentFeature).toBe("1368");
 	});
 
 	it("activeWork map correctly tracks all assignments", () => {

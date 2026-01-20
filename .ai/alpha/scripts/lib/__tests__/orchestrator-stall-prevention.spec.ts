@@ -102,7 +102,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 
 		// Feature should be returned for retry
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 		expect(feature?.status).toBe("failed");
 	});
 
@@ -128,7 +128,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		const feature = getNextAvailableFeature(manifest);
 
 		// Should skip 1367 (has assigned_sandbox) and return 1368
-		expect(feature?.id).toBe(1368);
+		expect(feature?.id).toBe("1368");
 	});
 
 	it("complete failure cycle: feature fails, gets cleaned up, can be retried", () => {
@@ -161,7 +161,7 @@ describe("Stall Prevention - Failed Feature Retry", () => {
 		// Step 3: Feature should now be available for retry
 		const retryFeature = getNextAvailableFeature(manifest);
 		expect(retryFeature).not.toBeNull();
-		expect(retryFeature?.id).toBe(1367);
+		expect(retryFeature?.id).toBe("1367");
 
 		// Step 4: Can be assigned to a new sandbox
 		const retryAssigned = assignFeatureToSandbox(feature, "sbx-b", manifest);
@@ -277,7 +277,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 		// Without the fix, the failed feature is skipped (stall scenario)
 		// and only the pending feature is returned
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1368); // Returns 1368, skipping 1367
+		expect(feature?.id).toBe("1368"); // Returns 1368, skipping 1367
 
 		// The failed feature with assigned_sandbox would be stuck forever
 		// This is the bug that the fix prevents
@@ -305,7 +305,7 @@ describe("Stall Prevention - Bug Regression Tests", () => {
 
 		// Feature should immediately be available without relying on stale detection
 		expect(feature).not.toBeNull();
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 		expect(feature?.status).toBe("failed");
 		expect(feature?.assigned_sandbox).toBeUndefined();
 	});

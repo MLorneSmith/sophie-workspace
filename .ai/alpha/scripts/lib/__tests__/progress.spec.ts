@@ -314,7 +314,7 @@ describe("writeUIProgress", () => {
 		);
 		const saved = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
-		expect(saved.feature.issue_number).toBe(1367);
+		expect(saved.feature.issue_number).toBe("1367");
 		expect(saved.feature.title).toBe("Test Feature");
 	});
 

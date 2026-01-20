@@ -199,7 +199,7 @@ describe("loadManifest", () => {
 
 		const result = loadManifest(specDir);
 
-		expect(result?.metadata.spec_id).toBe(1362);
+		expect(result?.metadata.spec_id).toBe("1362");
 		expect(result?.metadata.spec_name).toBe("Test Spec");
 	});
 
@@ -241,7 +241,7 @@ describe("saveManifest", () => {
 		const saved = JSON.parse(
 			fs.readFileSync(path.join(specDir, "spec-manifest.json"), "utf-8"),
 		);
-		expect(saved.metadata.spec_id).toBe(1362);
+		expect(saved.metadata.spec_id).toBe("1362");
 	});
 
 	it("updates last_checkpoint timestamp", () => {

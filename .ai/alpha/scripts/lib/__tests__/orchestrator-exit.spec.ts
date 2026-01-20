@@ -325,7 +325,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 			expect(retryableFeatures.length).toBe(3);
 			expect(blockedFeatures.length).toBe(2); // 1002 and 1003
-			expect(blockedFeatures.map((f) => f.id)).toEqual([1002, 1003]);
+			expect(blockedFeatures.map((f) => f.id)).toEqual(["1002", "1003"]);
 		});
 	});
 });

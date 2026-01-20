@@ -212,7 +212,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 		expect(originalFeature.status).toBe("failed");
 		expect(originalFeature.assigned_sandbox).toBeUndefined();
 		// And then returned as next available (failed features are retried)
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 	});
 
 	it("resets inconsistent state immediately if no assigned_at", () => {
@@ -230,7 +230,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 		// Should reset immediately since we can't tell how old it is
 		expect(originalFeature.status).toBe("failed");
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 	});
 
 	it("returns pending features normally", () => {
@@ -241,7 +241,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 		const feature = getNextAvailableFeature(manifest);
 
-		expect(feature?.id).toBe(1367);
+		expect(feature?.id).toBe("1367");
 		expect(feature?.status).toBe("pending");
 	});
 
@@ -258,7 +258,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 		const feature = getNextAvailableFeature(manifest);
 
-		expect(feature?.id).toBe(1368); // Skips 1367, returns 1368
+		expect(feature?.id).toBe("1368"); // Skips 1367, returns 1368
 	});
 
 	it("skips features recently assigned (race window)", () => {
@@ -273,7 +273,7 @@ describe("getNextAvailableFeature - inconsistent state handler", () => {
 
 		const feature = getNextAvailableFeature(manifest);
 
-		expect(feature?.id).toBe(1368); // Skips 1367 due to race window
+		expect(feature?.id).toBe("1368"); // Skips 1367 due to race window
 	});
 });
 
@@ -309,7 +309,7 @@ describe("race condition regression tests", () => {
 
 		// Get the feature for re-assignment
 		const nextFeature = getNextAvailableFeature(manifest);
-		expect(nextFeature?.id).toBe(1367);
+		expect(nextFeature?.id).toBe("1367");
 
 		// Assign to new sandbox - this should clear the error
 		const result = assignFeatureToSandbox(feature, "sbx-b", manifest);
