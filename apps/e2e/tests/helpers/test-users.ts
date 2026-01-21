@@ -35,12 +35,34 @@ export const TEST_USERS = {
 			displayName: "New Test User",
 		},
 	},
+	superAdmin: {
+		email: "michael@slideheroes.com",
+		password: "aiesec1992",
+		id: "c5b930c9-0a76-412e-a836-4bc4849a3270",
+		metadata: {
+			onboarded: true,
+			displayName: "Super Admin",
+			role: "super-admin",
+		},
+		appMetadata: {
+			role: "super-admin",
+		},
+	},
+};
+
+// Type for test user with optional appMetadata (used for super-admin)
+type TestUser = {
+	email: string;
+	password: string;
+	id: string;
+	metadata: Record<string, unknown>;
+	appMetadata?: Record<string, unknown>;
 };
 
 /**
  * Create or update a test user using the Supabase Admin API
  */
-export async function ensureTestUser(user: typeof TEST_USERS.user1) {
+export async function ensureTestUser(user: TestUser) {
 	const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 		auth: {
 			autoRefreshToken: false,
@@ -63,6 +85,7 @@ export async function ensureTestUser(user: typeof TEST_USERS.user1) {
 					// password: user.password,
 					email_confirm: true,
 					user_metadata: user.metadata,
+					...(user.appMetadata && { app_metadata: user.appMetadata }),
 				},
 			);
 
@@ -78,6 +101,7 @@ export async function ensureTestUser(user: typeof TEST_USERS.user1) {
 				password: user.password,
 				email_confirm: true,
 				user_metadata: user.metadata,
+				...(user.appMetadata && { app_metadata: user.appMetadata }),
 			});
 
 			if (createError) {
@@ -101,6 +125,7 @@ export async function setupTestUsers() {
 		ensureTestUser(TEST_USERS.user1),
 		ensureTestUser(TEST_USERS.user2),
 		ensureTestUser(TEST_USERS.newUser),
+		ensureTestUser(TEST_USERS.superAdmin),
 	]);
 
 	console.log("✅ Test users ready");
