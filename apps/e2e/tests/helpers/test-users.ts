@@ -1,10 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
 
 // E2E Supabase configuration
 const supabaseUrl = process.env.E2E_SUPABASE_URL || "http://localhost:54521";
 const supabaseServiceKey =
 	process.env.E2E_SUPABASE_SERVICE_ROLE_KEY ||
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU";
+
+// Database connection for direct queries (needed for auth schema access)
+const databaseUrl =
+	process.env.E2E_DATABASE_URL ||
+	"postgresql://postgres:postgres@127.0.0.1:54522/postgres";
 
 // Test user configurations
 export const TEST_USERS = {
@@ -48,6 +54,15 @@ export const TEST_USERS = {
 			role: "super-admin",
 		},
 	},
+};
+
+// MFA factor configuration for super admin (matches seeds/01_main_seed.sql)
+const SUPER_ADMIN_MFA_FACTOR = {
+	id: "659e3b57-1128-4d26-8757-f714fd073fc4",
+	friendlyName: "iPhone",
+	factorType: "totp",
+	status: "verified",
+	secret: "NHOHJVGPO3R3LKVPRMNIYLCDMBHUM2SE",
 };
 
 // Type for test user with optional appMetadata (used for super-admin)
@@ -116,17 +131,80 @@ export async function ensureTestUser(user: TestUser) {
 }
 
 /**
+ * Ensure MFA factor exists for super admin user
+ * This is required for is_aal2() to return true, enabling super admin access
+ * Uses direct PostgreSQL connection since PostgREST doesn't expose auth schema
+ */
+async function ensureSuperAdminMfaFactor() {
+	const client = new pg.Client({ connectionString: databaseUrl });
+
+	try {
+		await client.connect();
+
+		// Look up the super admin user by email to get the actual user ID
+		const userResult = await client.query(
+			"SELECT id FROM auth.users WHERE email = $1",
+			[TEST_USERS.superAdmin.email],
+		);
+
+		if (userResult.rows.length === 0) {
+			console.warn(
+				`Super admin user ${TEST_USERS.superAdmin.email} not found in database`,
+			);
+			return;
+		}
+
+		const superAdminUserId = userResult.rows[0].id;
+
+		// Check if MFA factor already exists for this user
+		const checkResult = await client.query(
+			"SELECT id FROM auth.mfa_factors WHERE user_id = $1",
+			[superAdminUserId],
+		);
+
+		if (checkResult.rows.length > 0) {
+			console.log("✅ Super admin MFA factor already exists");
+			return;
+		}
+
+		// Create the MFA factor
+		await client.query(
+			`INSERT INTO auth.mfa_factors (id, user_id, friendly_name, factor_type, status, secret, created_at, updated_at)
+			 VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+			[
+				SUPER_ADMIN_MFA_FACTOR.id,
+				superAdminUserId,
+				SUPER_ADMIN_MFA_FACTOR.friendlyName,
+				SUPER_ADMIN_MFA_FACTOR.factorType,
+				SUPER_ADMIN_MFA_FACTOR.status,
+				SUPER_ADMIN_MFA_FACTOR.secret,
+			],
+		);
+
+		console.log("✅ Created super admin MFA factor");
+	} catch (error) {
+		console.error("Error ensuring super admin MFA factor:", error);
+	} finally {
+		await client.end();
+	}
+}
+
+/**
  * Setup all test users before running tests
  */
 export async function setupTestUsers() {
 	console.log("🔧 Setting up test users...");
 
+	// First create all users
 	await Promise.all([
 		ensureTestUser(TEST_USERS.user1),
 		ensureTestUser(TEST_USERS.user2),
 		ensureTestUser(TEST_USERS.newUser),
 		ensureTestUser(TEST_USERS.superAdmin),
 	]);
+
+	// Then ensure MFA factor exists for super admin (required for AAL2)
+	await ensureSuperAdminMfaFactor();
 
 	console.log("✅ Test users ready");
 }
