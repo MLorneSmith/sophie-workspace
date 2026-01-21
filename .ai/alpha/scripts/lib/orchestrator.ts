@@ -619,7 +619,16 @@ export async function runWorkLoop(
 						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
+
+						// Bug fix #1713: Reset created_at timestamp on restart
+						// Without this, the UI shows stale timestamps suggesting the sandbox
+						// has been running much longer than it actually has
+						manifest.sandbox.created_at = new Date().toISOString();
 						saveManifest(manifest);
+
+						// Bug fix #1713: Write idle progress immediately after restart
+						// This ensures UI shows current heartbeat timestamp instead of stale data
+						writeIdleProgress(label, instance);
 
 						log(
 							`   ✅ Sandbox ${label} preemptively restarted (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
@@ -713,7 +722,16 @@ export async function runWorkLoop(
 						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
 							manifest.sandbox.sandbox_ids.push(newInstance.id);
 						}
+
+						// Bug fix #1713: Reset created_at timestamp on restart
+						// Without this, the UI shows stale timestamps suggesting the sandbox
+						// has been running much longer than it actually has
+						manifest.sandbox.created_at = new Date().toISOString();
 						saveManifest(manifest);
+
+						// Bug fix #1713: Write idle progress immediately after restart
+						// This ensures UI shows current heartbeat timestamp instead of stale data
+						writeIdleProgress(label, instance);
 
 						log(
 							`   ✅ Sandbox ${label} restarted successfully (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
