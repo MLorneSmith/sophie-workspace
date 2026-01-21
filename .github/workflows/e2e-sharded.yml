@@ -184,9 +184,9 @@ jobs:
     needs: setup-server
     # Explicit condition required for workflow_dispatch triggers to create matrix jobs
     # When parent job (setup-server) has an if: condition, dependent matrix jobs need
-    # !failure() && !cancelled() instead of the default success() to be scheduled correctly
+    # always() to override default success() behavior, then explicitly check parent result
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
-    if: ${{ !failure() && !cancelled() }}
+    if: ${{ always() && needs.setup-server.result == 'success' }}
     # Use github.run_id for runner isolation, but NOT job-index which causes scheduling failures
     # The run_id ensures runners aren't stolen by other jobs in the same workflow
     # The job-index pattern was causing silent matrix job scheduling failures

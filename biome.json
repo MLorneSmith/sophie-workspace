@@ -46,7 +46,7 @@
 			"!**/.ai/alpha/scripts/node_modules.bak",
 			"!**/.ai/alpha/progress/*.json",
 			"!**/.initiative-progress.json",
-			"!**/.ai/alpha/specs/**",
+			"!**/.ai/alpha/specs",
 			"!**/.ai/alpha/archive/**/*.json"
 		]
 	},
