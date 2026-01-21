@@ -182,6 +182,10 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
+    # Explicit if: success() required for workflow_dispatch triggers to create matrix jobs
+    # Without this, GitHub Actions skips matrix job creation when parent job has an if: condition
+    # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    if: success()
     # Use github.run_id for runner isolation, but NOT job-index which causes scheduling failures
     # The run_id ensures runners aren't stolen by other jobs in the same workflow
     # The job-index pattern was causing silent matrix job scheduling failures
