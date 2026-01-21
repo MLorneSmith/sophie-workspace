@@ -591,10 +591,10 @@ async function main() {
 		const newInitMatch = initDirName.match(/^(S\d+\.I(\d+))-Initiative-/);
 		const oldInitMatch = initDirName.match(/^(\d+)-Initiative-/);
 
-		if (newInitMatch && newInitMatch[1] && newInitMatch[2]) {
+		if (newInitMatch?.[1] && newInitMatch[2]) {
 			initId = newInitMatch[1]; // e.g., "S1362.I1"
 			initPriorityNum = parseInt(newInitMatch[2], 10); // Extract I# for priority
-		} else if (oldInitMatch && oldInitMatch[1]) {
+		} else if (oldInitMatch?.[1]) {
 			initId = oldInitMatch[1]; // e.g., "1365"
 			initPriorityNum = extractInitiativePriority(initDir);
 		} else {

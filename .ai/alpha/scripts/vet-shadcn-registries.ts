@@ -10,9 +10,9 @@
  *   npx tsx .ai/alpha/scripts/vet-shadcn-registries.ts --verbose
  */
 
-import { execSync } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
+import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 // ============================================================================
 // Types
