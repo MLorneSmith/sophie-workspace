@@ -396,6 +396,14 @@ export async function runFeatureImplementation(
 			// PTY allocates a real TTY, forcing Node.js CLI tools to use line-buffering
 			// instead of block-buffering, enabling real-time output streaming.
 			// See: #1472, #1469 for diagnosis and fix details
+			//
+			// CRITICAL: E2B PTY Timeout Configuration (Issue #1699, #1701)
+			// The E2B SDK has a default PTY timeout of 60 seconds (timeoutMs: 60_000).
+			// This causes the PTY stream to silently disconnect after 60 seconds without
+			// firing error events, resulting in UI hangs during long-running features.
+			// Setting timeoutMs to FEATURE_TIMEOUT_MS ensures PTY stays alive for the
+			// entire feature execution duration.
+			// See: E2B GitHub issues #727, #879, #921 for upstream documentation.
 			log(
 				`   │   🖥️  [PTY_CREATE] ${instance.label}: Creating PTY (cols=120, rows=40, timeout=${FEATURE_TIMEOUT_MS}ms)`,
 			);
@@ -406,6 +414,10 @@ export async function runFeatureImplementation(
 			const ptyHandle = await instance.sandbox.pty.create({
 				cols: 120,
 				rows: 40,
+				// CRITICAL: Set timeoutMs to feature timeout to prevent default 60-second disconnect
+				// E2B SDK default is 60_000ms (60s), which causes silent PTY stream stoppage
+				// See: #1699, #1701 - Alpha Orchestrator Progress Count Mismatch & UI Hang
+				timeoutMs: FEATURE_TIMEOUT_MS,
 				onData: (output: Uint8Array) => {
 					// Decode output data from Uint8Array to string
 					const data = new TextDecoder().decode(output);
@@ -454,7 +466,6 @@ export async function runFeatureImplementation(
 					FORCE_COLOR: "1",
 					CI: "false",
 				},
-				timeoutMs: FEATURE_TIMEOUT_MS,
 			});
 
 			log(

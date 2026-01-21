@@ -473,7 +473,9 @@ describe("writeOverallProgress", () => {
 		const progress = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
 		expect(progress.featuresCompleted).toBe(1); // Only 1 completed
-		expect(progress.tasksCompleted).toBe(5); // Only from completed feature
+		// Fix #1688, #1699: tasksCompleted now includes ALL features (completed + in_progress)
+		// Feature 1: 5 tasks completed, Feature 2: 2 tasks completed = 7 total
+		expect(progress.tasksCompleted).toBe(7); // From all features
 	});
 
 	it("caps values at totals to prevent >100% display", () => {

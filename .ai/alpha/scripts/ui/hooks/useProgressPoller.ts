@@ -871,25 +871,14 @@ export function useProgressPoller(
 				}
 			}
 
-			// Use overall progress from file for manifest-level data (features, initiatives),
-			// but add live in-progress tasks from active sandboxes for real-time updates
+			// Use overall progress from file for manifest-level data
+			// FIXED (Issue #1699, #1701): The manifest's writeOverallProgress() now calculates
+			// tasksCompleted by summing tasks_completed from ALL features (completed + in-progress).
+			// Previously, we added sandbox inProgressTasks on top, causing double-counting.
+			// Now we use the manifest's authoritative counts directly.
+			// See: manifest.ts writeOverallProgress() fix for issue #1688
 			let newProgress: OverallProgress;
 			if (overallProgressFile) {
-				// The manifest's tasksCompleted includes all tasks from COMPLETED features.
-				// For real-time progress, we need to add tasks from IN-PROGRESS features
-				// that sandboxes are currently working on.
-				const baseTasksCompleted = overallProgressFile.tasksCompleted;
-
-				// Sum tasks from in-progress features (sandboxes actively working)
-				let inProgressTasks = 0;
-				for (const sandbox of newSandboxes.values()) {
-					// Only count if sandbox is busy (actively working on a feature)
-					// SandboxStatus is: "ready" | "busy" | "completed" | "failed"
-					if (sandbox.status === "busy") {
-						inProgressTasks += sandbox.tasksCompleted;
-					}
-				}
-
 				newProgress = {
 					specId: overallProgressFile.specId,
 					specName: overallProgressFile.specName,
@@ -898,8 +887,9 @@ export function useProgressPoller(
 					initiativesTotal: overallProgressFile.initiativesTotal,
 					featuresCompleted: overallProgressFile.featuresCompleted,
 					featuresTotal: overallProgressFile.featuresTotal,
-					// Base (completed features) + in-progress tasks from active sandboxes
-					tasksCompleted: baseTasksCompleted + inProgressTasks,
+					// Use manifest's authoritative task count (includes all features)
+					// No longer adding sandbox inProgressTasks to avoid double-counting
+					tasksCompleted: overallProgressFile.tasksCompleted,
 					tasksTotal: overallProgressFile.tasksTotal,
 					branchName: overallProgressFile.branchName,
 					reviewUrls: overallProgressFile.reviewUrls,

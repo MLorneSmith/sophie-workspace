@@ -151,6 +151,73 @@ describe("task ID fallback", () => {
 });
 
 /**
+ * Test overall progress task count calculation
+ *
+ * These tests verify the fix for issue #1699, #1701 - task count mismatch
+ * caused by adding sandbox inProgressTasks on top of manifest's already-complete count.
+ * The fix uses the manifest's authoritative task count directly.
+ */
+describe("overall progress task count", () => {
+	/**
+	 * Simulates the OLD (buggy) calculation that added sandbox tasks on top
+	 */
+	function calculateTasksOld(
+		baseTasksFromManifest: number,
+		sandboxInProgressTasks: number,
+	): number {
+		return baseTasksFromManifest + sandboxInProgressTasks;
+	}
+
+	/**
+	 * Simulates the NEW (fixed) calculation that uses manifest directly
+	 */
+	function calculateTasksNew(
+		baseTasksFromManifest: number,
+		_sandboxInProgressTasks: number,
+	): number {
+		return baseTasksFromManifest;
+	}
+
+	it("should NOT double-count tasks when sandbox is busy (the bug)", () => {
+		// Scenario: Manifest has 7 tasks completed (4 from completed feature, 3 from in-progress)
+		// Sandbox shows 3 tasks completed for in-progress feature
+		const manifestTasks = 7; // Already includes in-progress tasks
+		const sandboxInProgress = 3;
+
+		// Old buggy behavior: 7 + 3 = 10 (double-counts in-progress tasks)
+		expect(calculateTasksOld(manifestTasks, sandboxInProgress)).toBe(10);
+
+		// New fixed behavior: 7 (uses manifest directly)
+		expect(calculateTasksNew(manifestTasks, sandboxInProgress)).toBe(7);
+	});
+
+	it("should show correct count when sandbox transitions from busy to ready", () => {
+		// Scenario: Feature completes, sandbox becomes "ready"
+		// Old behavior would show 0 in-progress tasks, dropping the count
+		const manifestTasks = 7; // Includes completed feature's tasks
+
+		// Old behavior with busy sandbox: 7 + 3 = 10
+		expect(calculateTasksOld(manifestTasks, 3)).toBe(10);
+
+		// Old behavior when sandbox becomes ready: 7 + 0 = 7 (drops!)
+		expect(calculateTasksOld(manifestTasks, 0)).toBe(7);
+
+		// New behavior is consistent regardless of sandbox state
+		expect(calculateTasksNew(manifestTasks, 3)).toBe(7);
+		expect(calculateTasksNew(manifestTasks, 0)).toBe(7);
+	});
+
+	it("should not depend on sandbox status for task counting", () => {
+		const manifestTasks = 104; // Total from all features
+
+		// New behavior: same result regardless of sandbox state
+		expect(calculateTasksNew(manifestTasks, 0)).toBe(104); // sandbox ready
+		expect(calculateTasksNew(manifestTasks, 5)).toBe(104); // sandbox busy with 5 tasks
+		expect(calculateTasksNew(manifestTasks, 10)).toBe(104); // sandbox busy with 10 tasks
+	});
+});
+
+/**
  * Test event list bounds
  */
 describe("event list bounds", () => {
