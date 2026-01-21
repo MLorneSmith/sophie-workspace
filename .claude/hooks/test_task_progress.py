@@ -82,3 +82,54 @@ class TestExtractTaskId:
         """Handles mixed format '[T1]: Task name'."""
         result = extract_task_id("[T2]: Another task")
         assert result == "T2"
+
+
+class TestExtractSemanticTaskId:
+    """Tests for semantic task ID extraction (S#.I#.F#.T# format)."""
+
+    def test_extracts_semantic_id_in_brackets(self):
+        """Extracts semantic task ID from '[S1692.I1.F1.T1] Task name' format."""
+        result = extract_task_id("[S1692.I1.F1.T1] Create dashboard types")
+        assert result == "S1692.I1.F1.T1"
+
+    def test_extracts_semantic_id_with_colon(self):
+        """Extracts semantic task ID from 'S1692.I1.F1.T1: Task name' format."""
+        result = extract_task_id("S1692.I1.F1.T1: Create dashboard types")
+        assert result == "S1692.I1.F1.T1"
+
+    def test_extracts_semantic_id_with_space(self):
+        """Extracts semantic task ID from 'S1692.I1.F1.T1 Task name' format."""
+        result = extract_task_id("S1692.I1.F1.T1 Create dashboard types")
+        assert result == "S1692.I1.F1.T1"
+
+    def test_semantic_id_priority_over_legacy(self):
+        """Semantic IDs have priority over legacy T# IDs."""
+        # Contains both semantic and legacy, semantic should be extracted
+        result = extract_task_id("[S1692.I1.F1.T1] T5 Create types")
+        assert result == "S1692.I1.F1.T1"
+
+    def test_extracts_multi_digit_semantic_components(self):
+        """Extracts semantic IDs with multi-digit components."""
+        result = extract_task_id("[S9999.I12.F345.T67] Multi-digit task")
+        assert result == "S9999.I12.F345.T67"
+
+    def test_extracts_from_active_form_semantic(self):
+        """Extracts semantic ID from activeForm-style content."""
+        result = extract_task_id("[S1692.I1.F1.T3] Creating dashboard skeleton")
+        assert result == "S1692.I1.F1.T3"
+
+    def test_does_not_match_partial_semantic_id(self):
+        """Does not match partial semantic patterns."""
+        # Missing .T# suffix
+        result = extract_task_id("S1692.I1.F1 Create types")
+        assert result is None
+
+    def test_extracts_semantic_in_middle_of_string(self):
+        """Extracts semantic ID when in middle of string."""
+        result = extract_task_id("Working on [S1692.I1.F2.T4] data loader")
+        assert result == "S1692.I1.F2.T4"
+
+    def test_handles_mixed_format_legacy_fallback(self):
+        """Falls back to legacy format when no semantic ID present."""
+        result = extract_task_id("[T3] Create data loader")
+        assert result == "T3"

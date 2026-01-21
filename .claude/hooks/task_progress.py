@@ -30,33 +30,42 @@ EVENTS_FILE = Path('.initiative-events.json')
 def extract_task_id(text: str) -> str | None:
     """Extract task ID from text using pattern matching.
 
-    Matches patterns like:
-    - "T1: Task name"
-    - "[T1] Task name"
-    - "T1 Task name"
+    Matches patterns in order of priority:
+    1. Semantic IDs: "[S1692.I1.F1.T1] Task name" or "S1692.I1.F1.T1: Task name"
+    2. Legacy IDs: "[T1] Task name", "T1: Task name", "T1 Task name"
 
-    Returns the task ID (e.g., "T1") or None if no match.
+    Returns the task ID (semantic or legacy format) or None if no match.
     """
+    import re
+
     if not text:
         return None
 
-    for prefix in ['T', '[T']:
-        if prefix in text:
-            try:
-                start = text.index(prefix)
-                end = start + 1
-                while end < len(text) and (text[end].isdigit() or text[end] in ':]'):
-                    end += 1
-                task_id = text[start:end].strip(':] ')
-                if task_id.startswith('['):
-                    task_id = task_id[1:]
-                if task_id.endswith(']'):
-                    task_id = task_id[:-1]
-                # Validate: must be T followed by digits
-                if task_id and task_id.startswith('T') and task_id[1:].isdigit():
-                    return task_id
-            except ValueError:
-                continue
+    # Priority 1: Match semantic task IDs (S#.I#.F#.T#)
+    # Matches: [S1692.I1.F1.T1], S1692.I1.F1.T1:, S1692.I1.F1.T1 (space)
+    semantic_patterns = [
+        r'\[(S\d+\.I\d+\.F\d+\.T\d+)\]',  # [S1692.I1.F1.T1]
+        r'(S\d+\.I\d+\.F\d+\.T\d+):',      # S1692.I1.F1.T1:
+        r'(S\d+\.I\d+\.F\d+\.T\d+)\s',     # S1692.I1.F1.T1 (followed by space)
+    ]
+
+    for pattern in semantic_patterns:
+        match = re.search(pattern, text)
+        if match:
+            return match.group(1)
+
+    # Priority 2: Match legacy task IDs (T#)
+    legacy_patterns = [
+        r'\[(T\d+)\]',  # [T1]
+        r'(T\d+):',      # T1:
+        r'(T\d+)\s',     # T1 (followed by space)
+    ]
+
+    for pattern in legacy_patterns:
+        match = re.search(pattern, text)
+        if match:
+            return match.group(1)
+
     return None
 
 
@@ -125,6 +134,20 @@ def main():
         progress['current_task']['started_at'] = now
         # Always set task ID (never leave undefined)
         progress['current_task']['id'] = task_id or 'T1'
+
+    # Extract completed task IDs and populate completed_tasks array
+    # This is CRITICAL for orchestrator progress tracking
+    completed_task_ids = []
+    for todo in todos:
+        if todo.get('status') == 'completed':
+            content = todo.get('content', '')
+            active_form = todo.get('activeForm', content)
+            task_id = extract_task_id(content) or extract_task_id(active_form)
+            if task_id:
+                completed_task_ids.append(task_id)
+
+    # Update completed_tasks array (this is what the orchestrator uses for progress)
+    progress['completed_tasks'] = completed_task_ids
 
     # Store todo counts for reference
     progress['todo_summary'] = {

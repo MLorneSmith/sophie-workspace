@@ -100,7 +100,14 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 2. **Load tasks.json**:
    - Read the `tasks.json` file from the feature directory
    - Parse metadata, tasks, and execution groups
-   - Create TodoWrite items for all tasks
+   - **CRITICAL**: Create TodoWrite items using SEMANTIC TASK IDs from tasks.json
+     - Format TodoWrite content as: `[S1692.I1.F1.T1] Task description`
+     - Format TodoWrite activeForm as: `[S1692.I1.F1.T1] Task active form`
+     - The semantic ID MUST be the exact `id` field from each task in tasks.json
+     - Example: For a task with `"id": "S1692.I1.F1.T1"` and `"name": "Create types"`
+       - content: `[S1692.I1.F1.T1] Create types`
+       - activeForm: `[S1692.I1.F1.T1] Creating types`
+     - This ensures the orchestrator can match completed tasks to tasks.json
 
 3. **Load research library**:
    - Check for `research-library/` directory in parent spec folder
