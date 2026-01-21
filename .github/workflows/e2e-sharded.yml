@@ -207,12 +207,7 @@ jobs:
   # so they're isolated to prevent false CI negatives.
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
-    # NOTE: No 'needs: setup-server' dependency - this was causing matrix job scheduling
-    # failures for workflow_dispatch triggers. GitHub Actions has different scheduling
-    # logic for matrix jobs with dependencies vs without. Removing the dependency allows
-    # the matrix scheduler to work normally on all trigger types.
-    # Step-level conditions now check github.actor directly (same logic as setup-server).
-    # See: Issue #1709, #1710 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    needs: setup-server
     # NOTE: No job-level if: condition here - this is intentional!
     # Job-level if: conditions (even ones checking outputs) prevent matrix job creation
     # for workflow_dispatch triggers. Instead, we use step-level conditions.
@@ -272,14 +267,11 @@ jobs:
       E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
     steps:
       # Check if we should skip (dependabot PRs)
-      # NOTE: We check github.actor directly instead of needs.setup-server.outputs.should-skip
-      # because without a needs: dependency, we can't access setup-server's outputs.
-      # This is the same logic used in setup-server's check-actor step.
-      # See: Issue #1709, #1710 - Removed needs: dependency to fix matrix job creation
+      # This replaces job-level if: condition to allow matrix job creation
       - name: Check if should skip
         id: check-skip
         run: |
-          if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+          if [[ "${{ needs.setup-server.outputs.should-skip }}" == "true" ]]; then
             echo "🤖 Dependabot PR - skipping E2E shard ${{ matrix.shard }}"
             echo "skip=true" >> $GITHUB_OUTPUT
           else
