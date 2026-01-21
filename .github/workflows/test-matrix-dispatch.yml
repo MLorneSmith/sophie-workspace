@@ -1,0 +1,49 @@
+# Test workflow to debug matrix + workflow_dispatch issue
+# DELETE THIS FILE AFTER TESTING
+
+name: Test Matrix Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_value:
+        description: 'Test value'
+        required: false
+        default: 'hello'
+
+jobs:
+  setup:
+    name: Setup Job
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+    steps:
+      - name: Check
+        id: check
+        run: |
+          echo "should-run=true" >> $GITHUB_OUTPUT
+          echo "Setup complete"
+
+  matrix-test:
+    name: Matrix ${{ matrix.num }}
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        num: [1, 2, 3, 4]
+    steps:
+      - name: Run test
+        run: |
+          echo "Running matrix job ${{ matrix.num }}"
+          echo "Input value: ${{ github.event.inputs.test_value }}"
+
+  report:
+    name: Report
+    needs: [setup, matrix-test]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report
+        run: echo "All matrix jobs completed"
