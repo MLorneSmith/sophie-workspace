@@ -367,9 +367,12 @@ async function globalSetup(config: FullConfig) {
 	// Run enhanced Supabase health checks with multi-stage verification
 	// This uses exponential backoff to handle Kong API startup delays in CI
 	// See: Issue #1642 - E2E Sharded Workflow Dual Failure Modes
+	// See: Issue #1681 - Scope health checks to local Supabase workflows only
 	try {
-		// Use enhanced health checks in CI environment for better reliability
-		if (process.env.CI === "true") {
+		// Use enhanced health checks only when running with local Supabase (e2e-sharded.yml)
+		// The E2E_LOCAL_SUPABASE flag is set by workflows that run local Supabase
+		// Remote Supabase workflows (dev-integration-tests.yml) skip local health checks
+		if (process.env.E2E_LOCAL_SUPABASE === "true") {
 			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
 			console.log("🔄 Using enhanced Supabase health checks (CI mode)...");
 			await waitForSupabaseHealth();
