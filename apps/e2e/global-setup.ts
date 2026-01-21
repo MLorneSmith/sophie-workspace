@@ -481,13 +481,26 @@ async function globalSetup(config: FullConfig) {
 	// Create test users in Supabase before authentication
 	// This ensures test users exist even after database reset with --no-seed
 	// See: Issue #1602, #1603 - E2E tests fail due to missing test users
-	try {
-		await setupTestUsers();
-	} catch (error) {
-		// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
-		console.error(`❌ Failed to setup test users: ${(error as Error).message}`);
-		throw new Error(
-			`Test user setup failed: ${(error as Error).message}. Cannot proceed with E2E tests.`,
+	// See: Issue #1690, #1691 - Skip for CI with remote Supabase (users pre-provisioned)
+	if (process.env.E2E_LOCAL_SUPABASE === "true" || process.env.CI !== "true") {
+		// Only run test user setup when we have local Supabase access:
+		// - Local Supabase in CI (E2E_LOCAL_SUPABASE=true)
+		// - Local development (CI is not set)
+		try {
+			await setupTestUsers();
+		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+			console.error(
+				`❌ Failed to setup test users: ${(error as Error).message}`,
+			);
+			throw new Error(
+				`Test user setup failed: ${(error as Error).message}. Cannot proceed with E2E tests.`,
+			);
+		}
+	} else {
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log(
+			"⏭️  Skipping test user setup (CI with remote Supabase - users pre-provisioned)",
 		);
 	}
 
