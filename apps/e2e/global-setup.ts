@@ -11,6 +11,11 @@ import {
 	verifyCookiesPresent,
 } from "./tests/helpers/cookie-verification";
 import { setupTestUsers } from "./tests/helpers/test-users";
+import {
+	checkPostgRESTHealth,
+	checkPostgresHealth,
+	waitForSupabaseHealth,
+} from "./tests/setup/supabase-health";
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
 import {
@@ -19,11 +24,6 @@ import {
 	checkSupabaseHealth,
 	logHealthCheckResults,
 } from "./tests/utils/server-health-check";
-import {
-	waitForSupabaseHealth,
-	checkPostgresHealth,
-	checkPostgRESTHealth,
-} from "./tests/setup/supabase-health";
 
 // Ensure environment variables are loaded
 dotenvConfig({
@@ -355,7 +355,18 @@ async function globalSetup(config: FullConfig) {
 	// Clean up billing test data before creating auth states
 	// This prevents duplicate subscription records from accumulating across test runs
 	// See: Issue #1461 - E2E Shard 10 Duplicate Subscription Records
-	await cleanupBillingTestData();
+	// See: Issue #1684 - Skip cleanup for CI with remote Supabase (no local PostgreSQL)
+	if (process.env.E2E_LOCAL_SUPABASE === "true" || process.env.CI !== "true") {
+		// Only run cleanup when we have local PostgreSQL access:
+		// - Local Supabase in CI (E2E_LOCAL_SUPABASE=true)
+		// - Local development (CI is not set)
+		await cleanupBillingTestData();
+	} else {
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log(
+			"⏭️  Skipping billing cleanup (CI with remote Supabase - no local PostgreSQL)",
+		);
+	}
 
 	// PHASE 2 FIX: Run health checks before auth setup
 	// This provides early warning if services are unhealthy
@@ -367,17 +378,44 @@ async function globalSetup(config: FullConfig) {
 	// Run enhanced Supabase health checks with multi-stage verification
 	// This uses exponential backoff to handle Kong API startup delays in CI
 	// See: Issue #1642 - E2E Sharded Workflow Dual Failure Modes
-	// See: Issue #1681 - Scope health checks to local Supabase workflows only
+	// See: Issue #1681, #1684 - Scope health checks to local Supabase workflows only
 	try {
-		// Use enhanced health checks only when running with local Supabase (e2e-sharded.yml)
-		// The E2E_LOCAL_SUPABASE flag is set by workflows that run local Supabase
-		// Remote Supabase workflows (dev-integration-tests.yml) skip local health checks
+		// Three-branch health check logic:
+		// 1. Local Supabase (e2e-sharded.yml): Full enhanced health checks with exponential backoff
+		// 2. CI with remote Supabase (dev-integration-tests.yml): PostgREST API check only
+		// 3. Local development: Both PostgreSQL and PostgREST checks
 		if (process.env.E2E_LOCAL_SUPABASE === "true") {
+			// Branch 1: Local Supabase in CI (e2e-sharded.yml)
+			// Uses enhanced health checks with exponential backoff
 			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
-			console.log("🔄 Using enhanced Supabase health checks (CI mode)...");
+			console.log(
+				"🔄 Using enhanced Supabase health checks (local Supabase mode)...",
+			);
 			await waitForSupabaseHealth();
+		} else if (process.env.CI === "true") {
+			// Branch 2: CI with remote Supabase (dev-integration-tests.yml)
+			// Skip PostgreSQL check - there's no local PostgreSQL to connect to
+			// Only verify PostgREST API access to remote Supabase
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log(
+				"🔄 Using PostgREST-only health check (CI with remote Supabase)...",
+			);
+			const postgrestResult = await checkPostgRESTHealth(5000);
+
+			if (!postgrestResult.healthy) {
+				throw new Error(
+					`PostgREST health check failed: ${postgrestResult.message}`,
+				);
+			}
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log("✅ Supabase PostgREST health check passed (remote mode)");
 		} else {
-			// For local development, use quick health checks
+			// Branch 3: Local development
+			// Check both PostgreSQL and PostgREST for complete health verification
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log(
+				"🔄 Using full Supabase health checks (local development mode)...",
+			);
 			const [postgresResult, postgrestResult] = await Promise.all([
 				checkPostgresHealth(5000),
 				checkPostgRESTHealth(5000),
@@ -394,7 +432,7 @@ async function globalSetup(config: FullConfig) {
 				);
 			}
 			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
-			console.log("✅ Supabase health checks passed (local mode)");
+			console.log("✅ Supabase health checks passed (local development mode)");
 		}
 	} catch (error) {
 		const errorMessage =
