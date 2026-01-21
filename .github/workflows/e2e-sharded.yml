@@ -7,19 +7,17 @@
 # the dependabot PR is merged and tested via dev-integration-tests.
 # See: CI/CD assessment 2026-01-21
 #
-# IMPORTANT: RunsOn Configuration
+# IMPORTANT: Runner Configuration
 # ================================
-# We use standard RunsOn labels: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+# Using ubuntu-latest instead of RunsOn self-hosted runners.
 #
-# The github.run_id ensures runners launched for this workflow aren't stolen by
-# other jobs targeting a subset of these labels (RunsOn docs: "runner stealing").
+# RunsOn labels (runs-on=${{ github.run_id }}/runner=2cpu-linux-x64) caused
+# matrix job scheduling failures specifically for workflow_dispatch triggers.
+# Matrix jobs were silently not created (only 2 of 14 jobs appeared).
+# Switching to ubuntu-latest resolves this GitHub Actions compatibility issue.
 #
-# DO NOT USE the pattern: runs-on=${{ github.run_id }}-job-${{ strategy.job-index }}/...
-# This dynamic job-index pattern causes silent matrix job scheduling failures where
-# matrix jobs never get created. Only github.run_id should be used for job isolation.
-#
-# See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes
-# See: https://runs-on.com/configuration/job-labels/ for official RunsOn docs
+# See: Issue #1709, #1710 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+# See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes (original RunsOn issues)
 
 name: E2E Tests (Sharded)
 
@@ -66,7 +64,7 @@ jobs:
   # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
   setup-server:
     name: Setup Test Server
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: ubuntu-latest
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
       # Output whether to skip E2E tests (for dependabot PRs)
@@ -212,11 +210,9 @@ jobs:
     # Job-level if: conditions (even ones checking outputs) prevent matrix job creation
     # for workflow_dispatch triggers. Instead, we use step-level conditions.
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
-    # Use github.run_id for runner isolation, but NOT job-index which causes scheduling failures
-    # The run_id ensures runners aren't stolen by other jobs in the same workflow
-    # The job-index pattern was causing silent matrix job scheduling failures
-    # See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    # Using ubuntu-latest instead of RunsOn to fix workflow_dispatch matrix job creation.
+    # See: Issue #1709, #1710 - RunsOn labels caused matrix jobs to not be created
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       # Control concurrency with max-parallel - reduced from 6 to 3 for better stability
@@ -446,7 +442,7 @@ jobs:
     # Use setup-server's should-skip output for consistency with other jobs
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
     if: ${{ always() && needs.setup-server.outputs.should-skip != 'true' }}
-    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 

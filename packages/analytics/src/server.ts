@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createPostHogAnalyticsService } from "@kit/posthog";
+import { createServerPostHogAnalyticsService as createPostHogAnalyticsService } from "@kit/posthog/server";
 
 import { createAnalyticsManager } from "./analytics-manager";
 import { NullAnalyticsService } from "./null-analytics-service";
@@ -10,9 +10,11 @@ import type { AnalyticsProviderFactory } from "./types";
 const hasPostHogConfig =
 	process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST;
 
-const providers: Record<string, AnalyticsProviderFactory<object>> =
-	hasPostHogConfig
-		? { posthog: createPostHogAnalyticsService }
-		: { null: () => NullAnalyticsService };
+const providers: Record<
+	string,
+	AnalyticsProviderFactory<object>
+> = hasPostHogConfig
+	? { posthog: createPostHogAnalyticsService }
+	: { null: () => NullAnalyticsService };
 
 export const analytics = createAnalyticsManager({ providers });
