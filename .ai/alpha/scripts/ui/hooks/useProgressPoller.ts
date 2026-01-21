@@ -356,12 +356,14 @@ function progressToSandboxState(
 			}
 		: null;
 
-	// Map current task with fallback ID handling
+	// Map current task - require valid task ID
+	// Fix for issue #1688: Removed fallback ID generation (`T${completedCount + 1}`)
+	// that created misleading task references like "T21". Tasks without explicit IDs
+	// now use "Unknown" to clearly indicate missing metadata.
 	let currentTask: TaskInfo | null = null;
 	if (progress.current_task) {
-		// Fallback: generate placeholder ID if missing (based on completed task count)
-		const completedCount = progress.completed_tasks?.length ?? 0;
-		const taskId = progress.current_task.id || `T${completedCount + 1}`;
+		// Use explicit task ID or "Unknown" - never generate fallback IDs
+		const taskId = progress.current_task.id || "Unknown";
 
 		currentTask = {
 			id: taskId,
@@ -386,20 +388,33 @@ function progressToSandboxState(
 	}
 
 	// Calculate tasks completed/total
-	// Stabilize tasksTotal to prevent flicker during updates
-	// The total should only increase (when new tasks discovered), never decrease
+	// Fix for issue #1688: Use authoritative task count from current_group when available.
+	// Previously calculated from visible state (completed + failed + current) which missed
+	// pending tasks, causing displays like "18/19" when actual total was different.
 	const tasksCompleted = progress.completed_tasks?.length ?? 0;
-	const failedCount = progress.failed_tasks?.length ?? 0;
-	const calculatedTotal =
-		tasksCompleted + failedCount + (progress.current_task ? 1 : 0);
 
-	// Preserve previous tasksTotal if it was higher (prevents flicker when currentTask toggles)
-	// Only update if the calculated value is higher (new task discovered)
-	const previousTotal = previousState?.tasksTotal ?? 0;
-	const tasksTotal =
-		calculatedTotal > 0
-			? Math.max(calculatedTotal, previousTotal)
-			: previousTotal;
+	// Prefer authoritative total from current_group (represents actual feature task count)
+	// Fall back to visible state calculation for backward compatibility
+	let tasksTotal: number;
+	if (
+		progress.current_group?.tasks_total &&
+		progress.current_group.tasks_total > 0
+	) {
+		// Use authoritative task count from feature's tasks.json (via current_group)
+		tasksTotal = progress.current_group.tasks_total;
+	} else {
+		// Fallback: Calculate from visible state (less accurate, misses pending)
+		const failedCount = progress.failed_tasks?.length ?? 0;
+		const calculatedTotal =
+			tasksCompleted + failedCount + (progress.current_task ? 1 : 0);
+
+		// Preserve previous tasksTotal if it was higher (prevents flicker)
+		const previousTotal = previousState?.tasksTotal ?? 0;
+		tasksTotal =
+			calculatedTotal > 0
+				? Math.max(calculatedTotal, previousTotal)
+				: previousTotal;
+	}
 
 	return {
 		sandboxId,

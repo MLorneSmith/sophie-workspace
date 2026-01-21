@@ -874,6 +874,62 @@ export async function runWorkLoop(
 				continue;
 			}
 
+			// Fix for issue #1688: Detect stuck features where sandbox has no current task
+			// but feature still has uncompleted tasks. This prevents indefinite stalls.
+			// Check runs after work assignment and before sleep to catch stalls quickly.
+			const STUCK_TASK_THRESHOLD_MS = 60_000; // 60 seconds without progress
+			const now = Date.now();
+
+			for (const feature of manifest.feature_queue) {
+				// Only check in-progress features with an assigned sandbox
+				if (feature.status !== "in_progress" || !feature.assigned_sandbox) {
+					continue;
+				}
+
+				// Find the sandbox assigned to this feature
+				const sandbox = instances.find(
+					(i) => i.label === feature.assigned_sandbox,
+				);
+				if (!sandbox) {
+					continue;
+				}
+
+				// Check if sandbox appears idle but feature has incomplete tasks
+				// Conditions for stuck detection:
+				// 1. Feature has fewer completed tasks than total
+				// 2. Sandbox status is not "busy" (idle or failed)
+				// 3. Feature assignment is old enough (avoid false positives during transitions)
+				const tasksRemaining =
+					feature.task_count - (feature.tasks_completed || 0);
+				const assignedDuration = feature.assigned_at
+					? now - feature.assigned_at
+					: 0;
+
+				if (
+					tasksRemaining > 0 &&
+					sandbox.status !== "busy" &&
+					assignedDuration > STUCK_TASK_THRESHOLD_MS
+				) {
+					log(
+						`   ⚠️ Stuck task detected: Feature #${feature.id} on ${sandbox.label} has ${tasksRemaining} tasks remaining but sandbox is ${sandbox.status}`,
+					);
+
+					// Reset the feature to pending so it can be reassigned
+					// This allows another sandbox (or the same one after restart) to pick it up
+					feature.status = "pending";
+					feature.assigned_sandbox = undefined;
+					feature.assigned_at = undefined;
+					feature.error = `Stuck: ${tasksRemaining} tasks remaining but sandbox idle for ${Math.round(assignedDuration / 1000)}s`;
+					saveManifest(manifest);
+
+					// Mark sandbox as ready to pick up new work
+					sandbox.status = "ready";
+					sandbox.currentFeature = null;
+
+					log(`   🔄 Feature #${feature.id} reset to pending for reassignment`);
+				}
+			}
+
 			// Wait for at least one sandbox to finish OR health check interval
 			await Promise.race([
 				...activeWork.values(),

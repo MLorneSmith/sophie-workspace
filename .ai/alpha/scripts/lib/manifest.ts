@@ -829,10 +829,14 @@ export function writeOverallProgress(
 		(f) => f.status === "completed",
 	).length;
 
-	// Calculate tasks completed by summing from all completed features
-	const tasksCompleted = manifest.feature_queue
-		.filter((f) => f.status === "completed")
-		.reduce((sum, f) => sum + (f.tasks_completed || 0), 0);
+	// Calculate tasks completed by summing from ALL features (completed and in-progress)
+	// Fix for issue #1688: Previously only counted tasks from completed features,
+	// causing mismatch between Overall Progress (101/101) and sandbox progress (18/19).
+	// Now includes tasks_completed from in-progress features to provide accurate real-time counts.
+	const tasksCompleted = manifest.feature_queue.reduce(
+		(sum, f) => sum + (f.tasks_completed || 0),
+		0,
+	);
 
 	// Calculate initiatives completed by counting status from manifest state
 	const initiativesCompleted = manifest.initiatives.filter(
