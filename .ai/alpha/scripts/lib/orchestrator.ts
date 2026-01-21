@@ -7,6 +7,7 @@
  */
 
 import { type ChildProcess, spawn } from "node:child_process";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import process from "node:process";
 
@@ -974,6 +975,19 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const specDir = specDirOrNull as string;
+
+	// Handle --reset flag: delete manifest to force regeneration
+	if (options.reset) {
+		const manifestPath = path.join(specDir, "spec-manifest.json");
+		if (fs.existsSync(manifestPath)) {
+			log("🔄 Resetting manifest as requested (--reset flag)...");
+			fs.unlinkSync(manifestPath);
+			log("   ✅ Manifest deleted, will regenerate from feature directories");
+		} else {
+			log("🔄 Reset requested but no manifest found, will generate fresh");
+		}
+	}
+
 	let manifestOrNull = loadManifest(specDir);
 
 	// Auto-generate manifest if missing

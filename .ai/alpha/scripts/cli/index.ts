@@ -31,6 +31,7 @@ export function parseArgs(): OrchestratorOptions {
 		skipDbSeed: false,
 		ui: true,
 		minimalUi: false,
+		reset: false,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -49,6 +50,8 @@ export function parseArgs(): OrchestratorOptions {
 			options.dryRun = true;
 		} else if (arg === "--force-unlock") {
 			options.forceUnlock = true;
+		} else if (arg === "--reset") {
+			options.reset = true;
 		} else if (arg === "--skip-db-reset") {
 			options.skipDbReset = true;
 		} else if (arg === "--skip-db-seed") {
@@ -92,6 +95,7 @@ Options:
   --timeout <s>         Sandbox timeout in seconds (default: 3600, max: 3600)
   --dry-run             Show execution plan without running
   --force-unlock        Force release any existing orchestrator lock
+  --reset               Reset manifest state (delete and regenerate)
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
   --no-ui               Disable Ink dashboard UI (uses console output)
@@ -115,6 +119,8 @@ Examples:
   tsx spec-orchestrator.ts 1362 -s 1         # Single sandbox mode
   tsx spec-orchestrator.ts 1362 -s 2         # Two sandbox mode
   tsx spec-orchestrator.ts 1362 --force-unlock  # Override stale lock
+  tsx spec-orchestrator.ts 1362 --reset         # Reset manifest state
+  tsx spec-orchestrator.ts 1362 --reset --force-unlock  # Full recovery
   tsx spec-orchestrator.ts 1362 --skip-db-seed  # Resume without re-seeding
 
 Environment Variables (for sandbox database):

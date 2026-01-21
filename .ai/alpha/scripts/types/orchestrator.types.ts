@@ -99,6 +99,8 @@ export interface OrchestratorOptions {
 	skipDbSeed: boolean;
 	ui: boolean;
 	minimalUi: boolean;
+	/** Reset manifest state (delete and regenerate) before running */
+	reset: boolean;
 }
 
 export interface OrchestratorLock {
