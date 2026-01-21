@@ -60,25 +60,46 @@ env:
 
 jobs:
   # Single server setup job that runs once
+  # NOTE: No job-level if: condition here - this is intentional!
+  # Job-level if: conditions prevent matrix job creation for workflow_dispatch triggers.
+  # Instead, we use step-level conditions and outputs to skip dependabot PRs.
+  # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
   setup-server:
     name: Setup Test Server
-    # Skip E2E tests for dependabot PRs - dependency updates rarely break E2E tests
-    # and any issues will be caught when merged via dev-integration-tests
-    if: github.actor != 'dependabot[bot]'
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
+      # Output whether to skip E2E tests (for dependabot PRs)
+      # Downstream jobs check this to determine if they should run
+      should-skip: ${{ steps.check-actor.outputs.should-skip }}
     steps:
+      # First step: Check if we should skip E2E tests for dependabot PRs
+      # This replaces the job-level if: condition to allow matrix job creation
+      - name: Check if should skip (dependabot)
+        id: check-actor
+        run: |
+          if [[ "${{ github.actor }}" == "dependabot[bot]" ]]; then
+            echo "🤖 Dependabot PR detected - skipping E2E tests"
+            echo "should-skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Non-dependabot actor - running E2E tests"
+            echo "should-skip=false" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v6
+        if: steps.check-actor.outputs.should-skip != 'true'
 
       - uses: ./.github/actions/setup-deps
+        if: steps.check-actor.outputs.should-skip != 'true'
 
       - name: Setup Supabase CLI
+        if: steps.check-actor.outputs.should-skip != 'true'
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Cache Supabase Docker images
+        if: steps.check-actor.outputs.should-skip != 'true'
         id: cache
         uses: actions/cache@v4
         with:
@@ -90,6 +111,7 @@ jobs:
             ${{ runner.os }}-supabase-docker-
 
       - name: Start E2E Supabase
+        if: steps.check-actor.outputs.should-skip != 'true'
         run: |
           # Start Supabase from apps/web where config.toml defines ports 54521/54522
           cd apps/web
@@ -102,6 +124,7 @@ jobs:
           echo "✅ Supabase E2E environment ready"
 
       - name: Wait for Supabase health
+        if: steps.check-actor.outputs.should-skip != 'true'
         run: |
           echo "🏥 Running enhanced Supabase health checks with exponential backoff..."
           echo "See: Issue #1641, #1642 - E2E Sharded Workflow Dual Failure Modes"
@@ -116,6 +139,7 @@ jobs:
           DEBUG: 'supabase:*'
 
       - name: Extract Supabase JWT keys
+        if: steps.check-actor.outputs.should-skip != 'true'
         id: supabase-keys
         run: |
           cd apps/web
@@ -145,6 +169,7 @@ jobs:
           echo "✅ JWT keys extracted successfully"
 
       - name: Build application
+        if: steps.check-actor.outputs.should-skip != 'true'
         run: |
           # Build with Turbo cache (cache-dir already configured in package.json)
           pnpm build
@@ -162,6 +187,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
 
       - name: Cache build and server state
+        if: steps.check-actor.outputs.should-skip != 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -182,11 +208,11 @@ jobs:
   e2e-shards:
     name: E2E Shard ${{ matrix.shard }}
     needs: setup-server
-    # Explicit condition required for workflow_dispatch triggers to create matrix jobs
-    # When parent job (setup-server) has an if: condition, dependent matrix jobs need
-    # always() to override default success() behavior, then explicitly check parent result
+    # Use setup-server's should-skip output to determine if we should run
+    # This pattern allows matrix jobs to be created for workflow_dispatch triggers
+    # while still skipping dependabot PRs via the output check
     # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
-    if: ${{ always() && needs.setup-server.result == 'success' }}
+    if: ${{ needs.setup-server.outputs.should-skip != 'true' }}
     # Use github.run_id for runner isolation, but NOT job-index which causes scheduling failures
     # The run_id ensures runners aren't stolen by other jobs in the same workflow
     # The job-index pattern was causing silent matrix job scheduling failures
@@ -394,9 +420,11 @@ jobs:
   # Aggregate results from all shards
   e2e-report:
     name: E2E Test Report
-    needs: e2e-shards
-    # Run report if shards ran (skip if dependabot PR caused entire workflow to be skipped)
-    if: always() && github.actor != 'dependabot[bot]'
+    needs: [e2e-shards, setup-server]
+    # Run report if shards ran (skip if dependabot PR)
+    # Use setup-server's should-skip output for consistency with other jobs
+    # See: Issue #1698, #1700 - E2E Shard Matrix Jobs Not Created for workflow_dispatch Events
+    if: ${{ always() && needs.setup-server.outputs.should-skip != 'true' }}
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     steps:
       - uses: actions/checkout@v6
