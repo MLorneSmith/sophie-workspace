@@ -1,0 +1,469 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I3.F2",
+    "feature_name": "Activity Data Aggregation",
+    "feature_slug": "activity-data-aggregation",
+    "initiative_id": "S1692.I3",
+    "spec_id": 1692,
+    "created_at": "2026-01-21T16:30:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": true,
+    "database_tasks": [
+      "S1692.I3.F2.T1",
+      "S1692.I3.F2.T2",
+      "S1692.I3.F2.T3",
+      "S1692.I3.F2.T4"
+    ],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S1692.I3.F2.T1",
+      "type": "task",
+      "name": "Create database view schema combining activity sources",
+      "action": {
+        "verb": "Create",
+        "target": "user_activities view schema"
+      },
+      "purpose": "Define a unified view that aggregates user activities from 5 different tables (lesson_progress, quiz_attempts, course_progress, building_blocks_submissions, survey_responses) into a single queryable interface",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": true,
+      "migration_name_prefix": "S1692_I3_F2_T1",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/15-account-views.sql",
+          "apps/web/supabase/migrations/20250319104726_web_course_system.sql",
+          "apps/web/supabase/migrations/20250319104724_web_survey_system.sql",
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql"
+        ],
+        "dependencies": [
+          "public.lesson_progress table",
+          "public.quiz_attempts table",
+          "public.course_progress table",
+          "public.building_blocks_submissions table",
+          "public.survey_responses table"
+        ],
+        "constraints": [
+          "Use UNION ALL to combine sources",
+          "Include activity_type, user_id, entity_id, timestamp, metadata columns",
+          "Order by timestamp DESC",
+          "Use security_invoker = true to inherit RLS from source tables",
+          "Handle NULL values appropriately (e.g., WHERE completed_at IS NOT NULL for lessons)",
+          "Use jsonb_build_object() for type-specific metadata"
+        ]
+      },
+      "input_state": "Five separate activity tables exist with RLS policies. No unified view exists.",
+      "output_state": "Schema file exists at apps/web/supabase/schemas/18-user-activity-view.sql containing a CREATE VIEW statement that UNION ALL's five activity sources with consistent column structure.",
+      "acceptance_criterion": "Schema file exists with valid SQL syntax, includes all 5 activity types (lesson_completed, quiz_completed, course_completed, storyboard_submitted, survey_completed), and uses security_invoker = true",
+      "verification_command": "test -f apps/web/supabase/schemas/18-user-activity-view.sql && grep -q 'security_invoker = true' apps/web/supabase/schemas/18-user-activity-view.sql && grep -c 'UNION ALL' apps/web/supabase/schemas/18-user-activity-view.sql | grep -q '^4$'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/supabase/schemas/18-user-activity-view.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1692.I3.F2.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F2.T2",
+      "type": "task",
+      "name": "Create migration file from schema diff",
+      "action": {
+        "verb": "Create",
+        "target": "migration file for user_activities view"
+      },
+      "purpose": "Create a timestamped migration file that applies the view schema to the database",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S1692_I3_F2_T2",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/18-user-activity-view.sql"
+        ],
+        "dependencies": [
+          "pnpm workspace command",
+          "supabase CLI"
+        ],
+        "constraints": [
+          "Use pnpm --filter web supabase:db:diff -f user_activity_view",
+          "Migration name should be descriptive",
+          "Verify migration file is created in migrations directory"
+        ]
+      },
+      "input_state": "Schema file exists at apps/web/supabase/schemas/18-user-activity-view.sql. No migration file exists yet.",
+      "output_state": "A new migration file exists in apps/web/supabase/migrations/ with a timestamp prefix and contains the CREATE VIEW SQL from the schema file.",
+      "acceptance_criterion": "Migration file exists in apps/web/supabase/migrations/ with pattern *_user_activity_view.sql and contains CREATE VIEW statement",
+      "verification_command": "ls -1 apps/web/supabase/migrations/*_user_activity_view.sql && grep -q 'CREATE.*VIEW.*user_activities' apps/web/supabase/migrations/*_user_activity_view.sql",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/supabase/migrations/*_user_activity_view.sql"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1692.I3.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F2.T3",
+      "type": "task",
+      "name": "Update database by applying migration",
+      "action": {
+        "verb": "Update",
+        "target": "local database with user_activities view"
+      },
+      "purpose": "Execute the migration to create the view in the local database",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S1692_I3_F2_T3",
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/*_user_activity_view.sql"
+        ],
+        "dependencies": [
+          "Local Supabase instance",
+          "pnpm workspace command"
+        ],
+        "constraints": [
+          "Use pnpm --filter web supabase migration up OR pnpm supabase:web:reset",
+          "Verify view exists after migration",
+          "Check that view is queryable"
+        ]
+      },
+      "input_state": "Migration file exists but view does not exist in local database. Local Supabase is running.",
+      "output_state": "The user_activities view exists in the local Supabase database and is queryable. View correctly combines data from all 5 source tables.",
+      "acceptance_criterion": "View exists in database and SELECT * FROM user_activities LIMIT 1 returns data or empty result without errors",
+      "verification_command": "pnpm --filter web supabase db dump --role-only --schema public | grep -q 'CREATE VIEW.*user_activities' || psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -c 'SELECT COUNT(*) FROM user_activities;'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "Local Supabase database schema"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F2.T2"
+        ],
+        "blocks": [
+          "S1692.I3.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F2.T4",
+      "type": "task",
+      "name": "Update TypeScript types from database schema",
+      "action": {
+        "verb": "Update",
+        "target": "database.types.ts with user_activities view types"
+      },
+      "purpose": "Regenerate type-safe TypeScript definitions to include the new view for type checking in loader and components",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S1692_I3_F2_T4",
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Supabase type generation CLI",
+          "Local Supabase instance with applied migration"
+        ],
+        "constraints": [
+          "Use pnpm supabase:web:typegen command",
+          "Verify Database['public']['Views']['user_activities'] type exists",
+          "Check that all columns are typed correctly"
+        ]
+      },
+      "input_state": "View exists in database but TypeScript types are not generated. database.types.ts exists but does not include user_activities view type.",
+      "output_state": "database.types.ts file is regenerated and includes TypeScript interface for user_activities view with all columns (activity_type, user_id, entity_id, timestamp, metadata) properly typed.",
+      "acceptance_criterion": "database.types.ts contains user_activities in Views section with correct column types",
+      "verification_command": "pnpm supabase:web:typegen && grep -q 'user_activities' apps/web/lib/database.types.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/lib/database.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F2.T3"
+        ],
+        "blocks": [
+          "S1692.I3.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F2.T5",
+      "type": "task",
+      "name": "Create TypeScript loader function for user activities",
+      "action": {
+        "verb": "Create",
+        "target": "user-activity.loader.ts file"
+      },
+      "purpose": "Implement a server-side loader function that queries the user_activities view with pagination support and React cache() wrapper for per-request memoization",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "cache from react",
+          "Database types from lib/database.types.ts"
+        ],
+        "constraints": [
+          "Use cache() wrapper for per-request memoization",
+          "Add 'server-only' import at top",
+          "Accept limit parameter (default 10)",
+          "Query user_activities view with .from('user_activities')",
+          "Order by timestamp DESC",
+          "Return typed results",
+          "Handle errors gracefully"
+        ]
+      },
+      "input_state": "TypeScript types exist for user_activities view. No loader function exists yet. Directory apps/web/app/home/(user)/_lib/server/ exists.",
+      "output_state": "File user-activity.loader.ts exists in apps/web/app/home/(user)/_lib/server/ directory. Function loadUserActivities is exported and cached. It accepts optional limit parameter and returns typed activity data.",
+      "acceptance_criterion": "Loader file exists, exports loadUserActivities function wrapped with cache(), compiles without errors, and includes proper TypeScript types",
+      "verification_command": "test -f apps/web/app/home/(user)/_lib/server/user-activity.loader.ts && grep -q \"export.*loadUserActivities\" apps/web/app/home/(user)/_lib/server/user-activity.loader.ts && grep -q \"cache(\" apps/web/app/home/(user)/_lib/server/user-activity.loader.ts && pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/user-activity.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F2.T4"
+        ],
+        "blocks": [
+          "S1692.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F2.T6",
+      "type": "task",
+      "name": "Test RLS enforcement on user_activities view",
+      "action": {
+        "verb": "Test",
+        "target": "RLS policies via manual queries"
+      },
+      "purpose": "Verify that the view correctly inherits RLS policies from source tables and users can only see their own activities",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/18-user-activity-view.sql",
+          "apps/web/app/home/(user)/_lib/server/user-activity.loader.ts"
+        ],
+        "dependencies": [
+          "Local Supabase instance",
+          "Test user accounts with activity data",
+          "Supabase Studio or psql"
+        ],
+        "constraints": [
+          "Test with at least 2 different user accounts",
+          "Verify User A cannot see User B's activities",
+          "Verify activities from all 5 sources appear correctly",
+          "Test via Supabase Studio SQL editor with SET LOCAL role and auth.jwt()",
+          "Verify loader function respects RLS"
+        ]
+      },
+      "input_state": "View exists, loader exists, but RLS enforcement is not verified. Test data may need to be created for multiple users.",
+      "output_state": "RLS is confirmed working: users can only query their own activities through the view, and activities from all 5 sources are correctly filtered. Documentation of test results exists.",
+      "acceptance_criterion": "Test queries confirm that user_activities view returns only activities for auth.uid() and blocks access to other users' data. All 5 activity types appear when relevant data exists.",
+      "verification_command": "echo 'Manual test: Query user_activities as different users via Supabase Studio and verify RLS filtering' && test -f apps/web/app/home/(user)/_lib/server/user-activity.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "Test validation results (documented in task completion)"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F2.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Schema Creation",
+        "task_ids": [
+          "S1692.I3.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Database Migration Workflow",
+        "task_ids": [
+          "S1692.I3.F2.T2",
+          "S1692.I3.F2.T3",
+          "S1692.I3.F2.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Loader Implementation",
+        "task_ids": [
+          "S1692.I3.F2.T5"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Testing & Validation",
+        "task_ids": [
+          "S1692.I3.F2.T6"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1692.I3.F2.T1",
+        "S1692.I3.F2.T2",
+        "S1692.I3.F2.T3",
+        "S1692.I3.F2.T4",
+        "S1692.I3.F2.T5",
+        "S1692.I3.F2.T6"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 10,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

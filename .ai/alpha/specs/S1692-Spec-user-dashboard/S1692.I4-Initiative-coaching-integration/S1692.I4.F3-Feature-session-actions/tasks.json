@@ -1,0 +1,331 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I4.F3",
+    "feature_name": "Session Actions & Interactions",
+    "feature_slug": "session-actions",
+    "initiative_id": "S1692.I4",
+    "spec_id": "1692",
+    "created_at": "2026-01-21T15:22:49Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1692.I4.F3.T1", "S1692.I4.F3.T2", "S1692.I4.F3.T3", "S1692.I4.F3.T4"]
+  },
+  "tasks": [
+    {
+      "id": "S1692.I4.F3.T1",
+      "type": "task",
+      "name": "Add Join Session button to coaching-session-card",
+      "action": {
+        "verb": "Add",
+        "target": "Join Session button with window.open handler"
+      },
+      "purpose": "Enable users to open their coaching meeting URL in a new tab directly from the dashboard widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Join Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-session-card.tsx (from F2)"
+        ],
+        "dependencies": [
+          "@kit/ui/button (Button component)",
+          "window.open (browser API)"
+        ],
+        "constraints": [
+          "Button must open meetingUrl in new tab",
+          "Use Button component from @kit/ui/button",
+          "Button should have accessible label"
+        ]
+      },
+      "input_state": "coaching-session-card.tsx displays session title, date/time, no actions",
+      "output_state": "coaching-session-card.tsx has Join Session button that opens meetingUrl in new tab when clicked",
+      "acceptance_criterion": "Clicking Join Session button opens booking.meetingUrl in a new browser tab",
+      "verification_command": "pnpm typecheck && grep -A5 'Join Session' apps/web/app/home/(user)/_components/coaching-session-card.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I4.F3.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I4.F3.T2",
+      "type": "task",
+      "name": "Implement time-based visibility for Join button",
+      "action": {
+        "verb": "Add",
+        "target": "conditional rendering logic based on session start time"
+      },
+      "purpose": "Show Join Session button only within 15 minutes of session start to prevent early joining",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "snapshot"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-session-card.tsx (modified in T1)"
+        ],
+        "dependencies": [
+          "JavaScript Date API",
+          "booking.startTime ISO string"
+        ],
+        "constraints": [
+          "Show button only if current time >= startTime - 15 minutes",
+          "Handle timezone correctly using Date objects",
+          "Component must re-render when time condition changes"
+        ]
+      },
+      "input_state": "Join Session button always visible regardless of session time",
+      "output_state": "Join Session button only visible when current time is within 15 minutes before session start",
+      "acceptance_criterion": "Join button is hidden if session starts >15 min from now, visible if session starts <=15 min from now",
+      "verification_command": "pnpm typecheck && grep -B5 -A10 'startTime' apps/web/app/home/(user)/_components/coaching-session-card.tsx | grep -E '(15|minutes|getTime)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I4.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I4.F3.T3",
+      "type": "task",
+      "name": "Add Reschedule button to coaching-session-card",
+      "action": {
+        "verb": "Add",
+        "target": "Reschedule button with navigation to /home/coaching"
+      },
+      "purpose": "Allow users to navigate to the coaching calendar page to reschedule their session",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Reschedule"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-session-card.tsx (modified in T1, T2)"
+        ],
+        "dependencies": [
+          "@kit/ui/button (Button component)",
+          "next/link (Link component for navigation)"
+        ],
+        "constraints": [
+          "Button navigates to /home/coaching",
+          "Use Link component with Button styling or router.push",
+          "Button should be secondary/outline variant"
+        ]
+      },
+      "input_state": "coaching-session-card.tsx has Join button but no reschedule action",
+      "output_state": "coaching-session-card.tsx has Reschedule button that navigates to /home/coaching when clicked",
+      "acceptance_criterion": "Clicking Reschedule button navigates user to /home/coaching page",
+      "verification_command": "pnpm typecheck && grep -A5 'Reschedule' apps/web/app/home/(user)/_components/coaching-session-card.tsx | grep '/home/coaching'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I4.F3.T4",
+      "type": "task",
+      "name": "Wire up Book Session CTA in coaching-empty-state",
+      "action": {
+        "verb": "Add",
+        "target": "navigation to /home/coaching for Book Session button"
+      },
+      "purpose": "Enable users to navigate from the empty state to the coaching page to book their first session",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx (from F2)"
+        ],
+        "dependencies": [
+          "@kit/ui/button (Button component)",
+          "next/link (Link component for navigation)"
+        ],
+        "constraints": [
+          "Button navigates to /home/coaching",
+          "Use Link component with Button styling",
+          "Button should be primary variant (CTA)"
+        ]
+      },
+      "input_state": "coaching-empty-state.tsx displays empty state message with non-functional or missing button",
+      "output_state": "coaching-empty-state.tsx has functional Book Session button that navigates to /home/coaching",
+      "acceptance_criterion": "Clicking Book Session button in empty state navigates user to /home/coaching page",
+      "verification_command": "pnpm typecheck && grep -A5 'Book Session' apps/web/app/home/(user)/_components/coaching-empty-state.tsx | grep '/home/coaching'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Session Action Buttons",
+        "task_ids": ["S1692.I4.F3.T1", "S1692.I4.F3.T2", "S1692.I4.F3.T3", "S1692.I4.F3.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 9,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1692.I4.F3.T1", "S1692.I4.F3.T2"],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 9,
+      "parallel": 3,
+      "time_saved_percent": 67
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}
