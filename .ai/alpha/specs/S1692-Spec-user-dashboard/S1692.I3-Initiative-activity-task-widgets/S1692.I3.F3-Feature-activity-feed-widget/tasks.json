@@ -1,0 +1,449 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I3.F3",
+    "feature_name": "Activity Feed Widget",
+    "feature_slug": "activity-feed-widget",
+    "initiative_id": "S1692.I3",
+    "spec_id": 1692,
+    "created_at": "2026-01-21T17:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1692.I3.F3.T2",
+      "S1692.I3.F3.T5"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1692.I3.F3.T1",
+      "type": "task",
+      "name": "Create activity icon mapping utility",
+      "action": {
+        "verb": "Create",
+        "target": "icon mapping utility function"
+      },
+      "purpose": "Define a mapping function that returns the appropriate Lucide icon component for each activity_type enum value (lesson_completed, quiz_completed, course_completed, storyboard_submitted, survey_completed)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx"
+        ],
+        "dependencies": [
+          "lucide-react icons: BookOpen, CheckCircle2, Award, FileText, ClipboardCheck"
+        ],
+        "constraints": [
+          "Export single function getActivityIcon(activityType: string)",
+          "Return icon component, not JSX",
+          "Handle unknown activity types gracefully with fallback icon"
+        ]
+      },
+      "input_state": "No icon mapping exists for activity types. Activity type enum is defined in F2 database view.",
+      "output_state": "File exists at apps/web/app/home/(user)/_lib/activity-icons.ts with getActivityIcon() function that returns Lucide icon components for all 5 activity types.",
+      "acceptance_criterion": "Function exists, exports getActivityIcon(), maps all 5 activity types to correct icons (lesson_completed→BookOpen, quiz_completed→CheckCircle2, course_completed→Award, storyboard_submitted→FileText, survey_completed→ClipboardCheck), and includes fallback",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/activity-icons.ts && grep -q 'export function getActivityIcon' apps/web/app/home/\\(user\\)/_lib/activity-icons.ts && grep -q 'BookOpen' apps/web/app/home/\\(user\\)/_lib/activity-icons.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/activity-icons.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1692.I3.F3.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F3.T2",
+      "type": "task",
+      "name": "Create activity description formatter utility",
+      "action": {
+        "verb": "Create",
+        "target": "description formatter utility function"
+      },
+      "purpose": "Create a function that generates user-friendly activity descriptions from activity metadata (e.g., 'Completed lesson • 85%', 'Quiz passed • Score: 92%', 'Course completed')",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Activity metadata structure from F2 (JSONB field with type-specific data)"
+        ],
+        "constraints": [
+          "Export single function formatActivityDescription(activityType: string, metadata: unknown)",
+          "Handle all 5 activity types with type-specific templates",
+          "Use TypeScript type guards for metadata validation",
+          "Return string with • separator for multi-part descriptions"
+        ]
+      },
+      "input_state": "No formatter exists. Activity metadata structure is defined in F2 view (jsonb_build_object with type-specific fields).",
+      "output_state": "File exists at apps/web/app/home/(user)/_lib/activity-descriptions.ts with formatActivityDescription() function that generates descriptions for all activity types.",
+      "acceptance_criterion": "Function exists, handles all 5 activity types, uses metadata correctly (e.g., completion_percentage for lessons, score for quizzes, passed boolean for quizzes), returns formatted strings with • separator",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/activity-descriptions.ts && grep -q 'export function formatActivityDescription' apps/web/app/home/\\(user\\)/_lib/activity-descriptions.ts && grep -q 'lesson_completed' apps/web/app/home/\\(user\\)/_lib/activity-descriptions.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/activity-descriptions.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1692.I3.F3.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F3.T3",
+      "type": "task",
+      "name": "Create activity feed list client component",
+      "action": {
+        "verb": "Create",
+        "target": "activity-feed-list.tsx client component"
+      },
+      "purpose": "Build the client-side timeline renderer that displays activity items with icons, descriptions, and relative timestamps using date-fns",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx",
+          "apps/web/app/(marketing)/blog/_components/date-formatter.tsx"
+        ],
+        "dependencies": [
+          "date-fns formatDistanceToNow",
+          "getActivityIcon() from T1",
+          "formatActivityDescription() from T2",
+          "Activity data type from F2"
+        ],
+        "constraints": [
+          "Must be client component ('use client' directive)",
+          "Accept activities prop as array",
+          "Render timeline with icon, description, and relative timestamp for each item",
+          "Use formatDistanceToNow for timestamps with 'ago' suffix",
+          "Limit to 10-15 items as specified",
+          "Handle empty array gracefully"
+        ]
+      },
+      "input_state": "Icon mapper and description formatter exist from T1 and T2. No activity list component exists.",
+      "output_state": "File exists at apps/web/app/home/(user)/_components/activity-feed-list.tsx as client component that renders timeline of activities with icons, descriptions, and relative timestamps.",
+      "acceptance_criterion": "Component exists with 'use client', accepts activities prop, renders each activity with icon from getActivityIcon(), description from formatActivityDescription(), and relative timestamp using formatDistanceToNow(), handles empty state",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/activity-feed-list.tsx && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/activity-feed-list.tsx && grep -q 'formatDistanceToNow' apps/web/app/home/\\(user\\)/_components/activity-feed-list.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-list.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F3.T1",
+          "S1692.I3.F3.T2"
+        ],
+        "blocks": [
+          "S1692.I3.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F3.T4",
+      "type": "task",
+      "name": "Create activity feed empty state component",
+      "action": {
+        "verb": "Create",
+        "target": "empty state component"
+      },
+      "purpose": "Create a reusable empty state component for users with no activity history, providing clear messaging and guidance",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/empty-state components (EmptyState, EmptyStateHeading, EmptyStateText)"
+        ],
+        "constraints": [
+          "Use EmptyState component from @kit/ui",
+          "Include heading 'No Recent Activity'",
+          "Include descriptive text explaining how activities appear",
+          "Match existing empty state patterns in codebase"
+        ]
+      },
+      "input_state": "EmptyState UI components exist from @kit/ui. No activity-specific empty state exists.",
+      "output_state": "File exists at apps/web/app/home/(user)/_components/activity-feed-empty.tsx with EmptyState component for no activities.",
+      "acceptance_criterion": "Component exists, uses EmptyState from @kit/ui, includes EmptyStateHeading and EmptyStateText with appropriate messaging about starting activities",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/activity-feed-empty.tsx && grep -q 'EmptyState' apps/web/app/home/\\(user\\)/_components/activity-feed-empty.tsx && grep -q 'EmptyStateHeading' apps/web/app/home/\\(user\\)/_components/activity-feed-empty.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-empty.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1692.I3.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F3.T5",
+      "type": "task",
+      "name": "Create activity feed widget server component",
+      "action": {
+        "verb": "Create",
+        "target": "activity-feed-widget.tsx server component"
+      },
+      "purpose": "Build the server component that fetches activity data using loadUserActivities() from F2 and renders the Card container with activity feed list or empty state",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Recent Activity"
+          },
+          {
+            "command": "find role",
+            "target": "region"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx",
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx"
+        ],
+        "dependencies": [
+          "loadUserActivities() from F2 (apps/web/app/home/(user)/_lib/server/user-activity.loader.ts)",
+          "@kit/ui/card components (Card, CardHeader, CardTitle, CardContent)",
+          "ActivityFeedList from T3",
+          "ActivityFeedEmpty from T4"
+        ],
+        "constraints": [
+          "Must be async server component (no 'use client')",
+          "Call loadUserActivities() with limit of 10-15",
+          "Wrap in Card with CardHeader 'Recent Activity'",
+          "Render ActivityFeedList if activities exist, else ActivityFeedEmpty",
+          "Handle errors with try/catch"
+        ]
+      },
+      "input_state": "loadUserActivities() exists from F2. ActivityFeedList and ActivityFeedEmpty exist from T3 and T4. No widget container exists.",
+      "output_state": "File exists at apps/web/app/home/(user)/_components/activity-feed-widget.tsx as async server component that fetches activities and renders Card with list or empty state.",
+      "acceptance_criterion": "Component exists as async function without 'use client', calls loadUserActivities(), uses Card from @kit/ui, renders ActivityFeedList when data exists or ActivityFeedEmpty when empty, includes error handling",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'async function' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'loadUserActivities' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx && grep -q 'Card' apps/web/app/home/\\(user\\)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I3.F3.T3",
+          "S1692.I3.F3.T4"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F3.T6",
+      "type": "task",
+      "name": "Create activity feed loading skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "loading skeleton component"
+      },
+      "purpose": "Build a loading skeleton that matches the activity feed layout structure for displaying while data loads",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/ai/storyboard/_components/storyboard-panel.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/skeleton component (if exists) or custom skeleton",
+          "@kit/ui/card components"
+        ],
+        "constraints": [
+          "Match activity feed list layout (timeline items)",
+          "Show 3-5 skeleton rows",
+          "Use Card container matching T5 layout",
+          "Use shimmer/pulse animation if available"
+        ]
+      },
+      "input_state": "Activity feed widget structure exists from T5. No loading skeleton exists.",
+      "output_state": "File exists at apps/web/app/home/(user)/_components/activity-feed-skeleton.tsx with skeleton component matching activity feed layout.",
+      "acceptance_criterion": "Component exists, renders Card with skeleton items matching activity feed layout (icon placeholder, text lines for description and timestamp), shows 3-5 items",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/activity-feed-skeleton.tsx && grep -q 'Card' apps/web/app/home/\\(user\\)/_components/activity-feed-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Utility Functions",
+        "task_ids": [
+          "S1692.I3.F3.T1",
+          "S1692.I3.F3.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "UI Components",
+        "task_ids": [
+          "S1692.I3.F3.T3",
+          "S1692.I3.F3.T4",
+          "S1692.I3.F3.T6"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 8,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Widget Integration",
+        "task_ids": [
+          "S1692.I3.F3.T5"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1692.I3.F3.T1",
+        "S1692.I3.F3.T3",
+        "S1692.I3.F3.T5"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 10,
+      "time_saved_percent": 37.5
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
