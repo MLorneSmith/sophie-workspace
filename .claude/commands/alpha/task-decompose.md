@@ -374,6 +374,84 @@ Add `ui_task: true` when the task:
 
 ---
 
+## Step 3: Commit Spec Files to Git (CRITICAL)
+
+**⚠️ MANDATORY**: After decomposition completes (either Mode A or Mode B), commit the spec files to git. Without this step, the orchestrator's sandboxes cannot access the spec files.
+
+### Why This Is Critical
+
+The Alpha orchestrator:
+1. Creates E2B sandboxes that clone from GitHub
+2. Sandboxes check out the `alpha/spec-S<num>` branch
+3. If spec files aren't committed and pushed, sandboxes can't find them
+4. This causes sandboxes to fail or implement wrong features
+
+### Git Commit Steps
+
+```bash
+# 1. Stage the entire spec directory (includes all decomposed files)
+git add .ai/alpha/specs/S<spec-num>-Spec-*/
+
+# 2. Commit with descriptive message
+git commit -m "feat(alpha): decompose S<spec-num> tasks for <initiative-or-feature>
+
+Initiative: <initiative-id> - <initiative-name>
+Features decomposed: <count>
+Total tasks: <count>
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+
+# 3. Push to dev branch
+git push origin dev
+```
+
+### Example for Mode B (Initiative)
+
+```bash
+git add .ai/alpha/specs/S1656-Spec-user-dashboard/
+git commit -m "feat(alpha): decompose S1656.I1 dashboard foundation tasks
+
+Initiative: S1656.I1 - Dashboard Foundation
+Features decomposed: 4
+Total tasks: 28
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+git push origin dev
+```
+
+### Example for Mode A (Single Feature)
+
+```bash
+git add .ai/alpha/specs/S1656-Spec-user-dashboard/
+git commit -m "feat(alpha): decompose S1656.I1.F1 dashboard page tasks
+
+Feature: S1656.I1.F1 - Dashboard Page & Grid Layout
+Tasks: 6
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+git push origin dev
+```
+
+### Verification
+
+```bash
+# Verify spec files are committed
+git log --oneline -1 -- .ai/alpha/specs/S<spec-num>-Spec-*/
+
+# Verify pushed to remote
+git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<spec-num>-Spec-*/
+# Should show no differences if push succeeded
+```
+
+### Notes
+
+- **Commit after each initiative** - Don't wait until all initiatives are done
+- **Multiple commits are fine** - Each initiative gets its own commit
+- **If push fails** - Check for merge conflicts, resolve, and retry
+- **This step is idempotent** - Running again after changes will create a new commit
+
+---
+
 ## Report
 
 ### Single Feature (Mode A)
@@ -388,6 +466,10 @@ Add `ui_task: true` when the task:
 
 ### tasks.json Location
 `<FEAT_DIR>/tasks.json`
+
+### Git Status
+✅ Spec files committed and pushed to `origin/dev`
+   Commit: <commit-hash>
 
 ### Next Step
 After decomposing ALL features in the initiative, run the spec orchestrator from the command line:
@@ -421,8 +503,12 @@ tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
 ### State File
 `${INIT_DIR}/decomposition-state.json`
 
+### Git Status
+✅ Spec files committed and pushed to `origin/dev`
+   Commit: <commit-hash>
+
 ### Next Step
-After decomposing ALL features in ALL initiatives, run the spec orchestrator from the command line:
+After decomposing ALL initiatives, run the spec orchestrator from the command line:
 ```bash
 tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
 ```
@@ -430,6 +516,13 @@ tsx .ai/alpha/scripts/spec-orchestrator.ts <SPEC_NUM>
 Example:
 ```bash
 tsx .ai/alpha/scripts/spec-orchestrator.ts 1362
+```
+
+**Pre-flight Check** (run before orchestrator):
+```bash
+# Verify all spec files are pushed
+git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<SPEC_NUM>-Spec-*/
+# Should show: "0 files changed" if everything is pushed
 ```
 ```
 
