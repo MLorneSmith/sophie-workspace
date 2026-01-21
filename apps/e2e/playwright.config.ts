@@ -150,7 +150,13 @@ export default defineConfig({
 				storageState: ".auth/test1@slideheroes.com.json",
 			},
 			// Exclude Payload tests from the default project - they use a separate project
-			testIgnore: [/.*\.setup\.ts/, /.*payload.*/],
+			// Also exclude Vitest tests in setup directory (supabase-health.spec.ts)
+			// These use .spec.ts extension but are meant for Vitest, not Playwright
+			testIgnore: [
+				/.*\.setup\.ts/,
+				/.*payload.*/,
+				/tests\/setup\/.*\.spec\.ts/,
+			],
 		},
 		{
 			name: "payload",
