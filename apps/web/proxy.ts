@@ -139,7 +139,9 @@ import pathsConfig from "~/config/paths.config";
 const NEXT_ACTION_HEADER = "next-action";
 
 export const config = {
-	matcher: ["/((?!_next/static|_next/image|images|locales|assets|api/*).*)"],
+	matcher: [
+		"/((?!_next/static|_next/image|images|locales|assets|api/*|ingest/*).*)",
+	],
 };
 
 const getUser = async (request: NextRequest, response: NextResponse) => {

@@ -26,6 +26,8 @@ const INTERNAL_PACKAGES = [
 /** @type {import('next').NextConfig} */
 const config = {
 	reactStrictMode: true,
+	// Required for PostHog reverse proxy to work correctly
+	skipTrailingSlashRedirect: true,
 	/** Enables hot reloading for local packages without a build step */
 	transpilePackages: INTERNAL_PACKAGES,
 	images: getImagesConfig(),
@@ -56,6 +58,7 @@ const config = {
 		"/*": ["./content/**/*"],
 	},
 	redirects: getRedirects,
+	rewrites: getPostHogRewrites,
 	turbopack: {
 		resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
 		resolveAlias: getModulesAliases(),
@@ -146,6 +149,28 @@ async function getRedirects() {
 			source: "/server-sitemap.xml",
 			destination: "/sitemap.xml",
 			permanent: true,
+		},
+	];
+}
+
+/**
+ * PostHog reverse proxy rewrites to bypass ad blockers.
+ * Routes /ingest/* requests to PostHog's EU ingestion servers.
+ * @see https://posthog.com/docs/advanced/proxy/nextjs
+ */
+async function getPostHogRewrites() {
+	return [
+		{
+			source: "/ingest/static/:path*",
+			destination: "https://eu-assets.i.posthog.com/static/:path*",
+		},
+		{
+			source: "/ingest/:path*",
+			destination: "https://eu.i.posthog.com/:path*",
+		},
+		{
+			source: "/ingest/decide",
+			destination: "https://eu.i.posthog.com/decide",
 		},
 	];
 }
