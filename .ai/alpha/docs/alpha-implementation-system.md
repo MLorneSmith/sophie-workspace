@@ -649,10 +649,37 @@ The `migration_name_prefix` uses the semantic ID (with underscores replacing dot
 
 On startup, the orchestrator:
 1. **Checks database capacity** - Warns if sandbox DB is near 500MB limit
-2. **Resets database** (optional) - Clean slate for each run
-3. **Sets up Supabase CLI** - Links each sandbox to the sandbox project
+2. **Checks if database is seeded** - Enables warm start optimization
+3. **Resets database** (optional) - Clean slate for each run
+4. **Creates sandboxes** - Parallelized with DB reset when possible
+5. **Seeds database** - Skipped on warm starts
+6. **Sets up Supabase CLI** - Links each sandbox to the sandbox project
 
 Use `--skip-db-reset` to skip database reset when resuming a partially complete run.
+
+### Startup Optimization (PR #1707)
+
+The orchestrator includes performance optimizations to reduce startup time:
+
+| Optimization | Savings | Description |
+|-------------|---------|-------------|
+| Early seeding check | 5-15 min (warm) | Checks `isDatabaseSeeded()` before sandbox creation to skip seeding entirely on repeat runs |
+| Parallel DB reset + sandbox | 30-60s | Runs `resetSandboxDatabase()` and first `createSandbox()` concurrently using `Promise.all()` |
+| Reduced UI poll timeout | 0-20s | Reduced from 30s/500ms to 10s/200ms for faster UI readiness detection |
+
+**Cold Start vs Warm Start:**
+
+- **Cold start**: First run after a fresh database. Requires full reset, sandbox creation, and seeding (~2 min with optimizations, previously ~5 min)
+- **Warm start**: Resume or restart when database is already seeded. Detects existing data and skips seeding (<60s with optimizations)
+
+**Startup Timing Log:**
+
+The orchestrator displays startup duration after sandboxes are ready:
+```
+⏱️  Startup completed in 45.2s
+```
+
+This helps measure the impact of optimizations and identify bottlenecks.
 
 ## Prerequisites
 

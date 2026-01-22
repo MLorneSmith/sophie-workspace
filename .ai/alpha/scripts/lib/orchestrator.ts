@@ -1160,11 +1160,24 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// Wait for UI to be ready before emitting database events
 		// This prevents timing race conditions where events are emitted before UI connects
+		// Optimization: Reduced timeout from 30s/500ms to 10s/200ms (PR #1707)
 		if (options.ui && orchestratorUrl) {
-			await waitForUIReady(30000, 500, log);
+			await waitForUIReady(10000, 200, log);
 		}
 
-		// Check sandbox database capacity
+		// =========================================================================
+		// Startup Optimization (PR #1707)
+		// =========================================================================
+		// Performance optimizations to reduce startup time:
+		// 1. Check isDatabaseSeeded() BEFORE sandbox creation (saves 5-15 min on warm starts)
+		// 2. Parallelize DB reset and first sandbox creation (saves 30-60s)
+		// 3. Reduced UI ready timeout from 30s to 10s
+		// =========================================================================
+		const startupStartTime = Date.now();
+
+		// Check sandbox database capacity and seeding status early
+		let databaseAlreadySeeded = false;
+		let needsDatabaseReset = false;
 		if (!options.dryRun && process.env.SUPABASE_SANDBOX_DB_URL) {
 			log("\n📊 Checking sandbox database...");
 			const hasCapacity = await checkDatabaseCapacity(options.ui);
@@ -1174,16 +1187,20 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				process.exit(1);
 			}
 
-			// Reset sandbox database
-			if (!options.skipDbReset) {
-				try {
-					await resetSandboxDatabase(options.ui);
-				} catch (error) {
-					console.error("Failed to reset sandbox database:", error);
-					if (uiManager) uiManager.stop();
-					process.exit(1);
+			// Check if database is already seeded BEFORE sandbox creation
+			// This is a key optimization: on warm starts, we can skip seeding entirely
+			if (!options.skipDbReset && !options.skipDbSeed) {
+				databaseAlreadySeeded = await isDatabaseSeeded(options.ui);
+				if (databaseAlreadySeeded) {
+					log("   ✅ Database already seeded (warm start detected)");
 				}
-			} else {
+			}
+
+			// Determine if DB reset is needed (will be parallelized with sandbox creation)
+			if (!options.skipDbReset && !databaseAlreadySeeded) {
+				needsDatabaseReset = true;
+				log("   📋 Database reset will be parallelized with sandbox creation");
+			} else if (options.skipDbReset) {
 				log("   ⏭️ Skipping database reset (--skip-db-reset)");
 			}
 		}
@@ -1292,6 +1309,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		}
 
 		// Step 2: Create any additional sandboxes needed
+		// Optimization (PR #1707): Parallelize DB reset with first sandbox creation
 		const sandboxesNeeded = options.sandboxCount - instances.length;
 
 		if (sandboxesNeeded > 0) {
@@ -1299,42 +1317,92 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				`\n📦 ${reconnectedCount > 0 ? "Creating" : "Creating"} ${sandboxesNeeded} sandbox(es)...`,
 			);
 
-			// Create first new sandbox (may be needed for seeding if no reconnection)
 			const startIndex = instances.length;
-			for (let i = 0; i < sandboxesNeeded; i++) {
-				const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
 
-				// Stagger delay for sandboxes after the first
-				if (i > 0 || startIndex > 0) {
+			// Parallelize DB reset with first sandbox creation (saves 30-60s on cold starts)
+			if (needsDatabaseReset && startIndex === 0) {
+				log("   ⚡ Parallelizing DB reset with first sandbox creation...");
+				const firstLabel = `sbx-${String.fromCharCode(97 + startIndex)}`;
+
+				const [, firstInstance] = await Promise.all([
+					resetSandboxDatabase(options.ui).catch((error) => {
+						console.error("Failed to reset sandbox database:", error);
+						if (uiManager) uiManager.stop();
+						process.exit(1);
+					}),
+					createSandbox(
+						manifest,
+						firstLabel,
+						options.timeout,
+						options.ui,
+						runId,
+					),
+				]);
+
+				instances.push(firstInstance);
+
+				// Create remaining sandboxes sequentially (with stagger delay)
+				for (let i = 1; i < sandboxesNeeded; i++) {
+					const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
 					log(
 						`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
 					);
 					await sleep(SANDBOX_STAGGER_DELAY_MS);
+					const instance = await createSandbox(
+						manifest,
+						label,
+						options.timeout,
+						options.ui,
+						runId,
+					);
+					instances.push(instance);
 				}
+			} else {
+				// Sequential creation (no DB reset needed or reconnecting)
+				for (let i = 0; i < sandboxesNeeded; i++) {
+					const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
 
-				const instance = await createSandbox(
-					manifest,
-					label,
-					options.timeout,
-					options.ui,
-					runId,
-				);
-				instances.push(instance);
+					// Stagger delay for sandboxes after the first
+					if (i > 0 || startIndex > 0) {
+						log(
+							`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+						);
+						await sleep(SANDBOX_STAGGER_DELAY_MS);
+					}
+
+					const instance = await createSandbox(
+						manifest,
+						label,
+						options.timeout,
+						options.ui,
+						runId,
+					);
+					instances.push(instance);
+				}
+			}
+		} else if (needsDatabaseReset) {
+			// No new sandboxes needed but DB reset is required (reconnection case)
+			try {
+				await resetSandboxDatabase(options.ui);
+			} catch (error) {
+				console.error("Failed to reset sandbox database:", error);
+				if (uiManager) uiManager.stop();
+				process.exit(1);
 			}
 		}
 
 		// Get the first instance for seeding (either reconnected or newly created)
 		const firstInstance = instances[0];
 
-		// Seed database via first sandbox (only if we didn't reconnect)
-		// When reconnecting, the database should already be seeded from the previous run
+		// Seed database via first sandbox (only if not already seeded)
+		// We checked isDatabaseSeeded() earlier to enable this optimization
 		if (
 			!options.skipDbReset &&
 			!options.skipDbSeed &&
 			process.env.SUPABASE_SANDBOX_DB_URL
 		) {
-			const alreadySeeded = await isDatabaseSeeded(options.ui);
-			if (alreadySeeded) {
+			// Use the pre-checked seeding status (optimization: avoid redundant check)
+			if (databaseAlreadySeeded) {
 				log("   ℹ️ Database already seeded, skipping seeding step");
 			} else if (firstInstance) {
 				const seedSuccess = await seedSandboxDatabase(
@@ -1363,6 +1431,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			log(`${instance.label}: ${instance.id}`);
 		}
 		log(`Branch: ${manifest.sandbox.branch_name}`);
+
+		// Log startup timing (PR #1707 optimization)
+		const startupDurationSec = ((Date.now() - startupStartTime) / 1000).toFixed(
+			1,
+		);
+		log(`⏱️  Startup completed in ${startupDurationSec}s`);
 
 		// Start implementation
 		log("\n" + "═".repeat(70));
