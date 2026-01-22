@@ -1,13 +1,12 @@
 /**
-
-* CLI Module
-*
-* Command-line argument parsing and help output for the spec orchestrator.
+ * CLI Module
+ *
+ * Command-line argument parsing and help output for the spec and refine orchestrators.
  */
 
 import process from "node:process";
 
-import type { OrchestratorOptions } from "../types/index.js";
+import type { OrchestratorOptions, RefineOptions } from "../types/index.js";
 
 // ============================================================================
 // Argument Parsing
@@ -145,5 +144,98 @@ Prerequisites:
   1. Complete task decomposition for all features
   2. Generate spec manifest:
      tsx generate-spec-manifest.ts <spec-id>
+`);
+}
+
+// ============================================================================
+// Refine Argument Parsing
+// ============================================================================
+
+/**
+ * Parse command-line arguments for the refine orchestrator.
+ *
+ * @returns Parsed refine options
+ */
+export function parseRefineArgs(): RefineOptions {
+	const args = process.argv.slice(2);
+	const options: RefineOptions = {
+		specId: "",
+		timeout: 3600, // 1 hour (E2B maximum)
+		interactive: false,
+		reconnect: false,
+		forceNew: false,
+		dryRun: false,
+	};
+
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (!arg) continue;
+
+		const nextArg = args[i + 1];
+
+		if (arg === "--issue" && nextArg) {
+			options.issue = nextArg;
+			i++;
+		} else if (arg === "--feature" && nextArg) {
+			options.featureId = nextArg;
+			i++;
+		} else if (arg === "--timeout" && nextArg) {
+			options.timeout = Math.min(parseInt(nextArg, 10), 3600);
+			i++;
+		} else if (arg === "--interactive") {
+			options.interactive = true;
+		} else if (arg === "--reconnect") {
+			options.reconnect = true;
+		} else if (arg === "--force-new") {
+			options.forceNew = true;
+		} else if (arg === "--dry-run") {
+			options.dryRun = true;
+		} else if (arg === "--help" || arg === "-h") {
+			showRefineHelp();
+			process.exit(0);
+		} else if (
+			!arg.startsWith("--") &&
+			!arg.startsWith("-") &&
+			!options.specId
+		) {
+			// Parse spec ID - handle both S1362 and 1362 formats
+			options.specId = arg.replace(/^S/i, "");
+		}
+	}
+
+	return options;
+}
+
+/**
+ * Print help message for refine orchestrator.
+ */
+export function showRefineHelp(): void {
+	console.log(`
+Alpha Refine Orchestrator
+
+Usage:
+  tsx refine-orchestrator.ts <spec-id> [options]
+
+Options:
+  --issue "description"    Issue description to fix
+  --feature <S#.I#.F#>     Scope refinement to specific feature
+  --timeout <seconds>      Sandbox timeout (default: 3600, max: 3600)
+  --interactive            Keep sandbox alive for iterative fixes
+  --reconnect              Reconnect to existing sandbox if available
+  --force-new              Force create new sandbox (ignore existing)
+  --dry-run                Show what would happen without executing
+
+Features:
+  * Lightweight single-sandbox orchestrator
+  * Reconnects to existing sandbox if still alive
+  * Invokes /alpha:refine with issue context
+  * Interactive mode for iterative debugging
+  * Tracks refinement history in spec-manifest.json
+
+Examples:
+  tsx refine-orchestrator.ts 1362 --issue "Login button doesn't render"
+  tsx refine-orchestrator.ts S1362 --issue "Slow page load" --feature S1362.I1.F2
+  tsx refine-orchestrator.ts 1362 --reconnect --interactive
+  tsx refine-orchestrator.ts 1362 --dry-run
 `);
 }

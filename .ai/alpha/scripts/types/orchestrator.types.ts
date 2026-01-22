@@ -8,6 +8,8 @@
 
 import type { Sandbox } from "@e2b/code-interpreter";
 
+import type { RefinementEntry } from "./refine.types.js";
+
 // ============================================================================
 // Feature & Initiative Types
 // ============================================================================
@@ -83,6 +85,8 @@ export interface SpecManifest {
 		/** Count of sandbox restarts during orchestration (for diagnostics) */
 		restart_count?: number;
 	};
+	/** History of refinements applied to this spec (optional) */
+	refinements?: RefinementEntry[];
 }
 
 // ============================================================================

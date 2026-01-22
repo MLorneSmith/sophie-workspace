@@ -21,3 +21,17 @@ export type {
 	StartupMonitorResult,
 	UIManager,
 } from "./orchestrator.types.js";
+
+export type {
+	RefineContext,
+	RefineIssueType,
+	RefineOptions,
+	RefineProgress,
+	RefineSkillMapping,
+	RefinementEntry,
+} from "./refine.types.js";
+
+export {
+	DEFAULT_SKILL_MAPPING,
+	ISSUE_TYPE_KEYWORDS,
+} from "./refine.types.js";

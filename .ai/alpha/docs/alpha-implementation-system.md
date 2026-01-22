@@ -1033,6 +1033,202 @@ agent-browser install --with-deps
 | `.claude/agents/alpha/task-decomposer.md` | Task decomposer with UI task detection |
 | `.ai/ai_docs/tool-docs/agent-browser.md` | Complete agent-browser reference |
 
+## Post-Implementation Refinement
+
+### Overview
+
+The Alpha workflow includes a refinement phase for debugging and fine-tuning after human review. This is handled by the **Refine Orchestrator** (`refine-orchestrator.ts`) and the **`/alpha:refine`** slash command.
+
+### When to Use
+
+Use refinement after the main implementation is complete and you've identified issues during review:
+
+- Visual bugs (rendering, layout, CSS issues)
+- Functional issues (logic errors, missing behavior)
+- Performance problems (slow loading, timeouts)
+- Polish requests (design improvements, UX tweaks)
+- Accessibility issues (screen reader, keyboard navigation)
+- Responsive design problems (mobile, tablet breakpoints)
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      REFINEMENT WORKFLOW                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. User identifies issue during review                                     │
+│     └─→ "Login button doesn't render on mobile"                             │
+│                                                                             │
+│  2. Run refine orchestrator                                                 │
+│     └─→ tsx refine-orchestrator.ts 1362 --issue "Login button..."           │
+│                                                                             │
+│  3. Orchestrator:                                                           │
+│     ├─→ Finds spec manifest                                                 │
+│     ├─→ Detects issue type (visual, functional, etc.)                       │
+│     ├─→ Creates or reconnects to sandbox                                    │
+│     ├─→ Checks out implementation branch                                    │
+│     └─→ Runs /alpha:refine with issue context                               │
+│                                                                             │
+│  4. /alpha:refine command:                                                  │
+│     ├─→ Invokes appropriate skill (frontend-debugging, etc.)                │
+│     ├─→ Diagnoses root cause                                                │
+│     ├─→ Implements fix                                                      │
+│     ├─→ Runs verification commands                                          │
+│     └─→ Commits and pushes fix                                              │
+│                                                                             │
+│  5. Orchestrator saves refinement entry to manifest                         │
+│     └─→ Track refinement history for the spec                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Usage
+
+**Basic usage:**
+```bash
+tsx .ai/alpha/scripts/refine-orchestrator.ts <spec-id> --issue "description"
+```
+
+**With feature scope:**
+```bash
+tsx refine-orchestrator.ts 1362 --issue "Button not visible" --feature S1362.I1.F2
+```
+
+**Interactive mode (keep sandbox alive):**
+```bash
+tsx refine-orchestrator.ts 1362 --interactive
+```
+
+**Reconnect to existing sandbox:**
+```bash
+tsx refine-orchestrator.ts 1362 --reconnect
+```
+
+### Command Line Options
+
+| Option | Description |
+|--------|-------------|
+| `--issue "description"` | Issue description to fix |
+| `--feature <S#.I#.F#>` | Scope refinement to specific feature |
+| `--timeout <seconds>` | Sandbox timeout (default: 3600, max: 3600) |
+| `--interactive` | Keep sandbox alive for iterative fixes |
+| `--reconnect` | Reconnect to existing sandbox if available |
+| `--force-new` | Force create new sandbox (ignore existing) |
+| `--dry-run` | Show what would happen without executing |
+
+### Issue Type Detection
+
+The system automatically detects issue type from keywords:
+
+| Type | Keywords | Skill Invoked |
+|------|----------|---------------|
+| Visual | rendering, layout, CSS, hidden, display | frontend-debugging |
+| Functional | doesn't work, broken, error, bug | (code tracing) |
+| Performance | slow, loading, timeout, lag | frontend-debugging |
+| Polish | polish, refine, improve, tweak | frontend-design |
+| Accessibility | a11y, screen reader, keyboard, aria | frontend-debugging |
+| Responsive | mobile, tablet, breakpoint, viewport | frontend-design |
+
+### Refinement History
+
+Refinements are tracked in `spec-manifest.json`:
+
+```json
+{
+  "refinements": [
+    {
+      "id": "R-20260122-143052-ABC",
+      "timestamp": "2026-01-22T14:30:52Z",
+      "issue_description": "Login button doesn't render on mobile",
+      "issue_type": "visual",
+      "feature_id": "S1362.I1.F2",
+      "skills_invoked": ["frontend-debugging"],
+      "files_modified": ["apps/web/app/(auth)/login/_components/login-form.tsx"],
+      "commit_hash": "abc1234",
+      "status": "completed",
+      "duration_seconds": 180
+    }
+  ]
+}
+```
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `.ai/alpha/scripts/refine-orchestrator.ts` | Main refine orchestrator script |
+| `.ai/alpha/scripts/lib/refine.ts` | Refine utilities (detection, history) |
+| `.ai/alpha/scripts/types/refine.types.ts` | Type definitions for refinement |
+| `.ai/alpha/scripts/cli/index.ts` | CLI argument parsing for refine |
+| `.claude/commands/alpha/refine.md` | /alpha:refine slash command |
+
+### Example Session
+
+```
+$ tsx refine-orchestrator.ts 1362 --issue "Login button doesn't render on mobile"
+
+══════════════════════════════════════════════════════════════════════
+   ALPHA REFINE ORCHESTRATOR
+══════════════════════════════════════════════════════════════════════
+
+📋 Spec: User Dashboard Home
+   Branch: alpha/spec-S1362
+
+🔍 Issue Analysis:
+   Description: Login button doesn't render on mobile
+   Detected Type: visual
+   Skills to invoke: frontend-debugging
+
+📦 Creating refine sandbox...
+   ID: sbx_abc123
+   Checking out branch: alpha/spec-S1362
+   ✅ Branch checked out
+   ✅ Sandbox ready
+
+🔗 Sandbox URLs:
+   VS Code: https://sbx_abc123-8080.e2b.dev
+
+🚀 Starting dev server for visual debugging...
+   Dev Server: https://sbx_abc123-3000.e2b.dev
+
+🔧 Running: /alpha:refine S1362 --issue "Login button doesn't render on mobile"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Claude Code Output:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Phase 0: Loading Context]
+✓ Found spec directory
+✓ Loaded spec-manifest.json
+
+[Phase 1: Diagnosis]
+Invoking skill: frontend-debugging
+...
+
+[Phase 2: Fix Implementation]
+Editing: apps/web/app/(auth)/login/_components/login-form.tsx
+- Changed: `hidden md:block` → `block`
+
+[Phase 3: Verification]
+✓ pnpm typecheck passed
+✓ pnpm lint passed
+
+[Phase 4: Commit & Report]
+✓ Committed: fix(alpha): show login button on mobile
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 Refinement entry saved: R-20260122-143052-ABC
+
+🛑 Stopping sandbox...
+✅ Sandbox terminated
+
+══════════════════════════════════════════════════════════════════════
+   REFINE COMPLETE
+══════════════════════════════════════════════════════════════════════
+```
+
 ## Orchestrator Event Streaming
 
 ### Overview
