@@ -556,6 +556,11 @@ export async function createSandbox(
  * Added HTTP 200 early success detection to stop polling immediately
  * when the server is confirmed ready.
  *
+ * Bug fix #1749: Use E2B's `background: true` option instead of shell
+ * backgrounding (`nohup ... &`) which doesn't work reliably in E2B.
+ * Also start only the web app (`pnpm --filter web dev`) instead of all
+ * apps via turbo, which can fail due to unrelated script issues.
+ *
  * @param sandbox - The E2B sandbox instance
  * @param maxAttempts - Maximum health check attempts (default: 180 = 180s)
  * @param intervalMs - Interval between health checks in ms (default: 1000)
@@ -567,12 +572,12 @@ export async function startDevServer(
 	maxAttempts: number = 180,
 	intervalMs: number = 1000,
 ): Promise<string> {
-	// Start the dev server
-	sandbox.commands
-		.run("nohup start-dev > /tmp/devserver.log 2>&1 &", { timeoutMs: 5000 })
-		.catch(() => {
-			/* fire and forget */
-		});
+	// Start the dev server using E2B's background option
+	// Bug fix #1749: Use `background: true` instead of shell backgrounding
+	// Only start the web app to avoid failures from unrelated apps (scripts, payload)
+	sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm --filter web dev`, {
+		background: true,
+	});
 
 	const devServerHost = sandbox.getHost(DEV_SERVER_PORT);
 	const devServerUrl = `https://${devServerHost}`;
@@ -871,13 +876,14 @@ export async function createReviewSandbox(
 	log("   ✅ Branch checked out");
 
 	// Sync dependencies with branch lockfile
-	// Always run pnpm install after branch checkout to ensure dependencies match
-	// the branch's lockfile. When deps are already synced, pnpm completes in <1s.
+	// Bug fix #1749: Use `pnpm install` without --frozen-lockfile because the branch
+	// may have added new dependencies (e.g., @posthog/nextjs-config) that aren't in
+	// the E2B template's pre-installed node_modules. The lockfile from the branch
+	// will be used for resolution, ensuring reproducible installs.
 	log("   Syncing dependencies with branch lockfile...");
-	await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-		{ timeoutMs: 600000 },
-	);
+	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
+		timeoutMs: 600000,
+	});
 
 	// Build workspace packages (required for dev server)
 	log("   Building workspace packages...");
