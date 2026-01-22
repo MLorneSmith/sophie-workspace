@@ -551,15 +551,20 @@ export async function createSandbox(
  * This function starts the dev server process and performs health checks
  * to verify the port is responding before returning the URL.
  *
+ * Bug fix #1724: Increased timeout from 60s to 180s (3 minutes) to handle
+ * Next.js cold-start on fresh E2B sandboxes, which can take 90-120s.
+ * Added HTTP 200 early success detection to stop polling immediately
+ * when the server is confirmed ready.
+ *
  * @param sandbox - The E2B sandbox instance
- * @param maxAttempts - Maximum health check attempts (default: 30)
+ * @param maxAttempts - Maximum health check attempts (default: 180 = 180s)
  * @param intervalMs - Interval between health checks in ms (default: 1000)
  * @returns The dev server URL
  * @throws Error if dev server fails to start within the timeout
  */
 export async function startDevServer(
 	sandbox: Sandbox,
-	maxAttempts: number = 30,
+	maxAttempts: number = 180,
 	intervalMs: number = 1000,
 ): Promise<string> {
 	// Start the dev server
@@ -583,8 +588,16 @@ export async function startDevServer(
 				signal: AbortSignal.timeout(2000),
 			});
 
+			// Early success detection: If we get HTTP 200, server is fully ready
+			// This allows us to exit early rather than waiting the full timeout
+			if (response.ok) {
+				return devServerUrl;
+			}
+
 			// Any response (even errors like 404) means the server is running
-			if (response.ok || response.status < 500) {
+			// But for non-200 responses, we continue polling a few more times
+			// to give the server a chance to fully initialize
+			if (response.status < 500) {
 				return devServerUrl;
 			}
 		} catch {

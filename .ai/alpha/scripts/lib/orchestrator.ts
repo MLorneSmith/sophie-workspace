@@ -1536,12 +1536,30 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		const otherInstances = instances.slice(1);
 
 		// Kill non-primary implementation sandboxes (sbx-b, sbx-c, etc.)
+		// Bug fix #1724: Track killed sandbox IDs for cleanup
+		const killedSandboxIds: string[] = [];
 		for (const instance of otherInstances) {
 			try {
 				log(`${instance.label}: Stopping (partial code only)...`);
+				killedSandboxIds.push(instance.id);
 				await instance.sandbox.kill();
 			} catch {
-				// Ignore
+				// Ignore - still track as killed even if kill fails
+			}
+		}
+
+		// Bug fix #1724: Clean up killed sandbox IDs from manifest
+		// Filter out any sandbox IDs that were just killed to prevent stale references
+		if (killedSandboxIds.length > 0) {
+			const previousCount = manifest.sandbox.sandbox_ids.length;
+			manifest.sandbox.sandbox_ids = manifest.sandbox.sandbox_ids.filter(
+				(id) => !killedSandboxIds.includes(id),
+			);
+			const cleanedCount = previousCount - manifest.sandbox.sandbox_ids.length;
+			if (cleanedCount > 0) {
+				log(
+					`   🧹 Cleaned up ${cleanedCount} killed sandbox ID(s) from manifest`,
+				);
 			}
 		}
 
@@ -1559,6 +1577,16 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					"Review sandbox creation",
 				);
 				log("   ✅ Review sandbox created successfully");
+
+				// Bug fix #1724: Track review sandbox ID in manifest immediately
+				// This ensures the manifest always has a valid reference to the running sandbox
+				if (
+					reviewSandbox &&
+					!manifest.sandbox.sandbox_ids.includes(reviewSandbox.sandboxId)
+				) {
+					manifest.sandbox.sandbox_ids.push(reviewSandbox.sandboxId);
+					log(`   📋 Tracking review sandbox ID: ${reviewSandbox.sandboxId}`);
+				}
 			} catch (error) {
 				log(
 					`   ⚠️ Failed to create review sandbox: ${error instanceof Error ? error.message : error}`,
@@ -1575,12 +1603,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			const devServerVscodeUrl = getVSCodeUrl(devServerSandbox);
 
 			try {
-				// Use longer timeout (60 attempts = 60s) for review sandbox
-				// Review sandbox should be cleaner, but give extra time just in case
-				// Wrap with 90-second timeout to prevent indefinite hangs
+				// Bug fix #1724: Use default timeout (180 attempts = 180s) for review sandbox
+				// Next.js cold-start on fresh E2B sandbox can take 90-120s
+				// Wrap with 200-second timeout to prevent indefinite hangs (slightly longer than polling)
 				const devServerUrl = await withTimeout(
-					startDevServer(devServerSandbox, 60, 1000),
-					90000,
+					startDevServer(devServerSandbox),
+					200000,
 					"Dev server startup",
 				);
 				reviewUrls.push({
@@ -1620,6 +1648,42 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			log(
 				`   ${implementationInstance.label}: VS Code available for code inspection`,
 			);
+		}
+
+		// Bug fix #1724: Validate manifest integrity before saving
+		// Ensure all sandbox IDs in manifest are from running sandboxes
+		const runningSandboxIds = new Set<string>();
+		if (implementationInstance) {
+			runningSandboxIds.add(implementationInstance.id);
+		}
+		if (reviewSandbox) {
+			runningSandboxIds.add(reviewSandbox.sandboxId);
+		}
+
+		// Log manifest state for debugging
+		log("\n📋 Manifest sandbox state:");
+		log(
+			`   Sandbox IDs in manifest: [${manifest.sandbox.sandbox_ids.join(", ")}]`,
+		);
+		log(
+			`   Running sandbox IDs: [${Array.from(runningSandboxIds).join(", ")}]`,
+		);
+
+		// Warn if there are orphaned IDs (IDs in manifest but not running)
+		const orphanedIds = manifest.sandbox.sandbox_ids.filter(
+			(id) => !runningSandboxIds.has(id),
+		);
+		if (orphanedIds.length > 0) {
+			log(`   ⚠️ Orphaned sandbox IDs detected: [${orphanedIds.join(", ")}]`);
+			// Remove orphaned IDs to maintain integrity
+			manifest.sandbox.sandbox_ids = manifest.sandbox.sandbox_ids.filter((id) =>
+				runningSandboxIds.has(id),
+			);
+			log(
+				`   🧹 Removed orphaned IDs, manifest now has: [${manifest.sandbox.sandbox_ids.join(", ")}]`,
+			);
+		} else {
+			log("   ✅ Manifest integrity verified (no orphaned sandbox IDs)");
 		}
 
 		// Save manifest with reviewUrls - this writes both the manifest file and
