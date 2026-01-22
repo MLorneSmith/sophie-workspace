@@ -11,6 +11,7 @@ node_modules/
 .next.old/
 dist/
 build/
+.vercel/cache/
 
 # Generated files
 apps/payload/payload-types.ts
