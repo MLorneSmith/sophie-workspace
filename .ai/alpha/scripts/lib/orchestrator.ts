@@ -1589,10 +1589,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					"Creating fresh review sandbox for dev server",
 					{ branchName },
 				);
-				// Wrap with 60-second timeout to prevent indefinite hangs
+				// Wrap with 5-minute timeout - matches realistic operation times
+				// (pnpm install can take 100+ seconds, git operations 20-40 seconds each)
 				reviewSandbox = await withTimeout(
 					createReviewSandbox(branchName, options.timeout, options.ui),
-					60000,
+					300000,
 					"Review sandbox creation",
 				);
 				log("   ✅ Review sandbox created successfully");
