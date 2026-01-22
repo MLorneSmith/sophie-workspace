@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Download deployment URLs
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: deployment-urls
           run-id: ${{ github.event.workflow_run.id }}
@@ -447,7 +447,7 @@ jobs:
 
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -541,7 +541,7 @@ jobs:
 
       - name: Upload HAR files on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: har-logs-${{ github.run_id }}
           path: apps/e2e/test-results/*.har

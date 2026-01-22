@@ -99,7 +99,7 @@ jobs:
       - name: Cache Supabase Docker images
         if: steps.check-actor.outputs.should-skip != 'true'
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.docker
@@ -186,7 +186,7 @@ jobs:
 
       - name: Cache build and server state
         if: steps.check-actor.outputs.should-skip != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
@@ -300,7 +300,7 @@ jobs:
 
       - name: Restore build and server state
         if: steps.check-skip.outputs.skip != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             apps/web/.next
@@ -426,7 +426,7 @@ jobs:
 
       - name: Upload test results
         if: ${{ always() && steps.check-skip.outputs.skip != 'true' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-results-shard-${{ matrix.shard }}-${{ github.run_id }}
           path: |
@@ -449,7 +449,7 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Download all shard results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: shard-results
           pattern: e2e-results-shard-*-${{ github.run_id }}

@@ -94,7 +94,7 @@ jobs:
       - uses: ./.github/actions/setup-deps
 
       - name: Setup Turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-validate-${{ github.sha }}
@@ -271,7 +271,7 @@ jobs:
           cat deployment-info/urls.json
 
       - name: Upload deployment URLs artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: deployment-urls
           path: deployment-info/urls.json
