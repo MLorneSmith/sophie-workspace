@@ -48,7 +48,7 @@ jobs:
       
       - name: Cache Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-visual-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -60,7 +60,7 @@ jobs:
           pnpm exec playwright install --with-deps chromium
       
       - name: Download baseline snapshots
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: baseline-cache
         with:
           path: apps/e2e/visual-snapshots
@@ -300,7 +300,7 @@ jobs:
       
       - name: Upload updated snapshots
         if: inputs.update_snapshots
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: apps/e2e/visual-snapshots
           key: visual-snapshots-${{ inputs.environment }}-${{ github.sha }}
@@ -338,7 +338,7 @@ jobs:
       - name: Upload test results
         if: always()
         id: upload
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: visual-regression-report-${{ github.run_id }}
           path: |

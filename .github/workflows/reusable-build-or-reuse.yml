@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload reused artifacts
         if: steps.check-reuse.outputs.reusable == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: build-artifacts-${{ inputs.environment }}
           path: build-artifacts-${{ inputs.environment }}

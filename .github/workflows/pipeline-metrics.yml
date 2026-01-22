@@ -261,7 +261,7 @@ jobs:
             }
 
       - name: Save metrics to artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: pipeline-metrics-${{ github.run_id }}
           path: |

@@ -83,7 +83,7 @@
 		"@vercel/otel": "^2.1.0",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
-		"lodash": "^4.17.21",
+		"lodash": "^4.17.23",
 		"lucide-react": "^0.555.0",
 		"next": "catalog:",
 		"next-sitemap": "^4.2.3",
