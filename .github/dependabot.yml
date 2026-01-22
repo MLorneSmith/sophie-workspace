@@ -14,6 +14,9 @@ updates:
       timezone: "UTC"
     # Target branch for PR creation
     target-branch: "dev"
+    # Automatically rebase PRs when base branch is updated
+    # This ensures Dependabot PRs always have latest workflow configuration
+    rebase-strategy: "auto"
     # Dependency update strategy
     versioning-strategy: "increase"
     # Open up to 10 PRs at a time (default is 5)
@@ -104,6 +107,9 @@ updates:
       timezone: "UTC"
     # Target branch for PR creation
     target-branch: "dev"
+    # Automatically rebase PRs when base branch is updated
+    # This ensures Dependabot PRs always have latest workflow configuration
+    rebase-strategy: "auto"
     # Open up to 5 PRs at a time for Actions
     open-pull-requests-limit: 5
     # Group all GitHub Actions updates
