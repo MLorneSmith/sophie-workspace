@@ -42,6 +42,7 @@ import {
 	setOrchestratorUrl,
 	validatePythonDependencies,
 } from "./environment.js";
+import { emitOrchestratorEvent } from "./event-emitter.js";
 import { runFeatureImplementation } from "./feature.js";
 import { runHealthChecks } from "./health.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
@@ -1524,32 +1525,45 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
 		manifest.progress.completed_at = new Date().toISOString();
 
-		// Bug fix #1590: Create a fresh review sandbox instead of reusing implementation sandbox.
-		// The implementation sandbox has accumulated resource pressure from running 110+ tasks,
-		// causing the dev server to fail to start within 30 seconds. A fresh sandbox provides
-		// a clean environment where the dev server can start in 10-20 seconds.
-		log("\n🔄 Creating fresh review sandbox...");
+		// =======================================================================
+		// Bug fix #1727: Complete lifecycle redesign for completion phase
+		// - Kill ALL implementation sandboxes (not just sbx-b, sbx-c)
+		// - Emit events for all completion phase transitions
+		// - Create fresh review sandbox with clean resources
+		// =======================================================================
+
+		log("\n🔄 Starting completion phase...");
+		emitOrchestratorEvent(
+			"completion_phase_start",
+			"Completion phase started - cleaning up implementation sandboxes",
+			{ sandboxCount: instances.length },
+		);
+
 		const reviewUrls: ReviewUrl[] = [];
 
-		// Keep implementation sandbox (sbx-a) available for code inspection via VS Code
-		const implementationInstance = instances[0];
-		const otherInstances = instances.slice(1);
-
-		// Kill non-primary implementation sandboxes (sbx-b, sbx-c, etc.)
-		// Bug fix #1724: Track killed sandbox IDs for cleanup
+		// Kill ALL implementation sandboxes (sbx-a, sbx-b, sbx-c, etc.)
+		// Bug fix #1727: Don't keep sbx-a alive - it has resource pressure from 110+ tasks
 		const killedSandboxIds: string[] = [];
-		for (const instance of otherInstances) {
+		for (const instance of instances) {
 			try {
-				log(`${instance.label}: Stopping (partial code only)...`);
+				log(`   ${instance.label}: Stopping...`);
+				emitOrchestratorEvent(
+					"sandbox_killing",
+					`Killing implementation sandbox ${instance.label}`,
+					{ sandboxId: instance.id, label: instance.label },
+				);
 				killedSandboxIds.push(instance.id);
 				await instance.sandbox.kill();
-			} catch {
-				// Ignore - still track as killed even if kill fails
+				log(`   ${instance.label}: ✅ Stopped`);
+			} catch (error) {
+				// Log error but still track as killed
+				log(
+					`   ${instance.label}: ⚠️ Kill failed: ${error instanceof Error ? error.message : error}`,
+				);
 			}
 		}
 
-		// Bug fix #1724: Clean up killed sandbox IDs from manifest
-		// Filter out any sandbox IDs that were just killed to prevent stale references
+		// Clean up killed sandbox IDs from manifest
 		if (killedSandboxIds.length > 0) {
 			const previousCount = manifest.sandbox.sandbox_ids.length;
 			manifest.sandbox.sandbox_ids = manifest.sandbox.sandbox_ids.filter(
@@ -1569,7 +1583,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		if (branchName) {
 			try {
-				log("   Creating dedicated review sandbox for dev server...");
+				log("\n   Creating dedicated review sandbox for dev server...");
+				emitOrchestratorEvent(
+					"review_sandbox_creating",
+					"Creating fresh review sandbox for dev server",
+					{ branchName },
+				);
 				// Wrap with 60-second timeout to prevent indefinite hangs
 				reviewSandbox = await withTimeout(
 					createReviewSandbox(branchName, options.timeout, options.ui),
@@ -1578,8 +1597,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				);
 				log("   ✅ Review sandbox created successfully");
 
-				// Bug fix #1724: Track review sandbox ID in manifest immediately
-				// This ensures the manifest always has a valid reference to the running sandbox
+				// Track review sandbox ID in manifest immediately
 				if (
 					reviewSandbox &&
 					!manifest.sandbox.sandbox_ids.includes(reviewSandbox.sandboxId)
@@ -1591,71 +1609,67 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 				log(
 					`   ⚠️ Failed to create review sandbox: ${error instanceof Error ? error.message : error}`,
 				);
-				log("   Falling back to implementation sandbox...");
+				// No fallback - all implementation sandboxes are killed
 			}
 		}
 
-		// Start dev server on review sandbox (preferred) or implementation sandbox (fallback)
-		log("\n🚀 Starting dev server for review...");
-		const devServerSandbox = reviewSandbox ?? implementationInstance?.sandbox;
+		// Start dev server on review sandbox
+		if (reviewSandbox) {
+			log("\n🚀 Starting dev server for review...");
+			emitOrchestratorEvent(
+				"dev_server_starting",
+				"Starting dev server on review sandbox",
+				{ sandboxId: reviewSandbox.sandboxId },
+			);
 
-		if (devServerSandbox) {
-			const devServerVscodeUrl = getVSCodeUrl(devServerSandbox);
+			const devServerVscodeUrl = getVSCodeUrl(reviewSandbox);
 
 			try {
-				// Bug fix #1724: Use default timeout (180 attempts = 180s) for review sandbox
+				// Use default timeout (180 attempts = 180s) for review sandbox
 				// Next.js cold-start on fresh E2B sandbox can take 90-120s
-				// Wrap with 200-second timeout to prevent indefinite hangs (slightly longer than polling)
+				// Wrap with 200-second timeout to prevent indefinite hangs
 				const devServerUrl = await withTimeout(
-					startDevServer(devServerSandbox),
+					startDevServer(reviewSandbox),
 					200000,
 					"Dev server startup",
 				);
 				reviewUrls.push({
-					label: reviewSandbox
-						? "sbx-review"
-						: (implementationInstance?.label ?? "sbx-a"),
+					label: "sbx-review",
 					vscode: devServerVscodeUrl,
 					devServer: devServerUrl,
 				});
-				log(
-					`   ✅ Dev server ready on ${reviewSandbox ? "review" : "implementation"} sandbox`,
+				log("   ✅ Dev server ready on review sandbox");
+				emitOrchestratorEvent(
+					"dev_server_ready",
+					"Dev server is running and accessible",
+					{ url: devServerUrl },
 				);
 			} catch (error) {
 				log(
 					`   ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
 				);
+				emitOrchestratorEvent(
+					"dev_server_failed",
+					`Dev server failed to start: ${error instanceof Error ? error.message : error}`,
+					{ error: error instanceof Error ? error.message : String(error) },
+				);
 				// Still add VS Code URL for code review even if dev server fails
 				reviewUrls.push({
-					label: reviewSandbox
-						? "sbx-review"
-						: (implementationInstance?.label ?? "sbx-a"),
+					label: "sbx-review",
 					vscode: devServerVscodeUrl,
 					devServer: "(failed to start)",
 				});
 			}
-		}
-
-		// Add implementation sandbox VS Code URL separately for code inspection
-		// This gives users access to both: dev server (review sandbox) and code editor (impl sandbox)
-		if (implementationInstance && reviewSandbox) {
-			const implVscodeUrl = getVSCodeUrl(implementationInstance.sandbox);
-			reviewUrls.push({
-				label: `${implementationInstance.label} (code)`,
-				vscode: implVscodeUrl,
-				devServer: "(use sbx-review for dev server)",
-			});
-			log(
-				`   ${implementationInstance.label}: VS Code available for code inspection`,
+		} else {
+			log("   ⚠️ No review sandbox available - dev server not started");
+			emitOrchestratorEvent(
+				"dev_server_failed",
+				"No review sandbox available - could not start dev server",
 			);
 		}
 
-		// Bug fix #1724: Validate manifest integrity before saving
-		// Ensure all sandbox IDs in manifest are from running sandboxes
+		// Only the review sandbox should remain running
 		const runningSandboxIds = new Set<string>();
-		if (implementationInstance) {
-			runningSandboxIds.add(implementationInstance.id);
-		}
 		if (reviewSandbox) {
 			runningSandboxIds.add(reviewSandbox.sandboxId);
 		}
@@ -1693,11 +1707,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		saveManifest(manifest, reviewUrls, runId);
 
 		// Print summary (always shown - handles its own output)
+		// Bug fix #1727: No implementation sandboxes remain - all were killed
 		if (!options.ui) {
-			const reviewInstancesForSummary = implementationInstance
-				? [implementationInstance]
-				: [];
-			printSummary(manifest, reviewInstancesForSummary, reviewUrls);
+			printSummary(manifest, [], reviewUrls);
 		}
 
 		// Add sandbox database review URL

@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 import Spinner from "ink-spinner";
 import React, { useEffect, useState } from "react";
+import stripAnsi from "strip-ansi";
 import type {
 	HealthStatus,
 	SandboxColumnProps,
@@ -68,6 +69,20 @@ export function computeHealthStatus(state: SandboxState): HealthStatus {
 function truncate(str: string, maxLen: number): string {
 	if (str.length <= maxLen) return str;
 	return `${str.substring(0, maxLen - 3)}...`;
+}
+
+/**
+ * Strip ANSI escape sequences and truncate text.
+ * Bug fix #1727: ANSI codes consume character budget without being visible,
+ * causing truncated output like "u..." when escape sequences are present.
+ *
+ * @param str - String that may contain ANSI escape sequences
+ * @param maxLen - Maximum length after stripping ANSI codes
+ * @returns Cleaned and truncated string
+ */
+function stripAndTruncate(str: string, maxLen: number): string {
+	const cleaned = stripAnsi(str);
+	return truncate(cleaned, maxLen);
 }
 
 /**
@@ -288,12 +303,13 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 			)}
 
 			{/* Recent Output Lines (from log file) - capped to 6 items for UI space */}
+			{/* Bug fix #1727: Strip ANSI codes to prevent truncation artifacts like "u..." */}
 			{state.recentOutput && state.recentOutput.length > 0 && (
 				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>Output:</Text>
-					{state.recentOutput.slice(0, 6).map((line) => (
-						<Text key={line} dimColor>
-							{truncate(line, 28)}
+					{state.recentOutput.slice(0, 6).map((line, index) => (
+						<Text key={`${index}-${line.slice(0, 20)}`} dimColor>
+							{stripAndTruncate(line, 28)}
 						</Text>
 					))}
 				</Box>

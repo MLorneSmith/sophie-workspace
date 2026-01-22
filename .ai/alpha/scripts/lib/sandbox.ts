@@ -19,8 +19,8 @@ import {
 import type { SandboxInstance, SpecManifest } from "../types/index.js";
 import {
 	E2B_API_KEY,
-	getAllEnvVars,
 	GITHUB_TOKEN,
+	getAllEnvVars,
 	validateSupabaseTokensRequired,
 } from "./environment.js";
 
@@ -624,6 +624,63 @@ export async function startDevServer(
 export function getVSCodeUrl(sandbox: Sandbox): string {
 	const vscodeHost = sandbox.getHost(VSCODE_PORT);
 	return `https://${vscodeHost}`;
+}
+
+// ============================================================================
+// Sandbox Destruction
+// ============================================================================
+
+/**
+ * Result of a sandbox destruction attempt.
+ */
+export interface DestroySandboxResult {
+	/** Whether the sandbox was successfully destroyed */
+	success: boolean;
+	/** The sandbox ID that was destroyed */
+	sandboxId: string;
+	/** Error message if destruction failed */
+	error?: string;
+}
+
+/**
+ * Destroy a sandbox gracefully, handling errors non-blocking.
+ *
+ * Bug fix #1727: Reusable helper for destroying sandboxes with proper
+ * error handling. Returns success/failure status rather than throwing.
+ *
+ * @param sandbox - The E2B sandbox instance to destroy
+ * @returns Result object indicating success/failure
+ */
+export async function destroySandbox(
+	sandbox: Sandbox,
+): Promise<DestroySandboxResult> {
+	const sandboxId = sandbox.sandboxId;
+
+	try {
+		await sandbox.kill();
+		return {
+			success: true,
+			sandboxId,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			sandboxId,
+			error: error instanceof Error ? error.message : String(error),
+		};
+	}
+}
+
+/**
+ * Destroy multiple sandboxes in parallel, collecting results.
+ *
+ * @param sandboxes - Array of sandbox instances to destroy
+ * @returns Array of results for each sandbox
+ */
+export async function destroySandboxes(
+	sandboxes: Sandbox[],
+): Promise<DestroySandboxResult[]> {
+	return Promise.all(sandboxes.map(destroySandbox));
 }
 
 // ============================================================================
