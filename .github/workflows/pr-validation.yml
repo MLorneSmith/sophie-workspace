@@ -323,6 +323,11 @@ jobs:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       DO_NOT_TRACK: 1
+      # Payload CMS requires these environment variables at build time
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
     steps:
       - uses: actions/checkout@v6
       
@@ -372,10 +377,10 @@ jobs:
       E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
       E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
-      
+
       # Chrome flags for Lighthouse in CI environment
       CHROME_FLAGS: '--no-sandbox --disable-dev-shm-usage --disable-gpu'
-      
+
       # Legacy environment variables (for backward compatibility)
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -383,6 +388,11 @@ jobs:
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       DO_NOT_TRACK: 1
       PLAYWRIGHT_SERVER_COMMAND: 'pnpm dev'
+      # Payload CMS requires these environment variables at build time
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
     steps:
       - uses: actions/checkout@v6
         with:
