@@ -1516,21 +1516,25 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// =======================================================================
 		// Bug fix #1746: Two-phase manifest save approach
-		// Phase 1: Set completion status and SAVE IMMEDIATELY to prevent frozen UI.
-		//          This ensures overall-progress.json updates before blocking operations.
-		// Phase 2: Save again AFTER review sandbox operations complete with reviewUrls.
+		// Bug fix #1754: Use intermediate "completing" status for proper UI feedback
+		// Phase 1: Set "completing" status and SAVE IMMEDIATELY to prevent frozen UI.
+		//          This ensures UI shows "Setting up review environment..." state.
+		// Phase 2: Set final status ("completed"/"partial") AFTER review sandbox
+		//          operations complete and reviewUrls is populated.
 		//
 		// Previous bug (#1720): Status was set in memory but saveManifest() was only
 		// called after sandbox operations (10+ minutes), leaving UI frozen.
+		// Previous bug (#1753): UI showed "completed" before dev server URL was available
 		// =======================================================================
 		const failedFeatures = manifest.feature_queue.filter(
 			(f) => f.status === "failed",
 		).length;
-		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+		// Phase 1: Set "completing" status - final status will be set in Phase 2
+		manifest.progress.status = "completing";
 		manifest.progress.completed_at = new Date().toISOString();
 
-		// Phase 1: Save manifest IMMEDIATELY with completion status (empty reviewUrls)
-		// This allows UI to show completion screen while sandbox operations run
+		// Phase 1: Save manifest IMMEDIATELY with "completing" status (empty reviewUrls)
+		// This allows UI to show "Setting up review environment..." while sandbox operations run
 		saveManifest(manifest, [], runId);
 
 		// =======================================================================
@@ -1710,9 +1714,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			log("   ✅ Manifest integrity verified (no orphaned sandbox IDs)");
 		}
 
-		// Phase 2: Save manifest again with reviewUrls populated
-		// Bug fix #1746: First save happened at completion status (empty reviewUrls)
-		// This second save updates the manifest with review URLs after sandbox operations
+		// Phase 2: Set final status and save manifest with reviewUrls populated
+		// Bug fix #1746: First save happened at "completing" status (empty reviewUrls)
+		// Bug fix #1754: Only now transition to final status after reviewUrls is populated
+		// This ensures UI shows dev server URL before displaying completion screen
+		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
 		saveManifest(manifest, reviewUrls, runId);
 
 		// Print summary (always shown - handles its own output)

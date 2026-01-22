@@ -65,7 +65,7 @@ export interface SpecManifest {
 	initiatives: InitiativeEntry[];
 	feature_queue: FeatureEntry[];
 	progress: {
-		status: "pending" | "in_progress" | "completed" | "failed" | "partial";
+		status: "pending" | "in_progress" | "completing" | "completed" | "failed" | "partial";
 		initiatives_completed: number;
 		initiatives_total: number;
 		features_completed: number;

@@ -179,7 +179,7 @@ export interface OverallProgress {
 	/** Total tasks count (across all features) */
 	tasksTotal: number;
 	/**Overall status*/
-	status: "pending" | "in_progress" | "completed" | "partial" | "failed";
+	status: "pending" | "in_progress" | "completing" | "completed" | "partial" | "failed";
 	/** Git branch name for the spec */
 	branchName?: string;
 	/** Review URLs for accessing completed sandboxes*/
