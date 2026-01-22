@@ -66,7 +66,7 @@ import {
 	reconnectToStoredSandboxes,
 	startDevServer,
 } from "./sandbox.js";
-import { sleep } from "./utils.js";
+import { sleep, withTimeout } from "./utils.js";
 import {
 	assignFeatureToSandbox,
 	cleanupStaleState,
@@ -1513,10 +1513,17 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			}
 		}
 
-		// Prepare review sandbox for complete review
-		// NOTE: We prepare review URLs BEFORE setting final status to avoid race condition
-		// where UI sees "completed" status before reviewUrls are available
-		//
+		// Set completion status EARLY to prevent frozen UI if sandbox creation hangs.
+		// Bug fix #1720: Status was previously set AFTER createReviewSandbox() and startDevServer().
+		// If either operation hangs, the status would never update, leaving the UI frozen.
+		// Now we set status first, then attempt sandbox operations. saveManifest() is still called
+		// AFTER reviewUrls are populated to ensure they're available when the manifest is written.
+		const failedFeatures = manifest.feature_queue.filter(
+			(f) => f.status === "failed",
+		).length;
+		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
+		manifest.progress.completed_at = new Date().toISOString();
+
 		// Bug fix #1590: Create a fresh review sandbox instead of reusing implementation sandbox.
 		// The implementation sandbox has accumulated resource pressure from running 110+ tasks,
 		// causing the dev server to fail to start within 30 seconds. A fresh sandbox provides
@@ -1545,10 +1552,11 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		if (branchName) {
 			try {
 				log("   Creating dedicated review sandbox for dev server...");
-				reviewSandbox = await createReviewSandbox(
-					branchName,
-					options.timeout,
-					options.ui,
+				// Wrap with 60-second timeout to prevent indefinite hangs
+				reviewSandbox = await withTimeout(
+					createReviewSandbox(branchName, options.timeout, options.ui),
+					60000,
+					"Review sandbox creation",
 				);
 				log("   ✅ Review sandbox created successfully");
 			} catch (error) {
@@ -1569,7 +1577,12 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			try {
 				// Use longer timeout (60 attempts = 60s) for review sandbox
 				// Review sandbox should be cleaner, but give extra time just in case
-				const devServerUrl = await startDevServer(devServerSandbox, 60, 1000);
+				// Wrap with 90-second timeout to prevent indefinite hangs
+				const devServerUrl = await withTimeout(
+					startDevServer(devServerSandbox, 60, 1000),
+					90000,
+					"Dev server startup",
+				);
 				reviewUrls.push({
 					label: reviewSandbox
 						? "sbx-review"
@@ -1609,17 +1622,10 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			);
 		}
 
-		// Final status - set AFTER reviewUrls are ready to avoid race condition
-		// This ensures UI never sees "completed" status without reviewUrls available
-		const failedFeatures = manifest.feature_queue.filter(
-			(f) => f.status === "failed",
-		).length;
-		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
-		manifest.progress.completed_at = new Date().toISOString();
-
 		// Save manifest with reviewUrls - this writes both the manifest file and
-		// overall-progress.json atomically with reviewUrls included, preventing
-		// the race condition where UI sees "completed" before reviewUrls are available
+		// overall-progress.json atomically with reviewUrls included.
+		// Note: Status was set earlier (before sandbox operations) to prevent frozen UI,
+		// but saveManifest() is called here to ensure reviewUrls are available when written.
 		saveManifest(manifest, reviewUrls, runId);
 
 		// Print summary (always shown - handles its own output)

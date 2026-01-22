@@ -44,6 +44,7 @@ import {
 	getRetryDelay,
 	updateOutputTracker,
 } from "./startup-monitor.js";
+import { stripAnsiCodes } from "./utils.js";
 import { updateNextFeatureId } from "./work-queue.js";
 
 // ============================================================================
@@ -434,7 +435,9 @@ export async function runFeatureImplementation(
 					const lines = data.split("\n");
 					for (const line of lines) {
 						if (line.trim()) {
-							recentOutput.push(line);
+							// Strip ANSI escape codes before storing for clean UI display
+							const cleanLine = stripAnsiCodes(line);
+							recentOutput.push(cleanLine);
 							// Keep only last N lines
 							if (recentOutput.length > RECENT_OUTPUT_LINES) {
 								recentOutput.shift();
