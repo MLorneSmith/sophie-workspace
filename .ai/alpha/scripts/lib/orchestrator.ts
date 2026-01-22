@@ -1514,16 +1514,24 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			}
 		}
 
-		// Set completion status EARLY to prevent frozen UI if sandbox creation hangs.
-		// Bug fix #1720: Status was previously set AFTER createReviewSandbox() and startDevServer().
-		// If either operation hangs, the status would never update, leaving the UI frozen.
-		// Now we set status first, then attempt sandbox operations. saveManifest() is still called
-		// AFTER reviewUrls are populated to ensure they're available when the manifest is written.
+		// =======================================================================
+		// Bug fix #1746: Two-phase manifest save approach
+		// Phase 1: Set completion status and SAVE IMMEDIATELY to prevent frozen UI.
+		//          This ensures overall-progress.json updates before blocking operations.
+		// Phase 2: Save again AFTER review sandbox operations complete with reviewUrls.
+		//
+		// Previous bug (#1720): Status was set in memory but saveManifest() was only
+		// called after sandbox operations (10+ minutes), leaving UI frozen.
+		// =======================================================================
 		const failedFeatures = manifest.feature_queue.filter(
 			(f) => f.status === "failed",
 		).length;
 		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
 		manifest.progress.completed_at = new Date().toISOString();
+
+		// Phase 1: Save manifest IMMEDIATELY with completion status (empty reviewUrls)
+		// This allows UI to show completion screen while sandbox operations run
+		saveManifest(manifest, [], runId);
 
 		// =======================================================================
 		// Bug fix #1727: Complete lifecycle redesign for completion phase
@@ -1702,10 +1710,9 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			log("   ✅ Manifest integrity verified (no orphaned sandbox IDs)");
 		}
 
-		// Save manifest with reviewUrls - this writes both the manifest file and
-		// overall-progress.json atomically with reviewUrls included.
-		// Note: Status was set earlier (before sandbox operations) to prevent frozen UI,
-		// but saveManifest() is called here to ensure reviewUrls are available when written.
+		// Phase 2: Save manifest again with reviewUrls populated
+		// Bug fix #1746: First save happened at completion status (empty reviewUrls)
+		// This second save updates the manifest with review URLs after sandbox operations
 		saveManifest(manifest, reviewUrls, runId);
 
 		// Print summary (always shown - handles its own output)
