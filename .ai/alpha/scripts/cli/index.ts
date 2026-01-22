@@ -21,7 +21,7 @@ import type { OrchestratorOptions, RefineOptions } from "../types/index.js";
 export function parseArgs(): OrchestratorOptions {
 	const args = process.argv.slice(2);
 	const options: OrchestratorOptions = {
-		specId: 0,
+		specId: -1, // -1 means "not provided" - allows spec ID 0 (debug spec)
 		sandboxCount: 3,
 		timeout: 3600, // 1 hour (E2B maximum)
 		dryRun: false,
@@ -31,6 +31,7 @@ export function parseArgs(): OrchestratorOptions {
 		ui: true,
 		minimalUi: false,
 		reset: false,
+		skipToCompletion: false,
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -62,10 +63,12 @@ export function parseArgs(): OrchestratorOptions {
 		} else if (arg === "--minimal-ui") {
 			options.ui = true;
 			options.minimalUi = true;
+		} else if (arg === "--skip-to-completion") {
+			options.skipToCompletion = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
-			!options.specId
+			options.specId === -1
 		) {
 			options.specId = parseInt(arg, 10);
 		}
@@ -97,6 +100,7 @@ Options:
   --reset               Reset manifest state (delete and regenerate)
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
+  --skip-to-completion  Skip work loop, jump to completion (debugging)
   --no-ui               Disable Ink dashboard UI (uses console output)
   --minimal-ui          Use minimal dashboard (for narrow terminals)
 
@@ -121,6 +125,8 @@ Examples:
   tsx spec-orchestrator.ts 1362 --reset         # Reset manifest state
   tsx spec-orchestrator.ts 1362 --reset --force-unlock  # Full recovery
   tsx spec-orchestrator.ts 1362 --skip-db-seed  # Resume without re-seeding
+  tsx spec-orchestrator.ts 0                    # Run debug spec
+  tsx spec-orchestrator.ts 1362 --skip-to-completion  # Debug completion sequence
 
 Environment Variables (for sandbox database):
   SUPABASE_SANDBOX_PROJECT_REF   Sandbox project reference ID

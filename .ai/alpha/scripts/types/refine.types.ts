@@ -230,7 +230,13 @@ export interface RefineContext {
  */
 export interface RefineProgress {
 	/** Status of the refinement */
-	status: "loading" | "diagnosing" | "fixing" | "verifying" | "completed" | "failed";
+	status:
+		| "loading"
+		| "diagnosing"
+		| "fixing"
+		| "verifying"
+		| "completed"
+		| "failed";
 
 	/** Current phase description */
 	phase: string;

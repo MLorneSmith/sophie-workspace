@@ -110,7 +110,8 @@ process.on("unhandledRejection", (reason, promise) => {
 async function main(): Promise<void> {
 	const options = parseArgs();
 
-	if (!options.specId) {
+	// -1 means no spec ID provided (allows spec ID 0 for debug spec)
+	if (options.specId === -1 || Number.isNaN(options.specId)) {
 		showHelp();
 		process.exit(1);
 	}

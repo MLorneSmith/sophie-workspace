@@ -1448,8 +1448,55 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			manifest.progress.started_at || new Date().toISOString();
 		saveManifest(manifest);
 
-		// Main work loop
-		await runWorkLoop(instances, manifest, options.ui, options.timeout, runId);
+		// Main work loop (or skip for debugging)
+		if (options.skipToCompletion) {
+			log("⏭️  DEBUG MODE: Skipping work loop (--skip-to-completion)");
+			log("   Marking all features as completed for testing...");
+
+			// Mark all pending/in_progress features as completed
+			for (const feature of manifest.feature_queue) {
+				if (feature.status !== "completed" && feature.status !== "failed") {
+					feature.status = "completed";
+					feature.tasks_completed = feature.task_count;
+				}
+			}
+
+			// Update progress counters
+			manifest.progress.features_completed = manifest.feature_queue.filter(
+				(f) => f.status === "completed",
+			).length;
+			manifest.progress.tasks_completed = manifest.feature_queue.reduce(
+				(sum, f) => sum + (f.status === "completed" ? f.task_count : 0),
+				0,
+			);
+
+			// Update initiative statuses
+			for (const initiative of manifest.initiatives) {
+				const initFeatures = manifest.feature_queue.filter(
+					(f) => f.initiative_id === initiative.id,
+				);
+				const completedCount = initFeatures.filter(
+					(f) => f.status === "completed",
+				).length;
+				initiative.features_completed = completedCount;
+				if (completedCount === initiative.feature_count) {
+					initiative.status = "completed";
+				}
+			}
+			manifest.progress.initiatives_completed = manifest.initiatives.filter(
+				(i) => i.status === "completed",
+			).length;
+
+			saveManifest(manifest);
+		} else {
+			await runWorkLoop(
+				instances,
+				manifest,
+				options.ui,
+				options.timeout,
+				runId,
+			);
+		}
 
 		// Push final changes
 		const pushInstance = instances[0];

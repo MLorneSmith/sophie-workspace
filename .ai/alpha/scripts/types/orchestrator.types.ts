@@ -105,6 +105,8 @@ export interface OrchestratorOptions {
 	minimalUi: boolean;
 	/** Reset manifest state (delete and regenerate) before running */
 	reset: boolean;
+	/** Skip work loop and jump to completion sequence (for debugging) */
+	skipToCompletion: boolean;
 }
 
 export interface OrchestratorLock {

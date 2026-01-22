@@ -124,7 +124,9 @@ async function main(): Promise<void> {
 	// Dry run - show what would happen
 	if (options.dryRun) {
 		console.log("\n🔍 DRY RUN - Would perform these actions:");
-		console.log(`   1. ${options.reconnect && hasActiveSandbox(manifest) ? "Reconnect to existing sandbox" : "Create new sandbox"}`);
+		console.log(
+			`   1. ${options.reconnect && hasActiveSandbox(manifest) ? "Reconnect to existing sandbox" : "Create new sandbox"}`,
+		);
 		console.log(`   2. Checkout branch: ${getBranchFromManifest(manifest)}`);
 		console.log("   3. Run /alpha:refine command with issue context");
 		if (options.interactive) {
@@ -165,7 +167,11 @@ async function main(): Promise<void> {
 	// Start dev server if needed for visual debugging
 	if (options.issue) {
 		const issueType = detectIssueType(options.issue);
-		if (issueType === "visual" || issueType === "responsive" || issueType === "polish") {
+		if (
+			issueType === "visual" ||
+			issueType === "responsive" ||
+			issueType === "polish"
+		) {
 			console.log("\n🚀 Starting dev server for visual debugging...");
 			try {
 				const devServerUrl = await startDevServer(sandbox);
@@ -195,7 +201,11 @@ async function main(): Promise<void> {
 	// Create refinement entry if issue was provided
 	if (options.issue) {
 		const issueType = detectIssueType(options.issue);
-		const entry = createRefinementEntry(options.issue, issueType, options.featureId);
+		const entry = createRefinementEntry(
+			options.issue,
+			issueType,
+			options.featureId,
+		);
 		entry.duration_seconds = Math.round((Date.now() - startTime) / 1000);
 		entry.skills_invoked = selectSkillsForIssue(issueType);
 		entry.status = result.success ? "completed" : "failed";
@@ -304,7 +314,9 @@ async function createRefineSandbox(
 		{ timeoutMs: 120000 },
 	);
 	if (buildResult.exitCode !== 0) {
-		console.warn(`   ⚠️ Build warning: ${buildResult.stderr || buildResult.stdout}`);
+		console.warn(
+			`   ⚠️ Build warning: ${buildResult.stderr || buildResult.stdout}`,
+		);
 	}
 
 	// Update manifest with sandbox info
@@ -348,7 +360,9 @@ async function runClaudeCode(
 			},
 		});
 
-		console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+		console.log(
+			"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n",
+		);
 
 		if (proc.exitCode !== 0) {
 			return {
