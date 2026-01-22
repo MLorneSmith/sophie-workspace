@@ -1,6 +1,7 @@
 import { render } from "ink";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+	CompletingUI,
 	CompletionUI,
 	ErrorUI,
 	LoadingUI,
@@ -51,8 +52,9 @@ export interface UIManagerConfig {
 
 /**
  * UI phase for rendering appropriate screen
+ * Bug fix #1754: Added "completing" phase for intermediate state during review sandbox setup
  */
-type UIPhase = "loading" | "running" | "completed" | "error";
+type UIPhase = "loading" | "running" | "completing" | "completed" | "error";
 
 /**
  * Main orchestrator UI app component
@@ -328,8 +330,11 @@ const OrchestratorApp: React.FC<{
 		pollInterval,
 		onStateChange: (state) => {
 			// Update phase based on state
+			// Bug fix #1754: Handle "completing" status for intermediate state during review sandbox setup
 			if (state.overallProgress.status === "completed") {
 				setPhase("completed");
+			} else if (state.overallProgress.status === "completing") {
+				setPhase("completing");
 			} else if (state.overallProgress.status === "failed") {
 				setPhase("error");
 				setErrorMessage("One or more sandboxes failed");
@@ -445,6 +450,17 @@ const OrchestratorApp: React.FC<{
 				<ErrorUI
 					error={errorMessage ?? "Unknown error"}
 					details={error?.message}
+				/>
+			);
+
+		case "completing":
+			// Bug fix #1754: Show intermediate UI during review sandbox setup
+			return (
+				<CompletingUI
+					specId={specId}
+					progress={enhancedState.overallProgress}
+					events={enhancedState.events}
+					elapsed={getElapsedTime()}
 				/>
 			);
 

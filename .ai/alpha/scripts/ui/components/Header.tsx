@@ -31,6 +31,7 @@ function getStatusColor(status: OverallProgress["status"]): string {
 	const colors: Record<OverallProgress["status"], string> = {
 		pending: "gray",
 		in_progress: "cyan",
+		completing: "yellow", // Bug fix #1754: Intermediate state during review sandbox setup
 		completed: "green",
 		partial: "yellow",
 		failed: "red",
@@ -45,6 +46,7 @@ function getStatusIcon(status: OverallProgress["status"]): string {
 	const icons: Record<OverallProgress["status"], string> = {
 		pending: "⏳",
 		in_progress: "🔄",
+		completing: "⏳", // Bug fix #1754: Intermediate state during review sandbox setup
 		completed: "✅",
 		partial: "⚠️",
 		failed: "❌",
