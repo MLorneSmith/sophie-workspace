@@ -222,7 +222,14 @@ export type OrchestratorEventType =
 	| "db_migration_complete"
 	| "db_seed_start"
 	| "db_seed_complete"
-	| "db_verify";
+	| "db_verify"
+	// Completion phase event types (from orchestrator)
+	| "completion_phase_start"
+	| "sandbox_killing"
+	| "review_sandbox_creating"
+	| "dev_server_starting"
+	| "dev_server_ready"
+	| "dev_server_failed";
 
 /**
 
