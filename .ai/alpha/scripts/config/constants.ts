@@ -156,3 +156,32 @@ export const MIN_STARTUP_OUTPUT_BYTES = 100;
  * If fewer than this, startup may be hung.
  */
 export const MIN_STARTUP_OUTPUT_LINES = 5;
+
+// ============================================================================
+// PTY Timeout & Recovery Configuration
+// ============================================================================
+
+/** Timeout for ptyHandle.wait() before checking progress file fallback (ms)
+ * When PTY disconnects silently, this timeout triggers the fallback mechanism
+ * that checks the sandbox's progress file for completion status.
+ * Default: 30 seconds - long enough for normal operations, short enough for quick recovery.
+ * Can be overridden via PTY_TIMEOUT_MS environment variable.
+ * See bug fix #1767 for rationale.
+ */
+export const PTY_WAIT_TIMEOUT_MS = Number.parseInt(
+	process.env.PTY_TIMEOUT_MS ?? "30000",
+	10,
+);
+
+/** Interval for polling progress file during PTY timeout recovery (ms)
+ * When PTY times out, we poll the progress file at this interval
+ * to check if the sandbox completed successfully.
+ */
+export const PTY_RECOVERY_POLL_INTERVAL_MS = 500;
+
+/** Maximum age for progress file heartbeat to be considered valid (ms)
+ * If the progress file's last_heartbeat is older than this, the file
+ * is considered stale and recovery will not succeed.
+ * Default: 5 minutes
+ */
+export const PROGRESS_FILE_STALE_THRESHOLD_MS = 5 * 60 * 1000;

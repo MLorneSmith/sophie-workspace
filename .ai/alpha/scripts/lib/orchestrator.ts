@@ -70,6 +70,11 @@ import {
 import { sleep, withTimeout } from "./utils.js";
 import { speakCompletion } from "./tts.js";
 import {
+	isFeatureCompleted,
+	isProgressFileStale,
+	readProgressFile,
+} from "./progress-file.js";
+import {
 	assignFeatureToSandbox,
 	cleanupStaleState,
 	getBlockedFeatures,
@@ -898,6 +903,10 @@ export async function runWorkLoop(
 			// Fix for issue #1688: Detect stuck features where sandbox has no current task
 			// but feature still has uncompleted tasks. This prevents indefinite stalls.
 			// Check runs after work assignment and before sleep to catch stalls quickly.
+			//
+			// Bug fix #1767: Added progress file fallback for PTY disconnect recovery.
+			// When PTY times out but sandbox actually completed, we check the progress
+			// file and force manifest update to unblock dependent features.
 			const STUCK_TASK_THRESHOLD_MS = 60_000; // 60 seconds without progress
 			const now = Date.now();
 
@@ -908,11 +917,78 @@ export async function runWorkLoop(
 				}
 
 				// Find the sandbox assigned to this feature
-				const sandbox = instances.find(
+				const sandboxInstance = instances.find(
 					(i) => i.label === feature.assigned_sandbox,
 				);
-				if (!sandbox) {
+				if (!sandboxInstance) {
 					continue;
+				}
+
+				// Bug fix #1767: Check if PTY timed out but progress file shows completion
+				// This handles the case where PTY disconnects after feature completes
+				// but ptyHandle.wait() never returns, leaving manifest stale.
+				if (sandboxInstance.status === "busy") {
+					try {
+						const progressResult = await readProgressFile(
+							sandboxInstance.sandbox,
+						);
+						if (
+							progressResult.success &&
+							progressResult.data &&
+							!isProgressFileStale(progressResult.data) &&
+							isFeatureCompleted(progressResult.data)
+						) {
+							log(
+								`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed`,
+							);
+
+							// Force manifest update to mark feature as completed
+							feature.status = "completed";
+							feature.tasks_completed =
+								progressResult.data.completed_tasks?.length ||
+								feature.task_count;
+							feature.assigned_sandbox = undefined;
+							feature.assigned_at = undefined;
+
+							// Update initiative status
+							const initiative = manifest.initiatives.find(
+								(i) => i.id === feature.initiative_id,
+							);
+							if (initiative) {
+								const initFeatures = manifest.feature_queue.filter(
+									(f) => f.initiative_id === initiative.id,
+								);
+								initiative.features_completed = initFeatures.filter(
+									(f) => f.status === "completed",
+								).length;
+
+								if (initFeatures.every((f) => f.status === "completed")) {
+									initiative.status = "completed";
+								} else {
+									initiative.status = "in_progress";
+								}
+							}
+
+							// Update progress tracking
+							manifest.progress.last_completed_feature_id = feature.id;
+
+							saveManifest(manifest);
+
+							// Mark sandbox as ready for next feature
+							sandboxInstance.status = "ready";
+							sandboxInstance.currentFeature = null;
+
+							log(
+								`   ✅ [PTY_FALLBACK] Feature #${feature.id} recovered - manifest updated, dependents unblocked`,
+							);
+							continue; // Move to next feature
+						}
+					} catch (progressError) {
+						// Progress file check failed, continue with normal stuck detection
+						log(
+							`   ⚠️ [PTY_FALLBACK] Progress file check failed for ${sandboxInstance.label}: ${progressError instanceof Error ? progressError.message : progressError}`,
+						);
+					}
 				}
 
 				// Check if sandbox appears idle but feature has incomplete tasks
@@ -928,11 +1004,11 @@ export async function runWorkLoop(
 
 				if (
 					tasksRemaining > 0 &&
-					sandbox.status !== "busy" &&
+					sandboxInstance.status !== "busy" &&
 					assignedDuration > STUCK_TASK_THRESHOLD_MS
 				) {
 					log(
-						`   ⚠️ Stuck task detected: Feature #${feature.id} on ${sandbox.label} has ${tasksRemaining} tasks remaining but sandbox is ${sandbox.status}`,
+						`   ⚠️ Stuck task detected: Feature #${feature.id} on ${sandboxInstance.label} has ${tasksRemaining} tasks remaining but sandbox is ${sandboxInstance.status}`,
 					);
 
 					// Reset the feature to pending so it can be reassigned
@@ -944,8 +1020,8 @@ export async function runWorkLoop(
 					saveManifest(manifest);
 
 					// Mark sandbox as ready to pick up new work
-					sandbox.status = "ready";
-					sandbox.currentFeature = null;
+					sandboxInstance.status = "ready";
+					sandboxInstance.currentFeature = null;
 
 					log(`   🔄 Feature #${feature.id} reset to pending for reassignment`);
 				}

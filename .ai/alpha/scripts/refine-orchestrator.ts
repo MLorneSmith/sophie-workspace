@@ -1,4 +1,4 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env tsx
 /**
  * Refine Orchestrator
  *
@@ -19,7 +19,55 @@
  *   --dry-run                Show what would happen without executing
  */
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import process from "node:process";
+
+// ============================================================================
+// Load .env file (before any other imports that use env vars)
+// ============================================================================
+
+function loadEnvFile(): void {
+	// Find project root by looking for .git directory (the actual repo root)
+	// This ensures we load from the main project root, not subdirectories with their own package.json
+	let currentDir = import.meta.dirname;
+	while (currentDir !== "/") {
+		// Look for .git to identify the actual project root
+		const gitPath = path.join(currentDir, ".git");
+		if (fs.existsSync(gitPath)) {
+			const envPath = path.join(currentDir, ".env");
+			if (fs.existsSync(envPath)) {
+				const content = fs.readFileSync(envPath, "utf-8");
+				for (const line of content.split("\n")) {
+					const trimmed = line.trim();
+					// Skip comments and empty lines
+					if (!trimmed || trimmed.startsWith("#")) continue;
+					// Parse KEY=VALUE (handle values with = in them)
+					const eqIndex = trimmed.indexOf("=");
+					if (eqIndex > 0) {
+						const key = trimmed.slice(0, eqIndex).trim();
+						let value = trimmed.slice(eqIndex + 1).trim();
+						// Remove surrounding quotes if present
+						if (
+							(value.startsWith('"') && value.endsWith('"')) ||
+							(value.startsWith("'") && value.endsWith("'"))
+						) {
+							value = value.slice(1, -1);
+						}
+						// Only set if not already defined (env vars take precedence)
+						if (process.env[key] === undefined) {
+							process.env[key] = value;
+						}
+					}
+				}
+			}
+			return;
+		}
+		currentDir = path.dirname(currentDir);
+	}
+}
+
+loadEnvFile();
 
 import { Sandbox } from "@e2b/code-interpreter";
 
@@ -52,6 +100,24 @@ import {
 	startDevServer,
 } from "./lib/sandbox.js";
 import type { SpecManifest } from "./types/index.js";
+
+// ============================================================================
+// Global Error Handler
+// ============================================================================
+
+/**
+ * Handle unhandled promise rejections.
+ * Ensures clean exit even if an async error escapes all error boundaries.
+ */
+process.on("unhandledRejection", (reason, promise) => {
+	console.error("\n❌ Unhandled promise rejection:", reason);
+	if (reason instanceof Error && reason.stack) {
+		console.error("Stack trace:", reason.stack);
+	}
+	console.error("Promise:", promise);
+
+	process.exit(1);
+});
 
 // ============================================================================
 // Main Orchestrator Logic
