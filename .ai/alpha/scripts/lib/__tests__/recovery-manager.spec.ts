@@ -9,7 +9,11 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { FeatureEntry, SandboxInstance, SpecManifest } from "../../types/index.js";
+import type {
+	FeatureEntry,
+	SandboxInstance,
+	SpecManifest,
+} from "../../types/index.js";
 import {
 	DEFAULT_RECOVERY_CONFIG,
 	formatRecoveryResult,
@@ -24,11 +28,13 @@ vi.mock("../manifest.js", () => ({
 }));
 
 // Mock sandbox for testing
-function createMockSandbox(options: {
-	killSuccess?: boolean;
-	processCount?: number;
-	clearSuccess?: boolean;
-} = {}) {
+function createMockSandbox(
+	options: {
+		killSuccess?: boolean;
+		processCount?: number;
+		clearSuccess?: boolean;
+	} = {},
+) {
 	const { killSuccess = true, processCount = 0, clearSuccess = true } = options;
 
 	return {
@@ -58,7 +64,9 @@ function createMockSandbox(options: {
 	>[0];
 }
 
-function createMockSandboxInstance(overrides: Partial<SandboxInstance> = {}): SandboxInstance {
+function createMockSandboxInstance(
+	overrides: Partial<SandboxInstance> = {},
+): SandboxInstance {
 	return {
 		id: "sbx-1",
 		label: "sbx-a",
@@ -76,7 +84,9 @@ function createMockSandboxInstance(overrides: Partial<SandboxInstance> = {}): Sa
 	};
 }
 
-function createMockFeature(overrides: Partial<FeatureEntry> = {}): FeatureEntry {
+function createMockFeature(
+	overrides: Partial<FeatureEntry> = {},
+): FeatureEntry {
 	return {
 		id: "F1",
 		initiative_id: "I1",
@@ -151,9 +161,8 @@ describe("recovery-manager", () => {
 		it("should wait for process termination", async () => {
 			const sandbox = createMockSandbox({ processCount: 0 });
 
-			const terminated = await recoveryManager.waitForProcessTermination(
-				sandbox,
-			);
+			const terminated =
+				await recoveryManager.waitForProcessTermination(sandbox);
 
 			expect(terminated).toBe(true);
 		});

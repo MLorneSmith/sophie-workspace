@@ -286,7 +286,8 @@ export class HeartbeatMonitor {
 			if (inStartupGrace) {
 				return {
 					status: "startup",
-					reason: "Heartbeat timestamp invalid, but within startup grace period",
+					reason:
+						"Heartbeat timestamp invalid, but within startup grace period",
 					heartbeatAgeMs: null,
 					featureStatus: "in_progress",
 					tasksCompleted,
