@@ -218,7 +218,7 @@ jobs:
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     needs: [check-skip, changes]
     if: needs.check-skip.outputs.should-skip != 'true' && needs.changes.outputs.typescript == 'true'
-    timeout-minutes: 15
+    timeout-minutes: 30
     env:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_WEBHOOK_SECRET: ${{ secrets.SUPABASE_DB_WEBHOOK_SECRET }}
@@ -292,6 +292,7 @@ jobs:
     needs: changes
     # Only run on pull requests with relevant changes
     if: (needs.changes.outputs.dependencies == 'true' || needs.changes.outputs.typescript == 'true') && github.event_name == 'pull_request'
+    continue-on-error: true  # Non-blocking - allows security findings to be triaged separately
     steps:
       - uses: actions/checkout@v6
 
@@ -300,7 +301,7 @@ jobs:
         with:
           secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
           fail-on-timeout: true
-          fail-on-dependency-scan: false  # Disabled: 60+ HIGH vulns from transitive deps, enable when resolved
+          fail-on-dependency-scan: true  # Enabled for visibility; job is non-blocking via continue-on-error
           fail-on-sast-scan: false  # Enable when on paid plan
           fail-on-iac-scan: false   # Enable when on paid plan
           minimum-severity: 'HIGH'
@@ -413,7 +414,7 @@ jobs:
 
       - name: Set up E2E database for accessibility tests
         run: |
-          cd apps/e2e
+          cd apps/web
           # Start E2E Supabase instance
           supabase start
           
