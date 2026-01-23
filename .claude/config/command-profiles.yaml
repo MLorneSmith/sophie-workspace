@@ -394,6 +394,116 @@ profiles:
         - "testing+quality/fundamentals.md"
 
   # ============================================================================
+  # /chore-plan - Create detailed implementation plans from chore issues
+  # ============================================================================
+  chore-plan:
+    description: "Create detailed implementation plans from chore issues"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Dependency Updates
+      - keywords: ["dependency", "dependencies", "update", "upgrade", "npm", "pnpm", "package", "version"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: high
+
+      # Infrastructure Maintenance
+      - keywords: ["docker", "container", "infrastructure", "deployment", "ci/cd", "pipeline"]
+        files:
+          - "infrastructure/docker-setup.md"
+          - "infrastructure/vercel-deployment.md"
+          - "infrastructure/ci-cd-complete.md"
+        priority: high
+
+      # E2B Sandbox Maintenance
+      - keywords: ["e2b", "sandbox", "template", "cloud vm"]
+        files:
+          - "infrastructure/e2b-sandbox.md"
+        priority: medium
+
+      # Database Maintenance
+      - keywords: ["database", "migration", "schema", "cleanup", "optimization", "postgres"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Database Reset & Seeding Maintenance
+      - keywords: ["reset", "seed", "payload seed", "supabase reset", "regenerate migrations"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Code Quality & Refactoring
+      - keywords: ["refactor", "cleanup", "lint", "format", "typescript", "eslint", "code quality"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Testing Improvements
+      - keywords: ["test", "testing", "coverage", "e2e", "unit", "vitest", "playwright"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+      # MakerKit Updates
+      - keywords: ["makerkit", "upstream", "merge", "template", "kit package"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: high
+
+      # Payload CMS Updates
+      - keywords: ["payload", "cms", "payload cms", "lexical", "editor"]
+        files:
+          - "development/architecture-overview.md"
+        priority: high
+
+      # Logging/Monitoring
+      - keywords: ["logging", "logger", "monitoring", "observability", "pino"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: medium
+
+      # Security Updates
+      - keywords: ["security", "vulnerability", "patch", "cve", "audit"]
+        files:
+          - "infrastructure/auth-security.md"
+          - "infrastructure/production-security.md"
+        priority: high
+
+      # Build & Tooling
+      - keywords: ["build", "webpack", "vite", "turbo", "turborepo", "bundler", "tooling"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Authentication Related
+      - keywords: ["auth", "authentication", "authorization", "session", "jwt"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+    categories:
+      infrastructure:
+        - "infrastructure/docker-setup.md"
+        - "infrastructure/vercel-deployment.md"
+        - "infrastructure/ci-cd-complete.md"
+      tooling:
+        - "development/makerkit-integration.md"
+        - "development/architecture-overview.md"
+      quality:
+        - "testing+quality/fundamentals.md"
+        - "testing+quality/e2e-testing.md"
+      security:
+        - "infrastructure/auth-security.md"
+        - "infrastructure/production-security.md"
+
+  # ============================================================================
   # /bug-plan - Create bug fix plans from diagnosis
   # ============================================================================
   bug-plan:
