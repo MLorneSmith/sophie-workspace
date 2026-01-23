@@ -130,3 +130,4 @@ jobs:
             apps/payload/dist
             build-info.json
           retention-days: 1
+          include-hidden-files: true

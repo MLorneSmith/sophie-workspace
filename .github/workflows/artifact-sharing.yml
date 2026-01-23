@@ -162,6 +162,7 @@ jobs:
             build-manifest.json
           retention-days: 7
           compression-level: 6
+          include-hidden-files: true
       
       - name: Save to long-term cache
         if: inputs.environment == 'production'
