@@ -38,6 +38,11 @@ import {
 	writeUIProgress,
 } from "./progress.js";
 import {
+	PTYTimeoutError,
+	waitWithTimeout,
+	type WaitWithTimeoutResult,
+} from "./pty-wrapper.js";
+import {
 	createStartupOutputTracker,
 	formatStartupFailureLog,
 	formatStartupSuccessLog,
@@ -490,13 +495,44 @@ export async function runFeatureImplementation(
 			);
 
 			// Wait for PTY command to complete
+			// Bug fix #1767: Use timeout wrapper with progress file fallback
+			// If PTY disconnects silently, the wrapper checks progress file for completion
 			log(
 				`   │   ⏳ [PTY_WAIT] ${instance.label}: Waiting for PTY to complete...`,
 			);
-			executionResult = await ptyHandle.wait();
+
+			let ptyWaitResult: WaitWithTimeoutResult;
+			try {
+				ptyWaitResult = await waitWithTimeout(ptyHandle, instance.sandbox);
+
+				if (ptyWaitResult.recoveredViaProgressFile) {
+					log(
+						`   │   🔄 [PTY_RECOVERED] ${instance.label}: PTY timeout but recovered via progress file`,
+					);
+					logStream.write(
+						"[PTY] PTY timeout - recovered via progress file (status: completed)\n",
+					);
+				}
+			} catch (ptyError) {
+				// Handle PTY timeout errors specifically
+				if (ptyError instanceof PTYTimeoutError) {
+					log(`   │   ⚠️ [PTY_TIMEOUT] ${instance.label}: ${ptyError.message}`);
+					logStream.write(`[PTY] PTY timeout error: ${ptyError.message}\n`);
+					// Re-throw to be handled by outer error handler
+					throw ptyError;
+				}
+				throw ptyError;
+			}
+
+			executionResult = {
+				exitCode: ptyWaitResult.exitCode,
+				stdout: capturedStdout,
+				stderr: "",
+				error: undefined,
+			};
 
 			log(
-				`   │   ✅ [PTY_DONE] ${instance.label}: PTY completed (exitCode=${executionResult.exitCode})`,
+				`   │   ✅ [PTY_DONE] ${instance.label}: PTY completed (exitCode=${executionResult.exitCode}${ptyWaitResult.recoveredViaProgressFile ? ", recovered" : ""})`,
 			);
 			logStream.write(
 				`[PTY] PTY completed with exit code ${executionResult.exitCode}\n`,
