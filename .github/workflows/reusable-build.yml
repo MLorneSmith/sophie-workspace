@@ -121,13 +121,26 @@ jobs:
           path: build-info.json
           retention-days: 7
 
+      - name: Archive build artifacts
+        run: |
+          echo "📦 Creating tar archive of build artifacts..."
+          # Create tar archive to avoid GitHub Actions upload-artifact colon restriction
+          # (Next.js/Turbopack generates files like [externals]_node:child_process_*.js)
+          tar -cf build-artifacts.tar \
+            apps/web/.next \
+            apps/payload/dist \
+            build-info.json
+
+          echo "✅ Archive created:"
+          ls -lh build-artifacts.tar
+          echo ""
+          echo "📋 Archive contents (first 20 entries):"
+          tar -tf build-artifacts.tar | head -20
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
           name: build-artifacts-${{ inputs.environment }}
-          path: |
-            apps/web/.next
-            apps/payload/dist
-            build-info.json
+          path: build-artifacts.tar
           retention-days: 1
-          include-hidden-files: true
+          if-no-files-found: error

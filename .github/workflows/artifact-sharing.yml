@@ -146,23 +146,36 @@ jobs:
             "pnpm_version": "$(pnpm --version)"
           }
           EOF
-          
+
           echo "📋 Build manifest created:"
           cat build-manifest.json
-      
+
+      - name: Archive build artifacts
+        run: |
+          echo "📦 Creating tar archive of build artifacts..."
+          # Create tar archive to avoid GitHub Actions upload-artifact colon restriction
+          # (Next.js/Turbopack generates files like [externals]_node:child_process_*.js)
+          tar -cf build-artifacts.tar \
+            apps/web/.next \
+            apps/web/public \
+            apps/payload/dist \
+            packages/*/dist \
+            build-manifest.json
+
+          echo "✅ Archive created:"
+          ls -lh build-artifacts.tar
+          echo ""
+          echo "📋 Archive contents (first 20 entries):"
+          tar -tf build-artifacts.tar | head -20
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
           name: build-artifacts-${{ inputs.environment }}-${{ inputs.commit_sha }}
-          path: |
-            apps/web/.next
-            apps/web/public
-            apps/payload/dist
-            packages/*/dist
-            build-manifest.json
+          path: build-artifacts.tar
           retention-days: 7
           compression-level: 6
-          include-hidden-files: true
+          if-no-files-found: error
       
       - name: Save to long-term cache
         if: inputs.environment == 'production'
@@ -208,7 +221,14 @@ jobs:
         with:
           name: build-artifacts-${{ inputs.environment }}-${{ inputs.commit_sha }}
           path: .
-      
+
+      - name: Extract artifacts
+        run: |
+          echo "📦 Extracting build artifacts from tar archive..."
+          tar -xf build-artifacts.tar
+          echo "✅ Artifacts extracted successfully"
+          rm build-artifacts.tar
+
       - name: Validate artifacts
         run: |
           echo "🔍 Validating build artifacts..."
