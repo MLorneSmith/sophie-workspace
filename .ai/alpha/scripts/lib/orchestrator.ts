@@ -1601,12 +1601,15 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					"Creating fresh review sandbox for dev server",
 					{ branchName },
 				);
-				// Wrap with 10-minute timeout - must match or exceed inner pnpm install timeout (600s)
-				// (pnpm install can take 100+ seconds on fresh sandboxes, git operations 20-40 seconds each)
-				// See: #1739 diagnosis, #1742 fix - outer timeout must not be shorter than inner timeout
+				// Wrap with 15-minute timeout as safety net (Bug fix #1760)
+				// Inner pnpm install has 600s timeout, git operations can take 2-4 minutes
+				// Optimization: createReviewSandbox now skips install when dependencies are unchanged
+				// Typical case: 2-3 minutes (git + build only)
+				// Worst case: 10-12 minutes (full install + build)
+				// See: #1739, #1742, #1760 for timeout history
 				reviewSandbox = await withTimeout(
 					createReviewSandbox(branchName, options.timeout, options.ui),
-					600000,
+					900000,
 					"Review sandbox creation",
 				);
 				log("   ✅ Review sandbox created successfully");

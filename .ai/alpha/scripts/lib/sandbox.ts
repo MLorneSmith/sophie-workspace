@@ -875,15 +875,46 @@ export async function createReviewSandbox(
 
 	log("   ✅ Branch checked out");
 
-	// Sync dependencies with branch lockfile
-	// Bug fix #1749: Use `pnpm install` without --frozen-lockfile because the branch
-	// may have added new dependencies (e.g., @posthog/nextjs-config) that aren't in
-	// the E2B template's pre-installed node_modules. The lockfile from the branch
-	// will be used for resolution, ensuring reproducible installs.
-	log("   Syncing dependencies with branch lockfile...");
-	await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
-		timeoutMs: 600000,
-	});
+	// Sync dependencies with branch lockfile (optimized - Bug fix #1760)
+	// Check if node_modules exists and if lockfile changed to avoid unnecessary installs
+	// This pattern matches createSandbox() and typically saves 7-8 minutes
+	const checkResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
+		{ timeoutMs: 10000 },
+	);
+
+	if (checkResult.stdout.trim() === "missing") {
+		// No node_modules - full install required
+		log("   Installing dependencies (node_modules missing)...");
+		await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
+			timeoutMs: 600000,
+		});
+	} else {
+		// node_modules exists - check if lockfile changed in this branch
+		// Use git diff to detect if pnpm-lock.yaml was modified
+		let lockfileChanged = true; // Default to install if check fails (safe fallback)
+		try {
+			const diffResult = await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && git diff --name-only HEAD~1 HEAD -- pnpm-lock.yaml | wc -l`,
+				{ timeoutMs: 30000 },
+			);
+			lockfileChanged = diffResult.stdout.trim() !== "0";
+		} catch {
+			log("   ⚠️ Could not check lockfile changes, falling back to install");
+		}
+
+		if (lockfileChanged) {
+			// Lockfile changed - sync dependencies with branch lockfile
+			// Bug fix #1749: Use `pnpm install` without --frozen-lockfile because the branch
+			// may have added new dependencies that aren't in the E2B template
+			log("   Syncing dependencies (lockfile changed)...");
+			await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
+				timeoutMs: 600000,
+			});
+		} else {
+			log("   ✅ Dependencies already installed (skipping pnpm install)");
+		}
+	}
 
 	// Build workspace packages (required for dev server)
 	log("   Building workspace packages...");
