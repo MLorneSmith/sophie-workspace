@@ -21,7 +21,11 @@
 import type { Sandbox } from "@e2b/code-interpreter";
 
 import { PROGRESS_FILE, WORKSPACE_DIR } from "../config/index.js";
-import type { FeatureEntry, SandboxInstance, SpecManifest } from "../types/index.js";
+import type {
+	FeatureEntry,
+	SandboxInstance,
+	SpecManifest,
+} from "../types/index.js";
 import { saveManifest } from "./manifest.js";
 import { sleep } from "./utils.js";
 
