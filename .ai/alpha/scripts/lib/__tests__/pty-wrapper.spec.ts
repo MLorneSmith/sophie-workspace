@@ -196,7 +196,8 @@ describe("pty-wrapper", () => {
 			expect(ptyTelemetry.recoveredViaProgressFile).toBe(1);
 		});
 
-		it("should throw PTYTimeoutError when progress file shows in_progress", async () => {
+		it("should return stillRunning=true when progress file shows in_progress with recent heartbeat", async () => {
+			// Bug fix #1786: When heartbeat is recent, feature is actively working - don't throw
 			vi.useFakeTimers();
 
 			const ptyHandle = createMockPtyHandle({});
@@ -209,7 +210,7 @@ describe("pty-wrapper", () => {
 				success: true,
 				data: inProgressData,
 			});
-			vi.mocked(isProgressFileStale).mockReturnValue(false);
+			vi.mocked(isProgressFileStale).mockReturnValue(false); // Heartbeat is RECENT
 			vi.mocked(isFeatureCompleted).mockReturnValue(false);
 
 			const waitPromise = waitWithTimeout(ptyHandle, sandbox, 100);
@@ -217,8 +218,15 @@ describe("pty-wrapper", () => {
 			await vi.advanceTimersByTimeAsync(100);
 			await vi.advanceTimersByTimeAsync(600);
 
-			await expect(waitPromise).rejects.toThrow(PTYTimeoutError);
-			expect(ptyTelemetry.recoveryFailed).toBe(1);
+			const result = await waitPromise;
+
+			// Should return stillRunning=true instead of throwing
+			expect(result.stillRunning).toBe(true);
+			expect(result.normalCompletion).toBe(false);
+			expect(result.recoveredViaProgressFile).toBe(false);
+			expect(result.exitCode).toBe(-1); // Signal "still running"
+			expect(result.progressData).toEqual(inProgressData);
+			expect(ptyTelemetry.recoveryFailed).toBe(0); // No failure - feature is working
 		});
 
 		it("should throw PTYTimeoutError when progress file is stale", async () => {
@@ -243,11 +251,18 @@ describe("pty-wrapper", () => {
 			vi.mocked(isFeatureCompleted).mockReturnValue(true);
 
 			const waitPromise = waitWithTimeout(ptyHandle, sandbox, 100);
+			// Prevent unhandled rejection warning by catching temporarily
+			let caughtError: Error | null = null;
+			waitPromise.catch((e) => {
+				caughtError = e;
+			});
 
 			await vi.advanceTimersByTimeAsync(100);
 			await vi.advanceTimersByTimeAsync(600);
+			// Let the catch handler run
+			await vi.runAllTimersAsync();
 
-			await expect(waitPromise).rejects.toThrow(PTYTimeoutError);
+			expect(caughtError).toBeInstanceOf(PTYTimeoutError);
 			expect(ptyTelemetry.recoveryFailed).toBe(1);
 		});
 
@@ -266,11 +281,18 @@ describe("pty-wrapper", () => {
 			});
 
 			const waitPromise = waitWithTimeout(ptyHandle, sandbox, 100);
+			// Prevent unhandled rejection warning by catching temporarily
+			let caughtError: Error | null = null;
+			waitPromise.catch((e) => {
+				caughtError = e;
+			});
 
 			await vi.advanceTimersByTimeAsync(100);
 			await vi.advanceTimersByTimeAsync(600);
+			// Let the catch handler run
+			await vi.runAllTimersAsync();
 
-			await expect(waitPromise).rejects.toThrow(PTYTimeoutError);
+			expect(caughtError).toBeInstanceOf(PTYTimeoutError);
 			expect(ptyTelemetry.recoveryFailed).toBe(1);
 		});
 	});
@@ -305,12 +327,19 @@ describe("pty-wrapper", () => {
 
 			// Don't pass timeout - should use PTY_WAIT_TIMEOUT_MS
 			const waitPromise = waitWithTimeout(ptyHandle, sandbox);
+			// Prevent unhandled rejection warning by catching temporarily
+			let caughtError: Error | null = null;
+			waitPromise.catch((e) => {
+				caughtError = e;
+			});
 
 			// Advance to default timeout
 			await vi.advanceTimersByTimeAsync(PTY_WAIT_TIMEOUT_MS);
 			await vi.advanceTimersByTimeAsync(600);
+			// Let the catch handler run
+			await vi.runAllTimersAsync();
 
-			await expect(waitPromise).rejects.toThrow(PTYTimeoutError);
+			expect(caughtError).toBeInstanceOf(PTYTimeoutError);
 		});
 	});
 
