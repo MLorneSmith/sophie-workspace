@@ -116,6 +116,9 @@ export { sleep } from "./utils.js";
 // Port health checks
 export { isPortOpen, waitForDevServer, waitForPort } from "./port-health.js";
 
+// TTS (Text-to-Speech) notifications
+export { isTTSAvailable, speak, speakCompletion } from "./tts.js";
+
 // Work queue
 export {
 	cleanupStaleState,

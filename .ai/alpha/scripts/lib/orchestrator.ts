@@ -68,6 +68,7 @@ import {
 	startDevServer,
 } from "./sandbox.js";
 import { sleep, withTimeout } from "./utils.js";
+import { speakCompletion } from "./tts.js";
 import {
 	assignFeatureToSandbox,
 	cleanupStaleState,
@@ -1723,6 +1724,14 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		// This ensures UI shows dev server URL before displaying completion screen
 		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
 		saveManifest(manifest, reviewUrls, runId);
+
+		// TTS completion notification (speaks in background, non-blocking)
+		// Issue #1761: Audio notification when orchestrator completes
+		speakCompletion(
+			failedFeatures === 0 ? "completed" : "partial",
+			manifest.progress.features_completed,
+			manifest.progress.features_total,
+		);
 
 		// Print summary (always shown - handles its own output)
 		// Bug fix #1727: No implementation sandboxes remain - all were killed
