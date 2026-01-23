@@ -4,8 +4,8 @@
 ## Metadata
 | Field | Value |
 |-------|-------|
-| **Parent Spec** | #[spec-#] |
-| **Initiative ID** | [spec-#]-I[number] |
+| **Parent Spec** | S[spec-#] |
+| **Initiative ID** | S[spec-#].I[priority] |
 | **Status** | Draft |
 | **Estimated Weeks** | [X-Y] |
 | **Priority** | [1-N] |
@@ -36,13 +36,13 @@
 ## Dependencies
 
 ### Blocks
-- None / [Initiative IDs this blocks]
+- None / [S#.I# IDs this blocks]
 
 ### Blocked By
-- None / [Initiative IDs that must complete first]
+- None / [S#.I# IDs that must complete first]
 
 ### Parallel With
-- [Initiative IDs that can run simultaneously]
+- [S#.I# IDs that can run simultaneously]
 
 ---
 

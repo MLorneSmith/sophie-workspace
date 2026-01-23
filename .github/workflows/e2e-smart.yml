@@ -161,7 +161,7 @@ jobs:
           PLAYWRIGHT_WORKERS: 4
 
       - name: Upload test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: quick-test-results-${{ github.run_id }}

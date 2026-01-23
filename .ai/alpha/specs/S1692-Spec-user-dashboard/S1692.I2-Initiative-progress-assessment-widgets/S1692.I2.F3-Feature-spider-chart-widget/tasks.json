@@ -1,0 +1,401 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I2.F3",
+    "feature_name": "Self-Assessment Spider Chart Widget",
+    "feature_slug": "spider-chart-widget",
+    "initiative_id": "S1692.I2",
+    "spec_id": "1692",
+    "created_at": "2026-01-21T16:00:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1692.I2.F3.T4", "S1692.I2.F3.T5"]
+  },
+  "tasks": [
+    {
+      "id": "S1692.I2.F3.T1",
+      "type": "task",
+      "name": "Create category scores data transformer",
+      "action": { "verb": "Create", "target": "category scores data transformer" },
+      "purpose": "Transform JSONB category_scores to Recharts array format: [{ category: string, score: number }]",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Input: JSONB object { 'Category Name': number }",
+          "Output: Array [{ category: string, score: number }]",
+          "Handle empty/null category_scores gracefully"
+        ]
+      },
+      "input_state": "No transformer utility exists",
+      "output_state": "transform-category-scores.ts utility exists with transformCategoryScores function",
+      "acceptance_criterion": "Function transforms { 'Content': 85, 'Design': 72 } to [{ category: 'Content', score: 85 }, { category: 'Design', score: 72 }]",
+      "verification_command": "pnpm typecheck && grep -q 'transformCategoryScores' apps/web/app/home/\\(user\\)/_lib/utils/transform-category-scores.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/utils/transform-category-scores.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I2.F3.T2", "S1692.I2.F3.T3", "S1692.I2.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I2.F3.T2",
+      "type": "task",
+      "name": "Create spider chart widget skeleton",
+      "action": { "verb": "Create", "target": "spider chart widget skeleton" },
+      "purpose": "Loading state component for spider chart widget with Card wrapper and circular skeleton",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Match existing radar chart Card structure",
+          "Use aspect-square container for circular skeleton"
+        ]
+      },
+      "input_state": "No skeleton component exists",
+      "output_state": "spider-chart-widget-skeleton.tsx exists with SpiderChartWidgetSkeleton component",
+      "acceptance_criterion": "Component exports SpiderChartWidgetSkeleton wrapped in Card with circular Skeleton placeholder",
+      "verification_command": "pnpm typecheck && grep -q 'SpiderChartWidgetSkeleton' apps/web/app/home/\\(user\\)/_components/spider-chart-widget-skeleton.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/spider-chart-widget-skeleton.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I2.F3.T1"],
+        "blocks": ["S1692.I2.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I2.F3.T3",
+      "type": "task",
+      "name": "Create chart configuration",
+      "action": { "verb": "Create", "target": "chart configuration" },
+      "purpose": "Define ChartConfig with label and color for spider chart using CSS variable",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "ChartConfig type from @kit/ui/chart"
+        ],
+        "constraints": [
+          "Use hsl(var(--chart-1)) for color",
+          "Label should be 'Score'"
+        ]
+      },
+      "input_state": "No chart config defined",
+      "output_state": "chartConfig constant defined in spider-chart-widget.tsx",
+      "acceptance_criterion": "chartConfig satisfies ChartConfig with score.label='Score' and score.color='hsl(var(--chart-1))'",
+      "verification_command": "pnpm typecheck && grep -q 'chartConfig.*satisfies ChartConfig' apps/web/app/home/\\(user\\)/_components/spider-chart-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/spider-chart-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I2.F3.T1"],
+        "blocks": ["S1692.I2.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I2.F3.T4",
+      "type": "task",
+      "name": "Create spider chart widget component",
+      "action": { "verb": "Create", "target": "spider chart widget component" },
+      "purpose": "Main SpiderChartWidget client component with RadarChart wrapped in ChartContainer and Card",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skills Assessment" },
+          { "command": "find role", "target": "graphics-document" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/assessment/survey/_components/radar-chart.tsx",
+          "apps/web/app/home/(user)/_lib/utils/transform-category-scores.ts",
+          "packages/ui/src/shadcn/chart.tsx"
+        ],
+        "dependencies": [
+          "ChartContainer, ChartTooltip, ChartTooltipContent from @kit/ui/chart",
+          "RadarChart, Radar, PolarGrid, PolarAngleAxis from recharts",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "transformCategoryScores utility"
+        ],
+        "constraints": [
+          "Client component ('use client' directive)",
+          "Handle empty category_scores with message",
+          "Use aspect-square max-h-[250px] for ChartContainer",
+          "fillOpacity={0.6} for radar area"
+        ]
+      },
+      "input_state": "Transformer and chartConfig exist, no widget component",
+      "output_state": "spider-chart-widget.tsx exists with SpiderChartWidget component displaying RadarChart",
+      "acceptance_criterion": "Component renders RadarChart with category scores, shows 'No category scores available' when empty",
+      "verification_command": "pnpm typecheck && grep -q '\"use client\"' apps/web/app/home/\\(user\\)/_components/spider-chart-widget.tsx && grep -q 'RadarChart' apps/web/app/home/\\(user\\)/_components/spider-chart-widget.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/spider-chart-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I2.F3.T1", "S1692.I2.F3.T3"],
+        "blocks": ["S1692.I2.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      },
+      "skill_hints": ["frontend-design", "react-best-practices"]
+    },
+    {
+      "id": "S1692.I2.F3.T5",
+      "type": "task",
+      "name": "Wire widget to dashboard page",
+      "action": { "verb": "Wire", "target": "widget to dashboard page" },
+      "purpose": "Import and position SpiderChartWidget in dashboard grid with Suspense boundary",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skills Assessment" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/spider-chart-widget.tsx",
+          "apps/web/app/home/(user)/_components/spider-chart-widget-skeleton.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-progress.loader.ts"
+        ],
+        "dependencies": [
+          "SpiderChartWidget component",
+          "SpiderChartWidgetSkeleton component",
+          "loadDashboardProgressData from F1",
+          "Suspense from react"
+        ],
+        "constraints": [
+          "Wrap widget in Suspense with skeleton fallback",
+          "Pass categoryScores from loader data",
+          "Position in dashboard grid (2nd position in row 1)"
+        ]
+      },
+      "input_state": "Dashboard page exists with empty PageBody, widget and skeleton components exist",
+      "output_state": "Dashboard page renders SpiderChartWidget with Suspense boundary and loader data",
+      "acceptance_criterion": "Widget displays on /home with data from loadDashboardProgressData, shows skeleton while loading",
+      "verification_command": "pnpm typecheck && grep -q 'SpiderChartWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'Suspense' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I2.F3.T2", "S1692.I2.F3.T4"],
+        "blocks": ["S1692.I2.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I2.F3.T6",
+      "type": "task",
+      "name": "Add assessment link and polish",
+      "action": { "verb": "Add", "target": "assessment link and polish" },
+      "purpose": "Add 'View Assessment' button linking to /home/assessment and final styling adjustments",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "View Assessment" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/spider-chart-widget.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Link to /home/assessment",
+          "Place button below chart in CardContent",
+          "Use Button variant='ghost' size='sm'"
+        ]
+      },
+      "input_state": "Widget displays chart but lacks navigation link",
+      "output_state": "Widget includes 'View Assessment' link button below chart",
+      "acceptance_criterion": "Clicking 'View Assessment' navigates to /home/assessment",
+      "verification_command": "pnpm typecheck && grep -q 'View Assessment' apps/web/app/home/\\(user\\)/_components/spider-chart-widget.tsx && grep -q '/home/assessment' apps/web/app/home/\\(user\\)/_components/spider-chart-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/spider-chart-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I2.F3.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Utilities and Config",
+        "task_ids": ["S1692.I2.F3.T1", "S1692.I2.F3.T2", "S1692.I2.F3.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": ["S1692.I2.F3.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Dashboard Integration",
+        "task_ids": ["S1692.I2.F3.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Polish",
+        "task_ids": ["S1692.I2.F3.T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1692.I2.F3.T1", "S1692.I2.F3.T3", "S1692.I2.F3.T4", "S1692.I2.F3.T5", "S1692.I2.F3.T6"],
+      "total_hours": 11
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 12,
+      "time_saved_percent": 8
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  },
+  "cross_feature_dependencies": {
+    "external_blockers": ["S1692.I2.F1"],
+    "notes": "Requires F1 data loader to provide categoryScores from survey_responses"
+  }
+}

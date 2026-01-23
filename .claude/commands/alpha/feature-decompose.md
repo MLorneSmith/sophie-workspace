@@ -1,6 +1,6 @@
 ---
 description: Decompose an initiative into features (vertical slices). This is the third step in our 'Alpha' autonomous coding process
-argument-hint: [initiative-#]
+argument-hint: <S#.I#|initiative-#> (e.g., S1362.I1 or 1363)
 model: opus
 allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
@@ -16,7 +16,10 @@ Alpha Workflow:
 1. Spec → 2. Initiatives → 3. Features (this) → 4. Tasks → 5. Implement
 
 Feature Size: 3-10 days | Target: 3-7 features per initiative
-Validation: INVEST-V criteria | Output: GitHub issues + local docs
+Validation: INVEST-V criteria | Output: Local docs + Spec issue comment (no individual issues)
+
+ID Format: S<spec-num>.I<init-priority>.F<feature-priority>
+Example: S1362.I1.F1 = Spec #1362, Initiative 1, Feature 1
 ```
 
 ## Overview
@@ -35,7 +38,7 @@ Phase 3: Dependency Analysis
     │ Build graph, validate cycles, define execution strategy
     ▼
 Phase 4: Documentation
-    │ Create feature docs, README, GitHub issues
+    │ Create feature docs with S#.I#.F# IDs, README, update Spec issue
 ```
 
 ## Feature Philosophy
@@ -74,21 +77,52 @@ A **vertical slice** feature:
 
 Before starting decomposition, validate prerequisites and establish path constants.
 
-#### Step 0.1: Validate Input
+#### Step 0.1: Validate Input and Parse Initiative ID
 
-If no issue number provided in `$ARGUMENTS`, use AskUserQuestion to get it.
+If no ID provided in `$ARGUMENTS`, use AskUserQuestion to get it.
 
-Verify the initiative issue exists:
-```bash
-gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json number,title,state
+**Accepted formats:**
+- `S1362.I1` - New semantic format (preferred)
+- `1363` - Legacy numeric format (backward compatible)
+
+**Parse the input:**
+```typescript
+const input = '$ARGUMENTS';
+let specNum, initPriority, initId;
+
+if (input.includes('.')) {
+  // New format: S1362.I1
+  const match = input.match(/S(\d+)\.I(\d+)/);
+  specNum = match[1];
+  initPriority = match[2];
+  initId = input; // e.g., S1362.I1
+} else {
+  // Legacy format: 1363 (GitHub issue number)
+  // Will need to look up parent spec
+  initId = input;
+}
 ```
 
-If this fails, stop and inform the user the issue doesn't exist.
+For legacy format, verify the initiative issue exists:
+```bash
+gh issue view $ARGUMENTS --repo MLorneSmith/2025slideheroes --json number,title,state,labels
+```
+
+For semantic format, the local directory is the source of truth.
 
 #### Step 0.2: Resolve Paths
 
 Use the **Glob tool** (not bash find) to locate the initiative directory. This avoids shell escaping issues with paths containing parentheses like `(user)`.
 
+**For semantic IDs (S#.I#):**
+```
+Glob tool:
+  pattern: .ai/alpha/specs/S[specNum]-Spec-*/$ARGUMENTS-Initiative-*
+  OR (with dots escaped)
+  pattern: .ai/alpha/specs/**/S*.I*-Initiative-*
+```
+
+**For legacy IDs (issue number):**
 ```
 Glob tool:
   pattern: .ai/alpha/specs/**/$ARGUMENTS-Initiative-*
@@ -97,10 +131,11 @@ Glob tool:
 ```
 
 From the Glob result, extract:
-- **INIT_DIR**: The full path to the initiative directory (e.g., `.ai/alpha/specs/1362-Spec-xyz/1363-Initiative-abc`)
-- **SPEC_DIR**: The parent directory (e.g., `.ai/alpha/specs/1362-Spec-xyz`)
+- **INIT_DIR**: The full path to the initiative directory (e.g., `.ai/alpha/specs/S1362-Spec-xyz/S1362.I1-Initiative-abc`)
+- **SPEC_DIR**: The parent directory (e.g., `.ai/alpha/specs/S1362-Spec-xyz`)
+- **SPEC_NUM**: Extract from SPEC_DIR name (e.g., `1362` from `S1362-Spec-xyz`)
 
-If no local directory found, proceed with GitHub issue only and note this limitation.
+If no local directory found, stop and inform the user.
 
 #### Step 0.3: Establish Path Constants
 
@@ -110,13 +145,22 @@ Document these constants for use throughout the workflow (copy exact paths, don'
 ## Path Constants (for this session)
 
 - **REPO**: MLorneSmith/2025slideheroes
-- **INIT_NUM**: [issue number from arguments]
+- **SPEC_NUM**: [number from spec directory, e.g., 1362]
+- **INIT_ID**: [semantic ID, e.g., S1362.I1]
+- **INIT_PRIORITY**: [priority number, e.g., 1]
 - **INIT_DIR**: [full path from Glob result]
 - **SPEC_DIR**: [parent of INIT_DIR]
 - **RESEARCH_DIR**: [SPEC_DIR]/research-library
 ```
 
 **Important**: Use these literal paths in all subsequent commands. Shell variables like `${INIT_DIR}` don't persist across tool calls.
+
+#### Step 0.4: Read ID System Documentation
+
+Read the hierarchical ID documentation to understand naming conventions:
+```
+.ai/alpha/docs/hierarchical-ids.md
+```
 
 #### Step 0.4: Verify GitHub CLI
 
@@ -287,6 +331,82 @@ Before diving into architecture, formally assess and document the initiative's c
 - **MEDIUM complexity** → Standard workflow (single agent per feature)
 - **HIGH complexity** → Full workflow (multi-agent comparison for complex features)
 
+#### Step 4.5: Discover Available Components
+
+Before designing architecture, explore shadcn/ui and configured registries for components that match feature requirements.
+
+**4.5.1: Search Official shadcn/ui Components**
+
+From the packages/ui directory, search for components matching feature needs:
+
+```bash
+cd packages/ui
+
+# Search for feature-relevant terms
+npx shadcn@latest search -q "[feature-keyword]"
+
+# Examples for common feature types:
+# Dashboard: npx shadcn@latest search -q "card"
+# Forms: npx shadcn@latest search -q "form"
+# Data display: npx shadcn@latest search -q "table"
+```
+
+**4.5.2: Explore Configured Community Registries**
+
+For enhanced UI features (animations, effects, specialized components), search configured registries:
+
+```bash
+# MagicUI - Animated components with Framer Motion
+npx shadcn@latest search @magicui -q "[keyword]"
+
+# Aceternity - Modern UI with 3D effects
+npx shadcn@latest search @aceternity -q "[keyword]"
+
+# Kibo UI - Component library
+npx shadcn@latest search @kibo-ui -q "[keyword]"
+
+# Additional configured registries
+npx shadcn@latest search @reui -q "[keyword]"
+npx shadcn@latest search @scrollxui -q "[keyword]"
+npx shadcn@latest search @moleculeui -q "[keyword]"
+npx shadcn@latest search @gaia -q "[keyword]"
+npx shadcn@latest search @phucbm -q "[keyword]"
+```
+
+**4.5.3: Preview Promising Components**
+
+Before including in architecture, preview implementation details:
+
+```bash
+# View official component code
+npx shadcn@latest view [component-name]
+
+# View registry component code
+npx shadcn@latest view @magicui/[component-name]
+```
+
+**4.5.4: Document Component Selections**
+
+Add a **Component Strategy** section to feature.md after "Architecture Decision":
+
+```markdown
+### Component Strategy
+
+| UI Element | Component | Source | Rationale |
+|------------|-----------|--------|-----------|
+| [element] | [component] | shadcn/ui | [why this choice] |
+| [element] | @magicui/[name] | @magicui | [why this choice] |
+
+**Components to Install** (if not already in packages/ui):
+- [ ] `npx shadcn@latest add [component]`
+- [ ] `npx shadcn@latest add @registry/[component]`
+```
+
+**Decision Criteria**:
+- **Official shadcn/ui first** - For standard UI patterns (forms, dialogs, cards, tables)
+- **Community registry** - When feature needs animations, effects, or specialized behavior
+- **Custom component** - Only when no suitable component exists in any registry
+
 #### Step 5: Design Architecture (Adaptive)
 
 Based on complexity assessment:
@@ -411,27 +531,41 @@ Calculate durations:
 
 ### Phase 4: Documentation
 
-#### Step 9: Create Feature Documents
+**IMPORTANT**: Features do NOT get individual GitHub issues. Only the Spec has a GitHub issue. Features use semantic IDs (`S#.I#.F#`) tracked in the local filesystem.
 
-For each feature, create a subdirectory and feature.md file.
+#### Step 9: Create Feature Documents with Semantic IDs
+
+For each feature, create a subdirectory using the `S#.I#.F#` naming convention where `F#` is the **priority**.
 
 Use the template loaded in Phase 0 (`.ai/alpha/templates/feature.md`) as a reference.
 
-Create feature directories using the literal INIT_DIR path from Phase 0:
+Create feature directories using the literal INIT_DIR path and semantic ID format:
 ```bash
-mkdir -p "[INIT_DIR]/pending-Feature-[feature-slug]"
+# Feature directories use the full semantic ID
+# S1362.I1.F1 = Priority 1 feature
+# S1362.I1.F2 = Priority 2 feature, etc.
+mkdir -p "[INIT_DIR]/S[SPEC_NUM].I[INIT_PRIORITY].F1-Feature-[feature-slug]"
+mkdir -p "[INIT_DIR]/S[SPEC_NUM].I[INIT_PRIORITY].F2-Feature-[feature-slug]"
+```
+
+**Example directory names:**
+```
+S1362.I1.F1-Feature-dashboard-page-grid/
+S1362.I1.F2-Feature-presentation-table/
+S1362.I1.F3-Feature-quick-actions-panel/
 ```
 
 Then use the Write tool to create `feature.md` in each directory.
 
 **Required sections in feature.md**:
-- Metadata (parent, ID, status, days, priority)
+- Metadata (parent initiative S#.I#, feature ID S#.I#.F#, status, days, priority)
 - Description (2-3 sentences)
 - User Story (As a... I want... So that...)
 - Acceptance Criteria (Must Have + Nice to Have)
 - Vertical Slice Components table
 - Architecture Decision (approach + rationale)
-- Dependencies (blocks, blocked by, parallel with)
+- Component Strategy (from Step 4.5)
+- Dependencies (blocks, blocked by, parallel with) - **Use S#.I#.F# or shorthand F# format**
 - Files to Create/Modify
 - Task Hints (for next decomposition phase)
 - Validation Commands
@@ -443,67 +577,50 @@ Create `[INIT_DIR]/README.md` with initiative overview.
 Use the template loaded in Phase 0 (`.ai/alpha/templates/feature-overview.md`) as a reference.
 
 **Required sections**:
-- Directory structure
-- Feature summary table (ID, issue, priority, days, deps, status)
-- Dependency graph (ASCII art)
+- Directory structure (showing S#.I#.F# naming)
+- Feature summary table (ID using S#.I#.F#, priority, days, deps, status)
+- Dependency graph (ASCII art with S#.I#.F# labels)
 - Parallel execution groups
 - Execution summary (sequential vs parallel duration)
 - INVEST-V validation summary
 - Architecture decisions summary
 - Next steps
 
-#### Step 11: Create GitHub Issues
+#### Step 11: Update Spec Issue with Features Comment
 
-First, ensure required labels exist (use literal INIT_NUM from Phase 0):
-
-```bash
-# Check and create alpha:feature label if missing
-gh label list --repo "MLorneSmith/2025slideheroes" --limit 100 | grep -q "alpha:feature" || \
-  gh label create "alpha:feature" --description "Alpha workflow feature" --color "6f42c1" --repo "MLorneSmith/2025slideheroes"
-
-# Check and create parent label if missing (replace [INIT_NUM] with actual number)
-gh label list --repo "MLorneSmith/2025slideheroes" --limit 100 | grep -q "parent:[INIT_NUM]" || \
-  gh label create "parent:[INIT_NUM]" --description "Parent initiative #[INIT_NUM]" --color "bfdadc" --repo "MLorneSmith/2025slideheroes"
-```
-
-Then create issues for each feature using literal paths:
+**No GitHub issues are created for features.** Instead, post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-gh issue create --repo "MLorneSmith/2025slideheroes" \
-  --title "Feature: [Feature Name]" \
-  --body "$(cat '[INIT_DIR]/pending-Feature-[feature-slug]/feature.md')" \
-  --label "type:feature,status:planning,alpha:feature,parent:[INIT_NUM]"
-```
-
-After each issue is created, capture the issue number from the output URL and rename the directory:
-```bash
-mv "[INIT_DIR]/pending-Feature-[feature-slug]" "[INIT_DIR]/[issue-num]-Feature-[feature-slug]"
-```
-
-#### Step 12: Update Initiative Issue
-
-Add a comment to the parent initiative with the features created (use literal INIT_NUM):
-
-```bash
-gh issue comment [INIT_NUM] --repo "MLorneSmith/2025slideheroes" --body "## Features Created
+gh issue comment [SPEC_NUM] --repo "MLorneSmith/2025slideheroes" --body "## [Decomposition Update] Features for [INIT_ID]
 
 This initiative has been decomposed into the following features:
 
-| Feature | Issue | Priority | Days | Dependencies |
-|---------|-------|----------|------|--------------|
-| [Name 1] | #XXX | 1 | X | None |
-| [Name 2] | #YYY | 2 | Y | #XXX |
+| ID | Name | Priority | Days | Dependencies |
+|----|------|----------|------|--------------|
+| S[SPEC_NUM].I[INIT_PRIORITY].F1 | [Name 1] | 1 | X | None |
+| S[SPEC_NUM].I[INIT_PRIORITY].F2 | [Name 2] | 2 | Y | F1 |
+| S[SPEC_NUM].I[INIT_PRIORITY].F3 | [Name 3] | 3 | Z | F1 |
 
-## Dependency Graph
+### Directory Structure
 \`\`\`
-[ASCII dependency graph]
+[INIT_DIR]/
+├── S[SPEC_NUM].I[INIT_PRIORITY].F1-Feature-[slug]/
+├── S[SPEC_NUM].I[INIT_PRIORITY].F2-Feature-[slug]/
+└── S[SPEC_NUM].I[INIT_PRIORITY].F3-Feature-[slug]/
 \`\`\`
 
-## Execution Summary
+### Dependency Graph
+\`\`\`
+[ASCII dependency graph with S#.I#.F# labels]
+\`\`\`
+
+### Execution Summary
 - Sequential: X days
 - Parallel: Y days (Z% time saved)
 
-**Next Step**: Run \`/alpha:task-decompose <first-feature-#>\`"
+**Next Step**: Run \`/alpha:task-decompose S[SPEC_NUM].I[INIT_PRIORITY].F1\` for Priority 1 feature.
+
+_Decomposed on $(date +%Y-%m-%d) by /alpha:feature-decompose_"
 ```
 
 ---
@@ -520,15 +637,14 @@ Before finalizing:
 - [ ] Acceptance criteria are specific and testable
 
 ### Dependencies
-- [ ] No circular dependencies
+- [ ] No circular dependencies (using S#.I#.F# references)
 - [ ] Critical path calculated
 - [ ] Parallel groups identified
 
 ### Artifacts
-- [ ] All feature directories created with feature.md
+- [ ] All feature directories created with S#.I#.F# naming
 - [ ] README.md created in initiative directory
-- [ ] All GitHub issues created with proper labels
-- [ ] Initiative issue updated with comment
+- [ ] Spec issue updated with features comment
 
 ---
 
@@ -537,16 +653,26 @@ Before finalizing:
 When complete, provide:
 
 - **Summary**: 2-3 sentence overview of decomposition results
-- **Path Constants Used**: INIT_DIR and INIT_NUM values from Phase 0
+- **Path Constants Used**: INIT_ID, INIT_DIR, SPEC_NUM values from Phase 0
 - **Complexity Assessment**: Overall rating and workflow selection
-- **Features Created**: Table with Issue #, Name, Priority, Days, INVEST-V status
+- **Features Created**: Table with Semantic ID (S#.I#.F#), Name, Priority, Days, INVEST-V status
 - **Architecture Decisions**: Approach chosen per feature (Minimal/Pragmatic/Clean)
 - **Dependency Validation**: Cycle check result, critical path, parallel groups
 - **Duration Analysis**: Sequential days, parallel days, time saved
-- **Next Step**: `/alpha:task-decompose <first-feature-#>` command
+- **Next Step**: `/alpha:task-decompose S#.I#.F1` command (using semantic ID)
 
 ---
 
-## Initiative Issue Number
+## Relevant Files
+
+- `.ai/alpha/templates/feature.md` - Feature template
+- `.ai/alpha/templates/feature-overview.md` - Overview template
+- `.ai/alpha/docs/hierarchical-ids.md` - ID system documentation
+- `.ai/alpha/specs/` - Root directory for all specs, initiatives, and features
+- `CLAUDE.md` - Development patterns and conventions
+
+---
+
+## Initiative ID
 
 $ARGUMENTS

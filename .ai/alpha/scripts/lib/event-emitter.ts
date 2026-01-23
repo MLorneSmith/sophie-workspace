@@ -31,13 +31,38 @@ export type OrchestratorDatabaseEventType =
 	| "db_verify";
 
 /**
+ * Event types emitted by the orchestrator during completion phase.
+ * These provide visibility into sandbox cleanup and review setup.
+ */
+export type OrchestratorCompletionEventType =
+	/** Signals the start of the completion phase (sandbox cleanup begins) */
+	| "completion_phase_start"
+	/** Emitted when an implementation sandbox is being destroyed */
+	| "sandbox_killing"
+	/** Emitted when creating a fresh review sandbox */
+	| "review_sandbox_creating"
+	/** Emitted when starting the dev server on review sandbox */
+	| "dev_server_starting"
+	/** Emitted when dev server is successfully running and accessible */
+	| "dev_server_ready"
+	/** Emitted when dev server fails to start within timeout */
+	| "dev_server_failed";
+
+/**
+ * Combined event type for all orchestrator events
+ */
+export type OrchestratorEventType =
+	| OrchestratorDatabaseEventType
+	| OrchestratorCompletionEventType;
+
+/**
  * Structure of an orchestrator event sent to the event server
  */
 export interface OrchestratorEmittedEvent {
 	/** Special sandbox_id to distinguish orchestrator events */
 	sandbox_id: "orchestrator";
 	/** Event type for categorization */
-	event_type: OrchestratorDatabaseEventType;
+	event_type: OrchestratorEventType;
 	/** ISO 8601 timestamp when event occurred */
 	timestamp: string;
 	/** Human-readable message for display */
@@ -70,7 +95,7 @@ const EVENT_SERVER_URL = `http://localhost:${EVENT_SERVER_PORT}/api/events`;
  * @param details - Optional additional details to include
  */
 export function emitOrchestratorEvent(
-	eventType: OrchestratorDatabaseEventType,
+	eventType: OrchestratorEventType,
 	message: string,
 	details?: Record<string, unknown>,
 ): void {
@@ -83,16 +108,21 @@ export function emitOrchestratorEvent(
 	};
 
 	// Fire-and-forget: send event without blocking
-	// Using fetch with .catch() to swallow any errors silently
+	// Using fetch with .catch() to handle errors gracefully
 	fetch(EVENT_SERVER_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(event),
-	}).catch(() => {
-		// Silently ignore errors - event server may not be running
-		// Orchestrator should never be blocked by event delivery failures
+	}).catch((err) => {
+		// In non-UI mode (ORCHESTRATOR_UI_ENABLED not set), log the error to help with debugging
+		// In UI mode, silently ignore - orchestrator continues regardless of event delivery
+		if (!process.env.ORCHESTRATOR_UI_ENABLED) {
+			console.error(
+				`⚠️ Failed to emit event to event server: ${err instanceof Error ? err.message : String(err)}`,
+			);
+		}
 	});
 }
 
@@ -104,7 +134,7 @@ export function emitOrchestratorEvent(
  */
 export function emitOrchestratorEvents(
 	events: Array<{
-		eventType: OrchestratorDatabaseEventType;
+		eventType: OrchestratorEventType;
 		message: string;
 		details?: Record<string, unknown>;
 	}>,

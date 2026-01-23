@@ -1,6 +1,6 @@
 ---
 description: Decompose a coding project specification (spec) into a set of initiatives. This is the second step in our 'Alpha' autonomous coding process
-argument-hint: [spec-#]
+argument-hint: <S#|spec-#> (e.g., S1362 or 1362)
 model: opus
 allowed-tools: [Read, Write, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 ---
@@ -18,9 +18,27 @@ The Alpha autonomous coding process:
 4. **Tasks** - Break features into atomic implementable tasks (2-8 hours each)
 5. **Implement** - Execute each task in a sandboxed environment
 
-## Spec Issue Number
+## Spec ID
 
 $ARGUMENTS
+
+**Accepted formats:**
+- `S1362` - New semantic format (preferred)
+- `1362` - Legacy numeric format (backward compatible)
+
+---
+
+## Quick Reference
+
+Once parsed, these variables are used throughout the command:
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `SPEC_NUM` | `1362` | Numeric spec ID (for directory lookups) |
+| `SPEC_ID` | `S1362` | Semantic spec ID (for artifact creation) |
+| `SPEC_DIR` | `.ai/alpha/specs/S1362-Spec-user-dashboard` | Full path to spec directory |
+
+**Set these once in Phase 0 and reference throughout.**
 
 ---
 
@@ -28,7 +46,7 @@ $ARGUMENTS
 
 **CRITICAL**: Before starting, verify prerequisites are met.
 
-### 0.1 Validate Input
+### 0.1 Validate Input and Parse Spec ID
 
 ```bash
 # If no argument provided, ask user
@@ -36,39 +54,80 @@ $ARGUMENTS
 
 If `$ARGUMENTS` is empty, use AskUserQuestion:
 ```
-"What is the GitHub issue number for the spec you want to decompose?"
+"What is the Spec ID you want to decompose? (e.g., S1362 or 1362)"
+```
+
+**Parse the input:**
+- If input starts with `S`, extract the number (e.g., `S1362` → `1362`)
+- Use the number for directory lookups (both old and new naming conventions)
+- Store the semantic ID for artifact creation
+
+```typescript
+const input = '$ARGUMENTS';
+const specNum = input.startsWith('S') ? input.slice(1) : input;
+const specId = `S${specNum}`; // Semantic ID (e.g., S1362)
 ```
 
 ### 0.2 Verify Spec Exists
 
 ```bash
 # Verify GitHub issue exists and has alpha:spec label
-gh issue view <spec-#> --repo MLorneSmith/2025slideheroes --json labels,title
+gh issue view <spec-num> --repo MLorneSmith/2025slideheroes --json labels,title
 ```
 
 If the issue doesn't exist or lacks `alpha:spec` label, stop and inform the user.
 
 ### 0.3 Verify Local Spec Directory
 
+**IMPORTANT**: Set `SPEC_DIR` once here and use it throughout all phases.
+
 ```bash
-# Find the spec directory
-SPEC_DIR=$(ls -d .ai/alpha/specs/<spec-#>-* 2>/dev/null | head -1)
-test -d "${SPEC_DIR}" && echo "✓ Spec directory exists: ${SPEC_DIR}"
+# Find spec directory (zsh-safe - checks each pattern separately)
+SPEC_DIR=""
+
+# Try new naming convention first: S1362-Spec-*
+for dir in .ai/alpha/specs/S<spec-num>-Spec-*/; do
+  if [[ -d "$dir" ]]; then
+    SPEC_DIR="${dir%/}"  # Remove trailing slash
+    break
+  fi
+done
+
+# Fall back to old naming convention: 1362-Spec-*
+if [[ -z "$SPEC_DIR" ]]; then
+  for dir in .ai/alpha/specs/<spec-num>-Spec-*/; do
+    if [[ -d "$dir" ]]; then
+      SPEC_DIR="${dir%/}"
+      break
+    fi
+  done
+fi
+
+# Verify found
+if [[ -z "$SPEC_DIR" ]]; then
+  echo "❌ Spec directory not found for S<spec-num>"
+  echo "   Run /alpha:spec first to create the specification."
+  exit 1
+fi
+
+echo "✓ SPEC_DIR=${SPEC_DIR}"
+```
+
+**Alternative (simpler)**: Use `ls` with error suppression and check result:
+```bash
+SPEC_DIR=$(ls -d .ai/alpha/specs/S<spec-num>-Spec-* 2>/dev/null | head -1)
+[[ -z "$SPEC_DIR" ]] && SPEC_DIR=$(ls -d .ai/alpha/specs/<spec-num>-Spec-* 2>/dev/null | head -1)
+[[ -z "$SPEC_DIR" ]] && echo "❌ Spec directory not found. Run /alpha:spec first." && exit 1
+echo "✓ SPEC_DIR=${SPEC_DIR}"
 ```
 
 If directory doesn't exist, inform user to run `/alpha:spec` first.
 
-### 0.4 Verify Required Labels Exist
+### 0.4 Read ID System Documentation
 
-```bash
-# Check for required labels
-gh label list --repo MLorneSmith/2025slideheroes | grep -E "type:initiative|alpha:initiative|status:planning"
+Read the hierarchical ID documentation to understand naming conventions:
 ```
-
-If labels are missing, create them:
-```bash
-gh label create "type:initiative" --repo MLorneSmith/2025slideheroes --description "Strategic initiative (2-8 weeks)" --color "9B59B6" 2>/dev/null || true
-gh label create "alpha:initiative" --repo MLorneSmith/2025slideheroes --description "Alpha workflow initiative" --color "6f42c1" 2>/dev/null || true
+.ai/alpha/docs/hierarchical-ids.md
 ```
 
 ### 0.5 Read Templates
@@ -89,14 +148,18 @@ Use TodoWrite immediately to create a tracking list:
 - [ ] Read previous research from research-library
 - [ ] Explore codebase patterns
 - [ ] Validate and size initiatives
-- [ ] Create initiative documents
-- [ ] Create GitHub issues
-- [ ] Update spec with initiatives
+- [ ] Create initiative documents with S#.I# IDs
+- [ ] Update spec issue with initiatives comment
 ```
+
+**Note**: No GitHub issues are created for initiatives. Only the Spec gets a GitHub issue. Initiatives use semantic IDs (S#.I#) tracked in the local filesystem.
 
 ### 1.2 Read the Spec
 
-Use the Read tool to read the local spec file (authoritative source):
+Use the Read tool to read the local spec file (authoritative source).
+
+**Note**: `${SPEC_DIR}` was set in Phase 0.3.
+
 ```
 ${SPEC_DIR}/spec.md
 ```
@@ -109,21 +172,17 @@ Extract from the spec:
 
 ### 1.3 Read Previous Research
 
-Read all research artifacts from the spec phase to leverage existing knowledge:
+Read all research artifacts from the spec phase to leverage existing knowledge.
 
+**Step 1**: List available research files:
 ```bash
-# List available research files
 ls -la ${SPEC_DIR}/research-library/
-
-# Read each research file
-for file in ${SPEC_DIR}/research-library/*.md; do
-  echo "=== Reading: $file ==="
-done
 ```
 
-Use the Read tool to read each file in `${SPEC_DIR}/research-library/`:
+**Step 2**: Use the Read tool to read each `.md` file found. Common patterns:
 - `context7-*.md` - Library/framework documentation findings
 - `perplexity-*.md` - Best practices and industry pattern research
+- `exa-*.md` - Semantic web search results
 
 **Extract from research:**
 1. **Technology decisions** - Libraries, frameworks, APIs already researched
@@ -135,15 +194,45 @@ This research informs initiative sizing and dependency identification.
 
 ### 1.4 Explore Codebase (Parallel)
 
-Launch 2-3 Task agents with `subagent_type=code-explorer` in parallel:
+Launch **exactly 3** Task agents with `subagent_type=code-explorer` in parallel. Use these specific prompt templates:
 
+**Agent 1 - Page & Layout Patterns**:
 ```
-Task 1: "Explore existing patterns for [primary capability]. Find: components, data loaders, database tables, reusable code."
+Explore existing page and layout patterns in this codebase. Find:
+1. How pages are structured in apps/web/app/home/
+2. Page layout components (PageBody, Page, headers)
+3. Data loader patterns (*-page.loader.ts files)
+4. Responsive grid layouts used
+5. Similar dashboard or listing pages as reference
 
-Task 2: "Explore [secondary capability] implementation. Find: similar features, integration points, external dependencies."
-
-Task 3: "Explore [infrastructure area]. Find: shared utilities, data models, API patterns."
+Return: Key file paths, code snippets, and patterns to follow.
 ```
+
+**Agent 2 - Reusable Components**:
+```
+Explore reusable UI components relevant to [primary capability from spec]. Find:
+1. Chart/visualization components (if needed)
+2. Card and Table components
+3. EmptyState and loading patterns
+4. Form components (if needed)
+5. Any existing components that match spec requirements
+
+Return: Component locations, usage examples, and reuse recommendations.
+```
+
+**Agent 3 - Data Layer & Schemas**:
+```
+Explore database schemas and data access patterns for [spec domain]. Find:
+1. Relevant table structures in migrations/
+2. RLS policies on those tables
+3. Existing data loader functions
+4. TypeScript types for the domain
+5. Query patterns used elsewhere
+
+Return: Table schemas, query examples, and type definitions.
+```
+
+**Customization**: Replace bracketed placeholders with actual capabilities from the spec's Section 5 (Key Capabilities).
 
 ---
 
@@ -351,11 +440,27 @@ IF ANY FAIL → Resolve before proceeding to Phase 3
 
 ## Phase 3: Create Artifacts
 
-### 3.1 Create Initiative Directories
+### 3.1 Create Initiative Directories with Semantic IDs
+
+Directories use the semantic ID format `S#.I#` where the number after `I` is the **priority**.
+
+**Note**: `SPEC_DIR` was already set in Phase 0.3 - reuse it here.
 
 ```bash
-SPEC_DIR=$(ls -d .ai/alpha/specs/<spec-#>-Spec-* 2>/dev/null | head -1)
-mkdir -p ${SPEC_DIR}/pending-Initiative-<initiative-slug>
+# Create directories with semantic IDs (SPEC_DIR already set in Phase 0)
+# S1362.I1 = Priority 1 initiative
+# S1362.I2 = Priority 2 initiative, etc.
+mkdir -p ${SPEC_DIR}/S<spec-num>.I1-Initiative-<initiative-slug>
+mkdir -p ${SPEC_DIR}/S<spec-num>.I2-Initiative-<initiative-slug>
+mkdir -p ${SPEC_DIR}/S<spec-num>.I3-Initiative-<initiative-slug>
+# ... etc for each initiative
+```
+
+**Example directory names:**
+```
+S1362.I1-Initiative-dashboard-foundation/
+S1362.I2-Initiative-progress-visualization/
+S1362.I3-Initiative-coaching-integration/
 ```
 
 ### 3.2 Create Initiative Documents
@@ -367,74 +472,59 @@ Use the Write tool to create `initiative.md` in each directory.
 - Description (2-3 sentences)
 - Business Value
 - Scope (In Scope / Out of Scope with checkboxes)
-- Dependencies (Blocks / Blocked By / Parallel With)
+- Dependencies (Blocks / Blocked By / Parallel With) - **Use S#.I# references**
 - Complexity Assessment (4 factors rated)
 - Feature Hints (Candidates + Suggested Order)
 - Validation Commands
 
-**Initiative ID Format**: `<spec-#>-I<number>` (e.g., `1333-I1`)
+**Initiative ID Format**: `S<spec-num>.I<priority>` (e.g., `S1362.I1`)
+
+**Dependency References**: Use full semantic IDs (e.g., `S1362.I1`) or shorthand (`I1`) within the same spec.
 
 ### 3.3 Create README Overview
 
 Use the Write tool to create `${SPEC_DIR}/README.md` with:
-- Metadata summary
-- Directory structure
-- Initiative summary table
-- Mermaid dependency graph
+- Metadata summary (using S# format for spec ID)
+- Directory structure (showing S#.I# naming)
+- Initiative summary table with semantic IDs
+- Mermaid dependency graph (using S#.I# labels)
 - Execution strategy (phases)
 - Risk summary
 - Next steps
 
 ---
 
-## Phase 4: GitHub Integration
+## Phase 4: Update Spec Issue (No Individual Initiative Issues)
 
-### 4.1 Create GitHub Issues
+**IMPORTANT**: Only the Spec has a GitHub issue. Initiatives, features, and tasks use semantic IDs tracked locally.
 
-For each initiative:
+### 4.1 Comment on Spec Issue
 
-```bash
-gh issue create \
-  --repo MLorneSmith/2025slideheroes \
-  --title "Initiative: [Initiative Name]" \
-  --body "$(cat ${SPEC_DIR}/pending-Initiative-<initiative-slug>/initiative.md)" \
-  --label "type:initiative" \
-  --label "status:planning" \
-  --label "alpha:initiative"
-```
-
-**Note**: Use `status:planning` (exists) not `status:draft` (doesn't exist).
-
-### 4.2 Rename Directories with Issue Numbers
+Post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-mv ${SPEC_DIR}/pending-Initiative-<initiative-slug> ${SPEC_DIR}/<issue-#>-Initiative-<initiative-slug>
-```
-
-### 4.3 Update Initiative Documents
-
-After renaming, update each `initiative.md`:
-- Change `Initiative ID` from `<spec-#>-I<number>` to actual issue number
-- Example: `1333-I1` → `#1335`
-
-### 4.4 Update README with Issue Numbers
-
-Update the README.md to reference actual issue numbers and links.
-
-### 4.5 Comment on Spec Issue
-
-```bash
-gh issue comment <spec-#> --repo MLorneSmith/2025slideheroes --body "$(cat <<'EOF'
-## Initiatives Created
+gh issue comment <spec-num> --repo MLorneSmith/2025slideheroes --body "$(cat <<'EOF'
+## [Decomposition Update] Initiatives Created
 
 This spec has been decomposed into the following initiatives:
 
-| Initiative | Issue | Priority | Est. Weeks | Dependencies |
-|------------|-------|----------|------------|--------------|
-| [Name 1] | #XXX | 1 | X | None |
-| [Name 2] | #YYY | 2 | Y | #XXX |
+| ID | Name | Priority | Est. Weeks | Dependencies |
+|----|------|----------|------------|--------------|
+| S<spec-num>.I1 | [Name 1] | 1 | X | None |
+| S<spec-num>.I2 | [Name 2] | 2 | Y | S<spec-num>.I1 |
+| S<spec-num>.I3 | [Name 3] | 3 | Z | S<spec-num>.I1 |
 
-**Next Step**: Run `/alpha:feature-decompose <first-issue-#>` for Priority 1 initiative.
+### Directory Structure
+```
+.ai/alpha/specs/S<spec-num>-Spec-<slug>/
+├── S<spec-num>.I1-Initiative-<slug>/
+├── S<spec-num>.I2-Initiative-<slug>/
+└── S<spec-num>.I3-Initiative-<slug>/
+```
+
+**Next Step**: Run `/alpha:feature-decompose S<spec-num>.I1` for Priority 1 initiative.
+
+_Decomposed on $(date +%Y-%m-%d) by /alpha:initiative-decompose_
 EOF
 )"
 ```
@@ -453,7 +543,7 @@ Verify all items before reporting completion:
 - [ ] No initiative < 2 weeks (demoted) or > 8 weeks (split)
 
 #### Dependency Validation (CRITICAL)
-- [ ] All dependencies explicitly documented
+- [ ] All dependencies explicitly documented using S#.I# format
 - [ ] **No circular dependencies** (cycle detection passed)
 - [ ] Critical path calculated and documented
 - [ ] Parallel groups identified
@@ -462,26 +552,38 @@ Verify all items before reporting completion:
 
 #### Artifact Validation
 - [ ] Priority order accounts for dependencies
-- [ ] GitHub issues created with correct labels
-- [ ] Initiative directories renamed with issue numbers
-- [ ] README.md created with dependency graph
+- [ ] Initiative directories use S#.I# naming format
+- [ ] README.md created with dependency graph (using S#.I# references)
 - [ ] Spec issue updated with initiatives comment
 
 ### 5.2 Verification Commands
 
+Use simple `ls` commands instead of complex `find` pipelines:
+
 ```bash
+# List all initiative directories (visual check)
+ls -la ${SPEC_DIR}/ | grep Initiative
+
 # Count initiatives (should be 3-9)
-find ${SPEC_DIR} -maxdepth 1 -type d -name "[0-9]*" | wc -l
+ls -1d ${SPEC_DIR}/S*.I*-Initiative-*/ 2>/dev/null | wc -l
 
 # Verify each initiative has initiative.md
-find ${SPEC_DIR} -name "initiative.md" | wc -l
+for dir in ${SPEC_DIR}/S*.I*-Initiative-*/; do
+  if [[ -f "${dir}initiative.md" ]]; then
+    echo "✓ ${dir}"
+  else
+    echo "❌ Missing initiative.md: ${dir}"
+  fi
+done
 
 # Verify README.md exists
-test -f ${SPEC_DIR}/README.md && echo "✓ README.md exists"
-
-# List created issues
-gh issue list --repo MLorneSmith/2025slideheroes --label "type:initiative" --label "alpha:initiative" --limit 10
+[[ -f "${SPEC_DIR}/README.md" ]] && echo "✓ README.md exists" || echo "❌ README.md missing"
 ```
+
+**Expected Results**:
+- 3-9 initiative directories with `S#.I#-Initiative-` naming
+- Each directory contains `initiative.md`
+- `README.md` exists in spec root with overview
 
 ---
 
@@ -495,22 +597,25 @@ When complete, provide this structured report:
 ### Summary
 [2-3 sentences describing what was decomposed]
 
-### Spec Directory
-`.ai/alpha/specs/<spec-#>-<slug>/`
+### Spec Info
+- **Spec ID**: S<spec-num>
+- **Spec Directory**: `.ai/alpha/specs/S<spec-num>-Spec-<slug>/`
+- **GitHub Issue**: #<spec-num>
 
 ### Initiatives Created
 
-| ID | Directory | Issue # | Priority | Est. Weeks | Dependencies |
-|----|-----------|---------|----------|------------|--------------|
-| I1 | `<issue-#>-Initiative-<slug>/` | #XXX | 1 | X | None |
-| I2 | `<issue-#>-Initiative-<slug>/` | #YYY | 2 | Y | #XXX |
+| ID | Directory | Priority | Est. Weeks | Dependencies |
+|----|-----------|----------|------------|--------------|
+| S<spec-num>.I1 | `S<spec-num>.I1-Initiative-<slug>/` | 1 | X | None |
+| S<spec-num>.I2 | `S<spec-num>.I2-Initiative-<slug>/` | 2 | Y | S<spec-num>.I1 |
+| S<spec-num>.I3 | `S<spec-num>.I3-Initiative-<slug>/` | 3 | Z | S<spec-num>.I1 |
 
 ### Dependency Graph
-[Mermaid or ASCII diagram]
+[Mermaid or ASCII diagram using S#.I# labels]
 
 ### Dependency Validation
 - **Cycle Detection**: Pass / Fail
-- **Critical Path**: [Initiative sequence]
+- **Critical Path**: [Initiative sequence using S#.I# IDs]
 - **Parallel Groups**: [Grouped by execution phase]
 
 ### Execution Phases (Parallel Groups)
@@ -530,8 +635,45 @@ When complete, provide this structured report:
 2. [Risk 2 with mitigation]
 
 ### Next Step
-Run `/alpha:feature-decompose <first-issue-#>` for Priority 1 / Group 0 initiative.
+Run `/alpha:feature-decompose S<spec-num>.I1` for Priority 1 / Group 0 initiative.
 ```
+
+---
+
+## Troubleshooting
+
+### Common Failures
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Spec directory not found" | Spec hasn't been created yet | Run `/alpha:spec <spec-num>` first |
+| "GitHub issue missing alpha:spec label" | Issue exists but wasn't created by /alpha:spec | Add `alpha:spec` label manually via `gh issue edit` |
+| "no matches found" (zsh) | Glob pattern has no matches | Use the zsh-safe pattern from 0.3 |
+| Initiative too small (<2 weeks) | Scope is feature-sized, not initiative-sized | Merge with a related initiative |
+| Initiative too large (>8 weeks) | Scope is epic-sized | Apply SPIDR splitting (see 2.4) |
+| Circular dependency detected | A → B → C → A chain exists | Break the cycle by redefining scope or extracting shared component |
+
+### Error Recovery
+
+**If Phase 0 fails** (pre-flight):
+- Verify GitHub CLI is authenticated: `gh auth status`
+- Verify spec exists: `gh issue view <num> --json labels`
+- Check directory manually: `ls -la .ai/alpha/specs/`
+
+**If exploration agents fail**:
+- Reduce to 2 agents if 3 is too much
+- Use more specific paths in prompts
+- Fall back to manual Glob/Grep if agents time out
+
+**If artifact creation fails**:
+- Check SPEC_DIR is set: `echo ${SPEC_DIR}`
+- Verify write permissions: `touch ${SPEC_DIR}/test && rm ${SPEC_DIR}/test`
+- Create directories one at a time to isolate the issue
+
+**If GitHub comment fails**:
+- Verify repo access: `gh repo view MLorneSmith/2025slideheroes`
+- Check issue exists and is open
+- Try posting a simpler comment first to test permissions
 
 ---
 
@@ -539,5 +681,6 @@ Run `/alpha:feature-decompose <first-issue-#>` for Priority 1 / Group 0 initiati
 
 - `.ai/alpha/templates/initiative.md` - Initiative template
 - `.ai/alpha/templates/initiative-overview.md` - Overview template
+- `.ai/alpha/docs/hierarchical-ids.md` - ID system documentation
 - `.ai/alpha/specs/` - Root directory for all specs and initiatives
 - `CLAUDE.md` - Development patterns and conventions

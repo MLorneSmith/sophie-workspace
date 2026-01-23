@@ -119,10 +119,14 @@ export const SANDBOX_KEEPALIVE_INTERVAL_MS = 15 * 60 * 1000;
 /** Stagger delay between sandbox keepalive calls (ms) - 2 minutes per sandbox */
 export const SANDBOX_KEEPALIVE_STAGGER_MS = 2 * 60 * 1000;
 
-/** Maximum sandbox age before forced restart (ms) - 50 minutes
- * This triggers a preemptive restart 10 minutes before the 1-hour E2B timeout
+/** Maximum sandbox age before forced restart (ms) - 60 minutes
+ * Increased from 50 to 60 minutes to allow long-running features to complete.
+ * The E2B sandbox timeout is 1 hour, so this gives features the full hour.
+ * If a sandbox expires at exactly 60 min, the keepalive mechanism will handle
+ * the restart gracefully.
+ * See diagnosis #1567 for rationale.
  */
-export const SANDBOX_MAX_AGE_MS = 50 * 60 * 1000;
+export const SANDBOX_MAX_AGE_MS = 60 * 60 * 1000;
 
 // ============================================================================
 // Startup Retry Configuration

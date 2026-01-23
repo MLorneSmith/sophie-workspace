@@ -10,6 +10,12 @@ import {
 	verifyCookieAttributes,
 	verifyCookiesPresent,
 } from "./tests/helpers/cookie-verification";
+import { setupTestUsers } from "./tests/helpers/test-users";
+import {
+	checkPostgRESTHealth,
+	checkPostgresHealth,
+	waitForSupabaseHealth,
+} from "./tests/setup/supabase-health";
 import { CredentialValidator } from "./tests/utils/credential-validator";
 import { runPreflightValidations } from "./tests/utils/e2e-validation";
 import {
@@ -349,13 +355,94 @@ async function globalSetup(config: FullConfig) {
 	// Clean up billing test data before creating auth states
 	// This prevents duplicate subscription records from accumulating across test runs
 	// See: Issue #1461 - E2E Shard 10 Duplicate Subscription Records
-	await cleanupBillingTestData();
+	// See: Issue #1684 - Skip cleanup for CI with remote Supabase (no local PostgreSQL)
+	if (process.env.E2E_LOCAL_SUPABASE === "true" || process.env.CI !== "true") {
+		// Only run cleanup when we have local PostgreSQL access:
+		// - Local Supabase in CI (E2E_LOCAL_SUPABASE=true)
+		// - Local development (CI is not set)
+		await cleanupBillingTestData();
+	} else {
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log(
+			"⏭️  Skipping billing cleanup (CI with remote Supabase - no local PostgreSQL)",
+		);
+	}
 
 	// PHASE 2 FIX: Run health checks before auth setup
 	// This provides early warning if services are unhealthy
 	// See: Issue #992 - E2E Test Infrastructure Systemic Architecture Problems
+	// See: Issue #1641, #1642 - Enhanced health checks with exponential backoff
 	// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
 	console.log("\n🏥 Running server health checks...\n");
+
+	// Run enhanced Supabase health checks with multi-stage verification
+	// This uses exponential backoff to handle Kong API startup delays in CI
+	// See: Issue #1642 - E2E Sharded Workflow Dual Failure Modes
+	// See: Issue #1681, #1684 - Scope health checks to local Supabase workflows only
+	try {
+		// Three-branch health check logic:
+		// 1. Local Supabase (e2e-sharded.yml): Full enhanced health checks with exponential backoff
+		// 2. CI with remote Supabase (dev-integration-tests.yml): PostgREST API check only
+		// 3. Local development: Both PostgreSQL and PostgREST checks
+		if (process.env.E2E_LOCAL_SUPABASE === "true") {
+			// Branch 1: Local Supabase in CI (e2e-sharded.yml)
+			// Uses enhanced health checks with exponential backoff
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log(
+				"🔄 Using enhanced Supabase health checks (local Supabase mode)...",
+			);
+			await waitForSupabaseHealth();
+		} else if (process.env.CI === "true") {
+			// Branch 2: CI with remote Supabase (dev-integration-tests.yml)
+			// Skip PostgreSQL check - there's no local PostgreSQL to connect to
+			// Only verify PostgREST API access to remote Supabase
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log(
+				"🔄 Using PostgREST-only health check (CI with remote Supabase)...",
+			);
+			const postgrestResult = await checkPostgRESTHealth(5000);
+
+			if (!postgrestResult.healthy) {
+				throw new Error(
+					`PostgREST health check failed: ${postgrestResult.message}`,
+				);
+			}
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log("✅ Supabase PostgREST health check passed (remote mode)");
+		} else {
+			// Branch 3: Local development
+			// Check both PostgreSQL and PostgREST for complete health verification
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log(
+				"🔄 Using full Supabase health checks (local development mode)...",
+			);
+			const [postgresResult, postgrestResult] = await Promise.all([
+				checkPostgresHealth(5000),
+				checkPostgRESTHealth(5000),
+			]);
+
+			if (!postgresResult.healthy) {
+				throw new Error(
+					`PostgreSQL health check failed: ${postgresResult.message}`,
+				);
+			}
+			if (!postgrestResult.healthy) {
+				throw new Error(
+					`PostgREST health check failed: ${postgrestResult.message}`,
+				);
+			}
+			// biome-ignore lint/suspicious/noConsole: Required for test setup health check visibility
+			console.log("✅ Supabase health checks passed (local development mode)");
+		}
+	} catch (error) {
+		const errorMessage =
+			error instanceof Error ? error.message : "Unknown error";
+		throw new Error(
+			`❌ Supabase health check failed: ${errorMessage}. Cannot proceed with auth setup.`,
+		);
+	}
+
+	// Run remaining health checks for Next.js and Payload
 	const [supabaseHealth, nextJsHealth, payloadHealth] = await Promise.all([
 		checkSupabaseHealth(),
 		checkNextJsHealth(),
@@ -368,10 +455,10 @@ async function globalSetup(config: FullConfig) {
 		payload: payloadHealth,
 	});
 
-	// Supabase and Next.js are required for tests
+	// Next.js is required for tests (Supabase was already checked above)
 	if (!supabaseHealth.healthy) {
 		throw new Error(
-			`❌ Supabase health check failed: ${supabaseHealth.message}. Cannot proceed with auth setup.`,
+			`❌ Supabase basic health check failed: ${supabaseHealth.message}. Cannot proceed with auth setup.`,
 		);
 	}
 
@@ -391,13 +478,47 @@ async function globalSetup(config: FullConfig) {
 		);
 	}
 
+	// Create test users in Supabase before authentication
+	// This ensures test users exist even after database reset with --no-seed
+	// See: Issue #1602, #1603 - E2E tests fail due to missing test users
+	// See: Issue #1690, #1691 - Skip for CI with remote Supabase (users pre-provisioned)
+	if (process.env.E2E_LOCAL_SUPABASE === "true" || process.env.CI !== "true") {
+		// Only run test user setup when we have local Supabase access:
+		// - Local Supabase in CI (E2E_LOCAL_SUPABASE=true)
+		// - Local development (CI is not set)
+		try {
+			await setupTestUsers();
+		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: Required for error reporting in test setup
+			console.error(
+				`❌ Failed to setup test users: ${(error as Error).message}`,
+			);
+			throw new Error(
+				`Test user setup failed: ${(error as Error).message}. Cannot proceed with E2E tests.`,
+			);
+		}
+	} else {
+		// biome-ignore lint/suspicious/noConsole: Required for test setup progress visibility
+		console.log(
+			"⏭️  Skipping test user setup (CI with remote Supabase - users pre-provisioned)",
+		);
+	}
+
 	const baseURL = config.projects[0]?.use?.baseURL || "http://localhost:3001";
 
 	// Validate baseURL in CI environment to prevent localhost URL usage
 	// biome-ignore lint/suspicious/noConsole: Required for test setup configuration visibility
 	console.log(`🌐 Using BASE_URL: ${baseURL}`);
 
-	if (baseURL?.includes("localhost") && process.env.CI === "true") {
+	// Validate localhost in CI - skip when E2E_LOCAL_SUPABASE is set (sharded workflow with local Supabase)
+	// The sharded workflow intentionally runs Supabase locally and sets E2E_LOCAL_SUPABASE=true
+	// See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+	// See: Issue #1518 - Added localhost validation to prevent CI testing against wrong URLs
+	if (
+		baseURL?.includes("localhost") &&
+		process.env.CI === "true" &&
+		process.env.E2E_LOCAL_SUPABASE !== "true"
+	) {
 		throw new Error(
 			"❌ CI environment detected but BASE_URL points to localhost! Check PLAYWRIGHT_BASE_URL environment variable.",
 		);

@@ -58,7 +58,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: "/test/spec",
@@ -66,8 +66,8 @@ function createTestManifest(
 		},
 		initiatives: [],
 		feature_queue: features.map((f, i) => ({
-			id: f.id ?? 1000 + i,
-			initiative_id: f.initiative_id ?? 1,
+			id: f.id ?? String(1000 + i),
+			initiative_id: f.initiative_id ?? "1",
 			title: f.title ?? `Test Feature ${i}`,
 			priority: f.priority ?? 1,
 			global_priority: f.global_priority ?? 1,
@@ -142,7 +142,7 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1367,
+				id: "1367",
 				status: "pending",
 			},
 		]);
@@ -177,7 +177,7 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 	it("clears assigned_at when runFeatureImplementation throws", async () => {
 		const manifest = createTestManifest([
 			{
-				id: 1368,
+				id: "1368",
 				status: "in_progress",
 				assigned_sandbox: "sbx-b",
 				assigned_at: Date.now() - 5000,
@@ -204,7 +204,7 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 	it("handles non-Error objects in error handler", async () => {
 		const manifest = createTestManifest([
 			{
-				id: 1369,
+				id: "1369",
 				status: "pending",
 			},
 		]);
@@ -232,7 +232,7 @@ describe("Orchestrator Error Handler - Feature Cleanup", () => {
 	it("is idempotent - cleaning up already undefined fields works", async () => {
 		const manifest = createTestManifest([
 			{
-				id: 1370,
+				id: "1370",
 				status: "pending",
 				// These are already undefined
 				assigned_sandbox: undefined,
@@ -270,7 +270,7 @@ describe("Orchestrator Error Handler - Stall Prevention", () => {
 
 		const manifest = createTestManifest([
 			{
-				id: 1371,
+				id: "1371",
 				status: "failed",
 				error: "Previous error",
 				// After fix, these should be cleared:
@@ -294,9 +294,9 @@ describe("Orchestrator Error Handler - Stall Prevention", () => {
 
 	it("multiple features failing do not cause accumulation of assigned_sandbox", () => {
 		const manifest = createTestManifest([
-			{ id: 1372, status: "pending" },
-			{ id: 1373, status: "pending" },
-			{ id: 1374, status: "pending" },
+			{ id: "1372", status: "pending" },
+			{ id: "1373", status: "pending" },
+			{ id: "1374", status: "pending" },
 		]);
 
 		// Simulate all three features failing

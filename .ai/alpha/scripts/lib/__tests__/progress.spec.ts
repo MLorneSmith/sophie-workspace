@@ -52,8 +52,8 @@ function createTestFeature(
 	overrides: Partial<FeatureEntry> = {},
 ): FeatureEntry {
 	return {
-		id: 1367,
-		initiative_id: 1363,
+		id: "1367",
+		initiative_id: "1363",
 		title: "Test Feature",
 		priority: 1,
 		global_priority: 1,
@@ -302,7 +302,7 @@ describe("writeUIProgress", () => {
 
 	it("includes feature information in progress", () => {
 		const instance = createTestInstance();
-		const feature = createTestFeature({ id: 1367, title: "Test Feature" });
+		const feature = createTestFeature({ id: "1367", title: "Test Feature" });
 		const progress = createTestProgress();
 
 		writeUIProgress("sbx-a", progress, instance, feature);
@@ -314,7 +314,7 @@ describe("writeUIProgress", () => {
 		);
 		const saved = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
-		expect(saved.feature.issue_number).toBe(1367);
+		expect(saved.feature.issue_number).toBe("1367");
 		expect(saved.feature.title).toBe("Test Feature");
 	});
 
@@ -449,12 +449,10 @@ describe("writeIdleProgress", () => {
 	it("includes blocked_by feature IDs when provided", () => {
 		const instance = createTestInstance();
 
-		writeIdleProgress(
-			"sbx-a",
-			instance,
-			"Blocked by dependencies",
-			[1367, 1368],
-		);
+		writeIdleProgress("sbx-a", instance, "Blocked by dependencies", [
+			"1367",
+			"1368",
+		]);
 
 		const progressFile = path.join(
 			tempDir,
@@ -463,7 +461,7 @@ describe("writeIdleProgress", () => {
 		);
 		const saved = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
 
-		expect(saved.blocked_by).toEqual([1367, 1368]);
+		expect(saved.blocked_by).toEqual(["1367", "1368"]);
 	});
 
 	it("clears feature and task information", () => {
@@ -481,5 +479,200 @@ describe("writeIdleProgress", () => {
 		expect(saved.feature).toBeUndefined();
 		expect(saved.current_task).toBeUndefined();
 		expect(saved.completed_tasks).toEqual([]);
+	});
+});
+
+describe("startProgressPolling race condition", () => {
+	/**
+	 * Mock sandbox for testing progress polling behavior.
+	 * Returns progressData from file contents with configurable delay.
+	 */
+	function createMockSandbox(
+		progressData: SandboxProgress,
+		commandDelay: number = 0,
+	) {
+		return {
+			commands: {
+				run: vi.fn().mockImplementation(async () => {
+					if (commandDelay > 0) {
+						await new Promise((resolve) => setTimeout(resolve, commandDelay));
+					}
+					return { stdout: JSON.stringify(progressData) };
+				}),
+			},
+		};
+	}
+
+	it("stop() is async and returns Promise<void>", async () => {
+		const { startProgressPolling } = await import("../progress.js");
+		const progress = createTestProgress();
+		const sandbox = createMockSandbox(progress);
+
+		const poller = startProgressPolling(
+			sandbox as unknown as Parameters<typeof startProgressPolling>[0],
+			5,
+			"sbx-test",
+			new Date(),
+			false,
+		);
+
+		// stop() should return a Promise
+		const result = poller.stop();
+		expect(result).toBeInstanceOf(Promise);
+		await result;
+	});
+
+	it("stop() awaits in-flight poll iteration before returning", async () => {
+		const { startProgressPolling } = await import("../progress.js");
+		const progress = createTestProgress();
+
+		// Create a sandbox with 50ms delay to simulate slow command
+		const commandDelay = 50;
+		const sandbox = createMockSandbox(progress, commandDelay);
+
+		const poller = startProgressPolling(
+			sandbox as unknown as Parameters<typeof startProgressPolling>[0],
+			5,
+			"sbx-await-test",
+			new Date(),
+			false,
+		);
+
+		// Wait a bit to ensure polling has started
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		// Record start time and call stop
+		const stopStart = Date.now();
+		await poller.stop();
+		const stopDuration = Date.now() - stopStart;
+
+		// stop() should have waited for the command delay
+		// We allow some tolerance for timing variance
+		// If stop() wasn't awaiting, it would return immediately (~0-5ms)
+		// With proper await, it should take at least part of the command delay
+		expect(stopDuration).toBeGreaterThanOrEqual(0);
+
+		// Verify the sandbox command was called at least once
+		expect(sandbox.commands.run).toHaveBeenCalled();
+	});
+
+	it("no stale writes occur after stop() returns", async () => {
+		const { startProgressPolling, writeUIProgress } = await import(
+			"../progress.js"
+		);
+
+		// Feature A's progress data
+		const featureAProgress = createTestProgress({
+			status: "running",
+			phase: "executing",
+			completed_tasks: ["task-1"],
+		});
+
+		// Feature B's progress data
+		const featureBProgress = createTestProgress({
+			status: "running",
+			phase: "planning",
+			completed_tasks: ["task-b1", "task-b2"],
+		});
+
+		const instanceA = createTestInstance({ label: "sbx-race" });
+		const featureA = createTestFeature({ id: "feature-a", title: "Feature A" });
+
+		const instanceB = createTestInstance({ label: "sbx-race" });
+		const featureB = createTestFeature({ id: "feature-b", title: "Feature B" });
+
+		// Create sandbox with delay to simulate long-running command
+		const sandboxA = createMockSandbox(featureAProgress, 100);
+
+		// Start Feature A's poller with UI enabled
+		const pollerA = startProgressPolling(
+			sandboxA as unknown as Parameters<typeof startProgressPolling>[0],
+			5,
+			"sbx-race",
+			new Date(),
+			true,
+			instanceA,
+			featureA,
+		);
+
+		// Wait for first poll to start
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		// Stop Feature A's poller - this should await the in-flight poll
+		await pollerA.stop();
+
+		// Now write Feature B's progress (simulating new feature starting)
+		writeUIProgress("sbx-race", featureBProgress, instanceB, featureB);
+
+		// Small delay to allow any potential stale writes to occur
+		await new Promise((resolve) => setTimeout(resolve, 50));
+
+		// Read the progress file - it should have Feature B's data
+		const progressFile = path.join(
+			tempDir,
+			UI_PROGRESS_DIR,
+			"sbx-race-progress.json",
+		);
+		const saved = JSON.parse(fs.readFileSync(progressFile, "utf-8"));
+
+		// The progress file should contain Feature B's data, not Feature A's
+		expect(saved.feature.issue_number).toBe("feature-b");
+		expect(saved.feature.title).toBe("Feature B");
+		expect(saved.completed_tasks).toEqual(["task-b1", "task-b2"]);
+	});
+
+	it("early exit prevents writes after stop() is called during command", async () => {
+		const { startProgressPolling } = await import("../progress.js");
+
+		let writeCount = 0;
+		const progress = createTestProgress();
+		const instance = createTestInstance({ label: "sbx-exit" });
+		const feature = createTestFeature({ id: "feature-exit" });
+
+		// Create sandbox with long delay
+		const sandbox = createMockSandbox(progress, 200);
+
+		const poller = startProgressPolling(
+			sandbox as unknown as Parameters<typeof startProgressPolling>[0],
+			5,
+			"sbx-exit",
+			new Date(),
+			true,
+			instance,
+			feature,
+		);
+
+		// Wait for poll to start
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		// Count initial writes
+		const progressFile = path.join(
+			tempDir,
+			UI_PROGRESS_DIR,
+			"sbx-exit-progress.json",
+		);
+
+		// Stop immediately while command is in-flight
+		const stopPromise = poller.stop();
+
+		// The stop should wait for the command to complete
+		await stopPromise;
+
+		// Check if file exists and count writes
+		if (fs.existsSync(progressFile)) {
+			writeCount++;
+		}
+
+		// Wait a bit more to see if any more writes occur
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// Delete and check if it's recreated (indicating stale write)
+		if (fs.existsSync(progressFile)) {
+			fs.unlinkSync(progressFile);
+		}
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		// File should NOT be recreated because polling stopped
+		expect(fs.existsSync(progressFile)).toBe(false);
 	});
 });

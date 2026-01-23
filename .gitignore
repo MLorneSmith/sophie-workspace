@@ -46,6 +46,14 @@ e2b-sandbox.zip
 # Sandbox session logs
 .ai/logs/sandbox-logs/
 
+# Alpha Orchestrator runtime state (ephemeral, machine-specific)
+.ai/alpha/progress/
+.ai/alpha/archive/
+.ai/alpha/logs/
+.ai/alpha/cache/
+.ai/alpha/scripts/node_modules/
+.ai/alpha/scripts/node_modules.bak/
+
 # Sandbox progress tracking files (written by Claude Code hooks)
 .initiative-progress.json
 

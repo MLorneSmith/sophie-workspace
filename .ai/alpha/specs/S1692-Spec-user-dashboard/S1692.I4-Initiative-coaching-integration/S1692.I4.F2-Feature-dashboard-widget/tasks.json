@@ -1,0 +1,724 @@
+{
+	"$schema": "../../../../.ai/alpha/templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1692.I4.F2",
+		"feature_name": "Coaching Sessions Dashboard Widget",
+		"feature_slug": "dashboard-widget",
+		"initiative_id": "S1692.I4",
+		"spec_id": "1692",
+		"created_at": "2026-01-21T10:00:00Z",
+		"complexity": {
+			"score": 62,
+			"level": "HIGH",
+			"target_steps": {
+				"min": 12,
+				"max": 20
+			},
+			"pattern_matched": "dashboard-card"
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": true,
+		"ui_tasks": ["T1", "T2", "T3", "T4", "T8"]
+	},
+	"tasks": [
+		{
+			"id": "T1",
+			"type": "task",
+			"name": "Create coaching widget skeleton component",
+			"action": {
+				"verb": "Create",
+				"target": "coaching-widget-skeleton.tsx component"
+			},
+			"purpose": "Provide loading state UI while session data is being fetched from Cal.com API",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"requires_ui": true,
+			"ui_task": true,
+			"skill_hints": ["frontend-design"],
+			"context": {
+				"files": [
+					"packages/ui/src/shadcn/card.tsx",
+					"packages/ui/src/shadcn/skeleton.tsx"
+				],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Skeleton from @kit/ui/skeleton"
+				],
+				"constraints": [
+					"Match widget card structure (header with title, content area)",
+					"Skeleton should mimic 3 session cards layout",
+					"Use Tailwind for spacing and layout"
+				]
+			},
+			"input_state": "Shadcn Card and Skeleton components available",
+			"output_state": "Skeleton component displays placeholder for widget while loading",
+			"acceptance_criterion": "Component renders 3 skeleton session cards with title and time placeholders",
+			"verification_command": "grep -A 10 'export.*CoachingWidgetSkeleton' apps/web/app/home/\\(user\\)/_components/coaching-widget-skeleton.tsx && pnpm typecheck",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/coaching-widget-skeleton.tsx",
+					"description": "Loading skeleton component with Card wrapper and 3 placeholder cards"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 1000,
+				"checks": [
+					{
+						"command": "snapshot"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "T2",
+			"type": "task",
+			"name": "Create coaching empty state component",
+			"action": {
+				"verb": "Create",
+				"target": "coaching-empty-state.tsx component"
+			},
+			"purpose": "Display when user has no coaching sessions booked, with CTA to book first session",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 1,
+			"group": 1,
+			"requires_ui": true,
+			"ui_task": true,
+			"skill_hints": ["frontend-design"],
+			"context": {
+				"files": [
+					"packages/ui/src/shadcn/button.tsx"
+				],
+				"dependencies": [
+					"Button from @kit/ui/button",
+					"Calendar icon from lucide-react"
+				],
+				"constraints": [
+					"Show calendar icon or coaching-related icon",
+					"Message: 'No upcoming coaching sessions'",
+					"CTA button: 'Book Session' linking to /home/coaching",
+					"Center-aligned, friendly tone"
+				]
+			},
+			"input_state": "Button and icon components available",
+			"output_state": "Empty state component with icon, message, and CTA renders when no sessions",
+			"acceptance_criterion": "Component renders centered message and Book Session button that links to /home/coaching",
+			"verification_command": "grep -A 10 'export.*CoachingEmptyState' apps/web/app/home/\\(user\\)/_components/coaching-empty-state.tsx && grep '/home/coaching' apps/web/app/home/\\(user\\)/_components/coaching-empty-state.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+					"description": "Empty state with icon, message, and CTA button"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 2000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "No upcoming coaching sessions"
+					},
+					{
+						"command": "find role",
+						"target": "button"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "T3",
+			"type": "task",
+			"name": "Create coaching session card component",
+			"action": {
+				"verb": "Create",
+				"target": "coaching-session-card.tsx component"
+			},
+			"purpose": "Display individual session information with title and formatted time",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 2,
+			"group": 1,
+			"requires_ui": true,
+			"ui_task": true,
+			"skill_hints": ["frontend-design", "react-best-practices"],
+			"context": {
+				"files": [
+					"packages/ui/src/shadcn/card.tsx"
+				],
+				"dependencies": [
+					"Card, CardContent from @kit/ui/card",
+					"Clock icon from lucide-react"
+				],
+				"constraints": [
+					"Props: { title: string; startTime: string; endTime: string }",
+					"Display title prominently",
+					"Show formatted time string (will be formatted by parent)",
+					"Placeholder for action buttons (added in F3)",
+					"Compact card design"
+				],
+				"patterns": [
+					{
+						"file": "packages/ui/src/shadcn/card.tsx",
+						"description": "Card component structure for consistent styling"
+					}
+				]
+			},
+			"input_state": "Card components available, session data structure defined",
+			"output_state": "Session card component renders title and time for single session",
+			"acceptance_criterion": "Component accepts session props and renders card with title and time display area",
+			"verification_command": "grep -A 20 'export.*CoachingSessionCard' apps/web/app/home/\\(user\\)/_components/coaching-session-card.tsx && grep 'title.*string' apps/web/app/home/\\(user\\)/_components/coaching-session-card.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/coaching-session-card.tsx",
+					"description": "Individual session card with title and time display"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["T4", "T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "find role",
+						"target": "heading"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "T4",
+			"type": "task",
+			"name": "Create main coaching sessions widget shell",
+			"action": {
+				"verb": "Create",
+				"target": "coaching-sessions-widget.tsx main component"
+			},
+			"purpose": "Orchestrate loading, empty, and populated states for coaching sessions display",
+			"status": "draft",
+			"estimated_hours": 3,
+			"priority": 3,
+			"group": 2,
+			"requires_ui": true,
+			"ui_task": true,
+			"skill_hints": ["react-best-practices"],
+			"context": {
+				"files": [
+					"packages/ui/src/shadcn/card.tsx",
+					"apps/web/app/home/(user)/_components/coaching-widget-skeleton.tsx",
+					"apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+					"apps/web/app/home/(user)/_components/coaching-session-card.tsx"
+				],
+				"dependencies": [
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"CoachingWidgetSkeleton component",
+					"CoachingEmptyState component",
+					"CoachingSessionCard component"
+				],
+				"constraints": [
+					"Client component with 'use client' directive",
+					"State management: isLoading, sessions data, error",
+					"Conditional rendering: skeleton → empty → populated → error",
+					"Take 3 sessions max from data",
+					"Card wrapper with 'Coaching Sessions' title"
+				]
+			},
+			"input_state": "Skeleton, empty state, and session card components exist",
+			"output_state": "Widget shell component conditionally renders appropriate state based on loading/data/error",
+			"acceptance_criterion": "Component renders skeleton during load, empty state when no data, and session cards when data present",
+			"verification_command": "grep \"'use client'\" apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -c 'CoachingWidgetSkeleton\\|CoachingEmptyState\\|CoachingSessionCard' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx | grep 3",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+					"description": "Main widget component orchestrating all states"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T1", "T2", "T3"],
+				"blocks": ["T5"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Coaching Sessions"
+					},
+					{
+						"command": "find role",
+						"target": "heading"
+					}
+				],
+				"screenshot": true
+			}
+		},
+		{
+			"id": "T5",
+			"type": "task",
+			"name": "Integrate useBookings hook for data fetching",
+			"action": {
+				"verb": "Add",
+				"target": "useBookings hook integration to widget"
+			},
+			"purpose": "Fetch upcoming coaching sessions from Cal.com API using @calcom/atoms hook",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+				],
+				"dependencies": [
+					"useBookings from @calcom/atoms",
+					"CalProvider from F1 (wraps layout)"
+				],
+				"constraints": [
+					"Import: useBookings from '@calcom/atoms'",
+					"Hook params: { take: 3, skip: 0, status: ['upcoming'] }",
+					"Extract: isLoading, data from hook result",
+					"Pass data.bookings to session cards",
+					"Handle undefined data gracefully"
+				],
+				"patterns": [
+					{
+						"file": ".ai/alpha/specs/S1692-Spec-user-dashboard/research-library/context7-calcom.md",
+						"description": "useBookings hook usage pattern lines 154-178"
+					}
+				]
+			},
+			"input_state": "Widget shell exists, CalProvider wraps user layout (from F1)",
+			"output_state": "Widget fetches real Cal.com session data and displays in session cards",
+			"acceptance_criterion": "Widget calls useBookings hook and displays fetched sessions or empty state",
+			"verification_command": "grep 'useBookings' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep \"status.*upcoming\" apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+					"description": "Add useBookings hook call and wire data to UI"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T4"],
+				"blocks": ["T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T6",
+			"type": "task",
+			"name": "Add relative time formatting with date-fns",
+			"action": {
+				"verb": "Add",
+				"target": "time formatting logic using formatRelative"
+			},
+			"purpose": "Display session times in human-readable relative format (e.g., 'in 2 hours', 'tomorrow at 3pm')",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 5,
+			"group": 3,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+					"apps/web/app/home/(user)/_components/coaching-session-card.tsx"
+				],
+				"dependencies": [
+					"formatRelative from date-fns",
+					"parseISO from date-fns"
+				],
+				"constraints": [
+					"Import: formatRelative, parseISO from 'date-fns'",
+					"Format booking.startTime using formatRelative",
+					"Pass formatted string to CoachingSessionCard",
+					"Handle invalid dates gracefully",
+					"Example output: 'tomorrow at 3:00 PM'"
+				]
+			},
+			"input_state": "useBookings provides startTime as ISO string, session card accepts time string",
+			"output_state": "Session cards display relative time format instead of raw ISO strings",
+			"acceptance_criterion": "Session times display in relative format like 'tomorrow at 3:00 PM' or 'in 2 hours'",
+			"verification_command": "grep 'formatRelative' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep 'date-fns' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+					"description": "Add formatRelative import and usage"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T3", "T5"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T7",
+			"type": "task",
+			"name": "Add error handling with fallback UI",
+			"action": {
+				"verb": "Add",
+				"target": "error state handling to widget"
+			},
+			"purpose": "Handle Cal.com API failures gracefully with fallback link to coaching page",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 6,
+			"group": 4,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+				],
+				"dependencies": [
+					"Alert, AlertDescription from @kit/ui/alert",
+					"Button from @kit/ui/button"
+				],
+				"constraints": [
+					"Catch useBookings errors (check hook for error property)",
+					"Display Alert component with error message",
+					"Include button linking to /home/coaching",
+					"Message: 'Unable to load sessions. Visit coaching page.'",
+					"Red/warning color scheme"
+				]
+			},
+			"input_state": "Widget fetches data and displays sessions",
+			"output_state": "Widget shows error alert with coaching page link when Cal.com API fails",
+			"acceptance_criterion": "Error state renders alert with message and button linking to /home/coaching",
+			"verification_command": "grep 'Alert' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep 'error' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+					"description": "Add error handling and Alert UI"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T5"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "T8",
+			"type": "task",
+			"name": "Add widget to dashboard page",
+			"action": {
+				"verb": "Add",
+				"target": "CoachingSessionsWidget to /home PageBody"
+			},
+			"purpose": "Integrate widget into main dashboard for user visibility",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 7,
+			"group": 5,
+			"requires_ui": true,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/page.tsx",
+					"apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+				],
+				"dependencies": [
+					"CoachingSessionsWidget component"
+				],
+				"constraints": [
+					"Import CoachingSessionsWidget",
+					"Add inside PageBody component",
+					"No Suspense needed (widget handles loading internally)",
+					"Position according to dashboard layout plan"
+				]
+			},
+			"input_state": "Widget component is complete and functional",
+			"output_state": "Widget appears on /home dashboard page",
+			"acceptance_criterion": "Navigating to /home shows CoachingSessionsWidget rendered on page",
+			"verification_command": "grep 'CoachingSessionsWidget' apps/web/app/home/\\(user\\)/page.tsx",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx",
+					"description": "Import and render CoachingSessionsWidget in PageBody"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["T4", "T5", "T6", "T7"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			},
+			"visual_verification": {
+				"enabled": true,
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Coaching Sessions"
+					},
+					{
+						"command": "find role",
+						"target": "heading"
+					},
+					{
+						"command": "snapshot",
+						"flags": "-i -c"
+					}
+				],
+				"expected_elements": [
+					"Coaching Sessions",
+					"No upcoming coaching sessions",
+					"Book Session"
+				],
+				"screenshot": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "UI Component Creation",
+				"task_ids": ["T1", "T2", "T3"],
+				"depends_on_groups": [],
+				"estimated_hours": 7,
+				"parallel_hours": 3,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["T1", "T2", "T3"],
+						"max_hours": 3,
+						"reason": "All create new independent component files with no shared dependencies"
+					}
+				],
+				"sequential_tasks": [],
+				"parallelization_analysis": {
+					"total_tasks": 3,
+					"parallelizable_count": 3,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 2.33
+				}
+			},
+			{
+				"id": 2,
+				"name": "Widget Shell Creation",
+				"task_ids": ["T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 3,
+				"parallel_hours": 3,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["T4"],
+						"max_hours": 3,
+						"reason": "Single task in group"
+					}
+				],
+				"sequential_tasks": ["T4"],
+				"parallelization_analysis": {
+					"total_tasks": 1,
+					"parallelizable_count": 1,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1.0
+				}
+			},
+			{
+				"id": 3,
+				"name": "Data Integration & Formatting",
+				"task_ids": ["T5", "T6"],
+				"depends_on_groups": [2],
+				"estimated_hours": 4,
+				"parallel_hours": 4,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["T5"],
+						"max_hours": 2,
+						"reason": "T5 modifies widget first"
+					},
+					{
+						"batch_id": 2,
+						"task_ids": ["T6"],
+						"max_hours": 2,
+						"reason": "T6 depends on T5 completing useBookings integration"
+					}
+				],
+				"sequential_tasks": ["T5", "T6"],
+				"parallelization_analysis": {
+					"total_tasks": 2,
+					"parallelizable_count": 0,
+					"sequential_count": 2,
+					"file_conflicts": [
+						{
+							"task_a": "T5",
+							"task_b": "T6",
+							"conflicting_file": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+						}
+					],
+					"speedup_potential": 1.0
+				}
+			},
+			{
+				"id": 4,
+				"name": "Error Handling",
+				"task_ids": ["T7"],
+				"depends_on_groups": [3],
+				"estimated_hours": 2,
+				"parallel_hours": 2,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["T7"],
+						"max_hours": 2,
+						"reason": "Single task in group"
+					}
+				],
+				"sequential_tasks": ["T7"],
+				"parallelization_analysis": {
+					"total_tasks": 1,
+					"parallelizable_count": 1,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1.0
+				}
+			},
+			{
+				"id": 5,
+				"name": "Dashboard Integration",
+				"task_ids": ["T8"],
+				"depends_on_groups": [4],
+				"estimated_hours": 1,
+				"parallel_hours": 1,
+				"parallel_batches": [
+					{
+						"batch_id": 1,
+						"task_ids": ["T8"],
+						"max_hours": 1,
+						"reason": "Single task in group"
+					}
+				],
+				"sequential_tasks": ["T8"],
+				"parallelization_analysis": {
+					"total_tasks": 1,
+					"parallelizable_count": 1,
+					"sequential_count": 0,
+					"file_conflicts": [],
+					"speedup_potential": 1.0
+				}
+			}
+		],
+		"critical_path": {
+			"task_ids": ["T3", "T4", "T5", "T6", "T7", "T8"],
+			"total_hours": 13
+		},
+		"duration": {
+			"sequential": 17,
+			"parallel": 13,
+			"time_saved_percent": 23.5
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 95
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": false,
+		"spec_issue_commented": true
+	}
+}

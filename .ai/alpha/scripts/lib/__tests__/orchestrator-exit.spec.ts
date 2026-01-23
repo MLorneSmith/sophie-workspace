@@ -22,7 +22,7 @@ function createTestManifest(
 ): SpecManifest {
 	return {
 		metadata: {
-			spec_id: 1362,
+			spec_id: "1362",
 			spec_name: "Test Spec",
 			generated_at: new Date().toISOString(),
 			spec_dir: "/test/spec",
@@ -30,8 +30,8 @@ function createTestManifest(
 		},
 		initiatives: [],
 		feature_queue: features.map((f, i) => ({
-			id: f.id ?? 1000 + i,
-			initiative_id: f.initiative_id ?? 1,
+			id: f.id ?? String(1000 + i),
+			initiative_id: f.initiative_id ?? "1",
 			title: f.title ?? `Test Feature ${i}`,
 			priority: f.priority ?? 1,
 			global_priority: f.global_priority ?? 1,
@@ -104,7 +104,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 	describe("hasRetryableFeatures (FIXED logic)", () => {
 		it("should return TRUE when pending features exist (no dependencies)", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "pending", dependencies: [] },
+				{ id: "1001", status: "pending", dependencies: [] },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -113,7 +113,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 		it("should return TRUE when failed features exist (no dependencies)", () => {
 			const manifest = createTestManifest([
 				{
-					id: 1001,
+					id: "1001",
 					status: "failed",
 					dependencies: [],
 					error: "Sandbox startup failed",
@@ -125,7 +125,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should return TRUE when pending features exist (with dependencies)", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "pending", dependencies: [999] },
+				{ id: "1001", status: "pending", dependencies: ["999"] },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -133,7 +133,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should return TRUE when failed features exist (with dependencies)", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "failed", dependencies: [999] },
+				{ id: "1001", status: "failed", dependencies: ["999"] },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -141,8 +141,8 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should return FALSE when all features are completed", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "completed" },
-				{ id: 1002, status: "completed" },
+				{ id: "1001", status: "completed" },
+				{ id: "1002", status: "completed" },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(false);
@@ -158,7 +158,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 			// Note: in_progress features are being worked on, not retryable
 			const manifest = createTestManifest([
 				{
-					id: 1001,
+					id: "1001",
 					status: "in_progress",
 					assigned_sandbox: "sbx-a",
 					assigned_at: Date.now(),
@@ -170,9 +170,9 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should return TRUE when mix of completed and failed exists", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "completed" },
-				{ id: 1002, status: "failed", error: "Test error" },
-				{ id: 1003, status: "completed" },
+				{ id: "1001", status: "completed" },
+				{ id: "1002", status: "failed", error: "Test error" },
+				{ id: "1003", status: "completed" },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -184,13 +184,13 @@ describe("Orchestrator Exit Condition Logic", () => {
 			// This test documents the bug - the old logic would miss this case
 			const manifest = createTestManifest([
 				{
-					id: 1001,
+					id: "1001",
 					status: "failed",
 					dependencies: [], // No dependencies!
 					error: "All sandboxes failed simultaneously",
 				},
 				{
-					id: 1002,
+					id: "1002",
 					status: "failed",
 					dependencies: [],
 					error: "All sandboxes failed simultaneously",
@@ -207,9 +207,9 @@ describe("Orchestrator Exit Condition Logic", () => {
 		it("OLD BUGGY logic: correctly returned TRUE for blocked features WITH dependencies", () => {
 			const manifest = createTestManifest([
 				{
-					id: 1001,
+					id: "1001",
 					status: "pending",
-					dependencies: [999], // Has dependency
+					dependencies: ["999"], // Has dependency
 				},
 			]);
 
@@ -226,21 +226,21 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 			const manifest = createTestManifest([
 				{
-					id: 1367,
+					id: "1367",
 					title: "User Dashboard - Statistics Cards",
 					status: "failed",
 					dependencies: [],
 					error: "Sandbox startup failed",
 				},
 				{
-					id: 1368,
+					id: "1368",
 					title: "User Dashboard - Activity Feed",
 					status: "failed",
 					dependencies: [],
 					error: "Sandbox startup failed",
 				},
 				{
-					id: 1369,
+					id: "1369",
 					title: "User Dashboard - Quick Actions",
 					status: "failed",
 					dependencies: [],
@@ -259,15 +259,15 @@ describe("Orchestrator Exit Condition Logic", () => {
 	describe("Edge cases", () => {
 		it("should handle mixed statuses correctly", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "completed" },
+				{ id: "1001", status: "completed" },
 				{
-					id: 1002,
+					id: "1002",
 					status: "in_progress",
 					assigned_sandbox: "sbx-a",
 					assigned_at: Date.now(),
 				},
-				{ id: 1003, status: "pending" },
-				{ id: 1004, status: "failed" },
+				{ id: "1003", status: "pending" },
+				{ id: "1004", status: "failed" },
 			]);
 
 			// Should return true because pending (1003) and failed (1004) exist
@@ -276,7 +276,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should handle features with empty dependency arrays", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "pending", dependencies: [] },
+				{ id: "1001", status: "pending", dependencies: [] },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -284,7 +284,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should handle features with multiple dependencies", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "failed", dependencies: [998, 999, 1000] },
+				{ id: "1001", status: "failed", dependencies: ["998", "999", "1000"] },
 			]);
 
 			expect(hasRetryableFeatures(manifest)).toBe(true);
@@ -292,9 +292,9 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 		it("should return FALSE when only in_progress and completed features exist", () => {
 			const manifest = createTestManifest([
-				{ id: 1001, status: "completed" },
+				{ id: "1001", status: "completed" },
 				{
-					id: 1002,
+					id: "1002",
 					status: "in_progress",
 					assigned_sandbox: "sbx-b",
 					assigned_at: Date.now(),
@@ -310,9 +310,9 @@ describe("Orchestrator Exit Condition Logic", () => {
 		it("should correctly identify blocked features among retryable features", () => {
 			// The fix preserves logging of blocked features for visibility
 			const manifest = createTestManifest([
-				{ id: 1001, status: "pending", dependencies: [] }, // Not blocked
-				{ id: 1002, status: "pending", dependencies: [1001] }, // Blocked
-				{ id: 1003, status: "failed", dependencies: [999] }, // Blocked
+				{ id: "1001", status: "pending", dependencies: [] }, // Not blocked
+				{ id: "1002", status: "pending", dependencies: ["1001"] }, // Blocked
+				{ id: "1003", status: "failed", dependencies: ["999"] }, // Blocked
 			]);
 
 			const retryableFeatures = manifest.feature_queue.filter(
@@ -325,7 +325,7 @@ describe("Orchestrator Exit Condition Logic", () => {
 
 			expect(retryableFeatures.length).toBe(3);
 			expect(blockedFeatures.length).toBe(2); // 1002 and 1003
-			expect(blockedFeatures.map((f) => f.id)).toEqual([1002, 1003]);
+			expect(blockedFeatures.map((f) => f.id)).toEqual(["1002", "1003"]);
 		});
 	});
 });

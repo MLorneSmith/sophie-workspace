@@ -1,0 +1,306 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I1.F2",
+    "feature_name": "Dashboard TypeScript Types & Data Loader Infrastructure",
+    "feature_slug": "types-and-loader",
+    "initiative_id": "S1692.I1",
+    "spec_id": 1692,
+    "created_at": "2026-01-21T10:00:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S1692.I1.F2.T1",
+      "type": "task",
+      "name": "Create TypeScript interfaces for all 7 dashboard widget data types",
+      "action": {
+        "verb": "Create",
+        "target": "TypeScript interfaces for 7 widget data types"
+      },
+      "purpose": "Define type-safe data contracts for all dashboard widgets enabling widget development with predictable data shapes",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "TypeScript",
+          "@kit/shared/logger"
+        ],
+        "constraints": [
+          "Follow existing interface patterns from feature.md",
+          "Use descriptive field names matching database columns",
+          "Include JSDoc comments for each interface",
+          "All fields properly typed (no 'any')",
+          "Use union types for enums (e.g., 'draft' | 'complete')"
+        ]
+      },
+      "input_state": "Feature document defines required widget data structures. No loader file exists yet.",
+      "output_state": "File created at apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts with 'server-only' directive and 7 interfaces defined: ProgressOverviewData, RecentActivityData, UpcomingTasksData, SkillsRadarData, PresentationsTableData, CoachingSessionsData, QuickActionsData. Each interface has JSDoc comments and proper TypeScript types.",
+      "acceptance_criterion": "TypeScript compiles without errors and all 7 interfaces are defined with correct field types matching feature.md specifications",
+      "verification_command": "pnpm typecheck && grep -E 'interface (ProgressOverviewData|RecentActivityData|UpcomingTasksData|SkillsRadarData|PresentationsTableData|CoachingSessionsData|QuickActionsData)' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | wc -l | grep -q '^7$'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1692.I1.F2.T2",
+          "S1692.I1.F2.T3",
+          "S1692.I1.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F2.T2",
+      "type": "task",
+      "name": "Create loadDashboardPageData function with React cache wrapper and Promise.all",
+      "action": {
+        "verb": "Create",
+        "target": "loadDashboardPageData function with parallel fetching"
+      },
+      "purpose": "Establish loader infrastructure enabling efficient parallel data fetching for all dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts",
+          "apps/web/app/home/[account]/_lib/server/team-account-workspace.loader.ts"
+        ],
+        "dependencies": [
+          "React.cache()",
+          "createServiceLogger from @kit/shared/logger"
+        ],
+        "constraints": [
+          "Use React cache() wrapper for per-request memoization",
+          "Use Promise.all() for parallel fetching of 7 widget loaders",
+          "Follow members-page.loader.ts pattern exactly",
+          "Return tuple matching [ProgressOverview, RecentActivity, UpcomingTasks, SkillsRadar, PresentationsTable, CoachingSessions, QuickActions]",
+          "Add createServiceLogger with name 'DASHBOARD-PAGE-LOADER'"
+        ]
+      },
+      "input_state": "7 widget interfaces are defined. Individual loader functions do not exist yet.",
+      "output_state": "loadDashboardPageData function created and exported from dashboard-page.loader.ts. Function wraps internal dashboardLoader with React cache(). Internal loader uses Promise.all() to call 7 individual loader functions in parallel. Service logger initialized.",
+      "acceptance_criterion": "loadDashboardPageData function exists, is exported, uses cache() wrapper, and calls 7 loaders in Promise.all()",
+      "verification_command": "grep -q 'export const loadDashboardPageData = cache' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'createServiceLogger' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I1.F2.T1"
+        ],
+        "blocks": [
+          "S1692.I1.F2.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F2.T3",
+      "type": "task",
+      "name": "Implement 7 individual loader functions returning empty/default data",
+      "action": {
+        "verb": "Implement",
+        "target": "7 individual loader functions with empty returns"
+      },
+      "purpose": "Provide placeholder loader functions enabling immediate widget development while real queries are added later",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "7 widget interfaces already defined",
+          "loadDashboardPageData function structure exists"
+        ],
+        "constraints": [
+          "Create 7 async functions: loadProgressOverview, loadRecentActivity, loadUpcomingTasks, loadSkillsRadar, loadPresentationsTable, loadCoachingSessions, loadQuickActions",
+          "Each function returns Promise resolving to empty/default data matching its interface",
+          "Use try/catch with logger.error for error handling pattern",
+          "Add JSDoc comment explaining these are placeholder implementations",
+          "Empty data examples: empty arrays [], 0 for numbers, null for optional fields, false for booleans"
+        ]
+      },
+      "input_state": "Interfaces defined, loadDashboardPageData exists but references undefined loader functions.",
+      "output_state": "7 loader functions implemented in dashboard-page.loader.ts. Each returns appropriate empty/default data. Functions are called from Promise.all() in loadDashboardPageData. Error handling pattern established with try/catch and logging.",
+      "acceptance_criterion": "All 7 loader functions are implemented, return data matching their interfaces, and are invoked from loadDashboardPageData",
+      "verification_command": "pnpm typecheck && grep -E 'async function load(ProgressOverview|RecentActivity|UpcomingTasks|SkillsRadar|PresentationsTable|CoachingSessions|QuickActions)' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | wc -l | grep -q '^7$'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I1.F2.T1",
+          "S1692.I1.F2.T2"
+        ],
+        "blocks": [
+          "S1692.I1.F2.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F2.T4",
+      "type": "task",
+      "name": "Export DashboardData aggregate type using Awaited<ReturnType<>> pattern",
+      "action": {
+        "verb": "Export",
+        "target": "DashboardData aggregate type"
+      },
+      "purpose": "Provide type-safe contract for dashboard page enabling type inference and auto-completion in consuming components",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/_lib/server/team-account-workspace.loader.ts",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadDashboardPageData function implemented",
+          "All 7 loader functions implemented"
+        ],
+        "constraints": [
+          "Follow team-account-workspace.loader.ts pattern: export type DashboardData = Awaited<ReturnType<typeof loadDashboardPageData>>",
+          "Add JSDoc comment explaining this type represents the shape of all dashboard data",
+          "Run lint and format commands after adding export",
+          "Verify TypeScript resolves the type correctly"
+        ]
+      },
+      "input_state": "loadDashboardPageData is fully implemented and returns a tuple of 7 widget data objects. No exported aggregate type exists.",
+      "output_state": "DashboardData type exported from dashboard-page.loader.ts using Awaited<ReturnType<>> pattern. Type automatically infers tuple structure from loadDashboardPageData return value. Lint and format commands pass. TypeScript compilation succeeds.",
+      "acceptance_criterion": "DashboardData type is exported and TypeScript correctly infers the tuple type containing all 7 widget data structures",
+      "verification_command": "pnpm typecheck && grep -q 'export type DashboardData = Awaited<ReturnType<typeof loadDashboardPageData>>' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && pnpm lint:fix && pnpm format:fix",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1692.I1.F2.T1",
+          "S1692.I1.F2.T2",
+          "S1692.I1.F2.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Types and Loader Infrastructure",
+        "task_ids": [
+          "S1692.I1.F2.T1",
+          "S1692.I1.F2.T2",
+          "S1692.I1.F2.T3",
+          "S1692.I1.F2.T4"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 8
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1692.I1.F2.T1",
+        "S1692.I1.F2.T2",
+        "S1692.I1.F2.T3",
+        "S1692.I1.F2.T4"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 8,
+      "parallel": 8,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

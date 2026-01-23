@@ -1,0 +1,40 @@
+{
+  "initiative_id": "S1692.I2",
+  "initiative_name": "Progress & Assessment Widgets",
+  "spec_id": "1692",
+  "status": "completed",
+  "current_phase": "finalization",
+  "features": {
+    "S1692.I2.F1": {
+      "name": "Progress & Assessment Data Loader",
+      "status": "completed",
+      "task_count": 3,
+      "hours": 4
+    },
+    "S1692.I2.F2": {
+      "name": "Course Progress Widget",
+      "status": "completed",
+      "task_count": 3,
+      "hours": 4
+    },
+    "S1692.I2.F3": {
+      "name": "Spider Chart Widget",
+      "status": "completed",
+      "task_count": 6,
+      "hours": 13
+    },
+    "S1692.I2.F4": {
+      "name": "Widget Empty States",
+      "status": "completed",
+      "task_count": 3,
+      "hours": 5
+    }
+  },
+  "spikes_pending": [],
+  "total_tasks": 15,
+  "total_spikes": 0,
+  "total_hours_sequential": 26,
+  "total_hours_parallel": 23,
+  "started_at": "2026-01-21T00:00:00Z",
+  "completed_at": "2026-01-21T12:00:00Z"
+}

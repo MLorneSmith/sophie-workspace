@@ -150,7 +150,13 @@ export default defineConfig({
 				storageState: ".auth/test1@slideheroes.com.json",
 			},
 			// Exclude Payload tests from the default project - they use a separate project
-			testIgnore: [/.*\.setup\.ts/, /.*payload.*/],
+			// Also exclude Vitest tests in setup directory (supabase-health.spec.ts)
+			// These use .spec.ts extension but are meant for Vitest, not Playwright
+			testIgnore: [
+				/.*\.setup\.ts/,
+				/.*payload.*/,
+				/tests\/setup\/.*\.spec\.ts/,
+			],
 		},
 		{
 			name: "payload",
@@ -189,14 +195,43 @@ export default defineConfig({
 	],
 
 	/*Run your local dev server before starting the tests*/
-	webServer: process.env.PLAYWRIGHT_SERVER_COMMAND
-		? {
-				cwd: "../../",
-				command: process.env.PLAYWRIGHT_SERVER_COMMAND,
-				url: "http://localhost:3001",
-				reuseExistingServer: !process.env.CI,
-				stdout: "pipe",
-				stderr: "pipe",
-			}
-		: undefined,
+	// Start both web and Payload servers since this config is used for both projects
+	// Web tests use port 3001, Payload tests use port 3021
+	// CONDITIONAL: Skip webServer when running against deployed environments (HTTPS URLs)
+	// This prevents "Process from config.webServer exited early" errors in CI workflows
+	// that test against deployed Vercel environments (e.g., dev-integration-tests)
+	// See Issue #1571, #1579 for diagnosis and fix details
+	// Use production server (next start) instead of dev server (next dev) in CI.
+	// The Setup Test Server job builds the application, so we can simply run the production build.
+	// Production server starts in 1-2 seconds vs dev server which may hang with cached build artifacts.
+	// See Issue #1583, #1584 for diagnosis and fix details.
+	webServer:
+		process.env.PLAYWRIGHT_BASE_URL?.startsWith("https://") ||
+		process.env.TEST_BASE_URL?.startsWith("https://") ||
+		process.env.BASE_URL?.startsWith("https://")
+			? undefined
+			: [
+					{
+						cwd: "../../",
+						command: "pnpm --filter web start:test",
+						url: "http://localhost:3001",
+						// Use GITHUB_ACTIONS instead of CI because local test controller sets CI=1
+						// but we want to reuse existing Docker server locally
+						reuseExistingServer: !process.env.GITHUB_ACTIONS,
+						timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
+						stdout: "ignore", // Reduce noise in logs
+						stderr: "pipe", // Still capture errors
+					},
+					{
+						cwd: "../../",
+						command: "pnpm --filter payload start:test",
+						url: "http://localhost:3021",
+						// Use GITHUB_ACTIONS instead of CI because local test controller sets CI=1
+						// but we want to reuse existing Docker server locally
+						reuseExistingServer: !process.env.GITHUB_ACTIONS,
+						timeout: 120 * 1000, // 2 minutes timeout (though production server starts instantly)
+						stdout: "ignore", // Reduce noise in logs
+						stderr: "pipe", // Still capture errors
+					},
+				],
 });

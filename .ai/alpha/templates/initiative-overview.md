@@ -1,7 +1,7 @@
 ```markdown
 # Initiative Overview: [Spec Name]
 
-**Parent Spec**: #[spec-#]
+**Parent Spec**: S[spec-#]
 **Created**: [Date]
 **Total Initiatives**: [N]
 **Estimated Duration**: [X-Y] weeks (critical path)
@@ -11,13 +11,13 @@
 ## Directory Structure
 
 ```
-.ai/alpha/specs/[spec-#]-Spec-[slug]/
-├── spec.md                           # Project specification
-├── README.md                         # This file - initiatives overview
-├── [init-#]-Initiative-[slug]/       # Initiative 1
+.ai/alpha/specs/S[spec-#]-Spec-[slug]/
+├── spec.md                                    # Project specification
+├── README.md                                  # This file - initiatives overview
+├── S[spec-#].I1-Initiative-[slug]/            # Initiative 1
 │   ├── initiative.md
-│   └── README.md                     # (Created later) Features overview
-├── [init-#]-Initiative-[slug]/       # Initiative 2
+│   └── README.md                              # (Created later) Features overview
+├── S[spec-#].I2-Initiative-[slug]/            # Initiative 2
 │   ├── initiative.md
 │   └── ...
 └── ...
@@ -29,9 +29,9 @@
 
 | ID | Directory | Priority | Weeks | Dependencies | Status |
 |----|-----------|----------|-------|--------------|--------|
-| [init-#] | `[init-#]-Initiative-[slug]/` | 1 | [X] | None | Draft |
-| [init-#] | `[init-#]-Initiative-[slug]/` | 2 | [Y] | I1 | Draft |
-| [init-#] | `[init-#]-Initiative-[slug]/` | 3 | [Z] | I1 | Draft |
+| S[spec-#].I1 | `S[spec-#].I1-Initiative-[slug]/` | 1 | [X] | None | Draft |
+| S[spec-#].I2 | `S[spec-#].I2-Initiative-[slug]/` | 2 | [Y] | S[spec-#].I1 | Draft |
+| S[spec-#].I3 | `S[spec-#].I3-Initiative-[slug]/` | 3 | [Z] | S[spec-#].I1 | Draft |
 
 ---
 
@@ -71,7 +71,7 @@ graph TD
 
 ## Next Steps
 
-1. Run `/alpha:feature-decompose [init-#]` for Priority 1 initiative
+1. Run `/alpha:feature-decompose S[spec-#].I1` for Priority 1 initiative
 2. Continue with remaining initiatives in priority order
 3. Update this overview as features are decomposed
 ```

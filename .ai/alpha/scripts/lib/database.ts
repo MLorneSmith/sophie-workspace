@@ -158,6 +158,11 @@ export async function resetSandboxDatabase(
 	updateLockResetState(true);
 
 	const resetScript = `
+-- Drop auth schema triggers before recreation to prevent "trigger already exists" errors
+-- These triggers are created by migrations, so we must drop them before re-running migrations
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
+
 -- Reset public schema (preserves auth, storage managed by Supabase)
 DROP SCHEMA IF EXISTS public CASCADE;
 CREATE SCHEMA public;
@@ -195,7 +200,7 @@ TRUNCATE supabase_migrations.schema_migrations;
 				"Applying base migrations...",
 			);
 			try {
-				execSync(`supabase db push --db-url "${dbUrl}"`, {
+				execSync(`supabase db push --yes --db-url "${dbUrl}"`, {
 					cwd: webDir,
 					encoding: "utf-8",
 					stdio: ["pipe", "pipe", "pipe"],

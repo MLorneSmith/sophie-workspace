@@ -118,8 +118,8 @@ function progressEqual(a: OverallProgress, b: OverallProgress): boolean {
 * Configuration for the progress poller
  */
 export interface ProgressPollerConfig {
-	/**Spec ID being orchestrated */
-	specId: number;
+	/**Spec ID being orchestrated (semantic S1362 or legacy 1362) */
+	specId: string;
 	/** Spec name for display */
 	specName: string;
 	/**Directory containing sandbox progress files */
@@ -157,11 +157,10 @@ interface ReviewUrlFile {
 }
 
 /**
-
-* Structure of overall-progress.json file written by orchestrator
+ * Structure of overall-progress.json file written by orchestrator
  */
 interface OverallProgressFile {
-	specId: number;
+	specId: string;
 	specName: string;
 	status: string;
 	initiativesCompleted: number;
@@ -357,11 +356,17 @@ function progressToSandboxState(
 			}
 		: null;
 
-	// Map current task
+	// Map current task - require valid task ID
+	// Fix for issue #1688: Removed fallback ID generation (`T${completedCount + 1}`)
+	// that created misleading task references like "T21". Tasks without explicit IDs
+	// now use "Unknown" to clearly indicate missing metadata.
 	let currentTask: TaskInfo | null = null;
 	if (progress.current_task) {
+		// Use explicit task ID or "Unknown" - never generate fallback IDs
+		const taskId = progress.current_task.id || "Unknown";
+
 		currentTask = {
-			id: progress.current_task.id,
+			id: taskId,
 			name: progress.current_task.name,
 			status: mapTaskStatus(progress.current_task.status),
 			verificationAttempts: progress.current_task.verification_attempts,
@@ -383,11 +388,33 @@ function progressToSandboxState(
 	}
 
 	// Calculate tasks completed/total
+	// Fix for issue #1688: Use authoritative task count from current_group when available.
+	// Previously calculated from visible state (completed + failed + current) which missed
+	// pending tasks, causing displays like "18/19" when actual total was different.
 	const tasksCompleted = progress.completed_tasks?.length ?? 0;
-	const tasksTotal =
-		tasksCompleted +
-		(progress.failed_tasks?.length ?? 0) +
-		(progress.current_task ? 1 : 0);
+
+	// Prefer authoritative total from current_group (represents actual feature task count)
+	// Fall back to visible state calculation for backward compatibility
+	let tasksTotal: number;
+	if (
+		progress.current_group?.tasks_total &&
+		progress.current_group.tasks_total > 0
+	) {
+		// Use authoritative task count from feature's tasks.json (via current_group)
+		tasksTotal = progress.current_group.tasks_total;
+	} else {
+		// Fallback: Calculate from visible state (less accurate, misses pending)
+		const failedCount = progress.failed_tasks?.length ?? 0;
+		const calculatedTotal =
+			tasksCompleted + failedCount + (progress.current_task ? 1 : 0);
+
+		// Preserve previous tasksTotal if it was higher (prevents flicker)
+		const previousTotal = previousState?.tasksTotal ?? 0;
+		tasksTotal =
+			calculatedTotal > 0
+				? Math.max(calculatedTotal, previousTotal)
+				: previousTotal;
+	}
 
 	return {
 		sandboxId,
@@ -397,7 +424,7 @@ function progressToSandboxState(
 		currentTask,
 		currentGroup,
 		tasksCompleted,
-		tasksTotal: tasksTotal > 0 ? tasksTotal : (previousState?.tasksTotal ?? 0),
+		tasksTotal,
 		phase: (progress.phase as Phase) ?? "idle",
 		contextUsage: progress.context_usage_percent ?? 0,
 		lastHeartbeat,
@@ -417,7 +444,7 @@ function progressToSandboxState(
 * Aggregate sandbox states into overall progress
  */
 function aggregateProgress(
-	specId: number,
+	specId: string,
 	specName: string,
 	sandboxes: Map<string, SandboxState>,
 	previousProgress: OverallProgress | null,
@@ -429,7 +456,7 @@ function aggregateProgress(
 	let activeFeatures = 0;
 
 	// Count unique features across all sandboxes
-	const seenFeatures = new Set<number>();
+	const seenFeatures = new Set<string>();
 
 	for (const sandbox of sandboxes.values()) {
 		if (
@@ -844,25 +871,14 @@ export function useProgressPoller(
 				}
 			}
 
-			// Use overall progress from file for manifest-level data (features, initiatives),
-			// but add live in-progress tasks from active sandboxes for real-time updates
+			// Use overall progress from file for manifest-level data
+			// FIXED (Issue #1699, #1701): The manifest's writeOverallProgress() now calculates
+			// tasksCompleted by summing tasks_completed from ALL features (completed + in-progress).
+			// Previously, we added sandbox inProgressTasks on top, causing double-counting.
+			// Now we use the manifest's authoritative counts directly.
+			// See: manifest.ts writeOverallProgress() fix for issue #1688
 			let newProgress: OverallProgress;
 			if (overallProgressFile) {
-				// The manifest's tasksCompleted includes all tasks from COMPLETED features.
-				// For real-time progress, we need to add tasks from IN-PROGRESS features
-				// that sandboxes are currently working on.
-				const baseTasksCompleted = overallProgressFile.tasksCompleted;
-
-				// Sum tasks from in-progress features (sandboxes actively working)
-				let inProgressTasks = 0;
-				for (const sandbox of newSandboxes.values()) {
-					// Only count if sandbox is busy (actively working on a feature)
-					// SandboxStatus is: "ready" | "busy" | "completed" | "failed"
-					if (sandbox.status === "busy") {
-						inProgressTasks += sandbox.tasksCompleted;
-					}
-				}
-
 				newProgress = {
 					specId: overallProgressFile.specId,
 					specName: overallProgressFile.specName,
@@ -871,8 +887,9 @@ export function useProgressPoller(
 					initiativesTotal: overallProgressFile.initiativesTotal,
 					featuresCompleted: overallProgressFile.featuresCompleted,
 					featuresTotal: overallProgressFile.featuresTotal,
-					// Base (completed features) + in-progress tasks from active sandboxes
-					tasksCompleted: baseTasksCompleted + inProgressTasks,
+					// Use manifest's authoritative task count (includes all features)
+					// No longer adding sandbox inProgressTasks to avoid double-counting
+					tasksCompleted: overallProgressFile.tasksCompleted,
 					tasksTotal: overallProgressFile.tasksTotal,
 					branchName: overallProgressFile.branchName,
 					reviewUrls: overallProgressFile.reviewUrls,
@@ -998,7 +1015,7 @@ export function useProgressPoller(
 
 * Create initial UI state
  */
-export function createInitialState(specId: number, specName: string): UIState {
+export function createInitialState(specId: string, specName: string): UIState {
 	return {
 		sandboxes: new Map(),
 		overallProgress: {

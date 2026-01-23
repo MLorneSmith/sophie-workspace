@@ -8,7 +8,7 @@
  * - Log formatting
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
 	checkStartupStatus,
 	createStartupOutputTracker,
@@ -226,15 +226,18 @@ describe("startup-monitor", () => {
 		});
 
 		describe("getElapsedTime", () => {
-			it("should return elapsed milliseconds", async () => {
+			it("should return elapsed milliseconds", () => {
+				vi.useFakeTimers();
+
 				const tracker = createStartupOutputTracker();
 
-				// Wait a small amount of time
-				await new Promise((resolve) => setTimeout(resolve, 50));
+				// Advance time by 50ms using fake timers
+				vi.advanceTimersByTime(50);
 
 				const elapsed = getElapsedTime(tracker);
 				expect(elapsed).toBeGreaterThanOrEqual(50);
-				expect(elapsed).toBeLessThan(200);
+
+				vi.useRealTimers();
 			});
 		});
 

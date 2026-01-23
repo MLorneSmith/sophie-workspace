@@ -5,7 +5,9 @@
 	"private": true,
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
+		"test": "vitest run && pnpm --filter @slideheroes/orchestrator-ui test",
+		"test:lib": "vitest run",
+		"test:ui": "pnpm --filter @slideheroes/orchestrator-ui test",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage"
 	},

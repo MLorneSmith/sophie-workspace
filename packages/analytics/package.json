@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "5.2.2",
+		"@kit/posthog": "workspace:*",
 		"@kit/shared": "workspace:*"
 	}
 }

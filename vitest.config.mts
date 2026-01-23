@@ -22,6 +22,7 @@ export default defineConfig({
 			"packages/features/team-accounts",
 			"packages/next",
 			"packages/supabase",
+			".ai/alpha/scripts",
 		],
 
 		// Global configuration options

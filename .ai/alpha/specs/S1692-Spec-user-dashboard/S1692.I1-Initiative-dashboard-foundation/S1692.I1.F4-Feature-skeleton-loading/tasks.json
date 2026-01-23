@@ -1,0 +1,346 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I1.F4",
+    "feature_name": "Skeleton Loading States",
+    "feature_slug": "skeleton-loading",
+    "initiative_id": "S1692.I1",
+    "spec_id": "S1692",
+    "created_at": "2026-01-21T14:30:00Z",
+    "complexity": {
+      "score": 31.25,
+      "level": "LOW",
+      "target_steps": { "min": 3, "max": 6 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S1692.I1.F4.T1",
+      "type": "task",
+      "name": "Create WidgetSkeleton helper function",
+      "action": { "verb": "Create", "target": "inline WidgetSkeleton helper" },
+      "purpose": "Reusable skeleton component for widget cards to avoid repetition",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/loading.tsx"
+        ],
+        "dependencies": [
+          "Card from @kit/ui/card",
+          "CardHeader from @kit/ui/card",
+          "CardContent from @kit/ui/card",
+          "Skeleton from @kit/ui/skeleton",
+          "cn from @kit/ui/cn"
+        ],
+        "constraints": [
+          "Inline function (not exported)",
+          "Accepts height and className props",
+          "Returns Card with Skeleton title and content"
+        ]
+      },
+      "input_state": "GlobalLoader exists at apps/web/app/home/(user)/loading.tsx (3 lines)",
+      "output_state": "WidgetSkeleton function exists in loading.tsx with Card structure and Skeleton components",
+      "acceptance_criterion": "WidgetSkeleton function renders Card with Skeleton title (h-5 w-32) and content (height prop)",
+      "verification_command": "grep -A 10 'function WidgetSkeleton' apps/web/app/home/(user)/loading.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I1.F4.T2", "S1692.I1.F4.T4", "S1692.I1.F4.T5", "S1692.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F4.T2",
+      "type": "task",
+      "name": "Add grid container structure",
+      "action": { "verb": "Add", "target": "responsive grid container" },
+      "purpose": "Establish grid layout matching page.tsx structure for skeleton",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx",
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "WidgetSkeleton helper (from T1)",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Grid classes: grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3",
+          "Must match F3 grid structure exactly",
+          "Return JSX with PageBody containing grid div"
+        ]
+      },
+      "input_state": "WidgetSkeleton function exists (T1 output)",
+      "output_state": "loading.tsx exports default function with PageBody and empty grid div",
+      "acceptance_criterion": "Grid container exists with responsive classes matching F3 specification",
+      "verification_command": "grep 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3' apps/web/app/home/(user)/loading.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I1.F4.T1"],
+        "blocks": ["S1692.I1.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F4.T3",
+      "type": "task",
+      "name": "Add header skeleton area",
+      "action": { "verb": "Add", "target": "header skeleton placeholder" },
+      "purpose": "Skeleton for page title and description area",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx",
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton"
+        ],
+        "constraints": [
+          "Skeleton for title: h-8 w-48",
+          "Skeleton for description: h-4 w-96 mt-2",
+          "Place before grid container"
+        ]
+      },
+      "input_state": "Grid container exists (T2 output)",
+      "output_state": "Header skeletons exist above grid container",
+      "acceptance_criterion": "Two Skeleton components exist before grid representing title and description",
+      "verification_command": "grep -B 5 'grid grid-cols-1' apps/web/app/home/(user)/loading.tsx | grep -c 'Skeleton' | grep -q '2' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I1.F4.T2"],
+        "blocks": ["S1692.I1.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F4.T4",
+      "type": "task",
+      "name": "Add Row 1 card skeletons",
+      "action": { "verb": "Add", "target": "3 WidgetSkeleton cards for Row 1" },
+      "purpose": "Skeleton placeholders for Course Progress, Recent Activity, Task Summary widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx"
+        ],
+        "dependencies": [
+          "WidgetSkeleton helper (from T1)"
+        ],
+        "constraints": [
+          "3 WidgetSkeleton instances",
+          "Height: h-48 (192px)",
+          "No additional classes needed (grid handles layout)"
+        ]
+      },
+      "input_state": "Grid container and header skeleton exist (T3 output)",
+      "output_state": "3 WidgetSkeleton components with h-48 height added to grid",
+      "acceptance_criterion": "Grid contains 3 WidgetSkeleton instances with height='h-48'",
+      "verification_command": "grep -c \"WidgetSkeleton.*height=\\\"h-48\\\"\" apps/web/app/home/(user)/loading.tsx | grep -q '3' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I1.F4.T1", "S1692.I1.F4.T3"],
+        "blocks": ["S1692.I1.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F4.T5",
+      "type": "task",
+      "name": "Add Row 2 card skeletons",
+      "action": { "verb": "Add", "target": "3 WidgetSkeleton cards for Row 2" },
+      "purpose": "Skeleton placeholders for Skills Assessment, My Presentations, Upcoming Coaching widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx"
+        ],
+        "dependencies": [
+          "WidgetSkeleton helper (from T1)"
+        ],
+        "constraints": [
+          "3 WidgetSkeleton instances",
+          "Height: h-64 (256px)",
+          "No additional classes needed (grid handles layout)"
+        ]
+      },
+      "input_state": "Row 1 skeletons exist (T4 output)",
+      "output_state": "3 additional WidgetSkeleton components with h-64 height added to grid",
+      "acceptance_criterion": "Grid contains 3 WidgetSkeleton instances with height='h-64'",
+      "verification_command": "grep -c \"WidgetSkeleton.*height=\\\"h-64\\\"\" apps/web/app/home/(user)/loading.tsx | grep -q '3' && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I1.F4.T1", "S1692.I1.F4.T4"],
+        "blocks": ["S1692.I1.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I1.F4.T6",
+      "type": "task",
+      "name": "Add Row 3 full-width card skeleton",
+      "action": { "verb": "Add", "target": "1 WidgetSkeleton card for Row 3" },
+      "purpose": "Skeleton placeholder for Quick Actions widget spanning full grid width",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/loading.tsx"
+        ],
+        "dependencies": [
+          "WidgetSkeleton helper (from T1)"
+        ],
+        "constraints": [
+          "1 WidgetSkeleton instance",
+          "Height: h-32 (128px)",
+          "className: md:col-span-2 lg:col-span-3"
+        ]
+      },
+      "input_state": "Row 2 skeletons exist (T5 output)",
+      "output_state": "1 WidgetSkeleton component with h-32 height and full-width classes added to grid",
+      "acceptance_criterion": "Grid contains 1 WidgetSkeleton with height='h-32' and className containing col-span classes",
+      "verification_command": "grep \"WidgetSkeleton.*height=\\\"h-32\\\".*md:col-span-2 lg:col-span-3\" apps/web/app/home/(user)/loading.tsx && pnpm typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/loading.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I1.F4.T1", "S1692.I1.F4.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": ["S1692.I1.F4.T1", "S1692.I1.F4.T2", "S1692.I1.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 6
+      },
+      {
+        "id": 2,
+        "name": "Widget Skeletons",
+        "task_ids": ["S1692.I1.F4.T4", "S1692.I1.F4.T5", "S1692.I1.F4.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 6,
+        "parallel_hours": 6
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1692.I1.F4.T1", "S1692.I1.F4.T2", "S1692.I1.F4.T3", "S1692.I1.F4.T4", "S1692.I1.F4.T5", "S1692.I1.F4.T6"],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 12,
+      "parallel": 12,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

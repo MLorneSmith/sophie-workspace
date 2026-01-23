@@ -114,8 +114,17 @@ jobs:
           find apps/web/.next/static -name "*.js" -exec du -ch {} + | tail -1 | cut -f1 > /tmp/pr-analysis/total-size.txt || echo "0K" > /tmp/pr-analysis/total-size.txt
           
           # Function to convert size to bytes for comparison
+          # Always returns a valid integer (0 for empty/invalid input)
           convert_to_bytes() {
             local size=$1
+            local result=0
+
+            # Handle empty or missing input
+            if [ -z "$size" ]; then
+              echo 0
+              return
+            fi
+
             # Remove any decimal points by extracting integer part only
             if [[ $size == *"."* ]]; then
               size=${size%%.*}${size##*.}
@@ -128,25 +137,38 @@ jobs:
                 size=${size%G}G
               fi
             fi
-            
+
             if [[ $size == *"K" ]]; then
-              echo $((${size%K} * 1024))
+              local num=${size%K}
+              result=$(( ${num:-0} * 1024 ))
             elif [[ $size == *"M" ]]; then
-              echo $((${size%M} * 1024 * 1024))
+              local num=${size%M}
+              result=$(( ${num:-0} * 1024 * 1024 ))
             elif [[ $size == *"G" ]]; then
-              echo $((${size%G} * 1024 * 1024 * 1024))
+              local num=${size%G}
+              result=$(( ${num:-0} * 1024 * 1024 * 1024 ))
             else
-              echo ${size%B}
+              # Remove trailing B if present, default to 0 if empty
+              local num=${size%B}
+              result=${num:-0}
             fi
+
+            # Final safety check: ensure result is a valid number
+            echo "${result:-0}"
           }
           
           # Function to calculate percentage change
+          # Validates inputs before arithmetic operations to prevent empty value errors
           calculate_change() {
             local base=$1
             local current=$2
             local base_bytes=$(convert_to_bytes "$base")
             local current_bytes=$(convert_to_bytes "$current")
-            
+
+            # Defensive: ensure variables are valid integers (default to 0 if empty)
+            base_bytes=${base_bytes:-0}
+            current_bytes=${current_bytes:-0}
+
             # Handle division by zero
             if [ "$base_bytes" -eq 0 ]; then
               if [ "$current_bytes" -eq 0 ]; then
@@ -156,7 +178,7 @@ jobs:
               fi
               return
             fi
-            
+
             local change=$(( (current_bytes - base_bytes) * 100 / base_bytes ))
             echo $change
           }

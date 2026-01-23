@@ -1,0 +1,548 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I5.F4",
+    "feature_name": "E2E Dashboard Tests",
+    "feature_slug": "e2e-dashboard-tests",
+    "initiative_id": "S1692.I5",
+    "spec_id": "S1692",
+    "created_at": "2026-01-21T17:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S1692.I5.F4.T1",
+      "type": "task",
+      "name": "Create Dashboard Page Object skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "Dashboard Page Object class structure"
+      },
+      "purpose": "Define the Page Object class with constructor and basic navigation methods for dashboard interactions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/account/account.po.ts",
+          "apps/e2e/tests/authentication/auth.po.ts"
+        ],
+        "dependencies": [
+          "@playwright/test Page",
+          "AUTH_STATES constants",
+          "AuthPageObject pattern"
+        ],
+        "constraints": [
+          "Follow existing Page Object pattern",
+          "Use data-testid selectors",
+          "Include navigation method to dashboard"
+        ]
+      },
+      "input_state": "No dashboard Page Object exists",
+      "output_state": "DashboardPageObject class exists with constructor and navigation methods",
+      "acceptance_criterion": "File apps/e2e/tests/dashboard/dashboard.po.ts exists with DashboardPageObject class and goto() method",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts && grep -q 'export class DashboardPageObject' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/e2e/tests/dashboard/dashboard.po.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I5.F4.T2", "S1692.I5.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T2",
+      "type": "task",
+      "name": "Add table interaction methods to Page Object",
+      "action": {
+        "verb": "Add",
+        "target": "table locator methods and row interaction helpers"
+      },
+      "purpose": "Enable test code to interact with the presentations table (get rows, click rows, verify columns)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts"
+        ],
+        "dependencies": [
+          "Playwright locators",
+          "data-testid patterns"
+        ],
+        "constraints": [
+          "Use data-testid selectors for table elements",
+          "Return locators for chainable assertions",
+          "Handle empty state gracefully"
+        ]
+      },
+      "input_state": "Page Object has basic structure but no table interaction methods",
+      "output_state": "Page Object has methods to locate table, rows, and interact with cells",
+      "acceptance_criterion": "Page Object includes methods: getTable(), getTableRows(), clickRow(index), getEmptyState()",
+      "verification_command": "grep -q 'getTable()' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts && grep -q 'clickRow' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.po.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T1"],
+        "blocks": ["S1692.I5.F4.T4", "S1692.I5.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T3",
+      "type": "task",
+      "name": "Add CTA button interaction method to Page Object",
+      "action": {
+        "verb": "Add",
+        "target": "Create Presentation button locator and click method"
+      },
+      "purpose": "Enable tests to interact with the Create Presentation CTA button in empty state and header",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts"
+        ],
+        "dependencies": [
+          "Playwright locators"
+        ],
+        "constraints": [
+          "Use data-testid selector for button",
+          "Handle both empty state CTA and header CTA if different"
+        ]
+      },
+      "input_state": "Page Object has table methods but no CTA interaction",
+      "output_state": "Page Object has method to click Create Presentation button",
+      "acceptance_criterion": "Page Object includes clickCreatePresentation() method",
+      "verification_command": "grep -q 'clickCreatePresentation' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.po.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.po.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T1"],
+        "blocks": ["S1692.I5.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T4",
+      "type": "task",
+      "name": "Create dashboard test suite skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "test file with describe block and setup"
+      },
+      "purpose": "Establish the test suite structure with authentication setup and beforeEach navigation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/account/account.spec.ts",
+          "apps/e2e/tests/utils/auth-state.ts",
+          "apps/e2e/tests/utils/base-test.ts"
+        ],
+        "dependencies": [
+          "test from base-test",
+          "expect from base-test",
+          "AUTH_STATES.TEST_USER",
+          "AuthPageObject.setupSession",
+          "DashboardPageObject"
+        ],
+        "constraints": [
+          "Use pre-authenticated state from global setup",
+          "Navigate to /home/[account] in beforeEach",
+          "Import from base-test not @playwright/test"
+        ]
+      },
+      "input_state": "No dashboard test file exists",
+      "output_state": "Test file exists with describe block, imports, and beforeEach setup",
+      "acceptance_criterion": "File apps/e2e/tests/dashboard/dashboard.spec.ts exists with test.describe and beforeEach that navigates to dashboard",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts && grep -q 'test.describe' /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T2"],
+        "blocks": ["S1692.I5.F4.T5", "S1692.I5.F4.T6", "S1692.I5.F4.T7", "S1692.I5.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T5",
+      "type": "task",
+      "name": "Add happy path test for presentations table",
+      "action": {
+        "verb": "Add",
+        "target": "test case verifying table renders with data"
+      },
+      "purpose": "Verify dashboard loads successfully and displays presentations table with user data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        ],
+        "dependencies": [
+          "expect assertions",
+          "toPass() wrapper for reliability",
+          "DashboardPageObject methods"
+        ],
+        "constraints": [
+          "Use toPass() for flaky table rendering",
+          "Verify table is visible",
+          "Verify at least one row exists",
+          "Check column headers are present"
+        ]
+      },
+      "input_state": "Test suite has structure but no test cases",
+      "output_state": "Test suite includes passing test for table with data",
+      "acceptance_criterion": "Test 'displays presentations table with user data' passes and verifies table visibility and rows",
+      "verification_command": "grep -q \"displays presentations table with user data\" /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T6",
+      "type": "task",
+      "name": "Add empty state test",
+      "action": {
+        "verb": "Add",
+        "target": "test case verifying empty state renders"
+      },
+      "purpose": "Verify dashboard shows empty state with CTA when user has no presentations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        ],
+        "dependencies": [
+          "expect assertions",
+          "DashboardPageObject.getEmptyState()",
+          "Fresh user account (no presentations)"
+        ],
+        "constraints": [
+          "May need to create fresh test user",
+          "Verify empty state is visible",
+          "Verify CTA button exists",
+          "Clean up test user after test"
+        ]
+      },
+      "input_state": "Test suite has happy path test but no empty state test",
+      "output_state": "Test suite includes test verifying empty state display",
+      "acceptance_criterion": "Test 'displays empty state when no presentations' passes and verifies empty state visibility and CTA",
+      "verification_command": "grep -q \"displays empty state when no presentations\" /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T7",
+      "type": "task",
+      "name": "Add row click navigation test",
+      "action": {
+        "verb": "Add",
+        "target": "test case verifying row click navigates to editor"
+      },
+      "purpose": "Verify clicking a presentation row navigates to the presentation editor with correct ID",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        ],
+        "dependencies": [
+          "expect assertions",
+          "page.waitForURL()",
+          "DashboardPageObject.clickRow()"
+        ],
+        "constraints": [
+          "Verify URL contains /home/ai/canvas",
+          "Verify query parameter id is present",
+          "Use waitForURL with pattern matching"
+        ]
+      },
+      "input_state": "Test suite has display tests but no navigation tests",
+      "output_state": "Test suite includes test verifying row click navigation",
+      "acceptance_criterion": "Test 'navigates to editor on row click' passes and verifies URL contains canvas and id parameter",
+      "verification_command": "grep -q \"navigates to editor on row click\" /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T8",
+      "type": "task",
+      "name": "Add CTA button navigation test",
+      "action": {
+        "verb": "Add",
+        "target": "test case verifying Create Presentation button navigation"
+      },
+      "purpose": "Verify clicking Create Presentation CTA navigates to building blocks form",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        ],
+        "dependencies": [
+          "expect assertions",
+          "page.waitForURL()",
+          "DashboardPageObject.clickCreatePresentation()"
+        ],
+        "constraints": [
+          "Verify URL contains building blocks form path",
+          "Handle both empty state and header CTA if different",
+          "Use waitForURL for navigation"
+        ]
+      },
+      "input_state": "Test suite has row click test but no CTA navigation test",
+      "output_state": "Test suite includes test verifying CTA button navigation",
+      "acceptance_criterion": "Test 'navigates to building blocks form on CTA click' passes and verifies URL navigation",
+      "verification_command": "grep -q \"navigates to building blocks form\" /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I5.F4.T9",
+      "type": "task",
+      "name": "Add loading skeleton test",
+      "action": {
+        "verb": "Add",
+        "target": "test case verifying loading state displays"
+      },
+      "purpose": "Verify loading skeleton is shown during data fetch before table renders",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        ],
+        "dependencies": [
+          "expect assertions",
+          "page.route() for network interception",
+          "Playwright route handler for delay"
+        ],
+        "constraints": [
+          "Use network interception to delay response",
+          "Verify skeleton is visible before data loads",
+          "Verify skeleton disappears after data loads",
+          "Clean up route interception"
+        ]
+      },
+      "input_state": "Test suite has navigation tests but no loading state test",
+      "output_state": "Test suite includes test verifying loading skeleton behavior",
+      "acceptance_criterion": "Test 'shows loading skeleton during data fetch' passes and verifies skeleton visibility and disappearance",
+      "verification_command": "grep -q \"shows loading skeleton\" /home/msmith/projects/2025slideheroes/apps/e2e/tests/dashboard/dashboard.spec.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/dashboard/dashboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I5.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Page Object Implementation",
+        "task_ids": ["S1692.I5.F4.T1", "S1692.I5.F4.T2", "S1692.I5.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 2,
+        "name": "Test Cases Implementation",
+        "task_ids": ["S1692.I5.F4.T4", "S1692.I5.F4.T5", "S1692.I5.F4.T6", "S1692.I5.F4.T7", "S1692.I5.F4.T8", "S1692.I5.F4.T9"],
+        "depends_on_groups": [1],
+        "estimated_hours": 12,
+        "parallel_hours": 12
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1692.I5.F4.T1", "S1692.I5.F4.T2", "S1692.I5.F4.T4", "S1692.I5.F4.T5"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 8,
+      "time_saved_percent": 52.9
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

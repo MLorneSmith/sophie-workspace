@@ -1,0 +1,158 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S0000.I1.F1",
+    "feature_name": "Trivial Task for Debug",
+    "feature_slug": "trivial-task",
+    "initiative_id": "S0000.I1",
+    "spec_id": 0,
+    "created_at": "2026-01-22T00:00:00Z",
+    "complexity": {
+      "score": 1,
+      "level": "MINIMAL",
+      "target_steps": { "min": 1, "max": 2 }
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": []
+  },
+  "tasks": [
+    {
+      "id": "S0000.I1.F1.T1",
+      "type": "task",
+      "name": "Create first marker file",
+      "action": {
+        "verb": "Create",
+        "target": "debug marker file 1"
+      },
+      "purpose": "Verify task execution by creating a simple marker file",
+      "status": "draft",
+      "estimated_hours": 0.1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Create file in temp directory",
+          "File should contain timestamp"
+        ]
+      },
+      "input_state": "No marker file exists",
+      "output_state": "Marker file created with timestamp",
+      "acceptance_criterion": "File /tmp/debug-marker-1.txt exists",
+      "verification_command": "test -f /tmp/debug-marker-1.txt && echo 'Marker 1 exists'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "/tmp/debug-marker-1.txt",
+          "description": "Debug marker file 1"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S0000.I1.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S0000.I1.F1.T2",
+      "type": "task",
+      "name": "Create second marker file",
+      "action": {
+        "verb": "Create",
+        "target": "debug marker file 2"
+      },
+      "purpose": "Verify sequential task execution",
+      "status": "draft",
+      "estimated_hours": 0.1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["/tmp/debug-marker-1.txt"],
+        "dependencies": [],
+        "constraints": [
+          "Create file in temp directory",
+          "File should contain timestamp and reference to marker 1"
+        ]
+      },
+      "input_state": "Marker 1 exists",
+      "output_state": "Marker 2 created, feature complete",
+      "acceptance_criterion": "File /tmp/debug-marker-2.txt exists",
+      "verification_command": "test -f /tmp/debug-marker-2.txt && echo 'Marker 2 exists'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "/tmp/debug-marker-2.txt",
+          "description": "Debug marker file 2"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S0000.I1.F1.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Marker Creation",
+        "task_ids": ["S0000.I1.F1.T1", "S0000.I1.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 0.2,
+        "parallel_hours": 0.2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S0000.I1.F1.T1", "S0000.I1.F1.T2"],
+      "total_hours": 0.2
+    },
+    "duration": {
+      "sequential": 0.2,
+      "parallel": 0.2,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": false
+  }
+}

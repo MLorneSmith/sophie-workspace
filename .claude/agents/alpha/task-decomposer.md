@@ -19,10 +19,10 @@ Given a feature issue number:
 3. Detect unknowns → flag spikes needed (DO NOT run spikes)
 4. Decompose feature → create atomic tasks
 5. Validate decomposition → ensure MAKER compliance
-6. Create artifacts → tasks.json + GitHub issue
+6. Create artifacts → tasks.json + Spec issue comment
 7. Return summary → for orchestrator
 
-**Output**: `tasks.json` file + GitHub issue + structured summary
+**Output**: `tasks.json` file + Spec issue comment + structured summary
 **NOT Output**: Running spikes, implementing code, or spawning sub-agents
 
 ---
@@ -455,6 +455,113 @@ After creating all tasks, update the metadata:
 Set `metadata.requires_database = true` if ANY task has `requires_database: true`.
 List all DB task IDs in `metadata.database_tasks` array.
 
+### UI Task Detection & Visual Verification
+
+Tasks that create or modify UI components should be flagged with `requires_ui: true` and include a `visual_verification` configuration. This enables agent-browser to validate the UI renders correctly during implementation.
+
+**Detection Criteria - Mark `requires_ui: true` if ANY of these apply:**
+
+| Indicator | Examples |
+|-----------|----------|
+| **Task outputs include** | `*.tsx` files in `apps/web/app/` routes |
+| **Task name mentions** | component, page, layout, form, modal, dialog, card, button, header, footer |
+| **Action verb + target** | Create/Add/Wire + "component", "page", "layout", "form" |
+| **Task type is** | UI component creation or modification |
+
+**Adding Visual Verification:**
+
+For tasks with `requires_ui: true`, also add a `visual_verification` configuration:
+
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" }
+    ],
+    "screenshot": true
+  },
+  "action": { "verb": "Create", "target": "dashboard page layout" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/[account]/dashboard/page.tsx" }
+  ]
+}
+```
+
+**Visual Verification Fields:**
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `route` | Yes | - | Route to navigate to (e.g., `/home/dashboard`) |
+| `wait_ms` | No | 3000 | Milliseconds to wait after page load |
+| `checks` | No | [] | Array of visual checks to perform |
+| `screenshot` | No | true | Whether to capture a screenshot |
+
+**Check Commands:**
+
+| Command | Target | Example Use Case |
+|---------|--------|------------------|
+| `is visible` | Text content | Verify heading or label appears |
+| `find role` | ARIA role | Verify interactive elements exist |
+| `find label` | Form label | Verify form fields are accessible |
+| `snapshot` | - | Capture accessibility tree for debugging |
+
+**Route Derivation:**
+
+Derive the route from the task's output file paths:
+- `apps/web/app/home/[account]/dashboard/page.tsx` → `/home/dashboard` (use placeholder for dynamic segments)
+- `apps/web/app/auth/login/page.tsx` → `/auth/login`
+- For components not directly routable, use the parent page route
+
+**Common Check Patterns:**
+
+```json
+// For page tasks
+"checks": [
+  { "command": "is visible", "target": "Page Title" },
+  { "command": "find role", "target": "main" }
+]
+
+// For form tasks
+"checks": [
+  { "command": "find role", "target": "textbox" },
+  { "command": "find role", "target": "button" }
+]
+
+// For navigation tasks
+"checks": [
+  { "command": "find role", "target": "navigation" },
+  { "command": "find role", "target": "link" }
+]
+
+// For data display tasks
+"checks": [
+  { "command": "find role", "target": "grid" },
+  { "command": "find role", "target": "row" }
+]
+```
+
+**Aggregating UI Tasks:**
+
+After creating all tasks, update the metadata:
+
+```json
+{
+  "metadata": {
+    "requires_ui": true,
+    "ui_tasks": ["T4", "T5", "T8"]
+  }
+}
+```
+
+Set `metadata.requires_ui = true` if ANY task has `requires_ui: true`.
+List all UI task IDs in `metadata.ui_tasks` array.
+
 ### Task Context Template
 
 For each task, define the minimal context needed (≤750 tokens total):
@@ -748,7 +855,7 @@ Write to `${FEAT_DIR}/tasks.json`:
   },
   "github": {
     "issues_created": false,
-    "feature_tasks_issue": null
+    "spec_issue_commented": true
   }
 }
 ```
@@ -763,15 +870,38 @@ Run the validation script:
 
 If validation fails, fix issues and re-run.
 
-### Step 7.3: Create GitHub Issue
+### Step 7.3: Update Spec Issue with Tasks Comment
 
-Run the issue creation script:
+**No GitHub issues are created for tasks.** Instead, post a decomposition summary to the Spec's GitHub issue:
 
 ```bash
-.ai/alpha/scripts/create-feature-tasks-issue.sh ${FEAT_DIR}/tasks.json
-```
+TASK_COUNT=$(jq '.tasks | length' ${FEAT_DIR}/tasks.json)
+SPIKE_COUNT=$(jq '[.tasks[] | select(.type == "spike")] | length' ${FEAT_DIR}/tasks.json)
+SEQ_HOURS=$(jq '.execution.duration.sequential' ${FEAT_DIR}/tasks.json)
+PAR_HOURS=$(jq '.execution.duration.parallel' ${FEAT_DIR}/tasks.json)
+TIME_SAVED=$(jq '.execution.duration.time_saved_percent' ${FEAT_DIR}/tasks.json)
 
-This creates a single GitHub issue with all tasks as checkboxes.
+gh issue comment ${SPEC_ID} --repo "MLorneSmith/2025slideheroes" --body "## [Decomposition Update] Tasks for S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}
+
+This feature has been decomposed into atomic tasks:
+
+| ID | Task Name | Type | Hours | Dependencies |
+|----|-----------|------|-------|--------------|
+$(jq -r '.tasks[] | "| \(.id) | \(.name) | \(.type // "task") | \(.estimated_hours) | \(.dependencies.blocked_by | if length == 0 then "None" else join(", ") end) |"' ${FEAT_DIR}/tasks.json)
+
+### Execution Summary
+- Total Tasks: ${TASK_COUNT}
+- Spikes: ${SPIKE_COUNT}
+- Sequential: ${SEQ_HOURS} hours
+- Parallel: ${PAR_HOURS} hours (${TIME_SAVED}% time saved)
+
+### Critical Path
+$(jq -r '.execution.critical_path.task_ids | join(" → ")' ${FEAT_DIR}/tasks.json)
+
+**Next Step**: Run \`/alpha:implement S${SPEC_ID}.I${INIT_NUM}.F${FEAT_NUM}\` to begin implementation.
+
+_Decomposed on $(date +%Y-%m-%d) by /alpha:task-decompose_"
+```
 
 ### Step 7.4: Create README (Optional)
 
@@ -785,29 +915,6 @@ This can be auto-generated from `tasks.json` or skipped since JSON is source of 
 - Task summary table
 - Mermaid execution graph
 - Duration analysis
-
-### Step 7.5: Link to Parent Feature Issue (Optional)
-
-Add a reference comment to the original Feature issue:
-
-```bash
-FEATURE_ISSUE="${FEATURE_ID}"
-TASKS_ISSUE=$(jq -r '.github.feature_tasks_issue' ${FEAT_DIR}/tasks.json)
-
-gh issue comment ${FEATURE_ISSUE} --repo MLorneSmith/2025slideheroes --body "## Task Decomposition Complete
-
-Tasks have been decomposed and tracked in issue #${TASKS_ISSUE}
-
-**Summary:**
-- Total Tasks: $(jq '.tasks | length' ${FEAT_DIR}/tasks.json)
-- Spikes: $(jq '[.tasks[] | select(.type == \"spike\")] | length' ${FEAT_DIR}/tasks.json)
-
-**Next Step:** Begin implementation with Group 0 tasks (spikes) if any, otherwise Group 1.
-
-See #${TASKS_ISSUE} for the full task list with checkboxes."
-```
-
-This step is optional since the tasks issue already has the `parent:$FEATURE_ID` label.
 
 ---
 
@@ -857,11 +964,8 @@ jq '.tasks | length' ${FEAT_DIR}/tasks.json
 # Count spikes
 jq '[.tasks[] | select(.type == "spike")] | length' ${FEAT_DIR}/tasks.json
 
-# Check GitHub issue created
-jq '.github.issues_created' ${FEAT_DIR}/tasks.json
-
-# Get feature tasks issue number
-jq '.github.feature_tasks_issue' ${FEAT_DIR}/tasks.json
+# Check Spec issue was commented
+jq '.github.spec_issue_commented' ${FEAT_DIR}/tasks.json
 
 # Check validation verdict
 jq '.validation.discriminator_verdict' ${FEAT_DIR}/tasks.json
@@ -911,7 +1015,7 @@ After completing all phases, return a structured summary for the orchestrator:
     "time_saved_percent": <N>,
     "critical_path": "<T1 → T3 → T5>"
   },
-  "github_issue": <issue number or null>,
+  "spec_issue_commented": <true|false>,
   "rejection_reason": "<reason if rejected, else null>"
 }
 ```
@@ -920,7 +1024,7 @@ After completing all phases, return a structured summary for the orchestrator:
 
 | Status | Meaning | Orchestrator Action |
 |--------|---------|---------------------|
-| `completed` | Decomposition done, issue created | Proceed to next feature |
+| `completed` | Decomposition done, Spec issue commented | Proceed to next feature |
 | `needs_spikes` | Unknowns detected | Run spike-researcher, then re-run decomposer |
 | `rejected` | Fundamental issues | Report to user, skip feature |
 
@@ -960,16 +1064,14 @@ Before returning, verify all categories:
 ### Artifact Validation
 - [ ] `tasks.json` created in feature directory with valid schema
 - [ ] All required JSON fields present (metadata, tasks, execution, validation)
-- [ ] Feature tasks issue created with all tasks as checkboxes
-- [ ] Issue has proper labels (type:feature-tasks, alpha:tasks, parent:$FEATURE_ID)
-- [ ] `tasks.json` updated with `github.feature_tasks_issue` number
-- [ ] `github.issues_created` set to `true` in JSON
+- [ ] Comment posted to parent Spec issue with task decomposition summary
+- [ ] `github.spec_issue_commented` set to `true` in JSON
 
 ### Decomposition Validation
 - [ ] Complexity assessment completed (Phase 2)
 - [ ] Pattern cache checked for matches (Phase 1.5)
 - [ ] Validation scores meet thresholds (Phase 6)
-- [ ] Verdict is APPROVED before creating GitHub issue
+- [ ] Verdict is APPROVED before posting Spec issue comment
 - [ ] Summary JSON structure is correct
 
 ---
@@ -1081,7 +1183,7 @@ After decomposition, the orchestrator reports these metrics:
     "time_saved_percent": 20,
     "critical_path": "T1 → T3 → T4 → T5"
   },
-  "github_issue": 1357,
+  "spec_issue_commented": true,
   "rejection_reason": null
 }
 ```

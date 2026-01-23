@@ -19,18 +19,18 @@ This system is the final piece of the Alpha Autonomous Coding workflow:
 The orchestrator runs at the **Spec level**, not Initiative level:
 
 ```
-tsx spec-orchestrator.ts 1362   ← Run with Spec ID
+tsx spec-orchestrator.ts 1362   ← Run with Spec ID (GitHub issue number)
 
-Spec #1362 (user-dashboard-home)
-├── Initiative #1363 (dashboard-foundation)
-│   ├── Feature #1367 ← Sandbox A takes this
-│   ├── Feature #1368 ← Sandbox B takes this
-│   ├── Feature #1369 ← Next available sandbox takes this
-│   └── Feature #1370
-├── Initiative #1364 (activity-feed)
-│   ├── Feature #1371 [blocked by #1363]
+S1362 (user-dashboard-home)
+├── S1362.I1 (dashboard-foundation)
+│   ├── S1362.I1.F1 ← Sandbox A takes this
+│   ├── S1362.I1.F2 ← Sandbox B takes this
+│   ├── S1362.I1.F3 ← Next available sandbox takes this
+│   └── S1362.I1.F4
+├── S1362.I2 (activity-feed)
+│   ├── S1362.I2.F1 [blocked by S1362.I1]
 │   └── ...
-└── Initiative #1365 (coaching-integration)
+└── S1362.I3 (coaching-integration)
     └── ...
 ```
 
@@ -48,12 +48,12 @@ Sandboxes don't get upfront feature assignments. Instead, they pull from a share
 
 ```
 Feature Queue (priority order):
-┌────────────────────────────────────────────────────────────────┐
-│ [F1367] [F1368] [F1369] [F1370] [F1371*] [F1372*] [F1373] ... │
-│    ↑       ↑                      * blocked by #1363          │
-│    │       └── Sandbox B grabs this                           │
-│    └────────── Sandbox A grabs this                           │
-└────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ [S1362.I1.F1] [S1362.I1.F2] [S1362.I1.F3] [S1362.I2.F1*] [S1362.I2.F2*] [S1362.I3.F1] │
+│       ↑            ↑                             * blocked by S1362.I1                  │
+│       │            └── Sandbox B grabs this                                             │
+│       └────────────── Sandbox A grabs this                                              │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 When a sandbox finishes a feature:
@@ -70,11 +70,13 @@ This means:
 
 ### 1. Spec Manifest Generator
 
-**Location**: `.ai/alpha/scripts/generate-spec-manifest.ts`
+**Location**: `.ai/alpha/scripts/generate-spec-manifest.ts` (standalone) and `.ai/alpha/scripts/lib/manifest.ts` (library)
 
 Aggregates all initiatives and features under a spec into a single manifest.
 
-**Usage**:
+**Auto-Generation**: The orchestrator automatically generates the manifest if it doesn't exist, so manual generation is typically not needed. The orchestrator calls `generateSpecManifest()` at startup when `spec-manifest.json` is missing.
+
+**Manual Usage** (optional):
 ```bash
 tsx .ai/alpha/scripts/generate-spec-manifest.ts <spec-id>
 ```
@@ -152,30 +154,28 @@ Slash command run inside E2B sandbox to implement a single feature's tasks.
 │                     ALPHA IMPLEMENTATION                          │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  1. Generate Spec Manifest                                       │
-│     └─→ tsx generate-spec-manifest.ts 1362                       │
-│                                                                  │
-│  2. Start Orchestrator                                           │
+│  1. Start Orchestrator                                           │
 │     └─→ tsx spec-orchestrator.ts 1362                            │
 │                                                                  │
-│  3. Orchestrator Actions:                                        │
+│  2. Orchestrator Startup:                                        │
+│     ├─→ Auto-generate spec-manifest.json (if missing)            │
 │     ├─→ Create E2B sandboxes (3 by default)                      │
 │     ├─→ All sandboxes share branch: alpha/spec-1362              │
 │     ├─→ Progress polling displays real-time task updates         │
 │     └─→ Sandboxes pull features from queue                       │
 │                                                                  │
-│  4. Work Queue Loop:                                             │
+│  3. Work Queue Loop:                                             │
 │     ├─→ Sandbox asks: "What's next?"                            │
 │     ├─→ Queue finds first pending feature with deps met          │
 │     ├─→ Sandbox runs: /alpha:implement <feature-id>              │
 │     ├─→ On completion: update manifest, ask for next            │
 │     └─→ Repeat until queue empty                                │
 │                                                                  │
-│  5. On Completion or Interrupt:                                  │
+│  4. On Completion or Interrupt:                                  │
 │     ├─→ Progress saved to spec-manifest.json                    │
 │     └─→ Changes pushed to GitHub                                │
 │                                                                  │
-│  6. Resume (if needed):                                          │
+│  5. Resume (if needed):                                          │
 │     └─→ Re-run same command - auto-continues from checkpoint    │
 │                                                                  │
 └──────────────────────────────────────────────────────────────────┘
@@ -199,6 +199,15 @@ No `--resume` flag needed - the system always reads current progress.
 
 ## File Structure
 
+The Alpha system uses **hierarchical semantic IDs** for local tracking:
+- Format: `S<spec#>.I<init-priority>.F<feat-priority>.T<task-priority>`
+- Example: `S1362.I1.F2.T3` = Spec #1362, Initiative priority 1, Feature priority 2, Task priority 3
+
+**Directory naming convention:**
+- Specs: `S<spec#>-Spec-<slug>/` (e.g., `S1362-Spec-user-dashboard-home/`)
+- Initiatives: `S<spec#>.I<priority>-Initiative-<slug>/` (e.g., `S1362.I1-Initiative-dashboard-foundation/`)
+- Features: `S<spec#>.I#.F<priority>-Feature-<slug>/` (e.g., `S1362.I1.F2-Feature-presentation-outline/`)
+
 ```
 .ai/alpha/
 ├── scripts/
@@ -208,15 +217,18 @@ No `--resume` flag needed - the system always reads current progress.
 │   └── alpha-orchestrator.ts        # (Legacy - per-initiative)
 ├── templates/
 │   └── *.schema.json
+├── docs/
+│   ├── alpha-implementation-system.md  # This file
+│   └── hierarchical-ids.md             # ID system documentation
 └── specs/
-    └── <spec-id>-Spec-<name>/
-        ├── spec-manifest.json       # Spec-level manifest
+    └── S<spec-id>-Spec-<name>/         # e.g., S1362-Spec-user-dashboard-home/
+        ├── spec-manifest.json          # Spec-level manifest
         ├── research-library/
-        └── <init-id>-Initiative-<name>/
+        └── S<spec-id>.I<priority>-Initiative-<name>/   # e.g., S1362.I1-Initiative-dashboard-foundation/
             ├── initiative.md
-            └── <feature-id>-Feature-<name>/
+            └── S<spec-id>.I#.F<priority>-Feature-<name>/   # e.g., S1362.I1.F2-Feature-presentation-outline/
                 ├── feature.md
-                └── tasks.json
+                └── tasks.json          # Contains S1362.I1.F2.T1, T2, T3, etc.
 
 .claude/commands/alpha/
 ├── spec.md
@@ -226,48 +238,53 @@ No `--resume` flag needed - the system always reads current progress.
 └── implement.md
 ```
 
+**Note:** The system also supports legacy numeric ID formats for backward compatibility (e.g., `1362-Spec-*`, `1363-Initiative-*`).
+
 ## Dependency Handling
 
 ### Feature Dependencies
 
-Features can depend on other features within the same initiative using **internal F# references**:
+Features can depend on other features using **semantic F# references** within the same initiative:
 
 ```markdown
 ### Blocked By
 - F1: Activity Database Schema (needs table to insert into)
 ```
 
-Or using **GitHub issue numbers** (optional):
+Or using **full semantic IDs** for cross-initiative dependencies:
 
 ```markdown
 ### Blocked By
-- #1367 (Dashboard Page must exist first)
+- S1362.I1.F2: Dashboard Grid Layout (needs grid component)
 ```
+
+**Legacy support**: GitHub issue numbers (`#1367`) are still supported for backward compatibility.
 
 **Dependency Resolution Process:**
 
 The `generate-spec-manifest.ts` script uses a **two-pass process**:
 
 1. **Pass 1 - Collection**: Collects all features and builds a mapping:
-   - Extracts Feature ID from metadata (e.g., `| **Feature ID** | 1365-F1 |`)
-   - Maps `initiative_id-F#` → `feature_id` (e.g., `1365-1` → `1373`)
+   - Extracts Feature ID from metadata (e.g., `| **Feature ID** | S1362.I1.F1 |`)
+   - Maps short `F#` → full semantic ID within same initiative
 
-2. **Pass 2 - Resolution**: Resolves internal references:
-   - `F1` in initiative 1365 → looks up `1365-1` → returns feature #1373
-   - GitHub issue numbers (`#1367`) are used directly
+2. **Pass 2 - Resolution**: Resolves references:
+   - `F1` in initiative S1362.I1 → resolves to `S1362.I1.F1`
+   - Full semantic IDs (`S1362.I1.F2`) are used directly
+   - Legacy issue numbers (`#1367`) are still supported
 
-**Important**: The mapping uses **Feature ID** (e.g., `1365-F1`), not **Priority**. This ensures correct resolution even if priorities are duplicated or out of order.
+**Important**: All IDs are now **strings** (semantic IDs like `S1362.I1.F1` or legacy numeric strings like `"1367"`).
 
 Example output from manifest generation:
 ```
 🔗 Pass 2: Resolving dependencies...
-   Activity Recording Service: depends on [1373]
-   Activity Feed Component: depends on [1374]
+   Activity Recording Service: depends on [S1362.I1.F1]
+   Activity Feed Component: depends on [S1362.I1.F2]
 ```
 
 The orchestrator:
-1. Extracts dependencies from `feature.md` files (both F# and #issue formats)
-2. Resolves internal F# references to actual feature IDs
+1. Extracts dependencies from `feature.md` files (F#, semantic IDs, or legacy #issue formats)
+2. Resolves internal F# references to full semantic IDs
 3. Won't assign a feature until all dependencies are `completed`
 4. Skips blocked features, assigns next available one
 
@@ -277,24 +294,26 @@ Features can also depend on entire initiatives:
 
 ```markdown
 ### Blocked By
-- #1363 (Requires dashboard foundation initiative complete)
+- S1362.I1 (Requires dashboard foundation initiative complete)
 ```
 
-When initiative #1363 has all features completed, features blocked by it become available.
+When initiative S1362.I1 has all features completed, features blocked by it become available.
+
+**Legacy format**: `#1363` (GitHub issue number) is still supported for backward compatibility.
 
 ## Branch Strategy
 
 All sandboxes work on the same spec branch:
 
 ```
-Branch: alpha/spec-1362
+Branch: alpha/S1362   (or alpha/spec-1362 for legacy)
 
 Sandbox A ────commit────commit────push────
                                     │
 Sandbox B ────commit────commit─────push────
                                     │
                                     ▼
-                            alpha/spec-1362
+                              alpha/S1362
                             (all work combined)
 ```
 
@@ -600,11 +619,11 @@ Database features are serialized to prevent migration conflicts:
 
 ```
 Feature Queue:
-[F1367 🗄️] [F1368] [F1369 🗄️] [F1370] [F1371 🗄️]
-    ↓
-Sandbox A takes F1367 (DB feature)
-Sandbox B takes F1368 (non-DB feature) - runs in parallel
-Sandbox C waits - cannot take F1369 until F1367 completes
+[S1362.I1.F1 🗄️] [S1362.I1.F2] [S1362.I1.F3 🗄️] [S1362.I2.F1] [S1362.I2.F2 🗄️]
+        ↓
+Sandbox A takes S1362.I1.F1 (DB feature)
+Sandbox B takes S1362.I1.F2 (non-DB feature) - runs in parallel
+Sandbox C waits - cannot take S1362.I1.F3 until S1362.I1.F1 completes
 ```
 
 When a database feature is `in_progress`:
@@ -617,23 +636,50 @@ When a database feature is `in_progress`:
 Database tasks in `tasks.json` have:
 ```json
 {
-  "id": "T3",
+  "id": "S1362.I1.F1.T3",
   "name": "Create user_activities table schema",
   "requires_database": true,
-  "migration_name_prefix": "1367_T3"
+  "migration_name_prefix": "S1362_I1_F1_T3"
 }
 ```
 
-The `migration_name_prefix` ensures unique migration filenames across parallel features.
+The `migration_name_prefix` uses the semantic ID (with underscores replacing dots) to ensure unique migration filenames across parallel features.
 
 ### Orchestrator Startup
 
 On startup, the orchestrator:
 1. **Checks database capacity** - Warns if sandbox DB is near 500MB limit
-2. **Resets database** (optional) - Clean slate for each run
-3. **Sets up Supabase CLI** - Links each sandbox to the sandbox project
+2. **Checks if database is seeded** - Enables warm start optimization
+3. **Resets database** (optional) - Clean slate for each run
+4. **Creates sandboxes** - Parallelized with DB reset when possible
+5. **Seeds database** - Skipped on warm starts
+6. **Sets up Supabase CLI** - Links each sandbox to the sandbox project
 
 Use `--skip-db-reset` to skip database reset when resuming a partially complete run.
+
+### Startup Optimization (PR #1707)
+
+The orchestrator includes performance optimizations to reduce startup time:
+
+| Optimization | Savings | Description |
+|-------------|---------|-------------|
+| Early seeding check | 5-15 min (warm) | Checks `isDatabaseSeeded()` before sandbox creation to skip seeding entirely on repeat runs |
+| Parallel DB reset + sandbox | 30-60s | Runs `resetSandboxDatabase()` and first `createSandbox()` concurrently using `Promise.all()` |
+| Reduced UI poll timeout | 0-20s | Reduced from 30s/500ms to 10s/200ms for faster UI readiness detection |
+
+**Cold Start vs Warm Start:**
+
+- **Cold start**: First run after a fresh database. Requires full reset, sandbox creation, and seeding (~2 min with optimizations, previously ~5 min)
+- **Warm start**: Resume or restart when database is already seeded. Detects existing data and skips seeding (<60s with optimizations)
+
+**Startup Timing Log:**
+
+The orchestrator displays startup duration after sandboxes are ready:
+```
+⏱️  Startup completed in 45.2s
+```
+
+This helps measure the impact of optimizations and identify bottlenecks.
 
 ## Prerequisites
 
@@ -641,22 +687,22 @@ Before running the orchestrator:
 
 1. Complete task decomposition for all features in all initiatives:
    ```bash
-   /alpha:task-decompose 1363
-   /alpha:task-decompose 1364
-   /alpha:task-decompose 1365
+   /alpha:task-decompose S1362.I1   # or legacy: /alpha:task-decompose 1363
+   /alpha:task-decompose S1362.I2
+   /alpha:task-decompose S1362.I3
    ```
 
-2. Generate the spec manifest:
-   ```bash
-   tsx .ai/alpha/scripts/generate-spec-manifest.ts 1362
-   ```
-
-3. Set environment variables:
+2. Set environment variables:
    ```bash
    export E2B_API_KEY=<your-key>
    export GITHUB_TOKEN=<your-token>
    # Claude auth auto-detected from ~/.claude/.credentials.json
    ```
+
+**Note**: The spec manifest (`spec-manifest.json`) is automatically generated by the orchestrator at startup if it doesn't exist. Manual generation is no longer required but is still available:
+```bash
+tsx .ai/alpha/scripts/generate-spec-manifest.ts 1362   # Optional: manual generation
+```
 
 ## Example Run
 
@@ -667,6 +713,14 @@ $ tsx spec-orchestrator.ts 1362
    ALPHA SPEC ORCHESTRATOR
 ══════════════════════════════════════════════════════════════════════
 
+📋 Spec manifest not found, generating automatically...
+   Found 4 initiatives
+   Pass 1: Collecting features...
+   Pass 2: Resolving dependencies...
+   ✅ Spec manifest generated: .ai/alpha/specs/S1362-Spec-user-dashboard-home/spec-manifest.json
+   📊 4 initiatives, 13 features, 108 tasks
+   ✅ Manifest generated successfully
+
 🔒 Acquired orchestrator lock
 
 📊 Checking sandbox database...
@@ -676,20 +730,20 @@ $ tsx spec-orchestrator.ts 1362
    📦 Applying base migrations...
    ✅ Base migrations applied
 
-📊 Spec #1362: user dashboard home
+📊 Spec S1362: user dashboard home
    Initiatives: 4
    Features: 13
    Tasks: 108
    Progress: 0/13 features
    Sandboxes: 3
 
-🎯 Next feature: #1367 - Dashboard Page & Grid Layout
+🎯 Next feature: S1362.I1.F1 - Dashboard Page & Grid Layout
 
 📦 Creating first sandbox...
 
 📦 Creating sandbox sbx-a...
    ID: sbx_abc123
-   Checking out branch: alpha/spec-1362
+   Checking out branch: alpha/S1362
    Setting up Supabase CLI...
    Found Supabase CLI: 2.x.x
    Linking to sandbox project: abcdefghijklmnop
@@ -707,7 +761,7 @@ $ tsx spec-orchestrator.ts 1362
 
 📦 Creating sandbox sbx-b...
    ID: sbx_def456
-   Checking out branch: alpha/spec-1362
+   Checking out branch: alpha/S1362
    Setting up Supabase CLI...
    ✅ Supabase CLI linked to sandbox project
 
@@ -715,7 +769,7 @@ $ tsx spec-orchestrator.ts 1362
 
 📦 Creating sandbox sbx-c...
    ID: sbx_ghi789
-   Checking out branch: alpha/spec-1362
+   Checking out branch: alpha/S1362
    Setting up Supabase CLI...
    ✅ Supabase CLI linked to sandbox project
 
@@ -725,21 +779,21 @@ $ tsx spec-orchestrator.ts 1362
    sbx-a: sbx_abc123
    sbx-b: sbx_def456
    sbx-c: sbx_ghi789
-   Branch: alpha/spec-1362
+   Branch: alpha/S1362
 
 ══════════════════════════════════════════════════════════════════════
    IMPLEMENTATION
 ══════════════════════════════════════════════════════════════════════
 
-   ┌── [sbx-a] Feature #1367: Dashboard Page & Grid Layout
+   ┌── [sbx-a] Feature S1362.I1.F1: Dashboard Page & Grid Layout
    │   Tasks: 20
    │   Progress polling every 30s...
-   │   Running: /alpha:implement 1367
+   │   Running: /alpha:implement S1362.I1.F1
 
    ┌─ 📊 [sbx-a] Progress Update ───────────────────────────────────
    │ Tasks: [████████░░░░░░░░░░░░] 8/20 (40%)
    │ Phase: executing
-   │ Current: 🔄 [T9] Create dashboard loader
+   │ Current: 🔄 [S1362.I1.F1.T9] Create dashboard loader
    │ Group: Data Layer (2/4)
    │ Context: 📈 25%
    │ Heartbeat: 💓 12s ago
@@ -748,13 +802,13 @@ $ tsx spec-orchestrator.ts 1362
    │   ... [more progress updates] ...
    └── ✅ completed (20/20 tasks)
 
-   ┌── [sbx-b] Feature #1368: Presentation Outline Table
+   ┌── [sbx-b] Feature S1362.I1.F2: Presentation Outline Table
    │   Tasks: 12
-   │   Running: /alpha:implement 1368
+   │   Running: /alpha:implement S1362.I1.F2
    │   ... [implementation output with progress polling] ...
    └── ✅ completed (12/12 tasks)
 
-   ┌── [sbx-c] Feature #1369: Quick Actions Panel
+   ┌── [sbx-c] Feature S1362.I1.F3: Quick Actions Panel
    │   Tasks: 6
    │   ...
    └── ✅ completed (6/6 tasks)
@@ -781,7 +835,7 @@ $ tsx spec-orchestrator.ts 1362
    Failed: 0
    Tasks: 108/108
 
-🌿 Branch: alpha/spec-1362
+🌿 Branch: alpha/S1362
 ⏱️ Duration: 35 minutes
 
 ══════════════════════════════════════════════════════════════════════
@@ -822,10 +876,358 @@ The old `alpha-orchestrator.ts` still exists for backwards compatibility but is 
 | `initiative-manifest.json` | `spec-manifest.json` |
 | `--resume` flag needed | Auto-resume |
 | Upfront feature assignment | Dynamic work queue |
+| GitHub issue IDs (numbers) | Semantic IDs (strings: S#.I#.F#) |
+| `1363-Initiative-*` directories | `S1362.I1-Initiative-*` directories |
 
 Migrate by:
 1. Generate spec manifest: `tsx generate-spec-manifest.ts <spec-id>`
 2. Use new orchestrator: `tsx spec-orchestrator.ts <spec-id>`
+
+**Note:** The system supports both legacy numeric IDs (e.g., `1367`) and new semantic IDs (e.g., `S1362.I1.F1`) for backward compatibility.
+
+## Visual Verification with agent-browser
+
+### Overview
+
+The Alpha workflow integrates `agent-browser` CLI for visual validation of UI implementations. This enables automated verification that UI components render correctly during task execution.
+
+### What is agent-browser?
+
+agent-browser is an AI-optimized headless browser CLI that uses accessibility-first semantic selectors (ARIA roles, labels) instead of fragile CSS selectors. This makes it ideal for automated UI validation in AI-driven workflows.
+
+**Key Differences from Playwright:**
+
+| Aspect | agent-browser | Playwright |
+|--------|---------------|------------|
+| **Use Case** | Quick AI-driven validation | Full E2E test suites |
+| **Interface** | CLI (shell commands) | Node.js/Python API |
+| **Selectors** | Accessibility-first (roles, labels) | CSS/XPath/role hybrid |
+| **Integration** | Alpha workflow automation | CI/CD pipelines |
+| **Maintenance** | Low - semantic selectors | Higher - DOM-dependent |
+
+**agent-browser complements, not replaces, Playwright E2E tests.**
+
+### Integration Points
+
+1. **Task Schema** (`tasks.json`) - `requires_ui` and `visual_verification` fields
+2. **`/alpha:implement` command** - Visual verification step after UI task completion
+3. **`alpha-task-decomposer` agent** - Generates visual verification specs for UI tasks
+
+### Task Schema Fields
+
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" }
+    ],
+    "screenshot": true
+  }
+}
+```
+
+**Fields:**
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `requires_ui` | No | false | Flag indicating this is a UI task |
+| `visual_verification.route` | Yes | - | Route to navigate to for verification |
+| `visual_verification.wait_ms` | No | 3000 | Milliseconds to wait after page load |
+| `visual_verification.checks` | No | [] | Array of visual checks to perform |
+| `visual_verification.screenshot` | No | true | Whether to capture a screenshot |
+
+### Visual Check Commands
+
+| Command | Target | Example |
+|---------|--------|---------|
+| `is visible` | Text content | `{ "command": "is visible", "target": "Dashboard" }` |
+| `find role` | ARIA role | `{ "command": "find role", "target": "heading" }` |
+| `find label` | Form label | `{ "command": "find label", "target": "Email" }` |
+| `find text` | Any text | `{ "command": "find text", "target": "Submit" }` |
+| `snapshot` | - | `{ "command": "snapshot" }` |
+
+### Verification Workflow
+
+When a UI task completes in `/alpha:implement`:
+
+```
+1. Check if task has visual_verification OR requires_ui
+2. Ensure dev server is running on port 3000
+3. Run agent-browser commands:
+   - Open the route
+   - Wait for page load
+   - Execute each check
+   - Capture screenshot (if enabled)
+4. Determine pass/fail:
+   - All checks pass → Continue
+   - Critical failure (page doesn't load) → Block task
+   - Non-critical failure → Log warning, continue
+```
+
+### Screenshot Storage
+
+- **Directory**: `.ai/alpha/validation/${FEATURE_ID}/`
+- **Naming**: `${TASK_ID}-screenshot.png`, `${TASK_ID}-snapshot.txt`
+- **Cleanup**: Screenshots are gitignored (large binary files)
+
+### agent-browser Commands Reference
+
+```bash
+# Open a page
+agent-browser open http://localhost:3000/home/dashboard
+
+# Wait for page to load (milliseconds)
+agent-browser wait 3000
+
+# Check if element is visible
+agent-browser is visible "Dashboard"
+
+# Find by ARIA role
+agent-browser find role button "Submit"
+agent-browser find role heading
+
+# Find by label
+agent-browser find label "Email"
+
+# Get accessibility snapshot
+agent-browser snapshot -i -c
+
+# Capture screenshot
+agent-browser screenshot ./path/to/screenshot.png
+```
+
+### Timeout and Fallback
+
+- **Verification timeout**: 30 seconds per task
+- **If agent-browser unavailable**: Log warning and skip (non-blocking)
+- **If dev server not running**: Skip visual verification
+- **If screenshot capture fails**: Log warning, continue (non-blocking)
+
+### Installation
+
+```bash
+# Install globally via pnpm
+pnpm add -g agent-browser
+
+# Download Chromium browser
+agent-browser install
+
+# Linux: Also install system dependencies if browser fails to launch
+agent-browser install --with-deps
+```
+
+### Related Files
+
+| File | Purpose |
+|------|---------|
+| `.ai/alpha/scripts/lib/visual-validation.ts` | TypeScript utilities for visual verification |
+| `.ai/alpha/templates/visual-verification.schema.json` | JSON schema for visual verification config |
+| `.ai/alpha/templates/tasks.schema.json` | Task schema with visual_verification field |
+| `.claude/commands/alpha/implement.md` | Implementation command with visual verification phase |
+| `.claude/agents/alpha/task-decomposer.md` | Task decomposer with UI task detection |
+| `.ai/ai_docs/tool-docs/agent-browser.md` | Complete agent-browser reference |
+
+## Post-Implementation Refinement
+
+### Overview
+
+The Alpha workflow includes a refinement phase for debugging and fine-tuning after human review. This is handled by the **Refine Orchestrator** (`refine-orchestrator.ts`) and the **`/alpha:refine`** slash command.
+
+### When to Use
+
+Use refinement after the main implementation is complete and you've identified issues during review:
+
+- Visual bugs (rendering, layout, CSS issues)
+- Functional issues (logic errors, missing behavior)
+- Performance problems (slow loading, timeouts)
+- Polish requests (design improvements, UX tweaks)
+- Accessibility issues (screen reader, keyboard navigation)
+- Responsive design problems (mobile, tablet breakpoints)
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      REFINEMENT WORKFLOW                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. User identifies issue during review                                     │
+│     └─→ "Login button doesn't render on mobile"                             │
+│                                                                             │
+│  2. Run refine orchestrator                                                 │
+│     └─→ tsx refine-orchestrator.ts 1362 --issue "Login button..."           │
+│                                                                             │
+│  3. Orchestrator:                                                           │
+│     ├─→ Finds spec manifest                                                 │
+│     ├─→ Detects issue type (visual, functional, etc.)                       │
+│     ├─→ Creates or reconnects to sandbox                                    │
+│     ├─→ Checks out implementation branch                                    │
+│     └─→ Runs /alpha:refine with issue context                               │
+│                                                                             │
+│  4. /alpha:refine command:                                                  │
+│     ├─→ Invokes appropriate skill (frontend-debugging, etc.)                │
+│     ├─→ Diagnoses root cause                                                │
+│     ├─→ Implements fix                                                      │
+│     ├─→ Runs verification commands                                          │
+│     └─→ Commits and pushes fix                                              │
+│                                                                             │
+│  5. Orchestrator saves refinement entry to manifest                         │
+│     └─→ Track refinement history for the spec                               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Usage
+
+**Basic usage:**
+```bash
+tsx .ai/alpha/scripts/refine-orchestrator.ts <spec-id> --issue "description"
+```
+
+**With feature scope:**
+```bash
+tsx refine-orchestrator.ts 1362 --issue "Button not visible" --feature S1362.I1.F2
+```
+
+**Interactive mode (keep sandbox alive):**
+```bash
+tsx refine-orchestrator.ts 1362 --interactive
+```
+
+**Reconnect to existing sandbox:**
+```bash
+tsx refine-orchestrator.ts 1362 --reconnect
+```
+
+### Command Line Options
+
+| Option | Description |
+|--------|-------------|
+| `--issue "description"` | Issue description to fix |
+| `--feature <S#.I#.F#>` | Scope refinement to specific feature |
+| `--timeout <seconds>` | Sandbox timeout (default: 3600, max: 3600) |
+| `--interactive` | Keep sandbox alive for iterative fixes |
+| `--reconnect` | Reconnect to existing sandbox if available |
+| `--force-new` | Force create new sandbox (ignore existing) |
+| `--dry-run` | Show what would happen without executing |
+
+### Issue Type Detection
+
+The system automatically detects issue type from keywords:
+
+| Type | Keywords | Skill Invoked |
+|------|----------|---------------|
+| Visual | rendering, layout, CSS, hidden, display | frontend-debugging |
+| Functional | doesn't work, broken, error, bug | (code tracing) |
+| Performance | slow, loading, timeout, lag | frontend-debugging |
+| Polish | polish, refine, improve, tweak | frontend-design |
+| Accessibility | a11y, screen reader, keyboard, aria | frontend-debugging |
+| Responsive | mobile, tablet, breakpoint, viewport | frontend-design |
+
+### Refinement History
+
+Refinements are tracked in `spec-manifest.json`:
+
+```json
+{
+  "refinements": [
+    {
+      "id": "R-20260122-143052-ABC",
+      "timestamp": "2026-01-22T14:30:52Z",
+      "issue_description": "Login button doesn't render on mobile",
+      "issue_type": "visual",
+      "feature_id": "S1362.I1.F2",
+      "skills_invoked": ["frontend-debugging"],
+      "files_modified": ["apps/web/app/(auth)/login/_components/login-form.tsx"],
+      "commit_hash": "abc1234",
+      "status": "completed",
+      "duration_seconds": 180
+    }
+  ]
+}
+```
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `.ai/alpha/scripts/refine-orchestrator.ts` | Main refine orchestrator script |
+| `.ai/alpha/scripts/lib/refine.ts` | Refine utilities (detection, history) |
+| `.ai/alpha/scripts/types/refine.types.ts` | Type definitions for refinement |
+| `.ai/alpha/scripts/cli/index.ts` | CLI argument parsing for refine |
+| `.claude/commands/alpha/refine.md` | /alpha:refine slash command |
+
+### Example Session
+
+```
+$ tsx refine-orchestrator.ts 1362 --issue "Login button doesn't render on mobile"
+
+══════════════════════════════════════════════════════════════════════
+   ALPHA REFINE ORCHESTRATOR
+══════════════════════════════════════════════════════════════════════
+
+📋 Spec: User Dashboard Home
+   Branch: alpha/spec-S1362
+
+🔍 Issue Analysis:
+   Description: Login button doesn't render on mobile
+   Detected Type: visual
+   Skills to invoke: frontend-debugging
+
+📦 Creating refine sandbox...
+   ID: sbx_abc123
+   Checking out branch: alpha/spec-S1362
+   ✅ Branch checked out
+   ✅ Sandbox ready
+
+🔗 Sandbox URLs:
+   VS Code: https://sbx_abc123-8080.e2b.dev
+
+🚀 Starting dev server for visual debugging...
+   Dev Server: https://sbx_abc123-3000.e2b.dev
+
+🔧 Running: /alpha:refine S1362 --issue "Login button doesn't render on mobile"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Claude Code Output:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Phase 0: Loading Context]
+✓ Found spec directory
+✓ Loaded spec-manifest.json
+
+[Phase 1: Diagnosis]
+Invoking skill: frontend-debugging
+...
+
+[Phase 2: Fix Implementation]
+Editing: apps/web/app/(auth)/login/_components/login-form.tsx
+- Changed: `hidden md:block` → `block`
+
+[Phase 3: Verification]
+✓ pnpm typecheck passed
+✓ pnpm lint passed
+
+[Phase 4: Commit & Report]
+✓ Committed: fix(alpha): show login button on mobile
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 Refinement entry saved: R-20260122-143052-ABC
+
+🛑 Stopping sandbox...
+✅ Sandbox terminated
+
+══════════════════════════════════════════════════════════════════════
+   REFINE COMPLETE
+══════════════════════════════════════════════════════════════════════
+```
 
 ## Orchestrator Event Streaming
 

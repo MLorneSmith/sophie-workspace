@@ -15,6 +15,12 @@ RUN apk add --no-cache \
 # Install pnpm globally
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 
+# Configure pnpm global bin directory (accessible to all users)
+ENV PNPM_HOME=/usr/local/share/pnpm
+ENV PATH="$PNPM_HOME:$PATH"
+ENV SHELL=/bin/bash
+RUN mkdir -p $PNPM_HOME && chmod 755 $PNPM_HOME && pnpm setup
+
 # Install global tools for CI
 RUN pnpm add -g \
     turbo@latest \
@@ -28,6 +34,9 @@ WORKDIR /workspace
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs \
     && adduser -S nodejs -u 1001
+
+# Ensure nodejs user can access global tools
+RUN chmod -R 755 $PNPM_HOME
 
 # Switch to non-root user
 USER nodejs

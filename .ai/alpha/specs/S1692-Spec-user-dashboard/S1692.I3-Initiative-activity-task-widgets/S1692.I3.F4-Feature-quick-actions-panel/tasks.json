@@ -1,0 +1,474 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1692.I3.F4",
+    "feature_name": "Quick Actions Panel",
+    "feature_slug": "quick-actions-panel",
+    "initiative_id": "S1692.I3",
+    "spec_id": 1692,
+    "created_at": "2026-01-21T10:30:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1692.I3.F4.T5", "S1692.I3.F4.T6"]
+  },
+  "tasks": [
+    {
+      "id": "S1692.I3.F4.T1",
+      "type": "task",
+      "name": "Create CTA action type definitions",
+      "action": {
+        "verb": "Create",
+        "target": "TypeScript types for CTA actions"
+      },
+      "purpose": "Define the shape of CTA actions (key, label, description, href, icon, priority) used throughout the feature",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must include all fields from Action Definitions table",
+          "Priority is object with new/active/power keys",
+          "Icon is string (lucide-react icon name)"
+        ]
+      },
+      "input_state": "No CTA action types exist",
+      "output_state": "CTAAction type defined with all required fields",
+      "acceptance_criterion": "Type exports CTAAction interface with key, label, description, href, icon, priority fields",
+      "verification_command": "pnpm typecheck && grep -q 'CTAAction' apps/web/app/home/\\(user\\)/_lib/server/user-cta-state.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/user-cta-state.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I3.F4.T2", "S1692.I3.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T2",
+      "type": "task",
+      "name": "Create loadUserCTAState function",
+      "action": {
+        "verb": "Create",
+        "target": "loadUserCTAState loader function"
+      },
+      "purpose": "Fetch all user progress data needed for CTA state determination using parallel queries",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/20250319104726_web_course_system.sql",
+          "apps/web/supabase/migrations/20250319104724_web_survey_system.sql"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "course_progress table with completion_percentage",
+          "survey_responses table with completed field",
+          "tasks table with status field"
+        ],
+        "constraints": [
+          "Use Promise.all() for parallel fetching",
+          "Query course_progress, survey_responses, building_blocks_submissions",
+          "Return object with hasCourseStarted, hasAssessmentCompleted, presentationCount"
+        ]
+      },
+      "input_state": "CTAAction type exists, no loader function",
+      "output_state": "loadUserCTAState function fetches and returns user progress data",
+      "acceptance_criterion": "Function returns object with hasCourseStarted, hasAssessmentCompleted, presentationCount fields",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadUserCTAState' apps/web/app/home/\\(user\\)/_lib/server/user-cta-state.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-cta-state.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I3.F4.T1"],
+        "blocks": ["S1692.I3.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T3",
+      "type": "task",
+      "name": "Create buildCTAActions function",
+      "action": {
+        "verb": "Create",
+        "target": "buildCTAActions state determination function"
+      },
+      "purpose": "Determine user state (new/active/power) and return prioritized list of 3-5 CTA actions",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "CTAAction type from T1",
+          "loadUserCTAState return type from T2"
+        ],
+        "constraints": [
+          "Implement state logic from User State Logic table",
+          "Return sorted actions by priority for user state",
+          "Return 5 actions for new_user, 5 for active_learner, 3 for power_user",
+          "Priority values: new_user (1=highest), active_learner, power_user",
+          "All 5 actions defined in Action Definitions table"
+        ]
+      },
+      "input_state": "CTAAction type and loadUserCTAState function exist",
+      "output_state": "buildCTAActions function returns 3-5 prioritized actions based on user state",
+      "acceptance_criterion": "Function takes CTAState, returns CTAAction[] with length 3-5, sorted by priority",
+      "verification_command": "pnpm typecheck && grep -q 'export function buildCTAActions' apps/web/app/home/\\(user\\)/_lib/server/user-cta-state.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-cta-state.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I3.F4.T1", "S1692.I3.F4.T2"],
+        "blocks": ["S1692.I3.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T4",
+      "type": "task",
+      "name": "Create QuickActionItem client component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionItem component skeleton"
+      },
+      "purpose": "Create client component structure with props interface for action card rendering",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/card-button.tsx"
+        ],
+        "dependencies": [
+          "CardButton, CardButtonHeader, CardButtonContent from @kit/ui/card-button",
+          "Link from next/link",
+          "CTAAction type from loader"
+        ],
+        "constraints": [
+          "Must be client component ('use client')",
+          "Accept action prop of type CTAAction",
+          "Use CardButton as Link wrapper",
+          "Export as default"
+        ]
+      },
+      "input_state": "No QuickActionItem component exists",
+      "output_state": "QuickActionItem component skeleton with props interface, no icon logic",
+      "acceptance_criterion": "Component renders CardButton with label and description, no icon yet",
+      "verification_command": "pnpm typecheck && grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/quick-action-item.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/quick-action-item.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1692.I3.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T5",
+      "type": "task",
+      "name": "Create QuickActionsPanel server component",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPanel server component"
+      },
+      "purpose": "Create server component that loads CTA state and renders grid of action cards",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "loadUserCTAState, buildCTAActions from loader",
+          "QuickActionItem from T4"
+        ],
+        "constraints": [
+          "Server component (async)",
+          "Call loadUserCTAState and buildCTAActions",
+          "Grid layout: grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+          "Pass each action to QuickActionItem"
+        ]
+      },
+      "input_state": "buildCTAActions function exists, QuickActionItem skeleton exists",
+      "output_state": "QuickActionsPanel renders grid of action cards using QuickActionItem",
+      "acceptance_criterion": "Component renders Card with 3-5 QuickActionItem children in responsive grid",
+      "verification_command": "pnpm typecheck && grep -q 'export default async function QuickActionsPanel' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I3.F4.T3", "S1692.I3.F4.T4"],
+        "blocks": ["S1692.I3.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T6",
+      "type": "task",
+      "name": "Add dynamic icon import to QuickActionItem",
+      "action": {
+        "verb": "Add",
+        "target": "dynamic icon import logic"
+      },
+      "purpose": "Import and render lucide-react icon dynamically based on action.icon string",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Take Assessment"
+          },
+          {
+            "command": "is visible",
+            "target": "Start Course"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "lucide-react icon components",
+          "QuickActionItem skeleton from T4"
+        ],
+        "constraints": [
+          "Use dynamic import: import(`lucide-react`).then(mod => mod[iconName])",
+          "Handle loading state while icon imports",
+          "Default to Activity icon if import fails",
+          "Render icon in CardButtonHeader with h-5 w-5 classes"
+        ]
+      },
+      "input_state": "QuickActionItem skeleton exists without icon logic",
+      "output_state": "QuickActionItem renders dynamic icon from lucide-react based on action.icon",
+      "acceptance_criterion": "Icon renders in CardButtonHeader, different icons shown for different actions",
+      "verification_command": "pnpm typecheck && grep -q 'lucide-react' apps/web/app/home/\\(user\\)/_components/quick-action-item.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-action-item.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1692.I3.F4.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1692.I3.F4.T7",
+      "type": "task",
+      "name": "Test user state scenarios",
+      "action": {
+        "verb": "Test",
+        "target": "all user state CTA logic"
+      },
+      "purpose": "Manually verify correct actions are shown for new user, active learner, and power user states",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "QuickActionsPanel from T5",
+          "Database seeding capability"
+        ],
+        "constraints": [
+          "Test 3 scenarios: new user (no data), active learner (course started), power user (course + assessment + presentations)",
+          "Verify action count (5, 5, 3) matches spec",
+          "Verify correct actions shown per state",
+          "Verify all links navigate correctly"
+        ]
+      },
+      "input_state": "QuickActionsPanel complete with icon logic",
+      "output_state": "All user states tested and verified to show correct actions",
+      "acceptance_criterion": "Manual test confirms new user sees 5 actions (Assessment first), active learner sees Continue Course, power user sees 3 actions",
+      "verification_command": "echo 'Manual testing complete - documented in test notes'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1692.I3.F4.T5", "S1692.I3.F4.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Loader Implementation",
+        "task_ids": ["S1692.I3.F4.T1", "S1692.I3.F4.T2", "S1692.I3.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 9,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Component Creation",
+        "task_ids": ["S1692.I3.F4.T4", "S1692.I3.F4.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Icon Integration & Testing",
+        "task_ids": ["S1692.I3.F4.T6", "S1692.I3.F4.T7"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1692.I3.F4.T1", "S1692.I3.F4.T2", "S1692.I3.F4.T3", "S1692.I3.F4.T5", "S1692.I3.F4.T6"],
+      "total_hours": 17
+    },
+    "duration": {
+      "sequential": 19,
+      "parallel": 10,
+      "time_saved_percent": 47.37
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

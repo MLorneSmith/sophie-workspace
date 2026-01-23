@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 import Spinner from "ink-spinner";
 import React, { useEffect, useState } from "react";
+import stripAnsi from "strip-ansi";
 import type {
 	HealthStatus,
 	SandboxColumnProps,
@@ -71,6 +72,20 @@ function truncate(str: string, maxLen: number): string {
 }
 
 /**
+ * Strip ANSI escape sequences and truncate text.
+ * Bug fix #1727: ANSI codes consume character budget without being visible,
+ * causing truncated output like "u..." when escape sequences are present.
+ *
+ * @param str - String that may contain ANSI escape sequences
+ * @param maxLen - Maximum length after stripping ANSI codes
+ * @returns Cleaned and truncated string
+ */
+function stripAndTruncate(str: string, maxLen: number): string {
+	const cleaned = stripAnsi(str);
+	return truncate(cleaned, maxLen);
+}
+
+/**
  * Format phase for display
  */
 function formatPhase(phase: string): string {
@@ -112,7 +127,8 @@ function formatHeartbeatAge(ageSeconds: number): string {
 
 /**
  * Custom hook for heartbeat age tracking.
- * Updates every 5 seconds to balance real-time feel with performance.
+ * Updates every 10 seconds to balance real-time feel with performance.
+ * Uses debouncing to prevent rapid state updates causing flicker.
  *
  * @param lastHeartbeat - The last heartbeat timestamp from sandbox state
  * @returns Current heartbeat age in seconds, updated periodically
@@ -125,16 +141,18 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 	);
 
 	useEffect(() => {
-		// Update immediately when lastHeartbeat changes
-		if (lastHeartbeat) {
-			setHeartbeatAge(
-				Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
-			);
-		} else {
-			setHeartbeatAge(null);
-		}
+		// Debounce immediate updates by 500ms to prevent rapid state changes
+		const debounceTimer = setTimeout(() => {
+			if (lastHeartbeat) {
+				setHeartbeatAge(
+					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
+				);
+			} else {
+				setHeartbeatAge(null);
+			}
+		}, 500);
 
-		// Update every 5 seconds instead of 1 second to reduce flicker
+		// Update every 10 seconds instead of 5 seconds to further reduce flicker
 		// Heartbeat age display doesn't require second-level precision
 		const ticker = setInterval(() => {
 			if (lastHeartbeat) {
@@ -142,9 +160,12 @@ function useRealtimeHeartbeat(lastHeartbeat: Date | null): number | null {
 					Math.round((Date.now() - lastHeartbeat.getTime()) / 1000),
 				);
 			}
-		}, 5000);
+		}, 10000);
 
-		return () => clearInterval(ticker);
+		return () => {
+			clearTimeout(debounceTimer);
+			clearInterval(ticker);
+		};
 	}, [lastHeartbeat]);
 
 	return heartbeatAge;
@@ -235,7 +256,8 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 								<Spinner type="dots" />{" "}
 							</Text>
 						)}
-						<Text color="yellow">{state.currentTask.id}</Text>
+						{/* Defensive rendering: show ID if available, fallback to "Working..." */}
+						<Text color="yellow">{state.currentTask.id || "Working..."}</Text>
 					</Box>
 					<Text>{truncate(state.currentTask.name, 24)}</Text>
 					{state.currentTask.verificationAttempts &&
@@ -280,13 +302,14 @@ const SandboxColumnImpl: React.FC<SandboxColumnProps> = ({ state }) => {
 				</Box>
 			)}
 
-			{/* Recent Output Lines (from log file) */}
+			{/* Recent Output Lines (from log file) - capped to 6 items for UI space */}
+			{/* Bug fix #1727: Strip ANSI codes to prevent truncation artifacts like "u..." */}
 			{state.recentOutput && state.recentOutput.length > 0 && (
 				<Box flexDirection="column" marginTop={1}>
 					<Text dimColor>Output:</Text>
-					{state.recentOutput.map((line) => (
-						<Text key={line} dimColor>
-							{truncate(line, 28)}
+					{state.recentOutput.slice(0, 6).map((line, index) => (
+						<Text key={`${index}-${line.slice(0, 20)}`} dimColor>
+							{stripAndTruncate(line, 28)}
 						</Text>
 					))}
 				</Box>

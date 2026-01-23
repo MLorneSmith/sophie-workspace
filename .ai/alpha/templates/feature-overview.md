@@ -1,7 +1,7 @@
 # Feature Overview: {{INITIATIVE_NAME}}
 
-**Parent Initiative**: #{{INITIATIVE_NUM}}
-**Parent Spec**: #{{SPEC_NUM}}
+**Parent Initiative**: S{{SPEC_NUM}}.I{{INIT_PRIORITY}}
+**Parent Spec**: S{{SPEC_NUM}}
 **Created**: {{DATE}}
 **Total Features**: {{FEATURE_COUNT}}
 **Estimated Duration**: {{SEQUENTIAL_DAYS}} days sequential / {{PARALLEL_DAYS}} days parallel
@@ -9,7 +9,7 @@
 ## Directory Structure
 
 ```
-{{INITIATIVE_NUM}}-Initiative-{{INITIATIVE_SLUG}}/
+S{{SPEC_NUM}}.I{{INIT_PRIORITY}}-Initiative-{{INITIATIVE_SLUG}}/
 ├── initiative.md                         # Initiative document
 ├── README.md                             # This file - features overview
 {{DIRECTORY_TREE}}
@@ -60,5 +60,5 @@
 
 ## Next Steps
 
-1. Run `/alpha:task-decompose {{FIRST_FEATURE_NUM}}` to decompose the first feature
+1. Run `/alpha:task-decompose S{{SPEC_NUM}}.I{{INIT_PRIORITY}}.F1` to decompose the first feature
 2. Begin implementation with Priority 1 / Group 0 features

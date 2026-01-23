@@ -79,7 +79,7 @@ Use AskUserQuestion to gather missing information. Ask **5-8 questions** coverin
 
 ### Step 4: Conduct Research
 
-#### Step 4.1: Explore the Codebase
+#### Step 4.1: Explore the Codebase (CRITICAL)
 
 Use the Task tool with `subagent_type=code-explorer` to understand existing patterns and data structures:
 
@@ -87,11 +87,21 @@ Use the Task tool with `subagent_type=code-explorer` to understand existing patt
 2. **Domain exploration**: Find existing implementations similar to the project scope
 3. **Data model exploration**: Identify relevant database tables, schemas, and relationships
 4. **Integration points**: Discover APIs, services, and external dependencies
+5. **Reusable components**: Identify SPECIFIC files that can be reused (exact paths!)
 
 Launch multiple code-explorer agents in parallel for efficiency:
 ```
-Task tool with subagent_type=code-xplorer
-prompt: "Explore the <domain-area> implementation patterns in this codebase"
+Task tool with subagent_type=code-explorer
+prompt: "Explore the <domain-area> implementation patterns in this codebase.
+Return SPECIFIC FILE PATHS for any reusable components found."
+```
+
+**⚠️ MANDATORY OUTPUT**: Document all reusable components with exact file paths:
+```markdown
+| Component Found | File Path | Reusable? |
+|-----------------|-----------|-----------|
+| RadialProgress  | apps/web/app/.../RadialProgress.tsx | Yes |
+| DataLoader      | apps/web/app/.../_lib/server/loader.ts | Pattern only |
 ```
 
 #### Step 4.2: Create Spec Directory Structure
@@ -214,7 +224,7 @@ prompt: |
 
 **Note**: All research from Steps 4.3 and 7 is saved to `${SPEC_DIR}/research-library/` and will be incorporated into the spec in Step 8.
 
-### Step 8: Read Research Library
+### Step 8: Read Research Library (MANDATORY)
 
 **CRITICAL**: Before creating the spec, you MUST read all research files saved by the research agents.
 
@@ -228,12 +238,64 @@ ls -la ${SPEC_DIR}/research-library/
 Read tool with file_path: ${SPEC_DIR}/research-library/<filename>.md
 ```
 
-These files contain valuable external research (Cal.com integration patterns, dashboard design best practices, etc.) that should inform the spec document. Extract key findings and incorporate them into:
-- Section 7 (Technical Context) - integration patterns, API details
-- Section 5 (Solution Overview) - design patterns and best practices
-- Section 11 (Appendices) - reference the research files
+These files contain valuable external research (Cal.com integration patterns, dashboard design best practices, etc.) that should inform the spec document.
+
+**⚠️ MANDATORY**: For EACH research file, extract and document:
+1. **3-5 key findings** that affect the spec
+2. **Which spec section(s)** each finding influences
+3. **How the finding changes** the approach
+
+Create a research integration table to include in the spec:
+```markdown
+| Research File | Key Findings | Spec Section(s) Affected |
+|--------------|--------------|-------------------------|
+| context7-calcom.md | Cal.com v2 API supports X, Y, Z | Section 7 Technical Context |
+| perplexity-dashboards.md | Best practice is 3-column grid | Section 5 Solution Overview |
+```
 
 **Do NOT skip this step** - the research agents gathered information you need.
+**Do NOT proceed** until you have documented research integration.
+
+### Step 8.5: Create Visual Mockup (UI Features Only)
+
+**⚠️ MANDATORY for UI features**: If this spec involves UI (dashboard, page, form, component), create an ASCII layout mockup.
+
+**Why this matters**: Decomposition teams need to understand spatial relationships between components. An ASCII mockup provides immediate visual context without requiring external tools.
+
+**ASCII Mockup Requirements:**
+1. Show the overall structure (grid layout, rows, columns)
+2. Label each component/widget with names from Key Capabilities
+3. Include sample content to clarify purpose
+4. Match the responsive breakpoints documented in Section 5
+
+**ASCII Mockup Template:**
+```
+┌──────────────────────────────────────────────────────────────┐
+│                        [Page Title]                            │
+├─────────────────┬─────────────────┬────────────────────────────┤
+│ [Component 1]   │ [Component 2]   │ [Component 3]              │
+│ - Sample data   │ - Sample data   │ - Sample data              │
+│ - Details       │ - Details       │ - Details                  │
+├─────────────────┼─────────────────┼────────────────────────────┤
+│ [Component 4]   │ [Component 5]   │ [Component 6]              │
+│ - Sample data   │ - Sample data   │ - Sample data              │
+├─────────────────┴─────────────────┴────────────────────────────┤
+│ [Full-width Component]                                         │
+│ ┌────────────┬────────────┬────────────┬─────────────────────┐ │
+│ │ Column 1   │ Column 2   │ Column 3   │ Actions             │ │
+│ ├────────────┼────────────┼────────────┼─────────────────────┤ │
+│ │ Row data   │ Row data   │ Row data   │ [Button]            │ │
+│ └────────────┴────────────┴────────────┴─────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Checklist before proceeding:**
+- [ ] Component names in mockup match Key Capabilities (Section 5)
+- [ ] Layout matches grid description (e.g., "3-3-1 grid")
+- [ ] Sample content shows what each component displays
+- [ ] Tables/lists show column structure if applicable
+
+Include this mockup in **Section 11.E (Visual Assets)** of the spec.
 
 ### Step 9: Create the Spec Document
 
@@ -261,25 +323,35 @@ gh issue create \
   --label "alpha:spec"
 ```
 
-### Step 11: Rename Spec Directory
+### Step 11: Rename Spec Directory with S# Format
 
-After issue creation, rename the directory with the issue number:
+After issue creation, rename the directory using the semantic ID format `S<issue-#>`:
 ```bash
-mv .ai/alpha/specs/pending-Spec-<project-slug> .ai/alpha/specs/<issue-#>-Spec-<project-slug>
+mv .ai/alpha/specs/pending-Spec-<project-slug> .ai/alpha/specs/S<issue-#>-Spec-<project-slug>
 ```
+
+**Semantic ID Format:**
+- Spec ID: `S<issue-#>` (e.g., `S1362`)
+- This is the **only level** that creates a GitHub issue
+- Initiatives will use `S<issue-#>.I<priority>` format (e.g., `S1362.I1`)
+- Features will use `S<issue-#>.I<priority>.F<priority>` format (e.g., `S1362.I1.F1`)
+- Tasks will use `S<issue-#>.I<priority>.F<priority>.T<priority>` format (e.g., `S1362.I1.F1.T1`)
 
 **Final structure:**
 ```
-.ai/alpha/specs/<issue-#>-Spec-<project-slug>/
+.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/
 ├── spec.md                    # The spec document
 ├── research-library/          # Research artifacts from sub-agents
 └── README.md                  # (Created later) Initiatives overview
 ```
 
+See `.ai/alpha/docs/hierarchical-ids.md` for the complete ID system documentation.
+
 ## Pre-Spec Checklist
 
 Before finalizing, verify:
 
+### Core Content
 - [ ] Problem statement is specific and quantified
 - [ ] Success metrics are SMART (Specific, Measurable, Achievable, Relevant, Time-bound)
 - [ ] Scope boundaries are explicit (in AND out)
@@ -288,6 +360,32 @@ Before finalizing, verify:
 - [ ] Key risks identified with owners
 - [ ] Open questions captured for follow-up
 - [ ] Decomposition hints provide clear initiative candidates
+
+### Research Quality (NEW)
+- [ ] At least one research file exists in `research-library/`
+- [ ] Research integration table completed with findings → spec section mapping
+- [ ] All reusable components documented with EXACT file paths (no placeholders)
+- [ ] Codebase exploration results include specific table/schema names
+
+### Technical Rigor (NEW)
+- [ ] **NO TBD items** in Technical Context - all unknowns are either researched or listed as Open Questions
+- [ ] All integration points specify exact table/file names
+- [ ] Goals have **specific percentage targets** (e.g., "+25%" not "increase")
+- [ ] Responsive breakpoints documented in Solution Overview (if UI feature)
+
+### Decomposition Readiness (NEW)
+- [ ] "Data Layer" considered as potential initiative (loaders, caching, parallel fetching)
+- [ ] "Foundation/Layout" identified as P0 if applicable
+- [ ] Complexity indicators have rationale based on actual codebase findings
+
+### Visual Documentation (UI Features)
+- [ ] ASCII layout mockup created showing component arrangement (Section 11.E)
+- [ ] Component labels in mockup match Key Capabilities names (Section 5)
+- [ ] Grid/layout structure documented (e.g., "3-3-1 grid", "2-column sidebar")
+- [ ] Sample content in mockup clarifies each component's purpose
+- [ ] Tables/lists show column headers if applicable
+
+> **Skip this section** for backend-only features (APIs, database migrations, CLI tools).
 
 ## Relevant Files
 
@@ -301,17 +399,23 @@ Before finalizing, verify:
 After creating the spec, verify:
 
 ```bash
-# Verify spec directory and file exist
-test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug> && echo "✓ Spec directory created"
-test -s .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec file created"
-test -d .ai/alpha/specs/<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
+# Verify spec directory and file exist (using S# format)
+test -d .ai/alpha/specs/S<issue-#>-Spec-<project-slug> && echo "✓ Spec directory created"
+test -s .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Spec file created"
+test -d .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/research-library && echo "✓ Research library created"
 
 # Verify GitHub issue was created
 gh issue view <issue-#> --repo MLorneSmith/2025slideheroes
 
 # Verify all required sections are present in spec
-grep -E "^## [0-9]+\." .ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md | wc -l
+grep -E "^## [0-9]+\." .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md | wc -l
 # Should return 11 (all 11 sections from template)
+
+# Verify ASCII mockup exists (for UI features)
+grep -q "┌─" .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ ASCII mockup present" || echo "⚠ No ASCII mockup (OK for backend-only specs)"
+
+# Verify research integration table exists
+grep -q "Research File.*Key Findings.*Spec Section" .ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md && echo "✓ Research integration table present"
 ```
 
 ## Project Description
@@ -323,11 +427,12 @@ $ARGUMENTS
 When complete, provide:
 
 - **Summary**: Brief overview of the captured specification (2-3 sentences)
-- **Spec Directory**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/`
-- **Spec File**: Path to `.ai/alpha/specs/<issue-#>-Spec-<project-slug>/spec.md`
-- **GitHub Issue**: Issue number and URL (e.g., `#123 - https://github.com/...`)
+- **Spec ID**: `S<issue-#>` (e.g., `S1362`)
+- **Spec Directory**: Path to `.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/`
+- **Spec File**: Path to `.ai/alpha/specs/S<issue-#>-Spec-<project-slug>/spec.md`
+- **GitHub Issue**: Issue number and URL (e.g., `#1362 - https://github.com/...`)
 - **Key Decisions**: Major scope/design decisions made during the interview
 - **Personas Identified**: Primary and secondary user personas
 - **Risk Highlights**: Top 2-3 risks identified
 - **Open Questions**: Unresolved items requiring follow-up
-- **Next Step**: Command to run next: `/alpha:initiative-decompose <issue-#>`
+- **Next Step**: Command to run next: `/alpha:initiative-decompose S<issue-#>` (e.g., `/alpha:initiative-decompose S1362`)

@@ -1,15 +1,10 @@
 ---
 description: Implement all tasks for a feature from Alpha workflow. Reads tasks.json, executes with sub-agents (parallel by default), validates, commits, and reports progress.
-argument-hint: <feature-id> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
+argument-hint: <S#.I#.F#|feature-#> [--resume-from=<task-id>] [--sequential] [--parallel-dry-run]
 model: opus
 allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion, WebFetch, WebSearch, TaskOutput]
 hooks:
   PostToolUse:
-    - matcher: ""
-      hooks:
-        - type: command
-          command: "HOOK_EVENT_TYPE=post_tool_use python3 $CLAUDE_PROJECT_DIR/.claude/hooks/event_reporter.py || true"
-          timeout: 3
     - matcher: "TodoWrite"
       hooks:
         - type: command
@@ -31,13 +26,17 @@ hooks:
 
 # Alpha Feature Implementation
 
-Implement ALL tasks for Feature #$ARGUMENTS from the Alpha autonomous coding workflow.
+Implement ALL tasks for Feature $ARGUMENTS from the Alpha autonomous coding workflow.
 
 **Arguments:**
-- `<feature-id>` - Required. The GitHub issue number for the feature.
-- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5`).
+- `<feature-id>` - Required. Semantic ID (e.g., `S1362.I1.F1`) or legacy GitHub issue number.
+- `--resume-from=<task-id>` - Optional. Skip completed tasks and resume from the specified task ID (e.g., `--resume-from=T5` or `--resume-from=S1362.I1.F1.T5`).
 - `--sequential` - Optional. Force sequential execution even when parallel batches are available.
 - `--parallel-dry-run` - Optional. Log parallel execution plan without executing. Use to validate analysis.
+
+**Accepted ID Formats:**
+- `S1362.I1.F1` - Semantic feature ID (preferred)
+- `1367` - Legacy GitHub issue number
 
 ## Context
 
@@ -70,16 +69,45 @@ You are running inside an E2B sandbox as part of the Alpha Initiative Orchestrat
 
 ### Phase 1: Load Context
 
-1. **Find feature directory**:
+1. **Parse input and find feature directory**:
+
+   **For semantic IDs (S#.I#.F#):**
+   ```typescript
+   const input = '$ARGUMENTS'.split(' ')[0]; // Extract feature ID
+   if (input.match(/^S\d+\.I\d+\.F\d+$/)) {
+     // Semantic ID: S1362.I1.F1
+     const match = input.match(/S(\d+)\.I(\d+)\.F(\d+)/);
+     const specNum = match[1];
+     const initPriority = match[2];
+     const featPriority = match[3];
+     // Use Glob to find: .ai/alpha/specs/**/S${specNum}.I${initPriority}.F${featPriority}-Feature-*
+   }
+   ```
+
+   Use Glob tool to find the feature directory:
+   ```
+   Glob tool:
+     pattern: .ai/alpha/specs/**/S*.I*.F*-Feature-*
+     # Or for specific ID: .ai/alpha/specs/**/S1362.I1.F1-Feature-*
+   ```
+
+   **For legacy issue numbers:**
    ```bash
-   # Search for feature directory by ID
+   # Search for feature directory by legacy ID
    find .ai/alpha/specs -name "$ARGUMENTS-Feature-*" -type d
    ```
 
 2. **Load tasks.json**:
    - Read the `tasks.json` file from the feature directory
    - Parse metadata, tasks, and execution groups
-   - Create TodoWrite items for all tasks
+   - **CRITICAL**: Create TodoWrite items using SEMANTIC TASK IDs from tasks.json
+     - Format TodoWrite content as: `[S1692.I1.F1.T1] Task description`
+     - Format TodoWrite activeForm as: `[S1692.I1.F1.T1] Task active form`
+     - The semantic ID MUST be the exact `id` field from each task in tasks.json
+     - Example: For a task with `"id": "S1692.I1.F1.T1"` and `"name": "Create types"`
+       - content: `[S1692.I1.F1.T1] Create types`
+       - activeForm: `[S1692.I1.F1.T1] Creating types`
+     - This ensures the orchestrator can match completed tasks to tasks.json
 
 3. **Load research library**:
    - Check for `research-library/` directory in parent spec folder
@@ -737,6 +765,197 @@ grep 'table_name' ../web/lib/database.types.ts
 - `Configure` - Update configuration
 - `Test` - Write or run tests
 - `Spike` - Research and document findings
+
+### Frontend Task Skill Invocation
+
+**Purpose**: When implementing frontend tasks, invoke specialized skills to improve code quality and ensure adherence to React and design best practices.
+
+**Identifying Frontend Tasks**:
+A task is considered a frontend task when ANY of these conditions are met:
+- Task outputs include `.tsx` files in `_components/` directories
+- Task action involves: "Create component", "Build UI", "Design interface"
+- Task touches: pages, layouts, panels, cards, forms, modals, dialogs
+- Task has `ui_task: true` in its metadata
+- Task has `skill_hints` array containing frontend skills
+
+**Available Frontend Skills**:
+- `/frontend-design` - Create distinctive, production-grade frontend interfaces with high design quality
+- `/react-best-practices` - React and Next.js performance optimization guidelines
+
+**Skill Selection Heuristics**:
+
+| Task Type | Skill to Invoke | Trigger Signal |
+|-----------|----------------|----------------|
+| New UI component | `/frontend-design` | Creates new `.tsx` in `_components/` |
+| Page layout | `/frontend-design` | Creates `page.tsx` or layout file |
+| Complex component design | `/frontend-design` | Task mentions "design", "styled", "aesthetic" |
+| Data-fetching component | `/react-best-practices` | Uses loader, suspense, or RSC patterns |
+| Performance-critical component | `/react-best-practices` | Task constraints mention performance |
+| Interactive form | Both skills | Creates form with validation/state |
+| Dashboard/data visualization | Both skills | Complex UI with data binding |
+
+**Skill Invocation Workflow**:
+
+```
+IF task is identified as frontend task:
+    Log: "🎨 Frontend task detected: ${task.name}"
+
+    IF task.skill_hints exists:
+        # Use explicit hints from task decomposition
+        For each skill in task.skill_hints:
+            Invoke: /${skill}
+    ELSE:
+        # Infer skills from task characteristics
+        IF task creates component in _components/ OR page layout:
+            Invoke: /frontend-design
+
+        IF task involves data fetching OR RSC OR performance:
+            Invoke: /react-best-practices
+
+        IF task creates form with validation:
+            Invoke: /frontend-design
+            Invoke: /react-best-practices
+
+    # Continue with task implementation using skill guidance
+```
+
+**Example Task with Skill Hints**:
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard metrics panel",
+  "ui_task": true,
+  "skill_hints": ["frontend-design", "react-best-practices"],
+  "action": { "verb": "Create", "target": "metrics panel component" },
+  "outputs": [
+    { "type": "new", "path": "apps/web/app/home/(user)/_components/metrics-panel.tsx" }
+  ]
+}
+```
+
+**Important Notes**:
+- Skills are advisory and enhance implementation quality - they don't replace verification
+- Skill invocation adds context but should not significantly impact task duration
+- If skill invocation fails (e.g., skill unavailable), continue with standard implementation
+- Document skill usage in task progress for traceability
+
+### Visual Verification (UI Tasks)
+
+**Identifying UI Tasks**:
+Tasks are considered UI tasks when ANY of these conditions are met:
+- Task has `visual_verification` field defined in tasks.json
+- Task has `requires_ui: true` field
+- Task outputs include `*.tsx` files in app routes (e.g., `apps/web/app/**/*.tsx`)
+- Task name contains: "component", "page", "layout", "form", "modal", "dialog"
+- Task action verb is `Create` or `Wire` with target containing UI terms
+
+**Visual Verification Workflow**:
+
+```
+IF task has visual_verification OR task is identified as UI task:
+    Log: "🖥️ UI task detected: ${task.name}"
+
+    1. Ensure dev server is running:
+       - Check if port 3000 is responding
+       - If not, start dev server: pnpm dev (in background)
+       - Wait for server to be ready (max 30s)
+
+    2. Run visual verification (if visual_verification defined):
+       ```bash
+       # Navigate to the route
+       agent-browser open ${baseUrl}${visual_verification.route}
+
+       # Wait for page to load
+       agent-browser wait ${visual_verification.wait_ms || 3000}
+
+       # Run each check
+       FOR each check in visual_verification.checks:
+           IF check.command == "is visible":
+               agent-browser is visible "${check.target}"
+           ELIF check.command == "find role":
+               agent-browser find role ${check.target}
+           ELIF check.command == "find label":
+               agent-browser find label "${check.target}"
+           ELIF check.command == "snapshot":
+               agent-browser snapshot -i -c
+       ```
+
+    3. Capture screenshot for documentation:
+       ```bash
+       # Create output directory
+       mkdir -p .ai/alpha/validation/${FEATURE_ID}/
+
+       # Capture screenshot
+       agent-browser screenshot .ai/alpha/validation/${FEATURE_ID}/${TASK_ID}-screenshot.png
+       ```
+
+    4. Handle verification result:
+       IF all checks pass:
+           Log: "✅ Visual verification passed"
+           Continue to next task
+       ELSE:
+           Log: "❌ Visual verification failed"
+           Log errors for each failed check
+           IF failure is critical (e.g., page doesn't load):
+               Mark task as blocked
+           ELSE:
+               Log warning and continue (non-blocking)
+```
+
+**Visual Verification Schema** (in tasks.json):
+```json
+{
+  "id": "T5",
+  "name": "Create dashboard page layout",
+  "requires_ui": true,
+  "visual_verification": {
+    "route": "/home/dashboard",
+    "wait_ms": 3000,
+    "checks": [
+      { "command": "is visible", "target": "Dashboard" },
+      { "command": "find role", "target": "heading" },
+      { "command": "find role", "target": "navigation" }
+    ],
+    "screenshot": true
+  }
+}
+```
+
+**Timeout and Fallback**:
+- Visual verification timeout: 30 seconds per task
+- If agent-browser is not available, log warning and skip (non-blocking)
+- If dev server is not running and cannot be started, skip visual verification
+- Screenshots are optional documentation - failure to capture doesn't block task
+
+**Screenshot Storage**:
+- Directory: `.ai/alpha/validation/${FEATURE_ID}/`
+- Naming: `${TASK_ID}-screenshot.png`, `${TASK_ID}-snapshot.txt`
+- These directories should be in `.gitignore` (large binary files)
+
+**Quick Reference - agent-browser Commands**:
+```bash
+# Open a page
+agent-browser open http://localhost:3000/home/dashboard
+
+# Wait for page to load (milliseconds)
+agent-browser wait 3000
+
+# Check if element is visible
+agent-browser is visible "Dashboard"
+
+# Find by ARIA role
+agent-browser find role button "Submit"
+agent-browser find role heading
+
+# Find by label
+agent-browser find label "Email"
+
+# Get accessibility snapshot
+agent-browser snapshot -i -c
+
+# Capture screenshot
+agent-browser screenshot ./path/to/screenshot.png
+```
 
 ### Phase 3: Validation & Commit
 

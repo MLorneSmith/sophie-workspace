@@ -2,7 +2,12 @@ import { Box, Text, useApp, useInput } from "ink";
 import type { FC } from "react";
 // biome-ignore lint/correctness/noUnusedImports: React must be in scope at runtime for Ink/react-reconciler
 import React from "react";
-import type { OrchestratorUIProps, ReviewUrl } from "../types.js";
+import type {
+	OrchestratorEvent,
+	OrchestratorUIProps,
+	OverallProgress as OverallProgressType,
+	ReviewUrl,
+} from "../types.js";
 import { EventLog } from "./EventLog.js";
 import { Header } from "./Header.js";
 import { OverallProgress } from "./OverallProgress.js";
@@ -156,7 +161,7 @@ export const ErrorUI: FC<{
  * Completion screen when all work is done
  */
 export const CompletionUI: FC<{
-	specId: number;
+	specId: string;
 	featuresCompleted: number;
 	tasksCompleted: number;
 	elapsed: string;
@@ -234,6 +239,187 @@ export const CompletionUI: FC<{
 
 			<Box marginTop={2}>
 				<Text dimColor>Press Enter or 'q' to exit</Text>
+			</Box>
+		</Box>
+	);
+};
+
+/**
+ * Intermediate completing screen during review sandbox setup
+ * Bug fix #1754: Shows progress during completion phase instead of premature "completed" state
+ *
+ * Displays:
+ * - "Setting up review environment..." header
+ * - List of completion phase events (review_sandbox_creating, dev_server_starting, etc.)
+ * - Dev server URL when available
+ * - Loading indicator while sandbox operations run
+ */
+export const CompletingUI: FC<{
+	specId: string;
+	progress: OverallProgressType;
+	events: OrchestratorEvent[];
+	elapsed: string;
+}> = ({ specId, progress, events, elapsed }) => {
+	// Filter for completion phase events only
+	const completionPhaseEventTypes = [
+		"completion_phase_start",
+		"sandbox_killing",
+		"review_sandbox_creating",
+		"dev_server_starting",
+		"dev_server_ready",
+		"dev_server_failed",
+	];
+
+	const completionEvents = events
+		.filter((e) => completionPhaseEventTypes.includes(e.type))
+		.slice(-10); // Show last 10 completion events
+
+	// Check if dev server URL is available from events
+	const devServerReadyEvent = events.find((e) => e.type === "dev_server_ready");
+	const devServerUrl = devServerReadyEvent?.details?.url as string | undefined;
+
+	// Determine current phase from most recent event
+	const latestEvent = completionEvents[completionEvents.length - 1];
+	const currentPhase = latestEvent?.type ?? "completion_phase_start";
+
+	// Get phase description
+	const getPhaseDescription = (phase: string): string => {
+		switch (phase) {
+			case "completion_phase_start":
+				return "Starting cleanup...";
+			case "sandbox_killing":
+				return "Stopping implementation sandboxes...";
+			case "review_sandbox_creating":
+				return "Creating review sandbox...";
+			case "dev_server_starting":
+				return "Starting dev server...";
+			case "dev_server_ready":
+				return "Dev server ready!";
+			case "dev_server_failed":
+				return "Dev server failed to start";
+			default:
+				return "Setting up...";
+		}
+	};
+
+	// Get event icon
+	const getEventIcon = (type: string): string => {
+		switch (type) {
+			case "completion_phase_start":
+				return "🔄";
+			case "sandbox_killing":
+				return "🛑";
+			case "review_sandbox_creating":
+				return "📦";
+			case "dev_server_starting":
+				return "🚀";
+			case "dev_server_ready":
+				return "✅";
+			case "dev_server_failed":
+				return "❌";
+			default:
+				return "•";
+		}
+	};
+
+	return (
+		<Box
+			flexDirection="column"
+			borderStyle="single"
+			borderColor="yellow"
+			padding={2}
+		>
+			<Box flexDirection="column" alignItems="center">
+				<Text bold color="yellow">
+					⏳ Setting Up Review Environment
+				</Text>
+				<Text dimColor>Spec #{specId}</Text>
+			</Box>
+
+			<Box marginTop={1} flexDirection="column" alignItems="center">
+				<Text>
+					<Text color="cyan">{progress.featuresCompleted}</Text> features
+					implemented
+				</Text>
+				<Text>
+					<Text color="green">{progress.tasksCompleted}</Text> tasks completed
+				</Text>
+				<Text dimColor>Elapsed: {elapsed}</Text>
+			</Box>
+
+			{progress.branchName && (
+				<Box marginTop={1} justifyContent="center">
+					<Text>
+						Branch: <Text color="yellow">{progress.branchName}</Text>
+					</Text>
+				</Box>
+			)}
+
+			{/* Current phase status */}
+			<Box marginTop={1} justifyContent="center">
+				<Text color="cyan">{getPhaseDescription(currentPhase)}</Text>
+			</Box>
+
+			{/* Completion phase event log */}
+			{completionEvents.length > 0 && (
+				<Box marginTop={1} flexDirection="column">
+					<Text bold dimColor>
+						Completion Phase Events:
+					</Text>
+					{completionEvents.map((event) => (
+						<Box key={event.id}>
+							<Text dimColor>
+								{new Date(event.timestamp).toLocaleTimeString()}{" "}
+							</Text>
+							<Text>{getEventIcon(event.type)} </Text>
+							<Text>{event.message}</Text>
+						</Box>
+					))}
+				</Box>
+			)}
+
+			{/* Show dev server URL if available */}
+			{devServerUrl && (
+				<Box marginTop={1} flexDirection="column" alignItems="center">
+					<Text bold color="green">
+						🔗 Dev Server Ready:
+					</Text>
+					<Text color="blue" underline>
+						{devServerUrl}
+					</Text>
+				</Box>
+			)}
+
+			{/* Show review URLs if already populated */}
+			{progress.reviewUrls && progress.reviewUrls.length > 0 && (
+				<Box marginTop={1} flexDirection="column" alignItems="center">
+					<Text bold color="cyan">
+						🔗 Review URLs:
+					</Text>
+					{progress.reviewUrls.map((url) => (
+						<Box key={url.label} flexDirection="column" marginTop={1}>
+							<Text bold>{url.label}:</Text>
+							<Text>
+								VS Code:{" "}
+								<Text color="blue" underline>
+									{url.vscode}
+								</Text>
+							</Text>
+							<Text>
+								Dev Server:{" "}
+								<Text color="blue" underline>
+									{url.devServer}
+								</Text>
+							</Text>
+						</Box>
+					))}
+				</Box>
+			)}
+
+			<Box marginTop={2} justifyContent="center">
+				<Text dimColor>
+					Please wait while review environment is being set up...
+				</Text>
 			</Box>
 		</Box>
 	);

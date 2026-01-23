@@ -55,6 +55,12 @@ function mapWebSocketToOrchestratorEventType(
 		"db_seed_start",
 		"db_seed_complete",
 		"db_verify",
+		"completion_phase_start",
+		"sandbox_killing",
+		"review_sandbox_creating",
+		"dev_server_starting",
+		"dev_server_ready",
+		"dev_server_failed",
 	];
 
 	if (validTypes.includes(eventType as OrchestratorEventType)) {
@@ -95,6 +101,12 @@ function getOrchestratorEventMessage(eventType: OrchestratorEventType): string {
 		db_seed_start: "Running database seeding...",
 		db_seed_complete: "Database seeding complete",
 		db_verify: "Verified database state",
+		completion_phase_start: "Starting completion phase",
+		sandbox_killing: "Killing sandboxes",
+		review_sandbox_creating: "Creating review sandbox",
+		dev_server_starting: "Starting development server",
+		dev_server_ready: "Development server ready",
+		dev_server_failed: "Development server failed",
 	};
 	return messages[eventType] || "Unknown event";
 }

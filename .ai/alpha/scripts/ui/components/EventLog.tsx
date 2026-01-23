@@ -37,6 +37,13 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	db_seed_start: "🌱",
 	db_seed_complete: "✅",
 	db_verify: "🔍",
+	// Completion phase icons
+	completion_phase_start: "🏁",
+	sandbox_killing: "🗑️",
+	review_sandbox_creating: "📦",
+	dev_server_starting: "🚀",
+	dev_server_ready: "✅",
+	dev_server_failed: "❌",
 };
 
 /**
@@ -69,6 +76,13 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	db_seed_start: "green",
 	db_seed_complete: "green",
 	db_verify: "cyan",
+	// Completion phase colors
+	completion_phase_start: "yellow",
+	sandbox_killing: "red",
+	review_sandbox_creating: "blue",
+	dev_server_starting: "yellow",
+	dev_server_ready: "green",
+	dev_server_failed: "red",
 };
 
 /**
