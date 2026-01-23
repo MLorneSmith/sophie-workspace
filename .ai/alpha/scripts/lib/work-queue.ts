@@ -363,3 +363,127 @@ export function getBlockedFeatures(
 
 	return blocked;
 }
+
+// ============================================================================
+// Deadlock Detection Helpers (Bug fix #1777)
+// ============================================================================
+
+/** Default maximum retry attempts for failed features in deadlock recovery */
+export const DEFAULT_MAX_RETRIES = 3;
+
+/**
+ * Get failed features that are blocking other features from being assigned.
+ *
+ * A failed feature "blocks" other features if:
+ * 1. The failed feature belongs to an initiative
+ * 2. Other features depend on that initiative being completed
+ * 3. The initiative cannot complete because this feature failed
+ *
+ * This is used for deadlock detection when all sandboxes are idle
+ * but some features can't be assigned due to failed features blocking
+ * initiative completion.
+ *
+ * @param manifest - The spec manifest to check
+ * @returns Array of failed features that are blocking the queue
+ */
+export function getBlockingFailedFeatures(
+	manifest: SpecManifest,
+): FeatureEntry[] {
+	// Get all failed features
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	);
+
+	if (failedFeatures.length === 0) {
+		return [];
+	}
+
+	// Get initiatives that have failed features (these can't complete)
+	const initiativesWithFailures = new Set(
+		failedFeatures.map((f) => f.initiative_id),
+	);
+
+	// Get completed initiatives and features for dependency checking
+	const completedFeatureIds = new Set(
+		manifest.feature_queue
+			.filter((f) => f.status === "completed")
+			.map((f) => f.id),
+	);
+	const completedInitiativeIds = new Set(
+		manifest.initiatives
+			.filter((i) => i.status === "completed")
+			.map((i) => i.id),
+	);
+
+	// Find features that are blocked by initiatives with failures
+	const featuresBlockedByFailures = manifest.feature_queue.filter((f) => {
+		// Only consider pending/failed features (not completed/in_progress)
+		if (f.status !== "pending" && f.status !== "failed") {
+			return false;
+		}
+
+		// Check if any dependency is an initiative with a failed feature
+		return f.dependencies.some((depId) => {
+			// If dep is already completed, it doesn't block
+			if (completedFeatureIds.has(depId) || completedInitiativeIds.has(depId)) {
+				return false;
+			}
+
+			// Check if this dep is an initiative with failures
+			return initiativesWithFailures.has(depId);
+		});
+	});
+
+	// If there are features blocked by initiatives with failures,
+	// return the failed features from those initiatives
+	if (featuresBlockedByFailures.length > 0) {
+		return failedFeatures.filter((f) =>
+			initiativesWithFailures.has(f.initiative_id),
+		);
+	}
+
+	return [];
+}
+
+/**
+ * Check if a failed feature should be retried based on its retry count.
+ *
+ * @param feature - The failed feature to check
+ * @param maxRetries - Maximum number of retry attempts (default: 3)
+ * @returns true if the feature can be retried, false if max retries exceeded
+ */
+export function shouldRetryFailedFeature(
+	feature: FeatureEntry,
+	maxRetries: number = DEFAULT_MAX_RETRIES,
+): boolean {
+	const retryCount = feature.retry_count ?? 0;
+	return retryCount < maxRetries;
+}
+
+/**
+ * Reset a failed feature for retry.
+ *
+ * This function:
+ * - Sets status back to "pending"
+ * - Clears the error message
+ * - Clears sandbox assignment (assigned_sandbox, assigned_at)
+ * - Increments retry_count
+ *
+ * Note: The caller must save the manifest after calling this function.
+ *
+ * @param feature - The failed feature to reset
+ */
+export function resetFailedFeatureForRetry(feature: FeatureEntry): void {
+	// Increment retry count FIRST (before resetting status)
+	feature.retry_count = (feature.retry_count ?? 0) + 1;
+
+	// Reset to pending status
+	feature.status = "pending";
+
+	// Clear error message for fresh attempt
+	feature.error = undefined;
+
+	// Clear sandbox assignment
+	feature.assigned_sandbox = undefined;
+	feature.assigned_at = undefined;
+}

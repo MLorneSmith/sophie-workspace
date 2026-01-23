@@ -36,6 +36,8 @@ export interface FeatureEntry {
 	error?: string;
 	requires_database: boolean;
 	database_task_count: number;
+	/** Number of retry attempts for deadlock recovery (Bug fix #1777) */
+	retry_count?: number;
 }
 
 export interface InitiativeEntry {

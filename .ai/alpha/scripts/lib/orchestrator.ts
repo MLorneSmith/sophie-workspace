@@ -77,8 +77,12 @@ import {
 import {
 	assignFeatureToSandbox,
 	cleanupStaleState,
+	DEFAULT_MAX_RETRIES,
 	getBlockedFeatures,
+	getBlockingFailedFeatures,
 	getNextAvailableFeature,
+	resetFailedFeatureForRetry,
+	shouldRetryFailedFeature,
 } from "./work-queue.js";
 
 // ============================================================================
@@ -391,6 +395,149 @@ export function printSummary(
 	} else {
 		console.log("\n✅ Spec implementation complete!");
 	}
+}
+
+// ============================================================================
+// Deadlock Detection (Bug fix #1777)
+// ============================================================================
+
+/**
+ * Detect and handle deadlock conditions in the orchestrator.
+ *
+ * A deadlock occurs when:
+ * 1. All sandboxes are idle (not busy)
+ * 2. No features can be assigned (getNextAvailableFeature returns null)
+ * 3. Failed features exist that are blocking other features
+ *
+ * When deadlock is detected, this function will:
+ * - Identify failed features that are blocking the queue
+ * - Retry failed features up to DEFAULT_MAX_RETRIES times
+ * - On max retries exceeded: mark the initiative as failed
+ *
+ * @param instances - All sandbox instances
+ * @param manifest - The spec manifest
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Object with { shouldExit: boolean, retriedCount: number, failedInitiatives: string[] }
+ */
+export function detectAndHandleDeadlock(
+	instances: SandboxInstance[],
+	manifest: SpecManifest,
+	uiEnabled: boolean,
+): { shouldExit: boolean; retriedCount: number; failedInitiatives: string[] } {
+	const { log } = createLogger(uiEnabled);
+
+	// Check condition 1: All sandboxes are idle (not busy)
+	const busySandboxes = instances.filter((i) => i.status === "busy");
+	if (busySandboxes.length > 0) {
+		// Not a deadlock - work is still in progress
+		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
+	}
+
+	// Check condition 2: No features can be assigned
+	const nextFeature = getNextAvailableFeature(manifest, uiEnabled);
+	if (nextFeature !== null) {
+		// Not a deadlock - there's work available
+		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
+	}
+
+	// Check condition 3: Failed features exist
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	);
+	if (failedFeatures.length === 0) {
+		// Not a deadlock - no failed features, just blocked or completed
+		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
+	}
+
+	// Get failed features that are blocking assignable features
+	const blockingFailedFeatures = getBlockingFailedFeatures(manifest);
+
+	if (blockingFailedFeatures.length === 0) {
+		// Failed features exist but aren't blocking others - not a critical deadlock
+		// This can happen if failed features are in a non-critical path
+		log("\n⚠️ Deadlock check: Failed features exist but are not blocking queue");
+		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
+	}
+
+	// Deadlock detected! Log and handle it.
+	log("\n🚨 Deadlock detected!");
+	log(`   All ${instances.length} sandboxes are idle`);
+	log("   No features can be assigned");
+	log(`   ${blockingFailedFeatures.length} failed feature(s) blocking queue:`);
+	for (const feature of blockingFailedFeatures) {
+		const retryCount = feature.retry_count ?? 0;
+		log(
+			`   - #${feature.id}: ${feature.title} (retries: ${retryCount}/${DEFAULT_MAX_RETRIES})`,
+		);
+	}
+
+	// Track results
+	let retriedCount = 0;
+	const failedInitiatives: string[] = [];
+
+	// Process each blocking failed feature
+	for (const feature of blockingFailedFeatures) {
+		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+			// Retry this feature
+			const newRetryCount = (feature.retry_count ?? 0) + 1;
+			log(
+				`\n🔄 Retrying failed feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
+			);
+
+			resetFailedFeatureForRetry(feature);
+			retriedCount++;
+
+			// Emit event for UI visibility
+			emitOrchestratorEvent(
+				"feature_retry",
+				`Retrying feature #${feature.id} after deadlock detection`,
+				{
+					featureId: feature.id,
+					retryCount: newRetryCount,
+					maxRetries: DEFAULT_MAX_RETRIES,
+				},
+			);
+		} else {
+			// Max retries exceeded - mark initiative as failed
+			const initiative = manifest.initiatives.find(
+				(i) => i.id === feature.initiative_id,
+			);
+			if (initiative && initiative.status !== "failed") {
+				log(
+					`\n❌ Max retries exceeded for feature #${feature.id} - marking initiative ${initiative.id} as failed`,
+				);
+				initiative.status = "failed";
+				failedInitiatives.push(initiative.id);
+
+				// Emit event for UI visibility
+				emitOrchestratorEvent(
+					"initiative_failed",
+					`Initiative ${initiative.id} marked as failed due to feature #${feature.id} exhausting retries`,
+					{
+						initiativeId: initiative.id,
+						featureId: feature.id,
+						retryCount: feature.retry_count ?? 0,
+					},
+				);
+			}
+		}
+	}
+
+	// Save manifest with updates
+	saveManifest(manifest);
+
+	// Determine if we should exit
+	// Exit if: all blocking features have exhausted retries (no features were retried)
+	const shouldExit = retriedCount === 0;
+
+	if (shouldExit) {
+		log("\n❌ All blocking features have exhausted retries - exiting");
+		log(`   Failed initiatives: ${failedInitiatives.join(", ") || "(none)"}`);
+	} else {
+		log(`\n✅ Retried ${retriedCount} feature(s) - continuing work loop`);
+	}
+
+	return { shouldExit, retriedCount, failedInitiatives };
 }
 
 // ============================================================================
@@ -873,6 +1020,37 @@ export async function runWorkLoop(
 
 			// If no work is active, check if we should exit or continue waiting
 			if (activeWork.size === 0) {
+				// Bug fix #1777: Check for deadlock condition FIRST
+				// Deadlock occurs when:
+				// 1. All sandboxes are idle (checked above: activeWork.size === 0)
+				// 2. No features can be assigned (getNextAvailableFeature returned null for all sandboxes)
+				// 3. Failed features exist that are blocking other features
+				const deadlockResult = detectAndHandleDeadlock(
+					instances,
+					manifest,
+					uiEnabled,
+				);
+
+				if (deadlockResult.shouldExit) {
+					log(
+						"\n❌ Orchestration incomplete: deadlock detected with no recovery possible",
+					);
+					if (deadlockResult.failedInitiatives.length > 0) {
+						log(
+							`   Failed initiatives: ${deadlockResult.failedInitiatives.join(", ")}`,
+						);
+					}
+					break;
+				}
+
+				// If features were retried, continue to let them be picked up
+				if (deadlockResult.retriedCount > 0) {
+					log(
+						`   ✅ Deadlock resolved: ${deadlockResult.retriedCount} feature(s) retried`,
+					);
+					continue;
+				}
+
 				// Check for ANY retryable features (pending or failed), regardless of dependencies
 				const retryableFeatures = manifest.feature_queue.filter(
 					(f) => f.status === "pending" || f.status === "failed",
