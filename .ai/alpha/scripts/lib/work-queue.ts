@@ -487,3 +487,51 @@ export function resetFailedFeatureForRetry(feature: FeatureEntry): void {
 	feature.assigned_sandbox = undefined;
 	feature.assigned_at = undefined;
 }
+
+// ============================================================================
+// Phantom Completion Detection (Bug fix #1782)
+// ============================================================================
+
+/**
+ * Get features that are in "phantom completion" state.
+ *
+ * A phantom-completed feature has:
+ * 1. status === "in_progress"
+ * 2. tasks_completed >= task_count (all tasks done)
+ * 3. Not currently being worked on (sandbox not busy)
+ *
+ * This happens when task execution completes but the manifest status
+ * wasn't updated (race condition between PTY completion and manifest save).
+ *
+ * @param manifest - The spec manifest to check
+ * @param busySandboxLabels - Set of sandbox labels that are currently busy
+ * @returns Array of features in phantom completion state
+ */
+export function getPhantomCompletedFeatures(
+	manifest: SpecManifest,
+	busySandboxLabels: Set<string>,
+): FeatureEntry[] {
+	return manifest.feature_queue.filter((feature) => {
+		// Must be in_progress to be phantom-completed
+		if (feature.status !== "in_progress") {
+			return false;
+		}
+
+		// Must have all tasks completed
+		const tasksCompleted = feature.tasks_completed ?? 0;
+		if (tasksCompleted < feature.task_count) {
+			return false;
+		}
+
+		// Must not have an active sandbox working on it
+		// (sandbox is not busy OR feature has no assigned sandbox)
+		if (
+			feature.assigned_sandbox &&
+			busySandboxLabels.has(feature.assigned_sandbox)
+		) {
+			return false;
+		}
+
+		return true;
+	});
+}

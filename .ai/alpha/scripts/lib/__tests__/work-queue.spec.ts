@@ -17,6 +17,7 @@ vi.mock("../manifest.js", () => ({
 import {
 	assignFeatureToSandbox,
 	getNextAvailableFeature,
+	getPhantomCompletedFeatures,
 } from "../work-queue.js";
 
 /**
@@ -322,5 +323,203 @@ describe("race condition regression tests", () => {
 		const shouldBeNull = getNextAvailableFeature(manifest);
 		expect(shouldBeNull).toBeNull(); // No features available (1367 is in_progress)
 		expect(feature.status).toBe("in_progress"); // Still in_progress, not reset
+	});
+});
+
+// ============================================================================
+// Phantom Completion Detection Tests (Bug fix #1782)
+// ============================================================================
+
+describe("getPhantomCompletedFeatures", () => {
+	it("detects feature with all tasks completed but status in_progress", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 4,
+				assigned_sandbox: "sbx-a",
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(
+			manifest,
+			new Set(), // No busy sandboxes
+		);
+
+		expect(phantomFeatures).toHaveLength(1);
+		expect(phantomFeatures[0]?.id).toBe("1367");
+	});
+
+	it("detects feature with more tasks completed than task_count", () => {
+		// Edge case - shouldn't happen but handle gracefully
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 5, // More than task_count
+				assigned_sandbox: "sbx-a",
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(1);
+	});
+
+	it("does NOT detect feature where tasks are incomplete", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 3, // One task remaining
+				assigned_sandbox: "sbx-a",
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("does NOT detect feature with status completed", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "completed",
+				task_count: 4,
+				tasks_completed: 4,
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("does NOT detect feature with status pending", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "pending",
+				task_count: 4,
+				tasks_completed: 0,
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("does NOT detect feature with status failed", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "failed",
+				task_count: 4,
+				tasks_completed: 2,
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("does NOT detect feature if assigned sandbox is busy", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 4,
+				assigned_sandbox: "sbx-a",
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(
+			manifest,
+			new Set(["sbx-a"]), // sbx-a is busy
+		);
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("detects feature with no assigned sandbox (orphaned)", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 4,
+				// No assigned_sandbox - orphaned state
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(1);
+	});
+
+	it("detects multiple phantom-completed features", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				tasks_completed: 4,
+			},
+			{
+				id: "1368",
+				status: "in_progress",
+				task_count: 3,
+				tasks_completed: 3,
+			},
+			{
+				id: "1369",
+				status: "in_progress",
+				task_count: 5,
+				tasks_completed: 2, // Not phantom-completed
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(2);
+		expect(phantomFeatures.map((f) => f.id)).toEqual(["1367", "1368"]);
+	});
+
+	it("handles tasks_completed being undefined (defaults to 0)", () => {
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 4,
+				// tasks_completed undefined - should default to 0
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0); // 0 < 4, not phantom-completed
+	});
+
+	it("detects feature with task_count 0 and tasks_completed 0", () => {
+		// Edge case - feature with no tasks should be detectable
+		const manifest = createTestManifest([
+			{
+				id: "1367",
+				status: "in_progress",
+				task_count: 0,
+				tasks_completed: 0,
+			},
+		]);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(1);
 	});
 });

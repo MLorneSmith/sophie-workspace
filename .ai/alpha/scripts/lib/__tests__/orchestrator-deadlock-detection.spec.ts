@@ -31,6 +31,7 @@ vi.mock("../event-emitter.js", () => ({
 import {
 	DEFAULT_MAX_RETRIES,
 	getBlockingFailedFeatures,
+	getPhantomCompletedFeatures,
 	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "../work-queue.js";
@@ -779,5 +780,274 @@ describe("regression: normal operation not affected", () => {
 
 		// Sandbox is busy, so no deadlock check performed
 		expect(result.shouldExit).toBe(false);
+	});
+});
+
+// ============================================================================
+// Phantom Completion Detection in Deadlock Recovery (Bug fix #1782)
+// ============================================================================
+
+describe("getPhantomCompletedFeatures", () => {
+	it("detects features with tasks_completed >= task_count but status in_progress", () => {
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 4,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress" }],
+		);
+
+		const phantomFeatures = getPhantomCompletedFeatures(
+			manifest,
+			new Set(), // No busy sandboxes
+		);
+
+		expect(phantomFeatures).toHaveLength(1);
+		expect(phantomFeatures[0]?.id).toBe("S1692.I1.F1");
+	});
+
+	it("does NOT detect phantom completion when sandbox is busy", () => {
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 4,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress" }],
+		);
+
+		const phantomFeatures = getPhantomCompletedFeatures(
+			manifest,
+			new Set(["sbx-a"]), // sbx-a is busy
+		);
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+
+	it("does NOT detect phantom completion when tasks are incomplete", () => {
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 3, // Not all tasks done
+					assigned_sandbox: "sbx-a",
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress" }],
+		);
+
+		const phantomFeatures = getPhantomCompletedFeatures(manifest, new Set());
+
+		expect(phantomFeatures).toHaveLength(0);
+	});
+});
+
+describe("detectAndHandleDeadlock - phantom completion recovery", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("recovers phantom-completed features before checking for failed features", () => {
+		// Scenario: Feature has all tasks done but status is in_progress
+		// This should be recovered as phantom completion, not treated as failed
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					initiative_id: "S1692.I1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 4,
+					assigned_sandbox: "sbx-a",
+				},
+				{
+					id: "S1692.I2.F1",
+					initiative_id: "S1692.I2",
+					status: "pending",
+					dependencies: ["S1692.I1"],
+				},
+			],
+			[
+				{ id: "S1692.I1", status: "in_progress", feature_count: 1 },
+				{ id: "S1692.I2", status: "pending" },
+			],
+		);
+
+		const instances = [createMockSandboxInstance("sbx-a", "ready")];
+
+		const result = detectAndHandleDeadlock(instances, manifest, true);
+
+		// Phantom completion should be detected and recovered
+		expect(result.shouldExit).toBe(false);
+		expect(result.retriedCount).toBe(1); // recoveredCount returned as retriedCount
+
+		// Verify feature was transitioned to completed
+		const feature = manifest.feature_queue.find((f) => f.id === "S1692.I1.F1");
+		expect(feature?.status).toBe("completed");
+
+		// Verify event was emitted
+		expect(emitOrchestratorEvent).toHaveBeenCalledWith(
+			"phantom_completion_detected",
+			expect.stringContaining("S1692.I1.F1"),
+			expect.objectContaining({
+				featureId: "S1692.I1.F1",
+				tasksCompleted: 4,
+				taskCount: 4,
+				context: "deadlock_detection",
+			}),
+		);
+	});
+
+	it("updates initiative status when phantom completion makes initiative complete", () => {
+		// All features in initiative are either completed or phantom-completed
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					initiative_id: "S1692.I1",
+					status: "completed",
+					task_count: 3,
+					tasks_completed: 3,
+				},
+				{
+					id: "S1692.I1.F2",
+					initiative_id: "S1692.I1",
+					status: "in_progress", // Phantom completed
+					task_count: 4,
+					tasks_completed: 4,
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress", feature_count: 2 }],
+		);
+
+		const instances = [createMockSandboxInstance("sbx-a", "ready")];
+
+		detectAndHandleDeadlock(instances, manifest, true);
+
+		// Initiative should now be completed
+		const initiative = manifest.initiatives.find((i) => i.id === "S1692.I1");
+		expect(initiative?.status).toBe("completed");
+	});
+
+	it("processes multiple phantom-completed features", () => {
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					initiative_id: "S1692.I1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 4,
+				},
+				{
+					id: "S1692.I1.F2",
+					initiative_id: "S1692.I1",
+					status: "in_progress",
+					task_count: 3,
+					tasks_completed: 3,
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress", feature_count: 2 }],
+		);
+
+		const instances = [createMockSandboxInstance("sbx-a", "ready")];
+
+		const result = detectAndHandleDeadlock(instances, manifest, true);
+
+		// Both phantom completions should be recovered
+		expect(result.retriedCount).toBe(2);
+
+		// Both features should be completed
+		expect(manifest.feature_queue[0]?.status).toBe("completed");
+		expect(manifest.feature_queue[1]?.status).toBe("completed");
+	});
+
+	it("does not process phantom completion when sandboxes are busy", () => {
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					initiative_id: "S1692.I1",
+					status: "in_progress",
+					task_count: 4,
+					tasks_completed: 4,
+					assigned_sandbox: "sbx-a",
+				},
+			],
+			[{ id: "S1692.I1", status: "in_progress" }],
+		);
+
+		const instances = [createMockSandboxInstance("sbx-a", "busy")];
+
+		const result = detectAndHandleDeadlock(instances, manifest, true);
+
+		// Sandbox is busy - no deadlock detection runs
+		expect(result.shouldExit).toBe(false);
+		expect(result.retriedCount).toBe(0);
+
+		// Feature should NOT be changed
+		expect(manifest.feature_queue[0]?.status).toBe("in_progress");
+	});
+
+	it("recovers phantom completion even when failed features also exist", () => {
+		// Scenario: All features have blocked dependencies OR are phantom/failed
+		// - F1 in I1 is phantom completed (tasks done, status in_progress)
+		// - F2 in I1 failed, with unmet dependency (blocked, can't be picked up)
+		// - F3 in I2 depends on I1 completing (blocked)
+		// getNextAvailableFeature returns null (no assignable work)
+		// Deadlock detection triggers, finds phantom completion first
+		const manifest = createTestManifest(
+			[
+				{
+					id: "S1692.I1.F1",
+					initiative_id: "S1692.I1",
+					status: "in_progress", // Phantom completed
+					task_count: 4,
+					tasks_completed: 4,
+				},
+				{
+					id: "S1692.I1.F2",
+					initiative_id: "S1692.I1",
+					status: "failed", // Failed feature
+					error: "PTY timeout",
+					retry_count: 0,
+					dependencies: ["S1692.I0.F1"], // Blocked by unmet dependency
+				},
+				{
+					id: "S1692.I2.F1",
+					initiative_id: "S1692.I2",
+					status: "pending",
+					dependencies: ["S1692.I1"], // Blocked by I1 not completed
+				},
+			],
+			[
+				{ id: "S1692.I0", status: "in_progress" }, // Not completed, blocks F2
+				{ id: "S1692.I1", status: "in_progress", feature_count: 2 },
+				{ id: "S1692.I2", status: "pending" },
+			],
+		);
+
+		const instances = [createMockSandboxInstance("sbx-a", "ready")];
+
+		const result = detectAndHandleDeadlock(instances, manifest, true);
+
+		// Phantom completion should be recovered first
+		expect(manifest.feature_queue[0]?.status).toBe("completed");
+
+		// The function returns early after recovering phantom completions
+		// Failed feature should not be processed in this call
+		expect(result.retriedCount).toBe(1);
+		expect(result.failedInitiatives).toHaveLength(0);
 	});
 });

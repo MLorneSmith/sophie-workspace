@@ -49,14 +49,17 @@ export type OrchestratorCompletionEventType =
 	| "dev_server_failed";
 
 /**
- * Event types emitted by the orchestrator for deadlock detection (Bug fix #1777).
- * These provide visibility into automatic feature retries during deadlock recovery.
+ * Event types emitted by the orchestrator for deadlock detection (Bug fix #1777)
+ * and phantom completion recovery (Bug fix #1782).
+ * These provide visibility into automatic feature retries and phantom completion recovery.
  */
 export type OrchestratorDeadlockEventType =
 	/** Emitted when a failed feature is being retried after deadlock detection */
 	| "feature_retry"
 	/** Emitted when an initiative is marked as failed due to max retries exceeded */
-	| "initiative_failed";
+	| "initiative_failed"
+	/** Emitted when a phantom-completed feature is detected and recovered (Bug fix #1782) */
+	| "phantom_completion_detected";
 
 /**
  * Combined event type for all orchestrator events

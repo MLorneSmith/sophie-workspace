@@ -81,6 +81,7 @@ import {
 	getBlockedFeatures,
 	getBlockingFailedFeatures,
 	getNextAvailableFeature,
+	getPhantomCompletedFeatures,
 	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "./work-queue.js";
@@ -438,6 +439,82 @@ export function detectAndHandleDeadlock(
 	if (nextFeature !== null) {
 		// Not a deadlock - there's work available
 		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
+	}
+
+	// Bug fix #1782: Check for phantom-completed features first
+	// These are features where tasks_completed >= task_count but status is still "in_progress"
+	// Recovering these can unblock dependents and prevent false deadlocks
+	const busySandboxLabels = new Set(
+		instances.filter((i) => i.status === "busy").map((i) => i.label),
+	);
+	const phantomCompletedFeatures = getPhantomCompletedFeatures(
+		manifest,
+		busySandboxLabels,
+	);
+
+	if (phantomCompletedFeatures.length > 0) {
+		log("\n🔮 [DEADLOCK_RECOVERY] Phantom-completed features detected:");
+		let recoveredCount = 0;
+
+		for (const feature of phantomCompletedFeatures) {
+			log(
+				`   - #${feature.id}: ${feature.tasks_completed}/${feature.task_count} tasks done, status was "${feature.status}"`,
+			);
+
+			// Transition to completed
+			feature.status = "completed";
+			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
+
+			// Update initiative status
+			const initiative = manifest.initiatives.find(
+				(i) => i.id === feature.initiative_id,
+			);
+			if (initiative) {
+				const initFeatures = manifest.feature_queue.filter(
+					(f) => f.initiative_id === initiative.id,
+				);
+				initiative.features_completed = initFeatures.filter(
+					(f) => f.status === "completed",
+				).length;
+
+				if (initFeatures.every((f) => f.status === "completed")) {
+					initiative.status = "completed";
+					log(
+						`   🔮 [DEADLOCK_RECOVERY] Initiative ${initiative.id} now complete`,
+					);
+				}
+			}
+
+			// Update progress tracking
+			manifest.progress.last_completed_feature_id = feature.id;
+			recoveredCount++;
+
+			// Emit event for UI visibility
+			emitOrchestratorEvent(
+				"phantom_completion_detected",
+				`Deadlock recovery: Feature #${feature.id} phantom completion recovered`,
+				{
+					featureId: feature.id,
+					tasksCompleted: feature.tasks_completed,
+					taskCount: feature.task_count,
+					initiativeId: feature.initiative_id,
+					context: "deadlock_detection",
+				},
+			);
+		}
+
+		saveManifest(manifest);
+		log(
+			`\n✅ [DEADLOCK_RECOVERY] Recovered ${recoveredCount} phantom-completed feature(s) - continuing work loop`,
+		);
+
+		// Return early - recovering phantom completions may unblock other features
+		return {
+			shouldExit: false,
+			retriedCount: recoveredCount,
+			failedInitiatives: [],
+		};
 	}
 
 	// Check condition 3: Failed features exist
@@ -1203,6 +1280,81 @@ export async function runWorkLoop(
 
 					log(`   🔄 Feature #${feature.id} reset to pending for reassignment`);
 				}
+			}
+
+			// Bug fix #1782: Phantom completion detection
+			// Detect features where all tasks completed but status wasn't updated
+			// This can happen when PTY disconnects after completion or manifest save fails
+			const busySandboxLabels = new Set(
+				instances.filter((i) => i.status === "busy").map((i) => i.label),
+			);
+			const phantomCompletedFeatures = getPhantomCompletedFeatures(
+				manifest,
+				busySandboxLabels,
+			);
+
+			for (const feature of phantomCompletedFeatures) {
+				const sandboxInstance = instances.find(
+					(i) => i.label === feature.assigned_sandbox,
+				);
+
+				log(
+					`   🔮 [PHANTOM_COMPLETION] Detected: Feature #${feature.id} has ${feature.tasks_completed}/${feature.task_count} tasks completed but status is "${feature.status}"`,
+				);
+
+				// Transition feature to completed
+				feature.status = "completed";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+
+				// Update initiative status
+				const initiative = manifest.initiatives.find(
+					(i) => i.id === feature.initiative_id,
+				);
+				if (initiative) {
+					const initFeatures = manifest.feature_queue.filter(
+						(f) => f.initiative_id === initiative.id,
+					);
+					initiative.features_completed = initFeatures.filter(
+						(f) => f.status === "completed",
+					).length;
+
+					if (initFeatures.every((f) => f.status === "completed")) {
+						initiative.status = "completed";
+						log(
+							`   🔮 [PHANTOM_COMPLETION] Initiative ${initiative.id} now complete (all ${initiative.feature_count} features done)`,
+						);
+					} else {
+						initiative.status = "in_progress";
+					}
+				}
+
+				// Update progress tracking
+				manifest.progress.last_completed_feature_id = feature.id;
+
+				saveManifest(manifest);
+
+				// Mark sandbox as ready for next feature if it exists
+				if (sandboxInstance) {
+					sandboxInstance.status = "ready";
+					sandboxInstance.currentFeature = null;
+				}
+
+				log(
+					`   ✅ [PHANTOM_COMPLETION] Feature #${feature.id} recovered - dependents unblocked`,
+				);
+
+				// Emit event for UI visibility
+				emitOrchestratorEvent(
+					"phantom_completion_detected",
+					`Feature #${feature.id} phantom completion recovered`,
+					{
+						featureId: feature.id,
+						tasksCompleted: feature.tasks_completed,
+						taskCount: feature.task_count,
+						initiativeId: feature.initiative_id,
+					},
+				);
 			}
 
 			// Wait for at least one sandbox to finish OR health check interval
