@@ -11,7 +11,7 @@
 		"build": "cross-env NODE_ENV=production NODE_OPTIONS=--no-deprecation next build --webpack",
 		"dev": "cross-env PORT=3020 NODE_OPTIONS=--no-deprecation next dev",
 		"dev:test": "dotenv -e .env.test -- cross-env PORT=3021 NODE_OPTIONS=--no-deprecation next dev",
-		"start:test": "cross-env NODE_ENV=test PORT=3021 NODE_OPTIONS=--no-deprecation next start",
+		"start:test": "cross-env PAYLOAD_ENV=test PORT=3021 NODE_OPTIONS=--no-deprecation next start",
 		"cache:clear": "rimraf .next .turbo",
 		"clean": "rimraf .next .turbo node_modules",
 		"devsafe": "pnpm cache:clear && cross-env NODE_OPTIONS=--no-deprecation next dev",
