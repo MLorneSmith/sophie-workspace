@@ -123,7 +123,7 @@ jobs:
           
           # Build with Turbo
           echo "::group::Build Output"
-          pnpm build --cache-dir=.turbo
+          pnpm build
           echo "::endgroup::"
           
           END_TIME=$(date +%s)

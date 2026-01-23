@@ -11,8 +11,11 @@
  *
  * Requirements:
  * - Python 3.9+
- * - pip install kokoro>=0.9.4 soundfile sounddevice
- * - System: espeak-ng (sudo apt-get install espeak-ng)
+ * - pip install kokoro>=0.9.4 soundfile
+ * - System: espeak-ng, pulseaudio-utils (paplay)
+ *
+ * WSLg Setup:
+ * Add to ~/.bashrc: export PULSE_SERVER=unix:/mnt/wslg/PulseServer
  */
 
 import { spawn } from "node:child_process";
@@ -26,15 +29,12 @@ const TTS_SPEED = process.env.CLAUDE_TTS_SPEED || "1.1";
  * Speak text using Kokoro TTS.
  *
  * Runs in background subprocess to avoid blocking the orchestrator.
+ * Uses paplay for audio playback (works with PulseAudio/WSLg).
  * Fails silently if TTS is not available or disabled.
  *
  * @param text - Text to speak
- * @param log - Optional logger function (defaults to console.log)
  */
-export function speak(
-	text: string,
-	_log?: (...args: unknown[]) => void,
-): void {
+export function speak(text: string): void {
 	if (!TTS_ENABLED) {
 		return;
 	}
@@ -45,18 +45,33 @@ export function speak(
 		.replace(/"/g, '\\"')
 		.replace(/\n/g, " ");
 
-	// Python script to run TTS
-	// Uses Kokoro's streaming API for immediate playback
+	// Python script to run TTS with paplay for audio output
+	// Writes to temp file, plays with paplay, then cleans up
 	const pythonScript = `
-import sounddevice as sd
+import soundfile as sf
 from kokoro import KPipeline
+import subprocess
+import tempfile
+import numpy as np
+import os
 
 try:
     pipeline = KPipeline(lang_code='a')
+    audio_chunks = []
     for _, _, audio in pipeline("${escapedText}", voice="${TTS_VOICE}", speed=${TTS_SPEED}):
-        sd.play(audio, samplerate=24000)
-        sd.wait()
-except Exception as e:
+        audio_chunks.append(audio)
+
+    full_audio = np.concatenate(audio_chunks)
+
+    # Write to temp file
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
+        sf.write(f.name, full_audio, 24000)
+        temp_path = f.name
+
+    # Play with paplay (PulseAudio)
+    subprocess.run(['paplay', temp_path], capture_output=True)
+    os.unlink(temp_path)
+except Exception:
     pass  # Fail silently
 `;
 
@@ -65,6 +80,11 @@ except Exception as e:
 		const child = spawn("python3", ["-c", pythonScript], {
 			stdio: "ignore",
 			detached: true,
+			env: {
+				...process.env,
+				// Ensure WSLg PulseAudio is used
+				PULSE_SERVER: process.env.PULSE_SERVER || "unix:/mnt/wslg/PulseServer",
+			},
 		});
 
 		// Unref to allow parent to exit independently
@@ -124,9 +144,10 @@ export async function isTTSAvailable(): Promise<boolean> {
 	}
 
 	return new Promise((resolve) => {
-		const child = spawn("python3", [
+		// Check Python dependencies (kokoro, soundfile) and paplay
+		const child = spawn("bash", [
 			"-c",
-			"from kokoro import KPipeline; import sounddevice; print('ok')",
+			"python3 -c 'from kokoro import KPipeline; import soundfile; print(\"ok\")' && which paplay",
 		]);
 
 		let output = "";

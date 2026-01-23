@@ -144,7 +144,7 @@ jobs:
         run: pnpm --filter web-e2e exec playwright install chromium --with-deps
 
       - name: Build application (with cache)
-        run: pnpm build --cache-dir=.turbo
+        run: pnpm build
 
       - name: Quick database setup
         run: |

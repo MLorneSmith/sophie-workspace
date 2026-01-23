@@ -69,13 +69,13 @@ jobs:
           echo "::group::Build Output"
           if [ -n "$TURBO_TOKEN" ]; then
             echo "Building with remote cache enabled"
-            pnpm build --cache-dir=.turbo || {
+            pnpm build || {
               echo "::warning::Build with remote cache failed. Retrying without remote cache..."
-              TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo --force
+              TURBO_REMOTE_CACHE_ENABLED=false pnpm build --force
             }
           else
             echo "Building without remote cache (no TURBO_TOKEN)"
-            TURBO_REMOTE_CACHE_ENABLED=false pnpm build --cache-dir=.turbo
+            TURBO_REMOTE_CACHE_ENABLED=false pnpm build
           fi
           echo "::endgroup::"
         env:
