@@ -241,10 +241,14 @@ jobs:
             
             ### 🔄 Next Steps
             1. Review this PR
-            2. Approve if everything looks good
-            3. Merge to trigger staging deployment
+            2. Mark as "Ready for review" when satisfied
+            3. Approve to trigger auto-merge (squash)
             4. Monitor staging deployment
             5. Run staging validation tests
+
+            ### ℹ️ Merge Strategy
+            This PR uses **squash merge** to keep staging history clean and avoid
+            the "branch behind" confusion that occurs with merge commits.
             
             ---
             *🤖 Generated automatically by Dev Promotion Readiness workflow*
@@ -267,11 +271,36 @@ jobs:
               issue_number: pr.data.number,
               labels: ['staging', 'deployment', 'automated']
             });
-            
+
+            // Enable auto-merge with squash to avoid merge commit confusion
+            // (staging won't have commits that dev lacks)
+            try {
+              await github.graphql(`
+                mutation EnableAutoMerge($pullRequestId: ID!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $pullRequestId,
+                    mergeMethod: SQUASH
+                  }) {
+                    pullRequest {
+                      autoMergeRequest {
+                        enabledAt
+                      }
+                    }
+                  }
+                }
+              `, {
+                pullRequestId: pr.data.node_id
+              });
+              console.log('Auto-merge (squash) enabled for PR');
+            } catch (error) {
+              console.log('Could not enable auto-merge:', error.message);
+              // Auto-merge may not be available if branch protection doesn't require reviews
+            }
+
             console.log(`Created PR #${pr.data.number}: ${pr.data.html_url}`);
             core.setOutput('pr_number', pr.data.number);
             core.setOutput('pr_url', pr.data.html_url);
-            
+
             return pr.data;
 
       - name: Send notifications
