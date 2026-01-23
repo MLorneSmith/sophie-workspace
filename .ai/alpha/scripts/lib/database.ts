@@ -347,7 +347,63 @@ export async function seedSandboxDatabase(
 		log("   ✅ Payload seeding complete");
 		emitOrchestratorEvent("db_seed_complete", "Payload seeding complete");
 
-		// Step 3: Quick verification
+		// Step 3: Create Supabase auth users for E2E testing
+		log("   👤 Creating Supabase auth test users...");
+		emitOrchestratorEvent(
+			"db_auth_seed_start",
+			"Creating Supabase auth users...",
+		);
+
+		try {
+			// Get sandbox Supabase credentials for auth user creation
+			const sandboxUrl = process.env.SUPABASE_SANDBOX_URL;
+			const sandboxServiceKey = process.env.SUPABASE_SANDBOX_SERVICE_ROLE_KEY;
+
+			// Build environment with E2E-specific variables the setup script expects
+			const authSeedEnvs: Record<string, string> = {
+				...getAllEnvVars(),
+				// Setup script looks for E2E_SUPABASE_URL and E2E_SUPABASE_SERVICE_ROLE_KEY
+				...(sandboxUrl && { E2E_SUPABASE_URL: sandboxUrl }),
+				...(sandboxServiceKey && {
+					E2E_SUPABASE_SERVICE_ROLE_KEY: sandboxServiceKey,
+				}),
+			};
+
+			const authSeedResult = await sandbox.commands.run(
+				`cd ${WORKSPACE_DIR} && node apps/e2e/scripts/setup-test-users.js`,
+				{
+					timeoutMs: 60000, // 1 minute for auth setup
+					envs: authSeedEnvs,
+				},
+			);
+
+			if (authSeedResult.exitCode !== 0) {
+				warn(`   ⚠️ Auth user seeding failed: ${authSeedResult.stderr}`);
+				emitOrchestratorEvent(
+					"db_auth_seed_failed",
+					`Auth user seeding failed: ${authSeedResult.stderr}`,
+					{ exitCode: authSeedResult.exitCode },
+				);
+				// Non-blocking - log warning but continue
+			} else {
+				log("   ✅ Supabase auth users created");
+				emitOrchestratorEvent(
+					"db_auth_seed_complete",
+					"Auth users created successfully",
+				);
+			}
+		} catch (err) {
+			const errorMessage = err instanceof Error ? err.message : String(err);
+			warn(`   ⚠️ Auth seeding error (non-blocking): ${errorMessage}`);
+			emitOrchestratorEvent(
+				"db_auth_seed_error",
+				`Auth seeding error: ${errorMessage}`,
+				{ error: errorMessage },
+			);
+			// Continue anyway - feature can proceed without auth users
+		}
+
+		// Step 4: Quick verification
 		log("   🔍 Verifying seeded data...");
 		const verifyResult = await sandbox.commands.run(
 			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,

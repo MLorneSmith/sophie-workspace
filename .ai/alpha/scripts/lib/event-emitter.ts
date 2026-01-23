@@ -28,6 +28,10 @@ export type OrchestratorDatabaseEventType =
 	| "db_migration_complete"
 	| "db_seed_start"
 	| "db_seed_complete"
+	| "db_auth_seed_start"
+	| "db_auth_seed_complete"
+	| "db_auth_seed_failed"
+	| "db_auth_seed_error"
 	| "db_verify";
 
 /**
