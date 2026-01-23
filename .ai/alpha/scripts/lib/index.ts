@@ -126,3 +126,48 @@ export {
 	getNextAvailableFeature,
 	updateNextFeatureId,
 } from "./work-queue.js";
+
+// State machine (Bug fix #1786: Event-driven architecture)
+export {
+	createDefaultContext,
+	featureStateMachine,
+	FeatureStateMachine,
+	isActiveState,
+	isAssignableState,
+	isTerminalState,
+	STATE_TRANSITIONS,
+} from "./state-machine.js";
+export type {
+	FeatureContext,
+	FeatureState,
+	StateTransition,
+	TransitionListener,
+	TransitionResult,
+} from "./state-machine.js";
+
+// Heartbeat monitor (Bug fix #1786: Event-driven architecture)
+export {
+	DEFAULT_HEARTBEAT_CONFIG,
+	formatHeartbeatStatus,
+	heartbeatMonitor,
+	HeartbeatMonitor,
+} from "./heartbeat-monitor.js";
+export type {
+	HeartbeatConfig,
+	HeartbeatStatus,
+	HeartbeatStatusType,
+} from "./heartbeat-monitor.js";
+
+// Recovery manager (Bug fix #1786: Event-driven architecture)
+export {
+	DEFAULT_RECOVERY_CONFIG,
+	formatRecoveryResult,
+	quickCleanup,
+	recoveryManager,
+	RecoveryManager,
+} from "./recovery-manager.js";
+export type {
+	RecoveryConfig,
+	RecoveryResult,
+	RecoveryTelemetry,
+} from "./recovery-manager.js";
