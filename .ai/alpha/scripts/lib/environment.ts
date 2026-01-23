@@ -428,5 +428,10 @@ export function getAllEnvVars(): Record<string, string> {
 		envs.ORCHESTRATOR_URL = _orchestratorUrl;
 	}
 
+	// Signal to Claude Code CLI that this is an intentional sandbox environment.
+	// Required since Claude Code 2.0.10+ to allow --dangerously-skip-permissions
+	// when running as root/sudo in E2B sandboxes. See: anthropics/claude-code#9184
+	envs.IS_SANDBOX = "1";
+
 	return envs;
 }

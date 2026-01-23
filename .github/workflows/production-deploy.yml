@@ -115,6 +115,13 @@ jobs:
           name: build-artifacts-production
           path: .
 
+      - name: Extract artifacts
+        run: |
+          echo "📦 Extracting build artifacts from tar archive..."
+          tar -xf build-artifacts.tar
+          echo "✅ Artifacts extracted successfully"
+          rm build-artifacts.tar
+
       - name: Deploy to Vercel
         id: deploy
         uses: ./.github/actions/vercel-deploy
@@ -171,6 +178,13 @@ jobs:
         with:
           name: build-artifacts-production
           path: .
+
+      - name: Extract artifacts
+        run: |
+          echo "📦 Extracting build artifacts from tar archive..."
+          tar -xf build-artifacts.tar
+          echo "✅ Artifacts extracted successfully"
+          rm build-artifacts.tar
 
       - name: Deploy to Vercel
         id: deploy
