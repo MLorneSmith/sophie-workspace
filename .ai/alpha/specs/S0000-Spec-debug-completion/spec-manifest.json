@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": "S0",
 		"spec_name": "debug completion",
-		"generated_at": "2026-01-23T15:51:29.125Z",
+		"generated_at": "2026-01-24T17:53:08.591Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S0000-Spec-debug-completion/research-library"
 	},
@@ -50,15 +50,15 @@
 		"tasks_total": 2,
 		"next_feature_id": null,
 		"last_completed_feature_id": "S0000.I1.F1",
-		"started_at": "2026-01-23T15:54:17.049Z",
-		"completed_at": "2026-01-23T15:55:31.664Z",
-		"last_checkpoint": "2026-01-23T15:56:20.693Z"
+		"started_at": "2026-01-24T17:56:19.688Z",
+		"completed_at": "2026-01-24T17:57:24.832Z",
+		"last_checkpoint": "2026-01-24T17:58:09.202Z"
 	},
 	"sandbox": {
 		"sandbox_ids": [
-			"i2rqi7x1li46su6cmmbg4"
+			"ikkpjr3vi2drvj0qpnmfs"
 		],
 		"branch_name": "alpha/spec-S0",
-		"created_at": "2026-01-23T15:51:46.682Z"
+		"created_at": "2026-01-24T17:53:30.313Z"
 	}
 }

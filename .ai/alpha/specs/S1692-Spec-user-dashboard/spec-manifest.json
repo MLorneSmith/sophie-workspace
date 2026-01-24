@@ -2,7 +2,7 @@
 	"metadata": {
 		"spec_id": "S1692",
 		"spec_name": "user dashboard",
-		"generated_at": "2026-01-23T21:02:53.207Z",
+		"generated_at": "2026-01-24T17:59:47.224Z",
 		"spec_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard",
 		"research_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/research-library"
 	},
@@ -62,10 +62,10 @@
 			"name": "presentation table polish",
 			"slug": "presentation-table-polish",
 			"priority": 5,
-			"status": "in_progress",
+			"status": "completed",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish",
 			"feature_count": 4,
-			"features_completed": 2,
+			"features_completed": 4,
 			"dependencies": [
 				"S1692.I1",
 				"S1692.I2",
@@ -176,7 +176,8 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"error": "Stuck: 3 tasks remaining but sandbox idle for 133s"
 		},
 		{
 			"id": "S1692.I2.F2",
@@ -189,7 +190,7 @@
 			"tasks_file": "S1692.I2-Initiative-progress-assessment-widgets/S1692.I2.F2-Feature-course-progress-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I2-Initiative-progress-assessment-widgets/S1692.I2.F2-Feature-course-progress-widget",
 			"task_count": 3,
-			"tasks_completed": 6,
+			"tasks_completed": 3,
 			"sequential_hours": 4,
 			"parallel_hours": 4,
 			"dependencies": [
@@ -277,7 +278,7 @@
 			"tasks_file": "S1692.I3-Initiative-activity-task-widgets/S1692.I3.F2-Feature-activity-data-aggregation/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I3-Initiative-activity-task-widgets/S1692.I3.F2-Feature-activity-data-aggregation",
 			"task_count": 6,
-			"tasks_completed": 6,
+			"tasks_completed": 3,
 			"sequential_hours": 10,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -298,7 +299,7 @@
 			"tasks_file": "S1692.I3-Initiative-activity-task-widgets/S1692.I3.F3-Feature-activity-feed-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I3-Initiative-activity-task-widgets/S1692.I3.F3-Feature-activity-feed-widget",
 			"task_count": 6,
-			"tasks_completed": 4,
+			"tasks_completed": 6,
 			"sequential_hours": 16,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -320,7 +321,7 @@
 			"tasks_file": "S1692.I3-Initiative-activity-task-widgets/S1692.I3.F4-Feature-quick-actions-panel/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I3-Initiative-activity-task-widgets/S1692.I3.F4-Feature-quick-actions-panel",
 			"task_count": 7,
-			"tasks_completed": 6,
+			"tasks_completed": 7,
 			"sequential_hours": 19,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -362,7 +363,7 @@
 			"tasks_file": "S1692.I4-Initiative-coaching-integration/S1692.I4.F2-Feature-dashboard-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I4-Initiative-coaching-integration/S1692.I4.F2-Feature-dashboard-widget",
 			"task_count": 8,
-			"tasks_completed": 8,
+			"tasks_completed": 7,
 			"sequential_hours": 17,
 			"parallel_hours": 13,
 			"dependencies": [
@@ -384,7 +385,7 @@
 			"tasks_file": "S1692.I4-Initiative-coaching-integration/S1692.I4.F3-Feature-session-actions/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I4-Initiative-coaching-integration/S1692.I4.F3-Feature-session-actions",
 			"task_count": 4,
-			"tasks_completed": 4,
+			"tasks_completed": 7,
 			"sequential_hours": 9,
 			"parallel_hours": 3,
 			"dependencies": [
@@ -393,8 +394,7 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0,
-			"error": "Stuck: 4 tasks remaining but sandbox idle for 134s"
+			"database_task_count": 0
 		},
 		{
 			"id": "S1692.I5.F1",
@@ -407,7 +407,7 @@
 			"tasks_file": "S1692.I5-Initiative-presentation-table-polish/S1692.I5.F1-Feature-presentation-table-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish/S1692.I5.F1-Feature-presentation-table-widget",
 			"task_count": 6,
-			"tasks_completed": 6,
+			"tasks_completed": 8,
 			"sequential_hours": 16,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -427,11 +427,11 @@
 			"slug": "empty-states-polish",
 			"priority": 2,
 			"global_priority": 17,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "S1692.I5-Initiative-presentation-table-polish/S1692.I5.F2-Feature-empty-states-polish/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish/S1692.I5.F2-Feature-empty-states-polish",
 			"task_count": 7,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 17,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -477,11 +477,11 @@
 			"slug": "e2e-dashboard-tests",
 			"priority": 4,
 			"global_priority": 19,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "S1692.I5-Initiative-presentation-table-polish/S1692.I5.F4-Feature-e2e-dashboard-tests/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish/S1692.I5.F4-Feature-e2e-dashboard-tests",
 			"task_count": 9,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 17,
 			"parallel_hours": 8,
 			"dependencies": [
@@ -499,22 +499,24 @@
 		}
 	],
 	"progress": {
-		"status": "in_progress",
-		"initiatives_completed": 4,
+		"status": "completed",
+		"initiatives_completed": 5,
 		"initiatives_total": 5,
-		"features_completed": 17,
+		"features_completed": 19,
 		"features_total": 19,
-		"tasks_completed": 88,
+		"tasks_completed": 101,
 		"tasks_total": 104,
-		"next_feature_id": "S1692.I5.F2",
+		"next_feature_id": null,
 		"last_completed_feature_id": "S1692.I5.F3",
-		"started_at": "2026-01-23T21:06:08.615Z",
-		"completed_at": null,
-		"last_checkpoint": "2026-01-24T16:06:02.963Z"
+		"started_at": "2026-01-24T18:02:55.861Z",
+		"completed_at": "2026-01-24T18:40:55.782Z",
+		"last_checkpoint": "2026-01-24T18:41:44.273Z"
 	},
 	"sandbox": {
-		"sandbox_ids": [],
+		"sandbox_ids": [
+			"irnwnvk7g4wjmw0w7lv5o"
+		],
 		"branch_name": "alpha/spec-S1692",
-		"created_at": null
+		"created_at": "2026-01-24T18:00:05.998Z"
 	}
 }
