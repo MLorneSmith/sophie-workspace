@@ -26,9 +26,10 @@ import { getProjectRoot, releaseLock, updateLockResetState } from "./lock.js";
 // ============================================================================
 
 /**
- * Create a conditional logger that only outputs when UI is disabled.
- * When UI is enabled, all console output is suppressed to avoid interfering
- * with the Ink-based dashboard.
+
+* Create a conditional logger that only outputs when UI is disabled.
+* When UI is enabled, all console output is suppressed to avoid interfering
+* with the Ink-based dashboard.
  */
 function createLogger(uiEnabled: boolean) {
 	return {
@@ -449,18 +450,19 @@ export async function seedSandboxDatabase(
 // ============================================================================
 
 /**
- * Sync feature-generated migrations to the remote sandbox database.
- * This function is called after each feature completes to push any new
- * migrations created by the feature to the remote database.
- *
- * The key issue this solves: `resetSandboxDatabase()` runs at startup BEFORE
- * features create migrations. This function ensures migrations created during
- * feature implementation are applied to the remote database.
- *
- * @param sandbox - The E2B sandbox instance
- * @param featureLabel - Human-readable feature label for logging
- * @param uiEnabled - Whether UI mode is enabled (suppresses console output)
- * @returns true if sync succeeded or was skipped (non-blocking), false on error
+
+* Sync feature-generated migrations to the remote sandbox database.
+* This function is called after each feature completes to push any new
+* migrations created by the feature to the remote database.
+*
+* The key issue this solves: `resetSandboxDatabase()` runs at startup BEFORE
+* features create migrations. This function ensures migrations created during
+* feature implementation are applied to the remote database.
+*
+* @param sandbox - The E2B sandbox instance
+* @param featureLabel - Human-readable feature label for logging
+* @param uiEnabled - Whether UI mode is enabled (suppresses console output)
+* @returns true if sync succeeded or was skipped (non-blocking), false on error
  */
 export async function syncFeatureMigrations(
 	sandbox: Sandbox,
@@ -473,14 +475,14 @@ export async function syncFeatureMigrations(
 	// Migration sync is critical - silent failures cause mysterious downstream errors
 	const validation = validateSupabaseTokensRequired();
 	if (!validation.isValid) {
-		error(`   ❌ Cannot sync migrations: ${validation.message}`);
+		error(`❌ Cannot sync migrations: ${validation.message}`);
 		throw new Error(
 			`Migration sync failed: ${validation.message}\n` +
 				"   Feature migrations cannot be applied without valid Supabase credentials.",
 		);
 	}
 
-	log(`   🔄 Syncing migrations after ${featureLabel}...`);
+	log(`🔄 Syncing migrations after ${featureLabel}...`);
 
 	try {
 		// Step 1: Check if there are any pending migrations in the sandbox
@@ -562,7 +564,7 @@ export async function syncFeatureMigrations(
 		return true;
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		warn(`   ⚠️ Migration sync failed (non-blocking): ${errorMessage}`);
+		warn(`⚠️ Migration sync failed (non-blocking): ${errorMessage}`);
 		// Non-blocking - allow orchestrator to continue
 		return true;
 	}
@@ -573,13 +575,14 @@ export async function syncFeatureMigrations(
 // ============================================================================
 
 /**
- * Verify that expected tables exist in the database after migrations.
- * Used to detect silent migration failures.
- *
- * @param dbUrl - Database connection URL
- * @param tableNames - Optional list of table names to verify. If not provided, checks for any public tables.
- * @param uiEnabled - Whether UI mode is enabled
- * @returns Object with success status and table count
+
+* Verify that expected tables exist in the database after migrations.
+* Used to detect silent migration failures.
+*
+* @param dbUrl - Database connection URL
+* @param tableNames - Optional list of table names to verify. If not provided, checks for any public tables.
+* @param uiEnabled - Whether UI mode is enabled
+* @returns Object with success status and table count
  */
 export function verifyTablesExist(
 	dbUrl: string,
@@ -634,18 +637,19 @@ export function verifyTablesExist(
 		return { success, tableCount };
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		error(`   ❌ Table verification failed: ${errorMessage}`);
+		error(`❌ Table verification failed: ${errorMessage}`);
 		return { success: false, tableCount: 0 };
 	}
 }
 
 /**
- * Verify that seed data exists in the database after seeding.
- * Checks the payload.users table for at least one user.
- *
- * @param dbUrl - Database connection URL
- * @param uiEnabled - Whether UI mode is enabled
- * @returns Object with success status and user count
+
+* Verify that seed data exists in the database after seeding.
+* Checks the payload.users table for at least one user.
+*
+* @param dbUrl - Database connection URL
+* @param uiEnabled - Whether UI mode is enabled
+* @returns Object with success status and user count
  */
 export function verifySeededData(
 	dbUrl: string,
@@ -673,7 +677,7 @@ export function verifySeededData(
 		return { success, userCount };
 	} catch (err) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		error(`   ❌ Seed verification failed: ${errorMessage}`);
+		error(`❌ Seed verification failed: ${errorMessage}`);
 		return { success: false, userCount: 0 };
 	}
 }
@@ -686,8 +690,9 @@ export function verifySeededData(
 
 * Check if the sandbox database appears to be seeded.
 * Quick check to avoid re-seeding on resume.
+* Checks BOTH payload.users AND auth.users to ensure complete seeding.
 *
-* @returns true if database appears to be seeded
+* @returns true if database appears to be fully seeded (both tables have data)
  */
 export async function isDatabaseSeeded(
 	uiEnabled: boolean = false,
@@ -699,20 +704,38 @@ export async function isDatabaseSeeded(
 	}
 
 	try {
-		// Check if payload.users table exists and has data
+		// Check both payload.users AND auth.users tables have data
+		// Warm start optimization requires BOTH to be seeded
 		const result = execSync(
-			`psql "${dbUrl}" -t -c "SELECT COUNT(*) FROM payload.users" 2>/dev/null || echo "0"`,
+			`psql "${dbUrl}" -t -c "SELECT (SELECT COUNT(*) FROM payload.users) AS payload_count, (SELECT COUNT(*) FROM auth.users) AS auth_count" 2>/dev/null || echo "0|0"`,
 			{ encoding: "utf-8" },
 		);
-		const count = parseInt(result.trim(), 10);
-		if (count > 0) {
-			log(`   ℹ️ Database already seeded (${count} user(s) found)`);
+
+		// Parse result: "payload_count | auth_count" format
+		const parts = result
+			.trim()
+			.split("|")
+			.map((s) => parseInt(s.trim(), 10));
+		const payloadCount = parts[0] || 0;
+		const authCount = parts[1] || 0;
+
+		const isFullySeeded = payloadCount > 0 && authCount > 0;
+
+		if (isFullySeeded) {
+			log(
+				`   ℹ️ Database fully seeded (${payloadCount} payload user(s), ${authCount} auth user(s))`,
+			);
+		} else if (payloadCount > 0 && authCount === 0) {
+			log(
+				`   ℹ️ Partial seed detected: ${payloadCount} payload user(s), 0 auth users - will re-seed`,
+			);
 		}
-		return count > 0;
+
+		return isFullySeeded;
 	} catch (err) {
 		// Verbose error logging instead of silent catch
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		warn(`   ⚠️ Could not check if database is seeded: ${errorMessage}`);
+		warn(`⚠️ Could not check if database is seeded: ${errorMessage}`);
 		return false;
 	}
 }
