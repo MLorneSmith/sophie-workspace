@@ -49,10 +49,10 @@
 			"name": "coaching integration",
 			"slug": "coaching-integration",
 			"priority": 4,
-			"status": "in_progress",
+			"status": "completed",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I4-Initiative-coaching-integration",
 			"feature_count": 3,
-			"features_completed": 1,
+			"features_completed": 3,
 			"dependencies": [
 				"S1692.I1"
 			]
@@ -62,10 +62,10 @@
 			"name": "presentation table polish",
 			"slug": "presentation-table-polish",
 			"priority": 5,
-			"status": "pending",
+			"status": "in_progress",
 			"initiative_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish",
 			"feature_count": 4,
-			"features_completed": 0,
+			"features_completed": 2,
 			"dependencies": [
 				"S1692.I1",
 				"S1692.I2",
@@ -298,7 +298,7 @@
 			"tasks_file": "S1692.I3-Initiative-activity-task-widgets/S1692.I3.F3-Feature-activity-feed-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I3-Initiative-activity-task-widgets/S1692.I3.F3-Feature-activity-feed-widget",
 			"task_count": 6,
-			"tasks_completed": 6,
+			"tasks_completed": 4,
 			"sequential_hours": 16,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -358,11 +358,11 @@
 			"slug": "dashboard-widget",
 			"priority": 2,
 			"global_priority": 14,
-			"status": "in_progress",
+			"status": "completed",
 			"tasks_file": "S1692.I4-Initiative-coaching-integration/S1692.I4.F2-Feature-dashboard-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I4-Initiative-coaching-integration/S1692.I4.F2-Feature-dashboard-widget",
 			"task_count": 8,
-			"tasks_completed": 0,
+			"tasks_completed": 8,
 			"sequential_hours": 17,
 			"parallel_hours": 13,
 			"dependencies": [
@@ -371,9 +371,7 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0,
-			"assigned_sandbox": "sbx-b",
-			"assigned_at": 1769203596150
+			"database_task_count": 0
 		},
 		{
 			"id": "S1692.I4.F3",
@@ -382,11 +380,11 @@
 			"slug": "session-actions",
 			"priority": 3,
 			"global_priority": 15,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "S1692.I4-Initiative-coaching-integration/S1692.I4.F3-Feature-session-actions/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I4-Initiative-coaching-integration/S1692.I4.F3-Feature-session-actions",
 			"task_count": 4,
-			"tasks_completed": 0,
+			"tasks_completed": 4,
 			"sequential_hours": 9,
 			"parallel_hours": 3,
 			"dependencies": [
@@ -395,7 +393,8 @@
 			],
 			"github_issue": null,
 			"requires_database": false,
-			"database_task_count": 0
+			"database_task_count": 0,
+			"error": "Stuck: 4 tasks remaining but sandbox idle for 134s"
 		},
 		{
 			"id": "S1692.I5.F1",
@@ -404,11 +403,11 @@
 			"slug": "presentation-table-widget",
 			"priority": 1,
 			"global_priority": 16,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "S1692.I5-Initiative-presentation-table-polish/S1692.I5.F1-Feature-presentation-table-widget/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish/S1692.I5.F1-Feature-presentation-table-widget",
 			"task_count": 6,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 16,
 			"parallel_hours": 10,
 			"dependencies": [
@@ -453,11 +452,11 @@
 			"slug": "accessibility-compliance",
 			"priority": 3,
 			"global_priority": 18,
-			"status": "pending",
+			"status": "completed",
 			"tasks_file": "S1692.I5-Initiative-presentation-table-polish/S1692.I5.F3-Feature-accessibility-compliance/tasks.json",
 			"feature_dir": "/home/msmith/projects/2025slideheroes/.ai/alpha/specs/S1692-Spec-user-dashboard/S1692.I5-Initiative-presentation-table-polish/S1692.I5.F3-Feature-accessibility-compliance",
 			"task_count": 6,
-			"tasks_completed": 0,
+			"tasks_completed": 6,
 			"sequential_hours": 15,
 			"parallel_hours": 15,
 			"dependencies": [
@@ -501,25 +500,21 @@
 	],
 	"progress": {
 		"status": "in_progress",
-		"initiatives_completed": 2,
+		"initiatives_completed": 4,
 		"initiatives_total": 5,
-		"features_completed": 12,
+		"features_completed": 17,
 		"features_total": 19,
-		"tasks_completed": 60,
+		"tasks_completed": 88,
 		"tasks_total": 104,
-		"next_feature_id": "S1692.I3.F3",
-		"last_completed_feature_id": "S1692.I3.F3",
+		"next_feature_id": "S1692.I5.F2",
+		"last_completed_feature_id": "S1692.I5.F3",
 		"started_at": "2026-01-23T21:06:08.615Z",
 		"completed_at": null,
-		"last_checkpoint": "2026-01-23T21:29:28.335Z"
+		"last_checkpoint": "2026-01-24T16:06:02.963Z"
 	},
 	"sandbox": {
-		"sandbox_ids": [
-			"izv7ioluxxazr70yturpc",
-			"ijn71bbamjaofw2kv30rl",
-			"ioi7pe2rpthf0iy1zd2x0"
-		],
+		"sandbox_ids": [],
 		"branch_name": "alpha/spec-S1692",
-		"created_at": "2026-01-23T21:03:17.612Z"
+		"created_at": null
 	}
 }
