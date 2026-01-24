@@ -446,6 +446,16 @@ export async function createSandbox(
 		timeoutMs: 5000,
 	});
 
+	// Check if lockfile changed compared to dev branch (Bug fix #1803)
+	// If the branch added new dependencies, we need to run pnpm install (not --frozen-lockfile)
+	// to sync those dependencies into the sandbox's node_modules
+	const lockfileChanged = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && git diff origin/dev -- pnpm-lock.yaml | head -1`,
+		{ timeoutMs: 30000 },
+	);
+
+	const hasLockfileChanges = lockfileChanged.stdout.trim() !== "";
+
 	// Verify dependencies
 	const checkResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
@@ -453,11 +463,21 @@ export async function createSandbox(
 	);
 
 	if (checkResult.stdout.trim() === "missing") {
-		log("   Installing dependencies...");
+		log("   Installing dependencies (node_modules missing)...");
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
 			{ timeoutMs: 600000 },
 		);
+	} else if (hasLockfileChanges) {
+		// Lockfile changed - sync dependencies with branch lockfile
+		// Bug fix #1803: Use `pnpm install` without --frozen-lockfile because the branch
+		// may have added new dependencies that aren't in the E2B template's node_modules
+		log("   Syncing dependencies (lockfile changed)...");
+		await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
+			timeoutMs: 600000,
+		});
+	} else {
+		log("   ✅ Dependencies already installed");
 	}
 
 	// Build workspace packages to ensure dist directories exist
@@ -875,46 +895,51 @@ export async function createReviewSandbox(
 
 	log("   ✅ Branch checked out");
 
-	// Sync dependencies with branch lockfile (optimized - Bug fix #1760)
-	// Check if node_modules exists and if lockfile changed to avoid unnecessary installs
-	// This pattern matches createSandbox() and typically saves 7-8 minutes
-	const checkResult = await sandbox.commands.run(
-		`cd ${WORKSPACE_DIR} && test -d node_modules && echo "exists" || echo "missing"`,
-		{ timeoutMs: 10000 },
+	// Fresh-clone validation (Bug fix #1803)
+	// This simulates what happens when someone checks out the branch locally:
+	// 1. Remove all node_modules (clean slate)
+	// 2. Run pnpm install --frozen-lockfile (fails if lockfile doesn't match package.json)
+	// 3. Run typecheck (ensures TypeScript compiles with clean dependencies)
+	// This catches issues where package.json has new dependencies but they weren't
+	// properly committed to the lockfile or don't install correctly.
+	log("   Running fresh-clone validation...");
+
+	// Remove accumulated state to simulate clean checkout
+	await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && rm -rf node_modules apps/*/node_modules packages/*/node_modules`,
+		{ timeoutMs: 60000 },
 	);
 
-	if (checkResult.stdout.trim() === "missing") {
-		// No node_modules - full install required
-		log("   Installing dependencies (node_modules missing)...");
-		await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
-			timeoutMs: 600000,
-		});
-	} else {
-		// node_modules exists - check if lockfile changed in this branch
-		// Use git diff to detect if pnpm-lock.yaml was modified
-		let lockfileChanged = true; // Default to install if check fails (safe fallback)
-		try {
-			const diffResult = await sandbox.commands.run(
-				`cd ${WORKSPACE_DIR} && git diff --name-only HEAD~1 HEAD -- pnpm-lock.yaml | wc -l`,
-				{ timeoutMs: 30000 },
-			);
-			lockfileChanged = diffResult.stdout.trim() !== "0";
-		} catch {
-			log("   ⚠️ Could not check lockfile changes, falling back to install");
-		}
+	// Install from lockfile (fails if lockfile doesn't match package.json)
+	log("   Installing dependencies from lockfile...");
+	const installResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
+		{ timeoutMs: 600000 },
+	);
 
-		if (lockfileChanged) {
-			// Lockfile changed - sync dependencies with branch lockfile
-			// Bug fix #1749: Use `pnpm install` without --frozen-lockfile because the branch
-			// may have added new dependencies that aren't in the E2B template
-			log("   Syncing dependencies (lockfile changed)...");
-			await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
-				timeoutMs: 600000,
-			});
-		} else {
-			log("   ✅ Dependencies already installed (skipping pnpm install)");
-		}
+	if (installResult.exitCode !== 0) {
+		throw new Error(
+			`Fresh-clone validation failed: Dependencies don't install cleanly.\n` +
+				"This means package.json has changes not reflected in pnpm-lock.yaml.\n" +
+				`Error: ${installResult.stderr || installResult.stdout}`,
+		);
 	}
+
+	// Verify TypeScript compiles with clean dependencies
+	log("   Running typecheck...");
+	const typecheckResult = await sandbox.commands.run(
+		`cd ${WORKSPACE_DIR} && pnpm typecheck`,
+		{ timeoutMs: 300000 },
+	);
+
+	if (typecheckResult.exitCode !== 0) {
+		throw new Error(
+			"Fresh-clone validation failed: TypeScript errors on clean install.\n" +
+				`Error: ${typecheckResult.stderr || typecheckResult.stdout}`,
+		);
+	}
+
+	log("   ✅ Fresh-clone validation passed");
 
 	// Build workspace packages (required for dev server)
 	log("   Building workspace packages...");

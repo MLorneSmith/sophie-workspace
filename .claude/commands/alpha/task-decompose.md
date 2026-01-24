@@ -374,6 +374,95 @@ Add `ui_task: true` when the task:
 
 ---
 
+## Dependency Installation Task Pattern
+
+**Purpose**: Ensure tasks that add npm packages are properly verified and don't cause environment drift issues.
+
+### Identifying Dependency Tasks
+
+A task is a dependency task when it:
+- Adds, updates, or removes entries in `package.json`
+- Modifies `pnpm-lock.yaml`
+- Installs packages via CLI (`pnpm add`, `npx`, etc.)
+
+### Required Task Fields
+
+For dependency tasks, always include:
+
+1. **Both package.json AND lockfile in outputs**:
+   ```json
+   "outputs": [
+     { "type": "modified", "path": "apps/web/package.json" },
+     { "type": "modified", "path": "pnpm-lock.yaml" }
+   ]
+   ```
+
+2. **Verification that includes install check**:
+   ```json
+   "verification_command": "pnpm install --frozen-lockfile --dry-run && grep -q '<package>' apps/web/package.json && pnpm typecheck"
+   ```
+
+   The `--frozen-lockfile --dry-run` verifies lockfile consistency without actually installing.
+
+3. **Clear acceptance criterion**:
+   ```json
+   "acceptance_criterion": "<package> appears in package.json AND pnpm-lock.yaml is updated AND pnpm typecheck passes"
+   ```
+
+### Example Dependency Task
+
+```json
+{
+  "id": "S1234.I1.F1.T1",
+  "name": "Add @example/package dependency",
+  "action": {
+    "verb": "Add",
+    "target": "@example/package dependency"
+  },
+  "purpose": "Install the package to enable feature X",
+  "requires_dependency_install": true,
+  "packages_added": ["@example/package"],
+  "outputs": [
+    { "type": "modified", "path": "apps/web/package.json" },
+    { "type": "modified", "path": "pnpm-lock.yaml" }
+  ],
+  "acceptance_criterion": "@example/package in package.json, lockfile updated, typecheck passes",
+  "verification_command": "pnpm install && grep -q '@example/package' apps/web/package.json && test -d apps/web/node_modules/@example/package && pnpm typecheck",
+  "context": {
+    "constraints": [
+      "Add to dependencies (not devDependencies)",
+      "Must run pnpm install after adding to package.json",
+      "Commit both package.json AND pnpm-lock.yaml"
+    ]
+  }
+}
+```
+
+### Common Mistakes to Avoid
+
+1. **Missing lockfile in outputs** - Causes lockfile to not be committed
+2. **Using `--frozen-lockfile` during implementation** - Fails when adding new packages
+3. **Not running `pnpm install` after edit** - Package not actually installed
+4. **Only checking package.json** - Doesn't verify package installs correctly
+
+### Dependent Tasks
+
+Tasks that USE the new package must have `blocked_by` pointing to the installation task:
+
+```json
+{
+  "id": "S1234.I1.F1.T2",
+  "name": "Create component using @example/package",
+  "dependencies": {
+    "blocked_by": ["S1234.I1.F1.T1"]
+  }
+}
+```
+
+This ensures the package is installed before any task tries to import it.
+
+---
+
 ## Step 3: Commit Spec Files to Git (CRITICAL)
 
 **⚠️ MANDATORY**: After decomposition completes (either Mode A or Mode B), commit the spec files to git. Without this step, the orchestrator's sandboxes cannot access the spec files.

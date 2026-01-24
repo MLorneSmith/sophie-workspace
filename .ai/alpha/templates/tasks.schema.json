@@ -508,6 +508,16 @@
 					"pattern": "^\\d+_[A-Za-z0-9]+$",
 					"description": "Prefix for migration filename (e.g., '1367_T3') to ensure uniqueness across parallel features"
 				},
+				"requires_dependency_install": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if this task adds/modifies npm dependencies (package.json changes)"
+				},
+				"packages_added": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of npm packages added by this task (e.g., ['@example/package', 'lodash'])"
+				},
 				"requires_ui": {
 					"type": "boolean",
 					"default": false,
