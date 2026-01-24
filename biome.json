@@ -150,6 +150,8 @@
 			"includes": [
 				"**/.ai/ai_scripts/**/*.js",
 				"**/.ai/ai_scripts/**/*.cjs",
+				"**/.ai/tools/**/*.ts",
+				"**/.ai/tools/**/*.js",
 				"**/.claude/scripts/**/*.js",
 				"**/.claude/scripts/**/*.cjs",
 				"**/scripts/**/*.js",

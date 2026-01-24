@@ -6,6 +6,7 @@ packages:
   - .claude/scripts
   - .ai/alpha/scripts
   - .ai/alpha/scripts/ui
+  - .ai/tools/*
   - scripts
 
 catalog:

@@ -1,0 +1,31 @@
+{
+	"name": "email-export",
+	"version": "1.0.0",
+	"description": "CLI tool to export emails from Gmail and convert to YAML format",
+	"type": "module",
+	"main": "dist/index.js",
+	"bin": {
+		"email-export": "dist/index.js"
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check src/",
+		"lint:fix": "biome check --write src/",
+		"dev": "tsx src/index.ts"
+	},
+	"dependencies": {
+		"chalk": "^5.6.2",
+		"commander": "^14.0.2",
+		"googleapis": "^140.0.1",
+		"html-to-text": "^9.0.5",
+		"ora": "^8.2.0",
+		"yaml": "^2.7.1"
+	},
+	"devDependencies": {
+		"@types/html-to-text": "^9.0.4",
+		"@types/node": "catalog:",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
+	}
+}
