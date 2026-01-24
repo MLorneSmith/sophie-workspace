@@ -1,0 +1,192 @@
+# Email Export - TEST: [5S] Substance: Best Stats I Have Ever Seen Part 2
+# Exported from Gmail on 2026-01-24T18:15:17.260Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "19bf131e26d404bf"
+  exportedAt: "2026-01-24T18:15:17.260Z"
+  source: "gmail"
+  labels:
+    - "UNREAD"
+    - "andre"
+    - "CATEGORY_FORUMS"
+    - "SENT"
+headers:
+  from: "Michael Smith <msmith@slideheroes.com>"
+  to: "msmith@slideheroes.com"
+  subject: "TEST: [5S] Substance: Best Stats I Have Ever Seen Part 2"
+  date: "Sat, 24 Jan 2026 18:08:56 +0000 (GMT)"
+  messageId: "<1228448804.2399696.1769278136919@cell-5-74bcb6f7bb-dzxhv>"
+thread:
+  threadId: "19bf131e26d404bf"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: "World Health, TED and GoogleView in Web Browser http://slideheroes.activehosted.com/p_v.php?c=16&m=18&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&l
+
+
+    **'Lesson Zero'**Log-in https://app.slideheroes.com/users/sign_in?utm_source=bpm_sequence&utm_medium=email
+
+
+    **You are receiving this email because you signed-up at SlideHeroes to watch 'Lesson Zero' of our Decks for Decision Makers high-stakes business presentation course. (If you decide you're in the wrong place, no worries. You'll find an unsubscribe link in the footer of this email.)**
+
+
+    **\"It is perfectly okay to write garbage—as long as you edit brilliantly.\"**
+
+
+    **- C. J. Cherryh**
+
+
+    Hi Michael,
+
+
+    I really like that quote.
+
+
+    Anyway...
+
+
+    Got a question for you...
+
+
+    What is
+
+
+    **your biggest challenge** with presentations?
+
+
+    You know, the part you struggle with the most.
+
+
+    Or put another way...
+
+
+    If you could wake up tomorrow morning and be a ROCKSTAR at this one thing (in regards to presentations), what would that be?
+
+
+    HIT REPLY and let me know.
+
+
+    It would mean the world to me.
+
+
+    **Michael \"waiting patiently\" Smith**
+
+
+    **P.S.**
+
+
+    **You may have been wondering what 'The best stats I have ever seen Part 2' are.**
+
+
+    **Good question. Glad you're paying attention.**
+
+
+    **Just before I wrote this email to you, I was on TED.com re-watching a talk from Hans Rosling.**
+
+
+    **Guy was a real trail-blazer.  He presented the following talk at TED in TED's early days. Sergey Brin and Larry Page were in the audience. They ended up buying the presentation technology Hans had developed for this talk.**
+
+
+    **Anyway, I digress...**
+
+
+    The talk is called \"The Greatest Stats You Have Ever Seen https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen".
+
+
+    **And they are.**
+
+
+    **If you're at all like me and love data, you'll probably enjoy it (a lot)**
+
+
+    https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen
+
+
+    It's been watched nearly 14 million times as I write this.
+
+
+    Oh yeah. There's also a sequel https://www.ted.com/playlists/474/the_best_hans_rosling_talks_yo#targetText=The%20best%20Hans%20Rosling%20talks%20you've%20ever%20seen&targetText=You've%20never%20seen%20data,%2Dcalled%20%22developing%20world.%22.
+
+
+    **Your attention is a privilege I never take for granted. If this communication is no longer of interest to you, just click the unsubscribe link below to be removed from this email list:**
+
+
+    Unsubscribe http://slideheroes.activehosted.com/proc.php?c=16&m=18&s=254303af226d1e258d117bd0fb6519ce&d=0&v=2&nl&act=unsub
+
+
+    **SlideHeroes Incorporated, 125-720 King Street West Suite 2000, Toronto, Ontario M5V 3S5, Canada**"
+  hasHtml: true
+annotations:
+  campaign: "5S"
+  campaign_full: "5S Substance Series"
+  position: 2
+  sequence_length: null
+  email_type: "nurture"
+  author: "Michael Smith"
+
+  purpose: |
+    Engagement email that solicits reader feedback about their biggest presentation challenge while providing valuable content about data visualization through Hans Rosling's TED talk as a resource.
+
+  audience: "Presentation professionals and business communicators interested in data-driven presentations"
+
+  techniques_used:
+    - technique: "Opening Quote"
+      location: "Before greeting"
+      example: "\"It is perfectly okay to write garbage—as long as you edit brilliantly.\" - C. J. Cherryh"
+      notes: "Sets tone about the iterative nature of creation, softens ask that follows"
+    - technique: "Direct Reader Engagement"
+      location: "Main body"
+      example: "Got a question for you... What is your biggest challenge with presentations?"
+      notes: "Creates dialogue, makes reader feel valued and heard"
+    - technique: "Transformation Question"
+      location: "Body"
+      example: "If you could wake up tomorrow morning and be a ROCKSTAR at this one thing (in regards to presentations), what would that be?"
+      notes: "Reframes the ask aspirationally, prompts emotional response"
+    - technique: "Bait-and-Switch Subject Line"
+      location: "Subject and P.S."
+      example: "You may have been wondering what 'The best stats I have ever seen Part 2' are."
+      notes: "Creates curiosity gap with subject, delivers in P.S. section"
+    - technique: "Humble Authenticity"
+      location: "Sign-off"
+      example: "It would mean the world to me."
+      notes: "Genuine vulnerability encourages response"
+    - technique: "Story Behind The Story"
+      location: "P.S."
+      example: "Guy was a real trail-blazer... Sergey Brin and Larry Page were in the audience. They ended up buying the presentation technology"
+      notes: "Adds insider knowledge, increases perceived value of recommendation"
+
+  hook:
+    type: "Literary quote + casual transition"
+    text: "I really like that quote. Anyway... Got a question for you..."
+    effectiveness: "Quote establishes intellectual credibility, then casual tone creates intimacy"
+
+  structure:
+    opening: "Inspirational quote followed by casual acknowledgment"
+    body: "Direct engagement request with reframed aspirational question"
+    closing: "Extended P.S. delivering on subject line promise with valuable TED talk recommendation"
+
+  effectiveness_notes: |
+    - Primary goal is engagement/feedback collection, content is secondary reward
+    - Subject line creates curiosity that P.S. section resolves
+    - Multiple calls to action (reply + watch video) serve different engagement levels
+    - Social proof via view count (14 million) validates recommendation
+
+  quotable:
+    - "If you could wake up tomorrow morning and be a ROCKSTAR at this one thing (in regards to presentations), what would that be?"
+    - "It would mean the world to me."
+
+  andre_style_elements:
+    present:
+      - "Conversational, personal tone"
+      - "Playful sign-off nickname (\"waiting patiently\")"
+      - "Extended P.S. with value delivery"
+      - "Direct engagement request"
+      - "Short, punchy paragraphs"
+      - "Strategic use of bold text"
+    missing:
+      - "Numbered lists or frameworks"
+      - "Historical storytelling (though references Hans Rosling)"
+      - "Detailed tactical advice"
