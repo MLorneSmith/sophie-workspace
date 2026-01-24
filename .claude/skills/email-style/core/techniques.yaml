@@ -1,0 +1,1046 @@
+# Andre Chaperon Email Techniques Library
+# Based on "The Art of Email" and "Autoresponder Madness" methodologies
+# Version: 1.0.0
+
+techniques:
+
+  # =============================================================================
+  # ENGAGEMENT TECHNIQUES
+  # =============================================================================
+
+  - name: "Open Loop"
+    category: "engagement"
+    description: |
+      Create curiosity by starting a story, question, or idea and deliberately
+      not resolving it. The reader must open the next email to find out what
+      happens. This is Andre's signature technique for driving sequential opens.
+
+    when_to_use:
+      - "End of any email that has a follow-up"
+      - "Subject lines to drive opens"
+      - "Mid-email to maintain attention through longer content"
+      - "P.S. sections to plant seeds for future emails"
+
+    formatting:
+      line_length: "Short, punchy - often just a few words"
+      spacing: "Extra line break before and after the hook"
+      example_layout: |
+        And then she said something unexpected.
+
+        (I'll tell you what it was tomorrow.)
+
+    variations:
+      - name: "Soft open loop"
+        description: "Hints at future content without explicit cliffhanger"
+        example: "There's more to this story..."
+      - name: "Nested loop"
+        description: "Opens a new loop before closing the previous one"
+        example: "But before I tell you what happened, I need to explain something else first."
+      - name: "P.S. subplot loop"
+        description: "Plants a personal story thread in the P.S. that continues across emails"
+        example: "P.S. My daughter said the strangest thing at breakfast today. I'll tell you about it in my next email."
+      - name: "Numbered sequence loop"
+        description: "Explicitly signals continuation with part numbers"
+        example: "That's it for Part 1. Tomorrow, Part 2 - where it gets really interesting."
+
+    mistakes:
+      - "Resolving the loop in the same email (kills anticipation)"
+      - "Too many open loops creating confusion (max 2-3 active loops)"
+      - "Loops that feel manipulative rather than genuine"
+      - "Forgetting to close loops (erodes trust)"
+
+    examples: []  # To be populated from email corpus
+
+  - name: "Curiosity Gap"
+    category: "engagement"
+    description: |
+      Create a gap between what the reader knows and what they want to know.
+      Unlike open loops which are narrative-based, curiosity gaps can be
+      informational - teasing a fact, insight, or revelation.
+
+    when_to_use:
+      - "Subject lines to drive opens"
+      - "Opening sentences to hook readers immediately"
+      - "Transitioning between sections"
+      - "Before revealing a key insight or framework"
+
+    formatting:
+      line_length: "Variable - can be a single word or short sentence"
+      spacing: "Often followed by a line break for emphasis"
+      example_layout: |
+        Here's the thing most people get wrong about email.
+
+        (It's not what you think.)
+
+    variations:
+      - name: "Information tease"
+        description: "Hints at valuable information without revealing it"
+        example: "There's one thing that separates successful email marketers from everyone else."
+      - name: "Contrarian setup"
+        description: "Signals you'll challenge conventional wisdom"
+        example: "Everyone tells you to email more often. They're wrong."
+      - name: "Specific number"
+        description: "Uses specificity to create intrigue"
+        example: "The 3 words that doubled my open rates."
+
+    mistakes:
+      - "Creating gaps you never fill (clickbait)"
+      - "Being too vague - gaps need some specificity to hook"
+      - "Overusing in a single email"
+
+    examples: []
+
+  - name: "Story Hook"
+    category: "engagement"
+    description: |
+      Open with a specific, sensory-rich moment that drops the reader into
+      the middle of a scene. Andre often starts emails mid-action or with
+      a vivid personal anecdote.
+
+    when_to_use:
+      - "Opening of story-driven emails"
+      - "When transitioning to a personal example"
+      - "To make abstract concepts concrete"
+
+    formatting:
+      line_length: "Short sentences, often fragments"
+      spacing: "Single sentence per line, heavy white space"
+      example_layout: |
+        Tuesday morning. 6am.
+
+        I'm staring at a blank screen.
+
+        Three cups of coffee in. Zero words written.
+
+    variations:
+      - name: "In medias res"
+        description: "Start in the middle of action"
+        example: "The phone rang. I knew who it was before I answered."
+      - name: "Specific detail anchor"
+        description: "Ground the story with ultra-specific details"
+        example: "Last Thursday, 3:47pm, I was sitting in my favorite coffee shop when..."
+      - name: "Dialogue opener"
+        description: "Start with spoken words"
+        example: '"You''re doing it all wrong," she said.'
+
+    mistakes:
+      - "Generic openings ('I want to tell you a story...')"
+      - "Too much setup before the hook"
+      - "Details that don't serve the story"
+
+    examples: []
+
+  - name: "Pattern Interrupt"
+    category: "engagement"
+    description: |
+      Break the reader's expectations with something unexpected. This can be
+      an unusual subject line, a surprising opening, or a format change that
+      snaps them to attention.
+
+    when_to_use:
+      - "Subject lines when open rates are dropping"
+      - "Opening of emails after a predictable sequence"
+      - "When you need to re-engage distracted readers"
+
+    formatting:
+      line_length: "Often very short - even single words"
+      spacing: "Isolated for impact"
+      example_layout: |
+        Stop.
+
+        Before you do anything else today, I need you to read this.
+
+    variations:
+      - name: "One-word subject"
+        description: "Ultra-short subject line that stands out"
+        example: "Subject: hey"
+      - name: "Question interrupt"
+        description: "Unexpected question that demands mental engagement"
+        example: "What if everything you knew about email marketing was wrong?"
+      - name: "Format break"
+        description: "Change the expected format of your emails"
+        example: "Today's email is different. Just 7 words..."
+
+    mistakes:
+      - "Overusing (becomes expected, loses impact)"
+      - "Being weird for weird's sake without purpose"
+      - "Pattern interrupts that damage trust"
+
+    examples: []
+
+  # =============================================================================
+  # STRUCTURE TECHNIQUES
+  # =============================================================================
+
+  - name: "Soap Opera Sequence"
+    category: "structure"
+    description: |
+      Andre's flagship framework. A serialized email sequence (typically 14 emails)
+      that tells an ongoing story across multiple emails, like episodes of a TV show.
+      Each email advances the narrative while opening new threads.
+
+    when_to_use:
+      - "Welcome sequences for new subscribers"
+      - "Product launch sequences"
+      - "Any sequence where you want high engagement across multiple emails"
+      - "When building deep relationships before selling"
+
+    formatting:
+      line_length: "Varies - longer early in sequence, shorter later"
+      spacing: "Heavy white space throughout"
+      example_layout: |
+        [Email opens mid-story from previous email]
+
+        So there I was, standing in the rain...
+
+        [Story progresses with new developments]
+
+        [New open loop planted]
+
+        Tomorrow: What happened when I finally knocked on the door.
+
+    variations:
+      - name: "Short SOS"
+        description: "5-7 email mini-sequence"
+        example: "A focused story arc for a specific offer or lesson"
+      - name: "Extended SOS"
+        description: "30-60 day narrative journey"
+        example: "Deep relationship building before major launch"
+      - name: "Branching SOS"
+        description: "Choose-your-own-adventure forks based on clicks"
+        example: "Click here if you're [A], here if you're [B]"
+
+    mistakes:
+      - "Starting to sell too early (never before email 5-6)"
+      - "Losing narrative thread between emails"
+      - "Sequences that don't actually tell a story"
+      - "No character development or emotional arc"
+
+    examples: []
+
+  - name: "Episode Framework"
+    category: "structure"
+    description: |
+      Structure individual emails like TV episodes: cold open, development,
+      climax, and a hook for the next episode. Each email should feel complete
+      yet connected to the larger arc.
+
+    when_to_use:
+      - "Every email in a Soap Opera Sequence"
+      - "Standalone story emails"
+      - "Educational content that benefits from narrative structure"
+
+    formatting:
+      line_length: "Progressive - start short, expand in middle, short at end"
+      spacing: "Clear section breaks between acts"
+      example_layout: |
+        [COLD OPEN - Hook immediately]
+
+        [DEVELOPMENT - Story/lesson unfolds]
+
+        [CLIMAX - Key insight or turning point]
+
+        [HOOK - Open loop for next email]
+
+        P.S. [Subplot thread]
+
+    variations:
+      - name: "Single-scene episode"
+        description: "Entire email is one vivid scene"
+        example: "One conversation, one moment, one realization"
+      - name: "Flashback structure"
+        description: "Start at the end, then explain how you got there"
+        example: "If you told me a year ago I'd be writing this... let me explain."
+
+    mistakes:
+      - "No clear structure (rambling)"
+      - "All setup, no payoff within the email"
+      - "Forgetting the hook for next time"
+
+    examples: []
+
+  - name: "P.S. Subplot"
+    category: "structure"
+    description: |
+      Use the P.S. section as a separate storytelling space that runs parallel
+      to the main email content. Plant personal stories, casual observations,
+      or secondary threads that continue across multiple emails.
+
+      IMPORTANT: The P.S. is MANDATORY in Andre's style. Every single email
+      has a P.S. section - this is non-negotiable.
+
+    when_to_use:
+      - "EVERY email - this is mandatory, not optional"
+      - "When you have a secondary message that doesn't fit the main body"
+      - "To add personal, human touches"
+      - "To plant seeds for future emails"
+
+    formatting:
+      line_length: "Casual, conversational"
+      spacing: "Separated from main body by clear break"
+      example_layout: |
+        [Main email body ends]
+
+        Talk soon,
+        Andre
+
+        P.S. My dog did the strangest thing this morning.
+        She sat at the window for 20 minutes, just staring.
+        I finally figured out what she was looking at...
+        (I'll tell you tomorrow - it's actually relevant to what we're talking about)
+
+    variations:
+      - name: "Personal subplot"
+        description: "Ongoing personal story (family, pets, daily life)"
+        example: "P.S. Update on my daughter's science project..."
+      - name: "Philosophical aside"
+        description: "Deeper thought that complements main message"
+        example: "P.S. I've been thinking about why we resist change..."
+      - name: "Teaser subplot"
+        description: "Seeds content for a future email"
+        example: "P.S. Remind me to tell you about the email that made me $47,000."
+
+    mistakes:
+      - "P.S. that just repeats the CTA (boring)"
+      - "Subplots that never pay off"
+      - "P.S. longer than the main email"
+
+    examples: []
+
+  - name: "P.S. Series Archive"
+    category: "structure"
+    description: |
+      At the conclusion of a mini-series or campaign, include a list of links
+      to all previous emails in the P.S. section. These emails are saved as
+      web pages, allowing readers to catch up on anything they missed or
+      revisit the complete series.
+
+      This provides value, creates a sense of completion, and gives readers
+      an easy way to consume the full narrative arc.
+
+    when_to_use:
+      - "Final email of a mini-series or campaign"
+      - "When wrapping up a multi-part story or lesson"
+      - "To provide a complete archive for late subscribers"
+
+    formatting:
+      line_length: "Short intro + bulleted list of links"
+      spacing: "Clear list format with each link on its own line"
+      example_layout: |
+        P.S. In case you missed any of the previous emails in this
+        series, here they are:
+
+        → Part 1: The Problem Nobody Talks About [link]
+        → Part 2: Why Most Solutions Fail [link]
+        → Part 3: The Counterintuitive Fix [link]
+        → Part 4: Putting It All Together [link]
+
+    variations:
+      - name: "Simple list"
+        description: "Just the titles with links"
+        example: "Previous emails: [Part 1] [Part 2] [Part 3]"
+      - name: "Annotated list"
+        description: "Brief description with each link"
+        example: "→ Part 1: Where we explored the core problem [link]"
+      - name: "Numbered archive"
+        description: "With campaign abbreviation"
+        example: "→ [BPM] #1: The Blueprint [link]"
+
+    mistakes:
+      - "Forgetting to actually save emails as web pages"
+      - "Broken or outdated links"
+      - "Including archive in every email (only at series end)"
+
+    examples: []
+
+  # =============================================================================
+  # SUBJECT LINE TECHNIQUES
+  # =============================================================================
+
+  - name: "Continuity Subject"
+    category: "subject_lines"
+    description: |
+      Subject lines that signal ongoing conversation or story, making the email
+      feel like part of a relationship rather than a marketing blast. Creates
+      the feeling of an ongoing dialogue.
+
+    when_to_use:
+      - "Sequence emails after the first"
+      - "When referencing previous emails"
+      - "To boost opens through implied relationship"
+
+    formatting:
+      line_length: "Short to medium"
+      spacing: "N/A for subject lines"
+      example_layout: |
+        Re: What we talked about
+        ...and here's what happened next
+        Following up on yesterday
+
+    variations:
+      - name: "Re: prefix"
+        description: "Suggests ongoing thread"
+        example: "Re: that thing I mentioned"
+      - name: "Ellipsis continuation"
+        description: "Implies story continues"
+        example: "...so I did what you suggested"
+      - name: "Reference back"
+        description: "Explicitly mentions previous email"
+        example: "About that email I sent Tuesday..."
+
+    mistakes:
+      - "Fake 'Re:' on first contact (deceptive)"
+      - "References that don't match actual previous content"
+      - "Overusing to the point of predictability"
+
+    examples: []
+
+  - name: "Intrigue Subject"
+    category: "subject_lines"
+    description: |
+      Subject lines that create curiosity without being clickbait. They
+      hint at valuable content while maintaining authenticity and trust.
+
+    when_to_use:
+      - "Story emails with genuine twists"
+      - "When sharing insights or revelations"
+      - "To stand out in crowded inboxes"
+
+    formatting:
+      line_length: "Short - often 1-5 words"
+      spacing: "N/A"
+      example_layout: |
+        The weird thing about Tuesday
+        She said no
+        I was wrong
+
+    variations:
+      - name: "Unexpected outcome"
+        description: "Hints at surprising result"
+        example: "It didn't work (at first)"
+      - name: "Incomplete thought"
+        description: "Sentence that demands completion"
+        example: "The one thing I wish I knew when..."
+      - name: "Confession"
+        description: "Vulnerability that creates connection"
+        example: "I almost didn't send this"
+
+    mistakes:
+      - "Clickbait that doesn't deliver"
+      - "Being mysterious without substance"
+      - "All intrigue, no clarity about topic"
+
+    examples: []
+
+  - name: "Campaign Abbreviation"
+    category: "subject_lines"
+    description: |
+      Use abbreviated campaign or newsletter names as prefixes in subject lines.
+      This creates brand recognition, helps readers identify email series, and
+      builds anticipation for specific content types.
+
+      Example: TWN = Tiny Worlds Newsletter, ARM = Autoresponder Madness
+
+    when_to_use:
+      - "All emails in a named series or newsletter"
+      - "When building a recognizable content brand"
+      - "For sequences readers should track over time"
+
+    formatting:
+      line_length: "Abbreviation + main subject"
+      spacing: "Abbreviation followed by colon or dash"
+      example_layout: |
+        TWN: The weird thing about Tuesday
+        ARM #14: Open loops (and how to close them)
+        SOS - Part 3: She said yes
+
+    variations:
+      - name: "Colon separator"
+        description: "Clean, professional feel"
+        example: "TWN: Subject here"
+      - name: "With number"
+        description: "Adds sequence tracking"
+        example: "TWN #47: Subject here"
+      - name: "Dash separator"
+        description: "Slightly more casual"
+        example: "TWN - Subject here"
+
+    mistakes:
+      - "Abbreviations readers don't recognize (introduce first)"
+      - "Inconsistent abbreviation usage"
+      - "Too many different abbreviations (confusing)"
+
+    examples: []
+
+  - name: "Question Subject"
+    category: "subject_lines"
+    description: |
+      Subject lines phrased as questions that engage the reader's mind
+      and demand a mental response. Questions have 10-15% higher open rates
+      than statements.
+
+    when_to_use:
+      - "When challenging assumptions"
+      - "To create dialogue feeling"
+      - "When the email answers a common question"
+
+    formatting:
+      line_length: "Short, direct"
+      spacing: "N/A"
+      example_layout: |
+        What if you're wrong?
+        Have you tried this?
+        Why does everyone get this backwards?
+
+    variations:
+      - name: "Challenge question"
+        description: "Questions reader's current approach"
+        example: "Is your email list actually working?"
+      - name: "Curiosity question"
+        description: "Piques interest about answer"
+        example: "What do these 3 things have in common?"
+      - name: "Personal question"
+        description: "Direct address to reader"
+        example: "Quick question for you..."
+
+    mistakes:
+      - "Questions with obvious answers"
+      - "Questions that feel like quiz spam"
+      - "Not answering the question in the email"
+
+    examples: []
+
+  # =============================================================================
+  # PERSUASION TECHNIQUES
+  # =============================================================================
+
+  - name: "Soft Sell"
+    category: "persuasion"
+    description: |
+      Andre's signature non-pushy approach to selling. Links to buy are present
+      but never pressured. The philosophy: "We never push you to purchase...
+      buy whenever you feel ready." High-quality content itself is the persuasion.
+
+    when_to_use:
+      - "Every email where a product is relevant"
+      - "Throughout sequences (not just 'sales emails')"
+      - "When building long-term customer relationships"
+
+    formatting:
+      line_length: "Embedded naturally in content"
+      spacing: "Not isolated or highlighted aggressively"
+      example_layout: |
+        If you want to go deeper on this, I cover it in detail
+        in [Course Name]. Here's the link if you're interested:
+
+        [link]
+
+        But for now, let me share one more thing...
+
+    variations:
+      - name: "Natural mention"
+        description: "Product reference flows from content"
+        example: "This is exactly what we cover in Module 3..."
+      - name: "Optional framing"
+        description: "Explicitly makes purchase optional"
+        example: "If and when you're ready, here's where to go..."
+      - name: "Value-first"
+        description: "Give substantial value, then mention product"
+        example: "[Teach something useful] ...and if you want the full system, it's all in [Product]."
+
+    mistakes:
+      - "Multiple aggressive CTAs"
+      - "Urgency/scarcity in every email"
+      - "Making people feel bad for not buying"
+      - "Selling before relationship is established"
+
+    examples: []
+
+  - name: "Future Pacing"
+    category: "persuasion"
+    description: |
+      Help readers vividly imagine their future state after taking action.
+      Paint a picture of the transformation rather than listing features.
+
+    when_to_use:
+      - "When introducing offers or solutions"
+      - "To overcome inertia and status quo bias"
+      - "In the 'climax' section of emails"
+
+    formatting:
+      line_length: "Descriptive but not long-winded"
+      spacing: "Often set apart for emphasis"
+      example_layout: |
+        Imagine waking up tomorrow knowing exactly what to write.
+
+        No staring at a blank screen.
+        No second-guessing every word.
+        Just... flow.
+
+    variations:
+      - name: "Day-in-the-life"
+        description: "Describe a specific future moment"
+        example: "Picture yourself 30 days from now, opening your laptop and..."
+      - name: "Contrast frame"
+        description: "Before vs. after comparison"
+        example: "Right now you're [pain]. But what if instead..."
+      - name: "Emotional state"
+        description: "Focus on feelings, not logistics"
+        example: "That feeling when you finally figure it out..."
+
+    mistakes:
+      - "Unrealistic promises"
+      - "Generic benefits without specificity"
+      - "All future, no present (feels disconnected)"
+
+    examples: []
+
+  - name: "Social Proof (Implicit)"
+    category: "persuasion"
+    description: |
+      Andre rarely uses traditional testimonials. Instead, social proof is
+      woven naturally into stories - mentioning what others have done,
+      students' results, or casual references to community.
+
+    when_to_use:
+      - "When credibility supports your point"
+      - "Stories that naturally involve others' success"
+      - "Not as isolated 'testimonial blocks'"
+
+    formatting:
+      line_length: "Embedded in narrative"
+      spacing: "Flows with story, not separated"
+      example_layout: |
+        A student of mine, Sarah, tried this exact approach last month.
+
+        She was skeptical too.
+
+        But three weeks later, she sent me this email...
+
+    variations:
+      - name: "Story-embedded"
+        description: "Others' results as part of a story"
+        example: "When I shared this with my mastermind group, one person said..."
+      - name: "Casual mention"
+        description: "Brief, non-highlighted references"
+        example: "This is something hundreds of my students have used..."
+      - name: "Dialogue proof"
+        description: "Quote from real conversation"
+        example: '"I didn''t believe it would work either," she told me.'
+
+    mistakes:
+      - "Blocks of testimonials that feel salesy"
+      - "Unbelievable claims"
+      - "Proof that doesn't match your audience"
+
+    examples: []
+
+  # =============================================================================
+  # CTA TECHNIQUES
+  # =============================================================================
+
+  - name: "Reply Prompt"
+    category: "cta"
+    description: |
+      Every email should invite replies. This builds relationship, boosts
+      deliverability, and creates genuine dialogue. Andre often ends with
+      questions that prompt responses.
+
+    when_to_use:
+      - "End of every email (or nearly every)"
+      - "When seeking feedback or segmentation"
+      - "To boost email deliverability"
+
+    formatting:
+      line_length: "Short, direct question"
+      spacing: "Clear, not buried"
+      example_layout: |
+        Did this resonate?
+
+        Hit reply and let me know.
+
+    variations:
+      - name: "Feedback request"
+        description: "Ask if content was valuable"
+        example: "Was this helpful? I'd love to know."
+      - name: "Segmentation question"
+        description: "Question that reveals subscriber type"
+        example: "Quick question: Are you more [A] or [B]? Reply and tell me."
+      - name: "Story continuation"
+        description: "Ask readers to share their experience"
+        example: "Has something like this ever happened to you? I'd love to hear about it."
+
+    mistakes:
+      - "Asking questions you won't actually read"
+      - "Too many questions in one email"
+      - "Questions that feel like work to answer"
+
+    examples: []
+
+  - name: "Embedded Link"
+    category: "cta"
+    description: |
+      Links woven naturally into content rather than isolated as obvious
+      CTAs. The reader encounters them as part of the narrative flow.
+
+    when_to_use:
+      - "When mentioning a product or resource"
+      - "For segmentation via clicks"
+      - "As alternative to aggressive CTA buttons"
+
+    formatting:
+      line_length: "Within flowing sentence"
+      spacing: "Not isolated or highlighted"
+      example_layout: |
+        This is exactly what I teach in the
+        Autoresponder Madness course - how to build
+        sequences that feel like conversations.
+
+    variations:
+      - name: "Natural reference"
+        description: "Link as part of explanation"
+        example: "You can see the full framework here [link] if you want to go deeper."
+      - name: "Resource mention"
+        description: "Helpful link as value-add"
+        example: "I put together a quick guide on this [link]."
+
+    mistakes:
+      - "Links that interrupt reading flow"
+      - "Too many links (decision paralysis)"
+      - "Links without context"
+
+    examples: []
+
+  # =============================================================================
+  # FORMATTING TECHNIQUES
+  # =============================================================================
+
+  - name: "Short Line Rhythm"
+    category: "formatting"
+    description: |
+      Andre's signature formatting: short sentences, often just a few words,
+      with single-sentence paragraphs. Creates a rhythm that pulls readers
+      down the page and makes emails easy to scan.
+
+    when_to_use:
+      - "Throughout all emails"
+      - "Especially for emotional or important points"
+      - "Opening and closing sections"
+
+    formatting:
+      line_length: "1-10 words per line typical"
+      spacing: "Blank line between most sentences"
+      example_layout: |
+        Here's the thing.
+
+        Most people get this wrong.
+
+        They write long paragraphs.
+        Dense blocks of text.
+        Walls of words.
+
+        Nobody reads that.
+
+        But short lines?
+
+        They pull you down the page.
+
+    variations:
+      - name: "Staccato"
+        description: "Very short, punchy lines"
+        example: "Stop. Think. Act."
+      - name: "Progressive"
+        description: "Lines that build in length"
+        example: "One word. Two words now. Then a slightly longer thought."
+
+    mistakes:
+      - "Every line the same length (monotonous)"
+      - "No variation in rhythm"
+      - "Fragmenting to the point of confusion"
+
+    examples: []
+
+  - name: "Strategic White Space"
+    category: "formatting"
+    description: |
+      Heavy use of blank lines to create breathing room, emphasize points,
+      and make emails feel less overwhelming. Andre's emails often have
+      more white space than text.
+
+    when_to_use:
+      - "Between every thought/paragraph"
+      - "Before and after important points"
+      - "To create dramatic pauses"
+
+    formatting:
+      line_length: "N/A"
+      spacing: "Blank line between most sentences; double space for emphasis"
+      example_layout: |
+        This is important.
+
+
+        Read that again.
+
+
+        Because most people miss it entirely.
+
+    variations:
+      - name: "Emphasis gap"
+        description: "Extra space before key point"
+        example: "[setup] \n\n\n [key insight]"
+      - name: "Transition space"
+        description: "Clear break between sections"
+        example: "'---' or extra blank lines between topics"
+
+    mistakes:
+      - "So much space the email feels disjointed"
+      - "No variation (all same spacing)"
+      - "Important points buried without space"
+
+    examples: []
+
+  - name: "Personal Greeting"
+    category: "formatting"
+    description: |
+      Andre always opens with a personal identification - letting the reader
+      know immediately who is writing. This creates intimacy and recognition,
+      especially important when emails might get forwarded or read out of context.
+
+      MANDATORY: Every email should open with some form of "Hey, it's Andre"
+      or similar personal identification.
+
+    when_to_use:
+      - "Opening of EVERY email - this is mandatory"
+
+    formatting:
+      line_length: "Short, casual"
+      spacing: "Own line, followed by blank line"
+      example_layout: |
+        Hey, it's Andre.
+
+        [Rest of email begins...]
+
+    variations:
+      - name: "Standard greeting"
+        description: "The default opener"
+        example: "Hey, it's Andre."
+      - name: "With context"
+        description: "Adds situation or timing"
+        example: "Hey, it's Andre. Quick one today."
+      - name: "Continuation"
+        description: "References previous email"
+        example: "Hey, it's Andre again."
+
+    mistakes:
+      - "Skipping the greeting entirely"
+      - "Generic 'Dear subscriber' openings"
+      - "Jumping straight into content without identification"
+
+    examples: []
+
+  - name: "Clever Signature"
+    category: "formatting"
+    description: |
+      Andre signs off with a playful middle "nickname" that changes based on
+      the email content, his mood, or a self-deprecating observation. Format:
+      Andre "clever phrase" Chaperon. This adds personality and memorability.
+
+    when_to_use:
+      - "Sign-off of most emails"
+      - "When the phrase can connect to email content"
+      - "For adding personality and humor"
+
+    formatting:
+      line_length: "Single line"
+      spacing: "After closing, before P.S."
+      example_layout: |
+        Talk soon,
+
+        Andre "dyslexic, but I cope" Chaperon
+
+        P.S. ...
+
+    variations:
+      - name: "Self-deprecating"
+        description: "Playful self-mockery"
+        example: 'Andre "still figuring this out" Chaperon'
+      - name: "Content-related"
+        description: "Connects to email topic"
+        example: 'Andre "open loop addict" Chaperon'
+      - name: "Situational"
+        description: "Based on current life moment"
+        example: 'Andre "three coffees deep" Chaperon'
+      - name: "Aspirational"
+        description: "Playful identity claim"
+        example: 'Andre "email nerd" Chaperon'
+
+    mistakes:
+      - "Forced or try-hard cleverness"
+      - "Same phrase every time (loses impact)"
+      - "Phrases that don't fit the tone"
+
+    examples: []
+
+  - name: "Conversational Asides"
+    category: "formatting"
+    description: |
+      Parenthetical comments, dashes, and asides that create an intimate,
+      thinking-out-loud feel. Makes the reader feel like they're getting
+      unfiltered thoughts.
+
+    when_to_use:
+      - "To add personality and authenticity"
+      - "For humor or self-deprecation"
+      - "To create intimacy with reader"
+
+    formatting:
+      line_length: "Short, often parenthetical"
+      spacing: "Inline or on own line"
+      example_layout: |
+        I've been doing this for 15 years.
+
+        (Wow, that makes me feel old.)
+
+        And in all that time, I've learned one thing...
+
+    variations:
+      - name: "Parenthetical"
+        description: "Thought in parentheses"
+        example: "I tried everything (and I mean everything)."
+      - name: "Dash aside"
+        description: "Thought set off by dashes"
+        example: "The secret - and this took me years to figure out - is simplicity."
+      - name: "Direct address"
+        description: "Breaking fourth wall with reader"
+        example: "You're probably thinking: 'That sounds too simple.' I get it."
+
+    mistakes:
+      - "Overusing (every sentence has aside)"
+      - "Asides that don't add value"
+      - "Breaking flow too often"
+
+    examples: []
+
+  # =============================================================================
+  # SEGMENTATION TECHNIQUES
+  # =============================================================================
+
+  - name: "Self-Identification"
+    category: "segmentation"
+    description: |
+      Early in sequences, ask subscribers to identify themselves through
+      clicks. This enables tailored follow-up sequences based on their
+      expressed interests and situation.
+
+    when_to_use:
+      - "Welcome sequence (email 1-2)"
+      - "When you have distinct audience segments"
+      - "Before launching different product tracks"
+
+    formatting:
+      line_length: "Clear, scannable options"
+      spacing: "Each option on its own line"
+      example_layout: |
+        Quick question:
+
+        Which describes you best?
+
+        → I'm just getting started [link]
+        → I have some experience but I'm stuck [link]
+        → I'm doing well but want to scale [link]
+
+        Click the one that fits - I'll send you something specific to where you are.
+
+    variations:
+      - name: "Challenge-based"
+        description: "Options framed as problems"
+        example: "What's your biggest struggle right now? [options]"
+      - name: "Goal-based"
+        description: "Options framed as desired outcomes"
+        example: "What are you trying to achieve? [options]"
+      - name: "Experience-based"
+        description: "Options based on level"
+        example: "How long have you been doing this? [options]"
+
+    mistakes:
+      - "Too many options (max 3-4)"
+      - "Options that aren't mutually exclusive"
+      - "Not following up with relevant content"
+
+    examples: []
+
+  - name: "Behavioral Trigger"
+    category: "segmentation"
+    description: |
+      Use clicks, opens, and replies to automatically route subscribers
+      into relevant sequences. Create emergent, personalized experiences
+      atop linear foundations.
+
+    when_to_use:
+      - "When clicks indicate interest in specific topics"
+      - "To create choose-your-own-adventure paths"
+      - "For lead scoring and VIP identification"
+
+    formatting:
+      line_length: "N/A (backend automation)"
+      spacing: "N/A"
+      example_layout: |
+        [In automation platform:]
+        IF clicks "link about X" → add tag "interested_in_X"
+        IF tag "interested_in_X" → start sequence "X Deep Dive"
+
+    variations:
+      - name: "Interest tagging"
+        description: "Clicks apply topic tags"
+        example: "Click on 'email marketing' → tag → email marketing sequence"
+      - name: "Engagement scoring"
+        description: "Multiple clicks increase lead score"
+        example: "3+ clicks in 7 days → VIP tag → special offers"
+      - name: "Purchase triggers"
+        description: "Buying triggers specific follow-up"
+        example: "Purchased X → remove from sales sequence → start onboarding sequence"
+
+    mistakes:
+      - "Automation without clear purpose"
+      - "Too many branches (unmanageable)"
+      - "Not testing paths actually work"
+
+    examples: []
+
+# =============================================================================
+# METADATA
+# =============================================================================
+
+metadata:
+  version: "1.1.0"
+  last_updated: "2026-01-24"
+  source: "Research from Andre Chaperon's 'The Art of Email', 'Autoresponder Madness', and 'Sphere of Influence' frameworks"
+  technique_count: 24
+  categories:
+    - name: "engagement"
+      description: "Techniques for capturing and maintaining attention"
+      techniques: ["Open Loop", "Curiosity Gap", "Story Hook", "Pattern Interrupt"]
+    - name: "structure"
+      description: "Frameworks for organizing emails and sequences"
+      techniques: ["Soap Opera Sequence", "Episode Framework", "P.S. Subplot", "P.S. Series Archive"]
+    - name: "subject_lines"
+      description: "Patterns for writing compelling subject lines"
+      techniques: ["Continuity Subject", "Intrigue Subject", "Campaign Abbreviation", "Question Subject"]
+    - name: "persuasion"
+      description: "Ethical influence techniques"
+      techniques: ["Soft Sell", "Future Pacing", "Social Proof (Implicit)"]
+    - name: "cta"
+      description: "Call-to-action patterns"
+      techniques: ["Reply Prompt", "Embedded Link"]
+    - name: "formatting"
+      description: "Visual and structural formatting patterns"
+      techniques: ["Short Line Rhythm", "Strategic White Space", "Personal Greeting", "Clever Signature", "Conversational Asides"]
+    - name: "segmentation"
+      description: "Techniques for personalizing subscriber journeys"
+      techniques: ["Self-Identification", "Behavioral Trigger"]
+
+  # Mandatory elements (must appear in EVERY email)
+  mandatory:
+    - "Personal Greeting"    # "Hey, it's Andre" opener
+    - "P.S. Subplot"         # Every email has a P.S.
+    - "Short Line Rhythm"    # Signature formatting style
