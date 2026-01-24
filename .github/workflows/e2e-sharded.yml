@@ -176,7 +176,7 @@ jobs:
           PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
           DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
           DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
-          PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+          PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
           NODE_ENV: 'production'
           # Supabase env vars must be present at build time for Next.js production builds
           # NEXT_PUBLIC_* vars are baked into the client bundle at build time
@@ -245,9 +245,12 @@ jobs:
       
       # Required for app to start
       NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
-      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
       PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
       NODE_ENV: 'test'
+      # Email configuration - required by Zod schema validation
+      # See: Issue #1796, #1797 - Shard 4 timeout due to missing emailSender
+      EMAIL_SENDER: 'noreply@slideheroes.com'
       
       # Enable Playwright parallelism
       PLAYWRIGHT_PARALLEL: 'true'
