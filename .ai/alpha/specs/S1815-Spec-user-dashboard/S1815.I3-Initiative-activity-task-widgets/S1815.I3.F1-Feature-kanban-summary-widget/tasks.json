@@ -1,0 +1,449 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I3.F1",
+    "feature_name": "Kanban Summary Widget",
+    "feature_slug": "kanban-summary-widget",
+    "initiative_id": "S1815.I3",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T18:30:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1815.I3.F1.T4", "S1815.I3.F1.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I3.F1.T1",
+      "type": "task",
+      "name": "Create kanban summary loader function",
+      "action": {
+        "verb": "Create",
+        "target": "kanban summary loader function"
+      },
+      "purpose": "Fetch doing tasks (limit 3) and next priority 'do' task for dashboard widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/api/tasks.ts",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient",
+          "getTasks",
+          "getTasksByStatus",
+          "TaskStatus type"
+        ],
+        "constraints": [
+          "Limit 'doing' status to 3 tasks",
+          "Fetch only 1 task from 'do' status ordered by priority",
+          "Use parallel Promise.all for performance",
+          "Return type should match widget expectations"
+        ]
+      },
+      "input_state": "Kanban task queries and types exist in codebase",
+      "output_state": "Loader function exported at _lib/server/loaders/kanban-summary.loader.ts",
+      "acceptance_criterion": "Function fetches doing tasks (max 3) and next priority do task using parallel queries",
+      "verification_command": "pnpm typecheck && grep -q 'loadKanbanSummary' apps/web/app/home/\\(user\\)/_lib/server/loaders/kanban-summary.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/kanban-summary.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I3.F1.T4", "S1815.I3.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F1.T2",
+      "type": "task",
+      "name": "Create kanban summary skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "kanban summary skeleton component"
+      },
+      "purpose": "Display loading placeholder during data fetch",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card components from @kit/ui/card"
+        ],
+        "constraints": [
+          "Match widget structure (header + task list)",
+          "Show 3 task placeholders",
+          "Match card dimensions of final widget"
+        ]
+      },
+      "input_state": "Skeleton component available in UI library",
+      "output_state": "Skeleton component exported at _components/widgets/kanban-summary-skeleton.tsx",
+      "acceptance_criterion": "Skeleton component renders Card with animated placeholders matching widget layout",
+      "verification_command": "pnpm typecheck && grep -q 'KanbanSummarySkeleton' apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I3.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F1.T3",
+      "type": "task",
+      "name": "Create widget empty state",
+      "action": {
+        "verb": "Create",
+        "target": "widget empty state UI"
+      },
+      "purpose": "Handle users with no active tasks gracefully",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "Card components from @kit/ui/card",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Show friendly message encouraging task creation",
+          "Include link to /home/kanban",
+          "Match card styling of populated state"
+        ]
+      },
+      "input_state": "EmptyState component available in UI library",
+      "output_state": "Empty state rendering logic added to widget component",
+      "acceptance_criterion": "Empty state displays message and link when tasks array is empty",
+      "verification_command": "grep -q 'EmptyState' apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I3.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F1.T4",
+      "type": "task",
+      "name": "Create widget populated state",
+      "action": {
+        "verb": "Create",
+        "target": "widget populated state with task list"
+      },
+      "purpose": "Display doing tasks and next priority task with proper styling",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Kanban Summary"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"
+        ],
+        "dependencies": [
+          "Card components from @kit/ui/card",
+          "Badge from @kit/ui/badge",
+          "Link from next/link",
+          "Task type from kanban schema"
+        ],
+        "constraints": [
+          "Priority colors: border-l-destructive (high), border-l-warning (medium), border-l-success (low)",
+          "Show task title only (no description or subtasks)",
+          "Display 'doing' tasks first, then 'do' task",
+          "Add 'View Kanban Board' link to /home/kanban",
+          "Show count indicator if more than 3 doing tasks exist"
+        ]
+      },
+      "input_state": "Loader function exists and returns task data",
+      "output_state": "Widget component displays tasks with priority borders and kanban link",
+      "acceptance_criterion": "Widget renders doing tasks with colored left borders and includes link to kanban board",
+      "verification_command": "pnpm typecheck && grep -q 'border-l-destructive\\|border-l-warning\\|border-l-success' apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I3.F1.T1"],
+        "blocks": ["S1815.I3.F1.T3", "S1815.I3.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F1.T5",
+      "type": "task",
+      "name": "Add dashboard loader integration",
+      "action": {
+        "verb": "Add",
+        "target": "kanban summary to dashboard loader parallel fetch"
+      },
+      "purpose": "Load widget data efficiently with other dashboard data",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+        ],
+        "dependencies": [
+          "loadKanbanSummary from loaders",
+          "getSupabaseServerClient"
+        ],
+        "constraints": [
+          "Add to Promise.all for parallel execution",
+          "Create dashboard.loader.ts if it doesn't exist",
+          "Follow existing loader pattern from load-user-workspace.ts"
+        ]
+      },
+      "input_state": "Loader function exists and widget component complete",
+      "output_state": "Dashboard loader includes kanban summary in parallel fetch",
+      "acceptance_criterion": "Dashboard loader calls loadKanbanSummary in Promise.all with other data fetches",
+      "verification_command": "grep -q 'loadKanbanSummary' apps/web/app/home/\\(user\\)/_lib/server/dashboard.loader.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/dashboard.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I3.F1.T1", "S1815.I3.F1.T4"],
+        "blocks": ["S1815.I3.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F1.T6",
+      "type": "task",
+      "name": "Wire widget to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "widget to dashboard page with Suspense"
+      },
+      "purpose": "Display widget on user home page with proper loading state",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Kanban Summary"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "KanbanSummaryWidget component",
+          "KanbanSummarySkeleton component",
+          "dashboard loader",
+          "Suspense from react"
+        ],
+        "constraints": [
+          "Wrap widget in Suspense with skeleton fallback",
+          "Add to PageBody component",
+          "Call dashboard loader in page component",
+          "Follow async server component pattern (await params if needed)"
+        ]
+      },
+      "input_state": "Widget component, skeleton, and dashboard loader all exist",
+      "output_state": "Widget renders on /home route with Suspense boundary",
+      "acceptance_criterion": "Widget displays on user home page with skeleton loading state during data fetch",
+      "verification_command": "grep -q 'KanbanSummaryWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'Suspense' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I3.F1.T2", "S1815.I3.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation (Parallel)",
+        "task_ids": ["S1815.I3.F1.T1", "S1815.I3.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Widget States (Sequential)",
+        "task_ids": ["S1815.I3.F1.T4", "S1815.I3.F1.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Dashboard Integration",
+        "task_ids": ["S1815.I3.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 4,
+        "name": "Page Wiring",
+        "task_ids": ["S1815.I3.F1.T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1815.I3.F1.T1", "S1815.I3.F1.T4", "S1815.I3.F1.T5", "S1815.I3.F1.T6"],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 7,
+      "parallel": 6,
+      "time_saved_percent": 14
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

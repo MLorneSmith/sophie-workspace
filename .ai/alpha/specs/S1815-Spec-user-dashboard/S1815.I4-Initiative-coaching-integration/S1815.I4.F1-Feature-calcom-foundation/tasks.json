@@ -1,0 +1,670 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I4.F1",
+    "feature_name": "Cal.com Foundation",
+    "feature_slug": "calcom-foundation",
+    "initiative_id": "S1815.I4",
+    "spec_id": "1815",
+    "created_at": "2026-01-26T18:30:00Z",
+    "complexity": {
+      "score": 71.25,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CAL_OAUTH_CLIENT_ID",
+        "description": "OAuth client ID for Cal.com API authentication",
+        "source": "Cal.com Platform dashboard → Settings → Developer → OAuth apps",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "CAL_API_KEY",
+        "description": "API key for server-side Cal.com operations",
+        "source": "Cal.com API settings → Generate API key",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_COACH_USERNAME",
+        "description": "Username for the default coach profile",
+        "source": "Cal.com account username",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "description": "Event type slug for coaching sessions (e.g., '60min')",
+        "source": "Cal.com event types → Copy slug from URL or settings",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1815.I4.F1.T1",
+      "type": "task",
+      "name": "Create coaching package structure",
+      "action": { "verb": "Create", "target": "coaching feature package skeleton" },
+      "purpose": "Establish the feature package directory and package.json for coaching functionality",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/auth/package.json"],
+        "dependencies": ["@kit/ui", "@kit/shared", "workspace packages"],
+        "constraints": ["Follow existing feature package patterns", "Use workspace:* for internal deps"]
+      },
+      "input_state": "No coaching package exists",
+      "output_state": "packages/features/coaching/package.json exists with correct structure and exports configuration",
+      "acceptance_criterion": "package.json exists with name '@kit/coaching', exports field defined, devDependencies configured",
+      "verification_command": "test -f packages/features/coaching/package.json && jq '.name == \"@kit/coaching\"' packages/features/coaching/package.json",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/package.json" },
+        { "type": "new", "path": "packages/features/coaching/src/index.ts" },
+        { "type": "new", "path": "packages/features/coaching/tsconfig.json" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F1.T2", "S1815.I4.F1.T3", "S1815.I4.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T2",
+      "type": "task",
+      "name": "Define Booking entity TypeScript interface",
+      "action": { "verb": "Create", "target": "Booking type definition" },
+      "purpose": "Define type-safe structure for Cal.com booking data extending the API response",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["research-library/context7-calcom.md"],
+        "dependencies": ["Cal.com API booking response structure"],
+        "constraints": ["Match Cal.com v2 API structure", "Add domain-specific fields", "Export from index.ts"]
+      },
+      "input_state": "Package structure exists, no type definitions",
+      "output_state": "Booking interface exists in packages/features/coaching/src/types/booking.ts with all Cal.com fields plus domain extensions",
+      "acceptance_criterion": "Booking interface includes id, uid, title, startTime, endTime, status, location, meetingUrl, and domain fields",
+      "verification_command": "grep -q 'export interface Booking' packages/features/coaching/src/types/booking.ts && grep -q 'meetingUrl' packages/features/coaching/src/types/booking.ts",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/types/booking.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1"],
+        "blocks": ["S1815.I4.F1.T5", "S1815.I4.F1.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T3",
+      "type": "task",
+      "name": "Define Session entity TypeScript interface",
+      "action": { "verb": "Create", "target": "Session type definition" },
+      "purpose": "Define type-safe structure for coaching session display data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["research-library/context7-calcom.md"],
+        "dependencies": ["Cal.com booking structure", "Booking interface from T2"],
+        "constraints": ["Extend or transform Booking for UI needs", "Include coach metadata", "Export from index.ts"]
+      },
+      "input_state": "Booking type exists",
+      "output_state": "Session interface exists representing a coaching session with coach details and status helpers",
+      "acceptance_criterion": "Session interface includes all Booking fields plus coachName, isPast, isUpcoming computed helpers",
+      "verification_command": "grep -q 'export interface Session' packages/features/coaching/src/types/booking.ts && grep -q 'coachName' packages/features/coaching/src/types/booking.ts",
+      "outputs": [
+        { "type": "modified", "path": "packages/features/coaching/src/types/booking.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1", "S1815.I4.F1.T2"],
+        "blocks": ["S1815.I4.F1.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T4",
+      "type": "task",
+      "name": "Define Coach entity TypeScript interface",
+      "action": { "verb": "Create", "target": "Coach type definition" },
+      "purpose": "Define type-safe structure for coach profile data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["research-library/context7-calcom.md"],
+        "dependencies": ["Cal.com host structure from booking response"],
+        "constraints": ["Match Cal.com host object structure", "Add optional fields for future expansion", "Export from index.ts"]
+      },
+      "input_state": "Package structure exists",
+      "output_state": "Coach interface exists with id, name, email, and optional fields",
+      "acceptance_criterion": "Coach interface includes id, name, email, timeZone, and optional avatarUrl",
+      "verification_command": "grep -q 'export interface Coach' packages/features/coaching/src/types/booking.ts && grep -q 'timeZone' packages/features/coaching/src/types/booking.ts",
+      "outputs": [
+        { "type": "modified", "path": "packages/features/coaching/src/types/booking.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1"],
+        "blocks": ["S1815.I4.F1.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T5",
+      "type": "task",
+      "name": "Create Cal.com configuration Zod schema",
+      "action": { "verb": "Create", "target": "Zod validation schema for Cal.com environment variables" },
+      "purpose": "Validate Cal.com environment variables at startup with helpful error messages",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.example", "research-library/context7-calcom.md"],
+        "dependencies": ["zod", "Booking type from T2"],
+        "constraints": ["Validate CAL_OAUTH_CLIENT_ID, CAL_API_KEY, NEXT_PUBLIC_CAL_COACH_USERNAME, NEXT_PUBLIC_CAL_EVENT_SLUG", "Provide clear error messages for missing vars", "Export schema and parsed config"]
+      },
+      "input_state": "Types exist, no configuration validation",
+      "output_state": "Zod schema exists in packages/features/coaching/src/lib/cal-config.ts that validates all required environment variables",
+      "acceptance_criterion": "Schema validates all 4 Cal.com env vars with descriptive error messages and exports parseCalConfig function",
+      "verification_command": "grep -q 'CalConfigSchema' packages/features/coaching/src/lib/cal-config.ts && grep -q 'CAL_OAUTH_CLIENT_ID' packages/features/coaching/src/lib/cal-config.ts",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/lib/cal-config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1", "S1815.I4.F1.T2"],
+        "blocks": ["S1815.I4.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T6",
+      "type": "task",
+      "name": "Add configuration validation utility function",
+      "action": { "verb": "Add", "target": "getCalConfig utility with graceful error handling" },
+      "purpose": "Provide a safe way to access Cal.com configuration with error handling",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/coaching/src/lib/cal-config.ts"],
+        "dependencies": ["Zod schema from T5", "@kit/shared/logger"],
+        "constraints": ["Return null if config invalid", "Log error with helpful message", "Export from index.ts"]
+      },
+      "input_state": "Zod schema exists for validation",
+      "output_state": "getCalConfig function exists that safely parses and returns config or null on failure",
+      "acceptance_criterion": "getCalConfig function returns parsed config on success, null on failure with logged error",
+      "verification_command": "grep -q 'export function getCalConfig' packages/features/coaching/src/lib/cal-config.ts",
+      "outputs": [
+        { "type": "modified", "path": "packages/features/coaching/src/lib/cal-config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T5"],
+        "blocks": ["S1815.I4.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T7",
+      "type": "task",
+      "name": "Create CalProvider wrapper component",
+      "action": { "verb": "Create", "target": "CalProvider React component" },
+      "purpose": "Wrap Cal.com atoms provider with configuration and error handling",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["research-library/context7-calcom.md", "packages/features/auth/src/sign-in.ts"],
+        "dependencies": ["@calcom/atoms (to be installed)", "getCalConfig from T6", "React context"],
+        "constraints": ["Use client directive", "Handle missing config gracefully", "Export from index.ts", "Import @calcom/atoms/globals.min.css"]
+      },
+      "input_state": "Configuration utilities exist, no provider component",
+      "output_state": "CalProvider component exists that wraps children with Cal.com configuration context",
+      "acceptance_criterion": "CalProvider component accepts clientId prop, renders children, shows warning if config invalid",
+      "verification_command": "grep -q 'export function CalProvider' packages/features/coaching/src/components/cal-provider.tsx && grep -q 'use client' packages/features/coaching/src/components/cal-provider.tsx",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/components/cal-provider.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1", "S1815.I4.F1.T6"],
+        "blocks": ["S1815.I4.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T8",
+      "type": "task",
+      "name": "Install @calcom/atoms package in web app",
+      "action": { "verb": "Add", "target": "@calcom/atoms dependency to apps/web" },
+      "purpose": "Install the Cal.com React components library for integration",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/package.json"],
+        "dependencies": ["pnpm workspace"],
+        "constraints": ["Use latest stable version", "Add to dependencies section", "Run pnpm install after"]
+      },
+      "input_state": "@calcom/atoms not installed",
+      "output_state": "@calcom/atoms is listed in apps/web/package.json dependencies and installed in node_modules",
+      "acceptance_criterion": "package.json includes @calcom/atoms and pnpm install completes successfully",
+      "verification_command": "grep -q '@calcom/atoms' apps/web/package.json && test -d node_modules/@calcom/atoms",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T9",
+      "type": "task",
+      "name": "Add coaching package dependency to web app",
+      "action": { "verb": "Add", "target": "@kit/coaching workspace dependency" },
+      "purpose": "Enable web app to import coaching package components and utilities",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/package.json"],
+        "dependencies": ["coaching package from T1"],
+        "constraints": ["Use workspace:* version", "Add to dependencies section"]
+      },
+      "input_state": "@kit/coaching not referenced in web app",
+      "output_state": "@kit/coaching is listed in apps/web/package.json dependencies with workspace:* version",
+      "acceptance_criterion": "package.json includes '@kit/coaching': 'workspace:*' in dependencies",
+      "verification_command": "grep -q '\"@kit/coaching\": \"workspace:\\*\"' apps/web/package.json",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T1", "S1815.I4.F1.T7", "S1815.I4.F1.T8"],
+        "blocks": ["S1815.I4.F1.T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T10",
+      "type": "task",
+      "name": "Update coaching package exports",
+      "action": { "verb": "Update", "target": "index.ts to export all types and components" },
+      "purpose": "Make all coaching types, components, and utilities importable from @kit/coaching",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/coaching/src/index.ts", "packages/features/auth/src/index.ts"],
+        "dependencies": ["All types from T2-T4", "CalProvider from T7", "cal-config utilities from T5-T6"],
+        "constraints": ["Export all public API surface", "Use named exports", "Update package.json exports field"]
+      },
+      "input_state": "Components and types exist but not exported",
+      "output_state": "index.ts exports all types, components, and utilities; package.json exports field configured",
+      "acceptance_criterion": "index.ts exports Booking, Session, Coach, CalProvider, getCalConfig; package.json has exports map",
+      "verification_command": "grep -q 'export.*CalProvider' packages/features/coaching/src/index.ts && grep -q 'export.*Booking' packages/features/coaching/src/index.ts",
+      "outputs": [
+        { "type": "modified", "path": "packages/features/coaching/src/index.ts" },
+        { "type": "modified", "path": "packages/features/coaching/package.json" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T2", "S1815.I4.F1.T3", "S1815.I4.F1.T4", "S1815.I4.F1.T7"],
+        "blocks": ["S1815.I4.F1.T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T11",
+      "type": "task",
+      "name": "Wrap user layout with CalProvider",
+      "action": { "verb": "Add", "target": "CalProvider wrapper to user home layout" },
+      "purpose": "Initialize Cal.com context for all user home routes",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 11,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/layout.tsx", "research-library/context7-calcom.md"],
+        "dependencies": ["CalProvider from @kit/coaching", "getCalConfig utility", "UserWorkspaceContextProvider"],
+        "constraints": ["Wrap inside UserWorkspaceContextProvider", "Pass clientId from env", "Handle missing config gracefully"]
+      },
+      "input_state": "Layout exists without CalProvider",
+      "output_state": "Layout wraps children with CalProvider configured with environment variables",
+      "acceptance_criterion": "layout.tsx imports and uses CalProvider, passes CAL_OAUTH_CLIENT_ID as clientId prop",
+      "verification_command": "grep -q 'CalProvider' apps/web/app/home/\\(user\\)/layout.tsx && grep -q '@kit/coaching' apps/web/app/home/\\(user\\)/layout.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/layout.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T9", "S1815.I4.F1.T10"],
+        "blocks": ["S1815.I4.F1.T14"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T12",
+      "type": "task",
+      "name": "Add Cal.com environment variables to .env.example",
+      "action": { "verb": "Add", "target": "Cal.com environment variable documentation" },
+      "purpose": "Document required environment variables for developers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 12,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.example"],
+        "dependencies": ["Environment variables defined in T5"],
+        "constraints": ["Add under new '# Cal.com Integration' section", "Include descriptive comments", "Show example values"]
+      },
+      "input_state": ".env.example exists without Cal.com variables",
+      "output_state": ".env.example includes all 4 Cal.com variables with comments and example values",
+      "acceptance_criterion": ".env.example contains CAL_OAUTH_CLIENT_ID, CAL_API_KEY, NEXT_PUBLIC_CAL_COACH_USERNAME, NEXT_PUBLIC_CAL_EVENT_SLUG with helpful comments",
+      "verification_command": "grep -q 'CAL_OAUTH_CLIENT_ID' apps/web/.env.example && grep -q '# Cal.com Integration' apps/web/.env.example",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/.env.example" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T13",
+      "type": "task",
+      "name": "Write unit test for configuration validation",
+      "action": { "verb": "Create", "target": "Vitest tests for cal-config utilities" },
+      "purpose": "Verify environment variable validation logic handles all cases correctly",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 13,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/coaching/src/lib/cal-config.ts"],
+        "dependencies": ["vitest", "Zod schema from T5", "getCalConfig from T6"],
+        "constraints": ["Test valid config", "Test missing required vars", "Test invalid format", "Test graceful error handling"]
+      },
+      "input_state": "Configuration utilities exist without tests",
+      "output_state": "cal-config.test.ts exists with tests for validation success and failure cases",
+      "acceptance_criterion": "Tests cover valid config, missing vars, invalid format, and getCalConfig null return",
+      "verification_command": "test -f packages/features/coaching/src/lib/cal-config.test.ts && grep -q 'describe.*CalConfig' packages/features/coaching/src/lib/cal-config.test.ts",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/lib/cal-config.test.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T5", "S1815.I4.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T14",
+      "type": "task",
+      "name": "Write unit test for CalProvider component",
+      "action": { "verb": "Create", "target": "Vitest tests for CalProvider rendering" },
+      "purpose": "Verify CalProvider renders correctly with valid and invalid configuration",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 14,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/coaching/src/components/cal-provider.tsx"],
+        "dependencies": ["@testing-library/react", "vitest", "CalProvider from T7"],
+        "constraints": ["Test renders children with valid config", "Test warning with missing config", "Mock @calcom/atoms imports"]
+      },
+      "input_state": "CalProvider exists without tests",
+      "output_state": "cal-provider.test.tsx exists with rendering and error handling tests",
+      "acceptance_criterion": "Tests verify children render with valid config and warning shows with invalid config",
+      "verification_command": "test -f packages/features/coaching/src/components/cal-provider.test.tsx && grep -q 'describe.*CalProvider' packages/features/coaching/src/components/cal-provider.test.tsx",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/components/cal-provider.test.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T7", "S1815.I4.F1.T11"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F1.T15",
+      "type": "task",
+      "name": "Write unit test for TypeScript type utilities",
+      "action": { "verb": "Create", "target": "Vitest tests for type guards and helpers" },
+      "purpose": "Verify type utilities and guards work correctly",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 15,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/features/coaching/src/types/booking.ts"],
+        "dependencies": ["vitest", "Type interfaces from T2-T4"],
+        "constraints": ["Test type guard functions if any", "Test helper functions for Session status", "Verify type exports"]
+      },
+      "input_state": "Types exist without test coverage",
+      "output_state": "booking.test.ts exists with tests for type utilities and guards",
+      "acceptance_criterion": "Tests verify isPast/isUpcoming helpers work correctly with various dates",
+      "verification_command": "test -f packages/features/coaching/src/types/booking.test.ts && grep -q 'describe' packages/features/coaching/src/types/booking.test.ts",
+      "outputs": [
+        { "type": "new", "path": "packages/features/coaching/src/types/booking.test.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F1.T2", "S1815.I4.F1.T3", "S1815.I4.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Package Structure & Types",
+        "task_ids": ["S1815.I4.F1.T1", "S1815.I4.F1.T2", "S1815.I4.F1.T3", "S1815.I4.F1.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Configuration Layer",
+        "task_ids": ["S1815.I4.F1.T5", "S1815.I4.F1.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 5
+      },
+      {
+        "id": 3,
+        "name": "Provider & Dependencies",
+        "task_ids": ["S1815.I4.F1.T7", "S1815.I4.F1.T8", "S1815.I4.F1.T9", "S1815.I4.F1.T10"],
+        "depends_on_groups": [2],
+        "estimated_hours": 8,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S1815.I4.F1.T11", "S1815.I4.F1.T12"],
+        "depends_on_groups": [3],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 5,
+        "name": "Testing",
+        "task_ids": ["S1815.I4.F1.T13", "S1815.I4.F1.T14", "S1815.I4.F1.T15"],
+        "depends_on_groups": [2, 3],
+        "estimated_hours": 8,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1815.I4.F1.T1", "S1815.I4.F1.T2", "S1815.I4.F1.T5", "S1815.I4.F1.T6", "S1815.I4.F1.T7", "S1815.I4.F1.T9", "S1815.I4.F1.T10", "S1815.I4.F1.T11"],
+      "total_hours": 18
+    },
+    "duration": {
+      "sequential": 33,
+      "parallel": 17,
+      "time_saved_percent": 48
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
