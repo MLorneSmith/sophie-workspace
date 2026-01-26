@@ -1,0 +1,302 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1823.I4.F1",
+    "feature_name": "Cal.com Foundation",
+    "feature_slug": "calcom-foundation",
+    "initiative_id": "S1823.I4",
+    "spec_id": "1823",
+    "created_at": "2026-01-26T00:00:00Z",
+    "complexity": {
+      "score": 19,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CALCOM_API_KEY",
+        "description": "Cal.com V2 API key for server-side booking fetches",
+        "source": "Cal.com Dashboard → Settings → Developer → API Keys",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Coach's Cal.com username for embed links",
+        "source": "Cal.com Dashboard → Profile",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug for booking links (e.g., '30min-coaching')",
+        "source": "Cal.com Dashboard → Event Types",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1823.I4.F1.T1",
+      "type": "task",
+      "name": "Add @calcom/embed-react package dependency",
+      "action": {
+        "verb": "Add",
+        "target": "@calcom/embed-react package to web app"
+      },
+      "purpose": "Install Cal.com React embed package to enable booking widget integration",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_dependency_install": true,
+      "packages_added": ["@calcom/embed-react"],
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/package.json"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Add to dependencies section, not devDependencies",
+          "Use latest stable version from npm",
+          "Maintain alphabetical ordering of dependencies"
+        ]
+      },
+      "input_state": "Package.json does not contain @calcom/embed-react",
+      "output_state": "Package.json includes @calcom/embed-react dependency",
+      "acceptance_criterion": "Package @calcom/embed-react is listed in apps/web/package.json dependencies",
+      "verification_command": "grep -q '@calcom/embed-react' apps/web/package.json && echo 'Package added'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/package.json",
+          "description": "Added @calcom/embed-react dependency"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1823.I4.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F1.T2",
+      "type": "task",
+      "name": "Create Cal.com TypeScript type definitions",
+      "action": {
+        "verb": "Create",
+        "target": "CalBooking and CalBookingAttendee type interfaces"
+      },
+      "purpose": "Define TypeScript types for Cal.com booking data to enable type-safe usage across features",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Place in apps/web/app/home/(user)/_lib/types/calcom.types.ts",
+          "Match Cal.com V2 API response structure from research",
+          "Include JSDoc comments for all interfaces",
+          "Export all types for reuse"
+        ],
+        "patterns": [
+          {
+            "file": "research-library/context7-calcom.md",
+            "description": "Cal.com API response structure showing booking fields (lines 131-144)"
+          }
+        ]
+      },
+      "input_state": "No Cal.com type definitions exist",
+      "output_state": "CalBooking and CalBookingAttendee interfaces defined and exported",
+      "acceptance_criterion": "File apps/web/app/home/(user)/_lib/types/calcom.types.ts exists with exported CalBooking interface",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/types/calcom.types.ts && grep -q 'export interface CalBooking' apps/web/app/home/\\(user\\)/_lib/types/calcom.types.ts && echo 'Types created'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/calcom.types.ts",
+          "description": "Cal.com type definitions including CalBooking and CalBookingAttendee interfaces"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1823.I4.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F1.T3",
+      "type": "task",
+      "name": "Document Cal.com environment variables in .env.example",
+      "action": {
+        "verb": "Add",
+        "target": "Cal.com environment variable documentation"
+      },
+      "purpose": "Document required Cal.com environment variables to guide configuration",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/.env.production"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Add to apps/web/.env.example (not .env.production which is committed)",
+          "Include inline comments explaining each variable",
+          "Format: CALCOM_API_KEY, NEXT_PUBLIC_CALCOM_COACH_USERNAME, NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+          "Group under '# CAL.COM' section header"
+        ]
+      },
+      "input_state": ".env.example does not contain Cal.com variables",
+      "output_state": ".env.example contains all three Cal.com environment variables with comments",
+      "acceptance_criterion": "File apps/web/.env.example contains CALCOM_API_KEY variable",
+      "verification_command": "grep -q 'CALCOM_API_KEY' apps/web/.env.example && echo 'Env vars documented'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.example",
+          "description": "Added Cal.com environment variables: CALCOM_API_KEY, NEXT_PUBLIC_CALCOM_COACH_USERNAME, NEXT_PUBLIC_CALCOM_EVENT_SLUG"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F1.T4",
+      "type": "task",
+      "name": "Verify Cal.com foundation setup",
+      "action": {
+        "verb": "Test",
+        "target": "Cal.com package installation with TypeScript type compilation"
+      },
+      "purpose": "Validate that the package installs correctly and types compile without errors",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/package.json",
+          "apps/web/app/home/(user)/_lib/types/calcom.types.ts"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Run pnpm install to install package",
+          "Run pnpm --filter web typecheck to verify types compile",
+          "Verify no TypeScript errors"
+        ]
+      },
+      "input_state": "Package and types defined but not verified",
+      "output_state": "Package installed successfully and types compile without errors",
+      "acceptance_criterion": "TypeScript compilation succeeds with no errors",
+      "verification_command": "pnpm --filter web typecheck 2>&1 | grep -q 'Found 0 errors' && echo 'Verification passed'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1823.I4.F1.T1", "S1823.I4.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Setup",
+        "task_ids": ["S1823.I4.F1.T1", "S1823.I4.F1.T2", "S1823.I4.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Verification",
+        "task_ids": ["S1823.I4.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1823.I4.F1.T1", "S1823.I4.F1.T4"],
+      "total_hours": 2
+    },
+    "duration": {
+      "sequential": 5,
+      "parallel": 3,
+      "time_saved_percent": 40
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
