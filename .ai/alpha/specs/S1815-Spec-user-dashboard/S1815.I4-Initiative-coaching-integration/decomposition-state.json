@@ -2,9 +2,10 @@
   "initiative_id": "S1815.I4",
   "initiative_name": "Coaching Integration",
   "spec_id": "1815",
-  "status": "in_progress",
-  "current_phase": "decomposition",
+  "status": "completed",
+  "current_phase": "finalization",
   "started_at": "2026-01-26T12:00:00Z",
+  "completed_at": "2026-01-26T12:30:00Z",
   "features": {
     "S1815.I4.F1": {
       "name": "Cal.com Foundation",
@@ -24,18 +25,20 @@
     },
     "S1815.I4.F3": {
       "name": "Session Actions",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 13,
+      "hours_estimate": 23,
+      "sequential_hours": 27,
+      "parallel_hours": 23
     }
   },
   "totals": {
     "features_total": 3,
-    "features_completed": 2,
-    "tasks_total": 27,
+    "features_completed": 3,
+    "tasks_total": 40,
     "spikes_pending": [],
     "total_spikes": 0,
-    "total_hours_sequential": 54,
-    "total_hours_parallel": 35
+    "total_hours_sequential": 81,
+    "total_hours_parallel": 58
   }
 }
