@@ -25,6 +25,25 @@ export {
 	getClaudeOAuthToken,
 } from "./environment.js";
 
+// Environment requirements (pre-flight checks)
+export {
+	aggregateRequiredEnvVars,
+	extractEnvRequirementsFromResearch,
+	extractEnvRequirementsFromTasks,
+	getEnvVarStatusSummary,
+	hasAllRequiredEnvVars,
+	validateRequiredEnvVars,
+} from "./env-requirements.js";
+export type { MissingEnvVar, RawEnvVar } from "./env-requirements.js";
+
+// Pre-flight checks
+export {
+	checkPreFlightSilent,
+	formatPreFlightForDryRun,
+	runPreFlightCheck,
+} from "./pre-flight.js";
+export type { PreFlightResult } from "./pre-flight.js";
+
 // Feature implementation
 export { runFeatureImplementation } from "./feature.js";
 

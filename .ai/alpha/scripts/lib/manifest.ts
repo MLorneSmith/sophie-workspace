@@ -20,6 +20,7 @@ import type {
 	InitiativeEntry,
 	SpecManifest,
 } from "../types/index.js";
+import { aggregateRequiredEnvVars } from "./env-requirements.js";
 import { getProjectRoot } from "./lock.js";
 
 // ============================================================================
@@ -678,7 +679,7 @@ export function generateSpecManifest(
 		overallStatus = "in_progress";
 	}
 
-	// Build manifest
+	// Build manifest (first pass - without required_env_vars)
 	const manifest: SpecManifest = {
 		metadata: {
 			spec_id: specSemanticId,
@@ -709,6 +710,14 @@ export function generateSpecManifest(
 			created_at: null,
 		},
 	};
+
+	// Aggregate required environment variables from research files and tasks.json
+	log("   Pass 4: Aggregating environment requirements...");
+	const requiredEnvVars = aggregateRequiredEnvVars(manifest);
+	if (requiredEnvVars.length > 0) {
+		manifest.metadata.required_env_vars = requiredEnvVars;
+		log(`   Found ${requiredEnvVars.length} required environment variable(s)`);
+	}
 
 	// Write manifest
 	const manifestPath = path.join(specDir, "spec-manifest.json");

@@ -48,6 +48,16 @@
 ### Trade-offs Accepted
 - {{TRADEOFF_1}}
 
+## Required Credentials
+> Environment variables required for this feature to function. Extracted from research files.
+
+| Variable | Description | Source |
+|----------|-------------|--------|
+| `{{ENV_VAR_1}}` | {{ENV_DESC_1}} | {{ENV_SOURCE_1}} |
+
+> If no external credentials required, note "None required" below:
+> {{CREDENTIALS_NOTE}}
+
 ## Dependencies
 
 ### Blocks

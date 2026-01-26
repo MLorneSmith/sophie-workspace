@@ -53,6 +53,11 @@ import {
 	loadManifest,
 	saveManifest,
 } from "./manifest.js";
+import {
+	checkPreFlightSilent,
+	formatPreFlightForDryRun,
+	runPreFlightCheck,
+} from "./pre-flight.js";
 import { writeIdleProgress } from "./progress.js";
 import { generateRunId } from "./run-id.js";
 import {
@@ -314,6 +319,10 @@ export function printDryRun(manifest: SpecManifest): void {
 	console.log("\n📊 Remaining Work:");
 	console.log(`Features: ${pendingFeatures.length}`);
 	console.log(`Estimated Hours: ${totalHours}`);
+
+	// Environment requirements
+	console.log("\n🔑 Environment Requirements:");
+	console.log(formatPreFlightForDryRun(manifest));
 }
 
 // ============================================================================
@@ -1436,6 +1445,28 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const manifest = manifestOrNull as SpecManifest;
+
+	// =========================================================================
+	// Pre-Flight Environment Variable Check
+	// =========================================================================
+	if (!options.skipPreFlight && !options.dryRun) {
+		log("\n🔍 Running pre-flight environment check...");
+
+		// For interactive terminals, run the full interactive check
+		// For non-interactive (piped/scripted), run silent check
+		const isInteractive = process.stdin.isTTY && process.stdout.isTTY;
+
+		if (isInteractive) {
+			const preFlightResult = await runPreFlightCheck(manifest, log);
+			if (!preFlightResult.proceed) {
+				log("❌ Pre-flight check failed. Exiting.");
+				process.exit(1);
+			}
+		} else {
+			// Non-interactive mode: just check and warn
+			checkPreFlightSilent(manifest, log);
+		}
+	}
 
 	// =========================================================================
 	// Validate Python Dependencies (before event server)

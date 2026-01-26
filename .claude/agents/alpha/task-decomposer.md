@@ -120,6 +120,68 @@ Proceed with manual decomposition using the appropriate pattern from Phase 5.
 
 After successful feature implementation, consider creating or updating patterns in `.ai/alpha/cache/decomposition-patterns/`. See `SCHEMA.md` for structure.
 
+### Step 1.6: Extract Environment Requirements
+
+Scan research files for external service credentials that will be needed at runtime.
+
+**Search for "Environment Variables Required" sections:**
+
+```bash
+# For each research file in RESEARCH_DIR
+for file in ${RESEARCH_DIR}/*.md; do
+  echo "=== $file ==="
+  grep -A 30 "## Environment Variables Required" "$file" | head -35
+done
+```
+
+**Parse Environment Variable Blocks:**
+
+Look for blocks formatted like:
+
+```env
+CAL_OAUTH_CLIENT_ID=your_oauth_client_id
+CAL_API_URL=https://api.cal.com/v2
+```
+
+For each variable found:
+- Extract the name (e.g., `CAL_OAUTH_CLIENT_ID`)
+- Infer description from context or research section
+- Record the source (e.g., "Cal.com settings → Developer apps")
+- Note if it's optional (has default value) or required
+- Track which research file documented it
+
+**Store in tasks.json metadata:**
+
+```json
+{
+  "metadata": {
+    "required_env_vars": [
+      {
+        "name": "CAL_OAUTH_CLIENT_ID",
+        "description": "Cal.com OAuth client identifier for booking widget",
+        "source": "https://cal.com/settings/developer → OAuth apps",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "CAL_API_URL",
+        "description": "Cal.com API endpoint URL",
+        "source": "Default: https://api.cal.com/v2",
+        "required": false,
+        "scope": "server"
+      }
+    ]
+  }
+}
+```
+
+**Environment Variable Scope:**
+- `"server"` - Server-side only (default for most credentials)
+- `"client"` - Client-side accessible (variables starting with `NEXT_PUBLIC_`)
+- `"both"` - Needed in both environments
+
+This enables the orchestrator to perform pre-flight checks before implementation and prompt the user for any missing credentials.
+
 ---
 
 ## Phase 2: Complexity Assessment (10%)
@@ -774,7 +836,16 @@ Write to `${FEAT_DIR}/tasks.json`:
       "pattern_matched": "<pattern or null>"
     },
     "requires_database": <true|false>,
-    "database_tasks": ["<task IDs with requires_database: true>"]
+    "database_tasks": ["<task IDs with requires_database: true>"],
+    "required_env_vars": [
+      {
+        "name": "<ENV_VAR_NAME>",
+        "description": "<what it's used for>",
+        "source": "<where to obtain>",
+        "required": <true|false>,
+        "scope": "<server|client|both>"
+      }
+    ]
   },
   "tasks": [
     {

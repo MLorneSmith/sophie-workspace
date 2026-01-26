@@ -218,6 +218,25 @@ Use the **Read tool** to read each research file found:
 
 This research informs feature design and architecture decisions.
 
+#### Step 1.6: Extract Credential Requirements from Research
+
+Scan research files for external service credentials that will be needed at runtime.
+
+**Search for "Environment Variables Required" sections:**
+```bash
+for file in [RESEARCH_DIR]/*.md; do
+  echo "=== $file ==="
+  grep -A 30 "## Environment Variables Required" "$file" | head -35
+done
+```
+
+For each variable found:
+- Extract the name (e.g., `CAL_OAUTH_CLIENT_ID`)
+- Note description and source
+- Track which feature will need it
+
+These credentials will be documented in each feature's `feature.md` and aggregated into `tasks.json` metadata during task decomposition.
+
 #### Step 2: Extract Feature Candidates
 
 From the initiative, identify candidates from:
