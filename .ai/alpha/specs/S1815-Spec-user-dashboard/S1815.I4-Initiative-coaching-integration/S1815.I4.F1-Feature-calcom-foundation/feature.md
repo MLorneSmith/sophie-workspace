@@ -6,80 +6,79 @@
 | **Parent Initiative** | S1815.I4 |
 | **Feature ID** | S1815.I4.F1 |
 | **Status** | Draft |
-| **Estimated Days** | 3 |
+| **Estimated Days** | 2 |
 | **Priority** | 1 |
 
 ## Description
-Install and configure the `@calcom/atoms` React package with CalProvider setup, environment variables for API authentication, and TypeScript types for booking data. This feature establishes the foundation for all Cal.com functionality in the dashboard.
+Configure Cal.com free embed integration with environment variables, TypeScript types for booking data, and embed utilities. This feature establishes the foundation for all Cal.com functionality in the dashboard using the free embed approach (iframe/popup) rather than the deprecated Platform API.
 
 ## User Story
 **As a** developer
-**I want to** have a properly configured Cal.com integration
-**So that** I can build coaching features with type-safe booking data and consistent API access
+**I want to** have a properly configured Cal.com embed integration
+**So that** I can build coaching features with type-safe booking data and consistent embed access
 
 ## Acceptance Criteria
 
 ### Must Have
-- [ ] `@calcom/atoms` package installed and configured in `apps/web`
-- [ ] CalProvider wrapper component created with proper client ID configuration
-- [ ] Environment variables documented and validated (`CAL_OAUTH_CLIENT_ID`, `CAL_API_KEY`)
+- [ ] Environment variables documented and validated (`NEXT_PUBLIC_CAL_COACH_USERNAME`, `NEXT_PUBLIC_CAL_EVENT_SLUG`)
 - [ ] TypeScript interfaces defined for Booking, Session, and Coach entities
+- [ ] Cal.com embed utility functions created (generateBookingUrl, generateRescheduleUrl)
 - [ ] Graceful error handling when Cal.com credentials are missing or invalid
-- [ ] Unit tests for provider setup and type utilities
+- [ ] Unit tests for embed utilities and type utilities
 
 ### Nice to Have
 - [ ] Feature flag to enable/disable Cal.com integration
-- [ ] Debug logging for Cal.com API responses in development
+- [ ] Debug logging for Cal.com embed events in development
 
 ## Vertical Slice Components
 
 | Layer | Component | Status |
 |-------|-----------|--------|
-| **UI** | CalProvider wrapper component | New |
+| **UI** | N/A (embeds handled in F2) | N/A |
 | **Logic** | Configuration validation utility | New |
+| **Logic** | Embed URL generation utilities | New |
 | **Data** | TypeScript types for Cal.com entities | New |
 | **Database** | N/A (no database changes) | N/A |
 
 ## Architecture Decision
 
 **Approach**: Pragmatic
-**Rationale**: Use `@calcom/atoms` package as recommended by Cal.com documentation. The package provides native React components with built-in hooks (`useBookings`, `useCancelBooking`) that integrate well with Next.js. Create a thin wrapper for configuration to avoid coupling components directly to environment variables.
+**Rationale**: Use Cal.com's free embed approach (iframe/popup) instead of the deprecated `@calcom/atoms` Platform package. This requires no paid subscription and works with any Cal.com account. Embed URLs are constructed from username and event slug.
 
 ### Key Architectural Choices
-1. Create `CalProvider` wrapper in `packages/features/coaching/` for reuse across the application
+1. Create embed utilities in `packages/features/coaching/` for URL generation
 2. Use environment variables with Zod validation at startup to fail fast on misconfiguration
-3. Define TypeScript types that extend Cal.com's types with our domain-specific fields
+3. Define TypeScript types for our domain needs (not dependent on Cal.com package types)
+4. Use iframe embed for inline booking, popup for modal booking
 
 ### Trade-offs Accepted
-- Adding new npm dependency (`@calcom/atoms`) increases bundle size
-- Tight coupling to Cal.com's component API versioning
+- No real-time booking data sync (must rely on embed callbacks or polling)
+- Less integrated UX compared to @calcom/atoms (but free and not deprecated)
 
 ## Component Strategy
 
 | UI Element | Component | Source | Rationale |
 |------------|-----------|--------|-----------|
-| Provider wrapper | Custom CalProvider | New | Encapsulate configuration and provide context |
-| N/A | `@calcom/atoms` package | External | Official Cal.com React integration |
+| Embed utilities | Custom functions | New | Generate Cal.com embed URLs |
+| N/A | Cal.com free embed | External | Free iframe/popup embed (no package needed) |
 
 **Components to Install**:
-- [ ] `pnpm add @calcom/atoms` in apps/web
+- None (free embed requires no npm packages)
 
 ## Required Credentials
 
 | Variable | Description | Source |
 |----------|-------------|--------|
-| `CAL_OAUTH_CLIENT_ID` | OAuth client ID for Cal.com API authentication | Cal.com Platform dashboard |
-| `CAL_API_KEY` | API key for server-side Cal.com operations | Cal.com API settings |
-| `NEXT_PUBLIC_CAL_COACH_USERNAME` | Username for the default coach profile | Cal.com account |
+| `NEXT_PUBLIC_CAL_COACH_USERNAME` | Username for the default coach profile | Cal.com account (from cal.com/your-username) |
 | `NEXT_PUBLIC_CAL_EVENT_SLUG` | Event type slug for coaching sessions (e.g., "60min") | Cal.com event types |
 
-> **Note**: These credentials are required for Cal.com integration to function. Without them, the coaching widget should gracefully degrade to show an unavailable state.
+> **Note**: Only 2 environment variables are required for the free embed approach. No OAuth client ID or API key needed.
 
 ## Dependencies
 
 ### Blocks
-- F2: Dashboard Widget (requires CalProvider and types)
-- F3: Session Actions (requires CalProvider and types)
+- F2: Dashboard Widget (requires types and embed utilities)
+- F3: Session Actions (requires types and embed utilities)
 
 ### Blocked By
 - None (this is the foundation feature)
@@ -90,33 +89,30 @@ Install and configure the `@calcom/atoms` React package with CalProvider setup, 
 ## Files to Create/Modify
 
 ### New Files
-- `packages/features/coaching/src/components/cal-provider.tsx` - CalProvider wrapper component
 - `packages/features/coaching/src/types/booking.ts` - TypeScript types for Cal.com entities
 - `packages/features/coaching/src/lib/cal-config.ts` - Configuration validation and utilities
+- `packages/features/coaching/src/lib/cal-embed.ts` - Embed URL generation utilities
 - `packages/features/coaching/src/index.ts` - Package exports
 - `packages/features/coaching/package.json` - Package configuration
 - `apps/web/.env.example` - Add Cal.com environment variable examples (append)
 
 ### Modified Files
-- `apps/web/package.json` - Add @calcom/atoms and @kit/coaching dependencies
-- `apps/web/app/home/(user)/layout.tsx` - Wrap with CalProvider (if client-side)
+- `apps/web/package.json` - Add @kit/coaching workspace dependency
 - `turbo.json` - Add coaching package to pipeline (if needed)
 
 ## Task Hints
 > Guidance for the next decomposition phase
 
 ### Candidate Tasks
-1. **Install @calcom/atoms package**: Add npm dependency to apps/web with correct version
-2. **Create coaching package structure**: Set up packages/features/coaching with package.json and exports
-3. **Define TypeScript types**: Create booking, session, and coach type definitions
-4. **Create CalProvider wrapper**: Implement provider component with configuration
-5. **Add environment variable validation**: Zod schema for Cal.com config with helpful error messages
-6. **Update layout with provider**: Wrap user routes with CalProvider
-7. **Write unit tests**: Test provider initialization and config validation
-8. **Document setup in env.example**: Add variable documentation
+1. **Create coaching package structure**: Set up packages/features/coaching with package.json and exports
+2. **Define TypeScript types**: Create booking, session, and coach type definitions
+3. **Add environment variable validation**: Zod schema for Cal.com config with helpful error messages
+4. **Create embed URL utilities**: Functions to generate booking and reschedule URLs
+5. **Write unit tests**: Test config validation and URL generation
+6. **Document setup in env.example**: Add variable documentation
 
 ### Suggested Order
-1. Package structure → 2. Types → 3. Config validation → 4. CalProvider → 5. Layout integration → 6. Tests → 7. Documentation
+1. Package structure → 2. Types → 3. Config validation → 4. Embed utilities → 5. Tests → 6. Documentation
 
 ## Validation Commands
 ```bash
@@ -127,13 +123,12 @@ pnpm typecheck
 # Run coaching package tests
 pnpm --filter @kit/coaching test
 
-# Verify provider renders without errors
-pnpm dev
-# Check browser console for Cal.com initialization
+# Verify embed URLs generate correctly
+# Example: https://cal.com/username/event-slug?embed=true
 
 # Validate environment variables
 pnpm --filter web build
-# Should fail fast if CAL_* variables are missing in production
+# Should fail fast if NEXT_PUBLIC_CAL_* variables are missing
 ```
 
 ## Related Files

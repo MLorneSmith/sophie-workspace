@@ -52,10 +52,14 @@ CAL_WEBHOOK_SECRET=your_webhook_secret
 `;
 
 			vi.mocked(fs.existsSync).mockReturnValue(true);
-			vi.mocked(fs.readdirSync).mockReturnValue(asReaddirReturn(["context7-calcom.md"]));
+			vi.mocked(fs.readdirSync).mockReturnValue(
+				asReaddirReturn(["context7-calcom.md"]),
+			);
 			vi.mocked(fs.readFileSync).mockReturnValue(mockContent);
 
-			const result = extractEnvRequirementsFromResearch("/tmp/research-library");
+			const result = extractEnvRequirementsFromResearch(
+				"/tmp/research-library",
+			);
 
 			expect(result).toHaveLength(3);
 			expect(result[0]).toMatchObject({
@@ -86,10 +90,14 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 `;
 
 			vi.mocked(fs.existsSync).mockReturnValue(true);
-			vi.mocked(fs.readdirSync).mockReturnValue(asReaddirReturn(["perplexity-stripe.md"]));
+			vi.mocked(fs.readdirSync).mockReturnValue(
+				asReaddirReturn(["perplexity-stripe.md"]),
+			);
 			vi.mocked(fs.readFileSync).mockReturnValue(mockContent);
 
-			const result = extractEnvRequirementsFromResearch("/tmp/research-library");
+			const result = extractEnvRequirementsFromResearch(
+				"/tmp/research-library",
+			);
 
 			expect(result).toHaveLength(2);
 			expect(result[0]).toMatchObject({ name: "STRIPE_SECRET_KEY" });
@@ -120,7 +128,9 @@ ALSO_VALID=value
 			vi.mocked(fs.readdirSync).mockReturnValue(asReaddirReturn(["test.md"]));
 			vi.mocked(fs.readFileSync).mockReturnValue(mockContent);
 
-			const result = extractEnvRequirementsFromResearch("/tmp/research-library");
+			const result = extractEnvRequirementsFromResearch(
+				"/tmp/research-library",
+			);
 
 			expect(result).toHaveLength(2);
 			expect(result[0]).toMatchObject({ name: "VALID_VAR" });
@@ -141,14 +151,19 @@ BACKEND_SECRET=secret
 			vi.mocked(fs.readdirSync).mockReturnValue(asReaddirReturn(["test.md"]));
 			vi.mocked(fs.readFileSync).mockReturnValue(mockContent);
 
-			const result = extractEnvRequirementsFromResearch("/tmp/research-library");
+			const result = extractEnvRequirementsFromResearch(
+				"/tmp/research-library",
+			);
 
 			expect(result).toHaveLength(2);
 			expect(result[0]).toMatchObject({
 				name: "NEXT_PUBLIC_API_URL",
 				scope: "client",
 			});
-			expect(result[1]).toMatchObject({ name: "BACKEND_SECRET", scope: "server" });
+			expect(result[1]).toMatchObject({
+				name: "BACKEND_SECRET",
+				scope: "server",
+			});
 		});
 	});
 
@@ -356,9 +371,7 @@ BACKEND_SECRET=secret
 
 			const result = getEnvVarStatusSummary(required);
 
-			expect(result).toBe(
-				"Missing 2 of 2 required environment variable(s)",
-			);
+			expect(result).toBe("Missing 2 of 2 required environment variable(s)");
 		});
 	});
 

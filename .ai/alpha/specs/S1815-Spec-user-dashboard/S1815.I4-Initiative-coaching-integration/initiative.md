@@ -27,11 +27,11 @@ Coaching session attendance is a key success metric (goal: +20% improvement). Su
   - "Join" button linking to meeting URL
   - "Reschedule" button opening reschedule modal
   - Display following session if available
-- [x] Cal.com Integration
-  - Install and configure `@calcom/atoms` package
-  - Use `useBookings` hook to fetch upcoming bookings
-  - Implement `Booker` component for scheduling
-  - Handle `rescheduleUid` for rescheduling flow
+- [x] Cal.com Integration (Free Embed Approach)
+  - Use Cal.com free iframe/popup embed (no @calcom/atoms - Platform deprecated)
+  - Generate embed URLs for booking and rescheduling
+  - Use postMessage events for completion detection
+  - No API key or OAuth required
 - [x] Empty State
   - No sessions scheduled → Show booking CTA
   - Booker component embedded or modal

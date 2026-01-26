@@ -39,8 +39,8 @@ import {
 } from "./progress.js";
 import {
 	PTYTimeoutError,
-	waitWithTimeout,
 	type WaitWithTimeoutResult,
+	waitWithTimeout,
 } from "./pty-wrapper.js";
 import {
 	createStartupOutputTracker,

@@ -24,8 +24,8 @@ import {
 import {
 	isFeatureCompleted,
 	isProgressFileStale,
-	readProgressFile,
 	type ProgressFileData,
+	readProgressFile,
 } from "./progress-file.js";
 
 // ============================================================================

@@ -35,7 +35,7 @@ import {
 	resetFailedFeatureForRetry,
 	shouldRetryFailedFeature,
 } from "../work-queue.js";
-import { detectAndHandleDeadlock } from "../orchestrator.js";
+import { detectAndHandleDeadlock } from "../deadlock-handler.js";
 import { emitOrchestratorEvent } from "../event-emitter.js";
 
 /**

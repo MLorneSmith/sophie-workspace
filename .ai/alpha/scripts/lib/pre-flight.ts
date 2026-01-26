@@ -5,8 +5,8 @@
  * Displays a table of required credentials and prompts user for action.
  */
 
-import * as readline from "node:readline";
 import process from "node:process";
+import * as readline from "node:readline";
 
 import type { SpecManifest } from "../types/index.js";
 
@@ -46,20 +46,13 @@ function printTable(
 	);
 
 	// Print header
-	log(
-		"   " +
-			headers.map((h, i) => h.padEnd(colWidths[i] ?? 0)).join(" │ "),
-	);
-	log(
-		"   " +
-			colWidths.map((w) => "─".repeat(w)).join("─┼─"),
-	);
+	log("   " + headers.map((h, i) => h.padEnd(colWidths[i] ?? 0)).join(" │ "));
+	log("   " + colWidths.map((w) => "─".repeat(w)).join("─┼─"));
 
 	// Print rows
 	for (const row of rows) {
 		log(
-			"   " +
-				row.map((cell, i) => cell.padEnd(colWidths[i] ?? 0)).join(" │ "),
+			"   " + row.map((cell, i) => cell.padEnd(colWidths[i] ?? 0)).join(" │ "),
 		);
 	}
 	log("");
@@ -90,7 +83,10 @@ function createReadline(): readline.Interface {
 /**
  * Prompt the user for input.
  */
-async function prompt(rl: readline.Interface, question: string): Promise<string> {
+async function prompt(
+	rl: readline.Interface,
+	question: string,
+): Promise<string> {
 	return new Promise((resolve) => {
 		rl.question(question, (answer) => {
 			resolve(answer);
@@ -125,14 +121,20 @@ export async function runPreFlightCheck(
 	const missing = validateRequiredEnvVars(required);
 
 	if (missing.length === 0) {
-		log(`   ✅ All ${required.length} required environment variable(s) are set`);
+		log(
+			`   ✅ All ${required.length} required environment variable(s) are set`,
+		);
 		return { proceed: true, envVarsSet: {}, skipped: false };
 	}
 
 	// Display pre-flight check header
-	log("\n══════════════════════════════════════════════════════════════════════════════");
+	log(
+		"\n══════════════════════════════════════════════════════════════════════════════",
+	);
 	log("   ALPHA SPEC ORCHESTRATOR - PRE-FLIGHT CHECK");
-	log("══════════════════════════════════════════════════════════════════════════════");
+	log(
+		"══════════════════════════════════════════════════════════════════════════════",
+	);
 	log(`\n📋 Spec ${manifest.metadata.spec_id}: ${manifest.metadata.spec_name}`);
 	log(`   Features: ${manifest.feature_queue.length}`);
 	log("\n🔑 Required Environment Variables:\n");
@@ -152,7 +154,9 @@ export async function runPreFlightCheck(
 
 	printTable(log, headers, rows);
 
-	log(`⚠️  Missing ${missing.length} required credential${missing.length > 1 ? "s" : ""}.\n`);
+	log(
+		`⚠️  Missing ${missing.length} required credential${missing.length > 1 ? "s" : ""}.\n`,
+	);
 
 	// Interactive prompt
 	const rl = createReadline();
@@ -200,7 +204,9 @@ Choice [1-4]: `,
 
 			case "3": {
 				rl.close();
-				log("\n⚠️  Proceeding without env vars. Features requiring them may fail.\n");
+				log(
+					"\n⚠️  Proceeding without env vars. Features requiring them may fail.\n",
+				);
 				return { proceed: true, envVarsSet: {}, skipped: false };
 			}
 
@@ -245,7 +251,9 @@ export function checkPreFlightSilent(
 	const missing = validateRequiredEnvVars(required);
 
 	if (missing.length === 0) {
-		log(`   ✅ All ${required.length} required environment variable(s) are set`);
+		log(
+			`   ✅ All ${required.length} required environment variable(s) are set`,
+		);
 		return true;
 	}
 

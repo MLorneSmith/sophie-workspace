@@ -48,17 +48,18 @@ Implement interactive actions for coaching sessions: "Join" button that opens th
 ## Architecture Decision
 
 **Approach**: Pragmatic
-**Rationale**: Use Cal.com's native reschedule flow by passing `rescheduleUid` to the Booker component. This leverages Cal.com's built-in validation and UI rather than building custom reschedule logic. For the join action, simply open the meetingUrl in a new tab with appropriate window.open attributes.
+**Rationale**: Use Cal.com's free reschedule URL pattern (cal.com/reschedule/{bookingUid}) in an iframe/popup. This leverages Cal.com's built-in validation and UI without requiring the deprecated Platform API.
 
 ### Key Architectural Choices
 1. Join action uses `window.open(meetingUrl, '_blank', 'noopener,noreferrer')` for security
-2. Reschedule reuses BookingDialog with rescheduleUid prop passed to Booker
-3. Use `onCreateBookingSuccess` callback from Booker to close dialog and refresh bookings
+2. Reschedule opens Cal.com reschedule URL in Dialog iframe
+3. Use postMessage listener to detect booking completion from embed
 4. Session joinability logic: enable Join button 30 minutes before start time
 
 ### Trade-offs Accepted
 - No server-side validation of meeting URLs (trust Cal.com data)
-- Reschedule flow is client-side only (no server action)
+- Reschedule flow uses iframe embed (less integrated than native components)
+- Relies on Cal.com embed postMessage events for completion detection
 
 ## Component Strategy
 
@@ -67,12 +68,12 @@ Implement interactive actions for coaching sessions: "Join" button that opens th
 | Join button | Button | @kit/ui/button | Standard action button |
 | Reschedule button | Button (variant="outline") | @kit/ui/button | Secondary action styling |
 | Reschedule modal | Dialog | @kit/ui/dialog | Consistent with booking dialog |
-| Rescheduling form | Booker | @calcom/atoms | With rescheduleUid prop |
+| Rescheduling form | Cal.com iframe | External | Free reschedule embed |
 | Toast notifications | toast | @kit/ui/sonner | Error/success feedback |
 | Loading spinner | Spinner | @kit/ui/spinner | Action loading state |
 
 **Components to Install**:
-- No new components needed
+- No new components needed (uses iframe embed, no npm packages)
 
 ## Required Credentials
 

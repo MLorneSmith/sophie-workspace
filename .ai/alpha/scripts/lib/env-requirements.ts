@@ -143,7 +143,8 @@ export function extractEnvRequirementsFromTasks(
 			description: v.description,
 			source: v.source,
 			required: v.required ?? true,
-			scope: v.scope ?? (v.name.startsWith("NEXT_PUBLIC_") ? "client" : "server"),
+			scope:
+				v.scope ?? (v.name.startsWith("NEXT_PUBLIC_") ? "client" : "server"),
 		}));
 	} catch {
 		return [];
@@ -184,10 +185,7 @@ export function aggregateRequiredEnvVars(
 
 	// Then, extract from each feature's tasks.json
 	for (const feature of manifest.feature_queue) {
-		const tasksPath = path.join(
-			manifest.metadata.spec_dir,
-			feature.tasks_file,
-		);
+		const tasksPath = path.join(manifest.metadata.spec_dir, feature.tasks_file);
 		const featureVars = extractEnvRequirementsFromTasks(tasksPath);
 
 		for (const v of featureVars) {

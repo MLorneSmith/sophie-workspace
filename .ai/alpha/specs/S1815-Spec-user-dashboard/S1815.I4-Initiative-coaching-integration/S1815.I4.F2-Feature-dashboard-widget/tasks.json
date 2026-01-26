@@ -148,9 +148,9 @@
       "name": "Create booking-dialog component",
       "action": {
         "verb": "Create",
-        "target": "booking-dialog.tsx wrapping Booker component"
+        "target": "booking-dialog.tsx with Cal.com iframe embed"
       },
-      "purpose": "Provide modal container for Cal.com booking flow",
+      "purpose": "Provide modal container for Cal.com booking flow using free embed",
       "status": "draft",
       "estimated_hours": 2,
       "priority": 3,
@@ -160,22 +160,22 @@
       "context": {
         "files": [
           "packages/ui/src/dialog.tsx (Dialog component)",
-          "research-library/context7-calcom.md (Booker usage)"
+          "packages/features/coaching/src/lib/cal-embed.ts (generateBookingUrl)"
         ],
         "dependencies": [
           "Dialog from @kit/ui/dialog",
-          "Booker from @calcom/atoms"
+          "generateBookingUrl from @kit/coaching"
         ],
         "constraints": [
           "Must use Dialog component for modal",
-          "Pass NEXT_PUBLIC_CAL_COACH_USERNAME and NEXT_PUBLIC_CAL_EVENT_SLUG as props",
-          "Handle onCreateBookingSuccess callback"
+          "Use generateBookingUrl to construct iframe src",
+          "Add postMessage listener for booking completion"
         ]
       },
-      "input_state": "Booker component available from @calcom/atoms (F1 dependency)",
-      "output_state": "BookingDialog component wraps Booker in Dialog with open/close state",
-      "acceptance_criterion": "BookingDialog opens modal with Booker component when triggered",
-      "verification_command": "pnpm typecheck && grep -q 'Booker' apps/web/app/home/\\(user\\)/_components/booking-dialog.tsx",
+      "input_state": "Cal.com embed utilities available from @kit/coaching (F1 dependency)",
+      "output_state": "BookingDialog component wraps Cal.com iframe in Dialog with open/close state",
+      "acceptance_criterion": "BookingDialog opens modal with Cal.com iframe embed when triggered",
+      "verification_command": "pnpm typecheck && grep -q 'iframe' apps/web/app/home/\\(user\\)/_components/booking-dialog.tsx",
       "outputs": [
         {
           "type": "new",
@@ -309,9 +309,9 @@
       "name": "Create coaching-sessions-widget component",
       "action": {
         "verb": "Create",
-        "target": "coaching-sessions-widget.tsx composing all states"
+        "target": "coaching-sessions-widget.tsx with booking CTA"
       },
-      "purpose": "Main widget component that orchestrates all states and data fetching",
+      "purpose": "Main widget component that displays booking CTA and composes all states",
       "status": "draft",
       "estimated_hours": 3,
       "priority": 6,
@@ -320,30 +320,27 @@
       "requires_ui": false,
       "context": {
         "files": [
-          "apps/web/app/home/(user)/_components/session-card.tsx (T1)",
           "apps/web/app/home/(user)/_components/coaching-widget-skeleton.tsx (T2)",
           "apps/web/app/home/(user)/_components/coaching-empty-state.tsx (T4)",
-          "apps/web/app/home/(user)/_components/coaching-error-state.tsx (T5)",
-          "research-library/context7-calcom.md (useBookings hook)"
+          "apps/web/app/home/(user)/_components/coaching-error-state.tsx (T5)"
         ],
         "dependencies": [
-          "useBookings from @calcom/atoms",
-          "SessionCard (T1)",
           "CoachingWidgetSkeleton (T2)",
           "CoachingEmptyState (T4)",
-          "CoachingErrorState (T5)"
+          "CoachingErrorState (T5)",
+          "BookingDialog (T3)"
         ],
         "constraints": [
           "Must use 'use client' directive",
-          "Call useBookings({ status: ['upcoming'], take: 5 })",
-          "Handle loading, empty, error, and populated states",
-          "Show next 2 upcoming sessions if available"
+          "Display booking CTA that opens BookingDialog",
+          "Handle config validation from @kit/coaching",
+          "Show error state if config invalid"
         ]
       },
-      "input_state": "All child components (T1, T2, T4, T5) exist, useBookings hook available from F1",
-      "output_state": "CoachingSessionsWidget fetches bookings and renders appropriate state",
-      "acceptance_criterion": "CoachingSessionsWidget displays loading/empty/error/populated states correctly based on useBookings response",
-      "verification_command": "pnpm typecheck && grep -q 'useBookings' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "input_state": "All child components (T2, T3, T4, T5) exist, config utilities available from F1",
+      "output_state": "CoachingSessionsWidget displays booking CTA with dialog",
+      "acceptance_criterion": "CoachingSessionsWidget displays booking CTA and opens BookingDialog on click",
+      "verification_command": "pnpm typecheck && grep -q 'BookingDialog' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
       "outputs": [
         {
           "type": "new",

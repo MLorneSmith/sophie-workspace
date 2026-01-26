@@ -47,32 +47,31 @@ Implement the coaching sessions widget for the user dashboard that displays upco
 ## Architecture Decision
 
 **Approach**: Pragmatic
-**Rationale**: Use the `useBookings` hook from `@calcom/atoms` for data fetching rather than building custom API integration. This provides built-in caching, loading states, and type safety. Embed the Booker component in a Dialog for the booking flow to keep users on the dashboard.
+**Rationale**: Use Cal.com's free embed approach (iframe in Dialog) for booking rather than the deprecated `@calcom/atoms` package. This works with any free Cal.com account. The widget displays a "Book a Session" CTA that opens a popup/modal with the Cal.com embed.
 
 ### Key Architectural Choices
-1. Client component with `useBookings({ status: ["upcoming"], take: 5 })` for data
-2. Use Dialog/Sheet from shadcn/ui to contain Booker component for booking flow
+1. Static widget showing booking CTA (no real-time session fetching without API)
+2. Use Dialog from shadcn/ui to contain Cal.com iframe embed for booking flow
 3. Card-based layout matching existing dashboard widget patterns
 4. Separate skeleton component for clean loading state
 
 ### Trade-offs Accepted
-- Client-side data fetching (not SSR) due to Cal.com atoms being client-only
-- Booking flow opens in modal rather than full page (keeps context)
+- No real-time session display without Cal.com API key (show booking CTA instead)
+- Booking flow uses iframe embed rather than native React components
 
 ## Component Strategy
 
 | UI Element | Component | Source | Rationale |
 |------------|-----------|--------|-----------|
 | Widget container | Card | @kit/ui/card | Consistent with other dashboard widgets |
-| Session display | Custom SessionCard | New | Specific to coaching display needs |
+| Booking CTA | Custom CoachingCTA | New | "Book a Session" button |
 | Loading state | Skeleton | @kit/ui/skeleton | Consistent loading pattern |
-| Empty state | EmptyState | @kit/ui/empty-state | Existing component with CTA support |
-| Booking modal | Dialog | @kit/ui/dialog | Modal container for Booker |
-| Booking form | Booker | @calcom/atoms | Official Cal.com booking component |
-| Date/time display | Custom | New | Formatted with date-fns |
+| Booking modal | Dialog | @kit/ui/dialog | Modal container for embed |
+| Booking form | Cal.com iframe | External | Free Cal.com embed |
 
 **Components to Install**:
 - No new components needed (Dialog, Card, Skeleton already available)
+- No npm packages required (uses iframe embed)
 
 ## Required Credentials
 

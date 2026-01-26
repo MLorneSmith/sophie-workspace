@@ -19,6 +19,16 @@ profiles:
       - "development/architecture-overview.md"
 
     # Conditional rules: load these files when keywords match
+    #
+    # NOTE: After completing a spec with /alpha:document, add routing rules here
+    # to include spec documentation for related future implementations.
+    #
+    # Example (uncomment and customize when spec documentation exists):
+    # - keywords: ["dashboard", "widget", "activity feed", "user home"]
+    #   files:
+    #     - "specs/S1692-user-dashboard.md"
+    #   priority: medium
+    #
     rules:
       # Database & Migration Work
       - keywords: ["database", "migration", "schema", "RLS", "postgres", "table", "query", "supabase"]
@@ -906,6 +916,67 @@ profiles:
         - "development/react-query-patterns.md"
       testing:
         - "testing+quality/fundamentals.md"
+
+# ============================================================================
+  # /alpha:document - Generate spec-level documentation after implementation
+  # ============================================================================
+  alpha-document:
+    description: "Generate spec-level documentation after Alpha implementation completes"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Dashboard & Widget Features
+      - keywords: ["dashboard", "widget", "chart", "visualization", "grid", "layout", "card"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Database & Schema
+      - keywords: ["database", "migration", "schema", "RLS", "table", "query"]
+        files:
+          - "development/database-patterns.md"
+        priority: high
+
+      # Server Actions & API
+      - keywords: ["server action", "loader", "mutation", "api", "endpoint"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # Authentication
+      - keywords: ["auth", "login", "permission", "role", "session"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+      # External Integrations
+      - keywords: ["cal.com", "stripe", "external", "integration", "webhook", "api"]
+        files:
+          - "development/server-actions.md"
+        priority: medium
+
+      # Testing
+      - keywords: ["test", "e2e", "unit", "coverage"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+    categories:
+      full_stack:
+        - "development/architecture-overview.md"
+        - "development/server-actions.md"
+        - "development/shadcn-ui-components.md"
+      frontend:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      backend:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
 
 # ============================================================================
 # Routing Configuration

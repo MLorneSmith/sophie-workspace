@@ -311,12 +311,12 @@
     {
       "id": "S1815.I4.F3.T6",
       "type": "task",
-      "name": "Add Booker component to RescheduleDialog",
+      "name": "Add Cal.com iframe to RescheduleDialog",
       "action": {
         "verb": "Add",
-        "target": "Booker component with rescheduleUid prop"
+        "target": "Cal.com reschedule iframe embed"
       },
-      "purpose": "Render Cal.com rescheduling flow inside dialog",
+      "purpose": "Render Cal.com rescheduling flow inside dialog using free embed",
       "status": "draft",
       "estimated_hours": 3,
       "priority": 6,
@@ -341,24 +341,22 @@
       "context": {
         "files": [
           "apps/web/app/home/(user)/_components/reschedule-dialog.tsx",
-          ".ai/alpha/specs/S1815-Spec-user-dashboard/research-library/context7-calcom.md"
+          "packages/features/coaching/src/lib/cal-embed.ts"
         ],
         "dependencies": [
-          "Booker from @calcom/atoms",
-          "NEXT_PUBLIC_CAL_COACH_USERNAME env var",
-          "NEXT_PUBLIC_CAL_EVENT_SLUG env var"
+          "generateRescheduleUrl from @kit/coaching",
+          "Dialog from @kit/ui/dialog"
         ],
         "constraints": [
-          "Pass rescheduleUid prop to Booker",
-          "Pass username from env var",
-          "Pass eventSlug from env var",
-          "Add onCreateBookingSuccess callback"
+          "Use generateRescheduleUrl with bookingUid",
+          "Render iframe with reschedule URL",
+          "Add postMessage listener for completion"
         ]
       },
       "input_state": "RescheduleDialog skeleton exists",
-      "output_state": "RescheduleDialog with Booker component configured",
-      "acceptance_criterion": "Booker component rendered with rescheduleUid and username props",
-      "verification_command": "grep -A 20 '<Booker' apps/web/app/home/\\(user\\)/_components/reschedule-dialog.tsx | grep -E '(rescheduleUid|username|eventSlug)'",
+      "output_state": "RescheduleDialog with Cal.com iframe embed configured",
+      "acceptance_criterion": "Iframe rendered with Cal.com reschedule URL",
+      "verification_command": "grep -A 10 'iframe' apps/web/app/home/\\(user\\)/_components/reschedule-dialog.tsx | grep -E '(reschedule|src)'",
       "outputs": [
         {
           "type": "modified",
@@ -510,12 +508,12 @@
     {
       "id": "S1815.I4.F3.T9",
       "type": "task",
-      "name": "Add onCreateBookingSuccess handler to Booker",
+      "name": "Add postMessage listener for booking completion",
       "action": {
         "verb": "Add",
-        "target": "callback that closes dialog and refreshes data"
+        "target": "postMessage listener that closes dialog on completion"
       },
-      "purpose": "Close reschedule dialog after successful reschedule",
+      "purpose": "Close reschedule dialog after successful reschedule via embed events",
       "status": "draft",
       "estimated_hours": 2,
       "priority": 9,
@@ -524,23 +522,23 @@
       "requires_ui": false,
       "context": {
         "files": [
-          "apps/web/app/home/(user)/_components/reschedule-dialog.tsx",
-          ".ai/alpha/specs/S1815-Spec-user-dashboard/research-library/context7-calcom.md"
+          "apps/web/app/home/(user)/_components/reschedule-dialog.tsx"
         ],
         "dependencies": [
           "onOpenChange callback prop",
           "onSuccess callback prop"
         ],
         "constraints": [
+          "Listen for Cal.com embed postMessage events",
+          "Detect booking success/reschedule events",
           "Call onOpenChange(false) to close dialog",
-          "Call onSuccess callback to trigger refetch",
-          "Handle in onCreateBookingSuccess prop"
+          "Call onSuccess callback to trigger UI update"
         ]
       },
-      "input_state": "Booker component exists without success handler",
-      "output_state": "Booker with onCreateBookingSuccess that closes dialog",
-      "acceptance_criterion": "onCreateBookingSuccess calls onOpenChange(false) and onSuccess",
-      "verification_command": "grep -A 10 'onCreateBookingSuccess' apps/web/app/home/\\(user\\)/_components/reschedule-dialog.tsx | grep -E '(onOpenChange|onSuccess)'",
+      "input_state": "Iframe embed exists without completion detection",
+      "output_state": "Dialog with postMessage listener that closes on booking completion",
+      "acceptance_criterion": "useEffect sets up postMessage listener that calls onOpenChange(false) on success",
+      "verification_command": "grep -A 10 'postMessage\\|addEventListener.*message' apps/web/app/home/\\(user\\)/_components/reschedule-dialog.tsx | grep -E '(onOpenChange|onSuccess)'",
       "outputs": [
         {
           "type": "modified",
