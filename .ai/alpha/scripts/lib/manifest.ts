@@ -61,6 +61,63 @@ interface RawDependency {
 }
 
 // ============================================================================
+// Circular Dependency Detection (#1820)
+// ============================================================================
+
+/**
+ * Detect circular dependencies in feature queue.
+ * Local implementation to avoid import cycles.
+ *
+ * @param featureQueue - Array of feature entries to check
+ * @returns Array of cycles (each cycle is an array of feature IDs)
+ */
+function detectCircularDependenciesLocal(
+	featureQueue: FeatureEntry[],
+): string[][] {
+	const cycles: string[][] = [];
+	const visited = new Set<string>();
+	const recursionStack = new Set<string>();
+	const featureIds = new Set(featureQueue.map((f) => f.id));
+
+	function dfs(featureId: string, path: string[]): void {
+		if (recursionStack.has(featureId)) {
+			// Found a cycle - extract the cycle from the path
+			const cycleStart = path.indexOf(featureId);
+			const cycle = [...path.slice(cycleStart), featureId];
+			cycles.push(cycle);
+			return;
+		}
+
+		if (visited.has(featureId)) {
+			return;
+		}
+
+		visited.add(featureId);
+		recursionStack.add(featureId);
+
+		const feature = featureQueue.find((f) => f.id === featureId);
+		if (feature) {
+			for (const depId of feature.dependencies) {
+				// Only follow feature-level dependencies for cycle detection
+				if (featureIds.has(depId)) {
+					dfs(depId, [...path, featureId]);
+				}
+			}
+		}
+
+		recursionStack.delete(featureId);
+	}
+
+	for (const feature of featureQueue) {
+		if (!visited.has(feature.id)) {
+			dfs(feature.id, []);
+		}
+	}
+
+	return cycles;
+}
+
+// ============================================================================
 // Manifest Generation Helper Functions
 // ============================================================================
 
@@ -598,15 +655,36 @@ export function generateSpecManifest(
 		}
 	}
 
-	// Pass 3: Propagate initiative-level dependencies to features
+	// Pass 3: Propagate initiative-level dependencies to features (with optimization)
 	// This ensures the work queue respects initiative dependency hierarchy
+	// OPTIMIZATION (#1820): Only propagate if feature doesn't already have feature-level deps
+	// from that initiative. This enables better parallelism.
 	log("   Pass 3: Propagating initiative dependencies to features...");
 
 	for (const initiative of initiatives) {
 		if (initiative.dependencies.length > 0) {
 			for (const feature of featureQueue) {
 				if (feature.initiative_id === initiative.id) {
-					// Prepend initiative dependencies, then existing feature dependencies
+					// Check if feature already has feature-level deps from the blocking initiative
+					// If so, skip the initiative-level propagation (feature-level is more granular)
+					const hasFeatureLevelDeps = feature.dependencies.some((depId) => {
+						// Check each initiative dependency
+						for (const initDepId of initiative.dependencies) {
+							// If feature already has deps from this initiative (S#.I#.F# format)
+							if (depId.startsWith(initDepId) && depId.includes(".F")) {
+								return true;
+							}
+						}
+						return false;
+					});
+
+					if (hasFeatureLevelDeps) {
+						// Feature has explicit feature-level deps, skip initiative propagation
+						// This enables better parallelism (#1820)
+						continue;
+					}
+
+					// No feature-level deps - propagate initiative dependencies
 					// Use Set to avoid duplicates
 					const combinedDeps = new Set([
 						...initiative.dependencies,
@@ -717,6 +795,19 @@ export function generateSpecManifest(
 	if (requiredEnvVars.length > 0) {
 		manifest.metadata.required_env_vars = requiredEnvVars;
 		log(`   Found ${requiredEnvVars.length} required environment variable(s)`);
+	}
+
+	// Pass 5: Validate dependencies - check for circular references (#1820)
+	log("   Pass 5: Validating dependency graph...");
+	const circularDeps = detectCircularDependenciesLocal(featureQueue);
+	if (circularDeps.length > 0) {
+		console.error("   ⚠️ Circular dependencies detected:");
+		for (const cycle of circularDeps) {
+			console.error(`      ${cycle.join(" → ")}`);
+		}
+		// Don't fail - just warn (existing manifests might have issues)
+	} else {
+		log("   ✓ No circular dependencies detected");
 	}
 
 	// Write manifest

@@ -37,11 +37,7 @@ import {
 	keepAliveSandboxes,
 } from "./sandbox.js";
 import { sleep } from "./utils.js";
-import {
-	assignFeatureToSandbox,
-	getBlockedFeatures,
-	getNextAvailableFeature,
-} from "./work-queue.js";
+import { assignFeatureToSandbox, getBlockedFeatures } from "./work-queue.js";
 
 // ============================================================================
 // Types
@@ -454,14 +450,66 @@ export class WorkLoop {
 
 	/**
 	 * Assign available work to idle sandboxes.
+	 *
+	 * Optimized (#1820): Batch-collects all available features first,
+	 * sorts by priority, then assigns to idle sandboxes. This maximizes
+	 * parallelism when multiple features become available simultaneously.
 	 */
 	private async assignWorkToIdleSandboxes(): Promise<void> {
-		for (const instance of this.instances) {
-			if (instance.status !== "ready") continue;
+		// Collect all idle sandboxes
+		const idleSandboxes = this.instances.filter((i) => i.status === "ready");
+		if (idleSandboxes.length === 0) return;
 
-			const feature = getNextAvailableFeature(this.manifest, this.uiEnabled);
+		// Batch-collect all available features (#1820 optimization)
+		const availableFeatures: typeof this.manifest.feature_queue = [];
+		const assignedInThisRound = new Set<string>();
+
+		// Get all features that can start (deps satisfied, not assigned)
+		for (const feature of this.manifest.feature_queue) {
+			if (feature.status !== "pending" && feature.status !== "failed") continue;
+			if (feature.assigned_sandbox) continue;
+
+			// Check if deps are satisfied
+			const completedFeatureIds = new Set(
+				this.manifest.feature_queue
+					.filter((f) => f.status === "completed")
+					.map((f) => f.id),
+			);
+			const completedInitiativeIds = new Set(
+				this.manifest.initiatives
+					.filter((i) => i.status === "completed")
+					.map((i) => i.id),
+			);
+
+			const depsComplete = feature.dependencies.every(
+				(depId) =>
+					completedFeatureIds.has(depId) || completedInitiativeIds.has(depId),
+			);
+
+			if (depsComplete) {
+				availableFeatures.push(feature);
+			}
+		}
+
+		// Sort by global_priority (lower = higher priority)
+		availableFeatures.sort((a, b) => a.global_priority - b.global_priority);
+
+		// Log batch assignment opportunity (#1820)
+		if (availableFeatures.length > 1 && idleSandboxes.length > 1) {
+			this.log(
+				`   📦 Batch assignment: ${availableFeatures.length} features available, ${idleSandboxes.length} sandboxes idle`,
+			);
+		}
+
+		// Assign features to sandboxes
+		let featuresAssigned = 0;
+		for (const instance of idleSandboxes) {
+			// Find next unassigned feature
+			const feature = availableFeatures.find(
+				(f) => !assignedInThisRound.has(f.id),
+			);
 			if (!feature) {
-				// No work available - write idle status
+				// No more work available - write idle status
 				if (this.uiEnabled) {
 					const blockedFeatures = getBlockedFeatures(this.manifest);
 					const blockedIds = blockedFeatures
@@ -481,6 +529,9 @@ export class WorkLoop {
 				continue;
 			}
 
+			// Mark as assigned in this round to prevent double-assignment
+			assignedInThisRound.add(feature.id);
+
 			// Use atomic assignment with timestamp-based conflict detection
 			const assigned = assignFeatureToSandbox(
 				feature,
@@ -495,6 +546,8 @@ export class WorkLoop {
 				continue;
 			}
 
+			featuresAssigned++;
+
 			// Set sandbox status to "busy" SYNCHRONOUSLY before async Promise
 			instance.status = "busy";
 			instance.currentFeature = feature.id;
@@ -503,6 +556,11 @@ export class WorkLoop {
 			// Start work on this sandbox
 			const workPromise = this.runFeatureWork(instance, feature);
 			this.activeWork.set(instance.label, workPromise);
+		}
+
+		// Log batch assignment result (#1820)
+		if (featuresAssigned > 1) {
+			this.log(`   ✅ Batch assigned ${featuresAssigned} features in parallel`);
 		}
 	}
 

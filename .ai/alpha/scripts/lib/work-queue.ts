@@ -52,15 +52,22 @@ const ASSIGNMENT_CONFLICT_WINDOW_MS = 30_000; // 30 seconds
 * 1. Is not assigned to another sandbox (with timestamp-based conflict detection)
 * 1. Database features are serialized (only one DB feature at a time)
 *
+* Supports both feature-level and initiative-level dependencies (#1820):
+* - Feature-level (S#.I#.F#): Checks if specific feature is completed
+* - Initiative-level (S#.I#): Checks if ALL features in initiative are completed
+*
 * @param manifest - The spec manifest containing the feature queue
 * @param uiEnabled - Whether UI mode is enabled (suppresses console output)
+* @param debugDeps - Whether to enable detailed dependency logging
 * @returns The next available feature, or null if none available
  */
 export function getNextAvailableFeature(
 	manifest: SpecManifest,
 	uiEnabled = false,
+	debugDeps = false,
 ): FeatureEntry | null {
 	const { log } = createLogger(uiEnabled);
+	const debugLog = debugDeps ? log : () => {};
 	const now = Date.now();
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
@@ -73,6 +80,10 @@ export function getNextAvailableFeature(
 		manifest.initiatives
 			.filter((i) => i.status === "completed")
 			.map((i) => i.id),
+	);
+
+	debugLog(
+		`🔍 [DEP_DEBUG] Checking availability: ${completedFeatureIds.size} features completed, ${completedInitiativeIds.size} initiatives completed`,
 	);
 
 	// Check if a database feature is currently running
@@ -136,23 +147,34 @@ export function getNextAvailableFeature(
 		}
 
 		// Check if all dependencies are satisfied
+		const unsatisfiedDeps: string[] = [];
 		const depsComplete = feature.dependencies.every((depId) => {
 			// Check if it's a completed feature
 			if (completedFeatureIds.has(depId)) {
+				debugLog(`   ✓ ${feature.id}: dep ${depId} satisfied (feature)`);
 				return true;
 			}
 			// Check if it's a completed initiative
 			if (completedInitiativeIds.has(depId)) {
+				debugLog(`   ✓ ${feature.id}: dep ${depId} satisfied (initiative)`);
 				return true;
 			}
+			unsatisfiedDeps.push(depId);
+			debugLog(`   ✗ ${feature.id}: dep ${depId} NOT satisfied`);
 			return false;
 		});
 
 		if (depsComplete) {
+			debugLog(`🟢 [DEP_DEBUG] Feature ${feature.id} is AVAILABLE`);
 			return feature;
 		}
+
+		debugLog(
+			`🔴 [DEP_DEBUG] Feature ${feature.id} BLOCKED by: ${unsatisfiedDeps.join(", ")}`,
+		);
 	}
 
+	debugLog("⚠️ [DEP_DEBUG] No features available");
 	return null;
 }
 

@@ -506,21 +506,44 @@ For each candidate feature, run through the decision tree:
 
 #### Step 7: Build & Validate Dependencies
 
+**CRITICAL: Use Feature-Level Dependencies for Maximum Parallelism**
+
+When specifying dependencies, ALWAYS prefer feature-level references over initiative-level:
+
+| Type | Example | Use When |
+|------|---------|----------|
+| Feature-level (preferred) | `S1815.I1.F1`, `S1815.I1.F3` | Feature needs specific upstream features |
+| Initiative-level (rare) | `S1815.I1` | Feature needs ALL features from initiative (e.g., final polish) |
+
+**Why Feature-Level Dependencies?**
+- Enables parallel execution across initiative boundaries
+- Features can start as soon as their specific dependencies complete
+- Prevents sandboxes from sitting idle waiting for unrelated features
+
+**Cross-Initiative Dependencies:**
+When features in I2, I3, or I4 need foundation from I1:
+- Identify the SPECIFIC features needed (e.g., types, grid layout)
+- Reference them explicitly: `Blocked By: S1815.I1.F1, S1815.I1.F3`
+- Do NOT use initiative-level: `Blocked By: S1815.I1` (blocks unnecessarily)
+
 Create the dependency graph:
 
 ```markdown
 ## Dependency Graph
 
-| From | To | Reason |
-|------|-----|--------|
-| F1 | F2 | F2 needs data from F1 |
-| F1 | F3 | F3 uses F1's loader |
+| From | To | Reason | Type |
+|------|-----|--------|------|
+| S1815.I1.F1 | S1815.I2.F1 | Needs TypeScript types | Feature-level |
+| S1815.I1.F3 | S1815.I2.F1 | Needs grid layout | Feature-level |
+| S1815.I3.F2 | S1815.I3.F3 | Needs data aggregation | Feature-level (same init) |
 ```
 
 **Quick Validation Checklist**:
 - [ ] No circular dependencies (if F1→F2, then F2 cannot →F1)
 - [ ] Clear root feature(s) with no blockers
 - [ ] All features reachable from roots
+- [ ] **No unnecessary initiative-level dependencies**
+- [ ] Cross-initiative deps use specific feature references
 
 **For simple hub-spoke graphs** (one root, all others depend on it):
 - Critical path = Root + longest child feature
@@ -584,7 +607,10 @@ Then use the Write tool to create `feature.md` in each directory.
 - Vertical Slice Components table
 - Architecture Decision (approach + rationale)
 - Component Strategy (from Step 4.5)
-- Dependencies (blocks, blocked by, parallel with) - **Use S#.I#.F# or shorthand F# format**
+- Dependencies (blocks, blocked by, parallel with):
+  - **ALWAYS use feature-level IDs** (S#.I#.F#) for maximum parallelism
+  - Use shorthand F# only for same-initiative deps
+  - **NEVER use initiative-level deps** (S#.I#) unless feature needs ALL features from that initiative
 - Files to Create/Modify
 - Task Hints (for next decomposition phase)
 - Validation Commands
