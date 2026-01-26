@@ -129,7 +129,7 @@ jobs:
     outputs:
       cache-key: ${{ steps.cache.outputs.cache-key }}
     env:
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3001
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
