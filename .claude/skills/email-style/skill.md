@@ -4,10 +4,11 @@ Write compelling email marketing in Andre Chaperon's "Art of Email" style, using
 
 ## Skill Overview
 
-This skill enables three modes of operation:
+This skill enables four modes of operation:
 1. **Write Mode** - Generate emails with a provided hook
 2. **Hook Mode** - Develop the perfect hook through interactive research
 3. **Validate Mode** - Check draft emails against Andre's style patterns
+4. **Campaign Mode** - View campaign structure and write sequence-aware emails
 
 ## Core Resources
 
@@ -17,13 +18,107 @@ Always load these files before any operation:
 - `core/hooks-library.yaml` - 45 hooks across 8 categories
 - `core/principles.md` - Andre's 7 core philosophy principles
 
+## Extended Corpus (On-Demand)
+
+The `emails/` directory contains 83 annotated emails organized two ways:
+
+### By Type (for style patterns)
+```
+emails/
+├── welcome/     # 6 emails - Welcome sequence openers
+├── nurture/     # 39 emails - Relationship-building sequences
+├── story/       # 12 emails - Story-driven emails
+├── sales/       # 3 emails - Sales/offer emails
+└── newsletter/  # 23 emails - Newsletter issues
+```
+
+### By Campaign (for sequence context)
+```
+emails/campaigns/
+└── bpm-onboarding/          # 16-email SlideHeroes onboarding sequence
+    ├── _campaign.yaml       # Campaign manifest with narrative arc
+    └── 01-*.yaml → 16-*.yaml  # Symlinks in sequence order
+```
+
+The `_campaign.yaml` manifest contains:
+- Campaign metadata (name, audience, goals)
+- Narrative arc description (phases and progression)
+- Email sequence with position, purpose, and techniques per email
+
+### Loading Strategy
+
+**By Type** (learning style patterns):
+
+| Request | What to Load |
+|---------|--------------|
+| Basic email with hook | `core/*` only |
+| Write welcome email | `core/*` + 2-3 from `emails/welcome/` |
+| Write nurture email | `core/*` + 2-3 from `emails/nurture/` |
+| Write story email | `core/*` + 2-3 from `emails/story/` |
+| Write sales email | `core/*` + all 3 from `emails/sales/` |
+| Write newsletter | `core/*` + 2-3 from `emails/newsletter/` |
+| Hook development | `core/*` + perplexity research |
+
+**By Campaign** (sequence context):
+
+| Request | What to Load |
+|---------|--------------|
+| View campaign structure | `emails/campaigns/[name]/_campaign.yaml` |
+| Write for existing campaign | `core/*` + campaign manifest + adjacent emails in sequence |
+| Create similar campaign | `core/*` + full campaign directory as reference |
+
+### When to Load Extended Examples
+
+Load additional examples from `emails/[type]/` when:
+- User requests high fidelity to Andre's style
+- The email type has few examples in `best-examples.yaml`
+- User explicitly asks for more examples
+
+Load from `emails/campaigns/` when:
+- User is writing for an existing campaign (e.g., BPM onboarding)
+- User wants to understand sequence flow before writing
+- User is creating a new campaign modeled on an existing one
+- Maintaining narrative continuity matters (callbacks, open loops)
+
+### Selecting Examples to Load
+
+**When loading by type** from `emails/[type]/`:
+1. **Technique diversity** - pick emails demonstrating different techniques
+2. **Recent emails** - more representative of current style
+3. **Campaign match** if user specified one (LEM, ARM, TWN, etc.)
+
+**When loading by campaign** from `emails/campaigns/[name]/`:
+1. **Always load `_campaign.yaml`** first - understand the narrative arc
+2. **Load adjacent emails** if writing for a specific position (e.g., emails 5-7 when writing email 6)
+3. **Load phase examples** - emails from the same campaign phase
+4. **Note open loops** - check what was promised in earlier emails
+
 ## Invocation
 
 ```
 /email-style write [type] "[hook or topic]"
+/email-style write --campaign [name] --position [N] "[hook or topic]"
 /email-style hook "[topic or offer]"
 /email-style validate [file-path]
+/email-style campaign [name]
 ```
+
+### Campaign-Aware Writing
+
+When writing for an existing campaign:
+```
+/email-style write --campaign bpm-onboarding --position 17 "introducing the DDM course offer"
+```
+
+This loads:
+1. The campaign manifest (`_campaign.yaml`)
+2. Adjacent emails (positions 15-16) for context
+3. Core techniques and principles
+
+The skill will ensure:
+- Continuity with previous emails (callbacks, fulfilled promises)
+- Consistent subject line patterns (`[BPM]` or `[5S]` prefix)
+- Appropriate phase positioning in narrative arc
 
 ---
 
@@ -47,8 +142,24 @@ Determine email type and identify applicable techniques:
 | sales | Social Proof (Implicit), Future Pacing, Soft Sell, Embedded Link |
 | newsletter | Campaign Abbreviation, Pattern Interrupt, P.S. Series Archive |
 
-#### Step 2: Review Relevant Examples
-Load 2-3 best examples that match the email type from `best-examples.yaml`.
+#### Step 2: Load Relevant Examples
+
+**From core (always):**
+Load 2-3 examples from `best-examples.yaml` that match the email type.
+
+**From extended corpus (when beneficial):**
+If more context would help, load 2-3 additional emails from `emails/[type]/`:
+
+```
+# Example: Writing a welcome email
+Read: emails/welcome/2024-08-02_134851_tiny-worlds-a-new-frontier-email-1-of-7.yaml
+Read: emails/welcome/2019-08-09_163739_lem-lucrative-email-marketing-prologue.yaml
+```
+
+**Selection criteria:**
+- Match the campaign style if specified
+- Pick emails with high technique diversity
+- For sequences, load emails with similar position numbers
 
 #### Step 3: Draft Email
 
@@ -278,6 +389,67 @@ Compare against best examples for:
 
 ---
 
+## Mode 4: Campaign View
+
+View the structure and narrative arc of an existing campaign.
+
+### Process
+
+#### Step 1: Load Campaign Manifest
+
+```
+Read: emails/campaigns/[name]/_campaign.yaml
+```
+
+#### Step 2: Present Campaign Overview
+
+```
+## Campaign: [Campaign Name]
+
+**Trigger:** [What causes someone to enter this sequence]
+**Audience:** [Who this campaign is for]
+**Length:** [N] emails over [timeframe]
+
+### Narrative Arc
+
+**Phase 1: [Phase Name] (Emails 1-N)**
+[Description of this phase's purpose and content]
+
+**Phase 2: [Phase Name] (Emails N-M)**
+[Description]
+
+...
+
+### Email Sequence
+
+| # | Subject | Phase | Purpose |
+|---|---------|-------|---------|
+| 1 | [subject] | [phase] | [one-line purpose] |
+| 2 | ... | ... | ... |
+
+### Key Techniques Used
+- [Technique patterns across the campaign]
+- [Subject line conventions]
+- [Open loop strategies]
+
+---
+
+**What would you like to do?**
+- Write the next email in this sequence
+- Write a specific position (e.g., email 17)
+- Create a similar campaign for a different product
+```
+
+#### Step 3: Offer Next Actions
+
+Based on campaign view, offer to:
+1. Write the next email in sequence
+2. Write for a specific position
+3. Extend the campaign with new emails
+4. Create a parallel campaign for different product/audience
+
+---
+
 ## Quick Reference: Andre's Voice
 
 ### Do:
@@ -310,11 +482,36 @@ Compare against best examples for:
 
 ---
 
+## Available Campaigns
+
+### BPM Onboarding (`bpm-onboarding`)
+16-email SlideHeroes onboarding sequence for Lesson Zero signups.
+
+| Phase | Emails | Content |
+|-------|--------|---------|
+| Welcome & Framework | 1-5 | Welcome + Presentations Reinvented trilogy |
+| Credibility | 6-9 | Case studies + DDM errors & omissions |
+| 5S Deep Dive | 10-16 | Structure, Story, Substance, Style, Self-Confidence |
+
+**Subject patterns:** `[BPM] ...` or `[5S] ...`
+
+---
+
 ## Example Usage
 
 ### Write a welcome email:
 ```
 /email-style write welcome "Last Tuesday, I almost deleted my entire email list. Here's why I'm glad I didn't."
+```
+
+### Write for an existing campaign:
+```
+/email-style write --campaign bpm-onboarding --position 17 "soft introduction to DDM course pricing"
+```
+
+### View campaign structure:
+```
+/email-style campaign bpm-onboarding
 ```
 
 ### Develop a hook:
