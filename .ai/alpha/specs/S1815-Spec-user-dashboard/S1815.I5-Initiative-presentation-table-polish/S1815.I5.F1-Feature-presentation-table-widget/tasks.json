@@ -1,0 +1,505 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I5.F1",
+    "feature_name": "Presentation Table Widget",
+    "feature_slug": "presentation-table-widget",
+    "initiative_id": "S1815.I5",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T00:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1815.I5.F1.T5", "S1815.I5.F1.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I5.F1.T1",
+      "type": "task",
+      "name": "Create presentation types interface",
+      "action": {
+        "verb": "Create",
+        "target": "TypeScript interface for presentation table data"
+      },
+      "purpose": "Define type-safe structure for presentation data used by table component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql"
+        ],
+        "dependencies": [
+          "@kit/supabase/database types"
+        ],
+        "constraints": [
+          "Must match building_blocks_submissions table schema",
+          "Include only fields needed for table display"
+        ]
+      },
+      "input_state": "building_blocks_submissions table exists in database with id, title, audience, presentation_type, updated_at columns",
+      "output_state": "TypeScript interface PresentationTableItem exists with id, title, audience, type, updatedAt properties",
+      "acceptance_criterion": "Type file exists and exports PresentationTableItem interface that compiles without errors",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/presentation.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I5.F1.T2", "S1815.I5.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T2",
+      "type": "task",
+      "name": "Add presentations query to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "presentations query function to dashboard loader"
+      },
+      "purpose": "Fetch building_blocks_submissions data server-side for dashboard page",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "PresentationTableItem interface"
+        ],
+        "constraints": [
+          "Query limited to 10 results",
+          "Sort by updated_at descending",
+          "RLS automatically enforces user_id filtering",
+          "Select only id, title, audience, presentation_type, updated_at columns"
+        ]
+      },
+      "input_state": "Dashboard page exists at apps/web/app/home/(user)/page.tsx without presentations data",
+      "output_state": "Loader function loadPresentations() exists and returns PresentationTableItem[], integrated into page component",
+      "acceptance_criterion": "Page component receives presentations prop with type-safe data from building_blocks_submissions table",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T1"],
+        "blocks": ["S1815.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T3",
+      "type": "task",
+      "name": "Create table column definitions",
+      "action": {
+        "verb": "Create",
+        "target": "ColumnDef array with Title, Audience, Type, Updated, Actions columns"
+      },
+      "purpose": "Define table structure and cell rendering logic for DataTable component",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/data-table.tsx",
+          "packages/features/admin/src/components/admin-accounts-table.tsx"
+        ],
+        "dependencies": [
+          "ColumnDef from @tanstack/react-table",
+          "Button from @kit/ui/button",
+          "Link from next/link",
+          "PresentationTableItem interface"
+        ],
+        "constraints": [
+          "Actions column contains Edit button linking to /home/ai/canvas?id={id}",
+          "Updated column formats date as relative time",
+          "Type column displays presentation_type value",
+          "Follow pattern from admin-accounts-table.tsx"
+        ]
+      },
+      "input_state": "PresentationTableItem interface exists, DataTable component available",
+      "output_state": "getPresentationColumns() function exists returning ColumnDef<PresentationTableItem>[] with 5 columns",
+      "acceptance_criterion": "Column definitions compile and render all specified columns with correct accessors and cell formatters",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-columns.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T1"],
+        "blocks": ["S1815.I5.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T4",
+      "type": "task",
+      "name": "Create empty state component",
+      "action": {
+        "verb": "Create",
+        "target": "empty state component for no presentations"
+      },
+      "purpose": "Display user-friendly message when user has no presentations",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Message: 'No presentations yet. Create your first presentation outline.'",
+          "Include link to /home/ai/canvas",
+          "Follow MakerKit empty state patterns"
+        ]
+      },
+      "input_state": "No empty state component exists for presentations table",
+      "output_state": "PresentationsEmptyState component exists and displays message with CTA link",
+      "acceptance_criterion": "Component renders with translated message and clickable link to canvas",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentations-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T3"],
+        "blocks": ["S1815.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T5",
+      "type": "task",
+      "name": "Create PresentationsTableWidget component",
+      "action": {
+        "verb": "Create",
+        "target": "client component wrapping DataTable with column definitions"
+      },
+      "purpose": "Compose DataTable with presentations data, columns, pagination, and empty state",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "table"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/data-table.tsx",
+          "packages/features/admin/src/components/admin-accounts-table.tsx"
+        ],
+        "dependencies": [
+          "DataTable from @kit/ui/data-table",
+          "getPresentationColumns function",
+          "PresentationsEmptyState component",
+          "PresentationTableItem interface"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "DataTable configured with pageSize=10, client-side pagination",
+          "Conditional rendering: empty state if data.length === 0",
+          "data-testid='presentations-table-widget' on wrapper"
+        ]
+      },
+      "input_state": "Column definitions and empty state components exist, presentations data available from loader",
+      "output_state": "PresentationsTableWidget component exists accepting presentations prop and rendering full-width table",
+      "acceptance_criterion": "Component renders DataTable with 10 presentations per page or empty state when no data",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T2", "S1815.I5.F1.T4"],
+        "blocks": ["S1815.I5.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T6",
+      "type": "task",
+      "name": "Integrate widget into dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "PresentationsTableWidget to dashboard page layout"
+      },
+      "purpose": "Display presentations table below page header in user dashboard",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "table"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "PresentationsTableWidget component",
+          "presentations data from loader",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Widget placed inside PageBody after header",
+          "Full-width container",
+          "Pass presentations prop from loader to widget"
+        ]
+      },
+      "input_state": "Dashboard page renders with header and empty PageBody, presentations data loaded",
+      "output_state": "Dashboard page displays PresentationsTableWidget below header with loaded data",
+      "acceptance_criterion": "Navigating to /home shows presentations table with user's presentations or empty state",
+      "verification_command": "pnpm dev && curl -I http://localhost:3000/home",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T5"],
+        "blocks": ["S1815.I5.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F1.T7",
+      "type": "task",
+      "name": "Add translation keys for table labels",
+      "action": {
+        "verb": "Add",
+        "target": "i18n translation keys for table column headers and empty state"
+      },
+      "purpose": "Enable internationalization of table UI text",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/common.json"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Add keys under 'presentations' namespace",
+          "Keys: title, audience, type, updated, actions, emptyState, emptyStateDescription"
+        ]
+      },
+      "input_state": "Table renders with hardcoded English strings",
+      "output_state": "Translation keys exist in common.json and components use Trans component for text",
+      "acceptance_criterion": "All table text uses i18n keys and displays correctly in English",
+      "verification_command": "pnpm typecheck && grep -q 'presentations.title' apps/web/public/locales/en/common.json",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/public/locales/en/common.json"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-columns.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Data Layer",
+        "task_ids": ["S1815.I5.F1.T1", "S1815.I5.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Component Layer",
+        "task_ids": ["S1815.I5.F1.T3", "S1815.I5.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration Layer",
+        "task_ids": ["S1815.I5.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Polish Layer",
+        "task_ids": ["S1815.I5.F1.T6", "S1815.I5.F1.T7"],
+        "depends_on_groups": [3],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1815.I5.F1.T1", "S1815.I5.F1.T3", "S1815.I5.F1.T4", "S1815.I5.F1.T5", "S1815.I5.F1.T6", "S1815.I5.F1.T7"],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 13,
+      "time_saved_percent": 19
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

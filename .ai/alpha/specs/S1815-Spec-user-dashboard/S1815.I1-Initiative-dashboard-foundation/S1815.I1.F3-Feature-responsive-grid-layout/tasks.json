@@ -1,0 +1,679 @@
+{
+  "$schema": "../../../../../../.ai/alpha/templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I1.F3",
+    "feature_name": "Responsive Grid Layout",
+    "feature_slug": "responsive-grid-layout",
+    "initiative_id": "S1815.I1",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T19:30:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1815.I1.F3.T2",
+      "S1815.I1.F3.T3",
+      "S1815.I1.F3.T4",
+      "S1815.I1.F3.T5",
+      "S1815.I1.F3.T6",
+      "S1815.I1.F3.T7",
+      "S1815.I1.F3.T8",
+      "S1815.I1.F3.T9"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I1.F3.T1",
+      "type": "task",
+      "name": "Create dashboard.json i18n file with widget translation keys",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard.json i18n file"
+      },
+      "purpose": "Define all widget title and description translation keys for internationalization support",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/common.json",
+          "apps/web/public/locales/en/assessment.json"
+        ],
+        "dependencies": [
+          "JSON structure for i18n keys"
+        ],
+        "constraints": [
+          "Must include keys for all 7 widgets",
+          "Follow existing i18n naming patterns",
+          "Include title, description, and empty state keys"
+        ]
+      },
+      "input_state": "No dashboard-specific i18n file exists",
+      "output_state": "File apps/web/public/locales/en/dashboard.json exists with translation keys for courseProgress, spiderChart, kanbanSummary, activityFeed, quickActions, coachingSessions, presentationsTable widgets",
+      "acceptance_criterion": "File contains valid JSON with nested objects for each widget, includes title, description, and emptyState keys, follows project i18n conventions",
+      "verification_command": "cat apps/web/public/locales/en/dashboard.json | jq '.courseProgress, .spiderChart, .kanbanSummary, .activityFeed, .quickActions, .coachingSessions, .presentationsTable' | grep -c title",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/public/locales/en/dashboard.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1815.I1.F3.T2",
+          "S1815.I1.F3.T3",
+          "S1815.I1.F3.T4",
+          "S1815.I1.F3.T5",
+          "S1815.I1.F3.T6",
+          "S1815.I1.F3.T7",
+          "S1815.I1.F3.T8",
+          "S1815.I1.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T2",
+      "type": "task",
+      "name": "Create DashboardGrid component with responsive Tailwind grid structure",
+      "action": {
+        "verb": "Create",
+        "target": "DashboardGrid component file"
+      },
+      "purpose": "Create main grid orchestrator component that distributes DashboardData to all 7 widget placeholders with responsive breakpoints",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "find role", "target": "main" },
+          { "command": "snapshot" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "tailwind", "responsive-design"],
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "DashboardData type from F1",
+          "Tailwind grid utilities",
+          "Trans component"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Grid: grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+          "Gap spacing: gap-4",
+          "Include animate-in fade-in animation",
+          "Bottom padding: pb-36"
+        ]
+      },
+      "input_state": "DashboardData type exists from F1, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/dashboard-grid.tsx exists with client component accepting DashboardData prop, renders 3-row grid with 7 widget component imports (placeholders)",
+      "acceptance_criterion": "Component accepts DashboardData prop, renders responsive grid with correct breakpoints, includes all 7 widget components as children, uses gap-4 spacing, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(use client|grid-cols-1 md:grid-cols-2 xl:grid-cols-3|gap-4)' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T3",
+      "type": "task",
+      "name": "Create course-progress-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "course-progress-widget.tsx component"
+      },
+      "purpose": "Create Course Progress widget placeholder Card showing empty state when data is null",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "CourseProgressData type"
+        ],
+        "constraints": [
+          "Accept CourseProgressData | null prop",
+          "Show empty state with text-muted-foreground when null",
+          "Use Trans for i18n keys from dashboard:courseProgress"
+        ]
+      },
+      "input_state": "Card component available, CourseProgressData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx exists with Card structure, shows title and empty state placeholder",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when data is null, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|CourseProgressData|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/widgets/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T4",
+      "type": "task",
+      "name": "Create spider-chart-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "spider-chart-widget.tsx component"
+      },
+      "purpose": "Create Spider Chart widget placeholder Card showing empty state when data is null",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skill Assessment" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "SurveyScoresData type"
+        ],
+        "constraints": [
+          "Accept SurveyScoresData | null prop",
+          "Show empty state with text-muted-foreground when null",
+          "Use Trans for i18n keys from dashboard:spiderChart"
+        ]
+      },
+      "input_state": "Card component available, SurveyScoresData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/spider-chart-widget.tsx exists with Card structure, shows title and empty state placeholder",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when data is null, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|SurveyScoresData|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/widgets/spider-chart-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/spider-chart-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T5",
+      "type": "task",
+      "name": "Create kanban-summary-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "kanban-summary-widget.tsx component"
+      },
+      "purpose": "Create Kanban Summary widget placeholder Card showing empty state when no tasks exist",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Kanban Summary" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "TasksSummaryData type"
+        ],
+        "constraints": [
+          "Accept TasksSummaryData[] prop",
+          "Show empty state with text-muted-foreground when array is empty",
+          "Use Trans for i18n keys from dashboard:kanbanSummary"
+        ]
+      },
+      "input_state": "Card component available, TasksSummaryData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/kanban-summary-widget.tsx exists with Card structure, shows title and empty state placeholder",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when tasks array is empty, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|TasksSummaryData|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/widgets/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T6",
+      "type": "task",
+      "name": "Create activity-feed-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "activity-feed-widget.tsx component"
+      },
+      "purpose": "Create Activity Feed widget placeholder Card showing empty state when no activities exist",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Recent Activity" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "ActivityData type"
+        ],
+        "constraints": [
+          "Accept ActivityData[] prop",
+          "Show empty state with text-muted-foreground when array is empty",
+          "Use Trans for i18n keys from dashboard:activityFeed"
+        ]
+      },
+      "input_state": "Card component available, ActivityData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/activity-feed-widget.tsx exists with Card structure, shows title and empty state placeholder",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when activities array is empty, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|ActivityData|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/widgets/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T7",
+      "type": "task",
+      "name": "Create quick-actions-widget.tsx Card with button placeholders",
+      "action": {
+        "verb": "Create",
+        "target": "quick-actions-widget.tsx component"
+      },
+      "purpose": "Create Quick Actions widget Card with placeholder buttons for contextual CTAs",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "button"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/button.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Button from @kit/ui/button",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Show 2-3 placeholder buttons (Continue Course, New Presentation, etc.)",
+          "Use Button variant='outline' for actions",
+          "Use Trans for i18n keys from dashboard:quickActions"
+        ]
+      },
+      "input_state": "Card and Button components available, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/quick-actions-widget.tsx exists with Card structure containing 2-3 placeholder Button components",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows 2-3 Button components with placeholder labels, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Button|Trans|variant)' apps/web/app/home/\\(user\\)/_components/widgets/quick-actions-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/quick-actions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T8",
+      "type": "task",
+      "name": "Create coaching-sessions-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-widget.tsx component"
+      },
+      "purpose": "Create Coaching Sessions widget placeholder Card showing empty state when no sessions exist",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Coaching Sessions" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "CoachingSessionData type"
+        ],
+        "constraints": [
+          "Accept CoachingSessionData[] prop",
+          "Show empty state with text-muted-foreground when array is empty",
+          "Use Trans for i18n keys from dashboard:coachingSessions",
+          "Note: Full Cal.com integration deferred to S1815.I4"
+        ]
+      },
+      "input_state": "Card component available, CoachingSessionData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/coaching-sessions-widget.tsx exists with Card structure, shows title and empty state placeholder",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when sessions array is empty, uses Trans for i18n, includes comment referencing S1815.I4 for full implementation, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|CoachingSessionData|text-muted-foreground|I4)' apps/web/app/home/\\(user\\)/_components/widgets/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F3.T9",
+      "type": "task",
+      "name": "Create presentations-table-widget.tsx Card placeholder",
+      "action": {
+        "verb": "Create",
+        "target": "presentations-table-widget.tsx component"
+      },
+      "purpose": "Create Presentations Table widget placeholder Card showing empty state when no presentations exist",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "My Presentations" },
+          { "command": "find role", "target": "heading" }
+        ],
+        "screenshot": true
+      },
+      "skill_hints": ["react", "shadcn-ui", "empty-state"],
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardDescription, CardContent from @kit/ui/card",
+          "Trans from @kit/ui/trans",
+          "PresentationData type"
+        ],
+        "constraints": [
+          "Accept PresentationData[] prop",
+          "Show empty state with text-muted-foreground when array is empty",
+          "Use Trans for i18n keys from dashboard:presentationsTable",
+          "Full-width layout (spans entire row)"
+        ]
+      },
+      "input_state": "Card component available, PresentationData type exists, i18n keys defined",
+      "output_state": "File apps/web/app/home/(user)/_components/widgets/presentations-table-widget.tsx exists with Card structure, shows title and empty state placeholder for full-width table",
+      "acceptance_criterion": "Component renders Card with CardHeader and CardContent, shows empty state when presentations array is empty, uses Trans for i18n, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Card|Trans|PresentationData|text-muted-foreground)' apps/web/app/home/\\(user\\)/_components/widgets/presentations-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/widgets/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - i18n Setup",
+        "task_ids": ["S1815.I1.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Grid Component",
+        "task_ids": ["S1815.I1.F3.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Widget Placeholders (Parallel)",
+        "task_ids": [
+          "S1815.I1.F3.T3",
+          "S1815.I1.F3.T4",
+          "S1815.I1.F3.T5",
+          "S1815.I1.F3.T6",
+          "S1815.I1.F3.T7",
+          "S1815.I1.F3.T8",
+          "S1815.I1.F3.T9"
+        ],
+        "depends_on_groups": [1],
+        "estimated_hours": 14,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1815.I1.F3.T1",
+        "S1815.I1.F3.T2"
+      ],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 19,
+      "parallel": 7,
+      "time_saved_percent": 63
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

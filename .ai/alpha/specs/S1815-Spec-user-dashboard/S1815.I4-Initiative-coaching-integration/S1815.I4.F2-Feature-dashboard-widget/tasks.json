@@ -1,0 +1,801 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I4.F2",
+    "feature_name": "Dashboard Coaching Widget",
+    "feature_slug": "dashboard-widget",
+    "initiative_id": "S1815.I4",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T00:00:00.000Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1815.I4.F2.T11"],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CAL_COACH_USERNAME",
+        "description": "Username for the default coach profile (inherited from F1)",
+        "source": "Cal.com account username",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "description": "Event type slug for coaching sessions (e.g., '60min') (inherited from F1)",
+        "source": "Cal.com event types → Copy slug from URL or settings",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1815.I4.F2.T1",
+      "type": "task",
+      "name": "Create session-card component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "session-card.tsx component file with prop types"
+      },
+      "purpose": "Display individual coaching session with date, time, coach name",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx (pattern reference)",
+          "packages/ui/src/card.tsx (Card component)",
+          "packages/features/coaching/src/types/booking.ts (from F1)"
+        ],
+        "dependencies": [
+          "Card from @kit/ui/card",
+          "Booking type from @kit/coaching"
+        ],
+        "constraints": [
+          "Must use Card component from @kit/ui",
+          "Display date with date-fns formatting",
+          "Show coach name and session title"
+        ]
+      },
+      "input_state": "Booking type exists from F1 (CalProvider foundation)",
+      "output_state": "SessionCard component renders booking data in card format",
+      "acceptance_criterion": "SessionCard displays date, time, and coach name from a Booking object",
+      "verification_command": "pnpm typecheck && grep -q 'export.*SessionCard' apps/web/app/home/\\(user\\)/_components/session-card.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T2",
+      "type": "task",
+      "name": "Create coaching-widget-skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-widget-skeleton.tsx with Skeleton components"
+      },
+      "purpose": "Display loading state while fetching booking data",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/skeleton.tsx (Skeleton component)",
+          "packages/ui/src/card.tsx (Card component)"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must match final widget dimensions",
+          "Use Card container with Skeleton elements inside",
+          "Mimic session-card layout"
+        ]
+      },
+      "input_state": "Skeleton UI component available from @kit/ui",
+      "output_state": "CoachingWidgetSkeleton component ready for Suspense boundary",
+      "acceptance_criterion": "CoachingWidgetSkeleton displays placeholder UI matching widget card size",
+      "verification_command": "pnpm typecheck && grep -q 'export.*CoachingWidgetSkeleton' apps/web/app/home/\\(user\\)/_components/coaching-widget-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-widget-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T3",
+      "type": "task",
+      "name": "Create booking-dialog component",
+      "action": {
+        "verb": "Create",
+        "target": "booking-dialog.tsx with Cal.com iframe embed"
+      },
+      "purpose": "Provide modal container for Cal.com booking flow using free embed",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/dialog.tsx (Dialog component)",
+          "packages/features/coaching/src/lib/cal-embed.ts (generateBookingUrl)"
+        ],
+        "dependencies": [
+          "Dialog from @kit/ui/dialog",
+          "generateBookingUrl from @kit/coaching"
+        ],
+        "constraints": [
+          "Must use Dialog component for modal",
+          "Use generateBookingUrl to construct iframe src",
+          "Add postMessage listener for booking completion"
+        ]
+      },
+      "input_state": "Cal.com embed utilities available from @kit/coaching (F1 dependency)",
+      "output_state": "BookingDialog component wraps Cal.com iframe in Dialog with open/close state",
+      "acceptance_criterion": "BookingDialog opens modal with Cal.com iframe embed when triggered",
+      "verification_command": "pnpm typecheck && grep -q 'iframe' apps/web/app/home/\\(user\\)/_components/booking-dialog.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/booking-dialog.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T4",
+      "type": "task",
+      "name": "Create coaching-empty-state component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-empty-state.tsx with booking CTA"
+      },
+      "purpose": "Display empty state when no sessions scheduled with booking CTA",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/empty-state.tsx (EmptyState component)",
+          "apps/web/app/home/(user)/_components/booking-dialog.tsx (BookingDialog)"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "Button from @kit/ui/button",
+          "BookingDialog (from T3)"
+        ],
+        "constraints": [
+          "Must use EmptyState component",
+          "Include 'Book a Session' button that opens BookingDialog",
+          "Use Trans for i18n text"
+        ]
+      },
+      "input_state": "BookingDialog component exists (T3), EmptyState from @kit/ui",
+      "output_state": "CoachingEmptyState component shows CTA that opens booking flow",
+      "acceptance_criterion": "CoachingEmptyState renders with button that opens BookingDialog",
+      "verification_command": "pnpm typecheck && grep -q 'BookingDialog' apps/web/app/home/\\(user\\)/_components/coaching-empty-state.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T3"],
+        "blocks": ["S1815.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T5",
+      "type": "task",
+      "name": "Create coaching-error-state component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-error-state.tsx with retry capability"
+      },
+      "purpose": "Display error state when Cal.com API unavailable",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/alert.tsx (Alert component)",
+          "packages/ui/src/button.tsx (Button component)"
+        ],
+        "dependencies": [
+          "Alert from @kit/ui/alert",
+          "Button from @kit/ui/button",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Must use Alert component for error display",
+          "Include retry button",
+          "Display user-friendly error message"
+        ]
+      },
+      "input_state": "Alert and Button components from @kit/ui",
+      "output_state": "CoachingErrorState component with retry action",
+      "acceptance_criterion": "CoachingErrorState renders error message with working retry button",
+      "verification_command": "pnpm typecheck && grep -q 'export.*CoachingErrorState' apps/web/app/home/\\(user\\)/_components/coaching-error-state.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-error-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T6",
+      "type": "task",
+      "name": "Create coaching-sessions-widget component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching-sessions-widget.tsx with booking CTA"
+      },
+      "purpose": "Main widget component that displays booking CTA and composes all states",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-widget-skeleton.tsx (T2)",
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx (T4)",
+          "apps/web/app/home/(user)/_components/coaching-error-state.tsx (T5)"
+        ],
+        "dependencies": [
+          "CoachingWidgetSkeleton (T2)",
+          "CoachingEmptyState (T4)",
+          "CoachingErrorState (T5)",
+          "BookingDialog (T3)"
+        ],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Display booking CTA that opens BookingDialog",
+          "Handle config validation from @kit/coaching",
+          "Show error state if config invalid"
+        ]
+      },
+      "input_state": "All child components (T2, T3, T4, T5) exist, config utilities available from F1",
+      "output_state": "CoachingSessionsWidget displays booking CTA with dialog",
+      "acceptance_criterion": "CoachingSessionsWidget displays booking CTA and opens BookingDialog on click",
+      "verification_command": "pnpm typecheck && grep -q 'BookingDialog' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T1", "S1815.I4.F2.T2", "S1815.I4.F2.T4", "S1815.I4.F2.T5"],
+        "blocks": ["S1815.I4.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T7",
+      "type": "task",
+      "name": "Add responsive styling to widget components",
+      "action": {
+        "verb": "Add",
+        "target": "Tailwind responsive classes to widget components"
+      },
+      "purpose": "Ensure widget adapts to mobile, tablet, desktop viewports",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx (T6)",
+          "apps/web/app/home/(user)/_components/session-card.tsx (T1)"
+        ],
+        "dependencies": [
+          "Tailwind CSS responsive breakpoints (sm, md, lg)"
+        ],
+        "constraints": [
+          "Mobile: stack sessions vertically",
+          "Tablet/Desktop: side-by-side if space allows",
+          "Match dashboard grid breakpoints"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget and child components exist with basic styling",
+      "output_state": "Widget components have responsive Tailwind classes for all breakpoints",
+      "acceptance_criterion": "Widget displays correctly at 320px, 768px, and 1024px viewport widths",
+      "verification_command": "grep -E '(sm:|md:|lg:)' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T6"],
+        "blocks": ["S1815.I4.F2.T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T8",
+      "type": "task",
+      "name": "Add i18n keys for coaching widget",
+      "action": {
+        "verb": "Add",
+        "target": "coaching translation keys to common.json"
+      },
+      "purpose": "Provide internationalized text for all widget states",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/public/locales/en/common.json"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Add keys under 'coaching' namespace",
+          "Include: title, emptyState, errorState, bookSessionCTA, upcomingSession",
+          "Follow existing JSON structure"
+        ]
+      },
+      "input_state": "common.json exists with 'routes.coaching' key",
+      "output_state": "common.json contains all coaching widget i18n keys",
+      "acceptance_criterion": "common.json has coaching.title, coaching.emptyStateMessage, coaching.bookSessionButton, coaching.errorMessage keys",
+      "verification_command": "jq '.coaching' apps/web/public/locales/en/common.json | grep -q 'title'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/public/locales/en/common.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I4.F2.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T9",
+      "type": "task",
+      "name": "Update widget components to use i18n keys",
+      "action": {
+        "verb": "Update",
+        "target": "widget components to use Trans component"
+      },
+      "purpose": "Replace hardcoded strings with internationalized text",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+          "apps/web/app/home/(user)/_components/coaching-error-state.tsx",
+          "apps/web/public/locales/en/common.json (T8)"
+        ],
+        "dependencies": [
+          "Trans from @kit/ui/trans",
+          "i18n keys from T8"
+        ],
+        "constraints": [
+          "Replace all user-facing text with Trans components",
+          "Use i18nKey prop referencing common.json keys"
+        ]
+      },
+      "input_state": "Widget components have hardcoded strings, i18n keys exist in common.json (T8)",
+      "output_state": "All widget user-facing text uses Trans component with i18n keys",
+      "acceptance_criterion": "No hardcoded user-facing strings remain in widget components",
+      "verification_command": "grep -L 'Trans.*i18nKey' apps/web/app/home/\\(user\\)/_components/coaching-*.tsx && exit 1 || exit 0",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-error-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T10",
+      "type": "task",
+      "name": "Add date formatting utilities for sessions",
+      "action": {
+        "verb": "Add",
+        "target": "date formatting helper using date-fns"
+      },
+      "purpose": "Format session dates consistently across widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card.tsx"
+        ],
+        "dependencies": [
+          "date-fns library (already in project)"
+        ],
+        "constraints": [
+          "Use date-fns format function",
+          "Display format: 'MMM d, yyyy h:mm a' (e.g., 'Jan 26, 2026 2:00 PM')",
+          "Handle timezone conversion if needed"
+        ]
+      },
+      "input_state": "SessionCard displays dates, date-fns is available",
+      "output_state": "SessionCard formats dates using date-fns with consistent format",
+      "acceptance_criterion": "SessionCard displays dates in 'MMM d, yyyy h:mm a' format",
+      "verification_command": "grep -q 'format.*startTime' apps/web/app/home/\\(user\\)/_components/session-card.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T11",
+      "type": "task",
+      "name": "Wire widget to user dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "CoachingSessionsWidget to home/(user)/page.tsx"
+      },
+      "purpose": "Integrate widget into dashboard layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 11,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx (T6)"
+        ],
+        "dependencies": [
+          "CoachingSessionsWidget (T6)",
+          "PageBody from @kit/ui/page"
+        ],
+        "constraints": [
+          "Add import for CoachingSessionsWidget",
+          "Place inside PageBody in grid layout",
+          "Wrap with Suspense using CoachingWidgetSkeleton as fallback"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget is complete (T6, T7), user page exists",
+      "output_state": "User dashboard page displays coaching widget in grid",
+      "acceptance_criterion": "Widget appears on /home route with Suspense boundary",
+      "verification_command": "grep -q 'CoachingSessionsWidget' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T7"],
+        "blocks": ["S1815.I4.F2.T12"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I4.F2.T12",
+      "type": "task",
+      "name": "Add unit tests for widget components",
+      "action": {
+        "verb": "Add",
+        "target": "unit tests for coaching widget states"
+      },
+      "purpose": "Verify widget renders correctly in all states",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 12,
+      "group": 7,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx (T6)"
+        ],
+        "dependencies": [
+          "@testing-library/react",
+          "vitest"
+        ],
+        "constraints": [
+          "Test loading state (skeleton renders)",
+          "Test empty state (CTA visible)",
+          "Test populated state (sessions display)",
+          "Test error state (retry button works)",
+          "Mock useBookings hook"
+        ]
+      },
+      "input_state": "Widget is integrated on page (T11)",
+      "output_state": "Unit tests exist covering all widget states",
+      "acceptance_criterion": "Tests pass for loading, empty, populated, and error states",
+      "verification_command": "pnpm --filter web test -- --grep 'CoachingSessionsWidget'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/__tests__/coaching-sessions-widget.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I4.F2.T11"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component foundations",
+        "task_ids": ["S1815.I4.F2.T1", "S1815.I4.F2.T2", "S1815.I4.F2.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "State components",
+        "task_ids": ["S1815.I4.F2.T4", "S1815.I4.F2.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Main widget composition",
+        "task_ids": ["S1815.I4.F2.T6"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Styling and i18n foundation",
+        "task_ids": ["S1815.I4.F2.T7", "S1815.I4.F2.T8"],
+        "depends_on_groups": [3],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Finalization details",
+        "task_ids": ["S1815.I4.F2.T9", "S1815.I4.F2.T10"],
+        "depends_on_groups": [4],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 6,
+        "name": "Page integration",
+        "task_ids": ["S1815.I4.F2.T11"],
+        "depends_on_groups": [4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 7,
+        "name": "Testing",
+        "task_ids": ["S1815.I4.F2.T12"],
+        "depends_on_groups": [6],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1815.I4.F2.T3",
+        "S1815.I4.F2.T4",
+        "S1815.I4.F2.T6",
+        "S1815.I4.F2.T7",
+        "S1815.I4.F2.T11",
+        "S1815.I4.F2.T12"
+      ],
+      "total_hours": 14
+    },
+    "duration": {
+      "sequential": 21,
+      "parallel": 14,
+      "time_saved_percent": 33.3
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

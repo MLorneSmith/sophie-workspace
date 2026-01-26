@@ -1,0 +1,524 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I3.F2",
+    "feature_name": "Activity Data Aggregation",
+    "feature_slug": "activity-data-aggregation",
+    "initiative_id": "S1815.I3",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T19:30:00.000Z",
+    "complexity": {
+      "score": 65,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I3.F2.T1",
+      "type": "task",
+      "name": "Create ActivityItem type definitions",
+      "action": {
+        "verb": "Create",
+        "target": "activity.types.ts with ActivityItem discriminated union"
+      },
+      "purpose": "Establish the type contract for unified activity data structure that all sources will conform to",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts (reference for table structures)"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Use TypeScript discriminated union with 'type' field",
+          "Include all 6 activity types: quiz_completed, lesson_completed, presentation_created, presentation_updated, course_started, course_completed",
+          "Each type has specific fields from its source table",
+          "All activities have common fields: id, userId, timestamp, type"
+        ]
+      },
+      "input_state": "No activity types file exists",
+      "output_state": "apps/web/app/home/(user)/_lib/types/activity.types.ts exists with complete type definitions",
+      "acceptance_criterion": "File exports ActivityItem type that passes TypeScript strict mode checks",
+      "verification_command": "pnpm typecheck && grep -q 'export type ActivityItem' apps/web/app/home/\\(user\\)/_lib/types/activity.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/activity.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1815.I3.F2.T2",
+          "S1815.I3.F2.T3",
+          "S1815.I3.F2.T4",
+          "S1815.I3.F2.T5",
+          "S1815.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T2",
+      "type": "task",
+      "name": "Create quiz activity source loader",
+      "action": {
+        "verb": "Create",
+        "target": "quiz-activity.ts loader function"
+      },
+      "purpose": "Fetch recent quiz completions from quiz_attempts table and transform to ActivityItem format",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Add 'server-only' import directive",
+          "Filter by user_id using RLS",
+          "Order by completed_at DESC",
+          "Limit to 20 results",
+          "Transform to quiz_completed ActivityItem type",
+          "Handle null completed_at (exclude incomplete attempts)"
+        ]
+      },
+      "input_state": "activity.types.ts exists with ActivityItem type",
+      "output_state": "quiz-activity.ts loader exports loadQuizActivity function",
+      "acceptance_criterion": "Function fetches quiz attempts and returns ActivityItem[] with type quiz_completed",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadQuizActivity' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity-sources/quiz-activity.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/quiz-activity.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1815.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T3",
+      "type": "task",
+      "name": "Create lesson activity source loader",
+      "action": {
+        "verb": "Create",
+        "target": "lesson-activity.ts loader function"
+      },
+      "purpose": "Fetch recent lesson completions from lesson_progress table and transform to ActivityItem format",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Add 'server-only' import directive",
+          "Filter by user_id using RLS",
+          "Order by completed_at DESC",
+          "Limit to 20 results",
+          "Transform to lesson_completed ActivityItem type",
+          "Handle null completed_at (exclude incomplete lessons)"
+        ]
+      },
+      "input_state": "activity.types.ts exists with ActivityItem type",
+      "output_state": "lesson-activity.ts loader exports loadLessonActivity function",
+      "acceptance_criterion": "Function fetches lesson progress and returns ActivityItem[] with type lesson_completed",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadLessonActivity' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity-sources/lesson-activity.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/lesson-activity.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1815.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T4",
+      "type": "task",
+      "name": "Create presentation activity source loader",
+      "action": {
+        "verb": "Create",
+        "target": "presentation-activity.ts loader function"
+      },
+      "purpose": "Fetch recent presentation creations and updates from building_blocks_submissions table and transform to ActivityItem format",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Add 'server-only' import directive",
+          "Filter by user_id using RLS",
+          "Generate TWO activities per presentation: one for created_at (presentation_created) and one for updated_at (presentation_updated) if different",
+          "Order by timestamp DESC",
+          "Limit to 20 results after merging created/updated activities",
+          "Handle null timestamps"
+        ]
+      },
+      "input_state": "activity.types.ts exists with ActivityItem type",
+      "output_state": "presentation-activity.ts loader exports loadPresentationActivity function",
+      "acceptance_criterion": "Function fetches presentations and returns ActivityItem[] with types presentation_created and presentation_updated",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadPresentationActivity' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity-sources/presentation-activity.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/presentation-activity.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1815.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T5",
+      "type": "task",
+      "name": "Create course activity source loader",
+      "action": {
+        "verb": "Create",
+        "target": "course-activity.ts loader function"
+      },
+      "purpose": "Fetch course start and completion milestones from course_progress table and transform to ActivityItem format",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Add 'server-only' import directive",
+          "Filter by user_id using RLS",
+          "Generate TWO activities per course: one for started_at (course_started) and one for completed_at (course_completed) if not null",
+          "Order by timestamp DESC",
+          "Limit to 20 results after merging start/completion activities"
+        ]
+      },
+      "input_state": "activity.types.ts exists with ActivityItem type",
+      "output_state": "course-activity.ts loader exports loadCourseActivity function",
+      "acceptance_criterion": "Function fetches course progress and returns ActivityItem[] with types course_started and course_completed",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadCourseActivity' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity-sources/course-activity.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/course-activity.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1815.I3.F2.T6"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T6",
+      "type": "task",
+      "name": "Create activity aggregation loader",
+      "action": {
+        "verb": "Create",
+        "target": "activity.loader.ts with loadRecentActivity function"
+      },
+      "purpose": "Aggregate activities from all 4 sources using Promise.all, merge, sort, and limit to 10 most recent",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/activity.types.ts",
+          "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/quiz-activity.ts",
+          "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/lesson-activity.ts",
+          "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/presentation-activity.ts",
+          "apps/web/app/home/(user)/_lib/server/loaders/activity-sources/course-activity.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client",
+          "loadQuizActivity()",
+          "loadLessonActivity()",
+          "loadPresentationActivity()",
+          "loadCourseActivity()"
+        ],
+        "constraints": [
+          "Add 'server-only' import directive",
+          "Use Promise.all for parallel fetching from all 4 sources",
+          "Merge results into single array",
+          "Sort by timestamp DESC",
+          "Slice to 10 most recent activities",
+          "Export type: export type RecentActivity = Awaited<ReturnType<typeof loadRecentActivity>>"
+        ]
+      },
+      "input_state": "All 4 activity source loaders exist",
+      "output_state": "activity.loader.ts exports loadRecentActivity function with type export",
+      "acceptance_criterion": "Function aggregates all sources in parallel and returns sorted ActivityItem[] limited to 10",
+      "verification_command": "pnpm typecheck && grep -q 'export async function loadRecentActivity' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity.loader.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/server/loaders/activity.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/loaders/activity.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T2",
+          "S1815.I3.F2.T3",
+          "S1815.I3.F2.T4",
+          "S1815.I3.F2.T5"
+        ],
+        "blocks": [
+          "S1815.I3.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I3.F2.T7",
+      "type": "task",
+      "name": "Add activity to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "loadRecentActivity call to dashboard.loader.ts Promise.all"
+      },
+      "purpose": "Integrate activity data into existing dashboard parallel fetch pattern",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard.loader.ts (if exists, else create)",
+          "apps/web/app/home/(user)/_lib/server/loaders/activity.loader.ts",
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts (reference pattern)"
+        ],
+        "dependencies": [
+          "loadRecentActivity() from ./loaders/activity.loader",
+          "cache() from react"
+        ],
+        "constraints": [
+          "If dashboard.loader.ts doesn't exist, create it following load-user-workspace.ts pattern",
+          "Use cache() wrapper for request-level caching",
+          "Add loadRecentActivity to existing Promise.all or create new one",
+          "Export type: export type DashboardData = Awaited<ReturnType<typeof loadDashboardData>>",
+          "Add 'server-only' import directive"
+        ]
+      },
+      "input_state": "activity.loader.ts exists with loadRecentActivity function",
+      "output_state": "dashboard.loader.ts includes activity in parallel fetch",
+      "acceptance_criterion": "Dashboard loader calls loadRecentActivity in Promise.all and returns activity data",
+      "verification_command": "pnpm typecheck && grep -q 'loadRecentActivity' apps/web/app/home/\\(user\\)/_lib/server/dashboard.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Type Definitions",
+        "task_ids": [
+          "S1815.I3.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Activity Source Loaders",
+        "task_ids": [
+          "S1815.I3.F2.T2",
+          "S1815.I3.F2.T3",
+          "S1815.I3.F2.T4",
+          "S1815.I3.F2.T5"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 13,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Aggregation Layer",
+        "task_ids": [
+          "S1815.I3.F2.T6"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Dashboard Integration",
+        "task_ids": [
+          "S1815.I3.F2.T7"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1815.I3.F2.T1",
+        "S1815.I3.F2.T2",
+        "S1815.I3.F2.T6",
+        "S1815.I3.F2.T7"
+      ],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 20,
+      "parallel": 11,
+      "time_saved_percent": 45
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

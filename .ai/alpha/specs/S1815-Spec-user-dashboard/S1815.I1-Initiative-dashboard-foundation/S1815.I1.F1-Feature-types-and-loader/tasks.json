@@ -1,0 +1,538 @@
+{
+  "$schema": "../../../../../../.ai/alpha/templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I1.F1",
+    "feature_name": "TypeScript Types & Data Loader",
+    "feature_slug": "types-and-loader",
+    "initiative_id": "S1815.I1",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T18:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I1.F1.T1",
+      "type": "task",
+      "name": "Create dashboard.types.ts with base type structure",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard.types.ts file with TypeScript interfaces skeleton"
+      },
+      "purpose": "Define comprehensive TypeScript interfaces for all 7 dashboard widget data structures",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+        ],
+        "dependencies": [
+          "Database.public.course_progress",
+          "Database.public.survey_responses",
+          "Database.public.tasks",
+          "Database.public.building_blocks_submissions"
+        ],
+        "constraints": [
+          "Must export all types for use in components",
+          "Use Database types from database.types.ts as source",
+          "Follow existing type patterns in codebase"
+        ]
+      },
+      "input_state": "No dashboard types exist",
+      "output_state": "File apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with 7 complete interface definitions",
+      "acceptance_criterion": "File exports CourseProgressData, SurveyScoresData, TasksSummaryData, ActivityData, PresentationData, CoachingSessionData, and DashboardData interfaces that compile without errors",
+      "verification_command": "pnpm typecheck && grep -E 'export (interface|type)' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts | wc -l",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1815.I1.F1.T2",
+          "S1815.I1.F1.T3",
+          "S1815.I1.F1.T4",
+          "S1815.I1.F1.T5",
+          "S1815.I1.F1.T6",
+          "S1815.I1.F1.T7",
+          "S1815.I1.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T2",
+      "type": "task",
+      "name": "Create dashboard-page.loader.ts skeleton with cache and Promise.all structure",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard-page.loader.ts file with cached loader function skeleton"
+      },
+      "purpose": "Set up the cached loader infrastructure with parallel fetching structure following load-user-workspace.ts pattern",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "cache from react",
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "DashboardData type"
+        ],
+        "constraints": [
+          "Use React cache() for per-request memoization",
+          "Export type as Awaited<ReturnType<typeof loadUserDashboard>>",
+          "Include Promise.all() structure for parallel fetching",
+          "Add 'use server' directive"
+        ]
+      },
+      "input_state": "Dashboard types exist but no loader function",
+      "output_state": "File apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts exists with loadUserDashboard cached function and helper function stubs",
+      "acceptance_criterion": "File exports loadUserDashboard and UserDashboard type, function compiles, uses cache(), contains Promise.all([]) with 7 helper function calls as stubs",
+      "verification_command": "pnpm typecheck && grep -E '(cache|Promise.all|export const loadUserDashboard)' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1"],
+        "blocks": [
+          "S1815.I1.F1.T3",
+          "S1815.I1.F1.T4",
+          "S1815.I1.F1.T5",
+          "S1815.I1.F1.T6",
+          "S1815.I1.F1.T7",
+          "S1815.I1.F1.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T3",
+      "type": "task",
+      "name": "Implement loadCourseProgress helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadCourseProgress helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Query course_progress table and map to CourseProgressData interface",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "course_progress table schema",
+          "CourseProgressData interface"
+        ],
+        "constraints": [
+          "Use .maybeSingle() for optional single-row query",
+          "Handle errors gracefully - return null on failure",
+          "Query must be RLS-protected (no admin client)",
+          "Include current_lesson_id and completion_percentage"
+        ]
+      },
+      "input_state": "Helper function stub exists returning null",
+      "output_state": "Helper function queries course_progress table, returns CourseProgressData or null on error",
+      "acceptance_criterion": "Function queries course_progress with user filter, returns typed data, handles errors with null return, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -A 20 'async function loadCourseProgress' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(from\\(|maybeSingle|catch)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T4",
+      "type": "task",
+      "name": "Implement loadSurveyScores helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadSurveyScores helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Query survey_responses table and parse category_scores JSONB field to SurveyScoresData",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "survey_responses table schema",
+          "SurveyScoresData interface"
+        ],
+        "constraints": [
+          "Use .maybeSingle() for optional single-row query",
+          "Parse category_scores JSON field containing skill assessment data",
+          "Handle errors gracefully - return null on failure",
+          "Query must be RLS-protected"
+        ]
+      },
+      "input_state": "Helper function stub exists returning null",
+      "output_state": "Helper function queries survey_responses table, parses category_scores JSONB, returns SurveyScoresData or null on error",
+      "acceptance_criterion": "Function queries survey_responses with user filter, accesses category_scores field, returns typed data, handles errors with null return, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -A 20 'async function loadSurveyScores' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(from\\(|category_scores|maybeSingle|catch)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T5",
+      "type": "task",
+      "name": "Implement loadTasksSummary helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadTasksSummary helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Query tasks table and aggregate by status to create TasksSummaryData",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "tasks table schema",
+          "TasksSummaryData interface"
+        ],
+        "constraints": [
+          "Filter by status in ['do', 'doing']",
+          "Return array of tasks for kanban summary",
+          "Handle errors gracefully - return empty array on failure",
+          "Query must be RLS-protected"
+        ]
+      },
+      "input_state": "Helper function stub exists returning empty array",
+      "output_state": "Helper function queries tasks table filtered by status, returns TasksSummaryData array or empty array on error",
+      "acceptance_criterion": "Function queries tasks with status filter ('do', 'doing'), returns typed array, handles errors with empty array return, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -A 20 'async function loadTasksSummary' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(from\\(|status|catch)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T6",
+      "type": "task",
+      "name": "Implement loadRecentActivities helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadRecentActivities helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Aggregate activity data from multiple tables and combine into ActivityData array",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "building_blocks_submissions table",
+          "quiz_attempts table (if applicable)",
+          "ActivityData interface"
+        ],
+        "constraints": [
+          "Query multiple tables for activity feed data",
+          "Combine and sort by timestamp descending",
+          "Limit to 10 most recent activities",
+          "Handle errors gracefully - return empty array on failure",
+          "Simplified aggregation (full implementation in I3)"
+        ]
+      },
+      "input_state": "Helper function stub exists returning empty array",
+      "output_state": "Helper function queries activity sources, combines results, sorts by timestamp, returns ActivityData array limited to 10 items or empty array on error",
+      "acceptance_criterion": "Function queries at least building_blocks_submissions, combines results, sorts descending, limits to 10, returns typed array, handles errors with empty array, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -A 30 'async function loadRecentActivities' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(from\\(|sort|limit|catch)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T7",
+      "type": "task",
+      "name": "Implement loadPresentations helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadPresentations helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Query building_blocks_submissions table and return recent presentations as PresentationData array",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "SupabaseClient type",
+          "building_blocks_submissions table schema",
+          "PresentationData interface"
+        ],
+        "constraints": [
+          "Order by updated_at descending",
+          "Limit to 10 most recent presentations",
+          "Handle errors gracefully - return empty array on failure",
+          "Query must be RLS-protected"
+        ]
+      },
+      "input_state": "Helper function stub exists returning empty array",
+      "output_state": "Helper function queries building_blocks_submissions ordered by updated_at desc, limited to 10, returns PresentationData array or empty array on error",
+      "acceptance_criterion": "Function queries building_blocks_submissions with user filter, orders by updated_at descending, limits to 10, returns typed array, handles errors with empty array, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -A 20 'async function loadPresentations' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(from\\(|order\\(|limit\\(|catch)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F1.T8",
+      "type": "task",
+      "name": "Add loadCoachingSessions placeholder helper function",
+      "action": {
+        "verb": "Add",
+        "target": "loadCoachingSessions placeholder helper function to dashboard-page.loader.ts"
+      },
+      "purpose": "Create placeholder function returning empty array for coaching sessions (full Cal.com integration deferred to I4)",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "CoachingSessionData interface"
+        ],
+        "constraints": [
+          "Must return empty array with correct type",
+          "Add JSDoc comment explaining placeholder status",
+          "Add TODO comment referencing S1815.I4 for full implementation"
+        ]
+      },
+      "input_state": "Helper function stub exists returning empty array without documentation",
+      "output_state": "Helper function returns empty CoachingSessionData array with JSDoc and TODO comment indicating placeholder status",
+      "acceptance_criterion": "Function returns correctly typed empty array, includes JSDoc explaining placeholder, includes TODO comment referencing S1815.I4, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -B 5 'async function loadCoachingSessions' apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts | grep -E '(@description|TODO|I4)'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F1.T1", "S1815.I1.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Type Definitions",
+        "task_ids": ["S1815.I1.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Loader Infrastructure",
+        "task_ids": ["S1815.I1.F1.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Data Fetching Helpers (Parallel)",
+        "task_ids": [
+          "S1815.I1.F1.T3",
+          "S1815.I1.F1.T4",
+          "S1815.I1.F1.T5",
+          "S1815.I1.F1.T6",
+          "S1815.I1.F1.T7",
+          "S1815.I1.F1.T8"
+        ],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 17,
+        "parallel_hours": 4
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1815.I1.F1.T1",
+        "S1815.I1.F1.T2",
+        "S1815.I1.F1.T6"
+      ],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 22,
+      "parallel": 9,
+      "time_saved_percent": 59
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 90
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1,0 +1,544 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I5.F3",
+    "feature_name": "Accessibility Compliance",
+    "feature_slug": "accessibility-compliance",
+    "initiative_id": "S1815.I5",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T18:30:00Z",
+    "complexity": {
+      "score": 56.25,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "signals": {
+        "files_affected": { "value": 9, "weight": 1.0 },
+        "dependencies": { "value": "few", "weight": 0.5 },
+        "estimated_loc": { "value": 175, "weight": 0.5 },
+        "feature_type": { "value": "enhancement", "weight": 0.25 }
+      }
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1815.I5.F3.T1"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I5.F3.T1",
+      "type": "task",
+      "name": "Create skip link component",
+      "action": {
+        "verb": "Create",
+        "target": "skip-to-content link component"
+      },
+      "purpose": "Allow keyboard users to bypass navigation and jump directly to main content",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skip to content" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/layout.tsx",
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "@kit/ui/trans",
+          "Next.js Link component",
+          "Tailwind CSS focus-visible utility"
+        ],
+        "constraints": [
+          "Component must be visually hidden until focused",
+          "Must appear first in DOM for keyboard tab order",
+          "Must use semantic HTML anchor element"
+        ]
+      },
+      "input_state": "Layout exists without skip link, page has no main landmark",
+      "output_state": "skip-link.tsx component created, visually hidden until focused, positioned first in layout DOM",
+      "acceptance_criterion": "Skip link component renders, is keyboard-accessible, and becomes visible on focus",
+      "verification_command": "pnpm typecheck && grep -q 'skip-link' apps/web/app/home/\\(user\\)/_components/skip-link.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/skip-link.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I5.F3.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T2",
+      "type": "task",
+      "name": "Add skip link to layout",
+      "action": {
+        "verb": "Add",
+        "target": "skip link component to user dashboard layout"
+      },
+      "purpose": "Integrate skip link as first focusable element in layout",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Skip to content" },
+          { "command": "find role", "target": "link" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/layout.tsx",
+          "apps/web/app/home/(user)/_components/skip-link.tsx"
+        ],
+        "dependencies": [
+          "SkipLink component from T1"
+        ],
+        "constraints": [
+          "Must be first child in SidebarLayout and HeaderLayout",
+          "Must not break existing layout structure"
+        ]
+      },
+      "input_state": "SkipLink component exists, layout renders without it",
+      "output_state": "SkipLink imported and rendered as first element in both layout variants",
+      "acceptance_criterion": "Skip link renders first in DOM and is keyboard-accessible via Tab key",
+      "verification_command": "pnpm typecheck && grep -q 'SkipLink' apps/web/app/home/\\(user\\)/layout.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/layout.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T1"],
+        "blocks": ["S1815.I5.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T3",
+      "type": "task",
+      "name": "Add main landmark to page",
+      "action": {
+        "verb": "Add",
+        "target": "main landmark role to dashboard page"
+      },
+      "purpose": "Provide semantic landmark for screen readers to identify main content region",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "PageBody component from @kit/ui/page"
+        ],
+        "constraints": [
+          "Use semantic <main> element or role='main' on PageBody",
+          "Must have id='main-content' to match skip link href",
+          "Only one main landmark per page"
+        ]
+      },
+      "input_state": "PageBody renders without explicit main landmark or id",
+      "output_state": "PageBody wrapped with main element, id='main-content' added",
+      "acceptance_criterion": "Page has exactly one main landmark with id='main-content'",
+      "verification_command": "pnpm typecheck && grep -q \"id='main-content'\" apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T2"],
+        "blocks": ["S1815.I5.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T4",
+      "type": "task",
+      "name": "Add ARIA labels to navigation",
+      "action": {
+        "verb": "Add",
+        "target": "aria-label attributes to navigation components"
+      },
+      "purpose": "Provide screen reader context for navigation regions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/home-sidebar.tsx",
+          "apps/web/app/home/(user)/_components/home-menu-navigation.tsx",
+          "apps/web/app/home/(user)/_components/home-mobile-navigation.tsx"
+        ],
+        "dependencies": [
+          "Existing navigation components"
+        ],
+        "constraints": [
+          "Use descriptive labels like 'Primary navigation', 'Mobile menu'",
+          "Do not duplicate visible text",
+          "Use aria-label or aria-labelledby"
+        ]
+      },
+      "input_state": "Navigation components lack explicit ARIA labels",
+      "output_state": "Navigation components have aria-label or aria-labelledby attributes",
+      "acceptance_criterion": "All navigation regions have descriptive ARIA labels",
+      "verification_command": "pnpm typecheck && grep -q 'aria-label' apps/web/app/home/\\(user\\)/_components/home-sidebar.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/home-sidebar.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/home-menu-navigation.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/home-mobile-navigation.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T2"],
+        "blocks": ["S1815.I5.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T5",
+      "type": "task",
+      "name": "Add ARIA labels to widget components",
+      "action": {
+        "verb": "Add",
+        "target": "aria-label attributes to dashboard widget components"
+      },
+      "purpose": "Provide screen reader context for interactive widget elements",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "Note: Actual widget component files will be created in previous features (F1, F2, I1-I4)",
+          "This task assumes widget components exist and adds ARIA attributes"
+        ],
+        "dependencies": [
+          "Widget components from S1815.I1-I4 features"
+        ],
+        "constraints": [
+          "Add aria-label to interactive elements without visible labels",
+          "Add aria-describedby for supplementary descriptions",
+          "Add role='region' and aria-labelledby to widget containers"
+        ]
+      },
+      "input_state": "Widget components exist but lack explicit ARIA labels for screen readers",
+      "output_state": "All widget interactive elements have descriptive ARIA labels",
+      "acceptance_criterion": "All 7 dashboard widgets have appropriate ARIA labels on interactive elements",
+      "verification_command": "pnpm typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/*-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T2"],
+        "blocks": ["S1815.I5.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T6",
+      "type": "task",
+      "name": "Add aria-live regions for dynamic content",
+      "action": {
+        "verb": "Add",
+        "target": "aria-live regions to loading states and notifications"
+      },
+      "purpose": "Announce dynamic content updates to screen readers",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "Widget loading states (if using Suspense fallbacks)"
+        ],
+        "dependencies": [
+          "Existing loading/notification components"
+        ],
+        "constraints": [
+          "Use aria-live='polite' for non-urgent updates",
+          "Use aria-live='assertive' for critical alerts only",
+          "Use sr-only class to hide visual announcement text"
+        ]
+      },
+      "input_state": "Dynamic content updates (loading, errors) are not announced to screen readers",
+      "output_state": "aria-live regions added to dashboard for loading states and notifications",
+      "acceptance_criterion": "Dynamic content updates are announced to screen readers via aria-live",
+      "verification_command": "pnpm typecheck && grep -q 'aria-live' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T3"],
+        "blocks": ["S1815.I5.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T7",
+      "type": "task",
+      "name": "Add keyboard navigation verification",
+      "action": {
+        "verb": "Add",
+        "target": "keyboard navigation E2E test for dashboard"
+      },
+      "purpose": "Verify all interactive elements are keyboard-accessible",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/hybrid-a11y.ts",
+          "Reference: apps/web/app/home/(user)/kanban/_components/task-card.tsx (keyboard pattern)"
+        ],
+        "dependencies": [
+          "Playwright test utilities",
+          "HybridAccessibilityTester class"
+        ],
+        "constraints": [
+          "Test Tab navigation through all interactive elements",
+          "Verify Enter/Space activate buttons and links",
+          "Verify focus indicators are visible",
+          "Test skip link functionality"
+        ]
+      },
+      "input_state": "No keyboard navigation test exists for dashboard",
+      "output_state": "E2E test created verifying keyboard navigation and focus management",
+      "acceptance_criterion": "Test passes verifying Tab order, Enter/Space activation, and visible focus",
+      "verification_command": "pnpm --filter web-e2e test:e2e tests/accessibility/dashboard-keyboard.spec.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/e2e/tests/accessibility/dashboard-keyboard.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T3", "S1815.I5.F3.T4", "S1815.I5.F3.T5", "S1815.I5.F3.T6"],
+        "blocks": ["S1815.I5.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F3.T8",
+      "type": "task",
+      "name": "Add Lighthouse accessibility audit test",
+      "action": {
+        "verb": "Add",
+        "target": "Lighthouse accessibility audit E2E test"
+      },
+      "purpose": "Verify dashboard meets 90+ Lighthouse accessibility score",
+      "status": "draft",
+      "estimated_hours": 2.5,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/hybrid-a11y.ts"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester.runFullAudit()",
+          "Playwright page fixture"
+        ],
+        "constraints": [
+          "Test must assert Lighthouse score >= 90",
+          "Test WCAG AA compliance",
+          "Check color contrast (4.5:1 normal, 3:1 large)",
+          "Generate detailed report on failure"
+        ]
+      },
+      "input_state": "No Lighthouse accessibility test exists for dashboard",
+      "output_state": "E2E test created running full Lighthouse audit with 90+ score requirement",
+      "acceptance_criterion": "Test passes with Lighthouse accessibility score >= 90 and WCAG AA compliance",
+      "verification_command": "pnpm --filter web-e2e test:e2e tests/accessibility/dashboard-lighthouse.spec.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/e2e/tests/accessibility/dashboard-lighthouse.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I5.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Components",
+        "description": "Create skip link and add to layout with main landmark",
+        "task_ids": ["S1815.I5.F3.T1", "S1815.I5.F3.T2", "S1815.I5.F3.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 4.5,
+        "parallel_hours": 4.5
+      },
+      {
+        "id": 2,
+        "name": "ARIA Enhancement",
+        "description": "Add ARIA labels to all interactive elements and dynamic regions",
+        "task_ids": ["S1815.I5.F3.T4", "S1815.I5.F3.T5", "S1815.I5.F3.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Testing & Validation",
+        "description": "Verify keyboard navigation and Lighthouse accessibility audit",
+        "task_ids": ["S1815.I5.F3.T7", "S1815.I5.F3.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5.5,
+        "parallel_hours": 5.5
+      }
+    ],
+    "critical_path": {
+      "description": "Sequential path through foundation, ARIA enhancement, and testing",
+      "task_ids": ["S1815.I5.F3.T1", "S1815.I5.F3.T2", "S1815.I5.F3.T3", "S1815.I5.F3.T6", "S1815.I5.F3.T7", "S1815.I5.F3.T8"],
+      "total_hours": 12.5
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 13,
+      "time_saved_percent": 23.5
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "checks": {
+      "all_acceptance_criteria_covered": true,
+      "files_to_modify_addressed": true,
+      "edge_cases_handled": true
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100,
+    "notes": "All tasks are atomic and follow m=1 principle. One task (T5) touches multiple widget files but this is acceptable as it's a single atomic operation (adding ARIA labels) applied consistently across similar components."
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_comment_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1815#issuecomment-3800433244"
+  }
+}
