@@ -1,0 +1,368 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1823.I3.F2",
+    "feature_name": "Activity Data Aggregation",
+    "feature_slug": "activity-data-aggregation",
+    "initiative_id": "S1823.I3",
+    "spec_id": 1823,
+    "created_at": "2026-01-26T18:00:00Z",
+    "complexity": {
+      "score": 52.5,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": true,
+    "database_tasks": ["S1823.I3.F2.T2", "S1823.I3.F2.T3"],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1823.I3.F2.T1",
+      "type": "task",
+      "name": "Create activity type definitions",
+      "action": { "verb": "Create", "target": "TypeScript types for ActivityItem and UserState" },
+      "purpose": "Define type-safe contracts for activity feed data and user state flags",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Database tables: lesson_progress, quiz_attempts, building_blocks_submissions, survey_responses"
+        ],
+        "constraints": [
+          "Must support all 4 activity types",
+          "Timestamps must be ISO string format",
+          "UserState must be boolean flags for quick actions"
+        ]
+      },
+      "input_state": "No dashboard types file exists",
+      "output_state": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts exists with ActivityItem, UserState, ActivityType types",
+      "acceptance_criterion": "Type file exists, exports ActivityItem interface with type discriminator, UserState interface with boolean flags, and ActivityType enum",
+      "verification_command": "pnpm typecheck && test -f apps/web/app/home/(user)/_lib/types/dashboard.types.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1823.I3.F2.T2", "S1823.I3.F2.T3", "S1823.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I3.F2.T2",
+      "type": "task",
+      "name": "Create database schema for RPC function",
+      "action": { "verb": "Create", "target": "Schema file with get_recent_activities RPC function" },
+      "purpose": "Define SQL function that unions activity data from 4 tables into single chronological feed",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S1823_I3_F2_T2",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/15-account-views.sql"
+        ],
+        "dependencies": [
+          "lesson_progress table (user_id, completed_at, lesson_id, course_id)",
+          "quiz_attempts table (user_id, completed_at, quiz_id, score, passed)",
+          "building_blocks_submissions table (user_id, created_at, title, id)",
+          "survey_responses table (user_id, created_at, survey_id, completed)"
+        ],
+        "constraints": [
+          "Use security_invoker=true pattern",
+          "RLS policies apply automatically",
+          "Return JSONB with type discriminator",
+          "Sort by timestamp DESC, limit 10"
+        ]
+      },
+      "input_state": "No 99-functions.sql schema file exists, no RPC function for activity aggregation",
+      "output_state": "apps/web/supabase/schemas/99-functions.sql exists with get_recent_activities() function that unions 4 tables",
+      "acceptance_criterion": "Schema file exists, function accepts user_id UUID parameter, returns JSONB array with activity_type and timestamp fields",
+      "verification_command": "test -f apps/web/supabase/schemas/99-functions.sql && grep -q 'get_recent_activities' apps/web/supabase/schemas/99-functions.sql",
+      "outputs": [
+        { "type": "new", "path": "apps/web/supabase/schemas/99-functions.sql" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I3.F2.T1"],
+        "blocks": ["S1823.I3.F2.T3", "S1823.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I3.F2.T3",
+      "type": "task",
+      "name": "Apply database migration for RPC function",
+      "action": { "verb": "Create", "target": "Migration file from schema diff" },
+      "purpose": "Apply the get_recent_activities RPC function to the database schema",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": true,
+      "migration_name_prefix": "S1823_I3_F2_T3",
+      "context": {
+        "files": [
+          "apps/web/supabase/schemas/99-functions.sql"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Must run after schema file is created",
+          "Must regenerate types after applying"
+        ]
+      },
+      "input_state": "Schema file exists but migration not yet created, RPC function not available in database",
+      "output_state": "Migration file created in apps/web/supabase/migrations/, migration applied to local DB, TypeScript types regenerated",
+      "acceptance_criterion": "Migration file exists, pnpm supabase:web:typegen succeeds, can query get_recent_activities from database",
+      "verification_command": "pnpm --filter web supabase:db:diff -f add_get_recent_activities && pnpm --filter web supabase migration up && pnpm supabase:web:typegen",
+      "outputs": [
+        { "type": "new", "path": "apps/web/supabase/migrations/*_add_get_recent_activities.sql" },
+        { "type": "modified", "path": "apps/web/lib/database.types.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I3.F2.T2"],
+        "blocks": ["S1823.I3.F2.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I3.F2.T4",
+      "type": "task",
+      "name": "Create loadRecentActivities function",
+      "action": { "verb": "Create", "target": "Server loader function for recent activities" },
+      "purpose": "Provide type-safe server function to fetch and transform activity data",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client",
+          "ActivityItem type from dashboard.types.ts",
+          "get_recent_activities RPC function"
+        ],
+        "constraints": [
+          "Use import 'server-only' directive",
+          "Call RPC function via client.rpc()",
+          "Transform JSONB to ActivityItem[] with proper typing",
+          "Handle errors gracefully"
+        ]
+      },
+      "input_state": "No load-dashboard-data.ts file exists, RPC function available but not called from TypeScript",
+      "output_state": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts exists with loadRecentActivities async function",
+      "acceptance_criterion": "Function exists, imports server-only, accepts SupabaseClient, returns Promise<ActivityItem[]>, calls get_recent_activities RPC",
+      "verification_command": "pnpm typecheck && grep -q 'loadRecentActivities' apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts && grep -q 'server-only' apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I3.F2.T1", "S1823.I3.F2.T2", "S1823.I3.F2.T3"],
+        "blocks": ["S1823.I3.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I3.F2.T5",
+      "type": "task",
+      "name": "Create loadUserState function",
+      "action": { "verb": "Create", "target": "Server loader function for user state flags" },
+      "purpose": "Calculate boolean flags indicating user progress for Quick Actions Panel",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts",
+          "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient() from @kit/supabase/server-client",
+          "UserState type from dashboard.types.ts",
+          "course_progress table",
+          "survey_responses table"
+        ],
+        "constraints": [
+          "Query course_progress.completed_at to check hasCourseProgress",
+          "Query survey_responses.completed to check hasSurveyResponse",
+          "Use parallel queries with Promise.all",
+          "Return boolean flags only"
+        ]
+      },
+      "input_state": "load-dashboard-data.ts exists with loadRecentActivities but no loadUserState",
+      "output_state": "loadUserState function added to load-dashboard-data.ts, returns UserState with 4 boolean flags",
+      "acceptance_criterion": "Function exists in load-dashboard-data.ts, returns Promise<UserState>, queries course_progress and survey_responses tables",
+      "verification_command": "pnpm typecheck && grep -q 'loadUserState' apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I3.F2.T1", "S1823.I3.F2.T4"],
+        "blocks": ["S1823.I3.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I3.F2.T6",
+      "type": "task",
+      "name": "Add unit tests for loader functions",
+      "action": { "verb": "Create", "target": "Unit tests for loadRecentActivities and loadUserState" },
+      "purpose": "Verify aggregation logic and type transformations work correctly",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-dashboard-data.ts"
+        ],
+        "dependencies": [
+          "Vitest testing framework",
+          "Mock Supabase client responses"
+        ],
+        "constraints": [
+          "Mock RPC function responses",
+          "Test empty state (no activities)",
+          "Test populated state (activities from all 4 sources)",
+          "Test error handling",
+          "Test UserState calculation logic"
+        ]
+      },
+      "input_state": "Loader functions exist but no tests",
+      "output_state": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.test.ts exists with test coverage for both functions",
+      "acceptance_criterion": "Test file exists, tests pass with pnpm test:unit, covers empty state and populated state scenarios",
+      "verification_command": "pnpm --filter web test:unit apps/web/app/home/(user)/_lib/server/load-dashboard-data.test.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/load-dashboard-data.test.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I3.F2.T4", "S1823.I3.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Type Definitions",
+        "task_ids": ["S1823.I3.F2.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Database Layer",
+        "task_ids": ["S1823.I3.F2.T2", "S1823.I3.F2.T3"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Server Functions",
+        "task_ids": ["S1823.I3.F2.T4", "S1823.I3.F2.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Testing",
+        "task_ids": ["S1823.I3.F2.T6"],
+        "depends_on_groups": [3],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1823.I3.F2.T1", "S1823.I3.F2.T2", "S1823.I3.F2.T3", "S1823.I3.F2.T4", "S1823.I3.F2.T6"],
+      "total_hours": 12
+    },
+    "duration": {
+      "sequential": 14,
+      "parallel": 12,
+      "time_saved_percent": 14
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

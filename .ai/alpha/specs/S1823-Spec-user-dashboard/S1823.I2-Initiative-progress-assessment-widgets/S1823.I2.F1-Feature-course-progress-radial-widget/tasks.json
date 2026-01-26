@@ -1,0 +1,432 @@
+{
+	"$schema": "../../../../templates/tasks.schema.json",
+	"metadata": {
+		"feature_id": "S1823.I2.F1",
+		"feature_name": "Course Progress Radial Widget",
+		"feature_slug": "course-progress-radial-widget",
+		"initiative_id": "S1823.I2",
+		"spec_id": "S1823",
+		"created_at": "2026-01-26T00:00:00Z",
+		"complexity": {
+			"score": 50,
+			"level": "STANDARD",
+			"target_steps": {
+				"min": 6,
+				"max": 12
+			},
+			"pattern_matched": "dashboard-card"
+		},
+		"requires_database": false,
+		"database_tasks": [],
+		"requires_ui": true,
+		"ui_tasks": ["S1823.I2.F1.T4", "S1823.I2.F1.T5"],
+		"required_env_vars": []
+	},
+	"tasks": [
+		{
+			"id": "S1823.I2.F1.T1",
+			"type": "task",
+			"name": "Create CourseProgressWidgetData type",
+			"action": {
+				"verb": "Create",
+				"target": "CourseProgressWidgetData TypeScript interface"
+			},
+			"purpose": "Define the data contract for the course progress widget, including completion percentage, lesson counts, and current lesson ID",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 1,
+			"group": 1,
+			"requires_database": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+				],
+				"dependencies": [],
+				"constraints": [
+					"Must match course_progress table schema",
+					"Must be nullable to handle empty state"
+				]
+			},
+			"input_state": "Dashboard types file may not exist yet (created in S1823.I1.F1)",
+			"output_state": "CourseProgressWidgetData interface exported from dashboard.types.ts with fields: completionPercentage, completedLessons, totalLessons, currentLessonId (all nullable)",
+			"acceptance_criterion": "TypeScript interface exists and compiles without errors",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'CourseProgressWidgetData' apps/web/app/home/\\(user\\)/_lib/types/dashboard.types.ts",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_lib/types/dashboard.types.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": [],
+				"blocks": ["S1823.I2.F1.T2", "S1823.I2.F1.T3"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1823.I2.F1.T2",
+			"type": "task",
+			"name": "Create course progress loader function",
+			"action": {
+				"verb": "Create",
+				"target": "loadCourseProgress loader function"
+			},
+			"purpose": "Fetch course progress data from course_progress and lesson_progress tables with RLS enforcement",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 2,
+			"group": 1,
+			"requires_database": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/load-user-workspace.ts"
+				],
+				"dependencies": [
+					"getSupabaseServerClient from @kit/supabase/server-client",
+					"cache from react"
+				],
+				"constraints": [
+					"Must use RLS-enforced client (not admin client)",
+					"Must use cache() wrapper for per-request memoization",
+					"Must handle case where user has no course progress"
+				]
+			},
+			"input_state": "CourseProgressWidgetData type is defined",
+			"output_state": "loadCourseProgress function exported from course-progress.loader.ts, queries course_progress table, returns CourseProgressWidgetData or null",
+			"acceptance_criterion": "Loader function compiles, fetches data with RLS, returns null for users without course enrollment",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'loadCourseProgress' apps/web/app/home/\\(user\\)/_lib/server/loaders/course-progress.loader.ts",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_lib/server/loaders/course-progress.loader.ts"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1823.I2.F1.T1"],
+				"blocks": ["S1823.I2.F1.T4"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1823.I2.F1.T3",
+			"type": "task",
+			"name": "Create CourseProgressWidgetSkeleton component",
+			"action": {
+				"verb": "Create",
+				"target": "loading skeleton component"
+			},
+			"purpose": "Provide a loading state UI using Skeleton component that matches the populated widget layout",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 3,
+			"group": 2,
+			"requires_database": false,
+			"context": {
+				"files": [],
+				"dependencies": [
+					"Card, CardHeader, CardContent from @kit/ui/card",
+					"Skeleton from @kit/ui/skeleton"
+				],
+				"constraints": [
+					"Must match populated widget dimensions",
+					"Must be server component"
+				]
+			},
+			"input_state": "CourseProgressWidgetData type is defined",
+			"output_state": "CourseProgressWidgetSkeleton component exported, renders Card with Skeleton placeholders for radial chart and text",
+			"acceptance_criterion": "Skeleton component exists and matches widget layout dimensions",
+			"verification_command": "pnpm --filter web typecheck && grep -q 'CourseProgressWidgetSkeleton' apps/web/app/home/\\(user\\)/_components/widgets/course-progress-widget.tsx",
+			"outputs": [
+				{
+					"type": "new",
+					"path": "apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1823.I2.F1.T1"],
+				"blocks": ["S1823.I2.F1.T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1823.I2.F1.T4",
+			"type": "task",
+			"name": "Create CourseProgressWidget populated state",
+			"action": {
+				"verb": "Create",
+				"target": "CourseProgressWidget component with data display"
+			},
+			"purpose": "Display course progress using RadialProgress component wrapped in Card with lesson count text and Continue Course button",
+			"status": "draft",
+			"estimated_hours": 2,
+			"priority": 4,
+			"group": 2,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Course Progress"
+					},
+					{
+						"command": "find role",
+						"target": "button"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/course/_components/RadialProgress.tsx"
+				],
+				"dependencies": [
+					"RadialProgress from ../course/_components/RadialProgress",
+					"Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+					"Button from @kit/ui/button"
+				],
+				"constraints": [
+					"Must import RadialProgress from existing location",
+					"Must be server component except RadialProgress client component",
+					"Must show lesson count text below radial chart",
+					"Continue button must link to /home/course"
+				]
+			},
+			"input_state": "Loader function exists and returns CourseProgressWidgetData",
+			"output_state": "CourseProgressWidget component displays radial progress, lesson count (e.g., '17 of 23 lessons'), and Continue Course button",
+			"acceptance_criterion": "Widget renders with real data, RadialProgress displays percentage, button navigates correctly",
+			"verification_command": "pnpm --filter web typecheck && pnpm dev # Manual: Navigate to /home, verify radial chart and button render",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1823.I2.F1.T2", "S1823.I2.F1.T3"],
+				"blocks": ["S1823.I2.F1.T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1823.I2.F1.T5",
+			"type": "task",
+			"name": "Add empty state to CourseProgressWidget",
+			"action": {
+				"verb": "Add",
+				"target": "empty state UI for no course progress"
+			},
+			"purpose": "Display friendly message and enrollment CTA when user has no course progress data",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 5,
+			"group": 3,
+			"requires_database": false,
+			"requires_ui": true,
+			"visual_verification": {
+				"route": "/home",
+				"wait_ms": 3000,
+				"checks": [
+					{
+						"command": "is visible",
+						"target": "Start Learning"
+					},
+					{
+						"command": "find role",
+						"target": "link"
+					}
+				],
+				"screenshot": true
+			},
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx"
+				],
+				"dependencies": [
+					"Card components from @kit/ui/card",
+					"Button from @kit/ui/button"
+				],
+				"constraints": [
+					"Must check if data is null before rendering",
+					"Must show encouraging message",
+					"CTA button links to /home/course"
+				]
+			},
+			"input_state": "CourseProgressWidget populated state exists",
+			"output_state": "Widget shows empty state Card with message 'Start your learning journey' and 'Browse Course' button when data is null",
+			"acceptance_criterion": "Empty state renders when loader returns null, button links correctly",
+			"verification_command": "pnpm --filter web typecheck # Manual: Test with user account that has no course_progress record",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_components/widgets/course-progress-widget.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1823.I2.F1.T4"],
+				"blocks": ["S1823.I2.F1.T6"]
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		},
+		{
+			"id": "S1823.I2.F1.T6",
+			"type": "task",
+			"name": "Wire CourseProgressWidget to dashboard loader",
+			"action": {
+				"verb": "Wire",
+				"target": "widget to dashboard page with Suspense"
+			},
+			"purpose": "Integrate widget into dashboard.loader.ts parallel fetching and add to dashboard page with loading boundary",
+			"status": "draft",
+			"estimated_hours": 1,
+			"priority": 6,
+			"group": 4,
+			"requires_database": false,
+			"context": {
+				"files": [
+					"apps/web/app/home/(user)/_lib/server/dashboard.loader.ts",
+					"apps/web/app/home/(user)/page.tsx"
+				],
+				"dependencies": [
+					"loadCourseProgress from course-progress.loader",
+					"Suspense from react",
+					"CourseProgressWidget and CourseProgressWidgetSkeleton"
+				],
+				"constraints": [
+					"Must add loadCourseProgress to Promise.all in dashboard loader",
+					"Must wrap widget in Suspense boundary with skeleton fallback",
+					"Widget must be positioned in top-left grid cell (row 1, col 1)"
+				]
+			},
+			"input_state": "Widget component complete with all states, loader function exists, dashboard loader infrastructure exists (from S1823.I1.F1)",
+			"output_state": "Dashboard loader includes courseProgress in parallel fetch, page.tsx renders widget in grid with Suspense boundary",
+			"acceptance_criterion": "Widget appears on /home dashboard in correct grid position, loading skeleton shows during fetch, data displays correctly",
+			"verification_command": "pnpm --filter web typecheck && pnpm dev # Navigate to /home, verify widget renders in top-left position",
+			"outputs": [
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/_lib/server/dashboard.loader.ts"
+				},
+				{
+					"type": "modified",
+					"path": "apps/web/app/home/(user)/page.tsx"
+				}
+			],
+			"dependencies": {
+				"blocked_by": ["S1823.I2.F1.T3", "S1823.I2.F1.T4", "S1823.I2.F1.T5"],
+				"blocks": []
+			},
+			"m1_checks": {
+				"single_verb": true,
+				"no_conjunctions": true,
+				"under_8_hours": true,
+				"under_750_tokens": true,
+				"binary_done_state": true,
+				"max_3_files": true
+			}
+		}
+	],
+	"execution": {
+		"groups": [
+			{
+				"id": 1,
+				"name": "Types and Loader",
+				"task_ids": ["S1823.I2.F1.T1", "S1823.I2.F1.T2"],
+				"depends_on_groups": [],
+				"estimated_hours": 3,
+				"parallel_hours": 2
+			},
+			{
+				"id": 2,
+				"name": "Component Foundation",
+				"task_ids": ["S1823.I2.F1.T3", "S1823.I2.F1.T4"],
+				"depends_on_groups": [1],
+				"estimated_hours": 3,
+				"parallel_hours": 2
+			},
+			{
+				"id": 3,
+				"name": "Empty State",
+				"task_ids": ["S1823.I2.F1.T5"],
+				"depends_on_groups": [2],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			},
+			{
+				"id": 4,
+				"name": "Integration",
+				"task_ids": ["S1823.I2.F1.T6"],
+				"depends_on_groups": [3],
+				"estimated_hours": 1,
+				"parallel_hours": 1
+			}
+		],
+		"critical_path": {
+			"task_ids": ["S1823.I2.F1.T1", "S1823.I2.F1.T2", "S1823.I2.F1.T4", "S1823.I2.F1.T5", "S1823.I2.F1.T6"],
+			"total_hours": 7
+		},
+		"duration": {
+			"sequential": 8,
+			"parallel": 6,
+			"time_saved_percent": 25
+		}
+	},
+	"validation": {
+		"discriminator_verdict": "APPROVED",
+		"scores": {
+			"completeness": 100,
+			"atomicity": 100,
+			"dependencies": 100,
+			"state_flow": 100,
+			"testability": 95
+		},
+		"dependency_checks": {
+			"no_cycles": true,
+			"all_documented": true,
+			"spikes_first": true,
+			"critical_path_valid": true
+		},
+		"m1_compliance": 100
+	},
+	"github": {
+		"issues_created": false,
+		"spec_issue_commented": true
+	}
+}

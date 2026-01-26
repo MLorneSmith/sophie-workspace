@@ -1,0 +1,522 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1823.I1.F3",
+    "feature_name": "Responsive Grid Layout",
+    "feature_slug": "responsive-grid-layout",
+    "initiative_id": "S1823.I1",
+    "spec_id": "S1823",
+    "created_at": "2026-01-26T00:00:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "signals": {
+        "files_affected": 2,
+        "dependencies": "few",
+        "estimated_loc": 150,
+        "feature_type": "feature"
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1823.I1.F3.T8"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1823.I1.F3.T1",
+      "type": "task",
+      "name": "Create DashboardGrid component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "DashboardGrid component file"
+      },
+      "purpose": "Establish the base component structure with proper imports and exports",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/card.tsx (Card component reference)",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx (grid pattern reference)"
+        ],
+        "dependencies": [
+          "Card, CardContent, CardHeader, CardTitle from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must be a client component (uses client-side responsiveness)",
+          "Must follow existing component naming conventions"
+        ]
+      },
+      "input_state": "No DashboardGrid component exists",
+      "output_state": "Empty DashboardGrid component file exists with proper imports and exports",
+      "acceptance_criterion": "Component file exists at apps/web/app/home/(user)/_components/dashboard-grid.tsx and exports DashboardGrid function",
+      "verification_command": "ls -la apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -q 'export.*DashboardGrid' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1823.I1.F3.T2", "S1823.I1.F3.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T2",
+      "type": "task",
+      "name": "Add responsive grid classes",
+      "action": {
+        "verb": "Add",
+        "target": "Tailwind CSS Grid classes to DashboardGrid"
+      },
+      "purpose": "Implement responsive grid layout with mobile-first breakpoints",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx (lines 46-54)"
+        ],
+        "dependencies": [
+          "Tailwind CSS grid utilities"
+        ],
+        "constraints": [
+          "Use pattern: grid-cols-1 md:grid-cols-2 xl:grid-cols-3",
+          "Use gap-4 or gap-6 for consistent spacing",
+          "Follow mobile-first responsive design"
+        ]
+      },
+      "input_state": "DashboardGrid component exists with empty div",
+      "output_state": "DashboardGrid has grid container with responsive classes applied",
+      "acceptance_criterion": "Component renders div with classes including 'grid', 'grid-cols-1', 'md:grid-cols-2', 'xl:grid-cols-3', and 'gap-4' or 'gap-6'",
+      "verification_command": "grep -E 'grid.*grid-cols-1.*md:grid-cols-2.*xl:grid-cols-3' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T1"],
+        "blocks": ["S1823.I1.F3.T4", "S1823.I1.F3.T5", "S1823.I1.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T3",
+      "type": "task",
+      "name": "Define widget slot props interface",
+      "action": {
+        "verb": "Add",
+        "target": "DashboardGridProps TypeScript interface"
+      },
+      "purpose": "Define type-safe props for passing widget components to grid slots",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        ],
+        "dependencies": [
+          "React.ReactNode type"
+        ],
+        "constraints": [
+          "Props must be optional (allow undefined for placeholder cards)",
+          "Widget names must match spec: courseProgress, assessment, kanbanSummary, activityFeed, quickActions, coachingSessions, presentationTable"
+        ]
+      },
+      "input_state": "DashboardGrid component has no props interface",
+      "output_state": "DashboardGridProps interface exists with optional ReactNode slots for all 7 widgets",
+      "acceptance_criterion": "Interface DashboardGridProps exists with optional properties for all 7 widget slots",
+      "verification_command": "grep -A 10 'interface DashboardGridProps' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx | grep -E '(courseProgress|assessment|kanbanSummary|activityFeed|quickActions|coachingSessions|presentationTable)\\?:'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T1"],
+        "blocks": ["S1823.I1.F3.T4", "S1823.I1.F3.T5", "S1823.I1.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T4",
+      "type": "task",
+      "name": "Add placeholder cards for row 1 widgets",
+      "action": {
+        "verb": "Add",
+        "target": "placeholder Card components for CourseProgress, Assessment, KanbanSummary"
+      },
+      "purpose": "Render grid slots for first row of widgets with temporary content",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use Card wrapper for each widget slot",
+          "Display widget name as CardTitle",
+          "Display 'Coming soon' or similar placeholder text in CardContent",
+          "Render widgets from props if provided, else render placeholder"
+        ]
+      },
+      "input_state": "DashboardGrid has grid container but no children",
+      "output_state": "Grid renders 3 Card components for row 1 widgets (CourseProgress, Assessment, KanbanSummary)",
+      "acceptance_criterion": "Component renders 3 Card components with titles 'Course Progress', 'Assessment', and 'Kanban Summary'",
+      "verification_command": "grep -E '(CourseProgress|Assessment|Kanban.*Summary)' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx | wc -l | grep -q '3'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T2", "S1823.I1.F3.T3"],
+        "blocks": ["S1823.I1.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T5",
+      "type": "task",
+      "name": "Add placeholder cards for row 2 widgets",
+      "action": {
+        "verb": "Add",
+        "target": "placeholder Card components for ActivityFeed, QuickActions, CoachingSessions"
+      },
+      "purpose": "Render grid slots for second row of widgets with temporary content",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use Card wrapper for each widget slot",
+          "Display widget name as CardTitle",
+          "Display 'Coming soon' or similar placeholder text in CardContent",
+          "Render widgets from props if provided, else render placeholder"
+        ]
+      },
+      "input_state": "DashboardGrid has row 1 widgets but no row 2",
+      "output_state": "Grid renders 3 additional Card components for row 2 widgets (ActivityFeed, QuickActions, CoachingSessions)",
+      "acceptance_criterion": "Component renders 3 Card components with titles 'Activity Feed', 'Quick Actions', and 'Coaching Sessions'",
+      "verification_command": "grep -E '(Activity.*Feed|Quick.*Actions|Coaching.*Sessions)' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx | wc -l | grep -q '3'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T2", "S1823.I1.F3.T3"],
+        "blocks": ["S1823.I1.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T6",
+      "type": "task",
+      "name": "Add full-width placeholder card for PresentationTable",
+      "action": {
+        "verb": "Add",
+        "target": "full-width placeholder Card component for PresentationTable"
+      },
+      "purpose": "Render bottom row full-width slot for presentation table widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use col-span-1 md:col-span-2 xl:col-span-3 for full-width row",
+          "Use Card wrapper for widget slot",
+          "Display 'Presentation Table' as CardTitle",
+          "Render widget from props if provided, else render placeholder"
+        ]
+      },
+      "input_state": "DashboardGrid has rows 1 and 2 but no full-width row 3",
+      "output_state": "Grid renders full-width Card component for PresentationTable spanning all columns",
+      "acceptance_criterion": "Component renders Card with title 'Presentation Table' and classes including 'col-span-1', 'md:col-span-2', 'xl:col-span-3'",
+      "verification_command": "grep -E 'Presentation.*Table' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx && grep -E 'col-span.*md:col-span.*xl:col-span' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T2", "S1823.I1.F3.T3"],
+        "blocks": ["S1823.I1.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T7",
+      "type": "task",
+      "name": "Add grid animation classes",
+      "action": {
+        "verb": "Add",
+        "target": "animate-in fade-in classes to grid container"
+      },
+      "purpose": "Add smooth entrance animation to dashboard grid",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx",
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx (line 47)"
+        ],
+        "dependencies": [
+          "Tailwind animate-in utilities"
+        ],
+        "constraints": [
+          "Follow pattern from dashboard-demo-charts: 'animate-in fade-in'",
+          "Add duration-500 or similar for smooth animation"
+        ]
+      },
+      "input_state": "DashboardGrid renders all widgets but has no animation",
+      "output_state": "Grid container has animate-in fade-in classes applied",
+      "acceptance_criterion": "Grid container div includes 'animate-in' and 'fade-in' classes",
+      "verification_command": "grep -E 'animate-in.*fade-in' apps/web/app/home/\\(user\\)/_components/dashboard-grid.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T4", "S1823.I1.F3.T5", "S1823.I1.F3.T6"],
+        "blocks": ["S1823.I1.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I1.F3.T8",
+      "type": "task",
+      "name": "Integrate DashboardGrid into page.tsx",
+      "action": {
+        "verb": "Update",
+        "target": "page.tsx to render DashboardGrid"
+      },
+      "purpose": "Display the grid layout on the user dashboard page",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "is visible", "target": "Assessment" },
+          { "command": "is visible", "target": "Kanban Summary" },
+          { "command": "is visible", "target": "Activity Feed" },
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "is visible", "target": "Coaching Sessions" },
+          { "command": "is visible", "target": "Presentation Table" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/dashboard-grid.tsx"
+        ],
+        "dependencies": [
+          "DashboardGrid component",
+          "PageBody component from @kit/ui/page"
+        ],
+        "constraints": [
+          "Import DashboardGrid from _components/dashboard-grid",
+          "Replace empty PageBody with PageBody containing DashboardGrid",
+          "Maintain existing HomeLayoutPageHeader"
+        ]
+      },
+      "input_state": "Page renders with empty PageBody",
+      "output_state": "Page renders DashboardGrid inside PageBody with all 7 placeholder widgets visible",
+      "acceptance_criterion": "Page imports and renders DashboardGrid component inside PageBody, grid displays 7 widget placeholders",
+      "verification_command": "grep -q 'DashboardGrid' apps/web/app/home/\\(user\\)/page.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I1.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": ["S1823.I1.F3.T1", "S1823.I1.F3.T2", "S1823.I1.F3.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Widget Slots",
+        "task_ids": ["S1823.I1.F3.T4", "S1823.I1.F3.T5", "S1823.I1.F3.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 8,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Animation and Integration",
+        "task_ids": ["S1823.I1.F3.T7", "S1823.I1.F3.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1823.I1.F3.T1", "S1823.I1.F3.T2", "S1823.I1.F3.T4", "S1823.I1.F3.T7", "S1823.I1.F3.T8"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 8,
+      "time_saved_percent": 53
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

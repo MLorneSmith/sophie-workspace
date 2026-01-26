@@ -196,6 +196,17 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
+      # E2E Database Configuration - Local Supabase instance (ports 54521/54522)
+      SUPABASE_URL: 'http://127.0.0.1:54521'
+      NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54521'
+      # JWT keys (SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY)
+      # are extracted dynamically from Supabase after startup in the "Extract Supabase JWT keys" step.
+      # This ensures we use the actual ES256 keys that Supabase generates, not hardcoded HS256 keys.
+      # See: Issue #1615 (diagnosis), Issue #1621 (fix) for details.
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+
+      # Test environment configuration
       NODE_ENV: 'test'
       NEXT_PUBLIC_SITE_URL: http://localhost:3001
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
@@ -206,8 +217,26 @@ jobs:
       STRIPE_WEBHOOK_SECRET: 'whsec_test_dummy'
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
+
+      # Required for app to start
+      NEXT_PUBLIC_BILLING_PROVIDER: 'stripe'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3021'
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+
+      # Enable Playwright parallelism
+      PLAYWRIGHT_PARALLEL: 'true'
       # Required: Tell Playwright which port the app is running on
       PLAYWRIGHT_BASE_URL: http://localhost:3001
+
+      # E2E test user credentials (from GitHub Secrets)
+      # These are required for authentication tests in shards 2-12
+      # See: Issue #1636 (diagnosis), Issue #1637 (fix)
+      E2E_TEST_USER_EMAIL: ${{ secrets.E2E_TEST_USER_EMAIL }}
+      E2E_TEST_USER_PASSWORD: ${{ secrets.E2E_TEST_USER_PASSWORD }}
+      E2E_OWNER_EMAIL: ${{ secrets.E2E_OWNER_EMAIL }}
+      E2E_OWNER_PASSWORD: ${{ secrets.E2E_OWNER_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
     steps:
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
@@ -257,20 +286,49 @@ jobs:
       - name: Start Supabase services
         run: pnpm run supabase:web:start -- -x studio,migra,deno-relay,pgadmin-schema-diff,imgproxy,logflare
 
-      - name: Export Supabase environment variables
+      # Run Payload CMS migrations to create payload.* tables
+      # Required for E2E Shards 7, 8, 9 (Payload tests)
+      # Without this, tests fail with: "relation payload.users does not exist"
+      # See: Issue #1813 (diagnosis), Issue #1814 (fix)
+      - name: Run Payload CMS migrations
+        run: |
+          echo "🔄 Running Payload CMS migrations..."
+          pnpm --filter payload payload migrate --forceAcceptWarning
+          echo "✅ Payload CMS migrations complete"
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+
+      - name: Extract Supabase JWT keys
         run: |
           cd apps/web
-          SUPABASE_URL=$(npx supabase status | grep "Project URL" | sed 's/│//g' | awk '{print $3}')
-          SUPABASE_ANON_KEY=$(npx supabase status | grep "Publishable" | sed 's/│//g' | awk '{print $2}')
-          SUPABASE_SERVICE_KEY=$(npx supabase status | grep -E "^│ Secret" | sed 's/│//g' | awk '{print $2}')
+          # Extract actual JWT keys from running Supabase instance
+          # This ensures we use the ES256 keys that Supabase generates, not hardcoded HS256 keys
+          echo "📋 Extracting JWT keys from Supabase..."
+          eval "$(supabase status -o env)"
 
-          echo "NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> $GITHUB_ENV
-          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY" >> $GITHUB_ENV
+          # Verify keys were extracted
+          if [ -z "$ANON_KEY" ] || [ -z "$SERVICE_ROLE_KEY" ]; then
+            echo "❌ Failed to extract JWT keys from Supabase"
+            supabase status
+            exit 1
+          fi
 
-          echo "✅ Exported NEXT_PUBLIC_SUPABASE_URL=$SUPABASE_URL"
-          echo "✅ Exported NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:0:20}..."
-          echo "✅ Exported SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_KEY:0:20}..."
+          # Export for E2E tests
+          # NOTE: E2E_ prefixed variables are required by test-users.ts and auth.po.ts
+          # The test code falls back to hardcoded HS256 keys if E2E_ vars are missing,
+          # but Supabase uses ES256 keys, causing JWT signing method validation errors.
+          # See: Issue #1626 - E2E Sharded Workflow Environment Variable Naming Mismatch
+          echo "SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_ANON_KEY=$ANON_KEY" >> $GITHUB_ENV
+          echo "E2E_SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> $GITHUB_ENV
+          # Signal that we're running with local Supabase in CI (allows localhost validation to pass)
+          # See: Issue #1626 - Localhost validation blocks sharded workflow with local Supabase
+          echo "E2E_LOCAL_SUPABASE=true" >> $GITHUB_ENV
+
+          echo "✅ JWT keys extracted successfully"
 
       - name: Start Stripe CLI and application
         run: |

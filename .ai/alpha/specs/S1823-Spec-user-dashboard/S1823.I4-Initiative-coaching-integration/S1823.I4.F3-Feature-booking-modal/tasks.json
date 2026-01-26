@@ -1,0 +1,366 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1823.I4.F3",
+    "feature_name": "Booking Modal Integration",
+    "feature_slug": "booking-modal",
+    "initiative_id": "S1823.I4",
+    "spec_id": 1823,
+    "created_at": "2026-01-26T21:30:00Z",
+    "complexity": {
+      "score": 37.5,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": {
+          "count": 2,
+          "weight": 0.25
+        },
+        "dependencies": {
+          "level": "few",
+          "weight": 0.5
+        },
+        "estimated_loc": {
+          "range": "50-75",
+          "weight": 0.5
+        },
+        "feature_type": {
+          "type": "enhancement",
+          "weight": 0.25
+        }
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1823.I4.F3.T4"
+    ],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+        "description": "Coach's Cal.com username for booking embed links",
+        "source": "Cal.com Dashboard → Profile",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
+        "description": "Event type slug for booking links (e.g., '30min-coaching')",
+        "source": "Cal.com Dashboard → Event Types",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1823.I4.F3.T1",
+      "type": "task",
+      "name": "Create BookSessionButton component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "BookSessionButton client component file"
+      },
+      "purpose": "Establish component foundation with props interface and basic structure",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "research-library/context7-calcom.md (lines 72-102: BookSessionButton example)"
+        ],
+        "dependencies": [
+          "@kit/ui/button",
+          "lucide-react icons"
+        ],
+        "constraints": [
+          "Must use 'use client' directive",
+          "Props: coachUsername and eventSlug strings",
+          "Return Button component from @kit/ui"
+        ]
+      },
+      "input_state": "No BookSessionButton component exists",
+      "output_state": "Client component file exists with TypeScript interface and button shell",
+      "acceptance_criterion": "Component file compiles without errors and exports BookSessionButton",
+      "verification_command": "pnpm --filter web typecheck && grep -q \"export.*BookSessionButton\" apps/web/app/home/(user)/_components/book-session-button.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1823.I4.F3.T2",
+          "S1823.I4.F3.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F3.T2",
+      "type": "task",
+      "name": "Add Cal.com API initialization",
+      "action": {
+        "verb": "Add",
+        "target": "useEffect hook with getCalApi initialization"
+      },
+      "purpose": "Initialize Cal.com embed API on component mount for modal control",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/book-session-button.tsx",
+          "research-library/context7-calcom.md (lines 82-88: useEffect pattern)"
+        ],
+        "dependencies": [
+          "getCalApi from @calcom/embed-react",
+          "useEffect from react"
+        ],
+        "constraints": [
+          "Call getCalApi() in async IIFE inside useEffect",
+          "Configure theme: light",
+          "Empty dependency array (run once on mount)"
+        ]
+      },
+      "input_state": "Component skeleton exists without API initialization",
+      "output_state": "Component initializes Cal.com API on mount with theme configuration",
+      "acceptance_criterion": "useEffect hook calls getCalApi and configures UI theme",
+      "verification_command": "grep -q 'const cal = await getCalApi' apps/web/app/home/(user)/_components/book-session-button.tsx && grep -q 'cal(\"ui\"' apps/web/app/home/(user)/_components/book-session-button.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1823.I4.F3.T1"
+        ],
+        "blocks": [
+          "S1823.I4.F3.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F3.T3",
+      "type": "task",
+      "name": "Add modal trigger handler",
+      "action": {
+        "verb": "Add",
+        "target": "onClick handler that opens Cal.com booking modal"
+      },
+      "purpose": "Enable user to open booking modal when clicking button",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/book-session-button.tsx",
+          "research-library/context7-calcom.md (lines 89-94: openBookingModal handler)"
+        ],
+        "dependencies": [
+          "getCalApi from @calcom/embed-react"
+        ],
+        "constraints": [
+          "Async function that calls getCalApi()",
+          "Invokes cal('modal', { calLink }) with template string",
+          "calLink format: `${coachUsername}/${eventSlug}`",
+          "Attach handler to Button onClick prop"
+        ]
+      },
+      "input_state": "Button exists with API initialized but no click behavior",
+      "output_state": "Button opens Cal.com booking modal with correct event link on click",
+      "acceptance_criterion": "openBookingModal function exists and Button has onClick prop",
+      "verification_command": "grep -q 'const openBookingModal.*async' apps/web/app/home/(user)/_components/book-session-button.tsx && grep -q 'onClick={openBookingModal}' apps/web/app/home/(user)/_components/book-session-button.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/book-session-button.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1823.I4.F3.T2"
+        ],
+        "blocks": [
+          "S1823.I4.F3.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I4.F3.T4",
+      "type": "task",
+      "name": "Wire button to widget empty state",
+      "action": {
+        "verb": "Wire",
+        "target": "BookSessionButton into CoachingSessionsWidget empty state"
+      },
+      "purpose": "Display booking CTA when user has no upcoming sessions",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book a Coaching Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/book-session-button.tsx",
+          "research-library/context7-calcom.md (lines 254-265: empty state with button)"
+        ],
+        "dependencies": [
+          "BookSessionButton component",
+          "NEXT_PUBLIC_CALCOM_COACH_USERNAME env var",
+          "NEXT_PUBLIC_CALCOM_EVENT_SLUG env var"
+        ],
+        "constraints": [
+          "Import BookSessionButton",
+          "Pass env vars as props to button",
+          "Render button inside empty state conditional",
+          "Replace or enhance existing empty state CTA placeholder"
+        ]
+      },
+      "input_state": "Widget empty state exists without functional booking button",
+      "output_state": "Widget renders BookSessionButton in empty state with env var props",
+      "acceptance_criterion": "Widget imports and renders BookSessionButton when no sessions exist",
+      "verification_command": "grep -q 'import.*BookSessionButton' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx && grep -q '<BookSessionButton' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1823.I4.F3.T1",
+          "S1823.I4.F3.T3"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Implementation",
+        "task_ids": [
+          "S1823.I4.F3.T1",
+          "S1823.I4.F3.T2",
+          "S1823.I4.F3.T3",
+          "S1823.I4.F3.T4"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 1,
+        "notes": "T2 and T3 must be sequential after T1, T4 after T3 completes"
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1823.I4.F3.T1",
+        "S1823.I4.F3.T2",
+        "S1823.I4.F3.T3",
+        "S1823.I4.F3.T4"
+      ],
+      "total_hours": 4
+    },
+    "duration": {
+      "sequential": 4,
+      "parallel": 4,
+      "time_saved_percent": 0,
+      "notes": "All tasks are in critical path due to dependencies"
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100,
+    "notes": [
+      "All tasks are atomic (single verb, no conjunctions)",
+      "All tasks under 2 hours (well under 8 hour limit)",
+      "Clear state flow from skeleton → API → modal → integration",
+      "Each task has binary verification command",
+      "No circular dependencies"
+    ]
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
