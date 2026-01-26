@@ -9,6 +9,8 @@
 
 import {
 	HEALTH_CHECK_INTERVAL_MS,
+	HEARTBEAT_TIMEOUT_MS,
+	PROMISE_TIMEOUT_MS,
 	SANDBOX_KEEPALIVE_INTERVAL_MS,
 	SANDBOX_KEEPALIVE_STAGGER_MS,
 	SANDBOX_MAX_AGE_MS,
@@ -22,7 +24,12 @@ import {
 	detectAndHandleDeadlock,
 	recoverPhantomCompletedFeatures,
 } from "./deadlock-handler.js";
+import { emitOrchestratorEvent } from "./event-emitter.js";
 import { runFeatureImplementation } from "./feature.js";
+import {
+	type PromiseAgeTracker,
+	createPromiseAgeTracker,
+} from "./promise-age-tracker.js";
 import { runHealthChecks } from "./health.js";
 import { saveManifest } from "./manifest.js";
 import { writeIdleProgress } from "./progress.js";
@@ -37,7 +44,12 @@ import {
 	keepAliveSandboxes,
 } from "./sandbox.js";
 import { sleep } from "./utils.js";
-import { assignFeatureToSandbox, getBlockedFeatures } from "./work-queue.js";
+import {
+	DEFAULT_MAX_RETRIES,
+	assignFeatureToSandbox,
+	getBlockedFeatures,
+	shouldRetryFailedFeature,
+} from "./work-queue.js";
 
 // ============================================================================
 // Types
@@ -94,6 +106,7 @@ export class WorkLoop {
 	private keepaliveInterval: ReturnType<typeof setInterval> | null = null;
 	private isRunning = false;
 	private log: Logger;
+	private promiseTracker!: PromiseAgeTracker;
 
 	constructor(options: WorkLoopOptions, log?: Logger) {
 		this.instances = options.instances;
@@ -103,6 +116,10 @@ export class WorkLoop {
 		this.runId = options.runId;
 		this.activeWork = new Map();
 		this.log = log ?? ((..._args: unknown[]) => {});
+		this.promiseTracker = createPromiseAgeTracker(
+			PROMISE_TIMEOUT_MS,
+			HEARTBEAT_TIMEOUT_MS,
+		);
 	}
 
 	/**
@@ -432,6 +449,9 @@ export class WorkLoop {
 				continue;
 			}
 
+			// Monitor promise ages and recover stuck promises (Bug fix #1841)
+			await this.monitorPromiseAges();
+
 			// Detect stuck tasks and recover (Bug fix #1688, #1767)
 			await this.detectAndRecoverStuckTasks();
 
@@ -554,6 +574,8 @@ export class WorkLoop {
 			instance.featureStartedAt = new Date();
 
 			// Start work on this sandbox
+			// Track promise for timeout detection (Bug fix #1841)
+			this.promiseTracker.track(instance.label, feature.id);
 			const workPromise = this.runFeatureWork(instance, feature);
 			this.activeWork.set(instance.label, workPromise);
 		}
@@ -593,6 +615,8 @@ export class WorkLoop {
 			saveManifest(this.manifest);
 		} finally {
 			this.activeWork.delete(instance.label);
+			// Remove from promise tracker (Bug fix #1841)
+			this.promiseTracker.remove(instance.label);
 		}
 	}
 
@@ -711,6 +735,112 @@ export class WorkLoop {
 					`   🔄 Feature #${feature.id} reset to pending for reassignment`,
 				);
 			}
+		}
+	}
+
+	/**
+	 * Monitor promise ages and recover stuck promises.
+	 * Bug fix #1841: Promise timeout detection for work loop recovery.
+	 *
+	 * When promises hang indefinitely (PTY timeout, Claude process crash),
+	 * this method detects them via dual signals:
+	 * 1. Promise age exceeds PROMISE_TIMEOUT_MS (10 minutes default)
+	 * 2. Heartbeat age exceeds HEARTBEAT_TIMEOUT_MS (5 minutes default)
+	 *
+	 * Both conditions must be met to trigger recovery, which prevents
+	 * false positives on slow-but-healthy features.
+	 */
+	private async monitorPromiseAges(): Promise<void> {
+		// Update heartbeat ages from progress files
+		await this.promiseTracker.updateHeartbeatAges((label) => {
+			const instance = this.instances.find((i) => i.label === label);
+			return instance?.sandbox;
+		});
+
+		// Find all stale promises
+		const stalePromises = this.promiseTracker.findStalePromises();
+
+		for (const staleInfo of stalePromises) {
+			this.log(
+				`   ⏰ [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} on ${staleInfo.sandboxLabel} timed out:`,
+			);
+			this.log(
+				`      Promise age: ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min`,
+			);
+			this.log(
+				`      Heartbeat age: ${staleInfo.heartbeatAgeMs !== null ? `${Math.round(staleInfo.heartbeatAgeMs / 1000 / 60)}min` : "unknown"}`,
+			);
+			this.log(`      Reason: ${staleInfo.reason}`);
+
+			// Find the feature and sandbox
+			const feature = this.manifest.feature_queue.find(
+				(f) => f.id === staleInfo.featureId,
+			);
+			const sandboxInstance = this.instances.find(
+				(i) => i.label === staleInfo.sandboxLabel,
+			);
+
+			if (!feature || !sandboxInstance) {
+				this.log(
+					"   ⚠️ [PROMISE_TIMEOUT] Could not find feature or sandbox for recovery",
+				);
+				continue;
+			}
+
+			// Check if we should retry or fail permanently
+			const canRetry = shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES);
+			const currentRetryCount = feature.retry_count ?? 0;
+
+			if (canRetry) {
+				// Increment retry count and reset to pending
+				feature.retry_count = currentRetryCount + 1;
+				feature.status = "pending";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+				feature.error = `Promise timeout (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES}): ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min elapsed, heartbeat stale`;
+				saveManifest(this.manifest);
+
+				this.log(
+					`   🔄 [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} reset to pending (retry ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
+				);
+			} else {
+				// Max retries exceeded - mark as permanently failed
+				feature.status = "failed";
+				feature.assigned_sandbox = undefined;
+				feature.assigned_at = undefined;
+				feature.error = `Promise timeout: Max retries (${DEFAULT_MAX_RETRIES}) exceeded after ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)}min timeout`;
+				saveManifest(this.manifest);
+
+				this.log(
+					`   ❌ [PROMISE_TIMEOUT] Feature #${staleInfo.featureId} marked as FAILED (max retries exceeded)`,
+				);
+			}
+
+			// Mark sandbox as ready for new work
+			sandboxInstance.status = "ready";
+			sandboxInstance.currentFeature = null;
+
+			// Remove from activeWork (the promise is stuck, so we abandon it)
+			this.activeWork.delete(staleInfo.sandboxLabel);
+
+			// Remove from tracker
+			this.promiseTracker.remove(staleInfo.sandboxLabel);
+
+			// Emit event for UI visibility
+			emitOrchestratorEvent(
+				"promise_timeout",
+				`Feature #${staleInfo.featureId} promise timed out after ${Math.round(staleInfo.promiseAgeMs / 1000 / 60)} minutes`,
+				{
+					featureId: staleInfo.featureId,
+					sandboxLabel: staleInfo.sandboxLabel,
+					promiseAgeMs: staleInfo.promiseAgeMs,
+					heartbeatAgeMs: staleInfo.heartbeatAgeMs,
+					reason: staleInfo.reason,
+					retryCount: feature.retry_count ?? 0,
+					maxRetries: DEFAULT_MAX_RETRIES,
+					markedAsFailed: !canRetry,
+				},
+			);
 		}
 	}
 

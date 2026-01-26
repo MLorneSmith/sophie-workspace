@@ -53,9 +53,9 @@ export type OrchestratorCompletionEventType =
 	| "dev_server_failed";
 
 /**
- * Event types emitted by the orchestrator for deadlock detection (Bug fix #1777)
- * and phantom completion recovery (Bug fix #1782).
- * These provide visibility into automatic feature retries and phantom completion recovery.
+ * Event types emitted by the orchestrator for deadlock detection (Bug fix #1777),
+ * phantom completion recovery (Bug fix #1782), and promise timeout (Bug fix #1841).
+ * These provide visibility into automatic feature retries and recovery mechanisms.
  */
 export type OrchestratorDeadlockEventType =
 	/** Emitted when a failed feature is being retried after deadlock detection */
@@ -63,7 +63,9 @@ export type OrchestratorDeadlockEventType =
 	/** Emitted when an initiative is marked as failed due to max retries exceeded */
 	| "initiative_failed"
 	/** Emitted when a phantom-completed feature is detected and recovered (Bug fix #1782) */
-	| "phantom_completion_detected";
+	| "phantom_completion_detected"
+	/** Emitted when a promise times out and the feature is reset (Bug fix #1841) */
+	| "promise_timeout";
 
 /**
  * Event types emitted by the orchestrator during documentation generation.
