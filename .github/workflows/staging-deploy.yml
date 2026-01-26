@@ -330,19 +330,18 @@ jobs:
 
           echo "✅ JWT keys extracted successfully"
 
-      - name: Start Stripe CLI and application
+      - name: Start Stripe CLI for webhook testing
         run: |
-          # Start Stripe CLI in background
+          # Start Stripe CLI in background for billing webhook tests (shards 10, 11)
+          # The application server is started by Playwright's webServer configuration
+          # See Issue #1830, #1832: Removed explicit app startup to avoid port 3001 conflict
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
             stripe/stripe-cli:latest listen \
             --forward-to http://host.docker.internal:3001/api/billing/webhook \
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
 
-          # Start application
-          pnpm --filter web start:test &
-
-          # Wait for application to be ready
-          npx wait-on http://localhost:3001 -t 60000
+          # Give Stripe CLI time to initialize
+          sleep 5
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |
