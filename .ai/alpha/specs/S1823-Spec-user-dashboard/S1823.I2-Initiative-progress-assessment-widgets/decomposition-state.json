@@ -5,9 +5,10 @@
   "decomposed_at": "2026-01-26T00:00:00Z",
   "decomposed_by": "/alpha:feature-decompose",
   "task_decomposition": {
-    "status": "in_progress",
+    "status": "completed",
     "started_at": "2026-01-26T13:30:00Z",
-    "current_phase": "decomposition"
+    "completed_at": "2026-01-26T13:45:00Z",
+    "current_phase": "finalization"
   },
   "complexity_assessment": {
     "technical_unknowns": "LOW",
@@ -25,8 +26,11 @@
       "slug": "course-progress-radial-widget",
       "priority": 1,
       "estimated_days": 3,
-      "status": "pending",
-      "task_status": "pending",
+      "status": "draft",
+      "task_status": "completed",
+      "task_count": 6,
+      "hours_sequential": 8,
+      "hours_parallel": 6,
       "blocked_by": ["S1823.I1.F1", "S1823.I1.F3"],
       "blocks": ["S1823.I2.F2"],
       "parallel_with": [],
@@ -43,7 +47,8 @@
         "approach": "pragmatic",
         "rationale": "Reuse existing RadialProgress component (75% ready)"
       },
-      "files_estimate": 6
+      "files_estimate": 6,
+      "tasks_file": "S1823.I2.F1-Feature-course-progress-radial-widget/tasks.json"
     },
     {
       "id": "S1823.I2.F2",
@@ -51,8 +56,11 @@
       "slug": "spider-chart-assessment-widget",
       "priority": 2,
       "estimated_days": 4,
-      "status": "pending",
-      "task_status": "pending",
+      "status": "draft",
+      "task_status": "completed",
+      "task_count": 6,
+      "hours_sequential": 8,
+      "hours_parallel": 6,
       "blocked_by": ["S1823.I1.F1", "S1823.I1.F3", "S1823.I2.F1"],
       "blocks": [],
       "parallel_with": [],
@@ -69,7 +77,8 @@
         "approach": "pragmatic",
         "rationale": "Adapt existing radar-chart component (90% ready)"
       },
-      "files_estimate": 6
+      "files_estimate": 6,
+      "tasks_file": "S1823.I2.F2-Feature-spider-chart-assessment-widget/tasks.json"
     }
   ],
   "execution_groups": [
@@ -99,7 +108,7 @@
   ],
   "spikes_pending": [],
   "total_spikes": 0,
-  "total_tasks": 0,
-  "total_hours_sequential": 0,
-  "total_hours_parallel": 0
+  "total_tasks": 12,
+  "total_hours_sequential": 16,
+  "total_hours_parallel": 12
 }
