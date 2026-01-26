@@ -2,42 +2,43 @@
   "initiative_id": "S1823.I5",
   "initiative_name": "Presentation Table & Polish",
   "spec_id": "1823",
-  "status": "in_progress",
-  "current_phase": "decomposition",
+  "status": "completed",
+  "current_phase": "finalization",
+  "completed_at": "2026-01-26T19:30:00Z",
   "started_at": "2026-01-26T19:00:00Z",
   "features": {
     "S1823.I5.F1": {
       "name": "Presentation Table Widget",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 7,
+      "hours_estimate": 18
     },
     "S1823.I5.F2": {
       "name": "Empty States Polish",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 13,
+      "hours_estimate": 19
     },
     "S1823.I5.F3": {
       "name": "Accessibility Compliance",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 10,
+      "hours_estimate": 14
     },
     "S1823.I5.F4": {
       "name": "E2E Dashboard Tests",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 14,
+      "hours_estimate": 42
     }
   },
   "totals": {
-    "features_completed": 0,
+    "features_completed": 4,
     "features_total": 4,
-    "total_tasks": 0,
+    "total_tasks": 44,
     "total_spikes": 0,
-    "total_hours_sequential": 0,
-    "total_hours_parallel": 0
+    "total_hours_sequential": 93,
+    "total_hours_parallel": 42
   },
   "spikes_pending": []
 }

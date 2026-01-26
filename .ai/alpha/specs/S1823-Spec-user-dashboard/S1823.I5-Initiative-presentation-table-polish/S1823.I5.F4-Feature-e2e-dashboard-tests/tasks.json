@@ -1,0 +1,774 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1823.I5.F4",
+    "feature_name": "E2E Dashboard Tests",
+    "feature_slug": "e2e-dashboard-tests",
+    "initiative_id": "S1823.I5",
+    "spec_id": 1823,
+    "created_at": "2026-01-26T14:30:00Z",
+    "complexity": {
+      "score": 71,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "E2E_TEST_USER_EMAIL",
+        "description": "Test user email for authenticated E2E tests",
+        "source": ".env.test in apps/e2e",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "E2E_TEST_USER_PASSWORD",
+        "description": "Test user password for authenticated E2E tests",
+        "source": ".env.test in apps/e2e",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "E2E_SUPABASE_SERVICE_ROLE_KEY",
+        "description": "Supabase service role key for test data seeding",
+        "source": ".env.test in apps/e2e or local Supabase",
+        "required": true,
+        "scope": "server"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1823.I5.F4.T1",
+      "type": "task",
+      "name": "Create dashboard fixtures directory structure",
+      "action": { "verb": "Create", "target": "fixtures directory and test data types" },
+      "purpose": "Establish directory structure for test data factories and type definitions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/helpers/test-users.ts",
+          "apps/e2e/tests/utils/database-utilities.ts"
+        ],
+        "dependencies": [
+          "@supabase/supabase-js createClient",
+          "TEST_USERS configuration"
+        ],
+        "constraints": [
+          "Follow existing test helper patterns",
+          "Use TypeScript for type safety"
+        ]
+      },
+      "input_state": "No fixtures directory exists for dashboard tests",
+      "output_state": "fixtures directory created with TypeScript types for dashboard test data",
+      "acceptance_criterion": "Directory apps/e2e/tests/fixtures/ exists with dashboard-test-data.ts file containing type definitions",
+      "verification_command": "ls -la apps/e2e/tests/fixtures/dashboard-test-data.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/fixtures/dashboard-test-data.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1823.I5.F4.T2", "S1823.I5.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T2",
+      "type": "task",
+      "name": "Create test data seeding functions",
+      "action": { "verb": "Create", "target": "functions to seed dashboard test data" },
+      "purpose": "Provide reusable functions to populate database with test data for dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/fixtures/dashboard-test-data.ts",
+          "apps/e2e/tests/helpers/test-users.ts"
+        ],
+        "dependencies": [
+          "Supabase admin client",
+          "TEST_USERS.user1 configuration"
+        ],
+        "constraints": [
+          "Use Supabase service role key for admin access",
+          "Create data for all 7 widgets",
+          "Support both populated and empty state scenarios"
+        ]
+      },
+      "input_state": "Type definitions exist but no seeding functions",
+      "output_state": "Functions exist to seed course progress, assessment, kanban, activity, coaching, presentation data",
+      "acceptance_criterion": "Functions seedDashboardData() and cleanupDashboardData() exist and successfully populate/clean test data",
+      "verification_command": "grep -q 'export async function seedDashboardData' apps/e2e/tests/fixtures/dashboard-test-data.ts && grep -q 'export async function cleanupDashboardData' apps/e2e/tests/fixtures/dashboard-test-data.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/fixtures/dashboard-test-data.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T1"],
+        "blocks": ["S1823.I5.F4.T4", "S1823.I5.F4.T6", "S1823.I5.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T3",
+      "type": "task",
+      "name": "Create DashboardPageObject class skeleton",
+      "action": { "verb": "Create", "target": "DashboardPageObject class with constructor" },
+      "purpose": "Establish Page Object Model structure for dashboard tests with widget selectors",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/account/account.po.ts",
+          "apps/e2e/tests/team-accounts/team-accounts.po.ts"
+        ],
+        "dependencies": [
+          "Page from @playwright/test",
+          "navigateAndWaitForHydration from utils"
+        ],
+        "constraints": [
+          "Follow existing PO naming conventions",
+          "Use data-testid selectors",
+          "Include constructor taking Page parameter"
+        ]
+      },
+      "input_state": "No dashboard Page Object exists",
+      "output_state": "DashboardPageObject class exists with constructor and navigation method",
+      "acceptance_criterion": "Class DashboardPageObject exists with constructor(page: Page) and navigateToDashboard() method",
+      "verification_command": "grep -q 'export class DashboardPageObject' apps/e2e/tests/dashboard/dashboard.po.ts && grep -q 'async navigateToDashboard' apps/e2e/tests/dashboard/dashboard.po.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/dashboard/dashboard.po.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T1"],
+        "blocks": ["S1823.I5.F4.T4", "S1823.I5.F4.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T4",
+      "type": "task",
+      "name": "Add widget visibility methods to DashboardPageObject",
+      "action": { "verb": "Add", "target": "widget visibility check methods" },
+      "purpose": "Provide reusable methods to verify all 7 dashboard widgets are visible",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts",
+          "apps/e2e/tests/utils/wait-for-hydration.ts"
+        ],
+        "dependencies": [
+          "waitForElementReady helper",
+          "CI_TIMEOUTS configuration"
+        ],
+        "constraints": [
+          "Use data-testid selectors for each widget",
+          "Follow toPass() pattern for reliability",
+          "Methods for: course progress, assessment, kanban, activity, quick actions, coaching, presentation table"
+        ]
+      },
+      "input_state": "DashboardPageObject has basic navigation only",
+      "output_state": "DashboardPageObject has methods to check visibility of all 7 widgets",
+      "acceptance_criterion": "Methods getCourseProgressWidget(), getAssessmentWidget(), getKanbanWidget(), getActivityWidget(), getQuickActionsWidget(), getCoachingWidget(), getPresentationTableWidget() return Locators",
+      "verification_command": "grep -c 'Widget()' apps/e2e/tests/dashboard/dashboard.po.ts | grep -q '^7$'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/dashboard/dashboard.po.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T3", "S1823.I5.F4.T2"],
+        "blocks": ["S1823.I5.F4.T8", "S1823.I5.F4.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T5",
+      "type": "task",
+      "name": "Add widget interaction methods to DashboardPageObject",
+      "action": { "verb": "Add", "target": "widget interaction methods" },
+      "purpose": "Provide methods to interact with widget CTAs and navigation elements",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts",
+          "apps/e2e/tests/utils/wait-for-hydration.ts"
+        ],
+        "dependencies": [
+          "clickWithRetry helper",
+          "Page navigation methods"
+        ],
+        "constraints": [
+          "Use data-testid for interactive elements",
+          "Follow toPass() pattern for clicks",
+          "Methods for: edit presentation, start course, quick action CTAs"
+        ]
+      },
+      "input_state": "DashboardPageObject has visibility methods only",
+      "output_state": "DashboardPageObject has interaction methods for widget CTAs",
+      "acceptance_criterion": "Methods clickEditPresentation(), clickStartCourse(), clickQuickAction() exist and use clickWithRetry pattern",
+      "verification_command": "grep -q 'async click' apps/e2e/tests/dashboard/dashboard.po.ts && grep -c 'clickWithRetry' apps/e2e/tests/dashboard/dashboard.po.ts | grep -q '[3-9]'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/dashboard/dashboard.po.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T3"],
+        "blocks": ["S1823.I5.F4.T9", "S1823.I5.F4.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T6",
+      "type": "task",
+      "name": "Add empty state check methods to DashboardPageObject",
+      "action": { "verb": "Add", "target": "empty state validation methods" },
+      "purpose": "Provide methods to verify empty state displays for widgets with no data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts"
+        ],
+        "dependencies": [
+          "Locator.isVisible() checks",
+          "data-testid for empty states"
+        ],
+        "constraints": [
+          "Check for empty state message presence",
+          "Check for CTA button presence",
+          "Methods for all widgets with empty states"
+        ]
+      },
+      "input_state": "DashboardPageObject has visibility and interaction methods",
+      "output_state": "DashboardPageObject has empty state validation methods",
+      "acceptance_criterion": "Methods hasEmptyState() for each widget return boolean and check for empty state message and CTA",
+      "verification_command": "grep -q 'hasEmptyState' apps/e2e/tests/dashboard/dashboard.po.ts && grep -c 'EmptyState' apps/e2e/tests/dashboard/dashboard.po.ts | grep -q '[5-9]'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/dashboard/dashboard.po.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T2"],
+        "blocks": ["S1823.I5.F4.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T7",
+      "type": "task",
+      "name": "Add data validation methods to DashboardPageObject",
+      "action": { "verb": "Add", "target": "data content validation methods" },
+      "purpose": "Provide methods to verify widgets display correct data content",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts"
+        ],
+        "dependencies": [
+          "Locator.textContent() checks",
+          "expect assertions"
+        ],
+        "constraints": [
+          "Verify course progress percentage",
+          "Verify presentation count",
+          "Verify activity items count"
+        ]
+      },
+      "input_state": "DashboardPageObject has visibility, interaction, and empty state methods",
+      "output_state": "DashboardPageObject has data validation methods",
+      "acceptance_criterion": "Methods verifyCourseProgress(), verifyPresentationCount(), verifyActivityCount() exist and use expect assertions",
+      "verification_command": "grep -q 'async verify' apps/e2e/tests/dashboard/dashboard.po.ts && grep -c 'verify.*Count\\|verify.*Progress' apps/e2e/tests/dashboard/dashboard.po.ts | grep -q '[3-9]'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/dashboard/dashboard.po.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T2"],
+        "blocks": ["S1823.I5.F4.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T8",
+      "type": "task",
+      "name": "Create dashboard smoke test spec",
+      "action": { "verb": "Create", "target": "smoke test for dashboard page load" },
+      "purpose": "Verify dashboard page loads and all widgets are visible for authenticated user",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts",
+          "apps/e2e/tests/utils/base-test.ts",
+          "apps/e2e/tests/utils/auth-state.ts"
+        ],
+        "dependencies": [
+          "test and expect from base-test",
+          "AUTH_STATES.TEST_USER",
+          "DashboardPageObject"
+        ],
+        "constraints": [
+          "Use pre-authenticated storage state",
+          "Test basic page load and visibility",
+          "Single test file for smoke tests"
+        ]
+      },
+      "input_state": "DashboardPageObject complete, no test specs exist",
+      "output_state": "Smoke test spec exists verifying dashboard loads and widgets visible",
+      "acceptance_criterion": "File dashboard.spec.ts exists with test 'dashboard page loads with all widgets visible' that passes",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard.spec.ts -- --grep 'loads with all widgets'",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/dashboard/dashboard.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T4"],
+        "blocks": ["S1823.I5.F4.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T9",
+      "type": "task",
+      "name": "Add happy path tests to dashboard spec",
+      "action": { "verb": "Add", "target": "happy path user journey tests" },
+      "purpose": "Verify complete user flow with populated dashboard data",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 9,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.spec.ts",
+          "apps/e2e/tests/fixtures/dashboard-test-data.ts"
+        ],
+        "dependencies": [
+          "seedDashboardData function",
+          "DashboardPageObject interaction methods"
+        ],
+        "constraints": [
+          "Seed test data in beforeEach",
+          "Test widget data display",
+          "Test widget interactions and navigation",
+          "Clean up data in afterEach"
+        ]
+      },
+      "input_state": "Smoke test exists, no happy path tests",
+      "output_state": "Happy path tests verify data display, interactions, and navigation",
+      "acceptance_criterion": "Tests verify course progress displays percentage, presentation table has rows, edit navigation works",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard.spec.ts -- --grep 'happy path|displays data|edit presentation'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/dashboard/dashboard.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T8", "S1823.I5.F4.T5", "S1823.I5.F4.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T10",
+      "type": "task",
+      "name": "Create dashboard empty states test spec",
+      "action": { "verb": "Create", "target": "empty state test specification" },
+      "purpose": "Verify empty states display correctly for new user with no data",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 10,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts",
+          "apps/e2e/tests/fixtures/dashboard-test-data.ts",
+          "apps/e2e/tests/helpers/test-users.ts"
+        ],
+        "dependencies": [
+          "TEST_USERS.newUser configuration",
+          "DashboardPageObject empty state methods",
+          "cleanupDashboardData function"
+        ],
+        "constraints": [
+          "Use newUser test account",
+          "Verify empty state messages",
+          "Verify CTA buttons present",
+          "Test CTA navigation"
+        ]
+      },
+      "input_state": "DashboardPageObject complete, no empty state tests",
+      "output_state": "Empty state test spec verifies all widgets show correct empty states",
+      "acceptance_criterion": "File dashboard-empty-states.spec.ts exists with tests verifying empty states and CTA navigation",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard-empty-states.spec.ts -- --grep 'empty state'",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/dashboard/dashboard-empty-states.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1823.I5.F4.T6", "S1823.I5.F4.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T11",
+      "type": "task",
+      "name": "Create dashboard responsive test spec",
+      "action": { "verb": "Create", "target": "responsive breakpoint test specification" },
+      "purpose": "Verify dashboard layout adapts correctly to mobile, tablet, desktop viewports",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 11,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/dashboard/dashboard.po.ts",
+          "apps/e2e/playwright.config.ts"
+        ],
+        "dependencies": [
+          "Page.setViewportSize() API",
+          "DashboardPageObject visibility methods"
+        ],
+        "constraints": [
+          "Test three breakpoints: mobile (375px), tablet (768px), desktop (1280px)",
+          "Verify widgets remain visible at all breakpoints",
+          "Test grid layout changes"
+        ]
+      },
+      "input_state": "Dashboard tests exist for default viewport only",
+      "output_state": "Responsive test spec verifies layout at three breakpoints",
+      "acceptance_criterion": "File dashboard-responsive.spec.ts exists with tests for mobile, tablet, desktop viewports",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard-responsive.spec.ts -- --grep 'mobile|tablet|desktop'",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/dashboard/dashboard-responsive.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T12",
+      "type": "task",
+      "name": "Create dashboard performance test spec",
+      "action": { "verb": "Create", "target": "performance validation test specification" },
+      "purpose": "Verify dashboard meets performance targets for LCP and CLS",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 12,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/hybrid-a11y.ts",
+          "apps/e2e/tests/dashboard/dashboard.po.ts"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester (includes Lighthouse)",
+          "Page.evaluate() for Web Vitals"
+        ],
+        "constraints": [
+          "LCP < 1.5s target",
+          "CLS < 0.1 target",
+          "Use Lighthouse audit from HybridAccessibilityTester"
+        ]
+      },
+      "input_state": "No performance tests exist for dashboard",
+      "output_state": "Performance test spec validates LCP and CLS metrics",
+      "acceptance_criterion": "File dashboard-performance.spec.ts exists with tests validating LCP < 1.5s and CLS < 0.1",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard-performance.spec.ts -- --grep 'LCP|CLS|performance'",
+      "outputs": [
+        { "type": "new", "path": "apps/e2e/tests/dashboard/dashboard-performance.spec.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T13",
+      "type": "task",
+      "name": "Add data-testid attributes to dashboard widgets",
+      "action": { "verb": "Add", "target": "data-testid attributes to widget components" },
+      "purpose": "Enable reliable E2E test selectors for all dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 13,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx",
+          "apps/web/app/home/[account]/page.tsx"
+        ],
+        "dependencies": [
+          "React component props",
+          "HTML data attributes"
+        ],
+        "constraints": [
+          "Add data-testid to each of 7 widget root elements",
+          "Add data-testid to interactive elements (buttons, links)",
+          "Follow naming convention: widget-name-widget, widget-name-cta"
+        ]
+      },
+      "input_state": "Dashboard widgets have no data-testid attributes",
+      "output_state": "All 7 widgets have data-testid on root and interactive elements",
+      "acceptance_criterion": "Each widget component has data-testid attribute and grep finds at least 14 data-testid attributes in dashboard components",
+      "verification_command": "grep -r 'data-testid' apps/web/app/home/[account]/_components/ | grep -c 'widget\\|cta' | grep -q '[1-9][4-9]'",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/[account]/_components/dashboard-demo-charts.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1823.I5.F4.T14",
+      "type": "task",
+      "name": "Update playwright config for dashboard tests",
+      "action": { "verb": "Update", "target": "playwright configuration if needed" },
+      "purpose": "Ensure dashboard tests run correctly in CI environment",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 14,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/playwright.config.ts"
+        ],
+        "dependencies": [
+          "Playwright configuration schema",
+          "Test project configuration"
+        ],
+        "constraints": [
+          "Verify timeout configuration adequate",
+          "Check if separate test project needed",
+          "Ensure baseURL configuration correct"
+        ]
+      },
+      "input_state": "Playwright config exists without dashboard-specific configuration",
+      "output_state": "Playwright config reviewed and updated if changes needed",
+      "acceptance_criterion": "Playwright config supports dashboard tests with adequate timeouts and no additional project configuration needed or project added if required",
+      "verification_command": "pnpm --filter web-e2e test tests/dashboard/dashboard.spec.ts --list | grep -q 'dashboard.spec.ts'",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/playwright.config.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation Setup",
+        "task_ids": ["S1823.I5.F4.T1", "S1823.I5.F4.T2", "S1823.I5.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 8,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Page Object Implementation",
+        "task_ids": ["S1823.I5.F4.T4", "S1823.I5.F4.T5", "S1823.I5.F4.T6", "S1823.I5.F4.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 11,
+        "parallel_hours": 6
+      },
+      {
+        "id": 3,
+        "name": "Core Dashboard Tests",
+        "task_ids": ["S1823.I5.F4.T8", "S1823.I5.F4.T9"],
+        "depends_on_groups": [2],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 4,
+        "name": "Empty State Tests",
+        "task_ids": ["S1823.I5.F4.T10"],
+        "depends_on_groups": [2],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 5,
+        "name": "Responsive and Performance Tests",
+        "task_ids": ["S1823.I5.F4.T11", "S1823.I5.F4.T12"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 6,
+        "name": "Integration and Configuration",
+        "task_ids": ["S1823.I5.F4.T13", "S1823.I5.F4.T14"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1823.I5.F4.T1", "S1823.I5.F4.T2", "S1823.I5.F4.T4", "S1823.I5.F4.T8", "S1823.I5.F4.T9"],
+      "total_hours": 16
+    },
+    "duration": {
+      "sequential": 42,
+      "parallel": 25,
+      "time_saved_percent": 40
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
