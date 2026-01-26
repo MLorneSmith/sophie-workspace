@@ -33,6 +33,7 @@ export function parseArgs(): OrchestratorOptions {
 		reset: false,
 		skipToCompletion: false,
 		skipPreFlight: false,
+		document: false, // Opt-in: generate spec documentation after completion
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -68,6 +69,8 @@ export function parseArgs(): OrchestratorOptions {
 			options.skipToCompletion = true;
 		} else if (arg === "--skip-pre-flight") {
 			options.skipPreFlight = true;
+		} else if (arg === "--document") {
+			options.document = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -107,6 +110,7 @@ Options:
   --skip-to-completion  Skip work loop, jump to completion (debugging)
   --no-ui               Disable Ink dashboard UI (uses console output)
   --minimal-ui          Use minimal dashboard (for narrow terminals)
+  --document            Generate spec documentation after completion
 
 Features:
 

@@ -138,6 +138,8 @@ export interface OrchestratorOptions {
 	skipToCompletion: boolean;
 	/** Skip interactive pre-flight environment variable check */
 	skipPreFlight: boolean;
+	/** Generate spec-level documentation after completion using /alpha:document */
+	document: boolean;
 }
 
 export interface OrchestratorLock {

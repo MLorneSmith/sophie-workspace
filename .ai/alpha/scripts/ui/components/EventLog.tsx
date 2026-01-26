@@ -44,6 +44,10 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	dev_server_starting: "🚀",
 	dev_server_ready: "✅",
 	dev_server_failed: "❌",
+	// Documentation generation icons
+	documentation_start: "📚",
+	documentation_complete: "✅",
+	documentation_failed: "⚠️",
 };
 
 /**
@@ -83,6 +87,10 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	dev_server_starting: "yellow",
 	dev_server_ready: "green",
 	dev_server_failed: "red",
+	// Documentation generation colors
+	documentation_start: "blue",
+	documentation_complete: "green",
+	documentation_failed: "yellow",
 };
 
 /**

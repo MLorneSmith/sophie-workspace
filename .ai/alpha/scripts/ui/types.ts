@@ -235,7 +235,11 @@ export type OrchestratorEventType =
 	| "review_sandbox_creating"
 	| "dev_server_starting"
 	| "dev_server_ready"
-	| "dev_server_failed";
+	| "dev_server_failed"
+	// Documentation generation event types (from orchestrator)
+	| "documentation_start"
+	| "documentation_complete"
+	| "documentation_failed";
 
 /**
 

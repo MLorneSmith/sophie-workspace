@@ -66,12 +66,25 @@ export type OrchestratorDeadlockEventType =
 	| "phantom_completion_detected";
 
 /**
+ * Event types emitted by the orchestrator during documentation generation.
+ * These provide visibility into spec-level documentation creation via /alpha:document.
+ */
+export type OrchestratorDocumentationEventType =
+	/** Emitted when starting spec documentation generation */
+	| "documentation_start"
+	/** Emitted when documentation is successfully generated */
+	| "documentation_complete"
+	/** Emitted when documentation generation fails */
+	| "documentation_failed";
+
+/**
  * Combined event type for all orchestrator events
  */
 export type OrchestratorEventType =
 	| OrchestratorDatabaseEventType
 	| OrchestratorCompletionEventType
-	| OrchestratorDeadlockEventType;
+	| OrchestratorDeadlockEventType
+	| OrchestratorDocumentationEventType;
 
 /**
  * Structure of an orchestrator event sent to the event server

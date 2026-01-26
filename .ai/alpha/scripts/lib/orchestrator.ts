@@ -1963,6 +1963,97 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 					log(`⚠️ Push failed: ${error}`);
 				}
 			}
+
+			// =========================================================================
+			// Documentation Generation (opt-in via --document flag)
+			// =========================================================================
+			// Generate spec-level documentation after all features are implemented.
+			// This captures patterns, components, and architectural decisions for
+			// future Claude Code reference.
+			// =========================================================================
+			if (options.document && pushInstance) {
+				const allFeaturesCompleted =
+					manifest.progress.features_completed ===
+					manifest.progress.features_total;
+
+				if (allFeaturesCompleted) {
+					log(
+						"\n📚 Generating spec documentation (--document flag enabled)...",
+					);
+					emitOrchestratorEvent(
+						"documentation_start",
+						"Starting spec documentation generation via /alpha:document",
+						{ specId: manifest.metadata.spec_id },
+					);
+
+					try {
+						// Run the /alpha:document command via Claude Code in the sandbox
+						// Use the first sandbox before it gets killed
+						const specIdArg = manifest.metadata.spec_id.replace(/^S/, "");
+						const docResult = await withTimeout(
+							pushInstance.sandbox.commands.run(
+								`cd /home/user/project && claude --dangerously-skip-permissions -p "/alpha:document ${specIdArg}"`,
+								{ timeoutMs: 600000 }, // 10 minute timeout for documentation generation
+							),
+							660000, // 11 minute outer timeout
+							"Documentation generation",
+						);
+
+						if (docResult.exitCode === 0) {
+							log("   ✅ Spec documentation generated successfully");
+							emitOrchestratorEvent(
+								"documentation_complete",
+								"Spec documentation generated successfully",
+								{ specId: manifest.metadata.spec_id },
+							);
+
+							// Push the documentation changes
+							log("   📤 Pushing documentation changes...");
+							try {
+								await pushInstance.sandbox.commands.run(
+									`cd /home/user/project && git add -A && git commit -m "docs(alpha): add spec documentation for S${specIdArg} [agent: alpha-orchestrator]" && git push`,
+									{ timeoutMs: 120000 },
+								);
+								log("   ✅ Documentation pushed to branch");
+							} catch (pushError) {
+								// Non-fatal: documentation was generated but push failed
+								log(
+									`   ⚠️ Documentation push failed: ${pushError instanceof Error ? pushError.message : pushError}`,
+								);
+							}
+						} else {
+							log(
+								`   ⚠️ Documentation generation failed (exit code: ${docResult.exitCode})`,
+							);
+							if (docResult.stderr) {
+								log(`   Stderr: ${docResult.stderr.slice(0, 500)}`);
+							}
+							emitOrchestratorEvent(
+								"documentation_failed",
+								`Documentation generation failed with exit code ${docResult.exitCode}`,
+								{
+									specId: manifest.metadata.spec_id,
+									exitCode: docResult.exitCode,
+								},
+							);
+						}
+					} catch (docError) {
+						// Non-fatal: documentation is optional, don't fail the whole orchestration
+						log(
+							`   ⚠️ Documentation generation error: ${docError instanceof Error ? docError.message : docError}`,
+						);
+						emitOrchestratorEvent(
+							"documentation_failed",
+							`Documentation generation error: ${docError instanceof Error ? docError.message : docError}`,
+							{ specId: manifest.metadata.spec_id },
+						);
+					}
+				} else {
+					log(
+						`\n📚 Skipping documentation: ${manifest.progress.features_completed}/${manifest.progress.features_total} features completed (not all complete)`,
+					);
+				}
+			}
 		} // End of else block for !allFeaturesAlreadyComplete (Bug fix #1799)
 
 		// =======================================================================
