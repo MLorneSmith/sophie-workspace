@@ -1,10 +1,16 @@
 {
   "initiative_id": "S1823.I1",
   "spec_id": "S1823",
-  "status": "task_decomposition_in_progress",
+  "status": "tasks_decomposed",
   "decomposed_at": "2026-01-26T00:00:00Z",
   "task_decomposition_started_at": "2026-01-26T13:08:00Z",
-  "current_feature": "S1823.I1.F1",
+  "current_feature": null,
+  "task_decomposition_progress": {
+    "S1823.I1.F1": { "status": "completed", "task_count": 12, "hours_sequential": 20, "hours_parallel": 15 },
+    "S1823.I1.F2": { "status": "completed", "task_count": 3, "hours_sequential": 2.5, "hours_parallel": 1.5 },
+    "S1823.I1.F3": { "status": "completed", "task_count": 8, "hours_sequential": 17, "hours_parallel": 10 },
+    "S1823.I1.F4": { "status": "completed", "task_count": 4, "hours_sequential": 10, "hours_parallel": 10 }
+  },
   "complexity": {
     "overall": "LOW",
     "factors": {
