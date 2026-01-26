@@ -14,15 +14,15 @@
     },
     "S1815.I3.F2": {
       "name": "Activity Data Aggregation",
-      "status": "pending",
-      "task_count": null,
-      "hours_estimate": null
+      "status": "completed",
+      "task_count": 7,
+      "hours_estimate": 20
     },
     "S1815.I3.F3": {
       "name": "Activity Feed Widget",
-      "status": "pending",
-      "task_count": null,
-      "hours_estimate": null
+      "status": "completed",
+      "task_count": 7,
+      "hours_estimate": 16
     },
     "S1815.I3.F4": {
       "name": "Quick Actions Panel",
@@ -33,12 +33,12 @@
   },
   "totals": {
     "features_total": 4,
-    "features_completed": 1,
+    "features_completed": 3,
     "features_failed": 0,
-    "total_tasks": 6,
+    "total_tasks": 20,
     "total_spikes": 0,
-    "total_hours_sequential": 7,
-    "total_hours_parallel": 5
+    "total_hours_sequential": 43,
+    "total_hours_parallel": 28
   },
   "spikes_pending": []
 }

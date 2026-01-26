@@ -16,9 +16,11 @@
     },
     "S1815.I4.F2": {
       "name": "Dashboard Widget",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 12,
+      "hours_estimate": 14,
+      "sequential_hours": 21,
+      "parallel_hours": 14
     },
     "S1815.I4.F3": {
       "name": "Session Actions",
@@ -29,11 +31,11 @@
   },
   "totals": {
     "features_total": 3,
-    "features_completed": 1,
-    "tasks_total": 15,
+    "features_completed": 2,
+    "tasks_total": 27,
     "spikes_pending": [],
     "total_spikes": 0,
-    "total_hours_sequential": 33,
-    "total_hours_parallel": 21
+    "total_hours_sequential": 54,
+    "total_hours_parallel": 35
   }
 }
