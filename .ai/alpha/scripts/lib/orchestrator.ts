@@ -6,20 +6,14 @@
 * Manages the work loop, dry run output, and summary generation.
  */
 
-import { type ChildProcess, spawn } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import process from "node:process";
-
-import type { Sandbox } from "@e2b/code-interpreter";
 
 import {
 	EVENT_SERVER_PORT,
 	HEALTH_CHECK_INTERVAL_MS,
 	LOGS_DIR,
-	SANDBOX_KEEPALIVE_INTERVAL_MS,
-	SANDBOX_KEEPALIVE_STAGGER_MS,
-	SANDBOX_MAX_AGE_MS,
 	SANDBOX_STAGGER_DELAY_MS,
 	UI_PROGRESS_DIR,
 } from "../config/index.js";
@@ -30,6 +24,10 @@ import type {
 	SpecManifest,
 	UIManager,
 } from "../types/index.js";
+import {
+	executeCompletionPhase,
+	generateDocumentation,
+} from "./completion-phase.js";
 import {
 	checkDatabaseCapacity,
 	isDatabaseSeeded,
@@ -42,9 +40,11 @@ import {
 	setOrchestratorUrl,
 	validatePythonDependencies,
 } from "./environment.js";
-import { emitOrchestratorEvent } from "./event-emitter.js";
-import { runFeatureImplementation } from "./feature.js";
-import { runHealthChecks } from "./health.js";
+import {
+	startEventServer,
+	stopEventServer,
+	waitForUIReady,
+} from "./event-server.js";
 import { acquireLock, getProjectRoot, releaseLock } from "./lock.js";
 import {
 	archiveAndClearPreviousRun,
@@ -53,33 +53,22 @@ import {
 	loadManifest,
 	saveManifest,
 } from "./manifest.js";
-import { writeIdleProgress } from "./progress.js";
+import {
+	checkPreFlightSilent,
+	formatPreFlightForDryRun,
+	runPreFlightCheck,
+} from "./pre-flight.js";
 import { generateRunId } from "./run-id.js";
 import {
 	clearStaleSandboxData,
-	createReviewSandbox,
 	createSandbox,
 	getSandboxAgeMinutes,
-	getSandboxesNeedingRestart,
-	getVSCodeUrl,
 	isSandboxExpired,
-	keepAliveSandboxes,
 	reconnectToStoredSandboxes,
-	startDevServer,
 } from "./sandbox.js";
-import { sleep, withTimeout } from "./utils.js";
-import { speakCompletion } from "./tts.js";
-import {
-	isFeatureCompleted,
-	isProgressFileStale,
-	readProgressFile,
-} from "./progress-file.js";
-import {
-	assignFeatureToSandbox,
-	cleanupStaleState,
-	getBlockedFeatures,
-	getNextAvailableFeature,
-} from "./work-queue.js";
+import { sleep } from "./utils.js";
+import { cleanupStaleState, getNextAvailableFeature } from "./work-queue.js";
+import { runWorkLoop } from "./work-loop.js";
 
 // ============================================================================
 // Logging Helper
@@ -101,151 +90,6 @@ function createLogger(uiEnabled: boolean) {
 			console.error(...args);
 		},
 	};
-}
-
-// ============================================================================
-// Event Server Management
-// ============================================================================
-
-let eventServerProcess: ChildProcess | null = null;
-
-/**
- * Start the event server for WebSocket streaming.
- *
- * @param projectRoot - Project root directory
- * @param log - Logger function
- * @returns The orchestrator URL to pass to sandboxes, or null if startup fails
- */
-async function startEventServer(
-	projectRoot: string,
-	log: (...args: unknown[]) => void,
-): Promise<string | null> {
-	const scriptPath = path.join(
-		projectRoot,
-		".ai/alpha/scripts/event-server.py",
-	);
-
-	try {
-		// Check if port is already in use (previous server still running)
-		const { execSync } = await import("node:child_process");
-		try {
-			// Try to kill any existing process on the port
-			execSync(`lsof -ti:${EVENT_SERVER_PORT} | xargs kill -9 2>/dev/null`, {
-				stdio: "ignore",
-			});
-			// Wait a bit for port to be released
-			await sleep(500);
-		} catch {
-			// No existing process, that's fine
-		}
-
-		// Start the event server
-		eventServerProcess = spawn("python3", [scriptPath], {
-			cwd: projectRoot,
-			stdio: ["ignore", "pipe", "pipe"],
-			detached: false,
-		});
-
-		// Wait for server to start
-		await new Promise<void>((resolve, reject) => {
-			const timeout = setTimeout(() => {
-				reject(new Error("Event server startup timeout"));
-			}, 10000);
-
-			eventServerProcess?.stdout?.on("data", (data: Buffer) => {
-				const output = data.toString();
-				if (output.includes("Starting Alpha Event Server")) {
-					clearTimeout(timeout);
-					resolve();
-				}
-			});
-
-			eventServerProcess?.stderr?.on("data", (data: Buffer) => {
-				const output = data.toString();
-				// FastAPI/uvicorn often logs to stderr
-				if (
-					output.includes("Uvicorn running") ||
-					output.includes("Started server")
-				) {
-					clearTimeout(timeout);
-					resolve();
-				}
-			});
-
-			eventServerProcess?.on("error", (err) => {
-				clearTimeout(timeout);
-				reject(err);
-			});
-
-			eventServerProcess?.on("exit", (code) => {
-				if (code !== 0 && code !== null) {
-					clearTimeout(timeout);
-					reject(new Error(`Event server exited with code ${code}`));
-				}
-			});
-		});
-
-		log(`   Started event server on port ${EVENT_SERVER_PORT}`);
-		return `http://localhost:${EVENT_SERVER_PORT}`;
-	} catch (error) {
-		log(`   ⚠️ Failed to start event server: ${error}`);
-		return null;
-	}
-}
-
-/**
- * Stop the event server if running.
- */
-function stopEventServer(log: (...args: unknown[]) => void): void {
-	if (eventServerProcess) {
-		log("   Stopping event server...");
-		eventServerProcess.kill("SIGTERM");
-		eventServerProcess = null;
-	}
-}
-
-/**
- * Wait for UI to be ready to receive events.
- *
- * Polls the event server's /api/ui-status endpoint to check if UI has
- * connected and sent its ready signal. This prevents events from being
- * emitted before the UI can receive them.
- *
- * @param maxWait - Maximum time to wait in ms (default: 30000)
- * @param pollInterval - How often to poll in ms (default: 500)
- * @param log - Logger function
- * @returns true if UI became ready, false if timeout
- */
-async function waitForUIReady(
-	maxWait: number = 30000,
-	pollInterval: number = 500,
-	log: (...args: unknown[]) => void = console.log,
-): Promise<boolean> {
-	const startTime = Date.now();
-	const statusUrl = `http://localhost:${EVENT_SERVER_PORT}/api/ui-status`;
-
-	log("   ⏳ Waiting for UI to connect...");
-
-	while (Date.now() - startTime < maxWait) {
-		try {
-			const response = await fetch(statusUrl);
-			if (response.ok) {
-				const data = (await response.json()) as { ui_ready?: boolean };
-				if (data.ui_ready === true) {
-					log("   ✅ UI ready, proceeding with database operations");
-					return true;
-				}
-			}
-		} catch {
-			// Event server not ready yet, continue polling
-		}
-
-		await sleep(pollInterval);
-	}
-
-	// Timeout reached - proceed anyway (non-blocking)
-	log("   ⚠️ UI ready timeout, proceeding without confirmation");
-	return false;
 }
 
 // ============================================================================
@@ -309,6 +153,10 @@ export function printDryRun(manifest: SpecManifest): void {
 	console.log("\n📊 Remaining Work:");
 	console.log(`Features: ${pendingFeatures.length}`);
 	console.log(`Estimated Hours: ${totalHours}`);
+
+	// Environment requirements
+	console.log("\n🔑 Environment Requirements:");
+	console.log(formatPreFlightForDryRun(manifest));
 }
 
 // ============================================================================
@@ -394,650 +242,12 @@ export function printSummary(
 }
 
 // ============================================================================
-// Work Loop
+// Work Loop (Re-exported from work-loop.ts)
 // ============================================================================
 
-/**
-
-* Main work loop - sandboxes pull features from queue until done.
-*
-* @param instances - All sandbox instances
-* @param manifest - The spec manifest
-* @param uiEnabled - Whether UI mode is enabled
-* @param timeoutSeconds - Sandbox timeout in seconds
-* @param runId - Run ID for this orchestrator session
- */
-export async function runWorkLoop(
-	instances: SandboxInstance[],
-	manifest: SpecManifest,
-	uiEnabled: boolean = false,
-	timeoutSeconds: number = 7200,
-	runId?: string,
-): Promise<void> {
-	// Create conditional logger
-	const { log } = createLogger(uiEnabled);
-
-	// Track active work
-	const activeWork = new Map<string, Promise<void>>();
-
-	// Start periodic health checks
-	let healthCheckRunning = false;
-	const healthCheckInterval = setInterval(async () => {
-		if (healthCheckRunning) return;
-		healthCheckRunning = true;
-
-		try {
-			const needsRestart = await runHealthChecks(
-				instances,
-				manifest,
-				uiEnabled,
-			);
-
-			// Attempt to restart sandboxes that failed health checks
-			for (const instance of needsRestart) {
-				if (instance.status === "failed") {
-					log(
-						`   🔄 Attempting to restart failed sandbox ${instance.label}...`,
-					);
-					try {
-						// CRITICAL: Kill the old sandbox before creating new one
-						try {
-							await instance.sandbox.kill();
-						} catch {
-							// Ignore kill errors - sandbox may already be dead
-						}
-
-						// Capture old ID before reassignment for cleanup
-						const oldSandboxId = instance.id;
-
-						const newInstance = await createSandbox(
-							manifest,
-							instance.label,
-							timeoutSeconds,
-							uiEnabled,
-							runId,
-						);
-
-						// Replace the old sandbox with the new one
-						instance.sandbox = newInstance.sandbox;
-						instance.id = newInstance.id;
-						instance.status = "ready";
-						instance.currentFeature = null;
-						instance.retryCount = 0;
-						instance.featureStartedAt = undefined;
-						instance.lastProgressSeen = undefined;
-						instance.runId = runId;
-						instance.lastHeartbeat = undefined;
-
-						// Track restart count for diagnostics
-						// Diagnosis #1567: This helps track sandbox recovery patterns
-						manifest.sandbox.restart_count =
-							(manifest.sandbox.restart_count ?? 0) + 1;
-
-						// Clean up old sandbox ID before adding new one
-						// This prevents sandbox_ids from accumulating beyond the sandbox count
-						const oldIdIndex =
-							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
-						if (oldIdIndex !== -1) {
-							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
-						}
-						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
-							manifest.sandbox.sandbox_ids.push(newInstance.id);
-						}
-						saveManifest(manifest);
-						log(
-							`   ✅ Sandbox ${instance.label} restarted successfully (restart #${manifest.sandbox.restart_count})`,
-						);
-					} catch (restartError) {
-						log(
-							`   ❌ Failed to restart sandbox ${instance.label}: ${restartError instanceof Error ? restartError.message : restartError}`,
-						);
-					}
-				}
-			}
-		} catch (error) {
-			log(
-				`   ⚠️ Health check error: ${error instanceof Error ? error.message : error}`,
-			);
-		} finally {
-			healthCheckRunning = false;
-		}
-	}, HEALTH_CHECK_INTERVAL_MS);
-
-	// Start periodic sandbox keepalive to prevent timeout expiration
-	// Uses staggered timing to prevent simultaneous expirations
-	let keepaliveRunning = false;
-	const keepaliveInterval = setInterval(async () => {
-		if (keepaliveRunning) return;
-		keepaliveRunning = true;
-
-		try {
-			// First, check for sandboxes approaching max age (60 min = preemptive restart)
-			// This prevents the edge case where keepalive and expiration happen simultaneously
-			const needsPreemptiveRestart = getSandboxesNeedingRestart(
-				instances,
-				SANDBOX_MAX_AGE_MS,
-			);
-
-			for (const label of needsPreemptiveRestart) {
-				const instance = instances.find((i) => i.label === label);
-				if (instance && instance.status !== "failed") {
-					const ageMinutes = Math.round(
-						(Date.now() - instance.createdAt.getTime()) / 60000,
-					);
-
-					// Find the in-progress feature assigned to this sandbox
-					const feature = manifest.feature_queue.find(
-						(f) => f.assigned_sandbox === label && f.status === "in_progress",
-					);
-
-					// Check if feature is almost done (80%+ tasks completed)
-					// If so, skip preemptive restart to avoid feature cycling (diagnosis #1567)
-					if (feature && feature.task_count > 0) {
-						const tasksCompleted = feature.tasks_completed;
-						const totalTasks = feature.task_count;
-						const percentDone =
-							totalTasks > 0 ? (tasksCompleted / totalTasks) * 100 : 0;
-
-						if (percentDone >= 80) {
-							log(
-								`   ⏰ Sandbox ${label} is ${ageMinutes}min old, but feature #${feature.id} is ${Math.round(percentDone)}% done - skipping preemptive restart`,
-							);
-							continue; // Skip restart for this feature
-						}
-					}
-
-					log(
-						`   ⏰ Sandbox ${label} is ${ageMinutes}min old, performing preemptive restart...`,
-					);
-
-					// Reset any in-progress feature assigned to this sandbox
-					if (feature) {
-						// Try graceful shutdown first before force-killing
-						// This gives Claude Code a chance to save state
-						try {
-							log("   🔄 Attempting graceful shutdown of Claude Code...");
-							await instance.sandbox.commands.run(
-								"pkill -TERM run-claude 2>/dev/null || true",
-								{ timeoutMs: 5000 },
-							);
-							await sleep(2000); // Wait for graceful shutdown
-						} catch {
-							// Graceful shutdown failed, proceed with force restart
-							log(
-								"   ⚠️ Graceful shutdown failed, proceeding with force restart",
-							);
-						}
-
-						feature.status = "pending";
-						feature.assigned_sandbox = undefined;
-						feature.assigned_at = undefined;
-						feature.error = "Preemptive restart before expiration";
-						saveManifest(manifest);
-					}
-
-					try {
-						// Kill the old sandbox
-						await instance.sandbox.kill();
-					} catch {
-						// Ignore kill errors - sandbox may already be dead
-					}
-
-					// Create a fresh sandbox
-					try {
-						// Capture old ID before reassignment for cleanup
-						const oldSandboxId = instance.id;
-
-						const newInstance = await createSandbox(
-							manifest,
-							label,
-							timeoutSeconds,
-							uiEnabled,
-							runId,
-						);
-
-						// Replace the old sandbox with the new one
-						instance.sandbox = newInstance.sandbox;
-						instance.id = newInstance.id;
-						instance.status = "ready";
-						instance.currentFeature = null;
-						instance.retryCount = 0;
-						instance.featureStartedAt = undefined;
-						instance.lastProgressSeen = undefined;
-						instance.lastHeartbeat = undefined;
-						instance.outputLineCount = 0;
-						instance.hasReceivedOutput = false;
-						instance.createdAt = newInstance.createdAt;
-						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
-						instance.runId = runId;
-
-						// Track restart count for diagnostics
-						// Diagnosis #1567: This helps track sandbox recovery patterns
-						manifest.sandbox.restart_count =
-							(manifest.sandbox.restart_count ?? 0) + 1;
-
-						// Clean up old sandbox ID before adding new one
-						// This prevents sandbox_ids from accumulating beyond the sandbox count
-						const oldIdIndex =
-							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
-						if (oldIdIndex !== -1) {
-							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
-						}
-						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
-							manifest.sandbox.sandbox_ids.push(newInstance.id);
-						}
-
-						// Bug fix #1713: Reset created_at timestamp on restart
-						// Without this, the UI shows stale timestamps suggesting the sandbox
-						// has been running much longer than it actually has
-						manifest.sandbox.created_at = new Date().toISOString();
-						saveManifest(manifest);
-
-						// Bug fix #1713: Write idle progress immediately after restart
-						// This ensures UI shows current heartbeat timestamp instead of stale data
-						writeIdleProgress(label, instance);
-
-						log(
-							`   ✅ Sandbox ${label} preemptively restarted (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
-						);
-					} catch (restartError) {
-						log(
-							`   ❌ Failed to restart sandbox ${label}: ${restartError instanceof Error ? restartError.message : restartError}`,
-						);
-						instance.status = "failed";
-					}
-				}
-			}
-
-			// Now do regular keepalive with staggered timing
-			// Stagger prevents all sandboxes from extending timeout at the exact same time
-			const timeoutMs = timeoutSeconds * 1000;
-			const failed = await keepAliveSandboxes(
-				instances,
-				timeoutMs,
-				uiEnabled,
-				SANDBOX_KEEPALIVE_STAGGER_MS,
-			);
-
-			// Handle failed sandboxes - attempt restart
-			for (const label of failed) {
-				const instance = instances.find((i) => i.label === label);
-				if (instance && instance.status !== "failed") {
-					log(`   ⚠️ Sandbox ${label} expired, attempting restart...`);
-
-					// Reset any in-progress feature assigned to this sandbox
-					const feature = manifest.feature_queue.find(
-						(f) => f.assigned_sandbox === label && f.status === "in_progress",
-					);
-					if (feature) {
-						feature.status = "pending";
-						feature.assigned_sandbox = undefined;
-						feature.assigned_at = undefined;
-						feature.error = "Sandbox expired - restarting";
-						saveManifest(manifest);
-					}
-
-					// Attempt to restart the sandbox
-					try {
-						log(`   🔄 Restarting sandbox ${label}...`);
-
-						// CRITICAL: Kill the old sandbox before creating new one
-						try {
-							await instance.sandbox.kill();
-						} catch {
-							// Ignore kill errors - sandbox may already be dead
-						}
-
-						// Capture old ID before reassignment for cleanup
-						const oldSandboxId = instance.id;
-
-						const newInstance = await createSandbox(
-							manifest,
-							label,
-							timeoutSeconds,
-							uiEnabled,
-							runId,
-						);
-
-						// Replace the old sandbox with the new one
-						instance.sandbox = newInstance.sandbox;
-						instance.id = newInstance.id;
-						instance.status = "ready";
-						instance.currentFeature = null;
-						instance.retryCount = 0;
-						instance.featureStartedAt = undefined;
-						instance.lastProgressSeen = undefined;
-						instance.lastHeartbeat = undefined;
-						instance.outputLineCount = 0;
-						instance.runId = runId;
-						instance.hasReceivedOutput = false;
-						instance.createdAt = newInstance.createdAt;
-						instance.lastKeepaliveAt = newInstance.lastKeepaliveAt;
-
-						// Track restart count for diagnostics
-						// Diagnosis #1567: This helps track sandbox recovery patterns
-						manifest.sandbox.restart_count =
-							(manifest.sandbox.restart_count ?? 0) + 1;
-
-						// Clean up old sandbox ID before adding new one
-						// This prevents sandbox_ids from accumulating beyond the sandbox count
-						const oldIdIndex =
-							manifest.sandbox.sandbox_ids.indexOf(oldSandboxId);
-						if (oldIdIndex !== -1) {
-							manifest.sandbox.sandbox_ids.splice(oldIdIndex, 1);
-						}
-						if (!manifest.sandbox.sandbox_ids.includes(newInstance.id)) {
-							manifest.sandbox.sandbox_ids.push(newInstance.id);
-						}
-
-						// Bug fix #1713: Reset created_at timestamp on restart
-						// Without this, the UI shows stale timestamps suggesting the sandbox
-						// has been running much longer than it actually has
-						manifest.sandbox.created_at = new Date().toISOString();
-						saveManifest(manifest);
-
-						// Bug fix #1713: Write idle progress immediately after restart
-						// This ensures UI shows current heartbeat timestamp instead of stale data
-						writeIdleProgress(label, instance);
-
-						log(
-							`   ✅ Sandbox ${label} restarted successfully (${newInstance.id}) - restart #${manifest.sandbox.restart_count}`,
-						);
-					} catch (restartError) {
-						log(
-							`   ❌ Failed to restart sandbox ${label}: ${restartError instanceof Error ? restartError.message : restartError}`,
-						);
-						instance.status = "failed";
-					}
-				}
-			}
-		} catch (error) {
-			log(
-				`   ⚠️ Keepalive error: ${error instanceof Error ? error.message : error}`,
-			);
-		} finally {
-			keepaliveRunning = false;
-		}
-	}, SANDBOX_KEEPALIVE_INTERVAL_MS);
-
-	try {
-		while (true) {
-			// Check if we're done
-			// Include "failed" features since they should be retried
-			const workableFeatures = manifest.feature_queue.filter(
-				(f) =>
-					f.status === "pending" ||
-					f.status === "in_progress" ||
-					f.status === "failed",
-			);
-
-			if (workableFeatures.length === 0) {
-				if (activeWork.size > 0) {
-					await Promise.all(activeWork.values());
-				}
-				break;
-			}
-
-			// Find idle sandboxes and assign work
-			for (const instance of instances) {
-				if (instance.status !== "ready") {
-					continue;
-				}
-
-				const feature = getNextAvailableFeature(manifest, uiEnabled);
-				if (!feature) {
-					// No work available - write idle status for this sandbox
-					if (uiEnabled) {
-						const blockedFeatures = getBlockedFeatures(manifest);
-						const blockedIds = blockedFeatures
-							.slice(0, 3)
-							.map((bf) => bf.feature.id);
-						const waitingReason =
-							blockedFeatures.length > 0
-								? `Waiting for dependencies (${blockedFeatures.length} features blocked)`
-								: "No available features";
-						writeIdleProgress(
-							instance.label,
-							instance,
-							waitingReason,
-							blockedIds,
-						);
-					}
-					continue;
-				}
-
-				// CRITICAL: Use atomic assignment with timestamp-based conflict detection
-				// This prevents race conditions where multiple sandboxes get the same feature
-				// The assignment function now saves the manifest atomically to prevent races
-				const assigned = assignFeatureToSandbox(
-					feature,
-					instance.label,
-					manifest,
-					uiEnabled,
-				);
-				if (!assigned) {
-					// Lost the race - another sandbox claimed this feature, try again
-					log(
-						`   ⚠️ ${instance.label}: Lost race for #${feature.id}, will retry`,
-					);
-					continue;
-				}
-				// NOTE: saveManifest is now called inside assignFeatureToSandbox for atomicity
-
-				// RACE CONDITION FIX: Set sandbox status to "busy" SYNCHRONOUSLY before async Promise
-				// This prevents the work loop from seeing the sandbox as "ready" on the next iteration
-				// and calling writeIdleProgress() before runFeatureImplementation() sets status.
-				// NOTE: feature.ts:166-169 will redundantly set these again when it runs.
-				// That's intentional - this synchronous set prevents the race condition
-				// by ensuring status is "busy" before async code executes. The feature.ts
-				// code provides defensive duplication in case of unusual error paths.
-				instance.status = "busy";
-				instance.currentFeature = feature.id;
-				instance.featureStartedAt = new Date();
-
-				// Start work on this sandbox
-				// Wrapped in try-catch to prevent unhandled rejections from breaking Promise.race()
-				const workPromise = (async () => {
-					try {
-						await runFeatureImplementation(
-							instance,
-							manifest,
-							feature,
-							uiEnabled,
-						);
-					} catch (error) {
-						// Log error but don't rethrow - let main error handler deal with it
-						// This prevents Promise.race() from immediately rejecting
-						log(
-							`│   ❌ Feature #${feature.id} implementation error: ${error instanceof Error ? error.message : String(error)}`,
-						);
-						// Mark sandbox as ready for next feature
-						instance.status = "ready";
-						instance.currentFeature = null;
-						// Mark feature as failed so it can be retried
-						feature.status = "failed";
-						feature.error =
-							error instanceof Error ? error.message : String(error);
-						// Clear sandbox assignment to prevent stall when features fail with errors
-						// that bypass feature.ts handler (e.g., PTY SIGTERM). Mirrors feature.ts:678-679.
-						feature.assigned_sandbox = undefined;
-						feature.assigned_at = undefined;
-						saveManifest(manifest);
-					} finally {
-						activeWork.delete(instance.label);
-					}
-				})();
-
-				activeWork.set(instance.label, workPromise);
-			}
-
-			// If no work is active, check if we should exit or continue waiting
-			if (activeWork.size === 0) {
-				// Check for ANY retryable features (pending or failed), regardless of dependencies
-				const retryableFeatures = manifest.feature_queue.filter(
-					(f) => f.status === "pending" || f.status === "failed",
-				);
-
-				// Exit only if no retryable features exist
-				if (retryableFeatures.length === 0) {
-					break;
-				}
-
-				// Log blocked features for visibility (features with unmet dependencies)
-				const blockedFeatures = retryableFeatures.filter(
-					(f) => f.dependencies.length > 0,
-				);
-				if (blockedFeatures.length > 0) {
-					log("\n⚠️ Features blocked by incomplete dependencies:");
-					for (const f of blockedFeatures.slice(0, 5)) {
-						log(
-							`   #${f.id}: blocked by ${f.dependencies.map((d) => `#${d}`).join(", ")}`,
-						);
-					}
-				}
-
-				// Continue loop to retry features when sandboxes become available
-				continue;
-			}
-
-			// Fix for issue #1688: Detect stuck features where sandbox has no current task
-			// but feature still has uncompleted tasks. This prevents indefinite stalls.
-			// Check runs after work assignment and before sleep to catch stalls quickly.
-			//
-			// Bug fix #1767: Added progress file fallback for PTY disconnect recovery.
-			// When PTY times out but sandbox actually completed, we check the progress
-			// file and force manifest update to unblock dependent features.
-			const STUCK_TASK_THRESHOLD_MS = 60_000; // 60 seconds without progress
-			const now = Date.now();
-
-			for (const feature of manifest.feature_queue) {
-				// Only check in-progress features with an assigned sandbox
-				if (feature.status !== "in_progress" || !feature.assigned_sandbox) {
-					continue;
-				}
-
-				// Find the sandbox assigned to this feature
-				const sandboxInstance = instances.find(
-					(i) => i.label === feature.assigned_sandbox,
-				);
-				if (!sandboxInstance) {
-					continue;
-				}
-
-				// Bug fix #1767: Check if PTY timed out but progress file shows completion
-				// This handles the case where PTY disconnects after feature completes
-				// but ptyHandle.wait() never returns, leaving manifest stale.
-				if (sandboxInstance.status === "busy") {
-					try {
-						const progressResult = await readProgressFile(
-							sandboxInstance.sandbox,
-						);
-						if (
-							progressResult.success &&
-							progressResult.data &&
-							!isProgressFileStale(progressResult.data) &&
-							isFeatureCompleted(progressResult.data)
-						) {
-							log(
-								`   🔄 [PTY_FALLBACK] Feature #${feature.id} on ${sandboxInstance.label}: PTY stuck but progress file shows completed`,
-							);
-
-							// Force manifest update to mark feature as completed
-							feature.status = "completed";
-							feature.tasks_completed =
-								progressResult.data.completed_tasks?.length ||
-								feature.task_count;
-							feature.assigned_sandbox = undefined;
-							feature.assigned_at = undefined;
-
-							// Update initiative status
-							const initiative = manifest.initiatives.find(
-								(i) => i.id === feature.initiative_id,
-							);
-							if (initiative) {
-								const initFeatures = manifest.feature_queue.filter(
-									(f) => f.initiative_id === initiative.id,
-								);
-								initiative.features_completed = initFeatures.filter(
-									(f) => f.status === "completed",
-								).length;
-
-								if (initFeatures.every((f) => f.status === "completed")) {
-									initiative.status = "completed";
-								} else {
-									initiative.status = "in_progress";
-								}
-							}
-
-							// Update progress tracking
-							manifest.progress.last_completed_feature_id = feature.id;
-
-							saveManifest(manifest);
-
-							// Mark sandbox as ready for next feature
-							sandboxInstance.status = "ready";
-							sandboxInstance.currentFeature = null;
-
-							log(
-								`   ✅ [PTY_FALLBACK] Feature #${feature.id} recovered - manifest updated, dependents unblocked`,
-							);
-							continue; // Move to next feature
-						}
-					} catch (progressError) {
-						// Progress file check failed, continue with normal stuck detection
-						log(
-							`   ⚠️ [PTY_FALLBACK] Progress file check failed for ${sandboxInstance.label}: ${progressError instanceof Error ? progressError.message : progressError}`,
-						);
-					}
-				}
-
-				// Check if sandbox appears idle but feature has incomplete tasks
-				// Conditions for stuck detection:
-				// 1. Feature has fewer completed tasks than total
-				// 2. Sandbox status is not "busy" (idle or failed)
-				// 3. Feature assignment is old enough (avoid false positives during transitions)
-				const tasksRemaining =
-					feature.task_count - (feature.tasks_completed || 0);
-				const assignedDuration = feature.assigned_at
-					? now - feature.assigned_at
-					: 0;
-
-				if (
-					tasksRemaining > 0 &&
-					sandboxInstance.status !== "busy" &&
-					assignedDuration > STUCK_TASK_THRESHOLD_MS
-				) {
-					log(
-						`   ⚠️ Stuck task detected: Feature #${feature.id} on ${sandboxInstance.label} has ${tasksRemaining} tasks remaining but sandbox is ${sandboxInstance.status}`,
-					);
-
-					// Reset the feature to pending so it can be reassigned
-					// This allows another sandbox (or the same one after restart) to pick it up
-					feature.status = "pending";
-					feature.assigned_sandbox = undefined;
-					feature.assigned_at = undefined;
-					feature.error = `Stuck: ${tasksRemaining} tasks remaining but sandbox idle for ${Math.round(assignedDuration / 1000)}s`;
-					saveManifest(manifest);
-
-					// Mark sandbox as ready to pick up new work
-					sandboxInstance.status = "ready";
-					sandboxInstance.currentFeature = null;
-
-					log(`   🔄 Feature #${feature.id} reset to pending for reassignment`);
-				}
-			}
-
-			// Wait for at least one sandbox to finish OR health check interval
-			await Promise.race([
-				...activeWork.values(),
-				sleep(HEALTH_CHECK_INTERVAL_MS),
-			]);
-		}
-	} finally {
-		clearInterval(healthCheckInterval);
-		clearInterval(keepaliveInterval);
-	}
-}
+// Work loop logic is now in work-loop.ts for better separation of concerns
+export { runWorkLoop, WorkLoop } from "./work-loop.js";
+export type { WorkLoopOptions, WorkLoopResult } from "./work-loop.js";
 
 // ============================================================================
 // Main Orchestration
@@ -1106,6 +316,28 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 	}
 
 	const manifest = manifestOrNull as SpecManifest;
+
+	// =========================================================================
+	// Pre-Flight Environment Variable Check
+	// =========================================================================
+	if (!options.skipPreFlight && !options.dryRun) {
+		log("\n🔍 Running pre-flight environment check...");
+
+		// For interactive terminals, run the full interactive check
+		// For non-interactive (piped/scripted), run silent check
+		const isInteractive = process.stdin.isTTY && process.stdout.isTTY;
+
+		if (isInteractive) {
+			const preFlightResult = await runPreFlightCheck(manifest, log);
+			if (!preFlightResult.proceed) {
+				log("❌ Pre-flight check failed. Exiting.");
+				process.exit(1);
+			}
+		} else {
+			// Non-interactive mode: just check and warn
+			checkPreFlightSilent(manifest, log);
+		}
+	}
 
 	// =========================================================================
 	// Validate Python Dependencies (before event server)
@@ -1302,6 +534,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 		log(`Sandboxes: ${options.sandboxCount}`);
 
 		// Check what's next
+		// Bug fix #1799: Track when all features are already complete to skip to completion phase
+		let allFeaturesAlreadyComplete = false;
 		const nextFeature = getNextAvailableFeature(manifest, options.ui);
 		if (nextFeature) {
 			log(`\n🎯 Next feature: #${nextFeature.id} - ${nextFeature.title}`);
@@ -1309,8 +543,8 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			manifest.progress.features_completed === manifest.progress.features_total
 		) {
 			log("\n🎉 All features already completed!");
-			if (uiManager) uiManager.stop();
-			return;
+			log("   Proceeding to completion phase to create review sandbox...");
+			allFeaturesAlreadyComplete = true;
 		} else {
 			log("\n⚠️ No features available (check dependencies)");
 			if (uiManager) uiManager.stop();
@@ -1323,491 +557,308 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 			return;
 		}
 
-		// =========================================================================
-		// Sandbox Initialization with Reconnection Support
-		// =========================================================================
-		// Bug fix #1634: Handle expired E2B sandboxes on restart
-		//
-		// When the orchestrator restarts, it attempts to reconnect to stored
-		// sandbox IDs from the manifest. This prevents the hang that occurred
-		// when trying to reconnect to expired sandboxes (1-hour E2B limit).
-		//
-		// The reconnection logic:
-		// 1. Checks if stored sandboxes are too old (>55 minutes)
-		// 2. Attempts connection with a 30-second timeout
-		// 3. Verifies liveness with a health check command
-		// 4. Falls back to creating fresh sandboxes if reconnection fails
-		// =========================================================================
-
+		// Bug fix #1799: Declare instances array outside conditional so it's available in completion phase
 		const instances: SandboxInstance[] = [];
-		let reconnectedCount = 0;
 
-		// Step 1: Check for stored sandbox IDs and attempt reconnection
-		if (manifest.sandbox.sandbox_ids.length > 0) {
-			log("\n🔄 Found stored sandbox IDs, checking if reusable...");
+		// Skip sandbox initialization and work loop if all features already complete
+		// This allows re-running the orchestrator to create review sandbox without wasting resources
+		if (allFeaturesAlreadyComplete) {
+			log(
+				"\n⏭️  Skipping sandbox initialization (all features already complete)",
+			);
+		} else {
+			// =========================================================================
+			// Sandbox Initialization with Reconnection Support
+			// =========================================================================
+			// Bug fix #1634: Handle expired E2B sandboxes on restart
+			//
+			// When the orchestrator restarts, it attempts to reconnect to stored
+			// sandbox IDs from the manifest. This prevents the hang that occurred
+			// when trying to reconnect to expired sandboxes (1-hour E2B limit).
+			//
+			// The reconnection logic:
+			// 1. Checks if stored sandboxes are too old (>55 minutes)
+			// 2. Attempts connection with a 30-second timeout
+			// 3. Verifies liveness with a health check command
+			// 4. Falls back to creating fresh sandboxes if reconnection fails
+			// =========================================================================
 
-			// Check expiration first (avoids hanging on connection)
-			if (isSandboxExpired(manifest.sandbox.created_at)) {
-				const age = getSandboxAgeMinutes(manifest.sandbox.created_at);
-				log(
-					`   ⚠️ Stored sandboxes are ${age ?? "unknown"} minutes old (max: 55 min)`,
-				);
-				log("   Clearing stale sandbox data and creating fresh sandboxes...");
-				clearStaleSandboxData(manifest);
-				saveManifest(manifest);
-			} else {
-				// Attempt reconnection with timeout and liveness verification
-				log(
-					`   Sandboxes are ${getSandboxAgeMinutes(manifest.sandbox.created_at) ?? "?"} minutes old, attempting reconnection...`,
-				);
-				const reconnected = await reconnectToStoredSandboxes(
-					manifest,
-					options.ui,
-				);
+			let reconnectedCount = 0;
 
-				// Add successfully reconnected sandboxes
-				for (const instance of reconnected) {
-					// Update runId for this session
-					instance.runId = runId;
-					instances.push(instance);
-					reconnectedCount++;
-				}
+			// Step 1: Check for stored sandbox IDs and attempt reconnection
+			if (manifest.sandbox.sandbox_ids.length > 0) {
+				log("\n🔄 Found stored sandbox IDs, checking if reusable...");
 
-				if (reconnected.length > 0) {
+				// Check expiration first (avoids hanging on connection)
+				if (isSandboxExpired(manifest.sandbox.created_at)) {
+					const age = getSandboxAgeMinutes(manifest.sandbox.created_at);
 					log(
-						`   ✅ Reconnected to ${reconnected.length} existing sandbox(es)`,
+						`   ⚠️ Stored sandboxes are ${age ?? "unknown"} minutes old (max: 55 min)`,
 					);
-					saveManifest(manifest);
-				} else {
-					log("   ⚠️ Could not reconnect to any stored sandboxes");
+					log("   Clearing stale sandbox data and creating fresh sandboxes...");
 					clearStaleSandboxData(manifest);
 					saveManifest(manifest);
+				} else {
+					// Attempt reconnection with timeout and liveness verification
+					log(
+						`   Sandboxes are ${getSandboxAgeMinutes(manifest.sandbox.created_at) ?? "?"} minutes old, attempting reconnection...`,
+					);
+					const reconnected = await reconnectToStoredSandboxes(
+						manifest,
+						options.ui,
+					);
+
+					// Add successfully reconnected sandboxes
+					for (const instance of reconnected) {
+						// Update runId for this session
+						instance.runId = runId;
+						instances.push(instance);
+						reconnectedCount++;
+					}
+
+					if (reconnected.length > 0) {
+						log(
+							`   ✅ Reconnected to ${reconnected.length} existing sandbox(es)`,
+						);
+						saveManifest(manifest);
+					} else {
+						log("   ⚠️ Could not reconnect to any stored sandboxes");
+						clearStaleSandboxData(manifest);
+						saveManifest(manifest);
+					}
 				}
 			}
-		}
 
-		// Step 2: Create any additional sandboxes needed
-		// Optimization (PR #1707): Parallelize DB reset with first sandbox creation
-		const sandboxesNeeded = options.sandboxCount - instances.length;
+			// Step 2: Create any additional sandboxes needed
+			// Optimization (PR #1707): Parallelize DB reset with first sandbox creation
+			const sandboxesNeeded = options.sandboxCount - instances.length;
 
-		if (sandboxesNeeded > 0) {
-			log(
-				`\n📦 ${reconnectedCount > 0 ? "Creating" : "Creating"} ${sandboxesNeeded} sandbox(es)...`,
-			);
+			if (sandboxesNeeded > 0) {
+				log(
+					`\n📦 ${reconnectedCount > 0 ? "Creating" : "Creating"} ${sandboxesNeeded} sandbox(es)...`,
+				);
 
-			const startIndex = instances.length;
+				const startIndex = instances.length;
 
-			// Parallelize DB reset with first sandbox creation (saves 30-60s on cold starts)
-			if (needsDatabaseReset && startIndex === 0) {
-				log("   ⚡ Parallelizing DB reset with first sandbox creation...");
-				const firstLabel = `sbx-${String.fromCharCode(97 + startIndex)}`;
+				// Parallelize DB reset with first sandbox creation (saves 30-60s on cold starts)
+				if (needsDatabaseReset && startIndex === 0) {
+					log("   ⚡ Parallelizing DB reset with first sandbox creation...");
+					const firstLabel = `sbx-${String.fromCharCode(97 + startIndex)}`;
 
-				const [, firstInstance] = await Promise.all([
-					resetSandboxDatabase(options.ui).catch((error) => {
-						console.error("Failed to reset sandbox database:", error);
-						if (uiManager) uiManager.stop();
-						process.exit(1);
-					}),
-					createSandbox(
-						manifest,
-						firstLabel,
-						options.timeout,
-						options.ui,
-						runId,
-					),
-				]);
+					const [, firstInstance] = await Promise.all([
+						resetSandboxDatabase(options.ui).catch((error) => {
+							console.error("Failed to reset sandbox database:", error);
+							if (uiManager) uiManager.stop();
+							process.exit(1);
+						}),
+						createSandbox(
+							manifest,
+							firstLabel,
+							options.timeout,
+							options.ui,
+							runId,
+						),
+					]);
 
-				instances.push(firstInstance);
+					instances.push(firstInstance);
 
-				// Create remaining sandboxes sequentially (with stagger delay)
-				for (let i = 1; i < sandboxesNeeded; i++) {
-					const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
-					log(
-						`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
-					);
-					await sleep(SANDBOX_STAGGER_DELAY_MS);
-					const instance = await createSandbox(
-						manifest,
-						label,
-						options.timeout,
-						options.ui,
-						runId,
-					);
-					instances.push(instance);
-				}
-			} else {
-				// Sequential creation (no DB reset needed or reconnecting)
-				for (let i = 0; i < sandboxesNeeded; i++) {
-					const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
-
-					// Stagger delay for sandboxes after the first
-					if (i > 0 || startIndex > 0) {
+					// Create remaining sandboxes sequentially (with stagger delay)
+					for (let i = 1; i < sandboxesNeeded; i++) {
+						const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
 						log(
 							`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
 						);
 						await sleep(SANDBOX_STAGGER_DELAY_MS);
+						const instance = await createSandbox(
+							manifest,
+							label,
+							options.timeout,
+							options.ui,
+							runId,
+						);
+						instances.push(instance);
 					}
+				} else {
+					// Sequential creation (no DB reset needed or reconnecting)
+					for (let i = 0; i < sandboxesNeeded; i++) {
+						const label = `sbx-${String.fromCharCode(97 + startIndex + i)}`;
 
-					const instance = await createSandbox(
-						manifest,
-						label,
-						options.timeout,
-						options.ui,
-						runId,
-					);
-					instances.push(instance);
+						// Stagger delay for sandboxes after the first
+						if (i > 0 || startIndex > 0) {
+							log(
+								`\n   ⏳ Waiting ${SANDBOX_STAGGER_DELAY_MS / 1000}s before next sandbox...`,
+							);
+							await sleep(SANDBOX_STAGGER_DELAY_MS);
+						}
+
+						const instance = await createSandbox(
+							manifest,
+							label,
+							options.timeout,
+							options.ui,
+							runId,
+						);
+						instances.push(instance);
+					}
 				}
-			}
-		} else if (needsDatabaseReset) {
-			// No new sandboxes needed but DB reset is required (reconnection case)
-			try {
-				await resetSandboxDatabase(options.ui);
-			} catch (error) {
-				console.error("Failed to reset sandbox database:", error);
-				if (uiManager) uiManager.stop();
-				process.exit(1);
-			}
-		}
-
-		// Get the first instance for seeding (either reconnected or newly created)
-		const firstInstance = instances[0];
-
-		// Seed database via first sandbox (only if not already seeded)
-		// We checked isDatabaseSeeded() earlier to enable this optimization
-		if (
-			!options.skipDbReset &&
-			!options.skipDbSeed &&
-			process.env.SUPABASE_SANDBOX_DB_URL
-		) {
-			// Use the pre-checked seeding status (optimization: avoid redundant check)
-			if (databaseAlreadySeeded) {
-				log("   ℹ️ Database already seeded, skipping seeding step");
-			} else if (firstInstance) {
-				const seedSuccess = await seedSandboxDatabase(
-					firstInstance.sandbox,
-					options.ui,
-				);
-				if (!seedSuccess) {
-					console.error("❌ Database seeding failed, aborting orchestration");
-					await firstInstance.sandbox.kill();
+			} else if (needsDatabaseReset) {
+				// No new sandboxes needed but DB reset is required (reconnection case)
+				try {
+					await resetSandboxDatabase(options.ui);
+				} catch (error) {
+					console.error("Failed to reset sandbox database:", error);
 					if (uiManager) uiManager.stop();
-					releaseLock(options.ui);
 					process.exit(1);
 				}
 			}
-		} else if (options.skipDbSeed) {
-			log("   ⏭️ Skipping database seeding (--skip-db-seed)");
-		}
 
-		saveManifest(manifest);
+			// Get the first instance for seeding (either reconnected or newly created)
+			const firstInstance = instances[0];
 
-		// Print sandbox info
-		log("\n" + "═".repeat(70));
-		log("   SANDBOXES READY");
-		log("═".repeat(70));
-		for (const instance of instances) {
-			log(`${instance.label}: ${instance.id}`);
-		}
-		log(`Branch: ${manifest.sandbox.branch_name}`);
-
-		// Log startup timing (PR #1707 optimization)
-		const startupDurationSec = ((Date.now() - startupStartTime) / 1000).toFixed(
-			1,
-		);
-		log(`⏱️  Startup completed in ${startupDurationSec}s`);
-
-		// Start implementation
-		log("\n" + "═".repeat(70));
-		log("   IMPLEMENTATION");
-		log("═".repeat(70));
-
-		manifest.progress.status = "in_progress";
-		manifest.progress.started_at =
-			manifest.progress.started_at || new Date().toISOString();
-		saveManifest(manifest);
-
-		// Main work loop (or skip for debugging)
-		if (options.skipToCompletion) {
-			log("⏭️  DEBUG MODE: Skipping work loop (--skip-to-completion)");
-			log("   Marking all features as completed for testing...");
-
-			// Mark all pending/in_progress features as completed
-			for (const feature of manifest.feature_queue) {
-				if (feature.status !== "completed" && feature.status !== "failed") {
-					feature.status = "completed";
-					feature.tasks_completed = feature.task_count;
+			// Seed database via first sandbox (only if not already seeded)
+			// We checked isDatabaseSeeded() earlier to enable this optimization
+			if (
+				!options.skipDbReset &&
+				!options.skipDbSeed &&
+				process.env.SUPABASE_SANDBOX_DB_URL
+			) {
+				// Use the pre-checked seeding status (optimization: avoid redundant check)
+				if (databaseAlreadySeeded) {
+					log("   ℹ️ Database already seeded, skipping seeding step");
+				} else if (firstInstance) {
+					const seedSuccess = await seedSandboxDatabase(
+						firstInstance.sandbox,
+						options.ui,
+					);
+					if (!seedSuccess) {
+						console.error("❌ Database seeding failed, aborting orchestration");
+						await firstInstance.sandbox.kill();
+						if (uiManager) uiManager.stop();
+						releaseLock(options.ui);
+						process.exit(1);
+					}
 				}
+			} else if (options.skipDbSeed) {
+				log("   ⏭️ Skipping database seeding (--skip-db-seed)");
 			}
-
-			// Update progress counters
-			manifest.progress.features_completed = manifest.feature_queue.filter(
-				(f) => f.status === "completed",
-			).length;
-			manifest.progress.tasks_completed = manifest.feature_queue.reduce(
-				(sum, f) => sum + (f.status === "completed" ? f.task_count : 0),
-				0,
-			);
-
-			// Update initiative statuses
-			for (const initiative of manifest.initiatives) {
-				const initFeatures = manifest.feature_queue.filter(
-					(f) => f.initiative_id === initiative.id,
-				);
-				const completedCount = initFeatures.filter(
-					(f) => f.status === "completed",
-				).length;
-				initiative.features_completed = completedCount;
-				if (completedCount === initiative.feature_count) {
-					initiative.status = "completed";
-				}
-			}
-			manifest.progress.initiatives_completed = manifest.initiatives.filter(
-				(i) => i.status === "completed",
-			).length;
 
 			saveManifest(manifest);
-		} else {
-			await runWorkLoop(
-				instances,
-				manifest,
-				options.ui,
-				options.timeout,
-				runId,
-			);
-		}
 
-		// Push final changes
-		const pushInstance = instances[0];
-		if (GITHUB_TOKEN && pushInstance) {
-			log("\n📤 Pushing final changes...");
-			try {
-				await pushInstance.sandbox.commands.run(
-					`cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
-					{ timeoutMs: 120000 },
-				);
-				log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
-			} catch (error) {
-				log(`⚠️ Push failed: ${error}`);
+			// Print sandbox info
+			log("\n" + "═".repeat(70));
+			log("   SANDBOXES READY");
+			log("═".repeat(70));
+			for (const instance of instances) {
+				log(`${instance.label}: ${instance.id}`);
 			}
-		}
+			log(`Branch: ${manifest.sandbox.branch_name}`);
 
-		// =======================================================================
-		// Bug fix #1746: Two-phase manifest save approach
-		// Bug fix #1754: Use intermediate "completing" status for proper UI feedback
-		// Phase 1: Set "completing" status and SAVE IMMEDIATELY to prevent frozen UI.
-		//          This ensures UI shows "Setting up review environment..." state.
-		// Phase 2: Set final status ("completed"/"partial") AFTER review sandbox
-		//          operations complete and reviewUrls is populated.
-		//
-		// Previous bug (#1720): Status was set in memory but saveManifest() was only
-		// called after sandbox operations (10+ minutes), leaving UI frozen.
-		// Previous bug (#1753): UI showed "completed" before dev server URL was available
-		// =======================================================================
-		const failedFeatures = manifest.feature_queue.filter(
-			(f) => f.status === "failed",
-		).length;
-		// Phase 1: Set "completing" status - final status will be set in Phase 2
-		manifest.progress.status = "completing";
-		manifest.progress.completed_at = new Date().toISOString();
+			// Log startup timing (PR #1707 optimization)
+			const startupDurationSec = (
+				(Date.now() - startupStartTime) /
+				1000
+			).toFixed(1);
+			log(`⏱️  Startup completed in ${startupDurationSec}s`);
 
-		// Phase 1: Save manifest IMMEDIATELY with "completing" status (empty reviewUrls)
-		// This allows UI to show "Setting up review environment..." while sandbox operations run
-		saveManifest(manifest, [], runId);
+			// Start implementation
+			log("\n" + "═".repeat(70));
+			log("   IMPLEMENTATION");
+			log("═".repeat(70));
 
-		// =======================================================================
-		// Bug fix #1727: Complete lifecycle redesign for completion phase
-		// - Kill ALL implementation sandboxes (not just sbx-b, sbx-c)
-		// - Emit events for all completion phase transitions
-		// - Create fresh review sandbox with clean resources
-		// =======================================================================
+			manifest.progress.status = "in_progress";
+			manifest.progress.started_at =
+				manifest.progress.started_at || new Date().toISOString();
+			saveManifest(manifest);
 
-		log("\n🔄 Starting completion phase...");
-		emitOrchestratorEvent(
-			"completion_phase_start",
-			"Completion phase started - cleaning up implementation sandboxes",
-			{ sandboxCount: instances.length },
-		);
+			// Main work loop (or skip for debugging)
+			if (options.skipToCompletion) {
+				log("⏭️  DEBUG MODE: Skipping work loop (--skip-to-completion)");
+				log("   Marking all features as completed for testing...");
 
-		const reviewUrls: ReviewUrl[] = [];
-
-		// Kill ALL implementation sandboxes (sbx-a, sbx-b, sbx-c, etc.)
-		// Bug fix #1727: Don't keep sbx-a alive - it has resource pressure from 110+ tasks
-		const killedSandboxIds: string[] = [];
-		for (const instance of instances) {
-			try {
-				log(`   ${instance.label}: Stopping...`);
-				emitOrchestratorEvent(
-					"sandbox_killing",
-					`Killing implementation sandbox ${instance.label}`,
-					{ sandboxId: instance.id, label: instance.label },
-				);
-				killedSandboxIds.push(instance.id);
-				await instance.sandbox.kill();
-				log(`   ${instance.label}: ✅ Stopped`);
-			} catch (error) {
-				// Log error but still track as killed
-				log(
-					`   ${instance.label}: ⚠️ Kill failed: ${error instanceof Error ? error.message : error}`,
-				);
-			}
-		}
-
-		// Clean up killed sandbox IDs from manifest
-		if (killedSandboxIds.length > 0) {
-			const previousCount = manifest.sandbox.sandbox_ids.length;
-			manifest.sandbox.sandbox_ids = manifest.sandbox.sandbox_ids.filter(
-				(id) => !killedSandboxIds.includes(id),
-			);
-			const cleanedCount = previousCount - manifest.sandbox.sandbox_ids.length;
-			if (cleanedCount > 0) {
-				log(
-					`   🧹 Cleaned up ${cleanedCount} killed sandbox ID(s) from manifest`,
-				);
-			}
-		}
-
-		// Create a fresh review sandbox for the dev server
-		let reviewSandbox: Sandbox | null = null;
-		const branchName = manifest.sandbox.branch_name;
-
-		if (branchName) {
-			try {
-				log("\n   Creating dedicated review sandbox for dev server...");
-				emitOrchestratorEvent(
-					"review_sandbox_creating",
-					"Creating fresh review sandbox for dev server",
-					{ branchName },
-				);
-				// Wrap with 15-minute timeout as safety net (Bug fix #1760)
-				// Inner pnpm install has 600s timeout, git operations can take 2-4 minutes
-				// Optimization: createReviewSandbox now skips install when dependencies are unchanged
-				// Typical case: 2-3 minutes (git + build only)
-				// Worst case: 10-12 minutes (full install + build)
-				// See: #1739, #1742, #1760 for timeout history
-				reviewSandbox = await withTimeout(
-					createReviewSandbox(branchName, options.timeout, options.ui),
-					900000,
-					"Review sandbox creation",
-				);
-				log("   ✅ Review sandbox created successfully");
-
-				// Track review sandbox ID in manifest immediately
-				if (
-					reviewSandbox &&
-					!manifest.sandbox.sandbox_ids.includes(reviewSandbox.sandboxId)
-				) {
-					manifest.sandbox.sandbox_ids.push(reviewSandbox.sandboxId);
-					log(`   📋 Tracking review sandbox ID: ${reviewSandbox.sandboxId}`);
+				// Mark all pending/in_progress features as completed
+				for (const feature of manifest.feature_queue) {
+					if (feature.status !== "completed" && feature.status !== "failed") {
+						feature.status = "completed";
+						feature.tasks_completed = feature.task_count;
+					}
 				}
-			} catch (error) {
-				log(
-					`   ⚠️ Failed to create review sandbox: ${error instanceof Error ? error.message : error}`,
+
+				// Update progress counters
+				manifest.progress.features_completed = manifest.feature_queue.filter(
+					(f) => f.status === "completed",
+				).length;
+				manifest.progress.tasks_completed = manifest.feature_queue.reduce(
+					(sum, f) => sum + (f.status === "completed" ? f.task_count : 0),
+					0,
 				);
-				// No fallback - all implementation sandboxes are killed
+
+				// Update initiative statuses
+				for (const initiative of manifest.initiatives) {
+					const initFeatures = manifest.feature_queue.filter(
+						(f) => f.initiative_id === initiative.id,
+					);
+					const completedCount = initFeatures.filter(
+						(f) => f.status === "completed",
+					).length;
+					initiative.features_completed = completedCount;
+					if (completedCount === initiative.feature_count) {
+						initiative.status = "completed";
+					}
+				}
+				manifest.progress.initiatives_completed = manifest.initiatives.filter(
+					(i) => i.status === "completed",
+				).length;
+
+				saveManifest(manifest);
+			} else {
+				await runWorkLoop(
+					instances,
+					manifest,
+					options.ui,
+					options.timeout,
+					runId,
+				);
 			}
-		}
 
-		// Start dev server on review sandbox
-		if (reviewSandbox) {
-			log("\n🚀 Starting dev server for review...");
-			emitOrchestratorEvent(
-				"dev_server_starting",
-				"Starting dev server on review sandbox",
-				{ sandboxId: reviewSandbox.sandboxId },
-			);
-
-			const devServerVscodeUrl = getVSCodeUrl(reviewSandbox);
-
-			try {
-				// Use default timeout (180 attempts = 180s) for review sandbox
-				// Next.js cold-start on fresh E2B sandbox can take 90-120s
-				// Wrap with 200-second timeout to prevent indefinite hangs
-				const devServerUrl = await withTimeout(
-					startDevServer(reviewSandbox),
-					200000,
-					"Dev server startup",
-				);
-				reviewUrls.push({
-					label: "sbx-review",
-					vscode: devServerVscodeUrl,
-					devServer: devServerUrl,
-				});
-				log("   ✅ Dev server ready on review sandbox");
-				emitOrchestratorEvent(
-					"dev_server_ready",
-					"Dev server is running and accessible",
-					{ url: devServerUrl },
-				);
-			} catch (error) {
-				log(
-					`   ⚠️ Dev server failed to start: ${error instanceof Error ? error.message : error}`,
-				);
-				emitOrchestratorEvent(
-					"dev_server_failed",
-					`Dev server failed to start: ${error instanceof Error ? error.message : error}`,
-					{ error: error instanceof Error ? error.message : String(error) },
-				);
-				// Still add VS Code URL for code review even if dev server fails
-				reviewUrls.push({
-					label: "sbx-review",
-					vscode: devServerVscodeUrl,
-					devServer: "(failed to start)",
-				});
+			// Push final changes
+			const pushInstance = instances[0];
+			if (GITHUB_TOKEN && pushInstance) {
+				log("\n📤 Pushing final changes...");
+				try {
+					await pushInstance.sandbox.commands.run(
+						`cd /home/user/project && git push -u origin "${manifest.sandbox.branch_name}"`,
+						{ timeoutMs: 120000 },
+					);
+					log(`✅ Pushed to ${manifest.sandbox.branch_name}`);
+				} catch (error) {
+					log(`⚠️ Push failed: ${error}`);
+				}
 			}
-		} else {
-			log("   ⚠️ No review sandbox available - dev server not started");
-			emitOrchestratorEvent(
-				"dev_server_failed",
-				"No review sandbox available - could not start dev server",
-			);
-		}
 
-		// Only the review sandbox should remain running
-		const runningSandboxIds = new Set<string>();
-		if (reviewSandbox) {
-			runningSandboxIds.add(reviewSandbox.sandboxId);
-		}
+			// Documentation Generation (opt-in via --document flag)
+			// Uses extracted generateDocumentation function from completion-phase.ts
+			if (options.document && pushInstance) {
+				await generateDocumentation(pushInstance.sandbox, manifest, log);
+			}
+		} // End of else block for !allFeaturesAlreadyComplete (Bug fix #1799)
 
-		// Log manifest state for debugging
-		log("\n📋 Manifest sandbox state:");
-		log(
-			`   Sandbox IDs in manifest: [${manifest.sandbox.sandbox_ids.join(", ")}]`,
+		// =======================================================================
+		// Completion Phase - extracted to completion-phase.ts
+		// Handles: killing sandboxes, creating review sandbox, starting dev server,
+		// cleaning up orphaned IDs, TTS notification
+		// =======================================================================
+		const completionResult = await executeCompletionPhase(
+			{
+				manifest,
+				instances,
+				timeout: options.timeout,
+				uiEnabled: options.ui,
+				runId,
+			},
+			log,
 		);
-		log(
-			`   Running sandbox IDs: [${Array.from(runningSandboxIds).join(", ")}]`,
-		);
 
-		// Warn if there are orphaned IDs (IDs in manifest but not running)
-		const orphanedIds = manifest.sandbox.sandbox_ids.filter(
-			(id) => !runningSandboxIds.has(id),
-		);
-		if (orphanedIds.length > 0) {
-			log(`   ⚠️ Orphaned sandbox IDs detected: [${orphanedIds.join(", ")}]`);
-			// Remove orphaned IDs to maintain integrity
-			manifest.sandbox.sandbox_ids = manifest.sandbox.sandbox_ids.filter((id) =>
-				runningSandboxIds.has(id),
-			);
-			log(
-				`   🧹 Removed orphaned IDs, manifest now has: [${manifest.sandbox.sandbox_ids.join(", ")}]`,
-			);
-		} else {
-			log("   ✅ Manifest integrity verified (no orphaned sandbox IDs)");
-		}
-
-		// Phase 2: Set final status and save manifest with reviewUrls populated
-		// Bug fix #1746: First save happened at "completing" status (empty reviewUrls)
-		// Bug fix #1754: Only now transition to final status after reviewUrls is populated
-		// This ensures UI shows dev server URL before displaying completion screen
-		manifest.progress.status = failedFeatures === 0 ? "completed" : "partial";
-		saveManifest(manifest, reviewUrls, runId);
-
-		// TTS completion notification (speaks in background, non-blocking)
-		// Issue #1761: Audio notification when orchestrator completes
-		speakCompletion(
-			failedFeatures === 0 ? "completed" : "partial",
-			manifest.progress.features_completed,
-			manifest.progress.features_total,
-		);
+		const { reviewUrls, failedFeatureCount } = completionResult;
 
 		// Print summary (always shown - handles its own output)
 		// Bug fix #1727: No implementation sandboxes remain - all were killed
@@ -1833,7 +884,7 @@ export async function orchestrate(options: OrchestratorOptions): Promise<void> {
 
 		// Note: Lock release moved to finally block for guaranteed cleanup
 
-		if (failedFeatures > 0) {
+		if (failedFeatureCount > 0) {
 			process.exit(1);
 		}
 	} finally {

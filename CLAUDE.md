@@ -699,7 +699,8 @@ Reports are saved to `.ai/reports/` with four category-specific subdirectories:
 | Bug implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
 | Feature plan | `/feature` | `<issue#>-feature-plan-<slug>.md` |
 | Feature implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
-| Chore plan | `/chore` | `<issue#>-chore-plan-<slug>.md` |
+| Chore plan (basic) | `/chore` | `<issue#>-chore-plan-<slug>.md` |
+| Chore plan (detailed) | `/chore-plan` | `<issue#>-chore-plan-<slug>.md` |
 | Chore implementation | `/implement` | `<issue#>-implementation-<slug>.md` |
 | Research (context7) | Agent | `context7-<description>.md` |
 | Research (perplexity) | Agent | `perplexity-<description>.md` |
@@ -710,6 +711,7 @@ Reports are saved to `.ai/reports/` with four category-specific subdirectories:
 - Reports use `pending-` prefix until GitHub issue is created, then renamed with issue number
 - `<slug>` is a short kebab-case description (first few words of title)
 - Date directories use `YYYY-MM-DD` format (e.g., `2025-11-27`)
+- **Chore workflows**: Use `/chore` → `/implement` for simple tasks, or `/chore` → `/chore-plan` → `/implement` for complex tasks requiring detailed research
 
 ### Temporary Files
 

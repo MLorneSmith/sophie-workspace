@@ -323,8 +323,11 @@ export async function getUserIdByEmail(email: string): Promise<string | null> {
  * Unlocks a Payload CMS user by clearing their lockUntil timestamp and resetting login attempts.
  * Use this before auth tests to prevent lockout from accumulated failed attempts.
  *
+ * Note: This function gracefully handles the case where the payload.users table doesn't exist yet,
+ * which can happen when test.beforeAll() runs before Playwright's webServer starts Payload CMS.
+ *
  * @param email - The email of the Payload user to unlock
- * @returns True if a user was found and updated, false if user not found
+ * @returns True if a user was found and updated, false if user not found or table doesn't exist
  */
 export async function unlockPayloadUser(email: string): Promise<boolean> {
 	const { Client } = await import("pg");
@@ -350,6 +353,22 @@ export async function unlockPayloadUser(email: string): Promise<boolean> {
 		}
 
 		return updated;
+	} catch (error) {
+		// Handle the case where payload.users table doesn't exist yet
+		// PostgreSQL error code 42P01 = undefined_table
+		// This can happen when test.beforeAll() runs before webServer starts Payload CMS
+		if (
+			error instanceof Error &&
+			"code" in error &&
+			(error as { code: string }).code === "42P01"
+		) {
+			console.log(
+				"[database-utilities] Payload users table not ready yet (server may still be initializing)",
+			);
+			return false;
+		}
+		// Re-throw other errors - they indicate real problems
+		throw error;
 	} finally {
 		await client.end();
 	}

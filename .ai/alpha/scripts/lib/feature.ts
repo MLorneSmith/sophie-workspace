@@ -39,8 +39,8 @@ import {
 } from "./progress.js";
 import {
 	PTYTimeoutError,
-	waitWithTimeout,
 	type WaitWithTimeoutResult,
+	waitWithTimeout,
 } from "./pty-wrapper.js";
 import {
 	createStartupOutputTracker,
@@ -497,13 +497,48 @@ export async function runFeatureImplementation(
 			// Wait for PTY command to complete
 			// Bug fix #1767: Use timeout wrapper with progress file fallback
 			// If PTY disconnects silently, the wrapper checks progress file for completion
+			// Bug fix #1786: Loop while feature is still running (has recent heartbeat)
 			log(
 				`   │   ⏳ [PTY_WAIT] ${instance.label}: Waiting for PTY to complete...`,
 			);
 
 			let ptyWaitResult: WaitWithTimeoutResult;
+			let stillRunningIterations = 0;
+			const MAX_STILL_RUNNING_ITERATIONS = 120; // 120 * 30s = 60 minutes max
+
 			try {
-				ptyWaitResult = await waitWithTimeout(ptyHandle, instance.sandbox);
+				// Loop while feature is still running (heartbeat is recent)
+				// This prevents killing healthy features due to PTY timeout
+				do {
+					ptyWaitResult = await waitWithTimeout(ptyHandle, instance.sandbox);
+
+					if (ptyWaitResult.stillRunning) {
+						stillRunningIterations++;
+						// Feature is still running with recent heartbeat - continue waiting
+						log(
+							`   │   ⏳ [PTY_STILL_RUNNING] ${instance.label}: Feature still running (heartbeat recent), continuing wait... (iteration ${stillRunningIterations})`,
+						);
+						logStream.write(
+							`[PTY] Feature still running with recent heartbeat, continuing wait (iteration ${stillRunningIterations})\n`,
+						);
+
+						// Safety: prevent infinite loop
+						if (stillRunningIterations >= MAX_STILL_RUNNING_ITERATIONS) {
+							log(
+								`   │   ⚠️ [PTY_MAX_ITERATIONS] ${instance.label}: Max wait iterations reached (${MAX_STILL_RUNNING_ITERATIONS})`,
+							);
+							logStream.write(
+								`[PTY] Max wait iterations reached (${MAX_STILL_RUNNING_ITERATIONS}), treating as stuck\n`,
+							);
+							throw new PTYTimeoutError(
+								instance.sandbox.sandboxId,
+								ptyWaitResult.progressData ?? null,
+								FEATURE_TIMEOUT_MS,
+								`Feature exceeded max wait time (${MAX_STILL_RUNNING_ITERATIONS} iterations)`,
+							);
+						}
+					}
+				} while (ptyWaitResult.stillRunning);
 
 				if (ptyWaitResult.recoveredViaProgressFile) {
 					log(
@@ -549,6 +584,18 @@ export async function runFeatureImplementation(
 		} catch (retryError) {
 			// Check if this was a startup hang that we should retry
 			if (startupHangDetected && attemptNumber < MAX_STARTUP_RETRIES) {
+				// Bug fix #1786: CRITICAL - Kill ALL Claude processes before retry
+				// This prevents zombie processes from accumulating when retrying
+				log(
+					`   │   🔪 [RETRY_CLEANUP] ${instance.label}: Killing Claude processes before retry...`,
+				);
+				logStream.write("\n=== CLEANUP BEFORE RETRY ===\n");
+				await killClaudeProcess(instance, uiEnabled);
+				log(`   │   ✓ [RETRY_CLEANUP] ${instance.label}: Cleanup complete`);
+				logStream.write(
+					"[CLEANUP] Processes killed and progress file cleared\n",
+				);
+
 				// Startup hang detected - wait with exponential backoff then retry
 				const retryDelay = getRetryDelay(attemptNumber);
 				if (retryDelay !== null) {
@@ -560,7 +607,7 @@ export async function runFeatureImplementation(
 					);
 					await new Promise((resolve) => setTimeout(resolve, retryDelay));
 				}
-				continue; // Retry
+				continue; // Retry with clean slate
 			}
 
 			// Max retries exceeded OR different error - propagate to outer catch

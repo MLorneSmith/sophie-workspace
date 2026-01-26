@@ -12,6 +12,7 @@ export type {
 	InitiativeEntry,
 	OrchestratorLock,
 	OrchestratorOptions,
+	RequiredEnvVar,
 	ReviewUrl,
 	SandboxInstance,
 	SandboxProgress,

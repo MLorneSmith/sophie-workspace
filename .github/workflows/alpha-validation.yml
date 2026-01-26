@@ -1,0 +1,53 @@
+name: Alpha Branch Validation
+
+on:
+  push:
+    branches:
+      - 'alpha/spec-*'
+
+concurrency:
+  group: alpha-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10.14.0'
+
+jobs:
+  validate:
+    name: Fresh-Clone Validation
+    runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
+    timeout-minutes: 15
+    env:
+      # Payload CMS requires these environment variables at build time
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

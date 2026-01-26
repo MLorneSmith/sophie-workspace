@@ -107,6 +107,10 @@ function getOrchestratorEventMessage(eventType: OrchestratorEventType): string {
 		dev_server_starting: "Starting development server",
 		dev_server_ready: "Development server ready",
 		dev_server_failed: "Development server failed",
+		// Documentation generation messages
+		documentation_start: "Generating spec documentation",
+		documentation_complete: "Documentation generated",
+		documentation_failed: "Documentation generation failed",
 	};
 	return messages[eventType] || "Unknown event";
 }

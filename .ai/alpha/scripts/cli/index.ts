@@ -32,6 +32,8 @@ export function parseArgs(): OrchestratorOptions {
 		minimalUi: false,
 		reset: false,
 		skipToCompletion: false,
+		skipPreFlight: false,
+		document: false, // Opt-in: generate spec documentation after completion
 	};
 
 	for (let i = 0; i < args.length; i++) {
@@ -65,6 +67,10 @@ export function parseArgs(): OrchestratorOptions {
 			options.minimalUi = true;
 		} else if (arg === "--skip-to-completion") {
 			options.skipToCompletion = true;
+		} else if (arg === "--skip-pre-flight") {
+			options.skipPreFlight = true;
+		} else if (arg === "--document") {
+			options.document = true;
 		} else if (
 			!arg.startsWith("--") &&
 			!arg.startsWith("-") &&
@@ -100,9 +106,11 @@ Options:
   --reset               Reset manifest state (delete and regenerate)
   --skip-db-reset       Skip sandbox database reset at startup
   --skip-db-seed        Skip Payload CMS seeding after reset
+  --skip-pre-flight     Skip interactive environment variable check
   --skip-to-completion  Skip work loop, jump to completion (debugging)
   --no-ui               Disable Ink dashboard UI (uses console output)
   --minimal-ui          Use minimal dashboard (for narrow terminals)
+  --document            Generate spec documentation after completion
 
 Features:
 

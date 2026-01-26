@@ -197,7 +197,7 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     env:
       NODE_ENV: 'test'
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: http://localhost:3001
       NEXT_PUBLIC_PRODUCT_NAME: SlideHeroes
       NEXT_PUBLIC_CI: true
       EMAIL_SENDER: noreply@slideheroes.com
@@ -207,7 +207,7 @@ jobs:
       ENABLE_BILLING_TESTS: true
       DO_NOT_TRACK: 1
       # Required: Tell Playwright which port the app is running on
-      PLAYWRIGHT_BASE_URL: http://localhost:3000
+      PLAYWRIGHT_BASE_URL: http://localhost:3001
     steps:
       # Stagger job creation to prevent GitHub Actions/RunsOn race condition
       # when multiple matrix jobs are created simultaneously (fixes Shard 10 stuck issue)
@@ -277,14 +277,14 @@ jobs:
           # Start Stripe CLI in background
           docker run --add-host=host.docker.internal:host-gateway --rm -it --name=stripe -d \
             stripe/stripe-cli:latest listen \
-            --forward-to http://host.docker.internal:3000/api/billing/webhook \
+            --forward-to http://host.docker.internal:3001/api/billing/webhook \
             --skip-verify --api-key "$STRIPE_SECRET_KEY" --log-level debug &
 
           # Start application
           pnpm --filter web start:test &
 
           # Wait for application to be ready
-          npx wait-on http://localhost:3000 -t 60000
+          npx wait-on http://localhost:3001 -t 60000
 
       - name: Run E2E tests for shard ${{ matrix.shard }}
         run: |

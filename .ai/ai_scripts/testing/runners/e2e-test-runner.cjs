@@ -50,6 +50,39 @@ function stringifyWithTabs(data) {
 	return `${JSON.stringify(data, null, "\t")}\n`;
 }
 
+/**
+ * Parse .env file content into an object
+ * @param {string} filePath - Path to the .env file
+ * @returns {Object} Parsed environment variables (empty object if file doesn't exist)
+ */
+function parseEnvFile(filePath) {
+	const fsSync = require("node:fs");
+	if (!fsSync.existsSync(filePath)) {
+		return {};
+	}
+	const content = fsSync.readFileSync(filePath, "utf-8");
+	const env = {};
+	for (const line of content.split("\n")) {
+		const trimmed = line.trim();
+		// Skip empty lines and comments
+		if (!trimmed || trimmed.startsWith("#")) continue;
+		const eqIndex = trimmed.indexOf("=");
+		if (eqIndex > 0) {
+			const key = trimmed.slice(0, eqIndex).trim();
+			let value = trimmed.slice(eqIndex + 1).trim();
+			// Remove surrounding quotes if present
+			if (
+				(value.startsWith('"') && value.endsWith('"')) ||
+				(value.startsWith("'") && value.endsWith("'"))
+			) {
+				value = value.slice(1, -1);
+			}
+			env[key] = value;
+		}
+	}
+	return env;
+}
+
 class E2ETestRunner {
 	constructor(config, testStatus, phaseCoordinator, resourceLock) {
 		this.config = config;
@@ -1153,6 +1186,18 @@ class E2ETestRunner {
 				// Use the TEST_BASE_URL if set
 				const testUrl = process.env.TEST_BASE_URL || "http://localhost:3001";
 
+				// Load E2E environment variables from apps/e2e/.env.local
+				// This ensures E2E_SUPABASE_SERVICE_ROLE_KEY and other env vars are available
+				// to Playwright global-setup for test user creation
+				// See: Issue #1788 - E2E Test JWT Validation Warning During Test User Setup
+				const e2eEnvPath = path.join(
+					process.cwd(),
+					"apps",
+					"e2e",
+					".env.local",
+				);
+				const e2eEnv = parseEnvFile(e2eEnvPath);
+
 				proc = spawn(command, args, {
 					cwd: cwd,
 					stdio: ["ignore", "pipe", "pipe"],
@@ -1160,6 +1205,7 @@ class E2ETestRunner {
 					detached: process.platform !== "win32", // Create process group on Unix
 					env: {
 						...process.env,
+						...e2eEnv, // E2E-specific env vars (E2E_SUPABASE_*, etc.)
 						PLAYWRIGHT_WORKERS: "1",
 						PLAYWRIGHT_PARALLEL: "false",
 						BASE_URL: testUrl,

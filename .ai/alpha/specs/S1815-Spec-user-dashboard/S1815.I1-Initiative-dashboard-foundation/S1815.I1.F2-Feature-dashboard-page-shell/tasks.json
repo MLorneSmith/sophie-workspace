@@ -1,0 +1,253 @@
+{
+  "$schema": "../../../../../../.ai/alpha/templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I1.F2",
+    "feature_name": "Dashboard Page Shell",
+    "feature_slug": "dashboard-page-shell",
+    "initiative_id": "S1815.I1",
+    "spec_id": "1815",
+    "created_at": "2026-01-26T20:00:00Z",
+    "complexity": {
+      "score": 19,
+      "level": "MINIMAL",
+      "target_steps": { "min": 1, "max": 3 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1815.I1.F2.T3"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I1.F2.T1",
+      "type": "task",
+      "name": "Add generateMetadata function and auth check to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "generateMetadata function and auth check"
+      },
+      "purpose": "Enable SEO with i18n title and ensure user authentication before rendering dashboard",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/assessment/page.tsx"
+        ],
+        "dependencies": [
+          "createI18nServerInstance from ~/lib/i18n/i18n.server",
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "redirect from next/navigation"
+        ],
+        "constraints": [
+          "Follow pattern from assessment/page.tsx",
+          "Use i18n key 'account:homePage' for metadata title",
+          "Redirect to /auth/sign-in if no user",
+          "Keep existing HomeLayoutPageHeader and PageBody structure"
+        ]
+      },
+      "input_state": "Page exists with basic structure (HomeLayoutPageHeader, PageBody, withI18n export) but no auth or metadata",
+      "output_state": "Page has async generateMetadata() function using i18n, async component function with auth.getUser() check and redirect logic",
+      "acceptance_criterion": "Page exports generateMetadata() using 'account:homePage' key, component is async, calls getUser(), redirects to /auth/sign-in if no user, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(generateMetadata|getUser|redirect)' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1815.I1.F2.T2", "S1815.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F2.T2",
+      "type": "task",
+      "name": "Import and call loadUserDashboard from F1 loader",
+      "action": {
+        "verb": "Add",
+        "target": "loadUserDashboard import and function call"
+      },
+      "purpose": "Integrate the data loader created in F1 to fetch dashboard data with user ID",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadUserDashboard from ./_lib/server/dashboard-page.loader",
+          "user object from auth.getUser() in T1"
+        ],
+        "constraints": [
+          "Call loadUserDashboard(client, user.id) after auth check",
+          "Store result in dashboardData variable for use in JSX",
+          "Do not add error handling (loader handles errors gracefully)"
+        ]
+      },
+      "input_state": "Page has auth check with user object, loader function exists in F1 but not called",
+      "output_state": "Page imports loadUserDashboard, calls it with client and user.id, stores result in dashboardData variable",
+      "acceptance_criterion": "File imports loadUserDashboard, calls it after getUser() check, assigns result to const dashboardData, compiles without errors",
+      "verification_command": "pnpm typecheck && grep -E '(import.*loadUserDashboard|const dashboardData)' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F2.T1"],
+        "blocks": ["S1815.I1.F2.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I1.F2.T3",
+      "type": "task",
+      "name": "Wrap PageBody content in Suspense boundary with placeholder grid",
+      "action": {
+        "verb": "Add",
+        "target": "Suspense boundary with DashboardGridPlaceholder fallback"
+      },
+      "purpose": "Enable streaming with loading state while dashboard data loads, preparing for grid widgets in F3",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Home" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "Suspense from react",
+          "Card from @kit/ui/card",
+          "Skeleton from @kit/ui/skeleton",
+          "dashboardData variable from T2"
+        ],
+        "constraints": [
+          "Create simple DashboardGridPlaceholder component inside page.tsx",
+          "Use 3-column grid matching final layout (grid-cols-1 md:grid-cols-2 lg:grid-cols-3)",
+          "Show 6 Card skeletons representing future widgets",
+          "Wrap grid div in Suspense with DashboardGridPlaceholder fallback",
+          "Grid should be empty for now (widgets added in F3+)"
+        ]
+      },
+      "input_state": "Page has loader call with dashboardData but no Suspense or grid structure in PageBody",
+      "output_state": "Page imports Suspense, defines DashboardGridPlaceholder component with skeleton cards, wraps grid div in Suspense boundary, PageBody contains grid structure",
+      "acceptance_criterion": "File imports Suspense, defines DashboardGridPlaceholder with 6 skeleton cards in responsive grid, wraps actual grid in Suspense with fallback, compiles and renders /home route without errors",
+      "verification_command": "pnpm typecheck && grep -E '(Suspense|DashboardGridPlaceholder|grid-cols)' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1815.I1.F2.T1", "S1815.I1.F2.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Metadata and Auth Setup",
+        "task_ids": ["S1815.I1.F2.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Loader Integration",
+        "task_ids": ["S1815.I1.F2.T2"],
+        "depends_on_groups": [1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "UI Structure with Suspense",
+        "task_ids": ["S1815.I1.F2.T3"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1815.I1.F2.T1", "S1815.I1.F2.T2", "S1815.I1.F2.T3"],
+      "total_hours": 6
+    },
+    "duration": {
+      "sequential": 6,
+      "parallel": 6,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1264,6 +1264,11 @@ Commits: 3
 8. **Handle --resume-from** - Skip completed tasks when resuming from crash
 9. **Check parallel batches** - Run Phase 1.5 analysis before execution
 10. **Use --parallel-dry-run** - Validate parallelism analysis before enabling parallel execution
+11. **Dependency tasks require special handling** - When a task adds npm packages:
+    - Run `pnpm install` after modifying package.json
+    - Commit both package.json AND pnpm-lock.yaml
+    - Verify with `pnpm typecheck` to ensure imports work
+    - See task-decompose.md "Dependency Installation Task Pattern" for details
 
 ## Parallel Execution Quick Reference
 

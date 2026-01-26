@@ -1,0 +1,607 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1815.I5.F2",
+    "feature_name": "Empty States Polish",
+    "feature_slug": "empty-states-polish",
+    "initiative_id": "S1815.I5",
+    "spec_id": 1815,
+    "created_at": "2026-01-26T00:00:00Z",
+    "complexity": {
+      "score": 50,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1815.I5.F2.T1",
+      "S1815.I5.F2.T2",
+      "S1815.I5.F2.T3",
+      "S1815.I5.F2.T4",
+      "S1815.I5.F2.T5",
+      "S1815.I5.F2.T6"
+    ],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1815.I5.F2.T1",
+      "type": "task",
+      "name": "Add empty state to Course Progress Widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state with 'Start Course' CTA to Course Progress Widget"
+      },
+      "purpose": "Display helpful empty state when user has no course_progress record",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Start Course"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state",
+          "EmptyStateButton from @kit/ui/empty-state",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Check if courseProgress data is null or undefined",
+          "Heading: 'Start Your Learning Journey'",
+          "Text: 'Begin the presentation skills course to track your progress'",
+          "Button: 'Start Course' linking to /home/course",
+          "data-testid='course-progress-empty-state'"
+        ]
+      },
+      "input_state": "CourseProgressWidget component exists without empty state handling",
+      "output_state": "CourseProgressWidget displays empty state with CTA when no course_progress data",
+      "acceptance_criterion": "Widget renders EmptyState component with Start Course button when courseProgress is null",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T2",
+      "type": "task",
+      "name": "Add empty state to Spider Chart Widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state with 'Take Assessment' CTA to Spider Chart Widget"
+      },
+      "purpose": "Display helpful empty state when user has no survey_responses",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Take Assessment"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/spider-chart-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state",
+          "EmptyStateButton from @kit/ui/empty-state",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Check if surveyResponses data is null or empty",
+          "Heading: 'Assess Your Skills'",
+          "Text: 'Complete the presentation skills assessment to see your strengths'",
+          "Button: 'Take Assessment' linking to /home/assessment/survey",
+          "data-testid='spider-chart-empty-state'"
+        ]
+      },
+      "input_state": "SpiderChartWidget component exists without empty state handling",
+      "output_state": "SpiderChartWidget displays empty state with CTA when no survey_responses data",
+      "acceptance_criterion": "Widget renders EmptyState component with Take Assessment button when surveyResponses is null or empty",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/spider-chart-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T3",
+      "type": "task",
+      "name": "Add empty state to Kanban Summary Widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state with 'Create Task' CTA to Kanban Summary Widget"
+      },
+      "purpose": "Display helpful empty state when user has no tasks",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Create Task"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state",
+          "EmptyStateButton from @kit/ui/empty-state",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Check if tasks array is empty",
+          "Heading: 'No Tasks Yet'",
+          "Text: 'Create your first task to organize your presentation work'",
+          "Button: 'Create Task' linking to /home/kanban",
+          "data-testid='kanban-summary-empty-state'"
+        ]
+      },
+      "input_state": "KanbanSummaryWidget component exists without empty state handling",
+      "output_state": "KanbanSummaryWidget displays empty state with CTA when tasks array is empty",
+      "acceptance_criterion": "Widget renders EmptyState component with Create Task button when tasks.length === 0",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T4",
+      "type": "task",
+      "name": "Add empty state to Activity Feed Widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state message to Activity Feed Widget"
+      },
+      "purpose": "Display helpful message when user has no activities",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Get Started"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state"
+        ],
+        "constraints": [
+          "Check if activities array is empty",
+          "Heading: 'No Activity Yet'",
+          "Text: 'Start creating presentations or taking courses to see your activity here'",
+          "No button needed (message only)",
+          "data-testid='activity-feed-empty-state'"
+        ]
+      },
+      "input_state": "ActivityFeedWidget component exists without empty state handling",
+      "output_state": "ActivityFeedWidget displays empty state message when activities array is empty",
+      "acceptance_criterion": "Widget renders EmptyState component with message when activities.length === 0",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T5",
+      "type": "task",
+      "name": "Add empty state to Coaching Sessions Widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state with 'Book Session' CTA to Coaching Sessions Widget"
+      },
+      "purpose": "Display helpful empty state when user has no coaching sessions booked",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state",
+          "EmptyStateButton from @kit/ui/empty-state",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Check if bookings array is empty",
+          "Heading: 'No Sessions Scheduled'",
+          "Text: 'Book a coaching session to get personalized feedback on your presentations'",
+          "Button: 'Book Session' linking to /home/coaching",
+          "data-testid='coaching-sessions-empty-state'"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget component exists without empty state handling",
+      "output_state": "CoachingSessionsWidget displays empty state with CTA when bookings array is empty",
+      "acceptance_criterion": "Widget renders EmptyState component with Book Session button when bookings.length === 0",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T6",
+      "type": "task",
+      "name": "Standardize Presentations Table empty state",
+      "action": {
+        "verb": "Update",
+        "target": "Presentations Table empty state to match consistent pattern"
+      },
+      "purpose": "Ensure presentations table empty state follows same design pattern as other widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Create Presentation"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/presentations-empty-state.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState from @kit/ui/empty-state",
+          "EmptyStateHeading from @kit/ui/empty-state",
+          "EmptyStateText from @kit/ui/empty-state",
+          "EmptyStateButton from @kit/ui/empty-state",
+          "Link from next/link"
+        ],
+        "constraints": [
+          "Heading: 'No Presentations Yet'",
+          "Text: 'Create your first presentation outline to get started'",
+          "Button: 'Create Presentation' linking to /home/ai/canvas",
+          "data-testid='presentations-empty-state'",
+          "Match styling and structure of other widget empty states"
+        ]
+      },
+      "input_state": "PresentationsEmptyState component exists with basic implementation from F1",
+      "output_state": "PresentationsEmptyState component matches consistent pattern with updated copy",
+      "acceptance_criterion": "Empty state renders with consistent styling and messaging matching other widgets",
+      "verification_command": "pnpm typecheck && pnpm dev",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1815.I5.F2.T7",
+      "type": "task",
+      "name": "Add data-testid attributes to all empty states",
+      "action": {
+        "verb": "Add",
+        "target": "data-testid attributes to all widget empty state components"
+      },
+      "purpose": "Enable E2E test targeting of empty state scenarios",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx",
+          "apps/web/app/home/(user)/_components/spider-chart-widget.tsx",
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/presentations-empty-state.tsx"
+        ],
+        "dependencies": [],
+        "constraints": [
+          "Each empty state wrapper has data-testid='<widget-name>-empty-state'",
+          "Each CTA button has data-testid='<widget-name>-empty-state-cta'",
+          "Verify all testids are kebab-case and descriptive"
+        ]
+      },
+      "input_state": "Empty states exist but lack consistent test targeting attributes",
+      "output_state": "All empty states have data-testid attributes for E2E testing",
+      "acceptance_criterion": "All 6 widget empty states have data-testid on wrapper and CTA buttons",
+      "verification_command": "grep -r 'data-testid.*empty-state' apps/web/app/home/\\(user\\)/_components/ | wc -l",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/spider-chart-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1815.I5.F2.T1",
+          "S1815.I5.F2.T2",
+          "S1815.I5.F2.T3",
+          "S1815.I5.F2.T4",
+          "S1815.I5.F2.T5",
+          "S1815.I5.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": false
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Widget Empty States",
+        "task_ids": [
+          "S1815.I5.F2.T1",
+          "S1815.I5.F2.T2",
+          "S1815.I5.F2.T3",
+          "S1815.I5.F2.T4",
+          "S1815.I5.F2.T5",
+          "S1815.I5.F2.T6"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 12,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Testing Support",
+        "task_ids": ["S1815.I5.F2.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1815.I5.F2.T1",
+        "S1815.I5.F2.T7"
+      ],
+      "total_hours": 3
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 3,
+      "time_saved_percent": 77
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -28,6 +28,10 @@ export type OrchestratorDatabaseEventType =
 	| "db_migration_complete"
 	| "db_seed_start"
 	| "db_seed_complete"
+	| "db_auth_seed_start"
+	| "db_auth_seed_complete"
+	| "db_auth_seed_failed"
+	| "db_auth_seed_error"
 	| "db_verify";
 
 /**
@@ -49,11 +53,38 @@ export type OrchestratorCompletionEventType =
 	| "dev_server_failed";
 
 /**
+ * Event types emitted by the orchestrator for deadlock detection (Bug fix #1777)
+ * and phantom completion recovery (Bug fix #1782).
+ * These provide visibility into automatic feature retries and phantom completion recovery.
+ */
+export type OrchestratorDeadlockEventType =
+	/** Emitted when a failed feature is being retried after deadlock detection */
+	| "feature_retry"
+	/** Emitted when an initiative is marked as failed due to max retries exceeded */
+	| "initiative_failed"
+	/** Emitted when a phantom-completed feature is detected and recovered (Bug fix #1782) */
+	| "phantom_completion_detected";
+
+/**
+ * Event types emitted by the orchestrator during documentation generation.
+ * These provide visibility into spec-level documentation creation via /alpha:document.
+ */
+export type OrchestratorDocumentationEventType =
+	/** Emitted when starting spec documentation generation */
+	| "documentation_start"
+	/** Emitted when documentation is successfully generated */
+	| "documentation_complete"
+	/** Emitted when documentation generation fails */
+	| "documentation_failed";
+
+/**
  * Combined event type for all orchestrator events
  */
 export type OrchestratorEventType =
 	| OrchestratorDatabaseEventType
-	| OrchestratorCompletionEventType;
+	| OrchestratorCompletionEventType
+	| OrchestratorDeadlockEventType
+	| OrchestratorDocumentationEventType;
 
 /**
  * Structure of an orchestrator event sent to the event server

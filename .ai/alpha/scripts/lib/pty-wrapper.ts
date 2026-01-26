@@ -24,8 +24,8 @@ import {
 import {
 	isFeatureCompleted,
 	isProgressFileStale,
-	readProgressFile,
 	type ProgressFileData,
+	readProgressFile,
 } from "./progress-file.js";
 
 // ============================================================================
@@ -79,6 +79,8 @@ export interface WaitWithTimeoutResult {
 	recoveredViaProgressFile: boolean;
 	/** Progress file data if recovery was used */
 	progressData?: ProgressFileData;
+	/** Whether the feature is still running (heartbeat is recent) */
+	stillRunning?: boolean;
 }
 
 // ============================================================================
@@ -228,14 +230,20 @@ async function attemptProgressFileRecovery(
 		};
 	}
 
-	// Case 4: Feature is still in progress - genuinely stuck
-	ptyTelemetry.recoveryFailed++;
-	throw new PTYTimeoutError(
-		sandboxId,
+	// Case 4: Feature is still in progress with recent heartbeat - NOT stuck, still running
+	// Bug fix #1786: Don't throw error when heartbeat is recent - feature is actively working
+	// The caller should handle stillRunning=true by continuing to wait or extending timeout
+	// Note: At this point, we already know heartbeat is NOT stale (checked in Case 2 above)
+	// So this is a feature actively working with recent heartbeats - we should NOT interrupt it
+	// Heartbeat is recent - Claude is still working, don't interrupt
+	// Return a result indicating the feature is still running
+	return {
+		exitCode: -1, // Signal "still running"
+		normalCompletion: false,
+		recoveredViaProgressFile: false,
 		progressData,
-		timeoutMs,
-		`Feature status is "${progressData.status}" - not completed`,
-	);
+		stillRunning: true,
+	};
 }
 
 // ============================================================================

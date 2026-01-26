@@ -36,6 +36,8 @@ export interface FeatureEntry {
 	error?: string;
 	requires_database: boolean;
 	database_task_count: number;
+	/** Number of retry attempts for deadlock recovery (Bug fix #1777) */
+	retry_count?: number;
 }
 
 export interface InitiativeEntry {
@@ -54,6 +56,25 @@ export interface InitiativeEntry {
 // Manifest Types
 // ============================================================================
 
+/**
+ * Required environment variable specification.
+ * Used to track external service credentials needed by features.
+ */
+export interface RequiredEnvVar {
+	/** Environment variable name (e.g., CAL_OAUTH_CLIENT_ID) */
+	name: string;
+	/** What this credential is used for */
+	description: string;
+	/** Where to obtain this credential (URL or instructions) */
+	source: string;
+	/** If false, feature can degrade gracefully without this */
+	required: boolean;
+	/** Where variable is used (affects NEXT_PUBLIC_ prefix) */
+	scope: "client" | "server" | "both";
+	/** Which features need this variable */
+	features: string[];
+}
+
 export interface SpecManifest {
 	metadata: {
 		spec_id: string; // Semantic ID: S1362 or legacy: 1362
@@ -61,6 +82,8 @@ export interface SpecManifest {
 		generated_at: string;
 		spec_dir: string;
 		research_dir: string;
+		/** Aggregated environment variables required by all features in this spec */
+		required_env_vars?: RequiredEnvVar[];
 	};
 	initiatives: InitiativeEntry[];
 	feature_queue: FeatureEntry[];
@@ -113,6 +136,10 @@ export interface OrchestratorOptions {
 	reset: boolean;
 	/** Skip work loop and jump to completion sequence (for debugging) */
 	skipToCompletion: boolean;
+	/** Skip interactive pre-flight environment variable check */
+	skipPreFlight: boolean;
+	/** Generate spec-level documentation after completion using /alpha:document */
+	document: boolean;
 }
 
 export interface OrchestratorLock {

@@ -94,6 +94,39 @@
 					"type": "array",
 					"items": { "type": "string" },
 					"description": "List of task IDs that require UI verification (e.g., ['T4', 'T5', 'T8'])"
+				},
+				"required_env_vars": {
+					"type": "array",
+					"description": "Environment variables/credentials this feature requires at runtime",
+					"items": {
+						"type": "object",
+						"required": ["name", "description", "source"],
+						"properties": {
+							"name": {
+								"type": "string",
+								"pattern": "^[A-Z][A-Z0-9_]*$",
+								"description": "Environment variable name (e.g., CAL_OAUTH_CLIENT_ID)"
+							},
+							"description": {
+								"type": "string",
+								"description": "What this credential is used for"
+							},
+							"source": {
+								"type": "string",
+								"description": "Where to obtain this credential (URL or instructions)"
+							},
+							"required": {
+								"type": "boolean",
+								"default": true,
+								"description": "If false, feature can degrade gracefully without this"
+							},
+							"scope": {
+								"type": "string",
+								"enum": ["client", "server", "both"],
+								"description": "Where variable is used (affects NEXT_PUBLIC_ prefix)"
+							}
+						}
+					}
 				}
 			}
 		},
@@ -507,6 +540,16 @@
 					"type": "string",
 					"pattern": "^\\d+_[A-Za-z0-9]+$",
 					"description": "Prefix for migration filename (e.g., '1367_T3') to ensure uniqueness across parallel features"
+				},
+				"requires_dependency_install": {
+					"type": "boolean",
+					"default": false,
+					"description": "True if this task adds/modifies npm dependencies (package.json changes)"
+				},
+				"packages_added": {
+					"type": "array",
+					"items": { "type": "string" },
+					"description": "List of npm packages added by this task (e.g., ['@example/package', 'lodash'])"
 				},
 				"requires_ui": {
 					"type": "boolean",

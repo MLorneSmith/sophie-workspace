@@ -221,6 +221,10 @@ const OrchestratorApp: React.FC<{
 				dev_server_starting: "Starting dev server",
 				dev_server_ready: "Dev server ready",
 				dev_server_failed: "Dev server failed",
+				// Documentation generation messages
+				documentation_start: "Generating spec documentation",
+				documentation_complete: "Documentation generated",
+				documentation_failed: "Documentation generation failed",
 			};
 			return messages[eventType] || "Unknown event";
 		},

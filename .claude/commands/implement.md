@@ -122,12 +122,17 @@ Before starting implementation:
 ## Reference to Planning Commands
 
 Implementation plans are created by these planning commands:
-- `/bug-plan` - Creates bug fix plans from diagnosis issues
+- `/bug-plan` - Creates detailed bug fix plans from diagnosis issues
 - `/feature` - Creates feature implementation plans
-- `/chore` - Creates maintenance/refactoring plans
+- `/chore` - Creates basic maintenance/refactoring plans
+- `/chore-plan` - Creates detailed implementation plans from chore issues (optional, more thorough)
 - `/diagnose` - Creates diagnostic reports (which then lead to bug fix plans)
 
 If you need to create a new plan, use one of the above commands first.
+
+**Note**: For chores, you can either:
+1. Use `/chore` directly and then `/implement` for simpler tasks
+2. Use `/chore` → `/chore-plan` → `/implement` for complex tasks requiring detailed research
 
 ## Plan
 If $ARGUMENTS is not a GitHub issue number, treat it as the plan content directly:

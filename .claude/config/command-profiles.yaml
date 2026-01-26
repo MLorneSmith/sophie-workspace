@@ -19,6 +19,16 @@ profiles:
       - "development/architecture-overview.md"
 
     # Conditional rules: load these files when keywords match
+    #
+    # NOTE: After completing a spec with /alpha:document, add routing rules here
+    # to include spec documentation for related future implementations.
+    #
+    # Example (uncomment and customize when spec documentation exists):
+    # - keywords: ["dashboard", "widget", "activity feed", "user home"]
+    #   files:
+    #     - "specs/S1692-user-dashboard.md"
+    #   priority: medium
+    #
     rules:
       # Database & Migration Work
       - keywords: ["database", "migration", "schema", "RLS", "postgres", "table", "query", "supabase"]
@@ -392,6 +402,116 @@ profiles:
         - "development/makerkit-integration.md"
       quality:
         - "testing+quality/fundamentals.md"
+
+  # ============================================================================
+  # /chore-plan - Create detailed implementation plans from chore issues
+  # ============================================================================
+  chore-plan:
+    description: "Create detailed implementation plans from chore issues"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Dependency Updates
+      - keywords: ["dependency", "dependencies", "update", "upgrade", "npm", "pnpm", "package", "version"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: high
+
+      # Infrastructure Maintenance
+      - keywords: ["docker", "container", "infrastructure", "deployment", "ci/cd", "pipeline"]
+        files:
+          - "infrastructure/docker-setup.md"
+          - "infrastructure/vercel-deployment.md"
+          - "infrastructure/ci-cd-complete.md"
+        priority: high
+
+      # E2B Sandbox Maintenance
+      - keywords: ["e2b", "sandbox", "template", "cloud vm"]
+        files:
+          - "infrastructure/e2b-sandbox.md"
+        priority: medium
+
+      # Database Maintenance
+      - keywords: ["database", "migration", "schema", "cleanup", "optimization", "postgres"]
+        files:
+          - "development/database-patterns.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Database Reset & Seeding Maintenance
+      - keywords: ["reset", "seed", "payload seed", "supabase reset", "regenerate migrations"]
+        files:
+          - "infrastructure/supabase-reset-system.md"
+          - "infrastructure/database-seeding.md"
+        priority: high
+
+      # Code Quality & Refactoring
+      - keywords: ["refactor", "cleanup", "lint", "format", "typescript", "eslint", "code quality"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Testing Improvements
+      - keywords: ["test", "testing", "coverage", "e2e", "unit", "vitest", "playwright"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+      # MakerKit Updates
+      - keywords: ["makerkit", "upstream", "merge", "template", "kit package"]
+        files:
+          - "development/makerkit-integration.md"
+        priority: high
+
+      # Payload CMS Updates
+      - keywords: ["payload", "cms", "payload cms", "lexical", "editor"]
+        files:
+          - "development/architecture-overview.md"
+        priority: high
+
+      # Logging/Monitoring
+      - keywords: ["logging", "logger", "monitoring", "observability", "pino"]
+        files:
+          - "infrastructure/enhanced-logger.md"
+        priority: medium
+
+      # Security Updates
+      - keywords: ["security", "vulnerability", "patch", "cve", "audit"]
+        files:
+          - "infrastructure/auth-security.md"
+          - "infrastructure/production-security.md"
+        priority: high
+
+      # Build & Tooling
+      - keywords: ["build", "webpack", "vite", "turbo", "turborepo", "bundler", "tooling"]
+        files:
+          - "development/architecture-overview.md"
+        priority: medium
+
+      # Authentication Related
+      - keywords: ["auth", "authentication", "authorization", "session", "jwt"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+    categories:
+      infrastructure:
+        - "infrastructure/docker-setup.md"
+        - "infrastructure/vercel-deployment.md"
+        - "infrastructure/ci-cd-complete.md"
+      tooling:
+        - "development/makerkit-integration.md"
+        - "development/architecture-overview.md"
+      quality:
+        - "testing+quality/fundamentals.md"
+        - "testing+quality/e2e-testing.md"
+      security:
+        - "infrastructure/auth-security.md"
+        - "infrastructure/production-security.md"
 
   # ============================================================================
   # /bug-plan - Create bug fix plans from diagnosis
@@ -796,6 +916,67 @@ profiles:
         - "development/react-query-patterns.md"
       testing:
         - "testing+quality/fundamentals.md"
+
+# ============================================================================
+  # /alpha:document - Generate spec-level documentation after implementation
+  # ============================================================================
+  alpha-document:
+    description: "Generate spec-level documentation after Alpha implementation completes"
+
+    defaults:
+      - "development/architecture-overview.md"
+
+    rules:
+      # Dashboard & Widget Features
+      - keywords: ["dashboard", "widget", "chart", "visualization", "grid", "layout", "card"]
+        files:
+          - "development/shadcn-ui-components.md"
+          - "development/react-query-patterns.md"
+        priority: high
+
+      # Database & Schema
+      - keywords: ["database", "migration", "schema", "RLS", "table", "query"]
+        files:
+          - "development/database-patterns.md"
+        priority: high
+
+      # Server Actions & API
+      - keywords: ["server action", "loader", "mutation", "api", "endpoint"]
+        files:
+          - "development/server-actions.md"
+        priority: high
+
+      # Authentication
+      - keywords: ["auth", "login", "permission", "role", "session"]
+        files:
+          - "infrastructure/auth-overview.md"
+          - "infrastructure/auth-implementation.md"
+        priority: high
+
+      # External Integrations
+      - keywords: ["cal.com", "stripe", "external", "integration", "webhook", "api"]
+        files:
+          - "development/server-actions.md"
+        priority: medium
+
+      # Testing
+      - keywords: ["test", "e2e", "unit", "coverage"]
+        files:
+          - "testing+quality/fundamentals.md"
+          - "testing+quality/e2e-testing.md"
+        priority: medium
+
+    categories:
+      full_stack:
+        - "development/architecture-overview.md"
+        - "development/server-actions.md"
+        - "development/shadcn-ui-components.md"
+      frontend:
+        - "development/shadcn-ui-components.md"
+        - "development/react-query-patterns.md"
+      backend:
+        - "development/server-actions.md"
+        - "development/database-patterns.md"
 
 # ============================================================================
 # Routing Configuration

@@ -131,7 +131,7 @@
 		"@biomejs/biome": "2.3.8",
 		"@commitlint/cli": "^20.2.0",
 		"@commitlint/config-conventional": "^20.2.0",
-		"@e2b/code-interpreter": "^2.3.1",
+		"@e2b/code-interpreter": "^2.3.3",
 		"@manypkg/cli": "^0.25.1",
 		"@playwright/test": "^1.57.0",
 		"@turbo/gen": "^2.6.3",

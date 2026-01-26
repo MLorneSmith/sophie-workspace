@@ -1,0 +1,127 @@
+# Email Export - Art of Email (the new shiny ARM)
+# Exported from Gmail on 2026-01-24T18:15:24.748Z
+# Fill in the annotations section to capture writing style patterns
+---
+metadata:
+  id: "17be474563400bf0"
+  exportedAt: "2026-01-24T18:15:24.748Z"
+  source: "gmail"
+  labels:
+    - "andre"
+    - "IMPORTANT"
+    - "CATEGORY_PERSONAL"
+headers:
+  from: "\"Andre & Shawn\" <hello@tinylittlebusinesses.com>"
+  to: "Michael <msmith@slideheroes.com>"
+  subject: "Art of Email (the new shiny ARM)"
+  date: "Tue, 14 Sep 2021 13:17:13 +0000 (UTC)"
+  messageId: "<68uzp9k8mnu8hm9x0wso@convertkit-mail.com>"
+thread:
+  threadId: "17be474563400bf0"
+  position: 1
+  totalInThread: 1
+  isFirstInThread: true
+  isLastInThread: true
+content:
+  body: |
+    [Original content preserved - abbreviated for space]
+  hasHtml: true
+annotations:
+  # === CAMPAIGN CONTEXT ===
+  campaign: "standalone"
+  campaign_full: "Art of Email Launch Announcement"
+  position: null
+  sequence_length: null
+  email_type: "sales"
+
+  # === PURPOSE & AUDIENCE ===
+  purpose: |
+    Major product announcement email to existing ARM customers announcing the
+    rebrand to Art of Email, explaining free upgrade, and introducing the
+    optional live workshop upsell.
+
+  audience: "Existing ARM customers"
+
+  # === TECHNIQUES USED ===
+  techniques_used:
+    - technique: "Exclusivity Header"
+      location: "opening"
+      example: "ATT: THIS IS FOR ARM CUSTOMERS ONLY..."
+      notes: "Creates VIP feeling, filters audience"
+    - technique: "Dual Voice Introduction"
+      location: "opening"
+      example: "Andre will lead off with the announcement, Shawn will add some context"
+      notes: "Sets up collaborative structure"
+    - technique: "Section Divider"
+      location: "throughout"
+      example: "S"
+      notes: "Visual breaks signal voice/topic changes"
+    - technique: "Historical Journey"
+      location: "body"
+      example: "I published ARM3 in 2012..."
+      notes: "Establishes longevity and evolution"
+    - technique: "Vulnerability About Struggle"
+      location: "body"
+      example: "I've been trying, unsuccessfully, to birth the next edition of ARM for many (many!) years"
+      notes: "Honest about difficulty builds anticipation"
+    - technique: "Proud Parent Metaphor"
+      location: "body"
+      example: "I feel like a proud dad announcing this."
+      notes: "Emotional connection to the work"
+    - technique: "Partner Attribution"
+      location: "body"
+      example: "this could not have happened without Shawn's contributions"
+      notes: "Generous credit to collaborator"
+    - technique: "Social Proof Story"
+      location: "body"
+      example: "\"We do about $100 million a year, and what you teach in ARM has contributed to the foundation...\""
+      notes: "Specific impressive testimonial"
+    - technique: "Third-Party Praise"
+      location: "body"
+      example: "Shawn's section: 'Andre is also one of the most humble people you'll ever meet'"
+      notes: "Partner provides credibility Andre couldn't claim himself"
+    - technique: "Industry Authority Statement"
+      location: "body"
+      example: "if you could pick the hundred most successful digital marketers...ninety-nine would say 'Andre Chaperon'"
+      notes: "Bold claim from third party (Shawn)"
+    - technique: "Behavior Over Words"
+      location: "body"
+      example: "people vote with their behavior...long before Andre and I were business partners...I was an ARM customer"
+      notes: "Ultimate testimonial - became partner after being customer"
+    - technique: "Free Upgrade Announcement"
+      location: "body"
+      example: "you will get access to the Art of Email for free"
+      notes: "Major value proposition for existing customers"
+    - technique: "Price Stacking"
+      location: "body"
+      example: "AoE costs $495. AoE (The Workshop) will also be $495. (That's a $990 investment for new customers.)"
+      notes: "Shows value existing customers receive"
+
+  # === HOOK ANALYSIS ===
+  hook:
+    type: "announcement"
+    text: "ATT: THIS IS FOR ARM CUSTOMERS ONLY..."
+    effectiveness: "Exclusivity creates immediate attention and filters to engaged audience"
+
+  # === STRUCTURAL NOTES ===
+  structure:
+    opening: "Exclusivity + dual voice setup"
+    body: "Andre's story + Shawn's context + ARM legacy + announcement + pricing"
+    closing: "Interest list CTA + timeline"
+
+  # === WHAT MAKES THIS EMAIL EFFECTIVE ===
+  effectiveness_notes: |
+    - Exclusivity header makes readers feel special
+    - Dual voice structure is unique and engaging
+    - Andre's struggle makes launch feel earned
+    - Shawn's third-party praise is more credible than self-promotion
+    - Free upgrade for existing customers builds massive goodwill
+    - Workshop upsell feels like added value, not money grab
+    - $100M testimonial is powerful social proof
+
+  # === QUOTABLE LINES ===
+  quotable:
+    - "I feel like a proud dad announcing this."
+    - "In the Internet marketing world, few courses have stood the test of time."
+    - "A 'lifetime' purchase in our books means lifetime, regardless of a name change."
+    - "people vote with their behavior"

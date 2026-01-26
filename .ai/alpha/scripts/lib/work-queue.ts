@@ -52,15 +52,22 @@ const ASSIGNMENT_CONFLICT_WINDOW_MS = 30_000; // 30 seconds
 * 1. Is not assigned to another sandbox (with timestamp-based conflict detection)
 * 1. Database features are serialized (only one DB feature at a time)
 *
+* Supports both feature-level and initiative-level dependencies (#1820):
+* - Feature-level (S#.I#.F#): Checks if specific feature is completed
+* - Initiative-level (S#.I#): Checks if ALL features in initiative are completed
+*
 * @param manifest - The spec manifest containing the feature queue
 * @param uiEnabled - Whether UI mode is enabled (suppresses console output)
+* @param debugDeps - Whether to enable detailed dependency logging
 * @returns The next available feature, or null if none available
  */
 export function getNextAvailableFeature(
 	manifest: SpecManifest,
 	uiEnabled = false,
+	debugDeps = false,
 ): FeatureEntry | null {
 	const { log } = createLogger(uiEnabled);
+	const debugLog = debugDeps ? log : () => {};
 	const now = Date.now();
 	const completedFeatureIds = new Set(
 		manifest.feature_queue
@@ -73,6 +80,10 @@ export function getNextAvailableFeature(
 		manifest.initiatives
 			.filter((i) => i.status === "completed")
 			.map((i) => i.id),
+	);
+
+	debugLog(
+		`🔍 [DEP_DEBUG] Checking availability: ${completedFeatureIds.size} features completed, ${completedInitiativeIds.size} initiatives completed`,
 	);
 
 	// Check if a database feature is currently running
@@ -136,23 +147,34 @@ export function getNextAvailableFeature(
 		}
 
 		// Check if all dependencies are satisfied
+		const unsatisfiedDeps: string[] = [];
 		const depsComplete = feature.dependencies.every((depId) => {
 			// Check if it's a completed feature
 			if (completedFeatureIds.has(depId)) {
+				debugLog(`   ✓ ${feature.id}: dep ${depId} satisfied (feature)`);
 				return true;
 			}
 			// Check if it's a completed initiative
 			if (completedInitiativeIds.has(depId)) {
+				debugLog(`   ✓ ${feature.id}: dep ${depId} satisfied (initiative)`);
 				return true;
 			}
+			unsatisfiedDeps.push(depId);
+			debugLog(`   ✗ ${feature.id}: dep ${depId} NOT satisfied`);
 			return false;
 		});
 
 		if (depsComplete) {
+			debugLog(`🟢 [DEP_DEBUG] Feature ${feature.id} is AVAILABLE`);
 			return feature;
 		}
+
+		debugLog(
+			`🔴 [DEP_DEBUG] Feature ${feature.id} BLOCKED by: ${unsatisfiedDeps.join(", ")}`,
+		);
 	}
 
+	debugLog("⚠️ [DEP_DEBUG] No features available");
 	return null;
 }
 
@@ -362,4 +384,176 @@ export function getBlockedFeatures(
 	}
 
 	return blocked;
+}
+
+// ============================================================================
+// Deadlock Detection Helpers (Bug fix #1777)
+// ============================================================================
+
+/** Default maximum retry attempts for failed features in deadlock recovery */
+export const DEFAULT_MAX_RETRIES = 3;
+
+/**
+ * Get failed features that are blocking other features from being assigned.
+ *
+ * A failed feature "blocks" other features if:
+ * 1. The failed feature belongs to an initiative
+ * 2. Other features depend on that initiative being completed
+ * 3. The initiative cannot complete because this feature failed
+ *
+ * This is used for deadlock detection when all sandboxes are idle
+ * but some features can't be assigned due to failed features blocking
+ * initiative completion.
+ *
+ * @param manifest - The spec manifest to check
+ * @returns Array of failed features that are blocking the queue
+ */
+export function getBlockingFailedFeatures(
+	manifest: SpecManifest,
+): FeatureEntry[] {
+	// Get all failed features
+	const failedFeatures = manifest.feature_queue.filter(
+		(f) => f.status === "failed",
+	);
+
+	if (failedFeatures.length === 0) {
+		return [];
+	}
+
+	// Get initiatives that have failed features (these can't complete)
+	const initiativesWithFailures = new Set(
+		failedFeatures.map((f) => f.initiative_id),
+	);
+
+	// Get completed initiatives and features for dependency checking
+	const completedFeatureIds = new Set(
+		manifest.feature_queue
+			.filter((f) => f.status === "completed")
+			.map((f) => f.id),
+	);
+	const completedInitiativeIds = new Set(
+		manifest.initiatives
+			.filter((i) => i.status === "completed")
+			.map((i) => i.id),
+	);
+
+	// Find features that are blocked by initiatives with failures
+	const featuresBlockedByFailures = manifest.feature_queue.filter((f) => {
+		// Only consider pending/failed features (not completed/in_progress)
+		if (f.status !== "pending" && f.status !== "failed") {
+			return false;
+		}
+
+		// Check if any dependency is an initiative with a failed feature
+		return f.dependencies.some((depId) => {
+			// If dep is already completed, it doesn't block
+			if (completedFeatureIds.has(depId) || completedInitiativeIds.has(depId)) {
+				return false;
+			}
+
+			// Check if this dep is an initiative with failures
+			return initiativesWithFailures.has(depId);
+		});
+	});
+
+	// If there are features blocked by initiatives with failures,
+	// return the failed features from those initiatives
+	if (featuresBlockedByFailures.length > 0) {
+		return failedFeatures.filter((f) =>
+			initiativesWithFailures.has(f.initiative_id),
+		);
+	}
+
+	return [];
+}
+
+/**
+ * Check if a failed feature should be retried based on its retry count.
+ *
+ * @param feature - The failed feature to check
+ * @param maxRetries - Maximum number of retry attempts (default: 3)
+ * @returns true if the feature can be retried, false if max retries exceeded
+ */
+export function shouldRetryFailedFeature(
+	feature: FeatureEntry,
+	maxRetries: number = DEFAULT_MAX_RETRIES,
+): boolean {
+	const retryCount = feature.retry_count ?? 0;
+	return retryCount < maxRetries;
+}
+
+/**
+ * Reset a failed feature for retry.
+ *
+ * This function:
+ * - Sets status back to "pending"
+ * - Clears the error message
+ * - Clears sandbox assignment (assigned_sandbox, assigned_at)
+ * - Increments retry_count
+ *
+ * Note: The caller must save the manifest after calling this function.
+ *
+ * @param feature - The failed feature to reset
+ */
+export function resetFailedFeatureForRetry(feature: FeatureEntry): void {
+	// Increment retry count FIRST (before resetting status)
+	feature.retry_count = (feature.retry_count ?? 0) + 1;
+
+	// Reset to pending status
+	feature.status = "pending";
+
+	// Clear error message for fresh attempt
+	feature.error = undefined;
+
+	// Clear sandbox assignment
+	feature.assigned_sandbox = undefined;
+	feature.assigned_at = undefined;
+}
+
+// ============================================================================
+// Phantom Completion Detection (Bug fix #1782)
+// ============================================================================
+
+/**
+ * Get features that are in "phantom completion" state.
+ *
+ * A phantom-completed feature has:
+ * 1. status === "in_progress"
+ * 2. tasks_completed >= task_count (all tasks done)
+ * 3. Not currently being worked on (sandbox not busy)
+ *
+ * This happens when task execution completes but the manifest status
+ * wasn't updated (race condition between PTY completion and manifest save).
+ *
+ * @param manifest - The spec manifest to check
+ * @param busySandboxLabels - Set of sandbox labels that are currently busy
+ * @returns Array of features in phantom completion state
+ */
+export function getPhantomCompletedFeatures(
+	manifest: SpecManifest,
+	busySandboxLabels: Set<string>,
+): FeatureEntry[] {
+	return manifest.feature_queue.filter((feature) => {
+		// Must be in_progress to be phantom-completed
+		if (feature.status !== "in_progress") {
+			return false;
+		}
+
+		// Must have all tasks completed
+		const tasksCompleted = feature.tasks_completed ?? 0;
+		if (tasksCompleted < feature.task_count) {
+			return false;
+		}
+
+		// Must not have an active sandbox working on it
+		// (sandbox is not busy OR feature has no assigned sandbox)
+		if (
+			feature.assigned_sandbox &&
+			busySandboxLabels.has(feature.assigned_sandbox)
+		) {
+			return false;
+		}
+
+		return true;
+	});
 }
