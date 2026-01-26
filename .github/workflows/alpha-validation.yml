@@ -21,6 +21,12 @@ jobs:
     name: Fresh-Clone Validation
     runs-on: runs-on=${{ github.run_id }}/runner=2cpu-linux-x64
     timeout-minutes: 15
+    env:
+      # Payload CMS requires these environment variables at build time
+      PAYLOAD_SECRET: 'test_payload_secret_for_e2e_testing'
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      DATABASE_URI: 'postgresql://postgres:postgres@localhost:54522/postgres'
+      PAYLOAD_PUBLIC_SERVER_URL: 'http://localhost:3020'
 
     steps:
       - name: Checkout
