@@ -22,7 +22,8 @@ thread:
   isFirstInThread: true
   isLastInThread: true
 content:
-  body: "Hey, it's André...
+  body: |
+    Hey, it's André...
 
 
     Glad you made it, I've been waiting for you.
@@ -363,7 +364,7 @@ content:
     )
 
 
-    Suite 23, Portland House, Gibraltar, Gibraltar GX11 1AA"
+    Suite 23, Portland House, Gibraltar, Gibraltar GX11 1AA
   hasHtml: true
 annotations:
   campaign: "TW"
