@@ -1,0 +1,84 @@
+{
+  "initiative_id": "S1823.I1",
+  "spec_id": "S1823",
+  "status": "task_decomposition_in_progress",
+  "decomposed_at": "2026-01-26T00:00:00Z",
+  "task_decomposition_started_at": "2026-01-26T13:08:00Z",
+  "current_feature": "S1823.I1.F1",
+  "complexity": {
+    "overall": "LOW",
+    "factors": {
+      "technical_unknowns": "LOW",
+      "external_dependencies": "LOW",
+      "expected_features": "LOW",
+      "dependency_graph": "LOW",
+      "code_reuse_potential": "HIGH"
+    }
+  },
+  "features": [
+    {
+      "id": "S1823.I1.F1",
+      "name": "Types and Loader",
+      "priority": 1,
+      "estimated_days": 3,
+      "status": "draft",
+      "blocked_by": [],
+      "blocks": ["S1823.I1.F2", "S1823.I2.F1", "S1823.I2.F2", "S1823.I3.F1", "S1823.I3.F3", "S1823.I5.F1"]
+    },
+    {
+      "id": "S1823.I1.F2",
+      "name": "Dashboard Page Shell",
+      "priority": 2,
+      "estimated_days": 2,
+      "status": "draft",
+      "blocked_by": ["S1823.I1.F1"],
+      "blocks": ["S1823.I1.F3"]
+    },
+    {
+      "id": "S1823.I1.F3",
+      "name": "Responsive Grid Layout",
+      "priority": 3,
+      "estimated_days": 3,
+      "status": "draft",
+      "blocked_by": ["S1823.I1.F1", "S1823.I1.F2"],
+      "blocks": ["S1823.I1.F4", "S1823.I2", "S1823.I3", "S1823.I4", "S1823.I5.F1"]
+    },
+    {
+      "id": "S1823.I1.F4",
+      "name": "Skeleton Loading",
+      "priority": 4,
+      "estimated_days": 2,
+      "status": "draft",
+      "blocked_by": ["S1823.I1.F3"],
+      "blocks": ["S1823.I5.F2"]
+    }
+  ],
+  "execution_groups": [
+    {
+      "group": 0,
+      "features": ["S1823.I1.F1"],
+      "max_days": 3
+    },
+    {
+      "group": 1,
+      "features": ["S1823.I1.F2"],
+      "max_days": 2
+    },
+    {
+      "group": 2,
+      "features": ["S1823.I1.F3"],
+      "max_days": 3
+    },
+    {
+      "group": 3,
+      "features": ["S1823.I1.F4"],
+      "max_days": 2
+    }
+  ],
+  "duration": {
+    "sequential_days": 10,
+    "parallel_days": 10,
+    "time_saved_days": 0,
+    "time_saved_percent": 0
+  }
+}

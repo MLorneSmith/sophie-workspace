@@ -1,0 +1,52 @@
+{
+  "initiative_id": "S1823.I3",
+  "initiative_name": "Activity & Task Widgets",
+  "spec_id": "S1823",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "features": {
+    "S1823.I3.F1": {
+      "name": "Kanban Summary Widget",
+      "status": "pending",
+      "task_count": null,
+      "hours_estimate": null,
+      "started_at": null,
+      "completed_at": null
+    },
+    "S1823.I3.F2": {
+      "name": "Activity Data Aggregation",
+      "status": "pending",
+      "task_count": null,
+      "hours_estimate": null,
+      "started_at": null,
+      "completed_at": null
+    },
+    "S1823.I3.F3": {
+      "name": "Activity Feed Widget",
+      "status": "pending",
+      "task_count": null,
+      "hours_estimate": null,
+      "started_at": null,
+      "completed_at": null
+    },
+    "S1823.I3.F4": {
+      "name": "Quick Actions Panel",
+      "status": "pending",
+      "task_count": null,
+      "hours_estimate": null,
+      "started_at": null,
+      "completed_at": null
+    }
+  },
+  "summary": {
+    "total_features": 4,
+    "completed_features": 0,
+    "total_tasks": 0,
+    "total_spikes": 0,
+    "hours_sequential": 0,
+    "hours_parallel": 0
+  },
+  "spikes_pending": [],
+  "created_at": "2026-01-26T14:00:00Z",
+  "updated_at": "2026-01-26T14:00:00Z"
+}

@@ -1,0 +1,43 @@
+{
+  "initiative_id": "S1823.I5",
+  "initiative_name": "Presentation Table & Polish",
+  "spec_id": "1823",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "started_at": "2026-01-26T19:00:00Z",
+  "features": {
+    "S1823.I5.F1": {
+      "name": "Presentation Table Widget",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1823.I5.F2": {
+      "name": "Empty States Polish",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1823.I5.F3": {
+      "name": "Accessibility Compliance",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1823.I5.F4": {
+      "name": "E2E Dashboard Tests",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    }
+  },
+  "totals": {
+    "features_completed": 0,
+    "features_total": 4,
+    "total_tasks": 0,
+    "total_spikes": 0,
+    "total_hours_sequential": 0,
+    "total_hours_parallel": 0
+  },
+  "spikes_pending": []
+}
