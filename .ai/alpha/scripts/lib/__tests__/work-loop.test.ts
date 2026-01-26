@@ -8,11 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SandboxInstance, SpecManifest } from "../../types/index.js";
-import {
-	runWorkLoop,
-	WorkLoop,
-	type WorkLoopOptions,
-} from "../work-loop.js";
+import { runWorkLoop, WorkLoop, type WorkLoopOptions } from "../work-loop.js";
 
 // Mock dependencies
 vi.mock("../deadlock-handler.js", () => ({
@@ -299,7 +295,9 @@ describe("WorkLoop", () => {
 			};
 
 			// Mock detectAndHandleDeadlock to return shouldExit: true to exit the loop
-			const { detectAndHandleDeadlock } = await import("../deadlock-handler.js");
+			const { detectAndHandleDeadlock } = await import(
+				"../deadlock-handler.js"
+			);
 			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
 				shouldExit: true,
 				retriedCount: 0,
@@ -326,7 +324,9 @@ describe("WorkLoop", () => {
 			const instances = [createTestInstance("sbx-a")];
 
 			// Ensure mock returns proper value for this test
-			const { detectAndHandleDeadlock } = await import("../deadlock-handler.js");
+			const { detectAndHandleDeadlock } = await import(
+				"../deadlock-handler.js"
+			);
 			vi.mocked(detectAndHandleDeadlock).mockReturnValue({
 				shouldExit: true, // Force exit to avoid infinite loop
 				retriedCount: 0,

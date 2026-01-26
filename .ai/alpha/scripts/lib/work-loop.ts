@@ -351,9 +351,7 @@ export class WorkLoop {
 			);
 			await sleep(2000);
 		} catch {
-			this.log(
-				"   ⚠️ Graceful shutdown failed, proceeding with force restart",
-			);
+			this.log("   ⚠️ Graceful shutdown failed, proceeding with force restart");
 		}
 	}
 
@@ -473,7 +471,12 @@ export class WorkLoop {
 						blockedFeatures.length > 0
 							? `Waiting for dependencies (${blockedFeatures.length} features blocked)`
 							: "No available features";
-					writeIdleProgress(instance.label, instance, waitingReason, blockedIds);
+					writeIdleProgress(
+						instance.label,
+						instance,
+						waitingReason,
+						blockedIds,
+					);
 				}
 				continue;
 			}
@@ -621,7 +624,8 @@ export class WorkLoop {
 			}
 
 			// Check for stuck tasks
-			const tasksRemaining = feature.task_count - (feature.tasks_completed || 0);
+			const tasksRemaining =
+				feature.task_count - (feature.tasks_completed || 0);
 			const assignedDuration = feature.assigned_at
 				? now - feature.assigned_at
 				: 0;
@@ -645,7 +649,9 @@ export class WorkLoop {
 				sandboxInstance.status = "ready";
 				sandboxInstance.currentFeature = null;
 
-				this.log(`   🔄 Feature #${feature.id} reset to pending for reassignment`);
+				this.log(
+					`   🔄 Feature #${feature.id} reset to pending for reassignment`,
+				);
 			}
 		}
 	}
