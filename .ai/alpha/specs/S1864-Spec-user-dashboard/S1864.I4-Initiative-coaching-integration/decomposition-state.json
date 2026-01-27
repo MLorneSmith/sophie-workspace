@@ -23,9 +23,10 @@
     },
     "S1864.I4.F3": {
       "name": "Session Actions",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 16,
+      "hours_estimate": 28,
+      "parallel_hours": 13
     },
     "S1864.I4.F4": {
       "name": "Booking Modal",
