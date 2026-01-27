@@ -431,7 +431,10 @@ export async function runFeatureImplementation(
 					capturedStdout += data;
 
 					// Always write to log file (persisted on orchestrator machine)
-					logStream.write(data);
+					// Guard against writing to closed stream (race condition with cleanup)
+					if (!logStream.writableEnded) {
+						logStream.write(data);
+					}
 
 					// Track output in startup tracker for early hang detection
 					updateOutputTracker(startupTracker, data);

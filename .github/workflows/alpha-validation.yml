@@ -6,7 +6,7 @@ on:
       - 'alpha/spec-*'
 
 concurrency:
-  group: alpha-validation-${{ github.ref }}
+  group: alpha-validation-${{ github.sha }}
   cancel-in-progress: false
 
 permissions:
