@@ -185,3 +185,39 @@ export const PTY_RECOVERY_POLL_INTERVAL_MS = 500;
  * Default: 5 minutes
  */
 export const PROGRESS_FILE_STALE_THRESHOLD_MS = 5 * 60 * 1000;
+
+// ============================================================================
+// Promise Timeout Monitor Configuration (Bug fix #1841)
+// ============================================================================
+
+/**
+ * Maximum age for a work loop promise before it's considered timed out (ms).
+ * When a promise exceeds this threshold AND the heartbeat is stale,
+ * the promise will be forcibly rejected and the feature reset to pending.
+ *
+ * Default: 10 minutes - generous for slow features.
+ * Rationale: Most features complete in 5-10 minutes. PTY disconnects from
+ * previous issues (#1767, #1786) occur within this window. This threshold
+ * ensures we catch hung promises without killing healthy slow work.
+ *
+ * Can be overridden via PROMISE_TIMEOUT_MS environment variable.
+ */
+export const PROMISE_TIMEOUT_MS = Number.parseInt(
+	process.env.PROMISE_TIMEOUT_MS ?? String(10 * 60 * 1000),
+	10,
+);
+
+/**
+ * Maximum age for sandbox heartbeat before promise is considered stale (ms).
+ * Used in conjunction with PROMISE_TIMEOUT_MS - both conditions must be met.
+ *
+ * Default: 5 minutes - matches PROGRESS_FILE_STALE_THRESHOLD_MS.
+ * A healthy sandbox updates its progress file heartbeat every few seconds.
+ * If heartbeat is older than this AND promise is old, the sandbox is stuck.
+ *
+ * Can be overridden via HEARTBEAT_TIMEOUT_MS environment variable.
+ */
+export const HEARTBEAT_TIMEOUT_MS = Number.parseInt(
+	process.env.HEARTBEAT_TIMEOUT_MS ?? String(5 * 60 * 1000),
+	10,
+);

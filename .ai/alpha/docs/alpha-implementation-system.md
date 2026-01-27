@@ -11,6 +11,8 @@ This system is the final piece of the Alpha Autonomous Coding workflow:
 3. **Feature Decompose** (`/alpha:feature-decompose`) - Break into features
 4. **Task Decompose** (`/alpha:task-decompose`) - Break into atomic tasks
 5. **Implement** (`spec-orchestrator.ts` + `/alpha:implement`) - **Build it all**
+6. **Review** (`/alpha:review`) - Validate implementation against spec
+7. **Refine** (`/alpha:refine`) - Fix issues found during review
 
 ## Architecture
 
@@ -1033,15 +1035,123 @@ agent-browser install --with-deps
 | `.claude/agents/alpha/task-decomposer.md` | Task decomposer with UI task detection |
 | `.ai/ai_docs/tool-docs/agent-browser.md` | Complete agent-browser reference |
 
+## Post-Implementation Review
+
+### Overview
+
+After implementation completes, the Alpha workflow includes a review phase to validate that all features match their specifications. This is handled by the **`/alpha:review`** slash command.
+
+### When to Use
+
+Run review after the orchestrator completes:
+
+```bash
+# After implementation completes
+tsx .ai/alpha/scripts/spec-orchestrator.ts 1362
+
+# Run review (in review sandbox or locally)
+/alpha:review 1362
+```
+
+### Review Levels
+
+The review command supports three granularity levels:
+
+| Level | Command | Scope |
+|-------|---------|-------|
+| Spec | `/alpha:review 1362` | All features in the spec |
+| Initiative | `/alpha:review S1362.I1` | All features in one initiative |
+| Feature | `/alpha:review S1362.I1.F1` | Single feature |
+
+### What Gets Reviewed
+
+1. **Acceptance Criteria** - Each feature's acceptance criteria are validated
+2. **Critical User Flows** - End-to-end flows defined in the spec are tested
+3. **Visual Verification** - Screenshots captured at key points
+4. **Cross-Feature Integration** - Features work together correctly
+5. **Error States** - No console errors, no broken navigation
+
+### Review Artifacts
+
+The review generates several artifacts:
+
+| Artifact | Location | Purpose |
+|----------|----------|---------|
+| JSON Report | `.ai/alpha/validation/S${specId}/review-report.json` | Machine-readable results |
+| Markdown Report | `.ai/alpha/validation/S${specId}/REVIEW.md` | Human-readable summary |
+| Screenshots | `.ai/alpha/validation/S${specId}/review/` | Visual evidence |
+| Manifest Update | `spec-manifest.json` | Review status tracking |
+
+### Issue Severity
+
+Issues found during review are categorized:
+
+| Severity | Definition | Review Impact |
+|----------|------------|---------------|
+| `blocker` | Prevents release | **Fails review** |
+| `tech_debt` | Should be fixed later | Does not fail review |
+| `skippable` | Minor, can ship as-is | Does not fail review |
+
+### Review Status in Manifest
+
+After review, `spec-manifest.json` includes a review section:
+
+```json
+{
+  "review": {
+    "status": "passed",
+    "started_at": "2026-01-27T12:00:00Z",
+    "completed_at": "2026-01-27T12:15:00Z",
+    "summary": "All 13 features reviewed. No blocking issues.",
+    "issues_found": {
+      "blocker": 0,
+      "tech_debt": 2,
+      "skippable": 1
+    },
+    "screenshots": [
+      ".ai/alpha/validation/S1362/review/01-dashboard.png"
+    ]
+  }
+}
+```
+
+### GitHub Integration
+
+The review command:
+1. Posts a review summary comment to the spec GitHub issue
+2. Adds labels (`alpha:reviewed`, `alpha:review-passed` or `alpha:review-failed`)
+3. Creates a follow-up issue if blocking issues are found
+
+### Workflow Integration
+
+```
+Spec → Decompose → Implement → Review → (Refine if needed) → Merge
+                      ↓           ↓           ↓
+              orchestrator   /alpha:review  /alpha:refine
+```
+
+If review finds blocking issues:
+1. Review fails
+2. Follow-up issue created
+3. Use `/alpha:refine` to fix issues
+4. Re-run `/alpha:review` to verify fixes
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `.claude/commands/alpha/review.md` | The /alpha:review slash command |
+| `.ai/alpha/validation/S${specId}/` | Review artifacts directory |
+
 ## Post-Implementation Refinement
 
 ### Overview
 
-The Alpha workflow includes a refinement phase for debugging and fine-tuning after human review. This is handled by the **Refine Orchestrator** (`refine-orchestrator.ts`) and the **`/alpha:refine`** slash command.
+The Alpha workflow includes a refinement phase for debugging and fine-tuning after review identifies issues. This is handled by the **Refine Orchestrator** (`refine-orchestrator.ts`) and the **`/alpha:refine`** slash command.
 
 ### When to Use
 
-Use refinement after the main implementation is complete and you've identified issues during review:
+Use refinement after `/alpha:review` identifies issues that need fixing:
 
 - Visual bugs (rendering, layout, CSS issues)
 - Functional issues (logic errors, missing behavior)
