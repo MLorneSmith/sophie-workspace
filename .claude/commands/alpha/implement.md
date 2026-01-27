@@ -957,6 +957,152 @@ agent-browser snapshot -i -c
 agent-browser screenshot ./path/to/screenshot.png
 ```
 
+### Behavioral Verification (Interactive Elements)
+
+**Purpose**: Validate that interactive elements (buttons, forms, links) have functional handlers, not just visual presence. This prevents the "renders but doesn't work" failure pattern seen in S1823.
+
+**When to Run**: After visual verification passes, run behavioral verification for tasks with:
+- `behavioral_verification` field defined in tasks.json
+- Task action verb is `Wire`
+- Task involves interactive elements (buttons, forms, links)
+
+**Behavioral Verification Workflow**:
+
+```
+IF task has behavioral_verification:
+    Log: "🔧 Behavioral verification: ${task.name}"
+
+    FOR each pattern in behavioral_verification.patterns:
+        IF pattern.type == "button_handler":
+            # Verify button has onClick handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Button '${pattern.target}' lacks onClick handler"
+                FAIL task
+            ELSE:
+                Log: "✅ Button '${pattern.target}' has handler"
+
+        ELIF pattern.type == "env_var_graceful":
+            # Verify env var handling is graceful (warn not error)
+            anti_pattern = grep_for_error(pattern)
+            IF anti_pattern:
+                Log: "❌ Env var uses console.error instead of graceful handling"
+                FAIL task
+            ELSE:
+                Log: "✅ Env var handled gracefully"
+
+        ELIF pattern.type == "form_submission":
+            # Verify form has onSubmit handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Form lacks onSubmit handler"
+                FAIL task
+
+        ELIF pattern.type == "link_navigation":
+            # Verify link has href or onClick navigation
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Link lacks navigation handler"
+                FAIL task
+
+        ELIF pattern.type == "modal_trigger":
+            # Verify modal trigger has open state handler
+            result = run_grep_check(pattern)
+            IF NOT result:
+                Log: "❌ Modal trigger lacks open handler"
+                FAIL task
+
+    # Run custom validation command if provided
+    IF behavioral_verification.validation_command:
+        result = bash(behavioral_verification.validation_command)
+        IF result.exit_code != 0:
+            Log: "❌ Custom validation failed"
+            FAIL task
+```
+
+**Behavioral Verification Commands**:
+
+```bash
+# Button handler check - verify onClick exists and is non-empty
+grep -Pzo 'Join[^<]*onClick=\{[^}]+\}' apps/web/.../component.tsx
+
+# Form submission check - verify onSubmit or handleSubmit
+grep -E 'onSubmit=\{|handleSubmit\(' apps/web/.../form.tsx
+
+# Env var graceful check - verify warn not error
+# Should find warn/return null/return []
+grep -E 'console\.warn|return (null|\[\]|undefined)' apps/web/.../loader.ts
+# Should NOT find console.error for missing env
+! grep -E 'console\.error.*API_KEY|throw.*missing.*KEY' apps/web/.../loader.ts
+
+# Link navigation check - verify href or router.push
+grep -E 'href="|onClick=.*navigate|router\.push' apps/web/.../nav.tsx
+
+# Modal trigger check - verify setOpen handler
+grep -E 'onClick=.*setOpen|onClick=.*setIsOpen|DialogTrigger' apps/web/.../modal.tsx
+```
+
+**Example Task with Behavioral Verification**:
+
+```json
+{
+  "id": "T6",
+  "name": "Wire Join button to meeting URL",
+  "action": { "verb": "Wire", "target": "Join button" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Join",
+        "expected_action": "navigate to meeting URL",
+        "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+      }
+    ],
+    "validation_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+  },
+  "verification_command": "pnpm typecheck && grep -q 'onClick.*Join' apps/web/..."
+}
+```
+
+**Failure Handling**:
+
+| Failure Type | Action | Retry? |
+|--------------|--------|--------|
+| Button lacks onClick | FAIL task | Yes (3x) |
+| Form lacks onSubmit | FAIL task | Yes (3x) |
+| Env var uses error | FAIL task | Yes (3x) |
+| Pattern not found | WARN and continue | No |
+| File not found | WARN and continue | No |
+
+**Integration with Visual Verification**:
+
+Behavioral verification runs AFTER visual verification:
+1. Visual: Element exists and is visible
+2. Behavioral: Element has functional handler
+
+This ensures both rendering AND functionality are validated before marking a task complete.
+
+**Interactive Element Click Testing** (Optional, for high-confidence validation):
+
+When agent-browser is available, you can also test actual click behavior:
+
+```bash
+# Navigate to page
+agent-browser open http://localhost:3000/home
+
+# Click a button and verify navigation
+agent-browser click "Join"
+agent-browser wait 2000
+agent-browser is visible "Meeting Room"  # Verify navigated to meeting
+
+# Click a button and verify modal opens
+agent-browser click "Book Session"
+agent-browser wait 1000
+agent-browser find role dialog  # Verify modal opened
+```
+
+Note: Click testing is more reliable but requires the dev server and proper authentication. Use grep-based pattern checks as the primary validation, with click testing as supplementary verification.
+
 ### Phase 3: Validation & Commit
 
 After each execution group:

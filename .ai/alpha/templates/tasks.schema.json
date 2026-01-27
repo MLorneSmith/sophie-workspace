@@ -572,6 +572,10 @@
 				"visual_verification": {
 					"$ref": "#/definitions/visual_verification",
 					"description": "Configuration for visual verification using agent-browser"
+				},
+				"behavioral_verification": {
+					"$ref": "#/definitions/behavioral_verification",
+					"description": "Configuration for behavioral verification patterns that validate functional completeness"
 				}
 			}
 		},
@@ -637,6 +641,140 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Whether to capture a screenshot after verification"
+				}
+			}
+		},
+		"behavioral_verification": {
+			"type": "object",
+			"description": "Configuration for behavioral verification patterns that validate functional completeness",
+			"properties": {
+				"patterns": {
+					"type": "array",
+					"description": "List of behavioral verification patterns to apply",
+					"items": {
+						"type": "object",
+						"required": ["type"],
+						"properties": {
+							"type": {
+								"type": "string",
+								"enum": [
+									"button_handler",
+									"env_var_graceful",
+									"form_submission",
+									"link_navigation",
+									"modal_trigger"
+								],
+								"description": "Type of behavioral pattern to verify"
+							},
+							"target": {
+								"type": "string",
+								"description": "Target element or identifier (button text, env var name, form name)"
+							},
+							"expected_action": {
+								"type": "string",
+								"description": "Expected behavior when pattern triggers (navigate, open modal, submit)"
+							},
+							"file_path": {
+								"type": "string",
+								"description": "File path to check for pattern compliance"
+							}
+						}
+					}
+				},
+				"validation_command": {
+					"type": "string",
+					"description": "Optional bash command for pattern validation (uses grep-based checks)"
+				}
+			}
+		},
+		"verification_pattern_types": {
+			"type": "object",
+			"description": "Reference definitions for behavioral verification pattern types",
+			"properties": {
+				"button_handler": {
+					"type": "object",
+					"description": "Validates that Button components have non-empty onClick handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "Button[^>]*onClick=\\{[^}]+\\}",
+							"description": "Regex pattern to match Button with onClick"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Button lacks onClick handler - interactive elements must have handlers",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"env_var_graceful": {
+					"type": "object",
+					"description": "Validates that optional env vars use warn/silent degradation, not error",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "console\\.warn|return null|return \\[\\]",
+							"description": "Regex pattern for graceful handling"
+						},
+						"anti_pattern_regex": {
+							"type": "string",
+							"default": "console\\.error.*[A-Z_]+.*not set|throw.*[A-Z_]+.*missing",
+							"description": "Regex pattern for non-graceful handling to reject"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Env var uses error logging instead of graceful degradation",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"form_submission": {
+					"type": "object",
+					"description": "Validates that form components have proper onSubmit handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "form[^>]*onSubmit=\\{[^}]+\\}|handleSubmit\\(",
+							"description": "Regex pattern to match form submission handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Form lacks onSubmit handler - forms must handle submission",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"link_navigation": {
+					"type": "object",
+					"description": "Validates that navigation links have proper href or onClick",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "Link[^>]*href=|onClick=.*navigate|router\\.push",
+							"description": "Regex pattern to match navigation handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Navigation element lacks href or navigation handler",
+							"description": "Message when pattern fails"
+						}
+					}
+				},
+				"modal_trigger": {
+					"type": "object",
+					"description": "Validates that modal trigger elements have proper open handlers",
+					"properties": {
+						"pattern_regex": {
+							"type": "string",
+							"default": "onClick=.*setOpen|onClick=.*setIsOpen|DialogTrigger",
+							"description": "Regex pattern to match modal trigger handling"
+						},
+						"failure_message": {
+							"type": "string",
+							"default": "Modal trigger lacks open state handler",
+							"description": "Message when pattern fails"
+						}
+					}
 				}
 			}
 		}
