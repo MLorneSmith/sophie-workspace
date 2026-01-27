@@ -208,7 +208,8 @@ export class WorkLoop {
 		// Bug fix #1858: Reset any in-progress features on this sandbox to pending
 		// This ensures features can be retried on another sandbox after sandbox death
 		const featureOnSandbox = this.manifest.feature_queue.find(
-			(f) => f.assigned_sandbox === instance.label && f.status === "in_progress",
+			(f) =>
+				f.assigned_sandbox === instance.label && f.status === "in_progress",
 		);
 		if (featureOnSandbox) {
 			this.resetFeatureForRetryOnSandboxDeath(

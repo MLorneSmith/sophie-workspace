@@ -324,7 +324,9 @@ export async function reconnectToStoredSandboxes(
 	} else {
 		// If E2B API call failed, fall back to attempting all stored IDs
 		// This preserves backward compatibility
-		log("   ⚠️ Could not verify sandbox IDs with E2B, attempting all stored IDs");
+		log(
+			"   ⚠️ Could not verify sandbox IDs with E2B, attempting all stored IDs",
+		);
 		verifiedIds.push(...sandbox_ids.filter((id): id is string => !!id));
 	}
 
