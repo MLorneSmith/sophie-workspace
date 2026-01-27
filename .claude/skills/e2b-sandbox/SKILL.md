@@ -650,7 +650,7 @@ start-dev       # Start pnpm dev on port 3000
 
 ### Accessing Services
 
-When using the `/sandbox feature` workflow, URLs are provided automatically:
+When using the `/alpha:sandbox feature` workflow, URLs are provided automatically:
 
 ```
 VS Code Web: https://{sandbox-id}-8080.e2b.app
@@ -673,12 +673,12 @@ dev_host = sandbox.get_host(3000)
 
 ## Sequential Feature Workflow
 
-The `/sandbox feature` command implements a human-in-the-loop workflow:
+The `/alpha:sandbox feature` command implements a human-in-the-loop workflow:
 
 ### Workflow Phases
 
 ```
-Phase 1: /sandbox feature "#123 Add dark mode"
+Phase 1: /alpha:sandbox feature "#123 Add dark mode"
   ├── Create sandbox
   ├── Sync with dev branch
   ├── Create branch: sandbox/issue123-add-dark-mode
@@ -686,13 +686,13 @@ Phase 1: /sandbox feature "#123 Add dark mode"
   ├── Start VS Code Web
   └── PAUSE for plan review
 
-Phase 2: /sandbox continue <sandbox-id>
+Phase 2: /alpha:sandbox continue <sandbox-id>
   ├── Run Claude Code: /implement (executes plan)
   ├── Start dev server
   ├── Run Claude Code: /review (AI reviews code)
   └── PAUSE for code review
 
-Phase 3: /sandbox approve <sandbox-id>
+Phase 3: /alpha:sandbox approve <sandbox-id>
   ├── Commit all changes
   ├── Push branch to origin
   └── Create PR → dev

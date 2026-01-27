@@ -1,6 +1,6 @@
 ---
 description: "Create and manage E2B cloud sandboxes for isolated code execution"
-argument-hint: 'run-claude "/feature" | create | list | kill <id>'
+argument-hint: 'run-claude "/feature:feature" | create | list | kill <id>'
 allowed-tools: [Bash]
 ---
 
@@ -46,7 +46,7 @@ Run the sandbox CLI wrapper script:
 
 | Command | Description |
 |---------|-------------|
-| `feature "<#issue description>" [--timeout 1800]` | Phase 1: Create sandbox, run /feature, open VS Code Web, PAUSE for plan review |
+| `feature "<#issue description>" [--timeout 1800]` | Phase 1: Create sandbox, run /feature:feature, open VS Code Web, PAUSE for plan review |
 | `continue <sandbox-id>` | Phase 2: Run /implement and /review, start dev server, PAUSE for code review |
 | `approve <sandbox-id> ["message"]` | Final: Commit, push, create PR |
 | `reject <sandbox-id> [--keep]` | Discard changes and kill sandbox. Use `--keep` to keep alive |
@@ -65,7 +65,7 @@ Run the sandbox CLI wrapper script:
 
 ## Recommended Workflow: Sequential Feature Development
 
-The feature workflow runs `/feature`, `/implement`, and `/review` sequentially with human review gates.
+The feature workflow runs `/feature:feature`, `/implement`, and `/review` sequentially with human review gates.
 
 **Recent Improvements (v3.1):**
 - ✅ VS Code Web starts in background (no timeout blocking)
@@ -79,12 +79,12 @@ The feature workflow runs `/feature`, `/implement`, and `/review` sequentially w
 │                    SANDBOX FEATURE WORKFLOW (v3)                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│  /sandbox feature "#123 Add dark mode"                                       │
+│  /alpha:sandbox feature "#123 Add dark mode"                                 │
 │       │                                                                      │
 │       ├─> Create sandbox                                                     │
 │       ├─> git fetch && pull origin dev                                       │
 │       ├─> Create branch: sandbox/issue123-add-dark-mode                      │
-│       ├─> Run Claude Code: /feature "Add dark mode"                          │
+│       ├─> Run Claude Code: /feature:feature "Add dark mode"                  │
 │       ├─> Start VS Code Web (code-server) on port 8080                       │
 │       └─> OUTPUT:                                                            │
 │           • Sandbox ID: abc123                                               │
@@ -95,7 +95,7 @@ The feature workflow runs `/feature`, `/implement`, and `/review` sequentially w
 │  Human reviews plan in VS Code Web                                           │
 │  ════════════════════════════════════════════════════════════════════════   │
 │                                                                              │
-│  /sandbox continue abc123                                                    │
+│  /alpha:sandbox continue abc123                                              │
 │       │                                                                      │
 │       ├─> Run Claude Code: /implement (executes the plan)                    │
 │       ├─> Start dev server: pnpm dev on port 3000                            │
@@ -109,7 +109,7 @@ The feature workflow runs `/feature`, `/implement`, and `/review` sequentially w
 │  Human reviews code in VS Code + tests app manually                          │
 │  ════════════════════════════════════════════════════════════════════════   │
 │                                                                              │
-│  /sandbox approve abc123                                                     │
+│  /alpha:sandbox approve abc123                                                     │
 │       │                                                                      │
 │       ├─> Commit all changes                                                 │
 │       ├─> Push branch to origin                                              │
@@ -132,14 +132,14 @@ The feature workflow runs `/feature`, `/implement`, and `/review` sequentially w
 ### Step 1: Start feature planning
 
 ```bash
-/sandbox feature "#123 Add dark mode toggle"
+/alpha:sandbox feature "#123 Add dark mode toggle"
 ```
 
 This:
 - Creates a sandbox with VS Code Web
 - Syncs with latest `dev` branch
 - Creates branch: `sandbox/issue123-add-dark-mode`
-- Runs Claude Code `/feature` to create a plan
+- Runs Claude Code `/feature:feature` to create a plan
 - **PAUSES** for human to review the plan
 
 ### Step 2: Review plan in VS Code Web
@@ -151,7 +151,7 @@ This:
 ### Step 3: Continue to implementation
 
 ```bash
-/sandbox continue abc123
+/alpha:sandbox continue abc123
 ```
 
 This:
@@ -169,7 +169,7 @@ This:
 ### Step 5: Approve and create PR
 
 ```bash
-/sandbox approve abc123
+/alpha:sandbox approve abc123
 ```
 
 This:
@@ -194,17 +194,17 @@ This:
 # === RECOMMENDED: Sequential Feature Workflow ===
 
 # Step 1: Start feature planning
-/sandbox feature "#123 Add dark mode toggle"
+/alpha:sandbox feature "#123 Add dark mode toggle"
 
 # Step 2: (Review plan in VS Code Web)
 
 # Step 3: Continue to implementation
-/sandbox continue abc123
+/alpha:sandbox continue abc123
 
 # Step 4: (Review code + test app)
 
 # Step 5: Approve and create PR
-/sandbox approve abc123
+/alpha:sandbox approve abc123
 
 # Step 6: Merge locally
 /gitmerge 456
@@ -212,19 +212,19 @@ This:
 # === Other Operations ===
 
 # Create sandbox manually
-/sandbox create
+/alpha:sandbox create
 
 # Run Claude Code command
-/sandbox run-claude "/test 1"
+/alpha:sandbox run-claude "/test 1"
 
 # View diff
-/sandbox diff abc123
+/alpha:sandbox diff abc123
 
 # Kill sandbox
-/sandbox kill abc123
+/alpha:sandbox kill abc123
 
 # === LEGACY: Skip review (auto-push) ===
-/sandbox feature "Quick fix" --no-review
+/alpha:sandbox feature "Quick fix" --no-review
 ```
 
 ## Prerequisites
@@ -266,7 +266,7 @@ Each session creates a JSON log file with:
   },
   "entries": [
     {"timestamp": "...", "type": "info", "message": "Session started"},
-    {"timestamp": "...", "type": "command", "message": "Running: /feature Add dark mode"},
+    {"timestamp": "...", "type": "command", "message": "Running: /feature:feature Add dark mode"},
     {"timestamp": "...", "type": "stdout", "message": "..."},
     {"timestamp": "...", "type": "info", "message": "Session completed"}
   ],

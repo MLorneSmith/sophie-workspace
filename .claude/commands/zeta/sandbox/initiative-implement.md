@@ -273,7 +273,7 @@ jq '.status = "complete"' /home/user/project/.initiative-progress.json > /tmp/pr
   mv /tmp/progress.tmp /home/user/project/.initiative-progress.json
 ```
 
-**WHY THIS MATTERS**: The orchestrator can poll `/sandbox progress <sandboxId>` to get real-time status instead of waiting for stdout which may be buffered.
+**WHY THIS MATTERS**: The orchestrator can poll `/alpha:sandbox progress <sandboxId>` to get real-time status instead of waiting for stdout which may be buffered.
 
 **Research-Guided Implementation:**
 - Apply code patterns from manifest
@@ -413,7 +413,7 @@ gh issue edit <issue-number> \
   "preview": {
     "dev_server_started": true,
     "port": 3000,
-    "note": "Orchestrator retrieves public URL via: /sandbox url <sandboxId> 3000"
+    "note": "Orchestrator retrieves public URL via: /alpha:sandbox url <sandboxId> 3000"
   },
   "research_patterns_applied": [
     "Schema Definition Pattern",

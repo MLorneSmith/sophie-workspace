@@ -15,7 +15,7 @@ Create a detailed implementation plan for a feature that is part of an `/initiat
 |----------|------------------|-------------|
 | Part of `/initiative` workflow | ✅ Called automatically by orchestrator | - |
 | Planning a single feature in an existing initiative | ✅ Use standalone with `--manifest` flag | - |
-| Planning a brand new feature (not part of initiative) | ❌ | Use `/feature` |
+| Planning a brand new feature (not part of initiative) | ❌ | Use `/feature:feature` |
 | Re-planning a feature after changes | ✅ Use standalone with existing manifest | - |
 
 ### Standalone Usage
@@ -42,7 +42,7 @@ The orchestrator collects the output JSON and continues to implementation phase.
 
 ## Key Differences from /feature
 
-| Aspect | /feature | /initiative-feature |
+| Aspect | /feature:feature | /initiative-feature |
 |--------|----------|---------------------|
 | Research | Does own codebase exploration | Loads research manifest |
 | Input | Feature description | GitHub issue number + master issue |
@@ -500,7 +500,7 @@ pnpm build
 ## Error Handling
 
 - **Issue not found**: Return error status with message
-- **Manifest not found**: Return warning, proceed with standard /feature approach
+- **Manifest not found**: Return warning, proceed with standard /feature:feature approach
 - **Master issue not provided**: Extract from manifest path or return error
 - **GitHub update failure**: Include in output, don't fail entire planning
 - **Skill invocation failure**: Log warning, continue without skill
@@ -508,7 +508,7 @@ pnpm build
 ## Related Commands
 
 - **`/initiative`**: Main orchestrator (calls this command)
-- **`/feature`**: Standalone version (without orchestrator)
+- **`/feature:feature`**: Standalone version (without orchestrator)
 - **`/implement`**: Execute this plan in sandbox
 
 ## Initiative Input
