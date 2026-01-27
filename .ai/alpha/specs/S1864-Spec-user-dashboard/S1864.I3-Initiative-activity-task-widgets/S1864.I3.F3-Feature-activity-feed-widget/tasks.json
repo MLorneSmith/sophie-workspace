@@ -1,0 +1,564 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I3.F3",
+    "feature_name": "Activity Feed Widget",
+    "feature_slug": "activity-feed-widget",
+    "initiative_id": "S1864.I3",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T20:00:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I3.F3.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I3.F3.T1",
+      "type": "task",
+      "name": "Create activity type definitions file",
+      "action": {
+        "verb": "Create",
+        "target": "activity type definitions"
+      },
+      "purpose": "Define TypeScript types for activity data returned from RPC",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database types from supabase:typegen (activity_logs table from F2)"
+        ],
+        "constraints": [
+          "Extract activity_logs type from Database types",
+          "Create ActivityItem type for component consumption",
+          "Include activity_type enum values",
+          "Match RPC return signature"
+        ]
+      },
+      "input_state": "database.types.ts contains activity_logs table type from F2 typegen",
+      "output_state": "New file with Activity type definitions exists and exports types",
+      "acceptance_criterion": "File exists and exports ActivityItem type with all required fields",
+      "verification_command": "grep -q 'export type ActivityItem' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/schema/activity.schema.ts && grep -q 'activity_type' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/schema/activity.schema.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/schema/activity.schema.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I3.F3.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T2",
+      "type": "task",
+      "name": "Create useActivities React Query hook skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "useActivities hook skeleton"
+      },
+      "purpose": "Create React Query hook structure for fetching activities without pagination logic",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/hooks/use-tasks.ts",
+          "apps/web/app/home/(user)/_lib/schema/activity.schema.ts"
+        ],
+        "dependencies": [
+          "ActivityItem type from T1",
+          "useUserWorkspace hook",
+          "useSupabase hook",
+          "useQuery from @tanstack/react-query"
+        ],
+        "constraints": [
+          "Follow use-tasks.ts pattern for structure",
+          "Use RPC call to get_recent_activities",
+          "Initial fetch only (no pagination yet)",
+          "Limit to 10 activities",
+          "Use pino logger for debug",
+          "Query key: ['activities', userId]"
+        ]
+      },
+      "input_state": "ActivityItem type exists; use-tasks.ts pattern available",
+      "output_state": "Hook file exists with basic useActivities query (no pagination)",
+      "acceptance_criterion": "File exports useActivities hook that fetches first 10 activities via RPC",
+      "verification_command": "grep -q 'export function useActivities' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts && grep -q 'get_recent_activities' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts && grep -q 'useQuery' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/hooks/use-activities.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T1"],
+        "blocks": ["S1864.I3.F3.T3", "S1864.I3.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T3",
+      "type": "task",
+      "name": "Add pagination state to useActivities hook",
+      "action": {
+        "verb": "Add",
+        "target": "pagination state management"
+      },
+      "purpose": "Implement offset-based pagination state for Load More functionality",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/hooks/use-activities.ts"
+        ],
+        "dependencies": [
+          "Basic useActivities hook from T2",
+          "useState for offset tracking",
+          "useCallback for loadMore function"
+        ],
+        "constraints": [
+          "Track offset state (starts at 0, increments by 10)",
+          "Export loadMore function",
+          "Export hasMore flag (false when returned < 10)",
+          "Export isLoadingMore flag for button state",
+          "Append new activities to existing array"
+        ]
+      },
+      "input_state": "useActivities hook fetches first 10 activities without pagination",
+      "output_state": "Hook supports offset pagination with loadMore function and hasMore flag",
+      "acceptance_criterion": "Hook exports loadMore, hasMore, and isLoadingMore alongside activities data",
+      "verification_command": "grep -q 'loadMore' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts && grep -q 'hasMore' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts && grep -q 'offset' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_lib/hooks/use-activities.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/hooks/use-activities.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T2"],
+        "blocks": ["S1864.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T4",
+      "type": "task",
+      "name": "Create widget component skeleton with Card layout",
+      "action": {
+        "verb": "Create",
+        "target": "widget component skeleton"
+      },
+      "purpose": "Create basic widget structure with Card, header, and ScrollArea container",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/features/notifications/src/components/notifications-popover.tsx",
+          "apps/web/app/home/(user)/_lib/hooks/use-activities.ts"
+        ],
+        "dependencies": [
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "ScrollArea from @kit/ui/scroll-area",
+          "useActivities hook from T2",
+          "Skeleton from @kit/ui/skeleton"
+        ],
+        "constraints": [
+          "Client component (use client directive)",
+          "Card wrapper with header 'Recent Activity'",
+          "ScrollArea with max-h-[60vh] for overflow",
+          "Skeleton loading state when isLoading",
+          "Empty state when activities.length === 0",
+          "No activity items rendered yet (placeholder div)"
+        ]
+      },
+      "input_state": "useActivities hook exists; notifications-popover pattern available",
+      "output_state": "Widget component exists with Card layout, ScrollArea, loading/empty states",
+      "acceptance_criterion": "Component renders Card with ScrollArea and shows skeleton during loading",
+      "verification_command": "grep -q 'use client' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'ScrollArea' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'Skeleton' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T2"],
+        "blocks": ["S1864.I3.F3.T5", "S1864.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T5",
+      "type": "task",
+      "name": "Add activity type icon mapping function",
+      "action": {
+        "verb": "Add",
+        "target": "icon mapping function"
+      },
+      "purpose": "Map activity_type enum values to appropriate Lucide icons",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+          "packages/features/notifications/src/components/notifications-popover.tsx"
+        ],
+        "dependencies": [
+          "Activity type definitions from T1",
+          "Lucide React icons: CheckCircle2, Award, Target, FileText, Edit3, CheckSquare, Calendar"
+        ],
+        "constraints": [
+          "Map lesson_completed → CheckCircle2",
+          "Map quiz_completed → Award",
+          "Map assessment_completed → Target",
+          "Map presentation_created → FileText",
+          "Map presentation_updated → Edit3",
+          "Map task_completed → CheckSquare",
+          "Map coaching_booked → Calendar",
+          "Follow NotificationIcon pattern from notifications-popover",
+          "Return icon component with h-4 class"
+        ]
+      },
+      "input_state": "Widget skeleton exists; activity types defined in schema",
+      "output_state": "Widget contains getActivityIcon function that returns appropriate icon",
+      "acceptance_criterion": "Function exists and returns correct Lucide icon for each activity type",
+      "verification_command": "grep -q 'getActivityIcon' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'CheckCircle2' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'lesson_completed' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T4"],
+        "blocks": ["S1864.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T6",
+      "type": "task",
+      "name": "Add activity timeline items with timestamps",
+      "action": {
+        "verb": "Add",
+        "target": "activity timeline rendering"
+      },
+      "purpose": "Render activity items with icons, entity names, and relative timestamps",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Recent Activity" },
+          { "command": "find role", "target": "region" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+          "packages/features/notifications/src/components/notifications-popover.tsx"
+        ],
+        "dependencies": [
+          "Activities data from useActivities hook",
+          "getActivityIcon function from T5",
+          "Intl.RelativeTimeFormat for timestamps"
+        ],
+        "constraints": [
+          "Map activities array to timeline items",
+          "Display icon, entity_name, and relative timestamp per item",
+          "Use Intl.RelativeTimeFormat pattern from notifications-popover (lines 64-110)",
+          "Format: 'Just now', '5 minutes ago', '2 hours ago', 'Yesterday', etc.",
+          "Divide items with border-b",
+          "Padding py-3 px-4 per item"
+        ]
+      },
+      "input_state": "Widget skeleton with icon mapping exists; activities data available from hook",
+      "output_state": "Widget displays list of activities with icons and relative timestamps",
+      "acceptance_criterion": "Activities render in timeline with icons, names, and formatted timestamps",
+      "verification_command": "grep -q 'Intl.RelativeTimeFormat' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'entity_name' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'created_at' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T3", "S1864.I3.F3.T4", "S1864.I3.F3.T5"],
+        "blocks": ["S1864.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T7",
+      "type": "task",
+      "name": "Add Load More button to widget",
+      "action": {
+        "verb": "Add",
+        "target": "Load More button"
+      },
+      "purpose": "Enable pagination by adding button that calls loadMore from hook",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        ],
+        "dependencies": [
+          "loadMore, hasMore, isLoadingMore from useActivities hook",
+          "Button from @kit/ui/button"
+        ],
+        "constraints": [
+          "Render button below ScrollArea",
+          "Only show if hasMore is true",
+          "Disable button when isLoadingMore",
+          "Show 'Loading...' text when isLoadingMore",
+          "Call loadMore onClick",
+          "Center align button with flex justify-center"
+        ]
+      },
+      "input_state": "Widget displays activities; hook provides loadMore function and flags",
+      "output_state": "Widget has Load More button that fetches next page when clicked",
+      "acceptance_criterion": "Button appears when hasMore=true, calls loadMore, shows loading state",
+      "verification_command": "grep -q 'Load More' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'loadMore' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx && grep -q 'hasMore' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T4", "S1864.I3.F3.T6"],
+        "blocks": ["S1864.I3.F3.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F3.T8",
+      "type": "task",
+      "name": "Add widget to dashboard page grid",
+      "action": {
+        "verb": "Add",
+        "target": "widget to page"
+      },
+      "purpose": "Integrate ActivityFeedWidget into dashboard page layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        ],
+        "dependencies": [
+          "ActivityFeedWidget component",
+          "PageBody component"
+        ],
+        "constraints": [
+          "Import ActivityFeedWidget",
+          "Add to PageBody content",
+          "Place in grid layout (position TBD based on other widgets)",
+          "Widget should be responsive"
+        ]
+      },
+      "input_state": "Dashboard page has minimal content; widget component is complete",
+      "output_state": "Dashboard page imports and renders ActivityFeedWidget",
+      "acceptance_criterion": "Page imports ActivityFeedWidget and renders it within PageBody",
+      "verification_command": "grep -q 'ActivityFeedWidget' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/page.tsx && grep -q 'from.*activity-feed-widget' /home/msmith/projects/2025slideheroes/apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F3.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1864.I3.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 1,
+        "name": "Hook Creation",
+        "task_ids": ["S1864.I3.F3.T2"],
+        "depends_on_groups": [0],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Pagination & Component Shell",
+        "task_ids": ["S1864.I3.F3.T3", "S1864.I3.F3.T4"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Icon Mapping",
+        "task_ids": ["S1864.I3.F3.T5"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Timeline Rendering",
+        "task_ids": ["S1864.I3.F3.T6"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 5,
+        "name": "Load More Button",
+        "task_ids": ["S1864.I3.F3.T7"],
+        "depends_on_groups": [0, 1, 2, 3, 4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 6,
+        "name": "Integration",
+        "task_ids": ["S1864.I3.F3.T8"],
+        "depends_on_groups": [0, 1, 2, 3, 4, 5],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I3.F3.T1", "S1864.I3.F3.T2", "S1864.I3.F3.T4", "S1864.I3.F3.T5", "S1864.I3.F3.T6", "S1864.I3.F3.T7", "S1864.I3.F3.T8"],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 18,
+      "parallel": 16,
+      "time_saved_percent": 11.1
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

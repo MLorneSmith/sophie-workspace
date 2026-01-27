@@ -1,0 +1,511 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I3.F4",
+    "feature_name": "Quick Actions Panel",
+    "feature_slug": "quick-actions-panel",
+    "initiative_id": "S1864.I3",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T20:15:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": { "min": 6, "max": 12 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I3.F4.T4", "S1864.I3.F4.T7"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I3.F4.T1",
+      "type": "task",
+      "name": "Create QuickActionItem type interface",
+      "action": { "verb": "Create", "target": "QuickActionItem type interface" },
+      "purpose": "Define TypeScript interface for individual quick action items with icon, title, description, href, and optional priority",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_lib/server/dashboard-types.ts"],
+        "dependencies": ["DashboardData type from S1864.I1.F1"],
+        "constraints": [
+          "Must export interface QuickActionItem with required and optional fields",
+          "Icon should be string (icon name from lucide-react)",
+          "All fields properly typed with JSDoc comments"
+        ]
+      },
+      "input_state": "dashboard-types.ts exists with DashboardData interface from S1864.I1.F1. No QuickActionItem type defined yet.",
+      "output_state": "QuickActionItem interface added to dashboard-types.ts with fields: icon (string), title (string), description (string), href (string), priority (optional number).",
+      "acceptance_criterion": "QuickActionItem interface exists in dashboard-types.ts with all required fields, TypeScript compiles without errors.",
+      "verification_command": "grep -q 'export interface QuickActionItem' apps/web/app/home/\\(user\\)/_lib/server/dashboard-types.ts && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/dashboard-types.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I3.F4.T2", "S1864.I3.F4.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T2",
+      "type": "task",
+      "name": "Create useQuickActions hook with parallel data fetching",
+      "action": { "verb": "Create", "target": "useQuickActions hook" },
+      "purpose": "Implement React Query hook that fetches course_progress, tasks, and survey_progress in parallel using Promise.all",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/card-button.tsx",
+          "apps/web/app/home/[account]/_lib/server/team-account-workspace.loader.ts"
+        ],
+        "dependencies": [
+          "useSupabase hook from @kit/supabase/hooks/use-supabase",
+          "useQuery from @tanstack/react-query",
+          "QuickActionItem type from T1"
+        ],
+        "constraints": [
+          "Use Promise.all for parallel fetching (60-80% faster)",
+          "Return isLoading, error, and actions array",
+          "Handle graceful degradation if tables have no data",
+          "Use 'use client' directive"
+        ]
+      },
+      "input_state": "QuickActionItem type exists from T1. No useQuickActions hook exists. Course_progress, tasks, and survey_progress tables exist with RLS.",
+      "output_state": "File apps/web/app/home/(user)/_lib/hooks/use-quick-actions.ts exists with hook that queries 3 tables in parallel, returns { isLoading, error, actions: QuickActionItem[] }.",
+      "acceptance_criterion": "Hook file exists at correct path, uses Promise.all for parallel fetching, returns properly typed data, TypeScript compiles without errors.",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_lib/hooks/use-quick-actions.ts && grep -q 'Promise.all' apps/web/app/home/\\(user\\)/_lib/hooks/use-quick-actions.ts && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/hooks/use-quick-actions.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T1"],
+        "blocks": ["S1864.I3.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T3",
+      "type": "task",
+      "name": "Add action derivation logic to useQuickActions",
+      "action": { "verb": "Add", "target": "action derivation logic" },
+      "purpose": "Implement conditional logic to derive contextual actions based on data presence (Continue Course if incomplete lessons, Continue Task if doing tasks, Complete Assessment if not done, New Presentation always)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_lib/hooks/use-quick-actions.ts"],
+        "dependencies": [
+          "QuickActionItem type from T1",
+          "Fetched data from T2 (course_progress, tasks, survey_progress)"
+        ],
+        "constraints": [
+          "Continue Course: show if current_lesson_id exists in course_progress",
+          "Continue Task: show if tasks with status='doing' exist",
+          "Complete Assessment: show if survey_progress is null/incomplete",
+          "New Presentation: always show as default action",
+          "Ensure at least 2 actions always returned",
+          "Return max 4 actions in 2x2 grid"
+        ]
+      },
+      "input_state": "useQuickActions hook exists from T2 with parallel data fetching but no action derivation logic. Hook returns raw data.",
+      "output_state": "useQuickActions hook includes deriveActions() function that maps fetched data to QuickActionItem[] array based on conditional rules. Returns 2-4 contextual actions with default fallbacks.",
+      "acceptance_criterion": "Hook returns 2-4 QuickActionItem objects based on data state, includes default actions when no contextual ones apply, TypeScript compiles without errors.",
+      "verification_command": "grep -q 'deriveActions' apps/web/app/home/\\(user\\)/_lib/hooks/use-quick-actions.ts && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_lib/hooks/use-quick-actions.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T2"],
+        "blocks": ["S1864.I3.F4.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T4",
+      "type": "task",
+      "name": "Create QuickActionsPanel component skeleton",
+      "action": { "verb": "Create", "target": "QuickActionsPanel component skeleton" },
+      "purpose": "Create client component that renders 2x2 grid layout with CardButton placeholders for quick actions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "find role", "target": "grid" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/card-button.tsx",
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx"
+        ],
+        "dependencies": [
+          "CardButton, CardButtonHeader, CardButtonTitle, CardButtonContent from @kit/ui/card-button",
+          "useQuickActions hook from T2/T3",
+          "Card, CardHeader, CardTitle from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "2x2 grid layout (grid-cols-2 gap-4)",
+          "Responsive: single column on mobile, 2 columns on tablet+",
+          "No interactive handlers yet (added in T5/T6)"
+        ]
+      },
+      "input_state": "useQuickActions hook exists from T2/T3. No QuickActionsPanel component exists. CardButton components available in @kit/ui.",
+      "output_state": "File apps/web/app/home/(user)/_components/quick-actions-panel.tsx exists with client component rendering Card wrapper, grid layout, and CardButton placeholders. Component calls useQuickActions hook.",
+      "acceptance_criterion": "Component file exists at correct path, renders 2x2 grid layout, displays placeholder CardButtons, TypeScript compiles without errors.",
+      "verification_command": "test -f apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'use client' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T2", "S1864.I3.F4.T3"],
+        "blocks": ["S1864.I3.F4.T5", "S1864.I3.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T5",
+      "type": "task",
+      "name": "Add icon and content rendering to QuickActionsPanel",
+      "action": { "verb": "Add", "target": "icon and content rendering" },
+      "purpose": "Populate CardButton components with icons, titles, and descriptions from QuickActionItem data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Continue Course" },
+          { "command": "is visible", "target": "New Presentation" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+          "packages/ui/src/makerkit/card-button.tsx"
+        ],
+        "dependencies": [
+          "lucide-react icons (import dynamically or use specific icons)",
+          "QuickActionItem data from useQuickActions",
+          "CardButtonHeader, CardButtonTitle, CardButtonContent structure"
+        ],
+        "constraints": [
+          "Map over actions array from useQuickActions",
+          "Display icon using lucide-react dynamic import",
+          "Render title in CardButtonTitle",
+          "Render description in CardButtonContent",
+          "No href/onClick handlers yet (added in T6)"
+        ]
+      },
+      "input_state": "QuickActionsPanel skeleton exists from T4 with grid layout but placeholder content. useQuickActions returns QuickActionItem[] with icon, title, description, href.",
+      "output_state": "QuickActionsPanel component maps over actions array and renders each action's icon, title, and description in CardButton structure. Content is visible but not yet interactive.",
+      "acceptance_criterion": "Component displays icons, titles, and descriptions for each action, content matches QuickActionItem data, TypeScript compiles without errors.",
+      "verification_command": "grep -q 'actions.map' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T4"],
+        "blocks": ["S1864.I3.F4.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T6",
+      "type": "task",
+      "name": "Wire CardButton navigation to action hrefs",
+      "action": { "verb": "Wire", "target": "CardButton navigation to hrefs" },
+      "purpose": "Connect each CardButton to its destination URL using Next.js Link component for client-side navigation",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "CardButton",
+            "expected_action": "navigate to action.href",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ],
+        "validation_command": "grep -Pzo 'CardButton[^>]*asChild[^>]*>[^<]*<Link[^>]*href' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx"
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+          "apps/web/app/home/(user)/_components/home-accounts-list.tsx"
+        ],
+        "dependencies": [
+          "Link component from next/link",
+          "CardButton asChild pattern",
+          "QuickActionItem.href from useQuickActions"
+        ],
+        "constraints": [
+          "Use CardButton with asChild prop",
+          "Wrap with Link component",
+          "href from action.href field",
+          "Preserve icon/title/description rendering from T5"
+        ]
+      },
+      "input_state": "QuickActionsPanel from T5 displays content but buttons are not interactive. CardButton supports asChild pattern for Link wrapping.",
+      "output_state": "Each CardButton wrapped with Link component using asChild pattern. Clicking action navigates to correct destination URL via client-side routing.",
+      "acceptance_criterion": "CardButtons wrapped with Link, clicking navigates to correct URL, navigation is client-side (no full page reload), TypeScript compiles without errors.",
+      "verification_command": "grep -Pzo 'CardButton[^>]*asChild[^>]*>[^<]*<Link[^>]*href' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T5"],
+        "blocks": ["S1864.I3.F4.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T7",
+      "type": "task",
+      "name": "Add skeleton loading state to QuickActionsPanel",
+      "action": { "verb": "Add", "target": "skeleton loading state" },
+      "purpose": "Display skeleton placeholders while useQuickActions data is loading to prevent layout shift",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 500,
+        "checks": [
+          { "command": "find role", "target": "status" },
+          { "command": "is visible", "target": "Loading" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Skeleton component from @kit/ui/skeleton",
+          "isLoading from useQuickActions"
+        ],
+        "constraints": [
+          "Show 4 skeleton CardButtons in 2x2 grid during loading",
+          "Match height and layout of actual CardButtons",
+          "Use Skeleton component for title and description areas",
+          "Prevent layout shift when data loads"
+        ]
+      },
+      "input_state": "QuickActionsPanel from T6 displays actions when loaded but has no loading state. Shows nothing or error during fetch.",
+      "output_state": "QuickActionsPanel displays 4 skeleton CardButton placeholders when isLoading=true. Skeleton layout matches actual CardButton dimensions and grid structure.",
+      "acceptance_criterion": "Component shows skeleton placeholders during loading, no layout shift when data appears, TypeScript compiles without errors.",
+      "verification_command": "grep -q 'isLoading' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && grep -q 'Skeleton' apps/web/app/home/\\(user\\)/_components/quick-actions-panel.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T6"],
+        "blocks": ["S1864.I3.F4.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F4.T8",
+      "type": "task",
+      "name": "Integrate QuickActionsPanel into dashboard page",
+      "action": { "verb": "Add", "target": "QuickActionsPanel to dashboard grid" },
+      "purpose": "Import and place QuickActionsPanel component in dashboard page grid layout at correct position",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Quick Actions" },
+          { "command": "find role", "target": "grid" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Dashboard grid layout from S1864.I1.F3",
+          "QuickActionsPanel component from T4-T7"
+        ],
+        "constraints": [
+          "Add import for QuickActionsPanel",
+          "Place in row 2, position 2 (per spec layout: 3-3-1 grid)",
+          "Ensure grid responsive classes apply correctly",
+          "Widget appears in correct position on all breakpoints"
+        ]
+      },
+      "input_state": "Dashboard page from S1864.I1.F2 has grid layout from S1864.I1.F3. QuickActionsPanel component complete from T7 but not integrated into page.",
+      "output_state": "Dashboard page imports and renders QuickActionsPanel in correct grid position. Widget appears at row 2, position 2 in desktop layout, stacks appropriately on mobile/tablet.",
+      "acceptance_criterion": "QuickActionsPanel visible on dashboard page at /home route, positioned correctly in grid layout, responsive behavior works, TypeScript compiles without errors.",
+      "verification_command": "grep -q 'QuickActionsPanel' apps/web/app/home/\\(user\\)/page.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F4.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Data Layer and Hook",
+        "task_ids": ["S1864.I3.F4.T1", "S1864.I3.F4.T2", "S1864.I3.F4.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 6.5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": ["S1864.I3.F4.T4", "S1864.I3.F4.T5", "S1864.I3.F4.T6", "S1864.I3.F4.T7"],
+        "depends_on_groups": [1],
+        "estimated_hours": 7,
+        "parallel_hours": 7
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1864.I3.F4.T8"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I3.F4.T1", "S1864.I3.F4.T2", "S1864.I3.F4.T3", "S1864.I3.F4.T4", "S1864.I3.F4.T5", "S1864.I3.F4.T6", "S1864.I3.F4.T7", "S1864.I3.F4.T8"],
+      "total_hours": 14.5
+    },
+    "duration": {
+      "sequential": 14.5,
+      "parallel": 11,
+      "time_saved_percent": 24
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
