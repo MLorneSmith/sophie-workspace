@@ -1,0 +1,711 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I4.F4",
+    "feature_name": "Booking Modal",
+    "feature_slug": "booking-modal",
+    "initiative_id": "S1864.I4",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:30:00Z",
+    "complexity": {
+      "score": 59,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1864.I4.F4.T2",
+      "S1864.I4.F4.T6",
+      "S1864.I4.F4.T8"
+    ],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CAL_USERNAME",
+        "description": "Cal.com username for embed URL construction",
+        "source": "Cal.com Account Settings",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "description": "Cal.com event type slug (e.g., '60min') for booking",
+        "source": "Cal.com Event Types",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1864.I4.F4.T1",
+      "type": "task",
+      "name": "Create shared Cal.com embed script loader utility",
+      "action": {
+        "verb": "Create",
+        "target": "calcom-embed-loader.ts utility"
+      },
+      "purpose": "Provide reusable async function to load Cal.com embed script dynamically, preventing duplicate script tags when used by both booking and reschedule modals",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Cal.com embed script from https://app.cal.com/embed/embed.js"
+        ],
+        "constraints": [
+          "Must check if script already loaded before inserting",
+          "Must return Promise that resolves when script loads",
+          "Must handle script load errors gracefully"
+        ]
+      },
+      "input_state": "No Cal.com script loader exists in codebase",
+      "output_state": "apps/web/lib/calcom-embed-loader.ts exists with loadCalEmbed() async function that returns load status",
+      "acceptance_criterion": "Function exports loadCalEmbed() that returns Promise<boolean> indicating script load success",
+      "verification_command": "grep -q 'export.*loadCalEmbed' apps/web/lib/calcom-embed-loader.ts && grep -q 'Promise<boolean>' apps/web/lib/calcom-embed-loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/lib/calcom-embed-loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F4.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T2",
+      "type": "task",
+      "name": "Create BookingModal component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "BookingModal component skeleton"
+      },
+      "purpose": "Render modal dialog shell with Dialog, DialogContent, DialogHeader from @kit/ui/dialog and empty container div for Cal.com embed",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book Coaching Session"
+          },
+          {
+            "command": "find role",
+            "target": "dialog"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/dialog.tsx"
+        ],
+        "dependencies": [
+          "Dialog, DialogContent, DialogHeader, DialogTitle from @kit/ui/dialog"
+        ],
+        "constraints": [
+          "Must be 'use client' component for modal state",
+          "Must accept isOpen, onOpenChange props for controlled state",
+          "Must include container div with id 'cal-booking-embed' for embed insertion"
+        ]
+      },
+      "input_state": "Dialog component exists in packages/ui, no BookingModal component exists",
+      "output_state": "apps/web/app/home/(user)/_components/booking-modal.tsx exists with controlled Dialog rendering 'Book Coaching Session' title and embed container",
+      "acceptance_criterion": "Component renders Dialog with DialogTitle 'Book Coaching Session' and div with id 'cal-booking-embed'",
+      "verification_command": "grep -q \"'use client'\" apps/web/app/home/(user)/_components/booking-modal.tsx && grep -q 'Book Coaching Session' apps/web/app/home/(user)/_components/booking-modal.tsx && grep -q 'cal-booking-embed' apps/web/app/home/(user)/_components/booking-modal.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F4.T3",
+          "S1864.I4.F4.T4"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T3",
+      "type": "task",
+      "name": "Add Cal.com embed initialization logic to BookingModal",
+      "action": {
+        "verb": "Add",
+        "target": "Cal.com embed initialization to BookingModal"
+      },
+      "purpose": "Load Cal.com script via loadCalEmbed() and initialize inline embed with username, eventSlug, and user context (email, name) when modal opens",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/calcom-embed-loader.ts",
+          "apps/web/app/home/(user)/_components/booking-modal.tsx"
+        ],
+        "dependencies": [
+          "loadCalEmbed() from calcom-embed-loader.ts",
+          "process.env.NEXT_PUBLIC_CAL_USERNAME",
+          "process.env.NEXT_PUBLIC_CAL_EVENT_SLUG",
+          "User email and name from session context"
+        ],
+        "constraints": [
+          "Must use useEffect hook triggered by isOpen prop",
+          "Must call Cal('inline', {...}) with correct config",
+          "Must handle missing env vars gracefully (warn, don't error)",
+          "Must pre-fill email and name from user session"
+        ]
+      },
+      "input_state": "BookingModal skeleton exists, loadCalEmbed() function exists, no embed initialization logic present",
+      "output_state": "BookingModal calls loadCalEmbed() and Cal('inline', {...}) in useEffect when isOpen=true, passing username, eventSlug, email, name config",
+      "acceptance_criterion": "useEffect hook exists that calls loadCalEmbed() and Cal('inline', {...}) with elementOrSelector '#cal-booking-embed' and config object containing calLink and user prefill data",
+      "verification_command": "grep -Pzo \"useEffect.*isOpen.*\\{[\\s\\S]*?loadCalEmbed[\\s\\S]*?Cal\\('inline'\" apps/web/app/home/(user)/_components/booking-modal.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "NEXT_PUBLIC_CAL_USERNAME and NEXT_PUBLIC_CAL_EVENT_SLUG",
+            "expected_action": "warn if missing, return null instead of error",
+            "file_path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'console\\.(warn|info)|return null' apps/web/app/home/(user)/_components/booking-modal.tsx | grep -v 'console\\.error'"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F4.T1",
+          "S1864.I4.F4.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T4",
+      "type": "task",
+      "name": "Add booking success event listener to BookingModal",
+      "action": {
+        "verb": "Add",
+        "target": "bookingSuccessful event listener to BookingModal"
+      },
+      "purpose": "Listen for Cal.com 'bookingSuccessful' event to automatically close modal when user completes booking, improving UX flow",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/booking-modal.tsx"
+        ],
+        "dependencies": [
+          "Cal.com event system (window.addEventListener)"
+        ],
+        "constraints": [
+          "Must add event listener in useEffect when modal opens",
+          "Must clean up listener in useEffect return function",
+          "Must call onOpenChange(false) when event fires"
+        ]
+      },
+      "input_state": "BookingModal has embed initialization, no event listener for booking success",
+      "output_state": "BookingModal listens for 'bookingSuccessful' event and calls onOpenChange(false) when event fires, with cleanup on unmount",
+      "acceptance_criterion": "useEffect hook adds 'bookingSuccessful' event listener that calls onOpenChange(false) and returns cleanup function removing listener",
+      "verification_command": "grep -Pzo \"addEventListener.*bookingSuccessful.*onOpenChange.*false\" apps/web/app/home/(user)/_components/booking-modal.tsx && grep -q 'removeEventListener' apps/web/app/home/(user)/_components/booking-modal.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "event_handler",
+            "target": "bookingSuccessful",
+            "expected_action": "close modal by calling onOpenChange(false)",
+            "file_path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
+          }
+        ],
+        "validation_command": "grep -A5 'addEventListener.*bookingSuccessful' apps/web/app/home/(user)/_components/booking-modal.tsx | grep -q 'onOpenChange.*false'"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F4.T2"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T5",
+      "type": "task",
+      "name": "Add modal state management to CoachingSessionsWidget",
+      "action": {
+        "verb": "Add",
+        "target": "booking modal state to CoachingSessionsWidget"
+      },
+      "purpose": "Track whether booking modal is open/closed using React useState hook, enabling controlled modal behavior",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "React useState hook"
+        ],
+        "constraints": [
+          "Must use useState<boolean> for isBookingOpen state",
+          "Must provide setter function for child components"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget exists without modal state management",
+      "output_state": "CoachingSessionsWidget has isBookingOpen state initialized to false with setIsBookingOpen setter",
+      "acceptance_criterion": "useState hook exists with isBookingOpen variable and setIsBookingOpen setter initialized to false",
+      "verification_command": "grep -q 'useState.*isBookingOpen' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx && grep -q 'setIsBookingOpen' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F4.T6",
+          "S1864.I4.F4.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T6",
+      "type": "task",
+      "name": "Create 'Book New Session' button in CoachingSessionsWidget",
+      "action": {
+        "verb": "Create",
+        "target": "'Book New Session' button in widget"
+      },
+      "purpose": "Render button element with text 'Book New Session' that users can click to open booking modal",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book New Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button"
+        ],
+        "constraints": [
+          "Must render Button component with text 'Book New Session'",
+          "Must be visible in widget UI",
+          "Button should have appropriate styling (variant, size)"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget has modal state, no 'Book New Session' button exists",
+      "output_state": "CoachingSessionsWidget renders Button component with text 'Book New Session' and no onClick handler yet",
+      "acceptance_criterion": "Button component exists in widget JSX with children text 'Book New Session'",
+      "verification_command": "grep -Pzo \"<Button[^>]*>[\\s\\S]*?Book New Session[\\s\\S]*?</Button>\" apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F4.T5"
+        ],
+        "blocks": [
+          "S1864.I4.F4.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T7",
+      "type": "task",
+      "name": "Wire 'Book New Session' button to modal state",
+      "action": {
+        "verb": "Wire",
+        "target": "button onClick to setIsBookingOpen"
+      },
+      "purpose": "Connect button click interaction to modal open logic by adding onClick handler that sets isBookingOpen to true",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "setIsBookingOpen state setter from T5",
+          "Button component from T6"
+        ],
+        "constraints": [
+          "Must add onClick prop to Button",
+          "onClick handler must call setIsBookingOpen(true)"
+        ]
+      },
+      "input_state": "Button exists without onClick handler, setIsBookingOpen state setter exists",
+      "output_state": "Button has onClick handler that calls setIsBookingOpen(true), clicking button opens modal",
+      "acceptance_criterion": "Button has onClick prop calling setIsBookingOpen(true)",
+      "verification_command": "grep -Pzo \"<Button[^>]*onClick=\\{[^}]*setIsBookingOpen.*true[^}]*\\}[^>]*>[\\s\\S]*?Book New Session\" apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Book New Session",
+            "expected_action": "call setIsBookingOpen(true) to open modal",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -A2 'Book New Session' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx | grep -q 'onClick.*setIsBookingOpen.*true'"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F4.T5",
+          "S1864.I4.F4.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T8",
+      "type": "task",
+      "name": "Add 'Book New Session' button to CoachingEmptyState",
+      "action": {
+        "verb": "Add",
+        "target": "'Book New Session' button to empty state"
+      },
+      "purpose": "Render CTA button in empty state component when user has no coaching sessions, providing clear action path",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Book New Session"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button"
+        ],
+        "constraints": [
+          "Must accept onBookClick prop function",
+          "Must render Button with text 'Book New Session'",
+          "Must be visible in empty state UI"
+        ]
+      },
+      "input_state": "CoachingEmptyState exists without booking CTA button",
+      "output_state": "CoachingEmptyState renders Button with text 'Book New Session' and accepts onBookClick prop (not wired yet)",
+      "acceptance_criterion": "Button component exists in empty state JSX with text 'Book New Session' and onBookClick prop in interface",
+      "verification_command": "grep -q 'onBookClick' apps/web/app/home/(user)/_components/coaching-empty-state.tsx && grep -Pzo \"<Button[^>]*>[\\s\\S]*?Book New Session[\\s\\S]*?</Button>\" apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F4.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F4.T9",
+      "type": "task",
+      "name": "Wire empty state button to modal state",
+      "action": {
+        "verb": "Wire",
+        "target": "empty state button to parent modal state"
+      },
+      "purpose": "Connect empty state CTA to booking modal by passing setIsBookingOpen as onBookClick prop from parent widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        ],
+        "dependencies": [
+          "setIsBookingOpen state setter from T5",
+          "onBookClick prop from T8"
+        ],
+        "constraints": [
+          "Must pass setIsBookingOpen as onBookClick prop to CoachingEmptyState",
+          "Empty state button onClick must call onBookClick prop"
+        ]
+      },
+      "input_state": "Empty state has button with onBookClick prop, parent widget has setIsBookingOpen state setter, not connected",
+      "output_state": "CoachingSessionsWidget passes setIsBookingOpen to CoachingEmptyState onBookClick prop, button click opens modal",
+      "acceptance_criterion": "CoachingEmptyState receives onBookClick={setIsBookingOpen} prop and button onClick calls onBookClick",
+      "verification_command": "grep -q 'onBookClick={setIsBookingOpen}' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx && grep -q 'onClick.*onBookClick' apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Book New Session (empty state)",
+            "expected_action": "call onBookClick prop which sets modal open",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+          }
+        ],
+        "validation_command": "grep -A2 'Book New Session' apps/web/app/home/(user)/_components/coaching-empty-state.tsx | grep -q 'onClick.*onBookClick'"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F4.T5",
+          "S1864.I4.F4.T8"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": [
+          "S1864.I4.F4.T1",
+          "S1864.I4.F4.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Embed Integration",
+        "task_ids": [
+          "S1864.I4.F4.T3",
+          "S1864.I4.F4.T4"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 7,
+        "parallel_hours": 4
+      },
+      {
+        "id": 3,
+        "name": "Widget Integration",
+        "task_ids": [
+          "S1864.I4.F4.T5",
+          "S1864.I4.F4.T6",
+          "S1864.I4.F4.T7"
+        ],
+        "depends_on_groups": [
+          2
+        ],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Empty State Integration",
+        "task_ids": [
+          "S1864.I4.F4.T8",
+          "S1864.I4.F4.T9"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1864.I4.F4.T1",
+        "S1864.I4.F4.T3",
+        "S1864.I4.F4.T5",
+        "S1864.I4.F4.T6",
+        "S1864.I4.F4.T7"
+      ],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 22,
+      "parallel": 11,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

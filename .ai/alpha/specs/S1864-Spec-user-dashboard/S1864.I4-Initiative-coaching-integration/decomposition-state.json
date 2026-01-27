@@ -2,8 +2,8 @@
   "initiative_id": "S1864.I4",
   "initiative_name": "Coaching Integration",
   "spec_id": "1864",
-  "status": "in_progress",
-  "current_phase": "decomposition",
+  "status": "completed",
+  "current_phase": "finalization",
   "created_at": "2026-01-27T00:00:00Z",
   "updated_at": "2026-01-27T00:00:00Z",
   "features": {
@@ -30,16 +30,17 @@
     },
     "S1864.I4.F4": {
       "name": "Booking Modal",
-      "status": "pending",
-      "task_count": 0,
-      "hours_estimate": 0
+      "status": "completed",
+      "task_count": 9,
+      "hours_estimate": 22,
+      "parallel_hours": 9
     }
   },
   "spikes_pending": [],
   "total_features": 4,
-  "completed_features": 0,
-  "total_tasks": 0,
+  "completed_features": 4,
+  "total_tasks": 50,
   "total_spikes": 0,
-  "total_hours_sequential": 0,
-  "total_hours_parallel": 0
+  "total_hours_sequential": 93,
+  "total_hours_parallel": 42
 }
