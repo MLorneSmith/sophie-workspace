@@ -2,13 +2,31 @@
 
 Write compelling email marketing in Andre Chaperon's "Art of Email" style, using annotated examples, extracted techniques, and structured workflows.
 
+## Two-Command Workflow
+
+Use the two-stage email creation process:
+
+1. **`/email-campaign`** - Strategy & hook development (run once per campaign)
+   - Loads product context and POVs
+   - Develops compelling hooks with quality scoring
+   - Creates campaign strategy document
+
+2. **`/email-write`** - Email execution (run for each email)
+   - Reads campaign strategy
+   - Writes individual emails with planned hooks
+   - Maintains narrative continuity
+
+---
+
 ## Skill Overview
 
-This skill enables four modes of operation:
-1. **Write Mode** - Generate emails with a provided hook
-2. **Hook Mode** - Develop the perfect hook through interactive research
-3. **Validate Mode** - Check draft emails against Andre's style patterns
-4. **Campaign Mode** - View campaign structure and write sequence-aware emails
+This skill provides reference documentation for email creation:
+1. **Write Guidelines** - How to generate emails with hooks and techniques
+2. **Hook Development** - How to develop compelling hooks through research
+3. **Validation** - How to check drafts against Andre's style patterns
+4. **Campaign Structure** - How to view and work with email sequences
+
+The `/email-campaign` and `/email-write` commands use this skill's resources and guidelines.
 
 ## Core Resources
 
@@ -17,6 +35,51 @@ Always load these files before any operation:
 - `core/best-examples.yaml` - 12 gold standard annotated emails
 - `core/hooks-library.yaml` - 45 hooks across 8 categories
 - `core/principles.md` - Andre's 7 core philosophy principles
+
+## Context Resources (SlideHeroes-Specific)
+
+Load these for SlideHeroes-specific content and voice:
+- `context/slideheroes-product.yaml` - Product positioning, audience, voice guidelines
+- `context/presentation-povs.yaml` - 32 belief statements on presentations (for hooks)
+- `context/ai-presentation-povs.yaml` - POVs on AI + presentations (placeholder)
+
+### When to Load Context
+
+| Situation | Load Context? |
+|-----------|---------------|
+| Writing for SlideHeroes campaigns | Yes - all context files |
+| Generic email style practice | No - core resources only |
+| Hook development | Yes - POVs provide hook angles |
+| Validation | No - core resources only |
+
+## Hook Quality Criteria
+
+When developing or evaluating hooks, score against these 5 criteria:
+
+| Criterion | Weight | Description |
+|-----------|--------|-------------|
+| Open Loop Power | 3 | Creates unresolved psychological tension (Zeigarnik Effect) |
+| Specificity | 2 | Uses concrete details vs. generic abstractions |
+| Relevance | 2 | Connects to audience's real pain points and desires |
+| Bridge Potential | 2 | Naturally transitions to the email's main message |
+| Authenticity | 1 | Rings true to SlideHeroes voice and experience |
+
+**Scoring:** Rate each 1-5, multiply by weight. Total: XX/50
+- 40+ = Strong hook (proceed)
+- 30-39 = Needs refinement
+- <30 = Rethink approach
+
+### POV-to-Hook Mapping
+
+Use POVs from `presentation-povs.yaml` to ground hooks in SlideHeroes beliefs:
+
+| POV Category | Best Hook Types |
+|--------------|-----------------|
+| Identity ("presentations aren't speeches") | Contrarian, Pattern Interrupt |
+| Structure ("answer a question") | Reframe, Question |
+| Evidence ("demonstrate, don't assert") | Story (with proof), Data |
+| Design ("minimalist ethos") | Contrarian, Permission |
+| Delivery ("have conviction") | Tough Love, Empathy |
 
 ## Extended Corpus (On-Demand)
 
@@ -95,13 +158,22 @@ Load from `emails/campaigns/` when:
 
 ## Invocation
 
+```bash
+# Stage 1: Design campaign strategy
+/email-campaign [campaign-name] "[audience description]"
+
+# Stage 2: Write individual emails
+/email-write [campaign-name] [position]
+/email-write [campaign-name] [position] --validate  # Validate existing draft
 ```
-/email-style write [type] "[hook or topic]"
-/email-style write --campaign [name] --position [N] "[hook or topic]"
-/email-style hook "[topic or offer]"
-/email-style validate [file-path]
-/email-style campaign [name]
-```
+
+## Output Locations
+
+| Content | Location |
+|---------|----------|
+| Campaign strategies | `.ai/content/emails/strategies/[campaign-name]-strategy.yaml` |
+| Individual emails | `.ai/content/emails/[campaign-name]/[position]-[slug].yaml` |
+| Existing campaigns | `.claude/skills/email-style/emails/campaigns/` |
 
 ### Campaign-Aware Writing
 
@@ -122,7 +194,7 @@ The skill will ensure:
 
 ---
 
-## Mode 1: Write Email
+## Writing Emails
 
 ### Input Requirements
 - **type**: welcome | nurture | story | sales | newsletter
@@ -235,7 +307,7 @@ Present the email with technique annotations:
 
 ---
 
-## Mode 2: Hook Development
+## Developing Hooks
 
 When the user needs help finding the right hook, enter interactive hook development mode.
 
@@ -313,7 +385,7 @@ With refined hook, offer to write the full email.
 
 ---
 
-## Mode 3: Validate Draft
+## Validating Drafts
 
 Check a draft email against Andre's style patterns.
 
@@ -389,7 +461,7 @@ Compare against best examples for:
 
 ---
 
-## Mode 4: Campaign View
+## Viewing Campaigns
 
 View the structure and narrative arc of an existing campaign.
 
@@ -499,27 +571,21 @@ Based on campaign view, offer to:
 
 ## Example Usage
 
-### Write a welcome email:
+**Step 1: Design campaign strategy**
+```bash
+/email-campaign course-launch "announcing DDM to existing subscribers"
 ```
-/email-style write welcome "Last Tuesday, I almost deleted my entire email list. Here's why I'm glad I didn't."
-```
+This creates `.ai/content/emails/strategies/course-launch-strategy.yaml`
 
-### Write for an existing campaign:
+**Step 2: Write individual emails**
+```bash
+/email-write course-launch 1
+/email-write course-launch 2
+/email-write course-launch 3
 ```
-/email-style write --campaign bpm-onboarding --position 17 "soft introduction to DDM course pricing"
-```
+Each email is saved to `.ai/content/emails/course-launch/`
 
-### View campaign structure:
-```
-/email-style campaign bpm-onboarding
-```
-
-### Develop a hook:
-```
-/email-style hook "launching a course about email copywriting"
-```
-
-### Validate a draft:
-```
-/email-style validate ./drafts/welcome-email-v1.md
+**Validate a draft**
+```bash
+/email-write course-launch 3 --validate
 ```
