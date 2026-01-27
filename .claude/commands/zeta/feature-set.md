@@ -7,13 +7,13 @@ allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 
 # Feature Set Decomposition
 
-Decompose complex multi-feature initiatives into 3-8 logical features with dependency mapping and GitHub tracking. Creates master plan + feature stubs for `/feature` → `/implement` workflow.
+Decompose complex multi-feature initiatives into 3-8 logical features with dependency mapping and GitHub tracking. Creates master plan + feature stubs for `/feature:feature` → `/implement` workflow.
 
 ## Instructions
 
 IMPORTANT: You're creating a decomposition plan for a complex initiative that spans multiple features.
 IMPORTANT: This is strategic planning - identifying feature boundaries and dependencies, not implementing features.
-IMPORTANT: The output will be used to create `/feature` plans for each identified feature.
+IMPORTANT: The output will be used to create `/feature:feature` plans for each identified feature.
 
 ### Step 1: Interview User
 
@@ -171,7 +171,7 @@ The output will be a master plan document with this structure:
 **Dependencies**: [Features that must complete first]
 **Implementation Phase**: [Phase 1/2/3]
 **Effort Estimate**: [Rough estimate: S/M/L/XL]
-**Description**: [Detailed description ready for `/feature` command]
+**Description**: [Detailed description ready for `/feature:feature` command]
 
 ## Dependency Graph
 
@@ -195,7 +195,7 @@ The output will be a master plan document with this structure:
 [Known risks, mitigation strategies]
 
 ## Next Steps
-[How to proceed: use `/feature` command on each feature]
+[How to proceed: use `/feature:feature` command on each feature]
 
 ## GitHub Issues
 [Links to master feature-set issue and individual feature issues]
@@ -235,7 +235,7 @@ For each identified feature in the decomposition:
 
 ```bash
 # Create feature stub issue linked to master
-# Note: These are stubs - full plans created via /feature command
+# Note: These are stubs - full plans created via /feature:feature command
 gh issue create \
   --repo MLorneSmith/2025slideheroes \
   --title "Feature: <featureName>" \
@@ -253,7 +253,7 @@ gh issue create \
 <what-this-feature-does>
 
 ---
-*This is a feature stub created by \`/feature-set\`. Run \`/feature <description>\` to create the full implementation plan.*" \
+*This is a feature stub created by \`/feature-set\`. Run \`/feature:feature <description>\` to create the full implementation plan.*" \
   --label "type:feature" \
   --label "status:blocked" \
   --label "priority:<priority>" \
@@ -290,7 +290,7 @@ gh issue comment ${MASTER_ISSUE_NUMBER} \
 #<f2> ──┴──> #<f4> ──┘
 \`\`\`
 
-**Next Steps**: Run \`/feature\` on each stub to create detailed implementation plans."
+**Next Steps**: Run \`/feature:feature\` on each stub to create detailed implementation plans."
 ```
 
 ### Step 4: Create GitHub Mapping File
@@ -318,7 +318,7 @@ cat > .ai/specs/feature-sets/<slug>/github-mapping.md << 'EOF'
 ## Workflow
 
 1. Unblock Phase 1 features: `gh issue edit #<issue> --remove-label "status:blocked" --add-label "status:ready"`
-2. Run `/feature <description>` for each feature to create detailed plans
+2. Run `/feature:feature <description>` for each feature to create detailed plans
 3. Run `/implement <issue#>` to execute each plan
 4. Update dependencies as features complete
 EOF
@@ -351,7 +351,7 @@ Master feature set plans are stored in:
 - After GitHub issue creation, rename to `<issue#>-overview.md`
 - Example: `pending-overview.md` → `42-overview.md`
 
-Individual features are then created using `/feature` command.
+Individual features are then created using `/feature:feature` command.
 
 ## Integration with Existing Workflow
 
@@ -362,7 +362,7 @@ Individual features are then created using `/feature` command.
 Master Plan + Feature Stubs
     ↓ User review & approval
 For each feature:
-    /feature [feature-name]
+    /feature:feature [feature-name]
         ↓ Creates detailed plan
     /implement [issue-number]
         ↓ Executes plan
@@ -391,12 +391,12 @@ After creating the feature set plan and GitHub issues, report:
 **Next Steps**:
 1. Review the master plan and feature stubs
 2. Unblock Phase 1 features: `gh issue edit #<issue> --remove-label "status:blocked" --add-label "status:ready"`
-3. Run `/feature <description>` on each feature to create detailed implementation plans
+3. Run `/feature:feature <description>` on each feature to create detailed implementation plans
 4. Run `/implement <issue#>` to execute each plan
 
 ## Related Commands
 
-- **`/feature`**: Create detailed implementation plan for a single feature
+- **`/feature:feature`**: Create detailed implementation plan for a single feature
 - **`/implement`**: Execute a feature or bug fix plan
 - **`/diagnose`**: Investigate and document root causes
 - **`/conditional_docs`**: Load relevant documentation for a task

@@ -68,8 +68,8 @@ async function buildTemplate(isDev: boolean = false): Promise<void> {
 		console.log(`Alias: ${alias}`);
 		console.log(`Template ID: ${result.templateId}`);
 		console.log("\nTo use this template:");
-		console.log(`  /sandbox create --template ${alias}`);
-		console.log(`  /sandbox run-claude "/test 1"`);
+		console.log(`  /alpha:sandbox create --template ${alias}`);
+		console.log(`  /alpha:sandbox run-claude "/test 1"`);
 	} catch (error) {
 		console.error("\nFailed to build template:", error);
 		process.exit(1);

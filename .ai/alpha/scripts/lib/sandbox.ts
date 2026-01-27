@@ -466,7 +466,7 @@ export async function createSandbox(
 		log("   Installing dependencies (node_modules missing)...");
 		await sandbox.commands.run(
 			`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-			{ timeoutMs: 600000 },
+			{ timeoutMs: 1200000 },
 		);
 	} else if (hasLockfileChanges) {
 		// Lockfile changed - sync dependencies with branch lockfile
@@ -474,7 +474,7 @@ export async function createSandbox(
 		// may have added new dependencies that aren't in the E2B template's node_modules
 		log("   Syncing dependencies (lockfile changed)...");
 		await sandbox.commands.run(`cd ${WORKSPACE_DIR} && pnpm install`, {
-			timeoutMs: 600000,
+			timeoutMs: 1200000,
 		});
 	} else {
 		log("   ✅ Dependencies already installed");
@@ -914,7 +914,7 @@ export async function createReviewSandbox(
 	log("   Installing dependencies from lockfile...");
 	const installResult = await sandbox.commands.run(
 		`cd ${WORKSPACE_DIR} && pnpm install --frozen-lockfile`,
-		{ timeoutMs: 600000 },
+		{ timeoutMs: 1200000 },
 	);
 
 	if (installResult.exitCode !== 0) {

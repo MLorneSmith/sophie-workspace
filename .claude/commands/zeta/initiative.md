@@ -1021,7 +1021,7 @@ Possible causes:
 Fix: Rebuild template with `pnpm e2b:build:prod` (requires GITHUB_TOKEN)
 
 For individual features, use:
-  /feature #<issue>   → Create plan
+  /feature:feature #<issue>   → Create plan
   /implement #<issue> → Execute plan
 ```
 
@@ -1052,7 +1052,7 @@ Ensure GITHUB_TOKEN or GH_TOKEN is set in your environment before running /initi
 | `/initiative-planning-coordinator` | Coordinate planning for ALL features (has Skill access) | Local |
 | `/initiative-feature` | Plan single feature with existing manifest (for re-planning or additions) | Local |
 | `/sandbox/initiative-implement` | Execute plan with manifest context | E2B Sandbox |
-| `/feature` | Standalone feature planning (no manifest, does own research) | Local |
+| `/feature:feature` | Standalone feature planning (no manifest, does own research) | Local |
 | `/implement` | Standalone implementation (no manifest context) | Local |
 
 ### When to Use Each Command
@@ -1060,7 +1060,7 @@ Ensure GITHUB_TOKEN or GH_TOKEN is set in your environment before running /initi
 | Scenario | Command |
 |----------|---------|
 | New large initiative (4+ features) | `/initiative` |
-| Single new feature (standalone) | `/feature` |
+| Single new feature (standalone) | `/feature:feature` |
 | Re-plan existing initiative feature | `/initiative-feature 123 --manifest github:issue:456` |
 | Implement standalone feature | `/implement 123` |
 | Implement initiative feature | Handled by `/initiative` orchestrator |

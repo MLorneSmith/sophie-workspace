@@ -7,7 +7,7 @@ allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, Task, TodoWrite, AskUserQue
 
 # Alpha Refinement Command
 
-Debug and fine-tune an Alpha implementation after human review. This command provides targeted debugging within E2B sandboxes, leveraging the spec/initiative/feature/task context.
+Debug and fine-tune an Alpha implementation after human review. This command pulls the alpha branch locally and provides targeted debugging, leveraging the spec/initiative/feature/task context.
 
 **Arguments:**
 - `<spec-id>` - Required. Spec ID in format `S1362` or `1362`
@@ -16,14 +16,20 @@ Debug and fine-tune an Alpha implementation after human review. This command pro
 
 ## Context
 
-You are running inside an E2B sandbox on the implementation branch. Your job is to:
-1. Understand the reported issue
-2. Diagnose the root cause using appropriate skills
-3. Fix the issue
-4. Verify the fix using existing verification commands
-5. Commit the fix
+This command works locally on your machine. Your job is to:
+1. Fetch and checkout the alpha branch
+2. Understand the reported issue
+3. Diagnose the root cause using appropriate skills
+4. Fix the issue
+5. Verify the fix using existing verification commands
+6. Commit and push the fix
 
-## Phase 0: Load Implementation Context
+## Phase 0: Setup & Load Context
+
+**FIRST**: Record the current branch so we can offer to return to it later:
+```bash
+ORIGINAL_BRANCH=$(git branch --show-current)
+```
 
 1. **Parse arguments**:
    ```typescript
@@ -59,12 +65,45 @@ You are running inside an E2B sandbox on the implementation branch. Your job is 
    - Feature list (from `feature_queue`)
    - Research directory (from `metadata.research_dir`)
 
-3. **Load feature context** (if --feature provided):
+3. **Checkout the alpha branch locally**:
+
+   **IMPORTANT**: Before switching branches, check for uncommitted changes:
+   ```bash
+   # Check current branch and status
+   git branch --show-current
+   git status --porcelain
+   ```
+
+   If there are uncommitted changes, ask user what to do:
+   - Stash changes (`git stash`)
+   - Abort and let user handle manually
+
+   **Fetch and checkout the alpha branch**:
+   ```bash
+   # Fetch latest from remote
+   git fetch origin
+
+   # Checkout the alpha branch (branch name from spec-manifest.json)
+   git checkout <branch_name>
+
+   # Pull latest changes
+   git pull origin <branch_name>
+
+   # Install dependencies (in case they changed)
+   pnpm install
+   ```
+
+   If the branch doesn't exist locally but exists on remote:
+   ```bash
+   git checkout -b <branch_name> origin/<branch_name>
+   ```
+
+4. **Load feature context** (if --feature provided):
    - Find the feature in `feature_queue`
    - Read the feature's `tasks.json` for verification commands
    - Note relevant files and patterns
 
-4. **Get or ask for issue description**:
+5. **Get or ask for issue description**:
    If `--issue` was not provided, use AskUserQuestion:
    ```
    question: "What issue would you like to fix?"
@@ -300,10 +339,14 @@ If verification commands fail after the fix:
 Spec: S1362 - User Dashboard
 Issue: "Login button doesn't render on mobile"
 
-[Phase 0: Loading Context]
+[Phase 0: Setup & Load Context]
 ✓ Found spec directory
 ✓ Loaded spec-manifest.json
 ✓ Branch: alpha/spec-S1362
+✓ Checking for uncommitted changes... none found
+✓ Fetching from remote...
+✓ Checked out alpha/spec-S1362
+✓ Running pnpm install...
 
 [Phase 1: Diagnosis]
 Detected issue type: Visual
@@ -335,6 +378,27 @@ Issue: Login button doesn't render on mobile
 Root cause: Tailwind responsive class `hidden md:block`
 Fix: Changed to `block` for all viewports
 Files: apps/web/app/(auth)/login/_components/login-form.tsx
+```
+
+## Phase 5: Cleanup (Optional)
+
+After refinement is complete, offer to return to the original branch:
+
+```bash
+# Ask user if they want to return to original branch
+# If yes:
+git checkout <original_branch>
+```
+
+Use AskUserQuestion:
+```
+question: "Return to your original branch?"
+header: "Cleanup"
+options:
+  - label: "Yes, return to [original_branch]"
+    description: "Switch back to the branch you were on before"
+  - label: "No, stay on alpha branch"
+    description: "Continue working on the alpha branch"
 ```
 
 ## Arguments

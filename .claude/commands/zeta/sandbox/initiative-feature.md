@@ -7,11 +7,11 @@ allowed-tools: [Read, Grep, Glob, Bash, Task, TodoWrite, AskUserQuestion]
 
 # Initiative Feature Planning
 
-Sandbox-optimized version of `/feature` that integrates with the `/initiative` orchestrator workflow. Loads pre-generated research manifest and outputs structured data for orchestration.
+Sandbox-optimized version of `/feature:feature` that integrates with the `/initiative` orchestrator workflow. Loads pre-generated research manifest and outputs structured data for orchestration.
 
 ## Key Differences from /feature
 
-| Aspect | /feature | /initiative-feature |
+| Aspect | /feature:feature | /initiative-feature |
 |--------|----------|---------------------|
 | Research | Does own codebase exploration | Loads research manifest |
 | Input | Feature description | GitHub issue number |
@@ -472,7 +472,7 @@ After completion, output:
 ## Error Handling
 
 - **Issue not found**: Return error status with message
-- **Manifest not found**: Return warning, proceed with standard /feature approach
+- **Manifest not found**: Return warning, proceed with standard /feature:feature approach
 - **GitHub update failure**: Include in output, don't fail entire planning
 
 ## Related Commands
@@ -480,6 +480,6 @@ After completion, output:
 - **`/initiative`**: Main orchestrator (calls this command)
 - **`/feature-set`**: Creates feature stub issues
 - **`/sandbox/initiative-implement`**: Execute this plan (E2B sandbox)
-- **`/feature`**: Standalone version (without orchestrator)
+- **`/feature:feature`**: Standalone version (without orchestrator)
 
 **Note**: This command is in `.claude/commands/sandbox/` and is designed for E2B sandbox execution only.
