@@ -1,0 +1,194 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I1.F2",
+    "feature_name": "Dashboard Page Shell",
+    "feature_slug": "dashboard-page-shell",
+    "initiative_id": "S1864.I1",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:30:00Z",
+    "complexity": {
+      "score": 12.5,
+      "level": "MINIMAL",
+      "target_steps": {
+        "min": 1,
+        "max": 3
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I1.F2.T2"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I1.F2.T1",
+      "type": "task",
+      "name": "Update page to async component with loader integration",
+      "action": {
+        "verb": "Update",
+        "target": "UserHomePage component to async with data loading"
+      },
+      "purpose": "Convert page to async server component that imports loader function, calls loadDashboardPageData, and stores result for future widget rendering",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/app/home/[account]/page.tsx"
+        ],
+        "dependencies": [
+          "loadDashboardPageData function from F1",
+          "async/await pattern from team account page"
+        ],
+        "constraints": [
+          "Import Suspense from 'react'",
+          "Import loadDashboardPageData from _lib/server/dashboard-page.loader",
+          "Add 'async' to function declaration",
+          "Call 'await loadDashboardPageData()' at component start",
+          "Store result in const data variable for future use",
+          "Follow existing import order convention"
+        ]
+      },
+      "input_state": "UserHomePage is a synchronous function component with basic imports for PageBody, Trans, i18n utilities, and HomeLayoutPageHeader",
+      "output_state": "UserHomePage is an async function that imports Suspense, calls loadDashboardPageData, and stores the result (data not yet consumed)",
+      "acceptance_criterion": "Page file contains 'import { Suspense } from \"react\"', imports loadDashboardPageData, component is 'async function UserHomePage()', and calls 'await loadDashboardPageData()'",
+      "verification_command": "grep -q 'import { Suspense }' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'async function UserHomePage' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'await loadDashboardPageData' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I1.F2.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I1.F2.T2",
+      "type": "task",
+      "name": "Wrap PageBody in Suspense boundary with loading fallback",
+      "action": {
+        "verb": "Add",
+        "target": "Suspense boundary around PageBody"
+      },
+      "purpose": "Enable streaming loading states by wrapping content in Suspense with simple loading placeholder",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Home"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/course/lessons/layout.tsx"
+        ],
+        "dependencies": [
+          "Suspense component from React (imported in T1)",
+          "PageBody component"
+        ],
+        "constraints": [
+          "Wrap PageBody with <Suspense> component",
+          "Add fallback prop with simple loading div containing 'Loading dashboard...' text",
+          "Skeleton component from F4 will replace fallback later",
+          "Ensure page compiles with pnpm typecheck"
+        ]
+      },
+      "input_state": "Page renders PageBody directly without Suspense boundary, component is async with loader data available",
+      "output_state": "PageBody is wrapped in Suspense with a simple loading fallback div, page renders without errors at /home route",
+      "acceptance_criterion": "PageBody is wrapped in <Suspense fallback={...}>, fallback contains loading text, and page passes typecheck",
+      "verification_command": "grep -q '<Suspense' apps/web/app/home/\\(user\\)/page.tsx && pnpm typecheck --filter web",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I1.F2.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Page Shell Implementation",
+        "task_ids": ["S1864.I1.F2.T1", "S1864.I1.F2.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I1.F2.T1", "S1864.I1.F2.T2"],
+      "total_hours": 2
+    },
+    "duration": {
+      "sequential": 2,
+      "parallel": 2,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

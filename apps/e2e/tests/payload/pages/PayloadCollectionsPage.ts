@@ -23,9 +23,10 @@ export class PayloadCollectionsPage extends PayloadBasePage {
 		super(page);
 
 		// Collection list elements
-		this.createNewButton = page.locator(
-			'a:has-text("Create New"), button:has-text("Create New")',
-		);
+		// Use .first() to avoid strict mode violations when multiple "Create New" elements exist
+		this.createNewButton = page
+			.locator('a:has-text("Create New"), button:has-text("Create New")')
+			.first();
 		this.searchInput = page.locator('input[placeholder*="Search"]');
 		this.listTable = page.locator("table, .list-table");
 

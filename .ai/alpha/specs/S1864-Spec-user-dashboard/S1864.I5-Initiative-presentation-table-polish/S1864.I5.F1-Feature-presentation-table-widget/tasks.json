@@ -1,0 +1,448 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I5.F1",
+    "feature_name": "Presentation Table Widget",
+    "feature_slug": "presentation-table-widget",
+    "initiative_id": "S1864.I5",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T00:00:00Z",
+    "complexity": {
+      "score": 43.75,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "signals": {
+        "files_affected": 3,
+        "files_weight": 0.5,
+        "dependencies": "few",
+        "dependencies_weight": 0.5,
+        "estimated_loc": 150,
+        "loc_weight": 0.5,
+        "feature_type": "enhancement",
+        "type_weight": 0.25
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I5.F1.T5", "S1864.I5.F1.T6"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I5.F1.T1",
+      "type": "task",
+      "name": "Create presentations loader function",
+      "action": {
+        "verb": "Create",
+        "target": "loadUserPresentations server loader"
+      },
+      "purpose": "Fetch user's building_blocks_submissions with RLS protection for table data source",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "building_blocks_submissions table with RLS policies"
+        ],
+        "constraints": [
+          "Query only columns needed for table (id, title, presentation_type, updated_at)",
+          "RLS automatically filters by auth.uid() = user_id",
+          "Order by updated_at DESC for most recent first",
+          "Return empty array if no presentations exist"
+        ]
+      },
+      "input_state": "building_blocks_submissions table exists with RLS policies",
+      "output_state": "Server-only loader function returns presentation data array",
+      "acceptance_criterion": "Function queries building_blocks_submissions and returns array of {id, title, presentation_type, updated_at}",
+      "verification_command": "grep -q 'export async function loadUserPresentations' apps/web/app/home/\\(user\\)/_lib/server/presentations.loader.ts && grep -q 'building_blocks_submissions' apps/web/app/home/\\(user\\)/_lib/server/presentations.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/presentations.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I5.F1.T3", "S1864.I5.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F1.T2",
+      "type": "task",
+      "name": "Define table column structure",
+      "action": {
+        "verb": "Create",
+        "target": "TanStack Table column definitions"
+      },
+      "purpose": "Define column schema for Title, Type, Last Updated, and Actions with sorting enabled",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "ColumnDef from @tanstack/react-table",
+          "Pencil icon from lucide-react",
+          "Button from @kit/ui/button"
+        ],
+        "constraints": [
+          "Title column: accessorKey 'title', sortable",
+          "Type column: accessorKey 'presentation_type', sortable, display 'N/A' if null",
+          "Last Updated column: accessorKey 'updated_at', sortable, format as relative time",
+          "Actions column: render Edit Outline button with href to /home/ai/canvas?id={id}",
+          "Use useMemo hook for column definitions",
+          "Column definitions must be memoized array of ColumnDef objects"
+        ]
+      },
+      "input_state": "Presentation data type structure is known from loader",
+      "output_state": "Column definitions array ready to pass to DataTable component",
+      "acceptance_criterion": "ColumnDef array defines 4 columns with correct accessorKeys and cell renderers",
+      "verification_command": "grep -q 'ColumnDef' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx && grep -q 'accessorKey.*title' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx && grep -q 'Pencil' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I5.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F1.T3",
+      "type": "task",
+      "name": "Create table widget component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "PresentationsTableWidget client component"
+      },
+      "purpose": "Build client component structure with DataTable, column definitions, and props interface",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "DataTable from @kit/ui/enhanced-data-table",
+          "Card components from @kit/ui/card",
+          "Column definitions from T2"
+        ],
+        "constraints": [
+          "Client component with 'use client' directive",
+          "Accept presentations prop array",
+          "Render Card wrapper with CardHeader and CardContent",
+          "Pass presentations data and columns to DataTable",
+          "Set manualSorting={false} for client-side sorting",
+          "Set pageSize={10} for pagination",
+          "Component must handle empty presentations array gracefully"
+        ]
+      },
+      "input_state": "Column definitions exist, DataTable component available",
+      "output_state": "Client component renders DataTable with card wrapper",
+      "acceptance_criterion": "Component renders DataTable inside Card with presentations prop passed through",
+      "verification_command": "grep -q \"'use client'\" apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx && grep -q 'DataTable' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx && grep -q 'manualSorting={false}' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I5.F1.T1", "S1864.I5.F1.T2"],
+        "blocks": ["S1864.I5.F1.T4", "S1864.I5.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F1.T4",
+      "type": "task",
+      "name": "Add table empty state",
+      "action": {
+        "verb": "Add",
+        "target": "empty state message to DataTable"
+      },
+      "purpose": "Display helpful message when user has no presentations",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Trans from @kit/ui/trans",
+          "DataTable noResultsMessage prop"
+        ],
+        "constraints": [
+          "Pass noResultsMessage prop to DataTable",
+          "Message: 'No presentations yet. Create your first one!'",
+          "Use Trans component for i18n support",
+          "Empty state shown automatically by DataTable when data.length === 0"
+        ]
+      },
+      "input_state": "Table widget component exists",
+      "output_state": "Table shows empty state message when presentations array is empty",
+      "acceptance_criterion": "DataTable displays empty message when presentations.length === 0",
+      "verification_command": "grep -q 'noResultsMessage' apps/web/app/home/\\(user\\)/_components/presentations-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I5.F1.T3"],
+        "blocks": ["S1864.I5.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F1.T5",
+      "type": "task",
+      "name": "Create loading skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "PresentationsTableSkeleton component"
+      },
+      "purpose": "Provide visual loading feedback during data fetch",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "table"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card components from @kit/ui/card"
+        ],
+        "constraints": [
+          "Match table widget card structure",
+          "Show 5 skeleton rows to simulate table",
+          "Use Skeleton component for shimmer effect",
+          "Export as PresentationsTableSkeleton"
+        ]
+      },
+      "input_state": "Table widget component structure known",
+      "output_state": "Skeleton component ready for Suspense fallback",
+      "acceptance_criterion": "Component renders Card with 5 Skeleton rows matching table layout",
+      "verification_command": "grep -q 'export.*PresentationsTableSkeleton' apps/web/app/home/\\(user\\)/_components/presentations-table-skeleton.tsx && grep -q 'Skeleton' apps/web/app/home/\\(user\\)/_components/presentations-table-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I5.F1.T3"],
+        "blocks": ["S1864.I5.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F1.T6",
+      "type": "task",
+      "name": "Wire table widget to dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "PresentationsTableWidget to user dashboard"
+      },
+      "purpose": "Integrate table widget into dashboard with server data loading and Suspense",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Presentations"
+          },
+          {
+            "command": "find role",
+            "target": "table"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "loadUserPresentations from T1",
+          "PresentationsTableWidget from T3",
+          "PresentationsTableSkeleton from T5",
+          "Suspense from react"
+        ],
+        "constraints": [
+          "Call loadUserPresentations in page component",
+          "Wrap PresentationsTableWidget in Suspense with skeleton fallback",
+          "Add widget to PageBody in dashboard grid",
+          "Widget should appear after existing dashboard content",
+          "Ensure server component pattern (async/await)",
+          "Pass presentations data as prop to widget"
+        ]
+      },
+      "input_state": "Dashboard page exists, loader and widget components ready",
+      "output_state": "Table widget integrated into dashboard with server data and loading state",
+      "acceptance_criterion": "Dashboard page fetches presentations data, renders widget with Suspense boundary",
+      "verification_command": "grep -q 'loadUserPresentations' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'PresentationsTableWidget' apps/web/app/home/\\(user\\)/page.tsx && grep -q 'Suspense' apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I5.F1.T1", "S1864.I5.F1.T4", "S1864.I5.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation - Data & Columns",
+        "task_ids": ["S1864.I5.F1.T1", "S1864.I5.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Component Implementation",
+        "task_ids": ["S1864.I5.F1.T3", "S1864.I5.F1.T4", "S1864.I5.F1.T5"],
+        "depends_on_groups": [1],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1864.I5.F1.T6"],
+        "depends_on_groups": [2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I5.F1.T1", "S1864.I5.F1.T3", "S1864.I5.F1.T4", "S1864.I5.F1.T6"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 10,
+      "parallel": 6,
+      "time_saved_percent": 40
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100,
+    "notes": "All tasks are atomic with single verbs, clear outputs, and testable acceptance criteria. Testability score 95% (manual testing via visual verification for UI tasks, automated verification for loader/integration)."
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_comment_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1864#issuecomment-3807228490"
+  }
+}

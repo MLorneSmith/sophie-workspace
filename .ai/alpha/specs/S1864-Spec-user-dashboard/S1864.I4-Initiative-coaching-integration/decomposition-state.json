@@ -1,0 +1,44 @@
+{
+  "initiative_id": "S1864.I4",
+  "initiative_name": "Coaching Integration",
+  "spec_id": "1864",
+  "status": "in_progress",
+  "current_phase": "decomposition",
+  "created_at": "2026-01-27T00:00:00Z",
+  "updated_at": "2026-01-27T00:00:00Z",
+  "features": {
+    "S1864.I4.F1": {
+      "name": "Cal.com Foundation",
+      "status": "completed",
+      "task_count": 16,
+      "hours_estimate": 23,
+      "parallel_hours": 11
+    },
+    "S1864.I4.F2": {
+      "name": "Dashboard Widget",
+      "status": "completed",
+      "task_count": 9,
+      "hours_estimate": 20,
+      "parallel_hours": 9
+    },
+    "S1864.I4.F3": {
+      "name": "Session Actions",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    },
+    "S1864.I4.F4": {
+      "name": "Booking Modal",
+      "status": "pending",
+      "task_count": 0,
+      "hours_estimate": 0
+    }
+  },
+  "spikes_pending": [],
+  "total_features": 4,
+  "completed_features": 0,
+  "total_tasks": 0,
+  "total_spikes": 0,
+  "total_hours_sequential": 0,
+  "total_hours_parallel": 0
+}

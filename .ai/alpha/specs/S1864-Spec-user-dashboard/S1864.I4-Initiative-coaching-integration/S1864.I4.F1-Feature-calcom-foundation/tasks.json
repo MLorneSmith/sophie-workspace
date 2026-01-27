@@ -1,0 +1,886 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I4.F1",
+    "feature_name": "Cal.com Foundation",
+    "feature_slug": "calcom-foundation",
+    "initiative_id": "S1864.I4",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:30:00Z",
+    "complexity": {
+      "score": 71,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": [
+      {
+        "name": "CAL_API_KEY",
+        "description": "Cal.com V2 API key for server-side booking requests",
+        "source": "Cal.com Platform Settings → API Keys",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "CAL_WEBHOOK_SECRET",
+        "description": "HMAC secret for Cal.com webhook signature verification",
+        "source": "Cal.com Webhook Settings → Webhook Secret",
+        "required": true,
+        "scope": "server"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_USERNAME",
+        "description": "Cal.com username for embed URLs and public booking links",
+        "source": "Cal.com Account → Settings → Username",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "description": "Event type slug for coaching sessions (e.g., '60min')",
+        "source": "Cal.com Event Types → Event slug",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1864.I4.F1.T1",
+      "type": "task",
+      "name": "Create CalComBooking interface",
+      "action": {
+        "verb": "Create",
+        "target": "CalComBooking interface"
+      },
+      "purpose": "Define TypeScript interface for Cal.com V2 booking response",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must match Cal.com V2 API response structure from research",
+          "Include id, uid, title, status, start, end, hosts, attendees, meetingUrl fields"
+        ]
+      },
+      "input_state": "No Cal.com types exist",
+      "output_state": "CalComBooking interface defined at apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts",
+      "acceptance_criterion": "CalComBooking interface exists with all required fields from V2 API",
+      "verification_command": "grep -q 'interface CalComBooking' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts && grep -q 'meetingUrl' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T2",
+      "type": "task",
+      "name": "Create CalComAttendee interface",
+      "action": {
+        "verb": "Create",
+        "target": "CalComAttendee interface"
+      },
+      "purpose": "Define TypeScript interface for Cal.com attendee data nested in booking responses",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts"],
+        "dependencies": [],
+        "constraints": [
+          "Must include name, email, timeZone, noShow fields",
+          "Used within CalComBooking.attendees array"
+        ]
+      },
+      "input_state": "CalComBooking interface exists",
+      "output_state": "CalComAttendee interface added to calcom.types.ts",
+      "acceptance_criterion": "CalComAttendee interface exists and is referenced in CalComBooking",
+      "verification_command": "grep -q 'interface CalComAttendee' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts && grep -q 'attendees.*CalComAttendee' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T1"],
+        "blocks": ["S1864.I4.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T3",
+      "type": "task",
+      "name": "Create CalComWebhookEvent interface",
+      "action": {
+        "verb": "Create",
+        "target": "CalComWebhookEvent interface"
+      },
+      "purpose": "Define TypeScript interface for Cal.com webhook payload structure",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts"],
+        "dependencies": ["CalComBooking", "CalComAttendee"],
+        "constraints": [
+          "Must include triggerEvent field (BOOKING_CREATED, BOOKING_RESCHEDULED, etc.)",
+          "Reuse CalComBooking and CalComAttendee interfaces where applicable"
+        ]
+      },
+      "input_state": "CalComBooking and CalComAttendee interfaces exist",
+      "output_state": "CalComWebhookEvent interface added to calcom.types.ts",
+      "acceptance_criterion": "CalComWebhookEvent interface exists with triggerEvent field",
+      "verification_command": "grep -q 'interface CalComWebhookEvent' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts && grep -q 'triggerEvent' apps/web/app/home/\\(user\\)/coaching/_lib/types/calcom.types.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/types/calcom.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T1", "S1864.I4.F1.T2"],
+        "blocks": ["S1864.I4.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T4",
+      "type": "task",
+      "name": "Create Cal.com environment schema",
+      "action": {
+        "verb": "Create",
+        "target": "Zod schema for Cal.com environment variables"
+      },
+      "purpose": "Validate required Cal.com environment variables on startup",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": ["zod"],
+        "constraints": [
+          "Must validate CAL_API_KEY (server-only, required)",
+          "Must validate CAL_WEBHOOK_SECRET (server-only, required)",
+          "Must validate NEXT_PUBLIC_CAL_USERNAME (client-safe, required)",
+          "Must validate NEXT_PUBLIC_CAL_EVENT_SLUG (client-safe, required)"
+        ]
+      },
+      "input_state": "No Cal.com environment validation exists",
+      "output_state": "Zod schema created at apps/web/app/home/(user)/coaching/_lib/schemas/calcom-env.schema.ts",
+      "acceptance_criterion": "CalComEnvSchema validates all four required environment variables",
+      "verification_command": "grep -q 'CAL_API_KEY.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts && grep -q 'CAL_WEBHOOK_SECRET.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/schemas/calcom-env.schema.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T5",
+      "type": "task",
+      "name": "Create CalComApiService class skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "CalComApiService class with constructor and imports"
+      },
+      "purpose": "Set up service class structure following existing service factory pattern",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/billing/_lib/server/user-billing.service.ts"],
+        "dependencies": ["@kit/shared/logger"],
+        "constraints": [
+          "Must include 'use server' directive at top",
+          "Must follow factory pattern: export function createCalComApiService()",
+          "Must initialize logger with namespace 'CalComApiService'"
+        ]
+      },
+      "input_state": "Cal.com environment schema exists",
+      "output_state": "CalComApiService class skeleton created at apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts",
+      "acceptance_criterion": "CalComApiService class exists with createCalComApiService factory function",
+      "verification_command": "grep -q 'class CalComApiService' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.ts && grep -q 'export function createCalComApiService' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T4"],
+        "blocks": ["S1864.I4.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T6",
+      "type": "task",
+      "name": "Add getUpcomingBookings method to CalComApiService",
+      "action": {
+        "verb": "Add",
+        "target": "getUpcomingBookings method"
+      },
+      "purpose": "Fetch upcoming Cal.com bookings from V2 API with Bearer token authentication",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"],
+        "dependencies": ["CalComBooking", "CalComEnvSchema", "@kit/shared/logger"],
+        "constraints": [
+          "Must use fetch with Authorization: Bearer ${CAL_API_KEY}",
+          "Must include cal-api-version: 2024-08-13 header",
+          "Must filter for status=accepted and afterStart=now",
+          "Must handle errors gracefully and return empty array on failure",
+          "Must log errors with structured logger"
+        ]
+      },
+      "input_state": "CalComApiService class skeleton exists, CalComBooking interface exists",
+      "output_state": "getUpcomingBookings method implemented in CalComApiService",
+      "acceptance_criterion": "getUpcomingBookings method exists and returns Promise<CalComBooking[]>",
+      "verification_command": "grep -q 'async getUpcomingBookings' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.ts && grep -q 'Promise<CalComBooking\\[\\]>' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.ts",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "CAL_API_KEY",
+            "expected_action": "log warning and return empty array",
+            "file_path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"
+          }
+        ],
+        "validation_command": "grep -E 'console\\.(warn|info)|return \\[\\]' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.ts | grep -v 'console\\.error'"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T5", "S1864.I4.F1.T1"],
+        "blocks": ["S1864.I4.F1.T11"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T7",
+      "type": "task",
+      "name": "Create CalComWebhookVerifier class skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "CalComWebhookVerifier class with constructor"
+      },
+      "purpose": "Set up webhook signature verification service structure",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": ["crypto", "@kit/shared/logger"],
+        "constraints": [
+          "Must include 'use server' directive",
+          "Must follow factory pattern: export function createCalComWebhookVerifier()",
+          "Must import crypto.createHmac for HMAC-SHA256"
+        ]
+      },
+      "input_state": "No webhook verifier exists",
+      "output_state": "CalComWebhookVerifier class skeleton created",
+      "acceptance_criterion": "CalComWebhookVerifier class exists with factory function",
+      "verification_command": "grep -q 'class CalComWebhookVerifier' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.ts && grep -q 'createCalComWebhookVerifier' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T8",
+      "type": "task",
+      "name": "Add verifySignature method to CalComWebhookVerifier",
+      "action": {
+        "verb": "Add",
+        "target": "verifySignature method"
+      },
+      "purpose": "Verify Cal.com webhook signatures using HMAC-SHA256 with timing-safe comparison",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.ts"],
+        "dependencies": ["crypto.createHmac", "crypto.timingSafeEqual"],
+        "constraints": [
+          "Must use crypto.createHmac('sha256', secret).update(payload).digest('hex')",
+          "Must use crypto.timingSafeEqual for constant-time comparison",
+          "Must return boolean (true if valid, false if invalid)",
+          "Must handle missing signature gracefully"
+        ]
+      },
+      "input_state": "CalComWebhookVerifier class skeleton exists",
+      "output_state": "verifySignature method implemented in CalComWebhookVerifier",
+      "acceptance_criterion": "verifySignature method exists and uses timingSafeEqual for comparison",
+      "verification_command": "grep -q 'verifySignature' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.ts && grep -q 'timingSafeEqual' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T7", "S1864.I4.F1.T3"],
+        "blocks": ["S1864.I4.F1.T12"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T9",
+      "type": "task",
+      "name": "Add CAL_API_KEY to .env.local.example",
+      "action": {
+        "verb": "Add",
+        "target": "CAL_API_KEY environment variable"
+      },
+      "purpose": "Document required Cal.com API key environment variable for developers",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.local.example"],
+        "dependencies": [],
+        "constraints": [
+          "Must include comment explaining where to obtain the key",
+          "Must note this is server-only (not NEXT_PUBLIC_)",
+          "Must include example value placeholder"
+        ]
+      },
+      "input_state": ".env.local.example exists without Cal.com variables",
+      "output_state": "CAL_API_KEY documented in .env.local.example",
+      "acceptance_criterion": "CAL_API_KEY appears in .env.local.example with helpful comment",
+      "verification_command": "grep -q 'CAL_API_KEY' apps/web/.env.local.example",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.local.example"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T10",
+      "type": "task",
+      "name": "Add CAL_WEBHOOK_SECRET to .env.local.example",
+      "action": {
+        "verb": "Add",
+        "target": "CAL_WEBHOOK_SECRET environment variable"
+      },
+      "purpose": "Document required webhook secret for signature verification",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.local.example"],
+        "dependencies": [],
+        "constraints": [
+          "Must include comment about Cal.com webhook settings",
+          "Must note this is for HMAC-SHA256 verification",
+          "Must be grouped with other Cal.com variables"
+        ]
+      },
+      "input_state": "CAL_API_KEY documented in .env.local.example",
+      "output_state": "CAL_WEBHOOK_SECRET documented in .env.local.example",
+      "acceptance_criterion": "CAL_WEBHOOK_SECRET appears in .env.local.example",
+      "verification_command": "grep -q 'CAL_WEBHOOK_SECRET' apps/web/.env.local.example",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.local.example"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T9"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T11",
+      "type": "task",
+      "name": "Add NEXT_PUBLIC_CAL_USERNAME to .env.local.example",
+      "action": {
+        "verb": "Add",
+        "target": "NEXT_PUBLIC_CAL_USERNAME environment variable"
+      },
+      "purpose": "Document client-accessible Cal.com username for booking widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 11,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.local.example"],
+        "dependencies": [],
+        "constraints": [
+          "Must have NEXT_PUBLIC_ prefix (client-safe)",
+          "Must explain it's used in embed URLs",
+          "Must include example value"
+        ]
+      },
+      "input_state": "CAL_WEBHOOK_SECRET documented in .env.local.example",
+      "output_state": "NEXT_PUBLIC_CAL_USERNAME documented in .env.local.example",
+      "acceptance_criterion": "NEXT_PUBLIC_CAL_USERNAME appears in .env.local.example",
+      "verification_command": "grep -q 'NEXT_PUBLIC_CAL_USERNAME' apps/web/.env.local.example",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.local.example"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T10"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T12",
+      "type": "task",
+      "name": "Add NEXT_PUBLIC_CAL_EVENT_SLUG to .env.local.example",
+      "action": {
+        "verb": "Add",
+        "target": "NEXT_PUBLIC_CAL_EVENT_SLUG environment variable"
+      },
+      "purpose": "Document client-accessible event type slug for booking widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 12,
+      "group": 5,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/.env.local.example"],
+        "dependencies": [],
+        "constraints": [
+          "Must have NEXT_PUBLIC_ prefix",
+          "Must explain it's the event type slug (e.g., '60min')",
+          "Must be the last Cal.com environment variable"
+        ]
+      },
+      "input_state": "NEXT_PUBLIC_CAL_USERNAME documented in .env.local.example",
+      "output_state": "All four Cal.com environment variables documented",
+      "acceptance_criterion": "NEXT_PUBLIC_CAL_EVENT_SLUG appears in .env.local.example",
+      "verification_command": "grep -q 'NEXT_PUBLIC_CAL_EVENT_SLUG' apps/web/.env.local.example",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/.env.local.example"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T11"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T13",
+      "type": "task",
+      "name": "Create unit test for CalComApiService.getUpcomingBookings",
+      "action": {
+        "verb": "Create",
+        "target": "unit test for getUpcomingBookings method"
+      },
+      "purpose": "Verify API client handles successful responses correctly",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 13,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"],
+        "dependencies": ["vitest"],
+        "constraints": [
+          "Must mock fetch to return successful Cal.com V2 API response",
+          "Must verify correct headers are sent (Authorization, cal-api-version)",
+          "Must verify method returns CalComBooking[] array"
+        ]
+      },
+      "input_state": "getUpcomingBookings method implemented",
+      "output_state": "Unit test created for getUpcomingBookings success case",
+      "acceptance_criterion": "Test file exists and tests successful API response",
+      "verification_command": "grep -q 'getUpcomingBookings.*success' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.test.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T14",
+      "type": "task",
+      "name": "Add error handling test for CalComApiService",
+      "action": {
+        "verb": "Add",
+        "target": "error handling test case"
+      },
+      "purpose": "Verify API client handles errors gracefully and returns empty array",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 14,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.test.ts"],
+        "dependencies": ["vitest"],
+        "constraints": [
+          "Must mock fetch to throw network error",
+          "Must verify method returns empty array instead of throwing",
+          "Must verify error is logged"
+        ]
+      },
+      "input_state": "Success test exists for getUpcomingBookings",
+      "output_state": "Error handling test added to calcom-api.service.test.ts",
+      "acceptance_criterion": "Test verifies graceful degradation on API failure",
+      "verification_command": "grep -q 'error.*empty.*array\\|graceful' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-api.service.test.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T13"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T15",
+      "type": "task",
+      "name": "Create unit test for webhook signature verification",
+      "action": {
+        "verb": "Create",
+        "target": "unit test for verifySignature method"
+      },
+      "purpose": "Verify webhook signature verification works correctly with valid signatures",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 15,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.ts"],
+        "dependencies": ["vitest", "crypto"],
+        "constraints": [
+          "Must test valid signature returns true",
+          "Must generate test signature using same HMAC-SHA256 algorithm",
+          "Must use known payload and secret for reproducibility"
+        ]
+      },
+      "input_state": "verifySignature method implemented",
+      "output_state": "Unit test created for valid webhook signature",
+      "acceptance_criterion": "Test verifies valid signatures return true",
+      "verification_command": "grep -q 'verifySignature.*valid' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.test.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F1.T16",
+      "type": "task",
+      "name": "Add invalid signature test for webhook verifier",
+      "action": {
+        "verb": "Add",
+        "target": "invalid signature test case"
+      },
+      "purpose": "Verify webhook verifier rejects invalid signatures",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 16,
+      "group": 6,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.test.ts"],
+        "dependencies": ["vitest"],
+        "constraints": [
+          "Must test invalid signature returns false",
+          "Must test tampered payload is detected",
+          "Must test wrong secret is detected"
+        ]
+      },
+      "input_state": "Valid signature test exists",
+      "output_state": "Invalid signature test cases added",
+      "acceptance_criterion": "Tests verify invalid signatures return false",
+      "verification_command": "grep -q 'verifySignature.*invalid\\|false' apps/web/app/home/\\(user\\)/coaching/_lib/server/calcom-webhook-verifier.service.test.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-webhook-verifier.service.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F1.T15"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "TypeScript Types",
+        "task_ids": ["S1864.I4.F1.T1", "S1864.I4.F1.T2", "S1864.I4.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Service Skeletons",
+        "task_ids": ["S1864.I4.F1.T4", "S1864.I4.F1.T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Service Implementations",
+        "task_ids": ["S1864.I4.F1.T6", "S1864.I4.F1.T7"],
+        "depends_on_groups": [1, 2],
+        "estimated_hours": 4,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Webhook Verification",
+        "task_ids": ["S1864.I4.F1.T8"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Environment Configuration",
+        "task_ids": ["S1864.I4.F1.T9", "S1864.I4.F1.T10", "S1864.I4.F1.T11", "S1864.I4.F1.T12"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 6,
+        "name": "Unit Tests",
+        "task_ids": ["S1864.I4.F1.T13", "S1864.I4.F1.T14", "S1864.I4.F1.T15", "S1864.I4.F1.T16"],
+        "depends_on_groups": [3, 4],
+        "estimated_hours": 7,
+        "parallel_hours": 7
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I4.F1.T4", "S1864.I4.F1.T5", "S1864.I4.F1.T6", "S1864.I4.F1.T13", "S1864.I4.F1.T14"],
+      "total_hours": 10
+    },
+    "duration": {
+      "sequential": 23,
+      "parallel": 11,
+      "time_saved_percent": 52
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
