@@ -304,6 +304,29 @@ jobs:
           DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
           PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
 
+      # Seed Payload admin user for E2E tests (Shards 7, 8, 9)
+      # The seed engine uses Payload's Local API to create the user with proper password hashing
+      # Without this, Payload login fails during global-setup with "no token received"
+      # See: Issue #1855 (diagnosis), Issue #1856 (fix)
+      - name: Seed Payload admin user
+        run: |
+          echo "🌱 Seeding Payload admin user..."
+          # Use || true to allow graceful failure if user already exists (idempotency)
+          # The seed engine exits non-zero on duplicate key errors, but the user exists which is what we need
+          if pnpm --filter payload seed:run -c users; then
+            echo "✅ Payload admin user created"
+          else
+            echo "ℹ️  Payload admin user may already exist (seed returned non-zero)"
+            # Verify user exists in database
+            psql "$DATABASE_URI" -c "SELECT email FROM payload.users WHERE email = 'michael@slideheroes.com'" | grep -q michael@slideheroes.com && \
+              echo "✅ Payload admin user verified in database" || \
+              (echo "❌ Payload admin user not found - seeding failed" && exit 1)
+          fi
+        env:
+          DATABASE_URI: postgresql://postgres:postgres@localhost:54522/postgres
+          PAYLOAD_SECRET: test_payload_secret_for_e2e_testing
+          SEED_USER_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
       - name: Extract Supabase JWT keys
         run: |
           cd apps/web
