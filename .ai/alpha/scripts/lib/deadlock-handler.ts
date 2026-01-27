@@ -322,10 +322,50 @@ export function detectAndHandleDeadlock(
 	// Get failed features that are blocking assignable features
 	const blockingFailedFeatures = getBlockingFailedFeatures(manifest);
 
+	// Bug fix #1858: Even if no features are explicitly "blocking", we should
+	// still retry ANY failed features with retries remaining when there's no work.
+	// This breaks deadlock cycles where sandboxes are idle with retryable failed features.
 	if (blockingFailedFeatures.length === 0) {
-		// Failed features exist but aren't blocking others - not a critical deadlock
-		// This can happen if failed features are in a non-critical path
-		log("\n⚠️ Deadlock check: Failed features exist but are not blocking queue");
+		// Check if any failed features can be retried
+		const retryableFailedFeatures = failedFeatures.filter((f) =>
+			shouldRetryFailedFeature(f, DEFAULT_MAX_RETRIES),
+		);
+
+		if (retryableFailedFeatures.length > 0) {
+			log(
+				`\n⚠️ No blocking failed features, but ${retryableFailedFeatures.length} failed feature(s) can be retried:`,
+			);
+			let retriedCount = 0;
+
+			for (const feature of retryableFailedFeatures) {
+				const newRetryCount = (feature.retry_count ?? 0) + 1;
+				log(
+					`   🔄 Retrying feature #${feature.id} (attempt ${newRetryCount}/${DEFAULT_MAX_RETRIES})`,
+				);
+				resetFailedFeatureForRetry(feature);
+				retriedCount++;
+
+				// Emit event for UI visibility
+				emitOrchestratorEvent(
+					"feature_retry",
+					`Retrying feature #${feature.id} from deadlock recovery`,
+					{
+						featureId: feature.id,
+						retryCount: newRetryCount,
+						maxRetries: DEFAULT_MAX_RETRIES,
+					},
+				);
+			}
+
+			saveManifest(manifest);
+			log(`\n✅ Retried ${retriedCount} feature(s) - continuing work loop`);
+			return { shouldExit: false, retriedCount, failedInitiatives: [] };
+		}
+
+		// Failed features exist but none can be retried - not a critical deadlock
+		log(
+			"\n⚠️ Deadlock check: Failed features exist but none can be retried (max retries exceeded)",
+		);
 		return { shouldExit: false, retriedCount: 0, failedInitiatives: [] };
 	}
 
