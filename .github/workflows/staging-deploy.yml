@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false  # Don't cancel in-progress deployments
 
 permissions:
-  contents: read
+  contents: write  # Required for sync-dev-with-staging job to push merge commits
   deployments: write
   pull-requests: write
   issues: write
@@ -743,3 +743,86 @@ jobs:
   #     VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   #     VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   #     VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
+
+  # Sync staging back into dev after successful deployment
+  # This prevents merge conflicts in future promotion PRs when using squash merge strategy.
+  # Without this sync, staging has squashed commits while dev has individual commits,
+  # causing Git to see divergent history on the next promotion attempt.
+  # See: Issue #1848 - PR conflicts due to squash merge history divergence
+  sync-dev-with-staging:
+    name: Sync Dev with Staging
+    runs-on: "runs-on/runner=4cpu-linux-x64"
+    needs: [deploy-web, deploy-payload]
+    if: success()
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: dev
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge staging into dev
+        run: |
+          echo "🔄 Syncing staging into dev to prevent future merge conflicts..."
+
+          # Fetch latest staging
+          git fetch origin staging
+
+          # Check if there are differences to merge
+          if git merge-base --is-ancestor origin/staging HEAD; then
+            echo "✅ Dev is already up-to-date with staging, no merge needed"
+            exit 0
+          fi
+
+          # Merge staging into dev
+          if git merge origin/staging -m "chore(ci): sync staging into dev after promotion
+
+          Automatic sync to prevent merge conflicts in future promotion PRs.
+          This keeps dev and staging histories aligned after squash merge.
+
+          [skip ci]"; then
+            echo "✅ Successfully merged staging into dev"
+          else
+            echo "⚠️ Merge conflict detected, attempting auto-resolution..."
+
+            # For spec-manifest.json conflicts, prefer the staging version (more complete)
+            git checkout --theirs .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+            git add .ai/alpha/specs/*/spec-manifest.json 2>/dev/null || true
+
+            # Try to complete the merge
+            if git commit -m "chore(ci): sync staging into dev after promotion (auto-resolved)
+
+            Automatic sync with auto-resolved conflicts in spec manifests.
+
+            [skip ci]"; then
+              echo "✅ Merge completed with auto-resolved conflicts"
+            else
+              echo "❌ Could not auto-resolve conflicts, manual intervention required"
+              git merge --abort
+              exit 1
+            fi
+          fi
+
+      - name: Push to dev
+        run: |
+          if git push origin dev; then
+            echo "✅ Successfully pushed sync commit to dev"
+          else
+            echo "❌ Failed to push to dev"
+            exit 1
+          fi
+
+      - name: Add workflow summary
+        run: |
+          echo "## 🔄 Dev Branch Sync" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Staging has been merged back into dev to keep branch histories aligned." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This prevents merge conflicts in future \`dev → staging\` promotion PRs." >> $GITHUB_STEP_SUMMARY

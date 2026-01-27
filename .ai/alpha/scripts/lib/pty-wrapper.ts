@@ -23,6 +23,7 @@ import {
 } from "../config/index.js";
 import {
 	isFeatureCompleted,
+	isFeatureFailed,
 	isProgressFileStale,
 	type ProgressFileData,
 	readProgressFile,
@@ -216,6 +217,18 @@ async function attemptProgressFileRecovery(
 			progressData,
 			timeoutMs,
 			`Progress file heartbeat is stale (last: ${progressData.last_heartbeat})`,
+		);
+	}
+
+	// Case 2.5: Feature explicitly failed - propagate failure
+	// Bug fix #1852: Check for failed status before checking if still running
+	if (isFeatureFailed(progressData)) {
+		ptyTelemetry.recoveryFailed++;
+		throw new PTYTimeoutError(
+			sandboxId,
+			progressData,
+			timeoutMs,
+			`Progress file indicates feature failed (status: ${progressData.status})`,
 		);
 	}
 
