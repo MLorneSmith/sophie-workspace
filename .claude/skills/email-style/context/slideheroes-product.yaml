@@ -1,0 +1,127 @@
+# SlideHeroes Product Context
+# Load this file during campaign strategy to ensure emails align with product positioning
+---
+metadata:
+  last_updated: "2026-01-27"
+  version: "1.0.0"
+
+brand:
+  name: "SlideHeroes"
+  tagline: "Slay your presentation audiences"
+  voice: "Expert but approachable, contrarian but helpful, rigorous but not academic"
+
+mission: |
+  Teach professionals how to craft compelling and effective 'sit-down-style'
+  business presentations - and help as many as possible create the powerful
+  presentations they need to be successful.
+
+product:
+  name: "Decks for Decision Makers (DDM)"
+  type: "Online video course"
+  format:
+    - "20 comprehensive video lessons"
+    - "4+ hours of structured video training"
+    - "20 detailed unit outlines with slides"
+    - "Free PowerPoint template (1,000+ slides)"
+    - "30-day money-back guarantee"
+
+  differentiator: |
+    Most presentation advice focuses on PUBLIC SPEAKING (TED talks, keynotes,
+    stage performances). SlideHeroes focuses on SIT-DOWN BUSINESS PRESENTATIONS -
+    the McKinsey-style decks you present around a boardroom table. These require
+    a fundamentally different approach.
+
+target_audience:
+  primary:
+    - "Corporate employees presenting to executives"
+    - "Consultants creating client deliverables"
+    - "Entrepreneurs pitching to investors"
+    - "Anyone who wants McKinsey-style presentation skills"
+
+  characteristics:
+    - "Work in corporate/professional environments"
+    - "Create presentations regularly (not one-off speakers)"
+    - "Need to communicate complex information clearly"
+    - "Want evidence-based, structured approach"
+    - "Frustrated by generic 'presentation tips' that don't apply to business contexts"
+
+  psychographics:
+    pain_points:
+      - "Most presentation advice is for speeches, not business decks"
+      - "Struggle to structure complex arguments clearly"
+      - "Don't know how to visualize data effectively"
+      - "Spend too much time on design vs. substance"
+      - "Feel like presentations don't land with executives"
+
+    desires:
+      - "Credibility in the boardroom"
+      - "Clear, persuasive communication"
+      - "Professional-looking deliverables"
+      - "Confidence when presenting to senior stakeholders"
+      - "Career advancement through communication skills"
+
+framework:
+  name: "The 5S Framework"
+  elements:
+    - name: "Structure"
+      description: "The backbone of clear communication - organizing your argument"
+    - name: "Story"
+      description: "The power of narrative to engage and persuade"
+    - name: "Substance"
+      description: "Evidence, data, and facts that demonstrate your points"
+    - name: "Style"
+      description: "Visual design that enhances rather than distracts"
+    - name: "Self-Confidence"
+      description: "Presence and delivery when presenting"
+
+key_concepts:
+  - name: "Presentations Reinvented"
+    description: "The core methodology that reframes how to think about business presentations"
+
+  - name: "Answer a question, don't present a topic"
+    description: "Every presentation should answer a question in the audience's mind"
+
+  - name: "Demonstrate, don't assert"
+    description: "Use data and evidence rather than opinions"
+
+  - name: "McKinsey-style"
+    description: "Shorthand for structured, evidence-based, executive-ready presentations"
+
+social_proof:
+  partnerships:
+    - name: "Seneca College"
+      description: "Canada's largest community college - DDM is core curriculum"
+    - name: "US Department of Energy"
+      description: "Upskilling government professionals"
+
+  results:
+    - "Hundreds of satisfied customers"
+    - "Taught at major educational institutions"
+    - "Used by consultants, corporate professionals, entrepreneurs"
+
+competitors_positioning:
+  not_like:
+    - "TED-talk style presentation coaching"
+    - "Public speaking courses"
+    - "Design-first tools (Canva, Beautiful.ai)"
+    - "Generic 'presentation tips' content"
+
+  similar_to:
+    - "McKinsey presentation methodology"
+    - "Barbara Minto's Pyramid Principle"
+    - "Edward Tufte's data visualization philosophy"
+    - "Consulting firm training programs"
+
+email_voice_guidelines:
+  tone:
+    - "Contrarian - challenge bad advice that's everywhere"
+    - "Expert - we know what we're talking about"
+    - "Generous - give away valuable insights freely"
+    - "Direct - no corporate fluff"
+    - "Practical - always actionable"
+
+  avoid:
+    - "Hype or overselling"
+    - "Generic motivation speak"
+    - "Academic jargon"
+    - "Apologetic positioning"
