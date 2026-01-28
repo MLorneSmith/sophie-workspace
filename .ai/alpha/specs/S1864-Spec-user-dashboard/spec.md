@@ -175,7 +175,7 @@ A 7-widget dashboard arranged in a 3-3-1 responsive grid layout at `/home/(user)
 | `public.tasks` / `public.subtasks` | DB Read | Kanban task data (status, priority) |
 | `public.building_blocks_submissions` | DB Read | Presentation outlines with storyboard |
 | `public.activity_logs` | DB Read/Write | **NEW TABLE** - Unified activity tracking |
-| Cal.com V2 API | REST API | Fetch upcoming bookings, embed booking widget |
+| Cal.com Embed Script | Embed | Self-hosted Cal.com widget or embed-react package (not deprecated platform offering) |
 | Recharts | Client Library | RadialBarChart, RadarChart visualizations |
 
 ### Technical Constraints

@@ -23,7 +23,7 @@
 			"Bash(git push:*)"
 		]
 	},
-	"enabledMcpjsonServers": ["playwright"],
+	"enabledMcpjsonServers": ["playwright", "posthog"],
 	"disabledMcpjsonServers": [
 		"exa",
 		"perplexity-ask",
