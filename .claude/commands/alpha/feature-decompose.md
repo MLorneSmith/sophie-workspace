@@ -346,6 +346,37 @@ For each variable found:
 
 These credentials will be documented in each feature's `feature.md` and aggregated into `tasks.json` metadata during task decomposition.
 
+#### Step 1.7: Validate Credentials Against Existing Environment Files
+
+Before proceeding, validate all proposed environment variables against actual project configurations.
+
+**Search existing .env files for actual variable names**:
+
+```bash
+# Scan all .env files for variables related to the integration
+for file in .env .env.local apps/web/.env apps/web/.env.local apps/web/.env.test 2>/dev/null; do
+  if [ -f "$file" ]; then
+    echo "=== $file ==="
+    grep -E "^[A-Z_]*=.*" "$file" | grep -i "<integration-keyword>" | cut -d= -f1 | sort -u
+  fi
+done
+```
+
+Replace `<integration-keyword>` with the integration name (e.g., "calcom", "stripe", "paddle").
+
+**Create a credential mapping table** in the research findings:
+
+| Proposed Variable | Actual Variable | Match? | Notes |
+|-------------------|-----------------|--------|-------|
+| `CAL_API_KEY` | `CALCOM_API_KEY` | ❌ Name differs | Use actual name |
+| `CAL_USERNAME` | `NEXT_PUBLIC_CALCOM_COACH_USERNAME` | ⚠️ Partial | Verify usage |
+
+**Guidelines**:
+- Always use actual variable names from existing .env files
+- If no matching variable exists, propose new name following project conventions
+- Document any missing variables needed for implementation
+- Flag naming inconsistencies for review
+
 #### Step 2: Extract Feature Candidates
 
 From the initiative, identify candidates from:
@@ -799,6 +830,14 @@ Before finalizing:
 - [ ] All feature directories created with S#.I#.F# naming
 - [ ] README.md created in initiative directory
 - [ ] Spec issue updated with features comment
+
+### Environment Variables
+- [ ] All `required_env_vars` have been validated against actual `.env` files (Step 1.7)
+- [ ] Credential mapping table created showing proposed vs actual names
+- [ ] No duplicate or conflicting variable names
+- [ ] Variable naming follows project convention (`INTEGRATION_*`, `NEXT_PUBLIC_*`)
+- [ ] Missing variables clearly documented
+- [ ] Validation command output included in research findings
 
 ---
 

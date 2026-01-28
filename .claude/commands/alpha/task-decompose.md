@@ -632,6 +632,28 @@ grep -r "import.*from.*database.types\|from '~/lib/database.types" tasks.json
 
 ---
 
+## Pre-Finalization: Validate Environment Variables in tasks.json
+
+**Verify all `required_env_vars` against feature-decompose research**:
+
+For each task with `required_env_vars`:
+
+```bash
+# Extract variables from tasks.json
+grep -o '"[A-Z_]*": true' tasks.json | cut -d'"' -f2 | sort -u
+
+# Cross-reference against feature-decompose credential mapping
+# Ensure each variable name matches the actual .env variable (not the proposed one)
+```
+
+**Validation checklist**:
+- [ ] All `required_env_vars` match actual environment variables from feature research
+- [ ] No proposed/intermediate variable names in tasks.json
+- [ ] Variable names follow project naming conventions
+- [ ] Feature-level validation was completed (Step 1.7 in feature-decompose.md)
+
+---
+
 ## Step 3: Commit Spec Files to Git (CRITICAL)
 
 **⚠️ MANDATORY**: After decomposition completes (either Mode A or Mode B), commit the spec files to git. Without this step, the orchestrator's sandboxes cannot access the spec files.
@@ -707,6 +729,28 @@ git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<spec-num>-Sp
 - **Multiple commits are fine** - Each initiative gets its own commit
 - **If push fails** - Check for merge conflicts, resolve, and retry
 - **This step is idempotent** - Running again after changes will create a new commit
+
+---
+
+## Pre-Completion Checklist
+
+Before finalizing task decomposition:
+
+### Environment Variables
+- [ ] All `required_env_vars` in tasks.json match actual `.env` files
+- [ ] No proposed/placeholder variable names remain
+- [ ] Variables validated at feature-decompose level (Step 1.7)
+- [ ] Implementation agents will receive correct variable names
+
+### Database Tasks
+- [ ] All database-referencing tasks have `requires_database: true`
+- [ ] Verification commands include typegen steps
+- [ ] Type-dependent tasks have proper `blockedBy` dependencies
+
+### Git Commit
+- [ ] Spec files staged and committed
+- [ ] Pushed to `origin/dev`
+- [ ] No uncommitted changes in spec directory
 
 ---
 
