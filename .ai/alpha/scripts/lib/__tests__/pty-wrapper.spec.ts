@@ -31,6 +31,7 @@ vi.mock("../progress-file.js", () => ({
 	readProgressFile: vi.fn(),
 	isProgressFileStale: vi.fn(),
 	isFeatureCompleted: vi.fn(),
+	isFeatureFailed: vi.fn(),
 }));
 
 // Import mocked functions after vi.mock
@@ -38,6 +39,7 @@ import {
 	readProgressFile,
 	isProgressFileStale,
 	isFeatureCompleted,
+	isFeatureFailed,
 } from "../progress-file.js";
 
 /**
@@ -172,6 +174,7 @@ describe("pty-wrapper", () => {
 				data: completedProgress,
 			});
 			vi.mocked(isProgressFileStale).mockReturnValue(false);
+			vi.mocked(isFeatureFailed).mockReturnValue(false);
 			vi.mocked(isFeatureCompleted).mockReturnValue(true);
 
 			// Start the wait with a short timeout
@@ -211,6 +214,7 @@ describe("pty-wrapper", () => {
 				data: inProgressData,
 			});
 			vi.mocked(isProgressFileStale).mockReturnValue(false); // Heartbeat is RECENT
+			vi.mocked(isFeatureFailed).mockReturnValue(false);
 			vi.mocked(isFeatureCompleted).mockReturnValue(false);
 
 			const waitPromise = waitWithTimeout(ptyHandle, sandbox, 100);

@@ -1,0 +1,696 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I3.F3",
+    "feature_name": "Activity Feed Widget",
+    "feature_slug": "activity-feed-widget",
+    "initiative_id": "S1877.I3",
+    "spec_id": "S1877",
+    "created_at": "2025-01-28T00:00:00Z",
+    "complexity": {
+      "score": 68.75,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I3.F3.T1",
+      "type": "task",
+      "name": "Create activity feed TypeScript type definitions",
+      "action": {
+        "verb": "Create",
+        "target": "Activity and ActivityTypeConfig type definitions"
+      },
+      "purpose": "Define TypeScript interfaces for activity data and activity type configuration",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database type from apps/web/lib/database.types.ts",
+          "Pick utility type from TypeScript"
+        ],
+        "constraints": [
+          "Import from Database['public']['Tables']['ai_request_logs']['Row']",
+          "Pick fields: id, feature, request_timestamp, model, total_tokens, cost, user_id"
+        ]
+      },
+      "input_state": "Database types exist in apps/web/lib/database.types.ts",
+      "output_state": "Activity type and ActivityTypeConfig interface defined in activity-feed.types.ts",
+      "acceptance_criterion": "Activity type and ActivityTypeConfig interface exist and compile without errors",
+      "verification_command": "pnpm typecheck && grep -q 'export type Activity' apps/web/app/home/(user)/dashboard/_lib/types/activity-feed.types.ts && grep -q 'export type ActivityTypeConfig' apps/web/app/home/(user)/dashboard/_lib/types/activity-feed.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_lib/types/activity-feed.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I3.F3.T2", "S1877.I3.F3.T3", "S1877.I3.F3.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T2",
+      "type": "task",
+      "name": "Create activity type configuration with icons and colors",
+      "action": {
+        "verb": "Create",
+        "target": "ACTIVITY_TYPE_CONFIG mapping object"
+      },
+      "purpose": "Map feature values (canvas, outline-generator, storyboard, quiz, etc.) to icons, labels, and colors",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/dashboard/_lib/types/activity-feed.types.ts"
+        ],
+        "dependencies": [
+          "ActivityTypeConfig interface from T1",
+          "Lucide React icons: Layout, FileText, Film, CheckCircle2, Sparkles, PenTool, Video, FileQuestion"
+        ],
+        "constraints": [
+          "Use Record<string, ActivityTypeConfig> type",
+          "Map known feature values to icons with semantic colors",
+          "Handle unknown features gracefully"
+        ]
+      },
+      "input_state": "ActivityTypeConfig interface defined from T1",
+      "output_state": "ACTIVITY_TYPE_CONFIG constant maps feature values to icons and colors",
+      "acceptance_criterion": "ACTIVITY_TYPE_CONFIG exports with at least 5 feature mappings and a fallback for unknown",
+      "verification_command": "pnpm typecheck && grep -q 'export const ACTIVITY_TYPE_CONFIG' apps/web/app/home/(user)/dashboard/_lib/utils/activity-config.ts && grep -q 'Record<string, ActivityTypeConfig>' apps/web/app/home/(user)/dashboard/_lib/utils/activity-config.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_lib/utils/activity-config.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T1"],
+        "blocks": ["S1877.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T3",
+      "type": "task",
+      "name": "Create timeAgo utility function",
+      "action": {
+        "verb": "Create",
+        "target": "timeAgo utility function using Intl.RelativeTimeFormat"
+      },
+      "purpose": "Format timestamps as relative time strings (e.g., '2 hours ago', '5 minutes ago')",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Intl.RelativeTimeFormat API",
+          "i18n language from useTranslation hook context (passed as parameter)"
+        ],
+        "constraints": [
+          "Handle <5 minutes as 'just now'",
+          "Handle minutes, hours, days, months, years",
+          "Capitalize first letter of output",
+          "Accept language parameter for localization"
+        ]
+      },
+      "input_state": "No time formatting utility exists",
+      "output_state": "timeAgo function exported for timestamp formatting",
+      "acceptance_criterion": "timeAgo function exports and formats timestamps correctly for different time ranges",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function timeAgo' apps/web/app/home/(user)/dashboard/_lib/utils/time-ago.ts && grep -q 'Intl.RelativeTimeFormat' apps/web/app/home/(user)/dashboard/_lib/utils/time-ago.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_lib/utils/time-ago.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T1"],
+        "blocks": ["S1877.I3.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T4",
+      "type": "task",
+      "name": "Create server-side loader for activity feed data",
+      "action": {
+        "verb": "Create",
+        "target": "loadActivityFeedData server loader function"
+      },
+      "purpose": "Fetch user's ai_request_logs for last 30 days from server",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "packages/supabase/src/server-client.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "Activity type from T1",
+          "Pattern from fetch-usage-data.ts for querying ai_request_logs"
+        ],
+        "constraints": [
+          "Import 'server-only' at top",
+          "Filter by request_timestamp >= now() - interval '30 days'",
+          "Order by request_timestamp DESC",
+          "Select only needed fields to minimize data transfer",
+          "Filter by user_id from auth.uid()"
+        ]
+      },
+      "input_state": "Activity type defined from T1",
+      "output_state": "loadActivityFeedData function returns array of Activity objects",
+      "acceptance_criterion": "loadActivityFeedData function exports and queries ai_request_logs correctly",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function loadActivityFeedData' apps/web/app/home/(user)/dashboard/_lib/server/activity-feed.loader.ts && grep -q \"from('ai_request_logs')\" apps/web/app/home/(user)/dashboard/_lib/server/activity-feed.loader.ts && grep -q \"import 'server-only'\" apps/web/app/home/(user)/dashboard/_lib/server/activity-feed.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_lib/server/activity-feed.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T1"],
+        "blocks": ["S1877.I3.F3.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T5",
+      "type": "task",
+      "name": "Create React Query hook for activity feed",
+      "action": {
+        "verb": "Create",
+        "target": "useActivityFeed React Query hook"
+      },
+      "purpose": "Provide client-side data fetching with caching, loading, and error states",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 1,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/supabase/src/hooks/use-supabase.ts",
+          "@tanstack/react-query"
+        ],
+        "dependencies": [
+          "useSupabase from @kit/supabase/hooks/use-supabase",
+          "useQuery from @tanstack/react-query",
+          "loadActivityFeedData from T4 (passed as initialData)",
+          "Activity type from T1"
+        ],
+        "constraints": [
+          "Use useQuery with queryKey ['activity-feed']",
+          "Query fetches from client using useSupabase().from('ai_request_logs')",
+          "Set staleTime to 5 minutes (300000ms)",
+          "Select only needed fields",
+          "Accept optional initialData prop for SSR"
+        ]
+      },
+      "input_state": "loadActivityFeedData server loader exists from T4",
+      "output_state": "useActivityFeed hook returns { data, isLoading, error } for activity data",
+      "acceptance_criterion": "useActivityFeed hook exports and returns proper query result shape",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function useActivityFeed' apps/web/app/home/(user)/dashboard/_lib/hooks/use-activity-feed.ts && grep -q 'useQuery' apps/web/app/home/(user)/dashboard/_lib/hooks/use-activity-feed.ts && grep -q 'staleTime' apps/web/app/home/(user)/dashboard/_lib/hooks/use-activity-feed.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_lib/hooks/use-activity-feed.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T4"],
+        "blocks": ["S1877.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T6",
+      "type": "task",
+      "name": "Create ActivityItem component",
+      "action": {
+        "verb": "Create",
+        "target": "ActivityItem component"
+      },
+      "purpose": "Render single activity row with icon, description, and relative timestamp",
+      "status": "draft",
+      "estimated_hours": 1.5,
+      "priority": 1,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/makerkit/if.tsx"
+        ],
+        "dependencies": [
+          "Activity type from T1",
+          "ACTIVITY_TYPE_CONFIG from T2",
+          "timeAgo from T3",
+          "Lucide icons from ACTIVITY_TYPE_CONFIG",
+          "Trans from @kit/ui/trans"
+        ],
+        "constraints": [
+          "Display feature icon from config with proper color",
+          "Show feature label as description (e.g., 'Generated canvas presentation')",
+          "Display relative timestamp using timeAgo utility",
+          "Use semantic colors for icons",
+          "Make it client component ('use client')"
+        ]
+      },
+      "input_state": "Activity types, config, and timeAgo utility exist from T1-T3",
+      "output_state": "ActivityItem component renders single activity with icon, label, and timestamp",
+      "acceptance_criterion": "ActivityItem component exports and renders activity data correctly",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function ActivityItem' apps/web/app/home/(user)/dashboard/_components/activity-item.tsx && grep -q 'ACTIVITY_TYPE_CONFIG' apps/web/app/home/(user)/dashboard/_components/activity-item.tsx && grep -q 'timeAgo' apps/web/app/home/(user)/dashboard/_components/activity-item.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_components/activity-item.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T1", "S1877.I3.F3.T2", "S1877.I3.F3.T3"],
+        "blocks": ["S1877.I3.F3.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T7",
+      "type": "task",
+      "name": "Create ActivityFeedWidget component with pagination state",
+      "action": {
+        "verb": "Create",
+        "target": "ActivityFeedWidget component"
+      },
+      "purpose": "Main widget displaying activity feed with ScrollArea, pagination, and Load More button",
+      "status": "draft",
+      "estimated_hours": 2.5,
+      "priority": 1,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Activity Feed"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/scroll-area.tsx",
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/button.tsx",
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/makerkit/if.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx",
+          "apps/web/app/home/(user)/dashboard/_components/activity-item.tsx"
+        ],
+        "dependencies": [
+          "useActivityFeed from T5",
+          "ActivityItem from T6",
+          "useTranslation from react-i18next",
+          "Card, ScrollArea, Button, Skeleton from @kit/ui",
+          "If, EmptyState from @kit/ui"
+        ],
+        "constraints": [
+          "Use useState for pagination (itemsPerPage, visibleCount)",
+          "Show 10 items per page initially",
+          "Display Load More button when visibleCount < data.length",
+          "Wrap activity list in ScrollArea with max-height",
+          "Show loading skeleton when isLoading is true",
+          "Show empty state when data is empty",
+          "Make it client component ('use client')"
+        ]
+      },
+      "input_state": "useActivityFeed hook and ActivityItem component exist from T5-T6",
+      "output_state": "ActivityFeedWidget displays paginated activity feed with all states",
+      "acceptance_criterion": "ActivityFeedWidget renders with loading, empty, and populated states, and pagination works",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function ActivityFeedWidget' apps/web/app/home/(user)/dashboard/_components/activity-feed-widget.tsx && grep -q 'useState' apps/web/app/home/(user)/dashboard/_components/activity-feed-widget.tsx && grep -q 'Load More' apps/web/app/home/(user)/dashboard/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T5", "S1877.I3.F3.T6"],
+        "blocks": ["S1877.I3.F3.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T8",
+      "type": "task",
+      "name": "Create ActivityFeedWidgetSkeleton loading component",
+      "action": {
+        "verb": "Create",
+        "target": "ActivityFeedWidgetSkeleton component"
+      },
+      "purpose": "Display skeleton placeholders while activity feed loads",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx",
+          "packages/ui/src/shadcn/card.tsx"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui",
+          "Card, CardContent from @kit/ui"
+        ],
+        "constraints": [
+          "Render 5 skeleton items matching ActivityItem structure",
+          "Use Skeleton component for icon, text, and timestamp placeholders",
+          "Match dimensions of actual ActivityItem component",
+          "Animate skeleton pulse effect"
+        ]
+      },
+      "input_state": "Skeleton component available from @kit/ui",
+      "output_state": "ActivityFeedWidgetSkeleton renders 5 placeholder activity items",
+      "acceptance_criterion": "ActivityFeedWidgetSkeleton component exports and displays 5 skeleton items",
+      "verification_command": "pnpm typecheck && grep -q 'export.*function ActivityFeedWidgetSkeleton' apps/web/app/home/(user)/dashboard/_components/activity-feed-widget-skeleton.tsx && grep -q 'Skeleton' apps/web/app/home/(user)/dashboard/_components/activity-feed-widget-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/dashboard/_components/activity-feed-widget-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I3.F3.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T9",
+      "type": "task",
+      "name": "Wire ActivityFeedWidget into dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "ActivityFeedWidget into user dashboard page"
+      },
+      "purpose": "Integrate the activity feed widget into the dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Activity Feed"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/dashboard/_components/activity-feed-widget.tsx"
+        ],
+        "dependencies": [
+          "ActivityFeedWidget from T7",
+          "ActivityFeedWidgetSkeleton from T8"
+        ],
+        "constraints": [
+          "Import ActivityFeedWidget component",
+          "Place widget in appropriate grid slot",
+          "Wrap in Suspense boundary with fallback skeleton",
+          "Ensure widget renders with proper spacing"
+        ]
+      },
+      "input_state": "ActivityFeedWidget and skeleton components exist from T7-T8",
+      "output_state": "ActivityFeedWidget renders in dashboard page grid",
+      "acceptance_criterion": "ActivityFeedWidget displays in dashboard page with Suspense boundary",
+      "verification_command": "pnpm typecheck && grep -q 'ActivityFeedWidget' apps/web/app/home/(user)/page.tsx && grep -q 'Suspense' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T7", "S1877.I3.F3.T8"],
+        "blocks": ["S1877.I3.F3.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F3.T10",
+      "type": "task",
+      "name": "Add i18n translations for activity feed widget",
+      "action": {
+        "verb": "Add",
+        "target": "i18n translation keys for activity feed"
+      },
+      "purpose": "Add translatable strings for widget title, empty state, and Load More button",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "public/locales/en/common.json"
+        ],
+        "dependencies": [
+          "Existing translation structure in common.json"
+        ],
+        "constraints": [
+          "Add 'dashboard.activityFeed' section with title",
+          "Add 'dashboard.activityFeed.emptyState' message",
+          "Add 'dashboard.activityFeed.loadMore' button text",
+          "Add 'dashboard.activityFeed.justNow' for time formatting",
+          "Follow existing translation key naming convention"
+        ]
+      },
+      "input_state": "Translation files exist with existing dashboard keys",
+      "output_state": "i18n keys added for activity feed widget",
+      "acceptance_criterion": "Translation keys added to common.json for activity feed widget",
+      "verification_command": "grep -q 'activityFeed' public/locales/en/common.json && grep -q 'loadMore' public/locales/en/common.json && grep -q 'emptyState' public/locales/en/common.json",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "public/locales/en/common.json"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I3.F3.T9"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1877.I3.F3.T1", "S1877.I3.F3.T8"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 1
+      },
+      {
+        "id": 1,
+        "name": "Config and Data",
+        "task_ids": ["S1877.I3.F3.T2", "S1877.I3.F3.T3", "S1877.I3.F3.T4"],
+        "depends_on_groups": [0],
+        "estimated_hours": 3,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Hook and Item Component",
+        "task_ids": ["S1877.I3.F3.T5", "S1877.I3.F3.T6"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 3,
+        "parallel_hours": 1.5
+      },
+      {
+        "id": 3,
+        "name": "Main Widget Component",
+        "task_ids": ["S1877.I3.F3.T7"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2.5,
+        "parallel_hours": 2.5
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S1877.I3.F3.T9"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
+        "name": "Localization",
+        "task_ids": ["S1877.I3.F3.T10"],
+        "depends_on_groups": [0, 1, 2, 3, 4],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1877.I3.F3.T1",
+        "S1877.I3.F3.T4",
+        "S1877.I3.F3.T5",
+        "S1877.I3.F3.T7",
+        "S1877.I3.F3.T9",
+        "S1877.I3.F3.T10"
+      ],
+      "total_hours": 8.0
+    },
+    "duration": {
+      "sequential": 12.5,
+      "parallel": 8.0,
+      "time_saved_percent": 36
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true,
+    "spec_issue_url": "https://github.com/MLorneSmith/2025slideheroes/issues/1877#issuecomment-3812525749"
+  }
+}

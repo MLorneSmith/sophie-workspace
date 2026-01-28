@@ -463,6 +463,157 @@ For each task, verify:
 □ Max 3 files? (touches 1-3 files)
 □ Clear outcome? (binary done/not-done state)
 □ Database flag set? (if task requires DB access)
+□ Interactive elements split? (render vs wire tasks)
+```
+
+### Interactive Element Rule (CRITICAL)
+
+**Purpose**: Prevent non-functional UI by splitting interactive element tasks into separate rendering and wiring tasks.
+
+**When to Apply**: Apply this rule when a task involves ANY of these interactive elements:
+- Buttons with click actions
+- Forms with submission
+- Links with navigation
+- Modal/dialog triggers
+- Dropdown selections
+- Toggles/switches
+- Any element requiring an onClick, onSubmit, or onChange handler
+
+**The Split Pattern**:
+
+For each interactive element, create TWO separate tasks:
+
+1. **Render Task**: Create the visual component/element
+   - Verb: `Create` or `Add`
+   - Focus: Structure, styling, accessibility
+   - Verification: Element exists and is visible
+
+2. **Wire Task**: Connect the element to its action
+   - Verb: `Wire`
+   - Focus: Event handlers, state updates, navigation
+   - Verification: Handler exists and triggers expected behavior
+
+**Example - Incorrect (Single Task)**:
+
+```json
+{
+  "id": "T5",
+  "name": "Create session card with join and reschedule buttons",
+  "action": { "verb": "Create", "target": "session card" }
+}
+```
+❌ Problem: Buttons may render but have no handlers (this happened in S1823!)
+
+**Example - Correct (Split Tasks)**:
+
+```json
+{
+  "id": "T5",
+  "name": "Create coaching session card layout",
+  "action": { "verb": "Create", "target": "session card layout" },
+  "verification_command": "grep -q 'CoachingSessionCard' file.tsx",
+  "purpose": "Render session card with placeholder buttons"
+},
+{
+  "id": "T6",
+  "name": "Wire Join button to meeting URL navigation",
+  "action": { "verb": "Wire", "target": "Join button to meeting" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Join",
+        "expected_action": "navigate to meeting URL",
+        "file_path": "apps/web/...session-card.tsx"
+      }
+    ]
+  },
+  "verification_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' file.tsx",
+  "dependencies": { "blocked_by": ["T5"] }
+},
+{
+  "id": "T7",
+  "name": "Wire Reschedule button to reschedule page",
+  "action": { "verb": "Wire", "target": "Reschedule button to page" },
+  "behavioral_verification": {
+    "patterns": [
+      {
+        "type": "button_handler",
+        "target": "Reschedule",
+        "expected_action": "navigate to reschedule page"
+      }
+    ]
+  },
+  "verification_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+\\}' file.tsx",
+  "dependencies": { "blocked_by": ["T5"] }
+}
+```
+✅ Each button has its own wiring task with explicit verification
+
+**Behavioral Verification Integration**:
+
+Wiring tasks MUST include `behavioral_verification` with patterns that validate functional completeness:
+
+```json
+"behavioral_verification": {
+  "patterns": [
+    {
+      "type": "button_handler",
+      "target": "Button Text",
+      "expected_action": "what happens on click",
+      "file_path": "path/to/component.tsx"
+    }
+  ],
+  "validation_command": "grep -Pzo 'ButtonText[^<]*onClick=\\{[^}]+\\}' path/to/file.tsx"
+}
+```
+
+**Pattern Types**:
+
+| Type | Use Case | Validation |
+|------|----------|------------|
+| `button_handler` | Buttons with onClick | Verify onClick is non-empty |
+| `form_submission` | Forms with submit | Verify onSubmit handler exists |
+| `link_navigation` | Links/navigation | Verify href or onClick navigation |
+| `modal_trigger` | Modal open buttons | Verify setOpen/setIsOpen handler |
+| `env_var_graceful` | Env var handling | Verify warn/null fallback, not error |
+
+**Exception - Simple Non-Interactive Elements**:
+
+You do NOT need to split tasks for elements that are truly non-interactive:
+- Display-only cards
+- Static text/headings
+- Images without click actions
+- Read-only data displays
+
+### Environment Variable Handling Rule
+
+When a task involves environment variables (especially for external services), ensure graceful degradation:
+
+**Pattern**: `env_var_graceful`
+
+**Correct Handling**:
+```typescript
+// ✅ Graceful - logs warning, returns empty
+if (!process.env.CALCOM_API_KEY) {
+  console.warn('CALCOM_API_KEY not set, coaching sessions disabled');
+  return [];
+}
+```
+
+**Incorrect Handling**:
+```typescript
+// ❌ Non-graceful - logs error, causes console pollution
+if (!process.env.CALCOM_API_KEY) {
+  console.error('CALCOM_API_KEY is not set!');
+  throw new Error('Missing CALCOM_API_KEY');
+}
+```
+
+**Verification Command**:
+```bash
+# Verify graceful degradation (warn or return null/empty)
+grep -E 'console\.(warn|info)|return (null|\[\]|undefined)' file.ts | grep -v 'console\.error'
 ```
 
 ### Database Task Detection

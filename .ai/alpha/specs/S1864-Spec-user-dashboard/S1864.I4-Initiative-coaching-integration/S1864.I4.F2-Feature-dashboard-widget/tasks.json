@@ -1,0 +1,684 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I4.F2",
+    "feature_name": "Dashboard Widget",
+    "feature_slug": "dashboard-widget",
+    "initiative_id": "S1864.I4",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:30:00Z",
+    "complexity": {
+      "score": 69,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I4.F2.T3", "S1864.I4.F2.T4", "S1864.I4.F2.T5", "S1864.I4.F2.T6", "S1864.I4.F2.T7"],
+    "required_env_vars": [
+      {
+        "name": "CAL_API_KEY",
+        "description": "Cal.com V2 API key for fetching upcoming bookings",
+        "source": "Cal.com Platform Settings → API Keys",
+        "required": true,
+        "scope": "server"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1864.I4.F2.T1",
+      "type": "task",
+      "name": "Create date formatting utilities",
+      "action": {
+        "verb": "Create",
+        "target": "date formatting utilities"
+      },
+      "purpose": "Provide reusable formatDate and formatTime functions for session display",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "date-fns (already installed, verified in current-subscription-card.tsx)"
+        ],
+        "constraints": [
+          "Use date-fns formatDate for consistency with existing patterns",
+          "Export formatDate and formatTime functions",
+          "Handle invalid dates gracefully (return 'Invalid Date' string)"
+        ]
+      },
+      "input_state": "No date utilities exist for coaching sessions",
+      "output_state": "formatDate and formatTime functions available for import",
+      "acceptance_criterion": "Functions exist and return formatted strings for valid dates",
+      "verification_command": "grep -q 'export function formatDate' apps/web/lib/date-utils.ts && grep -q 'export function formatTime' apps/web/lib/date-utils.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/lib/date-utils.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F2.T2", "S1864.I4.F2.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T2",
+      "type": "task",
+      "name": "Create coaching page data loader",
+      "action": {
+        "verb": "Create",
+        "target": "coaching page data loader"
+      },
+      "purpose": "Server-side data fetching using CalComApiService with Promise.all pattern",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts (loader pattern reference)"
+        ],
+        "dependencies": [
+          "CalComApiService.getUpcomingBookings() from F1",
+          "getSupabaseServerClient for auth context",
+          "@kit/shared/logger for structured logging"
+        ],
+        "constraints": [
+          "Use 'server-only' import at top",
+          "Follow loadMembersPageData pattern with Promise.all",
+          "Return empty array on API failure (graceful degradation)",
+          "Log errors with createServiceLogger",
+          "Filter for accepted, future sessions only",
+          "Sort by start time ascending (nearest first)"
+        ]
+      },
+      "input_state": "CalComApiService exists from F1, no loader exists",
+      "output_state": "loadCoachingPageData function exports upcoming sessions array",
+      "acceptance_criterion": "Loader function exists and returns array of upcoming coaching sessions",
+      "verification_command": "grep -q 'export async function loadCoachingPageData' apps/web/app/home/(user)/_lib/server/coaching-page.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/coaching-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T1"],
+        "blocks": ["S1864.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T3",
+      "type": "task",
+      "name": "Create coaching sessions skeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching sessions skeleton component"
+      },
+      "purpose": "Loading state that matches widget dimensions during data fetch",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 1000,
+        "checks": [
+          {
+            "command": "find role",
+            "target": "status"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx (Skeleton component)",
+          "packages/ui/src/shadcn/card.tsx (Card components)"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui/skeleton",
+          "Card, CardHeader, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Match actual widget layout (header + 3 session placeholders)",
+          "Use client component ('use client')",
+          "Skeleton height should match session card height (~80px each)"
+        ]
+      },
+      "input_state": "Skeleton component exists in UI library, no coaching skeleton exists",
+      "output_state": "CoachingSessionsSkeleton component renders loading state",
+      "acceptance_criterion": "Component renders Card with Skeleton placeholders matching widget layout",
+      "verification_command": "grep -q 'export function CoachingSessionsSkeleton' apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T4",
+      "type": "task",
+      "name": "Create coaching empty state component",
+      "action": {
+        "verb": "Create",
+        "target": "coaching empty state component"
+      },
+      "purpose": "Display when no upcoming sessions exist with Book CTA",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 2000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No Upcoming Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/empty-state.tsx (EmptyState components)"
+        ],
+        "dependencies": [
+          "EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/empty-state",
+          "Calendar icon from lucide-react"
+        ],
+        "constraints": [
+          "Use client component ('use client')",
+          "Show calendar icon",
+          "Heading: 'No Upcoming Sessions'",
+          "Text: 'Book your first coaching session to get started'",
+          "Button text: 'Book Your First Session'",
+          "Button disabled (F3 will wire modal trigger)"
+        ]
+      },
+      "input_state": "EmptyState component exists in UI library, no coaching empty state exists",
+      "output_state": "CoachingEmptyState component renders empty state with CTA",
+      "acceptance_criterion": "Component renders EmptyState with heading, text, and disabled button",
+      "verification_command": "grep -q 'export function CoachingEmptyState' apps/web/app/home/(user)/_components/coaching-empty-state.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I4.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T5",
+      "type": "task",
+      "name": "Create sessions list component layout",
+      "action": {
+        "verb": "Create",
+        "target": "sessions list component layout"
+      },
+      "purpose": "Render session cards with title, date/time, placeholder buttons",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Session"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/billing/gateway/src/components/current-subscription-card.tsx (Card layout pattern)",
+          "apps/web/lib/date-utils.ts (formatDate, formatTime functions)"
+        ],
+        "dependencies": [
+          "formatDate and formatTime from lib/date-utils",
+          "CalComBooking type from F1",
+          "Badge, Button from @kit/ui"
+        ],
+        "constraints": [
+          "Use client component ('use client')",
+          "Accept sessions prop: CalComBooking[]",
+          "Each session card shows: title, formatted date, formatted time",
+          "Render placeholder buttons (Join, Reschedule) - not wired yet",
+          "Use space-y-3 for session card spacing",
+          "Show status badge (e.g., 'Accepted')"
+        ]
+      },
+      "input_state": "Date utils exist, CalComBooking type from F1, no list component exists",
+      "output_state": "CoachingSessionsList component renders session cards with details",
+      "acceptance_criterion": "Component renders list of session cards with title, date/time, and placeholder buttons",
+      "verification_command": "grep -q 'export function CoachingSessionsList' apps/web/app/home/(user)/_components/coaching-sessions-list.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T1"],
+        "blocks": ["S1864.I4.F2.T8", "S1864.I4.F2.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T6",
+      "type": "task",
+      "name": "Create coaching sessions widget container",
+      "action": {
+        "verb": "Create",
+        "target": "coaching sessions widget container"
+      },
+      "purpose": "Main widget with conditional rendering (list vs empty state)",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx",
+          "apps/web/app/home/(user)/_components/coaching-empty-state.tsx"
+        ],
+        "dependencies": [
+          "CoachingSessionsList component",
+          "CoachingEmptyState component",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card",
+          "If component from @kit/ui/if"
+        ],
+        "constraints": [
+          "Use client component ('use client')",
+          "Accept sessions prop: CalComBooking[]",
+          "Card with header 'Coaching Sessions'",
+          "Conditional: show list if sessions.length > 0, else empty state",
+          "Use If component for conditional rendering"
+        ]
+      },
+      "input_state": "List and empty state components exist, no widget container exists",
+      "output_state": "CoachingSessionsWidget component renders with conditional logic",
+      "acceptance_criterion": "Widget renders Card with header and conditionally shows list or empty state",
+      "verification_command": "grep -q 'export function CoachingSessionsWidget' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T2", "S1864.I4.F2.T4", "S1864.I4.F2.T5"],
+        "blocks": ["S1864.I4.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T7",
+      "type": "task",
+      "name": "Integrate widget into dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "widget to dashboard page with Suspense"
+      },
+      "purpose": "Wire widget to page with server-side data loading and streaming",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx (current dashboard page)",
+          "apps/web/app/home/(user)/_lib/server/coaching-page.loader.ts",
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/coaching-sessions-skeleton.tsx"
+        ],
+        "dependencies": [
+          "loadCoachingPageData loader",
+          "CoachingSessionsWidget component",
+          "CoachingSessionsSkeleton component",
+          "Suspense from React"
+        ],
+        "constraints": [
+          "Convert page to async function",
+          "Call loadCoachingPageData in page component",
+          "Wrap widget in Suspense with skeleton fallback",
+          "Add widget to PageBody (replace empty PageBody)",
+          "Use await params pattern for Next.js 15"
+        ]
+      },
+      "input_state": "Widget and loader exist, page.tsx is minimal shell",
+      "output_state": "Dashboard page renders widget with data from loader in Suspense boundary",
+      "acceptance_criterion": "Page loads widget with real data and shows skeleton during loading",
+      "verification_command": "grep -q 'CoachingSessionsWidget' apps/web/app/home/(user)/page.tsx && grep -q 'Suspense' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T3", "S1864.I4.F2.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T8",
+      "type": "task",
+      "name": "Wire Join button to meeting URL navigation",
+      "action": {
+        "verb": "Wire",
+        "target": "Join button to meeting URL"
+      },
+      "purpose": "Connect Join button onClick handler to navigate to meeting URL",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Join",
+            "expected_action": "navigate to meeting URL",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        ],
+        "dependencies": [
+          "CalComBooking type (includes meetingUrl field)"
+        ],
+        "constraints": [
+          "Add onClick handler to Join button",
+          "Open meetingUrl in new tab (window.open with target='_blank')",
+          "Only show Join button if meetingUrl exists",
+          "Add rel='noopener noreferrer' for security"
+        ]
+      },
+      "input_state": "Join button renders but has no onClick handler",
+      "output_state": "Join button opens meeting URL in new tab when clicked",
+      "acceptance_criterion": "Join button has onClick handler that navigates to meetingUrl",
+      "verification_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-list.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F2.T9",
+      "type": "task",
+      "name": "Wire Reschedule button to reschedule page",
+      "action": {
+        "verb": "Wire",
+        "target": "Reschedule button to reschedule page"
+      },
+      "purpose": "Connect Reschedule button onClick handler to navigate to Cal.com reschedule",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Reschedule",
+            "expected_action": "navigate to reschedule page",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        ],
+        "dependencies": [
+          "CalComBooking type (includes uid field for reschedule)",
+          "Cal.com reschedule URL pattern: https://cal.com/{username}/{eventSlug}?rescheduleUid={uid}"
+        ],
+        "constraints": [
+          "Add onClick handler to Reschedule button",
+          "Construct reschedule URL using booking.uid",
+          "Open reschedule URL in new tab (window.open with target='_blank')",
+          "Add rel='noopener noreferrer' for security",
+          "Use NEXT_PUBLIC_CAL_USERNAME and NEXT_PUBLIC_CAL_EVENT_SLUG env vars"
+        ]
+      },
+      "input_state": "Reschedule button renders but has no onClick handler",
+      "output_state": "Reschedule button opens Cal.com reschedule page in new tab when clicked",
+      "acceptance_criterion": "Reschedule button has onClick handler that navigates to reschedule URL",
+      "verification_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+\\}' apps/web/app/home/(user)/_components/coaching-sessions-list.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I4.F2.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1864.I4.F2.T1", "S1864.I4.F2.T3", "S1864.I4.F2.T4"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 1,
+        "name": "Data & Sessions List",
+        "task_ids": ["S1864.I4.F2.T2", "S1864.I4.F2.T5"],
+        "depends_on_groups": [0],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Widget & Wiring",
+        "task_ids": ["S1864.I4.F2.T6", "S1864.I4.F2.T8", "S1864.I4.F2.T9"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1864.I4.F2.T7"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I4.F2.T1", "S1864.I4.F2.T2", "S1864.I4.F2.T6", "S1864.I4.F2.T7"],
+      "total_hours": 9
+    },
+    "duration": {
+      "sequential": 20,
+      "parallel": 9,
+      "time_saved_percent": 55
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

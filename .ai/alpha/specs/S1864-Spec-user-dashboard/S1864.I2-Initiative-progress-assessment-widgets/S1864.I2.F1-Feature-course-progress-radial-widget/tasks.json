@@ -1,0 +1,797 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I2.F1",
+    "feature_name": "Course Progress Radial Widget",
+    "feature_slug": "course-progress-radial-widget",
+    "initiative_id": "S1864.I2",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T20:30:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I2.F1.T7", "S1864.I2.F1.T9"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I2.F1.T1",
+      "type": "task",
+      "name": "Add CourseProgressData type to dashboard types",
+      "action": {
+        "verb": "Add",
+        "target": "CourseProgressData interface"
+      },
+      "purpose": "Define TypeScript type for course progress widget data structure",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "Database types for course_progress table",
+          "Database types for lesson_progress table"
+        ],
+        "constraints": [
+          "Must match existing database schema",
+          "Include completion percentage, lesson counts, current lesson info"
+        ]
+      },
+      "input_state": "dashboard-types.ts exists from I1.F1 with placeholder widget types",
+      "output_state": "CourseProgressData interface added to dashboard-types.ts with completion_percentage, completed_lessons, total_lessons, current_lesson fields",
+      "acceptance_criterion": "CourseProgressData interface exists in dashboard-types.ts and exports successfully",
+      "verification_command": "grep -q 'export interface CourseProgressData' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_lib/server/dashboard-types.ts && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I2.F1.T2", "S1864.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T2",
+      "type": "task",
+      "name": "Add loadCourseProgress function to dashboard loader",
+      "action": {
+        "verb": "Add",
+        "target": "loadCourseProgress function"
+      },
+      "purpose": "Fetch course progress data from course_progress and lesson_progress tables",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "CourseProgressData type from T1",
+          "Supabase client from getSupabaseServerClient",
+          "course_progress table with completion_percentage",
+          "lesson_progress table for lesson counts"
+        ],
+        "constraints": [
+          "Use RLS-protected queries",
+          "Handle user with no progress (return null)",
+          "Calculate completed vs total lessons"
+        ]
+      },
+      "input_state": "dashboard-page.loader.ts exists from I1.F1 with placeholder loader functions, CourseProgressData type defined",
+      "output_state": "loadCourseProgress function queries course_progress and lesson_progress, returns CourseProgressData or null",
+      "acceptance_criterion": "loadCourseProgress function exists, queries database, and returns correctly typed data or null",
+      "verification_command": "grep -q 'async function loadCourseProgress' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts && grep -q 'course_progress' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T1"],
+        "blocks": ["S1864.I2.F1.T3", "S1864.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T3",
+      "type": "task",
+      "name": "Update loadDashboardPageData to include course progress",
+      "action": {
+        "verb": "Update",
+        "target": "loadDashboardPageData Promise.all call"
+      },
+      "purpose": "Include loadCourseProgress in parallel data fetching",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        ],
+        "dependencies": [
+          "loadCourseProgress function from T2",
+          "Existing Promise.all structure from I1.F1"
+        ],
+        "constraints": [
+          "Maintain parallel fetching pattern",
+          "Add to existing Promise.all array",
+          "Update destructuring to include courseProgress"
+        ]
+      },
+      "input_state": "loadDashboardPageData exists with Promise.all for other widgets, loadCourseProgress function defined",
+      "output_state": "loadDashboardPageData includes loadCourseProgress(client, userId) in Promise.all, returns courseProgress in result",
+      "acceptance_criterion": "Promise.all includes loadCourseProgress and result includes courseProgress field",
+      "verification_command": "grep -Pzo 'Promise\\.all\\(\\[[^\\]]*loadCourseProgress[^\\]]*\\]\\)' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_lib/server/dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T2"],
+        "blocks": ["S1864.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T4",
+      "type": "task",
+      "name": "Create CourseProgressWidget component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "CourseProgressWidget component file"
+      },
+      "purpose": "Establish Card-based widget structure with props interface",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "CourseProgressData type from T1",
+          "Card, CardHeader, CardTitle, CardContent from @kit/ui/card"
+        ],
+        "constraints": [
+          "Use 'use client' directive",
+          "Accept data prop of type CourseProgressData | null",
+          "Render Card with header only (no content yet)"
+        ]
+      },
+      "input_state": "No CourseProgressWidget file exists, CourseProgressData type defined, Card components available",
+      "output_state": "CourseProgressWidget.tsx exists with Card skeleton, accepts data prop, renders CardHeader with title",
+      "acceptance_criterion": "Component file exists, compiles without errors, renders Card with header",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'use client' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T1", "S1864.I2.F1.T2", "S1864.I2.F1.T3"],
+        "blocks": ["S1864.I2.F1.T5", "S1864.I2.F1.T6", "S1864.I2.F1.T7", "S1864.I2.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T5",
+      "type": "task",
+      "name": "Add radial progress SVG to widget",
+      "action": {
+        "verb": "Add",
+        "target": "radial progress indicator"
+      },
+      "purpose": "Render circular progress chart showing completion percentage",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx",
+          "apps/web/app/home/(user)/course/_components/RadialProgress.tsx"
+        ],
+        "dependencies": [
+          "RadialProgress component pattern (reference only)",
+          "SVG circle elements for progress visualization"
+        ],
+        "constraints": [
+          "Use custom SVG (not RadialProgress component - widget needs larger size)",
+          "Size: 160px (larger than existing 40px RadialProgress)",
+          "Show percentage in center",
+          "Animate strokeDashoffset based on completion_percentage"
+        ]
+      },
+      "input_state": "Widget skeleton exists with Card, data prop available with completion_percentage",
+      "output_state": "Widget renders 160px radial progress SVG with animated stroke, percentage text in center",
+      "acceptance_criterion": "SVG circle renders with strokeDashoffset calculated from data.completion_percentage, center text shows percentage",
+      "verification_command": "grep -q 'strokeDashoffset' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'completion_percentage' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T6",
+      "type": "task",
+      "name": "Add lesson count display to widget",
+      "action": {
+        "verb": "Add",
+        "target": "lesson count text"
+      },
+      "purpose": "Show completed vs total lessons breakdown",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "CourseProgressData with completed_lessons and total_lessons fields"
+        ],
+        "constraints": [
+          "Format: 'X/Y Lessons Completed'",
+          "Place below radial progress chart",
+          "Use muted text color for secondary info"
+        ]
+      },
+      "input_state": "Widget has radial progress SVG, data includes completed_lessons and total_lessons",
+      "output_state": "Widget displays lesson count text below radial chart formatted as 'X/Y Lessons Completed'",
+      "acceptance_criterion": "Text displays completed_lessons/total_lessons with 'Lessons Completed' label",
+      "verification_command": "grep -q 'Lessons Completed' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'completed_lessons' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T7",
+      "type": "task",
+      "name": "Add Continue Course button to widget",
+      "action": {
+        "verb": "Add",
+        "target": "Continue Course Button element"
+      },
+      "purpose": "Render CTA button that will navigate to current lesson",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Continue Course" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "Button component from @kit/ui/button",
+          "CourseProgressData with current_lesson field"
+        ],
+        "constraints": [
+          "Use Button with variant='default'",
+          "Place at bottom of CardContent",
+          "Text: 'Continue Course'",
+          "No onClick yet (wiring in T9)"
+        ]
+      },
+      "input_state": "Widget has radial progress and lesson count, Button component available",
+      "output_state": "Button element exists with 'Continue Course' text, renders at bottom of widget",
+      "acceptance_criterion": "Button element exists in component with text 'Continue Course'",
+      "verification_command": "grep -q 'Continue Course' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'Button' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T4"],
+        "blocks": ["S1864.I2.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T8",
+      "type": "task",
+      "name": "Add empty state to widget",
+      "action": {
+        "verb": "Add",
+        "target": "empty state conditional render"
+      },
+      "purpose": "Handle case when user has not started course",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "data prop can be null when no progress exists"
+        ],
+        "constraints": [
+          "Check if data is null",
+          "Render Card with message encouraging user to start course",
+          "Include link to /home/course"
+        ]
+      },
+      "input_state": "Widget handles data prop with progress, needs null handling",
+      "output_state": "Widget conditionally renders empty state when data is null with 'Start your course' message",
+      "acceptance_criterion": "When data is null, widget renders Card with empty state message and link to course",
+      "verification_command": "grep -q 'data === null\\|!data' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q 'Start' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T9",
+      "type": "task",
+      "name": "Wire Continue Course button to lesson navigation",
+      "action": {
+        "verb": "Wire",
+        "target": "Continue Course button to navigation"
+      },
+      "purpose": "Enable button to navigate to current lesson when clicked",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Continue Course" },
+          { "command": "find role", "target": "button" }
+        ],
+        "screenshot": true
+      },
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Continue Course",
+            "expected_action": "navigate to current lesson URL",
+            "file_path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "Button element from T7",
+          "Link component from next/link",
+          "current_lesson data with slug"
+        ],
+        "constraints": [
+          "Use Link component wrapping Button (or Button asChild with Link)",
+          "Navigate to /home/course/lessons/[slug]",
+          "Use current_lesson.slug from data"
+        ]
+      },
+      "input_state": "Button element exists without onClick, current_lesson data available",
+      "output_state": "Button wrapped in Link or uses asChild pattern, navigates to correct lesson URL on click",
+      "acceptance_criterion": "Button has Link with href='/home/course/lessons/{slug}' pattern",
+      "verification_command": "grep -Pzo 'Continue Course[^<]*href=|asChild[^>]*>\\s*<Link' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q '/course/lessons/' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T10",
+      "type": "task",
+      "name": "Create CourseProgressWidgetSkeleton component",
+      "action": {
+        "verb": "Create",
+        "target": "skeleton component file"
+      },
+      "purpose": "Provide loading placeholder matching widget dimensions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 10,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Card components from @kit/ui/card",
+          "Skeleton component from @kit/ui/skeleton"
+        ],
+        "constraints": [
+          "Match CourseProgressWidget Card layout",
+          "Include Skeleton for radial chart (circle shape)",
+          "Include Skeleton for text elements",
+          "Include Skeleton for button"
+        ]
+      },
+      "input_state": "No skeleton file exists, Skeleton component available, widget dimensions known",
+      "output_state": "CourseProgressWidgetSkeleton.tsx exists with Card containing Skeleton elements matching widget layout",
+      "acceptance_criterion": "Skeleton component file exists and renders Card with Skeleton elements for chart, text, button",
+      "verification_command": "test -f /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget-skeleton.tsx && grep -q 'Skeleton' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget-skeleton.tsx && pnpm --filter web typecheck",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T11",
+      "type": "task",
+      "name": "Add accessibility attributes to widget",
+      "action": {
+        "verb": "Add",
+        "target": "ARIA labels and screen reader attributes"
+      },
+      "purpose": "Ensure widget is accessible to screen readers",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 11,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "Completed widget with radial progress and text"
+        ],
+        "constraints": [
+          "Add aria-label to radial SVG describing percentage",
+          "Add title element to SVG for screen readers",
+          "Ensure button has accessible text (already has 'Continue Course')",
+          "Add role='img' to SVG progress chart"
+        ]
+      },
+      "input_state": "Widget component complete with visual elements, needs accessibility attributes",
+      "output_state": "Widget SVG has aria-label, title element, and role='img', all interactive elements accessible",
+      "acceptance_criterion": "SVG has aria-label and title element, component passes basic accessibility checks",
+      "verification_command": "grep -q 'aria-label' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx && grep -q '<title>' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T5"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T12",
+      "type": "task",
+      "name": "Import CourseProgressWidget in dashboard page",
+      "action": {
+        "verb": "Add",
+        "target": "widget import statement"
+      },
+      "purpose": "Make widget available for use in dashboard page",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 12,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "CourseProgressWidget component from T4-T11",
+          "CourseProgressWidgetSkeleton component from T10"
+        ],
+        "constraints": [
+          "Import both widget and skeleton",
+          "Use correct import path from _components/"
+        ]
+      },
+      "input_state": "Dashboard page exists from I1.F2, widget components complete",
+      "output_state": "Dashboard page imports CourseProgressWidget and CourseProgressWidgetSkeleton",
+      "acceptance_criterion": "Import statements exist for both components in page.tsx",
+      "verification_command": "grep -q 'CourseProgressWidget' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/page.tsx && grep -q 'CourseProgressWidgetSkeleton' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T4", "S1864.I2.F1.T10"],
+        "blocks": ["S1864.I2.F1.T13"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I2.F1.T13",
+      "type": "task",
+      "name": "Add CourseProgressWidget to dashboard grid",
+      "action": {
+        "verb": "Add",
+        "target": "widget component to grid"
+      },
+      "purpose": "Place widget in dashboard layout with courseProgress data prop",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 13,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx"
+        ],
+        "dependencies": [
+          "Widget import from T12",
+          "Grid layout from I1.F3",
+          "courseProgress data from loader",
+          "Suspense boundary for loading state"
+        ],
+        "constraints": [
+          "Wrap in Suspense with CourseProgressWidgetSkeleton fallback",
+          "Pass data.courseProgress as data prop",
+          "Place in appropriate grid position (spec doesn't mandate position)"
+        ]
+      },
+      "input_state": "Dashboard page has grid layout from I1.F3, widget imported, courseProgress data available",
+      "output_state": "CourseProgressWidget placed in grid with Suspense boundary, receives courseProgress data",
+      "acceptance_criterion": "Widget renders in page wrapped in Suspense with skeleton fallback and data prop",
+      "verification_command": "grep -q 'CourseProgressWidget' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/page.tsx && grep -q 'courseProgress' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/page.tsx && grep -q 'Suspense' /home/msmith/projects/2025slideheroes/apps/web/app/home/\\(user\\)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I2.F1.T12"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Data Layer",
+        "task_ids": ["S1864.I2.F1.T1", "S1864.I2.F1.T2", "S1864.I2.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 7,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Widget Implementation",
+        "task_ids": ["S1864.I2.F1.T4", "S1864.I2.F1.T5", "S1864.I2.F1.T6", "S1864.I2.F1.T7", "S1864.I2.F1.T8", "S1864.I2.F1.T9"],
+        "depends_on_groups": [1],
+        "estimated_hours": 13,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Polish",
+        "task_ids": ["S1864.I2.F1.T10", "S1864.I2.F1.T11"],
+        "depends_on_groups": [],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": ["S1864.I2.F1.T12", "S1864.I2.F1.T13"],
+        "depends_on_groups": [2, 3],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I2.F1.T1", "S1864.I2.F1.T2", "S1864.I2.F1.T3", "S1864.I2.F1.T4", "S1864.I2.F1.T7", "S1864.I2.F1.T9", "S1864.I2.F1.T12", "S1864.I2.F1.T13"],
+      "total_hours": 16
+    },
+    "duration": {
+      "sequential": 27,
+      "parallel": 16,
+      "time_saved_percent": 40.7
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

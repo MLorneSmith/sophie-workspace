@@ -1,0 +1,446 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I2.F1",
+    "feature_name": "Course Progress Widget",
+    "feature_slug": "course-progress-widget",
+    "initiative_id": "S1877.I2",
+    "spec_id": "1877",
+    "created_at": "2026-01-28T00:00:00Z",
+    "complexity": {
+      "score": 44,
+      "level": "LOW",
+      "target_steps": { "min": 3, "max": 6 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I2.F1.T1",
+      "type": "task",
+      "name": "Create course progress data loader",
+      "action": { "verb": "Create", "target": "course progress data loader" },
+      "purpose": "Query course_progress and lesson_progress tables for dashboard widget data",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_lib/server/course-progress.loader.ts"],
+        "dependencies": ["getSupabaseServerClient from @kit/supabase/server-client", "cache from react"],
+        "constraints": ["Use server-only import", "Follow billing-page.loader pattern", "Return course progress and lesson progress data"]
+      },
+      "input_state": "course_progress and lesson_progress tables exist with RLS policies",
+      "output_state": "course-progress.loader.ts exports loadCourseProgressData function",
+      "acceptance_criterion": "Loader function queries course_progress and lesson_progress for user and returns data",
+      "verification_command": "grep -q 'loadCourseProgressData' apps/web/app/home/(user)/_lib/server/course-progress.loader.ts && grep -q 'server-only' apps/web/app/home/(user)/_lib/server/course-progress.loader.ts",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_lib/server/course-progress.loader.ts" }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I2.F1.T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T2",
+      "type": "task",
+      "name": "Create CourseProgressWidget with Card layout",
+      "action": { "verb": "Create", "target": "CourseProgressWidget component" },
+      "purpose": "Create widget component with Card, CardHeader, RadialProgress, and lesson list structure",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx", "apps/web/app/home/(user)/course/_components/RadialProgress.tsx"],
+        "dependencies": ["Card, CardHeader, CardTitle, CardContent from @kit/ui/card", "Badge from @kit/ui/badge", "RadialProgress from course/_components"],
+        "constraints": ["Use use client directive", "Accept progress data as props", "Display RadialProgress showing completion percentage", "Create lesson list UL structure"]
+      },
+      "input_state": "loadCourseProgressData loader exists from T1",
+      "output_state": "CourseProgressWidget component with Card layout and RadialProgress",
+      "acceptance_criterion": "CourseProgressWidget renders with Card, CardHeader, RadialProgress, and lesson list structure",
+      "verification_command": "grep -q 'CourseProgressWidget' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx && grep -q 'use client' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T1"],
+        "blocks": ["S1877.I2.F1.T3", "S1877.I2.F1.T5", "S1877.I2.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T3",
+      "type": "task",
+      "name": "Add lesson list rendering with status badges",
+      "action": { "verb": "Add", "target": "lesson list rendering with status badges" },
+      "purpose": "Display lessons with completion status indicators using Badge component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"],
+        "dependencies": ["Badge from @kit/ui/badge"],
+        "constraints": ["Map through lesson_progress array", "Show completed lessons with success badge", "Show in-progress lessons with warning badge", "Show not started lessons with default badge", "Display lesson title"]
+      },
+      "input_state": "CourseProgressWidget skeleton exists from T2",
+      "output_state": "CourseProgressWidget renders lesson list with status badges",
+      "acceptance_criterion": "Lesson list displays with completion status badges (success/warning/default)",
+      "verification_command": "grep -q 'Badge.*variant' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T2"],
+        "blocks": ["S1877.I2.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T4",
+      "type": "task",
+      "name": "Wire lesson links to course pages",
+      "action": { "verb": "Wire", "target": "lesson links to course pages" },
+      "purpose": "Add navigation to course pages when clicking on lessons",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "link_navigation",
+            "target": "lesson items",
+            "expected_action": "navigate to course page",
+            "file_path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"],
+        "dependencies": ["useRouter from next/navigation"],
+        "constraints": ["Wrap lesson items in Link component", "Navigate to course page on click", "Maintain lesson context"]
+      },
+      "input_state": "Lesson list with badges exists from T3",
+      "output_state": "Lesson items are clickable links to course pages",
+      "acceptance_criterion": "Clicking on lesson navigates to course page",
+      "verification_command": "grep -Pzo 'Link.*lesson' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T3"],
+        "blocks": ["S1877.I2.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T5",
+      "type": "task",
+      "name": "Add loading skeleton state",
+      "action": { "verb": "Add", "target": "loading skeleton state" },
+      "purpose": "Display Skeleton component while data is loading",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"],
+        "dependencies": ["Skeleton from @kit/ui/skeleton"],
+        "constraints": ["Show Skeleton when isLoading is true", "Hide widget content while loading", "Use Card layout for skeleton"]
+      },
+      "input_state": "CourseProgressWidget skeleton exists from T2",
+      "output_state": "CourseProgressWidget shows Skeleton while loading data",
+      "acceptance_criterion": "Skeleton component displays when isLoading prop is true",
+      "verification_command": "grep -q 'Skeleton' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T6",
+      "type": "task",
+      "name": "Add empty state for no course progress",
+      "action": { "verb": "Add", "target": "empty state for no course progress" },
+      "purpose": "Show empty state with CTA when user has no course progress data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"],
+        "dependencies": ["Trans from @kit/ui/trans"],
+        "constraints": ["Check if courseProgress is null", "Display empty state message", "Show CTA to start course", "Use Trans for i18n"]
+      },
+      "input_state": "CourseProgressWidget skeleton exists from T2",
+      "output_state": "CourseProgressWidget shows empty state when no course progress exists",
+      "acceptance_criterion": "Empty state displays with Start Course CTA when courseProgress is null",
+      "verification_command": "grep -qE 'Trans.*no.*progress|No Course Progress' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T2"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T7",
+      "type": "task",
+      "name": "Integrate CourseProgressWidget into dashboard page",
+      "action": { "verb": "Integrate", "target": "CourseProgressWidget into dashboard page" },
+      "purpose": "Replace first widget placeholder in dashboard grid with CourseProgressWidget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "main" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx"],
+        "dependencies": ["CourseProgressWidget", "loadCourseProgressData"],
+        "constraints": ["Replace first Card placeholder in grid", "Call loadCourseProgressData loader in page", "Pass progress data to widget", "Maintain responsive grid layout"]
+      },
+      "input_state": "CourseProgressWidget and loader exist from T1-T4",
+      "output_state": "Dashboard page renders CourseProgressWidget in first grid position",
+      "acceptance_criterion": "CourseProgressWidget displays in first position of dashboard grid with real data",
+      "verification_command": "grep -q 'CourseProgressWidget' apps/web/app/home/(user)/page.tsx && grep -q 'loadCourseProgressData' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        { "type": "modified", "path": "apps/web/app/home/(user)/page.tsx" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T1", "S1877.I2.F1.T4"],
+        "blocks": ["S1877.I2.F1.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T8",
+      "type": "task",
+      "name": "Run typecheck validation",
+      "action": { "verb": "Run", "target": "typecheck validation" },
+      "purpose": "Verify all TypeScript types are correct and no compilation errors exist",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": ["Run pnpm typecheck command", "All packages must pass type checking", "Database types must be imported correctly"]
+      },
+      "input_state": "All code changes from T1-T7 complete",
+      "output_state": "TypeScript compilation succeeds with no errors",
+      "acceptance_criterion": "pnpm typecheck exits with code 0 and no errors",
+      "verification_command": "pnpm typecheck 2>&1 | grep -q 'Found 0 errors'",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T7"],
+        "blocks": ["S1877.I2.F1.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I2.F1.T9",
+      "type": "task",
+      "name": "Validate CourseProgressWidget rendering",
+      "action": { "verb": "Validate", "target": "CourseProgressWidget rendering" },
+      "purpose": "Verify widget renders correctly with RadialProgress, lesson list, and all states",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 4,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          { "command": "is visible", "target": "Course Progress" },
+          { "command": "find role", "target": "grid" },
+          { "command": "find role", "target": "list" }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx", "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx"],
+        "dependencies": ["agent-browser for visual validation"],
+        "constraints": ["Verify RadialProgress displays with percentage", "Check lesson list renders with status badges", "Test loading skeleton appears", "Verify empty state for no progress", "Confirm responsive layout"]
+      },
+      "input_state": "Typecheck passes from T8",
+      "output_state": "CourseProgressWidget renders correctly in dashboard with all states",
+      "acceptance_criterion": "Widget displays with RadialProgress, lesson list, loading state, and empty state",
+      "verification_command": "grep -q 'CourseProgressWidget' apps/web/app/home/(user)/page.tsx && grep -q 'RadialProgress' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx && grep -q 'Badge' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1877.I2.F1.T8"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Core Component",
+        "task_ids": ["S1877.I2.F1.T1", "S1877.I2.F1.T2"],
+        "depends_on_groups": [],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Widget Features",
+        "task_ids": ["S1877.I2.F1.T3", "S1877.I2.F1.T4", "S1877.I2.F1.T5", "S1877.I2.F1.T6"],
+        "depends_on_groups": [1],
+        "estimated_hours": 8,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1877.I2.F1.T7", "S1877.I2.F1.T8"],
+        "depends_on_groups": [2],
+        "estimated_hours": 3,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Validation",
+        "task_ids": ["S1877.I2.F1.T9"],
+        "depends_on_groups": [3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1877.I2.F1.T1", "S1877.I2.F1.T2", "S1877.I2.F1.T3", "S1877.I2.F1.T4", "S1877.I2.F1.T7", "S1877.I2.F1.T8", "S1877.I2.F1.T9"],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 19,
+      "parallel": 10,
+      "time_saved_percent": 47
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

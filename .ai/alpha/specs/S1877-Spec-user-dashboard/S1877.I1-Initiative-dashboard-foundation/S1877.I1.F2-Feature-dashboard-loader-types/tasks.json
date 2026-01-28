@@ -1,0 +1,524 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I1.F2",
+    "feature_name": "Dashboard Data Loader & Types",
+    "feature_slug": "dashboard-loader-types",
+    "initiative_id": "S1877.I1",
+    "spec_id": 1877,
+    "created_at": "2026-01-28T12:00:00Z",
+    "complexity": {
+      "score": 56,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I1.F2.T1",
+      "type": "task",
+      "name": "Create dashboard data types",
+      "action": {
+        "verb": "Create",
+        "target": "dashboard data TypeScript types"
+      },
+      "purpose": "Define type definitions for all dashboard data structures",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/database.types.ts",
+          "apps/web/supabase/migrations/20250319104726_web_course_system.sql",
+          "apps/web/supabase/migrations/20250319104724_web_survey_system.sql",
+          "apps/web/supabase/migrations/20250221144500_web_create_kanban_tables.sql",
+          "apps/web/supabase/migrations/20250211000000_web_create_building_blocks_submissions.sql",
+          "apps/web/supabase/migrations/20250416140521_web_ai_usage_cost_tracking.sql"
+        ],
+        "dependencies": [
+          "Database types from database.types.ts",
+          "RLS-protected queries via Supabase client"
+        ],
+        "constraints": [
+          "Use existing database types for inference",
+          "No new database schema changes needed"
+        ]
+      },
+      "input_state": "No dashboard types defined",
+      "output_state": "Type definitions file created with CourseProgressData, AssessmentData, TasksData, ActivityData, PresentationsData, DashboardPageData interfaces",
+      "acceptance_criterion": "Type definitions exist and compile without errors",
+      "verification_command": "pnpm typecheck && grep -q 'export type CourseProgressData' apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I1.F2.T2", "S1877.I1.F2.T3", "S1877.I1.F2.T4", "S1877.I1.F2.T5", "S1877.I1.F2.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T2",
+      "type": "task",
+      "name": "Create course progress loader",
+      "action": {
+        "verb": "Create",
+        "target": "course progress loader function"
+      },
+      "purpose": "Load course and lesson progress data for dashboard",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "CourseProgressData type from T1",
+          "Supabase client via @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Use direct .from() queries (no RPC needed)",
+          "RLS automatically restricts to user's own data"
+        ]
+      },
+      "input_state": "CourseProgressData type defined",
+      "output_state": "Loader function queries course_progress and lesson_progress tables",
+      "acceptance_criterion": "Loader function exists and returns typed course progress data",
+      "verification_command": "pnpm typecheck && grep -q 'loadCourseProgress' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T1"],
+        "blocks": ["S1877.I1.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T3",
+      "type": "task",
+      "name": "Create assessment data loader",
+      "action": {
+        "verb": "Create",
+        "target": "assessment data loader function"
+      },
+      "purpose": "Load survey responses with category scores for spider chart",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "AssessmentData type from T1",
+          "Supabase client via @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Query survey_responses table for category_scores JSONB",
+          "Return null if no assessment completed"
+        ]
+      },
+      "input_state": "AssessmentData type defined",
+      "output_state": "Loader function queries survey_responses table",
+      "acceptance_criterion": "Loader function exists and returns typed assessment data with category scores",
+      "verification_command": "pnpm typecheck && grep -q 'loadAssessmentData' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T1"],
+        "blocks": ["S1877.I1.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T4",
+      "type": "task",
+      "name": "Create tasks loader",
+      "action": {
+        "verb": "Create",
+        "target": "tasks loader function"
+      },
+      "purpose": "Load kanban tasks for dashboard summary widget",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "TasksData type from T1",
+          "Supabase client via @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Query tasks and subtasks tables",
+          "Filter by status to separate 'doing' tasks",
+          "Include subtasks for task completion status"
+        ]
+      },
+      "input_state": "TasksData type defined",
+      "output_state": "Loader function queries tasks and subtasks tables",
+      "acceptance_criterion": "Loader function exists and returns typed tasks data",
+      "verification_command": "pnpm typecheck && grep -q 'loadTasks' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T1"],
+        "blocks": ["S1877.I1.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T5",
+      "type": "task",
+      "name": "Create activity loader",
+      "action": {
+        "verb": "Create",
+        "target": "activity loader function"
+      },
+      "purpose": "Load recent AI request logs for activity feed",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "ActivityData type from T1",
+          "Supabase client via @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Query ai_request_logs table",
+          "Filter by last 30 days",
+          "Order by request_timestamp DESC",
+          "Limit to 20 entries for initial load"
+        ]
+      },
+      "input_state": "ActivityData type defined",
+      "output_state": "Loader function queries ai_request_logs table",
+      "acceptance_criterion": "Loader function exists and returns typed activity data",
+      "verification_command": "pnpm typecheck && grep -q 'loadActivity' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T1"],
+        "blocks": ["S1877.I1.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T6",
+      "type": "task",
+      "name": "Create presentations loader",
+      "action": {
+        "verb": "Create",
+        "target": "presentations loader function"
+      },
+      "purpose": "Load building blocks submissions for presentation table",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/dashboard-data.types.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "PresentationsData type from T1",
+          "Supabase client via @kit/supabase/server-client"
+        ],
+        "constraints": [
+          "Query building_blocks_submissions table",
+          "Include title, presentation_type, created_at, updated_at, storyboard fields",
+          "Order by updated_at DESC"
+        ]
+      },
+      "input_state": "PresentationsData type defined",
+      "output_state": "Loader function queries building_blocks_submissions table",
+      "acceptance_criterion": "Loader function exists and returns typed presentations data",
+      "verification_command": "pnpm typecheck && grep -q 'loadPresentations' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T1"],
+        "blocks": ["S1877.I1.F2.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T7",
+      "type": "task",
+      "name": "Combine loaders with Promise.all",
+      "action": {
+        "verb": "Combine",
+        "target": "loaders in main function with Promise.all"
+      },
+      "purpose": "Create main loader function with parallel data fetching",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts"
+        ],
+        "dependencies": [
+          "All individual loader functions from T2-T6",
+          "Pattern from members-page.loader.ts for Promise.all structure"
+        ],
+        "constraints": [
+          "Add 'server-only' import",
+          "Use getSupabaseServerClient()",
+          "Group all independent queries in Promise.all()",
+          "Export DashboardPageData type via Awaited<ReturnType<>>"
+        ]
+      },
+      "input_state": "Individual loader functions exist",
+      "output_state": "Main loader function with Promise.all() parallel fetching",
+      "acceptance_criterion": "loadDashboardPageData function exists with Promise.all() and returns typed data",
+      "verification_command": "pnpm typecheck && grep -q 'Promise.all' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts && grep -q 'loadDashboardPageData' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T2", "S1877.I1.F2.T3", "S1877.I1.F2.T4", "S1877.I1.F2.T5", "S1877.I1.F2.T6"],
+        "blocks": ["S1877.I1.F2.T8"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I1.F2.T8",
+      "type": "task",
+      "name": "Add error handling and logging",
+      "action": {
+        "verb": "Add",
+        "target": "error handling and structured logging"
+      },
+      "purpose": "Add comprehensive error handling for all loader functions",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+          "apps/web/app/home/[account]/members/_lib/server/members-page.loader.ts"
+        ],
+        "dependencies": [
+          "@kit/shared/logger for createServiceLogger",
+          "Pattern from members-page.loader.ts for error handling"
+        ],
+        "constraints": [
+          "Use createServiceLogger('DASHBOARD-PAGE-LOADER')",
+          "Log errors with operation name and context",
+          "Return empty arrays or null values on error (graceful degradation)",
+          "Throw errors only for critical failures"
+        ]
+      },
+      "input_state": "Loader functions exist without error handling",
+      "output_state": "All loader functions have structured error handling",
+      "acceptance_criterion": "Error handling exists for all loader functions with structured logging",
+      "verification_command": "pnpm typecheck && grep -q 'logger.error' apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I1.F2.T7"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": [
+          "S1877.I1.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 1,
+        "name": "Data Loaders",
+        "task_ids": [
+          "S1877.I1.F2.T2",
+          "S1877.I1.F2.T3",
+          "S1877.I1.F2.T4",
+          "S1877.I1.F2.T5",
+          "S1877.I1.F2.T6"
+        ],
+        "depends_on_groups": [0],
+        "estimated_hours": 10,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Integration",
+        "task_ids": ["S1877.I1.F2.T7"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Error Handling",
+        "task_ids": ["S1877.I1.F2.T8"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1877.I1.F2.T1",
+        "S1877.I1.F2.T2",
+        "S1877.I1.F2.T7",
+        "S1877.I1.F2.T8"
+      ],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 16,
+      "parallel": 8,
+      "time_saved_percent": 50
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 95,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 95,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

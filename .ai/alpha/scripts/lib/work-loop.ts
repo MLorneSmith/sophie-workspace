@@ -198,9 +198,25 @@ export class WorkLoop {
 
 	/**
 	 * Restart a sandbox that failed health checks.
+	 *
+	 * Bug fix #1858: Also resets any in-progress features on the failing sandbox
+	 * to pending for reassignment to another sandbox.
 	 */
 	private async restartFailedSandbox(instance: SandboxInstance): Promise<void> {
 		this.log(`   🔄 Attempting to restart failed sandbox ${instance.label}...`);
+
+		// Bug fix #1858: Reset any in-progress features on this sandbox to pending
+		// This ensures features can be retried on another sandbox after sandbox death
+		const featureOnSandbox = this.manifest.feature_queue.find(
+			(f) =>
+				f.assigned_sandbox === instance.label && f.status === "in_progress",
+		);
+		if (featureOnSandbox) {
+			this.resetFeatureForRetryOnSandboxDeath(
+				featureOnSandbox,
+				`Sandbox ${instance.label} died - retrying on another sandbox`,
+			);
+		}
 
 		try {
 			// Kill the old sandbox before creating new one
@@ -601,18 +617,21 @@ export class WorkLoop {
 				this.uiEnabled,
 			);
 		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
 			this.log(
-				`│   ❌ Feature #${feature.id} implementation error: ${error instanceof Error ? error.message : String(error)}`,
+				`│   ❌ Feature #${feature.id} implementation error: ${errorMessage}`,
 			);
 			// Mark sandbox as ready for next feature
 			instance.status = "ready";
 			instance.currentFeature = null;
-			// Mark feature as failed so it can be retried
-			feature.status = "failed";
-			feature.error = error instanceof Error ? error.message : String(error);
-			feature.assigned_sandbox = undefined;
-			feature.assigned_at = undefined;
-			saveManifest(this.manifest);
+
+			// Bug fix #1858: Reset feature for retry instead of marking as failed
+			// Only mark as failed if max retries are exceeded
+			this.resetFeatureForRetryOnSandboxDeath(
+				feature,
+				`Implementation error: ${errorMessage}`,
+			);
 		} finally {
 			this.activeWork.delete(instance.label);
 			// Remove from promise tracker (Bug fix #1841)
@@ -974,6 +993,48 @@ export class WorkLoop {
 		feature.assigned_sandbox = undefined;
 		feature.assigned_at = undefined;
 		feature.error = errorMessage;
+		saveManifest(this.manifest);
+	}
+
+	/**
+	 * Reset a feature for retry when its sandbox dies.
+	 *
+	 * Bug fix #1858: When a sandbox dies, reset the feature to pending for
+	 * reassignment rather than marking it as failed. Only mark as failed
+	 * if max retries are exceeded.
+	 *
+	 * @param feature - The feature to reset
+	 * @param errorMessage - Description of why the feature is being reset
+	 */
+	private resetFeatureForRetryOnSandboxDeath(
+		feature: FeatureEntry,
+		errorMessage: string,
+	): void {
+		const currentRetryCount = feature.retry_count ?? 0;
+
+		if (shouldRetryFailedFeature(feature, DEFAULT_MAX_RETRIES)) {
+			// Increment retry count and reset to pending for reassignment
+			feature.retry_count = currentRetryCount + 1;
+			feature.status = "pending";
+			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
+			feature.error = `${errorMessage} (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`;
+
+			this.log(
+				`   🔄 Feature #${feature.id} reset to pending for retry (attempt ${feature.retry_count}/${DEFAULT_MAX_RETRIES})`,
+			);
+		} else {
+			// Max retries exceeded - mark as permanently failed
+			feature.status = "failed";
+			feature.assigned_sandbox = undefined;
+			feature.assigned_at = undefined;
+			feature.error = `${errorMessage} - max retries (${DEFAULT_MAX_RETRIES}) exceeded`;
+
+			this.log(
+				`   ❌ Feature #${feature.id} marked as FAILED (max retries exceeded)`,
+			);
+		}
+
 		saveManifest(this.manifest);
 	}
 

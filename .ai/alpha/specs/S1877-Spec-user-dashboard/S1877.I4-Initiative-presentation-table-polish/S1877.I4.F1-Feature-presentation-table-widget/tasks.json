@@ -1,0 +1,451 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I4.F1",
+    "feature_name": "Presentation Table Widget",
+    "feature_slug": "presentation-table-widget",
+    "initiative_id": "S1877.I4",
+    "spec_id": "S1877",
+    "created_at": "2026-01-28T00:00:00.000Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "HIGH",
+      "target_steps": { "min": 12, "max": 20 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I4.F1.T1",
+      "type": "task",
+      "name": "Create presentation data fetcher function",
+      "action": { "verb": "Create", "target": "presentation data fetcher function" },
+      "purpose": "Add server-side function to fetch user presentations from building_blocks_submissions table with RLS protection",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts",
+          "apps/web/lib/database.types.ts"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient from @kit/supabase/server-client",
+          "Database['public']['Tables']['buildings_blocks_submissions']['Row'] type",
+          "cache from react for per-request caching"
+        ],
+        "constraints": [
+          "Use RLS-protected Supabase client",
+          "Order by updated_at desc to show most recent first",
+          "Limit to 50 records maximum for initial load",
+          "Select only columns needed: id, title, presentation_type, updated_at"
+        ]
+      },
+      "input_state": "No presentation data fetcher exists for dashboard",
+      "output_state": "loadUserPresentations function exists and exports typed PresentationRow array",
+      "acceptance_criterion": "Function exists in _lib/server/ and returns array of presentation rows with correct typing",
+      "verification_command": "grep -q 'export.*loadUserPresentations' apps/web/app/home/(user)/_lib/server/*.ts && grep -q 'buildings_blocks_submissions' apps/web/app/home/(user)/_lib/server/*.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/load-presentations.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I4.F1.T3", "S1877.I4.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T2",
+      "type": "task",
+      "name": "Create presentation table widget component",
+      "action": { "verb": "Create", "target": "presentation table widget component" },
+      "purpose": "Build client component using DataTable to display presentations with columns for title, type, updated date, and actions",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/data-table.tsx",
+          "packages/ui/src/shadcn/table.tsx"
+        ],
+        "dependencies": [
+          "DataTable from @kit/ui/makerkit",
+          "Table, TableBody, TableCell, TableHead, TableHeader, TableRow from @kit/ui/shadcn",
+          "ColumnDef type from @tanstack/react-table",
+          "formatDate utility for date formatting"
+        ],
+        "constraints": [
+          "Use 'use client' directive for client-side interactivity",
+          "Define column definitions for title, presentation_type, updated_at, actions",
+          "Enable sorting on all columns except actions",
+          "Set default sorting by updated_at desc",
+          "Use pageSize of 15 with manualPagination enabled",
+          "Import PresentationRow type from load-presentations.ts"
+        ]
+      },
+      "input_state": "No presentation table widget exists",
+      "output_state": "PresentationTableWidget component exists with column definitions and DataTable integration",
+      "acceptance_criterion": "Component exists with DataTable configured and column definitions for title, type, updated_at, actions",
+      "verification_command": "grep -q 'export.*PresentationTableWidget' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && grep -q 'DataTable' apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1.T1"],
+        "blocks": ["S1877.I4.F1.T3", "S1877.I4.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T3",
+      "type": "task",
+      "name": "Create table skeleton loading component",
+      "action": { "verb": "Create", "target": "table skeleton loading component" },
+      "purpose": "Build skeleton rows component to show loading state while presentations are fetching",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/ui/src/shadcn/skeleton.tsx"],
+        "dependencies": [
+          "Skeleton from @kit/ui/shadcn",
+          "Table components from @kit/ui/shadcn"
+        ],
+        "constraints": [
+          "Render 5-10 skeleton rows matching table structure",
+          "Use Skeleton component with matching height/width to actual table cells",
+          "Show skeleton when isLoading prop is true"
+        ]
+      },
+      "input_state": "No loading skeleton exists for presentation table",
+      "output_state": "TableSkeleton component exists with configurable row count and skeleton cells matching table columns",
+      "acceptance_criterion": "Component exists and renders skeleton rows matching table structure",
+      "verification_command": "grep -q 'export.*TableSkeleton\\|export.*table-skeleton-rows' apps/web/app/home/(user)/_components/*.tsx && grep -q 'Skeleton' apps/web/app/home/(user)/_components/table-skeleton-rows.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/table-skeleton-rows.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1877.I4.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T4",
+      "type": "task",
+      "name": "Add empty state for presentation table",
+      "action": { "verb": "Add", "target": "empty state for presentation table" },
+      "purpose": "Configure EmptyState component to display when user has no presentations with CTA to create first",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["packages/ui/src/makerkit/empty-state.tsx"],
+        "dependencies": [
+          "EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton from @kit/ui/makerkit",
+          "Trans from @kit/ui/trans",
+          "Button from @kit/ui/shadcn",
+          "useRouter from next/navigation"
+        ],
+        "constraints": [
+          "Show EmptyState when presentations array is empty",
+          "Display heading: 'No Presentations Yet'",
+          "Display text: 'Create your first presentation outline to get started'",
+          "CTA button: 'Create First Presentation' linking to /home/(user)/ai/blocks",
+          "Use Trans component for internationalization"
+        ]
+      },
+      "input_state": "No empty state configuration in presentation table widget",
+      "output_state": "EmptyState configured in PresentationTableWidget with heading, text, and CTA button",
+      "acceptance_criterion": "EmptyState renders when presentations array is empty with correct heading, text, and CTA button",
+      "verification_command": "grep -q 'EmptyState' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && grep -q 'Create First Presentation\\|No Presentations Yet' apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1.T2"],
+        "blocks": ["S1877.I4.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T5",
+      "type": "task",
+      "name": "Render Edit Outline button in table actions column",
+      "action": { "verb": "Render", "target": "Edit Outline button in table actions column" },
+      "purpose": "Add visual button element to actions column that will navigate to storyboard page",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/presentation-table-widget.tsx"],
+        "dependencies": [
+          "Button from @kit/ui/shadcn",
+          "Lucide Edit icon from lucide-react"
+        ],
+        "constraints": [
+          "Render button in actions column cell",
+          "Display 'Edit Outline' text with Edit icon",
+          "Use variant='outline' or variant='ghost' for subtle appearance",
+          "Pass submission_id as data attribute for wiring",
+          "Do NOT add onClick handler yet (handled in T6)"
+        ]
+      },
+      "input_state": "Actions column exists without button element",
+      "output_state": "Actions column displays Edit Outline button with icon",
+      "acceptance_criterion": "Button element exists in actions column with text 'Edit Outline' and Edit icon",
+      "verification_command": "grep -Pzo 'Edit Outline[^<]*Button[^>]*>' apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1.T2", "S1877.I4.F1.T3", "S1877.I4.F1.T4"],
+        "blocks": ["S1877.I4.F1.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T6",
+      "type": "task",
+      "name": "Wire Edit Outline button to storyboard navigation",
+      "action": { "verb": "Wire", "target": "Edit Outline button to storyboard navigation" },
+      "purpose": "Add onClick handler to Edit Outline button that navigates to storyboard page with submission_id query parameter",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/_components/presentation-table-widget.tsx"],
+        "dependencies": [
+          "useRouter from next/navigation",
+          "Button from @kit/ui/shadcn"
+        ],
+        "constraints": [
+          "Add onClick handler to Edit Outline button",
+          "Navigate to /home/(user)/ai/storyboard route",
+          "Include submission_id as query parameter: ?id={submission.id}",
+          "Handle navigation client-side with router.push()"
+        ]
+      },
+      "input_state": "Edit Outline button rendered without navigation handler",
+      "output_state": "Edit Outline button navigates to storyboard page with correct submission_id",
+      "acceptance_criterion": "Clicking Edit Outline button navigates to /home/(user)/ai/storyboard?id=<submission_id>",
+      "verification_command": "grep -Pzo 'Edit Outline[^<]*Button[^>]*onClick=\\{[^}]+\\}' apps/web/app/home/(user)/_components/presentation-table-widget.tsx && grep -q 'router.push.*storyboard' apps/web/app/home/(user)/_components/presentation-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentation-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1.T5"],
+        "blocks": ["S1877.I4.F1.T7"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F1.T7",
+      "type": "task",
+      "name": "Integrate presentation table widget into dashboard page",
+      "action": { "verb": "Integrate", "target": "presentation table widget into dashboard page" },
+      "purpose": "Add PresentationTableWidget to user dashboard page in bottom row of grid layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/(user)/page.tsx"],
+        "dependencies": [
+          "PresentationTableWidget from ./_components/presentation-table-widget",
+          "loadUserPresentations from ./_lib/server/load-presentations",
+          "Suspense from react",
+          "TableSkeleton from ./_components/table-skeleton-rows"
+        ],
+        "constraints": [
+          "Import PresentationTableWidget component",
+          "Fetch presentations in server component using loadUserPresentations",
+          "Pass presentations array to PresentationTableWidget",
+          "Wrap widget in Suspense with TableSkeleton as fallback",
+          "Place widget in bottom row of dashboard grid (full-width col-span)",
+          "Handle data fetching error gracefully"
+        ]
+      },
+      "input_state": "Dashboard page exists without presentation table widget",
+      "output_state": "PresentationTableWidget integrated into dashboard page with data fetching and error handling",
+      "acceptance_criterion": "Dashboard page renders PresentationTableWidget with presentation data and skeleton loading state",
+      "verification_command": "grep -q 'PresentationTableWidget' apps/web/app/home/(user)/page.tsx && grep -q 'loadUserPresentations' apps/web/app/home/(user)/page.tsx && grep -q 'Suspense' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1877.I4.F1.T6"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1877.I4.F1.T1", "S1877.I4.F1.T3"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 1,
+        "name": "Widget Component",
+        "task_ids": ["S1877.I4.F1.T2"],
+        "depends_on_groups": [0],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 2,
+        "name": "Empty State",
+        "task_ids": ["S1877.I4.F1.T4"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 3,
+        "name": "Render Button",
+        "task_ids": ["S1877.I4.F1.T5"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Wire Button",
+        "task_ids": ["S1877.I4.F1.T6"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Dashboard Integration",
+        "task_ids": ["S1877.I4.F1.T7"],
+        "depends_on_groups": [0, 1, 2, 3, 4],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1877.I4.F1.T1", "S1877.I4.F1.T2", "S1877.I4.F1.T4", "S1877.I4.F1.T5", "S1877.I4.F1.T6", "S1877.I4.F1.T7"],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 15,
+      "time_saved_percent": 11.8
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

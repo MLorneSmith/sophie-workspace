@@ -6,7 +6,7 @@
  */
 
 import process from "node:process";
-import { Sandbox } from "@e2b/code-interpreter";
+import { Sandbox, type SandboxInfo } from "@e2b/code-interpreter";
 
 import {
 	DEV_SERVER_PORT,
@@ -88,6 +88,52 @@ async function withTimeout<T>(
 	} catch (error) {
 		clearTimeout(timeoutId);
 		throw error;
+	}
+}
+
+// ============================================================================
+// E2B Sandbox Verification (Bug fix #1858)
+// ============================================================================
+
+/**
+ * Get list of active sandbox IDs from E2B.
+ *
+ * Bug fix #1858: This function queries the E2B API to get all currently
+ * running sandboxes. Used to validate stored sandbox IDs before reconnection.
+ *
+ * @param uiEnabled - Whether UI mode is enabled
+ * @returns Set of active sandbox IDs, or null if API call fails
+ */
+export async function getActiveSandboxIds(
+	uiEnabled: boolean = false,
+): Promise<Set<string> | null> {
+	const { log } = createLogger(uiEnabled);
+
+	try {
+		// E2B SDK returns a paginator - iterate through all pages to get complete list
+		const paginator = Sandbox.list({ apiKey: E2B_API_KEY });
+		const allSandboxes: SandboxInfo[] = [];
+
+		// Fetch first page
+		if (paginator.hasNext) {
+			const items = await paginator.nextItems();
+			allSandboxes.push(...items);
+		}
+
+		// Fetch remaining pages if any
+		while (paginator.hasNext) {
+			const items = await paginator.nextItems();
+			allSandboxes.push(...items);
+		}
+
+		const activeIds = new Set(allSandboxes.map((s) => s.sandboxId));
+		log(`   Found ${activeIds.size} active sandboxes in E2B`);
+		return activeIds;
+	} catch (error) {
+		log(
+			`   ⚠️ Failed to list E2B sandboxes: ${error instanceof Error ? error.message : error}`,
+		);
+		return null;
 	}
 }
 
@@ -211,8 +257,9 @@ async function isSandboxAliveWithTimeout(
  *
  * This function validates stored sandbox IDs and attempts to reconnect:
  * 1. Checks if sandbox.created_at is too old (>55 minutes)
- * 2. Attempts to connect to each stored ID with timeout and liveness check
- * 3. Returns successfully connected sandboxes
+ * 2. Bug fix #1858: Verifies sandbox IDs exist in E2B before attempting connection
+ * 3. Attempts to connect to each verified ID with timeout and liveness check
+ * 4. Returns successfully connected sandboxes
  *
  * Use this when restarting the orchestrator to resume with existing sandboxes.
  *
@@ -252,9 +299,48 @@ export async function reconnectToStoredSandboxes(
 		`   Attempting to reconnect to ${sandbox_ids.length} stored sandbox(es)...`,
 	);
 
-	// Attempt to reconnect to each sandbox
-	for (let i = 0; i < sandbox_ids.length; i++) {
-		const sandboxId = sandbox_ids[i];
+	// Bug fix #1858: Verify sandbox IDs exist in E2B before attempting connection
+	// This prevents wasting time trying to connect to dead sandboxes and ensures
+	// we correctly identify which sandboxes have died and need their features reset
+	const activeSandboxIds = await getActiveSandboxIds(uiEnabled);
+	const verifiedIds: string[] = [];
+	const staleSandboxIds: string[] = [];
+
+	if (activeSandboxIds !== null) {
+		for (const id of sandbox_ids) {
+			if (id && activeSandboxIds.has(id)) {
+				verifiedIds.push(id);
+			} else if (id) {
+				staleSandboxIds.push(id);
+				log(`   ⚠️ Sandbox ${id} not found in E2B (sandbox died or expired)`);
+			}
+		}
+
+		if (staleSandboxIds.length > 0) {
+			log(
+				`   Detected ${staleSandboxIds.length} dead sandbox(es) - will skip reconnection attempt`,
+			);
+		}
+	} else {
+		// If E2B API call failed, fall back to attempting all stored IDs
+		// This preserves backward compatibility
+		log(
+			"   ⚠️ Could not verify sandbox IDs with E2B, attempting all stored IDs",
+		);
+		verifiedIds.push(...sandbox_ids.filter((id): id is string => !!id));
+	}
+
+	// If no verified IDs remain, clear manifest and return
+	if (verifiedIds.length === 0) {
+		log("   No verified sandboxes to reconnect - will create fresh sandboxes");
+		manifest.sandbox.sandbox_ids = [];
+		manifest.sandbox.created_at = null;
+		return [];
+	}
+
+	// Attempt to reconnect to each verified sandbox
+	for (let i = 0; i < verifiedIds.length; i++) {
+		const sandboxId = verifiedIds[i];
 		if (!sandboxId) continue;
 
 		const label = `sbx-${String.fromCharCode(97 + i)}`;

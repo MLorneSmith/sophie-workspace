@@ -1,0 +1,478 @@
+{
+  "$schema": "../../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I5.F3",
+    "feature_name": "Accessibility Compliance",
+    "feature_slug": "accessibility-compliance",
+    "initiative_id": "S1864.I5",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:30:00Z",
+    "complexity": {
+      "score": 35,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "signals": {
+        "files_affected": 8,
+        "dependencies": "few",
+        "estimated_loc": 150,
+        "feature_type": "enhancement"
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": false,
+    "ui_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I5.F3.T1",
+      "type": "task",
+      "name": "Add aria-labelledby to Course Progress Widget",
+      "action": {
+        "verb": "Add",
+        "target": "aria-labelledby to course progress card"
+      },
+      "purpose": "Enable screen readers to identify Course Progress Widget by associating card with title",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "CardHeader, CardTitle, CardContent"
+        ],
+        "constraints": [
+          "Must use aria-labelledby pattern linking Card to CardTitle id",
+          "Follow pattern: <Card aria-labelledby='course-progress-title'>",
+          "Add sr-only description for radial chart data"
+        ]
+      },
+      "input_state": "Course Progress Widget exists without ARIA labels",
+      "output_state": "Course Progress Widget has aria-labelledby and chart has sr-only description",
+      "acceptance_criterion": "Card has aria-labelledby pointing to title id, radial chart has aria-describedby with sr-only text",
+      "verification_command": "grep -E 'aria-labelledby=\"course-progress-title\"|role=\"img\".*aria-describedby' apps/web/app/home/(user)/_components/course-progress-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/course-progress-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T2",
+      "type": "task",
+      "name": "Add aria-labelledby and chart description to Assessment Spider Widget",
+      "action": {
+        "verb": "Add",
+        "target": "aria-labelledby and sr-only radar chart description"
+      },
+      "purpose": "Enable screen readers to identify Assessment Widget and understand spider chart data",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/assessment-spider-widget.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "RadarChart from recharts"
+        ],
+        "constraints": [
+          "Must use aria-labelledby pattern",
+          "Wrap RadarChart in div with role='img' aria-describedby",
+          "Add sr-only paragraph with category scores"
+        ]
+      },
+      "input_state": "Assessment Spider Widget exists without ARIA labels or chart description",
+      "output_state": "Assessment Spider Widget has aria-labelledby and radar chart has sr-only description of scores",
+      "acceptance_criterion": "Card has aria-labelledby, RadarChart wrapper has role='img' and aria-describedby with sr-only text",
+      "verification_command": "grep -E 'aria-labelledby=\"assessment-spider-title\"|role=\"img\".*aria-describedby' apps/web/app/home/(user)/_components/assessment-spider-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/assessment-spider-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T3",
+      "type": "task",
+      "name": "Add aria-labelledby to Kanban Summary Widget",
+      "action": {
+        "verb": "Add",
+        "target": "aria-labelledby to kanban summary card"
+      },
+      "purpose": "Enable screen readers to identify Kanban Summary Widget",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card"
+        ],
+        "constraints": [
+          "Must use aria-labelledby pattern",
+          "Link Card to CardTitle id"
+        ]
+      },
+      "input_state": "Kanban Summary Widget exists without ARIA labels",
+      "output_state": "Kanban Summary Widget has aria-labelledby linking to title",
+      "acceptance_criterion": "Card has aria-labelledby='kanban-summary-title'",
+      "verification_command": "grep 'aria-labelledby=\"kanban-summary-title\"' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T4",
+      "type": "task",
+      "name": "Add aria-live region to Activity Feed Widget",
+      "action": {
+        "verb": "Add",
+        "target": "aria-live='polite' to activity feed container"
+      },
+      "purpose": "Announce new activity items to screen readers when feed updates",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "CardContent for dynamic content area"
+        ],
+        "constraints": [
+          "Must add aria-labelledby to Card",
+          "Must add aria-live='polite' to CardContent",
+          "Must add aria-busy={isLoading} for loading states"
+        ]
+      },
+      "input_state": "Activity Feed Widget exists without aria-live or aria-labelledby",
+      "output_state": "Activity Feed Widget has aria-labelledby and CardContent has aria-live='polite' aria-busy={isLoading}",
+      "acceptance_criterion": "Card has aria-labelledby, CardContent has aria-live='polite' and aria-busy attribute",
+      "verification_command": "grep -E 'aria-labelledby=\"activity-feed-title\"|aria-live=\"polite\"|aria-busy=' apps/web/app/home/(user)/_components/activity-feed-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/activity-feed-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T5",
+      "type": "task",
+      "name": "Add aria-labelledby to Quick Actions Panel",
+      "action": {
+        "verb": "Add",
+        "target": "aria-labelledby to quick actions card"
+      },
+      "purpose": "Enable screen readers to identify Quick Actions Panel",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "Button components already accessible via Radix UI"
+        ],
+        "constraints": [
+          "Must use aria-labelledby pattern",
+          "Buttons already have Radix UI accessibility"
+        ]
+      },
+      "input_state": "Quick Actions Panel exists without ARIA labels",
+      "output_state": "Quick Actions Panel has aria-labelledby linking to title",
+      "acceptance_criterion": "Card has aria-labelledby='quick-actions-title'",
+      "verification_command": "grep 'aria-labelledby=\"quick-actions-title\"' apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T6",
+      "type": "task",
+      "name": "Add aria-labelledby to Coaching and Presentation Widgets",
+      "action": {
+        "verb": "Add",
+        "target": "aria-labelledby to remaining widgets"
+      },
+      "purpose": "Complete ARIA labeling for all 7 dashboard widgets",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 6,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        ],
+        "dependencies": [
+          "Card component from @kit/ui/card",
+          "DataTable already has TanStack Table accessibility"
+        ],
+        "constraints": [
+          "Must add aria-labelledby to both widgets",
+          "Presentations table uses DataTable which is already accessible",
+          "Verify table has proper scope attributes if custom headers used"
+        ]
+      },
+      "input_state": "Coaching Sessions and Presentations Table Widgets exist without ARIA labels",
+      "output_state": "Both widgets have aria-labelledby linking to their titles",
+      "acceptance_criterion": "Both Cards have aria-labelledby attributes pointing to respective title ids",
+      "verification_command": "grep -E 'aria-labelledby=\"(coaching-sessions-title|presentations-table-title)\"' apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx apps/web/app/home/(user)/_components/presentations-table-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        },
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/presentations-table-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I5.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I5.F3.T7",
+      "type": "task",
+      "name": "Add HybridAccessibilityTester E2E test for dashboard",
+      "action": {
+        "verb": "Create",
+        "target": "E2E accessibility test for user dashboard"
+      },
+      "purpose": "Validate WCAG 2.1 AA compliance with 0 critical/serious violations",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 7,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/e2e/tests/accessibility/hybrid-a11y.ts",
+          "apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts"
+        ],
+        "dependencies": [
+          "HybridAccessibilityTester class",
+          "AuthPageObject for user authentication"
+        ],
+        "constraints": [
+          "Must navigate to /home dashboard after auth",
+          "Must run HybridAccessibilityTester.runFullAudit with skipLighthouse=true skipContrast=true for CI",
+          "Must assert 0 critical/serious violations",
+          "Must verify keyboard navigation (Tab order through widgets)",
+          "Must verify all 7 widgets have aria-labelledby"
+        ]
+      },
+      "input_state": "No accessibility test exists for user dashboard",
+      "output_state": "E2E test validates dashboard accessibility with HybridAccessibilityTester",
+      "acceptance_criterion": "Test passes with 0 critical/serious violations and verifies all widget ARIA labels",
+      "verification_command": "pnpm --filter web-e2e test:shard5 -- dashboard-accessibility",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/e2e/tests/accessibility/accessibility-hybrid.spec.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I5.F3.T1",
+          "S1864.I5.F3.T2",
+          "S1864.I5.F3.T3",
+          "S1864.I5.F3.T4",
+          "S1864.I5.F3.T5",
+          "S1864.I5.F3.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Widget ARIA Enhancement",
+        "task_ids": [
+          "S1864.I5.F3.T1",
+          "S1864.I5.F3.T2",
+          "S1864.I5.F3.T3",
+          "S1864.I5.F3.T4",
+          "S1864.I5.F3.T5",
+          "S1864.I5.F3.T6"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 10,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Accessibility Testing",
+        "task_ids": [
+          "S1864.I5.F3.T7"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1864.I5.F3.T1",
+        "S1864.I5.F3.T7"
+      ],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 5,
+      "time_saved_percent": 62
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

@@ -1,0 +1,898 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1877.I3.F2",
+    "feature_name": "Quick Actions Panel",
+    "feature_slug": "quick-actions-panel",
+    "initiative_id": "S1877.I3",
+    "spec_id": "S1877",
+    "created_at": "2026-01-28T00:00:00Z",
+    "complexity": {
+      "score": 62.5,
+      "level": "STANDARD",
+      "target_steps": {
+        "min": 6,
+        "max": 12
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1877.I3.F2.T1",
+      "type": "task",
+      "name": "Create QuickAction types interface",
+      "action": {
+        "verb": "Create",
+        "target": "QuickAction types interface"
+      },
+      "purpose": "Define TypeScript types for quick actions including id, title, description, icon, href, and priority fields",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "Lucide React icon types",
+          "database.types.ts for reference"
+        ],
+        "constraints": [
+          "Use Lucide icon component type",
+          "Priority field must be number for sorting"
+        ]
+      },
+      "input_state": "No types defined for quick actions",
+      "output_state": "QuickAction interface exported from quick-actions.types.ts",
+      "acceptance_criterion": "quick-actions.types.ts exists and exports QuickAction interface with id, title, description, icon, href, priority fields",
+      "verification_command": "cat apps/web/app/home/(user)/_lib/types/quick-actions.types.ts | grep -q 'export interface QuickAction'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/types/quick-actions.types.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1877.I3.F2.T2"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T2",
+      "type": "task",
+      "name": "Create loadQuickActions server loader function",
+      "action": {
+        "verb": "Create",
+        "target": "loadQuickActions server loader function"
+      },
+      "purpose": "Implement server-side data fetching with 4 parallel queries and deriveActions state detection logic",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/course/_lib/server/server-actions.ts (course_progress query pattern)",
+          "apps/web/app/home/(user)/assessment/_lib/server/server-actions.ts (survey_responses query pattern)",
+          "apps/web/app/home/(user)/ai/storyboard/_components/presentation-selector.tsx (building_blocks_submissions query pattern)",
+          "apps/web/app/home/(user)/kanban/_lib/hooks/use-tasks.ts (tasks query pattern)"
+        ],
+        "dependencies": [
+          "getSupabaseServerClient",
+          "Promise.all() for parallel queries"
+        ],
+        "constraints": [
+          "Use Promise.all() for parallel fetching",
+          "Query 4 tables: course_progress, survey_responses, building_blocks_submissions, tasks",
+          "Implement deriveActions() function with priority scoring",
+          "Always include 'New Presentation' as fallback action"
+        ]
+      },
+      "input_state": "QuickAction types defined from T1",
+      "output_state": "loadQuickActions() function exports QuickAction[] array",
+      "acceptance_criterion": "quick-actions-loader.ts exports loadQuickActions function that returns QuickAction[] with 3-4 actions sorted by priority",
+      "verification_command": "cat apps/web/app/home/(user)/_lib/server/quick-actions-loader.ts | grep -q 'export async function loadQuickActions' && grep -q 'Promise.all'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_lib/server/quick-actions-loader.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1877.I3.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T3",
+      "type": "task",
+      "name": "Create QuickActionsPanel component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPanel component skeleton"
+      },
+      "purpose": "Create the main widget component structure with Card wrapper and CardButton items layout",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 2,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Quick Actions"
+          },
+          {
+            "command": "find role",
+            "target": "generic"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "packages/ui/src/makerkit/card-button.tsx (CardButton, CardButtonHeader, CardButtonContent)",
+          "packages/ui/src/shadcn/card.tsx (Card, CardHeader, CardTitle)",
+          "apps/web/app/home/(user)/ai/storyboard/_components/storyboard-panel.tsx (Card wrapper pattern)"
+        ],
+        "dependencies": [
+          "CardButton from @kit/ui",
+          "Card from @kit/ui",
+          "Lucide React icons"
+        ],
+        "constraints": [
+          "Use Card wrapper for widget",
+          "Render CardButton components for each action",
+          "Accept actions prop: QuickAction[]",
+          "Use responsive grid layout"
+        ]
+      },
+      "input_state": "No QuickActionsPanel component exists",
+      "output_state": "QuickActionsPanel component renders with placeholder button layout",
+      "acceptance_criterion": "quick-actions-panel.tsx creates Card with CardHeader containing 'Quick Actions' title and CardButton grid for actions",
+      "verification_command": "cat apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'export function QuickActionsPanel' && grep -q 'Card'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T1"
+        ],
+        "blocks": [
+          "S1877.I3.F2.T4",
+          "S1877.I3.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T4",
+      "type": "task",
+      "name": "Add action icon and text rendering",
+      "action": {
+        "verb": "Add",
+        "target": "action icon and text rendering"
+      },
+      "purpose": "Render Lucide icons, titles, and descriptions for each action button",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 4,
+      "group": 2,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "CardButtonHeader, CardButtonContent from @kit/ui",
+          "Lucide icons: BookOpen, ClipboardCheck, Layout, PlusCircle, CheckSquare"
+        ],
+        "constraints": [
+          "Map action.icon to Lucide component",
+          "Display title in CardButtonHeader",
+          "Display description in CardButtonContent"
+        ]
+      },
+      "input_state": "QuickActionsPanel skeleton exists from T3",
+      "output_state": "Each action button displays correct icon, title, and description",
+      "acceptance_criterion": "Each CardButton renders icon in header, title, and description from action data",
+      "verification_command": "grep -q 'action.icon\\|action.title\\|action.description' apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T3"
+        ],
+        "blocks": [
+          "S1877.I3.F2.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T5",
+      "type": "task",
+      "name": "Integrate loader data into QuickActionsPanel",
+      "action": {
+        "verb": "Integrate",
+        "target": "loader data into QuickActionsPanel"
+      },
+      "purpose": "Pass loadQuickActions() data to QuickActionsPanel component via dashboard page",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 5,
+      "group": 3,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_lib/server/quick-actions-loader.ts (loadQuickActions function)",
+          "apps/web/app/home/(user)/page.tsx (dashboard page)",
+          "apps/web/app/home/(user)/_lib/server/load-user-workspace.ts (parallel fetch pattern)"
+        ],
+        "dependencies": [
+          "loadQuickActions from quick-actions-loader",
+          "Promise.all() in page.tsx"
+        ],
+        "constraints": [
+          "Add loadQuickActions() to Promise.all() in page.tsx",
+          "Pass actions prop to QuickActionsPanel"
+        ]
+      },
+      "input_state": "Loader function and panel component exist separately",
+      "output_state": "QuickActionsPanel receives and displays actions from loadQuickActions()",
+      "acceptance_criterion": "page.tsx calls loadQuickActions() and passes actions to QuickActionsPanel",
+      "verification_command": "grep -q 'loadQuickActions' apps/web/app/home/(user)/page.tsx && grep -q 'actions=' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T2",
+          "S1877.I3.F2.T3",
+          "S1877.I3.F2.T4"
+        ],
+        "blocks": [
+          "S1877.I3.F2.T6",
+          "S1877.I3.F2.T7",
+          "S1877.I3.F2.T8"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T6",
+      "type": "task",
+      "name": "Create QuickActionsPanelSkeleton loading state",
+      "action": {
+        "verb": "Create",
+        "target": "QuickActionsPanelSkeleton loading state"
+      },
+      "purpose": "Create skeleton loader component with placeholder CardButton elements",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_ui": true,
+      "context": {
+        "files": [
+          "packages/ui/src/shadcn/skeleton.tsx (Skeleton component)",
+          "apps/web/app/home/(user)/ai/storyboard/_components/storyboard-panel.tsx (skeleton pattern)"
+        ],
+        "dependencies": [
+          "Skeleton from @kit/ui",
+          "Card from @kit/ui"
+        ],
+        "constraints": [
+          "Use Skeleton for placeholders",
+          "Match layout of QuickActionsPanel (3-4 buttons)"
+        ]
+      },
+      "input_state": "No skeleton component exists",
+      "output_state": "QuickActionsPanelSkeleton renders skeleton placeholder matching panel layout",
+      "acceptance_criterion": "quick-actions-panel-skeleton.tsx creates Card with 3-4 Skeleton placeholders in grid layout",
+      "verification_command": "cat apps/web/app/home/(user)/_components/quick-actions-panel-skeleton.tsx | grep -q 'export function QuickActionsPanelSkeleton' && grep -q 'Skeleton'",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel-skeleton.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5"
+        ],
+        "blocks": [
+          "S1877.I3.F2.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T7",
+      "type": "task",
+      "name": "Wire Continue Course button to course page",
+      "action": {
+        "verb": "Wire",
+        "target": "Continue Course button to course page"
+      },
+      "purpose": "Connect Continue Course action button to /home/course navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 7,
+      "group": 4,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Continue Course",
+            "expected_action": "navigate to /home/course",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/config/paths.config.ts (course path)",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "pathsConfig.app.course",
+          "BookOpen icon from lucide-react"
+        ],
+        "constraints": [
+          "Use pathsConfig for navigation",
+          "href attribute set to course path"
+        ]
+      },
+      "input_state": "Continue Course button renders without navigation",
+      "output_state": "Clicking Continue Course navigates to /home/course",
+      "acceptance_criterion": "Continue Course CardButton has href={pathsConfig.app.course}",
+      "verification_command": "grep -Pzo 'Continue Course[^<]*href=[^>]+' apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'course'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5",
+          "S1877.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T8",
+      "type": "task",
+      "name": "Wire New Presentation button to AI blocks page",
+      "action": {
+        "verb": "Wire",
+        "target": "New Presentation button to AI blocks page"
+      },
+      "purpose": "Connect New Presentation action button to /home/ai/blocks navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 8,
+      "group": 4,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "New Presentation",
+            "expected_action": "navigate to /home/ai/blocks",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/config/paths.config.ts (blocks path)",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "pathsConfig.app.blocks",
+          "PlusCircle icon from lucide-react"
+        ],
+        "constraints": [
+          "Use pathsConfig for navigation",
+          "href attribute set to blocks path"
+        ]
+      },
+      "input_state": "New Presentation button renders without navigation",
+      "output_state": "Clicking New Presentation navigates to /home/ai/blocks",
+      "acceptance_criterion": "New Presentation CardButton has href={pathsConfig.app.blocks}",
+      "verification_command": "grep -Pzo 'New Presentation[^<]*href=[^>]+' apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'blocks'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5",
+          "S1877.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T9",
+      "type": "task",
+      "name": "Wire Complete Assessment button to assessment page",
+      "action": {
+        "verb": "Wire",
+        "target": "Complete Assessment button to assessment page"
+      },
+      "purpose": "Connect Complete Assessment action button to /home/assessment navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 9,
+      "group": 4,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Complete Assessment",
+            "expected_action": "navigate to /home/assessment",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/config/paths.config.ts (assessment path)",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "pathsConfig.app.assessment",
+          "ClipboardCheck icon from lucide-react"
+        ],
+        "constraints": [
+          "Use pathsConfig for navigation",
+          "href attribute set to assessment path"
+        ]
+      },
+      "input_state": "Complete Assessment button renders without navigation",
+      "output_state": "Clicking Complete Assessment navigates to /home/assessment",
+      "acceptance_criterion": "Complete Assessment CardButton has href={pathsConfig.app.assessment}",
+      "verification_command": "grep -Pzo 'Complete Assessment[^<]*href=[^>]+' apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'assessment'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5",
+          "S1877.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T10",
+      "type": "task",
+      "name": "Wire Review Storyboard button to storyboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "Review Storyboard button to storyboard page"
+      },
+      "purpose": "Connect Review Storyboard action button to /home/ai/storyboard navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 4,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Review Storyboard",
+            "expected_action": "navigate to /home/ai/storyboard",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/config/paths.config.ts (storyboard path)",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "pathsConfig.app.storyboard",
+          "Layout icon from lucide-react"
+        ],
+        "constraints": [
+          "Use pathsConfig for navigation",
+          "href attribute set to storyboard path"
+        ]
+      },
+      "input_state": "Review Storyboard button renders without navigation",
+      "output_state": "Clicking Review Storyboard navigates to /home/ai/storyboard",
+      "acceptance_criterion": "Review Storyboard CardButton has href={pathsConfig.app.storyboard}",
+      "verification_command": "grep -Pzo 'Review Storyboard[^<]*href=[^>]+' apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'storyboard'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5",
+          "S1877.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T11",
+      "type": "task",
+      "name": "Wire Continue Task button to kanban page",
+      "action": {
+        "verb": "Wire",
+        "target": "Continue Task button to kanban page"
+      },
+      "purpose": "Connect Continue Task action button to /home/kanban navigation",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 11,
+      "group": 4,
+      "requires_ui": true,
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Continue Task",
+            "expected_action": "navigate to /home/kanban",
+            "file_path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+          }
+        ]
+      },
+      "context": {
+        "files": [
+          "apps/web/config/paths.config.ts (kanban path)",
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "pathsConfig.app.kanban",
+          "CheckSquare icon from lucide-react"
+        ],
+        "constraints": [
+          "Use pathsConfig for navigation",
+          "href attribute set to kanban path"
+        ]
+      },
+      "input_state": "Continue Task button renders without navigation",
+      "output_state": "Clicking Continue Task navigates to /home/kanban",
+      "acceptance_criterion": "Continue Task CardButton has href={pathsConfig.app.kanban}",
+      "verification_command": "grep -Pzo 'Continue Task[^<]*href=[^>]+' apps/web/app/home/(user)/_components/quick-actions-panel.tsx | grep -q 'kanban'",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T5",
+          "S1877.I3.F2.T6"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I3.F2.T12",
+      "type": "task",
+      "name": "Add i18n translations for quick actions",
+      "action": {
+        "verb": "Add",
+        "target": "i18n translations for quick actions"
+      },
+      "purpose": "Add translation keys for widget header and action titles/descriptions",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 12,
+      "group": 5,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        ],
+        "dependencies": [
+          "Trans component from @kit/ui"
+        ],
+        "constraints": [
+          "Add keys for widget header",
+          "Add keys for each action title and description"
+        ]
+      },
+      "input_state": "Hardcoded English text in component",
+      "output_state": "All text wrapped in Trans component with i18n keys",
+      "acceptance_criterion": "QuickActionsPanel uses Trans component for all user-facing text",
+      "verification_command": "grep -c '<Trans' apps/web/app/home/(user)/_components/quick-actions-panel.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/quick-actions-panel.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1877.I3.F2.T7",
+          "S1877.I3.F2.T8",
+          "S1877.I3.F2.T9",
+          "S1877.I3.F2.T10",
+          "S1877.I3.F2.T11"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Foundation",
+        "task_ids": [
+          "S1877.I3.F2.T1"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 2,
+        "name": "Data & UI",
+        "task_ids": [
+          "S1877.I3.F2.T2",
+          "S1877.I3.F2.T3"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "UI Details",
+        "task_ids": [
+          "S1877.I3.F2.T4"
+        ],
+        "depends_on_groups": [
+          1,
+          2
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Integration",
+        "task_ids": [
+          "S1877.I3.F2.T5"
+        ],
+        "depends_on_groups": [
+          1,
+          2,
+          3
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 5,
+        "name": "Skeleton",
+        "task_ids": [
+          "S1877.I3.F2.T6"
+        ],
+        "depends_on_groups": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 6,
+        "name": "Wiring",
+        "task_ids": [
+          "S1877.I3.F2.T7",
+          "S1877.I3.F2.T8",
+          "S1877.I3.F2.T9",
+          "S1877.I3.F2.T10",
+          "S1877.I3.F2.T11"
+        ],
+        "depends_on_groups": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "estimated_hours": 5,
+        "parallel_hours": 1
+      },
+      {
+        "id": 7,
+        "name": "Polish",
+        "task_ids": [
+          "S1877.I3.F2.T12"
+        ],
+        "depends_on_groups": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1877.I3.F2.T1",
+        "S1877.I3.F2.T2",
+        "S1877.I3.F2.T3",
+        "S1877.I3.F2.T4",
+        "S1877.I3.F2.T5",
+        "S1877.I3.F2.T6",
+        "S1877.I3.F2.T7",
+        "S1877.I3.F2.T12"
+      ],
+      "total_hours": 15
+    },
+    "duration": {
+      "sequential": 17,
+      "parallel": 11,
+      "time_saved_percent": 35.3
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 95
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

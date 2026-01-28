@@ -1,0 +1,1170 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I4.F3",
+    "feature_name": "Session Actions",
+    "feature_slug": "session-actions",
+    "initiative_id": "S1864.I4",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T19:45:00Z",
+    "complexity": {
+      "score": 71,
+      "level": "HIGH",
+      "target_steps": {
+        "min": 12,
+        "max": 20
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": [
+      "S1864.I4.F3.T3",
+      "S1864.I4.F3.T7",
+      "S1864.I4.F3.T11"
+    ],
+    "required_env_vars": [
+      {
+        "name": "NEXT_PUBLIC_CAL_USERNAME",
+        "description": "Cal.com username for reschedule embed URL",
+        "source": "From S1864.I4.F1 Cal.com Foundation",
+        "required": true,
+        "scope": "client"
+      },
+      {
+        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "description": "Event type slug for reschedule embed URL",
+        "source": "From S1864.I4.F1 Cal.com Foundation",
+        "required": true,
+        "scope": "client"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "S1864.I4.F3.T1",
+      "type": "task",
+      "name": "Create SessionCardActionsProps interface",
+      "action": {
+        "verb": "Create",
+        "target": "SessionCardActionsProps interface"
+      },
+      "purpose": "Define TypeScript interface for session action button props including meetingUrl and rescheduleUid",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "CalComBooking from F1"
+        ],
+        "constraints": [
+          "Must include meetingUrl (optional for Join button)",
+          "Must include rescheduleUid (required for Reschedule modal)",
+          "Must include session title and start time for modal context",
+          "Must include onRescheduleClick callback"
+        ]
+      },
+      "input_state": "No session action types exist",
+      "output_state": "SessionCardActionsProps interface created at apps/web/app/home/(user)/_components/session-card-actions.tsx",
+      "acceptance_criterion": "Interface exists with meetingUrl, rescheduleUid, onRescheduleClick fields",
+      "verification_command": "grep -q 'interface SessionCardActionsProps' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx && grep -q 'rescheduleUid' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F3.T2",
+          "S1864.I4.F3.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T2",
+      "type": "task",
+      "name": "Create Join button component",
+      "action": {
+        "verb": "Create",
+        "target": "Join button visual component"
+      },
+      "purpose": "Render Join Meeting button with disabled state when no meetingUrl exists",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "SessionCardActionsProps"
+        ],
+        "constraints": [
+          "Must use Shadcn Button component",
+          "Must show only if meetingUrl exists",
+          "Must have aria-label for accessibility",
+          "Must use target='_blank' and rel='noopener noreferrer' for external link"
+        ]
+      },
+      "input_state": "SessionCardActionsProps interface exists",
+      "output_state": "Join button component rendered in SessionCardActions",
+      "acceptance_criterion": "Join button renders conditionally based on meetingUrl presence",
+      "verification_command": "grep -q 'meetingUrl.*Button' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T1"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T3"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T3",
+      "type": "task",
+      "name": "Wire Join button to meeting URL navigation",
+      "action": {
+        "verb": "Wire",
+        "target": "Join button to meeting URL"
+      },
+      "purpose": "Connect Join button click handler to open meetingUrl in new tab",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Join"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "window.open for new tab navigation"
+        ],
+        "constraints": [
+          "Must use window.open(meetingUrl, '_blank', 'noopener,noreferrer')",
+          "Must not navigate if meetingUrl is empty",
+          "Must prevent default event propagation"
+        ]
+      },
+      "input_state": "Join button component exists without handler",
+      "output_state": "Join button onClick opens meetingUrl in new tab",
+      "acceptance_criterion": "Join button has onClick handler that calls window.open with meetingUrl",
+      "verification_command": "grep -Pzo 'Join[^<]*onClick=\\{[^}]+window\\.open' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Join",
+            "expected_action": "open meetingUrl in new tab via window.open",
+            "file_path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'onClick.*window\\.open.*_blank' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T2"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T12"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T4",
+      "type": "task",
+      "name": "Create Reschedule button component",
+      "action": {
+        "verb": "Create",
+        "target": "Reschedule button visual component"
+      },
+      "purpose": "Render Reschedule button that triggers modal open",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "Button from @kit/ui/button",
+          "SessionCardActionsProps"
+        ],
+        "constraints": [
+          "Must use Shadcn Button component with variant='outline'",
+          "Must display for all upcoming sessions (no conditional rendering)",
+          "Must have aria-label for accessibility",
+          "Must be visually distinct from Join button"
+        ]
+      },
+      "input_state": "Join button exists",
+      "output_state": "Reschedule button component rendered in SessionCardActions",
+      "acceptance_criterion": "Reschedule button renders for all sessions",
+      "verification_command": "grep -q 'Reschedule.*Button.*variant' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T1"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T5"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T5",
+      "type": "task",
+      "name": "Wire Reschedule button to modal open callback",
+      "action": {
+        "verb": "Wire",
+        "target": "Reschedule button to onRescheduleClick"
+      },
+      "purpose": "Connect Reschedule button click handler to parent-provided modal open function",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "onRescheduleClick from SessionCardActionsProps"
+        ],
+        "constraints": [
+          "Must call onRescheduleClick(rescheduleUid) on button click",
+          "Must not trigger modal open directly (parent component controls modal state)",
+          "Must prevent default event propagation"
+        ]
+      },
+      "input_state": "Reschedule button component exists without handler",
+      "output_state": "Reschedule button onClick calls onRescheduleClick callback",
+      "acceptance_criterion": "Reschedule button has onClick handler that invokes onRescheduleClick",
+      "verification_command": "grep -Pzo 'Reschedule[^<]*onClick=\\{[^}]+onRescheduleClick' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "button_handler",
+            "target": "Reschedule",
+            "expected_action": "call onRescheduleClick callback with rescheduleUid",
+            "file_path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'onClick.*onRescheduleClick' apps/web/app/home/\\(user\\)/_components/session-card-actions.tsx"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T4"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T12"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T6",
+      "type": "task",
+      "name": "Create RescheduleModalProps interface",
+      "action": {
+        "verb": "Create",
+        "target": "RescheduleModalProps interface"
+      },
+      "purpose": "Define TypeScript interface for reschedule modal component props",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 6,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Must include isOpen boolean for modal visibility",
+          "Must include onClose callback for closing modal",
+          "Must include rescheduleUid for Cal.com embed config",
+          "Must include sessionTitle for modal header context"
+        ]
+      },
+      "input_state": "No reschedule modal types exist",
+      "output_state": "RescheduleModalProps interface created at apps/web/app/home/(user)/_components/reschedule-modal.tsx",
+      "acceptance_criterion": "Interface exists with isOpen, onClose, rescheduleUid, sessionTitle fields",
+      "verification_command": "grep -q 'interface RescheduleModalProps' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx && grep -q 'rescheduleUid' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F3.T7"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T7",
+      "type": "task",
+      "name": "Create RescheduleModal dialog shell",
+      "action": {
+        "verb": "Create",
+        "target": "RescheduleModal dialog shell"
+      },
+      "purpose": "Create modal dialog structure using Shadcn Dialog with header and embed container",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 7,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Reschedule Session"
+          },
+          {
+            "command": "find role",
+            "target": "dialog"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        ],
+        "dependencies": [
+          "Dialog, DialogContent, DialogHeader, DialogTitle from @kit/ui/dialog",
+          "RescheduleModalProps"
+        ],
+        "constraints": [
+          "Must use Shadcn Dialog component pattern",
+          "Must include DialogHeader with sessionTitle",
+          "Must include container div for Cal.com iframe embed (id='reschedule-embed-container')",
+          "Must handle isOpen and onClose props for open state management",
+          "Must prevent modal close during reschedule flow (onClose only via X button)"
+        ]
+      },
+      "input_state": "RescheduleModalProps interface exists",
+      "output_state": "RescheduleModal dialog shell rendered with header and embed container",
+      "acceptance_criterion": "Dialog component exists with header, title, and embed container div",
+      "verification_command": "grep -q 'Dialog.*isOpen' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx && grep -q 'reschedule-embed-container' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T6"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T8",
+      "type": "task",
+      "name": "Create buildCalEmbedUrl utility function",
+      "action": {
+        "verb": "Create",
+        "target": "buildCalEmbedUrl utility"
+      },
+      "purpose": "Build Cal.com iframe embed URL with rescheduleUid and embed params",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 8,
+      "group": 4,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [],
+        "dependencies": [
+          "process.env.NEXT_PUBLIC_CAL_USERNAME",
+          "process.env.NEXT_PUBLIC_CAL_EVENT_SLUG"
+        ],
+        "constraints": [
+          "Must construct URL: https://cal.com/{username}/{eventSlug}",
+          "Must append rescheduleUid param",
+          "Must append embed=true param",
+          "Must gracefully handle missing env vars (return null or fallback URL)",
+          "Must encode URL parameters properly"
+        ]
+      },
+      "input_state": "No embed URL builder exists",
+      "output_state": "buildCalEmbedUrl function created at apps/web/lib/calcom-embed-url.ts",
+      "acceptance_criterion": "Function exists and constructs valid Cal.com reschedule embed URL",
+      "verification_command": "grep -q 'function buildCalEmbedUrl' apps/web/lib/calcom-embed-url.ts && grep -q 'rescheduleUid' apps/web/lib/calcom-embed-url.ts",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "env_var_graceful",
+            "target": "NEXT_PUBLIC_CAL_USERNAME",
+            "expected_action": "return null or fallback, not throw error",
+            "file_path": "apps/web/lib/calcom-embed-url.ts"
+          }
+        ],
+        "validation_command": "grep -E 'return null|return.*fallback' apps/web/lib/calcom-embed-url.ts | grep -v 'throw'"
+      },
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/lib/calcom-embed-url.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F3.T9"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T9",
+      "type": "task",
+      "name": "Add Cal.com iframe to RescheduleModal",
+      "action": {
+        "verb": "Add",
+        "target": "Cal.com reschedule iframe"
+      },
+      "purpose": "Render Cal.com reschedule iframe inside modal with rescheduleUid config",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 9,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/reschedule-modal.tsx",
+          "apps/web/lib/calcom-embed-url.ts"
+        ],
+        "dependencies": [
+          "buildCalEmbedUrl utility",
+          "RescheduleModalProps.rescheduleUid"
+        ],
+        "constraints": [
+          "Must use iframe element with src from buildCalEmbedUrl",
+          "Must set iframe width='100%' and height='600px' (minimum)",
+          "Must set border='none' and allow='fullscreen'",
+          "Must only render iframe when isOpen is true (lazy load)",
+          "Must use loading='lazy' attribute for performance"
+        ]
+      },
+      "input_state": "RescheduleModal dialog shell exists with embed container",
+      "output_state": "Cal.com reschedule iframe rendered in modal",
+      "acceptance_criterion": "Iframe element exists with src from buildCalEmbedUrl(rescheduleUid)",
+      "verification_command": "grep -q 'iframe.*buildCalEmbedUrl' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx && grep -q 'rescheduleUid' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T7",
+          "S1864.I4.F3.T8"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T10"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T10",
+      "type": "task",
+      "name": "Add useEffect cleanup for modal iframe",
+      "action": {
+        "verb": "Add",
+        "target": "useEffect cleanup for iframe"
+      },
+      "purpose": "Clean up iframe on modal close to prevent memory leaks",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 10,
+      "group": 5,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        ],
+        "dependencies": [
+          "React.useEffect"
+        ],
+        "constraints": [
+          "Must use useEffect with isOpen dependency",
+          "Must reset iframe src when modal closes (isOpen becomes false)",
+          "Must not cause re-renders during reschedule flow"
+        ]
+      },
+      "input_state": "Cal.com iframe renders in modal",
+      "output_state": "useEffect cleanup added to reset iframe on modal close",
+      "acceptance_criterion": "useEffect exists that cleans up iframe when isOpen changes to false",
+      "verification_command": "grep -q 'useEffect.*isOpen' apps/web/app/home/\\(user\\)/_components/reschedule-modal.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T9"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T11",
+      "type": "task",
+      "name": "Add reschedule modal state to CoachingSessionsWidget",
+      "action": {
+        "verb": "Add",
+        "target": "reschedule modal state management"
+      },
+      "purpose": "Manage which session is being rescheduled in widget component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 11,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Coaching Sessions"
+          },
+          {
+            "command": "find role",
+            "target": "button"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        ],
+        "dependencies": [
+          "React.useState"
+        ],
+        "constraints": [
+          "Must use useState to track rescheduleSession (session object or null)",
+          "Must provide handleRescheduleClick callback to SessionCardActions",
+          "Must provide handleRescheduleClose callback to RescheduleModal",
+          "Must derive isOpen boolean from rescheduleSession !== null"
+        ]
+      },
+      "input_state": "CoachingSessionsWidget exists without modal state",
+      "output_state": "Widget manages rescheduleSession state with open/close handlers",
+      "acceptance_criterion": "useState exists for rescheduleSession and callbacks handle modal open/close",
+      "verification_command": "grep -q 'useState.*rescheduleSession' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'handleRescheduleClick\\|handleRescheduleClose' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": [
+          "S1864.I4.F3.T13"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T12",
+      "type": "task",
+      "name": "Update CoachingSessionsList to use SessionCardActions",
+      "action": {
+        "verb": "Update",
+        "target": "CoachingSessionsList component"
+      },
+      "purpose": "Replace inline buttons with SessionCardActions component",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 12,
+      "group": 6,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx",
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "SessionCardActions component"
+        ],
+        "constraints": [
+          "Must import SessionCardActions component",
+          "Must pass meetingUrl, rescheduleUid, sessionTitle to SessionCardActions",
+          "Must pass onRescheduleClick callback from widget",
+          "Must remove any inline button implementations"
+        ]
+      },
+      "input_state": "CoachingSessionsList has inline buttons or placeholders",
+      "output_state": "CoachingSessionsList renders SessionCardActions for each session",
+      "acceptance_criterion": "SessionCardActions is imported and used in session map",
+      "verification_command": "grep -q 'SessionCardActions' apps/web/app/home/\\(user\\)/_components/coaching-sessions-list.tsx && grep -q 'onRescheduleClick' apps/web/app/home/\\(user\\)/_components/coaching-sessions-list.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-list.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T3",
+          "S1864.I4.F3.T5"
+        ],
+        "blocks": [
+          "S1864.I4.F3.T13"
+        ]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T13",
+      "type": "task",
+      "name": "Wire RescheduleModal to CoachingSessionsWidget",
+      "action": {
+        "verb": "Wire",
+        "target": "RescheduleModal to widget state"
+      },
+      "purpose": "Render RescheduleModal in widget with reschedule state management",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 13,
+      "group": 7,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx",
+          "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        ],
+        "dependencies": [
+          "RescheduleModal component",
+          "rescheduleSession state"
+        ],
+        "constraints": [
+          "Must import RescheduleModal component",
+          "Must pass isOpen={rescheduleSession !== null}",
+          "Must pass onClose={handleRescheduleClose}",
+          "Must pass rescheduleUid={rescheduleSession?.uid}",
+          "Must pass sessionTitle={rescheduleSession?.title}"
+        ]
+      },
+      "input_state": "Widget has reschedule state, RescheduleModal exists, SessionsList uses SessionCardActions",
+      "output_state": "RescheduleModal renders in widget and opens when user clicks Reschedule button",
+      "acceptance_criterion": "RescheduleModal is imported and rendered with correct props in widget",
+      "verification_command": "grep -q 'RescheduleModal' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx && grep -q 'isOpen=.*rescheduleSession' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx",
+      "behavioral_verification": {
+        "patterns": [
+          {
+            "type": "modal_trigger",
+            "target": "RescheduleModal",
+            "expected_action": "open modal when rescheduleSession is set",
+            "file_path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+          }
+        ],
+        "validation_command": "grep -E 'RescheduleModal.*isOpen' apps/web/app/home/\\(user\\)/_components/coaching-sessions-widget.tsx"
+      },
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/coaching-sessions-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T11",
+          "S1864.I4.F3.T12"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T14",
+      "type": "task",
+      "name": "Create unit test for buildCalEmbedUrl utility",
+      "action": {
+        "verb": "Create",
+        "target": "unit test for buildCalEmbedUrl"
+      },
+      "purpose": "Verify URL builder constructs correct Cal.com embed URLs",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 14,
+      "group": 8,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/lib/calcom-embed-url.ts"
+        ],
+        "dependencies": [
+          "vitest"
+        ],
+        "constraints": [
+          "Must test valid rescheduleUid produces correct URL format",
+          "Must test URL includes embed=true param",
+          "Must test graceful handling of missing env vars",
+          "Must test URL encoding of special characters in rescheduleUid"
+        ]
+      },
+      "input_state": "buildCalEmbedUrl utility exists",
+      "output_state": "Unit test created for URL builder utility",
+      "acceptance_criterion": "Test file exists and validates URL construction",
+      "verification_command": "grep -q 'buildCalEmbedUrl' apps/web/lib/calcom-embed-url.test.ts && grep -q 'embed=true' apps/web/lib/calcom-embed-url.test.ts",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/lib/calcom-embed-url.test.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T8"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T15",
+      "type": "task",
+      "name": "Create component test for SessionCardActions",
+      "action": {
+        "verb": "Create",
+        "target": "component test for SessionCardActions"
+      },
+      "purpose": "Verify action buttons render and trigger callbacks correctly",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 15,
+      "group": 8,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/session-card-actions.tsx"
+        ],
+        "dependencies": [
+          "vitest",
+          "@testing-library/react"
+        ],
+        "constraints": [
+          "Must test Join button appears when meetingUrl exists",
+          "Must test Join button opens new window on click",
+          "Must test Reschedule button appears for all sessions",
+          "Must test Reschedule button calls onRescheduleClick callback"
+        ]
+      },
+      "input_state": "SessionCardActions component implemented",
+      "output_state": "Component test created for SessionCardActions",
+      "acceptance_criterion": "Test file exists and validates button rendering and callbacks",
+      "verification_command": "grep -q 'SessionCardActions' apps/web/app/home/\\(user\\)/_components/session-card-actions.test.tsx && grep -q 'onRescheduleClick' apps/web/app/home/\\(user\\)/_components/session-card-actions.test.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/session-card-actions.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T3",
+          "S1864.I4.F3.T5"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I4.F3.T16",
+      "type": "task",
+      "name": "Create component test for RescheduleModal",
+      "action": {
+        "verb": "Create",
+        "target": "component test for RescheduleModal"
+      },
+      "purpose": "Verify modal renders with Cal.com iframe and handles open/close state",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 16,
+      "group": 8,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/reschedule-modal.tsx"
+        ],
+        "dependencies": [
+          "vitest",
+          "@testing-library/react"
+        ],
+        "constraints": [
+          "Must test modal renders when isOpen=true",
+          "Must test modal does not render when isOpen=false",
+          "Must test iframe src includes rescheduleUid",
+          "Must test onClose is called when close button clicked",
+          "Must test iframe cleanup on modal close"
+        ]
+      },
+      "input_state": "RescheduleModal component implemented",
+      "output_state": "Component test created for RescheduleModal",
+      "acceptance_criterion": "Test file exists and validates modal behavior and iframe rendering",
+      "verification_command": "grep -q 'RescheduleModal' apps/web/app/home/\\(user\\)/_components/reschedule-modal.test.tsx && grep -q 'isOpen' apps/web/app/home/\\(user\\)/_components/reschedule-modal.test.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/reschedule-modal.test.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [
+          "S1864.I4.F3.T9",
+          "S1864.I4.F3.T10"
+        ],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Session Actions Foundation",
+        "task_ids": [
+          "S1864.I4.F3.T1",
+          "S1864.I4.F3.T2"
+        ],
+        "depends_on_groups": [],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 2,
+        "name": "Join Button Wiring",
+        "task_ids": [
+          "S1864.I4.F3.T3"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Reschedule Button Foundation",
+        "task_ids": [
+          "S1864.I4.F3.T4",
+          "S1864.I4.F3.T5",
+          "S1864.I4.F3.T6"
+        ],
+        "depends_on_groups": [
+          1
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Modal Shell & URL Builder",
+        "task_ids": [
+          "S1864.I4.F3.T7",
+          "S1864.I4.F3.T8"
+        ],
+        "depends_on_groups": [
+          3
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 5,
+        "name": "Modal Iframe Integration",
+        "task_ids": [
+          "S1864.I4.F3.T9",
+          "S1864.I4.F3.T10"
+        ],
+        "depends_on_groups": [
+          4
+        ],
+        "estimated_hours": 3,
+        "parallel_hours": 3
+      },
+      {
+        "id": 6,
+        "name": "Widget Integration",
+        "task_ids": [
+          "S1864.I4.F3.T11",
+          "S1864.I4.F3.T12"
+        ],
+        "depends_on_groups": [
+          2,
+          3
+        ],
+        "estimated_hours": 4,
+        "parallel_hours": 4
+      },
+      {
+        "id": 7,
+        "name": "Final Wiring",
+        "task_ids": [
+          "S1864.I4.F3.T13"
+        ],
+        "depends_on_groups": [
+          5,
+          6
+        ],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 8,
+        "name": "Testing",
+        "task_ids": [
+          "S1864.I4.F3.T14",
+          "S1864.I4.F3.T15",
+          "S1864.I4.F3.T16"
+        ],
+        "depends_on_groups": [
+          7
+        ],
+        "estimated_hours": 8,
+        "parallel_hours": 8
+      }
+    ],
+    "critical_path": {
+      "task_ids": [
+        "S1864.I4.F3.T1",
+        "S1864.I4.F3.T6",
+        "S1864.I4.F3.T7",
+        "S1864.I4.F3.T9",
+        "S1864.I4.F3.T11",
+        "S1864.I4.F3.T13",
+        "S1864.I4.F3.T16"
+      ],
+      "total_hours": 13
+    },
+    "duration": {
+      "sequential": 28,
+      "parallel": 13,
+      "time_saved_percent": 54
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

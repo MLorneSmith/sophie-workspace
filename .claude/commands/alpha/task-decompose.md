@@ -463,6 +463,197 @@ This ensures the package is installed before any task tries to import it.
 
 ---
 
+## Mandatory Database Task Validation
+
+Before finalizing `tasks.json` for any feature, validate database task consistency:
+
+### Step 1: Detect Database References
+
+Search task outputs and context for table names:
+
+```bash
+# Scan feature artifacts for table references
+grep -r "table\|schema\|migration\|database" tasks.json feature.md 2>/dev/null || true
+
+# Common table patterns to detect
+grep -E "activity_logs|user_activities|CREATE TABLE|insert into|from.*where" tasks.json feature.md 2>/dev/null || true
+```
+
+Capture any table name references (e.g., `activity_logs`, `user_activities`, `presentations`).
+
+### Step 2: Verify `requires_database: true` Tasks Exist
+
+For EACH detected table name that is NEW (not existing in current schema):
+
+- **MUST have a corresponding task** with `requires_database: true`
+- That task MUST create the schema file AND generate types
+
+**Example Required Task Structure**:
+```json
+{
+  "id": "S1864.I3.F2.T1",
+  "name": "Create activity_logs schema and types",
+  "requires_database": true,
+  "action": {
+    "verb": "Create",
+    "target": "activity_logs table schema"
+  },
+  "outputs": [
+    { "type": "new", "path": "apps/web/supabase/schemas/XX-activity-logs.sql" }
+  ],
+  "verification_command": "pnpm --filter web supabase migration up && pnpm supabase:web:typegen && grep 'activity_logs' apps/web/lib/database.types.ts"
+}
+```
+
+### Step 3: Validate Verification Commands
+
+For ALL tasks with `requires_database: true`, the `verification_command` MUST include:
+
+1. **Migration application**: `pnpm --filter web supabase migration up`
+2. **Type generation**: `pnpm supabase:web:typegen`
+3. **Type verification**: `grep '[table_name]' apps/web/lib/database.types.ts`
+
+**Valid verification_command pattern**:
+```json
+{
+  "verification_command": "pnpm --filter web supabase migration up && pnpm supabase:web:typegen && grep 'activity_logs' apps/web/lib/database.types.ts"
+}
+```
+
+**Invalid patterns** (will cause downstream failures):
+```json
+// ❌ Missing typegen - types won't exist for dependent tasks
+{ "verification_command": "test -f apps/web/supabase/schemas/XX-activity.sql" }
+
+// ❌ Missing grep - can't verify types actually generated
+{ "verification_command": "pnpm supabase:web:typegen" }
+```
+
+### Step 4: Enforce Type-Dependent Task Blocking
+
+For any task that imports from `database.types.ts`:
+
+- **MUST have a `blockedBy` dependency**
+- That dependency must be a `requires_database: true` task that generates the types
+- Cannot execute until types are generated
+
+**Example**:
+```json
+{
+  "id": "S1864.I3.F2.T2",
+  "name": "Implement Activity Logger Service",
+  "blockedBy": ["S1864.I3.F2.T1"],
+  "context": {
+    "constraints": [
+      "Import activity_logs types from database.types.ts"
+    ]
+  },
+  "action": {
+    "verb": "Create",
+    "target": "activity logger service"
+  }
+}
+```
+
+### Step 5: Validate Imports Match Types
+
+For any task importing database types:
+
+```bash
+# Extract tasks that reference database types
+grep -r "import.*from.*database.types\|from '~/lib/database.types" tasks.json
+
+# For each match, verify the corresponding schema task exists
+# and is in the blockedBy chain
+```
+
+### Validation Failure Handling
+
+**If validation fails** (missing tasks, broken dependencies):
+
+1. **DO NOT finalize tasks.json**
+2. **Return validation errors** to orchestrator with specific issues
+3. **Require fixes** before proceeding
+
+**Error Report Format**:
+```json
+{
+  "validation": "failed",
+  "errors": [
+    {
+      "type": "missing_schema_task",
+      "table": "activity_logs",
+      "referenced_by": ["T3", "T5"],
+      "fix": "Add task with requires_database: true that creates activity_logs schema"
+    },
+    {
+      "type": "invalid_verification_command",
+      "task": "T2",
+      "issue": "Missing pnpm supabase:web:typegen",
+      "fix": "Add typegen to verification_command"
+    },
+    {
+      "type": "missing_blockedBy",
+      "task": "T5",
+      "imports_type": "activity_logs",
+      "depends_on": "T2",
+      "fix": "Add T2 to blockedBy array"
+    }
+  ]
+}
+```
+
+---
+
+### CRITICAL: Database Task Decomposition Rules
+
+**IF the feature involves creating or using database tables**:
+
+1. **MUST have a schema creation task** (requires_database: true)
+   - Create/modify schema file
+   - Generate migration
+   - Push migration to database
+   - Generate TypeScript types
+
+2. **Table references in other tasks MUST be in blockedBy**
+   - Feature F2 uses table X
+   - Feature F3 uses results from F2
+   - F3 cannot start until F2's type generation completes
+
+3. **All verification_commands for database tasks MUST include**:
+   - `pnpm --filter web supabase migration up`
+   - `pnpm supabase:web:typegen`
+   - Grep verification that types exist
+
+4. **Fail the entire decomposition** if:
+   - Table references found with no `requires_database` task
+   - Tasks import from `database.types.ts` without `blockedBy`
+   - Verification commands don't include type generation
+
+---
+
+## Pre-Finalization: Validate Environment Variables in tasks.json
+
+**Verify all `required_env_vars` against feature-decompose research**:
+
+For each task with `required_env_vars`:
+
+```bash
+# Extract variables from tasks.json
+grep -o '"[A-Z_]*": true' tasks.json | cut -d'"' -f2 | sort -u
+
+# Cross-reference against feature-decompose credential mapping
+# Ensure each variable name matches the actual .env variable (not the proposed one)
+```
+
+**Validation checklist**:
+- [ ] All `required_env_vars` match actual environment variables from feature research
+- [ ] No proposed/intermediate variable names in tasks.json
+- [ ] Variable names follow project naming conventions
+- [ ] Feature-level validation was completed (Step 1.7 in feature-decompose.md)
+
+---
+
 ## Step 3: Commit Spec Files to Git (CRITICAL)
 
 **⚠️ MANDATORY**: After decomposition completes (either Mode A or Mode B), commit the spec files to git. Without this step, the orchestrator's sandboxes cannot access the spec files.
@@ -538,6 +729,28 @@ git fetch origin && git diff origin/dev --stat -- .ai/alpha/specs/S<spec-num>-Sp
 - **Multiple commits are fine** - Each initiative gets its own commit
 - **If push fails** - Check for merge conflicts, resolve, and retry
 - **This step is idempotent** - Running again after changes will create a new commit
+
+---
+
+## Pre-Completion Checklist
+
+Before finalizing task decomposition:
+
+### Environment Variables
+- [ ] All `required_env_vars` in tasks.json match actual `.env` files
+- [ ] No proposed/placeholder variable names remain
+- [ ] Variables validated at feature-decompose level (Step 1.7)
+- [ ] Implementation agents will receive correct variable names
+
+### Database Tasks
+- [ ] All database-referencing tasks have `requires_database: true`
+- [ ] Verification commands include typegen steps
+- [ ] Type-dependent tasks have proper `blockedBy` dependencies
+
+### Git Commit
+- [ ] Spec files staged and committed
+- [ ] Pushed to `origin/dev`
+- [ ] No uncommitted changes in spec directory
 
 ---
 

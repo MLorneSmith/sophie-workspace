@@ -1,0 +1,422 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1864.I3.F1",
+    "feature_name": "Kanban Summary Widget",
+    "feature_slug": "kanban-summary-widget",
+    "initiative_id": "S1864.I3",
+    "spec_id": 1864,
+    "created_at": "2026-01-27T00:00:00Z",
+    "complexity": {
+      "score": 31,
+      "level": "LOW",
+      "target_steps": {
+        "min": 3,
+        "max": 6
+      },
+      "pattern_matched": "dashboard-card"
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "requires_ui": true,
+    "ui_tasks": ["S1864.I3.F1.T1", "S1864.I3.F1.T2", "S1864.I3.F1.T3", "S1864.I3.F1.T4"],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1864.I3.F1.T1",
+      "type": "task",
+      "name": "Create KanbanSummaryWidget component skeleton",
+      "action": {
+        "verb": "Create",
+        "target": "widget component skeleton"
+      },
+      "purpose": "Set up the base component file with Card layout and TypeScript types",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "heading"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/kanban/_lib/hooks/use-tasks.ts",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts",
+          "packages/ui/src/shadcn/card.tsx",
+          "packages/ui/src/shadcn/skeleton.tsx"
+        ],
+        "dependencies": [
+          "useTasks() hook",
+          "Card, CardHeader, CardTitle, CardContent components",
+          "Skeleton component",
+          "Task type from schema"
+        ],
+        "constraints": [
+          "Must be client component (uses useTasks hook)",
+          "Match card styling from spec mockup",
+          "Display 'use client' directive"
+        ]
+      },
+      "input_state": "Feature requirements document exists, useTasks hook available",
+      "output_state": "Component file created with Card structure and Skeleton loading state",
+      "acceptance_criterion": "Component file exists at apps/web/app/home/(user)/_components/kanban-summary-widget.tsx with 'use client' directive and renders Card with title 'Your Tasks'",
+      "verification_command": "grep -q \"'use client'\" apps/web/app/home/(user)/_components/kanban-summary-widget.tsx && grep -q 'Your Tasks' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "new",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1864.I3.F1.T2", "S1864.I3.F1.T3", "S1864.I3.F1.T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F1.T2",
+      "type": "task",
+      "name": "Add task filtering logic for doing and next pending tasks",
+      "action": {
+        "verb": "Add",
+        "target": "task filtering logic"
+      },
+      "purpose": "Filter tasks by status to show up to 3 'doing' tasks and 1 next 'do' task",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": false,
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+          "apps/web/app/home/(user)/kanban/_lib/schema/task.schema.ts"
+        ],
+        "dependencies": [
+          "useTasks() hook returns Task[] with status property",
+          "Task type with status: 'do' | 'doing' | 'done'"
+        ],
+        "constraints": [
+          "Limit 'doing' tasks to first 3",
+          "Find next pending task from 'do' status",
+          "Sort 'doing' tasks by created_at descending",
+          "Handle empty arrays gracefully"
+        ]
+      },
+      "input_state": "Component skeleton exists with useTasks() hook integrated",
+      "output_state": "Component filters tasks into doingTasks (max 3) and nextPendingTask variables",
+      "acceptance_criterion": "Component has doingTasks array (max length 3) and nextPendingTask variable extracted from tasks data",
+      "verification_command": "grep -q 'doingTasks' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx && grep -q 'nextPendingTask' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F1.T1"],
+        "blocks": ["S1864.I3.F1.T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F1.T3",
+      "type": "task",
+      "name": "Add task display with subtask progress",
+      "action": {
+        "verb": "Add",
+        "target": "task display UI"
+      },
+      "purpose": "Render doing tasks and next pending task with subtask completion counts",
+      "status": "draft",
+      "estimated_hours": 3,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "DOING"
+          },
+          {
+            "command": "is visible",
+            "target": "NEXT UP"
+          },
+          {
+            "command": "find role",
+            "target": "list"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+          "apps/web/app/home/(user)/kanban/_components/task-card.tsx",
+          "packages/ui/src/shadcn/badge.tsx"
+        ],
+        "dependencies": [
+          "Task type with subtasks array",
+          "Badge component for priority colors",
+          "CheckCircle2Icon from lucide-react"
+        ],
+        "constraints": [
+          "Show subtask progress as 'X/Y complete'",
+          "Match priority border colors from task-card.tsx",
+          "Display phase badge if present",
+          "Section headings: 'DOING' and 'NEXT UP'"
+        ]
+      },
+      "input_state": "Filtered task arrays (doingTasks, nextPendingTask) available",
+      "output_state": "Component displays task titles with subtask counts and priority colors",
+      "acceptance_criterion": "Component renders task list with titles, subtask progress indicators, and priority-colored borders matching task-card pattern",
+      "verification_command": "grep -q 'completedSubtasks' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx && grep -q 'DOING' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F1.T1", "S1864.I3.F1.T2"],
+        "blocks": ["S1864.I3.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F1.T4",
+      "type": "task",
+      "name": "Add empty state for no tasks",
+      "action": {
+        "verb": "Add",
+        "target": "empty state UI"
+      },
+      "purpose": "Display helpful empty state when user has no tasks",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 2,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "No tasks yet"
+          },
+          {
+            "command": "find role",
+            "target": "link"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+          "packages/ui/src/makerkit/empty-state.tsx"
+        ],
+        "dependencies": [
+          "EmptyState, EmptyStateHeading, EmptyStateText, EmptyStateButton components"
+        ],
+        "constraints": [
+          "Show when doingTasks and nextPendingTask are both empty",
+          "Include link to /home/kanban",
+          "Match EmptyState pattern from packages/ui"
+        ]
+      },
+      "input_state": "Component has task filtering logic that may return empty arrays",
+      "output_state": "Component shows EmptyState with CTA to kanban board when no tasks exist",
+      "acceptance_criterion": "Component renders EmptyState component with 'No tasks yet' heading when both doingTasks and nextPendingTask are empty",
+      "verification_command": "grep -q 'EmptyState' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx && grep -q 'No tasks yet' apps/web/app/home/(user)/_components/kanban-summary-widget.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F1.T1"],
+        "blocks": ["S1864.I3.F1.T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1864.I3.F1.T5",
+      "type": "task",
+      "name": "Wire widget to dashboard page",
+      "action": {
+        "verb": "Wire",
+        "target": "widget to dashboard page"
+      },
+      "purpose": "Integrate KanbanSummaryWidget into the user dashboard grid layout",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 3,
+      "requires_database": false,
+      "requires_ui": true,
+      "visual_verification": {
+        "route": "/home",
+        "wait_ms": 3000,
+        "checks": [
+          {
+            "command": "is visible",
+            "target": "Your Tasks"
+          },
+          {
+            "command": "find role",
+            "target": "main"
+          }
+        ],
+        "screenshot": true
+      },
+      "context": {
+        "files": [
+          "apps/web/app/home/(user)/page.tsx",
+          "apps/web/app/home/(user)/_components/kanban-summary-widget.tsx"
+        ],
+        "dependencies": [
+          "KanbanSummaryWidget component",
+          "PageBody component from @kit/ui/page",
+          "Suspense from react"
+        ],
+        "constraints": [
+          "Wrap widget in Suspense with Skeleton fallback",
+          "Place in PageBody",
+          "Maintain existing HomeLayoutPageHeader"
+        ]
+      },
+      "input_state": "Widget component is complete with all states implemented",
+      "output_state": "Dashboard page imports and renders KanbanSummaryWidget inside PageBody",
+      "acceptance_criterion": "Dashboard page imports KanbanSummaryWidget and renders it within PageBody, wrapped in Suspense",
+      "verification_command": "grep -q 'KanbanSummaryWidget' apps/web/app/home/(user)/page.tsx && grep -q 'Suspense' apps/web/app/home/(user)/page.tsx",
+      "outputs": [
+        {
+          "type": "modified",
+          "path": "apps/web/app/home/(user)/page.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1864.I3.F1.T3", "S1864.I3.F1.T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Component Foundation",
+        "task_ids": ["S1864.I3.F1.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 2,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Task Display Implementation",
+        "task_ids": ["S1864.I3.F1.T2", "S1864.I3.F1.T3", "S1864.I3.F1.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 6,
+        "parallel_hours": 3
+      },
+      {
+        "id": 3,
+        "name": "Integration",
+        "task_ids": ["S1864.I3.F1.T5"],
+        "depends_on_groups": [2],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1864.I3.F1.T1", "S1864.I3.F1.T2", "S1864.I3.F1.T3", "S1864.I3.F1.T5"],
+      "total_hours": 8
+    },
+    "duration": {
+      "sequential": 9,
+      "parallel": 6,
+      "time_saved_percent": 33
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}

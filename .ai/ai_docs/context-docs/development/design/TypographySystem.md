@@ -1,5 +1,11 @@
 # Typography System Documentation
 
+> **Note**: This document has been superseded by the comprehensive [DesignSystem.md](./DesignSystem.md).
+> Typography is now documented in Section 2 of the Design System.
+> This file is kept for historical reference.
+
+---
+
 ## Font Pairing
 
 ### Plus Jakarta Sans (Headings)

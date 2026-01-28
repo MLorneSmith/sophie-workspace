@@ -300,6 +300,52 @@ This prevents npx from prompting for package installation confirmation, which co
 4. Check server is running: `docker ps` or test endpoint with `curl`
 5. Validate JSON: `jq empty .mcp.json`
 
+### PostHog MCP Server
+
+PostHog provides an official MCP server for accessing analytics, feature flags, error tracking, experiments, and insights directly from Claude Code.
+
+**Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "posthog": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.posthog.com/mcp",
+        "--header",
+        "Authorization:${POSTHOG_AUTH_HEADER}"
+      ],
+      "env": {
+        "POSTHOG_AUTH_HEADER": "Bearer ${POSTHOG_PERSONAL_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+**Setup:**
+
+1. Get your Personal API key from [PostHog Settings](https://app.posthog.com/settings/user-api-keys?preset=mcp_server)
+2. Add `POSTHOG_PERSONAL_API_KEY=your_key_here` to `.env.local`
+3. Add the configuration above to `.mcp.json`
+4. Restart Claude Code
+
+**EU Users:** If your PostHog instance is in the EU, replace `mcp.posthog.com` with `mcp-eu.posthog.com`.
+
+**Available Capabilities:**
+- Query analytics and insights
+- Manage feature flags
+- Investigate error tracking
+- View experiments
+- Access user behavior data
+
+**References:**
+- [PostHog MCP Documentation](https://posthog.com/docs/model-context-protocol)
+- [PostHog MCP GitHub](https://github.com/PostHog/posthog/tree/master/services/mcp)
+
 ### docs-mcp Specific Issues
 
 **Verify container is running:**

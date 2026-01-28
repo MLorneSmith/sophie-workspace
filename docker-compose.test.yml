@@ -18,7 +18,6 @@ services:
       - stripe-webhook-data:/stripe:ro
     tmpfs:
       - /app/apps/web/.next:uid=1000,gid=1000,mode=1777
-      - /app/apps/payload/.next:uid=1000,gid=1000,mode=1777
     ports:
       - "3001:3001"
     restart: unless-stopped

@@ -8,6 +8,17 @@ input=$(cat)
 # Extract model display name and convert to lowercase
 model=$(echo "$input" | jq -r '.model.display_name' | tr '[:upper:]' '[:lower:]')
 
+# Check if THIS session is using claude-code-router (via ANTHROPIC_BASE_URL)
+CCR_CONFIG="$HOME/.claude-code-router/config.json"
+if [ -f "$CCR_CONFIG" ] && [[ "${ANTHROPIC_BASE_URL:-}" == *"localhost:3456"* || "${ANTHROPIC_BASE_URL:-}" == *"127.0.0.1:3456"* ]]; then
+    # This session is routed through CCR - get the default model
+    ccr_model=$(jq -r '.Router.default // empty' "$CCR_CONFIG" 2>/dev/null)
+    if [ -n "$ccr_model" ]; then
+        # Extract just the model name (after the comma)
+        model="${ccr_model#*,}"
+    fi
+fi
+
 # ============================================================================
 # Context Window Usage
 # ============================================================================

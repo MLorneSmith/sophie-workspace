@@ -1,0 +1,47 @@
+{
+  "initiative_id": "S1864.I1",
+  "initiative_name": "Dashboard Foundation",
+  "spec_id": "1864",
+  "status": "completed",
+  "current_phase": "finalization",
+  "features": {
+    "S1864.I1.F1": {
+      "name": "Types and Data Loader",
+      "status": "completed",
+      "task_count": 4,
+      "hours_estimate": 9
+    },
+    "S1864.I1.F2": {
+      "name": "Dashboard Page Shell",
+      "status": "completed",
+      "task_count": 2,
+      "hours_estimate": 2
+    },
+    "S1864.I1.F3": {
+      "name": "Responsive Grid Layout",
+      "status": "completed",
+      "task_count": 3,
+      "hours_estimate": 4
+    },
+    "S1864.I1.F4": {
+      "name": "Skeleton Loading States",
+      "status": "completed",
+      "task_count": 3,
+      "hours_estimate": 7
+    }
+  },
+  "totals": {
+    "features_completed": 4,
+    "features_total": 4,
+    "tasks_total": 12,
+    "spikes_pending": [],
+    "total_spikes": 0,
+    "total_hours_sequential": 22,
+    "total_hours_parallel": 16
+  },
+  "timestamps": {
+    "started": "2026-01-27T00:00:00Z",
+    "last_updated": "2026-01-27T00:00:00Z",
+    "completed": "2026-01-27T00:00:00Z"
+  }
+}
