@@ -26,14 +26,14 @@
     ],
     "required_env_vars": [
       {
-        "name": "NEXT_PUBLIC_CAL_USERNAME",
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
         "description": "Cal.com username for embed URL construction",
         "source": "Cal.com Account Settings",
         "required": true,
         "scope": "client"
       },
       {
-        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
         "description": "Cal.com event type slug (e.g., '60min') for booking",
         "source": "Cal.com Event Types",
         "required": true,
@@ -182,8 +182,8 @@
         ],
         "dependencies": [
           "loadCalEmbed() from calcom-embed-loader.ts",
-          "process.env.NEXT_PUBLIC_CAL_USERNAME",
-          "process.env.NEXT_PUBLIC_CAL_EVENT_SLUG",
+          "process.env.NEXT_PUBLIC_CALCOM_COACH_USERNAME",
+          "process.env.NEXT_PUBLIC_CALCOM_EVENT_SLUG",
           "User email and name from session context"
         ],
         "constraints": [
@@ -201,7 +201,7 @@
         "patterns": [
           {
             "type": "env_var_graceful",
-            "target": "NEXT_PUBLIC_CAL_USERNAME and NEXT_PUBLIC_CAL_EVENT_SLUG",
+            "target": "NEXT_PUBLIC_CALCOM_COACH_USERNAME and NEXT_PUBLIC_CALCOM_EVENT_SLUG",
             "expected_action": "warn if missing, return null instead of error",
             "file_path": "apps/web/app/home/(user)/_components/booking-modal.tsx"
           }

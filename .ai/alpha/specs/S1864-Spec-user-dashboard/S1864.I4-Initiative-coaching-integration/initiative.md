@@ -33,9 +33,9 @@ Directly supports Goal G4 (Increase coaching bookings +30%) by making coaching s
 - [ ] Webhook handler for booking events (optional, for activity feed integration)
 
 ### Out of Scope
-- [ ] Full Cal.com atoms integration (@calcom/atoms is deprecated)
+- [ ] Full Cal.com atoms integration (embed script is simpler for widget use case)
 - [ ] Multiple event types (single coaching event type for v1)
-- [ ] Managed user creation (use existing Cal.com authentication)
+- [ ] Managed user creation (Cal.com Platform OAuth is deprecated; use API key auth)
 - [ ] Custom theming of Cal.com embed (use default styling)
 - [ ] Recurring booking management
 

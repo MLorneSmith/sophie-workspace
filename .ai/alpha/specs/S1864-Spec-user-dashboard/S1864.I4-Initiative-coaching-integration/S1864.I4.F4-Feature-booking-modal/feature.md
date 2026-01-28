@@ -61,8 +61,8 @@ Integrate Cal.com booking embed for creating new coaching sessions. The "Book Ne
 
 | Variable | Description | Source |
 |----------|-------------|--------|
-| `NEXT_PUBLIC_CAL_USERNAME` | Cal.com username for embed URL | From F1 |
-| `NEXT_PUBLIC_CAL_EVENT_SLUG` | Event type slug for embed URL | From F1 |
+| `NEXT_PUBLIC_CALCOM_COACH_USERNAME` | Cal.com username for embed URL | From F1 |
+| `NEXT_PUBLIC_CALCOM_EVENT_SLUG` | Event type slug for embed URL | From F1 |
 
 ## Dependencies
 

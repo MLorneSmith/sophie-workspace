@@ -191,7 +191,7 @@ A 7-widget dashboard arranged in a 3-3-1 responsive grid layout at `/home/(user)
 - **State**: React Query for client-side caching (existing pattern)
 - **Data Fetching**: Server component loaders with `Promise.all()` parallel fetching
 - **UI Components**: Shadcn/ui Card, Table, Badge, Skeleton from `@kit/ui`
-- **Cal.com**: Embed script (vanilla JS) - @calcom/atoms is deprecated; use `Cal("inline", {...})` for booking widget
+- **Cal.com**: Embed script (vanilla JS) or @calcom/embed-react - Cal.com Platform OAuth is deprecated (not atoms); use `Cal("inline", {...})` or `<Cal calLink="..." />` for booking widget
 
 ### Dependencies
 
@@ -315,7 +315,7 @@ A 7-widget dashboard arranged in a 3-3-1 responsive grid layout at `/home/(user)
 | **SCQA Framework** | Situation-Complication-Question-Answer structure for presentations |
 | **Radial Progress** | Circular progress indicator showing completion percentage |
 | **Spider/Radar Chart** | Multi-axis chart showing scores across categories |
-| **Cal.com Embed** | Vanilla JS embed script for Cal.com scheduling integration (atoms package deprecated) |
+| **Cal.com Embed** | Vanilla JS embed script or @calcom/embed-react for Cal.com scheduling integration (Platform OAuth deprecated, not atoms) |
 | **Activity Feed** | Chronological list of user actions and events |
 | **RLS** | Row Level Security - Supabase's per-row access control |
 
@@ -434,7 +434,7 @@ A 7-widget dashboard arranged in a 3-3-1 responsive grid layout at `/home/(user)
 
 | Date | Decision | Rationale | Decided By |
 |------|----------|-----------|------------|
-| 2026-01-27 | Use Cal.com embed script over @calcom/atoms | @calcom/atoms (Platform) is deprecated; embed script is the supported approach | User/Spec Agent |
+| 2026-01-27 | Use Cal.com embed script or @calcom/embed-react | Cal.com Platform OAuth is deprecated (Dec 2025), but @calcom/atoms and @calcom/embed-react are actively maintained. Embed script or embed-react package both work for simple booking widget. | User/Spec Agent |
 | 2026-01-27 | Create new activity_logs table | User preference for dedicated table over aggregation | User |
 | 2026-01-27 | 30-day activity feed with pagination | User preference, balances completeness with performance | User |
 | 2026-01-27 | 3-3-1 grid layout | Research shows 3-6 widgets optimal, matches 7-widget requirement | Research |

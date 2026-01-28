@@ -22,28 +22,21 @@
     "ui_tasks": [],
     "required_env_vars": [
       {
-        "name": "CAL_API_KEY",
-        "description": "Cal.com V2 API key for server-side booking requests",
-        "source": "Cal.com Platform Settings → API Keys",
+        "name": "CALCOM_API_KEY",
+        "description": "Cal.com V2 API key for server-side booking requests (Bearer auth)",
+        "source": "Cal.com Settings → Security → API Keys",
         "required": true,
         "scope": "server"
       },
       {
-        "name": "CAL_WEBHOOK_SECRET",
-        "description": "HMAC secret for Cal.com webhook signature verification",
-        "source": "Cal.com Webhook Settings → Webhook Secret",
-        "required": true,
-        "scope": "server"
-      },
-      {
-        "name": "NEXT_PUBLIC_CAL_USERNAME",
+        "name": "NEXT_PUBLIC_CALCOM_COACH_USERNAME",
         "description": "Cal.com username for embed URLs and public booking links",
         "source": "Cal.com Account → Settings → Username",
         "required": true,
         "scope": "client"
       },
       {
-        "name": "NEXT_PUBLIC_CAL_EVENT_SLUG",
+        "name": "NEXT_PUBLIC_CALCOM_EVENT_SLUG",
         "description": "Event type slug for coaching sessions (e.g., '60min')",
         "source": "Cal.com Event Types → Event slug",
         "required": true,
@@ -205,16 +198,16 @@
         "files": [],
         "dependencies": ["zod"],
         "constraints": [
-          "Must validate CAL_API_KEY (server-only, required)",
-          "Must validate CAL_WEBHOOK_SECRET (server-only, required)",
-          "Must validate NEXT_PUBLIC_CAL_USERNAME (client-safe, required)",
-          "Must validate NEXT_PUBLIC_CAL_EVENT_SLUG (client-safe, required)"
+          "Must validate CALCOM_API_KEY (server-only, required)",
+          "Must validate CALCOM_WEBHOOK_SECRET (server-only, required)",
+          "Must validate NEXT_PUBLIC_CALCOM_COACH_USERNAME (client-safe, required)",
+          "Must validate NEXT_PUBLIC_CALCOM_EVENT_SLUG (client-safe, required)"
         ]
       },
       "input_state": "No Cal.com environment validation exists",
       "output_state": "Zod schema created at apps/web/app/home/(user)/coaching/_lib/schemas/calcom-env.schema.ts",
       "acceptance_criterion": "CalComEnvSchema validates all four required environment variables",
-      "verification_command": "grep -q 'CAL_API_KEY.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts && grep -q 'CAL_WEBHOOK_SECRET.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts",
+      "verification_command": "grep -q 'CALCOM_API_KEY.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts && grep -q 'CALCOM_WEBHOOK_SECRET.*z\\.string' apps/web/app/home/\\(user\\)/coaching/_lib/schemas/calcom-env.schema.ts",
       "outputs": [
         {
           "type": "new",
@@ -298,7 +291,7 @@
         "files": ["apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"],
         "dependencies": ["CalComBooking", "CalComEnvSchema", "@kit/shared/logger"],
         "constraints": [
-          "Must use fetch with Authorization: Bearer ${CAL_API_KEY}",
+          "Must use fetch with Authorization: Bearer ${CALCOM_API_KEY}",
           "Must include cal-api-version: 2024-08-13 header",
           "Must filter for status=accepted and afterStart=now",
           "Must handle errors gracefully and return empty array on failure",
@@ -313,7 +306,7 @@
         "patterns": [
           {
             "type": "env_var_graceful",
-            "target": "CAL_API_KEY",
+            "target": "CALCOM_API_KEY",
             "expected_action": "log warning and return empty array",
             "file_path": "apps/web/app/home/(user)/coaching/_lib/server/calcom-api.service.ts"
           }
@@ -435,10 +428,10 @@
     {
       "id": "S1864.I4.F1.T9",
       "type": "task",
-      "name": "Add CAL_API_KEY to .env.local.example",
+      "name": "Add CALCOM_API_KEY to .env.local.example",
       "action": {
         "verb": "Add",
-        "target": "CAL_API_KEY environment variable"
+        "target": "CALCOM_API_KEY environment variable"
       },
       "purpose": "Document required Cal.com API key environment variable for developers",
       "status": "draft",
@@ -456,9 +449,9 @@
         ]
       },
       "input_state": ".env.local.example exists without Cal.com variables",
-      "output_state": "CAL_API_KEY documented in .env.local.example",
-      "acceptance_criterion": "CAL_API_KEY appears in .env.local.example with helpful comment",
-      "verification_command": "grep -q 'CAL_API_KEY' apps/web/.env.local.example",
+      "output_state": "CALCOM_API_KEY documented in .env.local.example",
+      "acceptance_criterion": "CALCOM_API_KEY appears in .env.local.example with helpful comment",
+      "verification_command": "grep -q 'CALCOM_API_KEY' apps/web/.env.local.example",
       "outputs": [
         {
           "type": "modified",
@@ -481,10 +474,10 @@
     {
       "id": "S1864.I4.F1.T10",
       "type": "task",
-      "name": "Add CAL_WEBHOOK_SECRET to .env.local.example",
+      "name": "Add CALCOM_WEBHOOK_SECRET to .env.local.example",
       "action": {
         "verb": "Add",
-        "target": "CAL_WEBHOOK_SECRET environment variable"
+        "target": "CALCOM_WEBHOOK_SECRET environment variable"
       },
       "purpose": "Document required webhook secret for signature verification",
       "status": "draft",
@@ -501,10 +494,10 @@
           "Must be grouped with other Cal.com variables"
         ]
       },
-      "input_state": "CAL_API_KEY documented in .env.local.example",
-      "output_state": "CAL_WEBHOOK_SECRET documented in .env.local.example",
-      "acceptance_criterion": "CAL_WEBHOOK_SECRET appears in .env.local.example",
-      "verification_command": "grep -q 'CAL_WEBHOOK_SECRET' apps/web/.env.local.example",
+      "input_state": "CALCOM_API_KEY documented in .env.local.example",
+      "output_state": "CALCOM_WEBHOOK_SECRET documented in .env.local.example",
+      "acceptance_criterion": "CALCOM_WEBHOOK_SECRET appears in .env.local.example",
+      "verification_command": "grep -q 'CALCOM_WEBHOOK_SECRET' apps/web/.env.local.example",
       "outputs": [
         {
           "type": "modified",
@@ -527,10 +520,10 @@
     {
       "id": "S1864.I4.F1.T11",
       "type": "task",
-      "name": "Add NEXT_PUBLIC_CAL_USERNAME to .env.local.example",
+      "name": "Add NEXT_PUBLIC_CALCOM_COACH_USERNAME to .env.local.example",
       "action": {
         "verb": "Add",
-        "target": "NEXT_PUBLIC_CAL_USERNAME environment variable"
+        "target": "NEXT_PUBLIC_CALCOM_COACH_USERNAME environment variable"
       },
       "purpose": "Document client-accessible Cal.com username for booking widget",
       "status": "draft",
@@ -547,10 +540,10 @@
           "Must include example value"
         ]
       },
-      "input_state": "CAL_WEBHOOK_SECRET documented in .env.local.example",
-      "output_state": "NEXT_PUBLIC_CAL_USERNAME documented in .env.local.example",
-      "acceptance_criterion": "NEXT_PUBLIC_CAL_USERNAME appears in .env.local.example",
-      "verification_command": "grep -q 'NEXT_PUBLIC_CAL_USERNAME' apps/web/.env.local.example",
+      "input_state": "CALCOM_WEBHOOK_SECRET documented in .env.local.example",
+      "output_state": "NEXT_PUBLIC_CALCOM_COACH_USERNAME documented in .env.local.example",
+      "acceptance_criterion": "NEXT_PUBLIC_CALCOM_COACH_USERNAME appears in .env.local.example",
+      "verification_command": "grep -q 'NEXT_PUBLIC_CALCOM_COACH_USERNAME' apps/web/.env.local.example",
       "outputs": [
         {
           "type": "modified",
@@ -573,10 +566,10 @@
     {
       "id": "S1864.I4.F1.T12",
       "type": "task",
-      "name": "Add NEXT_PUBLIC_CAL_EVENT_SLUG to .env.local.example",
+      "name": "Add NEXT_PUBLIC_CALCOM_EVENT_SLUG to .env.local.example",
       "action": {
         "verb": "Add",
-        "target": "NEXT_PUBLIC_CAL_EVENT_SLUG environment variable"
+        "target": "NEXT_PUBLIC_CALCOM_EVENT_SLUG environment variable"
       },
       "purpose": "Document client-accessible event type slug for booking widget",
       "status": "draft",
@@ -593,10 +586,10 @@
           "Must be the last Cal.com environment variable"
         ]
       },
-      "input_state": "NEXT_PUBLIC_CAL_USERNAME documented in .env.local.example",
+      "input_state": "NEXT_PUBLIC_CALCOM_COACH_USERNAME documented in .env.local.example",
       "output_state": "All four Cal.com environment variables documented",
-      "acceptance_criterion": "NEXT_PUBLIC_CAL_EVENT_SLUG appears in .env.local.example",
-      "verification_command": "grep -q 'NEXT_PUBLIC_CAL_EVENT_SLUG' apps/web/.env.local.example",
+      "acceptance_criterion": "NEXT_PUBLIC_CALCOM_EVENT_SLUG appears in .env.local.example",
+      "verification_command": "grep -q 'NEXT_PUBLIC_CALCOM_EVENT_SLUG' apps/web/.env.local.example",
       "outputs": [
         {
           "type": "modified",

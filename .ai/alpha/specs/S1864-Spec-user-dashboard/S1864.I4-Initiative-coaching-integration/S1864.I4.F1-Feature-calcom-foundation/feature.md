@@ -55,14 +55,15 @@ Set up Cal.com V2 API client infrastructure including TypeScript types for booki
 - No real-time updates without webhooks (acceptable for v1)
 
 ## Required Credentials
-> Environment variables required for this feature to function. Extracted from research files.
+> Environment variables required for this feature to function. Matched to existing .env configuration.
 
 | Variable | Description | Source |
 |----------|-------------|--------|
-| `CAL_API_KEY` | Cal.com V2 API key for server-side requests | Cal.com Platform Settings |
-| `CAL_WEBHOOK_SECRET` | HMAC secret for webhook signature verification | Cal.com Webhook Settings |
-| `NEXT_PUBLIC_CAL_USERNAME` | Cal.com username for embed URLs | Cal.com Account |
-| `NEXT_PUBLIC_CAL_EVENT_SLUG` | Event type slug (e.g., "60min") | Cal.com Event Types |
+| `CALCOM_API_KEY` | Cal.com V2 API key for server-side requests (Bearer auth) | Cal.com Settings > Security > API Keys |
+| `NEXT_PUBLIC_CALCOM_COACH_USERNAME` | Cal.com username for embed URLs | Cal.com Account Settings |
+| `NEXT_PUBLIC_CALCOM_EVENT_SLUG` | Event type slug (e.g., "60min") | Cal.com Event Types |
+
+**Note**: `CAL_WEBHOOK_SECRET` is optional - only needed if implementing webhook handler for activity feed integration.
 
 ## Dependencies
 
