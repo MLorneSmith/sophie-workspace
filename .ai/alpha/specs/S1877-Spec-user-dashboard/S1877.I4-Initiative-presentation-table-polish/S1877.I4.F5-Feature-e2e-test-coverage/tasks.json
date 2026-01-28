@@ -10,7 +10,7 @@
     "complexity": {
       "score": 44,
       "level": "STANDARD",
-      "target_steps": { "min": 6, "max": 12 },
+      "target_steps": { "min": 6, "max": 13 },
       "pattern_matched": null
     },
     "requires_database": false,
@@ -277,6 +277,38 @@
     {
       "id": "S1877.I4.F5.T9",
       "type": "task",
+      "name": "Create loading skeleton test",
+      "action": { "verb": "Create", "target": "loading skeleton test" },
+      "purpose": "Verify loading skeleton displays during data fetch",
+      "status": "draft",
+      "estimated_hours": 4,
+      "priority": 5,
+      "group": 5,
+      "context": {
+        "files": ["apps/e2e/tests/user/presentation-table.po.ts", "apps/e2e/tests/user/presentation-table.spec.ts"],
+        "dependencies": ["PresentationTablePageObject state methods", "skeleton elements"],
+        "constraints": ["Test skeleton rows display during fetch"]
+      },
+      "input_state": "No loading skeleton test exists",
+      "output_state": "Test verifies loading skeleton displays correctly",
+      "acceptance_criterion": "Loading skeleton test passes",
+      "verification_command": "grep -q 'loading.*skeleton|skeleton.*loading' apps/e2e/tests/user/presentation-table.spec.ts",
+      "outputs": [
+        { "type": "modified", "path": "apps/e2e/tests/user/presentation-table.spec.ts" }
+      ],
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T3"], "blocks": [] },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1877.I4.F5.T10",
+      "type": "task",
       "name": "Create navigation tests for Edit Outline buttons",
       "action": { "verb": "Create", "target": "navigation tests" },
       "purpose": "Verify Edit Outline buttons navigate to storyboard page",
@@ -307,7 +339,7 @@
       }
     },
     {
-      "id": "S1877.I4.F5.T10",
+      "id": "S1877.I4.F5.T11",
       "type": "task",
       "name": "Create RLS isolation test",
       "action": { "verb": "Create", "target": "RLS isolation test" },
@@ -339,7 +371,7 @@
       }
     },
     {
-      "id": "S1877.I4.F5.T11",
+      "id": "S1877.I4.F5.T12",
       "type": "task",
       "name": "Create mobile responsive test",
       "action": { "verb": "Create", "target": "mobile test" },
@@ -371,7 +403,7 @@
       }
     },
     {
-      "id": "S1877.I4.F5.T12",
+      "id": "S1877.I4.F5.T13",
       "type": "task",
       "name": "Run presentation table E2E test suite",
       "action": { "verb": "Test", "target": "test suite" },
@@ -390,7 +422,7 @@
       "acceptance_criterion": "All tests pass with no failures",
       "verification_command": "pnpm --filter web-e2e test --grep 'presentation-table' && echo 'Tests executed successfully'",
       "outputs": [],
-      "dependencies": { "blocked_by": ["S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6", "S1877.I4.F5.T7", "S1877.I4.F5.T8", "S1877.I4.F5.T9", "S1877.I4.F5.T10", "S1877.I4.F5.T11"], "blocks": [] },
+      "dependencies": { "blocked_by": ["S1877.I4.F5.T4", "S1877.I4.F5.T5", "S1877.I4.F5.T6", "S1877.I4.F5.T7", "S1877.I4.F5.T8", "S1877.I4.F5.T9", "S1877.I4.F5.T10", "S1877.I4.F5.T11", "S1877.I4.F5.T12"], "blocks": [] },
       "m1_checks": {
         "single_verb": true,
         "no_conjunctions": true,
@@ -438,15 +470,15 @@
       {
         "id": 5,
         "name": "State Tests",
-        "task_ids": ["S1877.I4.F5.T8"],
+        "task_ids": ["S1877.I4.F5.T8", "S1877.I4.F5.T9"],
         "depends_on_groups": [2],
-        "estimated_hours": 5,
+        "estimated_hours": 8,
         "parallel_hours": 5
       },
       {
         "id": 6,
         "name": "Navigation and Security Tests",
-        "task_ids": ["S1877.I4.F5.T9", "S1877.I4.F5.T10", "S1877.I4.F5.T11"],
+        "task_ids": ["S1877.I4.F5.T10", "S1877.I4.F5.T11", "S1877.I4.F5.T12"],
         "depends_on_groups": [2],
         "estimated_hours": 12,
         "parallel_hours": 5
@@ -454,7 +486,7 @@
       {
         "id": 7,
         "name": "Test Execution",
-        "task_ids": ["S1877.I4.F5.T12"],
+        "task_ids": ["S1877.I4.F5.T13"],
         "depends_on_groups": [3, 4, 5, 6],
         "estimated_hours": 2,
         "parallel_hours": 2
@@ -472,12 +504,13 @@
       "S1877.I4.F5.T9",
       "S1877.I4.F5.T10",
       "S1877.I4.F5.T11",
-      "S1877.I4.F5.T12"
+      "S1877.I4.F5.T12",
+      "S1877.I4.F5.T13"
     ],
     "duration": {
-      "sequential": 50,
-      "parallel": 31,
-      "time_saved_percent": 38
+      "sequential": 49,
+      "parallel": 24,
+      "time_saved_percent": 51
     }
   },
   "validation": {
@@ -499,6 +532,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }
