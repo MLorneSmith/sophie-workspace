@@ -1,0 +1,493 @@
+{
+  "$schema": "../../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1882.I1.F3",
+    "feature_name": "Verification & Screenshots",
+    "feature_slug": "verification-and-screenshots",
+    "initiative_id": "S1882.I1",
+    "spec_id": "S1882",
+    "created_at": "2026-01-28T00:00:00Z",
+    "complexity": {
+      "score": 25,
+      "level": "LOW",
+      "target_steps": { "min": 3, "max": 6 },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "S1882.I1.F3.T1",
+      "type": "task",
+      "name": "Configure development server for visual verification",
+      "action": { "verb": "Configure", "target": "development server" },
+      "purpose": "Launch application to verify F1 and F2 design token implementations",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 0,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Ensure F1 (CSS tokens) and F2 (fonts) are complete",
+          "Server runs on port 3001",
+          "No TypeScript errors in implementation"
+        ]
+      },
+      "input_state": "Dev server is not running, F1 and F2 implementations complete",
+      "output_state": "Dev server running successfully at http://localhost:3001",
+      "acceptance_criterion": "Dev server starts without errors and serves pages at http://localhost:3001",
+      "verification_command": "pnpm dev &",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["S1882.I1.F3.T2", "S1882.I1.F3.T3", "S1882.I1.F3.T4", "S1882.I1.F3.T5", "S1882.I1.F3.T6"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T2",
+      "type": "task",
+      "name": "Verify fonts are applied via DevTools",
+      "action": { "verb": "Verify", "target": "fonts are applied via DevTools" },
+      "purpose": "Confirm Plus Jakarta Sans and DM Sans fonts render correctly on headings and body text",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/lib/fonts.ts", "apps/web/app/layout.tsx"],
+        "dependencies": ["Browser DevTools - Computed Styles panel"],
+        "constraints": [
+          "Expected heading font: Plus Jakarta Sans",
+          "Expected body font: DM Sans",
+          "Check in both light and dark modes"
+        ]
+      },
+      "input_state": "Dev server running, fonts configured in F2",
+      "output_state": "Font application documented with pass/fail status",
+      "acceptance_criterion": "Plus Jakarta Sans verified on headings, DM Sans verified on body text via Computed Styles",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T3",
+      "type": "task",
+      "name": "Verify colors are applied via DevTools",
+      "action": { "verb": "Verify", "target": "colors are applied via DevTools" },
+      "purpose": "Confirm brand cyan primary and warm amber accent colors render correctly",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["Browser DevTools - Computed Styles panel"],
+        "constraints": [
+          "Primary cyan: #24a9e0 (HSL: 195 78% 51%)",
+          "Accent amber: #d97706 (HSL: 38 92% 43%)",
+          "Check in both light and dark modes"
+        ]
+      },
+      "input_state": "Dev server running, colors configured in F1",
+      "output_state": "Color application documented with pass/fail status",
+      "acceptance_criterion": "Brand cyan (#24a9e0) verified as primary, warm amber (#d97706) verified as accent via Computed Styles",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T4",
+      "type": "task",
+      "name": "Verify radius and spacing via DevTools",
+      "action": { "verb": "Verify", "target": "radius and spacing via DevTools" },
+      "purpose": "Confirm 4px border radius and compact spacing are applied",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["Browser DevTools - Computed Styles panel"],
+        "constraints": [
+          "Expected radius: 4px (0.25rem)",
+          "Expected spacing: compact (0.85 density)",
+          "Check border-radius on buttons and cards"
+        ]
+      },
+      "input_state": "Dev server running, radius and spacing configured in F1",
+      "output_state": "Radius and spacing documented with pass/fail status",
+      "acceptance_criterion": "4px border radius verified, compact spacing verified via Computed Styles",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T5",
+      "type": "task",
+      "name": "Test dark mode functionality",
+      "action": { "verb": "Test", "target": "dark mode functionality" },
+      "purpose": "Ensure theme toggle works and dark mode colors are readable",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["Theme switcher in UI"],
+        "constraints": [
+          "Toggle to dark mode via theme switcher",
+          "Verify all colors invert properly",
+          "Ensure text remains readable"
+        ]
+      },
+      "input_state": "Dev server running, dark mode configured in F1",
+      "output_state": "Dark mode functionality documented with pass/fail status",
+      "acceptance_criterion": "Theme toggle works, dark mode colors render correctly, text is readable",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T6",
+      "type": "task",
+      "name": "Check WCAG AA contrast compliance",
+      "action": { "verb": "Check", "target": "WCAG AA contrast compliance" },
+      "purpose": "Validate all color combinations meet 4.5:1 contrast ratio",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/styles/shadcn-ui.css"],
+        "dependencies": ["Online WCAG contrast checker tool"],
+        "constraints": [
+          "WCAG AA minimum: 4.5:1 contrast",
+          "Test primary vs foreground colors",
+          "Test accent vs foreground colors",
+          "Test in both light and dark modes"
+        ]
+      },
+      "input_state": "Dev server running, colors configured in F1",
+      "output_state": "Contrast ratios documented with pass/fail status",
+      "acceptance_criterion": "All color pairs verified: primary, accent, backgrounds meet WCAG AA 4.5:1 in both modes",
+      "verification_command": "echo 'Manual verification - see findings documentation'",
+      "outputs": [
+        { "type": "modified", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/findings.md" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T1"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T7",
+      "type": "task",
+      "name": "Create screenshots directory structure",
+      "action": { "verb": "Create", "target": "screenshots directory structure" },
+      "purpose": "Set up directory for storing verification screenshots",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 2,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": [],
+        "constraints": [
+          "Directory: .ai/screenshots/S1882-design-system-v4-bold-geometric/",
+          "Ensure directory exists before screenshot capture"
+        ]
+      },
+      "input_state": "Screenshots directory does not exist",
+      "output_state": "Screenshots directory created at .ai/screenshots/S1882-design-system-v4-bold-geometric/",
+      "acceptance_criterion": "Directory .ai/screenshots/S1882-design-system-v4-bold-geometric/ exists",
+      "verification_command": "mkdir -p .ai/screenshots/S1882-design-system-v4-bold-geometric/ && ls -la .ai/screenshots/S1882-design-system-v4-bold-geometric/",
+      "outputs": [
+        { "type": "new", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T2", "S1882.I1.F3.T3", "S1882.I1.F3.T4", "S1882.I1.F3.T5", "S1882.I1.F3.T6"],
+        "blocks": ["S1882.I1.F3.T8", "S1882.I1.F3.T9"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T8",
+      "type": "task",
+      "name": "Add screenshots of home page",
+      "action": { "verb": "Add", "target": "screenshots of home page" },
+      "purpose": "Document visual state of home page for evaluation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/(marketing)/page.tsx"],
+        "dependencies": ["agent-browser or manual screenshot tool"],
+        "constraints": [
+          "Capture in light mode",
+          "Capture in dark mode",
+          "Save as home-light.png and home-dark.png"
+        ]
+      },
+      "input_state": "Screenshots directory created, dev server running",
+      "output_state": "Home page screenshots saved",
+      "acceptance_criterion": "Screenshots exist: home-light.png, home-dark.png",
+      "verification_command": "ls -la .ai/screenshots/S1882-design-system-v4-bold-geometric/home-*.png",
+      "outputs": [
+        { "type": "new", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/home-light.png" },
+        { "type": "new", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/home-dark.png" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T7"],
+        "blocks": ["S1882.I1.F3.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T9",
+      "type": "task",
+      "name": "Add screenshots of team dashboard",
+      "action": { "verb": "Add", "target": "screenshots of team dashboard" },
+      "purpose": "Document visual state of team dashboard for evaluation",
+      "status": "draft",
+      "estimated_hours": 2,
+      "priority": 3,
+      "group": 3,
+      "requires_database": false,
+      "context": {
+        "files": ["apps/web/app/home/[account]/page.tsx"],
+        "dependencies": ["agent-browser or manual screenshot tool"],
+        "constraints": [
+          "Capture in light mode",
+          "Capture in dark mode",
+          "Save as dashboard-light.png and dashboard-dark.png"
+        ]
+      },
+      "input_state": "Screenshots directory created, dev server running",
+      "output_state": "Team dashboard screenshots saved",
+      "acceptance_criterion": "Screenshots exist: dashboard-light.png, dashboard-dark.png",
+      "verification_command": "ls -la .ai/screenshots/S1882-design-system-v4-bold-geometric/dashboard-*.png",
+      "outputs": [
+        { "type": "new", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/dashboard-light.png" },
+        { "type": "new", "path": ".ai/screenshots/S1882-design-system-v4-bold-geometric/dashboard-dark.png" }
+      ],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T7"],
+        "blocks": ["S1882.I1.F3.T10"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "S1882.I1.F3.T10",
+      "type": "task",
+      "name": "Run quality checks",
+      "action": { "verb": "Run", "target": "quality checks" },
+      "purpose": "Ensure code quality standards are met",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 4,
+      "requires_database": false,
+      "context": {
+        "files": [],
+        "dependencies": ["pnpm typecheck", "pnpm lint:fix"],
+        "constraints": [
+          "TypeScript must compile without errors",
+          "Linting must pass or fixable"
+        ]
+      },
+      "input_state": "Verification and screenshots complete",
+      "output_state": "Quality checks passed",
+      "acceptance_criterion": "pnpm typecheck passes, pnpm lint:fix passes",
+      "verification_command": "pnpm typecheck && pnpm lint:fix",
+      "outputs": [],
+      "dependencies": {
+        "blocked_by": ["S1882.I1.F3.T8", "S1882.I1.F3.T9"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 0,
+        "name": "Foundation",
+        "task_ids": ["S1882.I1.F3.T1"],
+        "depends_on_groups": [],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 1,
+        "name": "DevTools Verification",
+        "task_ids": ["S1882.I1.F3.T2", "S1882.I1.F3.T3", "S1882.I1.F3.T4", "S1882.I1.F3.T5", "S1882.I1.F3.T6"],
+        "depends_on_groups": [0],
+        "estimated_hours": 6,
+        "parallel_hours": 2
+      },
+      {
+        "id": 2,
+        "name": "Directory Setup",
+        "task_ids": ["S1882.I1.F3.T7"],
+        "depends_on_groups": [0, 1],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 3,
+        "name": "Screenshot Capture",
+        "task_ids": ["S1882.I1.F3.T8", "S1882.I1.F3.T9"],
+        "depends_on_groups": [0, 1, 2],
+        "estimated_hours": 4,
+        "parallel_hours": 2
+      },
+      {
+        "id": 4,
+        "name": "Quality Validation",
+        "task_ids": ["S1882.I1.F3.T10"],
+        "depends_on_groups": [0, 1, 2, 3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["S1882.I1.F3.T1", "S1882.I1.F3.T6", "S1882.I1.F3.T7", "S1882.I1.F3.T8", "S1882.I1.F3.T10"],
+      "total_hours": 7
+    },
+    "duration": {
+      "sequential": 13,
+      "parallel": 7,
+      "time_saved_percent": 46.2
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
