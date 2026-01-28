@@ -107,7 +107,5 @@
 		"command": ".claude/statusline/statusline.sh",
 		"padding": 0
 	},
-	"enabledPlugins": {
-		"example-skills@anthropic-agent-skills": true
-	}
+	"enabledPlugins": {}
 }
