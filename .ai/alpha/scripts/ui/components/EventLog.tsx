@@ -41,6 +41,7 @@ const EVENT_ICONS: Record<OrchestratorEventType, string> = {
 	completion_phase_start: "🏁",
 	sandbox_killing: "🗑️",
 	review_sandbox_creating: "📦",
+	review_sandbox_failed: "❌", // Bug fix #1883
 	dev_server_starting: "🚀",
 	dev_server_ready: "✅",
 	dev_server_failed: "❌",
@@ -84,6 +85,7 @@ const EVENT_COLORS: Record<OrchestratorEventType, string> = {
 	completion_phase_start: "yellow",
 	sandbox_killing: "red",
 	review_sandbox_creating: "blue",
+	review_sandbox_failed: "red", // Bug fix #1883
 	dev_server_starting: "yellow",
 	dev_server_ready: "green",
 	dev_server_failed: "red",
