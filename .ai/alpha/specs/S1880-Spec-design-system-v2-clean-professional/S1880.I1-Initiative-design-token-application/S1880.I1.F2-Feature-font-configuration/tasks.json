@@ -1,0 +1,313 @@
+{
+  "$schema": "../../../../templates/tasks.schema.json",
+  "metadata": {
+    "feature_id": "S1880.I1.F2",
+    "feature_name": "Font Configuration",
+    "feature_slug": "font-configuration",
+    "initiative_id": "S1880.I1",
+    "spec_id": "1880",
+    "created_at": "2025-01-28T00:00:00Z",
+    "complexity": {
+      "score": 6.25,
+      "level": "MINIMAL",
+      "target_steps": {
+        "min": 1,
+        "max": 3
+      },
+      "pattern_matched": null
+    },
+    "requires_database": false,
+    "database_tasks": [],
+    "required_env_vars": []
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "type": "task",
+      "name": "Test SansFont wrapper configuration",
+      "action": {
+        "verb": "Test",
+        "target": "SansFont wrapper with Inter configuration"
+      },
+      "purpose": "Confirm fonts.ts uses SansFont wrapper with proper Inter font settings for Clean Professional design system",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 1,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/fonts.ts"
+        ],
+        "dependencies": [
+          "SansFont from next/font/google",
+          "cn utility from @kit/ui/utils"
+        ],
+        "constraints": [
+          "No changes expected - verification only",
+          "Current implementation uses Inter from next/font/google"
+        ]
+      },
+      "input_state": "fonts.ts exists with SansFont configuration",
+      "output_state": "Tested that SansFont wrapper exists with correct subsets configuration",
+      "acceptance_criterion": "fonts.ts contains SansFont wrapper with subsets: [\"latin\"] and variable: \"--font-sans\"",
+      "verification_command": "grep -q 'subsets.*\\[\"latin\"\\]' apps/web/lib/fonts.ts && grep -q 'variable.*\"--font-sans\"' apps/web/lib/fonts.ts",
+      "outputs": [
+        {
+          "type": "verified",
+          "path": "apps/web/lib/fonts.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": [],
+        "blocks": ["T2"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T2",
+      "type": "task",
+      "name": "Test font preload configuration",
+      "action": {
+        "verb": "Test",
+        "target": "font preload setting"
+      },
+      "purpose": "Confirm font configuration has preload enabled for Clean Professional design system",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 2,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/fonts.ts"
+        ],
+        "dependencies": [
+          "SansFont configuration from T1"
+        ],
+        "constraints": [
+          "No changes expected - verification only",
+          "preload should be enabled for performance"
+        ]
+      },
+      "input_state": "fonts.ts SansFont wrapper tested",
+      "output_state": "Tested preload enabled",
+      "acceptance_criterion": "fonts.ts has preload: true",
+      "verification_command": "grep -q 'preload.*true' apps/web/lib/fonts.ts",
+      "outputs": [
+        {
+          "type": "verified",
+          "path": "apps/web/lib/fonts.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T1"],
+        "blocks": ["T3"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T3",
+      "type": "task",
+      "name": "Test font fallback chain configuration",
+      "action": {
+        "verb": "Test",
+        "target": "font fallback chain"
+      },
+      "purpose": "Confirm proper fallback chain defined for Clean Professional design system",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 3,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/fonts.ts"
+        ],
+        "dependencies": [
+          "SansFont configuration from T1"
+        ],
+        "constraints": [
+          "No changes expected - verification only",
+          "Required fallback: [\"system-ui\", \"Helvetica Neue\", \"Helvetica\", \"Arial\"]"
+        ]
+      },
+      "input_state": "fonts.ts preload tested",
+      "output_state": "Tested fallback chain defined",
+      "acceptance_criterion": "fonts.ts has fallback: [\"system-ui\", \"Helvetica Neue\", \"Helvetica\", \"Arial\"]",
+      "verification_command": "grep -q 'fallback.*\\[\"system-ui\".*\"Helvetica Neue\".*\"Helvetica\".*\"Arial\"\\]' apps/web/lib/fonts.ts",
+      "outputs": [
+        {
+          "type": "verified",
+          "path": "apps/web/lib/fonts.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T2"],
+        "blocks": ["T4"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T4",
+      "type": "task",
+      "name": "Test font weights array configuration",
+      "action": {
+        "verb": "Test",
+        "target": "font weight array"
+      },
+      "purpose": "Confirm font configuration has proper weight coverage (300-700) for Clean Professional design system",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 4,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/lib/fonts.ts"
+        ],
+        "dependencies": [
+          "SansFont configuration from T1"
+        ],
+        "constraints": [
+          "No changes expected - verification only",
+          "Required weights: 300, 400, 500, 600, 700"
+        ]
+      },
+      "input_state": "fonts.ts fallback chain tested",
+      "output_state": "Tested weight array covers all required weights",
+      "acceptance_criterion": "fonts.ts has weight: [\"300\", \"400\", \"500\", \"600\", \"700\"]",
+      "verification_command": "grep -q 'weight.*\\[\"300\".*\"400\".*\"500\".*\"600\".*\"700\"\\]' apps/web/lib/fonts.ts",
+      "outputs": [
+        {
+          "type": "verified",
+          "path": "apps/web/lib/fonts.ts"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T3"],
+        "blocks": ["T5"]
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    },
+    {
+      "id": "T5",
+      "type": "task",
+      "name": "Test font layout application",
+      "action": {
+        "verb": "Test",
+        "target": "font variable in root layout"
+      },
+      "purpose": "Confirm font variable applied in root layout for Clean Professional design system",
+      "status": "draft",
+      "estimated_hours": 1,
+      "priority": 5,
+      "group": 1,
+      "requires_database": false,
+      "context": {
+        "files": [
+          "apps/web/app/layout.tsx"
+        ],
+        "dependencies": [
+          "getFontsClassName function",
+          "SansFont variable from fonts.ts"
+        ],
+        "constraints": [
+          "No changes expected - verification only"
+        ]
+      },
+      "input_state": "fonts.ts weights tested",
+      "output_state": "Tested font className applied to html element",
+      "acceptance_criterion": "layout.tsx applies getFontsClassName to html tag",
+      "verification_command": "grep -q 'className.*getFontsClassName' apps/web/app/layout.tsx",
+      "outputs": [
+        {
+          "type": "verified",
+          "path": "apps/web/app/layout.tsx"
+        }
+      ],
+      "dependencies": {
+        "blocked_by": ["T4"],
+        "blocks": []
+      },
+      "m1_checks": {
+        "single_verb": true,
+        "no_conjunctions": true,
+        "under_8_hours": true,
+        "under_750_tokens": true,
+        "binary_done_state": true,
+        "max_3_files": true
+      }
+    }
+  ],
+  "execution": {
+    "groups": [
+      {
+        "id": 1,
+        "name": "Font Configuration Verification",
+        "task_ids": ["T1", "T2", "T3", "T4", "T5"],
+        "depends_on_groups": [],
+        "estimated_hours": 5,
+        "parallel_hours": 0
+      }
+    ],
+    "critical_path": {
+      "task_ids": ["T1", "T2", "T3", "T4", "T5"],
+      "total_hours": 5
+    },
+    "duration": {
+      "sequential": 5,
+      "parallel": 5,
+      "time_saved_percent": 0
+    }
+  },
+  "validation": {
+    "discriminator_verdict": "APPROVED",
+    "scores": {
+      "completeness": 100,
+      "atomicity": 100,
+      "dependencies": 100,
+      "state_flow": 100,
+      "testability": 100
+    },
+    "dependency_checks": {
+      "no_cycles": true,
+      "all_documented": true,
+      "spikes_first": true,
+      "critical_path_valid": true
+    },
+    "m1_compliance": 100
+  },
+  "github": {
+    "issues_created": false,
+    "spec_issue_commented": true
+  }
+}
