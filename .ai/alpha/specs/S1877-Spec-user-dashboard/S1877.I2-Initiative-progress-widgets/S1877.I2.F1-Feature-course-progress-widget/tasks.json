@@ -235,8 +235,8 @@
       },
       "input_state": "CourseProgressWidget skeleton exists from T2",
       "output_state": "CourseProgressWidget shows empty state when no course progress exists",
-      "acceptance_criterion": "Empty state displays with 'Start Course' CTA when courseProgress is null",
-      "verification_command": "grep -q 'Trans.*no.*progress\|No Course Progress' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
+      "acceptance_criterion": "Empty state displays with Start Course CTA when courseProgress is null",
+      "verification_command": "grep -qE 'Trans.*no.*progress|No Course Progress' apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx",
       "outputs": [
         { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/course-progress-widget.tsx" }
       ],
@@ -441,6 +441,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }

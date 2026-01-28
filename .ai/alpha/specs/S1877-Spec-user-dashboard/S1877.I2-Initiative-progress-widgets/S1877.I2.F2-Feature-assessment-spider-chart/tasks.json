@@ -144,8 +144,8 @@
         { "type": "new", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
       ],
       "dependencies": {
-        "blocked_by": ["S1877.I2.F2.T2"],
-        "blocks": ["S1877.I2.F2.T4", "S1877.I2.F2.T5"]
+        "blocked_by": ["S1877.I2.F2.T1"],
+        "blocks": ["S1877.I2.F2.T4", "S1877.I2.F2.T5", "S1877.I2.F2.T6"]
       },
       "m1_checks": {
         "single_verb": true,
@@ -190,8 +190,8 @@
         { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
       ],
       "dependencies": {
-        "blocked_by": ["S1877.I2.F2.T3"],
-        "blocks": ["S1877.I2.F2.T5"]
+        "blocked_by": ["S1877.I2.F2.T1"],
+        "blocks": ["S1877.I2.F2.T6"]
       },
       "m1_checks": {
         "single_verb": true,
@@ -233,7 +233,7 @@
         { "type": "modified", "path": "apps/web/app/home/(user)/_components/dashboard/assessment-spider-widget.tsx" }
       ],
       "dependencies": {
-        "blocked_by": ["S1877.I2.F2.T3", "S1877.I2.F2.T4"],
+        "blocked_by": ["S1877.I2.F2.T3"],
         "blocks": ["S1877.I2.F2.T6"]
       },
       "m1_checks": {
@@ -291,7 +291,7 @@
         { "type": "modified", "path": "apps/web/app/home/(user)/_lib/server/user-dashboard-page.loader.ts" }
       ],
       "dependencies": {
-        "blocked_by": ["S1877.I2.F2.T5", "S1877.I1.F2"],
+        "blocked_by": ["S1877.I2.F2.T2", "S1877.I2.F2.T5"],
         "blocks": []
       },
       "m1_checks": {
@@ -309,36 +309,52 @@
       {
         "id": 1,
         "name": "Data Layer",
-        "task_ids": ["S1877.I2.F2.T1", "S1877.I2.F2.T2"],
+        "task_ids": ["S1877.I2.F2.T1"],
         "depends_on_groups": [],
-        "estimated_hours": 3,
+        "estimated_hours": 1,
         "parallel_hours": 1
       },
       {
         "id": 2,
-        "name": "Component Implementation",
-        "task_ids": ["S1877.I2.F2.T3", "S1877.I2.F2.T4", "S1877.I2.F2.T5"],
+        "name": "Data Loader",
+        "task_ids": ["S1877.I2.F2.T2"],
         "depends_on_groups": [1],
-        "estimated_hours": 6,
-        "parallel_hours": 3
+        "estimated_hours": 2,
+        "parallel_hours": 2
       },
       {
         "id": 3,
+        "name": "Component & Empty State",
+        "task_ids": ["S1877.I2.F2.T3", "S1877.I2.F2.T4"],
+        "depends_on_groups": [1],
+        "estimated_hours": 5,
+        "parallel_hours": 3
+      },
+      {
+        "id": 4,
+        "name": "Loading State",
+        "task_ids": ["S1877.I2.F2.T5"],
+        "depends_on_groups": [3],
+        "estimated_hours": 1,
+        "parallel_hours": 1
+      },
+      {
+        "id": 5,
         "name": "Integration",
         "task_ids": ["S1877.I2.F2.T6"],
-        "depends_on_groups": [1, 2],
+        "depends_on_groups": [2, 4],
         "estimated_hours": 1,
         "parallel_hours": 1
       }
     ],
     "critical_path": {
-      "task_ids": ["S1877.I2.F2.T1", "S1877.I2.F2.T2", "S1877.I2.F2.T3", "S1877.I2.F2.T4", "S1877.I2.F2.T5", "S1877.I2.F2.T6"],
-      "total_hours": 10
+      "task_ids": ["S1877.I2.F2.T1", "S1877.I2.F2.T3", "S1877.I2.F2.T5", "S1877.I2.F2.T6"],
+      "total_hours": 6
     },
     "duration": {
       "sequential": 10,
-      "parallel": 5,
-      "time_saved_percent": 50
+      "parallel": 6,
+      "time_saved_percent": 40
     }
   },
   "validation": {
@@ -360,6 +376,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }

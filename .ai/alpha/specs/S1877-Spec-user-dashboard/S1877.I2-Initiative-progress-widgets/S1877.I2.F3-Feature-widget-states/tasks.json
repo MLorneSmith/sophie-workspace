@@ -226,7 +226,7 @@
       ],
       "dependencies": {
         "blocked_by": ["S1877.I2.F3.T1", "S1877.I2.F3.T2"],
-        "blocks": ["S1877.I2.F3.T5"]
+        "blocks": []
       },
       "m1_checks": {
         "single_verb": true,
@@ -295,7 +295,7 @@
   "execution": {
     "groups": [
       {
-        "id": 1,
+        "id": 0,
         "name": "Create Wrapper Components",
         "task_ids": [
           "S1877.I2.F3.T1",
@@ -307,13 +307,13 @@
         "parallel_hours": 2
       },
       {
-        "id": 2,
+        "id": 1,
         "name": "Integrate States into Widgets",
         "task_ids": [
           "S1877.I2.F3.T4",
           "S1877.I2.F3.T5"
         ],
-        "depends_on_groups": [1],
+        "depends_on_groups": [0],
         "estimated_hours": 6,
         "parallel_hours": 3
       }
@@ -321,7 +321,7 @@
     "critical_path": {
       "task_ids": [
         "S1877.I2.F3.T1",
-        "S1877.I2.F3.T4"
+        "S1877.I2.F3.T5"
       ],
       "total_hours": 5
     },
@@ -350,6 +350,6 @@
   },
   "github": {
     "issues_created": false,
-    "spec_issue_commented": false
+    "spec_issue_commented": true
   }
 }
